@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">คัดลอกไปที่ <ph name="FOLDER_NAME" /> แล้ว</translation>
 <translation id="3475447146579922140">สเปรดชีตของ Google</translation>
 <translation id="3486821258960016770">มองโกเลีย</translation>
+<translation id="3495304270784461826">ข้อผิดพลาด <ph name="COUNT" /> รายการ</translation>
 <translation id="3522708245912499433">โปรตุเกส</translation>
 <translation id="3524311639100184459">ข้อควรระวัง: ไฟล์เหล่านี้ใช้ชั่วคราวและอาจถูกลบโดยอัตโนมัติเพื่อเพิ่มพื้นที่ว่างในดิสก์  <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">โฟลเดอร์</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">จักรยาน</translation>
 <translation id="8719721339511222681">เลือก <ph name="ENTRY_NAME" /> ไว้</translation>
 <translation id="872537912056138402">โครเอเชีย</translation>
+<translation id="8750438273876807512">แตะไฟล์ค้างไว้แล้วแตะ <ph name="ICON" /> จากนั้นเลือก "ตรึงที่ชั้นวาง" เพื่อให้เข้าถึงไฟล์ในชั้นวางได้อย่างรวดเร็ว</translation>
 <translation id="8775404590947523323">การแก้ไขของคุณจะถูกบันทึกไว้โดยอัตโนมัติ<ph name="BREAKS" />หากต้องการเก็บสำเนาของภาพต้นฉบับ ให้ยกเลิกการทำเครื่องหมาย "เขียนทับต้นฉบับ"</translation>
 <translation id="8808686172382650546">แมว</translation>
 <translation id="8810671769985673465">การซิปล้มเหลว มีรายการต่อไปนี้อยู่แล้ว "<ph name="FILE_NAME" />"</translation>

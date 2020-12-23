@@ -261,6 +261,7 @@
 <translation id="281504910091592009">သိမ်းဆည်းထားသည့် စကားဝှက်များကို သင်၏ <ph name="BEGIN_LINK" />Google အကောင့်<ph name="END_LINK" /> တွင် ကြည့်ရှုစီမံပါ</translation>
 <translation id="2818669890320396765">သင်၏ဝဘ်လိပ်စာများကို စက်အားလုံးတွင် ရယူနိုင်ရန် လက်မှတ်ထိုးဝင်ပြီး စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
+<translation id="2833452327385637152">စကားလုံး (သို့) စကားစုကို ရှာရန် ၎င်းကိုတို့မည့်အစား ထိ၍ဖိထားပါ။</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{လွန်ခဲ့သော ၁ ရက်က စစ်ဆေးခဲ့သည်}other{လွန်ခဲ့သော # ရက်က စစ်ဆေးခဲ့သည်}}</translation>
 <translation id="2842985007712546952">မူရင်း ဖိုင်တွဲ</translation>
 <translation id="2860954141821109167">ဤကိရိယာတွင် ဖုန်းအက်ပ်ဖွင့်ထားခြင်း ရှိမရှိ စစ်ဆေးပါ</translation>
@@ -1107,6 +1108,7 @@
 <translation id="8571213806525832805">ပြီးခဲ့သည့် ၄ ပတ်</translation>
 <translation id="8572344201470131220">ပုံကို ကူးယူပြီး</translation>
 <translation id="8583805026567836021">အကောင့် ဒေတာအားရှင်းလင်းနေ</translation>
+<translation id="8587585930972369234">ရှာဖွေရန် ထိ၍ဖိထားပါ</translation>
 <translation id="860043288473659153">ကတ်ကိုင်ဆောင်သူအမည်</translation>
 <translation id="8616006591992756292">သင့်  Google အကောင့်က ဖွင့်ကြည့်ထားသောမှတ်တမ်းသည် <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> တွင် အခြားပုံစံများဖြင့် ရှိနေနိုင်ပါသည်။</translation>
 <translation id="8617240290563765734">ဒေါင်းလုပ်လုပ်ထားသည့် အကြောင်းအရာတွင် သတ်မှတ်ထားသည့် အကြံပြု URL ကိုဖွင့်မလား?</translation>

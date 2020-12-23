@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">ব্লুটুথ ছেটিংসমূহ দেখুৱাওক। <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">সদায় শ্বেল্ফ দেখুৱাওক</translation>
+<translation id="1316811122439383437">ট’ট: শেহতীয়া স্ক্ৰীন কেপচাৰ, ডাউনল’ড আৰু পিন কৰা ফাইলসমূহ</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> সংযোগ কৰা হৈছে</translation>
 <translation id="1341651618736211726">অভাৰফ্ল'</translation>
 <translation id="1346748346194534595">সোঁ</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">ৱিণ্ড’ৰ স্ক্রীণশ্বট লওক</translation>
 <translation id="2617342710774726426">ছিম কাৰ্ড লক কৰা হৈছে</translation>
 <translation id="2621713457727696555">সুৰক্ষিত</translation>
+<translation id="2633643784040308254">মধ্যমীয়া</translation>
 <translation id="2653659639078652383">দাখিল কৰক</translation>
 <translation id="2658778018866295321">ক্লিক কৰি টানি আনক</translation>
 <translation id="2678852583403169292">কথা ক’বলৈ বাছনি কৰক সুবিধাটোৰ মেনু</translation>
@@ -409,6 +411,7 @@
 <translation id="4696813013609194136">অভিভাৱকৰ প্ৰৱেশ ক'ডৰ সহায়ত ডিভাইচ আনলক কৰক</translation>
 <translation id="4702647871202761252">গোপনীয়তাৰ স্ক্ৰীনখন অফ আছে</translation>
 <translation id="4705716602320768426">মতামত ফাইল কৰক</translation>
+<translation id="4730232680256276456">নমস্কাৰ</translation>
 <translation id="4731797938093519117">অভিভাৱকৰ এক্সেছ</translation>
 <translation id="4734965478015604180">আনুভূমিক</translation>
 <translation id="4744944742468440486">আপুনি কৰা বাছনি সম্পৰ্কীয় তথ্য</translation>
@@ -425,6 +428,7 @@
 <translation id="4868492592575313542">সক্ৰিয় কৰা হৈছে</translation>
 <translation id="4872237917498892622">Alt+Search বা Shift</translation>
 <translation id="4890187583552566966">আপোনাৰ প্ৰশাসকে Google Assistant অক্ষম কৰিছে।</translation>
+<translation id="4890408602550914571">আপোনাৰ ফ’নটো ওচৰত থকাটো আৰু ব্লুটুথ অন হৈ থকাটো নিশ্চিত কৰক।</translation>
 <translation id="4895488851634969361">বেটাৰী চ্চার্জ সম্পূর্ণ হৈছে।</translation>
 <translation id="490375751687810070">উলম্ব</translation>
 <translation id="4905614135390995787">উচ্চ বৈষাদৃশ্যৰ ম’ড ট’গল কৰাৰ শ্বৰ্টকাটটো সলনি হৈছে। <ph name="OLD_SHORTCUT" />ৰ পৰিৱৰ্তে <ph name="NEW_SHORTCUT" /> ব্যৱহাৰ কৰক।</translation>
@@ -472,6 +476,7 @@
 <translation id="5302048478445481009">ভাষা</translation>
 <translation id="5313326810920013265">ব্লুটুথ ছেটিংসমূহ</translation>
 <translation id="5314219114274263156">স্ক্ৰীন ৰেকৰ্ডিং লোৱা হ'ল</translation>
+<translation id="5322611492012084517">আপোনাৰ ফ’নটো বিচাৰি পোৱা নাই</translation>
 <translation id="5329548388331921293">সংযোগ কৰি থকা হৈছে…</translation>
 <translation id="5331975486040154427">USB-C ডিভাইচ (বাওঁফালৰ বেকপর্টত)</translation>
 <translation id="5352250171825660495">গাঢ় ৰঙৰ থীম অন হৈ আছে</translation>
@@ -518,6 +523,7 @@
 <translation id="576453121877257266">ৰাতিৰ লাইট অন কৰা আছে।</translation>
 <translation id="5769373120130404283">গোপনীয়তাৰ স্ক্ৰীন</translation>
 <translation id="5777841717266010279">স্ক্ৰীণ শ্বেয়াৰ কৰাটো বন্ধ কৰিবনে?</translation>
+<translation id="5779721926447984944">পিন কৰা ফাইল</translation>
 <translation id="5790085346892983794">সফল হৈছে</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">সংযুক্ত হৈ থকা ডিভাইচৰ ছেটিংসমূহ</translation>
@@ -562,6 +568,7 @@
 <translation id="615957422585914272">অন-স্ক্ৰীণ কীব’ৰ্ড দেখুৱাওক</translation>
 <translation id="6164005077879661055">এই নিৰীক্ষণত থকা ব্যৱহাৰকাৰীজনক আঁতৰালে তেওঁৰ সৈতে জড়িত সকলো ফাইল আৰু স্থানীয় ডেটা স্থায়ীভাৱে মচা হ’ব। নিৰীক্ষণত থকা এই ব্যৱহাৰকাৰীকাৰীজনে চোৱা ৱেবছাইট আৰু ছেটিংসমূহ তথাপিও পৰিচালকে <ph name="MANAGEMENT_URL" />ত চাব পাৰিব।</translation>
 <translation id="6165508094623778733">অধিক জানক</translation>
+<translation id="6179832488876878285">আপুনি নিজৰ গুৰুত্বপূৰ্ণ ফাইলসমূহ ইয়াত পিন কৰিব পাৰে। আৰম্ভ কৰিবলৈ Files এপ্‌টো খোলক।</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6236290670123303279">ছেটিংসমূহ পৰিচালনা কৰক</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -717,6 +724,7 @@
 <translation id="7654687942625752712">কথিত প্ৰতিক্ৰিয়া অক্ষম কৰিবলৈ দুয়োটা ভলিউম বুটাম টিপি পাঁচ ছেকেণ্ডৰ বাবে ধৰি ৰাখক।</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7662283695561029522">কনফিগাৰ কৰিবলৈ টিপক</translation>
+<translation id="7683326293741220026">আপোনাৰ ফ’নটোত ব্লুটুথ অফ কৰি থোৱা আছে যেন লাগিছে। ফ’ন হাব ব্যৱহাৰ কৰিবলৈ অনুগ্ৰহ কৰি আপোনাৰ ফ’নটোত ব্লুটুথ অন কৰক।</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{১টা জাননী}one{#টা জাননী}other{#টা জাননী}}</translation>
 <translation id="7724603315864178912">কাট কৰক</translation>
@@ -733,9 +741,11 @@
 <translation id="7860671499921112077">অৱলোকনত সোমাবলৈ তিনিটা আঙুলিৰে ওপৰলৈ ছোৱাইপ কৰক</translation>
 <translation id="7868900307798234037">ফিংগাৰপ্ৰিণ্টেৰে আনল’ক</translation>
 <translation id="7872786842639831132">অফ আছে</translation>
+<translation id="7875575368831396199">আপোনাৰ <ph name="DEVICE_TYPE" />ত ব্লুটুথ অফ কৰি থোৱা আছে যেন লাগিছে। ফ’ন হাব ব্যৱহাৰ কৰিবলৈ অনুগ্ৰহ কৰি ব্লুটুথ অন কৰক।</translation>
 <translation id="7886169021410746335">গোপনীয়তাৰ ছেটিংসমূহ মিলাওক</translation>
 <translation id="7886277072580235377">আপুনি ছাইন আউট কৰিলে আপোনাৰ ইণ্টাৰনেট ছেশ্বন মচা হ’ব। <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">এটা ইমেইল পঠিয়াওক</translation>
+<translation id="7895348134893321514">ট’ট</translation>
 <translation id="7897375687985782769">আপুনি স্ক্রীণখন ঘূৰাবলৈ কীব'ৰ্ডৰ শ্বৰ্টকাটত টিপিলে। আপুনি স্ক্রীণখন ঘূৰাব বিচাৰেনে?</translation>
 <translation id="7901405293566323524">ফ’ন হাব</translation>
 <translation id="7902625623987030061">ফিংগাৰপ্ৰিণ্ট ছেন্সৰটো স্পৰ্শ কৰক</translation>
@@ -803,6 +813,7 @@
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> ডেস্ক সক্রিয় কৰা হৈছে</translation>
 <translation id="8452135315243592079">কোনো ছিম কাৰ্ড নাই</translation>
 <translation id="8454013096329229812">ৱাই-ফাই অন কৰা হ’ল৷</translation>
+<translation id="8462305545768648477">কথা ক’বলৈ বাছনি কৰক সুবিধাটো বন্ধ কৰক</translation>
 <translation id="847056008324733326">ডিছপ্লে’ স্কে’লৰ ছেটিং</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />ৰ <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />আছে।</translation>
 <translation id="8477270416194247200">বাতিল কৰিবলৈ Alt+Search বা Shift টিপক।</translation>

@@ -35,8 +35,10 @@
 <translation id="3750315947605636967">您的摄像头正被另一个应用使用</translation>
 <translation id="3810838688059735925">视频</translation>
 <translation id="3838931309141338733">扫描条形码</translation>
+<translation id="3892148308691398805">复制文字</translation>
 <translation id="4000398125663085899">现在，新照片和视频会保存到“文件”应用中的文件夹：“我的文件”&gt;“相机”</translation>
 <translation id="4118525110028899586">暂停录制</translation>
+<translation id="4269820728363426813">复制链接地址</translation>
 <translation id="4279490309300973883">正在镜像</translation>
 <translation id="4329152592498422850">切换到正方形照片拍摄模式</translation>
 <translation id="4383571725254449280">打印性能日志</translation>
@@ -71,6 +73,7 @@
 <translation id="7134221860976209830">10 秒定时器</translation>
 <translation id="7243947652761655814">视频分辨率</translation>
 <translation id="7337660886763914220">文件系统出错。</translation>
+<translation id="7450541714075000668">文本已复制</translation>
 <translation id="7557677699350329807">切换到下一个摄像头</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="7649070708921625228">帮助</translation>

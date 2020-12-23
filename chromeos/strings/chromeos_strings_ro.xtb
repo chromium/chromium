@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Scanează</translation>
 <translation id="2570743873672969996">Se rulează testul <ph name="TEST_NAME" />...</translation>
+<translation id="2585245331261708204">Noutăți în SO Chrome</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Aplicații</translation>
@@ -183,6 +184,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6232017090690406397">Baterie</translation>
 <translation id="6325525973963619867">Eșuat</translation>
 <translation id="636850387210749493">Înscriere pentru întreprindere</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Fișierul scanat a fost salvat}few{Fișierele scanate au fost salvate}other{Fișierele scanate au fost salvate}}</translation>
 <translation id="649050271426829538">Oprită – Blocaj de hârtie</translation>
 <translation id="6517239166834772319">Explorare</translation>
 <translation id="6527081081771465939">Protocol de securitate Wi-Fi necunoscut</translation>

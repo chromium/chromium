@@ -261,6 +261,7 @@
 <translation id="281504910091592009">ඔබේ <ph name="BEGIN_LINK" />Google ගිණුම<ph name="END_LINK" /> තුළ සුරකින ලද මුරපද බලන්න සහ කළමනාකරණය කරන්න</translation>
 <translation id="2818669890320396765">ඔබේ සියලු උපාංග මත ඇති ඔබේ පිටුසන් ලබා ගැනීමට, පුරනය වී සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="2827278682606527653">සංග්‍රහ කාඩ්පත් මෙනුව අඩක් උස</translation>
+<translation id="2833452327385637152">වචනයක් හෝ වැකිකඩක් සෙවීම සඳහා, එය තට්ටු කරනවා වෙනුවට එය ස්පර්ශ කර අල්ලාගෙන සිටින්න</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{දින 1කට පෙර පරීක්ෂා කරන ලදි}one{දින #කට පෙර පරීක්ෂා කරන ලදි}other{දින #කට පෙර පරීක්ෂා කරන ලදි}}</translation>
 <translation id="2842985007712546952">මූලික ෆෝල්ඩරය</translation>
 <translation id="2860954141821109167">මෙම උපාංගය මත දුරකථන යෙදුමක් සබල කර තිබීම තහවුරු කර ගන්න</translation>
@@ -1108,6 +1109,7 @@
 <translation id="8571213806525832805">පසුගිය සති 4</translation>
 <translation id="8572344201470131220">රූපය පිටපත් කරන ලදි</translation>
 <translation id="8583805026567836021">ගිණුම් දත්ත ඉවත් කරමින්</translation>
+<translation id="8587585930972369234">සෙවීමට ස්පර්ශ කර අල්ලාගෙන ඉන්න</translation>
 <translation id="860043288473659153">කාඩ්පත් හිමිකරුගේ නම</translation>
 <translation id="8616006591992756292">ඔබේ Google ගිණුමට <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> හිදී බ්‍රවුස් කිරීමේ ඉතිහාසයේ වෙනත් ආකාරයන් තිබිය හැක.</translation>
 <translation id="8617240290563765734">බාගන්න ලද අන්තර්ගතයේ යෝජනාකර ඇති URL විවෘත කරන්න ද?</translation>

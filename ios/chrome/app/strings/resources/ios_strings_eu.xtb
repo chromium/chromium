@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Ezabatu lehendik dauden datuak.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> gisa hasi duzu saioa</translation>
 <translation id="1154690515305205900">Ezin da sortu nabarmendutako testura daraman esteka.</translation>
+<translation id="1154984953698510061">Ikusi beste fitxa batzuk</translation>
 <translation id="1157749421655780457">Eman kokapena atzitzeko baimena…</translation>
 <translation id="1165039591588034296">Errorea</translation>
 <translation id="1172898394251786223">Hurrengo eremua</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">Azken 24 orduetakoak</translation>
 <translation id="1285320974508926690">Ez itzuli inoiz webgune hau</translation>
 <translation id="1321993286294231467">Errore bat gertatu da irudia gordetzean.</translation>
+<translation id="1322735045095424339">Ezkutuko modua erabiltzeko eskatzen dizu zure erakundeak</translation>
 <translation id="1323735185997015385">Ezabatu</translation>
 <translation id="132683371494960526">Sakatu birritan karpeta nagusia aldatzeko.</translation>
 <translation id="1340643665687018190">Itxi menua</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Txartelaren titularraren izena</translation>
 <translation id="1809939268435598390">Ezabatu karpeta</translation>
 <translation id="1813414402673211292">Garbitu arakatze-datuak</translation>
+<translation id="1815941218935345331">Pasakodea</translation>
 <translation id="1820259098641718022">Gehitu da Irakurketa-zerrendan</translation>
 <translation id="1870148520156231997">Erakutsi pasahitza</translation>
 <translation id="1872096359983322073">Linterna</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Aurreratuak</translation>
 <translation id="1989112275319619282">Arakatu</translation>
 <translation id="2015722694326466240">Pasahitzak ikusteko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
+<translation id="2047933465321076474">Zure erakundeak arakatze pribatua desaktibatu du. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Aktibo duela <ph name="DAYS" /> egun</translation>
 <translation id="2074131957428911366">Zer sinkronizatu nahi duzun aukeratzeko, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="2079545284768500474">Desegin</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Arakatze-datuak garbitzen…</translation>
 <translation id="2257567812274161158">Sinkronizazioa ez dabil.</translation>
 <translation id="225943865679747347">Errore-kodea: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">Modu pribatuan arakatzeko eskatzen dizu zure erakundeak. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Gehitu kontu bat</translation>
 <translation id="2268044343513325586">Mugatu</translation>
 <translation id="2273327106802955778">"Gehiago" menua</translation>
@@ -136,6 +141,7 @@
 Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko.</translation>
 <translation id="2381405137052800939">Oinarrizkoak</translation>
 <translation id="2386793615875593361">Bat hautatu da</translation>
+<translation id="2419661687355878017">Zure erakundeak ezkutuko modua desaktibatu du</translation>
 <translation id="2421004566762153674">Hirugarrenen cookieak blokeatzea</translation>
 <translation id="2421044535038393232">Jarraitu editatzen</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
@@ -185,11 +191,13 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="291754862089661335">Ezarri QR kodea edo barra-kodea marko honetan</translation>
 <translation id="2921219216347069551">Ezin da partekatu orria</translation>
 <translation id="2923448633003185837">Itsatsi eta listo</translation>
+<translation id="2923827943290349720">Blokeatu ezkutuko moduko fitxak Chrome ixten duzunean</translation>
 <translation id="292639812446257861">Markatu irakurri gabeko gisa</translation>
 <translation id="2952581218264071393">1. Ireki Chrome-ren ezarpenak</translation>
 <translation id="2958718410589002129">Pasahitzak</translation>
 <translation id="2964349545761222050">Blokeatu hirugarrenen cookieak</translation>
 <translation id="2969979262385602596">Ezin izan da hasi saioa. Saiatu berriro geroago.</translation>
+<translation id="2975121486251958312">Ezkutuko modua baino ez dago erabilgarri</translation>
 <translation id="298306318844797842">Gehitu ordainketa-metodoa…</translation>
 <translation id="2989805286512600854">Ireki fitxa berri batean</translation>
 <translation id="3037605927509011580">Hutsegite bat izan da.</translation>
@@ -204,6 +212,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="3175081911749765310">Web-zerbitzuak</translation>
 <translation id="3178650076442119961">Aktibo gaur</translation>
 <translation id="3181954750937456830">Arakatze segurua (webgune arriskutsuen aurka babesten zaituzte gailua eta zu)</translation>
+<translation id="3184767182050912705">Desblokeatu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> erabilita</translation>
 <translation id="3196681740617426482">Webguneek cookieak erabil ditzakete arakatze-zerbitzua hobetzeko; adibidez, saioa hasita mantentzeko edo erosketa-saskiko produktuak gogoratzeko.
 
 Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko.</translation>
@@ -355,6 +364,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} eta beste bat}other{{domain} eta beste {count}}}</translation>
 <translation id="4826218269716039351">Blokeatu hirugarrenen cookieak</translation>
 <translation id="48274138579728272">Markatu irakurritako gisa</translation>
+<translation id="4833686396768033263">Ez daude erabilgarri azken fitxak</translation>
 <translation id="4833786495304741580">Erabilera-estatistikak eta hutsegite-txostenak automatikoki bidaltzen dizkio Google-ri.</translation>
 <translation id="4840495572919996524">Laster-markak, historia, pasahitzak eta beste ez dira sinkronizatuko Google-ko kontuarekin aurrerantzean.</translation>
 <translation id="4854345657858711387">Ezarri pasakode bat</translation>
@@ -418,6 +428,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5551897871312988470">Eskaini itzultzea</translation>
 <translation id="5556459405103347317">Kargatu berriro</translation>
 <translation id="5592679540098330836">Aktibatu <ph name="NAME" /> erabiltzailearen sinkronizazioa</translation>
+<translation id="5597169624050330492">Modu pribatuan arakatzeko eskatzen dizu zure erakundeak. Fitxak ez dira gordetzen ezkutuko moduan. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Pasahitza gorde nahi duzu?</translation>
 <translation id="5626245204502895507">Ezin izan da deskargatu fitxategia.</translation>
 <translation id="5631164295104953411">Gehitu ordainketa-metodoa</translation>
@@ -522,6 +533,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 
 Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
 <translation id="651505212789431520">Sinkronizazioa bertan behera utzi nahi duzu? Sinkronizazioa aktibatzeko, joan "Ezarpenak" atalera.</translation>
+<translation id="6524918542306337007">Ez dago erabilgarri ezkutuko modua</translation>
 <translation id="6561262006871132942">Handitu</translation>
 <translation id="6585618849026997638">Garrantzitsuak iruditzen zaizkizun orriak bizkor atzitu ahal izateko, gehi iezazkiezu laster-markak</translation>
 <translation id="6610002944194042868">Itzultzeko aukerak</translation>
@@ -580,6 +592,7 @@ Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
 <translation id="7133798577887235672">Izen-abizenak</translation>
 <translation id="7136892417564438900">Kamera ez dago erabilgarri</translation>
 <translation id="7159472599653637159">Mugikorrerakoa</translation>
+<translation id="7162168282402939716">Desblokeatu ezkutuko moduko fitxak <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> erabilita</translation>
 <translation id="7172852049901402487">Babestu zure pasahitzak segurtasun-arazo guztietatik</translation>
 <translation id="7173114856073700355">Ireki Ezarpenak</translation>
 <translation id="7189598951263744875">Partekatu…</translation>
@@ -617,6 +630,7 @@ Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
 <translation id="7537586195939242955">Dokumentua ezin izan da instalatu Passbook-en.</translation>
 <translation id="7554791636758816595">Fitxa berria</translation>
 <translation id="7561196759112975576">Beti</translation>
+<translation id="7583004045319035904">Erabili <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ezkutuko moduko fitxak desblokeatzeko.</translation>
 <translation id="7600965453749440009">Ez itzuli <ph name="LANGUAGE" /> inoiz</translation>
 <translation id="7603852183842204213"><ph name="NUMBER_OF_BLOCKED_POPUPS" /> leiho blokeatuta</translation>
 <translation id="7607521702806708809">Ezabatu pasahitza</translation>
@@ -709,6 +723,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8591976964826315682">Blokeatu hirugarrenen cookieak ezkutuko moduan</translation>
 <translation id="8605219856220328675">Itxi fitxa.</translation>
 <translation id="8620640915598389714">Editatu</translation>
+<translation id="863090005774946393">Zure erakundeak kudeatzen du arakatzailea. Baliteke eginbide batzuk desgaituta egotea.</translation>
 <translation id="8636825310635137004">Beste gailuetako fitxak eskura izateko, aktibatu sinkronizazioa.</translation>
 <translation id="8654802032646794042">Utzi</translation>
 <translation id="8668210798914567634">Irakurketa-zerrendan dago gordeta orri hau.</translation>

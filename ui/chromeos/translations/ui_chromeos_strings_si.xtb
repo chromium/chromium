@@ -228,6 +228,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> වෙත පිටපත් කළා.</translation>
 <translation id="3475447146579922140">Google පැතුරුම්පත</translation>
 <translation id="3486821258960016770">මොන්ගෝලියානු</translation>
+<translation id="3495304270784461826">දෝෂ <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">පෘතුගීසි</translation>
 <translation id="3524311639100184459">අවවාදය: මෙම ගොනු තාවකාලික වන අතර, තැටි ඉඩ නිදහස් කිරීමට ස්වයංක්‍රීයව මකනු ලැබිය හැක.  <ph name="BEGIN_LINK" />තවත් දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ෆෝල්ඩරය</translation>
@@ -737,6 +738,7 @@
 <translation id="8714406895390098252">බයිසිකල්</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> තෝරන ලදි.</translation>
 <translation id="872537912056138402">ක්‍රොඒෂියානු</translation>
+<translation id="8750438273876807512">රාක්කයේ ඇති ඔබගේ ගොනු වෙත ඉක්මන් ප්‍රවේශය සඳහා ගොනුවක් ස්පර්ශ කර අල්ලාගෙන <ph name="ICON" /> තට්ටු කර, "රාක්කයට අමුණන්න" තෝරන්න.</translation>
 <translation id="8775404590947523323">ඔබේ සැකසුම් ස්වයංක්‍රීයව සුරැකිනි.<ph name="BREAKS" />මුල් පින්තූරයේ පිටපතක් තබා ගැනීම සඳඅ, "මූලික නැවත ලියන්න" සලකුණ ඉවත් කරන්න.</translation>
 <translation id="8808686172382650546">පූසා</translation>
 <translation id="8810671769985673465">සිප් කිරීම අසාර්ථකයි, අයිතමය පවතියි: "<ph name="FILE_NAME" />"</translation>

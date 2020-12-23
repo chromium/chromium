@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ရှာဖွေရန်</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> စစ်ဆေးမှု လုပ်ဆောင်နေသည်...</translation>
+<translation id="2585245331261708204">Chrome OS ၏ အသစ်ပါဝင်မှု</translation>
 <translation id="2620436844016719705">စနစ်</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">အက်ပ်များ</translation>
@@ -182,6 +183,7 @@
 <translation id="6232017090690406397">ဘက်ထရီ</translation>
 <translation id="6325525973963619867">အောင်မြင်ပါ</translation>
 <translation id="636850387210749493">လုပ်ငန်း အမည်စာရင်းသွင်းခြင်း</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{စကင်ဖတ်ထားသော ဖိုင်ကို သိမ်းပြီးပါပြီ}other{စကင်ဖတ်ထားသော ဖိုင်များကို သိမ်းပြီးပါပြီ}}</translation>
 <translation id="649050271426829538">ရပ်သွားသည် - စာရွက်ညပ်နေသည်</translation>
 <translation id="6517239166834772319">စူးစမ်းလေ့လာခြင်း</translation>
 <translation id="6527081081771465939">အမည်မသိ WiFi လုံခြုံရေးပရိုတိုကော</translation>

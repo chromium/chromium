@@ -2193,6 +2193,13 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle est définie sur "AllowMigration", les utilisateurs disposant d'un répertoire d'accueil eCryptfs pourront le faire migrer vers un chiffrement ext4 si nécessaire (à l'heure actuelle, proposé lorsque Android N est disponible sur l'appareil).
 
       Cette règle ne s'applique pas aux applications kiosque, qui sont migrées automatiquement. Si vous ne définissez pas de valeur pour cette règle, l'appareil se comportera par défaut comme si la règle était définie sur "DisallowArc".</translation>
+<translation id="401650904918322517">Cette règle étant obsolète, elle sera supprimée dans la version 89 de <ph name="PRODUCT_OS_NAME" />.
+
+      Elle permet à la fonctionnalité Réponses rapides d'accéder ou non au contenu sélectionné, et d'envoyer ou non les informations le concernant au serveur.
+
+      Si la règle est activée, la fonctionnalité Réponses rapides est autorisée à accéder à ce contenu.
+      Si la règle est désactivée, cette fonctionnalité n'est pas autorisée à accéder à ce contenu.
+      Si la règle n'est pas configurée, les utilisateurs peuvent choisir d'autoriser ou non cette fonctionnalité à accéder à ce contenu.</translation>
 <translation id="4020682745012723568">Les applications Android n'ont pas accès aux cookies transférés vers le profil de l'utilisateur.</translation>
 <translation id="4025500273782820766">Autoriser les utilisateurs à sélectionner "Toujours autoriser" quand une boîte de dialogue de protocole externe s'affiche pour permettre à l'utilisateur d'ignorer les futures invites de confirmation</translation>
 <translation id="402759845255257575">Interdire à tous les sites d'exécuter JavaScript</translation>
@@ -3984,6 +3991,13 @@ Si vous sélectionnez les options suivantes :
 <translation id="6789422336869764846">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés indiquent l'état de l'interrupteur du mode développeur lors du démarrage de la machine.
 
       Si cette règle est désactivée, les appareils enregistrés n'indiquent pas cet état.</translation>
+<translation id="6793420507738858152">Lorsqu'elle est activée, la fonctionnalité <ph name="PRODUCT_NAME" /> envoie des en-têtes de requête précis qui fournissent des informations sur le navigateur et l'environnement de l'utilisateur.
+
+      Il s'agit d'une fonctionnalité complémentaire. Toutefois, les nouveaux en-têtes peuvent entraîner un dysfonctionnement de certains sites Web qui appliquent des restrictions en ce qui concerne les caractères que peuvent contenir les requêtes.
+
+      Si cette règle est activée ou qu'elle n'est pas configurée, la fonctionnalité <ph name="PRODUCT_NAME" /> est activée. Si cette règle est désactivée, la fonctionnalité n'est pas disponible.
+
+      Cette règle permet d'assurer la transition à court terme. Elle sera disponible au moins jusqu'à la version 91 de Chrome.</translation>
 <translation id="6795485990775913659">Autoriser l'impression sans code uniquement</translation>
 <translation id="6800181452282128474">Ne pas envoyer de requêtes aux serveurs Quirks</translation>
 <translation id="6810445994095397827">Bloquer JavaScript sur ces sites</translation>
@@ -4630,6 +4644,9 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />. Si cette règle n'est pas configurée, le moteur de recherche par défaut est activé, et les utilisateurs peuvent configurer la liste des moteurs de recherche.
 
       Sur <ph name="MS_WIN_NAME" />, cette fonctionnalité n'est disponible que pour les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sur Windows 10 Pro ou qui bénéficient de la gestion cloud du navigateur Chrome. Sur <ph name="MAC_OS_NAME" />, cette fonctionnalité n'est disponible que pour les instances gérées via MDM ou associées à un domaine via MCX.</translation>
+<translation id="7669630878711068277">Si vous activez cette règle ou que vous ne la configurez pas, les utilisateurs peuvent imprimer dans <ph name="PRODUCT_NAME" />. En revanche, ils ne peuvent pas modifier ce paramètre.
+
+      Si vous la désactivez, les utilisateurs ne peuvent pas imprimer à partir de <ph name="PRODUCT_NAME" />. La fonctionnalité d'impression est désactivée dans le menu à trois points, les extensions et les applications JavaScript.</translation>
 <translation id="7673194325208122247">Période (millisecondes)</translation>
 <translation id="7677220829878081413">
       Si la règle est définie sur "ArcSession", elle contraint l'appareil à redémarrer lorsqu'un utilisateur se déconnecte si Android est en cours d'exécution.

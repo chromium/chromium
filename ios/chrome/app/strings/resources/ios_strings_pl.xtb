@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Usuń istniejące dane.</translation>
 <translation id="1147031633655575115">Używasz konta <ph name="USER" /></translation>
 <translation id="1154690515305205900">Nie można utworzyć linku do podświetlonego tekstu.</translation>
+<translation id="1154984953698510061">Zobacz inne karty</translation>
 <translation id="1157749421655780457">Zezwól na dostęp do lokalizacji...</translation>
 <translation id="1165039591588034296">Błąd</translation>
 <translation id="1172898394251786223">Następne pole</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">Ostatnie 24 godziny</translation>
 <translation id="1285320974508926690">Nigdy nie tłumacz tej witryny</translation>
 <translation id="1321993286294231467">Błąd podczas zapisywania obrazu.</translation>
+<translation id="1322735045095424339">Twoja organizacja wymaga trybu incognito</translation>
 <translation id="1323735185997015385">Usuń</translation>
 <translation id="132683371494960526">Kliknij dwukrotnie, by zmienić folder nadrzędny.</translation>
 <translation id="1340643665687018190">Zamknij menu</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Imię i nazwisko posiadacza karty</translation>
 <translation id="1809939268435598390">Usuń folder</translation>
 <translation id="1813414402673211292">Wyczyść historię przeglądania</translation>
+<translation id="1815941218935345331">Hasło</translation>
 <translation id="1820259098641718022">Dodano do listy Do przeczytania</translation>
 <translation id="1870148520156231997">Pokaż hasło</translation>
 <translation id="1872096359983322073">Latarka</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Zaawansowane</translation>
 <translation id="1989112275319619282">Przeglądaj</translation>
 <translation id="2015722694326466240">Aby wyświetlić hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
+<translation id="2047933465321076474">Twoja organizacja wyłączyła przeglądanie prywatne. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Aktywność <ph name="DAYS" /> dni temu</translation>
 <translation id="2074131957428911366">W <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" /> możesz wybrać, co chcesz synchronizować.</translation>
 <translation id="2079545284768500474">Cofnij</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Czyszczę dane przeglądania…</translation>
 <translation id="2257567812274161158">Synchronizacja nie działa.</translation>
 <translation id="225943865679747347">Kod błędu: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">Twoja organizacja wymaga przeglądania prywatnego. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Dodaj konto</translation>
 <translation id="2268044343513325586">Zawęź</translation>
 <translation id="2273327106802955778">Menu Więcej</translation>
@@ -136,6 +141,7 @@
 Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam.</translation>
 <translation id="2381405137052800939">Podstawowe</translation>
 <translation id="2386793615875593361">Wybrano: 1</translation>
+<translation id="2419661687355878017">Twoja organizacja wyłączyła tryb incognito</translation>
 <translation id="2421004566762153674">Blokowanie plików cookie innych firm</translation>
 <translation id="2421044535038393232">Edytuj dalej</translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
@@ -185,11 +191,13 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="291754862089661335">Umieść kod QR lub kod kreskowy w tej ramce</translation>
 <translation id="2921219216347069551">Nie można udostępnić</translation>
 <translation id="2923448633003185837">Wklej i otwórz</translation>
+<translation id="2923827943290349720">Blokuj karty incognito po zamknięciu Chrome</translation>
 <translation id="292639812446257861">Oznacz jako nieprzeczytane</translation>
 <translation id="2952581218264071393">1. Otwórz ustawienia Chrome.</translation>
 <translation id="2958718410589002129">Hasła</translation>
 <translation id="2964349545761222050">Blokowanie plików cookie innych firm</translation>
 <translation id="2969979262385602596">Nie udało się zalogować. Spróbuj ponownie później.</translation>
+<translation id="2975121486251958312">Dostępny jest tylko tryb incognito</translation>
 <translation id="298306318844797842">Dodaj formę płatności…</translation>
 <translation id="2989805286512600854">Otwórz w nowej karcie</translation>
 <translation id="3037605927509011580">Kurza twarz!</translation>
@@ -204,6 +212,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="3175081911749765310">Usługi internetowe</translation>
 <translation id="3178650076442119961">Aktywność dzisiaj</translation>
 <translation id="3181954750937456830">Bezpieczne przeglądanie (chroni Ciebie i Twoje urządzenie przed niebezpiecznymi witrynami)</translation>
+<translation id="3184767182050912705">Odblokuj za pomocą <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">Witryny mogą używać plików cookie dla Twojej wygody – na przykład, by zapamiętać Twoje logowanie lub zawartość koszyka.
 
 W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam.</translation>
@@ -353,6 +362,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} i jeszcze 1}few{{domain} i jeszcze {count}}many{{domain} i jeszcze {count}}other{{domain} i jeszcze {count}}}</translation>
 <translation id="4826218269716039351">Blokuj pliki cookie innych firm</translation>
 <translation id="48274138579728272">Oznacz jako przeczytane</translation>
+<translation id="4833686396768033263">Ostatnie karty są niedostępne</translation>
 <translation id="4833786495304741580">Automatycznie przesyła do Google statystyki użytkowania i raporty o awariach.</translation>
 <translation id="4840495572919996524">Twoje zakładki, historia, hasła i inne ustawienia przestaną być synchronizowane z Twoim kontem Google.</translation>
 <translation id="4854345657858711387">Ustaw kod dostępu</translation>
@@ -416,6 +426,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5551897871312988470">Proponuj tłumaczenie</translation>
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="5592679540098330836">Włącz synchronizację dla: <ph name="NAME" /></translation>
+<translation id="5597169624050330492">Twoja organizacja wymaga przeglądania prywatnego. W trybie incognito karty nie są zapisywane. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Zapisać hasło?</translation>
 <translation id="5626245204502895507">Nie udało się pobrać teraz tego pliku.</translation>
 <translation id="5631164295104953411">Dodaj formę płatności</translation>
@@ -520,6 +531,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 
 Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="651505212789431520">Anulować synchronizację? W każdej chwili możesz włączyć synchronizację w Ustawieniach.</translation>
+<translation id="6524918542306337007">Tryb incognito jest niedostępny</translation>
 <translation id="6561262006871132942">Powiększ</translation>
 <translation id="6585618849026997638">Utwórz zakładkę, jeśli chcesz wrócić do interesującej Cię strony</translation>
 <translation id="6610002944194042868">Opcje tłumaczenia</translation>
@@ -578,6 +590,7 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="7133798577887235672">Imię i nazwisko</translation>
 <translation id="7136892417564438900">Aparat jest niedostępny</translation>
 <translation id="7159472599653637159">Żądaj strony mobilnej</translation>
+<translation id="7162168282402939716">Odblokuj karty incognito za pomocą <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Chroń swoje hasła przed zagrożeniami</translation>
 <translation id="7173114856073700355">Otwórz Ustawienia</translation>
 <translation id="7189598951263744875">Udostępnij...</translation>
@@ -615,6 +628,7 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="7537586195939242955">Twojego hasła nie można teraz umieścić w Passbooku.</translation>
 <translation id="7554791636758816595">Nowa karta</translation>
 <translation id="7561196759112975576">Zawsze</translation>
+<translation id="7583004045319035904">Używaj <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> do odblokowywania kart incognito.</translation>
 <translation id="7600965453749440009">Nigdy nie tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Zablokowano pop-upy (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Usuń hasło</translation>
@@ -707,6 +721,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8591976964826315682">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="8605219856220328675">Zamknij kartę</translation>
 <translation id="8620640915598389714">Edytuj</translation>
+<translation id="863090005774946393">Przeglądarką zarządza Twoja organizacja. Niektóre funkcje mogą być wyłączone.</translation>
 <translation id="8636825310635137004">Aby korzystać z kart ze swoich innych urządzeń, włącz synchronizację</translation>
 <translation id="8654802032646794042">Anuluj</translation>
 <translation id="8668210798914567634">Ta strona została zapisana na Twojej liście Do przeczytania.</translation>

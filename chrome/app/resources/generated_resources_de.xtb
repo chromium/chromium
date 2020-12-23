@@ -153,7 +153,7 @@
 <translation id="1164899421101904659">PUK eingeben</translation>
 <translation id="1165039591588034296">Fehler</translation>
 <translation id="1166212789817575481">Tabs rechts schließen</translation>
-<translation id="116624467691206283">Ungültiger PUK. Sie haben noch 1 Versuch.</translation>
+<translation id="116624467691206283">Ungültiger PUK. Du hast noch 1 Versuch.</translation>
 <translation id="1168020859489941584">Wird in <ph name="TIME_REMAINING" /> geöffnet...</translation>
 <translation id="1168100932582989117">Google-Nameserver</translation>
 <translation id="1170288591054440704">Nachfragen, wenn eine Website Schriftarten verwenden möchte, die auf meinem Gerät installiert sind</translation>
@@ -1136,7 +1136,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2262888617381992508">Dürfen keine geschützten Inhalte wiedergeben</translation>
 <translation id="2263189956353037928">Abmelden und wieder anmelden</translation>
 <translation id="2263371730707937087">Bildschirmaktualisierungsrate</translation>
-<translation id="2265889263013046172">Falscher PUK. Sie haben noch <ph name="RETRIES" /> Versuche, bevor Sie den Netzwerkzugriff von Ihrem Mobilfunkanbieter wiederherstellen lassen müssen.</translation>
+<translation id="2265889263013046172">Falscher PUK. Du hast noch <ph name="RETRIES" /> Versuche, bevor der Netzwerkzugriff gesperrt wird und nur von deinem Mobilfunkanbieter wiederhergestellt werden kann.</translation>
 <translation id="22665427234727190">Nachfragen, wenn eine Website auf Bluetooth-Geräte zugreifen möchte (empfohlen)</translation>
 <translation id="2266957463645820432">IPP über USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Daten mit einem beliebigen Gerät in der Domain "<ph name="DOMAIN" />" austauschen</translation>
@@ -1604,6 +1604,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2791529110887957050">Linux entfernen</translation>
 <translation id="2791952154587244007">Ein Fehler ist aufgetreten. Die Kioskanwendung kann auf diesem Gerät nicht automatisch gestartet werden.</translation>
 <translation id="2792290659606763004">Android-Apps entfernen?</translation>
+<translation id="2792465461386711506">Aktivieren Sie die Chrome-Synchronisierung, um die zuletzt auf Ihrem Smartphone geöffneten Chrome-Tabs zu sehen</translation>
 <translation id="2794233252405721443">Website blockiert</translation>
 <translation id="2795716239552913152">Websites verwenden Ihren Standort normalerweise für relevante Funktionen oder Informationen, wie etwa Lokalnachrichten oder Geschäfte in Ihrer Nähe</translation>
 <translation id="2796424461616874739">Zeitüberschreitung bei der Authentifizierung beim Herstellen der Verbindung zu "<ph name="DEVICE_NAME" />"</translation>
@@ -1899,7 +1900,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="313205617302240621">Passwort vergessen?</translation>
 <translation id="3132277757485842847">Die Verbindung zu Ihrem Smartphone konnte nicht aufrechterhalten werden. Ihr Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="3132996321662585180">Täglich aktualisieren</translation>
-<translation id="3138624403379688522">Ungültige PIN. Sie haben noch <ph name="RETRIES" /> Versuche.</translation>
+<translation id="3138624403379688522">Ungültige PIN. Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="313963229645891001">Wird heruntergeladen, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Gelber Standardavatar</translation>
 <translation id="3141318088920353606">Jetzt sprechen…</translation>
@@ -2503,7 +2504,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3817579325494460411">Keine Angabe</translation>
 <translation id="3819257035322786455">Sicherung</translation>
 <translation id="3819261658055281761">Das System konnte das langfristig gültige API-Zugriffstoken für das Gerät nicht speichern.</translation>
-<translation id="3819448694985509187">Falsche PIN. Sie haben noch 1 Versuch.</translation>
+<translation id="3819448694985509187">Falsche PIN. Du hast noch 1 Versuch.</translation>
 <translation id="3819800052061700452">V&amp;ollbildmodus</translation>
 <translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Anzeigen}other{Alle anzeigen}}</translation>
 <translation id="3820749202859700794">Elliptische SECG-Kurve secp521r1 (NIST P-521)</translation>
@@ -3229,6 +3230,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4671265665487288124">Websites dürfen nachfragen, ob sie automatisch mehrere Dateien herunterladen dürfen (empfohlen)</translation>
 <translation id="46733273239502219">Offlinedaten in installierten Apps werden auch gelöscht</translation>
 <translation id="4673442866648850031">Eingabestift-Tools werden automatisch geöffnet, sobald der Eingabestift entfernt wird</translation>
+<translation id="4676595058027112862">Phone Hub, weitere Informationen</translation>
 <translation id="4677772697204437347">GPU-Speicher</translation>
 <translation id="4680105648806843642">Der Ton wurde für diese Seite stummgeschaltet</translation>
 <translation id="4681453295291708042">Nearby Share deaktivieren</translation>
@@ -3579,7 +3581,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Ihre Festplatte ist voll. Wählen Sie bitte einen anderen Speicherort aus oder geben Sie Speicherplatz auf der Festplatte frei.</translation>
 <translation id="5123433949759960244">Basketball</translation>
-<translation id="5125167430897995218">Falscher PUK. Sie haben noch 1 Versuch, bevor Sie den Netzwerkzugriff von Ihrem Mobilfunkanbieter wiederherstellen lassen müssen.</translation>
+<translation id="5125167430897995218">Falscher PUK. Du hast noch 1 Versuch, bevor der Netzwerkzugriff gesperrt wird und nur von deinem Mobilfunkanbieter wiederhergestellt werden kann.</translation>
 <translation id="5125751979347152379">Ungültige URL</translation>
 <translation id="5126611267288187364">Änderungen anzeigen</translation>
 <translation id="5127620150973591153">ID der sicheren Verbindung: <ph name="TOKEN" /></translation>
@@ -5276,7 +5278,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7077829361966535409">Die Anmeldeseite konnte mit den aktuellen Proxy-Einstellungen nicht geladen werden. <ph name="GAIA_RELOAD_LINK_START" />Versuchen Sie erneut, sich anzumelden<ph name="GAIA_RELOAD_LINK_END" />, oder verwenden Sie andere <ph name="PROXY_SETTINGS_LINK_START" />Proxy-Einstellungen<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Alle Netzwerke</translation>
 <translation id="7078386829626602215">Kein Gerät erkannt. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="7079716540084905538">Sekundäres Google-Konto für <ph name="USER_NAME" /> hinzufügen</translation>
+<translation id="7079716540084905538">Weiteres Google-Konto für <ph name="USER_NAME" /> hinzufügen</translation>
 <translation id="708060913198414444">Audioadresse k&amp;opieren</translation>
 <translation id="7081952801286122383">Inkognitomodus ist aktiviert</translation>
 <translation id="708278670402572152">Zum Scannen Verbindung trennen</translation>
@@ -6269,7 +6271,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8206745257863499010">Blues</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Neue Benachrichtigung}other{# neue Benachrichtigungen}}</translation>
-<translation id="8211551284753798479">Ungültiger PUK. Sie haben noch <ph name="RETRIES" /> Versuche.</translation>
+<translation id="8211551284753798479">Ungültiger PUK. Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download wird ausgeführt}other{Downloads werden ausgeführt}}</translation>
 <translation id="8213449224684199188">Fotomodus aktiviert</translation>
 <translation id="8214489666383623925">Datei öffnen...</translation>
@@ -6285,6 +6287,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8227119283605456246">Datei anhängen</translation>
 <translation id="8230134520748321204">Passwort für <ph name="ORIGIN" /> speichern?</translation>
 <translation id="8234795456569844941">Bitte helfen Sie unseren Entwicklern bei der Lösung dieses Problems. Beschreiben Sie genau, was passiert ist, bevor Sie die Profilfehlermeldung erhalten haben:</translation>
+<translation id="8235605354099176425">Aktivieren Sie die <ph name="LINK1_BEGIN" />Chrome-Synchronisierung<ph name="LINK1_END" />, um die zuletzt geöffneten Chrome-Tabs zu sehen. <ph name="LINK2_BEGIN" />Weitere Informationen<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Stattdessen diesen Tab teilen</translation>
 <translation id="8237647586961940482">Dunkelrosa und Rot</translation>
 <translation id="8239032431519548577">Enterprise-Registrierung abgeschlossen</translation>
@@ -6615,7 +6618,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="8636284842992792762">Erweiterungen werden initialisiert…</translation>
 <translation id="8637542770513281060">Ihr Computer enthält ein Sicherheitsmodul, über das viele wichtige Sicherheitsfunktionen in Chrome OS implementiert werden. Weitere Informationen dazu finden Sie in der Chromebook-Hilfe unter https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="8637688295594795546">Systemupdate verfügbar. Download wird vorbereitet...</translation>
-<translation id="863903787380594467">Falsche PIN. Sie haben noch <ph name="RETRIES" /> Versuche.</translation>
+<translation id="863903787380594467">Falsche PIN. Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="8639047128869322042">Nach schädlicher Software wird gesucht...</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>
 <translation id="8639635302972078117">Sie haben die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- und Gerätedaten sowie App-Nutzungsdaten an Google. Ihr Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" für Ihr Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert.</translation>
@@ -7007,6 +7010,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="9044646465488564462">Fehler beim Herstellen einer Verbindung mit dem Netzwerk: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Die Webadresse der Seite, die Sie aufrufen möchten, wird an Google gesendet</translation>
 <translation id="9046895021617826162">Verbindungsaufbau fehlgeschlagen</translation>
+<translation id="9048745018038487540">Alle Schriftarten auswählen</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9052208328806230490">Sie haben Ihre Drucker unter dem Konto <ph name="EMAIL" /> bei <ph name="CLOUD_PRINT_NAME" /> registriert.</translation>
 <translation id="9052404922357793350">Weiterhin blockieren</translation>
@@ -7091,7 +7095,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="9147392381910171771">&amp;Optionen</translation>
 <translation id="9148058034647219655">Beenden</translation>
 <translation id="9148126808321036104">Erneut anmelden</translation>
-<translation id="914873105831852105">Ungültige PIN. Sie haben noch 1 Versuch.</translation>
+<translation id="914873105831852105">Ungültige PIN. Du hast noch 1 Versuch.</translation>
 <translation id="9148963623915467028">Diese Website hat Zugriff auf Ihren Standort.</translation>
 <translation id="9149866541089851383">Bearbeiten...</translation>
 <translation id="9150045010208374699">Ihre Kamera verwenden</translation>

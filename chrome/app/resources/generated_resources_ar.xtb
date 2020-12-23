@@ -1625,6 +1625,7 @@
 <translation id="2791529110887957050">‏إزالة نظام التشغيل Linux</translation>
 <translation id="2791952154587244007">حدث خطأ. لن يمكن تشغيل تطبيق الكشك تلقائيًا على هذا الجهاز.</translation>
 <translation id="2792290659606763004">‏هل تريد إزالة تطبيقات Android؟</translation>
+<translation id="2792465461386711506">‏يمكنك تفعيل ميزة مزامنة "Chrome" لعرض علامات تبويب Chrome الأخيرة من هاتفك.</translation>
 <translation id="2794233252405721443">تم حظر الموقع</translation>
 <translation id="2795716239552913152">تستخدم المواقع الإلكترونية عادةً موقعك الجغرافي لتتيح ميزات أو معلومات ذات صلة مثل الأخبار المحلية أو المتاجر القريبة.</translation>
 <translation id="2796424461616874739">انتهت مهلة المصادقة أثناء الاتصال بالجهاز "<ph name="DEVICE_NAME" />".</translation>
@@ -3253,6 +3254,7 @@
 <translation id="4671265665487288124">السماح للمواقع الإلكترونية بطلب تنزيل الملفات المتعدّدة تلقائيًا (مُستحسَن)</translation>
 <translation id="46733273239502219">سيتم أيضًا محو البيانات المتوفرة بلا اتصال بالإنترنت في التطبيقات المثبّتة.</translation>
 <translation id="4673442866648850031">فتح أدوات قلم الشاشة عندما تتم إزالة قلم الشاشة</translation>
+<translation id="4676595058027112862">ميزة "مركز التحكم بالهاتف"، مزيد من المعلومات</translation>
 <translation id="4677772697204437347">ذاكرة وحدة معالج الرسومات</translation>
 <translation id="467823995058589466">تم إيقاف الكاميرا.</translation>
 <translation id="4680105648806843642">تم كتم الصوت في هذه الصفحة.</translation>
@@ -6325,6 +6327,7 @@
 <translation id="8227119283605456246">إرفاق ملف</translation>
 <translation id="8230134520748321204">هل تريد حفظ كلمة المرور لـ <ph name="ORIGIN" />؟</translation>
 <translation id="8234795456569844941">يُرجى مساعدة مهندسينا في حل هذه المشكلة. أخبرنا بما حدث مباشرة قبل ظهور رسالة خطأ الملف الشخصي:</translation>
+<translation id="8235605354099176425">‏يمكنك تفعيل ميزة <ph name="LINK1_BEGIN" />مزامنة Chrome<ph name="LINK1_END" /> لعرض علامات تبويب Chrome الأخيرة.<ph name="LINK2_BEGIN" />مزيد من المعلومات<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">مشاركة علامة التبويب هذه بدلاً من ذلك</translation>
 <translation id="8237647586961940482">زهري داكن وأحمر</translation>
 <translation id="8239032431519548577">اكتمال التسجيل في المؤسسة</translation>
@@ -7056,6 +7059,7 @@
 <translation id="9044646465488564462">تعذّر الاتصال بالشبكة: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">‏يتم إرسال عنوان ويب الصفحة التي تحاول الوصول إليها إلى Google.</translation>
 <translation id="9046895021617826162">تعذّر الاتصال</translation>
+<translation id="9048745018038487540">اختيار كل الخطوط</translation>
 <translation id="9050666287014529139">عبارة المرور</translation>
 <translation id="9052208328806230490">لقد سجّلت طابعاتك في <ph name="CLOUD_PRINT_NAME" /> باستخدام الحساب <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">متابعة الحظر</translation>

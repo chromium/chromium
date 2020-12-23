@@ -47,6 +47,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1302880136325416935">Prikaz nastavitev Bluetootha. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Moč signala je <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Vedno pokaži polico</translation>
+<translation id="1316811122439383437">Tote: nedavni zajemi zaslonske slike, prenosi in pripete datoteke</translation>
 <translation id="1333308631814936910">Zaslon <ph name="DISPLAY_NAME" /> je povezan</translation>
 <translation id="1341651618736211726">Presežek</translation>
 <translation id="1346748346194534595">V desno</translation>
@@ -181,6 +182,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2596078834055697711">Ustvarjanje posnetka okna</translation>
 <translation id="2617342710774726426">Kartica SIM je zaklenjena</translation>
 <translation id="2621713457727696555">Varno</translation>
+<translation id="2633643784040308254">Srednje</translation>
 <translation id="2653659639078652383">Pošlji</translation>
 <translation id="2658778018866295321">Klikanje in vlečenje</translation>
 <translation id="2678852583403169292">Meni »Izberite in poslušajte«</translation>
@@ -410,6 +412,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4696813013609194136">Odklepanje naprave s kodo starša</translation>
 <translation id="4702647871202761252">Zaslon za zasebnost je izklopljen</translation>
 <translation id="4705716602320768426">Pošiljanje povratnih informacij</translation>
+<translation id="4730232680256276456">Pozdravljeni</translation>
 <translation id="4731797938093519117">Starševski dostop</translation>
 <translation id="4734965478015604180">Vodoravno</translation>
 <translation id="4744944742468440486">Podatki, povezani z vašim izborom</translation>
@@ -426,6 +429,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4868492592575313542">aktivirano</translation>
 <translation id="4872237917498892622">Alt + iskanje ali Shift</translation>
 <translation id="4890187583552566966">Skrbnik je onemogočil Pomočnika Google.</translation>
+<translation id="4890408602550914571">Preverite, ali imate telefon v bližini in ima vklopljeno povezavo Bluetooth.</translation>
 <translation id="4895488851634969361">Akumulator je poln.</translation>
 <translation id="490375751687810070">Navpično</translation>
 <translation id="4905614135390995787">Bližnjica za preklop na visokokontrastni način se je spremenila. Uporabite <ph name="NEW_SHORTCUT" /> namesto <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5302048478445481009">Jezik</translation>
 <translation id="5313326810920013265">Nastavitve za Bluetooth</translation>
 <translation id="5314219114274263156">Videoposnetek zaslona je bil ustvarjen</translation>
+<translation id="5322611492012084517">Telefona ni mogoče najti</translation>
 <translation id="5329548388331921293">Vzpostavljanje povezave …</translation>
 <translation id="5331975486040154427">Naprava USB-C (vrata levo zadaj)</translation>
 <translation id="5352250171825660495">Temna tema je vklopljena</translation>
@@ -519,6 +524,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="576453121877257266">Nočna svetloba je vklopljena.</translation>
 <translation id="5769373120130404283">Zaslon za zasebnost</translation>
 <translation id="5777841717266010279">Želite ustaviti skupno rabo zaslona?</translation>
+<translation id="5779721926447984944">Pripete datoteke</translation>
 <translation id="5790085346892983794">Uspešno</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Nastavitve povezanih naprav</translation>
@@ -563,6 +569,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="615957422585914272">Pokaži zaslonsko tipkovnico</translation>
 <translation id="6164005077879661055">Vse datoteke in lokalni podatki, povezani z zaščitenim uporabnikom, bodo trajno izbrisani, ko ga odstranite. Obiskana spletna mesta in nastavitve tega uporabnika bodo morda še vedno vidna upravitelju na <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Več o tem</translation>
+<translation id="6179832488876878285">Tukaj lahko pripnete pomembne datoteke. Če želite začeti, odprite aplikacijo Datoteke.</translation>
 <translation id="622484624075952240">Dol</translation>
 <translation id="6236290670123303279">Upravljanje nastavitev</translation>
 <translation id="6237231532760393653">1x</translation>
@@ -720,6 +727,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="7654687942625752712">Če želite onemogočiti glasovni odziv, pridržite obe tipki za glasnost za pet sekund.</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7662283695561029522">Dotaknite se, če želite konfigurirati</translation>
+<translation id="7683326293741220026">Videti je, da je v telefonu izklopljen Bluetooth. Če želite uporabljati telefonsko središče, v telefonu vklopite Bluetooth.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 obvestilo}one{# obvestilo}two{# obvestili}few{# obvestila}other{# obvestil}}</translation>
 <translation id="7724603315864178912">Izreži</translation>
@@ -737,9 +745,11 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="7860671499921112077">Če želite odpreti pregled, povlecite s tremi prsti navzgor.</translation>
 <translation id="7868900307798234037">Odklepanje s prstnim odtisom</translation>
 <translation id="7872786842639831132">Izklopljeno</translation>
+<translation id="7875575368831396199">Videti je, da je v napravi <ph name="DEVICE_TYPE" /> izklopljen Bluetooth. Vklopite Bluetooth, če želite uporabljati telefonsko središče.</translation>
 <translation id="7886169021410746335">Prilagodite nastavitve zasebnosti</translation>
 <translation id="7886277072580235377">Seja interneta bo počiščena, ko se odjavite. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Pošlji e-poštno sporočilo</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Pritisnili ste bližnjično tipko za sukanje zaslona. Ali želite zasukati zaslon?</translation>
 <translation id="7901405293566323524">Središče za telefone</translation>
 <translation id="7902625623987030061">Dotaknite se tipala prstnih odtisov.</translation>
@@ -807,6 +817,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="8444246603146515890">Namizje <ph name="DESK_TITILE" /> je bilo aktivirano</translation>
 <translation id="8452135315243592079">Ni kartice SIM</translation>
 <translation id="8454013096329229812">Wi-Fi je vklopljen.</translation>
+<translation id="8462305545768648477">Zapri »Izberite in poslušajte«</translation>
 <translation id="847056008324733326">Nastavitve zaslonskega razmerja</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> je <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Za preklic pritisnite Alt in tipko za iskanje ali Shift.</translation>

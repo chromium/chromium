@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> (<ph name="SOURCE_LANGUAGE_NAME" />)</translation>
 <translation id="2517472476991765520">Escaneja</translation>
 <translation id="2570743873672969996">S'està executant la prova <ph name="TEST_NAME" />...</translation>
+<translation id="2585245331261708204">Novetats de Chrome OS</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2740531572673183784">D'acord</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
@@ -183,6 +184,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6325525973963619867">Error</translation>
 <translation id="636850387210749493">Inscripció empresarial</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{El fitxer escanejat s'ha desat}other{Els fitxers escanejats s'han desat}}</translation>
 <translation id="649050271426829538">S'ha aturat: embús de paper</translation>
 <translation id="6517239166834772319">Explora</translation>
 <translation id="6527081081771465939">Protocol de seguretat Wi-Fi desconegut</translation>

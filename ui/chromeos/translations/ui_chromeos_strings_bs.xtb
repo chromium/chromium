@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Kopirano u folder <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google tabela</translation>
 <translation id="3486821258960016770">mongolski</translation>
+<translation id="3495304270784461826">Broj grešaka: <ph name="COUNT" /></translation>
 <translation id="3522708245912499433">portugalski</translation>
 <translation id="3524311639100184459">Oprez: Ovi fajlovi su privremeni i moguće je da će se automatski izbrisati radi oslobađanja prostora na disku.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Biciklo</translation>
 <translation id="8719721339511222681">Odabran je unos <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">hrvatska</translation>
+<translation id="8750438273876807512">Dodirnite i zadržite fajl i dodirnite <ph name="ICON" />, a nakon toga odaberite "Zakači na policu" da brzo pristupite fajlovima na polici.</translation>
 <translation id="8775404590947523323">Vaše izmjene se pohranjuju automatski.<ph name="BREAKS" />Da sačuvate kopiju originalne slike, uklonite oznaku "Zamijeni original"</translation>
 <translation id="8808686172382650546">Mačka</translation>
 <translation id="8810671769985673465">Komprimiranje nije uspjelo, stavka postoji: "<ph name="FILE_NAME" />"</translation>

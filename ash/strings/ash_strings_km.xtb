@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">បង្ហាញ​ការកំណត់​ប៊្លូធូស។ <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">កម្លាំង​រលកសញ្ញា <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">បង្ហាញ​ធ្នើជានិច្ច</translation>
+<translation id="1316811122439383437">Tote៖ ឯកសារដែលបានខ្ទាស់ ការទាញយក និងការថត​អេក្រង់ថ្មីៗ</translation>
 <translation id="1333308631814936910">បានភ្ជាប់ <ph name="DISPLAY_NAME" /></translation>
 <translation id="1341651618736211726">លើស​ចំណុះ</translation>
 <translation id="1346748346194534595">ស្តាំ</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">ថត​រូបថត​អេក្រង់​វិនដូ</translation>
 <translation id="2617342710774726426">ស៊ីមកាតជាប់សោ</translation>
 <translation id="2621713457727696555">មាន​សុវត្ថិភាព</translation>
+<translation id="2633643784040308254">Med</translation>
 <translation id="2653659639078652383">ដាក់ស្នើ</translation>
 <translation id="2658778018866295321">ចុចហើយអូស</translation>
 <translation id="2678852583403169292">ម៉ឺនុយជ្រើសរើសដើម្បីអាន</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">ដោះ​សោ​ឧបករណ៍​ដោយ​ប្រើ​កូដ​សម្រាប់​មាតា​បិតា</translation>
 <translation id="4702647871202761252">អេក្រង់​ឯកជនភាព​ត្រូវបានបិទ</translation>
 <translation id="4705716602320768426">ដាក់បញ្ជូនមតិកែលម្អ</translation>
+<translation id="4730232680256276456">សួស្ដី</translation>
 <translation id="4731797938093519117">សិទ្ធិចូលប្រើប្រាស់​សម្រាប់មាតាបិតា</translation>
 <translation id="4734965478015604180">ផ្ដេក​</translation>
 <translation id="4744944742468440486">ព័ត៌មានពាក់ព័ន្ធនឹងការជ្រើសរើសរបស់អ្នក</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">បាន​បើកដំណើរការ</translation>
 <translation id="4872237917498892622">Alt+ស្វែងរក ឬ Shift</translation>
 <translation id="4890187583552566966">Google ជំនួយការ​ត្រូវបានបិទ​ដោយ​អ្នកគ្រប់គ្រង​របស់​អ្នក។</translation>
+<translation id="4890408602550914571">សូមប្រាកដ​ថា ទូរសព្ទរបស់អ្នក​នៅជិត និងបានបើក​ប៊្លូធូស។</translation>
 <translation id="4895488851634969361">ថ្មពេញ។</translation>
 <translation id="490375751687810070">បញ្ឈរ​</translation>
 <translation id="4905614135390995787">ផ្លូវកាត់​សម្រាប់​បិទ/បើក​មុខងារ​កម្រិតពណ៌​ខ្ពស់បាន​ផ្លាស់ប្តូរ។ សូមប្រើ <ph name="NEW_SHORTCUT" /> ជំនួសឲ្យ <ph name="OLD_SHORTCUT" /> ។</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">ភាសា</translation>
 <translation id="5313326810920013265">ការកំណត់​ប៊្លូធូស</translation>
 <translation id="5314219114274263156">បានថតអេក្រង់</translation>
+<translation id="5322611492012084517">រកទូរសព្ទរបស់អ្នក​មិនឃើញទេ</translation>
 <translation id="5329548388331921293">កំពុង​ភ្ជាប់...</translation>
 <translation id="5331975486040154427">ឧបករណ៍ USB-C (រន្ធក្រោយផ្នែកខាងឆ្វេង)</translation>
 <translation id="5352250171825660495">រចនាប័ទ្ម​ងងឹតបានបើក</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">បានបើកពន្លឺពេលយប់។</translation>
 <translation id="5769373120130404283">អេក្រង់​ឯកជនភាព</translation>
 <translation id="5777841717266010279">បញ្ឈប់ការចែករំលែកអេក្រង់?</translation>
+<translation id="5779721926447984944">​ឯកសារដែលបាន​ខ្ទាស់</translation>
 <translation id="5790085346892983794">ជោគជ័យ</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">ការកំណត់​ឧបករណ៍ដែល​បានភ្ជាប់</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">បង្ហាញក្តារចុចលើអេក្រង់</translation>
 <translation id="6164005077879661055">ឯកសារ និងទិន្នន័យមូលដ្ឋានទាំងអស់ដែលពាក់ព័ន្ធជាមួយអ្នកប្រើដែលបានចាត់នឹងត្រូវបានលុបជាអចិន្ត្រៃយ៍នៅពេលអ្នកប្រើដែលបានចាត់ត្រូវបានដកចេញ។ គេហទំព័រដែលបានទៅកាន់ ការកំណត់សម្រាប់អ្នកប្រើដែលបានចាត់នេះអាចនៅតែមើលឃើញដោយអ្នកគ្រប់គ្រង <ph name="MANAGEMENT_URL" />។</translation>
 <translation id="6165508094623778733">ស្វែងយល់​បន្ថែម</translation>
+<translation id="6179832488876878285">អ្នកអាចខ្ទាស់ឯកសារសំខាន់ៗរបស់អ្នកនៅទីនេះ។ សូមបើកកម្មវិធី Files ដើម្បីចាប់ផ្ដើម។</translation>
 <translation id="622484624075952240">ចុះក្រោម</translation>
 <translation id="6236290670123303279">គ្រប់គ្រង​ការកំណត់</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">ចុច​គ្រាប់​ចុច​កម្រិត​សំឡេង​ទាំងពីរ​ឱ្យ​ជាប់​រយៈ​ពេល​ប្រាំ​វិនាទី ដើម្បី​បិទ​ការ​អាន​អេក្រង់។</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
 <translation id="7662283695561029522">ចុច​ដើម្បី​កំណត់​រចនាសម្ព័ន្ធ</translation>
+<translation id="7683326293741220026">ប៊្លូធូសហាក់ដូចជាបានបិទនៅលើទូរសព្ទរបស់អ្នក។ សូមបើកប៊្លូធូសនៅលើទូរសព្ទរបស់អ្នក ដើម្បីប្រើមណ្ឌលទូរសព្ទ។</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{ការ​ជូនដំណឹង 1}other{ការ​ជូន​ដំណឹង #}}</translation>
 <translation id="7724603315864178912">កាត់</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">អូស​ឡើងលើ​ដោយប្រើ​ម្រាមដៃបី ដើម្បីចូល​ទិដ្ឋភាពរួម</translation>
 <translation id="7868900307798234037">ការដោះសោដោយប្រើ​ស្នាម​ម្រាមដៃ</translation>
 <translation id="7872786842639831132">បិទ</translation>
+<translation id="7875575368831396199">ប៊្លូធូសហាក់ដូចជាបានបិទនៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក។ សូមបើកប៊្លូធូស ដើម្បីប្រើមណ្ឌលទូរសព្ទ។</translation>
 <translation id="7886169021410746335">កែតម្រូវ​ការកំណត់​ឯកជនភាព​</translation>
 <translation id="7886277072580235377">រយៈពេល​ចូលប្រើអ៊ីនធឺណិតរបស់អ្នក​នឹងត្រូវបាន​សម្អាត នៅពេល​អ្នកចេញ​ពីគណនី។ <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ផ្ញើ​​អ៊ីមែល</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">អ្នក​បានចុច​ផ្លូវកាត់ក្ដារចុច​សម្រាប់ការ​បង្វិល​អេក្រង់។ តើអ្នក​ចង់បង្វិល​អេក្រង់ដែរ​ទេ?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">ចុចលើ​ឧបករណ៍​ចាប់ស្នាម​ម្រាមដៃ</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890">បានបើកដំណើរការតុទី <ph name="DESK_TITILE" /></translation>
 <translation id="8452135315243592079">បាត់ស៊ីមកាត</translation>
 <translation id="8454013096329229812">Wi-Fi ត្រូវបានបើក។</translation>
+<translation id="8462305545768648477">បិទមុខងារជ្រើសរើសដើម្បីអាន</translation>
 <translation id="847056008324733326">ការកំណត់​មាត្រដ្ឋានអេក្រង់</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> មាន <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />។</translation>
 <translation id="8477270416194247200">ចុច Alt+Search ឬ Shift ដើម្បីបោះបង់។</translation>

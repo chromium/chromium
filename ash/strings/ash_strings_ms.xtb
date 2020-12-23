@@ -47,6 +47,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1302880136325416935">Tunjukkan tetapan Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Sentiasa tunjukkan rak</translation>
+<translation id="1316811122439383437">Tote: tangkapan skrin baru-baru ini, muat turun dan fail yang disemat</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> disambungkan</translation>
 <translation id="1341651618736211726">Limpahan</translation>
 <translation id="1346748346194534595">Kanan</translation>
@@ -181,6 +182,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2596078834055697711">Ambil tangkapan skrin tetingkap</translation>
 <translation id="2617342710774726426">Kad SIM dikunci</translation>
 <translation id="2621713457727696555">Selamat</translation>
+<translation id="2633643784040308254">Sederhana</translation>
 <translation id="2653659639078652383">Serah</translation>
 <translation id="2658778018866295321">Klik dan seret</translation>
 <translation id="2678852583403169292">Menu Pilih untuk bercakap</translation>
@@ -411,6 +413,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4696813013609194136">Buka kunci peranti menggunakan kod ibu bapa</translation>
 <translation id="4702647871202761252">Skrin privasi dimatikan</translation>
 <translation id="4705716602320768426">Failkan maklum balas</translation>
+<translation id="4730232680256276456">Hai</translation>
 <translation id="4731797938093519117">Akses ibu bapa</translation>
 <translation id="4734965478015604180">Mendatar</translation>
 <translation id="4744944742468440486">Maklumat yang berkaitan dengan pilihan anda</translation>
@@ -427,6 +430,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4868492592575313542">diaktifkan</translation>
 <translation id="4872237917498892622">Alt+Search atau Shift</translation>
 <translation id="4890187583552566966">Google Assistant dilumpuhkan oleh pentadbir anda.</translation>
+<translation id="4890408602550914571">Pastikan telefon anda berada berdekatan dan Bluetooth dihidupkan.</translation>
 <translation id="4895488851634969361">Bateri penuh.</translation>
 <translation id="490375751687810070">Menegak</translation>
 <translation id="4905614135390995787">Pintasan untuk menogol Mod Kontras Tinggi telah ditukar. Sila gunakan <ph name="NEW_SHORTCUT" /> dan bukannya <ph name="OLD_SHORTCUT" />.</translation>
@@ -474,6 +478,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5302048478445481009">Bahasa</translation>
 <translation id="5313326810920013265">Tetapan Bluetooth</translation>
 <translation id="5314219114274263156">Perakam skrin diambil</translation>
+<translation id="5322611492012084517">Tidak dapat menemukan telefon anda</translation>
 <translation id="5329548388331921293">Menyambung…</translation>
 <translation id="5331975486040154427">Peranti USB-C (port belakang sebelah kiri)</translation>
 <translation id="5352250171825660495">Tema gelap dihidupkan</translation>
@@ -520,6 +525,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="576453121877257266">Cahaya Malam dihidupkan.</translation>
 <translation id="5769373120130404283">Skrin privasi</translation>
 <translation id="5777841717266010279">Hentikan perkongsian skrin?</translation>
+<translation id="5779721926447984944">Fail disemat</translation>
 <translation id="5790085346892983794">Berjaya</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Tetapan peranti yang bersambung</translation>
@@ -564,6 +570,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="615957422585914272">Paparkan papan kekunci pada skrin</translation>
 <translation id="6164005077879661055">Semua fail dan data setempat yang dikaitkan dengan pengguna diselia akan dipadamkan secara kekal apabila pengguna diselia ini dialih keluar. Tapak web yang dilawati dan tetapan untuk pengguna diselia ini masih boleh dilihat oleh pengurus di <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>
+<translation id="6179832488876878285">Anda boleh menyematkan fail penting anda di sini. Buka apl Files untuk bermula.</translation>
 <translation id="622484624075952240">Bawah</translation>
 <translation id="6236290670123303279">Urus Tetapan</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -721,6 +728,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7654687942625752712">Tekan dan tahan kedua-dua kekunci kelantangan selama lima saat untuk melumpuhkan maklum balas yang dituturkan.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7662283695561029522">Ketik untuk membuat konfigurasi</translation>
+<translation id="7683326293741220026">Nampaknya Bluetooth dimatikan pada telefon anda. Sila hidupkan Bluetooth pada telefon anda untuk menggunakan Hab Telefon.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 pemberitahuan}other{# pemberitahuan}}</translation>
 <translation id="7724603315864178912">Potong</translation>
@@ -738,9 +746,11 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7860671499921112077">Leret ke atas dengan tiga jari untuk memasuki Ikhtisar</translation>
 <translation id="7868900307798234037">Membuka kunci dengan cap jari</translation>
 <translation id="7872786842639831132">Mati</translation>
+<translation id="7875575368831396199">Nampaknya Bluetooth dimatikan pada <ph name="DEVICE_TYPE" /> anda. Sila hidupkan Bluetooth untuk menggunakan Hab Telefon.</translation>
 <translation id="7886169021410746335">Laraskan tetapan privasi</translation>
 <translation id="7886277072580235377">Sesi Internet anda akan dipadam bersih apabila anda log keluar. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Hantar e-mel</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Anda menekan pintasan papan kekunci untuk putaran skrin. Adakah anda ingin memutarkan skrin?</translation>
 <translation id="7901405293566323524">Hab Telefon</translation>
 <translation id="7902625623987030061">Sentuh penderia cap jari</translation>
@@ -808,6 +818,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8444246603146515890">Meja <ph name="DESK_TITILE" /> diaktifkan</translation>
 <translation id="8452135315243592079">Kad SIM tiada</translation>
 <translation id="8454013096329229812">Wi-Fi dihidupkan.</translation>
+<translation id="8462305545768648477">Tutup Pilih untuk bercakap</translation>
 <translation id="847056008324733326">Tetapan skala paparan</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> mempunyai <ph name="FEATURE_NAME" /> yang <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Tekan Alt+Search atau Shift untuk membatalkan.</translation>

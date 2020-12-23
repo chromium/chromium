@@ -47,6 +47,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1302880136325416935">Shfaq cilësimet e Bluetooth-it. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Shfaq gjithmonë raftin</translation>
+<translation id="1316811122439383437">Çanta: regjistrimet e fundit të ekranit, shkarkimet dhe skedarët e gozhduar</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> u lidh</translation>
 <translation id="1341651618736211726">Tejkalo</translation>
 <translation id="1346748346194534595">Djathtas</translation>
@@ -181,6 +182,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2596078834055697711">Nxirr një pamje ekrani për dritaren</translation>
 <translation id="2617342710774726426">Karta SIM është e kyçur</translation>
 <translation id="2621713457727696555">I siguruar</translation>
+<translation id="2633643784040308254">Mesatare</translation>
 <translation id="2653659639078652383">Dërgoje</translation>
 <translation id="2658778018866295321">Kliko dhe zvarrit</translation>
 <translation id="2678852583403169292">Menyja e "Zgjidh që të thuhet"</translation>
@@ -410,6 +412,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4696813013609194136">Shkyç pajisjen me kodin e prindit</translation>
 <translation id="4702647871202761252">Ekrani i privatësisë është joaktiv</translation>
 <translation id="4705716602320768426">Dërgo komente</translation>
+<translation id="4730232680256276456">E lartë</translation>
 <translation id="4731797938093519117">Qasja e prindit</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Informacion në lidhje me zgjedhjen tënde</translation>
@@ -426,6 +429,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4868492592575313542">aktivizuar</translation>
 <translation id="4872237917498892622">Alt+Kërko ose Shift</translation>
 <translation id="4890187583552566966">"Asistenti i Google" është çaktivizuar nga administratori yt.</translation>
+<translation id="4890408602550914571">Sigurohu që telefoni yt të jetë pranë dhe ta ketë të aktivizuar Bluetooth-in.</translation>
 <translation id="4895488851634969361">Bateria është plot.</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="4905614135390995787">Shkurtorja për të ndryshuar modalitetin e kontrastit të lartë ka ndryshuar. Përdor <ph name="NEW_SHORTCUT" /> në vend të <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5302048478445481009">Gjuha</translation>
 <translation id="5313326810920013265">Cilësimet e Bluetooth-it</translation>
 <translation id="5314219114274263156">Regjistrimi i ekranit përfundoi</translation>
+<translation id="5322611492012084517">Telefoni yt nuk mund të gjendet</translation>
 <translation id="5329548388331921293">Po lidhet...</translation>
 <translation id="5331975486040154427">Pajisja USB-C (porta e pasme, majtas)</translation>
 <translation id="5352250171825660495">"Tema e errët" është aktive</translation>
@@ -519,6 +524,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="576453121877257266">"Drita e natës" është aktive.</translation>
 <translation id="5769373120130404283">Ekrani i privatësisë</translation>
 <translation id="5777841717266010279">Dëshiron të ndalosh ndarjen e ekranit?</translation>
+<translation id="5779721926447984944">Skedarët e gozhduar</translation>
 <translation id="5790085346892983794">Me sukses</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Cilësimet e pajisjeve të lidhura</translation>
@@ -563,6 +569,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="615957422585914272">Shfaq tastierën në ekran</translation>
 <translation id="6164005077879661055">Të gjithë skedarët dhe të dhënat lokale të lidhura me përdoruesin e kontrolluar do të fshihen përgjithmonë pasi të hiqet përdoruesi i kontrolluar. Sajtet e uebit të vizituara dhe cilësimet për këtë përdorues të kontrolluar mund të jenë akoma të dukshme nga menaxheri në <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
+<translation id="6179832488876878285">Mund t'i gozhdosh skedarët e tu të rëndësishëm këtu. Hap aplikacionin "Skedarët" për të filluar.</translation>
 <translation id="622484624075952240">Poshtë</translation>
 <translation id="6236290670123303279">Menaxho cilësimet</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7654687942625752712">Shtyp dhe mbaj të dy butonat e volumit për pesë sekonda për të çaktivizuar komentet me zë.</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7662283695561029522">Trokit për të konfiguruar</translation>
+<translation id="7683326293741220026">Me sa duket Bluetooth-i është çaktivizuar në telefonin tënd. Aktivizo Bluetooth-in në telefon për të përdorur Phone Hub.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 njoftim}other{# njoftime}}</translation>
 <translation id="7724603315864178912">Prite</translation>
@@ -737,9 +745,11 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7860671499921112077">Rrëshqit shpejt lart me tre gishta për të hyrë te "Përmbledhja"</translation>
 <translation id="7868900307798234037">Po shkyçet me gjurmën e gishtit</translation>
 <translation id="7872786842639831132">Joaktive</translation>
+<translation id="7875575368831396199">Me sa duket Bluetooth-i është çaktivizuar në <ph name="DEVICE_TYPE" />. Aktivizo Bluetooth-in për të përdorur Phone Hub.</translation>
 <translation id="7886169021410746335">Të rregullojë cilësimet e privatësisë</translation>
 <translation id="7886277072580235377">Seanca jote e internetit do të spastrohet kur të dalësh. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Dërgo një email</translation>
+<translation id="7895348134893321514">Çanta</translation>
 <translation id="7897375687985782769">Ke shtypur shkurtoren e tastierës për rrotullimin e ekranit. Dëshiron ta rrotullosh ekranin?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Prek sensorin e gjurmës së gishtit</translation>
@@ -807,6 +817,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8444246603146515890">Tavolina e punës <ph name="DESK_TITILE" /> u aktivizua</translation>
 <translation id="8452135315243592079">Karta SIM mungon</translation>
 <translation id="8454013096329229812">Wi-Fi është i aktivizuar.</translation>
+<translation id="8462305545768648477">Mbyll "Zgjidh që të thuhet"</translation>
 <translation id="847056008324733326">Cilësimet e shkallës së ekranit</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ka <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Shtyp Alt+"Kërko" ose "Shift" për të anuluar.</translation>

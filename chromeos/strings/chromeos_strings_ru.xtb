@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Искать</translation>
 <translation id="2570743873672969996">Запуск теста "<ph name="TEST_NAME" />"…</translation>
+<translation id="2585245331261708204">Что нового в Chrome OS</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2740531572673183784">ОК</translation>
 <translation id="2805756323405976993">Сервисы</translation>
@@ -183,6 +184,7 @@
 <translation id="6232017090690406397">Аккумулятор</translation>
 <translation id="6325525973963619867">Ошибка</translation>
 <translation id="636850387210749493">Регистрация в корпоративном домене</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Отсканированный файл сохранен.}one{Отсканированные файлы сохранены.}few{Отсканированные файлы сохранены.}many{Отсканированные файлы сохранены.}other{Отсканированные файлы сохранены.}}</translation>
 <translation id="649050271426829538">Печать прервана: застряла бумага</translation>
 <translation id="6517239166834772319">Возможности</translation>
 <translation id="6527081081771465939">Неизвестный протокол обеспечения безопасности сети Wi-Fi.</translation>

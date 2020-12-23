@@ -1622,6 +1622,7 @@
 <translation id="2791529110887957050">Հեռացնել Լինուքսը</translation>
 <translation id="2791952154587244007">Սխալ առաջացավ: Kiosk հավելվածը չի կարող ինքնագործարկվել այս սարքում:</translation>
 <translation id="2792290659606763004">Հեռացնե՞լ Android հավելվածները:</translation>
+<translation id="2792465461386711506">Միացրեք Chrome Sync-ը՝ ձեր հեռախոսում Chrome-ի վերջին բացված ներդիրները դիտելու համար</translation>
 <translation id="2794233252405721443">Կայքն արգելափակված է</translation>
 <translation id="2795716239552913152">Կայքերը սովորաբար օգտագործում են ձեր տեղադրության տվյալները՝ համապատասխան գործառույթների կամ տեղեկությունների ցուցադրման համար (օրինակ՝ տեղական նորություններ կամ մոտակա խանութների մասին տեղեկություններ)</translation>
 <translation id="2796424461616874739">«<ph name="DEVICE_NAME" />»-ին կապակցվելիս իսկորոշումը ժամասպառվեց:</translation>
@@ -3252,6 +3253,7 @@
 <translation id="4671265665487288124">Կայքերը կարող են ավտոմատ մի քանի ֆայլ ներբեռնելու թույլտվություն հայցել</translation>
 <translation id="46733273239502219">Տեղադրված հավելվածներից պահված տվյալները նույնպես կջնջվեն</translation>
 <translation id="4673442866648850031">Ստիլուսը հեռացնելու դեպքում բացել ստիլուսի գործիքները</translation>
+<translation id="4676595058027112862">Հեռախոսի կառավարման կենտրոն, Իմանալ ավելին</translation>
 <translation id="4677772697204437347">GPU հիշողություն</translation>
 <translation id="467823995058589466">Տեսախցիկն անջատված է</translation>
 <translation id="4680105648806843642">Այս էջում ձայնն անջատված է</translation>
@@ -6322,6 +6324,7 @@
 <translation id="8227119283605456246">Կցել ֆայլ</translation>
 <translation id="8230134520748321204">Պահե՞լ <ph name="ORIGIN" /> կայքի գաղտնաբառը</translation>
 <translation id="8234795456569844941">Օգնեք մեր ճարտարագետներին շտկել այս խնդիրը։ Նկարագրեք, թե ինչ տեղի ունեցավ նախքան պրոֆիլի սխալի մասին հաղորդագրություն ստանալը՝</translation>
+<translation id="8235605354099176425">Միացրեք <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" />-ը՝ Chrome-ի վերջին բացված ներդիրները դիտելու համար։<ph name="LINK2_BEGIN" />Իմանալ ավելին<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Փոխարենը կիսվեք այս ներդիրով</translation>
 <translation id="8237647586961940482">Մուգ վարդագույն և կարմիր</translation>
 <translation id="8239032431519548577">Ընկերության գրանցումն ավարտված է</translation>
@@ -7050,6 +7053,7 @@
 <translation id="9044646465488564462">Չհաջողվեց կապակցվել ցանցին` <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Google-ին է ուղարկում է այն էջի վեբ հասցեն, որը փորձում եք բացել</translation>
 <translation id="9046895021617826162">Չհաջողվեց միանալ</translation>
+<translation id="9048745018038487540">Նշել բոլոր տառատեսակները</translation>
 <translation id="9050666287014529139">Անցաբառ</translation>
 <translation id="9052208328806230490">Ձեր տպիչները գրանցված են <ph name="CLOUD_PRINT_NAME" />-ում <ph name="EMAIL" /> հաշվի միջոցով</translation>
 <translation id="9052404922357793350">Շարունակել արգելափակումը</translation>

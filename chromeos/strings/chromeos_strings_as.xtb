@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">স্কেন কৰক</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> পৰীক্ষা চলাই থকা হৈছে...</translation>
+<translation id="2585245331261708204">Chrome OSত নতুন কি আছে</translation>
 <translation id="2620436844016719705">ছিষ্টেম</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2805756323405976993">এপ্</translation>
@@ -183,6 +184,7 @@
 <translation id="6232017090690406397">বেটাৰী</translation>
 <translation id="6325525973963619867">বিফল হৈছে</translation>
 <translation id="636850387210749493">এন্টাৰপ্ৰাইজৰ পঞ্জীয়ন</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{স্কেন কৰা ফাইলটো ছেভ কৰা হ’ল}one{স্কেন কৰা ফাইলসমূহ ছেভ কৰা হ’ল}other{স্কেন কৰা ফাইলসমূহ ছেভ কৰা হ’ল}}</translation>
 <translation id="649050271426829538">বন্ধ হৈছে - কাগজ ঠাহ খাই গৈছে</translation>
 <translation id="6517239166834772319">অন্বেষণ</translation>
 <translation id="6527081081771465939">ৱাই-ফাইৰ অজ্ঞাত সুৰক্ষাৰ প্ৰ'টকল</translation>

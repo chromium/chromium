@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Skopiowano do: <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Arkusz kalkulacyjny Google</translation>
 <translation id="3486821258960016770">Mongolski</translation>
+<translation id="3495304270784461826">Błędy: <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">Portugalski</translation>
 <translation id="3524311639100184459">Uwaga: te pliki mają charakter tymczasowy i mogą zostać automatycznie usunięte w celu zwolnienia miejsca na dysku.  <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Rower</translation>
 <translation id="8719721339511222681">Zaznaczono element <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Chorwacki</translation>
+<translation id="8750438273876807512">Naciśnij i przytrzymaj plik, a następnie kliknij <ph name="ICON" /> i wybierz „Przypnij do półki”, by mieć szybki dostęp do swoich plików na półce.</translation>
 <translation id="8775404590947523323">Twoje zmiany są zapisywane automatycznie.<ph name="BREAKS" />Aby zachować kopię oryginalnego obrazu, odznacz „Zastąp oryginalny”.</translation>
 <translation id="8808686172382650546">Kot</translation>
 <translation id="8810671769985673465">Pakowanie nie powiodło się, ponieważ element już istnieje: „<ph name="FILE_NAME" />”</translation>

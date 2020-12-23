@@ -261,6 +261,7 @@
 <translation id="281504910091592009">查看和管理您的 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" />中保存的密码</translation>
 <translation id="2818669890320396765">要将您的书签同步到您的所有设备上，请登录您的帐号并开启同步功能</translation>
 <translation id="2827278682606527653">动态卡片上的菜单已半屏打开</translation>
+<translation id="2833452327385637152">若要搜索某个字词或短语，请轻触并按住该字词或短语，而不是点按它</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 天前检查过}other{# 天前检查过}}</translation>
 <translation id="2842985007712546952">父文件夹</translation>
 <translation id="2860954141821109167">请确保已在此设备上启用了一款电话应用</translation>
@@ -1108,6 +1109,7 @@
 <translation id="8571213806525832805">近 4 周</translation>
 <translation id="8572344201470131220">图片已复制</translation>
 <translation id="8583805026567836021">清除帐号数据</translation>
+<translation id="8587585930972369234">轻触并按住即可搜索</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8616006591992756292">您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="8617240290563765734">要打开下载的内容中指定的建议网址吗？</translation>

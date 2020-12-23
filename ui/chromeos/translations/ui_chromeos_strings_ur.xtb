@@ -228,6 +228,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> میں کاپی ہو گيا۔</translation>
 <translation id="3475447146579922140">‏Google اسپریڈ شیٹ</translation>
 <translation id="3486821258960016770">منگؤلی</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> خرابیاں۔</translation>
 <translation id="3522708245912499433">پُرتگالی</translation>
 <translation id="3524311639100184459">احتیاط: یہ فائلز عارضی ہیں اور ڈسک میں جگہ خالی کرنے کیلئے انہیں خودکار طور پر حذف کیا جا سکتا ہے۔  <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">فولڈر</translation>
@@ -737,6 +738,7 @@
 <translation id="8714406895390098252">سائیکل</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> منتخب کیا گیا۔</translation>
 <translation id="872537912056138402">کراتی</translation>
+<translation id="8750438273876807512">شیلف میں اپنی فائلز تک فوری رسائی کے ليے فائل ٹچ کریں اور دبائے رکھیں اور <ph name="ICON" /> تھپتھپائیں اور 'شیلف میں پن کریں' کو منتخب کریں۔</translation>
 <translation id="8775404590947523323">آپ کی ترامیم خود بخود محفوظ ہو جاتی ہیں۔<ph name="BREAKS" />اصل تصویر کی ایک کاپی رکھنے کیلئے، "اصل کو مٹا کر لکھیں" کو غیر نشان زد کریں</translation>
 <translation id="8808686172382650546">بلی</translation>
 <translation id="8810671769985673465">زپ بنانے کا عمل ناکام ہو گیا، آئٹم موجود ہے: "<ph name="FILE_NAME" />"</translation>

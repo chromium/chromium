@@ -51,6 +51,7 @@
 <translation id="2461822463642141190">Trenutačno</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Traži</translation>
+<translation id="2585245331261708204">Novo u OS-u Chrome</translation>
 <translation id="2620436844016719705">Sustav</translation>
 <translation id="2740531572673183784">U redu</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
@@ -179,6 +180,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6325525973963619867">Nije uspjelo</translation>
 <translation id="636850387210749493">Prijava poduzeća</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Spremljena je skenirana datoteka}one{Spremljena je skenirana datoteka}few{Spremljene su skenirane datoteke}other{Spremljene su skenirane datoteke}}</translation>
 <translation id="649050271426829538">Zaustavljeno – zaglavljeni papir</translation>
 <translation id="6517239166834772319">Istražite</translation>
 <translation id="6527081081771465939">Nepoznat sigurnosni protokol za Wi-Fi</translation>

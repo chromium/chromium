@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Копирано је у: <ph name="FOLDER_NAME" /></translation>
 <translation id="3475447146579922140">Google табела</translation>
 <translation id="3486821258960016770">монголски</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> грешака.</translation>
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3524311639100184459">Опрез: Ове датотеке су привремене и могу да се избришу аутоматски како би се ослободио простор на диску.  <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Директоријум</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Бицикл</translation>
 <translation id="8719721339511222681">Изабрали сте ставку <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">хрватски</translation>
+<translation id="8750438273876807512">Додирните и задржите фајл и додирните <ph name="ICON" />, па изаберите „Закачи на полицу“ ради брзог приступа фајловима на полици.</translation>
 <translation id="8775404590947523323">Измене се аутоматски чувају.<ph name="BREAKS" />Да бисте задржали копију оригиналне слике, опозовите избор у пољу за потврду „Замени оригинал“</translation>
 <translation id="8808686172382650546">Мачка</translation>
 <translation id="8810671769985673465">Додавање у zip датотеку није успело, ставка постоји: „<ph name="FILE_NAME" />“</translation>

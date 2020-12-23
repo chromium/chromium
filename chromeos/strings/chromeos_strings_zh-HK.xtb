@@ -184,7 +184,7 @@
 <translation id="6232017090690406397">電池</translation>
 <translation id="6325525973963619867">失敗</translation>
 <translation id="636850387210749493">企業註冊</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{已儲存完成掃描的檔案}other{已儲存完成掃描的檔案}}</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{已儲存掃瞄的檔案}other{已儲存掃瞄的檔案}}</translation>
 <translation id="649050271426829538">已停止 - 卡紙</translation>
 <translation id="6517239166834772319">探索</translation>
 <translation id="6527081081771465939">未知的 Wi-Fi 安全通訊協定</translation>

@@ -47,6 +47,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1302880136325416935">Zobrazit nastavení Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Síla signálu: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Vždy zobrazovat poličku</translation>
+<translation id="1316811122439383437">Tote: nedávné záznamy obrazovky a stažené a připnuté soubory</translation>
 <translation id="1333308631814936910">Zařízení <ph name="DISPLAY_NAME" /> je připojeno</translation>
 <translation id="1341651618736211726">Přetečení</translation>
 <translation id="1346748346194534595">Doprava</translation>
@@ -181,6 +182,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2596078834055697711">Pořídit snímek obrazovky okna</translation>
 <translation id="2617342710774726426">SIM karta je uzamčena</translation>
 <translation id="2621713457727696555">Zabezpečeno</translation>
+<translation id="2633643784040308254">Stř</translation>
 <translation id="2653659639078652383">Odeslat</translation>
 <translation id="2658778018866295321">Kliknout a přetáhnout</translation>
 <translation id="2678852583403169292">Nabídka Poslech vybraného textu</translation>
@@ -410,6 +412,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4696813013609194136">Odemkněte zařízení rodičovským kódem</translation>
 <translation id="4702647871202761252">Obrazovka ochrany soukromí je vypnutá</translation>
 <translation id="4705716602320768426">Poslat zpětnou vazbu</translation>
+<translation id="4730232680256276456">Vys</translation>
 <translation id="4731797938093519117">Rodičovský přístup</translation>
 <translation id="4734965478015604180">Na šířku</translation>
 <translation id="4744944742468440486">Informace související s vaším výběrem</translation>
@@ -426,6 +429,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4868492592575313542">aktivovala</translation>
 <translation id="4872237917498892622">Alt + Vyhledávání nebo Shift</translation>
 <translation id="4890187583552566966">Váš administrátor Asistenta Google zakázal.</translation>
+<translation id="4890408602550914571">Zkontrolujte, zda je telefon poblíž a je na něm zapnuté rozhraní Bluetooth.</translation>
 <translation id="4895488851634969361">Baterie je plně nabita.</translation>
 <translation id="490375751687810070">Na výšku</translation>
 <translation id="4905614135390995787">Zkratka k přepínání režimu vysokého kontrastu se změnila. Namísto zkratky <ph name="OLD_SHORTCUT" /> používejte zkratku <ph name="NEW_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5302048478445481009">Jazyk</translation>
 <translation id="5313326810920013265">Nastavení Bluetooth</translation>
 <translation id="5314219114274263156">Záznam obrazovky byl pořízen</translation>
+<translation id="5322611492012084517">Telefon nebyl nalezen</translation>
 <translation id="5329548388331921293">Připojování…</translation>
 <translation id="5331975486040154427">Zařízení USB Type-C (levý zadní port)</translation>
 <translation id="5352250171825660495">Tmavý motiv je zapnutý</translation>
@@ -519,6 +524,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="576453121877257266">Noční režim je zapnutý.</translation>
 <translation id="5769373120130404283">Obrazovka ochrany soukromí</translation>
 <translation id="5777841717266010279">Ukončit sdílení obrazovky?</translation>
+<translation id="5779721926447984944">Připnuté soubory</translation>
 <translation id="5790085346892983794">Úspěšně provedeno</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Nastavení připojených zařízení</translation>
@@ -563,6 +569,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="615957422585914272">Zobrazit softwarovou klávesnici</translation>
 <translation id="6164005077879661055">Po odebrání dozorovaného uživatele budou trvale smazány všechny soubory a místní data, která jsou k němu přiřazena. Navštívené weby a nastavení tohoto dozorovaného uživatele může správce i nadále zobrazit na adrese <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Další informace</translation>
+<translation id="6179832488876878285">Sem si můžete připnout důležité soubory. Začněte tím, že otevřete aplikaci Soubory.</translation>
 <translation id="622484624075952240">Dolů</translation>
 <translation id="6236290670123303279">Spravovat nastavení</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7654687942625752712">Hlasovou odezvu vypnete podržením obou tlačítek hlasitosti po dobu pěti sekund.</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7662283695561029522">Klepnutím zahájíte konfiguraci</translation>
+<translation id="7683326293741220026">Na telefonu je pravděpodobně vypnuté rozhraní Bluetooth. Pokud chcete používat Telefonní centrum, zapněte Bluetooth.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 oznámení}few{# oznámení}many{# oznámení}other{# oznámení}}</translation>
 <translation id="7724603315864178912">Vyjmout</translation>
@@ -737,9 +745,11 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7860671499921112077">Přehled otevřete přejetím třemi prsty nahoru</translation>
 <translation id="7868900307798234037">Odemknutí otiskem prstu</translation>
 <translation id="7872786842639831132">Vyp</translation>
+<translation id="7875575368831396199">Na zařízení <ph name="DEVICE_TYPE" /> je pravděpodobně vypnuté rozhraní Bluetooth. Pokud chcete používat Telefonní centrum, zapněte Bluetooth.</translation>
 <translation id="7886169021410746335">Upravit nastavení soukromí</translation>
 <translation id="7886277072580235377">Když se odhlásíte, vaše návštěvy internetu se vymaže. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Poslat e‑mail</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Stiskli jste klávesovou zkratku pro otočení obrazovky. Chcete otočit obrazovku?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Dotkněte se snímače otisků prstů</translation>
@@ -807,6 +817,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8444246603146515890">Plocha <ph name="DESK_TITILE" /> byla aktivována</translation>
 <translation id="8452135315243592079">Chybí SIM karta</translation>
 <translation id="8454013096329229812">Připojení Wi-Fi je zapnuto.</translation>
+<translation id="8462305545768648477">Zavřít poslech vybraného textu</translation>
 <translation id="847056008324733326">Zobrazit nastavení měřítka</translation>
 <translation id="8473301994082929012">Organizace <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> funkci <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Vypnete jej stisknutím kombinace kláves Alt + Hledat nebo klávesy Shift.</translation>

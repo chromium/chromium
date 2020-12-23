@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">Показване на настройките за Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Сила на сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Лавицата да се показва винаги</translation>
+<translation id="1316811122439383437">Кутия: скорошни екранни снимки, изтегляния и фиксирани файлове</translation>
 <translation id="1333308631814936910">Свързахте <ph name="DISPLAY_NAME" /></translation>
 <translation id="1341651618736211726">Препълване</translation>
 <translation id="1346748346194534595">Надясно</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">Правене на екранна снимка на прозореца</translation>
 <translation id="2617342710774726426">SIM картата е заключена</translation>
 <translation id="2621713457727696555">защитена</translation>
+<translation id="2633643784040308254">Средно</translation>
 <translation id="2653659639078652383">Изпращане</translation>
 <translation id="2658778018866295321">Кликване и преместване с плъзгане</translation>
 <translation id="2678852583403169292">Меню на „Прочитане на глас“</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">Отключване на устройството с код на родител</translation>
 <translation id="4702647871202761252">Екранът за поверителност е изключен</translation>
 <translation id="4705716602320768426">Изпращане на отзиви</translation>
+<translation id="4730232680256276456">Високо</translation>
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4744944742468440486">Информация за избраното от вас</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">активирана</translation>
 <translation id="4872237917498892622">„Alt + търсене“ или „Shift“</translation>
 <translation id="4890187583552566966">Администраторът ви е деактивирал Google Асистент.</translation>
+<translation id="4890408602550914571">Уверете се, че телефонът ви е наблизо и че сте включили Bluetooth.</translation>
 <translation id="4895488851634969361">Батерията е пълна.</translation>
 <translation id="490375751687810070">Вертикално</translation>
 <translation id="4905614135390995787">Клавишната комбинация за превключване на режима на висок контраст е променена. Моля, използвайте <ph name="NEW_SHORTCUT" /> вместо <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">Език</translation>
 <translation id="5313326810920013265">Настройки за Bluetooth</translation>
 <translation id="5314219114274263156">Направен е запис на екрана</translation>
+<translation id="5322611492012084517">Телефонът ви не е намерен</translation>
 <translation id="5329548388331921293">Установява се връзка...</translation>
 <translation id="5331975486040154427">Устройство с USB-C (задният ляв порт)</translation>
 <translation id="5352250171825660495">Тъмната тема е включена</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">Функцията за нощно осветление е включена.</translation>
 <translation id="5769373120130404283">Екран за поверителност</translation>
 <translation id="5777841717266010279">Да се спре ли споделянето на екрана?</translation>
+<translation id="5779721926447984944">Фиксирани файлове</translation>
 <translation id="5790085346892983794">Успех</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Настройки за свързани устройства</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">Показване на екранната клавиатура</translation>
 <translation id="6164005077879661055">Всички файлове и локални данни, свързани с контролирания потребител, ще бъдат изтрити за постоянно, щом той бъде премахнат. Посетените уебсайтове и настройките за него може все още да се виждат от мениджъра на адрес <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Научете повече</translation>
+<translation id="6179832488876878285">Тук можете да фиксирате важните за вас файлове. Отворете приложението „Файлове“, за да започнете.</translation>
 <translation id="622484624075952240">Клавиш за надолу</translation>
 <translation id="6236290670123303279">Управление на настройките</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">Натиснете и двата бутона за силата на звука и ги задръжте за пет секунди, за да деактивирате обратната връзка с говор.</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7662283695561029522">Докоснете, за да конфигурирате</translation>
+<translation id="7683326293741220026">Изглежда, че функцията за Bluetooth на телефона ви е изключена. Включете я, за да използвате Phone Hub.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 известие}other{# известия}}</translation>
 <translation id="7724603315864178912">Изрязване</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">Прекарайте три пръста нагоре, за да влезете в общия преглед</translation>
 <translation id="7868900307798234037">Отключване с отпечатък</translation>
 <translation id="7872786842639831132">Изкл.</translation>
+<translation id="7875575368831396199">Изглежда, че функцията за Bluetooth на <ph name="DEVICE_TYPE" /> е изключена. Включете я, за да използвате Phone Hub.</translation>
 <translation id="7886169021410746335">да коригира настройките за поверителност.</translation>
 <translation id="7886277072580235377">Сесията ви за интернет ще бъде изчистена, когато излезете от профила си. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">„Send an email“ („Изпрати имейл“)</translation>
+<translation id="7895348134893321514">Кутия</translation>
 <translation id="7897375687985782769">Използвахте клавишната комбинация за завъртане на екрана. Искате ли да промените ориентацията му?</translation>
 <translation id="7901405293566323524">Център за телефоните</translation>
 <translation id="7902625623987030061">Докоснете сензора за отпечатъци</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890">Работен кът <ph name="DESK_TITILE" /> е активиран</translation>
 <translation id="8452135315243592079">SIM картата липсва</translation>
 <translation id="8454013096329229812">Wi-Fi е включен.</translation>
+<translation id="8462305545768648477">Затваряне на функцията „Прочитане на глас“</translation>
 <translation id="847056008324733326">Настройки за мащаба на показване</translation>
 <translation id="8473301994082929012">Функцията „<ph name="FEATURE_NAME" />“ е <ph name="FEATURE_STATE" /> от <ph name="ORGANIZATION_NAME" />.</translation>
 <translation id="8477270416194247200">Натиснете Alt + клавиша „търсене“ или само Shift, за да анулирате.</translation>

@@ -2168,6 +2168,13 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
       Als je dit beleid instelt op AllowMigration, wordt aan gebruikers met ecryptfs-homedirectory's aangeboden deze te migreren naar ext4-versleuteling als dat nodig is (momenteel is dit het geval wanneer Android N beschikbaar komt op het apparaat).
 
       Dit beleid is niet van toepassing op kiosk-apps. Deze worden automatisch overgezet. Als dit beleid niet is ingesteld, gedraagt het apparaat zich alsof DisallowArc is geselecteerd.</translation>
+<translation id="401650904918322517">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 89.
+
+      Dit beleid geeft 'Snelle antwoorden' toegang tot geselecteerde content en toestemming om de informatie naar de server te sturen.
+
+      Als je het beleid hebt toegepast, heeft 'Snelle antwoorden' toegang tot geselecteerde content.
+      Als je het beleid niet hebt toegepast, heeft 'Snelle antwoorden' geen toegang tot geselecteerde content.
+      Als je het beleid niet instelt, kunnen gebruikers bepalen of 'Snelle antwoorden' toegang tot geselecteerde content heeft.</translation>
 <translation id="4020682745012723568">Cookies die worden overgedragen naar het profiel van de gebruiker, zijn niet toegankelijk voor Android-apps.</translation>
 <translation id="4025500273782820766">Toestaan dat gebruikers 'Altijd toestaan' selecteren wanneer een dialoogvenster voor externe protocollen wordt weergegeven om toekomstige bevestigingsprompts over te slaan</translation>
 <translation id="402759845255257575">Niet toestaan dat sites JavaScript uitvoeren</translation>
@@ -3956,6 +3963,13 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="6789422336869764846">Als je het beleid inschakelt of niet instelt, rapporteren ingeschreven apparaten de status van de schakelaar voor de ontwikkelaarsmodus toen de computer werd opgestart.
 
       Als je het beleid uitschakelt, rapporteren ingeschreven apparaten de status van de schakelaar voor de ontwikkelaarsmodus niet.</translation>
+<translation id="6793420507738858152">Als je dit beleid hebt toegepast, stuurt de <ph name="PRODUCT_NAME" />-functie gedetailleerde verzoekheaders met informatie over de browser en omgeving van de gebruiker.
+
+      Dit is een aanvullende functie, maar de nieuwe headers kunnen de juiste weergave verhinderen van sommige websites die de tekens in deze verzoeken beperken.
+
+      Als je dit beleid toepast of niet instelt, wordt de <ph name="PRODUCT_NAME" />-functie uitgezet. Als je het beleid niet hebt toegepast, is de functie ook niet beschikbaar.
+
+      Dit bedrijfsbeleid is voor kortdurende aanpassing en is ten minste beschikbaar tot Chrome 91.</translation>
 <translation id="6795485990775913659">Alleen afdrukken toestaan zonder pincode</translation>
 <translation id="6800181452282128474">Geen query's sturen naar Quirks Servers</translation>
 <translation id="6810445994095397827">JavaScript blokkeren op deze sites</translation>
@@ -4603,6 +4617,9 @@ Als je ervoor kiest het volgende te gebruiken:
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />. Als je dit beleid niet instelt, wordt de standaard zoekprovider ingeschakeld en kunnen gebruikers de lijst met zoekproviders instellen.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor 'Cloudbeheer voor de Chrome-browser'. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
+<translation id="7669630878711068277">Als je dit beleid toepast of niet instelt, kunnen gebruikers afdrukken in <ph name="PRODUCT_NAME" /> en kunnen ze deze instelling niet wijzigen.
+
+      Als je het beleid niet hebt toegepast, kunnen gebruikers ook niet afdrukken vanaf <ph name="PRODUCT_NAME" />. Afdrukken is niet mogelijk vanuit het menu met 3 stippen, extensies en JavaScript-apps.</translation>
 <translation id="7673194325208122247">Periode (milliseconden)</translation>
 <translation id="7677220829878081413">
       Als dit beleid is ingesteld op ArcSession, wordt het apparaat gedwongen opnieuw opgestart na het uitloggen van een gebruiker als Android is gestart.

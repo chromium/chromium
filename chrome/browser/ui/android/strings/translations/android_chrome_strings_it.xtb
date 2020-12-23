@@ -261,6 +261,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="281504910091592009">Visualizza e gestisci le password salvate nel tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Accedi e attiva la sincronizzazione per trovare i tuoi preferiti su tutti i dispositivi</translation>
 <translation id="2827278682606527653">Menu scheda feed aperto nella metà inferiore dello schermo</translation>
+<translation id="2833452327385637152">Per cercare una parola o una frase, toccala e tienila premuta anziché toccarla</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Eseguito 1 giorno fa}other{Eseguito # giorni fa}}</translation>
 <translation id="2842985007712546952">Cartella principale</translation>
 <translation id="2860954141821109167">Assicurati che su questo dispositivo ci sia un'app per telefono attiva</translation>
@@ -1108,6 +1109,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="8571213806525832805">Ultime 4 settimane</translation>
 <translation id="8572344201470131220">Immagine copiata</translation>
 <translation id="8583805026567836021">Cancellazione dati dell'account</translation>
+<translation id="8587585930972369234">Tocca e tieni premuto per cercare</translation>
 <translation id="860043288473659153">Nome del titolare della carta</translation>
 <translation id="8616006591992756292">Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Aprire l'URL consigliato specificato nei contenuti scaricati?</translation>

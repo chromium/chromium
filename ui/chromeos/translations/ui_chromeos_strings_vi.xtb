@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Đã sao chép vào <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Bảng tính Google</translation>
 <translation id="3486821258960016770">Tiếng Mông Cổ</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> lỗi.</translation>
 <translation id="3522708245912499433">Tiếng Bồ Đào Nha</translation>
 <translation id="3524311639100184459">Lưu ý: Các tệp này chỉ được lưu trữ tạm thời và có thể tự động bị xóa để giải phóng dung lượng ổ đĩa.  <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Thư mục</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Xe đạp</translation>
 <translation id="8719721339511222681">Đã chọn <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Tiếng Croatia</translation>
+<translation id="8750438273876807512">Chạm và giữ một tệp rồi nhấn vào biểu tượng <ph name="ICON" />, sau đó chọn "Ghim vào kệ" để truy cập nhanh vào các tệp trong kệ.</translation>
 <translation id="8775404590947523323">Chỉnh sửa của bạn đã được lưu tự động.<ph name="BREAKS" />Để giữ bản sao của ảnh gốc, hãy bỏ chọn "Ghi đè tệp gốc"</translation>
 <translation id="8808686172382650546">Mèo</translation>
 <translation id="8810671769985673465">Không nén được, mục tồn tại: "<ph name="FILE_NAME" />"</translation>

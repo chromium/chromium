@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />   <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Rechercher</translation>
 <translation id="2570743873672969996">Le test <ph name="TEST_NAME" /> est en cours d'exécution…</translation>
+<translation id="2585245331261708204">Nouveautés dans Chrome OS</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Applications</translation>
@@ -183,6 +184,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6232017090690406397">Pile</translation>
 <translation id="6325525973963619867">Échec</translation>
 <translation id="636850387210749493">Inscription d'entreprise</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Fichier numérisé enregistré}one{Fichier numérisé enregistré}other{Fichiers numérisés enregistrés}}</translation>
 <translation id="649050271426829538">Tâche arrêtée : bourrage de papier</translation>
 <translation id="6517239166834772319">Explorer</translation>
 <translation id="6527081081771465939">Protocole de sécurité Wi-Fi inconnu</translation>

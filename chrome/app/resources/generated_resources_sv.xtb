@@ -1608,6 +1608,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2791529110887957050">Ta bort Linux</translation>
 <translation id="2791952154587244007">Ett fel har inträffat. Kioskappen kan inte startas automatiskt på den här enheten.</translation>
 <translation id="2792290659606763004">Vill du ta bort Android-appar?</translation>
+<translation id="2792465461386711506">Aktivera Chrome Sync för att se de senaste flikarna i Chrome från telefonen</translation>
 <translation id="2794233252405721443">Webbplatsen har blockerats</translation>
 <translation id="2795716239552913152">Åtkomst till enhetens plats brukar kunna behövas för relevanta funktioner eller information som lokala nyheter eller affärer i närheten</translation>
 <translation id="2796424461616874739">Autentiseringen avbröts vid anslutning till <ph name="DEVICE_NAME" />.</translation>
@@ -3233,6 +3234,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4671265665487288124">Webbplatser får begära tillstånd att ladda ned flera filer automatiskt (rekommenderas)</translation>
 <translation id="46733273239502219">Offlinedata i installerade appar raderas också</translation>
 <translation id="4673442866648850031">Öppna verktyg för e-penna när e-pennan tas bort</translation>
+<translation id="4676595058027112862">Phone Hub, Läs mer</translation>
 <translation id="4677772697204437347">GPU-minne</translation>
 <translation id="4680105648806843642">Ljudet är avstängt på den här sidan</translation>
 <translation id="4681453295291708042">Inaktivera Närdelning</translation>
@@ -6290,6 +6292,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8227119283605456246">Bifoga fil</translation>
 <translation id="8230134520748321204">Vill du spara lösenordet för <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Hjälp våra programutvecklare att lösa problemet genom att berätta vad som hände precis innan profilmeddelandet visades:</translation>
+<translation id="8235605354099176425">Aktivera <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> för att se de senaste flikarna i Chrome.<ph name="LINK2_BEGIN" />Läs mer<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Dela den här fliken i stället</translation>
 <translation id="8237647586961940482">Mörkrosa och röd</translation>
 <translation id="8239032431519548577">Företagsregistreringen är klar</translation>
@@ -7012,6 +7015,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="9044646465488564462">Det gick inte att ansluta till nätverket: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Skickar webbadresserna till sidor som du försöker nå till Google</translation>
 <translation id="9046895021617826162">Anslutningen misslyckades</translation>
+<translation id="9048745018038487540">Välj alla teckensnitt</translation>
 <translation id="9050666287014529139">Lösenfras</translation>
 <translation id="9052208328806230490">Du har registrerat dina skrivare med <ph name="CLOUD_PRINT_NAME" /> och du använde kontot <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Fortsätt blockera</translation>

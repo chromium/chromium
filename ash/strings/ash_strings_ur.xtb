@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">بلوٹوتھ کی ترتیبات دکھائیں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">ہمیشہ شیلف دکھائیں</translation>
+<translation id="1316811122439383437">ٹوٹ: حالیہ اسکرین کیپچرز، ڈاؤن لوڈز اور پن کردہ فائلز</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> منسلک ہے</translation>
 <translation id="1341651618736211726">اوورفلو</translation>
 <translation id="1346748346194534595">دائیں</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">ونڈو اسکرین شاٹ لیں</translation>
 <translation id="2617342710774726426">‏SIM کارڈ مقفل ہے</translation>
 <translation id="2621713457727696555">محفوظ ہے</translation>
+<translation id="2633643784040308254">متوسط</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="2658778018866295321">کلک کریں اور گھسیٹیں</translation>
 <translation id="2678852583403169292">سننے کیلئے منتخب کریں کا مینو</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">والدین کے کوڈ سے آلہ غیر مقفل کریں</translation>
 <translation id="4702647871202761252">رازداری کی اسکرین آف ہے</translation>
 <translation id="4705716602320768426">تاثرات فائل کریں</translation>
+<translation id="4730232680256276456">آداب</translation>
 <translation id="4731797938093519117">والدین کی رسائی</translation>
 <translation id="4734965478015604180">افقی</translation>
 <translation id="4744944742468440486">آپ کے انتخاب سے متعلقہ معلومات</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">فعال</translation>
 <translation id="4872237917498892622">‏Alt+تلاش یا Shift</translation>
 <translation id="4890187583552566966">‏Google اسسٹنٹ کو آپ کے منتظم نے غیر فعال کر دیا ہے۔</translation>
+<translation id="4890408602550914571">یقینی بنائیں کہ آپ کا فون قریب میں ہے اور اس میں بلوٹوتھ آن ہے۔</translation>
 <translation id="4895488851634969361">بیٹری بھری ہوئی ہے۔</translation>
 <translation id="490375751687810070">عمودی</translation>
 <translation id="4905614135390995787">اعلی تناسب امتزاج کی وضع ٹوگل کرنے کا شارٹ کٹ تبدیل ہو گيا ہے۔ براہ کرم <ph name="OLD_SHORTCUT" /> کے بجائے <ph name="NEW_SHORTCUT" /> کا استعمال کریں۔</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">زبان</translation>
 <translation id="5313326810920013265">بلوٹوتھ کی ترتیبات</translation>
 <translation id="5314219114274263156">اسکرین ریکارڈنگ کی گئی</translation>
+<translation id="5322611492012084517">آپ کا فون تلاش نہیں کیا جا سکا</translation>
 <translation id="5329548388331921293">منسلک ہو رہا ہے…</translation>
 <translation id="5331975486040154427">‏USB-C آلہ (بائیں طرف کا پچھلا پورٹ)</translation>
 <translation id="5352250171825660495">گہری تھیم آن ہے</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">نائٹ لائٹ آن ہے۔</translation>
 <translation id="5769373120130404283">رازداری کی اسکرین</translation>
 <translation id="5777841717266010279">اسکرین کا اشتراک روکیں؟</translation>
+<translation id="5779721926447984944">فائلز کو پن کیا گیا</translation>
 <translation id="5790085346892983794">کامیاب</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">منسلک کردہ آلات کی ترتیبات</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">آن اسکرین کی بورڈ دکھائیں</translation>
 <translation id="6164005077879661055">یہ تحفظ یافتہ صارف ہٹائے جانے پر تحفظ یافتہ صارف کے ساتھ وابستہ سبھی فائلیں اور مقامی ڈیٹا مستقل طور پر حذف کر دیے جائیں گے۔ اس تحفظ یافتہ صارف کیلئے ملاحظہ کردہ ویب سائٹس اور ترتیبات مینیجر کے ذریعے ابھی بھی <ph name="MANAGEMENT_URL" /> پر مرئی ہونگی۔</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
+<translation id="6179832488876878285">آپ اپنی اہم فائلز کو یہاں پن کر سکتے ہیں۔ شروع کرنے کیلئے فائلز ایپ کھولیں۔</translation>
 <translation id="622484624075952240">نیچے</translation>
 <translation id="6236290670123303279">ترتیبات کا نظم کریں</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">صوتی تاثرات کو غیر فعال کرنے کیلئے پانچ منٹ تک والیوم کی دونوں کلیدوں کو دبائے رکھیں۔</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7662283695561029522">کنفیگر کرنے کیلئے تھپتھپائیں</translation>
+<translation id="7683326293741220026">ایسا لگتا ہے کہ آپ کے فون پر بلوٹوتھ آف ہے۔ فون ہب کا استعمال کرنے کیلئے براہ کرم اپنے فون پر بلوٹوتھ آن کریں۔</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 اطلاع}other{# اطلاعات}}</translation>
 <translation id="7724603315864178912">کٹ کریں</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">مجموعی جائزے میں داخل ہونے کے لیے تین انگلیوں سے اوپر سوائپ کریں</translation>
 <translation id="7868900307798234037">فنگر پرنٹ سے غیر مقفل کیا جا رہا ہے</translation>
 <translation id="7872786842639831132">آف</translation>
+<translation id="7875575368831396199">ایسا لگتا ہے کہ آپ کے <ph name="DEVICE_TYPE" /> پر بلوٹوتھ آٖف ہے۔ فون ہب کا استعمال کرنے کیلئے براہ کرم بلوٹوتھ آن کریں۔</translation>
 <translation id="7886169021410746335">رازداری کی ترتیبات کو ایڈجسٹ کریں</translation>
 <translation id="7886277072580235377">آپ کے سائن آؤٹ ہونے پر آپ کا انٹرنیٹ سیشن صاف ہو جائے گا۔ <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ای میل بھیجیں</translation>
+<translation id="7895348134893321514">ٹوٹ</translation>
 <translation id="7897375687985782769">آپ نے اسکرین کو گھمانے کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسکرین کو گھمانا چاہتے ہیں؟</translation>
 <translation id="7901405293566323524">فون کا ہب</translation>
 <translation id="7902625623987030061">فنگر پرنٹ سینسر کو ٹچ کریں</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> ڈیسک فعال کر دیا گیا</translation>
 <translation id="8452135315243592079">‏غائب SIM کارڈ</translation>
 <translation id="8454013096329229812">‏Wi-Fi آن ہے۔</translation>
+<translation id="8462305545768648477">سننے کیلئے منتخب کریں کو بند کریں</translation>
 <translation id="847056008324733326">اسکیل ترتیبات کو ڈسپلے کریں</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> میں <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ہے۔</translation>
 <translation id="8477270416194247200">‏منسوخ کرنے کے لیے Alt+Search یا Shift دبائیں۔</translation>

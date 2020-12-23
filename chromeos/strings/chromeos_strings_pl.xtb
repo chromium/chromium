@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skanuj</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
+<translation id="2585245331261708204">Co nowego w Chrome OS</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
@@ -183,6 +184,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6325525973963619867">Niepowodzenie</translation>
 <translation id="636850387210749493">Rejestracja w firmie</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Zeskanowany plik został zapisany}few{Zeskanowane pliki zostały zapisane}many{Zeskanowane pliki zostały zapisane}other{Zeskanowane pliki zostały zapisane}}</translation>
 <translation id="649050271426829538">Zatrzymano – zacięcie papieru</translation>
 <translation id="6517239166834772319">Odkrywaj</translation>
 <translation id="6527081081771465939">Nieznany protokół zabezpieczeń Wi-Fi</translation>

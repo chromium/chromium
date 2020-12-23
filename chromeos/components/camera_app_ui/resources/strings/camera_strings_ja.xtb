@@ -35,8 +35,10 @@
 <translation id="3750315947605636967">別のアプリでカメラが使用されています</translation>
 <translation id="3810838688059735925">動画</translation>
 <translation id="3838931309141338733">バーコード スキャン</translation>
+<translation id="3892148308691398805">テキストをコピー</translation>
 <translation id="4000398125663085899">新しい画像と動画はファイルアプリのフォルダ（[マイファイル] &gt; [カメラ]）に保存されるようになりました</translation>
 <translation id="4118525110028899586">録画を一時停止</translation>
+<translation id="4269820728363426813">リンクアドレスをコピー</translation>
 <translation id="4279490309300973883">ミラーリング</translation>
 <translation id="4329152592498422850">スクエア写真の撮影に切り替え</translation>
 <translation id="4383571725254449280">パフォーマンス ログを印刷する</translation>
@@ -71,6 +73,7 @@
 <translation id="7134221860976209830">10 秒タイマー</translation>
 <translation id="7243947652761655814">動画の解像度</translation>
 <translation id="7337660886763914220">ファイル システムのエラーが発生しました。</translation>
+<translation id="7450541714075000668">テキストをコピーしました</translation>
 <translation id="7557677699350329807">次のカメラに切り替え</translation>
 <translation id="7608223098072244877">4x4</translation>
 <translation id="7649070708921625228">ヘルプ</translation>

@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">S-a copiat în <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Foaie de calcul Google</translation>
 <translation id="3486821258960016770">Mongolă</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> erori.</translation>
 <translation id="3522708245912499433">Portugheză</translation>
 <translation id="3524311639100184459">Atenție: aceste fișiere sunt temporare și pot fi șterse automat pentru a elibera spațiu pe disc.  <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dosar</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Bicicletă</translation>
 <translation id="8719721339511222681">S-a selectat <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croată</translation>
+<translation id="8750438273876807512">Atinge lung un fișier și atinge <ph name="ICON" />, apoi selectează „Fixează pe raft” pentru acces rapid la fișierele din raft.</translation>
 <translation id="8775404590947523323">Editările dvs. sunt salvate în mod automat.<ph name="BREAKS" />Pentru a păstra o copie a imaginii originale, debifați „Suprascrieți fișierul original”</translation>
 <translation id="8808686172382650546">Pisică</translation>
 <translation id="8810671769985673465">Arhivarea nu a reușit, elementul există: „<ph name="FILE_NAME" />”</translation>

@@ -228,6 +228,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> သို့ မိတ္တူကူးထားသည်။</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3486821258960016770">မွန်ဂိုလီးယား</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> အမှားများ။</translation>
 <translation id="3522708245912499433">ပေါ်တူဂီ</translation>
 <translation id="3524311639100184459">သတိ- ဤဖိုင်များသည် ယာယီဖြစ်ပြီး ဒစ်ခ်နေရာလွတ်ပြုလုပ်ရန် အလိုအလျောက် ဖျက်နိုင်ပါသည်။  <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ဖိုင်တွဲ</translation>
@@ -737,6 +738,7 @@
 <translation id="8714406895390098252">စက်ဘီး</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ကို ရွေးချယ်ထားသည်။</translation>
 <translation id="872537912056138402">ခရိုအေးရှန်း</translation>
+<translation id="8750438273876807512">ဖိုင်တစ်ဖိုင်ကို တို့ထိ၍ဖိထားပြီး <ph name="ICON" /> ကို တို့ပါ၊ ထို့နောက် စင်ပေါ်ရှိ သင့်ဖိုင်များကို အမြန်သုံးခွင့်အတွက် "စင်တွင်ပင်ထိုးရန်" ကို ရွေးပါ။</translation>
 <translation id="8775404590947523323">သင်၏ တည်းဖြတ်မှုများကို အလိုလို သိမ်းဆည်းပေးသည်။ <ph name="BREAKS" />မူရင်း ပုံ၏ ကော်ပီကို ထားရှိရန်၊ "မူရင်းကို ဖျက်ရေးရန်"ကို ခြစ်ထားမှု ဖျက်ပေးပါ။</translation>
 <translation id="8808686172382650546">ကြောင်</translation>
 <translation id="8810671769985673465">ဇစ်လုပ်၍ မရပါ၊ ဖိုင်ရှိနေပါသည်- "<ph name="FILE_NAME" />"</translation>

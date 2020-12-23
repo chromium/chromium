@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Pindai</translation>
 <translation id="2570743873672969996">Menjalankan pengujian <ph name="TEST_NAME" /> ...</translation>
+<translation id="2585245331261708204">Yang baru di Chrome OS</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2805756323405976993">Apl</translation>
@@ -183,6 +184,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6232017090690406397">Baterai</translation>
 <translation id="6325525973963619867">Gagal</translation>
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{File yang dipindai telah disimpan}other{File yang dipindai telah disimpan}}</translation>
 <translation id="649050271426829538">Dihentikan - Kertas macet</translation>
 <translation id="6517239166834772319">Jelajahi</translation>
 <translation id="6527081081771465939">Protokol keamanan Wi-Fi tidak dikenal</translation>

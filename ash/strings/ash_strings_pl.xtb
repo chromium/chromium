@@ -47,6 +47,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1302880136325416935">Pokaż ustawienia Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Zawsze pokazuj półkę</translation>
+<translation id="1316811122439383437">Tote: ostatnie zrzuty ekranu, pobrane rzeczy i przypięte pliki</translation>
 <translation id="1333308631814936910">Połączono: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1341651618736211726">Rozwiń menu</translation>
 <translation id="1346748346194534595">W prawo</translation>
@@ -181,6 +182,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2596078834055697711">Zrób zrzut ekranu okna</translation>
 <translation id="2617342710774726426">Karta SIM jest zablokowana</translation>
 <translation id="2621713457727696555">Zabezpieczona</translation>
+<translation id="2633643784040308254">Średnia</translation>
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2658778018866295321">Kliknij i przeciągnij</translation>
 <translation id="2678852583403169292">Menu Przeczytaj na głos</translation>
@@ -410,6 +412,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4696813013609194136">Odblokuj urządzenie kodem rodzica</translation>
 <translation id="4702647871202761252">Ekran chroniący prywatność jest wyłączony</translation>
 <translation id="4705716602320768426">Zgłoś opinię</translation>
+<translation id="4730232680256276456">Cześć</translation>
 <translation id="4731797938093519117">Dostęp rodzica</translation>
 <translation id="4734965478015604180">Poziomo</translation>
 <translation id="4744944742468440486">Informacje związane z zaznaczoną treścią</translation>
@@ -426,6 +429,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4868492592575313542">aktywna</translation>
 <translation id="4872237917498892622">Alt+Szukaj lub Shift</translation>
 <translation id="4890187583552566966">Asystenta Google wyłączył administrator.</translation>
+<translation id="4890408602550914571">Sprawdź, czy telefon jest w pobliżu i ma włączony Bluetooth.</translation>
 <translation id="4895488851634969361">Bateria jest pełna.</translation>
 <translation id="490375751687810070">Pionowo</translation>
 <translation id="4905614135390995787">Zmieniliśmy skrót, który włącza i wyłącza tryb wysokiego kontrastu. Użyj <ph name="NEW_SHORTCUT" /> zamiast <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5302048478445481009">Język</translation>
 <translation id="5313326810920013265">Ustawienia Bluetooth</translation>
 <translation id="5314219114274263156">Nagrano ekran</translation>
+<translation id="5322611492012084517">Nie udało się znaleźć telefonu</translation>
 <translation id="5329548388331921293">Łączę…</translation>
 <translation id="5331975486040154427">Urządzenie USB-C (tylny port na lewym boku)</translation>
 <translation id="5352250171825660495">Tryb ciemny jest włączony</translation>
@@ -519,6 +524,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="576453121877257266">Podświetlenie nocne jest włączone.</translation>
 <translation id="5769373120130404283">Ekran chroniący prywatność</translation>
 <translation id="5777841717266010279">Zakończyć udostępnianie ekranu?</translation>
+<translation id="5779721926447984944">Przypięte pliki</translation>
 <translation id="5790085346892983794">Udało się</translation>
 <translation id="5820394555380036790">System operacyjny Chromium</translation>
 <translation id="5825969630400862129">Ustawienia połączonych urządzeń</translation>
@@ -563,6 +569,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="615957422585914272">Pokaż klawiaturę ekranową</translation>
 <translation id="6164005077879661055">W chwili usunięcia użytkownika nadzorowanego wszystkie powiązane z nim pliki i dane lokalne zostaną trwale usunięte. Lista stron, na które wszedł ten użytkownik, oraz jego ustawienia mogą być wciąż widoczne dla menedżera na <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
+<translation id="6179832488876878285">Tutaj możesz przypiąć ważne pliki. Aby rozpocząć, otwórz aplikację Pliki.</translation>
 <translation id="622484624075952240">W dół</translation>
 <translation id="6236290670123303279">Zarządzaj ustawieniami</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7654687942625752712">Naciśnij i przytrzymaj przez pięć sekund oba klawisze głośności, by wyłączyć komunikaty głosowe.</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7662283695561029522">Kliknij, by skonfigurować</translation>
+<translation id="7683326293741220026">Wygląda na to, że Bluetooth na Twoim telefonie jest wyłączony. Włącz go, by korzystać ze sterowania telefonem.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 powiadomienie}few{# powiadomienia}many{# powiadomień}other{# powiadomienia}}</translation>
 <translation id="7724603315864178912">Wytnij</translation>
@@ -737,9 +745,11 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7860671499921112077">Przesuń 3 palcami w górę, aby otworzyć Przegląd</translation>
 <translation id="7868900307798234037">Odblokowano odciskiem palca</translation>
 <translation id="7872786842639831132">Wyłączono</translation>
+<translation id="7875575368831396199">Wygląda na to, że Bluetooth jest wyłączony na Twoim urządzeniu <ph name="DEVICE_TYPE" />. Włącz go, by korzystać ze sterowania telefonem.</translation>
 <translation id="7886169021410746335">Dostosowywać ustawienia prywatności</translation>
 <translation id="7886277072580235377">Twoja sesja internetowa zostanie wyczyszczona, gdy się wylogujesz. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Wyślij e-maila</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Naciśnięto skrót klawiszowy obrotu ekranu. Czy chcesz obrócić ekran?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Dotknij czytnika linii papilarnych</translation>
@@ -807,6 +817,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8444246603146515890">Aktywowano biurko <ph name="DESK_TITILE" /></translation>
 <translation id="8452135315243592079">Brak karty SIM</translation>
 <translation id="8454013096329229812">Wi-Fi włączone.</translation>
+<translation id="8462305545768648477">Zamknij Przeczytaj na głos</translation>
 <translation id="847056008324733326">Ustawienia skali wyświetlania</translation>
 <translation id="8473301994082929012">Funkcja <ph name="FEATURE_NAME" /> w organizacji <ph name="ORGANIZATION_NAME" /> jest <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Aby anulować, naciśnij Alt + Szukaj lub Shift.</translation>

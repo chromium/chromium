@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Kopiert til <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google-regneark</translation>
 <translation id="3486821258960016770">Mongolsk</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> feil.</translation>
 <translation id="3522708245912499433">Portugisisk</translation>
 <translation id="3524311639100184459">Advarsel: Disse filene er midlertidige og kan bli slettet automatisk for å frigjøre diskplass.  <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mappe</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Sykkel</translation>
 <translation id="8719721339511222681">Valgte <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Kroatisk</translation>
+<translation id="8750438273876807512">Trykk og hold på en fil, trykk på <ph name="ICON" />, og velg «Fest til hyllen» for rask tilgang til filer på hyllen.</translation>
 <translation id="8775404590947523323">Endringene dine lagres automatisk.<ph name="BREAKS" />For å beholde en kopi av originalbildet, må du fjerne avmerkingen for «Overskriv originalen»</translation>
 <translation id="8808686172382650546">Katt</translation>
 <translation id="8810671769985673465">Kunne ikke opprette ZIP-filen – elementet finnes allerede: «<ph name="FILE_NAME" />»</translation>

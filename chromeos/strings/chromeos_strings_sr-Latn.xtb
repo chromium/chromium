@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2570743873672969996">Pokreće se test <ph name="TEST_NAME" />...</translation>
+<translation id="2585245331261708204">Novo u vezi Chrome OS-a</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2740531572673183784">Potvrdi</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
@@ -183,6 +184,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6325525973963619867">Neuspešno</translation>
 <translation id="636850387210749493">Prijavljivanje za izdanje za preduzeća</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Skenirani fajl je sačuvan}one{Skenirani fajlovi su sačuvani}few{Skenirani fajlovi su sačuvani}other{Skenirani fajlovi su sačuvani}}</translation>
 <translation id="649050271426829538">Zaustavljeno – papir je zaglavljen</translation>
 <translation id="6517239166834772319">Istražite</translation>
 <translation id="6527081081771465939">Nepoznat bezbednosni protokol za WiFi</translation>

@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Скопировано в папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3475447146579922140">Электронная таблица Google</translation>
 <translation id="3486821258960016770">Монгольский</translation>
+<translation id="3495304270784461826">Ошибок: <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">Португальский</translation>
 <translation id="3524311639100184459">Внимание! Эти файлы – временные. Они могут быть автоматически удалены, чтобы освободить место на диске.  <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681">Выбран объект "<ph name="ENTRY_NAME" />".</translation>
 <translation id="872537912056138402">Хорватский</translation>
+<translation id="8750438273876807512">Нажмите и удерживайте файл, затем нажмите на значок <ph name="ICON" /> и выберите "Закрепить на панели запуска".</translation>
 <translation id="8775404590947523323">Изменения сохраняются автоматически.<ph name="BREAKS" />Чтобы оставить копию исходного изображения, снимите флажок "Перезаписать оригинал".</translation>
 <translation id="8808686172382650546">Кот</translation>
 <translation id="8810671769985673465">Не удалось выполнить архивирование. Объект "<ph name="FILE_NAME" />" уже есть в архиве.</translation>

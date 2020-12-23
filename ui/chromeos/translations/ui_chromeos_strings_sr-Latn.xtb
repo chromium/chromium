@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Kopirano je u: <ph name="FOLDER_NAME" /></translation>
 <translation id="3475447146579922140">Google tabela</translation>
 <translation id="3486821258960016770">mongolski</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> grešaka.</translation>
 <translation id="3522708245912499433">portugalski</translation>
 <translation id="3524311639100184459">Oprez: Ove datoteke su privremene i mogu da se izbrišu automatski kako bi se oslobodio prostor na disku.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Direktorijum</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Bicikl</translation>
 <translation id="8719721339511222681">Izabrali ste stavku <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">hrvatski</translation>
+<translation id="8750438273876807512">Dodirnite i zadržite fajl i dodirnite <ph name="ICON" />, pa izaberite „Zakači na policu“ radi brzog pristupa fajlovima na polici.</translation>
 <translation id="8775404590947523323">Izmene se automatski čuvaju.<ph name="BREAKS" />Da biste zadržali kopiju originalne slike, opozovite izbor u polju za potvrdu „Zameni original“</translation>
 <translation id="8808686172382650546">Mačka</translation>
 <translation id="8810671769985673465">Dodavanje u zip datoteku nije uspelo, stavka postoji: „<ph name="FILE_NAME" />“</translation>

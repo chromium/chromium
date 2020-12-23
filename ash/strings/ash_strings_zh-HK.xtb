@@ -47,7 +47,7 @@
 <translation id="1302880136325416935">顯示藍牙設定。<ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">訊號強度係 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">永遠顯示檔案櫃</translation>
-<translation id="1316811122439383437">Tote：最近擷取的螢幕畫面、下載的檔案和固定的檔案</translation>
+<translation id="1316811122439383437">Tote：最近的螢幕截圖、下載檔案及已固定的檔案</translation>
 <translation id="1333308631814936910">已連接「<ph name="DISPLAY_NAME" />」</translation>
 <translation id="1341651618736211726">展開</translation>
 <translation id="1346748346194534595">向右</translation>
@@ -412,7 +412,7 @@
 <translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
 <translation id="4702647871202761252">已停用私隱保護畫面</translation>
 <translation id="4705716602320768426">提供意見</translation>
-<translation id="4730232680256276456">你好</translation>
+<translation id="4730232680256276456">您好</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4734965478015604180">橫向</translation>
 <translation id="4744944742468440486">所揀內容嘅相關資料</translation>
@@ -429,7 +429,7 @@
 <translation id="4868492592575313542">已啟用</translation>
 <translation id="4872237917498892622">Alt + 搜尋鍵或 Shift 鍵</translation>
 <translation id="4890187583552566966">您的管理員已停用「Google 助理」。</translation>
-<translation id="4890408602550914571">請確認你的手機在附近，且已開啟藍牙功能。</translation>
+<translation id="4890408602550914571">請確認您的手機在附近，且已開啟藍牙。</translation>
 <translation id="4895488851634969361">電池電量已滿。</translation>
 <translation id="490375751687810070">垂直</translation>
 <translation id="4905614135390995787">切換高對比模式的快速鍵已變更，請改用 <ph name="NEW_SHORTCUT" /> 以取代原有的 <ph name="OLD_SHORTCUT" />。</translation>
@@ -477,7 +477,7 @@
 <translation id="5302048478445481009">語言</translation>
 <translation id="5313326810920013265">藍牙設定</translation>
 <translation id="5314219114274263156">已錄影螢幕畫面</translation>
-<translation id="5322611492012084517">找不到你的手機</translation>
+<translation id="5322611492012084517">找不到手機</translation>
 <translation id="5329548388331921293">正在連線…</translation>
 <translation id="5331975486040154427">USB-C 裝置 (左側後方連接埠)</translation>
 <translation id="5352250171825660495">深色主題背景已開啟</translation>
@@ -524,7 +524,7 @@
 <translation id="576453121877257266">「夜燈模式」已開啟。</translation>
 <translation id="5769373120130404283">私隱保護畫面</translation>
 <translation id="5777841717266010279">停止共用畫面？</translation>
-<translation id="5779721926447984944">固定的檔案</translation>
+<translation id="5779721926447984944">已固定的檔案</translation>
 <translation id="5790085346892983794">成功</translation>
 <translation id="5820394555380036790">Chromium 作業系統</translation>
 <translation id="5825969630400862129">已連接裝置設定</translation>
@@ -569,7 +569,7 @@
 <translation id="615957422585914272">顯示螢幕小鍵盤</translation>
 <translation id="6164005077879661055">將這位受管使用者移除後，系統即會永久刪除所有與該使用者相關的檔案和本機數據。管理員仍可前往 <ph name="MANAGEMENT_URL" /> 查看這位受管使用者的網頁瀏覽記錄和設定。</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
-<translation id="6179832488876878285">你可以將重要的檔案固定在這裡，只要開啟「檔案」應用程式即可開始使用。</translation>
+<translation id="6179832488876878285">您可將重要的檔案固定至此處。開啟「檔案」應用程式即可開始使用。</translation>
 <translation id="622484624075952240">向下鍵</translation>
 <translation id="6236290670123303279">管理設定</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -727,7 +727,7 @@
 <translation id="7654687942625752712">同時按住兩個音量鍵五秒，即可停用朗讀功能。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7662283695561029522">輕觸即可設定</translation>
-<translation id="7683326293741220026">手機的藍牙功能似乎已關閉。請開啟手機的藍牙功能，才能使用 Phone Hub。</translation>
+<translation id="7683326293741220026">手機上的藍牙似乎已關閉。請開啟手機的藍牙，才能使用 Phone Hub。</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 則通知}other{# 則通知}}</translation>
 <translation id="7724603315864178912">剪下</translation>
@@ -745,7 +745,7 @@
 <translation id="7860671499921112077">用三隻手指向上滑動即可進入「概覽」</translation>
 <translation id="7868900307798234037">用緊指紋解鎖</translation>
 <translation id="7872786842639831132">關閉</translation>
-<translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 的藍牙功能似乎已關閉。請開啟藍牙功能，才能使用 Phone Hub。</translation>
+<translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 的藍牙似乎已關閉。請開啟藍牙，才能使用 Phone Hub。</translation>
 <translation id="7886169021410746335">調整私隱權設定</translation>
 <translation id="7886277072580235377">登出帳戶後，系統將清除您的互聯網工作階段。<ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">傳送電郵</translation>
@@ -817,7 +817,7 @@
 <translation id="8444246603146515890">已啟用桌面 <ph name="DESK_TITILE" /></translation>
 <translation id="8452135315243592079">找不到 SIM 卡</translation>
 <translation id="8454013096329229812">Wi-Fi 已開啟。</translation>
-<translation id="8462305545768648477">關閉隨選朗讀</translation>
+<translation id="8462305545768648477">關閉「選取以朗讀」</translation>
 <translation id="847056008324733326">顯示比例設定</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> 已 <ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>
 <translation id="8477270416194247200">按下 Alt + 搜尋鍵或 Shift 鍵即可取消。</translation>

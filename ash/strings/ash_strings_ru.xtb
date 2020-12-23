@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">Показать настройки Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="1312604459020188865">Уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Всегда показывать Временное хранилище</translation>
+<translation id="1316811122439383437">Tote: недавние скриншоты, а также скачанные и закрепленные файлы</translation>
 <translation id="1333308631814936910">Подключено устройство "<ph name="DISPLAY_NAME" />".</translation>
 <translation id="1341651618736211726">Открыть дополнительное меню</translation>
 <translation id="1346748346194534595">Справа</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">Сделать скриншот окна</translation>
 <translation id="2617342710774726426">SIM-карта заблокирована</translation>
 <translation id="2621713457727696555">Защищена</translation>
+<translation id="2633643784040308254">Средний</translation>
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="2658778018866295321">Перетаскивание</translation>
 <translation id="2678852583403169292">Меню озвучивания при нажатии</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">Требуется родительский код доступа</translation>
 <translation id="4702647871202761252">Экран конфиденциальности отключен</translation>
 <translation id="4705716602320768426">Отправить отзыв</translation>
+<translation id="4730232680256276456">Высокий</translation>
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="4734965478015604180">Горизонтально</translation>
 <translation id="4744944742468440486">Информация на основе выделенного текста</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">включила</translation>
 <translation id="4872237917498892622">Alt + Search или Shift</translation>
 <translation id="4890187583552566966">Администратор отключил Google Ассистента</translation>
+<translation id="4890408602550914571">Убедитесь, что телефон находится рядом и на нем включена передача данных по Bluetooth.</translation>
 <translation id="4895488851634969361">Батарея полностью заряжена.</translation>
 <translation id="490375751687810070">Вертикально</translation>
 <translation id="4905614135390995787">Изменились быстрые клавиши для управления режимом высокой контрастности. Используйте <ph name="NEW_SHORTCUT" /> вместо <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">Язык</translation>
 <translation id="5313326810920013265">Настройки Bluetooth</translation>
 <translation id="5314219114274263156">Видео с экрана записано</translation>
+<translation id="5322611492012084517">Не удается найти телефон</translation>
 <translation id="5329548388331921293">Подключение…</translation>
 <translation id="5331975486040154427">Устройство USB-C (дальний порт слева)</translation>
 <translation id="5352250171825660495">Тёмная тема включена</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">Ночная подсветка включена</translation>
 <translation id="5769373120130404283">Экран конфиденциальности</translation>
 <translation id="5777841717266010279">Закрыть доступ к экрану?</translation>
+<translation id="5779721926447984944">Закрепленные файлы</translation>
 <translation id="5790085346892983794">Выполнено</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Настройки подключенных устройств</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">Показывать экранную клавиатуру</translation>
 <translation id="6164005077879661055">После удаления контролируемого профиля все файлы и локальные данные, связанные с ним, будут удалены. Посещенные страницы и настройки этого профиля будут видны его менеджеру на странице: <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Подробнее</translation>
+<translation id="6179832488876878285">Вы можете закрепить здесь важные документы. Чтобы начать, откройте приложение "Файлы".</translation>
 <translation id="622484624075952240">Вниз</translation>
 <translation id="6236290670123303279">Настройки</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">Чтобы отключить озвучивание текста на экране, удерживайте обе кнопки громкости в течение пяти секунд.</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7662283695561029522">Нажмите, чтобы настроить.</translation>
+<translation id="7683326293741220026">Включите Bluetooth на телефоне, чтобы использовать функцию "Управление телефоном".</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 уведомление}one{# уведомление}few{# уведомления}many{# уведомлений}other{# уведомления}}</translation>
 <translation id="7724603315864178912">Вырезать</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">Чтобы перейти в режим обзора, проведите тремя пальцами вверх.</translation>
 <translation id="7868900307798234037">Экран разблокирован с помощью отпечатка пальца</translation>
 <translation id="7872786842639831132">Отключено</translation>
+<translation id="7875575368831396199">Включите Bluetooth на устройстве <ph name="DEVICE_TYPE" />, чтобы использовать функцию "Управление телефоном".</translation>
 <translation id="7886169021410746335">Изменять настройки конфиденциальности.</translation>
 <translation id="7886277072580235377">После выхода из аккаунта данные о ваших действиях в Интернете будут удалены. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Отправить письмо</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Вы нажали сочетание клавиш для поворота экрана. Выполнить это действие?</translation>
 <translation id="7901405293566323524">Интерфейс Phone Hub</translation>
 <translation id="7902625623987030061">Коснитесь сканера отпечатков.</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890">Рабочий стол "<ph name="DESK_TITILE" />" активирован.</translation>
 <translation id="8452135315243592079">SIM-карта не обнаружена</translation>
 <translation id="8454013096329229812">Wi-Fi включен</translation>
+<translation id="8462305545768648477">Остановить озвучивание при нажатии</translation>
 <translation id="847056008324733326">Настройки масштаба экрана</translation>
 <translation id="8473301994082929012">Организация <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> функцию "<ph name="FEATURE_NAME" />".</translation>
 <translation id="8477270416194247200">Для отмены нажмите ALT + SEARCH или SHIFT.</translation>

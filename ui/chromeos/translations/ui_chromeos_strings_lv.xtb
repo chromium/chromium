@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Nokopēts uz mapi <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google izklājlapa</translation>
 <translation id="3486821258960016770">Mongoļu</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> kļūdas.</translation>
 <translation id="3522708245912499433">Portugāļu valoda</translation>
 <translation id="3524311639100184459">Uzmanību! Šie ir pagaidu faili un var tikt automātiski izdzēsti, lai atbrīvotu vietu diskā.  <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="3527085408025491307">Mape</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Velosipēds</translation>
 <translation id="8719721339511222681">Atlasīts vienums “<ph name="ENTRY_NAME" />”.</translation>
 <translation id="872537912056138402">Horvātu valoda</translation>
+<translation id="8750438273876807512">Lai varētu ātri piekļūt failiem plauktā, pieskarieties failam un turiet to, pieskarieties ikonai <ph name="ICON" /> un atlasiet Piespraust plauktam.</translation>
 <translation id="8775404590947523323">Izmaiņas tiek saglabātas automātiski.<ph name="BREAKS" />Lai saglabātu sākotnējā attēla kopiju, noņemiet atzīmi no izvēles rūtiņas “Pārrakstīt sākotnējo”.</translation>
 <translation id="8808686172382650546">Kaķis</translation>
 <translation id="8810671769985673465">Tilpsaspiešana neizdevās, vienums pastāv: <ph name="FILE_NAME" />.</translation>

@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">已複製到「<ph name="FOLDER_NAME" />」。</translation>
 <translation id="3475447146579922140">Google 試算表</translation>
 <translation id="3486821258960016770">蒙古文</translation>
+<translation id="3495304270784461826">發生 <ph name="COUNT" /> 個錯誤。</translation>
 <translation id="3522708245912499433">葡萄牙文</translation>
 <translation id="3524311639100184459">注意：系統可能會自動刪除這些暫存檔案，以釋放磁碟空間。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">資料夾</translation>
@@ -738,7 +739,7 @@
 <translation id="8714406895390098252">單車</translation>
 <translation id="8719721339511222681">揀咗 <ph name="ENTRY_NAME" />。</translation>
 <translation id="872537912056138402">克羅地亞文</translation>
-<translation id="8750438273876807512">按住檔案並輕觸 <ph name="ICON" /> 圖示，然後選取 [固定至檔案櫃]，即可在檔案櫃中快速存取檔案。</translation>
+<translation id="8750438273876807512">輕觸並按住檔案，然後輕按 <ph name="ICON" /> 圖示並選取 [固定至檔案櫃]，即可在檔案櫃中快速存取檔案。</translation>
 <translation id="8775404590947523323">您的編輯已自動儲存。<ph name="BREAKS" />如要保留原始圖片複本，請取消勾選 [覆寫原始檔案]</translation>
 <translation id="8808686172382650546">Cat</translation>
 <translation id="8810671769985673465">壓縮失敗，項目已存在：「<ph name="FILE_NAME" />」</translation>

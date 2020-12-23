@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">Прегледајте Bluetooth подешавања. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Јачина сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Увек приказуј полицу</translation>
+<translation id="1316811122439383437">Држач: недавни снимци екрана, преузимања и закачени фајлови</translation>
 <translation id="1333308631814936910">Повезаних: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1341651618736211726">Прекорачење</translation>
 <translation id="1346748346194534595">Удесно</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">Направите снимак екрана прозора</translation>
 <translation id="2617342710774726426">SIM картица је закључана</translation>
 <translation id="2621713457727696555">Заштићено</translation>
+<translation id="2633643784040308254">Средње</translation>
 <translation id="2653659639078652383">Пошаљи</translation>
 <translation id="2658778018866295321">Кликните и превуците</translation>
 <translation id="2678852583403169292">Мени функције Изаберите за говор</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">Откључајте уређај помоћу кода родитеља</translation>
 <translation id="4702647871202761252">Екран за приватност је искључен</translation>
 <translation id="4705716602320768426">Пошаљите повратне информације</translation>
+<translation id="4730232680256276456">Здраво</translation>
 <translation id="4731797938093519117">Родитељски приступ</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4744944742468440486">Информације везане за ваш избор</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">активирано</translation>
 <translation id="4872237917498892622">Alt + тастер за претрагу или Shift</translation>
 <translation id="4890187583552566966">Администратор је онемогућио Google помоћник.</translation>
+<translation id="4890408602550914571">Уверите се да је телефон у близини и да је Bluetooth укључен.</translation>
 <translation id="4895488851634969361">Батерија је пуна.</translation>
 <translation id="490375751687810070">Вертикално</translation>
 <translation id="4905614135390995787">Пречица за укључивање и искључивање режима високог контраста је промењена. Користите <ph name="NEW_SHORTCUT" /> уместо <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">Језик</translation>
 <translation id="5313326810920013265">Подешавања Bluetooth-а</translation>
 <translation id="5314219114274263156">Екран је снимљен</translation>
+<translation id="5322611492012084517">Проналажење телефона није успело</translation>
 <translation id="5329548388331921293">Повезује се...</translation>
 <translation id="5331975486040154427">Уређај са USB прикључком типа C (леви задњи порт)</translation>
 <translation id="5352250171825660495">Тамна тема је укључена</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">Ноћно светло је укључено.</translation>
 <translation id="5769373120130404283">Екран за приватност</translation>
 <translation id="5777841717266010279">Желите ли да прекинете дељење екрана?</translation>
+<translation id="5779721926447984944">Закачени фајлови</translation>
 <translation id="5790085346892983794">Успешно</translation>
 <translation id="5820394555380036790">Chromium ОС</translation>
 <translation id="5825969630400862129">Подешавања повезаних уређаја</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">Прикажи тастатуру на екрану</translation>
 <translation id="6164005077879661055">Све датотеке и локални подаци повезани са корисником под надзором ће бити трајно избрисани када уклоните овог корисника под надзором. Менаџер ће можда и даље моћи да види посећене веб-сајтове и подешавања за овог корисника под надзором на <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
+<translation id="6179832488876878285">Овде можете да закачите најважније фајлове. Отворите апликацију Фајлови да бисте започели.</translation>
 <translation id="622484624075952240">Надоле</translation>
 <translation id="6236290670123303279">Управљајте подешавањима</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">Притисните оба тастера за јачину звука и задржите их пет секунди да бисте онемогућили повратни говор.</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7662283695561029522">Додирните да бисте конфигурисали</translation>
+<translation id="7683326293741220026">Изгледа да је искључен Bluetooth на телефону. Укључите Bluetooth на телефону да бисте користили Phone Hub.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 обавештење}one{# обавештење}few{# обавештења}other{# обавештења}}</translation>
 <translation id="7724603315864178912">Исеци</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">Превуците нагоре помоћу три прста да бисте ушли у Преглед</translation>
 <translation id="7868900307798234037">Откључавање помоћу отиска прста</translation>
 <translation id="7872786842639831132">Искључено</translation>
+<translation id="7875575368831396199">Изгледа да је искључен Bluetooth на уређају <ph name="DEVICE_TYPE" />. Укључите Bluetooth да бисте користили Phone Hub.</translation>
 <translation id="7886169021410746335">Прилагодите подешавања приватности</translation>
 <translation id="7886277072580235377">Интернет сесија ће бити обрисана када се одјавите. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Пошаљи имејл</translation>
+<translation id="7895348134893321514">Држач</translation>
 <translation id="7897375687985782769">Притиснули сте тастерску пречицу за ротацију екрана. Желите ли да ротирате екран?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Додирните сензор за отисак прста</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890">Радна површина <ph name="DESK_TITILE" /> је активирана</translation>
 <translation id="8452135315243592079">SIM картица недостаје</translation>
 <translation id="8454013096329229812">WiFi је укључен.</translation>
+<translation id="8462305545768648477">Затворите Изаберите за говор</translation>
 <translation id="847056008324733326">Подешавања размере приказа</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Притисните Alt + тастер за претрагу или Shift да бисте отказали.</translation>

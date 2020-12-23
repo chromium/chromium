@@ -2201,6 +2201,13 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn đặt chính sách này thành "AllowMigration", người dùng có thư mục gốc mã hóa ecryptfs sẽ được đề nghị di chuyển các thư mục này sang mã hóa ext4 nếu cần (hiện tại Android N đã có sẵn trên thiết bị).
 
       Chính sách này không áp dụng cho các ứng dụng kiosk – các ứng dụng này sẽ được di chuyển tự động. Nếu bạn không đặt chính sách này, thiết bị sẽ hoạt động giống như bạn đã chọn "DisallowArc".</translation>
+<translation id="401650904918322517">Chính sách này không được dùng nữa và sẽ bị loại bỏ khỏi <ph name="PRODUCT_OS_NAME" /> phiên bản 89.
+
+      Chính sách này cấp cho tính năng Câu trả lời nhanh quyền truy cập vào nội dung đã chọn và gửi thông tin đó đến máy chủ.
+
+      Nếu bạn bật chính sách này, tính năng Câu trả lời nhanh sẽ được phép truy cập vào nội dung đã chọn.
+      Nếu bạn tắt chính sách này, tính năng Câu trả lời nhanh sẽ không được phép truy cập vào nội dung đã chọn.
+      Nếu bạn không đặt chính sách này, người dùng có thể quyết định liệu có cho phép tính năng Câu trả lời nhanh truy cập vào nội dung đã chọn hay không.</translation>
 <translation id="4020682745012723568">Cookie được chuyển tới hồ sơ của người dùng không thể truy cập vào các ứng dụng Android.</translation>
 <translation id="4025500273782820766">Cho phép người dùng chọn "Luôn cho phép" khi hộp thoại giao thức bên ngoài hiển thị để bỏ qua những lời nhắc xác nhận trong tương lai</translation>
 <translation id="402759845255257575">Không cho phép bất kỳ trang web nào chạy JavaScript</translation>
@@ -3998,6 +4005,13 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="6789422336869764846">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì thiết bị đã đăng ký sẽ báo cáo trạng thái của chế độ chuyển đổi dành cho nhà phát triển của thiết bị lúc máy khởi động.
 
       Nếu bạn đặt chính sách này thành Tắt, thiết bị đã đăng ký sẽ không báo cáo trạng thái của chế độ chuyển đổi dành cho nhà phát triển.</translation>
+<translation id="6793420507738858152">Khi được bật, tính năng <ph name="PRODUCT_NAME" /> sẽ gửi tiêu đề của yêu cầu chi tiết cung cấp thông tin về trình duyệt và môi trường của người dùng.
+
+      Đây là một tính năng bổ sung nhưng tiêu đề mới có thể làm hỏng một số trang web hạn chế lượng ký tự có trong các yêu cầu.
+
+      Nếu bạn bật hoặc không đặt chính sách này, thì tính năng <ph name="PRODUCT_NAME" /> sẽ được bật. Nếu bạn tắt chính sách này, tính năng đó sẽ không hoạt động.
+
+      Chính sách doanh nghiệp này là để áp dụng trong thời gian ngắn, ít nhất là đến Chrome 91.</translation>
 <translation id="6795485990775913659">Chỉ cho phép in khi không có mã PIN</translation>
 <translation id="6800181452282128474">Không truy vấn máy chủ Quirks</translation>
 <translation id="6810445994095397827">Chặn JavaScript trên các trang web này</translation>
@@ -4646,6 +4660,9 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn đặt chính sách này thì người dùng sẽ không thay đổi được trong <ph name="PRODUCT_NAME" />. Nếu bạn không đặt chính sách này, nhà cung cấp dịch vụ tìm kiếm mặc định sẽ được bật và người dùng có thể đặt danh sách nhà cung cấp dịch vụ tìm kiếm.
 
       Trên <ph name="MS_WIN_NAME" />, chức năng này chỉ có ở những phiên bản liên kết với một miền <ph name="MS_AD_NAME" />, chạy trên Windows 10 Pro, hoặc đã đăng ký tùy chọn Quản lý trình duyệt Chrome qua đám mây. Trên <ph name="MAC_OS_NAME" />, chức năng này chỉ có ở những phiên bản được quản lý qua MDM, hoặc liên kết với một miền qua MCX.</translation>
+<translation id="7669630878711068277">Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì người dùng có thể in trong <ph name="PRODUCT_NAME" /> và không thể thay đổi tùy chọn cài đặt này.
+
+      Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thể in từ <ph name="PRODUCT_NAME" />. Tính năng in bị tắt trong trình đơn ba chấm, các tiện ích và ứng dụng JavaScript.</translation>
 <translation id="7673194325208122247">Khoảng thời gian (mili giây)</translation>
 <translation id="7677220829878081413">
       Khi bạn đặt chính sách này thành ArcSession, nếu Android đã khởi động, thì chính sách này sẽ buộc thiết bị khởi động lại khi người dùng đăng xuất.

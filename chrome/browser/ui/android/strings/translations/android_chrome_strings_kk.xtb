@@ -261,6 +261,7 @@
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google есептік жазбаңызда<ph name="END_LINK" /> сақталған құпия сөздерді көру және басқару</translation>
 <translation id="2818669890320396765">Бетбелгілерді барлық құрылғылардан пайдалану үшін есептік жазбаға кіріп, синхрондау функциясын қосыңыз</translation>
 <translation id="2827278682606527653">Фид картасының мәзірі жартылай ашылды.</translation>
+<translation id="2833452327385637152">Сөзді немесе фразаны іздеу үшін оны түртудің орнына басып ұстап тұрыңыз</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 күн бұрын тексерілді.}other{# күн бұрын тексерілді.}}</translation>
 <translation id="2842985007712546952">Түпкі қалта</translation>
 <translation id="2860954141821109167">Бұл құрылғыда телефон қолданбасы қосулы екенін тексеріңіз.</translation>
@@ -1108,6 +1109,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="8571213806525832805">Соңғы 4 апта</translation>
 <translation id="8572344201470131220">Сурет көшірілді.</translation>
 <translation id="8583805026567836021">Есептік жазба деректерін өшіру</translation>
+<translation id="8587585930972369234">Іздеу үшін түртіп ұстап тұрыңыз</translation>
 <translation id="860043288473659153">Карта иесінің аты-жөні</translation>
 <translation id="8616006591992756292"><ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> мекенжайында Google есептік жазбасымен шолу тарихының басқа да үлгілері болуы мүмкін.</translation>
 <translation id="8617240290563765734">Жүктелген мазмұндағы ұсынылған URL мекенжайын ашу қажет пе?</translation>

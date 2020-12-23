@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">显示蓝牙设置。<ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">一律显示任务栏</translation>
+<translation id="1316811122439383437">Tote：近期的屏幕截图、下载内容和已固定的文件</translation>
 <translation id="1333308631814936910">已与“<ph name="DISPLAY_NAME" />”连接</translation>
 <translation id="1341651618736211726">溢出</translation>
 <translation id="1346748346194534595">向右</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">截取窗口屏幕截图</translation>
 <translation id="2617342710774726426">SIM 卡已被锁定</translation>
 <translation id="2621713457727696555">受保护</translation>
+<translation id="2633643784040308254">中</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">点击并拖动</translation>
 <translation id="2678852583403169292">“随选朗读”菜单</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">使用家长访问代码解锁设备</translation>
 <translation id="4702647871202761252">已关闭隐私保护屏</translation>
 <translation id="4705716602320768426">提交反馈</translation>
+<translation id="4730232680256276456">高</translation>
 <translation id="4731797938093519117">家长访问</translation>
 <translation id="4734965478015604180">横向</translation>
 <translation id="4744944742468440486">与您所选内容相关的信息</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">已启用</translation>
 <translation id="4872237917498892622">Alt + 搜索键或 Shift</translation>
 <translation id="4890187583552566966">Google 助理已被您的管理员停用。</translation>
+<translation id="4890408602550914571">请确保您的手机就在附近且已开启蓝牙。</translation>
 <translation id="4895488851634969361">电池电量已满。</translation>
 <translation id="490375751687810070">纵向</translation>
 <translation id="4905614135390995787">用于切换高反差模式的快捷键已更改。请使用 <ph name="NEW_SHORTCUT" />，而不是 <ph name="OLD_SHORTCUT" />。</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">语言</translation>
 <translation id="5313326810920013265">蓝牙设置</translation>
 <translation id="5314219114274263156">已录制屏幕</translation>
+<translation id="5322611492012084517">找不到您的手机</translation>
 <translation id="5329548388331921293">正在连接…</translation>
 <translation id="5331975486040154427">USB-C 设备（左侧后端端口）</translation>
 <translation id="5352250171825660495">深色主题已开启</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">当前已开启护眼模式。</translation>
 <translation id="5769373120130404283">隐私保护屏</translation>
 <translation id="5777841717266010279">要停止屏幕共享吗？</translation>
+<translation id="5779721926447984944">已固定的文件</translation>
 <translation id="5790085346892983794">成功</translation>
 <translation id="5820394555380036790">Chromium 操作系统</translation>
 <translation id="5825969630400862129">设置已连接的设备</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">显示屏幕键盘</translation>
 <translation id="6164005077879661055">删除该受监管用户后，与其相关联的所有文件和本地数据都会被永久删除，但管理员仍可以在 <ph name="MANAGEMENT_URL" /> 上查看该用户的设置和访问过的网站。</translation>
 <translation id="6165508094623778733">了解详情</translation>
+<translation id="6179832488876878285">您可将自己的重要文件固定在此处。打开“文件”应用即可开始操作。</translation>
 <translation id="622484624075952240">向下箭头键</translation>
 <translation id="6236290670123303279">管理设置</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">同时按住两个音量键 5 秒钟，即可停用语音反馈。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7662283695561029522">点按即可配置</translation>
+<translation id="7683326293741220026">您手机上的蓝牙似乎处于关闭状态。请开启蓝牙以便使用 Phone Hub。</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 条通知}other{# 条通知}}</translation>
 <translation id="7724603315864178912">剪切</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">若要进入“概览”模式，请用三根手指向上滑动</translation>
 <translation id="7868900307798234037">正在使用指纹解锁</translation>
 <translation id="7872786842639831132">关闭</translation>
+<translation id="7875575368831396199">您的 <ph name="DEVICE_TYPE" /> 上的蓝牙似乎处于关闭状态。请开启蓝牙以便使用 Phone Hub。</translation>
 <translation id="7886169021410746335">调整隐私设置</translation>
 <translation id="7886277072580235377">当您退出时，系统即会清除您的网络会话。<ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">发送电子邮件</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">您按下了旋转屏幕的键盘快捷键。要旋转屏幕吗？</translation>
 <translation id="7901405293566323524">手机中心</translation>
 <translation id="7902625623987030061">请轻触指纹传感器</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890">桌面 <ph name="DESK_TITILE" /> 已激活</translation>
 <translation id="8452135315243592079">缺少 SIM 卡</translation>
 <translation id="8454013096329229812">Wi-Fi 已打开。</translation>
+<translation id="8462305545768648477">关闭“随选朗读”功能</translation>
 <translation id="847056008324733326">显示比例设置</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />已<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>
 <translation id="8477270416194247200">按 Alt+搜索键或按 Shift 键可取消。</translation>

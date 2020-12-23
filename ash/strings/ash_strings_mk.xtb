@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">Прикажи ги поставките за Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Секогаш прикажувај ја полицата</translation>
+<translation id="1316811122439383437">Tote: неодамнешни снимања на екранот, преземања и закачени датотеки</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> е поврзан</translation>
 <translation id="1341651618736211726">Прелевање</translation>
 <translation id="1346748346194534595">Надесно</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">Прави слика од екранот</translation>
 <translation id="2617342710774726426">SIM-картичката е заклучена</translation>
 <translation id="2621713457727696555">Заштитена</translation>
+<translation id="2633643784040308254">Средна</translation>
 <translation id="2653659639078652383">Испрати</translation>
 <translation id="2658778018866295321">Кликни и повлечи</translation>
 <translation id="2678852583403169292">Мени за „Изберете за говор“</translation>
@@ -411,6 +413,7 @@
 <translation id="4696813013609194136">Отклучете го уредот со код на родител</translation>
 <translation id="4702647871202761252">Исклучен е екранот за приватност</translation>
 <translation id="4705716602320768426">Испратете повратни информации</translation>
+<translation id="4730232680256276456">Здраво</translation>
 <translation id="4731797938093519117">Пристап за родители</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4744944742468440486">Информации поврзани со вашиот избор</translation>
@@ -427,6 +430,7 @@
 <translation id="4868492592575313542">активиранo</translation>
 <translation id="4872237917498892622">Alt+Search или Shift</translation>
 <translation id="4890187583552566966">„Помошникот на Google“ е оневозможен од вашиот администратор.</translation>
+<translation id="4890408602550914571">Проверете дали телефонот е во близина и со вклучен Bluetooth.</translation>
 <translation id="4895488851634969361">Батеријата е полна.</translation>
 <translation id="490375751687810070">Вертикално</translation>
 <translation id="4905614135390995787">Кратенката за префрлање во режим на висок контраст е променета. Користете <ph name="NEW_SHORTCUT" /> наместо <ph name="OLD_SHORTCUT" />.</translation>
@@ -474,6 +478,7 @@
 <translation id="5302048478445481009">Јазик</translation>
 <translation id="5313326810920013265">Поставки за Bluetooth</translation>
 <translation id="5314219114274263156">Направена е снимка од екранот</translation>
+<translation id="5322611492012084517">Не може да се најде телефонот</translation>
 <translation id="5329548388331921293">Се поврзува…</translation>
 <translation id="5331975486040154427">USB-Ц уред (задна порта од лева страна)</translation>
 <translation id="5352250171825660495">Темната тема е вклучена</translation>
@@ -520,6 +525,7 @@
 <translation id="576453121877257266">„Ноќното светло“ е вклучено.</translation>
 <translation id="5769373120130404283">Екран за приватност</translation>
 <translation id="5777841717266010279">Запри споделување екран?</translation>
+<translation id="5779721926447984944">Закачени датотеки</translation>
 <translation id="5790085346892983794">Успешно</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Поставки за поврзани уреди</translation>
@@ -564,6 +570,7 @@
 <translation id="615957422585914272">Покажи тастатура на екран</translation>
 <translation id="6164005077879661055">Сите датотеки и локални податоци што се поврзани со надгледуваниот корисник трајно ќе се избришат откако тој ќе се отстрани. Посетените веб-локации и поставки за надгледуваниот корисник можеби уште ќе бидат видливи за управникот на <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Дознајте повеќе</translation>
+<translation id="6179832488876878285">Може да ги закачите вашите важни датотеки тука. Отворете ја апликацијата Files за да започнете.</translation>
 <translation id="622484624075952240">Долу</translation>
 <translation id="6236290670123303279">Управувајте со поставките</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -721,6 +728,7 @@
 <translation id="7654687942625752712">Притиснете ги и задржете ги двете копчиња за јачина на звук пет секунди за да оневозможите говорни повратни информации.</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7662283695561029522">Допрете за конфигурирање</translation>
+<translation id="7683326293741220026">Се чини дека Bluetooth е исклучен на телефонот. Вклучете го Bluetooth на телефонот за да користите Phone Hub.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 известување}one{# известување}other{# известувања}}</translation>
 <translation id="7724603315864178912">Исечи</translation>
@@ -738,9 +746,11 @@
 <translation id="7860671499921112077">Повлечете нагоре со три прста за да влезете во „Преглед“</translation>
 <translation id="7868900307798234037">Отклучување со отпечаток</translation>
 <translation id="7872786842639831132">Исклучено</translation>
+<translation id="7875575368831396199">Се чини дека Bluetooth е исклучен на вашиот <ph name="DEVICE_TYPE" />. Вклучете го Bluetooth за да користите Phone Hub.</translation>
 <translation id="7886169021410746335">ги приспособи поставките за приватност.</translation>
 <translation id="7886277072580235377">Сесијата на интернет ќе се исчисти кога ќе се одјавите. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Испрати е-порака</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Ја притиснавте кратенката од тастатура за ротација на екранот. Дали сакате да го ротирате екранот?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Допрете го сензорот за отпечатоци</translation>
@@ -808,6 +818,7 @@
 <translation id="8444246603146515890">Работен простор <ph name="DESK_TITILE" /> е активиран</translation>
 <translation id="8452135315243592079">Недостасува SIM-картичка</translation>
 <translation id="8454013096329229812">Wi-Fi е вклучено.</translation>
+<translation id="8462305545768648477">Затворете ја функцијата „Изберете за говор“</translation>
 <translation id="847056008324733326">Приказ на поставките за скала</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> има <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Притиснете Alt+„Пребарување“ или Shift за да откажете.</translation>

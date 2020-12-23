@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Kopieret til <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google-regneark</translation>
 <translation id="3486821258960016770">Mongolsk</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> fejl.</translation>
 <translation id="3522708245912499433">Portugisisk</translation>
 <translation id="3524311639100184459">Advarsel! Disse filer er midlertidige og kan slettes automatisk for at frigøre diskplads.  <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mappe</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Cykel</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> er valgt.</translation>
 <translation id="872537912056138402">Kroatisk</translation>
+<translation id="8750438273876807512">Tryk på en fil, hold fingeren nede, tryk på <ph name="ICON" />, og vælg "Fastgør til hylde" for at få hurtig adgang til dine filer på hylden.</translation>
 <translation id="8775404590947523323">Din ændringer gemmes automatisk.<ph name="BREAKS" />Hvis du gemmer en kopi af det oprindelige billede, skal du fjerne markeringen for "Overskriv originalen"</translation>
 <translation id="8808686172382650546">Kat</translation>
 <translation id="8810671769985673465">Komprimering mislykkedes, elementet findes: "<ph name="FILE_NAME" />"</translation>

@@ -1605,6 +1605,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2791529110887957050">Quitar Linux</translation>
 <translation id="2791952154587244007">Se produjo un error. La aplicación del kiosco no podrá iniciarse automáticamente en este dispositivo.</translation>
 <translation id="2792290659606763004">¿Quitar las apps de Android?</translation>
+<translation id="2792465461386711506">Activa la Sincronización de Chrome para ver las pestañas recientes de Chrome desde tu teléfono</translation>
 <translation id="2794233252405721443">Sitio bloqueado</translation>
 <translation id="2795716239552913152">Por lo general, los sitios utilizan tu ubicación para mostrar información o habilitar funciones relevantes, como noticias locales o tiendas cercanas.</translation>
 <translation id="2796424461616874739">Se agotó el tiempo de espera para la autenticación mientras se establecía la conexión a "<ph name="DEVICE_NAME" />".</translation>
@@ -3230,6 +3231,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4671265665487288124">Permitir que los sitios soliciten permiso para descargar múltiples archivos de forma automática (recomendado)</translation>
 <translation id="46733273239502219">También se borrarán los datos sin conexión de las apps instaladas</translation>
 <translation id="4673442866648850031">Abrir las herramientas de pluma stylus al quitarla</translation>
+<translation id="4676595058027112862">Phone Hub, más información</translation>
 <translation id="4677772697204437347">Memoria de la GPU</translation>
 <translation id="4680105648806843642">El sonido está silenciado en esta página</translation>
 <translation id="4681453295291708042">Inhabilitar Compartir con Nearby</translation>
@@ -6107,7 +6109,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8017679124341497925">Se editó el acceso directo</translation>
 <translation id="8018313076035239964">Controla qué contenido pueden mostrarte los sitios web y qué información pueden usar</translation>
 <translation id="8023801379949507775">Actualizar las extensiones ahora</translation>
-<translation id="8026334261755873520">Eliminar datos de navegación</translation>
+<translation id="8026334261755873520">Borrar datos de navegación</translation>
 <translation id="8028060951694135607">Recuperación de claves de Microsoft</translation>
 <translation id="8028803902702117856">Descargando <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Tamaño</translation>
@@ -6287,6 +6289,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8227119283605456246">Adjuntar un archivo</translation>
 <translation id="8230134520748321204">¿Quieres guardar la contraseña para <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Ayuda a nuestros ingenieros a corregir este problema. Cuéntanos lo que pasó justo antes de recibir el mensaje de error de perfil:</translation>
+<translation id="8235605354099176425">Activa la <ph name="LINK1_BEGIN" />Sincronización de Chrome<ph name="LINK1_END" /> para ver las pestañas recientes de Chrome. <ph name="LINK2_BEGIN" />Más información<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Compartir esta pestaña en su lugar</translation>
 <translation id="8237647586961940482">Rosa oscuro y rojo</translation>
 <translation id="8239032431519548577">Se completó la inscripción empresarial</translation>
@@ -7009,6 +7012,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="9044646465488564462">Error al establecer conexión con la red: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Envía a Google la dirección web de la página a la que intentas acceder</translation>
 <translation id="9046895021617826162">No se pudo conectar</translation>
+<translation id="9048745018038487540">Seleccionar todas las fuentes</translation>
 <translation id="9050666287014529139">Frase de contraseña</translation>
 <translation id="9052208328806230490">Registraste tus impresoras con <ph name="CLOUD_PRINT_NAME" /> utilizando la cuenta <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Seguir bloqueando</translation>

@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">แสดงการตั้งค่าบลูทูธ <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">แสดงชั้นวางเสมอ</translation>
+<translation id="1316811122439383437">Tote: การจับภาพหน้าจอ การดาวน์โหลด และไฟล์ที่ตรึงไว้ล่าสุด</translation>
 <translation id="1333308631814936910">เชื่อมต่อ <ph name="DISPLAY_NAME" /> แล้ว</translation>
 <translation id="1341651618736211726">รายการเพิ่มเติม</translation>
 <translation id="1346748346194534595">ขวา</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">ถ่ายภาพหน้าจอของหน้าต่าง</translation>
 <translation id="2617342710774726426">ซิมการ์ดถูกล็อก</translation>
 <translation id="2621713457727696555">ปลอดภัย</translation>
+<translation id="2633643784040308254">ปานกลาง</translation>
 <translation id="2653659639078652383">ส่ง</translation>
 <translation id="2658778018866295321">คลิกแล้วลาก</translation>
 <translation id="2678852583403169292">เมนูเลือกเพื่อให้อ่าน</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">ปลดล็อกอุปกรณ์ด้วยรหัสของผู้ปกครอง</translation>
 <translation id="4702647871202761252">หน้าจอส่วนตัวปิดอยู่</translation>
 <translation id="4705716602320768426">ความคิดเห็นเกี่ยวกับไฟล์</translation>
+<translation id="4730232680256276456">สูง</translation>
 <translation id="4731797938093519117">การเข้าถึงของผู้ปกครอง</translation>
 <translation id="4734965478015604180">แนวนอน</translation>
 <translation id="4744944742468440486">ข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">เปิดใช้งานอยู่</translation>
 <translation id="4872237917498892622">Alt+ค้นหา หรือ Shift</translation>
 <translation id="4890187583552566966">ผู้ดูแลระบบปิดใช้ Google Assistant</translation>
+<translation id="4890408602550914571">ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ และเปิดบลูทูธไว้</translation>
 <translation id="4895488851634969361">แบตเตอรี่เต็ม</translation>
 <translation id="490375751687810070">แนวตั้ง</translation>
 <translation id="4905614135390995787">มีการเปลี่ยนแปลงแป้นพิมพ์ลัดสำหรับสลับโหมดคอนทราสต์สูง โปรดใช้ <ph name="NEW_SHORTCUT" /> แทน <ph name="OLD_SHORTCUT" /></translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">ภาษา</translation>
 <translation id="5313326810920013265">การตั้งค่าบลูทูธ</translation>
 <translation id="5314219114274263156">อัดหน้าจอแล้ว</translation>
+<translation id="5322611492012084517">ไม่พบโทรศัพท์</translation>
 <translation id="5329548388331921293">กำลังเชื่อมต่อ...</translation>
 <translation id="5331975486040154427">อุปกรณ์ USB-C (พอร์ตด้านหลังซ้าย)</translation>
 <translation id="5352250171825660495">ธีมมืดเปิดอยู่</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">แสงตอนกลางคืนเปิดอยู่</translation>
 <translation id="5769373120130404283">หน้าจอส่วนตัว</translation>
 <translation id="5777841717266010279">ต้องการหยุดแชร์หน้าจอไหม</translation>
+<translation id="5779721926447984944">ไฟล์ที่ตรึงไว้</translation>
 <translation id="5790085346892983794">สำเร็จ</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">การตั้งค่าอุปกรณ์ที่เชื่อมต่อ</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">แสดงแป้นพิมพ์บนหน้าจอ</translation>
 <translation id="6164005077879661055">ไฟล์และข้อมูลในตัวเครื่องทั้งหมดที่เกี่ยวข้องกับผู้ใช้ภายใต้การดูแลจะถูกลบออกอย่างถาวรเมื่อผู้ใช้ภายใต้การดูแลนี้ถูกลบ เว็บไซต์ที่เข้าชมและการตั้งค่าสำหรับผู้ใช้ภายใต้การดูแลนี้อาจจะยังคงมองเห็นได้โดยผู้จัดการที่ <ph name="MANAGEMENT_URL" /></translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
+<translation id="6179832488876878285">คุณตรึงไฟล์สำคัญๆ ไว้ที่นี่ได้ เปิดแอป Files เพื่อเริ่มต้นใช้งาน</translation>
 <translation id="622484624075952240">ลง</translation>
 <translation id="6236290670123303279">จัดการการตั้งค่า</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">กดแป้นปรับระดับเสียงค้างไว้ 5 วินาทีเพื่อปิดใช้การอธิบายและอ่านออกเสียง</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7662283695561029522">แตะเพื่อกำหนดค่า</translation>
+<translation id="7683326293741220026">ดูเหมือนว่าบลูทูธของโทรศัพท์จะปิดอยู่ โปรดเปิดบลูทูธของโทรศัพท์เพื่อใช้ฮับโทรศัพท์</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{การแจ้งเตือน 1 รายการ}other{การแจ้งเตือน # รายการ}}</translation>
 <translation id="7724603315864178912">ตัด</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">ใช้ 3 นิ้วเลื่อนขึ้นเพื่อเข้าสู่ "ภาพรวม"</translation>
 <translation id="7868900307798234037">กำลังปลดล็อกด้วยลายนิ้วมือ</translation>
 <translation id="7872786842639831132">ปิด</translation>
+<translation id="7875575368831396199">ดูเหมือนว่าบลูทูธของ <ph name="DEVICE_TYPE" /> จะปิดอยู่ โปรดเปิดบลูทูธเพื่อใช้ฮับโทรศัพท์</translation>
 <translation id="7886169021410746335">ปรับการตั้งค่าความเป็นส่วนตัว</translation>
 <translation id="7886277072580235377">ระบบจะล้างเซสชันอินเทอร์เน็ตของคุณเมื่อออกจากระบบ <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ส่งอีเมล</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">คุณกดแป้นพิมพ์ลัดสำหรับการหมุนหน้าจอ จะหมุนหน้าจอไหม</translation>
 <translation id="7901405293566323524">ฮับโทรศัพท์</translation>
 <translation id="7902625623987030061">แตะเซ็นเซอร์ลายนิ้วมือ</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890">เปิดใช้งานเดสก์ <ph name="DESK_TITILE" /> แล้ว</translation>
 <translation id="8452135315243592079">ไม่มีซิมการ์ด</translation>
 <translation id="8454013096329229812">WiFi เปิดอยู่</translation>
+<translation id="8462305545768648477">ปิดฟีเจอร์เลือกเพื่อให้อ่าน</translation>
 <translation id="847056008324733326">การตั้งค่าระดับการแสดงผล</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ได้<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />ไว้</translation>
 <translation id="8477270416194247200">กด Alt + Search หรือ Shift เพื่อยกเลิก</translation>

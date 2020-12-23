@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">‏צפייה בהגדרות Bluetooth‏. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">עוצמת האות: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">המדף תמיד מוצג</translation>
+<translation id="1316811122439383437">מדף: צילומי מסך אחרונים, הורדות וקבצים מוצמדים</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> מחובר</translation>
 <translation id="1341651618736211726">אפשרויות נוספות</translation>
 <translation id="1346748346194534595">ימינה</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">צילום מסך של חלון</translation>
 <translation id="2617342710774726426">‏כרטיס ה-SIM נעול</translation>
 <translation id="2621713457727696555">מאובטחת</translation>
+<translation id="2633643784040308254">בינונית</translation>
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2658778018866295321">לחיצה וגרירה</translation>
 <translation id="2678852583403169292">תפריט הקראה</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">ביטול נעילת המכשיר באמצעות קוד הורה</translation>
 <translation id="4702647871202761252">מסך הפרטיות כבוי</translation>
 <translation id="4705716602320768426">מילוי משוב</translation>
+<translation id="4730232680256276456">גבוהה</translation>
 <translation id="4731797938093519117">גישת הורים</translation>
 <translation id="4734965478015604180">אופקי</translation>
 <translation id="4744944742468440486">מידע בקשר לבחירה שלך</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">מופעלת</translation>
 <translation id="4872237917498892622">‏Alt + חיפוש או Shift</translation>
 <translation id="4890187583552566966">‏Google Assistant הושבתה על-ידי מנהל המערכת.</translation>
+<translation id="4890408602550914571">‏יש לוודא שהטלפון נמצא בקרבת מקום ושה-Bluetooth מופעל.</translation>
 <translation id="4895488851634969361">הסוללה טעונה במלואה.</translation>
 <translation id="490375751687810070">אנכי</translation>
 <translation id="4905614135390995787">מקש הקיצור להפעלה או כיבוי של מצב ניגודיות גבוהה השתנה. יש להשתמש ב-<ph name="NEW_SHORTCUT" /> במקום ב-<ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">שפה</translation>
 <translation id="5313326810920013265">‏הגדרות Bluetooth</translation>
 <translation id="5314219114274263156">התבצעה הקלטת מסך</translation>
+<translation id="5322611492012084517">לא ניתן למצוא את הטלפון</translation>
 <translation id="5329548388331921293">מתבצעת התחברות…</translation>
 <translation id="5331975486040154427">‏מכשיר עם יציאת USB-C (יציאה שמאלית-אחורית)</translation>
 <translation id="5352250171825660495">עיצוב כהה פועל</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">תאורת הלילה פועלת.</translation>
 <translation id="5769373120130404283">מסך פרטיות</translation>
 <translation id="5777841717266010279">להפסיק את שיתוף המסך?</translation>
+<translation id="5779721926447984944">קבצים מוצמדים</translation>
 <translation id="5790085346892983794">הצלחה</translation>
 <translation id="5820394555380036790">‏מערכת ההפעלה של Chromium</translation>
 <translation id="5825969630400862129">הגדרות של מכשירים מחוברים</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">הצגת מקלדת במסך</translation>
 <translation id="6164005077879661055">כל הקבצים והנתונים המקומיים המשויכים למשתמש בפיקוח יימחקו לצמיתות לאחר שמשתמש בפיקוח זה יוסר. המנהל עדיין יוכל לראות את האתרים שבהם משתמש בפיקוח זה ביקר, ואת ההגדרות שלו, בכתובת <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
+<translation id="6179832488876878285">כאן אפשר להצמיד את הקבצים החשובים. יש לפתוח את אפליקציית 'קבצים' כדי להתחיל.</translation>
 <translation id="622484624075952240">למטה</translation>
 <translation id="6236290670123303279">ניהול ההגדרות</translation>
 <translation id="6237231532760393653">‎1X‎</translation>
@@ -722,6 +729,7 @@
 <translation id="7654687942625752712">כדי להשבית את קורא המסך הקולי, צריך ללחוץ על שני לחצני עוצמת הקול למשך חמש שניות.</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7662283695561029522">יש להקיש כדי להגדיר</translation>
+<translation id="7683326293741220026">‏כנראה שה-Bluetooth כבוי בטלפון שלך. יש להפעיל את Bluetooth בטלפון כדי להשתמש ב-Phone Hub.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{הודעה אחת}two{2 הודעות}many{# הודעות}other{# הודעות}}</translation>
 <translation id="7724603315864178912">חיתוך</translation>
@@ -739,9 +747,11 @@
 <translation id="7860671499921112077">כדי להיכנס אל 'מסכים אחרונים', יש להחליק למעלה בעזרת שלוש אצבעות</translation>
 <translation id="7868900307798234037">ביטול נעילה באמצעות טביעת אצבע</translation>
 <translation id="7872786842639831132">כבוי</translation>
+<translation id="7875575368831396199">‏נראה שה-Bluetooth כבוי ב-<ph name="DEVICE_TYPE" /> שלך. יש להפעיל את Bluetooth כדי להשתמש ב-Phone Hub.</translation>
 <translation id="7886169021410746335">התאמת הגדרות הפרטיות</translation>
 <translation id="7886277072580235377">סשן הגלישה שלך יימחק אחרי היציאה. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">שליחת אימייל</translation>
+<translation id="7895348134893321514">מדף</translation>
 <translation id="7897375687985782769">הקשת על מקש הקיצור של סיבוב המסך. לסובב את המסך?</translation>
 <translation id="7901405293566323524">מרכז טלפוני</translation>
 <translation id="7902625623987030061">יש לגעת בחיישן טביעות האצבע</translation>
@@ -809,6 +819,7 @@
 <translation id="8444246603146515890">שולחן העבודה <ph name="DESK_TITILE" /> הופעל</translation>
 <translation id="8452135315243592079">‏כרטיס SIM חסר</translation>
 <translation id="8454013096329229812">‏Wi-Fi מופעל.</translation>
+<translation id="8462305545768648477">סגירת הקראה</translation>
 <translation id="847056008324733326">הגדרות קנה המידה של התצוגה</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> את <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">‏יש להקיש על Alt+Search או על Shift כדי לבטל.</translation>

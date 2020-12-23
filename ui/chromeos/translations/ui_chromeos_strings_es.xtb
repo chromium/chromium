@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Copiado en <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Hoja de cálculo de Google</translation>
 <translation id="3486821258960016770">Mongol</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> errores.</translation>
 <translation id="3522708245912499433">Portugués</translation>
 <translation id="3524311639100184459">Aviso: Estos archivos son temporales y es posible que se eliminen automáticamente para liberar espacio en el disco.  <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Carpeta</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">Se ha seleccionado <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croata</translation>
+<translation id="8750438273876807512">Mantén pulsado un archivo, toca <ph name="ICON" /> y selecciona Fijar en la estantería para poder acceder con rapidez a los archivos de la estantería.</translation>
 <translation id="8775404590947523323">Los cambios se guardan de forma automática.<ph name="BREAKS" />Para guardar una copia de la imagen original, desactiva la opción "Sobrescribir original".</translation>
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8810671769985673465">Error al comprimir; el elemento ya existe: "<ph name="FILE_NAME" />"</translation>

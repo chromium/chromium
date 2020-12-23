@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Изтриване на съществуващите данни.</translation>
 <translation id="1147031633655575115">Влезли сте като <ph name="USER" /></translation>
 <translation id="1154690515305205900">Не може да се създаде връзка към откроения текст.</translation>
+<translation id="1154984953698510061">Преглед на другите раздели</translation>
 <translation id="1157749421655780457">Разрешаване на местоположението...</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1172898394251786223">Следващото поле</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">Последните 24 часа</translation>
 <translation id="1285320974508926690">Този сайт да не се превежда никога</translation>
 <translation id="1321993286294231467">При запазване на изображението възникна грешка.</translation>
+<translation id="1322735045095424339">Организацията ви изисква да сърфирате в режим „инкогнито“</translation>
 <translation id="1323735185997015385">Изтриване</translation>
 <translation id="132683371494960526">Докоснете двукратно, за да промените главната папка.</translation>
 <translation id="1340643665687018190">Затваряне на менюто</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Име на титуляря на картата</translation>
 <translation id="1809939268435598390">Изтриване на папката</translation>
 <translation id="1813414402673211292">Изчистване на данните за сърфирането</translation>
+<translation id="1815941218935345331">Код за достъп</translation>
 <translation id="1820259098641718022">Добавихте към списъка за четене</translation>
 <translation id="1870148520156231997">Показване на паролата</translation>
 <translation id="1872096359983322073">Фенерче</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Разширени</translation>
 <translation id="1989112275319619282">Сърфиране</translation>
 <translation id="2015722694326466240">За да видите паролите, трябва първо да зададете код за достъп на устройството си.</translation>
+<translation id="2047933465321076474">Организацията ви е изключила режима за частно сърфиране. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Активно преди <ph name="DAYS" /> дни</translation>
 <translation id="2074131957428911366">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмяна</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Данните за сърфирането се изчистват...</translation>
 <translation id="2257567812274161158">Синхронизирането не работи.</translation>
 <translation id="225943865679747347">Код на грешката: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">Организацията ви изисква да сърфирате частно. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Добавяне на профил</translation>
 <translation id="2268044343513325586">Прецизиране</translation>
 <translation id="2273327106802955778">Меню „Още“</translation>
@@ -136,6 +141,7 @@
 Сайтовете не могат да използват „бисквитки“, за да следят активността ви при сърфиране в различни сайтове, например с цел персонализиране на реклами.</translation>
 <translation id="2381405137052800939">Основни положения</translation>
 <translation id="2386793615875593361">1 избрана</translation>
+<translation id="2419661687355878017">Организацията ви е изключила режима „инкогнито“</translation>
 <translation id="2421004566762153674">„Бисквитките“ на трети страни се блокират</translation>
 <translation id="2421044535038393232">Продължаване на редактирането</translation>
 <translation id="2435457462613246316">Показване на паролата</translation>
@@ -185,11 +191,13 @@
 <translation id="291754862089661335">Поставете кода за бърза реакция или баркода в тази рамка</translation>
 <translation id="2921219216347069551">Стр. не може да се сподели</translation>
 <translation id="2923448633003185837">Поставяне и старт</translation>
+<translation id="2923827943290349720">Заключване на разделите в режим „инкогнито“ при затваряне на Chrome</translation>
 <translation id="292639812446257861">Означаване като непрочетено</translation>
 <translation id="2952581218264071393">1. Отворете настройките на Chrome.</translation>
 <translation id="2958718410589002129">Пароли</translation>
 <translation id="2964349545761222050">Блокиране на „бисквитките“ на трети страни</translation>
 <translation id="2969979262385602596">Влизането не бе успешно. Моля, опитайте пак по-късно.</translation>
+<translation id="2975121486251958312">Налице е само режим „инкогнито“</translation>
 <translation id="298306318844797842">Добавяне на начин на плащане…</translation>
 <translation id="2989805286512600854">Отваряне в нов раздел</translation>
 <translation id="3037605927509011580">Ужас!</translation>
@@ -204,6 +212,7 @@
 <translation id="3175081911749765310">Уеб услуги</translation>
 <translation id="3178650076442119961">Активно днес</translation>
 <translation id="3181954750937456830">„Безопасно сърфиране“ (защитава вас и устройството ви от опасни сайтове)</translation>
+<translation id="3184767182050912705">Отключване с <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">Сайтовете могат да използват „бисквитки“ с цел по-добро сърфиране, например за да оставате в профила си или за да запомнят артикулите в пазарската ви кошница.
 
 Докато сте в режим „инкогнито“, сайтовете не могат да използват „бисквитки“, за да следят активността ви при сърфиране в различни сайтове, например с цел персонализиране на реклами.</translation>
@@ -355,6 +364,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и още 1}other{{domain} и още {count}}}</translation>
 <translation id="4826218269716039351">Блокиране на трети страни</translation>
 <translation id="48274138579728272">Означаване като прочетено</translation>
+<translation id="4833686396768033263">Скорошните раздели не са налице</translation>
 <translation id="4833786495304741580">Автоматично изпраща до Google статистически данни за употребата и сигнали за сривове.</translation>
 <translation id="4840495572919996524">Вашите отметки, история, пароли и други неща повече няма да се синхронизират с профила ви в Google.</translation>
 <translation id="4854345657858711387">Задайте код за достъп</translation>
@@ -418,6 +428,7 @@
 <translation id="5551897871312988470">Предложения за превод</translation>
 <translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="5592679540098330836">Включване на синхронизирането за <ph name="NAME" /></translation>
+<translation id="5597169624050330492">Организацията ви изисква да сърфирате частно. В режим „инкогнито“ разделите не се запазват. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Да се запази ли паролата?</translation>
 <translation id="5626245204502895507">Понастоящем файлът не можа да бъде изтеглен.</translation>
 <translation id="5631164295104953411">Добавяне на начин на плащане</translation>
@@ -522,6 +533,7 @@
 
 Опитайте да използвате уникална парола за всеки сайт.</translation>
 <translation id="651505212789431520">Да се анулира ли синхронизирането? Можете да го включите по всяко време в „Настройки“.</translation>
+<translation id="6524918542306337007">Режимът „инкогнито“ не е налице</translation>
 <translation id="6561262006871132942">Приближаване</translation>
 <translation id="6585618849026997638">Можете да се върнете на важна за вас страница, като добавите отметка</translation>
 <translation id="6610002944194042868">Опции за превод</translation>
@@ -580,6 +592,7 @@
 <translation id="7133798577887235672">Име и фамилия</translation>
 <translation id="7136892417564438900">Няма достъп до камерата</translation>
 <translation id="7159472599653637159">Мобилен сайт</translation>
+<translation id="7162168282402939716">Отключване на разделите в режим „инкогнито“ с <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Защитете паролите си от проблеми със сигурността</translation>
 <translation id="7173114856073700355">Към настройките</translation>
 <translation id="7189598951263744875">Споделяне...</translation>
@@ -617,6 +630,7 @@
 <translation id="7537586195939242955">Понастоящем пропускът не може да се инсталира в Passbook.</translation>
 <translation id="7554791636758816595">Нов раздел</translation>
 <translation id="7561196759112975576">Винаги</translation>
+<translation id="7583004045319035904">Използвайте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> за отключване на разделите в режим „инкогнито“.</translation>
 <translation id="7600965453749440009">Никога да не се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Блок. изск. прозорци (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Изтриване на паролата</translation>
@@ -709,6 +723,7 @@
 <translation id="8591976964826315682">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="8605219856220328675">Затваряне на раздела.</translation>
 <translation id="8620640915598389714">Редактиране</translation>
+<translation id="863090005774946393">Браузърът се управлява от организацията ви. Някои функции може да са деактивирани.</translation>
 <translation id="8636825310635137004">Включете синхронизирането, за да получите разделите си от другите си устройства.</translation>
 <translation id="8654802032646794042">Отказ</translation>
 <translation id="8668210798914567634">Тази страница е запазена в списъка ви за четене.</translation>

@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">הועתק אל <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">‏גיליון אלקטרוני של Google</translation>
 <translation id="3486821258960016770">מונגולית</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> שגיאות.</translation>
 <translation id="3522708245912499433">פורטוגזית</translation>
 <translation id="3524311639100184459">זהירות: הקבצים האלה זמניים, וייתכן שהם יימחקו באופן אוטומטי כדי לפנות מקום בכונן.  <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">תיקייה</translation>
@@ -739,6 +740,7 @@
 <translation id="8714406895390098252">אופניים</translation>
 <translation id="8719721339511222681">בחרת את <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">קרואטית</translation>
+<translation id="8750438273876807512">כד לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ארוכה על הקובץ, להקיש על <ph name="ICON" /> ולבחור באפשרות "הצמדה למדף"</translation>
 <translation id="8775404590947523323">שינויי העריכה שלך נשמרים אוטומטית.<ph name="BREAKS" />כדי לשמור עותק של התמונה המקורית, יש לבטל את הסימון של "החלפת קובץ מקורי"</translation>
 <translation id="8808686172382650546">חתול</translation>
 <translation id="8810671769985673465">הכיווץ נכשל, הפריט קיים: "<ph name="FILE_NAME" />"</translation>

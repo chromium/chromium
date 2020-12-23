@@ -47,6 +47,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1302880136325416935">Vis Bluetooth-innstillinger. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Vis alltid hyllen</translation>
+<translation id="1316811122439383437">Tote: nylige skjermdumper, nedlastinger og festede filer</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> er tilkoblet</translation>
 <translation id="1341651618736211726">Overflyt</translation>
 <translation id="1346748346194534595">Høyre</translation>
@@ -181,6 +182,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2596078834055697711">Ta en skjermdump av vinduet</translation>
 <translation id="2617342710774726426">SIM-kortet er låst</translation>
 <translation id="2621713457727696555">Sikret</translation>
+<translation id="2633643784040308254">Middels</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2658778018866295321">Klikk og dra</translation>
 <translation id="2678852583403169292">Tekstopplesing-menyen</translation>
@@ -410,6 +412,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4696813013609194136">Lås opp enheten med foreldrekode</translation>
 <translation id="4702647871202761252">Personvernskjermen er av</translation>
 <translation id="4705716602320768426">Send tilbakemelding</translation>
+<translation id="4730232680256276456">Hei</translation>
 <translation id="4731797938093519117">Foreldretilgang</translation>
 <translation id="4734965478015604180">Horisontal</translation>
 <translation id="4744944742468440486">Informasjon om det du har markert</translation>
@@ -426,6 +429,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4868492592575313542">aktivert</translation>
 <translation id="4872237917498892622">Alt + Søk eller Shift</translation>
 <translation id="4890187583552566966">Administratoren din har slått av Google-assistenten.</translation>
+<translation id="4890408602550914571">Sørg for at telefonen er i nærheten, og at Bluetooth er slått på.</translation>
 <translation id="4895488851634969361">Batteriet er fullt.</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="4905614135390995787">Hurtigtasten for å slå høykontrastmodus av eller på er endret. Bruk <ph name="NEW_SHORTCUT" /> i stedet for <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5302048478445481009">Språk</translation>
 <translation id="5313326810920013265">Bluetooth-innstillinger</translation>
 <translation id="5314219114274263156">Skjermopptaket er utført</translation>
+<translation id="5322611492012084517">Finner ikke telefonen</translation>
 <translation id="5329548388331921293">Kobler til …</translation>
 <translation id="5331975486040154427">USB-C-enhet (porten bak på venstre side)</translation>
 <translation id="5352250171825660495">Mørkt tema er på</translation>
@@ -519,6 +524,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="576453121877257266">Nattlys er på.</translation>
 <translation id="5769373120130404283">Personvernskjerm</translation>
 <translation id="5777841717266010279">Vil du stoppe skjermdelingen?</translation>
+<translation id="5779721926447984944">Festede filer</translation>
 <translation id="5790085346892983794">Fullført</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Innstillinger for tilkoblede enheter</translation>
@@ -563,6 +569,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="615957422585914272">Vis skjermtastaturet</translation>
 <translation id="6164005077879661055">Alle filer og lokale data tilknyttet den administrerte brukeren slettes permanent når den administrerte brukeren fjernes. Besøkte nettsteder og innstillinger for denne administrerte brukeren kan fortsatt ses av administratoren på <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
+<translation id="6179832488876878285">Du kan feste viktige filer her. Åpne Filer-appen for å komme i gang.</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="6236290670123303279">Administrer innstillinger</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7654687942625752712">Trykk og hold på begge volumknappene i fem sekunder for å slå av taletilbakemelding.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7662283695561029522">Trykk for å konfigurere</translation>
+<translation id="7683326293741220026">Det ser ut til at Bluetooth er slått av på telefonen. Slå på Bluetooth på telefonen for å bruke Telefonstyring.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 varsel}other{# varsler}}</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
@@ -737,9 +745,11 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7860671499921112077">Sveip opp med tre fingre for å åpne Oversikt</translation>
 <translation id="7868900307798234037">Låser opp med fingeravtrykk</translation>
 <translation id="7872786842639831132">Av</translation>
+<translation id="7875575368831396199">Det ser ut til at Bluetooth er slått av på <ph name="DEVICE_TYPE" />. Slå på Bluetooth for å bruke Telefonstyring.</translation>
 <translation id="7886169021410746335">justere personverninnstillinger</translation>
 <translation id="7886277072580235377">Internett-økten din fjernes når du logger av. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Send e-post</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Du har trykket på hurtigtasten for skjermrotasjon. Vil du rotere skjermen?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Trykk på fingeravtrykkssensoren</translation>
@@ -807,6 +817,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8444246603146515890">Skrivebord <ph name="DESK_TITILE" /> er aktivert</translation>
 <translation id="8452135315243592079">SIM-kort mangler</translation>
 <translation id="8454013096329229812">Wi-Fi er slått på.</translation>
+<translation id="8462305545768648477">Lukk Tekstopplesing</translation>
 <translation id="847056008324733326">Innstillinger for visningsskala</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> har <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Trykk på Alt + Søk eller Shift for å avbryte.</translation>

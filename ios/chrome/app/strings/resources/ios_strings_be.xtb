@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Выдаліць існуючыя даныя.</translation>
 <translation id="1147031633655575115">Вы ўвайшлі як <ph name="USER" /></translation>
 <translation id="1154690515305205900">Не ўдалося стварыць спасылку на вылучаны тэкст.</translation>
+<translation id="1154984953698510061">Паглядзець іншыя ўкладкі</translation>
 <translation id="1157749421655780457">Дазволіць выкарыстанне месцазнаходжання...</translation>
 <translation id="1165039591588034296">Памылка</translation>
 <translation id="1172898394251786223">Наступнае поле</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">За апошнія 24 гадзіны</translation>
 <translation id="1285320974508926690">Ніколі не перакладаць гэты сайт</translation>
 <translation id="1321993286294231467">Памылка пры захаванні фота.</translation>
+<translation id="1322735045095424339">Ваша арганізацыя патрабуе выкарыстання рэжыму інкогніта</translation>
 <translation id="1323735185997015385">Выдаліць</translation>
 <translation id="132683371494960526">Каб змяніць бацькоўскую папку, націсніце двойчы.</translation>
 <translation id="1340643665687018190">Закрыць меню</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Імя ўладальніка карткі</translation>
 <translation id="1809939268435598390">Выдаліць папку</translation>
 <translation id="1813414402673211292">Выдаленне гісторыі праглядаў</translation>
+<translation id="1815941218935345331">Код доступу</translation>
 <translation id="1820259098641718022">Дададзена ў Спіс чытання</translation>
 <translation id="1870148520156231997">Паказаць пароль</translation>
 <translation id="1872096359983322073">Ліхтарык</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Пашыраныя налады</translation>
 <translation id="1989112275319619282">Агляд</translation>
 <translation id="2015722694326466240">Каб убачыць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
+<translation id="2047933465321076474">Ваша арганізацыя адключыла прыватны прагляд. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Апошнія дзеянні: <ph name="DAYS" /> сут таму</translation>
 <translation id="2074131957428911366">У <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" /> заўсёды можна выбраць, што трэба сінхранізаваць.</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Ідзе ачыстка даных прагляду...</translation>
 <translation id="2257567812274161158">Сінхранізацыя не працуе.</translation>
 <translation id="225943865679747347">Код памылкі: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">Палітыка вашай арганізацыі патрабуе, каб вы праглядалі старонкі ў прыватным рэжыме. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Дадаць уліковы запіс</translation>
 <translation id="2268044343513325586">Удакладніць</translation>
 <translation id="2273327106802955778">Меню "Дадаткова"</translation>
@@ -136,6 +141,7 @@
 Сайты не могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах, напрыклад, каб персаналізаваць рэкламу.</translation>
 <translation id="2381405137052800939">Асновы</translation>
 <translation id="2386793615875593361">1 выбрана</translation>
+<translation id="2419661687355878017">Ваша арганізацыя адключыла рэжым інкогніта</translation>
 <translation id="2421004566762153674">Блакіроўка старонніх файлаў cookie</translation>
 <translation id="2421044535038393232">Працягнуць рэдагаванне</translation>
 <translation id="2435457462613246316">Паказаць пароль</translation>
@@ -185,11 +191,13 @@
 <translation id="291754862089661335">Змясціце QR-код або штрыхкод у гэтай рамцы</translation>
 <translation id="2921219216347069551">Не ўдалося абагуліць</translation>
 <translation id="2923448633003185837">Уставіць і перайсці</translation>
+<translation id="2923827943290349720">Блакіраваць укладкі ў рэжыме інкогніта пры закрыцці Chrome</translation>
 <translation id="292639812446257861">Пазначыць як непрачытаныя</translation>
 <translation id="2952581218264071393">1. Адкрыйце налады Chrome.</translation>
 <translation id="2958718410589002129">Паролі</translation>
 <translation id="2964349545761222050">Блакіраваць староннія файлы cookie</translation>
 <translation id="2969979262385602596">Не ўдалося ўвайсці. Паўтарыце спробу пазней.</translation>
+<translation id="2975121486251958312">Даступны толькі рэжым інкогніта</translation>
 <translation id="298306318844797842">Дадаць спосаб аплаты...</translation>
 <translation id="2989805286512600854">Адкрыць у новай укладцы</translation>
 <translation id="3037605927509011580">Якая неспадзяванка!</translation>
@@ -204,6 +212,7 @@
 <translation id="3175081911749765310">Вэб-сэрвісы</translation>
 <translation id="3178650076442119961">Апошнія дзеянні адбываліся сёння</translation>
 <translation id="3181954750937456830">Бяспечны прагляд (абараняе вас і прыладу ад небяспечных сайтаў)</translation>
+<translation id="3184767182050912705">Разблакіраваць, выкарыстаўшы <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">Сайты могуць выкарыстоўваць файлы cookie для паляпшэння сваёй функцыянальнасці: напрыклад, для захавання інфармацыі пра тое, што вы ўвайшлі ва ўліковы запіс, або каб запамінаць тавары ў кошыку.
 
 У рэжыме інкогніта сайты не могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах у мэтах персаналізацыі рэкламы.</translation>
@@ -355,6 +364,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} і яшчэ 1}one{{domain} і яшчэ {count}}few{{domain} і яшчэ {count}}many{{domain} і яшчэ {count}}other{{domain} і яшчэ {count}}}</translation>
 <translation id="4826218269716039351">Староннія файлы cookie блакіруюцца</translation>
 <translation id="48274138579728272">Пазначыць як прачытанае</translation>
+<translation id="4833686396768033263">Нядаўнія ўкладкі недаступныя</translation>
 <translation id="4833786495304741580">Аўтаматычна адпраўляе ў Google статыстыку выкарыстання і справаздачы аб збоях.</translation>
 <translation id="4840495572919996524">Закладкі, гісторыя, паролі і іншае больш не будуць сінхранізавацца з Уліковым запісам Google.</translation>
 <translation id="4854345657858711387">Задайце пароль</translation>
@@ -418,6 +428,7 @@
 <translation id="5551897871312988470">Прапаноўваць перакласці з мовы</translation>
 <translation id="5556459405103347317">Перазагрузіць</translation>
 <translation id="5592679540098330836">Уключыць сінхранізацыю для ўліковага запісу <ph name="NAME" /></translation>
+<translation id="5597169624050330492">Палітыка вашай арганізацыі патрабуе, каб вы праглядалі старонкі ў прыватным рэжыме. У гэтым рэжыме ўкладкі не захоўваюцца. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Захаваць пароль?</translation>
 <translation id="5626245204502895507">Файл спампаваць не ўдалося.</translation>
 <translation id="5631164295104953411">Дадаванне спосабу аплаты</translation>
@@ -522,6 +533,7 @@
 
 Паспрабуйце выкарыстоўваць унікальны пароль для кожнага сайта.</translation>
 <translation id="651505212789431520">Скасаваць сінхранізацыю? Сінхранізацыю можна ўключыць у любы момант у Наладах.</translation>
+<translation id="6524918542306337007">Рэжым інкогніта недаступны</translation>
 <translation id="6561262006871132942">Павялічыць</translation>
 <translation id="6585618849026997638">Каб мець магчымасць вярнуцца да важнай для вас старонкі пазней, можна дадаць закладку</translation>
 <translation id="6610002944194042868">Параметры перакладу</translation>
@@ -580,6 +592,7 @@
 <translation id="7133798577887235672">Поўнае імя</translation>
 <translation id="7136892417564438900">Камера недаступная</translation>
 <translation id="7159472599653637159">Запытаць мабільную версію сайта</translation>
+<translation id="7162168282402939716">Разблакіраваць укладкі ў рэжыме інкогніта, выкарыстаўшы <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Захоўвайце паролі ў бяспечным месцы, каб прадухіліць іх раскрыццё ў выпадку праблем з бяспекай</translation>
 <translation id="7173114856073700355">Адкрыць Налады</translation>
 <translation id="7189598951263744875">Абагуліць...</translation>
@@ -617,6 +630,7 @@
 <translation id="7537586195939242955">Зараз усталяваць пароль у Passbook не ўдалося.</translation>
 <translation id="7554791636758816595">Новая ўкладка</translation>
 <translation id="7561196759112975576">Заўсёды</translation>
+<translation id="7583004045319035904">Выкарыстоўвайце <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> для разблакіроўкі ўкладак у рэжыме інкогніта</translation>
 <translation id="7600965453749440009">Ніколі не перакладаць з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Успл. вокны заблак. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Выдаліць пароль</translation>
@@ -709,6 +723,7 @@
 <translation id="8591976964826315682">Блакіраваць староннія файлы cookie у рэжыме інкогніта</translation>
 <translation id="8605219856220328675">Закрыць укладку.</translation>
 <translation id="8620640915598389714">Змяніць</translation>
+<translation id="863090005774946393">Вашым браўзерам кіруе арганізацыя. Некаторыя функцыі могуць быць адключаны.</translation>
 <translation id="8636825310635137004">Каб глядзець укладкі са сваіх іншых прылад, уключыце сінхранізацыю.</translation>
 <translation id="8654802032646794042">Скасаваць</translation>
 <translation id="8668210798914567634">Гэта старонка была захавана ў спіс чытання.</translation>

@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Удалить сохраненные данные.</translation>
 <translation id="1147031633655575115">Вы вошли как <ph name="USER" /></translation>
 <translation id="1154690515305205900">Создать ссылку на выделенный текст нельзя.</translation>
+<translation id="1154984953698510061">Посмотреть другие вкладки</translation>
 <translation id="1157749421655780457">Разрешить передачу геоданных</translation>
 <translation id="1165039591588034296">Ошибка</translation>
 <translation id="1172898394251786223">Следующее поле</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">Последние 24 часа</translation>
 <translation id="1285320974508926690">Никогда не переводить этот сайт</translation>
 <translation id="1321993286294231467">При сохранении изображения возникла ошибка.</translation>
+<translation id="1322735045095424339">В вашей организации обязательно использовать режим инкогнито.</translation>
 <translation id="1323735185997015385">Удалить</translation>
 <translation id="132683371494960526">Чтобы изменить родительскую папку, нажмите дважды.</translation>
 <translation id="1340643665687018190">Закрыть меню</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Владелец карты</translation>
 <translation id="1809939268435598390">Удалить папку</translation>
 <translation id="1813414402673211292">Очистка истории</translation>
+<translation id="1815941218935345331">Код доступа</translation>
 <translation id="1820259098641718022">Добавлено в список чтения</translation>
 <translation id="1870148520156231997">Показать пароль</translation>
 <translation id="1872096359983322073">Вспышка</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Дополнительные</translation>
 <translation id="1989112275319619282">Выбрать</translation>
 <translation id="2015722694326466240">Чтобы просматривать пароли, настройте на устройстве код доступа.</translation>
+<translation id="2047933465321076474">В вашей организации режим инкогнито отключен. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Последние действия: <ph name="DAYS" /> дн. назад</translation>
 <translation id="2074131957428911366">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмена</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Удаление данных о работе в браузере…</translation>
 <translation id="2257567812274161158">Ошибка синхронизации.</translation>
 <translation id="225943865679747347">Код ошибки: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">Согласно правилам вашей организации, использовать режим инкогнито обязательно. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Добавить аккаунт</translation>
 <translation id="2268044343513325586">Уточнить</translation>
 <translation id="2273327106802955778">Меню "Ещё"</translation>
@@ -136,6 +141,7 @@
 Сайты не могут использовать файлы cookie, чтобы получать данные о ваших действиях в браузере, например для показа персонализированной рекламы.</translation>
 <translation id="2381405137052800939">Основные</translation>
 <translation id="2386793615875593361">Выбрана 1 фотография</translation>
+<translation id="2419661687355878017">В вашей организации режим инкогнито отключен.</translation>
 <translation id="2421004566762153674">Блокировать сторонние файлы cookie</translation>
 <translation id="2421044535038393232">Продолжить редактирование</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
@@ -185,11 +191,13 @@
 <translation id="291754862089661335">Поместите QR-код или штрихкод в эту рамку</translation>
 <translation id="2921219216347069551">Ошибка</translation>
 <translation id="2923448633003185837">Вставить и перейти</translation>
+<translation id="2923827943290349720">Блокировать доступ к вкладкам инкогнито при закрытии Chrome</translation>
 <translation id="292639812446257861">Отметить как непрочитанное</translation>
 <translation id="2952581218264071393">1. Откройте настройки Chrome.</translation>
 <translation id="2958718410589002129">Пароли</translation>
 <translation id="2964349545761222050">Блокировать сторонние файлы cookie</translation>
 <translation id="2969979262385602596">Не удалось войти в аккаунт. Повторите попытку.</translation>
+<translation id="2975121486251958312">Доступен только режим инкогнито</translation>
 <translation id="298306318844797842">Добавить способ оплаты</translation>
 <translation id="2989805286512600854">Открыть в новой вкладке</translation>
 <translation id="3037605927509011580">Опаньки...</translation>
@@ -204,6 +212,7 @@
 <translation id="3175081911749765310">Веб-сервисы</translation>
 <translation id="3178650076442119961">Последние действия: сегодня</translation>
 <translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
+<translation id="3184767182050912705">Разблокировать с помощью <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">Сайты могут использовать файлы cookie для вашего удобства, например сохранять информацию о товарах в корзине или о том, что вы вошли в аккаунт.
 
 В режиме инкогнито сайты не могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например, для показа персонализированной рекламы.</translation>
@@ -355,6 +364,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и ещё 1 вкладка}one{{domain} и ещё {count} вкладка}few{{domain} и ещё {count} вкладки}many{{domain} и ещё {count} вкладок}other{{domain} и ещё {count} вкладки}}</translation>
 <translation id="4826218269716039351">Блокировать сторонние файлы cookie</translation>
 <translation id="48274138579728272">Отметить как прочитанное</translation>
+<translation id="4833686396768033263">Недавние вкладки недоступны</translation>
 <translation id="4833786495304741580">Автоматически отправлять в Google статистику использования и отчеты о сбоях.</translation>
 <translation id="4840495572919996524">Ваши закладки, пароли, история и другие данные больше не будут синхронизироваться с аккаунтом Google.</translation>
 <translation id="4854345657858711387">Установите код доступа</translation>
@@ -418,6 +428,7 @@
 <translation id="5551897871312988470">Предлагать перевести</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
 <translation id="5592679540098330836">Включить синхронизацию для пользователя <ph name="NAME" /></translation>
+<translation id="5597169624050330492">Согласно правилам вашей организации, использовать режим инкогнито обязательно. В этом режиме вкладки не сохраняются. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Сохранение пароля</translation>
 <translation id="5626245204502895507">Не удалось скачать файлы.</translation>
 <translation id="5631164295104953411">Добавить способ оплаты</translation>
@@ -522,6 +533,7 @@
 
 Для каждого сайта желательно использовать уникальный пароль.</translation>
 <translation id="651505212789431520">Отключить синхронизацию? Ее можно включить в настройках в любой момент.</translation>
+<translation id="6524918542306337007">Режим инкогнито недоступен</translation>
 <translation id="6561262006871132942">Увеличить</translation>
 <translation id="6585618849026997638">Добавьте страницу с важными сведениями в закладки, и вы всегда сможете вернуться к ней.</translation>
 <translation id="6610002944194042868">Параметры перевода</translation>
@@ -580,6 +592,7 @@
 <translation id="7133798577887235672">Полное имя</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>
 <translation id="7159472599653637159">Мобильная версия</translation>
+<translation id="7162168282402939716">Разблокировать вкладки инкогнито с помощью <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Убедитесь в надежности паролей</translation>
 <translation id="7173114856073700355">Открыть настройки</translation>
 <translation id="7189598951263744875">Поделиться…</translation>
@@ -617,6 +630,7 @@
 <translation id="7537586195939242955">Не удалось внести данные в Passbook.</translation>
 <translation id="7554791636758816595">Новая вкладка</translation>
 <translation id="7561196759112975576">Всегда</translation>
+<translation id="7583004045319035904">Используйте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> для разблокировки вкладок инкогнито.</translation>
 <translation id="7600965453749440009">Никогда не переводить <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Заблок. вспл. окон: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
 <translation id="7607521702806708809">Удалить пароль</translation>
@@ -709,6 +723,7 @@
 <translation id="8591976964826315682">Блокировать файлы cookie сторонних сайтов в режиме инкогнито</translation>
 <translation id="8605219856220328675">Закрыть вкладку.</translation>
 <translation id="8620640915598389714">Изменить</translation>
+<translation id="863090005774946393">Этим браузером управляет ваша организация. Некоторые функции могут быть отключены.</translation>
 <translation id="8636825310635137004">Чтобы получить доступ к вкладкам на всех ваших устройствах, включите синхронизацию.</translation>
 <translation id="8654802032646794042">Отмена</translation>
 <translation id="8668210798914567634">Страница сохранена в список для чтения.</translation>

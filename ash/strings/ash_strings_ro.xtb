@@ -47,6 +47,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1302880136325416935">Afișează setările Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Puterea semnalului: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Afișează întotdeauna raftul</translation>
+<translation id="1316811122439383437">Manager de clipboard: capturi de ecran, descărcări și fișiere fixate recente</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> s-a conectat</translation>
 <translation id="1341651618736211726">Suplimentar</translation>
 <translation id="1346748346194534595">Dreapta</translation>
@@ -181,6 +182,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2596078834055697711">Realizează o captură de ecran a ferestrei</translation>
 <translation id="2617342710774726426">Cardul SIM este blocat</translation>
 <translation id="2621713457727696555">Securizată</translation>
+<translation id="2633643784040308254">Mediu</translation>
 <translation id="2653659639078652383">Trimite</translation>
 <translation id="2658778018866295321">Dă clic și trage</translation>
 <translation id="2678852583403169292">Meniul Selectați și ascultați</translation>
@@ -410,6 +412,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4696813013609194136">Deblochează dispozitivul cu codul părintelui</translation>
 <translation id="4702647871202761252">Ecranul de confidențialitate este dezactivat</translation>
 <translation id="4705716602320768426">Feedback pentru fișiere</translation>
+<translation id="4730232680256276456">Ridicat</translation>
 <translation id="4731797938093519117">Acces pentru părinți</translation>
 <translation id="4734965478015604180">Orizontal</translation>
 <translation id="4744944742468440486">Informații legate de selecția ta</translation>
@@ -426,6 +429,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4868492592575313542">activată</translation>
 <translation id="4872237917498892622">Alt+Căutare sau Shift</translation>
 <translation id="4890187583552566966">Asistentul Google este dezactivat de administrator.</translation>
+<translation id="4890408602550914571">Asigură-te că telefonul este în apropiere, cu funcția Bluetooth activată.</translation>
 <translation id="4895488851634969361">Bateria este încărcată complet.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="4905614135390995787">Comanda rapidă pentru comutarea modului Contrast ridicat s-a modificat. Folosește <ph name="NEW_SHORTCUT" /> în loc de <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5302048478445481009">Limbă</translation>
 <translation id="5313326810920013265">Setări Bluetooth</translation>
 <translation id="5314219114274263156">S-a înregistrat ecranul</translation>
+<translation id="5322611492012084517">Telefonul nu a fost găsit</translation>
 <translation id="5329548388331921293">Se conectează…</translation>
 <translation id="5331975486040154427">Dispozitiv USB-C (portul din stânga spate)</translation>
 <translation id="5352250171825660495">Tema întunecată este activată</translation>
@@ -519,6 +524,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="576453121877257266">Lumina de noapte este activată.</translation>
 <translation id="5769373120130404283">Ecran de confidențialitate</translation>
 <translation id="5777841717266010279">Oprești permiterea accesului la ecran?</translation>
+<translation id="5779721926447984944">Fișiere fixate</translation>
 <translation id="5790085346892983794">Ai reușit</translation>
 <translation id="5820394555380036790">Sistemul de operare Chromium</translation>
 <translation id="5825969630400862129">Setări pentru dispozitivele conectate</translation>
@@ -563,6 +569,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="615957422585914272">Afișați tastatura pe ecran</translation>
 <translation id="6164005077879661055">Toate fișierele și datele locale asociate acestui utilizator monitorizat vor fi șterse definitiv după eliminarea acestui utilizator monitorizat. Site-urile web accesate și setările acestui utilizator monitorizat pot fi în continuare vizibile pentru manager la <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
+<translation id="6179832488876878285">Poți să fixezi fișierele importante aici. Deschide aplicația Fișiere pentru a începe.</translation>
 <translation id="622484624075952240">Jos</translation>
 <translation id="6236290670123303279">Gestionează setările</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7654687942625752712">Apasă lung ambele taste de volum timp de cinci secunde ca să dezactivezi feedbackul rostit.</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7662283695561029522">Atinge pentru a configura</translation>
+<translation id="7683326293741220026">Se pare că funcția Bluetooth este dezactivată pe telefon. Activează Bluetooth pe telefon pentru a folosi Phone Hub.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{O notificare}few{# notificări}other{# de notificări}}</translation>
 <translation id="7724603315864178912">Decupează</translation>
@@ -737,9 +745,11 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7860671499921112077">Glisează cu trei degete în sus pentru a intra în modul Prezentare generală</translation>
 <translation id="7868900307798234037">Deblochează cu amprenta</translation>
 <translation id="7872786842639831132">Dezactivat</translation>
+<translation id="7875575368831396199">Se pare că funcția Bluetooth este dezactivată pe <ph name="DEVICE_TYPE" />. Activează Bluetooth pentru a folosi Phone Hub.</translation>
 <translation id="7886169021410746335">să ajusteze setările de confidențialitate</translation>
 <translation id="7886277072580235377">Sesiunea de internet va fi anulată după ce te deconectezi. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Trimite un e-mail</translation>
+<translation id="7895348134893321514">Manager de clipboard</translation>
 <translation id="7897375687985782769">Ai apăsat comanda rapidă de la tastatură pentru rotirea ecranului. Vrei să rotești ecranul?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Atinge senzorul de amprentă</translation>
@@ -807,6 +817,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8444246603146515890">Desktopul <ph name="DESK_TITILE" /> este activat</translation>
 <translation id="8452135315243592079">Lipsește cardul SIM</translation>
 <translation id="8454013096329229812">Conexiunea Wi-Fi este activată.</translation>
+<translation id="8462305545768648477">Închide funcția „Selectați și ascultați”</translation>
 <translation id="847056008324733326">Setările pentru scara afișajului</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> are <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Apasă pe Alt + tasta de căutare sau pe Shift pentru a anula.</translation>

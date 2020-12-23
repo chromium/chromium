@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skano</translation>
 <translation id="2570743873672969996">Po ekzekuton testin <ph name="TEST_NAME" />...</translation>
+<translation id="2585245331261708204">Të rejat me Chrome OS</translation>
 <translation id="2620436844016719705">Sistemi</translation>
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
@@ -182,6 +183,7 @@
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6325525973963619867">Dështoi</translation>
 <translation id="636850387210749493">Regjistrimi i ndërmarrjes</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Skedari i skanuar u ruajt}other{Skedarët e skanuar u ruajtën}}</translation>
 <translation id="649050271426829538">Ndaloi - Bllokim letre</translation>
 <translation id="6517239166834772319">Eksploro</translation>
 <translation id="6527081081771465939">Protokoll i panjohur sigurie i Wi-Fi</translation>

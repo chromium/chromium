@@ -228,6 +228,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> मा प्रतिलिपि गरियो।</translation>
 <translation id="3475447146579922140">Google स्प्रेडसिट</translation>
 <translation id="3486821258960016770">मङ्गोलियाली</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> त्रुटिहरू।</translation>
 <translation id="3522708245912499433">पोर्टुगिज</translation>
 <translation id="3524311639100184459">चेतावनी: यी फाइलहरू अस्थायी हुन् र भण्डारण स्थान खाली गर्नका निम्ति यी फाइल स्वतः मेटाइन सक्छन्।  <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">फोल्डर</translation>
@@ -737,6 +738,7 @@
 <translation id="8714406895390098252">साइकल</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> चयन गरियो।</translation>
 <translation id="872537912056138402">क्रोएसियाली</translation>
+<translation id="8750438273876807512">आफ्ना फाइलहरू सेल्फबाट द्रुत रूपमा हेर्न तथा प्रयोग गर्न कुनै फाइलमा टच एण्ड होल्ड गर्नुहोस् र <ph name="ICON" /> मा ट्याप गर्नुहोस् र "सेल्फमा पिन गर्नुहोस्" चयन गर्नुहोस्।</translation>
 <translation id="8775404590947523323">तपाईंका सम्पादन स्वतः बचत भए।<ph name="BREAKS" />वास्तविक छविको प्रतिलिपि राख्न, "वास्तविकलाई ओभरराइट गर्नुहोस्" को जाँच रद्द गर्नुहोस्</translation>
 <translation id="8808686172382650546">बिरालो</translation>
 <translation id="8810671769985673465">जिप गर्न सकिएन, विद्यमान वस्तु: "<ph name="FILE_NAME" />"</translation>

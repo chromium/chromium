@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Kopiatu da <ph name="FOLDER_NAME" /> karpetan.</translation>
 <translation id="3475447146579922140">Google kalkulu-orria</translation>
 <translation id="3486821258960016770">Mongoliarra</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> errore.</translation>
 <translation id="3522708245912499433">Portugaldarra</translation>
 <translation id="3524311639100184459">Kontuz: fitxategi hauek aldi baterakoak dira eta agian automatikoki ezabatuko dira diskoan tokia egiteko.  <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Karpeta</translation>
@@ -737,6 +738,7 @@
 <translation id="8714406895390098252">Bizikleta</translation>
 <translation id="8719721339511222681">Hautatu da <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Kroaziarra</translation>
+<translation id="8750438273876807512">Eduki sakatuta fitxategi bat eta sakatu <ph name="ICON" />. Gero, hautatu "Ainguratu apalean"; horrela, apalean dauden fitxategietarako sarbide bizkorra izango duzu.</translation>
 <translation id="8775404590947523323">Aldaketak automatikoki gordetzen dira.<ph name="BREAKS" />Jatorrizko irudiaren kopia bat gordetzeko, kendu marka "Gainidatzi jatorrizkoa" aukerari</translation>
 <translation id="8808686172382650546">Katua</translation>
 <translation id="8810671769985673465">Ezin izan da konprimitu; elementua bazegoen lehendik ere: “<ph name="FILE_NAME" />”</translation>

@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">ବ୍ଲୁଟୁଥ୍‍ ସେଟିଂସ୍ ଦେଖାନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">ସର୍ବଦା ସେଲ୍ଫ ଦେଖାନ୍ତୁ</translation>
+<translation id="1316811122439383437">ଟୋଟେ: ବର୍ତ୍ତମାନର ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍, ଡାଉନଲୋଡ୍ ଏବଂ ପିନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକ</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="1341651618736211726">ଓଭର୍‌ଫ୍ଲୋ</translation>
 <translation id="1346748346194534595">ଡାହାଣ</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">ୱିଣ୍ଡୋ ସ୍କ୍ରିନ୍‌ସଟ୍ ନିଅନ୍ତୁ</translation>
 <translation id="2617342710774726426">SIM କାର୍ଡ ଲକ୍‍ ହୋଇଯାଇଛି।</translation>
 <translation id="2621713457727696555">ସୁରକ୍ଷିତ</translation>
+<translation id="2633643784040308254">ମଧ୍ୟମ</translation>
 <translation id="2653659639078652383">ଉପସ୍ଥାପନ</translation>
 <translation id="2658778018866295321">କ୍ଲିକ୍ କରି ଡ୍ରାଗ୍ କରନ୍ତୁ</translation>
 <translation id="2678852583403169292">ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକ୍ ମେନୁ</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">ମାତାପିତାଙ୍କ କୋଡ୍‌ରେ ଡିଭାଇସ୍ ଅନଲକ୍ କରନ୍ତୁ</translation>
 <translation id="4702647871202761252">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="4705716602320768426">ମତାମତ ଦାଖଲ କରନ୍ତୁ</translation>
+<translation id="4730232680256276456">ନମସ୍କାର</translation>
 <translation id="4731797938093519117">ମାତା-ପିତାଙ୍କର ଆକ୍ସେସ୍</translation>
 <translation id="4734965478015604180">ଭୂସମାନ୍ତର</translation>
 <translation id="4744944742468440486">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">ସକ୍ରିୟ କରାଯାଇଛି</translation>
 <translation id="4872237917498892622">Alt+Search କିମ୍ବା Shift</translation>
 <translation id="4890187583552566966">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା Google ଆସିଷ୍ଟାଣ୍ଟ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
+<translation id="4890408602550914571">ଆପଣଙ୍କ ଫୋନ୍ ନିକଟରେ ଅଛି ଏବଂ ସେଥିରେ ବ୍ଲୁଟୁଥ୍ ଚାଲୁ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="4895488851634969361">ବ୍ୟାଟେରୀ ପୂର୍ଣ୍ଣ ଅଟେ।</translation>
 <translation id="490375751687810070">ଭୂଲମ୍ଵ</translation>
 <translation id="4905614135390995787">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ ମୋଡ୍‌କୁ ଟୋଗଲ୍‌ କରିବାକୁ ସର୍ଟକଟ୍‌ ପରିବର୍ତ୍ତନ ହୋ‍ଇଛି। ଦୟାକରି <ph name="OLD_SHORTCUT" /> ପରିବର୍ତ୍ତେ <ph name="NEW_SHORTCUT" /> ବ୍ୟବହାର କରନ୍ତୁ।</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">ଭାଷା</translation>
 <translation id="5313326810920013265">ବ୍ଲୁଟୁଥ୍‍ ସେଟିଂସ୍‍</translation>
 <translation id="5314219114274263156">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ନିଆଯାଇଛି</translation>
+<translation id="5322611492012084517">ଆପଣଙ୍କ ଫୋନ୍ ମିଳି ପାରୁନାହିଁ</translation>
 <translation id="5329548388331921293">ସଂଯୋଗ ହେଉଛି...</translation>
 <translation id="5331975486040154427">USB-C ଡିଭାଇସ୍‌ (ବାମପଟ ପଛ ପୋର୍ଟ)</translation>
 <translation id="5352250171825660495">ଗାଢ଼ ଥିମ୍ ଚାଲୁ ଅଛି</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">ନାଇଟ୍ ଲାଇଟ୍ ଚାଲୁ ଅଛି।</translation>
 <translation id="5769373120130404283">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍</translation>
 <translation id="5777841717266010279">ସ୍କ୍ରିନ୍ ସେୟାରିଂ ବନ୍ଦ କରିବେ?</translation>
+<translation id="5779721926447984944">ପିନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକ</translation>
 <translation id="5790085346892983794">ସଫଳ ହୋଇଛି</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">ସଂଯୁକ୍ତ ଥିବା ଡିଭାଇସଗୁଡ଼ିକର ସେଟିଂସ୍</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">ଅନ୍-ସ୍କ୍ରିନ୍ କୀବୋର୍ଡ ଦେଖାନ୍ତୁ</translation>
 <translation id="6164005077879661055">ଥରେ ଏହି ପର୍ଯ୍ୟବେକ୍ଷିତ ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ କାଢ଼ି ଦେବା ପରେ, ତାଙ୍କର ସମସ୍ତ ଫାଇଲ୍ ଓ ସ୍ଥାନୀୟ ଡାଟାକୁ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ୍ କରିଦିଆଯିବ। ଏହି ପର୍ଯ୍ୟବେକ୍ଷିତ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ପାଇଁ ଦେଖାଯାଇଥିବା ୱେବ୍‌ସାଇଟ୍ ଏବଂ ସେଟିଂସ୍ ଏବେବି <ph name="MANAGEMENT_URL" />ରେ ପରିଚାଳକଙ୍କ ଦ୍ୱାରା ଦେଖା ଦେଇପାରେ।</translation>
 <translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
+<translation id="6179832488876878285">ଆପଣ ଆପଣଙ୍କର ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଫାଇଲଗୁଡ଼ିକୁ ଏଠାରେ ପିନ୍ କରିପାରିବେ। ଆରମ୍ଭ କରିବାକୁ Files ଆପ୍ ଖୋଲନ୍ତୁ।</translation>
 <translation id="622484624075952240">ଡାଉନ୍‍ କୀ</translation>
 <translation id="6236290670123303279">ସେଟିଂସ୍ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">କୁହାଯାଇଥିବା ମତାମତ ଅକ୍ଷମ କରିବାକୁ ଉଭୟ ଭଲ୍ୟୁମ୍‍ କୀ ଦବାଇ ରଖନ୍ତୁ।</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7662283695561029522">କନ୍‌ଫିଗର୍‌ କରିବାକୁ ଟାପ୍‍ କରନ୍ତୁ</translation>
+<translation id="7683326293741220026">ଆପଣଙ୍କ ଫୋନରେ ବ୍ଲୁଟୁଥ୍ ବନ୍ଦ କରାଯାଇଥିବା ପରି ଜଣାପଡ଼ୁଛି। ଦୟାକରି ଫୋନ୍ ହବ୍ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ ଫୋନରେ ବ୍ଲୁଟୁଥକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1ଟି ବିଜ୍ଞପ୍ତି}other{#ଟି ବିଜ୍ଞପ୍ତି}}</translation>
 <translation id="7724603315864178912">Cut</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">ଓଭରଭିଉରେ ଏଣ୍ଟର୍ କରିବା ପାଇଁ ତିନୋଟି ଆଙ୍ଗୁଠିରେ ଉପରକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="7868900307798234037">ଟିପ ଚିହ୍ନ ସାହାଯ୍ୟରେ ଅନ୍‌ଲକ୍ କରୁଛି</translation>
 <translation id="7872786842639831132">ବନ୍ଦ ଅଛି</translation>
+<translation id="7875575368831396199">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ବ୍ଲୁଟୁଥ୍ ବନ୍ଦ କରାଯାଇଥିବା ପରି ଜଣାପଡ଼ୁଛି। ଦୟାକରି ଫୋନ୍ ହବ୍ ବ୍ୟବହାର କରିବା ପାଇଁ ବ୍ଲୁଟୁଥକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="7886169021410746335">ଗୋପନୀୟତା ସେଟିଂସ୍ ଆଡ୍‌ଜଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="7886277072580235377">ଯେତେବେଳେ ଆପଣ ସାଇନ୍ ଆଉଟ୍ କରିବେ ସେତେବେଳେ ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ୍ ଅବଧି ଖାଲି ହୋଇଯିବ। <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ଏକ ଇମେଲ୍ ପଠାନ୍ତୁ</translation>
+<translation id="7895348134893321514">ଟୋଟେ</translation>
 <translation id="7897375687985782769">ଆପଣ ସ୍କ୍ରିନ୍‍ର ଘୂର୍ଣ୍ଣନ ପାଇଁ କୀବୋର୍ଡ ସର୍ଟକଟ୍ ଦବାଇଛନ୍ତି। ଆପଣ କ'ଣ ସ୍କ୍ରିନ୍‍କୁ ଘୂରାଇବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="7901405293566323524">ଫୋନ୍ ହବ୍</translation>
 <translation id="7902625623987030061">ଟିପଚିହ୍ନ ସେନ୍ସରକୁ ଛୁଅଁନ୍ତୁ</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> ଡେସ୍କ ସକ୍ରିୟ କରାଯାଇଛି</translation>
 <translation id="8452135315243592079">ଅନୁପଲବ୍ଧ ଥିବା SIM କାର୍ଡ</translation>
 <translation id="8454013096329229812">ୱାଇ-ଫାଇ ଚାଲୁ ସ୍ଥିତିରେ ଅଛି।</translation>
+<translation id="8462305545768648477">ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="847056008324733326">ଡିସପ୍ଲେ ସ୍କେଲ୍‌ ସେଟିଂସ୍‌</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />ର <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />ଅଛି।</translation>
 <translation id="8477270416194247200">Alt+Search ଦବାନ୍ତୁ କିମ୍ବା ବାତିଲ୍‌କୁ ଶିଫ୍ଟ କରନ୍ତୁ।</translation>

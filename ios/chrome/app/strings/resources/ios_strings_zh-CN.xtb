@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">删除现有数据。</translation>
 <translation id="1147031633655575115">目前的登录者是：<ph name="USER" /></translation>
 <translation id="1154690515305205900">无法创建指向突出显示的文本的链接。</translation>
+<translation id="1154984953698510061">查看其他标签页</translation>
 <translation id="1157749421655780457">允许使用位置信息…</translation>
 <translation id="1165039591588034296">错误</translation>
 <translation id="1172898394251786223">下一个字段</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">过去 24 小时</translation>
 <translation id="1285320974508926690">一律不翻译此网站</translation>
 <translation id="1321993286294231467">保存图片时出错。</translation>
+<translation id="1322735045095424339">贵单位要求使用无痕模式</translation>
 <translation id="1323735185997015385">删除</translation>
 <translation id="132683371494960526">点按两次即可更改父文件夹。</translation>
 <translation id="1340643665687018190">关闭菜单</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">持卡人姓名</translation>
 <translation id="1809939268435598390">删除文件夹</translation>
 <translation id="1813414402673211292">清除浏览数据</translation>
+<translation id="1815941218935345331">密码</translation>
 <translation id="1820259098641718022">已添加到阅读清单</translation>
 <translation id="1870148520156231997">显示密码</translation>
 <translation id="1872096359983322073">闪光灯</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">高级</translation>
 <translation id="1989112275319619282">浏览</translation>
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
+<translation id="2047933465321076474">贵单位关闭了无痕浏览。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> 天前曾有活动</translation>
 <translation id="2074131957428911366">您始终可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="2079545284768500474">撤消</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">正在清除浏览数据…</translation>
 <translation id="2257567812274161158">同步功能无法正常运行。</translation>
 <translation id="225943865679747347">错误代码：<ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">贵单位要求您不露痕迹地浏览。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">添加帐号</translation>
 <translation id="2268044343513325586">优化</translation>
 <translation id="2273327106802955778">“更多”菜单</translation>
@@ -136,6 +141,7 @@
 网站也无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2386793615875593361">已选择 1 张</translation>
+<translation id="2419661687355878017">贵单位关闭了无痕模式</translation>
 <translation id="2421004566762153674">阻止第三方 Cookie</translation>
 <translation id="2421044535038393232">继续修改</translation>
 <translation id="2435457462613246316">显示密码</translation>
@@ -185,11 +191,13 @@
 <translation id="291754862089661335">将 QR 码或条形码放到此框内</translation>
 <translation id="2921219216347069551">无法分享网页</translation>
 <translation id="2923448633003185837">粘贴并转到</translation>
+<translation id="2923827943290349720">在您关闭 Chrome 时锁定无痕式标签页</translation>
 <translation id="292639812446257861">标记为未读</translation>
 <translation id="2952581218264071393">1. 打开 Chrome 设置</translation>
 <translation id="2958718410589002129">密码</translation>
 <translation id="2964349545761222050">阻止第三方 Cookie</translation>
 <translation id="2969979262385602596">登录失败，请稍后重试。</translation>
+<translation id="2975121486251958312">仅无痕模式可用</translation>
 <translation id="298306318844797842">添加付款方式…</translation>
 <translation id="2989805286512600854">在新标签页中打开</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
@@ -204,6 +212,7 @@
 <translation id="3175081911749765310">网络服务</translation>
 <translation id="3178650076442119961">今天曾有活动</translation>
 <translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
+<translation id="3184767182050912705">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解锁</translation>
 <translation id="3196681740617426482">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
 
 不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
@@ -355,6 +364,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 以及另外 1 个}other{{domain} 以及另外 {count} 个}}</translation>
 <translation id="4826218269716039351">阻止第三方 Cookie</translation>
 <translation id="48274138579728272">标记为已读</translation>
+<translation id="4833686396768033263">“最近打开的标签页”页面不可用</translation>
 <translation id="4833786495304741580">自动将使用情况统计信息和崩溃报告发送至 Google。</translation>
 <translation id="4840495572919996524">您的书签、历史记录、密码和其他信息将不再同步到您的 Google 帐号中。</translation>
 <translation id="4854345657858711387">设置密码</translation>
@@ -418,6 +428,7 @@
 <translation id="5551897871312988470">询问是否翻译</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5592679540098330836">为<ph name="NAME" />开启同步</translation>
+<translation id="5597169624050330492">贵单位要求您不露痕迹地浏览。在无痕模式下，系统不会保存标签页。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
 <translation id="5626245204502895507">该文件目前无法下载。</translation>
 <translation id="5631164295104953411">添加付款方式</translation>
@@ -522,6 +533,7 @@
 
 请尽量为每个网站使用独一无二的密码。</translation>
 <translation id="651505212789431520">取消同步？您随时可在“设置”中开启同步功能。</translation>
+<translation id="6524918542306337007">无痕模式不可用</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6585618849026997638">您可以为重要网页添加书签以便返回查看</translation>
 <translation id="6610002944194042868">翻译选项</translation>
@@ -580,6 +592,7 @@
 <translation id="7133798577887235672">全称</translation>
 <translation id="7136892417564438900">无法使用相机</translation>
 <translation id="7159472599653637159">请求移动版网站</translation>
+<translation id="7162168282402939716">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解锁无痕式标签页</translation>
 <translation id="7172852049901402487">保护您的密码免受安全威胁</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7189598951263744875">分享...</translation>
@@ -617,6 +630,7 @@
 <translation id="7537586195939242955">抱歉，目前无法将您的票证添加到 Passbook。</translation>
 <translation id="7554791636758816595">新标签页</translation>
 <translation id="7561196759112975576">永远</translation>
+<translation id="7583004045319035904">请使用<ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解锁您的无痕式标签页。</translation>
 <translation id="7600965453749440009">一律不翻译<ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">拦截了弹出式窗口（<ph name="NUMBER_OF_BLOCKED_POPUPS" /> 个）</translation>
 <translation id="7607521702806708809">删除密码</translation>
@@ -709,6 +723,7 @@
 <translation id="8591976964826315682">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="8605219856220328675">关闭标签页。</translation>
 <translation id="8620640915598389714">编辑</translation>
+<translation id="863090005774946393">您的浏览器由贵单位管理。某些功能可能已停用。</translation>
 <translation id="8636825310635137004">要访问您在其他设备上的标签页，请开启同步功能。</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8668210798914567634">此页面已保存到您的阅读列表。</translation>

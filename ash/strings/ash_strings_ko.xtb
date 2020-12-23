@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">블루투스 설정을 표시합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">실행기 항상 표시</translation>
+<translation id="1316811122439383437">손가방: 최근 화면 캡처, 다운로드, 고정된 파일</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> 기기가 연결됨</translation>
 <translation id="1341651618736211726">더보기</translation>
 <translation id="1346748346194534595">오른쪽</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">창 스크린샷 찍기</translation>
 <translation id="2617342710774726426">SIM 카드가 잠겨 있습니다.</translation>
 <translation id="2621713457727696555">보안</translation>
+<translation id="2633643784040308254">중간</translation>
 <translation id="2653659639078652383">제출</translation>
 <translation id="2658778018866295321">클릭하여 드래그</translation>
 <translation id="2678852583403169292">텍스트 읽어주기 메뉴</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">부모 코드로 기기 잠금 해제</translation>
 <translation id="4702647871202761252">개인정보 보호 화면이 꺼져 있습니다</translation>
 <translation id="4705716602320768426">의견 보내기</translation>
+<translation id="4730232680256276456">높음</translation>
 <translation id="4731797938093519117">부모 액세스</translation>
 <translation id="4734965478015604180">가로</translation>
 <translation id="4744944742468440486">선택 항목 관련 정보</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">활성화됨</translation>
 <translation id="4872237917498892622">Alt+검색 또는 Shift 키</translation>
 <translation id="4890187583552566966">관리자가 Google 어시스턴트를 사용 중지했습니다.</translation>
+<translation id="4890408602550914571">휴대전화가 근처에 있고 블루투스가 켜져 있는지 확인하세요.</translation>
 <translation id="4895488851634969361">배터리 충전이 완료되었습니다.</translation>
 <translation id="490375751687810070">세로</translation>
 <translation id="4905614135390995787">고대비 모드 전환 단축키가 변경되었습니다. <ph name="OLD_SHORTCUT" /> 대신 <ph name="NEW_SHORTCUT" />을(를) 사용하세요.</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">언어</translation>
 <translation id="5313326810920013265">블루투스 설정</translation>
 <translation id="5314219114274263156">화면 녹화됨</translation>
+<translation id="5322611492012084517">휴대전화를 찾을 수 없음</translation>
 <translation id="5329548388331921293">연결 중...</translation>
 <translation id="5331975486040154427">USB-C 기기(좌측 후면 포트)</translation>
 <translation id="5352250171825660495">어두운 테마가 켜져 있습니다.</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">야간 조명이 켜졌습니다.</translation>
 <translation id="5769373120130404283">개인정보 보호 화면</translation>
 <translation id="5777841717266010279">화면 공유를 중단하시겠습니까?</translation>
+<translation id="5779721926447984944">고정된 파일</translation>
 <translation id="5790085346892983794">완료</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">연결된 기기 설정</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">터치 키보드 표시</translation>
 <translation id="6164005077879661055">관리 대상 사용자를 제거하면 해당 관리 대상 사용자와 연결되어 있는 모든 파일 및 로컬 데이터가 영구적으로 삭제됩니다. 하지만 관리자는 관리 대상 사용자의 방문한 웹사이트 및 설정을 <ph name="MANAGEMENT_URL" /> 페이지에서 계속 볼 수 있습니다.</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
+<translation id="6179832488876878285">여기에 중요한 파일을 고정할 수 있습니다. 시작하려면 Files 앱을 여세요.</translation>
 <translation id="622484624075952240">아래</translation>
 <translation id="6236290670123303279">설정 관리</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">음성 피드백을 사용 중지하려면 두 볼륨 키를 5초 동안 길게 누르세요.</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7662283695561029522">설정하려면 탭하세요.</translation>
+<translation id="7683326293741220026">휴대전화의 블루투스가 꺼져 있는 것 같습니다. 휴대전화 허브를 사용하려면 휴대전화에서 블루투스를 사용 설정하세요.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{알림 1개}other{알림 #개}}</translation>
 <translation id="7724603315864178912">잘라내기</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">최근 사용을 시작하려면 세 손가락을 사용해 위로 스와이프하세요.</translation>
 <translation id="7868900307798234037">지문으로 잠금 해제</translation>
 <translation id="7872786842639831132">꺼짐</translation>
+<translation id="7875575368831396199"><ph name="DEVICE_TYPE" />의 블루투스가 꺼져 있는 것 같습니다. 휴대전화 허브를 사용하려면 블루투스를 사용 설정하세요.</translation>
 <translation id="7886169021410746335">개인정보 보호 설정 조정</translation>
 <translation id="7886277072580235377">로그아웃하면 인터넷 세션이 삭제됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">이메일 보내 줘</translation>
+<translation id="7895348134893321514">손가방</translation>
 <translation id="7897375687985782769">화면 회전 단축키를 누르셨습니다. 화면을 회전하시겠습니까?</translation>
 <translation id="7901405293566323524">휴대전화 허브</translation>
 <translation id="7902625623987030061">지문 센서를 터치하세요.</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> 데스크가 활성화되었습니다.</translation>
 <translation id="8452135315243592079">SIM 카드 없음</translation>
 <translation id="8454013096329229812">Wi-Fi가 켜져 있습니다.</translation>
+<translation id="8462305545768648477">텍스트 읽어주기 닫기</translation>
 <translation id="847056008324733326">배율 설정 표시</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />에서 <ph name="FEATURE_NAME" /> 기능을 <ph name="FEATURE_STATE" /> 상태로 설정했습니다.</translation>
 <translation id="8477270416194247200">취소하려면 Alt+검색 또는 Shift 키를 누르세요.</translation>

@@ -1370,6 +1370,7 @@
 <translation id="6389470377220713856">कार्ड पर नाम</translation>
 <translation id="6390200185239044127">ज़ी-फ़ोल्ड हाल्फ़</translation>
 <translation id="6390662030813198813">इंजीनियरिंग-ई</translation>
+<translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> से इस जगह पर टेक्स्ट चिपकाने की सुविधा को आपके एडमिन ने ब्लॉक कर दिया है</translation>
 <translation id="6401136357288658127">यह नीति हटा दी गई है. आपको इसके बजाय, इस <ph name="NEW_POLICY" /> नीति का इस्तेमाल करना चाहिए.</translation>
 <translation id="6404511346730675251">बुकमार्क में बदलाव करें</translation>
 <translation id="6406765186087300643">सी0 (एन्वेलप)</translation>
@@ -1862,6 +1863,7 @@
 <translation id="8371889962595521444">कस्टम रूट सर्टिफ़िकेट</translation>
 <translation id="8380941800586852976">खतरनाक</translation>
 <translation id="8381674639488873545">ये शुल्क एक बार लगने वाले या बार-बार लगने वाले हो सकते हैं और हो सकता है कि इनके बारे में साफ़ तौर पर न बताया जाए. <ph name="BEGIN_LINK" />फिर भी दिखाएं<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> से <ph name="VM_NAME" /> पर क्लिपबोर्ड डेटा शेयर करने की सुविधा को आपके एडमिन ने ब्लॉक कर दिया है</translation>
 <translation id="8412145213513410671">क्रैश (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">आपको वही 'पासफ़्रेज़' दोबारा दर्ज करना होगा.</translation>
 <translation id="8416694386774425977">नेटवर्क कॉन्फ़िगरेशन गलत है और उसे लाया नहीं जा सका.
@@ -2056,7 +2058,7 @@
 <translation id="917450738466192189">सर्वर का प्रमाणपत्र अमान्य है.</translation>
 <translation id="9174917557437862841">टैब बदलने का बटन, इस टैब पर स्विच करने के लिए Enter दबाएं</translation>
 <translation id="9179703756951298733">Chrome की सेटिंग में, आप पैसे चुकाने और क्रेडिट कार्ड की जानकारी को प्रबंधित कर सकते हैं</translation>
-<translation id="9183302530794969518">Google दस्तावेज़</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> एक असमर्थित प्रोटोकॉल का उपयोग करता है.</translation>
 <translation id="9191834167571392248">नीचे बाईं ओर पंच</translation>
 <translation id="9199905725844810519">प्रिंट करने की सुविधा को ब्लॉक किया गया है</translation>

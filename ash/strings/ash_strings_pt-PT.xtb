@@ -47,6 +47,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1302880136325416935">Mostrar definições de Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Mostrar sempre a prateleira</translation>
+<translation id="1316811122439383437">Tote: capturas de ecrã, transferências e ficheiros fixados recentes</translation>
 <translation id="1333308631814936910">Ecrã <ph name="DISPLAY_NAME" /> ligado.</translation>
 <translation id="1341651618736211726">Menu adicional</translation>
 <translation id="1346748346194534595">Direita</translation>
@@ -181,6 +182,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2596078834055697711">Criar uma captura de ecrã da janela</translation>
 <translation id="2617342710774726426">O cartão SIM está bloqueado</translation>
 <translation id="2621713457727696555">Protegida</translation>
+<translation id="2633643784040308254">Méd.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Clique e arraste</translation>
 <translation id="2678852583403169292">Menu da funcionalidade Selecionar para falar</translation>
@@ -410,6 +412,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4696813013609194136">Desbloquear o dispositivo com o código parental</translation>
 <translation id="4702647871202761252">O ecrã de privacidade está desligado</translation>
 <translation id="4705716602320768426">Envie comentários</translation>
+<translation id="4730232680256276456">Elev.</translation>
 <translation id="4731797938093519117">Acesso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Informações relacionadas com a sua seleção</translation>
@@ -426,6 +429,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4868492592575313542">ativada</translation>
 <translation id="4872237917498892622">Alt + Pesquisar ou Shift</translation>
 <translation id="4890187583552566966">O Assistente Google foi desativado pelo administrador.</translation>
+<translation id="4890408602550914571">Certifique-se de que o telemóvel está próximo e com o Bluetooth ativado.</translation>
 <translation id="4895488851634969361">A bateria está carregada.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="4905614135390995787">O atalho para ativar/desativar o Modo de alto contraste foi alterado. Utilize <ph name="NEW_SHORTCUT" /> em vez de <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5313326810920013265">Definições de Bluetooth</translation>
 <translation id="5314219114274263156">Gravação de ecrã captada</translation>
+<translation id="5322611492012084517">Não é possível encontrar o telemóvel</translation>
 <translation id="5329548388331921293">A ligar…</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta traseira do lado esquerdo)</translation>
 <translation id="5352250171825660495">O tema escuro está ativado.</translation>
@@ -519,6 +524,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="576453121877257266">A Luz noturna está ativada.</translation>
 <translation id="5769373120130404283">Ecrã de privacidade</translation>
 <translation id="5777841717266010279">Parar a partilha do ecrã?</translation>
+<translation id="5779721926447984944">Ficheiros fixados</translation>
 <translation id="5790085346892983794">Sucesso</translation>
 <translation id="5820394555380036790">SO Chromium</translation>
 <translation id="5825969630400862129">Definições de dispositivos associados</translation>
@@ -563,6 +569,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="615957422585914272">Mostrar teclado no ecrã</translation>
 <translation id="6164005077879661055">Todos os ficheiros e dados locais associados ao utilizador supervisionado serão definitivamente eliminados depois de este utilizador supervisionado ser removido. Os Sites visitados e as definições deste utilizador supervisionado poderão continuar visíveis para o gestor em <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
+<translation id="6179832488876878285">Pode fixar os seus ficheiros importantes aqui. Abra a app Files para começar.</translation>
 <translation id="622484624075952240">Para baixo</translation>
 <translation id="6236290670123303279">Gerir definições</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7654687942625752712">Prima sem soltar ambas as teclas de volume durante cinco segundos para desativar os feedback de voz.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7662283695561029522">Toque para configurar</translation>
+<translation id="7683326293741220026">O Bluetooth está desativado no seu telemóvel. Ative o Bluetooth no seu telemóvel para utilizar o Phone Hub.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificação}other{# notificações}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
@@ -737,9 +745,11 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7860671499921112077">Deslize rapidamente para cima com três dedos para aceder à Vista geral.</translation>
 <translation id="7868900307798234037">Desbloqueado com a impressão digital</translation>
 <translation id="7872786842639831132">Desativado</translation>
+<translation id="7875575368831396199">O Bluetooth está desativado no seu <ph name="DEVICE_TYPE" />. Ative o Bluetooth para utilizar o Phone Hub.</translation>
 <translation id="7886169021410746335">Ajustar as definições de privacidade</translation>
 <translation id="7886277072580235377">Quando terminar sessão, a sua sessão de Internet será apagada. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Enviar um email</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Premiu o atalho de teclado da rotação do ecrã. Pretende rodar o ecrã?</translation>
 <translation id="7901405293566323524">Centro do telemóvel</translation>
 <translation id="7902625623987030061">Toque no sensor de impressões digitais.</translation>
@@ -807,6 +817,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8444246603146515890">Espaço de trabalho <ph name="DESK_TITILE" /> ativado</translation>
 <translation id="8452135315243592079">Cartão SIM em falta</translation>
 <translation id="8454013096329229812">A ligação Wi-Fi está ativada.</translation>
+<translation id="8462305545768648477">Fechar Selecionar para falar</translation>
 <translation id="847056008324733326">Definições de escala do ecrã</translation>
 <translation id="8473301994082929012">A <ph name="ORGANIZATION_NAME" /> colocou a funcionalidade <ph name="FEATURE_NAME" /> como <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Prima Alt + Pesquisar ou Shift para cancelar.</translation>

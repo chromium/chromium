@@ -261,6 +261,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="281504910091592009">Afficher et gérer les mots de passe enregistrés dans votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Connectez-vous et activez la synchronisation pour accéder à vos favoris sur tous vos appareils</translation>
 <translation id="2827278682606527653">Le menu de la carte de flux est ouvert à mi-hauteur</translation>
+<translation id="2833452327385637152">Pour rechercher un mot ou une expression, appuyez dessus de manière prolongée plutôt que brièvement</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Vérification effectuée il y a 1 jour}one{Vérification effectuée il y a # jour}other{Vérification effectuée il y a # jours}}</translation>
 <translation id="2842985007712546952">Dossier parent</translation>
 <translation id="2860954141821109167">Assurez-vous qu'une application Téléphone est activée sur cet appareil</translation>
@@ -1108,6 +1109,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="8571213806525832805">4 dernières semaines</translation>
 <translation id="8572344201470131220">Image copiée</translation>
 <translation id="8583805026567836021">Suppression des données du compte</translation>
+<translation id="8587585930972369234">Appui prolongé pour rechercher</translation>
 <translation id="860043288473659153">Nom du titulaire de la carte</translation>
 <translation id="8616006591992756292">Votre compte Google conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Ouvrir l'URL suggérée indiquée dans le contenu téléchargé ?</translation>

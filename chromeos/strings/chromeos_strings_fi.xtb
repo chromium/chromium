@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Etsi</translation>
 <translation id="2570743873672969996">Tehdään testiä <ph name="TEST_NAME" />…</translation>
+<translation id="2585245331261708204">Chrome OS: uutta</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
@@ -183,6 +184,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6325525973963619867">Epäonnistui</translation>
 <translation id="636850387210749493">Yritysversion käyttöönotto</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Skannattu tiedosto tallennettu}other{Skannatut tiedostot tallennettu}}</translation>
 <translation id="649050271426829538">Pysähtynyt – Paperitukos</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Tuntematon Wi-Fi-suojausprotokolla</translation>

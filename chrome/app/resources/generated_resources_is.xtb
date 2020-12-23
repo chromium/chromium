@@ -1621,6 +1621,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2791529110887957050">Fjarlægja Linux</translation>
 <translation id="2791952154587244007">Villa kom upp. Sjálfsalaforrit mun ekki geta ræst sig sjálfkrafa á þessu tæki.</translation>
 <translation id="2792290659606763004">Fjarlægja Android forrit?</translation>
+<translation id="2792465461386711506">Kveikja á Chrome samstillingu til að skoða nýlega Chrome flipa í símanum</translation>
 <translation id="2794233252405721443">Lokað á þetta vefsvæði</translation>
 <translation id="2795716239552913152">Vefsvæði nota yfirleitt staðsetningu þína fyrir viðeigandi eiginleika eða upplýsingar eins og staðbundnar fréttir eða verslanir í nágrenninu</translation>
 <translation id="2796424461616874739">Auðkenning rann út á tíma þegar tengst var við „<ph name="DEVICE_NAME" />“.</translation>
@@ -3251,6 +3252,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4671265665487288124">Vefsvæði geta beðið um að fá að hlaða sjálfkrafa niður mörgum skrám (ráðlagt)</translation>
 <translation id="46733273239502219">Ónettengdum gögnum í uppsettum forritum verður einnig eytt</translation>
 <translation id="4673442866648850031">Opna pennaverkfæri þegar penni er fjarlægður</translation>
+<translation id="4676595058027112862">Símstöð, Frekari upplýsingar</translation>
 <translation id="4677772697204437347">Minni skjástýringar</translation>
 <translation id="467823995058589466">Slökkt er á myndavél</translation>
 <translation id="4680105648806843642">Slökkt var á hljóði á þessari síðu</translation>
@@ -6319,6 +6321,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8227119283605456246">Hengja skrá við</translation>
 <translation id="8230134520748321204">Vista aðgangsorð fyrir <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Hjálpaðu verkfræðingum okkar að leysa vandamálið. Segðu okkur hvað gerðist rétt áður en þú fékkst þessi prófílvilluskilaboð.</translation>
+<translation id="8235605354099176425">Kveikja á<ph name="LINK1_BEGIN" />Chrome samstillingu<ph name="LINK1_END" /> til að skoða nýlega Chrome flipa.<ph name="LINK2_BEGIN" />Frekari upplýsingar<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Deila þessum flipa í staðinn</translation>
 <translation id="8237647586961940482">Dökkbleikur og rauður</translation>
 <translation id="8239032431519548577">Fyrirtækjaskráningu lokið</translation>
@@ -7047,6 +7050,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9044646465488564462">Mistókst að tengjast netinu: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Sendir veffang síðunnar sem þú reynir að opna til Google</translation>
 <translation id="9046895021617826162">Tenging mistókst</translation>
+<translation id="9048745018038487540">Velja allar leturgerðir</translation>
 <translation id="9050666287014529139">Aðgangsorð</translation>
 <translation id="9052208328806230490">Þú hefur skráð prentarana þína hjá <ph name="CLOUD_PRINT_NAME" /> með því að nota reikninginn <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Halda áfram að útiloka</translation>

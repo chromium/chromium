@@ -1362,6 +1362,7 @@
 <translation id="6389470377220713856">სახელი ბარათზე</translation>
 <translation id="6390200185239044127">Z-ის ფორმით დაკეცვა ნახევრად</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6393956493820063117"><ph name="ORIGIN_NAME" />-დან ამ მდებარეობაზე ჩასმა დაბლოკილია ადმინისტრატორის წესების მიხედვით</translation>
 <translation id="6401136357288658127">ეს წესები მოძველდა. სანაცვლოდ უნდა გამოიყენოთ <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">სანიშნის რედაქტირება</translation>
 <translation id="6406765186087300643">C0 (კონვერტი)</translation>
@@ -1753,6 +1754,7 @@
 <translation id="7977538094055660992">გამოტანის მოწყობილობა</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="79859296434321399">აუგმენტური რეალობის კონტენტის სანახავად დააინსტალირეთ ARCore</translation>
+<translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">აკინძვა</translation>
 <translation id="7995512525968007366">არ არის მითითებული</translation>
 <translation id="800218591365569300">მეხსიერების გამოსათავისუფლებლად ცადეთ სხვა ჩანართების ან პროგრამების დახურვა.</translation>
@@ -1853,6 +1855,7 @@
 <translation id="8371889962595521444">მორგებული ძირეული სერტიფიკატები</translation>
 <translation id="8380941800586852976">სახიფათო</translation>
 <translation id="8381674639488873545">აღნიშნული გადახდები შეიძლება განხორციელდეს ერთჯერადად ან პერიოდულად და არ იყოს ადვილად შესამჩნევი. <ph name="BEGIN_LINK" />მაინც ჩვენება<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698"><ph name="ORIGIN_NAME" />-დან <ph name="VM_NAME" />-ში გაზიარება დაბლოკილია ადმინისტრატორის წესების მიხედვით</translation>
 <translation id="8412145213513410671">შეცდომები (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">ერთი და იგივე პაროლის ფრაზა ორჯერ უნდა შეიყვანოთ.</translation>
 <translation id="8416694386774425977">ქსელის კონფიგურაცია არასწორია და მისი იმპორტირება ვერ მოხერხდა.

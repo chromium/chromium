@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Copia in <ph name="FOLDER_NAME" /> eseguita.</translation>
 <translation id="3475447146579922140">Foglio di calcolo Google</translation>
 <translation id="3486821258960016770">Mongolo</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> errori.</translation>
 <translation id="3522708245912499433">Portoghese</translation>
 <translation id="3524311639100184459">Attenzione: questi file sono temporanei e potrebbero essere eliminati automaticamente per liberare spazio su disco.  <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Cartella</translation>
@@ -737,6 +738,7 @@
 <translation id="8714406895390098252">Bicicletta</translation>
 <translation id="8719721339511222681">È stato selezionato l'elemento <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croato</translation>
+<translation id="8750438273876807512">Tocca e tieni premuto un file, tocca <ph name="ICON" /> e seleziona "Fissa sullo shelf" per accedervi rapidamente dallo shelf.</translation>
 <translation id="8775404590947523323">Le modifiche vengono salvate automaticamente.<ph name="BREAKS" />Per conservare una copia dell'immagine originale, deseleziona l'opzione "Sovrascrivi originale".</translation>
 <translation id="8808686172382650546">Gatto</translation>
 <translation id="8810671769985673465">Compressione non riuscita. Elemento esistente: "<ph name="FILE_NAME" />"</translation>

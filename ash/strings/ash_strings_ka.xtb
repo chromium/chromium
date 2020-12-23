@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">Bluetooth-ის პარამეტრების ჩვენება. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">თაროს ყოველთვის ჩვენება</translation>
+<translation id="1316811122439383437">Tote: ეკრანის ბოლოდროინდელი აღბეჭდვები, ჩამოტვირთვები და ჩამაგრებული ფაილები</translation>
 <translation id="1333308631814936910">დაკავშირებულია <ph name="DISPLAY_NAME" /></translation>
 <translation id="1341651618736211726">გადავსება</translation>
 <translation id="1346748346194534595">მარჯვნივ</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">ფანჯრის ანაბეჭდის გადაღება</translation>
 <translation id="2617342710774726426">SIM ბარათი დაბლოკილია</translation>
 <translation id="2621713457727696555">დაცული</translation>
+<translation id="2633643784040308254">საშ</translation>
 <translation id="2653659639078652383">გაგზავნა</translation>
 <translation id="2658778018866295321">დაწკაპუნება და ჩავლებით გადატანა</translation>
 <translation id="2678852583403169292">წარმოსათქმელად მონიშვნის მენიუ</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">განბლოკეთ მოწყობილობა მშობლის კოდით</translation>
 <translation id="4702647871202761252">კონფიდენციალურობის ეკრანი გამორთულია</translation>
 <translation id="4705716602320768426">გამოხმაურება</translation>
+<translation id="4730232680256276456">გამარჯობა</translation>
 <translation id="4731797938093519117">მშობლის წვდომა</translation>
 <translation id="4734965478015604180">ჰორიზონტალური</translation>
 <translation id="4744944742468440486">თქვენს არჩევანთან დაკავშირებული ინფორმაცია</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">გააქტიურებულია</translation>
 <translation id="4872237917498892622">Alt+ძიება ან Shift</translation>
 <translation id="4890187583552566966">Google ასისტენტი გათიშულია თქვენი ადმინისტრატორის მიერ.</translation>
+<translation id="4890408602550914571">ტელეფონი ახლოს უნდა გქონდეთ და მასზე ჩართული იყოს Bluetooth.</translation>
 <translation id="4895488851634969361">ბატარეა სავსეა.</translation>
 <translation id="490375751687810070">ვერტიკალური</translation>
 <translation id="4905614135390995787">მაღალკონტრასტული რეჟიმის გადართვის მალსახმობი შეიცვალა. გთხოვთ, <ph name="OLD_SHORTCUT" />-ის ნაცვლად გამოიყენოთ <ph name="NEW_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">ენა</translation>
 <translation id="5313326810920013265">Bluetooth-ის პარამეტრები</translation>
 <translation id="5314219114274263156">ეკრანის ჩანაწერი გაკეთებულია</translation>
+<translation id="5322611492012084517">თქვენი ტელეფონი ვერ მოიძებნა</translation>
 <translation id="5329548388331921293">მიმდინარეობს დაკავშირება...</translation>
 <translation id="5331975486040154427">USB-C მოწყობილობა (მარცხენა უკანა პორტი)</translation>
 <translation id="5352250171825660495">მუქი თემა ჩართულია</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">ღამის განათება ჩართულია.</translation>
 <translation id="5769373120130404283">კონფიდენციალური ეკრანი</translation>
 <translation id="5777841717266010279">შევწყვიტოთ ეკრანის გაზიარება?</translation>
+<translation id="5779721926447984944">ჩამაგრებული ფაილები</translation>
 <translation id="5790085346892983794">წარმატება</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">დაკავშირებული მოწყობილობების პარამეტრები</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">ეკრანული კლავიატურის ჩვენება</translation>
 <translation id="6164005077879661055">კონტროლის ქვეშ მყოფ ამ მომხმარებელთან დაკავშირებული ფაილები და ლოკალური მონაცემები სამუდამოდ წაიშლება ამ მომხმარებლის წაშლის შემთხვევაში. ამ მომხმარებლის მიერ მონახულებული ვებსაიტები და პარამეტრები შეიძლება მაინც ხილვადი დარჩეს მმართველისთვის აქ: <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
+<translation id="6179832488876878285">აქ შეგიძლიათ მნიშვნელოვანი ფაილების ჩამაგრება. დასაწყებად გახსენით ფაილების აპი.</translation>
 <translation id="622484624075952240">ქვემოთ</translation>
 <translation id="6236290670123303279">პარამეტრების მართვა</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">გახმოვანებული უკუკავშირის გასათიშად დააჭირეთ ხმის ორივე ღილაკს ხუთი წამის განმავლობაში.</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7662283695561029522">შეეხეთ პარამეტრების კონფიგურაციისთვის</translation>
+<translation id="7683326293741220026">როგორც ჩანს, თქვენს ტელეფონზე გამორთულია Bluetooth. ტელეფონის ცენტრის გამოსაყენებლად ჩართეთ Bluetooth თქვენს ტელეფონზე.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 შეტყობინება}other{# შეტყობინება}}</translation>
 <translation id="7724603315864178912">ამოჭრა</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">მიმოხილვაზე გადასასვლელად გადაფურცლეთ ზემოთ სამი თითით</translation>
 <translation id="7868900307798234037">მიმდინარეობს თითის ანაბეჭდით განბლოკვა</translation>
 <translation id="7872786842639831132">გამორთვა</translation>
+<translation id="7875575368831396199">როგორც ჩანს, თქვენს <ph name="DEVICE_TYPE" />-ზე გამორთულია Bluetooth. ტელეფონის ცენტრის გამოსაყენებლად ჩართეთ Bluetooth.</translation>
 <translation id="7886169021410746335">კონფიდენციალურობის პარამეტრების კორექტირება</translation>
 <translation id="7886277072580235377">გასვლის შემდეგ თქვენი ინტერნეტ-სესია გასუფთავდება. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ელფოსტის გაგზავნა</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">თქვენ დააჭირეთ ეკრანის ბრუნვის კლავიატურის მალსახმობს. გსურთ ეკრანის შებრუნება?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">შეეხეთ თითის ანაბეჭდის სენსორს</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890">სამუშაო მაგიდა <ph name="DESK_TITILE" /> გააქტიურებულია</translation>
 <translation id="8452135315243592079">აკლია SIM ბარათი</translation>
 <translation id="8454013096329229812">Wi-Fi ჩართულია.</translation>
+<translation id="8462305545768648477">წარმოსათქმელად მონიშვნის დახურვა</translation>
 <translation id="847056008324733326">ჩვენების მასშტაბის პარამეტრები</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-ს აქვს <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">გასაუქმებლად დააჭირეთ Shift კლავიშს ან კომბინაციას: Alt+Search.</translation>

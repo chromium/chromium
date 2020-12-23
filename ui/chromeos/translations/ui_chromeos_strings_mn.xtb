@@ -228,6 +228,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> руу хуулсан.</translation>
 <translation id="3475447146579922140">Google-ийн хүснэгт</translation>
 <translation id="3486821258960016770">Монгол</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> алдаа.</translation>
 <translation id="3522708245912499433">Португал</translation>
 <translation id="3524311639100184459">Анхааруулга: Эдгээр файл нь түр зуурын файлууд бөгөөд дискийн зайг чөлөөлөхийн тулд автоматаар устгаж болно.  <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Хавтас</translation>
@@ -735,6 +736,7 @@
 <translation id="8714406895390098252">Унадаг дугуй</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> сонгогдсон.</translation>
 <translation id="872537912056138402">Хорват</translation>
+<translation id="8750438273876807512">Тавиур дахь файлууддаа шуурхай хандахын тулд файлыг удаан дарж, <ph name="ICON" />-г товшоод, "Тавиурт бэхлэх"-ийг сонгоно уу.</translation>
 <translation id="8775404590947523323">Таны хийсэн өөрчлөлт автоматиар хадгалагдсан.<ph name="BREAKS" />Анхны зургийг хадгалахын тулд "Overwrite original" сонголтыг идэвхгүй болго</translation>
 <translation id="8808686172382650546">Муур</translation>
 <translation id="8810671769985673465">Zip болгож чадсангүй. Байгаа зүйлс: "$1" "<ph name="FILE_NAME" />"</translation>

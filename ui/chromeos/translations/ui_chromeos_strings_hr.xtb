@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Kopirano u mapu <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Googleova proračunska tablica</translation>
 <translation id="3486821258960016770">mongolski</translation>
+<translation id="3495304270784461826">Broj pogrešaka: <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">Portugalski</translation>
 <translation id="3524311639100184459">Oprez: ove su datoteke privremene i mogu se automatski izbrisati za oslobađanje prostora na disku.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mapa</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Bicikl</translation>
 <translation id="8719721339511222681">Odabrana je stavka <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Hrvatski</translation>
+<translation id="8750438273876807512">Dodirnite i držite datoteku te dodirnite <ph name="ICON" /> i odaberite opcioju Prikvači na policu za brzi pristup datotekama na polici.</translation>
 <translation id="8775404590947523323">Vaša se uređivanja spremaju automatski.<ph name="BREAKS" />Da biste zadržali kopiju izvorne slike, isključite oznaku opcije "Prebriši izvornik"</translation>
 <translation id="8808686172382650546">Mačka</translation>
 <translation id="8810671769985673465">Komprimiranje nije uspjelo, stavka postoji: "<ph name="FILE_NAME" />"</translation>

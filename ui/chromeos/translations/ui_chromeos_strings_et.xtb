@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Kopeeritud kausta <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google'i arvutustabel</translation>
 <translation id="3486821258960016770">mongoli</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> viga.</translation>
 <translation id="3522708245912499433">Portugali keel</translation>
 <translation id="3524311639100184459">Hoiatus. Need on ajutised failid ja võidakse kettaruumi vabastamiseks automaatselt kustutada.  <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Kaust</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Jalgratas</translation>
 <translation id="8719721339511222681">Valiti <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">horvaatia keel</translation>
+<translation id="8750438273876807512">Puudutage pikalt faili, puudutage ikooni <ph name="ICON" /> ja tehke valik „Kinnita riiulile”, et riiulil olevatele failidele kiirelt juurde pääseda.</translation>
 <translation id="8775404590947523323">Teie muudatused salvestatakse automaatselt.<ph name="BREAKS" />Algse kujutise koopia säilitamiseks tühjendage märkeruut „Kirjuta algne fail üle”</translation>
 <translation id="8808686172382650546">Kass</translation>
 <translation id="8810671769985673465">Pakkimine nurjus, üksus on juba olemas: „<ph name="FILE_NAME" />”</translation>

@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">Bluetooth の設定を表示します。<ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">シェルフを常に表示</translation>
+<translation id="1316811122439383437">トート: 最近撮影した画面キャプチャや、最近ダウンロードまたは固定したファイル</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" />を接続しました</translation>
 <translation id="1341651618736211726">オーバーフロー</translation>
 <translation id="1346748346194534595">右</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">ウィンドウのスクリーンショットを撮影する</translation>
 <translation id="2617342710774726426">SIM カードはロックされています</translation>
 <translation id="2621713457727696555">保護あり</translation>
+<translation id="2633643784040308254">中</translation>
 <translation id="2653659639078652383">送信</translation>
 <translation id="2658778018866295321">クリックしてドラッグ</translation>
 <translation id="2678852583403169292">選択して読み上げメニュー</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">保護者のコードでデバイスをロック解除</translation>
 <translation id="4702647871202761252">プライバシー スクリーンはオフになっています</translation>
 <translation id="4705716602320768426">フィードバックを送信</translation>
+<translation id="4730232680256276456">高</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="4734965478015604180">横</translation>
 <translation id="4744944742468440486">選択した項目に関連する情報</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">有効</translation>
 <translation id="4872237917498892622">Alt+ 検索/Shift</translation>
 <translation id="4890187583552566966">Google アシスタントは管理者によって無効にされています。</translation>
+<translation id="4890408602550914571">スマートフォンが近くにあり、Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="4895488851634969361">バッテリー残量: 満。</translation>
 <translation id="490375751687810070">縦</translation>
 <translation id="4905614135390995787">ハイ コントラスト モードを切り替えるショートカットが変わりました。これまでの <ph name="OLD_SHORTCUT" /> キーではなく <ph name="NEW_SHORTCUT" /> キーを使用してください。</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">言語</translation>
 <translation id="5313326810920013265">Bluetooth 設定</translation>
 <translation id="5314219114274263156">画面を録画しました</translation>
+<translation id="5322611492012084517">スマートフォンが見つかりません</translation>
 <translation id="5329548388331921293">接続中…</translation>
 <translation id="5331975486040154427">USB-C デバイス（左奥のポート）</translation>
 <translation id="5352250171825660495">ダークテーマはオンになっています</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">夜間モードはオンです。</translation>
 <translation id="5769373120130404283">プライバシー スクリーン</translation>
 <translation id="5777841717266010279">画面の共有を解除しますか？</translation>
+<translation id="5779721926447984944">固定したファイル</translation>
 <translation id="5790085346892983794">完了</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">接続済みデバイスの設定</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">画面キーボードを表示する</translation>
 <translation id="6164005077879661055">この監視対象ユーザーを削除すると、このユーザーに関連付けられたすべてのファイルとローカル データも完全に削除されます。この監視対象ユーザーがアクセスしたウェブサイトやこのユーザーの設定は引き続き、管理者が <ph name="MANAGEMENT_URL" /> で見ることができます。</translation>
 <translation id="6165508094623778733">詳細</translation>
+<translation id="6179832488876878285">重要なファイルをここに固定できます。この機能を使用するには、ファイルアプリを開いてください。</translation>
 <translation id="622484624075952240">下矢印キー</translation>
 <translation id="6236290670123303279">設定を管理</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -721,6 +728,7 @@
 <translation id="7654687942625752712">音声フィードバックを無効にするには、音量大と音量小の両方のボタンを 5 秒間押し続けてください。</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7662283695561029522">設定するにはタップします</translation>
+<translation id="7683326293741220026">スマートフォンで Bluetooth がオフになっているようです。スマートフォン ハブを使用するには、スマートフォンで Bluetooth をオンにしてください。</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 件の通知}other{# 件の通知}}</translation>
 <translation id="7724603315864178912">切り取り</translation>
@@ -738,9 +746,11 @@
 <translation id="7860671499921112077">概要モードに切り替えるには、3 本の指で上にスワイプします</translation>
 <translation id="7868900307798234037">指紋によるロック解除</translation>
 <translation id="7872786842639831132">オフ</translation>
+<translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> で Bluetooth がオフになっているようです。スマートフォン ハブを使用するには、Bluetooth をオンにしてください。</translation>
 <translation id="7886169021410746335">プライバシー設定を調整する</translation>
 <translation id="7886277072580235377">ログアウトするとインターネット セッションは終了します。<ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">メールを送って</translation>
+<translation id="7895348134893321514">トート</translation>
 <translation id="7897375687985782769">画面回転のキーボード ショートカットを押しました。画面を回転しますか？</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">指紋認証センサーをタップ</translation>
@@ -808,6 +818,7 @@
 <translation id="8444246603146515890">デスク <ph name="DESK_TITILE" /> が有効になりました</translation>
 <translation id="8452135315243592079">SIM カードがありません</translation>
 <translation id="8454013096329229812">Wi-Fi が有効になりました。</translation>
+<translation id="8462305545768648477">「選択して読み上げ」を閉じる</translation>
 <translation id="847056008324733326">表示スケールの設定</translation>
 <translation id="8473301994082929012"><ph name="FEATURE_NAME" />は <ph name="ORGANIZATION_NAME" /> により<ph name="FEATURE_STATE" />に設定されています。</translation>
 <translation id="8477270416194247200">キャンセルするには Alt+ 検索キーまたは Shift キーを押します。</translation>

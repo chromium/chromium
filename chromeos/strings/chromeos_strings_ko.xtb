@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />, <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">검색</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> 테스트 실행 중…</translation>
+<translation id="2585245331261708204">Chrome OS의 새로운 기능</translation>
 <translation id="2620436844016719705">시스템</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2805756323405976993">앱</translation>
@@ -183,6 +184,7 @@
 <translation id="6232017090690406397">배터리</translation>
 <translation id="6325525973963619867">실패</translation>
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{스캔한 파일이 저장되었습니다.}other{스캔한 파일이 저장되었습니다.}}</translation>
 <translation id="649050271426829538">중지됨 - 용지 걸림</translation>
 <translation id="6517239166834772319">살펴보기</translation>
 <translation id="6527081081771465939">알려지지 않은 Wi-Fi 보안 프로토콜입니다.</translation>

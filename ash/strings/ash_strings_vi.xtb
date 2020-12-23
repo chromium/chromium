@@ -47,6 +47,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1302880136325416935">Hiển thị các tùy chọn cài đặt Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Luôn hiển thị giá</translation>
+<translation id="1316811122439383437">Tote: các ảnh chụp màn hình, tệp đã tải xuống và tệp đã ghim gần đây</translation>
 <translation id="1333308631814936910">Đã kết nối <ph name="DISPLAY_NAME" /></translation>
 <translation id="1341651618736211726">Nút tràn</translation>
 <translation id="1346748346194534595">Phải</translation>
@@ -181,6 +182,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2596078834055697711">Chụp ảnh màn hình cửa sổ</translation>
 <translation id="2617342710774726426">Thẻ SIM bị khóa</translation>
 <translation id="2621713457727696555">Đã bảo mật</translation>
+<translation id="2633643784040308254">Trung bình</translation>
 <translation id="2653659639078652383">Gửi</translation>
 <translation id="2658778018866295321">Nhấp và kéo</translation>
 <translation id="2678852583403169292">Trình đơn Chọn để nói</translation>
@@ -410,6 +412,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4696813013609194136">Mở khóa thiết bị bằng mã dành cho cha mẹ</translation>
 <translation id="4702647871202761252">Màn hình bảo vệ quyền riêng tư đang tắt</translation>
 <translation id="4705716602320768426">Gửi ý kiến phản hồi</translation>
+<translation id="4730232680256276456">Cao</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
 <translation id="4734965478015604180">Ngang</translation>
 <translation id="4744944742468440486">Thông tin liên quan đến nội dung bạn chọn</translation>
@@ -426,6 +429,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4868492592575313542">đã bật</translation>
 <translation id="4872237917498892622">Alt+Search hoặc Shift</translation>
 <translation id="4890187583552566966">Quản trị viên của bạn đã tắt Trợ lý Google.</translation>
+<translation id="4890408602550914571">Hãy đảm bảo điện thoại của bạn ở gần và đã bật Bluetooth.</translation>
 <translation id="4895488851634969361">Pin đầy.</translation>
 <translation id="490375751687810070">Dọc</translation>
 <translation id="4905614135390995787">Phím tắt để chuyển đổi Chế độ tương phản cao đã thay đổi. Vui lòng sử dụng <ph name="NEW_SHORTCUT" /> thay vì <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5302048478445481009">Ngôn ngữ</translation>
 <translation id="5313326810920013265">Cài đặt Bluetooth</translation>
 <translation id="5314219114274263156">Đã ghi màn hình</translation>
+<translation id="5322611492012084517">Không tìm được điện thoại của bạn</translation>
 <translation id="5329548388331921293">Đang kết nối...</translation>
 <translation id="5331975486040154427">Thiết bị USB-C (cổng phía sau, bên trái)</translation>
 <translation id="5352250171825660495">Giao diện tối đang bật</translation>
@@ -519,6 +524,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="576453121877257266">Chế độ Ánh sáng đêm đang bật.</translation>
 <translation id="5769373120130404283">Màn hình bảo vệ quyền riêng tư</translation>
 <translation id="5777841717266010279">Bạn muốn dừng chia sẻ màn hình?</translation>
+<translation id="5779721926447984944">Tệp đã ghim</translation>
 <translation id="5790085346892983794">Thành công</translation>
 <translation id="5820394555380036790">Hệ điều hành Chromium</translation>
 <translation id="5825969630400862129">Cài đặt thiết bị đã kết nối</translation>
@@ -563,6 +569,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="615957422585914272">Hiển thị bàn phím ảo</translation>
 <translation id="6164005077879661055">Tất cả các tệp và dữ liệu trên máy được liên kết với người dùng được giám sát sẽ vĩnh viễn bị xóa khi người dùng được giám sát này bị xóa. Các trang web đã truy cập và các cài đặt của người dùng được giám sát này có thể vẫn hiển thị với người quản lý tại <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
+<translation id="6179832488876878285">Bạn có thể ghim các tệp quan trọng của mình ở đây. Hãy mở ứng dụng Files để bắt đầu.</translation>
 <translation id="622484624075952240">Xuống</translation>
 <translation id="6236290670123303279">Quản lý các tùy chọn cài đặt</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7654687942625752712">Nhấn và giữ cả hai phím âm lượng trong 5 giây để tắt tính năng phản hồi bằng giọng nói.</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7662283695561029522">Nhấn để định cấu hình</translation>
+<translation id="7683326293741220026">Có vẻ như bạn đã tắt Bluetooth trên điện thoại. Vui lòng bật Bluetooth để sử dụng Trung tâm điều khiển điện thoại.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 thông báo}other{# thông báo}}</translation>
 <translation id="7724603315864178912">Cắt</translation>
@@ -737,9 +745,11 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7860671499921112077">Vuốt lên bằng 3 ngón tay để chuyển sang chế độ Tổng quan</translation>
 <translation id="7868900307798234037">Mở khóa bằng vân tay</translation>
 <translation id="7872786842639831132">Tắt</translation>
+<translation id="7875575368831396199">Có vẻ như bạn đã tắt Bluetooth trên <ph name="DEVICE_TYPE" />. Vui lòng bật Bluetooth để sử dụng Trung tâm điều khiển điện thoại.</translation>
 <translation id="7886169021410746335">Điều chỉnh các tùy chọn cài đặt quyền riêng tư</translation>
 <translation id="7886277072580235377">Phiên hoạt động trên Internet của bạn sẽ bị xóa khi bạn đăng xuất. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Gửi email</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Bạn đã nhấn phím tắt để xoay màn hình. Bạn có muốn xoay màn hình không?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Chạm vào cảm biến vân tay</translation>
@@ -807,6 +817,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8444246603146515890">Đã kích hoạt Không gian làm việc <ph name="DESK_TITILE" /></translation>
 <translation id="8452135315243592079">Thiếu thẻ SIM</translation>
 <translation id="8454013096329229812">Wi-Fi đang bật.</translation>
+<translation id="8462305545768648477">Đóng tính năng Chọn để nói</translation>
 <translation id="847056008324733326">Cài đặt tỷ lệ hiển thị</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> đã <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Nhấn phím Alt+Search hoặc Shift để hủy.</translation>

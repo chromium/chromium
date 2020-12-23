@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">موجودہ ڈیٹا کو حذف کریں۔</translation>
 <translation id="1147031633655575115"><ph name="USER" /> کے بطور سائن ان ہیں</translation>
 <translation id="1154690515305205900">نمایاں کردہ ٹیکسٹ کا لنک تخلیق نہیں کیا جا سکتا۔</translation>
+<translation id="1154984953698510061">دیگر ٹیبز دیکھیں</translation>
 <translation id="1157749421655780457">مقام کی اجازت دیں...</translation>
 <translation id="1165039591588034296">خرابی</translation>
 <translation id="1172898394251786223">اگلا فیلڈ</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">گزشتہ 24 گھنٹے</translation>
 <translation id="1285320974508926690">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>
 <translation id="1321993286294231467">تصویر محفوظ کرنے میں خرابی۔</translation>
+<translation id="1322735045095424339">آپ کی تنظیم پوشیدگی وضع چاہتی ہے</translation>
 <translation id="1323735185997015385">حذف کریں</translation>
 <translation id="132683371494960526">پیرینٹ فولڈر تبدیل کرنے کیلئے دو بار تھپتھپائیں۔</translation>
 <translation id="1340643665687018190">مینو بند کریں</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">کارڈ کے حامل کا نام</translation>
 <translation id="1809939268435598390">فولڈر حذف کریں</translation>
 <translation id="1813414402673211292">براؤزنگ ڈیٹا صاف کریں</translation>
+<translation id="1815941218935345331">پاس کوڈ</translation>
 <translation id="1820259098641718022">پڑھنے کی فہرست میں شامل کر دیا گیا ہے</translation>
 <translation id="1870148520156231997">پاس ورڈ ظاہر کریں</translation>
 <translation id="1872096359983322073">ٹارچ</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">جدید ترین</translation>
 <translation id="1989112275319619282">براؤز کریں</translation>
 <translation id="2015722694326466240">پاسورڈز دیکھنے کے لیے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا چاہئے۔</translation>
+<translation id="2047933465321076474">آپ کی تنظیم نے نجی براؤزنگ کو آف کر دیا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> دن پہلے فعال تھا</translation>
 <translation id="2074131957428911366">آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ کس چیز کی مطابقت پذیری کرنی ہے۔</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">براؤزنگ ڈیٹا صاف ہو رہا ہے...</translation>
 <translation id="2257567812274161158">مطابقت پذیری کام نہیں کر رہی ہے۔</translation>
 <translation id="225943865679747347">خرابی کا کوڈ: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">آپ کی تنظیم چاہتی ہے کہ آپ نجی طور پر براؤز کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">اکاؤنٹ شامل کریں</translation>
 <translation id="2268044343513325586">بہتر بنائیں</translation>
 <translation id="2273327106802955778">مزید مینو</translation>
@@ -136,6 +141,7 @@
 سائٹس مختلف سائٹس پر آپ کی براؤزنگ کی سرگرمی دیکھنے کیلئے کوکیز کا استعمال نہیں کر سکتی ہیں، مثال کے طور پر اشتہارات کو ذاتی نوعیت کا بنانا۔</translation>
 <translation id="2381405137052800939">مبادیات</translation>
 <translation id="2386793615875593361">1 کو منتخب کیا گیا</translation>
+<translation id="2419661687355878017">آپ کی تنظیم نے پوشیدگی وضع آف کر دی ہے</translation>
 <translation id="2421004566762153674">فریق ثالث کوکیز کو مسدود کیا جا رہا ہے</translation>
 <translation id="2421044535038393232">ترمیم جاری رکھیں</translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
@@ -185,11 +191,13 @@
 <translation id="291754862089661335">‏QR کوڈ کو اس فریم میں رکھیں</translation>
 <translation id="2921219216347069551">صفحہ کا اشتراک نہیں کر سکتے ہیں</translation>
 <translation id="2923448633003185837">پیسٹ کریں اور جائیں</translation>
+<translation id="2923827943290349720">‏جب آپ Chrome کو بند کرتے ہیں تب پوشیدگی ٹیبز کو مقفل کریں</translation>
 <translation id="292639812446257861">بغیر پڑھے ہوئے کے بطور نشان زد کریں</translation>
 <translation id="2952581218264071393">‏1۔ Chrome کی ترتیبات کھولیں</translation>
 <translation id="2958718410589002129">پاس ورڈز</translation>
 <translation id="2964349545761222050">فریق ثالث کوکیز کو مسدود کریں</translation>
 <translation id="2969979262385602596">سائن ان کرنے میں ناکام ہوگیا۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
+<translation id="2975121486251958312">صرف پوشیدگی وضع دستیاب ہے</translation>
 <translation id="298306318844797842">ادائیگی کا طریقہ شامل کریں...</translation>
 <translation id="2989805286512600854">نئے ٹیب میں کھولیں</translation>
 <translation id="3037605927509011580">ارے، رکیں!</translation>
@@ -204,6 +212,7 @@
 <translation id="3175081911749765310">ویب سروسز</translation>
 <translation id="3178650076442119961">آج فعال تھا</translation>
 <translation id="3181954750937456830">محفوظ براؤزنگ (آپ اور آپ کے آلہ کی خطرناک سائٹس سے حفاظت کرتی ہے)</translation>
+<translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> سے غیر مقفل کریں</translation>
 <translation id="3196681740617426482">سائٹس آپ کے براؤزنگ کے تجربہ کو بہتر بنانے کے لیے کوکیز کا استعمال کر سکتی ہیں، مثال کے طور پر آپ کو سائن ان رکھنا یا آپ کی شاپنگ کارٹ میں آئٹمز کو یاد رکھنا۔
 
 پوشیدگی موڈ میں ہونے پر سائٹس مختلف سائٹس میں آپ کی براؤزنگ سرگرمی کو دیکھنے کے لیے کوکیز کا استعمال نہیں کرسکتی ہیں، مثال کے طور پر اشتہارات کو ذاتی نوعیت کا بنانا۔</translation>
@@ -355,6 +364,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} اور 1 دیگر}other{{domain} اور {count} دیگر}}</translation>
 <translation id="4826218269716039351">فریق ثالث مسدود کریں</translation>
 <translation id="48274138579728272">پڑھا ہوا کے بطور نشان زد کریں</translation>
+<translation id="4833686396768033263">حالیہ ٹیبز دستیاب نہیں ہیں</translation>
 <translation id="4833786495304741580">‏Google کو خودکار طور پر استعمال کے اعداد و شمار اور کریش رپورٹس بھیجتی ہے۔</translation>
 <translation id="4840495572919996524">‏آپ کے بُک مارکس، سرگزشت، پاس ورڈز وغیرہ کی اب آپ کے Google اکاؤنٹ کے ساتھ مطابقت پذیری نہیں کی جائے گی۔</translation>
 <translation id="4854345657858711387">ایک پاس کوڈ سیٹ کریں</translation>
@@ -418,6 +428,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5551897871312988470">ترجمہ کی پیشکش کریں</translation>
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> کیلئے مطابقت پذیری آن کریں</translation>
+<translation id="5597169624050330492">آپ کی تنظیم چاہتی ہے کہ آپ نجی طور پر براؤز کریں۔ ٹیبز پوشیدگی وضع میں محفوظ نہیں ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">پاس ورڈ کو محفوظ کریں؟</translation>
 <translation id="5626245204502895507">فائل اس وقت ڈاؤن لوڈ نہیں ہو سکی۔</translation>
 <translation id="5631164295104953411">ادائیگی کا طریقہ شامل کریں</translation>
@@ -522,6 +533,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 
 ہر سائٹ کے لئے ایک منفرد پاس ورڈ استعمال کرنے کی کوشش کریں۔</translation>
 <translation id="651505212789431520">مطابقت پذیری منسوخ کریں؟ آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو آن کر سکتے ہیں۔</translation>
+<translation id="6524918542306337007">پوشیدگی وضع دستیاب نہیں ہے</translation>
 <translation id="6561262006871132942">زوم ان کریں</translation>
 <translation id="6585618849026997638">بُک مارک شامل کر کے آپ کسی ایسے صفحے پر واپس جا سکتے ہیں جو آپ کیلئے اہم ہے</translation>
 <translation id="6610002944194042868">ترجمہ کے اختیارات</translation>
@@ -580,6 +592,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7133798577887235672">پورا نام</translation>
 <translation id="7136892417564438900">کیمرا دستیاب نہیں ہے</translation>
 <translation id="7159472599653637159">موبائل سائٹ کی درخواست کریں</translation>
+<translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> سے پوشیدگی ٹیبز غیر مقفل کریں</translation>
 <translation id="7172852049901402487">سیکیورٹی کے معاملات سے اپنے پاس ورڈز محفوظ رکھیں</translation>
 <translation id="7173114856073700355">ترتیبات کھولیں</translation>
 <translation id="7189598951263744875">اشتراک کریں…</translation>
@@ -617,6 +630,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7537586195939242955">‏معذرت، آپ کا Pass اس وقت Passbook میں انسٹال نہیں کیا جا سکتا ہے۔</translation>
 <translation id="7554791636758816595">نیا ٹیب</translation>
 <translation id="7561196759112975576">ہمیشہ</translation>
+<translation id="7583004045319035904">اپنے پوشیدگی ٹیبز کو غیر مقفل کرنے کیلئے <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> کا استعمال کریں۔</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> کا کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="7603852183842204213">پاپ اپس کو مسدود کر دیا گیا (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">پاس ورڈ حذف کریں</translation>
@@ -709,6 +723,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8591976964826315682">پوشیدگی میں فریق ثالث کی کوکیز کو مسدود کریں</translation>
 <translation id="8605219856220328675">ٹیب بند کریں۔</translation>
 <translation id="8620640915598389714">ترمیم کریں</translation>
+<translation id="863090005774946393">آپ کا براؤزر آپ کی تنظیم کے زیر انتظام ہے۔ کچھ خصوصیات غیر فعال ہو سکتی ہیں۔</translation>
 <translation id="8636825310635137004">اپنے دیگر آلات سے اپنے ٹیبز حاصل کرنے کیلئے، مطابقت پذیری کو آن کریں۔</translation>
 <translation id="8654802032646794042">منسوخ کریں</translation>
 <translation id="8668210798914567634">اس صفحہ کو آپ کی پڑھنے کی فہرست میں محفوظ کر دیا گیا ہے۔</translation>

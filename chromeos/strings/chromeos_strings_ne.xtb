@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> परीक्षण गरिँदै छ...</translation>
+<translation id="2585245331261708204">Chrome OS मा नयाँ के छ?</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2740531572673183784">ठिक छ</translation>
 <translation id="2805756323405976993">एप्स</translation>
@@ -182,6 +183,7 @@
 <translation id="6232017090690406397">ब्याटरी</translation>
 <translation id="6325525973963619867">चलाउन सकिएन</translation>
 <translation id="636850387210749493">उद्यम भर्ना</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{स्क्यान गरिएको फाइल सुरक्षित गरियो}other{स्क्यान गरिएका फाइलहरू सुरक्षित गरिए}}</translation>
 <translation id="649050271426829538">रोकियो - प्रिन्टरमा कागज अड्कियो</translation>
 <translation id="6517239166834772319">एक्स्प्लोर</translation>
 <translation id="6527081081771465939">अज्ञात WiFi सेक्युरिटी प्रोटोकोल</translation>

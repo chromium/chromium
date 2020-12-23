@@ -1757,6 +1757,7 @@
 <translation id="7977538094055660992">அவுட்புட் சாதனம்</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="79859296434321399">ஆக்மென்ட்டட் ரியாலிட்டி உள்ளடக்கத்தைப் பார்க்க, ARCoreஐ நிறுவவும்</translation>
+<translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">பைண்டு</translation>
 <translation id="7995512525968007366">குறிப்பிடப்படவில்லை</translation>
 <translation id="800218591365569300">பிற தாவல்கள் அல்லது நிரல்களை மூடி, நினைவகத்தைக் காலியாக்கவும்.</translation>
@@ -2051,7 +2052,7 @@
 <translation id="917450738466192189">சேவையகச் சான்றிதழ் செல்லுபடியானதல்ல.</translation>
 <translation id="9174917557437862841">இந்தத் தாவலுக்கு மாற, ’தாவல்’ மாற்ற பட்டனைத் தட்டி, ‘எண்டர்’ பட்டனை அழுத்தவும்</translation>
 <translation id="9179703756951298733">Chrome அமைப்புகளில் உங்கள் பேமெண்ட்கள், கிரெடிட் கார்ட் குறித்த தகவலை நிர்வகித்தல்</translation>
-<translation id="9183302530794969518">Google ஆவணம்</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ஆதரிக்கப்படாத நெறிமுறையைப் பயன்படுத்துகிறது.</translation>
 <translation id="9191834167571392248">பஞ்ச் பாட்டம் லெஃப்ட்</translation>
 <translation id="9199905725844810519">பிரிண்ட் செய்வது தடுக்கப்பட்டுள்ளது</translation>

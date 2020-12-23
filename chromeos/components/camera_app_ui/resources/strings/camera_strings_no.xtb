@@ -35,8 +35,10 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="3750315947605636967">Kameraet ditt brukes av en annen app</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skann strekkoden</translation>
+<translation id="3892148308691398805">Kopiér teksten</translation>
 <translation id="4000398125663085899">Nye bilder og videoer lagres nå i en mappe i Filer-appen: Mine filer &gt; Kamera</translation>
 <translation id="4118525110028899586">Sett opptaket på pause</translation>
+<translation id="4269820728363426813">Kopiér linkadressen</translation>
 <translation id="4279490309300973883">Speiling</translation>
 <translation id="4329152592498422850">Bytt til kvadratisk bilde</translation>
 <translation id="4383571725254449280">Logger over utskriftsytelse</translation>
@@ -71,6 +73,7 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="7134221860976209830">Ti sekunders nedtelling</translation>
 <translation id="7243947652761655814">Videooppløsning</translation>
 <translation id="7337660886763914220">Filsystemfeil.</translation>
+<translation id="7450541714075000668">Teksten er kopiert</translation>
 <translation id="7557677699350329807">Bytt til neste kamera</translation>
 <translation id="7608223098072244877">4 ganger 4</translation>
 <translation id="7649070708921625228">Hjelp</translation>

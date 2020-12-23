@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">კოპირებულია „<ph name="FOLDER_NAME" />“-ში.</translation>
 <translation id="3475447146579922140">Google ის ელ.ცხრილი</translation>
 <translation id="3486821258960016770">მონღოლური</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> შეცდომა.</translation>
 <translation id="3522708245912499433">პორტუგალიური</translation>
 <translation id="3524311639100184459">გაფრთხილება: ეს ფაილები დროებითია და შეიძლება ავტომატურად წაიშალოს დისკზე ადგილის გასათავისუფლებლად.  <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">საქაღალდე</translation>
@@ -737,6 +738,7 @@
 <translation id="8714406895390098252">ველოსიპედი</translation>
 <translation id="8719721339511222681">არჩეულია <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">ხორვატიული</translation>
+<translation id="8750438273876807512">თაროდან თქვენს ფაილებზე სწრაფი წვდომა რომ იქონიოთ, ხანგრძლივად შეეხეთ ფაილს, შემდეგ კი შეხებით აირჩიეთ <ph name="ICON" /> და „თაროზე ჩამაგრება“.</translation>
 <translation id="8775404590947523323">ცვლილებები ავტომატურად ინახება. <ph name="BREAKS" />ორიგინალური გამოსახულების ასლის შესანახად მოხსენით მონიშვნა უჯრიდან „ორიგინალურის შეცვლა“.</translation>
 <translation id="8808686172382650546">კატა</translation>
 <translation id="8810671769985673465">შეკუმშვა ვერ მოხერხდა, ერთეული უკვე არსებობს: „<ph name="FILE_NAME" />“</translation>

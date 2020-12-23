@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ស្កេន</translation>
 <translation id="2570743873672969996">កំពុងដំណើរការតេស្ត <ph name="TEST_NAME" />...</translation>
+<translation id="2585245331261708204">អ្វីដែលថ្មីសម្រាប់ Chrome OS</translation>
 <translation id="2620436844016719705">ប្រព័ន្ធ</translation>
 <translation id="2740531572673183784">យល់ព្រម</translation>
 <translation id="2805756323405976993">កម្មវិធី</translation>
@@ -182,6 +183,7 @@
 <translation id="6232017090690406397">ថ្ម</translation>
 <translation id="6325525973963619867">មិនបានសម្រេច</translation>
 <translation id="636850387210749493">ការចុះឈ្មោះសហគ្រាស</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{បានរក្សាទុក​ឯកសារ​ដែលបានស្កេន}other{បានរក្សាទុក​ឯកសារ​ដែលបានស្កេន}}</translation>
 <translation id="649050271426829538">បានឈប់ - ជាប់​ក្រដាស</translation>
 <translation id="6517239166834772319">រុករក</translation>
 <translation id="6527081081771465939">មិនស្គាល់​ប្រូតូកូល​សុវត្ថិភាព WiFi</translation>

@@ -47,6 +47,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1302880136325416935">Muestra la configuración de Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="1312604459020188865">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Mostrar estantería siempre</translation>
+<translation id="1316811122439383437">Tote: capturas de pantalla, descargas y archivos fijados recientes</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> conectado</translation>
 <translation id="1341651618736211726">Menú adicional</translation>
 <translation id="1346748346194534595">Derecha</translation>
@@ -181,6 +182,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2596078834055697711">Hacer una captura de pantalla de la ventana</translation>
 <translation id="2617342710774726426">La tarjeta SIM está bloqueada</translation>
 <translation id="2621713457727696555">Segura</translation>
+<translation id="2633643784040308254">Media</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Hacer clic y arrastrar</translation>
 <translation id="2678852583403169292">Menú Enunciar Selección</translation>
@@ -411,6 +413,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4696813013609194136">Desbloquear con código parental</translation>
 <translation id="4702647871202761252">La pantalla de privacidad está desactivada</translation>
 <translation id="4705716602320768426">Comentarios sobre el archivo</translation>
+<translation id="4730232680256276456">Alta</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Información relacionada con tu selección</translation>
@@ -427,6 +430,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4868492592575313542">activado</translation>
 <translation id="4872237917498892622">Alt+tecla de búsqueda o Mayús</translation>
 <translation id="4890187583552566966">Tu administrador ha inhabilitado el Asistente de Google.</translation>
+<translation id="4890408602550914571">Comprueba que tengas el teléfono cerca y que el Bluetooth esté activado.</translation>
 <translation id="4895488851634969361">La batería está llena.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="4905614135390995787">La combinación de teclas para activar el modo de contraste alto ha cambiado. Utiliza <ph name="NEW_SHORTCUT" /> en lugar de <ph name="OLD_SHORTCUT" />.</translation>
@@ -474,6 +478,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
 <translation id="5314219114274263156">Grabación de pantalla realizada</translation>
+<translation id="5322611492012084517">No se puede encontrar tu teléfono</translation>
 <translation id="5329548388331921293">Conectando...</translation>
 <translation id="5331975486040154427">Dispositivo USB tipo C (puerto trasero izquierdo)</translation>
 <translation id="5352250171825660495">Tema oscuro está activado</translation>
@@ -520,6 +525,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="576453121877257266">Luz nocturna activada.</translation>
 <translation id="5769373120130404283">Pantalla de privacidad</translation>
 <translation id="5777841717266010279">¿Dejar de compartir la pantalla?</translation>
+<translation id="5779721926447984944">Archivos fijados</translation>
 <translation id="5790085346892983794">Completado correctamente</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
@@ -564,6 +570,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="615957422585914272">Mostrar teclado en pantalla</translation>
 <translation id="6164005077879661055">Todos los archivos y datos locales asociados al usuario supervisado se eliminarán de forma permanente una vez que se haya eliminado este usuario supervisado. Es posible que el administrador pueda seguir viendo la configuración y los sitios web visitados de este usuario supervisado en la página <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Más información</translation>
+<translation id="6179832488876878285">Puedes fijar tus archivos importantes aquí. Abre la aplicación Archivos para empezar.</translation>
 <translation id="622484624075952240">Flecha hacia abajo</translation>
 <translation id="6236290670123303279">Gestionar configuración</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -721,6 +728,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7654687942625752712">Mantén pulsadas ambas teclas de volumen durante cinco segundos para inhabilitar los mensajes de voz.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7662283695561029522">Toca para configurar</translation>
+<translation id="7683326293741220026">Parece que el Bluetooth de tu teléfono está desactivado. Activa el Bluetooth para usar la función Mi teléfono.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificaciones}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
@@ -738,9 +746,11 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7860671499921112077">Desliza tres dedos hacia arriba para acceder a la vista general</translation>
 <translation id="7868900307798234037">Desbloqueando con huella digital</translation>
 <translation id="7872786842639831132">No</translation>
+<translation id="7875575368831396199">Parece que el Bluetooth de <ph name="DEVICE_TYPE" /> está desactivado. Activa el Bluetooth para usar la función Mi teléfono.</translation>
 <translation id="7886169021410746335">Ajustar la configuración de privacidad</translation>
 <translation id="7886277072580235377">Tu sesión de Internet se borrará cuando la cierres. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Enviar un correo electrónico</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Has pulsado la combinación de teclas que gira la pantalla. ¿Quieres girar la pantalla?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toca el sensor de huellas digitales</translation>
@@ -808,6 +818,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8444246603146515890">Se ha activado el escritorio <ph name="DESK_TITILE" /></translation>
 <translation id="8452135315243592079">Falta la tarjeta SIM</translation>
 <translation id="8454013096329229812">La conexión Wi-Fi está activada.</translation>
+<translation id="8462305545768648477">Cerrar Enunciar Selección</translation>
 <translation id="847056008324733326">Configuración de escala de pantalla</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ha <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pulsa Alt + tecla de búsqueda o Mayús para cancelarlo.</translation>

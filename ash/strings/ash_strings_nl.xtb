@@ -47,6 +47,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1302880136325416935">Bluetooth-instellingen weergeven. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Plank altijd weergeven</translation>
+<translation id="1316811122439383437">Bak: recente schermopnamen, downloads en vastgezette bestanden</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> gekoppeld</translation>
 <translation id="1341651618736211726">Overloop</translation>
 <translation id="1346748346194534595">Rechts</translation>
@@ -181,6 +182,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2596078834055697711">Een screenshot van het venster maken</translation>
 <translation id="2617342710774726426">Simkaart is vergrendeld</translation>
 <translation id="2621713457727696555">Beveiligd</translation>
+<translation id="2633643784040308254">Gemiddeld</translation>
 <translation id="2653659639078652383">Verzenden</translation>
 <translation id="2658778018866295321">Klikken en slepen</translation>
 <translation id="2678852583403169292">Menu Selecteer om uitgesproken te worden</translation>
@@ -410,6 +412,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4696813013609194136">Apparaat ontgrendelen met oudercode</translation>
 <translation id="4702647871202761252">Privacyscherm is uitgeschakeld</translation>
 <translation id="4705716602320768426">Feedback geven</translation>
+<translation id="4730232680256276456">Hallo,</translation>
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="4734965478015604180">Horizontaal</translation>
 <translation id="4744944742468440486">Informatie met betrekking tot je selectie</translation>
@@ -426,6 +429,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4868492592575313542">geactiveerd</translation>
 <translation id="4872237917498892622">Alt+Zoeken of Shift</translation>
 <translation id="4890187583552566966">De Google Assistent is uitgeschakeld door je beheerder.</translation>
+<translation id="4890408602550914571">Zorg dat je telefoon in de buurt is en dat bluetooth aanstaat.</translation>
 <translation id="4895488851634969361">De batterij is vol.</translation>
 <translation id="490375751687810070">Verticaal</translation>
 <translation id="4905614135390995787">De sneltoets om de modus voor hoog contrast in of uit te schakelen, is gewijzigd. Gebruik <ph name="NEW_SHORTCUT" /> in plaats van <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5302048478445481009">Taal</translation>
 <translation id="5313326810920013265">Bluetooth-instellingen</translation>
 <translation id="5314219114274263156">Schermopname gemaakt</translation>
+<translation id="5322611492012084517">Kan je telefoon niet vinden</translation>
 <translation id="5329548388331921293">Verbinden...</translation>
 <translation id="5331975486040154427">USB-C-apparaat (poort links aan de achterkant)</translation>
 <translation id="5352250171825660495">Het donkere thema is ingeschakeld</translation>
@@ -519,6 +524,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="576453121877257266">Nachtverlichting is ingeschakeld.</translation>
 <translation id="5769373120130404283">Privacyscherm</translation>
 <translation id="5777841717266010279">Stoppen met scherm delen?</translation>
+<translation id="5779721926447984944">Vastgezette bestanden</translation>
 <translation id="5790085346892983794">Geslaagd</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Instellingen voor verbonden apparaten</translation>
@@ -563,6 +569,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="615957422585914272">Schermtoetsenbord weergeven</translation>
 <translation id="6164005077879661055">Alle bestanden en lokale gegevens gekoppeld aan de gebruiker met beperkte rechten worden permanent verwijderd zodra de gebruiker met beperkte rechten is verwijderd. Bezochte websites en instellingen voor deze gebruiker met beperkte rechten kunnen nog steeds zichtbaar zijn voor de beheerder op <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
+<translation id="6179832488876878285">Je kunt hier je belangrijke bestanden vastzetten. Open de app Bestanden om aan de slag te gaan.</translation>
 <translation id="622484624075952240">Omlaag</translation>
 <translation id="6236290670123303279">Instellingen beheren</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="7654687942625752712">Houd beide volumetoetsen gedurende vijf seconden ingedrukt om gesproken feedback uit te schakelen.</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7662283695561029522">Tik om te configureren</translation>
+<translation id="7683326293741220026">Zo te zien staat bluetooth uit op je telefoon. Zet bluetooth aan op je telefoon om Telefoonhub te gebruiken.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Eén melding}other{# meldingen}}</translation>
 <translation id="7724603315864178912">Knip</translation>
@@ -737,9 +745,11 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="7860671499921112077">Swipe met 3 vingers omhoog om het overzicht te openen</translation>
 <translation id="7868900307798234037">Ontgrendelen met vingerafdruk</translation>
 <translation id="7872786842639831132">Uit</translation>
+<translation id="7875575368831396199">Zo te zien staat bluetooth uit op je <ph name="DEVICE_TYPE" />. Zet bluetooth aan om Telefoonhub te gebruiken.</translation>
 <translation id="7886169021410746335">Privacyinstellingen aanpassen</translation>
 <translation id="7886277072580235377">Je internetsessie wordt gewist wanneer je uitlogt. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Stuur een e-mail</translation>
+<translation id="7895348134893321514">Bak</translation>
 <translation id="7897375687985782769">Je hebt op de sneltoets voor schermrotatie gedrukt. Wil je het scherm draaien?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Raak de vingerafdruksensor aan</translation>
@@ -807,6 +817,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8444246603146515890">Bureaublad <ph name="DESK_TITILE" /> geactiveerd</translation>
 <translation id="8452135315243592079">Simkaart ontbreekt</translation>
 <translation id="8454013096329229812">Wifi is ingeschakeld.</translation>
+<translation id="8462305545768648477">'Selecteer om uitgesproken te worden' sluiten</translation>
 <translation id="847056008324733326">Instellingen voor weergaveschaal</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> heeft <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Druk op Alt+Zoeken of Shift om te annuleren.</translation>

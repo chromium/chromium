@@ -261,6 +261,7 @@
 <translation id="281504910091592009">‏הצגה וניהול של סיסמאות שמורות ב<ph name="BEGIN_LINK" />חשבון Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">כדי לקבל גישה אל הסימניות שלך בכל המכשירים, יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="2827278682606527653">תפריט כרטיס הפיד נפתח בחצי מגובה המסך</translation>
+<translation id="2833452327385637152">כדי לבצע חיפוש של מילה או ביטוי, יש ללחוץ עליהם לחיצה ארוכה במקום להקיש עליהם</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{התבצעה בדיקה לפני יום אחד}two{התבצעה בדיקה לפני יומיים}many{התבצעה בדיקה לפני # ימים}other{התבצעה בדיקה לפני # ימים}}</translation>
 <translation id="2842985007712546952">תיקיית אב</translation>
 <translation id="2860954141821109167">יש לוודא שמופעלת במכשיר הזה אפליקציית טלפון</translation>
@@ -1108,6 +1109,7 @@
 <translation id="8571213806525832805">מארבעת השבועות האחרונים</translation>
 <translation id="8572344201470131220">התמונה הועתקה</translation>
 <translation id="8583805026567836021">נתוני החשבון נמחקים</translation>
+<translation id="8587585930972369234">יש ללחוץ לחיצה ארוכה כדי לחפש</translation>
 <translation id="860043288473659153">שם בעל הכרטיס</translation>
 <translation id="8616006591992756292">‏ייתכן שלחשבון Google שלך יהיו צורות אחרות של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">האם לעבור אל כתובת האתר שצוינה כהצעה בתוכן שהורדת?</translation>

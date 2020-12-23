@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">Bluetooth-beállítások megjelenítése. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Jelerősség: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Mindig látsszon a polc</translation>
+<translation id="1316811122439383437">Tároló: nemrég készült képernyőfelvételek, letöltések és kitűzött fájlok</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> csatlakoztatva</translation>
 <translation id="1341651618736211726">Túlcsordulás</translation>
 <translation id="1346748346194534595">Jobbra</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">Képernyőkép készítése az ablakról</translation>
 <translation id="2617342710774726426">A SIM-kártya zárolva van</translation>
 <translation id="2621713457727696555">Biztonságos</translation>
+<translation id="2633643784040308254">Közepes</translation>
 <translation id="2653659639078652383">Küldés</translation>
 <translation id="2658778018866295321">Kattintás és húzás</translation>
 <translation id="2678852583403169292">Felolvasás menü</translation>
@@ -411,6 +413,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4696813013609194136">Zárolás feloldása szülői kóddal</translation>
 <translation id="4702647871202761252">Az adatvédelmi képernyő ki van kapcsolva</translation>
 <translation id="4705716602320768426">Visszajelzés küldése</translation>
+<translation id="4730232680256276456">Magas</translation>
 <translation id="4731797938093519117">Szülői hozzáférés</translation>
 <translation id="4734965478015604180">Vízszintes</translation>
 <translation id="4744944742468440486">A kiválasztott elemhez kapcsolódó információ</translation>
@@ -427,6 +430,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4868492592575313542">aktiválva</translation>
 <translation id="4872237917498892622">Alt + Keresés vagy Shift</translation>
 <translation id="4890187583552566966">A rendszergazda letiltotta a Google Segédet.</translation>
+<translation id="4890408602550914571">Gondoskodjon arról, hogy telefonja a közelben legyen, bekapcsolt Bluetooth funkcióval.</translation>
 <translation id="4895488851634969361">Az akkumulátor feltöltve.</translation>
 <translation id="490375751687810070">Függőleges</translation>
 <translation id="4905614135390995787">Módosult a nagy kontrasztú mód billentyűparancsa. Használja a(z) <ph name="NEW_SHORTCUT" /> billentyűparancsot a(z) <ph name="OLD_SHORTCUT" /> helyett.</translation>
@@ -474,6 +478,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5302048478445481009">Nyelv</translation>
 <translation id="5313326810920013265">Bluetooth-beállítások</translation>
 <translation id="5314219114274263156">Képernyőfelvétel elkészítve</translation>
+<translation id="5322611492012084517">Telefonja nem található</translation>
 <translation id="5329548388331921293">Kapcsolódás…</translation>
 <translation id="5331975486040154427">C típusú USB-vel kompatibilis eszköz (bal hátsó port)</translation>
 <translation id="5352250171825660495">Sötét téma bekapcsolva.</translation>
@@ -520,6 +525,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="576453121877257266">Az éjszakai fény be van kapcsolva.</translation>
 <translation id="5769373120130404283">Adatvédelmi képernyő</translation>
 <translation id="5777841717266010279">Leállítja a képernyőmegosztást?</translation>
+<translation id="5779721926447984944">Kitűzött fájlok</translation>
 <translation id="5790085346892983794">Siker</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Csatlakoztatott eszközök beállításai</translation>
@@ -564,6 +570,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="615957422585914272">A képernyő-billentyűzet megjelenítése</translation>
 <translation id="6164005077879661055">Amikor ezt a felügyelt felhasználót eltávolítják, minden hozzá tartozó fájl és helyi adat véglegesen törlődik. A felügyelt felhasználó felkeresett webhelyeit és beállításait a kezelő továbbra is láthatja a következő címen: <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">További információ</translation>
+<translation id="6179832488876878285">Ide kitűzheti a fontos fájlokat. A kezdéshez nyissa meg a Fájlok alkalmazást.</translation>
 <translation id="622484624075952240">Le</translation>
 <translation id="6236290670123303279">Beállítások kezelése</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -721,6 +728,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="7654687942625752712">A hangos visszajelzés kikapcsolásához öt másodpercig tartsa lenyomva mindkét hangerőgombot.</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7662283695561029522">Koppintson a konfiguráláshoz</translation>
+<translation id="7683326293741220026">Úgy tűnik, ki van kapcsolva a Bluetooth a telefonon. A Telefonközpont használatához kapcsolja be a telefonon a Bluetootht.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 értesítés}other{# értesítés}}</translation>
 <translation id="7724603315864178912">Kivágás</translation>
@@ -738,9 +746,11 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="7860671499921112077">Az Áttekintés nézetbe való belépéshez csúsztasson felfelé három ujjával</translation>
 <translation id="7868900307798234037">Feloldás ujjlenyomattal</translation>
 <translation id="7872786842639831132">Ki</translation>
+<translation id="7875575368831396199">Úgy tűnik, ki van kapcsolva a Bluetooth a(z) <ph name="DEVICE_TYPE" /> eszközön. Kapcsolja be a Bluetootht a Telefonközpont használatához.</translation>
 <translation id="7886169021410746335">Adatvédelmi beállítások módosítása</translation>
 <translation id="7886277072580235377">Kijelentkezés után az internetes munkamenet törlődik. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">E-mail küldése</translation>
+<translation id="7895348134893321514">Tároló</translation>
 <translation id="7897375687985782769">Lenyomta a képernyő elforgatásának billentyűparancsát. Biztosan elforgatja a képernyőt?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Érintse meg az ujjlenyomat-érzékelőt</translation>
@@ -808,6 +818,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="8444246603146515890">A(z) „<ph name="DESK_TITILE" />” asztal aktiválva</translation>
 <translation id="8452135315243592079">Hiányzó SIM-kártya</translation>
 <translation id="8454013096329229812">Wi-Fi bekapcsolva.</translation>
+<translation id="8462305545768648477">Felolvasás bezárása</translation>
 <translation id="847056008324733326">A megjelenítési méret beállításai</translation>
 <translation id="8473301994082929012">A(z) <ph name="ORGANIZATION_NAME" /> szervezetnél <ph name="FEATURE_STATE" /> van a(z) <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">A kikapcsoláshoz nyomja meg az Alt+Keresés billentyűkombinációt vagy a Shift billentyűt.</translation>

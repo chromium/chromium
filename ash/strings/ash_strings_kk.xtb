@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">Bluetooth параметрлерін көрсету. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Сигнал күші: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Сөрені әрқашан көрсету</translation>
+<translation id="1316811122439383437">Tote: экраннан түсірілген соңғы кескіндер, соңғы жүктеп алынған және бекітілген файлдар.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> қосылған</translation>
 <translation id="1341651618736211726">Қосымша мәзір</translation>
 <translation id="1346748346194534595">Оңға</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">Терезенің скриншотын жасау</translation>
 <translation id="2617342710774726426">SIM картасы құлыпталған</translation>
 <translation id="2621713457727696555">Қорғалған</translation>
+<translation id="2633643784040308254">Орташа</translation>
 <translation id="2653659639078652383">Жіберу</translation>
 <translation id="2658778018866295321">Басу және сүйреу</translation>
 <translation id="2678852583403169292">Select to Speak мәзірі</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">Құрылғының құлпын ата-ана кодымен ашыңыз</translation>
 <translation id="4702647871202761252">Құпиялылық экраны өшірулі.</translation>
 <translation id="4705716602320768426">Пікір жіберу</translation>
+<translation id="4730232680256276456">Сәлем</translation>
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
 <translation id="4734965478015604180">Көлденең</translation>
 <translation id="4744944742468440486">Таңдауға қатысты ақпарат</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">іске қосылды</translation>
 <translation id="4872237917498892622">Alt+іздеу немесе Shift</translation>
 <translation id="4890187583552566966">Google Assistant қолданбасын әкімші өшірген.</translation>
+<translation id="4890408602550914571">Телефоныңыз жаныңызда болуы және Bluetooth қосылып тұруы керек.</translation>
 <translation id="4895488851634969361">Батарея толы.</translation>
 <translation id="490375751687810070">Тік</translation>
 <translation id="4905614135390995787">Жоғары контраст режимін ауыстыру таңбашасы өзгертілді. <ph name="OLD_SHORTCUT" /> таңбашасының орнына <ph name="NEW_SHORTCUT" /> таңбашасын пайдаланыңыз.</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">Тіл</translation>
 <translation id="5313326810920013265">Bluetooth параметрлері</translation>
 <translation id="5314219114274263156">Экран жазбасы алынды</translation>
+<translation id="5322611492012084517">Телефоныңызды табу мүмкін емес</translation>
 <translation id="5329548388331921293">Қосылуда…</translation>
 <translation id="5331975486040154427">USB-C құрылғысы (сол жақ артқы порты)</translation>
 <translation id="5352250171825660495">Қараңғы тақырып қосулы.</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">"Түнгі жарық" функциясы қосулы.</translation>
 <translation id="5769373120130404283">Құпиялылық экраны</translation>
 <translation id="5777841717266010279">Экран бөлісуді тоқтату қажет пе?</translation>
+<translation id="5779721926447984944">Бекітілген файлдар</translation>
 <translation id="5790085346892983794">Орындалды</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Байланыстырылған құрылғылар параметрлері</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">Экрандағы пернетақтаны көрсету</translation>
 <translation id="6164005077879661055">Бақылаудағы пайдаланушыға қатысты барлық файлдар мен жергілікті деректер осы бақылаудағы пайдаланушы алып тасталғаннан кейін біржола жойылады. Осы бақылаудағы пайдаланушының кірген веб-сайттар мен параметрлері <ph name="MANAGEMENT_URL" /> сілтемесіндегі басқарушыға көрінуі мүмкін.</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
+<translation id="6179832488876878285">Бұл жерде маңызды файлдарыңызды бекіте аласыз. Бастау үшін Files қолданбасын ашыңыз.</translation>
 <translation id="622484624075952240">Төмен</translation>
 <translation id="6236290670123303279">Параметрлерді басқару</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">Дауыстап оқу функциясын өшіру үшін дыбыс түймелерін бірге бес секунд басып тұрыңыз.</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7662283695561029522">Конфигурациялау үшін түртіңіз</translation>
+<translation id="7683326293741220026">Телефоныңызда Bluetooth өшірулі сияқты. Phone Hub функциясын пайдалану үшін телефоныңыздан Bluetooth қосыңыз.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 хабарландыру}other{# хабарландыру}}</translation>
 <translation id="7724603315864178912">Қиып алу</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">Үш саусақпен жоғары сырғытып, "Шолу" бөліміне кіріңіз.</translation>
 <translation id="7868900307798234037">Саусақ ізімен ашылуда</translation>
 <translation id="7872786842639831132">Өшірулі</translation>
+<translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> құрылғыңызда Bluetooth өшірулі сияқты. Phone Hub функциясын пайдалану үшін Bluetooth қосыңыз.</translation>
 <translation id="7886169021410746335">Құпиялылық параметрлерін реттеу</translation>
 <translation id="7886277072580235377">Сіз шыққан кезде, сеансыңыз өшіріледі. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Электрондық хат жіберу</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Экранды бұруға арналған пернелер тіркесімін бастыңыз. Оны бұрғыңыз келе ме?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Саусақ ізін оқу сканерін түртіңіз.</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> үстелі іске қосылды.</translation>
 <translation id="8452135315243592079">SIM картасы жоқ</translation>
 <translation id="8454013096329229812">Wi-Fi қосылды.</translation>
+<translation id="8462305545768648477">Select-to-Speak функциясын жабу</translation>
 <translation id="847056008324733326">Дисплей масштабы параметрлері</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ұйымы <ph name="FEATURE_NAME" /> функциясын <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Бас тарту үшін Alt+Іздеу не Shift пернесін басыңыз.</translation>

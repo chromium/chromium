@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Quét</translation>
 <translation id="2570743873672969996">Đang chạy kiểm tra <ph name="TEST_NAME" />...</translation>
+<translation id="2585245331261708204">Chrome OS có gì mới</translation>
 <translation id="2620436844016719705">Hệ thống</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
@@ -183,6 +184,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6232017090690406397">Pin</translation>
 <translation id="6325525973963619867">Lỗi</translation>
 <translation id="636850387210749493">Đăng ký doanh nghiệp</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Đã lưu tệp được quét}other{Đã lưu các tệp được quét}}</translation>
 <translation id="649050271426829538">Đã dừng – Kẹt giấy</translation>
 <translation id="6517239166834772319">Khám phá</translation>
 <translation id="6527081081771465939">Giao thức bảo mật Wi-Fi không xác định</translation>

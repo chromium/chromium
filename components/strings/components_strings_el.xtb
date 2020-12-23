@@ -1374,6 +1374,7 @@
 <translation id="6389470377220713856">Όνομα σε κάρτα</translation>
 <translation id="6390200185239044127">Δίπλωμα Z στη μέση</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6393956493820063117">Η επικόλληση από το <ph name="ORIGIN_NAME" /> σε αυτήν την τοποθεσία έχει αποκλειστεί από την πολιτική του διαχειριστή.</translation>
 <translation id="6401136357288658127">Αυτή η πολιτική έχει καταργηθεί. Θα πρέπει να χρησιμοποιήσετε εναλλακτικά την πολιτική <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Επεξεργασία σελιδοδείκτη</translation>
 <translation id="6406765186087300643">C0 (Φάκελος)</translation>
@@ -1866,6 +1867,7 @@
 <translation id="8371889962595521444">Προσαρμοσμένα πιστοποιητικά ρίζας</translation>
 <translation id="8380941800586852976">Επικίνδυνο</translation>
 <translation id="8381674639488873545">Αυτές οι χρεώσεις μπορεί να είναι εφάπαξ ή επαναλαμβανόμενες και ίσως να μην είναι εμφανείς.<ph name="BEGIN_LINK" />Εμφάνιση ούτως ή άλλως<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698">Η κοινοποίηση από το <ph name="ORIGIN_NAME" /> στο <ph name="VM_NAME" /> έχει αποκλειστεί από την πολιτική του διαχειριστή.</translation>
 <translation id="8412145213513410671">Σφάλματα (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Πρέπει να εισαγάγετε δύο φορές την ίδια φράση πρόσβασης.</translation>
 <translation id="8416694386774425977">Η διαμόρφωση δικτύου είναι μη έγκυρη και δεν ήταν δυνατή η εισαγωγή της.

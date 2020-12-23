@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> चाचणी रन होत आहे...</translation>
+<translation id="2585245331261708204">Chrome OS मध्ये नवीन</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2740531572673183784">ठीक आहे</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
@@ -183,6 +184,7 @@
 <translation id="6232017090690406397">बॅटरी</translation>
 <translation id="6325525973963619867">अयशस्वी</translation>
 <translation id="636850387210749493">Enterprise नावनोंदणी</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{स्कॅन केलेली फाइल सेव्ह केली आहे}other{स्कॅन केलेली फाइल सेव्ह केल्या आहेत}}</translation>
 <translation id="649050271426829538">थांबले - कागद अडकला</translation>
 <translation id="6517239166834772319">एक्सप्लोर करा</translation>
 <translation id="6527081081771465939">अनोळखी वायफाय सुरक्षा प्रोटोकॉल</translation>

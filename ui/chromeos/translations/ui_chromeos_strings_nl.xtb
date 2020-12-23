@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Gekopieerd naar <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google-spreadsheet</translation>
 <translation id="3486821258960016770">Mongools</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> fouten.</translation>
 <translation id="3522708245912499433">Portugees</translation>
 <translation id="3524311639100184459">Let op: Deze bestanden zijn tijdelijk en kunnen automatisch worden verwijderd om schijfruimte vrij te maken.  <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Map</translation>
@@ -739,6 +740,7 @@
 <translation id="8714406895390098252">Fiets</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> is geselecteerd.</translation>
 <translation id="872537912056138402">Kroatisch</translation>
+<translation id="8750438273876807512">Tik op een bestand en houd dit vast. Tik vervolgens op <ph name="ICON" /> en selecteer 'Vastzetten op plank' om snel toegang tot je bestanden te krijgen op de plank.</translation>
 <translation id="8775404590947523323">Je bewerkingen worden automatisch opgeslagen.<ph name="BREAKS" />Als je een kopie van de oorspronkelijke afbeelding wilt behouden, vink je het selectievakje 'Oorspronkelijk bestand overschrijven' uit.</translation>
 <translation id="8808686172382650546">Kat</translation>
 <translation id="8810671769985673465">Inpakken mislukt. Item bestaat al: '<ph name="FILE_NAME" />'</translation>

@@ -2202,6 +2202,13 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Jika Anda menyetel kebijakan ini ke 'AllowMigration', pengguna dengan direktori beranda ecryptfs akan ditawarkan untuk migrasi ke enkripsi ext4 jika diperlukan (untuk saat ini dilakukan jika Android N tersedia di perangkat).
 
       Kebijakan ini tidak berlaku untuk aplikasi kios, yang akan otomatis dimigrasikan. Jika kebijakan ini tidak disetel, perangkat akan berperilaku seolah-olah 'DisallowArc' dipilih.</translation>
+<translation id="401650904918322517">Kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 89.
+
+      Kebijakan ini memberikan izin kepada fitur Jawaban Cepat untuk mengakses konten yang dipilih dan mengirimkan info ke server.
+
+      Jika kebijakan ini diaktifkan, Jawaban Cepat akan diizinkan mengakses konten yang dipilih.
+      Jika kebijakan ini dinonaktifkan, Jawaban Cepat tidak akan diizinkan mengakses konten yang dipilih.
+      Jika kebijakan ini tidak disetel, pengguna dapat memilih untuk mengizinkan Jawaban Cepat mengakses konten yang dipilih atau tidak.</translation>
 <translation id="4020682745012723568">Cookie yang ditransfer ke profil pengguna tidak dapat diakses oleh aplikasi Android.</translation>
 <translation id="4025500273782820766">Izinkan pengguna memilih "Selalu izinkan" untuk melewati perintah konfirmasi di waktu mendatang, jika dialog protokol eksternal muncul</translation>
 <translation id="402759845255257575">Jangan izinkan situs apa pun menjalankan JavaScript</translation>
@@ -3993,6 +4000,13 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="6789422336869764846">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan status tombol dev perangkat saat perangkat di-booting.
 
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan status tombol dev.</translation>
+<translation id="6793420507738858152">Jika diaktifkan, fitur <ph name="PRODUCT_NAME" /> akan mengirimkan header permintaan terperinci yang memberikan informasi tentang browser dan lingkungan pengguna.
+
+      Ini adalah fitur tambahan, tetapi header baru dapat menyebabkan error di situs yang membatasi karakter yang mungkin ada di dalam permintaan.
+
+      Jika kebijakan ini diaktifkan atau tidak disetel, fitur <ph name="PRODUCT_NAME" /> akan diaktifkan. Jika kebijakan dinonaktifkan, fitur tidak akan tersedia.
+
+      Kebijakan perusahaan ini berlaku untuk adaptasi jangka pendek dan akan tersedia setidaknya sampai Chrome 91.</translation>
 <translation id="6795485990775913659">Hanya izinkan pencetakan tanpa PIN</translation>
 <translation id="6800181452282128474">Jangan kueri Server Quirks</translation>
 <translation id="6810445994095397827">Cekal JavaScript di situs ini</translation>
@@ -4637,6 +4651,9 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, penyedia penelusuran default akan diaktifkan, dan pengguna dapat menyetel daftar penyedia penelusuran.
 
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di Pengelolaan Cloud Browser Chrome. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
+<translation id="7669630878711068277">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dapat mencetak dalam <ph name="PRODUCT_NAME" />, tetapi pengguna tidak dapat mengganti setelan ini.
+
+      Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat mencetak dari <ph name="PRODUCT_NAME" />. Pencetakan nonaktif di menu tiga titik, ekstensi, dan aplikasi JavaScript.</translation>
 <translation id="7673194325208122247">Periode waktu (milidetik)</translation>
 <translation id="7677220829878081413">
       Jika ditetapkan ke ArcSession, kebijakan ini akan memaksa perangkat untuk reboot saat pengguna logout jika Android telah dimulai.

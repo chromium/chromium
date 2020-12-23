@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Elimina dati esistenti.</translation>
 <translation id="1147031633655575115">Accesso eseguito come <ph name="USER" /></translation>
 <translation id="1154690515305205900">Impossibile creare un link al testo evidenziato.</translation>
+<translation id="1154984953698510061">Vedi altre schede</translation>
 <translation id="1157749421655780457">Consenti accesso a posizione…</translation>
 <translation id="1165039591588034296">Errore</translation>
 <translation id="1172898394251786223">Campo successivo</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">Ultime 24 ore</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
 <translation id="1321993286294231467">Errore durante il salvataggio dell'immagine.</translation>
+<translation id="1322735045095424339">La tua organizzazione richiede la modalità in incognito</translation>
 <translation id="1323735185997015385">Elimina</translation>
 <translation id="132683371494960526">Tocca due volte per cambiare la cartella principale.</translation>
 <translation id="1340643665687018190">Chiudi menu</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Nome del titolare della carta</translation>
 <translation id="1809939268435598390">Elimina cartella</translation>
 <translation id="1813414402673211292">Cancella dati di navigazione</translation>
+<translation id="1815941218935345331">Passcode</translation>
 <translation id="1820259098641718022">Aggiunta all'elenco di lettura</translation>
 <translation id="1870148520156231997">Mostra password</translation>
 <translation id="1872096359983322073">Torcia</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Avanzate</translation>
 <translation id="1989112275319619282">Esplora</translation>
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
+<translation id="2047933465321076474">La tua organizzazione ha disattivato la navigazione privata. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Attivo <ph name="DAYS" /> giorni fa</translation>
 <translation id="2074131957428911366">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annulla</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Cancellazione dati di navigazione…</translation>
 <translation id="2257567812274161158">La sincronizzazione non funziona.</translation>
 <translation id="225943865679747347">Codice di errore: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">La tua organizzazione ti richiede di navigare in privato. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Aggiungi account</translation>
 <translation id="2268044343513325586">Perfeziona</translation>
 <translation id="2273327106802955778">Menu Altro</translation>
@@ -136,6 +141,7 @@
 I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su siti diversi, ad esempio per personalizzare gli annunci.</translation>
 <translation id="2381405137052800939">Opzioni di base</translation>
 <translation id="2386793615875593361">Una selezionata</translation>
+<translation id="2419661687355878017">La tua organizzazione ha disattivato la modalità in incognito</translation>
 <translation id="2421004566762153674">Blocco dei cookie di terze parti</translation>
 <translation id="2421044535038393232">Continua a modificare</translation>
 <translation id="2435457462613246316">Mostra password</translation>
@@ -185,11 +191,13 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="291754862089661335">Posiziona il codice a barre o QR all'interno di quest'area</translation>
 <translation id="2921219216347069551">Impossibile condividere la pagina</translation>
 <translation id="2923448633003185837">Incolla e vai</translation>
+<translation id="2923827943290349720">Blocca le schede di navigazione in incognito quando chiudi Chrome</translation>
 <translation id="292639812446257861">Segna come da leggere</translation>
 <translation id="2952581218264071393">1. Apri le Impostazioni di Chrome</translation>
 <translation id="2958718410589002129">Password</translation>
 <translation id="2964349545761222050">Blocca cookie di terze parti</translation>
 <translation id="2969979262385602596">Impossibile accedere. Riprova più tardi.</translation>
+<translation id="2975121486251958312">Disponibile solo la modalità in incognito</translation>
 <translation id="298306318844797842">Aggiungi il metodo di pagamento…</translation>
 <translation id="2989805286512600854">Apri in un'altra scheda</translation>
 <translation id="3037605927509011580">Uffa!</translation>
@@ -204,6 +212,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="3175081911749765310">Servizi web</translation>
 <translation id="3178650076442119961">Attivo oggi</translation>
 <translation id="3181954750937456830">Navigazione sicura (protegge te e il tuo dispositivo da siti pericolosi)</translation>
+<translation id="3184767182050912705">Sblocca con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">I siti possono utilizzare i cookie per migliorare la tua esperienza di navigazione, ad esempio per mantenere l'accesso o memorizzare gli articoli aggiunti al carrello.
 
 In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su siti diversi, ad esempio per personalizzare gli annunci.</translation>
@@ -355,6 +364,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 altra}other{{domain} e altre {count}}}</translation>
 <translation id="4826218269716039351">Blocca i cookie di terze parti</translation>
 <translation id="48274138579728272">Contrassegna come letto</translation>
+<translation id="4833686396768033263">Schede recenti non disponibili</translation>
 <translation id="4833786495304741580">Invia automaticamente a Google statistiche sull'utilizzo e rapporti sugli arresti anomali.</translation>
 <translation id="4840495572919996524">I preferiti, la cronologia, le password e altre impostazioni non verranno più sincronizzati con il tuo Account Google.</translation>
 <translation id="4854345657858711387">Imposta un passcode</translation>
@@ -418,6 +428,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5551897871312988470">Proponi di tradurre</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="5592679540098330836">Attiva la sincronizzazione per <ph name="NAME" /></translation>
+<translation id="5597169624050330492">La tua organizzazione ti richiede di navigare in privato. Le schede non vengono salvate nella modalità in incognito. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Salvare la password?</translation>
 <translation id="5626245204502895507">Il file non può essere scaricato in questo momento.</translation>
 <translation id="5631164295104953411">Aggiungi il metodo di pagamento</translation>
@@ -522,6 +533,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 
 Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="651505212789431520">Annullare la sincronizzazione? Puoi attivare la sincronizzazione in qualsiasi momento nelle impostazioni.</translation>
+<translation id="6524918542306337007">Modalità di navigazione in incognito non disponibile</translation>
 <translation id="6561262006871132942">Aumenta lo zoom</translation>
 <translation id="6585618849026997638">Puoi tornare a una pagina che ritieni importante aggiungendola ai preferiti</translation>
 <translation id="6610002944194042868">Opzioni di Traduttore</translation>
@@ -580,6 +592,7 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="7133798577887235672">Nome e cognome</translation>
 <translation id="7136892417564438900">La videocamera non è disponibile</translation>
 <translation id="7159472599653637159">Richiedi sito per dispositivi mobili</translation>
+<translation id="7162168282402939716">Sblocca le schede di navigazione in incognito con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Proteggi le tue password dai problemi di sicurezza</translation>
 <translation id="7173114856073700355">Apri Impostazioni</translation>
 <translation id="7189598951263744875">Condividi...</translation>
@@ -617,6 +630,7 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="7537586195939242955">Spiacenti, il tuo pass non può essere installato in Passbook in questo momento.</translation>
 <translation id="7554791636758816595">Nuova scheda</translation>
 <translation id="7561196759112975576">Sempre</translation>
+<translation id="7583004045319035904">Utilizza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> per sbloccare le schede di navigazione in incognito.</translation>
 <translation id="7600965453749440009">Non tradurre mai <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Popup bloccati (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Elimina password</translation>
@@ -709,6 +723,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8591976964826315682">Blocca cookie di terze parti in modalità di navigazione in incognito</translation>
 <translation id="8605219856220328675">Chiudi la scheda.</translation>
 <translation id="8620640915598389714">Modifica</translation>
+<translation id="863090005774946393">Il tuo browser è gestito dalla tua organizzazione. Alcune funzionalità potrebbero essere disattivate.</translation>
 <translation id="8636825310635137004">Attiva la sincronizzazione per trovare le tue schede degli altri dispositivi.</translation>
 <translation id="8654802032646794042">Annulla</translation>
 <translation id="8668210798914567634">Questa pagina è stata salvata nel tuo Elenco di lettura.</translation>

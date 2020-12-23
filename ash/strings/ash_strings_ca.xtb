@@ -47,6 +47,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1302880136325416935">Mostra la configuració del Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal</translation>
 <translation id="1316069254387866896">Mostra sempre el prestatge</translation>
+<translation id="1316811122439383437">Tote: captures de pantalla, baixades i fitxers fixats recents</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> connectada</translation>
 <translation id="1341651618736211726">Menú addicional</translation>
 <translation id="1346748346194534595">Dreta</translation>
@@ -181,6 +182,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2596078834055697711">Fa una captura de pantalla de la finestra</translation>
 <translation id="2617342710774726426">La targeta SIM està bloquejada</translation>
 <translation id="2621713457727696555">Segura</translation>
+<translation id="2633643784040308254">Mitjana</translation>
 <translation id="2653659639078652383">Envia</translation>
 <translation id="2658778018866295321">Fes clic i arrossega</translation>
 <translation id="2678852583403169292">Menú Escolta la selecció</translation>
@@ -410,6 +412,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4696813013609194136">Desbloqueja el dispositiu amb el codi parental</translation>
 <translation id="4702647871202761252">La pantalla de privadesa està desactivada</translation>
 <translation id="4705716602320768426">Envia suggeriments</translation>
+<translation id="4730232680256276456">Alta</translation>
 <translation id="4731797938093519117">Accés parental</translation>
 <translation id="4734965478015604180">Horitzontal</translation>
 <translation id="4744944742468440486">Informació relacionada amb la teva selecció</translation>
@@ -426,6 +429,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4868492592575313542">activada</translation>
 <translation id="4872237917498892622">Alt+Cerca o Maj</translation>
 <translation id="4890187583552566966">L'administrador ha desactivat l'Assistent de Google.</translation>
+<translation id="4890408602550914571">Comprova que el telèfon sigui a prop teu i que tingui el Bluetooth activat.</translation>
 <translation id="4895488851634969361">La bateria està carregada.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="4905614135390995787">La drecera per activar/desactivar el mode d'alt contrast ha canviat. A partir d'ara, utilitza <ph name="NEW_SHORTCUT" /> en lloc de la drecera <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5313326810920013265">Configuració del Bluetooth</translation>
 <translation id="5314219114274263156">S'ha fet una gravació de pantalla</translation>
+<translation id="5322611492012084517">No es troba el telèfon</translation>
 <translation id="5329548388331921293">S'està connectant...</translation>
 <translation id="5331975486040154427">Dispositiu USB-C (port posterior esquerre)</translation>
 <translation id="5352250171825660495">El tema fosc està activat</translation>
@@ -519,6 +524,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="576453121877257266">La funció Llum nocturna està activada.</translation>
 <translation id="5769373120130404283">Pantalla de privadesa</translation>
 <translation id="5777841717266010279">Vols aturar la compartició de pantalla?</translation>
+<translation id="5779721926447984944">Fitxers fixats</translation>
 <translation id="5790085346892983794">Amb èxit</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Configuració dels dispositius connectats</translation>
@@ -563,6 +569,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="615957422585914272">Mostra el teclat en pantalla</translation>
 <translation id="6164005077879661055">Tots els fitxers i les dades locals associats amb l'usuari supervisat se suprimiran permanentment quan aquest usuari supervisat se suprimeixi. És possible que el gestor encara pugui veure els llocs web visitats i la configuració d'aquest usuari supervisat a la pàgina <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Més informació</translation>
+<translation id="6179832488876878285">Pots fixar els teus fitxers importants aquí. Obre l'aplicació Fitxers per començar.</translation>
 <translation id="622484624075952240">Avall</translation>
 <translation id="6236290670123303279">Gestiona la configuració</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7654687942625752712">Mantén premudes les dues tecles de volum durant cinc segons per desactivar els avisos de veu.</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7662283695561029522">Toca per configurar</translation>
+<translation id="7683326293741220026">Sembla que el Bluetooth està desactivat al teu telèfon. Activa'l per utilitzar El meu telèfon.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificació}other{# notificacions}}</translation>
 <translation id="7724603315864178912">Retalla</translation>
@@ -737,9 +745,11 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7860671499921112077">Fes lliscar tres dits cap amunt per entrar a Visió general</translation>
 <translation id="7868900307798234037">Has desbloquejat el dispositiu amb empremta digital</translation>
 <translation id="7872786842639831132">Desactivat</translation>
+<translation id="7875575368831396199">Sembla que el Bluetooth està desactivat al teu <ph name="DEVICE_TYPE" />. Activa el Bluetooth per utilitzar El meu telèfon.</translation>
 <translation id="7886169021410746335">Ajustar la configuració de privadesa</translation>
 <translation id="7886277072580235377">Les dades de la sessió a Internet s'esborraran en tancar-la. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Envia un correu electrònic</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Has premut la tecla de drecera de la rotació de la pantalla. Vols girar la pantalla?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toca el sensor d'empremtes digitals</translation>
@@ -807,6 +817,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8444246603146515890">L'escriptori <ph name="DESK_TITILE" /> està activat</translation>
 <translation id="8452135315243592079">Falta la targeta SIM</translation>
 <translation id="8454013096329229812">La Wi-Fi està activada.</translation>
+<translation id="8462305545768648477">Tanca Escolta la selecció</translation>
 <translation id="847056008324733326">Configuració de l'escala de visualització</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> té la funció <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Prem Alt+Cerca o Maj per cancel·lar.</translation>

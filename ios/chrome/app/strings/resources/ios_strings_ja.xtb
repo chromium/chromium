@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">既存のデータを削除します。</translation>
 <translation id="1147031633655575115"><ph name="USER" /> としてログイン</translation>
 <translation id="1154690515305205900">選択したテキストへのリンクを作成できません。</translation>
+<translation id="1154984953698510061">他のタブを表示</translation>
 <translation id="1157749421655780457">位置情報へのアクセスを許可...</translation>
 <translation id="1165039591588034296">エラー</translation>
 <translation id="1172898394251786223">次の項目</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">過去 24 時間</translation>
 <translation id="1285320974508926690">このサイトは翻訳しない</translation>
 <translation id="1321993286294231467">画像の保存中にエラーが発生しました。</translation>
+<translation id="1322735045095424339">組織がシークレット モードを使用するよう求めています</translation>
 <translation id="1323735185997015385">削除</translation>
 <translation id="132683371494960526">ダブルタップして親フォルダを変更。</translation>
 <translation id="1340643665687018190">メニューを閉じる</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">カード名義人</translation>
 <translation id="1809939268435598390">フォルダーを削除</translation>
 <translation id="1813414402673211292">閲覧履歴データの削除</translation>
+<translation id="1815941218935345331">パスコード</translation>
 <translation id="1820259098641718022">リーディング リストに追加しました</translation>
 <translation id="1870148520156231997">パスワードを表示します</translation>
 <translation id="1872096359983322073">照明</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">詳細設定</translation>
 <translation id="1989112275319619282">閲覧</translation>
 <translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスワードを設定する必要があります。</translation>
+<translation id="2047933465321076474">シークレット ブラウジングは組織によって無効にされています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">最終同期: <ph name="DAYS" /> 日前</translation>
 <translation id="2074131957428911366">同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。</translation>
 <translation id="2079545284768500474">元に戻す</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">閲覧データを削除しています...</translation>
 <translation id="2257567812274161158">同期が機能していません。</translation>
 <translation id="225943865679747347">エラー コード: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">組織がシークレット モードで閲覧するよう求めています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">アカウントを追加</translation>
 <translation id="2268044343513325586">絞り込み</translation>
 <translation id="2273327106802955778">その他のメニュー</translation>
@@ -136,6 +141,7 @@
 サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどが行えなくなります。</translation>
 <translation id="2381405137052800939">基本設定</translation>
 <translation id="2386793615875593361">1 枚選択されています</translation>
+<translation id="2419661687355878017">シークレット モードは組織によって無効にされています</translation>
 <translation id="2421004566762153674">サードパーティの Cookie をブロック</translation>
 <translation id="2421044535038393232">編集を続ける</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
@@ -185,11 +191,13 @@
 <translation id="291754862089661335">QR コードまたはバーコードをこの枠に合わせてください</translation>
 <translation id="2921219216347069551">ページを共有できない</translation>
 <translation id="2923448633003185837">貼り付けて移動</translation>
+<translation id="2923827943290349720">Chrome を終了するときにシークレット タブをロックする</translation>
 <translation id="292639812446257861">未読にする</translation>
 <translation id="2952581218264071393">1. Chrome の設定を開く</translation>
 <translation id="2958718410589002129">パスワード</translation>
 <translation id="2964349545761222050">サードパーティの Cookie をブロックする</translation>
 <translation id="2969979262385602596">ログインできません。後でもう一度お試しください。</translation>
+<translation id="2975121486251958312">シークレット モードのみ使用できます</translation>
 <translation id="298306318844797842">お支払い方法を追加...</translation>
 <translation id="2989805286512600854">新しいタブで開く</translation>
 <translation id="3037605927509011580">エラー</translation>
@@ -204,6 +212,7 @@
 <translation id="3175081911749765310">ウェブサービス</translation>
 <translation id="3178650076442119961">最終同期: 今日</translation>
 <translation id="3181954750937456830">セーフ ブラウジング（危険なサイトからユーザーとデバイスを保護します）</translation>
+<translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> でロックを解除</translation>
 <translation id="3196681740617426482">サイトは、Cookie を使用してブラウジングの利便性を改善することができます。たとえばログイン状態の維持や、ショッピング カートの中身の保存が可能になります。
 
 シークレット モードのとき、サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどが行えなくなります。</translation>
@@ -355,6 +364,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} とその他 1 タブ}other{{domain} とその他 {count} タブ}}</translation>
 <translation id="4826218269716039351">サードパーティの Cookie をブロック</translation>
 <translation id="48274138579728272">既読にする</translation>
+<translation id="4833686396768033263">最近使ったタブは使用できません</translation>
 <translation id="4833786495304741580">使用統計情報や障害レポートを Google に自動送信します。</translation>
 <translation id="4840495572919996524">ブックマーク、履歴、パスワードなどの設定は Google アカウントと同期されなくなります。</translation>
 <translation id="4854345657858711387">パスコードの設定</translation>
@@ -418,6 +428,7 @@
 <translation id="5551897871312988470">翻訳するか尋ねる</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> の同期をオンにします</translation>
+<translation id="5597169624050330492">組織がシークレット モードで閲覧するよう求めています。シークレット モードではタブは保存されません。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">パスワードを保存しますか？</translation>
 <translation id="5626245204502895507">今回は、ファイルをダウンロードできませんでした。</translation>
 <translation id="5631164295104953411">お支払い方法を追加</translation>
@@ -522,6 +533,7 @@
 
 各サイトで個別のパスワードを使用することをご検討ください。</translation>
 <translation id="651505212789431520">同期をキャンセルしますか？同期は設定でいつでもオンにできます。</translation>
+<translation id="6524918542306337007">シークレット モードは使用できません</translation>
 <translation id="6561262006871132942">拡大</translation>
 <translation id="6585618849026997638">重要なページは、ブックマークを追加しておくとすぐにアクセスできます</translation>
 <translation id="6610002944194042868">翻訳オプション</translation>
@@ -580,6 +592,7 @@
 <translation id="7133798577887235672">氏名</translation>
 <translation id="7136892417564438900">カメラを使用できません</translation>
 <translation id="7159472599653637159">モバイルサイトをリクエスト</translation>
+<translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> でシークレット タブのロックを解除</translation>
 <translation id="7172852049901402487">セキュリティの問題からパスワードを保護します</translation>
 <translation id="7173114856073700355">設定を開く</translation>
 <translation id="7189598951263744875">共有...</translation>
@@ -617,6 +630,7 @@
 <translation id="7537586195939242955">現在、Passbookにパスをインストールできません。</translation>
 <translation id="7554791636758816595">新しいタブ</translation>
 <translation id="7561196759112975576">常に使用</translation>
+<translation id="7583004045319035904"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> を使用して、シークレット タブのロックを解除します。</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />を翻訳しない</translation>
 <translation id="7603852183842204213">ブロックしたポップアップ: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
 <translation id="7607521702806708809">パスワードを削除</translation>
@@ -709,6 +723,7 @@
 <translation id="8591976964826315682">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="8605219856220328675">タブを閉じる。</translation>
 <translation id="8620640915598389714">編集</translation>
+<translation id="863090005774946393">お使いのブラウザは組織によって管理されています。一部の機能が無効になっている可能性があります。</translation>
 <translation id="8636825310635137004">他のデバイスと同じタブを使用するには、同期を有効にします。</translation>
 <translation id="8654802032646794042">キャンセル</translation>
 <translation id="8668210798914567634">このページはリーディング リストに保存されています。</translation>

@@ -1621,6 +1621,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2791529110887957050">Odstrániť Linux</translation>
 <translation id="2791952154587244007">Vyskytla sa chyba. Aplikácia verejného terminálu sa v tomto zariadení nebude môcť automaticky spustiť.</translation>
 <translation id="2792290659606763004">Odstrániť aplikácie pre Android?</translation>
+<translation id="2792465461386711506">Ak si chcete v telefóne zobraziť nedávne karty Chromu, zapnite synchronizáciu Chromu</translation>
 <translation id="2794233252405721443">Web je blokovaný</translation>
 <translation id="2795716239552913152">Weby zvyčajne používajú vašu polohu, aby mohli poskytovať relevantné funkcie či informácie, napríklad miestne správy alebo predajne v okolí</translation>
 <translation id="2796424461616874739">Počas pripájania k zariadeniu <ph name="DEVICE_NAME" /> vypršal limit na overenie totožnosti.</translation>
@@ -3251,6 +3252,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4671265665487288124">Weby môžu žiadať o automatické sťahovanie viacerých súborov (odporúčané)</translation>
 <translation id="46733273239502219">Budú vymazané aj offline údaje v nainštalovaných aplikáciách</translation>
 <translation id="4673442866648850031">Pri odstránení dotykového pera spúšťať nástroje pre dotykové pero</translation>
+<translation id="4676595058027112862">Telefónne centrum. Ďalšie informácie</translation>
 <translation id="4677772697204437347">Pamäť grafického procesora</translation>
 <translation id="467823995058589466">Kamera je vypnutá</translation>
 <translation id="4680105648806843642">Na tejto stránke bol vypnutý zvuk</translation>
@@ -6320,6 +6322,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8227119283605456246">Pripojiť súbor</translation>
 <translation id="8230134520748321204">Chcete uložiť heslo pre web <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Pomôžte našim programátorom vyriešiť tento problém. Povedzte nám, čo sa stalo presne predtým, než sa zobrazilo chybové hlásenie profilu:</translation>
+<translation id="8235605354099176425">Ak si chcete zobraziť nedávne karty Chromu, zapnite <ph name="LINK1_BEGIN" />synchronizáciu Chromu<ph name="LINK1_END" />.<ph name="LINK2_BEGIN" />Ďalšie informácie<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Zdieľať radšej túto kartu</translation>
 <translation id="8237647586961940482">Tmavoružová a červená</translation>
 <translation id="8239032431519548577">Registrácia podniku bola dokončená</translation>
@@ -7049,6 +7052,7 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="9044646465488564462">Nepodarilo sa pripojiť k sieti: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Odošle Googlu webovú adresu stránky, na ktorú sa pokúšate prejsť</translation>
 <translation id="9046895021617826162">Zlyhanie pripojenia</translation>
+<translation id="9048745018038487540">Vybrať všetky písma</translation>
 <translation id="9050666287014529139">Prístupová fráza</translation>
 <translation id="9052208328806230490">Tlačiarne ste zaregistrovali v službe <ph name="CLOUD_PRINT_NAME" /> prostredníctvom účtu <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Pokračovať v blokovaní</translation>

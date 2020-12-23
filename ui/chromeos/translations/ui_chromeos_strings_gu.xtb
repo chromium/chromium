@@ -228,6 +228,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" />માં કૉપિ કર્યા.</translation>
 <translation id="3475447146579922140">Google સ્પ્રેડશીટ</translation>
 <translation id="3486821258960016770">મૉંગોલિયન</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> ભૂલો.</translation>
 <translation id="3522708245912499433">પોર્ટુગીઝ</translation>
 <translation id="3524311639100184459">ચેતવણી: આ ફાઇલો અસ્થાયી છે અને બની શકે કે ડિસ્ક પર સ્પેસ ખાલી કરવા માટે તેમને ઑટોમૅટિક રીતે ડિલીટ કરવામાં આવે  <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ફોલ્ડર</translation>
@@ -736,6 +737,7 @@
 <translation id="8714406895390098252">સાયકલ</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> પસંદ કર્યું</translation>
 <translation id="872537912056138402">ક્રોએશિયન</translation>
+<translation id="8750438273876807512">કોઈ ફાઇલને ટચ કરીને થોડીવાર દબાવી રાખો અને <ph name="ICON" /> પર ટૅપ કરો અને શેલ્ફમાં તમારી ફાઇલોને ઝડપથી ઍક્સેસ કરવા માટે "શેલ્ફ પર પિન કરો" પસંદ કરો.</translation>
 <translation id="8775404590947523323">તમારા ફેરફારો ઑટોમૅટિક રીતે સચવાયા છે.<ph name="BREAKS" />મૂળ છબીની કૉપિ રાખવા માટે, "મૂળ પર ઓવરરાઇટ કરો" ને  અનચેક કરો</translation>
 <translation id="8808686172382650546">બિલાડી</translation>
 <translation id="8810671769985673465">ઝિપ કરવાનું નિષ્ફળ, આઇટમ અસ્તિત્વમાં છે: "<ph name="FILE_NAME" />"</translation>

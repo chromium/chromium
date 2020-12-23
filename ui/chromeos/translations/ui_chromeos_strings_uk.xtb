@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Скопійовано в папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3475447146579922140">Таблиці Google</translation>
 <translation id="3486821258960016770">Монгольська</translation>
+<translation id="3495304270784461826">Помилок: <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">Португальська</translation>
 <translation id="3524311639100184459">Увага: ці файли тимчасові й можуть автоматично видалятися, щоб звільнити місце на диску.  <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681">Вибрано: <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Хорватська</translation>
+<translation id="8750438273876807512">Натисніть і втримуйте файл, а потім торкніться значка <ph name="ICON" /> та виберіть "Закріпити на полиці", щоб швидко відкривати його.</translation>
 <translation id="8775404590947523323">Ваші зміни зберігаються автоматично.<ph name="BREAKS" />Щоб зберегти копію оригінального зображення, зніміть прапорець поруч з опцією "Замінити оригінал"</translation>
 <translation id="8808686172382650546">Кіт</translation>
 <translation id="8810671769985673465">Не вдалося заархівувати, елемент існує: "<ph name="FILE_NAME" />"</translation>

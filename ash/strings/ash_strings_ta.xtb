@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">புளூடூத் அமைப்புகளைக் காண்பிக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">ஷெல்ஃபை எப்போதும் காட்டு</translation>
+<translation id="1316811122439383437">டோட்: சமீபத்திய ஸ்கிரீன்ஷாட்டுகள், பதிவிறக்கங்கள் &amp; பின் (pin) செய்த கோப்புகள்</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> இணைக்கப்பட்டது</translation>
 <translation id="1341651618736211726">கூடுதல் விருப்பங்கள்</translation>
 <translation id="1346748346194534595">வலது</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">சாளரத்தை ஸ்கிரீன்ஷாட் எடுக்கும்</translation>
 <translation id="2617342710774726426">சிம் கார்டு பூட்டப்பட்டுள்ளது</translation>
 <translation id="2621713457727696555">பாதுகாக்கப்பட்ட வைஃபை நெட்வொர்க்</translation>
+<translation id="2633643784040308254">நடுத்தரம்</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
 <translation id="2658778018866295321">கிளிக் செய்து இழுக்கும்</translation>
 <translation id="2678852583403169292">பேசும் திரையின் மெனு</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">பெற்றோர் குறியீட்டின் மூலம் சாதனத்தை திறத்தல்</translation>
 <translation id="4702647871202761252">தனிப்பட்ட திரை முடக்கப்பட்டுள்ளது</translation>
 <translation id="4705716602320768426">கருத்தைப் பதிவுசெய்க</translation>
+<translation id="4730232680256276456">வணக்கம்</translation>
 <translation id="4731797938093519117">பெற்றோர் அணுகல்</translation>
 <translation id="4734965478015604180">கிடைமட்டம்</translation>
 <translation id="4744944742468440486">உங்கள் தேர்வுடன் தொடர்புடைய தகவல்கள்</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">செயல்படுத்தப்பட்டது</translation>
 <translation id="4872237917498892622">Alt+தேடல் அல்லது Shift</translation>
 <translation id="4890187583552566966">Google அசிஸ்டண்ட்டை உங்கள் நிர்வாகி முடக்கியுள்ளார்.</translation>
+<translation id="4890408602550914571">உங்கள் மொபைல் அருகில் இருப்பதையும் அதில் புளூடூத் இயக்கப்பட்டிருப்பதையும் உறுதிப்படுத்திக் கொள்ளவும்.</translation>
 <translation id="4895488851634969361">பேட்டரி நிரம்பியது.</translation>
 <translation id="490375751687810070">செங்குத்து</translation>
 <translation id="4905614135390995787">அதிக ஒளி மாறுபாட்டுப் பயன்முறையை மாற்றும் ஷார்ட்கட் மாற்றப்பட்டது. <ph name="OLD_SHORTCUT" />க்குப் பதிலாக, <ph name="NEW_SHORTCUT" />ஐப் பயன்படுத்தவும்.</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">மொழி</translation>
 <translation id="5313326810920013265">புளூடூத் அமைப்புகள்</translation>
 <translation id="5314219114274263156">ஸ்கிரீன் ரெக்கார்டு செய்யப்பட்டது</translation>
+<translation id="5322611492012084517">உங்கள் மொபைலைக் கண்டறிய முடியவில்லை</translation>
 <translation id="5329548388331921293">இணைக்கப்படுகிறது...</translation>
 <translation id="5331975486040154427">USB-C சாதனம் (இடது பக்கம் பின்னே இருக்கும் போர்ட்)</translation>
 <translation id="5352250171825660495">டார்க் தீம் இயக்கப்பட்டுள்ளது</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">நைட் லைட் ஆன் செய்யப்பட்டது.</translation>
 <translation id="5769373120130404283">தனிப்பட்ட திரை</translation>
 <translation id="5777841717266010279">திரைப் பகிர்வதை நிறுத்தவா?</translation>
+<translation id="5779721926447984944">பின் (pin) செய்யப்பட்ட கோப்புகள்</translation>
 <translation id="5790085346892983794">வெற்றி</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">இணைக்கப்பட்ட சாதனங்களின் அமைப்புகள்</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">ஸ்கிரீன் கீபோர்டைக் காட்டு</translation>
 <translation id="6164005077879661055">இந்தக் மேற்பார்வையிடப்படும் பயனர் அகற்றப்பட்டவுடன் மேற்பார்வையிடப்படும் பயனருடன் தொடர்புடைய எல்லா கோப்புகளும், அகத் தரவும் நிரந்தரமாக நீக்கப்படும். இந்தக் மேற்பார்வையிடப்படும் பயனர் பார்வையிட்ட இணையதளங்களையும் அமைப்புகளையும் <ph name="MANAGEMENT_URL" /> இல் இன்னும் நிர்வாகியால் பார்க்க முடியும்.</translation>
 <translation id="6165508094623778733">மேலும் அறிக</translation>
+<translation id="6179832488876878285">முக்கியமான கோப்புகளை இங்கே பின் (pin) செய்யலாம். பின் செய்ய Files ஆப்ஸைத் திறக்கவும்.</translation>
 <translation id="622484624075952240">கீழ்</translation>
 <translation id="6236290670123303279">அமைப்புகளை நிர்வகி</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">பேச்சுவடிவ கருத்தை முடக்க, ஐந்து வினாடிகளுக்கு இரண்டு ஒலியளவு விசைகளையும் அழுத்திப் பிடித்திருக்கவும்.</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7662283695561029522">உள்ளமைக்க, தட்டவும்</translation>
+<translation id="7683326293741220026">உங்கள் ஃபோனில் புளூடூத் முடக்கப்பட்டுள்ளதாகத் தெரிகிறது. ஃபோன் ஹப்பைப் பயன்படுத்த புளூடூத்தை இயக்கவும்.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 அறிவிப்பு}other{# அறிவிப்புகள்}}</translation>
 <translation id="7724603315864178912">வெட்டு</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">மேலோட்டப் பயன்முறைக்குச் செல்ல, மேல்நோக்கி மூன்று விரல்களால் ஸ்வைப் செய்யவும்</translation>
 <translation id="7868900307798234037">கைரேகை மூலம் திறக்கிறது</translation>
 <translation id="7872786842639831132">முடக்கு</translation>
+<translation id="7875575368831396199">உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் புளூடூத் முடக்கப்பட்டுள்ளதாகத் தெரிகிறது. ஃபோன் ஹப்பைப் பயன்படுத்த புளூடூத்தை இயக்கவும்.</translation>
 <translation id="7886169021410746335">தனியுரிமை அமைப்புகளை மாற்றலாம்</translation>
 <translation id="7886277072580235377">வெளியேறும்போது உங்கள் இணைய அமர்வு அழிக்கப்படும். <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">மின்னஞ்சல் அனுப்பு</translation>
+<translation id="7895348134893321514">டோட்</translation>
 <translation id="7897375687985782769">திரைச் சுழற்சிக்கான கீபோர்ட் ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். திரையைச் சுழற்ற விரும்புகிறீர்களா?</translation>
 <translation id="7901405293566323524">மொபைல் ஹப்</translation>
 <translation id="7902625623987030061">கைரேகை சென்சாரைத் தொடுக</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890">டெஸ்க் <ph name="DESK_TITILE" /> இயக்கப்பட்டது</translation>
 <translation id="8452135315243592079">சிம் கார்டு இல்லை</translation>
 <translation id="8454013096329229812">வைஃபை இயக்கத்தில் உள்ளது.</translation>
+<translation id="8462305545768648477">பேசும் திரையை மூடுக</translation>
 <translation id="847056008324733326">திரை அளவு அமைப்புகள்</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />, <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />ஐ கொண்டுள்ளது.</translation>
 <translation id="8477270416194247200">ரத்துசெய்ய, Alt+தேடல் அல்லது Shift விசையை அழுத்தவும்.</translation>

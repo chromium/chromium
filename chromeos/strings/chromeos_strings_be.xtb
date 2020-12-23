@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Пошук</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> праходзіць праверку...</translation>
+<translation id="2585245331261708204">Што новага ў Chrome OS</translation>
 <translation id="2620436844016719705">Сістэма</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Праграмы</translation>
@@ -183,6 +184,7 @@
 <translation id="6232017090690406397">Акумулятар</translation>
 <translation id="6325525973963619867">Збой</translation>
 <translation id="636850387210749493">Рэгістрацыя для арганізацый</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Файл адсканіраванага відарыса захаваны}one{Файлы адсканіраваных відарысаў захаваны}few{Файлы адсканіраваных відарысаў захаваны}many{Файлы адсканіраваных відарысаў захаваны}other{Файлы адсканіраваных відарысаў захаваны}}</translation>
 <translation id="649050271426829538">Спынена: захрасла папера</translation>
 <translation id="6517239166834772319">Агляд</translation>
 <translation id="6527081081771465939">Невядомы пратакол сістэмы бяспекі Wi-Fi</translation>

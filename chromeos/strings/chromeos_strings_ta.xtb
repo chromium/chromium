@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ஸ்கேன் செய்</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> சோதனை இயங்குகிறது...</translation>
+<translation id="2585245331261708204">Chrome OSஸில் புதிதாக உள்ளவை</translation>
 <translation id="2620436844016719705">அமைப்பு</translation>
 <translation id="2740531572673183784">சரி</translation>
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
@@ -183,6 +184,7 @@
 <translation id="6232017090690406397">பேட்டரி</translation>
 <translation id="6325525973963619867">தோல்வி</translation>
 <translation id="636850387210749493">நிறுவனப் பதிவு</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{ஸ்கேன் செய்யப்பட்ட கோப்பு சேமிக்கப்பட்டது}other{ஸ்கேன் செய்யப்பட்ட கோப்புகள் சேமிக்கப்பட்டன}}</translation>
 <translation id="649050271426829538">காகிதம் சிக்கிக் கொண்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">அறியப்படாத WiFi பாதுகாப்பு நெறிமுறை</translation>

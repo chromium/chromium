@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Átmásolva ide: <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google-táblázat</translation>
 <translation id="3486821258960016770">mongol</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> hiba.</translation>
 <translation id="3522708245912499433">portugál</translation>
 <translation id="3524311639100184459">Figyelem: Ezek ideiglenes fájlok, és automatikusan törlésre kerülnek azért, hogy tárhely szabaduljon fel.  <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="3527085408025491307">Mappa</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Kerékpár</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> kijelölve.</translation>
 <translation id="872537912056138402">horvát</translation>
+<translation id="8750438273876807512">Tartsa nyomva ujját a kívánt fájlon, koppintson a <ph name="ICON" /> ikonra, majd válassza a „Rögzítés a polcra” lehetőséget, így gyorsan hozzáférhet a polcon lévő fájlokhoz.</translation>
 <translation id="8775404590947523323">A módosításokat automatikusan menti a rendszer.<ph name="BREAKS" />Az eredeti kép egy másolatának megtartásához törölje az "Eredeti felülírása" jelölőnégyzetet</translation>
 <translation id="8808686172382650546">Macska</translation>
 <translation id="8810671769985673465">A tömörítés nem sikerült, ilyen elem már van: „<ph name="FILE_NAME" />”</translation>

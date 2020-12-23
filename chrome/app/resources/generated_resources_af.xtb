@@ -1620,6 +1620,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2791529110887957050">Verwyder Linux</translation>
 <translation id="2791952154587244007">'n Fout het voorgekom. Kioskprogram sal nie outomaties op hierdie toestel kan begin nie.</translation>
 <translation id="2792290659606763004">Verwyder Android-programme?</translation>
+<translation id="2792465461386711506">Skakel Chrome-sinkronisering aan om onlangse Chrome-oortjies van jou foon af te bekyk</translation>
 <translation id="2794233252405721443">Werf is geblokkeer</translation>
 <translation id="2795716239552913152">Werwe gebruik gewoonlik jou ligging vir relevante kenmerke, soos plaaslike nuus of nabygeleë winkels</translation>
 <translation id="2796424461616874739">Stawing-uittelling terwyl daar aan "<ph name="DEVICE_NAME" />" gekoppel word.</translation>
@@ -3250,6 +3251,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4671265665487288124">Werwe kan vra om outomaties veelvuldige lêers af te laai (aanbeveel)</translation>
 <translation id="46733273239502219">Vanlyn data in geïnstalleerde programme sal ook uitgevee word</translation>
 <translation id="4673442866648850031">Maak stilusnutsgoed oop wanneer die stilus verwyder word</translation>
+<translation id="4676595058027112862">Foonsentrum, kom meer te wete</translation>
 <translation id="4677772697204437347">GPU-geheue</translation>
 <translation id="467823995058589466">Kamera is afgeskakel</translation>
 <translation id="4680105648806843642">Klank op hierdie bladsy word gedemp</translation>
@@ -6319,6 +6321,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8227119283605456246">Heg lêer aan</translation>
 <translation id="8230134520748321204">Stoor wagwoord vir <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Help asseblief ons ingenieurs om hierdie probleem op te los. Sê vir ons wat gebeur het net voordat jy die profielfoutboodskap gekry het:</translation>
+<translation id="8235605354099176425">Skakel<ph name="LINK1_BEGIN" />Chrome-sinkronisering<ph name="LINK1_END" /> aan om onlangse Chrome-oortjies te bekyk.<ph name="LINK2_BEGIN" />Kom meer te wete<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Deel eerder hierdie oortjie</translation>
 <translation id="8237647586961940482">Donkerpienk en rooi</translation>
 <translation id="8239032431519548577">Onderneminginskrywing is voltooi</translation>
@@ -7046,6 +7049,7 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="9044646465488564462">Kon nie aan die netwerk koppel nie: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Stuur die webadres van die bladsy wat jy tans in Google probeer bereik</translation>
 <translation id="9046895021617826162">Kon nie koppel nie</translation>
+<translation id="9048745018038487540">Kies alle lettertipes</translation>
 <translation id="9050666287014529139">Wagfrase</translation>
 <translation id="9052208328806230490">Jy het jou drukkers by <ph name="CLOUD_PRINT_NAME" /> geregistreer deur die rekening <ph name="EMAIL" /> te gebruik.</translation>
 <translation id="9052404922357793350">Hou aan blokkeer</translation>

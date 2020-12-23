@@ -1373,6 +1373,7 @@
 <translation id="6389470377220713856">Име на картичка</translation>
 <translation id="6390200185239044127">Z-превиткување на половина</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6393956493820063117">Лепењето од <ph name="ORIGIN_NAME" /> на локацијава е блокирано со правило на администраторот</translation>
 <translation id="6401136357288658127">Правилово е неподдржано. Наместо него, треба да го користите правилото <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Измени обележувач</translation>
 <translation id="6406765186087300643">C0 (плик)</translation>
@@ -1764,6 +1765,7 @@
 <translation id="7977538094055660992">Излезен уред</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="79859296434321399">За да прегледувате содржини во проширена реалност, инсталирајте го ARCore</translation>
+<translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Врзување</translation>
 <translation id="7995512525968007366">Не е наведено</translation>
 <translation id="800218591365569300">Обидете се да ги затворите другите картички или програми за да ослободите меморија.</translation>
@@ -1864,6 +1866,7 @@
 <translation id="8371889962595521444">Приспособен сертификат за администраторски права</translation>
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8381674639488873545">Овие трошоци може да бидат еднократни или повторливи и може нема да бидат очигледни. <ph name="BEGIN_LINK" />Сепак прикажи<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698">Споделувањето од <ph name="ORIGIN_NAME" /> на <ph name="VM_NAME" /> е блокирано со правило на администраторот</translation>
 <translation id="8412145213513410671">Падови (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Мора да ја внесете истата лозинка двапати.</translation>
 <translation id="8416694386774425977">Конфигурацијата на мрежата е неважечка и не може да се увезе.

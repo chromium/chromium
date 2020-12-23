@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Kopioitu kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="3475447146579922140">Google-laskentataulukko</translation>
 <translation id="3486821258960016770">mongoli</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> virhettä.</translation>
 <translation id="3522708245912499433">portugali</translation>
 <translation id="3524311639100184459">Varoitus: Nämä tiedostot ovat tilapäisiä ja ne voidaan poistaa automaattisesti levytilan vapauttamiseksi.  <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Kansio</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Polkupyörä</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> valittiin.</translation>
 <translation id="872537912056138402">kroaatti</translation>
+<translation id="8750438273876807512">Kosketa tiedostoa pitkään, valitse <ph name="ICON" /> ja valitse Kiinnitä hyllyyn, niin löydät tiedostot nopeasti hyllystä.</translation>
 <translation id="8775404590947523323">Tekemäsi muutokset tallentuvat automaattisesti.<ph name="BREAKS" />Säilytä alkuperäisen kuvan kopio poistamalla valinta kohdasta Korvaa alkuperäinen.</translation>
 <translation id="8808686172382650546">Kissa</translation>
 <translation id="8810671769985673465">Pakkaus epäonnistui, koska kohde on jo olemassa: <ph name="FILE_NAME" /></translation>

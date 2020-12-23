@@ -228,6 +228,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> папкасына көчүрүлдү.</translation>
 <translation id="3475447146579922140">Google электрондук жадыбал</translation>
 <translation id="3486821258960016770">Монголчо</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> ката.</translation>
 <translation id="3522708245912499433">Португалча</translation>
 <translation id="3524311639100184459">Эскертүү: Бул файлдар убактылуу жана дискте орун бошотуу үчүн автоматтык түрдө жок кылынышы мүмкүн.  <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Куржун</translation>
@@ -737,6 +738,7 @@
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> тандалды.</translation>
 <translation id="872537912056138402">Хорватча</translation>
+<translation id="8750438273876807512">Текчедеги файлдарды ыкчам ачуу үчүн файлды коё бербей басып туруп, <ph name="ICON" /> сүрөтчөсүн таптап, "Текчеге кадоону" тандаңыз.</translation>
 <translation id="8775404590947523323">Түзөтүүлөрүңүз автоматтык түрдө сакталды.<ph name="BREAKS" /> Сүрөттүн түпнуска көчүрмөсүн сактап коюу үчүн, "Түпнусканын үстүнөн жазуу" деген параметрди алып салыңыз.</translation>
 <translation id="8808686172382650546">Мышык</translation>
 <translation id="8810671769985673465">Кысылган жок, бул жердеги элемент: "<ph name="FILE_NAME" />"</translation>

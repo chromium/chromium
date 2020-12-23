@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Kontrolli</translation>
 <translation id="2570743873672969996">Testi <ph name="TEST_NAME" /> käitamine …</translation>
+<translation id="2585245331261708204">Mis on Chrome OS-is uut?</translation>
 <translation id="2620436844016719705">Süsteem</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2805756323405976993">Rakendused</translation>
@@ -183,6 +184,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6232017090690406397">Aku</translation>
 <translation id="6325525973963619867">Ebaõnnestus</translation>
 <translation id="636850387210749493">Ettevõtte registreerimine</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Skannitud fail salvestati}other{Skannitud failid salvestati}}</translation>
 <translation id="649050271426829538">Peatatud – paberiummistus</translation>
 <translation id="6517239166834772319">Avastamine</translation>
 <translation id="6527081081771465939">Tundmatu WiFi-turvaprotokoll</translation>

@@ -47,6 +47,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1302880136325416935">Afficher les paramètres Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Toujours afficher l'étagère</translation>
+<translation id="1316811122439383437">Tote : captures d'écran, téléchargements et fichiers épinglés récents</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> connecté</translation>
 <translation id="1341651618736211726">Dépassement</translation>
 <translation id="1346748346194534595">À droite</translation>
@@ -181,6 +182,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2596078834055697711">Faire une capture de la fenêtre</translation>
 <translation id="2617342710774726426">La carte SIM est verrouillée</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
+<translation id="2633643784040308254">Moyen</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2658778018866295321">Cliquer et faire glisser</translation>
 <translation id="2678852583403169292">Menu Sélectionner pour prononcer</translation>
@@ -410,6 +412,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
 <translation id="4705716602320768426">Classer le commentaire</translation>
+<translation id="4730232680256276456">Élevé</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Informations sur le texte sélectionné</translation>
@@ -426,6 +429,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4868492592575313542">a activé</translation>
 <translation id="4872237917498892622">Alt + Recherche ou Maj</translation>
 <translation id="4890187583552566966">L'administrateur a désactivé l'Assistant Google.</translation>
+<translation id="4890408602550914571">Vérifiez que votre téléphone est à proximité et que le Bluetooth est activé.</translation>
 <translation id="4895488851634969361">La batterie est pleine.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="4905614135390995787">Le raccourci permettant d'activer ou de désactiver le mode Contraste élevé a été modifié. Veuillez utiliser "<ph name="NEW_SHORTCUT" />" au lieu de "<ph name="OLD_SHORTCUT" />".</translation>
@@ -473,6 +477,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5302048478445481009">Langue</translation>
 <translation id="5313326810920013265">Paramètres Bluetooth</translation>
 <translation id="5314219114274263156">Enregistrement d'écran effectué</translation>
+<translation id="5322611492012084517">Impossible de trouver votre téléphone</translation>
 <translation id="5329548388331921293">Connexion…</translation>
 <translation id="5331975486040154427">Appareil USB de type C (port situé sur la gauche de l'appareil, à l'arrière)</translation>
 <translation id="5352250171825660495">Le thème sombre est activé</translation>
@@ -519,6 +524,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="576453121877257266">Éclairage nocturne activé.</translation>
 <translation id="5769373120130404283">Écran de confidentialité</translation>
 <translation id="5777841717266010279">Arrêter le partage d'écran ?</translation>
+<translation id="5779721926447984944">Fichiers épinglés</translation>
 <translation id="5790085346892983794">Succès</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Paramètres des appareils connectés</translation>
@@ -563,6 +569,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="615957422585914272">Afficher le clavier à l'écran</translation>
 <translation id="6164005077879661055">Tous les fichiers et les données locales associés à l'utilisateur supervisé seront définitivement supprimés en même temps que cet utilisateur. Le gestionnaire peut toujours accéder aux sites Web consultés par l'utilisateur supervisé et aux paramètres de celui-ci à l'adresse <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
+<translation id="6179832488876878285">Vous pouvez épingler vos fichiers importants ici. Pour commencer, ouvrez l'application Fichiers.</translation>
 <translation id="622484624075952240">Bas</translation>
 <translation id="6236290670123303279">Gérer les paramètres</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7654687942625752712">Appuyez pendant cinq secondes sur les deux touches de volume pour désactiver les commentaires audio.</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7662283695561029522">Appuyer pour configurer</translation>
+<translation id="7683326293741220026">Apparemment, le Bluetooth est désactivé sur votre téléphone. Activez-le pour utiliser Phone Hub.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}one{# notification}other{# notifications}}</translation>
 <translation id="7724603315864178912">Couper</translation>
@@ -737,9 +745,11 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7860671499921112077">Balayez l'écran vers le haut avec trois doigts pour accéder à l'aperçu</translation>
 <translation id="7868900307798234037">Déverrouillage en cours avec votre empreinte digitale</translation>
 <translation id="7872786842639831132">Désactivé</translation>
+<translation id="7875575368831396199">Apparemment, le Bluetooth est désactivé sur votre <ph name="DEVICE_TYPE" />. Activez-le pour utiliser Phone Hub.</translation>
 <translation id="7886169021410746335">Régler les paramètres de confidentialité</translation>
 <translation id="7886277072580235377">Votre session Internet est effacée lorsque vous vous déconnectez. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Envoie un e-mail</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Vous avez appuyé sur le raccourci clavier de rotation d'écran. Voulez-vous faire pivoter l'écran ?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Appuyez sur le lecteur d'empreinte</translation>
@@ -807,6 +817,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8444246603146515890">Bureau <ph name="DESK_TITILE" /> activé</translation>
 <translation id="8452135315243592079">Carte SIM manquante</translation>
 <translation id="8454013096329229812">Le Wi-Fi est activé.</translation>
+<translation id="8462305545768648477">Fermer Sélectionner pour prononcer</translation>
 <translation id="847056008324733326">Paramètres de l'échelle d'affichage</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> a <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Appuyez sur Alt+Rechercher ou Maj pour annuler.</translation>

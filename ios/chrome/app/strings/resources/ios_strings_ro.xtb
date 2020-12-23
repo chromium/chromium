@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Șterge datele existente.</translation>
 <translation id="1147031633655575115">Te-ai conectat ca <ph name="USER" /></translation>
 <translation id="1154690515305205900">Nu se poate crea un link spre textul evidențiat.</translation>
+<translation id="1154984953698510061">Vezi alte file</translation>
 <translation id="1157749421655780457">Permite accesul la locație...</translation>
 <translation id="1165039591588034296">Eroare</translation>
 <translation id="1172898394251786223">Următorul câmp</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">Ultimele 24 de ore</translation>
 <translation id="1285320974508926690">Nu traduce niciodată acest site</translation>
 <translation id="1321993286294231467">Eroare la salvarea imaginii.</translation>
+<translation id="1322735045095424339">Organizația ta solicită modul incognito</translation>
 <translation id="1323735185997015385">Șterge</translation>
 <translation id="132683371494960526">Atinge de două ori pentru a modifica dosarul părinte.</translation>
 <translation id="1340643665687018190">Meniul Închide</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Numele titularului cardului</translation>
 <translation id="1809939268435598390">Șterge dosarul</translation>
 <translation id="1813414402673211292">Ștergeți datele de navigare</translation>
+<translation id="1815941218935345331">Parolă</translation>
 <translation id="1820259098641718022">S-a adăugat în lista de lectură</translation>
 <translation id="1870148520156231997">Afișează parola</translation>
 <translation id="1872096359983322073">Lanternă</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Avansate</translation>
 <translation id="1989112275319619282">Răsfoiește</translation>
 <translation id="2015722694326466240">Pentru a vedea parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
+<translation id="2047933465321076474">Organizația ta a dezactivat navigarea privată. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Activ acum <ph name="DAYS" /> zile</translation>
 <translation id="2074131957428911366">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anulează</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Se șterg datele de navigare...</translation>
 <translation id="2257567812274161158">Sincronizarea nu funcționează.</translation>
 <translation id="225943865679747347">Cod de eroare: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">Organizația îți solicită să navighezi în privat. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Adaugă un cont</translation>
 <translation id="2268044343513325586">Rafinează</translation>
 <translation id="2273327106802955778">Meniul Mai multe</translation>
@@ -136,6 +141,7 @@
 Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile.</translation>
 <translation id="2381405137052800939">Setări de bază</translation>
 <translation id="2386793615875593361">1 selectată</translation>
+<translation id="2419661687355878017">Organizația ta a dezactivat modul incognito</translation>
 <translation id="2421004566762153674">Blocarea cookie-urilor terță parte</translation>
 <translation id="2421044535038393232">Continuă editarea</translation>
 <translation id="2435457462613246316">Afișați parola</translation>
@@ -185,11 +191,13 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="291754862089661335">Poziționează codul QR sau codul de bare în acest cadru</translation>
 <translation id="2921219216347069551">Pagină netrimisă</translation>
 <translation id="2923448633003185837">Inserează și accesează</translation>
+<translation id="2923827943290349720">Blochează filele incognito când închizi Chrome</translation>
 <translation id="292639812446257861">Marchează ca necitite</translation>
 <translation id="2952581218264071393">1. deschide setările Chrome;</translation>
 <translation id="2958718410589002129">Parole</translation>
 <translation id="2964349545761222050">Blochează cookie-urile terță parte</translation>
 <translation id="2969979262385602596">Nu te-ai conectat. Încearcă din nou mai târziu.</translation>
+<translation id="2975121486251958312">Este disponibil numai modul incognito</translation>
 <translation id="298306318844797842">Adaugă o metodă de plată...</translation>
 <translation id="2989805286512600854">Deschideți într-o filă nouă</translation>
 <translation id="3037605927509011580">Of, nu mai merge!</translation>
@@ -204,6 +212,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="3175081911749765310">Servicii web</translation>
 <translation id="3178650076442119961">Activ astăzi</translation>
 <translation id="3181954750937456830">Navigare sigură (protecție împotriva site-urilor periculoase)</translation>
+<translation id="3184767182050912705">Deblochează cu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">Site-urile pot folosi cookie-uri pentru a-ți îmbunătăți experiența de navigare, de exemplu, pentru a te menține conectat(ă) sau pentru a reține articolele din coșul de cumpărături.
 
 În modul incognito, site-urile nu pot folosi cookie-urile pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile.</translation>
@@ -355,6 +364,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} și încă una}few{{domain} și încă {count}}other{{domain} și încă {count}}}</translation>
 <translation id="4826218269716039351">Blochează cookie-urile terță parte</translation>
 <translation id="48274138579728272">Marchează ca citit</translation>
+<translation id="4833686396768033263">Nu sunt disponibile file recente</translation>
 <translation id="4833786495304741580">Trimite automat statistici de utilizare și rapoarte de blocare la Google.</translation>
 <translation id="4840495572919996524">Marcajele, istoricul, parolele și alte setări nu vor mai fi sincronizate cu Contul Google.</translation>
 <translation id="4854345657858711387">Setează o parolă</translation>
@@ -418,6 +428,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5551897871312988470">Oferă traducerea</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
 <translation id="5592679540098330836">Activează sincronizarea pentru <ph name="NAME" /></translation>
+<translation id="5597169624050330492">Organizația îți solicită să navighezi în privat. Filele nu sunt salvate în modul incognito. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Salvezi parola?</translation>
 <translation id="5626245204502895507">Momentan, fișierul nu a putut fi descărcat.</translation>
 <translation id="5631164295104953411">Adaugă o metodă de plată</translation>
@@ -522,6 +533,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 
 Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="651505212789431520">Anulezi sincronizarea? Poți să activezi sincronizarea oricând în Setări.</translation>
+<translation id="6524918542306337007">Modul incognito nu este disponibil</translation>
 <translation id="6561262006871132942">Mărește</translation>
 <translation id="6585618849026997638">Poți să revii la o pagină importantă adăugând un marcaj</translation>
 <translation id="6610002944194042868">Opțiuni de traducere</translation>
@@ -580,6 +592,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7133798577887235672">Numele complet</translation>
 <translation id="7136892417564438900">Camera foto nu este disponibilă</translation>
 <translation id="7159472599653637159">Site mobil</translation>
+<translation id="7162168282402939716">Deblochează filele incognito cu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Protejează-ți parolele împotriva problemelor de securitate</translation>
 <translation id="7173114856073700355">Deschide Setările</translation>
 <translation id="7189598951263744875">Trimite...</translation>
@@ -617,6 +630,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7537586195939242955">Momentan, parola nu poate fi instalată în Agenda de parole.</translation>
 <translation id="7554791636758816595">Filă nouă</translation>
 <translation id="7561196759112975576">Întotdeauna</translation>
+<translation id="7583004045319035904">Folosește <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> pentru a debloca filele incognito.</translation>
 <translation id="7600965453749440009">Nu traduce niciodată din <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop-upuri blocate (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Șterge parola</translation>
@@ -709,6 +723,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8591976964826315682">Blochează cookie-urile terță parte în modul incognito</translation>
 <translation id="8605219856220328675">Închide fila.</translation>
 <translation id="8620640915598389714">Editează</translation>
+<translation id="863090005774946393">Browserul este gestionat de organizația ta. Este posibil ca unele funcții să fie dezactivate.</translation>
 <translation id="8636825310635137004">Pentru a accesa filele de pe alte dispozitive, activează sincronizarea.</translation>
 <translation id="8654802032646794042">Anulează</translation>
 <translation id="8668210798914567634">Această pagină a fost salvată în Lista de lectură.</translation>

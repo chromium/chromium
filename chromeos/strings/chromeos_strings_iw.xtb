@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">סריקה</translation>
 <translation id="2570743873672969996">הבדיקה של <ph name="TEST_NAME" /> בתהליך…</translation>
+<translation id="2585245331261708204">‏מה חדש ב-Chrome OS</translation>
 <translation id="2620436844016719705">מערכת</translation>
 <translation id="2740531572673183784">אישור</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
@@ -183,6 +184,7 @@
 <translation id="6232017090690406397">סוללה</translation>
 <translation id="6325525973963619867">נכשל</translation>
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{הקובץ שנסרק נשמר}two{הקבצים שנסרקו נשמרו}many{הקבצים שנסרקו נשמרו}other{הקבצים שנסרקו נשמרו}}</translation>
 <translation id="649050271426829538">הפסיקה – חסימת נייר</translation>
 <translation id="6517239166834772319">‏מה חדש ב-Chromebook</translation>
 <translation id="6527081081771465939">‏פרוטוקול אבטחת Wi-Fi לא מזוהה</translation>

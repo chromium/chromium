@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">බ්ලූටූත් සැකසීම් පෙන්වන්න. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">සැමවිටම රාක්කය පෙන්වන්න</translation>
+<translation id="1316811122439383437">Tote: මෑත තිර ග්‍රහණ, බාගැනීම් සහ ඇමිණූ ගොනු</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> සම්බන්ධිතයි</translation>
 <translation id="1341651618736211726">පිටාරය</translation>
 <translation id="1346748346194534595">දක්ෂිණාවර්ත</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">කවුළුවේ තිර රුවක් ලබා ගන්න</translation>
 <translation id="2617342710774726426">SIM පත අගුළු වැටී ඇත</translation>
 <translation id="2621713457727696555">ආරක්ෂිතයි</translation>
+<translation id="2633643784040308254">මධ්‍යම</translation>
 <translation id="2653659639078652383">ඉදිරිපත් කරන්න</translation>
 <translation id="2658778018866295321">ක්ලික් කර අදින්න</translation>
 <translation id="2678852583403169292">කථා කිරීමට තෝරන්න මෙනුව</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">මාපිය කේතය සමඟ උපාංගය අඟුලු අරින්න</translation>
 <translation id="4702647871202761252">පෞද්ගලිකත්ව තිරය අක්‍රියයි</translation>
 <translation id="4705716602320768426">ප්‍රතිපෝෂණය ගොනු කරන්න</translation>
+<translation id="4730232680256276456">ආයුබෝවන්</translation>
 <translation id="4731797938093519117">මාපිය ප්‍රවේශය</translation>
 <translation id="4734965478015604180">තිරස්</translation>
 <translation id="4744944742468440486">ඔබගේ තේරීමට අදාළ තොරතුරු</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">ක්‍රියාත්මක කළා</translation>
 <translation id="4872237917498892622">Alt+Search හෝ Shift</translation>
 <translation id="4890187583552566966">Google සහායක ඔබේ පරිපාලක විසින් අබල කර ඇත.</translation>
+<translation id="4890408602550914571">ඔබගේ දුරකථනය අවට ඇති බව සහ බ්ලූටූත් ක්‍රියාත්මක කර ඇති බව සහතික කර ගන්න.</translation>
 <translation id="4895488851634969361">බැටරීය සම්පූර්ණයි.</translation>
 <translation id="490375751687810070">සිරස්</translation>
 <translation id="4905614135390995787">ඉහළ ප්‍රභේදන ප්‍රකාරය ටොගල කිරීමේ කෙටි මග වෙනස් කර ඇත. කරුණාකර <ph name="NEW_SHORTCUT" /> <ph name="OLD_SHORTCUT" /> වෙනුවට භාවිත කරන්න.</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">භාෂාව</translation>
 <translation id="5313326810920013265">බ්ලූටූත් සැකසීම්</translation>
 <translation id="5314219114274263156">තිර පිටපත් කිරීමක් ගන්නා ලදි</translation>
+<translation id="5322611492012084517">ඔබගේ දුරකථනය සොයා ගත නොහැකිය</translation>
 <translation id="5329548388331921293">සබැඳෙමින්...</translation>
 <translation id="5331975486040154427">USB-C උපාංගය (වම්පස පසු තොට)</translation>
 <translation id="5352250171825660495">අඳුරු තේමාව ක්‍රියාත්මකයි</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">රාත්‍රී ආලෝකය සක්‍රීයයි.</translation>
 <translation id="5769373120130404283">පෞද්ගලිකත්ව තිරය</translation>
 <translation id="5777841717266010279">තිර හවුල්කිරීම නවතන්නද?</translation>
+<translation id="5779721926447984944">ඇමුණූ ගොනු</translation>
 <translation id="5790085346892983794">සාර්ථකයි</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">සම්බන්ධිත උපාංග සැකසීම්</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">තිරය-මත යතුරුපුවරුව පෙන්වන්න</translation>
 <translation id="6164005077879661055">මෙම අධීක්ෂණය කළ  භාවිතකරු ඉවත් කළ විට අධීක්ෂණය කළ භාවිතකරු හා අදාළ ගොනු සහ ප්‍රාදේශී්‍ය දත්ත සියල්ල ස්ථිරවම මැකෙනු ඇත. මෙම අධීක්ෂණය කළ භාවිතකරු සඳහා නරඹන ලද වෙබ් අඩවි සහ පසුතල තවමත් <ph name="MANAGEMENT_URL" /> හිදී කළමනාකරුට දැකිය හැකිය.</translation>
 <translation id="6165508094623778733">තව දැන ගන්න</translation>
+<translation id="6179832488876878285">ඔබට ඔබගේ වැදගත් ගොනු මෙහි ඇලවිය හැකිය. ආරම්භ කිරීමට ගොනු යෙදුම විවෘත කරන්න.</translation>
 <translation id="622484624075952240">පහළ</translation>
 <translation id="6236290670123303279">සැකසීම් කළමනා කරන්න</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">කථන ප්‍රතිපෝෂණය අබල කිරීම සඳහා ශබ්ද යතුරු දෙකම තත්පර 5 කට ඔබා සිටින්න.</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
 <translation id="7662283695561029522">වින්‍යාස කිරීමට තට්ටු කරන්න</translation>
+<translation id="7683326293741220026">ඔබගේ දුරකථනයේ බ්ලූටූත් ක්‍රියාවිරහිත කර ඇති බව පෙනේ. Phone Hub භාවිත කිරීමට කරුණාකර ඔබගේ දුරකථනයේ බ්ලූටූත් ක්‍රියාත්මක කරන්න.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{දැනුම්දීම් 1ක්}one{දැනුම්දීම් #ක්}other{දැනුම්දීම් #ක්}}</translation>
 <translation id="7724603315864178912">කැපීම</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">දළ විශ්ලේෂණයට ඇතුළු වීමට ඇඟිලි තුනකින් ඉහළට ස්වයිප් කරන්න</translation>
 <translation id="7868900307798234037">ඇඟිලි සලකුණ සමඟ අඟුල අරින්න</translation>
 <translation id="7872786842639831132">ක්‍රියාවිරහිතයි</translation>
+<translation id="7875575368831396199">ඔබගේ <ph name="DEVICE_TYPE" /> හි බ්ලූටූත් ක්‍රියාවිරහිත කර ඇති බව පෙනේ. Phone Hub භාවිත කිරීමට කරුණාකර බ්ලූටූත් ක්‍රියාත්මක කරන්න.</translation>
 <translation id="7886169021410746335">පෞද්ගලිකත්ව සැකසීම් සීරුමාරු කරන්න</translation>
 <translation id="7886277072580235377">ඔබ වරනය වන විට ඔබගේ අන්තර්ජාල සැසිය හිස් වනු ඇත. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ඊ-තැපෑලක් යවන්න</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">ඔබ තිරයේ කරකැවීම සඳහා යතුරුපුවරු කෙටිමඟ ඔබා ඇත. ඔබට එය සක්‍රීය කළ යුතුද?</translation>
 <translation id="7901405293566323524">දුරකථන මධ්‍යස්ථානය</translation>
 <translation id="7902625623987030061">ඇඟිලි සලකුණු සංවේදකය ස්පර්ශ කරන්න</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> මේසය ක්‍රියාත්මක කළා</translation>
 <translation id="8452135315243592079">SIM පත අතුරුදහන්</translation>
 <translation id="8454013096329229812">Wi-Fi ඔන් කර ඇත.</translation>
+<translation id="8462305545768648477">කථා කිරීමට තෝරන්න වසන්න</translation>
 <translation id="847056008324733326">සංදර්ශන පරිමාණ සැකසීම්</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> හට <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ඇත.</translation>
 <translation id="8477270416194247200">අවලංගු කිරීමට Alt+සෙවීම හෝ Shift ඔබන්න.</translation>

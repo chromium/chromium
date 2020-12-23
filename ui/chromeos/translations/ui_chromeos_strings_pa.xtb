@@ -228,6 +228,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਕਾਪੀ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3486821258960016770">ਮੰਗੋਲੀਆਈ</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> ਅਸ਼ੁੱਧੀਆਂ।</translation>
 <translation id="3522708245912499433">ਪੋਰਤੂਗੂਈਸ</translation>
 <translation id="3524311639100184459">ਸਾਵਧਾਨ: ਇਹ ਫ਼ਾਈਲਾਂ ਅਸਥਾਈ ਹਨ ਅਤੇ ਡਿਸਕ ਵਿੱਚ ਜਗ੍ਹਾ ਨੂੰ ਖਾਲੀ ਕਰਨ ਲਈ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮਿਟਾਈਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ।  <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ਫੋਲਡਰ</translation>
@@ -737,6 +738,7 @@
 <translation id="8714406895390098252">ਸਾਈਕਲ</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ।</translation>
 <translation id="872537912056138402">Croatian</translation>
+<translation id="8750438273876807512">ਫ਼ਾਈਲ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ ਅਤੇ <ph name="ICON" /> 'ਤੇ ਟੈਪ ਕਰੋ ਅਤੇ ਸ਼ੈਲਫ ਵਿੱਚ ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਤਤਕਾਲ ਪਹੁੰਚ ਕਰਨ ਲਈ "ਸ਼ੈਲਫ 'ਤੇ ਪਿੰਨ ਕਰੋ" ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="8775404590947523323">ਤੁਹਾਡੇ ਸੰਪਾਦਨ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸੁਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ।<ph name="BREAKS" />ਅਸਲ ਚਿੱਤਰ ਦੀ ਇੱਕ ਕਾਪੀ ਰੱਖਣ ਲਈ, "ਅਸਲ 'ਤੇ ਓਵਰਰਾਈਟ ਕਰੋ" 'ਤੇ ਨਿਸ਼ਾਨ ਹਟਾਓ।</translation>
 <translation id="8808686172382650546">ਬਿੱਲੀ</translation>
 <translation id="8810671769985673465">ਜ਼ਿਪ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ, ਆਈਟਮ ਮੌਜੂਦ ਹੈ: "<ph name="FILE_NAME" />"</translation>

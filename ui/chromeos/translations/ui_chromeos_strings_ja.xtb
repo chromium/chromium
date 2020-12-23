@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">「<ph name="FOLDER_NAME" />」にコピーしました。</translation>
 <translation id="3475447146579922140">Google スプレッドシート</translation>
 <translation id="3486821258960016770">モンゴル語</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> 件のエラーがあります。</translation>
 <translation id="3522708245912499433">ポルトガル語</translation>
 <translation id="3524311639100184459">注: これらのファイルは一時的なもので、ディスクの空き容量を増やすために自動的に削除されることがあります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">フォルダ</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">自転車</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> を選択しました。</translation>
 <translation id="872537912056138402">クロアチア語</translation>
+<translation id="8750438273876807512">ファイルを長押しして <ph name="ICON" /> をタップし、[シェルフに固定] を選択すると、シェルフからファイルに簡単にアクセスできます。</translation>
 <translation id="8775404590947523323">編集内容は自動的に保存されます。<ph name="BREAKS" />オリジナルの画像のコピーを残す場合、[オリジナルを上書き] チェックボックスをオフにしてください。</translation>
 <translation id="8808686172382650546">ネコ</translation>
 <translation id="8810671769985673465">圧縮できませんでした。アイテム「<ph name="FILE_NAME" />」が存在します。</translation>

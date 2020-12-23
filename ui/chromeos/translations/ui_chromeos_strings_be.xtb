@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Скапіравана ў папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3475447146579922140">Табліца Google</translation>
 <translation id="3486821258960016770">Мангольская</translation>
+<translation id="3495304270784461826">Памылак: <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">Партугальская</translation>
 <translation id="3524311639100184459">Увага! Гэта часовыя файлы, і яны могуць быць аўтаматычна выдалены для вызвалення месца на дыску.  <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
@@ -737,6 +738,7 @@
 <translation id="8714406895390098252">Веласіпед</translation>
 <translation id="8719721339511222681">Выбрана: <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Харвацкая</translation>
+<translation id="8750438273876807512">Каб атрымаць хуткі доступ да файла праз паліцу, дакраніцеся да файла і ўтрымлівайце яго, затым націсніце на значок <ph name="ICON" /> і выберыце пункт "Замацаваць на паліцы".</translation>
 <translation id="8775404590947523323">Змены захоўваюцца аўтаматычна.<ph name="BREAKS" />Каб захаваць копію арыгінальнага відарыса, зніміце птушку "Перазапісаць арыгінал"</translation>
 <translation id="8808686172382650546">Кот</translation>
 <translation id="8810671769985673465">Не ўдалося стварыць архіў – элемент ужо існуе: "<ph name="FILE_NAME" />"</translation>

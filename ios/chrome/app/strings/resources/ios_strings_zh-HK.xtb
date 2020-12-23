@@ -39,7 +39,7 @@
 <translation id="1283524564873030414">過去 24 小時</translation>
 <translation id="1285320974508926690">永不翻譯此網站</translation>
 <translation id="1321993286294231467">儲存圖片時發生錯誤。</translation>
-<translation id="1322735045095424339">貴機構規定必須使用無痕模式</translation>
+<translation id="1322735045095424339">您的機構要求使用無痕模式</translation>
 <translation id="1323735185997015385">刪除</translation>
 <translation id="132683371494960526">扲兩下就可以更改上層資料夾。</translation>
 <translation id="1340643665687018190">關閉選單</translation>
@@ -106,7 +106,7 @@
 <translation id="1974060860693918893">進階選項</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
-<translation id="2047933465321076474">貴機構已關閉私密瀏覽功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="2047933465321076474">您的機構已關閉私密瀏覽功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">曾於 <ph name="DAYS" /> 天前在線</translation>
 <translation id="2074131957428911366">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
 <translation id="2079545284768500474">復原</translation>
@@ -124,7 +124,7 @@
 <translation id="2239626343334228536">正在清除瀏覽資料…</translation>
 <translation id="2257567812274161158">同步功能無法正常運作。</translation>
 <translation id="225943865679747347">錯誤代碼：<ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">貴機構要求你使用私密瀏覽模式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="2262397157440718954">您的機構要求您私下瀏覽內容。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">新增帳戶</translation>
 <translation id="2268044343513325586">修正搜尋</translation>
 <translation id="2273327106802955778">[更多] 選單</translation>
@@ -141,7 +141,7 @@
 網站不可使用 Cookie 來查看您在各網站的瀏覽活動，例如放送個人化廣告。</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2386793615875593361">已選取 1 張</translation>
-<translation id="2419661687355878017">貴機構已關閉無痕模式</translation>
+<translation id="2419661687355878017">您的機構已關閉無痕模式</translation>
 <translation id="2421004566762153674">封鎖第三方 Cookie</translation>
 <translation id="2421044535038393232">繼續編輯</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
@@ -191,7 +191,7 @@
 <translation id="291754862089661335">將二維條碼或條碼放置此頁框中</translation>
 <translation id="2921219216347069551">無法分享網頁</translation>
 <translation id="2923448633003185837">貼上並前往</translation>
-<translation id="2923827943290349720">關閉 Chrome 時鎖定無痕分頁</translation>
+<translation id="2923827943290349720">關閉 Chrome 時鎖定無痕式分頁</translation>
 <translation id="292639812446257861">標示為未閱讀</translation>
 <translation id="2952581218264071393">1. 開啟 Chrome 設定</translation>
 <translation id="2958718410589002129">密碼</translation>
@@ -428,7 +428,7 @@
 <translation id="5551897871312988470">提供翻譯</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5592679540098330836">開啟「<ph name="NAME" />」的同步功能</translation>
-<translation id="5597169624050330492">貴機構要求你使用私密瀏覽模式。在無痕模式下無法儲存分頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="5597169624050330492">您的機構要求您私下瀏覽內容。在無痕模式下無法儲存分頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
 <translation id="5626245204502895507">目前無法下載這個檔案。</translation>
 <translation id="5631164295104953411">新增付款方法</translation>
@@ -590,7 +590,7 @@
 <translation id="7133798577887235672">完整名稱</translation>
 <translation id="7136892417564438900">無法使用相機</translation>
 <translation id="7159472599653637159">切換至流動網站</translation>
-<translation id="7162168282402939716">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁</translation>
+<translation id="7162168282402939716">用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕式分頁</translation>
 <translation id="7172852049901402487">確保密碼安全，避免發生安全性問題</translation>
 <translation id="7173114856073700355">開啟設定</translation>
 <translation id="7189598951263744875">分享...</translation>
@@ -628,7 +628,7 @@
 <translation id="7537586195939242955">很抱歉，目前無法將您的通行票證加到 Passbook。</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7561196759112975576">永遠使用</translation>
-<translation id="7583004045319035904">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁。</translation>
+<translation id="7583004045319035904">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕式分頁。</translation>
 <translation id="7600965453749440009">永遠不要翻譯<ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">已封鎖彈出式視窗 (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">刪除密碼</translation>
@@ -721,7 +721,7 @@
 <translation id="8591976964826315682">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="8605219856220328675">關閉分頁</translation>
 <translation id="8620640915598389714">編輯</translation>
-<translation id="863090005774946393">你的瀏覽器是由貴機構管理，部分功能可能處於停用狀態。</translation>
+<translation id="863090005774946393">您的瀏覽器由機構管理。部分功能可能已停用。</translation>
 <translation id="8636825310635137004">如要取得其他裝置上的分頁，請開啟同步處理功能。</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8668210798914567634">此網頁已儲存至您的閱讀清單。</translation>

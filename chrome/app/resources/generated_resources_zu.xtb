@@ -1619,6 +1619,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2791529110887957050">Susa i-Linux</translation>
 <translation id="2791952154587244007">Kuvele iphutha. Uhlelo lokusebenza lwekhiyoski ngeke lize likwazi ukuqalisa ngokuzenzakalela kule divayisi.</translation>
 <translation id="2792290659606763004">Susa izinhlelo zokusebenza ze-Android?</translation>
+<translation id="2792465461386711506">Vula Ukuvumelanisa kwe-Chrome ukuze ubuke amathebhu we-Chrome wakamuva kusuka efonini yakho</translation>
 <translation id="2794233252405721443">Isayithi livinjelwe</translation>
 <translation id="2795716239552913152">Amasayithi avamise ukusebenzisa indawo yakho ngezici ezihambisanayo noma ulwazi, njengezindaba zasendaweni noma izitolo eziseduze</translation>
 <translation id="2796424461616874739">Ukuqinisekiswa kuphelelwe yisikhathi ngenkathi kuxhumeka ku-"<ph name="DEVICE_NAME" />".</translation>
@@ -3248,6 +3249,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4671265665487288124">Amasayithi angacela ukulanda ngokuzenzakalela amafayela amaningi (kunconyiwe)</translation>
 <translation id="46733273239502219">Idatha engaxhumekile ku-inthanethi nayo izosulwa</translation>
 <translation id="4673442866648850031">Vula amathuluzi e-stylus uma i-stylus sisusiwe</translation>
+<translation id="4676595058027112862">Ihabhu yefoni, Funda kabanzi</translation>
 <translation id="4677772697204437347">Imemori ye-GPU</translation>
 <translation id="467823995058589466">Ikhamera ivaliwe</translation>
 <translation id="4680105648806843642">Umsindo uye wathuliswa kuleli khasi</translation>
@@ -6319,6 +6321,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8227119283605456246">Namathisela ifayela</translation>
 <translation id="8230134520748321204">Londolozela amaphasiwedi i-<ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Sicela usize onjiniyela bethu ukulungisa le nkinga. Sitshele ukuthi kwenzeke ini ngaphambi kokuthi uthole umlayezo wephutha wephrofayela:</translation>
+<translation id="8235605354099176425">Vula<ph name="LINK1_BEGIN" />Ukuvumelanisa kwe-Chrome<ph name="LINK1_END" /> ukuze ubuke amathebhu we-Chrome wakamuva.<ph name="LINK2_BEGIN" />Funda kabanzi<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Yabelana ngale thebhu kunalokho</translation>
 <translation id="8237647586961940482">Okuphinki kakhulu nokubomvu</translation>
 <translation id="8239032431519548577">Ukubhaliswa kwebhizinisi kuqedile</translation>
@@ -7047,6 +7050,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="9044646465488564462">Yehlulekile ukuxhumeka kunethiwekhi: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Ithumela ikhasi lewebhu lekhasi ozama ukufinyelela kulo ku-Google</translation>
 <translation id="9046895021617826162">Ukuxhumeka kuhlulekile</translation>
+<translation id="9048745018038487540">Khetha wonke amafonti</translation>
 <translation id="9050666287014529139">Umushwana wokungena</translation>
 <translation id="9052208328806230490">Ubhalise amaphrinta wakho nge-<ph name="CLOUD_PRINT_NAME" /> usebenzisa i-akhawunti ye-<ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Qhubeka uvimbele</translation>

@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2570743873672969996">Ejecutando prueba <ph name="TEST_NAME" />...</translation>
+<translation id="2585245331261708204">Novedades de Chrome OS</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
@@ -182,6 +183,7 @@
 <translation id="6232017090690406397">Batería</translation>
 <translation id="6325525973963619867">Se ha producido un error.</translation>
 <translation id="636850387210749493">Registro de empresa</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Archivo escaneado guardado}other{Archivos escaneados guardados}}</translation>
 <translation id="649050271426829538">Detenido: atasco de papel</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">Protocolo de seguridad Wi-Fi desconocido</translation>

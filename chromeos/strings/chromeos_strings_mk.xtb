@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2570743873672969996">Се извршува тест за <ph name="TEST_NAME" />…</translation>
+<translation id="2585245331261708204">Што е ново во Chrome OS</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2740531572673183784">Во ред</translation>
 <translation id="2805756323405976993">Апликации</translation>
@@ -183,6 +184,7 @@
 <translation id="6232017090690406397">Батерија</translation>
 <translation id="6325525973963619867">Неуспешно</translation>
 <translation id="636850387210749493">Запишување компанија</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Скенираната датотека е зачувана}one{Скенираните датотеки се зачувани}other{Скенираните датотеки се зачувани}}</translation>
 <translation id="649050271426829538">Запрено - заглавена хартија</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Непознат безбедносен протокол за Wi-Fi</translation>

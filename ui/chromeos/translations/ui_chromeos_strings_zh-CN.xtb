@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">已复制到“<ph name="FOLDER_NAME" />”。</translation>
 <translation id="3475447146579922140">Google 电子表格</translation>
 <translation id="3486821258960016770">蒙古语</translation>
+<translation id="3495304270784461826"><ph name="COUNT" />个错误。</translation>
 <translation id="3522708245912499433">葡萄牙语</translation>
 <translation id="3524311639100184459">警告：这些都是临时文件，可能会被系统自动删除以释放磁盘空间。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">文件夹</translation>
@@ -733,6 +734,7 @@
 <translation id="8714406895390098252">自行车</translation>
 <translation id="8719721339511222681">已选择<ph name="ENTRY_NAME" />。</translation>
 <translation id="872537912056138402">克罗地亚语</translation>
+<translation id="8750438273876807512">轻触并按住某个文件，点按 <ph name="ICON" />，然后选择“固定到任务栏”，以便在任务栏中快速访问您的文件。</translation>
 <translation id="8775404590947523323">系统会自动保存您所做的修改。<ph name="BREAKS" />要保留原始图像的副本，请取消选中“覆盖原始文件”。</translation>
 <translation id="8808686172382650546">猫</translation>
 <translation id="8810671769985673465">压缩失败，已有此项内容：“<ph name="FILE_NAME" />”</translation>

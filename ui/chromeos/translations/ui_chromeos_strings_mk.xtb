@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Копирана во <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google табела</translation>
 <translation id="3486821258960016770">монголски</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3524311639100184459">Внимание: датотекиве се привремени и може да се бришат автоматски за да се ослободи простор на дискот.  <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
@@ -737,6 +738,7 @@
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681">Избрано е <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">хрватска</translation>
+<translation id="8750438273876807512">Допрете и задржете датотека и допрете <ph name="ICON" />, па изберете „Прикачи на полицата“ за брз пристап до вашите датотеки во полицата.</translation>
 <translation id="8775404590947523323">Вашите уредувања се зачувуваат автоматски.<ph name="BREAKS" />За да зачувате копија од оригиналната слика, поништете го изборот на „Пребриши оригинал“</translation>
 <translation id="8808686172382650546">Мачка</translation>
 <translation id="8810671769985673465">Пакувањето не успеа, ставката постои: „<ph name="FILE_NAME" />“</translation>

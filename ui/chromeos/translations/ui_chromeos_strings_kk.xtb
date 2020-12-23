@@ -228,6 +228,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> қалтасына көшірілді.</translation>
 <translation id="3475447146579922140">Google электрондық кестесі</translation>
 <translation id="3486821258960016770">Моңғол</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> қате.</translation>
 <translation id="3522708245912499433">португал</translation>
 <translation id="3524311639100184459">Абайлаңыз: бұл файлдар уақытша және дискідегі орынды босату үшін автоматты түрде жойылуы мүмкін.  <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Қалта</translation>
@@ -737,6 +738,7 @@
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> таңдалды.</translation>
 <translation id="872537912056138402">хорват</translation>
+<translation id="8750438273876807512">Сөредегі файлдарға жылдам кіру үшін файлды түртіп ұстап тұрып, <ph name="ICON" /> белгішесін басыңыз да, "Сөреге бекіту" тармағын таңдаңыз.</translation>
 <translation id="8775404590947523323">Сіздің өңдеулеріңіз автоматты түрде сақталады.<ph name="BREAKS" />Түпнұсқалы кескіннің көшірмесін сақтау үшін "Түпнұсқаның үстінен жазу" құсбелгісін алып тастаңыз.</translation>
 <translation id="8808686172382650546">Мысық</translation>
 <translation id="8810671769985673465">Қысу орындалмады. Мына элемент бұрыннан бар: "<ph name="FILE_NAME" />"</translation>

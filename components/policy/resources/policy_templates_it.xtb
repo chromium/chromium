@@ -2180,6 +2180,13 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
       Se il criterio viene impostato su "AllowMigration", gli utenti con le home directory criptate tramite ecryptfs hanno la possibilità di eseguirne la migrazione alla crittografia ext4 in base alle necessità (al momento quando Android N sarà disponibile sul dispositivo).
 
       Non viene applicato alle app kiosk, che vengono migrate automaticamente. Se non viene configurato, il dispositivo si comporta come se fosse stato scelto "DisallowArc".</translation>
+<translation id="401650904918322517">Questo criterio è deprecato e verrà rimosso nella versione 89 di <ph name="PRODUCT_OS_NAME" />.
+
+      Questo criterio consente di autorizzare Risposte rapide ad accedere ai contenuti selezionati e a inviare le informazioni al server.
+
+      Se il criterio è attivato, Risposte rapide potrà accedere ai contenuti selezionati.
+      Se il criterio è disattivato, Risposte rapide non potrà accedere ai contenuti selezionati.
+      Se il criterio non viene impostato, gli utenti possono decidere se autorizzare Risposte rapide ad accedere ai contenuti selezionati.</translation>
 <translation id="4020682745012723568">Le app Android non possono accedere ai cookie trasferiti al profilo dell'utente.</translation>
 <translation id="4025500273782820766">Consenti agli utenti di selezionare "Consenti sempre" quando viene mostrata una finestra di dialogo relativa a un protocollo esterno per non ricevere più messaggi di conferma in futuro</translation>
 <translation id="402759845255257575">Non consentire ad alcun sito di eseguire JavaScript</translation>
@@ -3972,6 +3979,13 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="6789422336869764846">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano lo stato della modalità sviluppatore del dispositivo all'avvio.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano lo stato della modalità sviluppatore.</translation>
+<translation id="6793420507738858152">Se attivata, la funzionalità <ph name="PRODUCT_NAME" /> invierà intestazioni della richiesta granulari che forniscono informazioni sul browser e sull'ambiente degli utenti.
+
+      Si tratta di una funzionalità aggiuntiva, ma le nuove intestazioni potrebbero causare interruzioni su alcuni siti web che limitano il numero di caratteri della richiesta.
+
+      Se il criterio è attivato o non viene configurato, la funzionalità <ph name="PRODUCT_NAME" /> verrà attivata. Se il criterio è disattivato, la funzionalità non sarà disponibile.
+
+      Questo criterio aziendale è finalizzato al periodo di transizione e sarà disponibile almeno fino alla versione 91 di Chrome.</translation>
 <translation id="6795485990775913659">Consenti la stampa solo senza PIN</translation>
 <translation id="6800181452282128474">Non inviare query a Quirks Server</translation>
 <translation id="6810445994095397827">Blocca JavaScript in questi siti</translation>
@@ -4618,6 +4632,9 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se il criterio viene impostato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene impostato, il provider di ricerca predefinito è attivo e gli utenti possono configurare l'elenco dei provider di ricerca.
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in Chrome Browser Cloud Management. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
+<translation id="7669630878711068277">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono stampare in <ph name="PRODUCT_NAME" /> e non possono modificare questa impostazione.
+
+      Se il criterio viene impostato su Disattivato, gli utenti non possono stampare da <ph name="PRODUCT_NAME" />. L'opzione di stampa è disattivata nel menu con tre puntini, nelle estensioni e nelle applicazioni JavaScript.</translation>
 <translation id="7673194325208122247">Periodo di tempo (millisecondi)</translation>
 <translation id="7677220829878081413">
       Se è impostato su ArcSession, questo criterio forza il riavvio del dispositivo all'uscita dell'utente se Android è stato avviato.

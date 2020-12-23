@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">Показати налаштування Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Завжди показувати полицю</translation>
+<translation id="1316811122439383437">Сховище: нещодавні записи екрана, завантаження та закріплені файли</translation>
 <translation id="1333308631814936910">Дисплей "<ph name="DISPLAY_NAME" />" підключено</translation>
 <translation id="1341651618736211726">Додаткове меню</translation>
 <translation id="1346748346194534595">Праворуч</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">Зробити знімок екрана вікна</translation>
 <translation id="2617342710774726426">SIM-карту заблоковано</translation>
 <translation id="2621713457727696555">Захищено</translation>
+<translation id="2633643784040308254">Сер.</translation>
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2658778018866295321">Натиснути й перетягнути</translation>
 <translation id="2678852583403169292">Меню функції "Читання з екрана"</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">Введіть код доступу батьків</translation>
 <translation id="4702647871202761252">Екран конфіденційності вимкнено</translation>
 <translation id="4705716602320768426">Надіслати відгук</translation>
+<translation id="4730232680256276456">Вітаємо!</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
 <translation id="4734965478015604180">Горизонтально</translation>
 <translation id="4744944742468440486">Інформація, пов'язана з виділеним текстом</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">активовано</translation>
 <translation id="4872237917498892622">Alt+клавіша пошуку або Shift</translation>
 <translation id="4890187583552566966">Ваш адміністратор вимкнув Google Асистент.</translation>
+<translation id="4890408602550914571">Переконайтеся, що ваш телефон поблизу, а Bluetooth увімкнено.</translation>
 <translation id="4895488851634969361">Акумулятор заряджений.</translation>
 <translation id="490375751687810070">Вертикально</translation>
 <translation id="4905614135390995787">Комбінація клавіш для керування режимом високого контрасту змінилася. Тепер це <ph name="NEW_SHORTCUT" />, а не <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">Мова</translation>
 <translation id="5313326810920013265">Налаштування Bluetooth</translation>
 <translation id="5314219114274263156">Запис екрана зроблено</translation>
+<translation id="5322611492012084517">Не вдається знайти телефон</translation>
 <translation id="5329548388331921293">З'єднання…</translation>
 <translation id="5331975486040154427">Пристрій, під’єднаний до порту USB-C (ліворуч на задній панелі)</translation>
 <translation id="5352250171825660495">Темну тему ввімкнено</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">Нічний екран увімкнено.</translation>
 <translation id="5769373120130404283">Маскування контенту</translation>
 <translation id="5777841717266010279">Скасувати спільний доступ до екрана?</translation>
+<translation id="5779721926447984944">Закріплені файли</translation>
 <translation id="5790085346892983794">Готово</translation>
 <translation id="5820394555380036790">ОС Chromium</translation>
 <translation id="5825969630400862129">Налаштування підключених пристроїв</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">Показувати екранну клавіатуру</translation>
 <translation id="6164005077879661055">Усі файли та локальні дані, пов’язані з контрольованим користувачем, буде назавжди видалено, якщо вилучити цього контрольованого користувача. Менеджер усе одно може бачити веб-сайти, які відвідував цей контрольований користувач, і його налаштування на сторінці <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Докладніше</translation>
+<translation id="6179832488876878285">Тут можна закріпити важливі файли. Щоб почати, відкрийте додаток Файли.</translation>
 <translation id="622484624075952240">Донизу</translation>
 <translation id="6236290670123303279">Керувати налаштуваннями</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">Утримуйте обидві клавіші гучності впродовж п’яти секунд, щоб вимкнути голосові підказки.</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7662283695561029522">Торкніться, щоб налаштувати</translation>
+<translation id="7683326293741220026">Схоже, на телефоні вимкнено Bluetooth. Увімкніть його, щоб скористатися функцією "Керування телефоном".</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 cповіщення}one{# сповіщення}few{# сповіщення}many{# сповіщень}other{# сповіщення}}</translation>
 <translation id="7724603315864178912">Вирізати</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">Щоб відкрити режим огляду, проведіть трьома пальцями вгору</translation>
 <translation id="7868900307798234037">Розблокування відбитком</translation>
 <translation id="7872786842639831132">Вимкнено</translation>
+<translation id="7875575368831396199">Схоже, на пристрої <ph name="DEVICE_TYPE" /> вимкнено Bluetooth. Увімкніть його, щоб скористатися функцією "Керування телефоном".</translation>
 <translation id="7886169021410746335">змінювати налаштування конфіденційності.</translation>
 <translation id="7886277072580235377">Коли ви вийдете з облікового запису, дані інтернет-сеансу буде стерто. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Надішли електронний лист</translation>
+<translation id="7895348134893321514">Сховище</translation>
 <translation id="7897375687985782769">Ви натиснули комбінацію клавіш для обертання екрана. Обернути?</translation>
 <translation id="7901405293566323524">Телефонний центр</translation>
 <translation id="7902625623987030061">Торкніться сканера відбитків пальців</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890">Робочий стіл "<ph name="DESK_TITILE" />" активовано</translation>
 <translation id="8452135315243592079">Немає SIM-карти</translation>
 <translation id="8454013096329229812">Wi-Fi увімкнено.</translation>
+<translation id="8462305545768648477">Закрити "Читання з екрана"</translation>
 <translation id="847056008324733326">Налаштування масштабу дисплея</translation>
 <translation id="8473301994082929012">На сайті <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Щоб скасувати, натисніть Alt+Search або Shift.</translation>

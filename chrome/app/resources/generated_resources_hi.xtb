@@ -1621,6 +1621,7 @@
 <translation id="2791529110887957050">Linux हटाएं</translation>
 <translation id="2791952154587244007">एक गड़बड़ी हुई. किओस्क ऐप्लिकेशन इस डिवाइस परअपने-आपलॉन्च नहीं हो सकेंगे.</translation>
 <translation id="2792290659606763004">क्या Android ऐप्लिकेशन निकालना है?</translation>
+<translation id="2792465461386711506">अपने फ़ोन में Chrome पर हाल ही में खोले गए टैब देखने के लिए, Chrome सिंक की सुविधा चालू करें</translation>
 <translation id="2794233252405721443">साइट अवरोधित है</translation>
 <translation id="2795716239552913152">आम तौर पर, साइटें, काम की सुविधाओं या जानकारी के लिए, आपकी जगह की जानकारी का इस्तेमाल करती हैं. जैसे कि स्थानीय समाचार या आस-पास की दुकानें</translation>
 <translation id="2796424461616874739">"<ph name="DEVICE_NAME" />" से कनेक्ट करते समय प्रमाणीकरण समयबाह्य हो गया.</translation>
@@ -3250,6 +3251,7 @@
 <translation id="4671265665487288124">साइटें अपने-आप कई फाइलें डाउनलोड करने के लिए पूछ सकती हैं (हम इस सेटिंग को चालू रखने का सुझाव देते हैं)</translation>
 <translation id="46733273239502219">इंस्टॉल किए गए ऐप्लिकेशन में मौजूद ऑफ़लाइन डेटा को भी मिटा दिया जाएगा</translation>
 <translation id="4673442866648850031">स्टाइलस निकाले जाने पर स्टाइलस टूल खोलें</translation>
+<translation id="4676595058027112862">फ़ोन हब, ज़्यादा जानें</translation>
 <translation id="4677772697204437347">GPU मेमोरी</translation>
 <translation id="467823995058589466">कैमरा बंद कर दिया गया है</translation>
 <translation id="4680105648806843642">इस पेज पर आवाज़ बंद कर दी गई थी</translation>
@@ -6319,6 +6321,7 @@
 <translation id="8227119283605456246">फ़ाइल अटैच करें</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> के लिए पासवर्ड सेव करें?</translation>
 <translation id="8234795456569844941">कृपया इस समस्या को ठीक करने में हमारे इंजीनियरों की मदद करें. हमें बताएं कि प्रोफ़ाइल से जुड़ी गड़बड़ी का मैसेज मिलने से ठीक पहले क्या हुआ था:</translation>
+<translation id="8235605354099176425">Chrome पर हाल ही में खोले गए टैब देखने के लिए,<ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> की सुविधा चालू करें.<ph name="LINK2_BEGIN" />ज़्यादा जानें<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">उसके बजाय यह टैब शेयर करें</translation>
 <translation id="8237647586961940482">गहरा गुलाबी और लाल</translation>
 <translation id="8239032431519548577">एंटरप्राइज़ में नाम दर्ज हो गया है</translation>
@@ -7047,6 +7050,7 @@
 <translation id="9044646465488564462">नेटवर्क से कनेक्ट करने में विफल रहा: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">आप जिस पेज पर जाने की कोशिश कर रहे हैं उसका वेब पता Google को भेजती है</translation>
 <translation id="9046895021617826162">कनेक्ट करना विफल</translation>
+<translation id="9048745018038487540">सभी फ़ॉन्ट चुनें</translation>
 <translation id="9050666287014529139">पासफ़्रेज़ (लंबा पासवर्ड)</translation>
 <translation id="9052208328806230490">आपने अपने प्रिंटर को खाता <ph name="EMAIL" /> का उपयोग करके <ph name="CLOUD_PRINT_NAME" /> के साथ पंजीकृत किया है </translation>
 <translation id="9052404922357793350">ब्लॉक करना जारी रखें</translation>

@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">બ્લૂટૂથ સેટિંગ બતાવો. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">હંમેશાં શેલ્ફ બતાવો</translation>
+<translation id="1316811122439383437">Tote: તાજેતરના સ્ક્રીન કૅપ્ચર, ડાઉનલોડ અને પિન કરેલી ફાઇલો</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> કનેક્ટ થયું</translation>
 <translation id="1341651618736211726">ઓવરફ્લો</translation>
 <translation id="1346748346194534595">જમણે</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">વિંડો સ્ક્રીનશૉટ લો</translation>
 <translation id="2617342710774726426">SIM કાર્ડ લૉક કરેલ છે</translation>
 <translation id="2621713457727696555">સુરક્ષિત</translation>
+<translation id="2633643784040308254">મધ્યમ</translation>
 <translation id="2653659639078652383">સબમિટ કરો</translation>
 <translation id="2658778018866295321">ક્લિક કરો અને ખેંચો</translation>
 <translation id="2678852583403169292">સાંભળવા માટે પસંદ કરો મેનૂ</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">માતાપિતાના કોડ વડે ડિવાઇસને અનલૉક કરો</translation>
 <translation id="4702647871202761252">પ્રાઇવસી સ્ક્રીન બંધ છે</translation>
 <translation id="4705716602320768426">પ્રતિસાદ ફાઇલ કરો</translation>
+<translation id="4730232680256276456">નમસ્તે</translation>
 <translation id="4731797938093519117">માતાપિતા માટે ઍક્સેસ</translation>
 <translation id="4734965478015604180">હોરિઝોન્ટલ</translation>
 <translation id="4744944742468440486">તમારી પસંદગી સંબંધિત માહિતી</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">સક્રિય કરેલું</translation>
 <translation id="4872237917498892622">Alt+Search અથવા Shift</translation>
 <translation id="4890187583552566966">તમારા વ્યવસ્થાપકે Google સહાયક બંધ કરેલું છે.</translation>
+<translation id="4890408602550914571">ખાતરી કરો કે તમારો ફોન નજીકમાં હોય અને બ્લૂટૂથ ચાલુ કરેલું હોય.</translation>
 <translation id="4895488851634969361">બેટરી સંપૂર્ણ છે.</translation>
 <translation id="490375751687810070">વર્ટિકલ</translation>
 <translation id="4905614135390995787">હાઇ કોન્ટ્રાસ્ટ મોડને ટૉગલ કરવાનો શૉર્ટકટ બદલાઇ ગયો છો. <ph name="OLD_SHORTCUT" />ને બદલે કૃપા કરીને <ph name="NEW_SHORTCUT" />નો ઉપયોગ કરો.</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">ભાષા</translation>
 <translation id="5313326810920013265">Bluetooth સેટિંગ</translation>
 <translation id="5314219114274263156">સ્ક્રીન રેકોર્ડિંગ કર્યું</translation>
+<translation id="5322611492012084517">તમારો ફોન શોધી શકાતો નથી</translation>
 <translation id="5329548388331921293">કનેક્ટ થઈ રહ્યું છે…</translation>
 <translation id="5331975486040154427">USB-C ડિવાઇસ (ડાબી બાજુનું પાછળનું પોર્ટ)</translation>
 <translation id="5352250171825660495">ઘેરી થીમ ચાલુ છે</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">રાત્રિ પ્રકાશ ચાલુ છે.</translation>
 <translation id="5769373120130404283">પ્રાઇવસી સ્ક્રીન</translation>
 <translation id="5777841717266010279">સ્ક્રીન શેરિંગ રોકીએ?</translation>
+<translation id="5779721926447984944">પિન કરેલી ફાઇલો</translation>
 <translation id="5790085346892983794">સફળતા</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">કનેક્ટ થયેલા ડિવાઇસના સેટિંગ</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">ઑન-સ્ક્રીન કીબોર્ડ બતાવો</translation>
 <translation id="6164005077879661055">એકવાર આ નિરીક્ષણ કરેલ વપરાશકર્તાને દૂર કરવામાં આવે પછી નિરીક્ષણ કરેલ વપરાશકર્તા સાથે સંકળાયેલી બધી ફાઇલો અને સ્થાનિક ડેટા કાયમી રૂપે કાઢી નાંખવામાં આવશે. નિરીક્ષણ કરેલ વપરાશકર્તા માટે મુલાકાત લીધેલી વેબસાઇટ્સ અને સેટિંગ્સ <ph name="MANAGEMENT_URL" /> પરના સંચાલકને હજી પણ દૃશ્યમાન હોઈ શકે છે.</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
+<translation id="6179832488876878285">તમે તમારી મહત્ત્વની ફાઇલો અહીં પિન કરી શકો છો. શરૂ કરવા માટે Files ઍપ ખોલો.</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6236290670123303279">સેટિંગને મેનેજ કરો</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">બોલાયેલ પ્રતિસાદ બંધ કરવા પાંચ સેકન્ડ માટે બન્ને વૉલ્યૂમ કીને દબાવી રાખો.</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7662283695561029522">ગોઠવવા માટે ટૅપ કરો</translation>
+<translation id="7683326293741220026">એવું લાગે છે કે તમારા ફોન પર બ્લૂટૂથ બંધ કરેલું છે. કૃપા કરીને ફોન હબનો ઉપયોગ કરવા માટે તમારા ફોન પર બ્લૂટૂથ ચાલુ કરો.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 નોટિફિકેશન}one{# નોટિફિકેશન}other{# નોટિફિકેશન}}</translation>
 <translation id="7724603315864178912">કાપો</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">ઓવરવ્યૂમાં દાખલ થવા માટે, ત્રણ આંગળી વડે ઉપરની તરફ સ્વાઇપ કરો</translation>
 <translation id="7868900307798234037">ફિંગરપ્રિન્ટથી અનલૉક કરી રહ્યાં છે</translation>
 <translation id="7872786842639831132">બંધ છે</translation>
+<translation id="7875575368831396199">એવું લાગે છે કે તમારા <ph name="DEVICE_TYPE" /> પર બ્લૂટૂથ બંધ કરેલું છે. કૃપા કરીને ફોન હબનો ઉપયોગ કરવા માટે બ્લૂટૂથ ચાલુ કરો.</translation>
 <translation id="7886169021410746335">ગોપનીયતા સેટિંગ ગોઠવો</translation>
 <translation id="7886277072580235377">જ્યારે તમે સાઇન આઉટ કરશો, ત્યારે તમારા ઇન્ટરનેટ સત્રની માહિતી સાફ કરવામાં આવશે. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ઇમેઇલ મોકલો</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">તમે સ્ક્રીનને ફેરવવા માટે કીબોર્ડ શૉર્ટકટ દબાવેલ છે. શું તમે સ્ક્રીનને ફેરવવા માગો છો?</translation>
 <translation id="7901405293566323524">ફોન હબ</translation>
 <translation id="7902625623987030061">ફિંગરપ્રિન્ટ સેન્સરને ટચ કરો</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890">ડેસ્ક <ph name="DESK_TITILE" /> સક્રિય કર્યું</translation>
 <translation id="8452135315243592079">SIM કાર્ડ ખૂટે છે</translation>
 <translation id="8454013096329229812">વાઇ-ફાઇ ચાલુ છે.</translation>
+<translation id="8462305545768648477">સાંભળવા માટે પસંદ કરો બંધ કરો</translation>
 <translation id="847056008324733326">પ્રદર્શન ધોરણનું સેટિંગ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />માં <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />છે.</translation>
 <translation id="8477270416194247200">રદ કરવા માટે Alt+શોધો અથવા Shift દબાવો.</translation>

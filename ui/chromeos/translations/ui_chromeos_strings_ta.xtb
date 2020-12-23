@@ -228,6 +228,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" />க்கு நகலெடுக்கப்பட்டது.</translation>
 <translation id="3475447146579922140">Google விரிதாள்</translation>
 <translation id="3486821258960016770">மங்கோலியன்</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> பிழைகள்.</translation>
 <translation id="3522708245912499433">போர்ச்சுகீஸ்</translation>
 <translation id="3524311639100184459">எச்சரிக்கை: இந்தக் கோப்புகள் தற்காலிகமானவை, டிஸ்க்கில் இடத்தைக் காலியாக்கும் வகையில் இவை தானாகவே நீக்கப்படலாம்.  <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">கோப்புறை</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">சைக்கிள்</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> தேர்ந்தெடுக்கப்பட்டுள்ளது.</translation>
 <translation id="872537912056138402">குரோஷியன்</translation>
+<translation id="8750438273876807512">கோப்பினைத் தொட்டுப் பிடித்து <ph name="ICON" /> ஐகானைத் தட்டி, "ஷெல்ஃபில் பின் செய்" என்பதைத் தேர்ந்தெடுக்கவும், இதன் மூலம் ஷெல்ஃபிலுள்ள கோப்புகளுக்கான விரைவு அணுகலைப் பெறலாம்.</translation>
 <translation id="8775404590947523323">உங்கள் திருத்தங்கள் தானாகவே சேமிக்கப்படுகின்றன.<ph name="BREAKS" />அசல் படத்தின் நகலை வைத்திருக்க, "அசலில் மேலெழுது" என்பதை நீக்கவும்</translation>
 <translation id="8808686172382650546">பூனை</translation>
 <translation id="8810671769985673465">ஜிப் செய்தல் ரத்தானது, இருக்கும் உள்ளடக்கம்: "<ph name="FILE_NAME" />"</translation>

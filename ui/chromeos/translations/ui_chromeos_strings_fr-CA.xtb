@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Copié dans le dossier <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Feuilles de calcul Google</translation>
 <translation id="3486821258960016770">Mongol</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> erreurs.</translation>
 <translation id="3522708245912499433">Portugais</translation>
 <translation id="3524311639100184459">Attention : Ces fichiers sont temporaires et peuvent être automatiquement supprimés pour libérer de l'espace disque.  <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dossier</translation>
@@ -739,6 +740,7 @@
 <translation id="8714406895390098252">Vélo</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> sélectionné.</translation>
 <translation id="872537912056138402">Croate</translation>
+<translation id="8750438273876807512">Maintenez le doigt sur un fichier et touchez l'icône <ph name="ICON" />, puis sélectionnez « Épingler sur l'étagère » afin d'accéder rapidement à vos fichiers sur l'étagère.</translation>
 <translation id="8775404590947523323">Vos modifications sont enregistrées automatiquement.<ph name="BREAKS" />Pour conserver une copie de l'image originale, décochez l'option « Écraser l'original ».</translation>
 <translation id="8808686172382650546">Chat</translation>
 <translation id="8810671769985673465">Échec de la compression au format .zip, car l'élément existe déjà : « <ph name="FILE_NAME" /> »</translation>

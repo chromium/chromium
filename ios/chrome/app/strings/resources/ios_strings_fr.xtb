@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Supprimer les données existantes.</translation>
 <translation id="1147031633655575115">Connecté en tant que <ph name="USER" /></translation>
 <translation id="1154690515305205900">La création d'un lien vers le texte surligné a échoué.</translation>
+<translation id="1154984953698510061">Voir les autres onglets</translation>
 <translation id="1157749421655780457">Autoriser l'utilisation de votre position…</translation>
 <translation id="1165039591588034296">Erreur</translation>
 <translation id="1172898394251786223">Champ suivant</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">Dernières 24 heures</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
 <translation id="1321993286294231467">Erreur lors de l'enregistrement de l'image.</translation>
+<translation id="1322735045095424339">Votre organisation exige d'utiliser le mode navigation privée</translation>
 <translation id="1323735185997015385">Supprimer</translation>
 <translation id="132683371494960526">Appuyez deux fois pour modifier le dossier parent.</translation>
 <translation id="1340643665687018190">Fermer le menu</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Nom du titulaire de la carte</translation>
 <translation id="1809939268435598390">Supprimer le dossier</translation>
 <translation id="1813414402673211292">Effacer les données de navigation</translation>
+<translation id="1815941218935345331">Code secret</translation>
 <translation id="1820259098641718022">Page ajoutée à la liste de lecture</translation>
 <translation id="1870148520156231997">Afficher le mot de passe</translation>
 <translation id="1872096359983322073">Lampe torche</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Paramètres avancés</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="2015722694326466240">Pour afficher les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
+<translation id="2047933465321076474">Votre organisation a désactivé la navigation privée. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous avez toujours la possibilité de sélectionner les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annuler</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Effacement des données de navigation…</translation>
 <translation id="2257567812274161158">La synchronisation ne fonctionne pas.</translation>
 <translation id="225943865679747347">Code d'erreur : <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">Votre organisation exige que vous utilisiez le mode navigation privée. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Ajouter un compte</translation>
 <translation id="2268044343513325586">Affiner</translation>
 <translation id="2273327106802955778">Menu Plus</translation>
@@ -136,6 +141,7 @@
 Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces).</translation>
 <translation id="2381405137052800939">Paramètres de base</translation>
 <translation id="2386793615875593361">1 photo sélectionnée</translation>
+<translation id="2419661687355878017">Votre organisation a désactivé le mode navigation privée</translation>
 <translation id="2421004566762153674">Blocage des cookies tiers</translation>
 <translation id="2421044535038393232">Poursuivre les modifications</translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
@@ -185,11 +191,13 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="291754862089661335">Positionnez le code QR ou le code-barres dans ce cadre</translation>
 <translation id="2921219216347069551">Impossible de partager page</translation>
 <translation id="2923448633003185837">Coller et rechercher</translation>
+<translation id="2923827943290349720">Verrouiller les onglets de navigation privée lorsque vous fermez Chrome</translation>
 <translation id="292639812446257861">Marquer comme non lues</translation>
 <translation id="2952581218264071393">1. Accédez aux paramètres de Chrome</translation>
 <translation id="2958718410589002129">Mots de passe</translation>
 <translation id="2964349545761222050">Bloquer les cookies tiers</translation>
 <translation id="2969979262385602596">Échec de la connexion. Veuillez réessayer plus tard.</translation>
+<translation id="2975121486251958312">Seul le mode navigation privée est disponible</translation>
 <translation id="298306318844797842">Ajouter un mode de paiement</translation>
 <translation id="2989805286512600854">Ouvrir dans un nouvel onglet</translation>
 <translation id="3037605927509011580">Aïe aïe aïe</translation>
@@ -204,6 +212,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="3175081911749765310">Services Web</translation>
 <translation id="3178650076442119961">Actif aujourd'hui</translation>
 <translation id="3181954750937456830">Navigation sécurisée (assure votre protection et celle de votre appareil contre les sites dangereux)</translation>
+<translation id="3184767182050912705">Déverrouiller avec <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation (par exemple, pour maintenir votre connexion ou mémoriser les articles de votre panier).
 
 En revanche, lorsque vous êtes en mode navigation privée, les sites ne peuvent pas utiliser de cookies pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces).</translation>
@@ -355,6 +364,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} et 1 autre}one{{domain} et {count} autre}other{{domain} et {count} autres}}</translation>
 <translation id="4826218269716039351">Bloquer les cookies tiers</translation>
 <translation id="48274138579728272">Marquer comme lu</translation>
+<translation id="4833686396768033263">Onglets récents indisponibles</translation>
 <translation id="4833786495304741580">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
 <translation id="4840495572919996524">Vos favoris, votre historique, vos mots de passe et d'autres paramètres ne seront plus synchronisés avec votre compte Google.</translation>
 <translation id="4854345657858711387">Définir un code secret</translation>
@@ -418,6 +428,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5551897871312988470">Proposer de traduire</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5592679540098330836">Activer la synchronisation pour <ph name="NAME" /></translation>
+<translation id="5597169624050330492">Votre organisation exige que vous utilisiez le mode navigation privée. Lorsque ce mode est utilisé, les onglets ne sont pas enregistrés. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe ?</translation>
 <translation id="5626245204502895507">Impossible de télécharger le fichier pour le moment.</translation>
 <translation id="5631164295104953411">Ajouter un mode de paiement</translation>
@@ -522,6 +533,7 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 
 Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</translation>
 <translation id="651505212789431520">Annuler la synchronisation ? Vous pouvez activer la synchronisation à tout moment dans les paramètres.</translation>
+<translation id="6524918542306337007">Mode navigation privée indisponible</translation>
 <translation id="6561262006871132942">Zoom avant</translation>
 <translation id="6585618849026997638">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>
 <translation id="6610002944194042868">Options de traduction</translation>
@@ -580,6 +592,7 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="7133798577887235672">Nom complet</translation>
 <translation id="7136892417564438900">Appareil photo non disponible</translation>
 <translation id="7159472599653637159">Voir version mobile</translation>
+<translation id="7162168282402939716">Déverrouiller les onglets de navigation privée avec "<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />"</translation>
 <translation id="7172852049901402487">Protéger vos mots de passe</translation>
 <translation id="7173114856073700355">Paramètres</translation>
 <translation id="7189598951263744875">Partager…</translation>
@@ -617,6 +630,7 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="7537586195939242955">Impossible d'installer votre Pass dans Passbook actuellement.</translation>
 <translation id="7554791636758816595">Nouvel onglet</translation>
 <translation id="7561196759112975576">Toujours</translation>
+<translation id="7583004045319035904">Utilisez "<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />" pour déverrouiller vos onglets de navigation privée.</translation>
 <translation id="7600965453749440009">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /> </translation>
 <translation id="7603852183842204213">Pop-up bloqués (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Supprimer le mot de passe</translation>
@@ -709,6 +723,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8591976964826315682">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="8605219856220328675">Fermer l'onglet</translation>
 <translation id="8620640915598389714">Modifier</translation>
+<translation id="863090005774946393">Votre navigateur est géré par votre organisation. Certaines fonctionnalités peuvent être désactivées.</translation>
 <translation id="8636825310635137004">Activez la synchronisation pour accéder à vos onglets sur vos autres appareils.</translation>
 <translation id="8654802032646794042">Annuler</translation>
 <translation id="8668210798914567634">Cette page a été enregistrée dans votre liste de lecture.</translation>

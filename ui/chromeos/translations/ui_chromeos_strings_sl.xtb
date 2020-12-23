@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Kopirano v mapo <ph name="FOLDER_NAME" /></translation>
 <translation id="3475447146579922140">Googlova preglednica</translation>
 <translation id="3486821258960016770">mongolščina</translation>
+<translation id="3495304270784461826">Št. napak: <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">portugalščina</translation>
 <translation id="3524311639100184459">Pozor: Te datoteke so začasne in bodo morda samodejno izbrisane, da se sprosti prostor na disku.  <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mapa</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Kolo</translation>
 <translation id="8719721339511222681">Izbran je vnos <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">hrvaščina</translation>
+<translation id="8750438273876807512">Pridržite datoteko in se dotaknite <ph name="ICON" /> ter izberite »Pripni na polico« za hiter dostop do datotek na polici.</translation>
 <translation id="8775404590947523323">Vaši popravki se samodejno shranijo.<ph name="BREAKS" />Če želite obdržati kopijo izvirne slike, počistite polje »Prepiši izvirno«</translation>
 <translation id="8808686172382650546">Mačka</translation>
 <translation id="8810671769985673465">Ustvarjanje datoteke zip ni uspelo, obstoječi element: »<ph name="FILE_NAME" />«</translation>

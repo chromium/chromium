@@ -1620,6 +1620,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2791529110887957050">Remove Linux</translation>
 <translation id="2791952154587244007">An error occurred. Kiosk application will not be able to auto-launch on this device.</translation>
 <translation id="2792290659606763004">Remove Android apps?</translation>
+<translation id="2792465461386711506">Turn on Chrome Sync to view recent Chrome tabs from your phone</translation>
 <translation id="2794233252405721443">Site blocked</translation>
 <translation id="2795716239552913152">Sites usually use your location for relevant features or info, like local news or nearby shops</translation>
 <translation id="2796424461616874739">Authentication timeout while connecting to "<ph name="DEVICE_NAME" />".</translation>
@@ -3250,6 +3251,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4671265665487288124">Sites can ask to automatically download multiple files (recommended)</translation>
 <translation id="46733273239502219">Offline data in installed apps will also be cleared</translation>
 <translation id="4673442866648850031">Open stylus tools when the stylus is removed</translation>
+<translation id="4676595058027112862">Phone Hub, learn more</translation>
 <translation id="4677772697204437347">GPU memory</translation>
 <translation id="467823995058589466">Camera is turned off</translation>
 <translation id="4680105648806843642">Sound was muted on this page</translation>
@@ -6320,6 +6322,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8227119283605456246">Attach file</translation>
 <translation id="8230134520748321204">Save password for <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Please help our engineers fix this problem. Tell us what happened right before you got the profile error message:</translation>
+<translation id="8235605354099176425">Turn on<ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> to view recent Chrome tabs.<ph name="LINK2_BEGIN" />Learn more<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Share this tab instead</translation>
 <translation id="8237647586961940482">Dark pink and red</translation>
 <translation id="8239032431519548577">Enterprise enrolment complete</translation>
@@ -7047,6 +7050,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="9044646465488564462">Failed to connect to network: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Sends the web address of the page that you're trying to reach to Google</translation>
 <translation id="9046895021617826162">Connection failed</translation>
+<translation id="9048745018038487540">Select all fonts</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9052208328806230490">You have registered your printers with <ph name="CLOUD_PRINT_NAME" />, using the account <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Continue blocking</translation>

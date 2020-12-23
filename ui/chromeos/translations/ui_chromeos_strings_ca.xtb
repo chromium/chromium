@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">S'ha copiat a <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Full de càlcul de Google</translation>
 <translation id="3486821258960016770">Mongol</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> errors.</translation>
 <translation id="3522708245912499433">Portuguès</translation>
 <translation id="3524311639100184459">Compte: aquests fitxers són temporals i és possible que se suprimeixin automàticament per alliberar espai de disc.  <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Carpeta</translation>
@@ -738,6 +739,7 @@
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">S'ha seleccionat <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croat</translation>
+<translation id="8750438273876807512">Mantén premut un fitxer i toca <ph name="ICON" />. A continuació, selecciona Fixa al prestatge per accedir ràpidament als fitxers d'un prestatge.</translation>
 <translation id="8775404590947523323">Els canvis es desen automàticament.<ph name="BREAKS" />Per conservar una còpia de la imatge original, desmarqueu "Sobreescriu l'original"</translation>
 <translation id="8808686172382650546">Gat</translation>
 <translation id="8810671769985673465">S'ha produït un error en la compressió; l'element existeix: "<ph name="FILE_NAME" />"</translation>

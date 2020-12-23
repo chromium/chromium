@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">ब्लूटूथ सेटिंग्ज दाखवा. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">नेहमी शेल्फ दाखवा</translation>
+<translation id="1316811122439383437">टोटे: अलीकडील स्क्रीन कॅप्चर, डाउनलोड आणि पिन केलेल्या फाइल</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> कनेक्‍ट केले</translation>
 <translation id="1341651618736211726">ओव्हरफ्लो</translation>
 <translation id="1346748346194534595">उजवे</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">विंडो स्क्रीनशॉट घ्या</translation>
 <translation id="2617342710774726426">सिम कार्ड लॉक केले आहे</translation>
 <translation id="2621713457727696555">सुरक्षित</translation>
+<translation id="2633643784040308254">मध्यम</translation>
 <translation id="2653659639078652383">सबमिट करा</translation>
 <translation id="2658778018866295321">क्लिक आणि ड्रॅग करा</translation>
 <translation id="2678852583403169292">बोलण्यासाठी निवडा मेनू</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">पालक कोडने डिव्हाइस अनलॉक करा</translation>
 <translation id="4702647871202761252">गोपनीयता स्क्रीन बंद आहे</translation>
 <translation id="4705716602320768426">फाइल फीडबॅक</translation>
+<translation id="4730232680256276456">हाय</translation>
 <translation id="4731797938093519117">पालक अ‍ॅक्सेस</translation>
 <translation id="4734965478015604180">आडवा</translation>
 <translation id="4744944742468440486">तुमच्या निवडीशी संबंधित माहिती</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">अ‍ॅक्टिव्हेट केले आहे</translation>
 <translation id="4872237917498892622">Alt+Search किंवा Shift</translation>
 <translation id="4890187583552566966">तुमच्या अ‍ॅडमिनिस्ट्रेटरने Google Assistant बंद केलेले आहे.</translation>
+<translation id="4890408602550914571">तुमचा फोन जवळपास असल्याची आणि ब्लूटूथ सुरू असल्याची खात्री करा.</translation>
 <translation id="4895488851634969361">बॅटरी भरली आहे.</translation>
 <translation id="490375751687810070">उभा</translation>
 <translation id="4905614135390995787">उच्च तीव्रता मोड टॉगल करण्यासाठी शॉर्टकट बदलला आहे. कृपया <ph name="OLD_SHORTCUT" /> ऐवजी <ph name="NEW_SHORTCUT" /> वापरा.</translation>
@@ -473,6 +477,7 @@
 <translation id="5302048478445481009">भाषा</translation>
 <translation id="5313326810920013265">ब्लूटूथ सेटिंग्ज</translation>
 <translation id="5314219114274263156">स्क्रीन रेकॉर्डिंग घेतले</translation>
+<translation id="5322611492012084517">तुमचा फोन आढळला नाही</translation>
 <translation id="5329548388331921293">कनेक्ट करत आहे…</translation>
 <translation id="5331975486040154427">USB-C डिव्‍हाइस (डाव्या बाजूचे मागील पोर्ट)</translation>
 <translation id="5352250171825660495">गडद थीम सुरू आहे</translation>
@@ -519,6 +524,7 @@
 <translation id="576453121877257266">रात्रीचा प्रकाश सुरू आहे.</translation>
 <translation id="5769373120130404283">गोपनीयता स्क्रीन</translation>
 <translation id="5777841717266010279">स्क्रीन सामायिकरण थांबवायचे?</translation>
+<translation id="5779721926447984944">पिन केलेल्या फाइल</translation>
 <translation id="5790085346892983794">यशस्वी</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">कनेक्‍ट केलेली डिव्हाइस सेटिंग्ज</translation>
@@ -563,6 +569,7 @@
 <translation id="615957422585914272">ऑन-स्‍क्रीन कीबोर्ड दर्शवा</translation>
 <translation id="6164005077879661055">एकदा हा पर्यवेक्षित वापरकर्ता काढल्यानंतर पर्यवेक्षित वापरकर्त्याशी संबद्ध सर्व फाइल आणि स्थानिक डेटा कायमचा हटवला जाईल. या पर्यवेक्षित वापरकर्त्यासाठी भेट दिलेल्या वेबसाइट आणि सेटिंग्ज तरीही <ph name="MANAGEMENT_URL" /> वर व्यवस्थापकाद्वारे दृश्यमान असू शकतात.</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
+<translation id="6179832488876878285">तुम्ही तुमच्या महत्त्वाच्या फाइल येथे पिन करू शकता. सुरुवात करण्यासाठी Files अ‍ॅप उघडा.</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6236290670123303279">सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="6237231532760393653">१X</translation>
@@ -720,6 +727,7 @@
 <translation id="7654687942625752712">वाचिक फीडबॅक बंद करण्यासाठी दोन्ही व्हॉल्युम की पाच सेकंदांसाठी दाबा आणि धरून ठेवा.</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7662283695561029522">कॉंफिगर करण्यासाठी टॅप करा</translation>
+<translation id="7683326293741220026">तुमच्या फोनचा ब्लूटूथ बंद असल्याचे दिसते. कृपया फोन हब वापरण्यासाठी तुमच्या फोनचा ब्लूटूथ सुरू करा.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{एक सूचना}other{# सूचना}}</translation>
 <translation id="7724603315864178912">कट करा</translation>
@@ -737,9 +745,11 @@
 <translation id="7860671499921112077">अवलोकन मध्ये एंटर करण्यासाठी तीन बोटांनी वर स्‍वाइप करा</translation>
 <translation id="7868900307798234037">फिंगरप्रिंटने अनलॉक करत आहे</translation>
 <translation id="7872786842639831132">बंद करा</translation>
+<translation id="7875575368831396199">तुमच्या <ph name="DEVICE_TYPE" /> चा ब्लूटूथ बंद असल्याचे दिसते. कृपया फोन हब वापरण्यासाठी ब्लूटूथ सुरू करा.</translation>
 <translation id="7886169021410746335">गोपनीयता सेटिंग्ज ॲडजस्ट करा</translation>
 <translation id="7886277072580235377">तुम्ही साइन आउट केल्यावर तुमचे इंटरनेट सेशन साफ केले जाईल. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ईमेल पाठवा</translation>
+<translation id="7895348134893321514">टोटे</translation>
 <translation id="7897375687985782769">तुम्ही स्क्रीन रोटेशनसाठी कीबोर्ड शॉर्टकट दाबला आहे. तुम्हाला स्क्रीन फिरवायची आहे का?</translation>
 <translation id="7901405293566323524">फोन हब</translation>
 <translation id="7902625623987030061">फिंगरप्रिंट सेन्सरला स्पर्श करा</translation>
@@ -807,6 +817,7 @@
 <translation id="8444246603146515890">डेस्क <ph name="DESK_TITILE" /> ॲक्टिव्हेट केले</translation>
 <translation id="8452135315243592079">गहाळ सिम कार्ड</translation>
 <translation id="8454013096329229812">वाय-फाय सुरू आहे.</translation>
+<translation id="8462305545768648477">बोलण्यासाठी निवडा बंद करा</translation>
 <translation id="847056008324733326">स्केल सेटिंग्‍ज दाखवा</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> कडे <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> आहेत.</translation>
 <translation id="8477270416194247200">रद्द करण्यासाठी Alt+Search किंवा Shift दाबा.</translation>

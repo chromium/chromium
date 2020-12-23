@@ -47,6 +47,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1302880136325416935">Tampilkan setelan Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Selalu tampilkan rak</translation>
+<translation id="1316811122439383437">Tote: screenshot, download, dan file tersemat yang terbaru</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> terhubung</translation>
 <translation id="1341651618736211726">Luapan</translation>
 <translation id="1346748346194534595">Kanan</translation>
@@ -181,6 +182,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2596078834055697711">Mengambil screenshot jendela</translation>
 <translation id="2617342710774726426">Kartu SIM terkunci</translation>
 <translation id="2621713457727696555">Aman</translation>
+<translation id="2633643784040308254">Sedang</translation>
 <translation id="2653659639078652383">Kirim</translation>
 <translation id="2658778018866295321">Klik dan tarik</translation>
 <translation id="2678852583403169292">Menu Klik untuk Diucapkan</translation>
@@ -410,6 +412,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4696813013609194136">Buka kunci perangkat dengan kode orang tua</translation>
 <translation id="4702647871202761252">Layar privasi nonaktif</translation>
 <translation id="4705716602320768426">Kirim masukan</translation>
+<translation id="4730232680256276456">Tinggi</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4744944742468440486">Info terkait pilihan Anda</translation>
@@ -426,6 +429,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4868492592575313542">diaktifkan</translation>
 <translation id="4872237917498892622">Alt+Telusuri atau Shift</translation>
 <translation id="4890187583552566966">Asisten Google dinonaktifkan oleh administrator</translation>
+<translation id="4890408602550914571">Pastikan ponsel berada di dekat Anda dan Bluetooth aktif.</translation>
 <translation id="4895488851634969361">Baterai penuh.</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="4905614135390995787">Pintasan untuk beralih Mode Kontras Tinggi telah berubah. Gunakan <ph name="NEW_SHORTCUT" /> sebagai ganti <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +477,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5302048478445481009">Bahasa</translation>
 <translation id="5313326810920013265">Setelan bluetooth</translation>
 <translation id="5314219114274263156">Perekaman layar diambil</translation>
+<translation id="5322611492012084517">Tidak dapat menemukan ponsel Anda</translation>
 <translation id="5329548388331921293">Menghubungkan ...</translation>
 <translation id="5331975486040154427">Perangkat USB-C (port belakang sebelah kiri)</translation>
 <translation id="5352250171825660495">Tema gelap aktif</translation>
@@ -519,6 +524,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="576453121877257266">Mode Cahaya Malam aktif.</translation>
 <translation id="5769373120130404283">Layar privasi</translation>
 <translation id="5777841717266010279">Berhenti membagikan layar?</translation>
+<translation id="5779721926447984944">File tersemat</translation>
 <translation id="5790085346892983794">Berhasil</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Setelan perangkat yang terhubung</translation>
@@ -563,6 +569,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="615957422585914272">Tampilkan keyboard di layar</translation>
 <translation id="6164005077879661055">Semua file dan data lokal yang terkait dengan pengguna yang dilindungi akan dihapus secara permanen setelah pengguna yang dilindungi ini dihapus. Situs web yang dikunjungi dan setelan untuk pengguna yang dilindungi ini mungkin tetap dapat dilihat oleh pengelola di <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
+<translation id="6179832488876878285">Anda dapat menyematkan file penting di sini. Buka aplikasi File untuk memulai.</translation>
 <translation id="622484624075952240">Bawah</translation>
 <translation id="6236290670123303279">Kelola Setelan</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +727,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7654687942625752712">Tekan dan tahan kedua tombol volume selama 5 detik untuk menonaktifkan masukan lisan.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7662283695561029522">Ketuk untuk mengonfigurasi</translation>
+<translation id="7683326293741220026">Sepertinya Bluetooth dinonaktifkan di ponsel Anda. Aktifkan Bluetooth di ponsel untuk menggunakan Phone Hub.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifikasi}other{# notifikasi}}</translation>
 <translation id="7724603315864178912">Potong</translation>
@@ -737,9 +745,11 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7860671499921112077">Geser ke atas dengan tiga jari untuk masuk ke Ringkasan</translation>
 <translation id="7868900307798234037">Membuka kunci dengan sidik jari</translation>
 <translation id="7872786842639831132">Nonaktif</translation>
+<translation id="7875575368831396199">Sepertinya Bluetooth dinonaktifkan di <ph name="DEVICE_TYPE" /> Anda. Aktifkan Bluetooth untuk menggunakan Phone Hub.</translation>
 <translation id="7886169021410746335">Menyesuaikan setelan privasi</translation>
 <translation id="7886277072580235377">Sesi internet Anda akan dihapus saat Anda logout. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Kirim email</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Anda menekan pintasan keyboard untuk rotasi layar. Ingin memutar layar?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Sentuh sensor sidik jari</translation>
@@ -807,6 +817,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8444246603146515890">Desktop <ph name="DESK_TITILE" /> diaktifkan</translation>
 <translation id="8452135315243592079">Kartu SIM tidak ada</translation>
 <translation id="8454013096329229812">Wi-Fi diaktifkan.</translation>
+<translation id="8462305545768648477">Tutup Klik untuk Diucapkan</translation>
 <translation id="847056008324733326">Setelan skala layar</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> telah <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Tekan Alt+Search atau Shift untuk membatalkan.</translation>

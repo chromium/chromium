@@ -228,6 +228,7 @@
 <translation id="3473378059788601120">Copiouse en <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Folla de cálculo de Google</translation>
 <translation id="3486821258960016770">Mongol</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
 <translation id="3522708245912499433">Portugués</translation>
 <translation id="3524311639100184459">Precaución: Estes ficheiros son temporais e pódense eliminar automaticamente para liberar espazo no disco.  <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Cartafol</translation>
@@ -737,6 +738,7 @@
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">Seleccionouse <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croata</translation>
+<translation id="8750438273876807512">Para poder acceder rapidamente aos ficheiros dun estante, mantén premido un ficheiro, toca <ph name="ICON" /> e selecciona Fixar no estante.</translation>
 <translation id="8775404590947523323">As túas edicións gárdanse automaticamente.<ph name="BREAKS" />Para conservar unha copia da imaxe orixinal, desmarca "Sobrescribir orixinal"</translation>
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8810671769985673465">Produciuse un erro na compresión. Xa existe o elemento "<ph name="FILE_NAME" />"</translation>

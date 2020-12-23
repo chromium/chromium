@@ -53,7 +53,7 @@
 <translation id="1054153489933238809">Asl &amp;tasvirni yangi tabda ochish</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> qurilmasini 1 hafta ichida yangilang}other{<ph name="DEVICE_TYPE" /> qurilmasini {NUM_WEEKS} hafta ichida yangilang}}</translation>
 <translation id="1055806300943943258">Bluetooth va USB qurilmalar qidirilmoqda...</translation>
-<translation id="1056466516655540509"><ph name="MINUTES" /> daqiqa oldin yangilangan</translation>
+<translation id="1056466516655540509"><ph name="MINUTES" /> daq oldin yangilandi</translation>
 <translation id="1056775291175587022">Tarmoq topilmadi</translation>
 <translation id="1056898198331236512">Ogohlantirish</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -256,7 +256,7 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1274997165432133392">Cookie fayllari va boshqa sayt ma’lumotlari</translation>
 <translation id="1275718070701477396">Tanlandi</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> oʻrnatilmadi</translation>
-<translation id="1277020343994096713">Joriysidan farqli yangi PIN kod yarating</translation>
+<translation id="1277020343994096713">Hozirgidan farqli yangi PIN kod yarating</translation>
 <translation id="1278703349931574538">Kontaktlarni boshqarish</translation>
 <translation id="127946606521051357">Yaqin-atrofdagi qurilma fayl yubormoqda</translation>
 <translation id="1280820357415527819">Mobil tarmoqlar qidirilmoqda</translation>
@@ -601,7 +601,7 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1641113438599504367">Saytlarni xavfsiz kezish</translation>
 <translation id="1642494467033190216">Boshqa nosozliklarni ko‘rib chiqish funksiyalarini yoqishdan avval tub fayllar tizimi himoyasini o‘chirib qo‘ying va qurilmani qayta ishga tushiring.</translation>
 <translation id="1643072738649235303">SHA-1 algoritmli X9.62 ECDSA imzosi</translation>
-<translation id="1643921258693943800">Atrofga yuborish funksiyasini ishlatish uchun Bluetooth va Wi-Fi sozlamalarini yoqing</translation>
+<translation id="1643921258693943800">Yaqin-atrofga yuborish funksiyasini ishlatish uchun Bluetooth va Wi-Fi sozlamalarini yoqing</translation>
 <translation id="1644574205037202324">Tarix</translation>
 <translation id="1645516838734033527"><ph name="DEVICE_TYPE" /> xavfsizligi uchun Smart Lock telefoningiz ekranini qulflashni talab qilyapti.</translation>
 <translation id="1646982517418478057">Bu sertifikat faylini shifrlash uchun parol kiriting</translation>
@@ -1108,7 +1108,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="2224337661447660594">Internet yo‘q</translation>
 <translation id="2224444042887712269">Bu sozlama <ph name="OWNER_EMAIL" /> tomonidan o‘rnatilingan.</translation>
-<translation id="222447520299472966">Kamida bitta foto albom tanlanishi kerak</translation>
+<translation id="222447520299472966">Kamida bitta fotoalbom tanlanishi kerak</translation>
 <translation id="2224551243087462610">Jild nomini o‘zgartirish</translation>
 <translation id="2225864335125757863">Hisobingiz xavfsiz saqlanishi uchun bu parollarni darhol yangilang:</translation>
 <translation id="2226204716217107988">Boshqa profilni tanlaysizmi?</translation>
@@ -1778,7 +1778,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2962131322798295505">Fon rasmini tanlagich</translation>
 <translation id="2963151496262057773">“<ph name="PLUGIN_NAME" />” plagin so‘rovlarga javob bermay qo‘ydi. U to‘xtatilsinmi?</translation>
 <translation id="2964193600955408481">Wi-Fi‘ni o‘chirib qo‘yish</translation>
-<translation id="2964245677645334031">Yaqin-atrofga koʻrinuvchanlik</translation>
+<translation id="2964245677645334031">Yaqin-atrofga ochiqlik</translation>
 <translation id="2966937470348689686">Android sozlamalarini boshqarish</translation>
 <translation id="2972581237482394796">&amp;Qaytarish</translation>
 <translation id="2973324205039581528">Sayt ovozini o‘chirish</translation>
@@ -2569,7 +2569,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3862788408946266506">Manifest faylida “kiosk_only” atributi mavjud ilovalarni Chrome OS‘da faqatgina kiosk rejimida o‘rnatish mumkin</translation>
 <translation id="3865414814144988605">Piksellar sig‘imi</translation>
 <translation id="3866249974567520381">Tavsif</translation>
-<translation id="3867134342671430205">Displeyni sinqoncha yoki yon strelkalar yordamida suring</translation>
+<translation id="3867134342671430205">Displeyni sichqoncha yoki yon strelkalar yordamida suring</translation>
 <translation id="3867944738977021751">Sertifikat maydoni</translation>
 <translation id="3869917919960562512">Noto‘g‘ri indeks.</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" /> uchun saqlangan parollar yo‘q</translation>
@@ -5460,7 +5460,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7262004276116528033">Tizimga kirish xizmati <ph name="SAML_DOMAIN" /> domenida joylashgan.</translation>
 <translation id="7267044199012331848">Virtual mashina oʻrnatilmadi Qayta urining yoki administratorga murojaat qiling. Xatolik kodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="7268127947535186412">Bu sozlamani qurilma egasi boshqaradi.</translation>
-<translation id="7269736181983384521">Atrofga yuborish trafik sarfi</translation>
+<translation id="7269736181983384521">Yaqin-atrofga yuborilgan trafik sarfi</translation>
 <translation id="7270858098575133036">Saytlar MIDI qurilmalarga ruxsat olish uchun tizim xabarlaridan foydalanmoqchi bo‘layotganda xabar berilsin.</translation>
 <translation id="7272674038937250585">Hech qanday tavsif berilmagan.</translation>
 <translation id="7273110280511444812">oxirgi ulanish: <ph name="DATE" /></translation>
@@ -5883,7 +5883,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7764225426217299476">Manzil kiritish</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> saytidan <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7765158879357617694">Ko‘chirib o‘tkazish</translation>
-<translation id="7765507180157272835">Bluetooth va Wi-Fi aloqa zarur</translation>
+<translation id="7765507180157272835">Bluetooth va Wi-Fi aloqasi zarur</translation>
 <translation id="7766082757934713382">Tarmoq trafik sarfini avtomatik ishga tushuvchi ilovalar va tizim uchun yangilanishlarni pauza qilish orqali kamaytirish mumkin.</translation>
 <translation id="7766838926148951335">Ruxsatlarni qabul qilish</translation>
 <translation id="7768507955883790804">Saytlarga tashrif vaqtida bu sozlama avtomatik tatbiq qilinadi</translation>
@@ -6293,7 +6293,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8200772114523450471">Davom ettirish</translation>
 <translation id="8201717382574620700">Albom tanlash: <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" /> qurilmasi profilini yangilash uchun parolni qayta kiriting.</translation>
-<translation id="8203152941016626022">Atrofga yuborish qurilmasining nomi</translation>
+<translation id="8203152941016626022">Yaqin-atrofga yuborish qurilmasining nomi</translation>
 <translation id="8203732864715032075">Bu kompyuter xabarlashuv uchun birlamchi bo‘lishi uchun sizga bildirishnoma yuborildi. <ph name="LINK_BEGIN" />Batafsil axborot<ph name="LINK_END" /></translation>
 <translation id="820568752112382238">Eng koʻp ochilgan saytlar</translation>
 <translation id="8206745257863499010">Blyuz</translation>
@@ -6528,7 +6528,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8489156414266187072">Shaxsiy takliflar faqat sizning hisobda chiqadi</translation>
 <translation id="8490896350101740396">Quyidagi kiosk ilovalar "<ph name="UPDATED_APPS" />" yangilandi. Yangilash jarayonini tugallash uchun qurilmani qayta yuklang.</translation>
 <translation id="8492822722330266509">Saytlar oynalarni qalqib chiqarishi va sahifalarni yoʻnaltirishi mumkin</translation>
-<translation id="8492972329130824181">Uydagi tarmoq ishlamayapti. Ulanish uchun mobil internet roumingini yoqing.</translation>
+<translation id="8492972329130824181">Uydagi tarmoq ishlamayapti. Ulanish uchun mobil internet-roumingni yoqing.</translation>
 <translation id="8493236660459102203">Mikrofon:</translation>
 <translation id="8496717697661868878">Bu plaginni ishga tushirish</translation>
 <translation id="8497219075884839166">Windows vositalari</translation>
