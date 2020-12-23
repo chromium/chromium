@@ -52,11 +52,9 @@ class CONTENT_EXPORT ServiceWorkerContextWatcher
 
   ~ServiceWorkerContextWatcher() override;
 
-  void GetStoredRegistrationsOnCoreThread();
-  void OnStoredRegistrationsOnCoreThread(
+  void OnStoredRegistrations(
       blink::ServiceWorkerStatusCode status,
       const std::vector<ServiceWorkerRegistrationInfo>& stored_registrations);
-  void StopOnCoreThread();
 
   void StoreRegistrationInfo(
       const ServiceWorkerRegistrationInfo& registration,
