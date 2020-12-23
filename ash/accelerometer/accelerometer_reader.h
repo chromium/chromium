@@ -25,8 +25,15 @@ enum class ECLidAngleDriverStatus { UNKNOWN, SUPPORTED, NOT_SUPPORTED };
 
 class AccelerometerProviderInterface;
 
-// Reads an accelerometer device and reports data back to an
-// AccelerometerDelegate.
+// AccelerometerReader should only be used on the UI thread.
+// It notifies observers if EC Lid Angle Driver is supported, and provides
+// accelerometers' (lid and base) samples.
+// The current usages of accelerometers' samples are for calculating the angle
+// between the lid and the base, which can be substituted by EC Lid Angle
+// Driver, if it exists, and the auto rotation, which only needs
+// lid-accelerometer's data.
+// Therefore, if EC Lid Angle Driver is present, base-accelerometer's samples
+// may be ignored and not sent to the observers.
 class ASH_EXPORT AccelerometerReader {
  public:
   // An interface to receive data from the AccelerometerReader.

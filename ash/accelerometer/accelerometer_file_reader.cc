@@ -27,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/current_thread.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner.h"
@@ -142,15 +143,18 @@ bool ReadFileToDouble(const base::FilePath& path, double* value) {
 }  // namespace
 
 AccelerometerFileReader::AccelerometerFileReader()
-    : observers_(
-          new base::ObserverListThreadSafe<AccelerometerReader::Observer>()) {}
+    : ui_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
 void AccelerometerFileReader::PrepareAndInitialize() {
+  DCHECK(base::CurrentUIThread::IsSet());
+
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+
   // AccelerometerReader is important for screen orientation so we need
   // USER_VISIBLE priority.
   // Use CONTINUE_ON_SHUTDOWN to avoid blocking shutdown since the datareading
   // could get blocked on certain devices. See https://crbug.com/1023989.
-  task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+  blocking_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
@@ -158,35 +162,164 @@ void AccelerometerFileReader::PrepareAndInitialize() {
 
   initialization_timeout_ = base::TimeTicks::Now() + kInitializeTimeout;
 
-  // Asynchronously detect and initialize the accelerometer to avoid delaying
-  // startup.
-  task_runner_->PostNonNestableTask(
-      FROM_HERE,
-      base::BindOnce(&AccelerometerFileReader::InitializeInternal, this));
+  TryScheduleInitialize();
 }
 
-void AccelerometerFileReader::TryScheduleInitializeInternal() {
-  // If we haven't yet passed the timeout cutoff, try this again. This will
-  // be scheduled at the same rate as reading.
-  if (base::TimeTicks::Now() < initialization_timeout_) {
-    DCHECK_EQ(State::INITIALIZING, initialization_state_);
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&AccelerometerFileReader::InitializeInternal, this),
-        kDelayBetweenReads);
-  } else {
-    LOG(ERROR) << "Failed to initialize for accelerometer read.\n";
-    initialization_state_ = State::FAILED;
+void AccelerometerFileReader::AddObserver(
+    AccelerometerReader::Observer* observer) {
+  DCHECK(base::CurrentUIThread::IsSet());
+  DCHECK(blocking_task_runner_);
+  observers_.AddObserver(observer);
+
+  if (initialization_state_ != State::SUCCESS)
+    return;
+
+  blocking_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&AccelerometerFileReader::ReadSample, this));
+}
+
+void AccelerometerFileReader::RemoveObserver(
+    AccelerometerReader::Observer* observer) {
+  DCHECK(base::CurrentUIThread::IsSet());
+  observers_.RemoveObserver(observer);
+}
+
+void AccelerometerFileReader::StartListenToTabletModeController() {
+  DCHECK(base::CurrentUIThread::IsSet());
+  Shell::Get()->tablet_mode_controller()->AddObserver(this);
+}
+
+void AccelerometerFileReader::StopListenToTabletModeController() {
+  DCHECK(base::CurrentUIThread::IsSet());
+  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
+}
+
+void AccelerometerFileReader::SetEmitEvents(bool emit_events) {
+  DCHECK(base::CurrentUIThread::IsSet());
+  emit_events_ = emit_events;
+}
+
+void AccelerometerFileReader::EnableAccelerometerReading() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (read_refresh_timer_.IsRunning())
+    return;
+
+  read_refresh_timer_.Start(FROM_HERE, kDelayBetweenReads, this,
+                            &AccelerometerFileReader::ReadSample);
+}
+
+void AccelerometerFileReader::DisableAccelerometerReading() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!read_refresh_timer_.IsRunning())
+    return;
+
+  read_refresh_timer_.Stop();
+}
+
+void AccelerometerFileReader::TriggerRead() {
+  DCHECK(base::CurrentUIThread::IsSet());
+  switch (initialization_state_) {
+    case State::SUCCESS:
+      if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED) {
+        blocking_task_runner_->PostTask(
+            FROM_HERE,
+            base::BindOnce(&AccelerometerFileReader::EnableAccelerometerReading,
+                           this));
+      }
+      break;
+    case State::FAILED:
+      LOG(ERROR) << "Failed to initialize for accelerometer read.\n";
+      break;
+    case State::INITIALIZING:
+      ui_task_runner_->PostNonNestableDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&AccelerometerFileReader::TriggerRead, this),
+          kDelayBetweenInitChecks);
+      break;
   }
 }
 
-void AccelerometerFileReader::InitializeInternal() {
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  DCHECK_EQ(State::INITIALIZING, initialization_state_);
+void AccelerometerFileReader::CancelRead() {
+  DCHECK(base::CurrentUIThread::IsSet());
+  if (initialization_state_ == State::SUCCESS &&
+      ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED) {
+    blocking_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AccelerometerFileReader::DisableAccelerometerReading,
+                       this));
+  }
+}
+
+void AccelerometerFileReader::OnTabletPhysicalStateChanged() {
+  DCHECK(base::CurrentUIThread::IsSet());
+
+  // When CrOS EC lid angle driver is not present, accelerometer read is always
+  // ON and can't be tuned. Thus AccelerometerFileReader no longer listens to
+  // tablet mode event.
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::NOT_SUPPORTED) {
+    tablet_mode_controller->RemoveObserver(this);
+    return;
+  }
+
+  // Auto rotation is turned on when the device is physically used as a tablet
+  // (i.e. flipped or detached), regardless of the UI state (i.e. whether tablet
+  // mode is turned on or off).
+  const bool is_auto_rotation_on =
+      tablet_mode_controller->is_in_tablet_physical_state();
+
+  if (is_auto_rotation_on)
+    TriggerRead();
+  else
+    CancelRead();
+}
+
+AccelerometerFileReader::InitializationResult::InitializationResult()
+    : initialization_state(State::INITIALIZING),
+      ec_lid_angle_driver_status(ECLidAngleDriverStatus::UNKNOWN) {}
+AccelerometerFileReader::InitializationResult::~InitializationResult() =
+    default;
+
+AccelerometerFileReader::ReadingData::ReadingData() = default;
+AccelerometerFileReader::ReadingData::ReadingData(const ReadingData&) = default;
+AccelerometerFileReader::ReadingData::~ReadingData() = default;
+
+AccelerometerFileReader::ConfigurationData::ConfigurationData() : count(0) {
+  for (int i = 0; i < ACCELEROMETER_SOURCE_COUNT; ++i) {
+    has[i] = false;
+    for (int j = 0; j < 3; ++j) {
+      scale[i][j] = 0;
+      index[i][j] = -1;
+    }
+  }
+}
+
+AccelerometerFileReader::ConfigurationData::~ConfigurationData() = default;
+
+AccelerometerFileReader::~AccelerometerFileReader() = default;
+
+void AccelerometerFileReader::TryScheduleInitialize() {
+  DCHECK(base::CurrentUIThread::IsSet());
+  DCHECK(blocking_task_runner_);
+
+  // Asynchronously detect and initialize the accelerometer to avoid delaying
+  // startup.
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&AccelerometerFileReader::InitializeInternal, this),
+      base::BindOnce(
+          &AccelerometerFileReader::SetStatesWithInitializationResult, this));
+}
+
+AccelerometerFileReader::InitializationResult
+AccelerometerFileReader::InitializeInternal() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Log the warning/error messages only in the first initialization to prevent
   // spamming during the retries of initialization.
   static bool first_initialization_ = true;
+
+  InitializationResult result;
 
   // Check for accelerometer symlink which will be created by the udev rules
   // file on detecting the device.
@@ -197,18 +330,11 @@ void AccelerometerFileReader::InitializeInternal() {
                      << kAccelerometerDevicePath;
       }
       first_initialization_ = false;
-      TryScheduleInitializeInternal();
-    } else {
-      initialization_state_ = State::FAILED;
+      return result;
     }
-    return;
-  }
 
-  if (base::SysInfo::IsRunningOnChromeOS() &&
-      !base::IsDirectoryEmpty(base::FilePath(kECLidAngleDriverPath))) {
-    ec_lid_angle_driver_status_ = ECLidAngleDriverStatus::SUPPORTED;
-  } else {
-    ec_lid_angle_driver_status_ = ECLidAngleDriverStatus::NOT_SUPPORTED;
+    result.initialization_state = State::FAILED;
+    return result;
   }
 
   // Find trigger to use:
@@ -233,8 +359,8 @@ void AccelerometerFileReader::InitializeInternal() {
           LOG(ERROR) << "Accelerometer trigger does not exist at "
                      << trigger_now.value();
         }
-        initialization_state_ = State::FAILED;
-        return;
+        result.initialization_state = State::FAILED;
+        return result;
       } else {
         configuration_.trigger_now = trigger_now;
         break;
@@ -246,11 +372,11 @@ void AccelerometerFileReader::InitializeInternal() {
       if (first_initialization_)
         LOG(ERROR) << "Accelerometer trigger not found";
       first_initialization_ = false;
-      TryScheduleInitializeInternal();
-    } else {
-      initialization_state_ = State::FAILED;
+      return result;
     }
-    return;
+
+    result.initialization_state = State::FAILED;
+    return result;
   }
 
   base::FileEnumerator symlink_dir(base::FilePath(kAccelerometerDevicePath),
@@ -262,8 +388,8 @@ void AccelerometerFileReader::InitializeInternal() {
     if (!base::ReadSymbolicLink(name, &iio_device)) {
       LOG(ERROR) << "Failed to read symbolic link " << kAccelerometerDevicePath
                  << "/" << name.MaybeAsASCII() << "\n";
-      initialization_state_ = State::FAILED;
-      return;
+      result.initialization_state = State::FAILED;
+      return result;
     }
 
     base::FilePath iio_path(base::FilePath(kAccelerometerIioBasePath)
@@ -274,14 +400,14 @@ void AccelerometerFileReader::InitializeInternal() {
         &location);
     if (legacy_cross_accel) {
       if (!InitializeLegacyAccelerometers(iio_path, name)) {
-        initialization_state_ = State::FAILED;
-        return;
+        result.initialization_state = State::FAILED;
+        return result;
       }
     } else {
       base::TrimWhitespaceASCII(location, base::TRIM_ALL, &location);
       if (!InitializeAccelerometer(iio_path, name, location)) {
-        initialization_state_ = State::FAILED;
-        return;
+        result.initialization_state = State::FAILED;
+        return result;
       }
     }
   }
@@ -298,154 +424,77 @@ void AccelerometerFileReader::InitializeInternal() {
                                               : kAccelerometerAxes[j];
         LOG(ERROR) << "Field index for " << kLocationStrings[i] << " " << axis
                    << " axis out of bounds.";
-        initialization_state_ = State::FAILED;
-        return;
+        result.initialization_state = State::FAILED;
+        return result;
       }
     }
   }
 
-  initialization_state_ = State::SUCCESS;
+  result.initialization_state = State::SUCCESS;
+  result.ec_lid_angle_driver_status =
+      (base::SysInfo::IsRunningOnChromeOS() &&
+       !base::IsDirectoryEmpty(base::FilePath(kECLidAngleDriverPath)))
+          ? ECLidAngleDriverStatus::SUPPORTED
+          : ECLidAngleDriverStatus::NOT_SUPPORTED;
 
-  // If ChromeOS lid angle driver is not present, start accelerometer read and
-  // read is always on.
-  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::NOT_SUPPORTED)
-    EnableAccelerometerReading();
+  return result;
 }
 
-void AccelerometerFileReader::Read() {
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  if (!accelerometer_read_on_)
-    return;
+void AccelerometerFileReader::SetStatesWithInitializationResult(
+    InitializationResult result) {
+  DCHECK(base::CurrentUIThread::IsSet());
 
-  ReadFileAndNotify();
-  task_runner_->PostNonNestableDelayedTask(
-      FROM_HERE, base::BindOnce(&AccelerometerFileReader::Read, this),
-      kDelayBetweenReads);
-}
-
-void AccelerometerFileReader::EnableAccelerometerReading() {
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  if (accelerometer_read_on_)
-    return;
-
-  accelerometer_read_on_ = true;
-  Read();
-}
-
-void AccelerometerFileReader::DisableAccelerometerReading() {
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  if (!accelerometer_read_on_)
-    return;
-
-  accelerometer_read_on_ = false;
-}
-
-void AccelerometerFileReader::CheckInitStatus() {
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
+  initialization_state_ = result.initialization_state;
   switch (initialization_state_) {
-    case State::SUCCESS:
-      EnableAccelerometerReading();
-      break;
-    case State::FAILED:
-      LOG(ERROR) << "Failed to initialize for accelerometer read.\n";
-      break;
     case State::INITIALIZING:
-      task_runner_->PostNonNestableDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&AccelerometerFileReader::CheckInitStatus, this),
-          kDelayBetweenInitChecks);
-      break;
-  }
-}
+      // If we haven't yet passed the timeout cutoff, try this again. This will
+      // be scheduled at the same rate as reading.
+      if (base::TimeTicks::Now() < initialization_timeout_) {
+        blocking_task_runner_->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&AccelerometerFileReader::TryScheduleInitialize,
+                           this),
+            kDelayBetweenReads);
+      } else {
+        LOG(ERROR) << "Failed to initialize for accelerometer read.\n";
+        initialization_state_ = State::FAILED;
+      }
 
-void AccelerometerFileReader::TriggerRead() {
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  switch (initialization_state_) {
+      break;
+
     case State::SUCCESS:
-      if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED)
-        EnableAccelerometerReading();
+      DCHECK_NE(result.ec_lid_angle_driver_status,
+                ECLidAngleDriverStatus::UNKNOWN);
+      ec_lid_angle_driver_status_ = result.ec_lid_angle_driver_status;
+
+      if (ec_lid_angle_driver_status_ ==
+          ECLidAngleDriverStatus::NOT_SUPPORTED) {
+        // If ChromeOS lid angle driver is not present, start accelerometer read
+        // and read is always on.
+        blocking_task_runner_->PostTask(
+            FROM_HERE,
+            base::BindOnce(&AccelerometerFileReader::EnableAccelerometerReading,
+                           this));
+      }
+
       break;
+
     case State::FAILED:
-      LOG(ERROR) << "Failed to initialize for accelerometer read.\n";
       break;
-    case State::INITIALIZING:
-      task_runner_->PostNonNestableTask(
-          FROM_HERE,
-          base::BindOnce(&AccelerometerFileReader::CheckInitStatus, this));
+
+    default:
+      LOG(FATAL) << "Unexpected state: "
+                 << static_cast<int>(initialization_state_);
       break;
   }
 }
-
-void AccelerometerFileReader::CancelRead() {
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  if (initialization_state_ == State::SUCCESS &&
-      ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED)
-    DisableAccelerometerReading();
-}
-
-void AccelerometerFileReader::AddObserver(
-    AccelerometerReader::Observer* observer) {
-  observers_->AddObserver(observer);
-  if (initialization_state_ == State::SUCCESS) {
-    task_runner_->PostNonNestableTask(
-        FROM_HERE,
-        base::BindOnce(&AccelerometerFileReader::ReadFileAndNotify, this));
-  }
-}
-
-void AccelerometerFileReader::RemoveObserver(
-    AccelerometerReader::Observer* observer) {
-  observers_->RemoveObserver(observer);
-}
-
-void AccelerometerFileReader::StartListenToTabletModeController() {
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
-}
-
-void AccelerometerFileReader::StopListenToTabletModeController() {
-  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
-}
-
-void AccelerometerFileReader::SetEmitEvents(bool emit_events) {
-  task_runner_->PostNonNestableTask(
-      FROM_HERE, base::BindOnce(&AccelerometerFileReader::SetEmitEventsInternal,
-                                this, emit_events));
-}
-
-void AccelerometerFileReader::SetEmitEventsInternal(bool emit_events) {
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  emit_events_ = emit_events;
-}
-
-void AccelerometerFileReader::OnTabletPhysicalStateChanged() {
-  // When CrOS EC lid angle driver is not present, accelerometer read is always
-  // ON and can't be tuned. Thus AccelerometerFileReader no longer listens to
-  // tablet mode event.
-  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::NOT_SUPPORTED) {
-    tablet_mode_controller->RemoveObserver(this);
-    return;
-  }
-
-  // Auto rotation is turned on when the device is physically used as a tablet
-  // (i.e. flipped or detached), regardless of the UI state (i.e. whether tablet
-  // mode is turned on or off).
-  const bool is_auto_rotation_on =
-      tablet_mode_controller->is_in_tablet_physical_state();
-
-  task_runner_->PostNonNestableTask(
-      FROM_HERE,
-      is_auto_rotation_on
-          ? base::BindOnce(&AccelerometerFileReader::TriggerRead, this)
-          : base::BindOnce(&AccelerometerFileReader::CancelRead, this));
-}
-
-AccelerometerFileReader::~AccelerometerFileReader() = default;
 
 bool AccelerometerFileReader::InitializeAccelerometer(
     const base::FilePath& iio_path,
     const base::FilePath& name,
     const std::string& location) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   size_t config_index = 0;
   for (; config_index < base::size(kLocationStrings); ++config_index) {
     if (location == kLocationStrings[config_index])
@@ -491,6 +540,8 @@ bool AccelerometerFileReader::InitializeAccelerometer(
 bool AccelerometerFileReader::InitializeLegacyAccelerometers(
     const base::FilePath& iio_path,
     const base::FilePath& name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   ReadingData reading_data;
   reading_data.path =
       base::FilePath(kAccelerometerDevicePath).Append(name.BaseName());
@@ -542,8 +593,8 @@ bool AccelerometerFileReader::InitializeLegacyAccelerometers(
   return true;
 }
 
-void AccelerometerFileReader::ReadFileAndNotify() {
-  DCHECK_EQ(State::SUCCESS, initialization_state_);
+void AccelerometerFileReader::ReadSample() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Initiate the trigger to read accelerometers simultaneously.
   int bytes_written = base::WriteFile(configuration_.trigger_now, "1\n", 2);
@@ -553,7 +604,7 @@ void AccelerometerFileReader::ReadFileAndNotify() {
   }
 
   // Read resulting sample from /dev/cros-ec-accel.
-  update_ = new AccelerometerUpdate();
+  scoped_refptr<AccelerometerUpdate> update = new AccelerometerUpdate();
   for (auto reading_data : configuration_.reading_data) {
     int reading_size = reading_data.sources.size() * kSizeOfReading;
     DCHECK_GT(reading_size, 0);
@@ -577,38 +628,32 @@ void AccelerometerFileReader::ReadFileAndNotify() {
     for (AccelerometerSource source : reading_data.sources) {
       DCHECK(configuration_.has[source]);
       int16_t* values = reinterpret_cast<int16_t*>(reading);
-      update_->Set(source,
-                   values[configuration_.index[source][0]] *
-                       configuration_.scale[source][0],
-                   values[configuration_.index[source][1]] *
-                       configuration_.scale[source][1],
-                   values[configuration_.index[source][2]] *
-                       configuration_.scale[source][2]);
+      update->Set(source,
+                  values[configuration_.index[source][0]] *
+                      configuration_.scale[source][0],
+                  values[configuration_.index[source][1]] *
+                      configuration_.scale[source][1],
+                  values[configuration_.index[source][2]] *
+                      configuration_.scale[source][2]);
     }
   }
+
+  ui_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AccelerometerFileReader::NotifyObserversWithUpdate, this,
+                     update));
+}
+
+void AccelerometerFileReader::NotifyObserversWithUpdate(
+    scoped_refptr<AccelerometerUpdate> update) {
+  DCHECK(base::CurrentUIThread::IsSet());
+  DCHECK(update);
 
   if (!emit_events_)
     return;
 
-  observers_->Notify(FROM_HERE,
-                     &AccelerometerReader::Observer::OnAccelerometerUpdated,
-                     update_);
+  for (auto& observer : observers_)
+    observer.OnAccelerometerUpdated(update);
 }
-
-AccelerometerFileReader::ReadingData::ReadingData() = default;
-AccelerometerFileReader::ReadingData::ReadingData(const ReadingData&) = default;
-AccelerometerFileReader::ReadingData::~ReadingData() = default;
-
-AccelerometerFileReader::ConfigurationData::ConfigurationData() : count(0) {
-  for (int i = 0; i < ACCELEROMETER_SOURCE_COUNT; ++i) {
-    has[i] = false;
-    for (int j = 0; j < 3; ++j) {
-      scale[i][j] = 0;
-      index[i][j] = -1;
-    }
-  }
-}
-
-AccelerometerFileReader::ConfigurationData::~ConfigurationData() = default;
 
 }  // namespace ash
