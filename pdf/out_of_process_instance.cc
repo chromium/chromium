@@ -14,7 +14,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
@@ -705,10 +704,10 @@ bool OutOfProcessInstance::HandleInputEvent(const pp::InputEvent& event) {
     if (!mouse_event.is_null()) {
       pp::Point point = mouse_event.GetPosition();
       pp::Point movement = mouse_event.GetMovement();
-      ScalePoint(device_scale_, &point);
+      ScalePoint(device_scale(), &point);
       point.set_x(point.x() - available_area_.x());
 
-      ScalePoint(device_scale_, &movement);
+      ScalePoint(device_scale(), &movement);
       mouse_event =
           pp::MouseInputEvent(this, event.GetType(), event.GetTimeStamp(),
                               event.GetModifiers(), mouse_event.GetButton(),
@@ -730,7 +729,7 @@ bool OutOfProcessInstance::HandleInputEvent(const pp::InputEvent& event) {
             touch_event.GetTouchByIndex(PP_TOUCHLIST_TYPE_TARGETTOUCHES, i);
 
         pp::FloatPoint point = touch_point.position();
-        ScaleFloatPoint(device_scale_, &point);
+        ScaleFloatPoint(device_scale(), &point);
         point.set_x(point.x() - available_area_.x());
 
         new_touch_event.AddTouchPoint(
@@ -758,19 +757,19 @@ bool OutOfProcessInstance::HandleInputEvent(const pp::InputEvent& event) {
 
 void OutOfProcessInstance::DidChangeView(const pp::View& view) {
   pp::Rect view_rect(view.GetRect());
-  float old_device_scale = device_scale_;
-  float device_scale = view.GetDeviceScale();
-  pp::Size view_device_size(view_rect.width() * device_scale,
-                            view_rect.height() * device_scale);
+  float old_device_scale = device_scale();
+  float new_device_scale = view.GetDeviceScale();
+  pp::Size view_device_size(view_rect.width() * new_device_scale,
+                            view_rect.height() * new_device_scale);
 
-  if (view_device_size != plugin_size_ || device_scale != device_scale_ ||
+  if (view_device_size != plugin_size_ || new_device_scale != device_scale() ||
       view_rect.point() != plugin_offset_) {
-    device_scale_ = device_scale;
+    set_device_scale(new_device_scale);
     plugin_dip_size_ = view_rect.size();
     plugin_size_ = view_device_size;
     plugin_offset_ = view_rect.point();
 
-    paint_manager().SetSize(SizeFromPPSize(view_device_size), device_scale_);
+    paint_manager().SetSize(SizeFromPPSize(view_device_size), device_scale());
 
     const gfx::Size old_image_data_size = SizeFromPPSize(image_data_.size());
     gfx::Size new_image_data_size = PaintManager::GetNewContextSize(
@@ -780,7 +779,7 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
                                   PPSizeFromSize(new_image_data_size), false);
       skia_image_data_ =
           SkBitmapFromPPImageData(std::make_unique<pp::ImageData>(image_data_));
-      first_paint_ = true;
+      set_first_paint(true);
     }
 
     if (image_data_.is_null()) {
@@ -788,7 +787,7 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
       return;
     }
 
-    OnGeometryChanged(zoom_, old_device_scale);
+    OnGeometryChanged(zoom(), old_device_scale);
   }
 
   if (!is_print_preview_ &&
@@ -815,8 +814,8 @@ void OutOfProcessInstance::UpdateScroll() {
       scroll_offset_.x(),
       scroll_offset_.y() - top_toolbar_height_in_viewport_coords());
   scroll_offset_float = BoundScrollOffsetToDocument(scroll_offset_float);
-  engine()->ScrolledToXPosition(scroll_offset_float.x() * device_scale_);
-  engine()->ScrolledToYPosition(scroll_offset_float.y() * device_scale_);
+  engine()->ScrolledToXPosition(scroll_offset_float.x() * device_scale());
+  engine()->ScrolledToYPosition(scroll_offset_float.y() * device_scale());
 }
 
 void OutOfProcessInstance::DidChangeFocus(bool has_focus) {
@@ -916,12 +915,12 @@ void OutOfProcessInstance::SendAccessibilityViewportInfo() {
   viewport_info.scroll.y =
       -top_toolbar_height_in_viewport_coords() - plugin_offset_.y();
   viewport_info.offset.x =
-      available_area_.point().x() / (device_scale_ * zoom_);
+      available_area_.point().x() / (device_scale() * zoom());
   viewport_info.offset.y =
-      available_area_.point().y() / (device_scale_ * zoom_);
+      available_area_.point().y() / (device_scale() * zoom());
 
-  viewport_info.zoom = zoom_;
-  viewport_info.scale = device_scale_;
+  viewport_info.zoom = zoom();
+  viewport_info.scale = device_scale();
   viewport_info.focus_info = {
       PP_PrivateFocusObjectType::PP_PRIVATEFOCUSOBJECT_NONE, 0, 0};
 
@@ -938,7 +937,7 @@ void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,
   pp::Point l(left.x() + available_area_.x(), left.y());
   pp::Point r(right.x() + available_area_.x(), right.y());
 
-  float inverse_scale = 1.0f / device_scale_;
+  float inverse_scale = 1.0f / device_scale();
   ScalePoint(inverse_scale, &l);
   ScalePoint(inverse_scale, &r);
 
@@ -951,7 +950,7 @@ void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,
 
 void OutOfProcessInstance::SetCaretPosition(const pp::FloatPoint& position) {
   pp::Point new_position(position.x(), position.y());
-  ScalePoint(device_scale_, &new_position);
+  ScalePoint(device_scale(), &new_position);
   new_position.set_x(new_position.x() - available_area_.x());
   engine()->SetCaretPosition(PointFromPPPoint(new_position));
 }
@@ -959,7 +958,7 @@ void OutOfProcessInstance::SetCaretPosition(const pp::FloatPoint& position) {
 void OutOfProcessInstance::MoveRangeSelectionExtent(
     const pp::FloatPoint& extent) {
   pp::Point new_extent(extent.x(), extent.y());
-  ScalePoint(device_scale_, &new_extent);
+  ScalePoint(device_scale(), &new_extent);
   new_extent.set_x(new_extent.x() - available_area_.x());
   engine()->MoveRangeSelectionExtent(PointFromPPPoint(new_extent));
 }
@@ -967,11 +966,11 @@ void OutOfProcessInstance::MoveRangeSelectionExtent(
 void OutOfProcessInstance::SetSelectionBounds(const pp::FloatPoint& base,
                                               const pp::FloatPoint& extent) {
   pp::Point new_base_point(base.x(), base.y());
-  ScalePoint(device_scale_, &new_base_point);
+  ScalePoint(device_scale(), &new_base_point);
   new_base_point.set_x(new_base_point.x() - available_area_.x());
 
   pp::Point new_extent_point(extent.x(), extent.y());
-  ScalePoint(device_scale_, &new_extent_point);
+  ScalePoint(device_scale(), &new_extent_point);
   new_extent_point.set_x(new_extent_point.x() - available_area_.x());
 
   engine()->SetSelectionBounds(PointFromPPPoint(new_base_point),
@@ -980,7 +979,7 @@ void OutOfProcessInstance::SetSelectionBounds(const pp::FloatPoint& base,
 
 pp::Var OutOfProcessInstance::GetLinkAtPosition(const pp::Point& point) {
   pp::Point offset_point(point);
-  ScalePoint(device_scale_, &offset_point);
+  ScalePoint(device_scale(), &offset_point);
   offset_point.set_x(offset_point.x() - available_area_.x());
   return engine()->GetLinkAtPosition(PointFromPPPoint(offset_point));
 }
@@ -1112,6 +1111,83 @@ void OutOfProcessInstance::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
   }
 }
 
+void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
+                                   std::vector<PaintReadyRect>* ready,
+                                   std::vector<gfx::Rect>* pending) {
+  if (image_data_.is_null()) {
+    DCHECK(plugin_size_.IsEmpty());
+    return;
+  }
+  if (first_paint()) {
+    set_first_paint(false);
+    pp::Rect rect = pp::Rect(pp::Point(), image_data_.size());
+    FillRect(rect, GetBackgroundColor());
+    ready->push_back(PaintReadyRect(rect, image_data_, /*flush_now=*/true));
+  }
+
+  if (!received_viewport_message_ || !needs_reraster_)
+    return;
+
+  engine()->PrePaint();
+
+  for (const auto& paint_rect : paint_rects) {
+    // Intersect with plugin area since there could be pending invalidates from
+    // when the plugin area was larger.
+    pp::Rect rect = PPRectFromRect(paint_rect);
+    rect = rect.Intersect(pp::Rect(pp::Point(), plugin_size_));
+    if (rect.IsEmpty())
+      continue;
+
+    pp::Rect pdf_rect = available_area_.Intersect(rect);
+    if (!pdf_rect.IsEmpty()) {
+      pdf_rect.Offset(available_area_.x() * -1, 0);
+
+      std::vector<gfx::Rect> pdf_ready;
+      std::vector<gfx::Rect> pdf_pending;
+      engine()->Paint(RectFromPPRect(pdf_rect), skia_image_data_, pdf_ready,
+                      pdf_pending);
+      for (auto& ready_rect : pdf_ready) {
+        ready_rect.Offset(VectorFromPPPoint(available_area_.point()));
+        ready->push_back(
+            PaintReadyRect(PPRectFromRect(ready_rect), image_data_));
+      }
+      for (auto& pending_rect : pdf_pending) {
+        pending_rect.Offset(VectorFromPPPoint(available_area_.point()));
+        pending->push_back(pending_rect);
+      }
+    }
+
+    // Ensure the region above the first page (if any) is filled;
+    int32_t first_page_ypos = engine()->GetNumberOfPages() == 0
+                                  ? 0
+                                  : engine()->GetPageScreenRect(0).y();
+    if (rect.y() < first_page_ypos) {
+      pp::Rect region = rect.Intersect(pp::Rect(
+          pp::Point(), pp::Size(plugin_size_.width(), first_page_ypos)));
+      ready->push_back(PaintReadyRect(region, image_data_));
+      FillRect(region, GetBackgroundColor());
+    }
+
+    for (const auto& background_part : background_parts_) {
+      pp::Rect intersection = background_part.location.Intersect(rect);
+      if (!intersection.IsEmpty()) {
+        FillRect(intersection, background_part.color);
+        ready->push_back(PaintReadyRect(intersection, image_data_));
+      }
+    }
+  }
+
+  engine()->PostPaint();
+
+  if (!deferred_invalidates_.empty()) {
+    ScheduleTaskOnMainThread(
+        base::TimeDelta(),
+        base::BindOnce(&OutOfProcessInstance::InvalidateAfterPaintDone,
+                       weak_factory_.GetWeakPtr()),
+        0);
+  }
+}
+
 void OutOfProcessInstance::CalculateBackgroundParts() {
   background_parts_.clear();
   int left_width = available_area_.x();
@@ -1157,12 +1233,13 @@ pp::VarArray OutOfProcessInstance::GetDocumentAttachments() {
 }
 
 int OutOfProcessInstance::GetDocumentPixelWidth() const {
-  return static_cast<int>(ceil(document_size_.width() * zoom_ * device_scale_));
+  return static_cast<int>(
+      ceil(document_size_.width() * zoom() * device_scale()));
 }
 
 int OutOfProcessInstance::GetDocumentPixelHeight() const {
   return static_cast<int>(
-      ceil(document_size_.height() * zoom_ * device_scale_));
+      ceil(document_size_.height() * zoom() * device_scale()));
 }
 
 void OutOfProcessInstance::FillRect(const pp::Rect& rect, uint32_t color) {
@@ -1205,7 +1282,7 @@ void OutOfProcessInstance::ProposeDocumentLayout(const DocumentLayout& layout) {
 }
 
 void OutOfProcessInstance::Invalidate(const gfx::Rect& rect) {
-  if (in_paint_) {
+  if (in_paint()) {
     deferred_invalidates_.push_back(rect);
     return;
   }
@@ -1223,7 +1300,7 @@ void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
 void OutOfProcessInstance::ScrollToX(int x_in_screen_coords) {
   pp::VarDictionary position;
   position.Set(kType, kJSSetScrollPositionType);
-  position.Set(kJSPositionX, pp::Var(x_in_screen_coords / device_scale_));
+  position.Set(kJSPositionX, pp::Var(x_in_screen_coords / device_scale()));
   PostMessage(position);
 }
 
@@ -1231,7 +1308,7 @@ void OutOfProcessInstance::ScrollToY(int y_in_screen_coords,
                                      bool compensate_for_toolbar) {
   pp::VarDictionary position;
   position.Set(kType, kJSSetScrollPositionType);
-  float new_y_viewport_coords = y_in_screen_coords / device_scale_;
+  float new_y_viewport_coords = y_in_screen_coords / device_scale();
   if (compensate_for_toolbar) {
     new_y_viewport_coords -= top_toolbar_height_in_viewport_coords();
   }
@@ -1242,8 +1319,8 @@ void OutOfProcessInstance::ScrollToY(int y_in_screen_coords,
 void OutOfProcessInstance::ScrollBy(const gfx::Vector2d& scroll_delta) {
   pp::VarDictionary position;
   position.Set(kType, kJSScrollByType);
-  position.Set(kJSPositionX, pp::Var(scroll_delta.x() / device_scale_));
-  position.Set(kJSPositionY, pp::Var(scroll_delta.y() / device_scale_));
+  position.Set(kJSPositionX, pp::Var(scroll_delta.x() / device_scale()));
+  position.Set(kJSPositionY, pp::Var(scroll_delta.y() / device_scale()));
   PostMessage(position);
 }
 
@@ -1303,7 +1380,7 @@ void OutOfProcessInstance::UpdateCursor(PP_CursorType_Dev cursor) {
 
 void OutOfProcessInstance::UpdateTickMarks(
     const std::vector<gfx::Rect>& tickmarks) {
-  float inverse_scale = 1.0f / device_scale_;
+  float inverse_scale = 1.0f / device_scale();
   tickmarks_.clear();
   tickmarks_.reserve(tickmarks.size());
   for (auto& tickmark : tickmarks) {
@@ -1700,7 +1777,7 @@ void OutOfProcessInstance::HandleGetThumbnailMessage(
 
   const int page_index = dict.Get(pp::Var(kJSGetThumbnailPage)).AsInt();
   engine()->RequestThumbnail(
-      page_index, device_scale_,
+      page_index, device_scale(),
       base::BindOnce(&OutOfProcessInstance::SendThumbnail,
                      weak_factory_.GetWeakPtr(),
                      dict.Get(pp::Var(kJSMessageId)).AsString()));
@@ -1886,7 +1963,7 @@ void OutOfProcessInstance::HandleViewportMessage(
     // TODO(crbug.com/1013800): Eliminate need to get document size from here.
     document_size_ =
         PPSizeFromSize(engine()->ApplyDocumentLayout(layout_options));
-    OnGeometryChanged(zoom_, device_scale_);
+    OnGeometryChanged(zoom(), device_scale());
   }
 
   if (!(dict.Get(pp::Var(kJSXOffset)).is_number() &&
@@ -1900,8 +1977,8 @@ void OutOfProcessInstance::HandleViewportMessage(
   stop_scrolling_ = false;
   PinchPhase pinch_phase =
       static_cast<PinchPhase>(dict.Get(pp::Var(kJSPinchPhase)).AsInt());
-  double zoom = dict.Get(pp::Var(kJSZoom)).AsDouble();
-  double zoom_ratio = zoom / zoom_;
+  double new_zoom = dict.Get(pp::Var(kJSZoom)).AsDouble();
+  double zoom_ratio = new_zoom / zoom();
 
   pp::FloatPoint scroll_offset(dict.Get(pp::Var(kJSXOffset)).AsDouble(),
                                dict.Get(pp::Var(kJSYOffset)).AsDouble());
@@ -1953,12 +2030,12 @@ void OutOfProcessInstance::HandleViewportMessage(
       pinch_vector = gfx::Vector2d();
       last_bitmap_smaller_ = true;
     } else if (last_bitmap_smaller_) {
-      pinch_center = pp::Point((plugin_size_.width() / device_scale_) / 2,
-                               (plugin_size_.height() / device_scale_) / 2);
+      pinch_center = pp::Point((plugin_size_.width() / device_scale()) / 2,
+                               (plugin_size_.height() / device_scale()) / 2);
       const double zoom_when_doc_covers_plugin_width =
-          zoom_ * plugin_size_.width() / GetDocumentPixelWidth();
+          zoom() * plugin_size_.width() / GetDocumentPixelWidth();
       paint_offset = gfx::Vector2d(
-          (1 - zoom / zoom_when_doc_covers_plugin_width) * pinch_center.x(),
+          (1 - new_zoom / zoom_when_doc_covers_plugin_width) * pinch_center.x(),
           (1 - zoom_ratio) * pinch_center.y());
       pinch_vector = gfx::Vector2d();
       scroll_delta = gfx::Vector2d(
@@ -1989,13 +2066,13 @@ void OutOfProcessInstance::HandleViewportMessage(
   }
 
   // Bound the input parameters.
-  zoom = std::max(kMinZoom, zoom);
+  new_zoom = std::max(kMinZoom, new_zoom);
   DCHECK(dict.Get(pp::Var(kJSUserInitiated)).is_bool());
 
-  SetZoom(zoom);
+  SetZoom(new_zoom);
   scroll_offset = BoundScrollOffsetToDocument(scroll_offset);
-  engine()->ScrolledToXPosition(scroll_offset.x() * device_scale_);
-  engine()->ScrolledToYPosition(scroll_offset.y() * device_scale_);
+  engine()->ScrolledToXPosition(scroll_offset.x() * device_scale());
+  engine()->ScrolledToYPosition(scroll_offset.y() * device_scale());
 }
 
 void OutOfProcessInstance::PreviewDocumentLoadComplete() {
@@ -2114,8 +2191,8 @@ void OutOfProcessInstance::ResetRecentlySentFindUpdate(int32_t /* unused */) {
 
 void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
                                              float old_device_scale) {
-  if (zoom_ != old_zoom || device_scale_ != old_device_scale)
-    engine()->ZoomUpdated(zoom_ * device_scale_);
+  if (zoom() != old_zoom || device_scale() != old_device_scale)
+    engine()->ZoomUpdated(zoom() * device_scale());
 
   available_area_ = pp::Rect(plugin_size_);
   int doc_width = GetDocumentPixelWidth();
@@ -2125,7 +2202,7 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
   }
   int bottom_of_document =
       GetDocumentPixelHeight() +
-      (top_toolbar_height_in_viewport_coords() * device_scale_);
+      (top_toolbar_height_in_viewport_coords() * device_scale());
   if (bottom_of_document < available_area_.height())
     available_area_.set_height(bottom_of_document);
 
@@ -2152,9 +2229,9 @@ std::unique_ptr<UrlLoader> OutOfProcessInstance::CreateUrlLoaderInternal() {
 }
 
 void OutOfProcessInstance::SetZoom(double scale) {
-  double old_zoom = zoom_;
-  zoom_ = scale;
-  OnGeometryChanged(old_zoom, device_scale_);
+  double old_zoom = zoom();
+  set_zoom(scale);
+  OnGeometryChanged(old_zoom, device_scale());
 }
 
 void OutOfProcessInstance::AppendBlankPrintPreviewPages() {
@@ -2184,7 +2261,7 @@ void OutOfProcessInstance::EnteredEditMode() {
 }
 
 float OutOfProcessInstance::GetToolbarHeightInScreenCoords() {
-  return top_toolbar_height_in_viewport_coords() * device_scale_;
+  return top_toolbar_height_in_viewport_coords() * device_scale();
 }
 
 void OutOfProcessInstance::DocumentFocusChanged(bool document_has_focus) {
@@ -2216,84 +2293,6 @@ std::unique_ptr<Graphics> OutOfProcessInstance::CreatePaintGraphics(
 
 bool OutOfProcessInstance::BindPaintGraphics(Graphics& graphics) {
   return BindGraphics(static_cast<PepperGraphics&>(graphics).pepper_graphics());
-}
-
-void OutOfProcessInstance::OnPaint(const std::vector<gfx::Rect>& paint_rects,
-                                   std::vector<PaintReadyRect>* ready,
-                                   std::vector<gfx::Rect>* pending) {
-  base::AutoReset<bool> auto_reset_in_paint(&in_paint_, true);
-  if (image_data_.is_null()) {
-    DCHECK(plugin_size_.IsEmpty());
-    return;
-  }
-  if (first_paint_) {
-    first_paint_ = false;
-    pp::Rect rect = pp::Rect(pp::Point(), image_data_.size());
-    FillRect(rect, GetBackgroundColor());
-    ready->push_back(PaintReadyRect(rect, image_data_, /*flush_now=*/true));
-  }
-
-  if (!received_viewport_message_ || !needs_reraster_)
-    return;
-
-  engine()->PrePaint();
-
-  for (const auto& paint_rect : paint_rects) {
-    // Intersect with plugin area since there could be pending invalidates from
-    // when the plugin area was larger.
-    pp::Rect rect = PPRectFromRect(paint_rect);
-    rect = rect.Intersect(pp::Rect(pp::Point(), plugin_size_));
-    if (rect.IsEmpty())
-      continue;
-
-    pp::Rect pdf_rect = available_area_.Intersect(rect);
-    if (!pdf_rect.IsEmpty()) {
-      pdf_rect.Offset(available_area_.x() * -1, 0);
-
-      std::vector<gfx::Rect> pdf_ready;
-      std::vector<gfx::Rect> pdf_pending;
-      engine()->Paint(RectFromPPRect(pdf_rect), skia_image_data_, pdf_ready,
-                      pdf_pending);
-      for (auto& ready_rect : pdf_ready) {
-        ready_rect.Offset(VectorFromPPPoint(available_area_.point()));
-        ready->push_back(
-            PaintReadyRect(PPRectFromRect(ready_rect), image_data_));
-      }
-      for (auto& pending_rect : pdf_pending) {
-        pending_rect.Offset(VectorFromPPPoint(available_area_.point()));
-        pending->push_back(pending_rect);
-      }
-    }
-
-    // Ensure the region above the first page (if any) is filled;
-    int32_t first_page_ypos = engine()->GetNumberOfPages() == 0
-                                  ? 0
-                                  : engine()->GetPageScreenRect(0).y();
-    if (rect.y() < first_page_ypos) {
-      pp::Rect region = rect.Intersect(pp::Rect(
-          pp::Point(), pp::Size(plugin_size_.width(), first_page_ypos)));
-      ready->push_back(PaintReadyRect(region, image_data_));
-      FillRect(region, GetBackgroundColor());
-    }
-
-    for (const auto& background_part : background_parts_) {
-      pp::Rect intersection = background_part.location.Intersect(rect);
-      if (!intersection.IsEmpty()) {
-        FillRect(intersection, background_part.color);
-        ready->push_back(PaintReadyRect(intersection, image_data_));
-      }
-    }
-  }
-
-  engine()->PostPaint();
-
-  if (!deferred_invalidates_.empty()) {
-    ScheduleTaskOnMainThread(
-        base::TimeDelta(),
-        base::BindOnce(&OutOfProcessInstance::InvalidateAfterPaintDone,
-                       weak_factory_.GetWeakPtr()),
-        0);
-  }
 }
 
 void OutOfProcessInstance::ScheduleTaskOnMainThread(
@@ -2419,11 +2418,11 @@ void OutOfProcessInstance::UserMetricsRecordAction(const std::string& action) {
 pp::FloatPoint OutOfProcessInstance::BoundScrollOffsetToDocument(
     const pp::FloatPoint& scroll_offset) {
   float max_x = std::max(
-      document_size_.width() * float{zoom_} - plugin_dip_size_.width(), 0.0f);
+      document_size_.width() * float{zoom()} - plugin_dip_size_.width(), 0.0f);
   float x = base::ClampToRange(scroll_offset.x(), 0.0f, max_x);
   float min_y = -top_toolbar_height_in_viewport_coords();
   float max_y = std::max(
-      document_size_.height() * float{zoom_} - plugin_dip_size_.height(),
+      document_size_.height() * float{zoom()} - plugin_dip_size_.height(),
       min_y);
   float y = base::ClampToRange(scroll_offset.y(), min_y, max_y);
   return pp::FloatPoint(x, y);
@@ -2498,7 +2497,7 @@ void OutOfProcessInstance::OnPrint(int32_t /*unused_but_required*/) {
 
 void OutOfProcessInstance::InvalidateAfterPaintDone(
     int32_t /*unused_but_required*/) {
-  DCHECK(!in_paint_);
+  DCHECK(!in_paint());
   for (const gfx::Rect& rect : deferred_invalidates_)
     Invalidate(rect);
   deferred_invalidates_.clear();

@@ -159,9 +159,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   bool IsValidLink(const std::string& url) override;
   std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
   bool BindPaintGraphics(Graphics& graphics) override;
-  void OnPaint(const std::vector<gfx::Rect>& paint_rects,
-               std::vector<PaintReadyRect>* ready,
-               std::vector<gfx::Rect>* pending) override;
   void ScheduleTaskOnMainThread(
       base::TimeDelta delay,
       ResultCallback callback,
@@ -187,6 +184,9 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result) override;
   void DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                       int32_t result) override;
+  void DoPaint(const std::vector<gfx::Rect>& paint_rects,
+               std::vector<PaintReadyRect>* ready,
+               std::vector<gfx::Rect>* pending) override;
 
  private:
   // Message handlers.
@@ -378,8 +378,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
     PINCH_END = 4
   };
 
-  // Current zoom factor.
-  double zoom_ = 1.0;
   // True if we request a new bitmap rendering.
   bool needs_reraster_ = true;
   // The scroll position for the last raster, before any transformations are
@@ -387,17 +385,9 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   pp::FloatPoint scroll_offset_at_last_raster_;
   // True if last bitmap was smaller than screen.
   bool last_bitmap_smaller_ = false;
-  // Current device scale factor. Multiply by |device_scale_| to convert from
-  // viewport to screen coordinates. Divide by |device_scale_| to convert from
-  // screen to viewport coordinates.
-  float device_scale_ = 1.0f;
   // True if the plugin is full-page.
   bool full_ = false;
 
-  // True if we haven't painted the plugin viewport yet.
-  bool first_paint_ = true;
-  // Whether OnPaint() is in progress or not.
-  bool in_paint_ = false;
   // Deferred invalidates while |in_paint_| is true.
   std::vector<gfx::Rect> deferred_invalidates_;
 

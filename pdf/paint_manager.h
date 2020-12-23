@@ -53,14 +53,14 @@ class PaintManager {
     // Paints the given invalid area of the plugin to the given graphics
     // device. Returns true if anything was painted.
     //
-    // You are given the list of rects to paint in |paint_rects|.  You can
+    // You are given the list of rects to paint in `paint_rects`.  You can
     // combine painting into less rectangles if it's more efficient.  When a
     // rect is painted, information about that paint should be inserted into
-    // |ready|.  Otherwise if a paint needs more work, add the rect to
-    // |pending|.  If |pending| is not empty, your OnPaint function will get
+    // `ready`.  Otherwise if a paint needs more work, add the rect to
+    // `pending`.  If `pending` is not empty, your OnPaint function will get
     // called again.  Once OnPaint is called and it returns no pending rects,
     // all the previously ready rects will be flushed on screen.  The exception
-    // is for ready rects that have |flush_now| set to true.  These will be
+    // is for ready rects that have `flush_now` set to true.  These will be
     // flushed right away.
     //
     // Do not call Flush() on the graphics device, this will be done

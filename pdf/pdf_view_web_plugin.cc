@@ -323,14 +323,6 @@ bool PdfViewWebPlugin::BindPaintGraphics(Graphics& graphics) {
   return false;
 }
 
-// TODO(https://crbug.com/1099020): To be implemented as a Pepper-free version
-// of `OutOfProcessInstance::OnPaint()`
-void PdfViewWebPlugin::OnPaint(const std::vector<gfx::Rect>& paint_rects,
-                               std::vector<PaintReadyRect>* ready,
-                               std::vector<gfx::Rect>* pending) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 void PdfViewWebPlugin::ScheduleTaskOnMainThread(
     base::TimeDelta delay,
     ResultCallback callback,
@@ -395,6 +387,14 @@ void PdfViewWebPlugin::DidOpen(std::unique_ptr<UrlLoader> loader,
 void PdfViewWebPlugin::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                                       int32_t result) {
   NOTIMPLEMENTED();
+}
+
+// TODO(https://crbug.com/1099020): To be implemented as a Pepper-free version
+// of `OutOfProcessInstance::DoPaint()`
+void PdfViewWebPlugin::DoPaint(const std::vector<gfx::Rect>& paint_rects,
+                               std::vector<PaintReadyRect>* ready,
+                               std::vector<gfx::Rect>* pending) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 }  // namespace chrome_pdf

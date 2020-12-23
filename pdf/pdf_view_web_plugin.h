@@ -105,9 +105,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool IsValidLink(const std::string& url) override;
   std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
   bool BindPaintGraphics(Graphics& graphics) override;
-  void OnPaint(const std::vector<gfx::Rect>& paint_rects,
-               std::vector<PaintReadyRect>* ready,
-               std::vector<gfx::Rect>* pending) override;
   void ScheduleTaskOnMainThread(
       base::TimeDelta delay,
       ResultCallback callback,
@@ -130,6 +127,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result) override;
   void DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                       int32_t result) override;
+  void DoPaint(const std::vector<gfx::Rect>& paint_rects,
+               std::vector<PaintReadyRect>* ready,
+               std::vector<gfx::Rect>* pending) override;
 
  private:
   // Call `Destroy()` instead.

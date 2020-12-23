@@ -32,6 +32,11 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // PDFEngine::Client:
   uint32_t GetBackgroundColor() override;
 
+  // PaintManager::Client
+  void OnPaint(const std::vector<gfx::Rect>& paint_rects,
+               std::vector<PaintReadyRect>* ready,
+               std::vector<gfx::Rect>* pending) override;
+
  protected:
   PdfViewPluginBase();
   ~PdfViewPluginBase() override;
@@ -65,6 +70,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
   virtual void DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                               int32_t result) = 0;
 
+  // Paints the given invalid area of the plugin to the given graphics device.
+  // PaintManager::Client::OnPaint() should be its only caller.
+  virtual void DoPaint(const std::vector<gfx::Rect>& paint_rects,
+                       std::vector<PaintReadyRect>* ready,
+                       std::vector<gfx::Rect>* pending) = 0;
+
   void SetBackgroundColor(uint32_t background_color) {
     background_color_ = background_color;
   }
@@ -77,6 +88,17 @@ class PdfViewPluginBase : public PDFEngine::Client,
     top_toolbar_height_in_viewport_coords_ = height;
   }
 
+  double zoom() const { return zoom_; }
+  void set_zoom(double zoom) { zoom_ = zoom; }
+
+  float device_scale() const { return device_scale_; }
+  void set_device_scale(float device_scale) { device_scale_ = device_scale; }
+
+  bool first_paint() const { return first_paint_; }
+  void set_first_paint(bool first_paint) { first_paint_ = first_paint; }
+
+  bool in_paint() const { return in_paint_; }
+
  private:
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};
@@ -87,6 +109,20 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // The blank space above the first page of the document reserved for the
   // toolbar.
   int top_toolbar_height_in_viewport_coords_ = 0;
+
+  // Current zoom factor.
+  double zoom_ = 1.0;
+
+  // Current device scale factor. Multiply by `device_scale_` to convert from
+  // viewport to screen coordinates. Divide by `device_scale_` to convert from
+  // screen to viewport coordinates.
+  float device_scale_ = 1.0f;
+
+  // True if we haven't painted the plugin viewport yet.
+  bool first_paint_ = true;
+
+  // Whether OnPaint() is in progress or not.
+  bool in_paint_ = false;
 };
 
 }  // namespace chrome_pdf
