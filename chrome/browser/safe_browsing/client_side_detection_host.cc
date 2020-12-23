@@ -432,6 +432,11 @@ void ClientSideDetectionHost::PhishingDetectionDone(
       verdict->ParseFromString(verdict_str) &&
       verdict->IsInitialized()) {
     VLOG(2) << "Phishing classification score: " << verdict->client_score();
+    for (auto& match : verdict->vision_match()) {
+      VLOG(2) << "Target Digest: " << match.matched_target_digest();
+      VLOG(2) << "Phash Score: " << match.vision_matched_phash_score();
+      VLOG(2) << "EMD Score: " << match.vision_matched_emd_score();
+    }
     Profile* profile =
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     if (!IsExtendedReportingEnabled(*profile->GetPrefs()) &&
