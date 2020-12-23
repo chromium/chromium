@@ -54,8 +54,8 @@ WelcomeScreenHandler::WelcomeScreenHandler(JSCallsContainer* js_calls_container,
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   CHECK(accessibility_manager);
   accessibility_subscription_ = accessibility_manager->RegisterCallback(
-      base::Bind(&WelcomeScreenHandler::OnAccessibilityStatusChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&WelcomeScreenHandler::OnAccessibilityStatusChanged,
+                          base::Unretained(this)));
 }
 
 WelcomeScreenHandler::~WelcomeScreenHandler() {

@@ -27,8 +27,8 @@ UpdateScreenHandler::UpdateScreenHandler(JSCallsContainer* js_calls_container)
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   CHECK(accessibility_manager);
   accessibility_subscription_ = accessibility_manager->RegisterCallback(
-      base::Bind(&UpdateScreenHandler::OnAccessibilityStatusChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&UpdateScreenHandler::OnAccessibilityStatusChanged,
+                          base::Unretained(this)));
 }
 
 UpdateScreenHandler::~UpdateScreenHandler() {

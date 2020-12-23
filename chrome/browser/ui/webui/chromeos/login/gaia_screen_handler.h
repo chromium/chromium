@@ -245,8 +245,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
                        const SamlPasswordAttributes& password_attributes);
 
   // Kick off cookie / local storage cleanup.
-  void StartClearingCookies(const base::Closure& on_clear_callback);
-  void OnCookiesCleared(const base::Closure& on_clear_callback);
+  void StartClearingCookies(base::OnceClosure on_clear_callback);
+  void OnCookiesCleared(base::OnceClosure on_clear_callback);
 
   // Kick off DNS cache flushing.
   void StartClearingDnsCache();

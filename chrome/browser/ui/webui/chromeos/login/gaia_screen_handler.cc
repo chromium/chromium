@@ -1037,21 +1037,21 @@ void GaiaScreenHandler::OnDnsCleared() {
 }
 
 void GaiaScreenHandler::StartClearingCookies(
-    const base::Closure& on_clear_callback) {
+    base::OnceClosure on_clear_callback) {
   cookies_cleared_ = false;
   ProfileHelper* profile_helper = ProfileHelper::Get();
   LOG_ASSERT(Profile::FromWebUI(web_ui()) ==
              profile_helper->GetSigninProfile());
   profile_helper->ClearSigninProfile(
-      base::Bind(&GaiaScreenHandler::OnCookiesCleared,
-                 weak_factory_.GetWeakPtr(), on_clear_callback));
+      base::AdaptCallbackForRepeating(base::BindOnce(
+          &GaiaScreenHandler::OnCookiesCleared, weak_factory_.GetWeakPtr(),
+          std::move(on_clear_callback))));
 }
 
-void GaiaScreenHandler::OnCookiesCleared(
-    const base::Closure& on_clear_callback) {
+void GaiaScreenHandler::OnCookiesCleared(base::OnceClosure on_clear_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   cookies_cleared_ = true;
-  on_clear_callback.Run();
+  std::move(on_clear_callback).Run();
 }
 
 void GaiaScreenHandler::SubmitLoginFormForTest() {
@@ -1129,8 +1129,8 @@ void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {
     ShowGaiaScreenIfReady();
   } else {
     StartClearingDnsCache();
-    StartClearingCookies(base::Bind(&GaiaScreenHandler::ShowGaiaScreenIfReady,
-                                    weak_factory_.GetWeakPtr()));
+    StartClearingCookies(base::BindOnce(
+        &GaiaScreenHandler::ShowGaiaScreenIfReady, weak_factory_.GetWeakPtr()));
   }
 }
 

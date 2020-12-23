@@ -140,19 +140,19 @@ const char kSourceAccountPicker[] = "account-picker";
 
 class CallOnReturn {
  public:
-  explicit CallOnReturn(const base::Closure& callback)
-      : callback_(callback), call_scheduled_(false) {}
+  explicit CallOnReturn(base::OnceClosure callback)
+      : callback_(std::move(callback)), call_scheduled_(false) {}
 
   ~CallOnReturn() {
     if (call_scheduled_ && !callback_.is_null())
-      callback_.Run();
+      std::move(callback_).Run();
   }
 
   void CancelScheduledCall() { call_scheduled_ = false; }
   void ScheduleCall() { call_scheduled_ = true; }
 
  private:
-  base::Closure callback_;
+  base::OnceClosure callback_;
   bool call_scheduled_;
 
   DISALLOW_COPY_AND_ASSIGN(CallOnReturn);
@@ -586,8 +586,8 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
       (state == NetworkStateInformer::PROXY_AUTH_REQUIRED) &&
       (proxy_auth_dialog_reload_times_ > 0);
 
-  CallOnReturn reload_gaia(base::Bind(
-      &SigninScreenHandler::ReloadGaia, weak_factory_.GetWeakPtr(), true));
+  CallOnReturn reload_gaia(base::BindOnce(&SigninScreenHandler::ReloadGaia,
+                                          weak_factory_.GetWeakPtr(), true));
 
   if (is_online || !is_behind_captive_portal)
     error_screen_->HideCaptivePortal();
