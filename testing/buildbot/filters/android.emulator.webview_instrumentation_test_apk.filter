@@ -1,2 +1,10 @@
 # crbug.com/1065160
 -org.chromium.android_webview.test.AwAutofillTest.testTouchingFormWithAdjustPan
+
+# crbug.com/1161326
+-org.chromium.android_webview.test.AwAutofillTest.testServerPredictionArrivesAfterAutofillStart
+-org.chromium.android_webview.test.AwAutofillTest.testServerPredictionArrivesAfterAutofillStart__multiprocess_mode
+-org.chromium.android_webview.test.AwAutofillTest.testServerPredictionArrivesBeforeCallbackRegistered
+-org.chromium.android_webview.test.AwAutofillTest.testServerPredictionArrivesBeforeCallbackRegistered__multiprocess_mode
+-org.chromium.android_webview.test.AwAutofillTest.testServerQueryFailedAfterAutofillStart
+-org.chromium.android_webview.test.AwAutofillTest.testServerQueryFailedAfterAutofillStart__multiprocess_mode
