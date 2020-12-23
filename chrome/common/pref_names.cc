@@ -3149,4 +3149,8 @@ const char kSecurityTokenSessionNotificationScheduledDomain[] =
     "security_token_session_notification_scheduled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !defined(OS_ANDROID)
+// Boolean pref indicating whether user has dismissed the cart module on NTP.
+const char kCartModuleDismissed[] = "cart_module_dismissed";
+#endif
 }  // namespace prefs

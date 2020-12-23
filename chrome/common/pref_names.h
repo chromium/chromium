@@ -1102,6 +1102,10 @@ extern const char kSecurityTokenSessionNotificationDisplayed[];
 extern const char kSecurityTokenSessionNotificationScheduledDomain[];
 #endif
 
+#if !defined(OS_ANDROID)
+extern const char kCartModuleDismissed[];
+#endif
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

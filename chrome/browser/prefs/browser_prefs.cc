@@ -226,6 +226,7 @@
 #include "components/query_tiles/tile_service_prefs.h"
 #else  // defined(OS_ANDROID)
 #include "chrome/browser/accessibility/caption_controller.h"
+#include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/intranet_redirect_detector.h"
@@ -1005,6 +1006,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   StartupBrowserCreator::RegisterProfilePrefs(registry);
   TaskModuleService::RegisterProfilePrefs(registry);
   UnifiedAutoplayConfig::RegisterProfilePrefs(registry);
+  CartService::RegisterProfilePrefs(registry);
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
