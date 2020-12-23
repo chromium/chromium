@@ -114,7 +114,8 @@ class TracingAgent::PerfettoTracingSession
     on_recording_enabled_callback_ = std::move(on_recording_enabled_callback);
     consumer_host_->EnableTracing(
         tracing_session_host_.BindNewPipeAndPassReceiver(),
-        std::move(tracing_session_client), std::move(perfetto_config));
+        std::move(tracing_session_client), std::move(perfetto_config),
+        base::File());
 
     tracing_session_host_.set_disconnect_handler(
         base::BindOnce(&PerfettoTracingSession::OnTracingSessionFailed,

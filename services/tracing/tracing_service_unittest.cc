@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -15,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/perfetto/test_utils.h"
@@ -99,22 +101,28 @@ class TracingServiceTest : public testing::Test {
     perfetto_service()->SetActiveServicePidsInitialized();
   }
 
+  static size_t CountTestPackets(const char* data, size_t length) {
+    if (!length)
+      return 0;
+    size_t test_packet_count = 0;
+    perfetto::protos::Trace trace;
+    EXPECT_TRUE(trace.ParseFromArray(data, length));
+    for (const auto& packet : trace.packet()) {
+      if (packet.has_for_testing()) {
+        EXPECT_EQ(kPerfettoTestString, packet.for_testing().str());
+        test_packet_count++;
+      }
+    }
+    return test_packet_count;
+  }
+
   size_t ReadAndCountTestPackets(perfetto::TracingSession& session) {
     size_t test_packet_count = 0;
     base::RunLoop wait_for_data_loop;
     session.ReadTrace(
         [&wait_for_data_loop, &test_packet_count](
             perfetto::TracingSession::ReadTraceCallbackArgs args) {
-          if (args.size) {
-            perfetto::protos::Trace trace;
-            EXPECT_TRUE(trace.ParseFromArray(args.data, args.size));
-            for (const auto& packet : trace.packet()) {
-              if (packet.has_for_testing()) {
-                EXPECT_EQ(kPerfettoTestString, packet.for_testing().str());
-                test_packet_count++;
-              }
-            }
-          }
+          test_packet_count += CountTestPackets(args.data, args.size);
           if (!args.has_more)
             wait_for_data_loop.Quit();
         });
@@ -145,7 +153,8 @@ class TestTracingClient : public mojom::TracingSessionClient {
 
     consumer_host_->EnableTracing(
         tracing_session_host_.BindNewPipeAndPassReceiver(),
-        receiver_.BindNewPipeAndPassRemote(), std::move(perfetto_config));
+        receiver_.BindNewPipeAndPassRemote(), std::move(perfetto_config),
+        base::File());
 
     tracing_session_host_->RequestBufferUsage(
         base::BindOnce([](base::OnceClosure on_response, bool, float,
@@ -378,5 +387,56 @@ TEST_F(TracingServiceTest, PerfettoClientProducer) {
   // Read and verify the data.
   EXPECT_EQ(kNumPackets, ReadAndCountTestPackets(*session));
 }
+
+#if !defined(OS_WIN)
+// TODO(crbug.com/1158482): Support tracing to file on Windows.
+TEST_F(TracingServiceTest, TraceToFile) {
+  // Set up API bindings.
+  EnableClientApiConsumer();
+
+  // Register a mock producer with an in-process Perfetto service.
+  auto pid = 123;
+  size_t kNumPackets = 10;
+  base::RunLoop wait_for_start;
+  base::RunLoop wait_for_registration;
+  std::unique_ptr<MockProducer> producer = std::make_unique<MockProducer>(
+      std::string("org.chromium-") + base::NumberToString(pid),
+      "com.example.mock_data_source", perfetto_service(),
+      wait_for_registration.QuitClosure(), wait_for_start.QuitClosure(),
+      kNumPackets);
+  wait_for_registration.Run();
+
+  base::FilePath output_file_path;
+  ASSERT_TRUE(base::CreateTemporaryFile(&output_file_path));
+
+  base::File output_file;
+  output_file.Initialize(output_file_path,
+                         base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+
+  // Start a tracing session using the client API.
+  auto session = perfetto::Tracing::NewTrace();
+  perfetto::TraceConfig perfetto_config;
+  perfetto_config.add_buffers()->set_size_kb(1024);
+  auto* ds_cfg = perfetto_config.add_data_sources()->mutable_config();
+  ds_cfg->set_name("com.example.mock_data_source");
+  session->Setup(perfetto_config, output_file.TakePlatformFile());
+  session->Start();
+  wait_for_start.Run();
+
+  // Stop the session and wait for it to stop. Note that we can't use the
+  // blocking API here because the service runs on the current sequence.
+  base::RunLoop wait_for_stop_loop;
+  session->SetOnStopCallback(
+      [&wait_for_stop_loop] { wait_for_stop_loop.Quit(); });
+  session->Stop();
+  wait_for_stop_loop.Run();
+
+  // Read and verify the data.
+  std::string trace;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(base::ReadFileToString(output_file_path, &trace));
+  EXPECT_EQ(kNumPackets, CountTestPackets(trace.data(), trace.length()));
+}
+#endif
 
 }  // namespace tracing

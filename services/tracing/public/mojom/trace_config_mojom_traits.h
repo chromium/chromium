@@ -163,6 +163,10 @@ class StructTraits<tracing::mojom::TraceConfigDataView, perfetto::TraceConfig> {
     return src.duration_ms();
   }
 
+  static bool write_into_file(const perfetto::TraceConfig& src) {
+    return src.write_into_file();
+  }
+
   static bool Read(tracing::mojom::TraceConfigDataView data,
                    perfetto::TraceConfig* out);
 };

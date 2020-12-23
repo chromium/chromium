@@ -93,6 +93,7 @@ bool StructTraits<tracing::mojom::TraceConfigDataView, perfetto::TraceConfig>::
   }
 
   out->set_duration_ms(data.duration_ms());
+  out->set_write_into_file(data.write_into_file());
   return true;
 }
 

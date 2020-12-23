@@ -300,7 +300,8 @@ class TracingHandler::PerfettoTracingSession
 
     consumer_host_->EnableTracing(
         tracing_session_host_.BindNewPipeAndPassReceiver(),
-        receiver_.BindNewPipeAndPassRemote(), std::move(perfetto_config));
+        receiver_.BindNewPipeAndPassRemote(), std::move(perfetto_config),
+        base::File());
 
     receiver_.set_disconnect_handler(
         base::BindOnce(&PerfettoTracingSession::OnTracingSessionFailed,

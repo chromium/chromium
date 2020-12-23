@@ -154,7 +154,7 @@ class ThreadedPerfettoService : public mojom::TracingSessionClient {
 
     consumer_->EnableTracing(
         tracing_session_host_->BindNewPipeAndPassReceiver(),
-        std::move(tracing_session_client), std::move(config));
+        std::move(tracing_session_client), std::move(config), base::File());
   }
 
   void ReadBuffers(mojo::ScopedDataPipeProducerHandle stream,
@@ -727,7 +727,7 @@ class MockConsumerHost : public mojom::TracingSessionClient {
 
     consumer_host_->EnableTracing(
         tracing_session_host_.BindNewPipeAndPassReceiver(),
-        std::move(tracing_session_client), config);
+        std::move(tracing_session_client), config, base::File());
     tracing_session_host_.set_disconnect_handler(base::BindOnce(
         &MockConsumerHost::OnConnectionLost, base::Unretained(this)));
   }

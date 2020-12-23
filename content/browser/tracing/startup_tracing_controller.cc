@@ -31,17 +31,32 @@ namespace content {
 
 class StartupTracingController::BackgroundTracer {
  public:
-  BackgroundTracer(base::FilePath output_file,
+  enum class WriteMode { kAfterStopping, kStreaming };
+
+  BackgroundTracer(WriteMode write_mode,
+                   base::FilePath output_file,
                    tracing::TraceStartupConfig::OutputFormat output_format,
                    perfetto::TraceConfig trace_config,
                    base::OnceClosure on_tracing_finished)
       : state_(State::kTracing),
+        write_mode_(write_mode),
         task_runner_(base::SequencedTaskRunnerHandle::Get()),
         output_file_(output_file),
         output_format_(output_format),
         on_tracing_finished_(std::move(on_tracing_finished)) {
     tracing_session_ = perfetto::Tracing::NewTrace();
-    tracing_session_->Setup(trace_config);
+
+    if (write_mode_ == WriteMode::kStreaming) {
+#if !defined(OS_WIN)
+      OpenFile(output_file_);
+      tracing_session_->Setup(trace_config, file_.TakePlatformFile());
+#else
+      NOTREACHED() << "Streaming to file is not supported on Windows yet";
+#endif
+    } else {
+      tracing_session_->Setup(trace_config);
+    }
+
     tracing_session_->StartBlocking();
     tracing_session_->SetOnStopCallback([&]() { OnTracingStopped(); });
 
@@ -68,21 +83,15 @@ class StartupTracingController::BackgroundTracer {
 
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_EQ(state_, State::kTracing);
+    if (write_mode_ == WriteMode::kStreaming) {
+      // No need to explicitly call ReadTrace as Perfetto has already written
+      // the file.
+      Finalise(output_file_);
+      return;
+    }
     state_ = State::kWritingToFile;
 
-    if (output_format_ ==
-        tracing::TraceStartupConfig::OutputFormat::kLegacyJSON) {
-      trace_packet_tokenizer_ =
-          std::make_unique<tracing::TracePacketTokenizer>();
-    }
-
-    file_ = base::CreateAndOpenTemporaryFileInDir(output_file_.DirName(),
-                                                  &written_to_file_);
-    if (!file_.IsValid()) {
-      file_.Initialize(output_file_,
-                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-      written_to_file_ = output_file_;
-    }
+    OpenFile(output_file_);
 
     // The owner of BackgroundTracer is responsible for ensuring that
     // BackgroundTracer stays alive until |on_tracing_finished_| is called.
@@ -93,19 +102,7 @@ class StartupTracingController::BackgroundTracer {
           if (args.has_more)
             return;
 
-          file_.Close();
-
-          if (written_to_file_ != output_file_) {
-            base::File::Error error;
-            if (!base::ReplaceFile(written_to_file_, output_file_, &error)) {
-              LOG(ERROR) << "Cannot move file '" << written_to_file_ << "' to '"
-                         << output_file_
-                         << "' : " << base::File::ErrorToString(error);
-            }
-          }
-
-          std::move(on_tracing_finished_).Run();
-          state_ = State::kFinished;
+          Finalise(output_file_);
         });
   }
 
@@ -122,7 +119,11 @@ class StartupTracingController::BackgroundTracer {
     }
 
     // For JSON, we need to extract raw data from the packet.
-    DCHECK(trace_packet_tokenizer_);
+    if (!trace_packet_tokenizer_) {
+      trace_packet_tokenizer_ =
+          std::make_unique<tracing::TracePacketTokenizer>();
+    }
+
     std::vector<perfetto::TracePacket> packets = trace_packet_tokenizer_->Parse(
         reinterpret_cast<const uint8_t*>(data), size);
     for (const auto& packet : packets) {
@@ -133,12 +134,58 @@ class StartupTracingController::BackgroundTracer {
     }
   }
 
+  // Open |file_| for writing and set |written_to_file_| accordingly.
+  // In order to atomically commit the trace file, create a temporary file first
+  // which then will be subsequently renamed.
+  void OpenFile(const base::FilePath& path) {
+    file_ = base::CreateAndOpenTemporaryFileInDir(path.DirName(),
+                                                  &written_to_file_);
+    if (file_.IsValid()) {
+      LOG(ERROR) << "Created valid file";
+      return;
+    }
+
+    VLOG(1) << "Failed to create temporary file, using file '" << path
+            << "' directly instead";
+
+    // On Android, it might not be possible to create a temporary file.
+    // In that case, we should use the file directly.
+    file_.Initialize(output_file_,
+                     base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+    written_to_file_ = output_file_;
+
+    if (!file_.IsValid())
+      LOG(ERROR) << "Startup tracing failed: couldn't open file: " << path;
+  }
+
+  // Close the file and rename if needed.
+  void Finalise(const base::FilePath& path) {
+    DCHECK_NE(state_, State::kFinished);
+    file_.Close();
+
+    if (written_to_file_ != path) {
+      base::File::Error error;
+      if (!base::ReplaceFile(written_to_file_, output_file_, &error)) {
+        LOG(ERROR) << "Cannot move file '" << written_to_file_ << "' to '"
+                   << output_file_
+                   << "' : " << base::File::ErrorToString(error);
+      }
+    }
+
+    state_ = State::kFinished;
+    std::move(on_tracing_finished_).Run();
+
+    VLOG(0) << "Completed startup tracing to " << path;
+  }
+
   enum class State {
     kTracing,
     kWritingToFile,
     kFinished,
   };
   State state_;
+
+  const WriteMode write_mode_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
@@ -210,6 +257,21 @@ void StartupTracingController::StartIfNeeded() {
   auto output_format =
       tracing::TraceStartupConfig::GetInstance()->GetOutputFormat();
 
+  BackgroundTracer::WriteMode write_mode;
+#if defined(OS_WIN)
+  // TODO(crbug.com/1158482/): Perfetto does not (yet) support writing directly
+  // to a file on Windows.
+  write_mode = BackgroundTracer::WriteMode::kAfterStopping;
+#else
+  // Only protos can be incrementally written to a file - legacy json needs to
+  // go through an additional conversion step after, which requires the entire
+  // trace to be available.
+  write_mode =
+      output_format == tracing::TraceStartupConfig::OutputFormat::kProto
+          ? BackgroundTracer::WriteMode::kStreaming
+          : BackgroundTracer::WriteMode::kAfterStopping;
+#endif
+
   const auto& chrome_config =
       tracing::TraceStartupConfig::GetInstance()->GetTraceConfig();
   perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
@@ -225,8 +287,8 @@ void StartupTracingController::StartIfNeeded() {
     output_file_ = GetStartupTraceFileName();
 
   background_tracer_ = base::SequenceBound<BackgroundTracer>(
-      std::move(background_task_runner), output_file_, output_format,
-      perfetto_config,
+      std::move(background_task_runner), write_mode, output_file_,
+      output_format, perfetto_config,
       base::BindOnce(
           [](StartupTracingController* controller) {
             GetUIThreadTaskRunner({})->PostTask(
@@ -260,7 +322,6 @@ void StartupTracingController::OnStoppedOnUIThread() {
   if (on_tracing_finished_)
     std::move(on_tracing_finished_).Run();
 
-  VLOG(0) << "Completed startup tracing to " << output_file_;
   tracing::TraceStartupConfig::GetInstance()->OnTraceToResultFileFinished();
   tracing::TraceStartupConfig::GetInstance()->SetDisabled();
 }

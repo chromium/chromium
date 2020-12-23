@@ -366,8 +366,14 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
   void EnableTracing(const perfetto::TraceConfig& trace_config,
                      perfetto::base::ScopedFile file) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(!file);  // Direct tracing to a file isn't supported.
     trace_config_ = trace_config;
+#if defined(OS_WIN)
+    // TODO(crbug.com/1158482): Add support on Windows.
+    DCHECK(!file)
+        << "Tracing directly to a file isn't supported on Windows yet";
+#else
+    output_file_ = base::File(file.release());
+#endif
     if (!trace_config.deferred_start())
       StartTracing();
   }
@@ -383,7 +389,8 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
     tracing_failed_ = false;
     consumer_host_->EnableTracing(
         tracing_session_host_.BindNewPipeAndPassReceiver(),
-        tracing_session_client_.BindNewPipeAndPassRemote(), trace_config_);
+        tracing_session_client_.BindNewPipeAndPassRemote(), trace_config_,
+        std::move(output_file_));
     tracing_session_host_.set_disconnect_handler(base::BindOnce(
         &ConsumerEndpoint::OnTracingFailed, base::Unretained(this)));
     tracing_session_client_.set_disconnect_handler(base::BindOnce(
@@ -636,6 +643,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
       this};
   std::unique_ptr<mojo::DataPipeDrainer> drainer_;
   perfetto::TraceConfig trace_config_;
+  base::File output_file_;
 
   std::unique_ptr<TracePacketTokenizer> tokenizer_;
   bool tracing_failed_ = false;

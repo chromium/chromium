@@ -4,6 +4,8 @@
 
 module tracing.mojom;
 
+import "mojo/public/mojom/base/file.mojom";
+
 // Producer processes register with the format
 // "kPerfettoProducerNamePrefix-PID" when connecting to Chrome's internal
 // tracing service. Note that system producers use a different but similar
@@ -213,6 +215,7 @@ struct TraceConfig {
   IncrementalStateConfig incremental_state_config;
 
   uint32 duration_ms;
+  bool write_into_file;
 };
 
 // The priority of the incoming EnableTracing request, used to determine
@@ -242,7 +245,8 @@ interface ConsumerHost {
   // the new session will take precedence.
   EnableTracing(pending_receiver<TracingSessionHost> tracing_session_host,
                 pending_remote<TracingSessionClient> tracing_session_client,
-                TraceConfig config);
+                TraceConfig config,
+                mojo_base.mojom.File? output_file);
 };
 
 // Represents the host side of an active tracing session. Closing this

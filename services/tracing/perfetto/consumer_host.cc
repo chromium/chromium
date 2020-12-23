@@ -151,6 +151,7 @@ ConsumerHost::TracingSession::TracingSession(
     mojo::PendingReceiver<mojom::TracingSessionHost> tracing_session_host,
     mojo::PendingRemote<mojom::TracingSessionClient> tracing_session_client,
     const perfetto::TraceConfig& trace_config,
+    perfetto::base::ScopedFile output_file,
     mojom::TracingClientPriority priority)
     : host_(host),
       tracing_session_client_(std::move(tracing_session_client)),
@@ -216,7 +217,8 @@ ConsumerHost::TracingSession::TracingSession(
     }
   }
 
-  host_->consumer_endpoint()->EnableTracing(effective_config);
+  host_->consumer_endpoint()->EnableTracing(effective_config,
+                                            std::move(output_file));
   MaybeSendEnableTracingAck();
 
   if (pending_enable_tracing_ack_pids_) {
@@ -627,7 +629,8 @@ ConsumerHost::~ConsumerHost() {
 void ConsumerHost::EnableTracing(
     mojo::PendingReceiver<mojom::TracingSessionHost> tracing_session_host,
     mojo::PendingRemote<mojom::TracingSessionClient> tracing_session_client,
-    const perfetto::TraceConfig& trace_config) {
+    const perfetto::TraceConfig& trace_config,
+    base::File output_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!tracing_session_);
 
@@ -652,6 +655,15 @@ void ConsumerHost::EnableTracing(
     }
   }
 
+#if defined(OS_WIN)
+  // TODO(crbug.com/1158482): Support writing to a file directly on Windows.
+  DCHECK(!output_file.IsValid())
+      << "Tracing directly to a file isn't supported yet on Windows";
+  perfetto::base::ScopedFile file;
+#else
+  perfetto::base::ScopedFile file(output_file.TakePlatformFile());
+#endif
+
   // We create our new TracingSession async, if the PerfettoService allows
   // us to, after it's stopped any currently running lower or equal priority
   // tracing sessions.
@@ -663,6 +675,7 @@ void ConsumerHost::EnableTracing(
                        mojo::PendingRemote<mojom::TracingSessionClient>
                            tracing_session_client,
                        const perfetto::TraceConfig& trace_config,
+                       perfetto::base::ScopedFile output_file,
                        mojom::TracingClientPriority priority) {
                       if (!weak_this) {
                         return;
@@ -672,10 +685,11 @@ void ConsumerHost::EnableTracing(
                           std::make_unique<TracingSession>(
                               weak_this.get(), std::move(tracing_session_host),
                               std::move(tracing_session_client), trace_config,
-                              priority);
+                              std::move(output_file), priority);
                     },
                     weak_factory_.GetWeakPtr(), std::move(tracing_session_host),
-                    std::move(tracing_session_client), trace_config, priority));
+                    std::move(tracing_session_client), trace_config,
+                    std::move(file), priority));
 }
 
 void ConsumerHost::OnConnect() {}
