@@ -124,7 +124,7 @@ public class EditorFieldModel {
     @Nullable
     private HashMap<String, CharSequence> mDropdownKeyToValueMap;
     @Nullable
-    private HashMap<CharSequence, String> mDropdownValueToKeyMap;
+    private HashMap<String, String> mDropdownValueToKeyMap;
     @Nullable
     private Set<String> mDropdownKeys;
     @Nullable
@@ -436,7 +436,10 @@ public class EditorFieldModel {
     @Nullable
     public String getDropdownKeyByValue(@Nullable CharSequence value) {
         assert mInputTypeHint == INPUT_TYPE_HINT_DROPDOWN;
-        return mDropdownValueToKeyMap.get(value);
+        if (value == null) {
+            return null;
+        }
+        return mDropdownValueToKeyMap.get(value.toString());
     }
 
     /**
@@ -462,8 +465,8 @@ public class EditorFieldModel {
         mDropdownValueToKeyMap = new HashMap<>();
         for (int i = 0; i < mDropdownKeyValues.size(); i++) {
             mDropdownKeys.add(mDropdownKeyValues.get(i).getKey());
-            mDropdownValueToKeyMap.put(
-                    mDropdownKeyValues.get(i).getValue(), mDropdownKeyValues.get(i).getKey());
+            mDropdownValueToKeyMap.put(mDropdownKeyValues.get(i).getValue().toString(),
+                    mDropdownKeyValues.get(i).getKey());
             mDropdownKeyToValueMap.put(
                     mDropdownKeyValues.get(i).getKey(), mDropdownKeyValues.get(i).getValue());
         }

@@ -254,7 +254,7 @@ public abstract class VrDelegate implements VrHandler {
 
         // Only Samsung devices change resolution in VR.
         if (!model.startsWith(SAMSUNG_GALAXY_PREFIX)) return false;
-        CharSequence modelNumber = model.subSequence(3, 7);
+        String modelNumber = model.substring(3, 7);
         // Only S8(+) and Note 8 models change resolution in VR.
         if (!SAMSUNG_GALAXY_8_MODELS.contains(modelNumber)) return false;
         return true;
