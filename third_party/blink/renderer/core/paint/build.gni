@@ -200,6 +200,8 @@ blink_core_sources_paint = [
   "scoped_svg_paint_state.h",
   "scrollable_area_painter.cc",
   "scrollable_area_painter.h",
+  "selection_bounds_recorder.cc",
+  "selection_bounds_recorder.h",
   "svg_container_painter.cc",
   "svg_container_painter.h",
   "svg_foreign_object_painter.cc",

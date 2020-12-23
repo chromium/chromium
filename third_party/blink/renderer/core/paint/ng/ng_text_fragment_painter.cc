@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/paint/list_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
 #include "third_party/blink/renderer/core/paint/text_painter_base.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -374,69 +375,6 @@ class SelectionPaintState {
   bool paint_selected_text_separately_;
 };
 
-class SelectionBoundsRecorder {
-  STACK_ALLOCATED();
-
- public:
-  SelectionBoundsRecorder(const NGInlineCursor& cursor,
-                          SelectionPaintState& selection,
-                          PaintController& paint_controller,
-                          const PhysicalOffset& box_rect_offset)
-      : cursor_(cursor),
-        selection_(selection),
-        paint_controller_(paint_controller),
-        box_rect_offset_(box_rect_offset) {}
-
-  ~SelectionBoundsRecorder();
-
- private:
-  const NGInlineCursor& cursor_;
-  SelectionPaintState& selection_;
-  PaintController& paint_controller_;
-  const PhysicalOffset& box_rect_offset_;
-};
-
-SelectionBoundsRecorder::~SelectionBoundsRecorder() {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-
-  const FrameSelection& frame_selection =
-      cursor_.Current().GetLayoutObject()->GetFrame()->Selection();
-  if (!frame_selection.IsHandleVisible() || frame_selection.IsHidden())
-    return;
-
-  SelectionState state = selection_.State();
-  if (state == SelectionState::kInside || state == SelectionState::kNone)
-    return;
-
-  // TODO(crbug.com/1065049) Handle RTL (i.e. IsTextDirectionRTL) to adjust
-  // the type and edges appropriately (i.e. the right edge of the selection rect
-  // should be used for start's edges).
-  base::Optional<PaintedSelectionBound> start;
-  base::Optional<PaintedSelectionBound> end;
-  auto selection_rect =
-      PixelSnappedIntRect(selection_.ComputeSelectionRect(box_rect_offset_));
-  if (state == SelectionState::kStart ||
-      state == SelectionState::kStartAndEnd) {
-    start.emplace();
-    start->type = gfx::SelectionBound::Type::LEFT;
-    start->edge_start = selection_rect.MinXMinYCorner();
-    start->edge_end = selection_rect.MinXMaxYCorner();
-    // TODO(crbug.com/1065049) Handle the case where selection within input
-    // text is clipped out.
-    start->hidden = false;
-  }
-
-  if (state == SelectionState::kStartAndEnd || state == SelectionState::kEnd) {
-    end.emplace();
-    end->type = gfx::SelectionBound::Type::RIGHT;
-    end->edge_start = selection_rect.MaxXMinYCorner();
-    end->edge_end = selection_rect.MaxXMaxYCorner();
-    end->hidden = false;
-  }
-
-  paint_controller_.RecordSelection(start, end);
-}
-
 // Check if text-emphasis and ruby annotation text are on different sides.
 // See InlineTextBox::GetEmphasisMarkPosition().
 //
@@ -541,12 +479,16 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   // whether the diplay item that contains the actual selection painting is
   // reused.
   base::Optional<SelectionBoundsRecorder> selection_recorder;
-  if (UNLIKELY(RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-               selection && paint_info.phase == PaintPhase::kForeground &&
+  if (UNLIKELY(selection && paint_info.phase == PaintPhase::kForeground &&
                !is_printing)) {
-    selection_recorder.emplace(cursor_, *selection,
-                               paint_info.context.GetPaintController(),
-                               box_rect.offset);
+    if (SelectionBoundsRecorder::ShouldRecordSelection(
+            cursor_.Current().GetLayoutObject()->GetFrame()->Selection(),
+            selection->State())) {
+      PhysicalRect selection_rect =
+          selection->ComputeSelectionRect(box_rect.offset);
+      selection_recorder.emplace(selection->State(), selection_rect,
+                                 paint_info.context.GetPaintController());
+    }
   }
 
   if (paint_info.phase != PaintPhase::kTextClip) {
