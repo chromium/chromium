@@ -66,12 +66,6 @@ class AXTreeSnapshotterImpl : public AXTreeSnapshotter {
                 size_t max_node_count,
                 ui::AXTreeUpdate* accessibility_tree) override;
 
-  // Same as above, but returns in |accessibility_tree| a ui::AXTreeUpdate
-  // with content-specific metadata, instead of an AXTreeUpdate.
-  void SnapshotContentTree(ui::AXMode ax_mode,
-                           size_t max_node_count,
-                           ui::AXTreeUpdate* accessibility_tree);
-
  private:
   RenderFrameImpl* render_frame_;
   std::unique_ptr<blink::WebAXContext> context_;

@@ -109,29 +109,6 @@ AXTreeSnapshotterImpl::~AXTreeSnapshotterImpl() = default;
 void AXTreeSnapshotterImpl::Snapshot(ui::AXMode ax_mode,
                                      size_t max_node_count,
                                      ui::AXTreeUpdate* response) {
-  // Get a snapshot of the accessibility tree as an AXNodeData.
-  ui::AXTreeUpdate content_tree;
-  SnapshotContentTree(ax_mode, max_node_count, &content_tree);
-
-  // As a sanity check, node_id_to_clear and event_from should be uninitialized
-  // if this is a full tree snapshot. They'd only be set to something if
-  // this was indeed a partial update to the tree (which we don't want).
-  DCHECK_EQ(0, content_tree.node_id_to_clear);
-  DCHECK_EQ(ax::mojom::EventFrom::kNone, content_tree.event_from);
-
-  // We now have a complete serialization of the accessibility tree, but it
-  // includes a few fields we don't want to export outside of content/,
-  // so copy it into a more generic ui::AXTreeUpdate instead.
-  response->root_id = content_tree.root_id;
-  response->nodes.resize(content_tree.nodes.size());
-  response->node_id_to_clear = content_tree.node_id_to_clear;
-  response->event_from = content_tree.event_from;
-  response->nodes.assign(content_tree.nodes.begin(), content_tree.nodes.end());
-}
-
-void AXTreeSnapshotterImpl::SnapshotContentTree(ui::AXMode ax_mode,
-                                                size_t max_node_count,
-                                                ui::AXTreeUpdate* response) {
   if (!render_frame_->GetWebFrame())
     return;
   if (!WebAXObject::MaybeUpdateLayoutAndCheckValidity(
@@ -163,6 +140,12 @@ void AXTreeSnapshotterImpl::SnapshotContentTree(ui::AXMode ax_mode,
   // It failed again. Clear the response object because it might have errors.
   *response = ui::AXTreeUpdate();
   LOG(WARNING) << "Unable to serialize accessibility tree.";
+
+  // As a sanity check, node_id_to_clear and event_from should be uninitialized
+  // if this is a full tree snapshot. They'd only be set to something if
+  // this was indeed a partial update to the tree (which we don't want).
+  DCHECK_EQ(0, response->node_id_to_clear);
+  DCHECK_EQ(ax::mojom::EventFrom::kNone, response->event_from);
 }
 
 // static
@@ -178,7 +161,7 @@ void RenderAccessibilityImpl::SnapshotAccessibilityTree(
     return;
 
   AXTreeSnapshotterImpl snapshotter(render_frame);
-  snapshotter.SnapshotContentTree(ax_mode, kMaxSnapshotNodeCount, response);
+  snapshotter.Snapshot(ax_mode, kMaxSnapshotNodeCount, response);
 }
 
 RenderAccessibilityImpl::RenderAccessibilityImpl(
