@@ -33,6 +33,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -46,6 +47,8 @@ const int kMinFontSizeDelta = -10;
 // an IME property. A checkmark icon is shown in the row if selected.
 class ImeListItemView : public ActionableView {
  public:
+  METADATA_HEADER(ImeListItemView);
+
   ImeListItemView(ImeListView* list_view,
                   const base::string16& id,
                   const base::string16& label,
@@ -102,7 +105,8 @@ class ImeListItemView : public ActionableView {
     }
     SetAccessibleName(label_view->GetText());
   }
-
+  ImeListItemView(const ImeListItemView&) = delete;
+  ImeListItemView& operator=(const ImeListItemView&) = delete;
   ~ImeListItemView() override = default;
 
   // ActionableView:
@@ -130,9 +134,10 @@ class ImeListItemView : public ActionableView {
  private:
   ImeListView* ime_list_view_;
   bool selected_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeListItemView);
 };
+
+BEGIN_METADATA(ImeListItemView, ActionableView)
+END_METADATA
 
 }  // namespace
 
@@ -142,7 +147,11 @@ class ImeListItemView : public ActionableView {
 // attached and the user is in TabletMode mode.
 class KeyboardStatusRow : public views::View {
  public:
+  METADATA_HEADER(KeyboardStatusRow);
+
   KeyboardStatusRow() = default;
+  KeyboardStatusRow(const KeyboardStatusRow&) = delete;
+  KeyboardStatusRow& operator=(const KeyboardStatusRow&) = delete;
   ~KeyboardStatusRow() override = default;
 
   views::ToggleButton* toggle() const { return toggle_; }
@@ -181,15 +190,13 @@ class KeyboardStatusRow : public views::View {
     tri_view->AddView(TriView::Container::END, toggle_);
   }
 
-  // views::View:
-  const char* GetClassName() const override { return "KeyboardStatusRow"; }
-
  private:
   // ToggleButton to toggle keyboard on or off.
   views::ToggleButton* toggle_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardStatusRow);
 };
+
+BEGIN_METADATA(KeyboardStatusRow, views::View)
+END_METADATA
 
 ImeListView::ImeListView(DetailedViewDelegate* delegate)
     : TrayDetailedView(delegate) {}
@@ -347,10 +354,6 @@ void ImeListView::VisibilityChanged(View* starting_from, bool is_visible) {
   ScrollItemToVisible(current_ime_view_);
 }
 
-const char* ImeListView::GetClassName() const {
-  return "ImeListView";
-}
-
 void ImeListView::FocusCurrentImeIfNeeded() {
   views::FocusManager* manager = GetFocusManager();
   if (!manager || manager->GetFocusedView() || last_selected_item_id_.empty())
@@ -370,6 +373,9 @@ void ImeListView::FocusCurrentImeIfNeeded() {
     }
   }
 }
+
+BEGIN_METADATA(ImeListView, TrayDetailedView)
+END_METADATA
 
 ImeListViewTestApi::ImeListViewTestApi(ImeListView* ime_list_view)
     : ime_list_view_(ime_list_view) {}

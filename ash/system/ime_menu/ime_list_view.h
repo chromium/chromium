@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -23,6 +24,8 @@ class KeyboardStatusRow;
 // of the virtual keyboard.
 class ImeListView : public TrayDetailedView {
  public:
+  METADATA_HEADER(ImeListView);
+
   enum SingleImeBehavior {
     // Shows the IME menu if there's only one IME in system.
     SHOW_SINGLE_IME,
@@ -31,6 +34,8 @@ class ImeListView : public TrayDetailedView {
   };
 
   explicit ImeListView(DetailedViewDelegate* delegate);
+  ImeListView(const ImeListView&) = delete;
+  ImeListView& operator=(const ImeListView&) = delete;
   ~ImeListView() override;
 
   // Initializes the contents of a newly-instantiated ImeListView.
@@ -71,7 +76,6 @@ class ImeListView : public TrayDetailedView {
 
   // views::View:
   void VisibilityChanged(View* starting_from, bool is_visible) override;
-  const char* GetClassName() const override;
 
  private:
   friend class ImeListViewTestApi;
@@ -108,8 +112,6 @@ class ImeListView : public TrayDetailedView {
 
   // The item view of the current selected IME.
   views::View* current_ime_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeListView);
 };
 
 class ASH_EXPORT ImeListViewTestApi {
