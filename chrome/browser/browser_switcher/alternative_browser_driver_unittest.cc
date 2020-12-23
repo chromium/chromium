@@ -120,15 +120,16 @@ TEST_F(AlternativeBrowserDriverTest, GetBrowserName) {
   actual = driver()->GetBrowserName();
   EXPECT_EQ("Internet Explorer", actual);
 
-  SetBrowserPath("${edge}");
-  actual = driver()->GetBrowserName();
-  EXPECT_EQ("Microsoft Edge", actual);
 #endif
 
 #if defined(OS_WIN) || defined(OS_MAC)
   SetBrowserPath("${safari}");
   actual = driver()->GetBrowserName();
   EXPECT_EQ("Safari", actual);
+
+  SetBrowserPath("${edge}");
+  actual = driver()->GetBrowserName();
+  EXPECT_EQ("Microsoft Edge", actual);
 #endif
 
   SetBrowserPath("${firefox}");
@@ -177,16 +178,16 @@ TEST_F(AlternativeBrowserDriverTest, GetBrowserType) {
       "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe");
   actual = driver()->GetBrowserType();
   EXPECT_EQ(BrowserType::kChrome, actual);
-
-  SetBrowserPath("${edge}");
-  actual = driver()->GetBrowserType();
-  EXPECT_EQ(BrowserType::kEdge, actual);
 #endif
 
 #if defined(OS_WIN) || defined(OS_MAC)
   SetBrowserPath("${safari}");
   actual = driver()->GetBrowserType();
   EXPECT_EQ(BrowserType::kSafari, actual);
+
+  SetBrowserPath("${edge}");
+  actual = driver()->GetBrowserType();
+  EXPECT_EQ(BrowserType::kEdge, actual);
 #endif
 
   SetBrowserPath("${firefox}");
