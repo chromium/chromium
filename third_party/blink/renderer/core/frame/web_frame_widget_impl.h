@@ -847,7 +847,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   Member<DataObject> current_drag_data_;
 
   // The available drag operations (copy, move link...) allowed by the source.
-  DragOperation operations_allowed_ = kDragOperationNone;
+  DragOperationsMask operations_allowed_ = kDragOperationNone;
 
   // The current drag operation as negotiated by the source and destination.
   // When not equal to DragOperationNone, the drag data can be dropped onto the

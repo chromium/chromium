@@ -158,9 +158,7 @@ class DraggedNodeImageBuilder {
 #endif
 };
 
-}  // namespace
-
-static base::Optional<DragOperation> ConvertEffectAllowedToDragOperation(
+base::Optional<DragOperationsMask> ConvertEffectAllowedToDragOperationsMask(
     const String& op) {
   // Values specified in
   // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-effectallowed
@@ -174,18 +172,24 @@ static base::Optional<DragOperation> ConvertEffectAllowedToDragOperation(
     return kDragOperationLink;
   if (op == "move")
     return kDragOperationMove;
-  if (op == "copyLink")
-    return static_cast<DragOperation>(kDragOperationCopy | kDragOperationLink);
-  if (op == "copyMove")
-    return static_cast<DragOperation>(kDragOperationCopy | kDragOperationMove);
-  if (op == "linkMove")
-    return static_cast<DragOperation>(kDragOperationLink | kDragOperationMove);
+  if (op == "copyLink") {
+    return static_cast<DragOperationsMask>(kDragOperationCopy |
+                                           kDragOperationLink);
+  }
+  if (op == "copyMove") {
+    return static_cast<DragOperationsMask>(kDragOperationCopy |
+                                           kDragOperationMove);
+  }
+  if (op == "linkMove") {
+    return static_cast<DragOperationsMask>(kDragOperationLink |
+                                           kDragOperationMove);
+  }
   if (op == "all")
     return kDragOperationEvery;
   return base::nullopt;
 }
 
-static String ConvertDragOperationToEffectAllowed(DragOperation op) {
+String ConvertDragOperationsMaskToEffectAllowed(DragOperationsMask op) {
   if (((op & kDragOperationMove) && (op & kDragOperationCopy) &&
        (op & kDragOperationLink)) ||
       (op == kDragOperationEvery))
@@ -208,8 +212,7 @@ static String ConvertDragOperationToEffectAllowed(DragOperation op) {
 // We provide the IE clipboard types (URL and Text), and the clipboard types
 // specified in the HTML spec. See
 // https://html.spec.whatwg.org/multipage/dnd.html#the-datatransfer-interface
-static String NormalizeType(const String& type,
-                            bool* convert_to_url = nullptr) {
+String NormalizeType(const String& type, bool* convert_to_url = nullptr) {
   String clean_type = type.StripWhiteSpace().LowerASCII();
   if (clean_type == kMimeTypeText ||
       clean_type.StartsWith(kMimeTypeTextPlainEtc))
@@ -221,6 +224,8 @@ static String NormalizeType(const String& type,
   }
   return clean_type;
 }
+
+}  // namespace
 
 // static
 DataTransfer* DataTransfer::Create() {
@@ -259,7 +264,7 @@ void DataTransfer::setEffectAllowed(const String& effect) {
   if (!IsForDragAndDrop())
     return;
 
-  if (!ConvertEffectAllowedToDragOperation(effect)) {
+  if (!ConvertEffectAllowedToDragOperationsMask(effect)) {
     // This means that there was no conversion, and the effectAllowed that
     // we are passed isn't a valid effectAllowed, so we should ignore it,
     // and not set |effect_allowed_|.
@@ -556,30 +561,31 @@ bool DataTransfer::CanSetDragImage() const {
          policy_ == DataTransferAccessPolicy::kWritable;
 }
 
-DragOperation DataTransfer::SourceOperation() const {
-  base::Optional<DragOperation> op =
-      ConvertEffectAllowedToDragOperation(effect_allowed_);
+DragOperationsMask DataTransfer::SourceOperation() const {
+  base::Optional<DragOperationsMask> op =
+      ConvertEffectAllowedToDragOperationsMask(effect_allowed_);
   DCHECK(op);
   return *op;
 }
 
 DragOperation DataTransfer::DestinationOperation() const {
   DCHECK(DropEffectIsInitialized());
-  base::Optional<DragOperation> op =
-      ConvertEffectAllowedToDragOperation(drop_effect_);
+  base::Optional<DragOperationsMask> op =
+      ConvertEffectAllowedToDragOperationsMask(drop_effect_);
   DCHECK(op == kDragOperationCopy || op == kDragOperationNone ||
          op == kDragOperationLink || op == kDragOperationMove);
-  return *op;
+  return static_cast<DragOperation>(*op);
 }
 
-void DataTransfer::SetSourceOperation(DragOperation op) {
-  effect_allowed_ = ConvertDragOperationToEffectAllowed(op);
+void DataTransfer::SetSourceOperation(DragOperationsMask op) {
+  effect_allowed_ = ConvertDragOperationsMaskToEffectAllowed(op);
 }
 
 void DataTransfer::SetDestinationOperation(DragOperation op) {
   DCHECK(op == kDragOperationCopy || op == kDragOperationNone ||
          op == kDragOperationLink || op == kDragOperationMove);
-  drop_effect_ = ConvertDragOperationToEffectAllowed(op);
+  drop_effect_ = ConvertDragOperationsMaskToEffectAllowed(
+      static_cast<DragOperationsMask>(op));
 }
 
 DataTransferItemList* DataTransfer::items() {

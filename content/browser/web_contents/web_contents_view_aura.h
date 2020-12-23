@@ -110,7 +110,7 @@ class CONTENT_EXPORT WebContentsViewAura
   ~WebContentsViewAura() override;
 
   void EndDrag(base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
-               blink::DragOperationsMask ops);
+               blink::DragOperation op);
 
   void InstallOverscrollControllerDelegate(RenderWidgetHostViewAura* view);
 
@@ -291,7 +291,7 @@ class CONTENT_EXPORT WebContentsViewAura
 
   std::unique_ptr<WebContentsViewDelegate> delegate_;
 
-  blink::DragOperationsMask current_drag_op_;
+  blink::DragOperation current_drag_op_;
 
   std::unique_ptr<DropData> current_drop_data_;
 

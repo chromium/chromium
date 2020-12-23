@@ -754,7 +754,7 @@ bool DragController::CanProcessDrag(DragData* drag_data,
   return true;
 }
 
-static DragOperation DefaultOperationForDrag(DragOperation src_op_mask) {
+static DragOperation DefaultOperationForDrag(DragOperationsMask src_op_mask) {
   // This is designed to match IE's operation fallback for the case where
   // the page calls preventDefault() in a drag event but doesn't set dropEffect.
   if (src_op_mask == kDragOperationEvery)
@@ -781,7 +781,7 @@ bool DragController::TryDHTMLDrag(DragData* drag_data,
 
   DataTransferAccessPolicy policy = DataTransferAccessPolicy::kTypesReadable;
   DataTransfer* data_transfer = CreateDraggingDataTransfer(policy, drag_data);
-  DragOperation src_op_mask = drag_data->DraggingSourceOperationMask();
+  DragOperationsMask src_op_mask = drag_data->DraggingSourceOperationMask();
   data_transfer->SetSourceOperation(src_op_mask);
 
   WebMouseEvent event = CreateMouseEvent(drag_data);

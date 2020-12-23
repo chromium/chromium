@@ -101,8 +101,8 @@ TEST_F(DragControllerSimTest, DropURLOnNonNavigatingClearsState) {
   object->SetURLAndTitle("https://www.example.com/index.html", "index");
   DragData data(
       object, FloatPoint(10, 10), FloatPoint(10, 10),
-      static_cast<DragOperation>(kDragOperationCopy | kDragOperationLink |
-                                 kDragOperationMove));
+      static_cast<DragOperationsMask>(kDragOperationCopy | kDragOperationLink |
+                                      kDragOperationMove));
 
   WebView().GetPage()->GetDragController().DragEnteredOrUpdated(
       &data, *GetDocument().GetFrame());
@@ -141,8 +141,8 @@ TEST_F(DragControllerSimTest, ThrottledDocumentHandled) {
   object->SetURLAndTitle("https://www.example.com/index.html", "index");
   DragData data(
       object, FloatPoint(10, 10), FloatPoint(10, 10),
-      static_cast<DragOperation>(kDragOperationCopy | kDragOperationLink |
-                                 kDragOperationMove));
+      static_cast<DragOperationsMask>(kDragOperationCopy | kDragOperationLink |
+                                      kDragOperationMove));
 
   WebView().GetPage()->GetDragController().DragEnteredOrUpdated(
       &data, *GetDocument().GetFrame());

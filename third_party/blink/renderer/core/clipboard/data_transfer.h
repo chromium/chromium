@@ -122,9 +122,9 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   // anyway.
   bool CanSetDragImage() const;
 
-  DragOperation SourceOperation() const;
+  DragOperationsMask SourceOperation() const;
   DragOperation DestinationOperation() const;
-  void SetSourceOperation(DragOperation);
+  void SetSourceOperation(DragOperationsMask);
   void SetDestinationOperation(DragOperation);
 
   DataTransferItemList* items();
