@@ -114,6 +114,8 @@ static_library("phonehub") {
 # Sources only include files used in the debug UI.
 static_library("debug") {
   sources = [
+    "fake_browser_tabs_model_provider.cc",
+    "fake_browser_tabs_model_provider.h",
     "fake_connection_scheduler.cc",
     "fake_connection_scheduler.h",
     "fake_do_not_disturb_controller.cc",

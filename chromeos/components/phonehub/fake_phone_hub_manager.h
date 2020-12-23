@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chromeos/components/phonehub/fake_browser_tabs_model_provider.h"
 #include "chromeos/components/phonehub/fake_connection_scheduler.h"
 #include "chromeos/components/phonehub/fake_do_not_disturb_controller.h"
 #include "chromeos/components/phonehub/fake_feature_status_provider.h"
@@ -66,8 +67,13 @@ class FakePhoneHubManager : public PhoneHubManager {
     return &fake_user_action_recorder_;
   }
 
+  FakeBrowserTabsModelProvider* fake_browser_tabs_model_provider() {
+    return &fake_browser_tabs_model_provider_;
+  }
+
  private:
   // PhoneHubManager:
+  BrowserTabsModelProvider* GetBrowserTabsModelProvider() override;
   DoNotDisturbController* GetDoNotDisturbController() override;
   FeatureStatusProvider* GetFeatureStatusProvider() override;
   FindMyDeviceController* GetFindMyDeviceController() override;
@@ -89,6 +95,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   FakeTetherController fake_tether_controller_;
   FakeConnectionScheduler fake_connection_scheduler_;
   FakeUserActionRecorder fake_user_action_recorder_;
+  FakeBrowserTabsModelProvider fake_browser_tabs_model_provider_;
 };
 
 }  // namespace phonehub

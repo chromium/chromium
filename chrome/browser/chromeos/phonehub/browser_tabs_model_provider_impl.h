@@ -17,20 +17,38 @@ namespace sync_sessions {
 class SessionSyncService;
 }  // namespace sync_sessions
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace chromeos {
 namespace phonehub {
 
-// Responsible for providing the BrowserTabsModel to observers.
+// Gets the browser tab model info by finding a SyncedSession (provided lazily
+// by a SessionService) with a |session_name| that matches the |pii_free_name|
+// of the phone provided by a MultiDeviceSetupClient. If sync is enabled, the
+// class uses a BrowserTabsMetadataFetcher to actually fetch the browser tab
+// metadata once it finds the correct SyncedSession.
+//
+// Uses a SyncService in TriggerRefresh() to manually request updates for the
+// latest SyncedSessions. If updated SyncSessions exist on the server, all
+// SessionSyncService subscriptions will be updated almost immediately, instead
+// of being lazily updated and eventually consistent with the latest browser tab
+// info on the server.
 class BrowserTabsModelProviderImpl
     : public BrowserTabsModelProvider,
       public multidevice_setup::MultiDeviceSetupClient::Observer {
  public:
   BrowserTabsModelProviderImpl(
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+      syncer::SyncService* sync_service,
       sync_sessions::SessionSyncService* session_sync_service,
       std::unique_ptr<BrowserTabsMetadataFetcher>
           browser_tabs_metadata_fetcher);
   ~BrowserTabsModelProviderImpl() override;
+
+  // BrowserTabsModelProvider:
+  void TriggerRefresh() override;
 
  private:
   friend class BrowserTabsModelProviderImplTest;
@@ -48,6 +66,7 @@ class BrowserTabsModelProviderImpl
   base::Optional<std::string> GetSessionName() const;
 
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
+  syncer::SyncService* sync_service_;
   sync_sessions::SessionSyncService* session_sync_service_;
   std::unique_ptr<BrowserTabsMetadataFetcher> browser_tabs_metadata_fetcher_;
   base::CallbackListSubscription session_updated_subscription_;

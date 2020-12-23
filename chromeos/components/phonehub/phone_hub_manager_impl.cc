@@ -114,6 +114,10 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
 
 PhoneHubManagerImpl::~PhoneHubManagerImpl() = default;
 
+BrowserTabsModelProvider* PhoneHubManagerImpl::GetBrowserTabsModelProvider() {
+  return browser_tabs_model_provider_.get();
+}
+
 ConnectionScheduler* PhoneHubManagerImpl::GetConnectionScheduler() {
   return connection_scheduler_.get();
 }

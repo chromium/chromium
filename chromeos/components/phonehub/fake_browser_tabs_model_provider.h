@@ -17,6 +17,9 @@ class FakeBrowserTabsModelProvider : public BrowserTabsModelProvider {
   FakeBrowserTabsModelProvider();
   ~FakeBrowserTabsModelProvider() override;
 
+  // BrowserTabsModelProvider:
+  void TriggerRefresh() override {}
+
   void NotifyBrowserTabsUpdated(
       bool is_sync_enabled,
       const std::vector<BrowserTabsModel::BrowserTabMetadata>

@@ -11,6 +11,10 @@ FakePhoneHubManager::FakePhoneHubManager() = default;
 
 FakePhoneHubManager::~FakePhoneHubManager() = default;
 
+BrowserTabsModelProvider* FakePhoneHubManager::GetBrowserTabsModelProvider() {
+  return &fake_browser_tabs_model_provider_;
+}
+
 DoNotDisturbController* FakePhoneHubManager::GetDoNotDisturbController() {
   return &fake_do_not_disturb_controller_;
 }

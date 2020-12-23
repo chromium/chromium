@@ -55,6 +55,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   ~PhoneHubManagerImpl() override;
 
   // PhoneHubManager:
+  BrowserTabsModelProvider* GetBrowserTabsModelProvider() override;
   ConnectionScheduler* GetConnectionScheduler() override;
   DoNotDisturbController* GetDoNotDisturbController() override;
   FeatureStatusProvider* GetFeatureStatusProvider() override;

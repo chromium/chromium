@@ -7,6 +7,8 @@
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/phonehub/browser_tabs_metadata_fetcher.h"
 #include "chromeos/components/phonehub/browser_tabs_model.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 
@@ -15,9 +17,11 @@ namespace phonehub {
 
 BrowserTabsModelProviderImpl::BrowserTabsModelProviderImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+    syncer::SyncService* sync_service,
     sync_sessions::SessionSyncService* session_sync_service,
     std::unique_ptr<BrowserTabsMetadataFetcher> browser_tabs_metadata_fetcher)
     : multidevice_setup_client_(multidevice_setup_client),
+      sync_service_(sync_service),
       session_sync_service_(session_sync_service),
       browser_tabs_metadata_fetcher_(std::move(browser_tabs_metadata_fetcher)) {
   multidevice_setup_client_->AddObserver(this);
@@ -48,6 +52,10 @@ void BrowserTabsModelProviderImpl::OnHostStatusChanged(
     const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
         host_device_with_status) {
   AttemptBrowserTabsModelUpdate();
+}
+
+void BrowserTabsModelProviderImpl::TriggerRefresh() {
+  sync_service_->TriggerRefresh({syncer::SESSIONS});
 }
 
 void BrowserTabsModelProviderImpl::AttemptBrowserTabsModelUpdate() {
@@ -100,7 +108,7 @@ void BrowserTabsModelProviderImpl::AttemptBrowserTabsModelUpdate() {
 void BrowserTabsModelProviderImpl::InvalidateWeakPtrsAndClearTabMetadata(
     bool is_tab_sync_enabled) {
   weak_ptr_factory_.InvalidateWeakPtrs();
-  BrowserTabsModelProvider::NotifyBrowserTabsUpdated(
+  NotifyBrowserTabsUpdated(
       /*is_tab_sync_enabled=*/is_tab_sync_enabled, {});
 }
 
@@ -110,7 +118,7 @@ void BrowserTabsModelProviderImpl::OnMetadataFetched(
   // The operation to fetch metadata was cancelled.
   if (!metadata)
     return;
-  BrowserTabsModelProvider::NotifyBrowserTabsUpdated(
+  NotifyBrowserTabsUpdated(
       /*is_tab_sync_enabled=*/true, *metadata);
 }
 

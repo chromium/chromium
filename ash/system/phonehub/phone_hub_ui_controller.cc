@@ -15,6 +15,7 @@
 #include "ash/system/phonehub/phone_disconnected_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "base/logging.h"
+#include "chromeos/components/phonehub/browser_tabs_model_provider.h"
 #include "chromeos/components/phonehub/connection_scheduler.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/components/phonehub/user_action_recorder.h"
@@ -95,6 +96,7 @@ void PhoneHubUiController::HandleBubbleOpened() {
   if (feature_status == FeatureStatus::kEnabledButDisconnected)
     phone_hub_manager_->GetConnectionScheduler()->ScheduleConnectionNow();
 
+  phone_hub_manager_->GetBrowserTabsModelProvider()->TriggerRefresh();
   phone_hub_manager_->GetUserActionRecorder()->RecordUiOpened();
 }
 

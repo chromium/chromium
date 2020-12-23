@@ -15,11 +15,6 @@ namespace chromeos {
 namespace phonehub {
 
 // Responsible for providing BrowserTabsModel information to observers.
-// Gets the browser tab model info by finding a SyncedSession (provided by
-// the SessionService) with a |session_name| that matches the |pii_free_name| of
-// the phone provided by a MultiDeviceSetupClient. If sync is enabled, the class
-// uses a BrowserTabsMetadataFetcher to actually fetch the browser tab metadata
-// once it finds the correct SyncedSession.
 class BrowserTabsModelProvider {
  public:
   class Observer : public base::CheckedObserver {
@@ -38,6 +33,12 @@ class BrowserTabsModelProvider {
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Used to manually request updates for the latest browser tab metadata,
+  // instead of lazily waiting for an update to occur on its own. This may be
+  // advantageous when the user opens the PhoneHub tray immediately after
+  // visiting a link on the connected phone's Chrome Browser.
+  virtual void TriggerRefresh() = 0;
 
  protected:
   BrowserTabsModelProvider();
