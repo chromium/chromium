@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <limits>
 #include <map>
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>
@@ -361,8 +362,8 @@ class SiteProcessMap : public base::SupportsUserData::Data {
       if (i->second == host)
         site_info_set.insert(i->first);
     }
-    for (auto i = site_info_set.begin(); i != site_info_set.end(); ++i) {
-      auto iter = map_.find(*i);
+    for (const auto& i : site_info_set) {
+      auto iter = map_.find(i);
       if (iter != map_.end()) {
         DCHECK_EQ(iter->second, host);
         map_.erase(iter);
@@ -400,7 +401,7 @@ class RendererSandboxedProcessLauncherDelegate
   {
   }
 
-  ~RendererSandboxedProcessLauncherDelegate() override {}
+  ~RendererSandboxedProcessLauncherDelegate() override = default;
 
 #if defined(OS_WIN)
   bool PreSpawnTarget(sandbox::TargetPolicy* policy) override {
@@ -456,6 +457,9 @@ class SessionStorageHolder : public base::SupportsUserData::Data {
         FROM_HERE, session_storage_namespaces_awaiting_close_.release());
   }
 
+  SessionStorageHolder(const SessionStorageHolder& other) = delete;
+  SessionStorageHolder& operator=(const SessionStorageHolder& other) = delete;
+
   void Hold(const SessionStorageNamespaceMap& sessions, int widget_route_id) {
     (*session_storage_namespaces_awaiting_close_)[widget_route_id] = sessions;
   }
@@ -467,7 +471,6 @@ class SessionStorageHolder : public base::SupportsUserData::Data {
  private:
   std::unique_ptr<std::map<int, SessionStorageNamespaceMap>>
       session_storage_namespaces_awaiting_close_;
-  DISALLOW_COPY_AND_ASSIGN(SessionStorageHolder);
 };
 
 // This class manages spare RenderProcessHosts.
@@ -491,7 +494,12 @@ class SessionStorageHolder : public base::SupportsUserData::Data {
 // performance may suffer due to the unnecessary RPH creation.
 class SpareRenderProcessHostManager : public RenderProcessHostObserver {
  public:
-  SpareRenderProcessHostManager() {}
+  SpareRenderProcessHostManager() = default;
+
+  SpareRenderProcessHostManager(const SpareRenderProcessHostManager& other) =
+      delete;
+  SpareRenderProcessHostManager& operator=(
+      const SpareRenderProcessHostManager& other) = delete;
 
   static SpareRenderProcessHostManager& GetInstance() {
     static base::NoDestructor<SpareRenderProcessHostManager> s_instance;
@@ -719,8 +727,6 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
   // This is a bare pointer, because RenderProcessHost manages the lifetime of
   // all its instances; see GetAllHosts().
   RenderProcessHost* spare_render_process_host_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SpareRenderProcessHostManager);
 };
 
 class RenderProcessHostIsReadyObserver : public RenderProcessHostObserver {
@@ -736,6 +742,11 @@ class RenderProcessHostIsReadyObserver : public RenderProcessHostObserver {
   ~RenderProcessHostIsReadyObserver() override {
     render_process_host_->RemoveObserver(this);
   }
+
+  RenderProcessHostIsReadyObserver(
+      const RenderProcessHostIsReadyObserver& other) = delete;
+  RenderProcessHostIsReadyObserver& operator=(
+      const RenderProcessHostIsReadyObserver& other) = delete;
 
   void RenderProcessReady(RenderProcessHost* host) override { PostTask(); }
 
@@ -761,8 +772,6 @@ class RenderProcessHostIsReadyObserver : public RenderProcessHostObserver {
   RenderProcessHost* render_process_host_;
   base::OnceClosure task_;
   base::WeakPtrFactory<RenderProcessHostIsReadyObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessHostIsReadyObserver);
 };
 
 // The following class is used to track the sites each RenderProcessHost is
@@ -790,7 +799,7 @@ const void* const kPendingSiteProcessCountTrackerKey =
 class SiteProcessCountTracker : public base::SupportsUserData::Data,
                                 public RenderProcessHostObserver {
  public:
-  SiteProcessCountTracker() {}
+  SiteProcessCountTracker() = default;
   ~SiteProcessCountTracker() override { DCHECK(map_.empty()); }
 
   void IncrementSiteProcessCount(const SiteInfo& site_info,
@@ -1001,7 +1010,7 @@ class UnmatchedServiceWorkerProcessTracker
     return tracker->TakeFreshestProcessForSite(site_instance);
   }
 
-  UnmatchedServiceWorkerProcessTracker() {}
+  UnmatchedServiceWorkerProcessTracker() = default;
 
   ~UnmatchedServiceWorkerProcessTracker() override {
     DCHECK(site_process_set_.empty());
@@ -1268,6 +1277,9 @@ class RenderProcessHostImpl::IOThreadHostImpl : public mojom::ChildProcessHost {
         receiver_(this, std::move(host_receiver)) {}
   ~IOThreadHostImpl() override = default;
 
+  IOThreadHostImpl(const IOThreadHostImpl& other) = delete;
+  IOThreadHostImpl& operator=(const IOThreadHostImpl& other) = delete;
+
  private:
   // mojom::ChildProcessHost implementation:
   void BindHostReceiver(mojo::GenericPendingReceiver receiver) override {
@@ -1338,8 +1350,6 @@ class RenderProcessHostImpl::IOThreadHostImpl : public mojom::ChildProcessHost {
   const base::WeakPtr<RenderProcessHostImpl> weak_host_;
   std::unique_ptr<service_manager::BinderRegistry> binders_;
   mojo::Receiver<mojom::ChildProcessHost> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IOThreadHostImpl);
 };
 
 // static
@@ -2059,8 +2069,10 @@ void RenderProcessHostImpl::CreatePermissionService(
     mojo::PendingReceiver<blink::mojom::PermissionService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!permission_service_context_)
-    permission_service_context_.reset(new PermissionServiceContext(this));
+  if (!permission_service_context_) {
+    permission_service_context_ =
+        std::make_unique<PermissionServiceContext>(this);
+  }
 
   permission_service_context_->CreateServiceForWorker(origin,
                                                       std::move(receiver));

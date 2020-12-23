@@ -172,6 +172,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   ~RenderProcessHostImpl() override;
 
+  RenderProcessHostImpl(const RenderProcessHostImpl& other) = delete;
+  RenderProcessHostImpl& operator=(const RenderProcessHostImpl& other) = delete;
+
   // RenderProcessHost implementation (public portion).
   bool Init() override;
   void EnableSendQueue() override;
@@ -1178,8 +1181,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   base::Optional<base::SequenceBound<IOThreadHostImpl>> io_thread_host_impl_;
 
   base::WeakPtrFactory<RenderProcessHostImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessHostImpl);
 };
 
 }  // namespace content
