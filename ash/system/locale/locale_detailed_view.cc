@@ -25,6 +25,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -36,6 +37,8 @@ namespace {
 // |checked| is true.
 class LocaleItem : public ActionableView {
  public:
+  METADATA_HEADER(LocaleItem);
+
   LocaleItem(tray::LocaleDetailedView* locale_detailed_view,
              const std::string& iso_code,
              const base::string16& display_name,
@@ -81,7 +84,8 @@ class LocaleItem : public ActionableView {
     }
     SetAccessibleName(display_name_view->GetText());
   }
-
+  LocaleItem(const LocaleItem&) = delete;
+  LocaleItem& operator=(const LocaleItem&) = delete;
   ~LocaleItem() override = default;
 
   // ActionableView:
@@ -96,8 +100,6 @@ class LocaleItem : public ActionableView {
     ScrollViewToVisible();
   }
 
-  const char* GetClassName() const override { return "LocaleItem"; }
-
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     ActionableView::GetAccessibleNodeData(node_data);
     node_data->role = ax::mojom::Role::kCheckBox;
@@ -108,9 +110,10 @@ class LocaleItem : public ActionableView {
  private:
   tray::LocaleDetailedView* locale_detailed_view_;
   const bool checked_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocaleItem);
 };
+
+BEGIN_METADATA(LocaleItem, ActionableView)
+END_METADATA
 
 }  // namespace
 
@@ -155,9 +158,8 @@ void LocaleDetailedView::HandleViewClicked(views::View* view) {
   }
 }
 
-const char* LocaleDetailedView::GetClassName() const {
-  return "LocaleDetailedView";
-}
+BEGIN_METADATA(LocaleDetailedView, TrayDetailedView)
+END_METADATA
 
 }  // namespace tray
 }  // namespace ash
