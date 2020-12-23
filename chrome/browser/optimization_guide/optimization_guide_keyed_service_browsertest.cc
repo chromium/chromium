@@ -671,41 +671,68 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 }
 
-// TODO(crbug/1158343): Re-enable when flake is fixed.
 IN_PROC_BROWSER_TEST_F(
     OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest,
-    DISABLED_IncognitoCanStillReadFromComponentHints) {
-  // Instantiate off the record Optimization Guide Service.
-  OptimizationGuideKeyedServiceFactory::GetForProfile(
-      browser()->profile()->GetPrimaryOTRProfile())
-      ->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
-
+    IncognitoCanStillReadFromComponentHints) {
   // Wait until initialization logic finishes running and component pushed to
   // both incognito and regular browsers.
   PushHintsComponentAndWaitForCompletion();
-  base::RunLoop().RunUntilIdle();
 
   // Set up incognito browser and incognito OptimizationGuideKeyedService
   // consumer.
   Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
-  auto otr_consumer =
-      std::make_unique<OptimizationGuideConsumerWebContentsObserver>(
-          otr_browser->tab_strip_model()->GetActiveWebContents());
-  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  otr_consumer->set_callback(base::BindOnce(
-      [](base::RunLoop* run_loop,
-         optimization_guide::OptimizationGuideDecision decision,
-         const optimization_guide::OptimizationMetadata& metadata) {
-        // Should still get decision in incognito.
-        EXPECT_EQ(decision,
-                  optimization_guide::OptimizationGuideDecision::kTrue);
-        run_loop->Quit();
-      },
-      run_loop.get()));
 
-  // Navigate to a URL that has a hint from a component.
+  // Instantiate off the record Optimization Guide Service.
+  OptimizationGuideKeyedService* otr_ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          browser()->profile()->GetPrimaryOTRProfile());
+  otr_ogks->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
+
+  // Navigate to a URL that has a hint from a component and wait for that hint
+  // to have loaded.
+  base::HistogramTester histogram_tester;
   ui_test_utils::NavigateToURL(otr_browser, url_with_hints());
-  run_loop->Run();
+  RetryForHistogramUntilCountReached(histogram_tester,
+                                     "OptimizationGuide.LoadedHint.Result", 1);
+
+  EXPECT_EQ(
+      optimization_guide::OptimizationGuideDecision::kTrue,
+      otr_ogks->CanApplyOptimization(
+          url_with_hints(), optimization_guide::proto::NOSCRIPT, nullptr));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest,
+    IncognitoStillProcessesBloomFilter) {
+  PushHintsComponentAndWaitForCompletion();
+
+  CreateIncognitoBrowser(browser()->profile());
+
+  // Instantiate off the record Optimization Guide Service.
+  OptimizationGuideKeyedService* otr_ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          browser()->profile()->GetPrimaryOTRProfile());
+
+  base::HistogramTester histogram_tester;
+
+  // Register an optimization type with an optimization filter.
+  otr_ogks->RegisterOptimizationTypes(
+      {optimization_guide::proto::FAST_HOST_HINTS});
+  // Wait until filter is loaded. This histogram will record twice: once when
+  // the config is found and once when the filter is created.
+  RetryForHistogramUntilCountReached(
+      histogram_tester,
+      "OptimizationGuide.OptimizationFilterStatus.FastHostHints", 2);
+
+  EXPECT_EQ(optimization_guide::OptimizationGuideDecision::kFalse,
+            otr_ogks->CanApplyOptimization(
+                GURL("https://blockedhost.com/whatever"),
+                optimization_guide::proto::FAST_HOST_HINTS, nullptr));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.FastHostHints",
+      static_cast<int>(optimization_guide::OptimizationTypeDecision::
+                           kNotAllowedByOptimizationFilter),
+      1);
 }
 
 class OptimizationGuideKeyedServiceCommandLineOverridesTest

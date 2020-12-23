@@ -148,16 +148,19 @@ class OptimizationGuideKeyedService
 
   content::BrowserContext* browser_context_;
 
+  // The store of hints.
+  std::unique_ptr<optimization_guide::OptimizationGuideStore> hint_store_;
+
   // Manages the storing, loading, and fetching of hints.
   std::unique_ptr<OptimizationGuideHintsManager> hints_manager_;
-
-  // Manages the storing, loading, and evaluating of optimization target
-  // prediction models.
-  std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
 
   // The store of optimization target prediction models and features.
   std::unique_ptr<optimization_guide::OptimizationGuideStore>
       prediction_model_and_features_store_;
+
+  // Manages the storing, loading, and evaluating of optimization target
+  // prediction models.
+  std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
 
   // The top host provider to use for fetching information for the user's top
   // hosts. Will be null if the user has not consented to this type of browser

@@ -31,17 +31,9 @@
 #include "net/nqe/effective_connection_type.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 
-namespace base {
-class FilePath;
-}  // namespace base
-
 namespace content {
 class NavigationHandle;
 }  // namespace content
-
-namespace leveldb_proto {
-class ProtoDatabaseProvider;
-}  // namespace leveldb_proto
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -53,6 +45,7 @@ class HintsFetcherFactory;
 class OptimizationFilter;
 class OptimizationMetadata;
 class OptimizationGuideService;
+class OptimizationGuideStore;
 enum class OptimizationTargetDecision;
 enum class OptimizationTypeDecision;
 class StoreUpdateData;
@@ -71,9 +64,8 @@ class OptimizationGuideHintsManager
   OptimizationGuideHintsManager(
       optimization_guide::OptimizationGuideService* optimization_guide_service,
       Profile* profile,
-      const base::FilePath& profile_path,
       PrefService* pref_service,
-      leveldb_proto::ProtoDatabaseProvider* database_provider,
+      optimization_guide::OptimizationGuideStore* hint_store,
       optimization_guide::TopHostProvider* top_host_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
@@ -163,6 +155,9 @@ class OptimizationGuideHintsManager
   // Notifies |this| that a navigation with redirect chain
   // |navigation_redirect_chain| has finished.
   void OnNavigationFinish(const std::vector<GURL>& navigation_redirect_chain);
+
+  // Returns the persistent store for |this|.
+  optimization_guide::OptimizationGuideStore* hint_store();
 
   // Add hints to the cache with the provided metadata. For testing only.
   void AddHintForTesting(

@@ -15,7 +15,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/optimization_guide_prefs.h"
 #include "components/optimization_guide/optimization_guide_service.h"
 #include "components/prefs/pref_service.h"
@@ -38,14 +37,11 @@ class MockOptimizationGuideHintsManager : public OptimizationGuideHintsManager {
   MockOptimizationGuideHintsManager(
       optimization_guide::OptimizationGuideService* optimization_guide_service,
       Profile* profile,
-      base::FilePath file_path,
-      leveldb_proto::ProtoDatabaseProvider* db_provider,
       PrefService* pref_service)
       : OptimizationGuideHintsManager(optimization_guide_service,
                                       profile,
-                                      file_path,
                                       pref_service,
-                                      db_provider,
+                                      /*hint_store=*/nullptr,
                                       /*top_host_provider=*/nullptr,
                                       /*url_loader_factory=*/nullptr) {}
   ~MockOptimizationGuideHintsManager() override = default;
@@ -98,18 +94,14 @@ class OptimizationGuideBridgeTest : public testing::Test {
     optimization_guide_service_ =
         std::make_unique<optimization_guide::OptimizationGuideService>(
             task_environment_.GetMainThreadTaskRunner());
-    db_provider_ = std::make_unique<leveldb_proto::ProtoDatabaseProvider>(
-        temp_dir_.GetPath());
     optimization_guide_hints_manager_ =
         std::make_unique<MockOptimizationGuideHintsManager>(
-            optimization_guide_service_.get(), profile_, temp_dir_.GetPath(),
-            db_provider_.get(), pref_service_.get());
+            optimization_guide_service_.get(), profile_, pref_service_.get());
   }
 
   void TearDown() override {
     optimization_guide_hints_manager_->Shutdown();
     optimization_guide_hints_manager_.reset();
-    db_provider_.reset();
     optimization_guide_service_.reset();
   }
 
@@ -133,7 +125,6 @@ class OptimizationGuideBridgeTest : public testing::Test {
   TestingProfile* profile_;
   std::unique_ptr<optimization_guide::OptimizationGuideService>
       optimization_guide_service_;
-  std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> db_provider_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };

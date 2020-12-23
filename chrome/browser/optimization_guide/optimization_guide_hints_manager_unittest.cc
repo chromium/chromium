@@ -30,6 +30,7 @@
 #include "components/optimization_guide/optimization_guide_features.h"
 #include "components/optimization_guide/optimization_guide_prefs.h"
 #include "components/optimization_guide/optimization_guide_service.h"
+#include "components/optimization_guide/optimization_guide_store.h"
 #include "components/optimization_guide/optimization_guide_switches.h"
 #include "components/optimization_guide/proto_database_provider_test_base.h"
 #include "components/optimization_guide/top_host_provider.h"
@@ -302,9 +303,12 @@ class OptimizationGuideHintsManagerTest
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
+    hint_store_ = std::make_unique<optimization_guide::OptimizationGuideStore>(
+        db_provider_.get(), temp_dir(),
+        task_environment_.GetMainThreadTaskRunner());
     hints_manager_ = std::make_unique<OptimizationGuideHintsManager>(
-        optimization_guide_service_.get(), &testing_profile_, temp_dir(),
-        pref_service_.get(), db_provider_.get(), top_host_provider,
+        optimization_guide_service_.get(), &testing_profile_,
+        pref_service_.get(), hint_store_.get(), top_host_provider,
         url_loader_factory_);
     hints_manager_->SetClockForTesting(task_environment_.GetMockClock());
 
@@ -319,6 +323,7 @@ class OptimizationGuideHintsManagerTest
   void ResetHintsManager() {
     hints_manager_->Shutdown();
     hints_manager_.reset();
+    hint_store_.reset();
     RunUntilIdle();
   }
 
@@ -442,6 +447,7 @@ class OptimizationGuideHintsManagerTest
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfile testing_profile_;
   std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
+  std::unique_ptr<optimization_guide::OptimizationGuideStore> hint_store_;
   std::unique_ptr<OptimizationGuideHintsManager> hints_manager_;
   std::unique_ptr<TestOptimizationGuideService> optimization_guide_service_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;

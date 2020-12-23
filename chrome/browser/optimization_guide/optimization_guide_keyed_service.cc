@@ -126,6 +126,7 @@ void OptimizationGuideKeyedService::Initialize() {
   // For incognito profiles, we act in "read-only" mode of the original
   // profile's store and do not fetch any new hints or models.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
+  optimization_guide::OptimizationGuideStore* hint_store;
   optimization_guide::OptimizationGuideStore*
       prediction_model_and_features_store;
   if (profile->IsOffTheRecord()) {
@@ -133,6 +134,7 @@ void OptimizationGuideKeyedService::Initialize() {
         OptimizationGuideKeyedServiceFactory::GetForProfile(
             profile->GetOriginalProfile());
     DCHECK(original_ogks);
+    hint_store = original_ogks->GetHintsManager()->hint_store();
     prediction_model_and_features_store =
         original_ogks->GetPredictionManager()->model_and_features_store();
   } else {
@@ -147,6 +149,18 @@ void OptimizationGuideKeyedService::Initialize() {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         "SyntheticOptimizationGuideRemoteFetching",
         optimization_guide_fetching_enabled ? "Enabled" : "Disabled");
+
+    hint_store_ =
+        optimization_guide::features::ShouldPersistHintsToDisk()
+            ? std::make_unique<optimization_guide::OptimizationGuideStore>(
+                  proto_db_provider,
+                  profile_path.AddExtensionASCII(
+                      optimization_guide::kOptimizationGuideHintStore),
+                  base::ThreadPool::CreateSequencedTaskRunner(
+                      {base::MayBlock(), base::TaskPriority::BEST_EFFORT}))
+            : nullptr;
+    hint_store = hint_store_.get();
+
     prediction_model_and_features_store_ =
         std::make_unique<optimization_guide::OptimizationGuideStore>(
             proto_db_provider,
@@ -160,8 +174,8 @@ void OptimizationGuideKeyedService::Initialize() {
   }
 
   hints_manager_ = std::make_unique<OptimizationGuideHintsManager>(
-      g_browser_process->optimization_guide_service(), profile, profile_path,
-      profile->GetPrefs(), proto_db_provider, top_host_provider_.get(),
+      g_browser_process->optimization_guide_service(), profile,
+      profile->GetPrefs(), hint_store, top_host_provider_.get(),
       url_loader_factory);
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       prediction_model_and_features_store, top_host_provider_.get(),

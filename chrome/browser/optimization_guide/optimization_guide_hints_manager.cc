@@ -253,9 +253,8 @@ bool ShouldIgnoreNewlyRegisteredOptimizationType(
 OptimizationGuideHintsManager::OptimizationGuideHintsManager(
     optimization_guide::OptimizationGuideService* optimization_guide_service,
     Profile* profile,
-    const base::FilePath& profile_path,
     PrefService* pref_service,
-    leveldb_proto::ProtoDatabaseProvider* database_provider,
+    optimization_guide::OptimizationGuideStore* hint_store,
     optimization_guide::TopHostProvider* top_host_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : optimization_guide_service_(optimization_guide_service),
@@ -264,13 +263,7 @@ OptimizationGuideHintsManager::OptimizationGuideHintsManager(
       profile_(profile),
       pref_service_(pref_service),
       hint_cache_(std::make_unique<optimization_guide::HintCache>(
-          optimization_guide::features::ShouldPersistHintsToDisk()
-              ? std::make_unique<optimization_guide::OptimizationGuideStore>(
-                    database_provider,
-                    profile_path.AddExtensionASCII(
-                        optimization_guide::kOptimizationGuideHintStore),
-                    background_task_runner_)
-              : nullptr,
+          hint_store,
           optimization_guide::features::MaxHostKeyedHintCacheSize())),
       page_navigation_hints_fetchers_(
           optimization_guide::features::MaxConcurrentPageNavigationFetches()),
@@ -346,7 +339,9 @@ void OptimizationGuideHintsManager::OnHintsComponentAvailable(
   }
 
   std::unique_ptr<optimization_guide::StoreUpdateData> update_data =
-      hint_cache_->MaybeCreateUpdateDataForComponentHints(info.version);
+      profile_->IsOffTheRecord()
+          ? nullptr
+          : hint_cache_->MaybeCreateUpdateDataForComponentHints(info.version);
 
   // Processes the hints from the newly available component on a background
   // thread, providing a StoreUpdateData for component update from the hint
@@ -399,7 +394,8 @@ OptimizationGuideHintsManager::ProcessHintsComponent(
   // aren't hints sent down via the component, but we need to figure out
   // threading since these hints are now stored in memory prior to being
   // persisted.
-  if (update_data) {
+  // Don't store hints in the store if it's off the record.
+  if (update_data && !profile_->IsOffTheRecord()) {
     bool did_process_hints = hint_cache_->ProcessAndCacheHints(
         config->mutable_hints(), update_data.get());
     optimization_guide::RecordProcessHintsComponentResult(
@@ -504,8 +500,10 @@ void OptimizationGuideHintsManager::OnHintCacheInitialized() {
       optimization_guide::switches::ParseComponentConfigFromCommandLine();
   if (manual_config) {
     std::unique_ptr<optimization_guide::StoreUpdateData> update_data =
-        hint_cache_->MaybeCreateUpdateDataForComponentHints(
-            base::Version(kManualConfigComponentVersion));
+        profile_->IsOffTheRecord()
+            ? nullptr
+            : hint_cache_->MaybeCreateUpdateDataForComponentHints(
+                  base::Version(kManualConfigComponentVersion));
     hint_cache_->ProcessAndCacheHints(manual_config->mutable_hints(),
                                       update_data.get());
     // Allow |UpdateComponentHints| to block startup so that the first
@@ -922,8 +920,10 @@ void OptimizationGuideHintsManager::RegisterOptimizationTypes(
     base::Optional<double> value = previously_registered_opt_types->FindBoolKey(
         optimization_guide::proto::OptimizationType_Name(optimization_type));
     if (!value) {
-      if (!ShouldIgnoreNewlyRegisteredOptimizationType(optimization_type))
+      if (!profile_->IsOffTheRecord() &&
+          !ShouldIgnoreNewlyRegisteredOptimizationType(optimization_type)) {
         should_clear_hints_for_new_type_ = true;
+      }
       previously_registered_opt_types->SetBoolKey(
           optimization_guide::proto::OptimizationType_Name(optimization_type),
           true);
@@ -1259,12 +1259,12 @@ void OptimizationGuideHintsManager::OnNavigationStartOrRedirect(
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  LoadHintForNavigation(navigation_handle, std::move(callback));
+
   if (optimization_guide::switches::
           DisableFetchingHintsAtNavigationStartForTesting()) {
     return;
   }
-
-  LoadHintForNavigation(navigation_handle, std::move(callback));
 
   MaybeFetchHintsForNavigation(navigation_handle);
 }
@@ -1355,6 +1355,11 @@ void OptimizationGuideHintsManager::OnNavigationFinish(
 
     PrepareToInvokeRegisteredCallbacks(url);
   }
+}
+
+optimization_guide::OptimizationGuideStore*
+OptimizationGuideHintsManager::hint_store() {
+  return hint_cache_->hint_store();
 }
 
 bool OptimizationGuideHintsManager::HasAllInformationForDecisionAvailable(

@@ -52,12 +52,13 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
                                     bool purge_existing_data = false) {
     auto database_path = temp_dir_.GetPath();
     auto database_task_runner = task_environment_.GetMainThreadTaskRunner();
-    hint_cache_ = std::make_unique<HintCache>(
+    optimization_guide_store_ =
         IsBackedByPersistentStore()
             ? std::make_unique<OptimizationGuideStore>(
                   db_provider_.get(), database_path, database_task_runner)
-            : nullptr,
-        memory_cache_size);
+            : nullptr;
+    hint_cache_ = std::make_unique<HintCache>(optimization_guide_store_.get(),
+                                              memory_cache_size);
     is_store_initialized_ = false;
     hint_cache_->Initialize(purge_existing_data,
                             base::BindOnce(&HintCacheTest::OnStoreInitialized,
@@ -70,6 +71,7 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
 
   void DestroyHintCache() {
     hint_cache_.reset();
+    optimization_guide_store_.reset();
     loaded_hint_ = nullptr;
     is_store_initialized_ = false;
     are_component_hints_updated_ = false;
@@ -165,6 +167,7 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  std::unique_ptr<OptimizationGuideStore> optimization_guide_store_;
   std::unique_ptr<HintCache> hint_cache_;
   const proto::Hint* loaded_hint_;
 
