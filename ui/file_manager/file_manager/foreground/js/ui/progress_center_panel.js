@@ -101,45 +101,6 @@ class ProgressCenterPanel {
   }
 
   /**
-   * Generate destination string for display on the feedback panel.
-   * @param {!ProgressCenterItem} item Item we're generating a message for.
-   * @param {Object} info Cached information to use for formatting.
-   * @return {string} String formatted based on the item state.
-   */
-  generateDestinationString_(item, info) {
-    const hasDestination = this.isNonEmptyString_(info['destination']);
-    switch (item.state) {
-      case 'progressing':
-        if (hasDestination) {
-          return strf('TO_FOLDER_NAME', info['destination']);
-        }
-        break;
-      case 'completed':
-        if (item.type === ProgressItemType.COPY) {
-          if (hasDestination) {
-            return strf('COPIED_TO', info['destination']);
-          } else {
-            return str('COPIED');
-          }
-        } else if (item.type === ProgressItemType.MOVE) {
-          if (hasDestination) {
-            return strf('MOVED_TO', info['destination']);
-          } else {
-            return str('MOVED');
-          }
-        }
-        break;
-      case 'error':
-      case 'canceled':
-        break;
-      default:
-        assertNotReached();
-        break;
-    }
-    return '';
-  }
-
-  /**
    * Generate primary text string for display on the feedback panel.
    * It is used for TransferDetails mode.
    * @param {!ProgressCenterItem} item Item we're generating a message for.
@@ -284,17 +245,8 @@ class ProgressCenterPanel {
         };
       }
 
-      let primaryText, secondaryText;
-      if (util.isTransferDetailsEnabled()) {
-        primaryText = this.generatePrimaryString_(item, panelItem.userData);
-        panelItem.secondaryText = this.generateRemainingTimeMessage(item);
-      } else {
-        primaryText = this.generateSourceString_(item, panelItem.userData);
-        if (item.destinationMessage) {
-          panelItem.secondaryText =
-              strf('TO_FOLDER_NAME', item.destinationMessage);
-        }
-      }
+      const primaryText = this.generatePrimaryString_(item, panelItem.userData);
+      panelItem.secondaryText = this.generateRemainingTimeMessage(item);
       panelItem.primaryText = primaryText;
       panelItem.setAttribute('data-progress-id', item.id);
 
@@ -321,12 +273,7 @@ class ProgressCenterPanel {
             donePanelItem.id = item.id;
             donePanelItem.panelType = donePanelItem.panelTypeDone;
             donePanelItem.primaryText = primaryText;
-            if (util.isTransferDetailsEnabled()) {
-              donePanelItem.secondaryText = str('COMPLETE_LABEL');
-            } else {
-              donePanelItem.secondaryText =
-                  this.generateDestinationString_(item, panelItem.userData);
-            }
+            donePanelItem.secondaryText = str('COMPLETE_LABEL');
             donePanelItem.signalCallback = (signal) => {
               if (signal === 'dismiss') {
                 this.feedbackHost_.removePanelItem(donePanelItem);

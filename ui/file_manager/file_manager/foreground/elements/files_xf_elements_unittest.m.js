@@ -33,11 +33,6 @@ export function setUp() {
   loadTimeData.getString = id => {
     return loadTimeData.data_[id] || id;
   };
-
-  /** @return {boolean} */
-  window.isTransferDetailsEnabled = () => {
-    return enableFilesTransferDetails;
-  };
 }
 
 export function tearDown() {

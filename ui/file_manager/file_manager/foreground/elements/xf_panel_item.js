@@ -259,9 +259,7 @@
    * @private
    */
   setPanelType(type) {
-    if (util.isTransferDetailsEnabled()) {
-      this.setAttribute('detailed-panel', 'detailed-panel');
-    }
+    this.setAttribute('detailed-panel', 'detailed-panel');
 
     if (this.panelType_ === type) {
       return;
