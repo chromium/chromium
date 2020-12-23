@@ -17,6 +17,8 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
+import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensQueryResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
@@ -27,6 +29,7 @@ import org.chromium.components.variations.VariationsAssociatedData;
 /**
  * This class provides utilities for intenting into Google Lens.
  */
+// TODO(crbug/1157496): Consolidate param-checks into a single function.
 public class LensUtils {
     private static final String LENS_CONTRACT_URI = "googleapp://lens";
     private static final String LENS_DIRECT_INTENT_CONTRACT_URI = "google://lens";
@@ -46,6 +49,8 @@ public class LensUtils {
             "minAgsaVersionNameForShopping";
     private static final String MIN_AGSA_VERSION_DIRECT_INTENT_FEATURE_PARAM_NAME =
             "minAgsaVersionForDirectIntent";
+    private static final String MIN_AGSA_VERSION_DIRECT_INTENT_SDK_FEATURE_PARAM_NAME =
+            "minAgsaVersionForDirectIntentSdk";
     private static final String USE_SEARCH_BY_IMAGE_TEXT_FEATURE_PARAM_NAME =
             "useSearchByImageText";
     private static final String LENS_SHOPPING_ALLOWLIST_ENTRIES_FEATURE_PARAM_NAME =
@@ -57,12 +62,15 @@ public class LensUtils {
     private static final String SEND_ALT_PARAM_NAME = "sendAlt";
     private static final String SEND_PAGE_PARAM_NAME = "sendPage";
     private static final String USE_DIRECT_INTENT_FEATURE_PARAM_NAME = "useDirectIntent";
+    private static final String USE_DIRECT_INTENT_SDK_INTEGRATION_PARAM_NAME =
+            "useDirectIntentSdkIntegration";
     private static final String DISABLE_ON_INCOGNITO_PARAM_NAME = "disableOnIncognito";
     private static final String ORDER_SHARE_IMAGE_BEFORE_LENS_PARAM_NAME =
             "orderShareImageBeforeLens";
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE = "10.65";
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_CHROME_SHOPPING_INTENT = "11.16";
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_DIRECT_INTENT = "11.34";
+    private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_DIRECT_INTENT_SDK = "11.39.7";
     private static final int LENS_INTENT_TYPE_LENS_CHROME_SHOPPING = 18;
     private static final String LENS_SHOPPING_FEATURE_FLAG_VARIANT_NAME = "lensShopVariation";
     private static final String LENS_DEFAULT_SHOPPING_URL_PATTERNS =
@@ -220,6 +228,32 @@ public class LensUtils {
     }
 
     /**
+     * Gets the minimum AGSA version required to support the direct intent SDK
+     * integration on this device. Takes the value from a server provided value if a
+     * field trial is active but otherwise will take the value from a client side
+     * default (unless the lens feature is not enabled at all, in which case return
+     * an empty string).
+     *
+     * @return The minimum version name string or an empty string if not available.
+     */
+    public static String getMinimumAgsaVersionForDirectIntentSdkSupport() {
+        // Shopping feature AGSA version takes priority over Search with Google Lens
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS)) {
+            final String serverProvidedMinAgsaVersion =
+                    ChromeFeatureList.getFieldTrialParamByFeature(
+                            ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
+                            MIN_AGSA_VERSION_DIRECT_INTENT_SDK_FEATURE_PARAM_NAME);
+            if (TextUtils.isEmpty(serverProvidedMinAgsaVersion)) {
+                // Falls into this block if the user enabled the feature using chrome://flags
+                // and the param was not set by the server.
+                return MIN_AGSA_VERSION_NAME_FOR_LENS_DIRECT_INTENT_SDK;
+            }
+            return serverProvidedMinAgsaVersion;
+        }
+        return "";
+    }
+
+    /**
      * Checks whether the device is below Android O. We restrict to these versions
      * to limit to OS"s where image processing vulnerabilities can be retroactively
      * fixed if they are discovered in the future.
@@ -343,6 +377,59 @@ public class LensUtils {
         return intent;
     }
 
+    /**
+     * Start an early Lens AGSA connection if feature parameter is enabled and client is not
+     * incognito. Eligibity checks happen in LensController.
+     *
+     * @param isIncognito Whether the client is incognito
+     */
+    public static void startLensConnectionIfNecessary(boolean isIncognito) {
+        // TODO(crbug/1157543): Pass isIncognito through to LensController.
+        if (!isIncognito) {
+            LensController.getInstance().startLensConnection();
+        }
+    }
+
+    /**
+     * Terminate an early Lens AGSA connection if feature parameter is enabled and client is not
+     * incognito. Eligibity checks happen in LensController.
+     *
+     * @param isIncognito Whether the client is incognito
+     */
+    public static void terminateLensConnectionsIfNecessary(boolean isIncognito) {
+        // TODO(crbug/1157543): Pass isIncognito through to LensController.
+        if (!isIncognito) {
+            LensController.getInstance().terminateLensConnections();
+        }
+    }
+
+    /**
+     * Build a LensIntentParams object from the provided parameters in order to intent into Lens.
+     *
+     * @param imageUri         The content provider URI generated by chrome (or
+     *                         empty URI) if only resolving the activity.
+     * @param isIncognito      Whether the current tab is in incognito mode.
+     * @param srcUrl           The 'src' attribute of the image.
+     * @param titleOrAltText   The 'title' or, if empty, the 'alt' attribute of the
+     *                         image.
+     * @param pageUrl          The url of the top level frame of the page.
+     * @param requiresConfirmation Whether the request requires an confirmation dialog.
+     * @return The intent parameters to intent to Google Lens.
+     */
+    public static LensIntentParams buildLensIntentParams(final Uri imageUri,
+            final boolean isIncognito, final String srcUrl, final String titleOrAltText,
+            final String pageUrl, final boolean requiresConfirmation) {
+        LensIntentParams.Builder intentParamsBuilder = new LensIntentParams.Builder();
+        return intentParamsBuilder.withImageUri(imageUri)
+                .withIsIncognito(isIncognito)
+                .withRequiresConfirmation(requiresConfirmation)
+                .withIntentType(getLensShoppingIntentType())
+                .withImageTitleOrAltText(titleOrAltText)
+                .withSrcUrl(srcUrl)
+                .withPageUrl(pageUrl)
+                .build();
+    }
+
     public static boolean isGoogleLensFeatureEnabled(boolean isIncognito) {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS)
                 && !(isIncognito
@@ -378,6 +465,24 @@ public class LensUtils {
                        USE_DIRECT_INTENT_FEATURE_PARAM_NAME, false)
                 && !GSAState.getInstance(context).isAgsaVersionBelowMinimum(
                         agsaVersionName, getMinimumAgsaVersionForDirectIntentSupport());
+    }
+
+    /**
+     * Enables the starting of LenActivity directly, rather than going through the Lens
+     * session running in AGSA. Also checks if the required AGSA version for direct intent
+     * is below or equal to the provided version.
+     */
+    public static boolean useDirectIntentSdkIntegration(final Context context) {
+        // TODO(https://crbug.com/1146591): Refactor GSA state checks to avoid multiple version
+        // grabs.
+        String agsaVersionName = sFakeInstalledAgsaVersion != null
+                ? sFakeInstalledAgsaVersion
+                : getLensActivityVersionNameIfAvailable(context);
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                       ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
+                       USE_DIRECT_INTENT_SDK_INTEGRATION_PARAM_NAME, false)
+                && !GSAState.getInstance(context).isAgsaVersionBelowMinimum(
+                        agsaVersionName, getMinimumAgsaVersionForDirectIntentSdkSupport());
     }
 
     /**

@@ -208,6 +208,8 @@ public class ContextMenuHelper {
                 new RevampedContextMenuCoordinator(topContentOffsetPx, mCurrentNativeDelegate);
         mCurrentContextMenu = menuCoordinator;
         mChipDelegate = mCurrentPopulator.getChipDelegate();
+        // TODO(crbug/1158604): Remove leftover Lens dependencies.
+        LensUtils.startLensConnectionIfNecessary(mIsIncognito);
         if (mChipDelegate != null) {
             menuCoordinator.displayMenuWithChip(mWindow, mWebContents, mCurrentContextMenuParams,
                     items, mCallback, mOnMenuShown, mOnMenuClosed, mChipDelegate);

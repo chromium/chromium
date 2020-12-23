@@ -27,6 +27,8 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensQueryResult;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -133,19 +135,26 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     public static void shareImageWithGoogleLens(final WindowAndroid window, Uri imageUri,
             boolean isIncognito, String srcUrl, String titleOrAltText, String pageUrl,
             LensQueryResult lensQueryResult, boolean requiresConfirmation) {
-        Intent shareIntent =
-                LensUtils.getShareWithGoogleLensIntent(ContextUtils.getApplicationContext(),
-                        imageUri, isIncognito, SystemClock.elapsedRealtimeNanos(), srcUrl,
-                        titleOrAltText, pageUrl, lensQueryResult, requiresConfirmation);
-        try {
-            // Pass an empty callback to ensure the triggered activity can identify the source
-            // of the intent (startActivityForResult allows app identification).
-            fireIntent(window, shareIntent, (w, resultCode, data) -> {});
-        } catch (ActivityNotFoundException e) {
-            // The initial version check should guarantee that the activity is available. However,
-            // the exception may be thrown in test environments after mocking out the version check.
-            if (Boolean.TRUE.equals(sIgnoreActivityNotFoundException)) return;
-            throw e;
+        if (LensUtils.useDirectIntentSdkIntegration(ContextUtils.getApplicationContext())) {
+            LensIntentParams intentParams = LensUtils.buildLensIntentParams(
+                    imageUri, isIncognito, srcUrl, titleOrAltText, pageUrl, requiresConfirmation);
+            LensController.getInstance().startLens(window, intentParams);
+        } else {
+            Intent shareIntent =
+                    LensUtils.getShareWithGoogleLensIntent(ContextUtils.getApplicationContext(),
+                            imageUri, isIncognito, SystemClock.elapsedRealtimeNanos(), srcUrl,
+                            titleOrAltText, pageUrl, lensQueryResult, requiresConfirmation);
+            try {
+                // Pass an empty callback to ensure the triggered activity can identify the source
+                // of the intent (startActivityForResult allows app identification).
+                fireIntent(window, shareIntent, (w, resultCode, data) -> {});
+            } catch (ActivityNotFoundException e) {
+                // The initial version check should guarantee that the activity is available.
+                // However, the exception may be thrown in test environments after mocking out the
+                // version check.
+                if (Boolean.TRUE.equals(sIgnoreActivityNotFoundException)) return;
+                throw e;
+            }
         }
     }
 
