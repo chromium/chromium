@@ -26,6 +26,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -187,10 +188,6 @@ void OverviewButtonTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
   // This class has no bubbles to hide.
 }
 
-const char* OverviewButtonTray::GetClassName() const {
-  return "OverviewButtonTray";
-}
-
 void OverviewButtonTray::UpdateIconVisibility() {
   // The visibility of the OverviewButtonTray has diverged from
   // OverviewController::CanSelect. The visibility of the button should
@@ -210,5 +207,8 @@ void OverviewButtonTray::UpdateIconVisibility() {
   SetVisiblePreferred(should_show && active_session && shelf_controls_shown &&
                       !app_mode);
 }
+
+BEGIN_METADATA(OverviewButtonTray, TrayBackgroundView)
+END_METADATA
 
 }  // namespace ash

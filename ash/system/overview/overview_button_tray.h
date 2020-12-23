@@ -13,6 +13,7 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "base/macros.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class ImageView;
@@ -31,6 +32,8 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
                                       public TabletModeObserver,
                                       public ShelfConfig::Observer {
  public:
+  METADATA_HEADER(OverviewButtonTray);
+
   // Second taps within this time will be counted as double taps. Use this
   // instead of ui::Event's click_count and tap_count as those have a minimum
   // time bewtween events before the second tap counts as a double tap.
@@ -41,6 +44,8 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
       base::TimeDelta::FromMilliseconds(300);
 
   explicit OverviewButtonTray(Shelf* shelf);
+  OverviewButtonTray(const OverviewButtonTray&) = delete;
+  OverviewButtonTray& operator=(const OverviewButtonTray&) = delete;
   ~OverviewButtonTray() override;
 
   // Sets the ink drop ripple to ACTIVATED immediately with no animations.
@@ -74,9 +79,6 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
 
-  // views::View:
-  const char* GetClassName() const override;
-
  private:
   friend class OverviewButtonTrayTest;
 
@@ -92,8 +94,6 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   // Stores the timestamp of the last tap event time that happened while not
   // in overview mode. Used to check for double taps, which invoke quick switch.
   base::Optional<base::TimeTicks> last_press_event_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewButtonTray);
 };
 
 }  // namespace ash
