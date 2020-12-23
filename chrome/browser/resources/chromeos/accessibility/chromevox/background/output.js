@@ -155,8 +155,7 @@ Output = class {
         return node.htmlAttributes['aria-posinset'] ||
             (node.root.role !== RoleType.ROOT_WEB_AREA && node.posInSet);
       case 'setSize':
-        return node.htmlAttributes['aria-setsize'] ||
-            (node.root.role !== RoleType.ROOT_WEB_AREA && node.setSize);
+        return node.htmlAttributes['aria-setsize'] || node.setSize;
 
       // These attributes default to false for empty strings.
       case 'roleDescription':
@@ -2304,7 +2303,11 @@ Output.ROLE_INFO_ = {
   note: {msgId: 'role_note', inherits: 'abstractContainer'},
   progressIndicator:
       {msgId: 'role_progress_indicator', inherits: 'abstractRange'},
-  popUpButton: {msgId: 'role_button', earconId: 'POP_UP_BUTTON'},
+  popUpButton: {
+    msgId: 'role_button',
+    earconId: 'POP_UP_BUTTON',
+    inherits: 'comboBoxMenuButton'
+  },
   radioButton: {msgId: 'role_radio'},
   radioGroup: {msgId: 'role_radiogroup', inherits: 'abstractContainer'},
   region: {msgId: 'role_region', inherits: 'abstractContainer'},
@@ -2484,8 +2487,9 @@ Output.RULES = {
     },
     client: {speak: `$name`},
     comboBoxMenuButton: {
-      speak: `$name $value $node(activeDescendant)
-          $state $restriction $role $description`,
+      speak: `$name $if($collapsed, $value) $role @aria_has_popup
+          $if($setSize, @@list_with_items($setSize))
+          $state $restriction $description`,
     },
     date: {enter: `$nameFromNode $role $state $restriction $description`},
     dialog: {enter: `$nameFromNode $role $description $textContent`},
@@ -2575,12 +2579,6 @@ Output.RULES = {
           $restriction $description`
     },
     paragraph: {speak: `$nameOrDescendants`},
-    popUpButton: {
-      speak: `$name $if($value, $value, $descendants) $role @aria_has_popup
-          $if($expanded, @@list_with_items($setSize)) $state $restriction
-          $if($posInSet, @describe_index($posInSet, $setSize))
-          $description`
-    },
     radioButton: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
           $if($checked, @describe_radio_selected($name),

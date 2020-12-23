@@ -276,7 +276,7 @@ TEST_F('ChromeVoxBackgroundTest', 'SelectSingleBasic', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.formsDoc, function() {
     mockFeedback.expectSpeech('apple', 'has pop up', 'Collapsed')
-        .expectBraille('apple btn +popup +')
+        .expectBraille('apple btn +popup +3 +')
         .call(press(KeyCode.DOWN))
         .expectSpeech('grape', /2 of 3/)
         .expectBraille('grape 2/3')
@@ -712,6 +712,7 @@ TEST_F('ChromeVoxBackgroundTest', 'SelectOptionSelected', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
       `
+    <p>start</p>
     <select>
       <option>apple
       <option>banana
@@ -726,8 +727,10 @@ TEST_F('ChromeVoxBackgroundTest', 'SelectOptionSelected', function() {
           options[options.length - 1].doDefault();
         };
 
-        mockFeedback.call(clickSelect)
-            .expectSpeech('apple')
+        mockFeedback.call(doCmd('nextObject'))
+            .expectSpeech('Button', 'Press Search+Space to activate')
+            .call(clickSelect)
+            .expectNextSpeechUtteranceIsNot('apple')
             .expectSpeech('Button')
             .expectSpeech('Expanded')
             .call(selectLastOption)
