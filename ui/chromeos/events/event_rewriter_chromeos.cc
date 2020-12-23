@@ -965,7 +965,8 @@ bool EventRewriterChromeOS::ShouldRemapToRightClick(
       *matched_mask = kSearchLeftButton;
     }
   } else {
-    if (AreFlagsSet(flags, kAltLeftButton)) {
+    if (AreFlagsSet(flags, kAltLeftButton) &&
+        is_alt_left_click_remapping_enabled_) {
       *matched_mask = kAltLeftButton;
     }
   }

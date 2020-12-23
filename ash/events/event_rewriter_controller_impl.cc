@@ -60,6 +60,7 @@ void EventRewriterControllerImpl::Initialize(
       std::make_unique<ui::EventRewriterChromeOS>(
           event_rewriter_delegate, Shell::Get()->sticky_keys_controller(),
           privacy_screen_supported);
+  event_rewriter_chromeos_ = event_rewriter_chromeos.get();
 
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter =
       std::make_unique<AccessibilityEventRewriter>(
@@ -110,6 +111,12 @@ void EventRewriterControllerImpl::CaptureAllKeysForSpokenFeedback(
 
 void EventRewriterControllerImpl::SetSendMouseEvents(bool value) {
   accessibility_event_rewriter_->set_send_mouse_events(value);
+}
+
+void EventRewriterControllerImpl::SetAltLeftClickRemappingEnabled(
+    bool enabled) {
+  if (event_rewriter_chromeos_)
+    event_rewriter_chromeos_->set_alt_left_click_remapping_enabled(enabled);
 }
 
 void EventRewriterControllerImpl::OnHostInitialized(

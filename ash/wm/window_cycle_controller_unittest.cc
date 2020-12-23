@@ -124,6 +124,20 @@ class WindowCycleControllerTest : public AshTestBase {
         ->GetWindowCycleItemViewsForTesting();
   }
 
+  const views::View::Views& GetWindowCycleTabSliderViews() const {
+    return Shell::Get()
+        ->window_cycle_controller()
+        ->window_cycle_list()
+        ->GetWindowCycleTabSliderViewsForTesting();
+  }
+
+  const views::Label* GetWindowCycleNoRecentItemsLabel() const {
+    return Shell::Get()
+        ->window_cycle_controller()
+        ->window_cycle_list()
+        ->GetWindowCycleNoRecentItemsLabelForTesting();
+  }
+
   const aura::Window* GetTargetWindow() const {
     return Shell::Get()
         ->window_cycle_controller()
@@ -1335,6 +1349,193 @@ TEST_F(WindowCycleControllerTest, DoubleAltTabWithDeskSwitch) {
   waiter.Wait();
   EXPECT_EQ(desk_0, desks_controller->active_desk());
   EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
+}
+
+class ModeSelectionWindowCycleControllerTest
+    : public WindowCycleControllerTest {
+ public:
+  ModeSelectionWindowCycleControllerTest() = default;
+  ModeSelectionWindowCycleControllerTest(
+      const ModeSelectionWindowCycleControllerTest&) = delete;
+  ModeSelectionWindowCycleControllerTest& operator=(
+      const ModeSelectionWindowCycleControllerTest&) = delete;
+  ~ModeSelectionWindowCycleControllerTest() override = default;
+
+  // WindowCycleControllerTest:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kBento);
+    WindowCycleControllerTest::SetUp();
+    generator_ = GetEventGenerator();
+  }
+
+  void SwitchPerDeskAltTabMode(bool per_desk_mode) {
+    gfx::Point button_center =
+        GetWindowCycleTabSliderViews()[per_desk_mode ? 1 : 0]
+            ->GetBoundsInScreen()
+            .CenterPoint();
+    generator_->MoveMouseTo(button_center);
+    generator_->ClickLeftButton();
+    EXPECT_EQ(per_desk_mode,
+              Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ui::test::EventGenerator* generator_;
+};
+
+// Tests that alt-tab shows all windows in an all-desk mode by default and
+// shows only windows in the current desk in a current-desk mode. Switching
+// between two modes should refresh the window list, while re-entering alt-tab
+// should display the most recently selected mode.
+TEST_F(ModeSelectionWindowCycleControllerTest, CycleShowsWindowsPerMode) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+
+  // Create two windows for desk1 and three windows for desk2.
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk_2 = desks_controller->desks()[1].get();
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
+  auto win3 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
+  auto win4 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
+
+  // By default should contain windows from all desks.
+  auto* generator = GetEventGenerator();
+  // Press and hold an alt key to test that alt + left clicking a button works.
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  cycle_controller->StartCycling();
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  auto cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(5u, cycle_windows.size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  EXPECT_TRUE(base::Contains(cycle_windows, win0.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, win1.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, win2.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, win3.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, win4.get()));
+
+  // Switching alt-tab to the current-desk mode should show windows in the
+  // active desk.
+  SwitchPerDeskAltTabMode(true);
+  cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(3u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  EXPECT_TRUE(base::Contains(cycle_windows, win2.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, win3.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, win4.get()));
+  cycle_controller->CompleteCycling();
+
+  // Activate desk1 and start alt-tab.
+  const Desk* desk_1 = desks_controller->desks()[0].get();
+  ActivateDesk(desk_1);
+  cycle_controller->StartCycling();
+  // Should start alt-tab with the current-desk mode and show only two windows
+  // from desk1.
+  EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
+  cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(2u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  EXPECT_TRUE(base::Contains(cycle_windows, win0.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, win1.get()));
+
+  // Switch to the all-desks mode, check and stop alt-tab.
+  SwitchPerDeskAltTabMode(false);
+  cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(5u, cycle_windows.size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  cycle_controller->CompleteCycling();
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+}
+
+// For one window display, tests that alt-tab does not show up if there is only
+// one window to be shown, but would continue to show a window in alt-tab if
+// switching from the all-desks mode with multiple windows.
+TEST_F(ModeSelectionWindowCycleControllerTest, OneWindowInActiveDesk) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+
+  // Create two windows for desk1 and one window for desk2.
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk_2 = desks_controller->desks()[1].get();
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
+
+  // Starting alt-tab should shows all desks.
+  cycle_controller->StartCycling();
+  auto cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(3u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+
+  // Switching to an active desk mode should shows a single window in desk2.
+  SwitchPerDeskAltTabMode(true);
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(1u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  EXPECT_TRUE(base::Contains(cycle_windows, win2.get()));
+  cycle_controller->CompleteCycling();
+
+  // Closing alt-tab and trying to re-open again in the current-desk mode
+  // should not work because there's only one window.
+  cycle_controller->StartCycling();
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_FALSE(CycleViewExists());
+  cycle_controller->CompleteCycling();
+}
+
+// Similar to OneWindowInActiveDesk, tests that alt-tab will not work if there
+// is no window to be shown. However, if users already open alt-tab with
+// multiple windows in the all-desks mode and later switch to the current-
+// desk mode, which has no window, it'll display "No recent items".
+TEST_F(ModeSelectionWindowCycleControllerTest, NoWindowInActiveDesk) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+
+  // Create two desks with all two windows in desk1.
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk_2 = desks_controller->desks()[1].get();
+
+  // Activate desk2.
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+
+  // Starting alt-tab should show all windows from all desks.
+  cycle_controller->StartCycling();
+  auto cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(2u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  EXPECT_FALSE(GetWindowCycleNoRecentItemsLabel()->GetVisible());
+
+  // Switching to an active-desk mode should not show any mirror window
+  // and should display "no recent items" label.
+  SwitchPerDeskAltTabMode(true);
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(0u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  EXPECT_TRUE(GetWindowCycleNoRecentItemsLabel()->GetVisible());
+
+  // Switching back to an all-desks mode should hide the label.
+  SwitchPerDeskAltTabMode(false);
+  EXPECT_FALSE(GetWindowCycleNoRecentItemsLabel()->GetVisible());
+  DeskSwitchAnimationWaiter waiter;
+  cycle_controller->CompleteCycling();
+  waiter.Wait();
 }
 
 }  // namespace ash
