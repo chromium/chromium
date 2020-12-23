@@ -52,7 +52,7 @@ public class AutofillAssistantFacade {
 
     /** Returns true if conditions are satisfied to attempt to start Autofill Assistant. */
     private static boolean isConfigured(AutofillAssistantArguments arguments) {
-        return arguments.isEnabled();
+        return arguments.areMandatoryParametersSet();
     }
 
     /**

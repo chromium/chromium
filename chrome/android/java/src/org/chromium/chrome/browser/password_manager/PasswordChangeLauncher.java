@@ -37,6 +37,7 @@ public class PasswordChangeLauncher {
                         .withInitialUrl(origin)
                         .addParameter(PASSWORD_CHANGE_USERNAME_PARAMETER, username)
                         .addParameter(INTENT_PARAMETER, INTENT)
+                        .addParameter(AutofillAssistantArguments.PARAMETER_START_IMMEDIATELY, true)
                         .build());
     }
 }

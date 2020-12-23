@@ -39,6 +39,7 @@ import org.chromium.url.Origin;
     private static final String AUTOFILL_ASSISTANT_INTENT_URL =
             "intent://www.example.com#Intent;scheme=https;"
             + "B.org.chromium.chrome.browser.autofill_assistant.ENABLED=true;"
+            + "B.org.chromium.chrome.browser.autofill_assistant.START_IMMEDIATELY=true;"
             + "S." + ExternalNavigationHandler.EXTRA_BROWSER_FALLBACK_URL + "="
             + Uri.encode("https://www.example.com") + ";end";
     private static final String[] SUPERVISOR_START_ACTIONS = {

@@ -11,6 +11,7 @@ import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POL
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -537,8 +538,9 @@ class AutofillAssistantUiTestUtil {
      * Starts the CCT test rule on a blank page.
      */
     public static void startOnBlankPage(CustomTabActivityTestRule testRule) {
-        testRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), "about:blank"));
+        testRule.startCustomTabActivityWithIntent(
+                AutofillAssistantUiTestUtil.createMinimalCustomTabIntentForAutobot(
+                        "about:blank", /* startImmediately = */ true));
     }
 
     /**
@@ -754,5 +756,13 @@ class AutofillAssistantUiTestUtil {
         }
 
         return builder.toString();
+    }
+
+    public static Intent createMinimalCustomTabIntentForAutobot(
+            String url, boolean startImmediately) {
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+                InstrumentationRegistry.getTargetContext(), url);
+        intent.putExtra(AutofillAssistantArguments.PARAMETER_START_IMMEDIATELY, startImmediately);
+        return intent;
     }
 }

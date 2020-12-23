@@ -87,6 +87,14 @@ public class AutofillAssistantArguments {
     /** Special parameter that enables the feature. */
     private static final String PARAMETER_ENABLED = "ENABLED";
 
+    /**
+     * Special bool parameter that MUST be present in all intents. It allows the caller to either
+     * request immediate start of autobot (if set to true), or a delayed start using trigger scripts
+     * (if set to false). If this is set to false, one of the trigger script parameters must be set
+     * as well (@code{PARAMETER_REQUEST_TRIGGER_SCRIPT} or @code{PARAMETER_TRIGGER_SCRIPTS_BASE64}).
+     */
+    public static final String PARAMETER_START_IMMEDIATELY = "START_IMMEDIATELY";
+
     /** Special parameter for the calling account. */
     private static final String PARAMETER_CALLER_ACCOUNT = "CALLER_ACCOUNT";
 
@@ -200,12 +208,17 @@ public class AutofillAssistantArguments {
         return map;
     }
 
-    /**
-     * Searches the parameters for the ENABLED flag.
-     * @return whether the feature is set as enabled.
-     */
-    public boolean isEnabled() {
-        return getBooleanParameter(PARAMETER_ENABLED);
+    /** Returns whether all mandatory script parameters are set. */
+    public boolean areMandatoryParametersSet() {
+        if (!getBooleanParameter(PARAMETER_ENABLED)
+                || mAutofillAssistantParameters.get(PARAMETER_START_IMMEDIATELY) == null) {
+            return false;
+        }
+        if (!getBooleanParameter(PARAMETER_START_IMMEDIATELY)) {
+            return requestsTriggerScript() || containsBase64TriggerScripts()
+                    || containsTriggerScript();
+        }
+        return true;
     }
 
     /**

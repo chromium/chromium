@@ -19,7 +19,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.verify;
 
-import android.support.test.InstrumentationRegistry;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +46,6 @@ import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderCoor
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.MaterialProgressBar;
@@ -88,8 +86,8 @@ public class AutofillAssistantHeaderUiTest {
     @Before
     public void setUp() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(), "about:blank"));
+                AutofillAssistantUiTestUtil.createMinimalCustomTabIntentForAutobot(
+                        "about:blank", /* startImmediately = */ true));
     }
 
     private CustomTabActivity getActivity() {
