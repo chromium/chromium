@@ -92,6 +92,21 @@ class SessionRestorationBrowserAgent
                            web::WebState* new_web_state,
                            int active_index,
                            ActiveWebStateChangeReason reason) override;
+  void WillDetachWebStateAt(WebStateList* web_state_list,
+                            web::WebState* web_state,
+                            int index) override;
+  void WebStateInsertedAt(WebStateList* web_state_list,
+                          web::WebState* web_state,
+                          int index,
+                          bool activating) override;
+  void WebStateReplacedAt(WebStateList* web_state_list,
+                          web::WebState* old_web_state,
+                          web::WebState* new_web_state,
+                          int index) override;
+  void WebStateMoved(WebStateList* web_state_list,
+                     web::WebState* web_state,
+                     int from_index,
+                     int to_index) override;
 
   // The path to use for all session storage reads and writes. If multi-window
   // is enabled, the session ID for this agent is used to determine this path;

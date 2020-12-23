@@ -85,7 +85,9 @@ void CleanCertificatePolicyCache(
 
 @end
 
-@implementation TabModel
+@implementation TabModel {
+  BOOL _savedSessionDuringBackgrounding;
+}
 
 @synthesize browserState = _browserState;
 
@@ -123,10 +125,12 @@ void CleanCertificatePolicyCache(
     for (const auto& webStateListObserver : _webStateListObservers)
       _webStateList->AddObserver(webStateListObserver.get());
 
+    _savedSessionDuringBackgrounding = NO;
+
     // Register for resign active notification.
     [[NSNotificationCenter defaultCenter]
         addObserver:self
-           selector:@selector(willResignActive:)
+           selector:@selector(applicationWillResignActive:)
                name:UIApplicationWillResignActiveNotification
              object:nil];
     // Register for background notification.
@@ -134,6 +138,12 @@ void CleanCertificatePolicyCache(
         addObserver:self
            selector:@selector(applicationDidEnterBackground:)
                name:UIApplicationDidEnterBackgroundNotification
+             object:nil];
+    // Register for foregrounding notification.
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(applicationWillEnterForeground:)
+               name:UIApplicationWillEnterForegroundNotification
              object:nil];
   }
   return self;
@@ -143,6 +153,11 @@ void CleanCertificatePolicyCache(
 - (void)disconnect {
   if (!_browserState)
     return;
+
+  if (!_savedSessionDuringBackgrounding) {
+    [self saveSessionOnBackgroundingOrTermination];
+    _savedSessionDuringBackgrounding = YES;
+  }
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
@@ -172,7 +187,7 @@ void CleanCertificatePolicyCache(
 
 // Called when UIApplicationWillResignActiveNotification is received.
 // TODO(crbug.com/1115611): Move to SceneController.
-- (void)willResignActive:(NSNotification*)notify {
+- (void)applicationWillResignActive:(NSNotification*)notify {
   if (_webEnabler->IsWebUsageEnabled() && _webStateList->GetActiveWebState()) {
     SnapshotTabHelper::FromWebState(_webStateList->GetActiveWebState())
         ->WillBeSavedGreyWhenBackgrounding();
@@ -182,6 +197,27 @@ void CleanCertificatePolicyCache(
 // Called when UIApplicationDidEnterBackgroundNotification is received.
 // TODO(crbug.com/1115611): Move to SceneController.
 - (void)applicationDidEnterBackground:(NSNotification*)notify {
+  // When using the Scene API (which requires iOS 13.0 or later and a recent
+  // enough device), UIApplicationDidEnterBackgroundNotification is not sent
+  // to the application if it is terminated by swipe gesture while it is in
+  // the foreground. The notification is send if Scene API is not used. In
+  // order to avoid saving twice the session on app termination, use a flag
+  // to record that the session was saved.
+  [self saveSessionOnBackgroundingOrTermination];
+  _savedSessionDuringBackgrounding = YES;
+}
+
+// Called when UIApplicationWillEnterForegroundNotification is received.
+// TODO(crbug.com/1115611): Move to SceneController.
+- (void)applicationWillEnterForeground:(NSNotification*)notify {
+  // Reset the boolean to allow saving the session state the next time the
+  // application is backgrounded or terminated.
+  _savedSessionDuringBackgrounding = NO;
+}
+
+#pragma mark - Saving session on backgrounding or termination
+
+- (void)saveSessionOnBackgroundingOrTermination {
   if (!_browserState)
     return;
 
@@ -194,7 +230,8 @@ void CleanCertificatePolicyCache(
       _webStateList);
 
   // Normally, the session is saved after some timer expires but since the app
-  // is about to enter the background send YES to save the session immediately.
+  // is about to be backgrounded or terminated send true to save the session
+  // immediately.
   _sessionRestorationBrowserAgent->SaveSession(/*immediately=*/true);
 
   // Write out a grey version of the current website to disk.
