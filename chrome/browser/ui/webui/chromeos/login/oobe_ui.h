@@ -83,7 +83,7 @@ class OobeUI : public ui::MojoWebUIController {
 
   bool IsScreenInitialized(OobeScreenId screen);
 
-  bool IsJSReady(const base::Closure& display_is_ready_callback);
+  bool IsJSReady(base::OnceClosure display_is_ready_callback);
 
   // Shows or hides OOBE UI elements.
   void ShowOobeUI(bool show);
@@ -204,7 +204,7 @@ class OobeUI : public ui::MojoWebUIController {
   bool ready_ = false;
 
   // Callbacks to notify when JS part is fully loaded and ready to accept calls.
-  std::vector<base::Closure> ready_callbacks_;
+  base::OnceClosureList ready_callbacks_;
 
   // List of registered observers.
   base::ObserverList<Observer>::Unchecked observer_list_;

@@ -756,9 +756,7 @@ void OobeUI::InitializeHandlers() {
   js_calls_container_->ExecuteDeferredJSCalls(web_ui());
 
   ready_ = true;
-  for (size_t i = 0; i < ready_callbacks_.size(); ++i)
-    ready_callbacks_[i].Run();
-  ready_callbacks_.clear();
+  ready_callbacks_.Notify();
 
   for (BaseWebUIHandler* handler : webui_only_handlers_)
     handler->InitializeBase();
@@ -784,9 +782,9 @@ bool OobeUI::IsScreenInitialized(OobeScreenId screen) {
   return false;
 }
 
-bool OobeUI::IsJSReady(const base::Closure& display_is_ready_callback) {
+bool OobeUI::IsJSReady(base::OnceClosure display_is_ready_callback) {
   if (!ready_)
-    ready_callbacks_.push_back(display_is_ready_callback);
+    ready_callbacks_.AddUnsafe(std::move(display_is_ready_callback));
   return ready_;
 }
 
