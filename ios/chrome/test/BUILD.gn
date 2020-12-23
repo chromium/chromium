@@ -201,7 +201,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/metrics:unit_tests",
     "//ios/chrome/browser/metrics:unit_tests_internal",
     "//ios/chrome/browser/net:unit_tests",
-    "//ios/chrome/browser/network_activity:unit_tests",
     "//ios/chrome/browser/ntp:unit_tests",
     "//ios/chrome/browser/omaha:unit_tests",
     "//ios/chrome/browser/open_in:unit_tests",

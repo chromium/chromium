@@ -74,7 +74,6 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/metrics",
-    "//ios/chrome/browser/network_activity:tab_helper",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/open_in",
     "//ios/chrome/browser/overscroll_actions",

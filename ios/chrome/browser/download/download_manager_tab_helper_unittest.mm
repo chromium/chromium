@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#import "ios/chrome/browser/network_activity/network_activity_indicator_manager.h"
 #import "ios/chrome/test/fakes/fake_download_manager_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -138,92 +137,6 @@ TEST_F(DownloadManagerTabHelperTest, HideAndShowWebState) {
   web_state_->WasShown();
   ASSERT_TRUE(delegate_.state);
   EXPECT_EQ(web::DownloadTask::State::kNotStarted, *delegate_.state);
-}
-
-// Tests showing network activity indicator when download is started and hiding
-// when download is cancelled.
-TEST_F(DownloadManagerTabHelperTest, NetworkActivityIndicatorOnCancel) {
-  ASSERT_FALSE(delegate_.state);
-  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
-
-  web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_EQ(0U, [[NetworkActivityIndicatorManager sharedInstance]
-                    numTotalNetworkTasks]);
-  task_ptr->Start(std::make_unique<net::URLFetcherStringWriter>());
-  EXPECT_EQ(1U, [[NetworkActivityIndicatorManager sharedInstance]
-                    numTotalNetworkTasks]);
-
-  task_ptr->Cancel();
-  EXPECT_EQ(0U, [[NetworkActivityIndicatorManager sharedInstance]
-                    numTotalNetworkTasks]);
-}
-
-// Tests showing network activity indicator when download is started and hiding
-// when download is complete.
-TEST_F(DownloadManagerTabHelperTest, NetworkActivityIndicatorOnDone) {
-  ASSERT_FALSE(delegate_.state);
-  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
-
-  web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_EQ(0U, [[NetworkActivityIndicatorManager sharedInstance]
-                    numTotalNetworkTasks]);
-  task_ptr->Start(std::make_unique<net::URLFetcherStringWriter>());
-  EXPECT_EQ(1U, [[NetworkActivityIndicatorManager sharedInstance]
-                    numTotalNetworkTasks]);
-
-  task_ptr->SetDone(true);
-  EXPECT_EQ(0U, [[NetworkActivityIndicatorManager sharedInstance]
-                    numTotalNetworkTasks]);
-}
-
-// Tests showing network activity indicator when download is started and hiding
-// when the download task is replaced.
-TEST_F(DownloadManagerTabHelperTest, NetworkActivityIndicatorOnReplacement) {
-  ASSERT_FALSE(delegate_.state);
-  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
-
-  web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_EQ(0U, [[NetworkActivityIndicatorManager sharedInstance]
-                    numTotalNetworkTasks]);
-  task_ptr->Start(std::make_unique<net::URLFetcherStringWriter>());
-  EXPECT_EQ(1U, [[NetworkActivityIndicatorManager sharedInstance]
-                    numTotalNetworkTasks]);
-
-  // Replace the download task.
-  auto task2 = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
-  const web::FakeDownloadTask* task2_ptr = task2.get();
-  tab_helper()->Download(std::move(task2));
-
-  EXPECT_EQ(task2_ptr, delegate_.decidingPolicyForDownload);
-  // Ask the delegate to replace the new download.
-  BOOL replaced = [delegate_ decidePolicy:kNewDownloadPolicyReplace];
-  ASSERT_TRUE(replaced);
-
-  // Now network activity indicator is hidden.
-  EXPECT_EQ(0U, [[NetworkActivityIndicatorManager sharedInstance]
-                    numTotalNetworkTasks]);
-}
-
-// Tests showing network activity indicator when download is started and hiding
-// when tab helper is destroyed.
-TEST_F(DownloadManagerTabHelperTest, NetworkActivityIndicatorOnDestruction) {
-  ASSERT_FALSE(delegate_.state);
-  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kMimeType);
-
-  web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_EQ(0U, [[NetworkActivityIndicatorManager sharedInstance]
-                    numTotalNetworkTasks]);
-  task_ptr->Start(std::make_unique<net::URLFetcherStringWriter>());
-  EXPECT_EQ(1U, [[NetworkActivityIndicatorManager sharedInstance]
-                    numTotalNetworkTasks]);
-
-  web_state_ = nullptr;
-  EXPECT_EQ(0U, [[NetworkActivityIndicatorManager sharedInstance]
-                    numTotalNetworkTasks]);
 }
 
 // Tests that has_download_task() returns correct result.

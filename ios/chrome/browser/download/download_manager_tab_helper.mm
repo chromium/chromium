@@ -8,7 +8,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper_delegate.h"
-#import "ios/chrome/browser/network_activity/network_activity_indicator_manager.h"
 #import "ios/web/public/download/download_task.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -72,8 +71,6 @@ void DownloadManagerTabHelper::WasHidden(web::WebState* web_state) {
 void DownloadManagerTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
   if (task_) {
-    [[NetworkActivityIndicatorManager sharedInstance]
-        clearNetworkTasksForGroup:GetNetworkActivityKey()];
     task_->RemoveObserver(this);
     task_ = nullptr;
   }
@@ -83,18 +80,12 @@ void DownloadManagerTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
   DCHECK_EQ(task, task_.get());
   switch (task->GetState()) {
     case web::DownloadTask::State::kCancelled:
-      [[NetworkActivityIndicatorManager sharedInstance]
-          clearNetworkTasksForGroup:GetNetworkActivityKey()];
       task_->RemoveObserver(this);
       task_ = nullptr;
       break;
     case web::DownloadTask::State::kInProgress:
-      [[NetworkActivityIndicatorManager sharedInstance]
-          startNetworkTaskForGroup:GetNetworkActivityKey()];
       break;
     case web::DownloadTask::State::kComplete:
-      [[NetworkActivityIndicatorManager sharedInstance]
-          clearNetworkTasksForGroup:GetNetworkActivityKey()];
       break;
     case web::DownloadTask::State::kNotStarted:
       // OnDownloadUpdated cannot be called with this state.
@@ -102,16 +93,9 @@ void DownloadManagerTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
   }
 }
 
-NSString* DownloadManagerTabHelper::GetNetworkActivityKey() const {
-  return [@"DownloadManagerTabHelper."
-      stringByAppendingString:task_->GetIndentifier()];
-}
-
 void DownloadManagerTabHelper::DidCreateDownload(
     std::unique_ptr<web::DownloadTask> task) {
   if (task_) {
-    [[NetworkActivityIndicatorManager sharedInstance]
-        clearNetworkTasksForGroup:GetNetworkActivityKey()];
     task_->RemoveObserver(this);
   }
   task_ = std::move(task);
