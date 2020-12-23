@@ -105,9 +105,19 @@ JNI_PerformanceHintsObserver_IsContextMenuPerformanceInfoEnabled(JNIEnv* env) {
 PerformanceHintsObserver::PerformanceHintsObserver(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+
+  // Given that we throw things away if the user is unable to fetch from
+  // the remote Optimization Guide, do not instantiate anything else since
+  // we will throw everything away anyway. Although FAST_HOST_HINTS and some
+  // hints that were fetched for the original profile are available in
+  // incognito, these do not provide sufficient coverage.
+  if (profile->IsOffTheRecord())
+    return;
+
   optimization_guide_decider_ =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   std::vector<optimization_guide::proto::OptimizationType> opts;
   opts.push_back(optimization_guide::proto::PERFORMANCE_HINTS);
   if (features::AreFastHostHintsEnabled()) {

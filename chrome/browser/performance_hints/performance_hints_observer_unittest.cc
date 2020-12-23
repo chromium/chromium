@@ -21,6 +21,7 @@
 #include "components/optimization_guide/optimization_guide_switches.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using optimization_guide::OptimizationGuideDecision;
@@ -90,6 +91,17 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
                           MockOptimizationGuideKeyedService>(context);
                     })));
 
+    mock_otr_optimization_guide_keyed_service_ =
+        static_cast<MockOptimizationGuideKeyedService*>(
+            OptimizationGuideKeyedServiceFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    profile()->GetPrimaryOTRProfile(),
+                    base::BindRepeating([](content::BrowserContext* context)
+                                            -> std::unique_ptr<KeyedService> {
+                      return std::make_unique<
+                          MockOptimizationGuideKeyedService>(context);
+                    })));
+
     // By default, all sources will return no hints.
     ON_CALL(*mock_optimization_guide_keyed_service_,
             CanApplyOptimization(
@@ -127,9 +139,25 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<content::MockNavigationHandle> test_handle_;
   MockOptimizationGuideKeyedService* mock_optimization_guide_keyed_service_ =
       nullptr;
+  MockOptimizationGuideKeyedService*
+      mock_otr_optimization_guide_keyed_service_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PerformanceHintsObserverTest);
 };
+
+TEST_F(PerformanceHintsObserverTest, IncognitoDoesNotRegisterPerformanceHints) {
+  std::unique_ptr<content::WebContents> incognito_web_contents(
+      content::WebContentsTester::CreateTestWebContents(
+          profile()->GetPrimaryOTRProfile(), nullptr));
+
+  EXPECT_CALL(*mock_otr_optimization_guide_keyed_service_,
+              RegisterOptimizationTypes(testing::UnorderedElementsAre(
+                  optimization_guide::proto::PERFORMANCE_HINTS,
+                  optimization_guide::proto::FAST_HOST_HINTS)))
+      .Times(0);
+
+  PerformanceHintsObserver::CreateForWebContents(incognito_web_contents.get());
+}
 
 TEST_F(PerformanceHintsObserverTest, RegisterPerformanceHints) {
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
