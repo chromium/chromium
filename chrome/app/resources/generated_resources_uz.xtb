@@ -53,7 +53,7 @@
 <translation id="1054153489933238809">Asl &amp;tasvirni yangi tabda ochish</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> qurilmasini 1 hafta ichida yangilang}other{<ph name="DEVICE_TYPE" /> qurilmasini {NUM_WEEKS} hafta ichida yangilang}}</translation>
 <translation id="1055806300943943258">Bluetooth va USB qurilmalar qidirilmoqda...</translation>
-<translation id="1056466516655540509"><ph name="MINUTES" /> daqiqa oldin yangilangan</translation>
+<translation id="1056466516655540509"><ph name="MINUTES" /> daq oldin yangilandi</translation>
 <translation id="1056775291175587022">Tarmoq topilmadi</translation>
 <translation id="1056898198331236512">Ogohlantirish</translation>
 <translation id="1058262162121953039">PUK</translation>
