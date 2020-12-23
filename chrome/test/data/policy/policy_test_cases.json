@@ -1477,7 +1477,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "SpellcheckLanguageBlacklist": ["fr"]},
-        "prefs": { "spellcheck.blacklisted_dictionaries": {} }
+        "prefs": { "spellcheck.blocked_dictionaries": {} }
       }
     ]
   },
@@ -1487,7 +1487,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "SpellcheckLanguageBlocklist": ["fr"]},
-        "prefs": { "spellcheck.blacklisted_dictionaries": {} }
+        "prefs": { "spellcheck.blocked_dictionaries": {} }
       }
     ]
   },

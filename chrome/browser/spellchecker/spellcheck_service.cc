@@ -121,6 +121,22 @@ SpellcheckService::SpellcheckService(content::BrowserContext* context)
   }
 #endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
+  // Migrating kSpellCheckBlacklistedDictionaries preference to
+  // kSpellCheckBlocklistedDictionaries.
+  // TODO(crbug/1161062): Remove after M91.
+  StringListPrefMember old_blocked_dict_pref;
+  old_blocked_dict_pref.Init(
+      spellcheck::prefs::kSpellCheckBlacklistedDictionaries, prefs);
+  StringListPrefMember blocked_dict_pref;
+  blocked_dict_pref.Init(spellcheck::prefs::kSpellCheckBlocklistedDictionaries,
+                         prefs);
+
+  if (blocked_dict_pref.GetValue().empty() &&
+      !old_blocked_dict_pref.GetValue().empty()) {
+    blocked_dict_pref.SetValue(old_blocked_dict_pref.GetValue());
+    old_blocked_dict_pref.SetValue(std::vector<std::string>());
+  }
+
   pref_change_registrar_.Add(
       spellcheck::prefs::kSpellCheckDictionaries,
       base::BindRepeating(&SpellcheckService::OnSpellCheckDictionariesChanged,

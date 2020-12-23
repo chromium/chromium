@@ -299,7 +299,7 @@ Polymer({
    */
   getIndicatorPrefForManagedSpellcheckLanguage_(isEnabled) {
     return isEnabled ? this.getPref('spellcheck.forced_dictionaries') :
-                       this.getPref('spellcheck.blacklisted_dictionaries');
+                       this.getPref('spellcheck.blocked_dictionaries');
   },
 
   /**

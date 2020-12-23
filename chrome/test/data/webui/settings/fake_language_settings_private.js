@@ -460,7 +460,7 @@ cr.define('settings', function() {
         value: 'en-US,sw',
       },
       {
-        key: 'spellcheck.blacklisted_dictionaries',
+        key: 'spellcheck.blocked_dictionaries',
         type: chrome.settingsPrivate.PrefType.LIST,
         value: [],
       },

@@ -575,8 +575,7 @@ suite('languages page', function() {
 
       // Force-disable the same language via policy.
       languageHelper.setPrefValue('spellcheck.forced_dictionaries', []);
-      languageHelper.setPrefValue(
-          'spellcheck.blacklisted_dictionaries', ['nb']);
+      languageHelper.setPrefValue('spellcheck.blocked_dictionaries', ['nb']);
       languageHelper.enableLanguage('nb');
       flush();
       const forceDisabledNbLanguageRow =

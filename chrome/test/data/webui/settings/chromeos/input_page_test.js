@@ -546,7 +546,7 @@ suite('input page', () => {
         () => {
           // Force-disable a language via policy.
           languageHelper.setPrefValue(
-              'spellcheck.blacklisted_dictionaries', ['nb']);
+              'spellcheck.blocked_dictionaries', ['nb']);
           Polymer.dom.flush();
           const newSpellCheckList =
               spellCheckListContainer.querySelectorAll('.list-item');
@@ -555,8 +555,7 @@ suite('input page', () => {
 
     test('shows force-off spell check when language is enabled', () => {
       // Force-disable a language via policy.
-      languageHelper.setPrefValue(
-          'spellcheck.blacklisted_dictionaries', ['nb']);
+      languageHelper.setPrefValue('spellcheck.blocked_dictionaries', ['nb']);
       languageHelper.enableLanguage('nb');
       Polymer.dom.flush();
 

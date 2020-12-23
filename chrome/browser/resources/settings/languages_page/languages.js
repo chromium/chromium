@@ -156,7 +156,7 @@ Polymer({
     'spellCheckDictionariesPrefChanged_(' +
         'prefs.spellcheck.dictionaries.value.*, ' +
         'prefs.spellcheck.forced_dictionaries.value.*, ' +
-        'prefs.spellcheck.blacklisted_dictionaries.value.*, languages)',
+        'prefs.spellcheck.blocked_dictionaries.value.*, languages)',
     'translateLanguagesPrefChanged_(' +
         'prefs.translate_blocked_languages.value.*, languages)',
     'updateRemovableLanguages_(' +
@@ -370,7 +370,7 @@ Polymer({
             this.getPref('spellcheck.forced_dictionaries').value));
     const spellCheckBlacklistedSet =
         this.makeSetFromArray_(/** @type {!Array<string>} */ (
-            this.getPref('spellcheck.blacklisted_dictionaries').value));
+            this.getPref('spellcheck.blocked_dictionaries').value));
 
     for (let i = 0; i < this.languages.enabled.length; i++) {
       const languageState = this.languages.enabled[i];
@@ -525,7 +525,7 @@ Polymer({
     const spellCheckPref = this.getPref('spellcheck.dictionaries');
     const spellCheckForcedPref = this.getPref('spellcheck.forced_dictionaries');
     const spellCheckBlacklistedPref =
-        this.getPref('spellcheck.blacklisted_dictionaries');
+        this.getPref('spellcheck.blocked_dictionaries');
     const spellCheckSet = this.makeSetFromArray_(
         /** @type {!Array<string>} */ (
             spellCheckPref.value.concat(spellCheckForcedPref.value)));

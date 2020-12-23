@@ -596,9 +596,8 @@ Polymer({
    * @param {boolean} isEnabled Whether the language is enabled or not.
    */
   getIndicatorPrefForManagedSpellcheckLanguage_(isEnabled) {
-    return isEnabled ?
-        this.get('spellcheck.forced_dictionaries', this.prefs) :
-        this.get('spellcheck.blacklisted_dictionaries', this.prefs);
+    return isEnabled ? this.get('spellcheck.forced_dictionaries', this.prefs) :
+                       this.get('spellcheck.blocked_dictionaries', this.prefs);
   },
 
   /**
