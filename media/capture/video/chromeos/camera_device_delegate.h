@@ -52,6 +52,7 @@ struct ResultMetadata {
   base::Optional<float> focus_distance;
   base::Optional<int32_t> pan;
   base::Optional<int32_t> saturation;
+  base::Optional<int32_t> sensitivity;
   base::Optional<int32_t> sharpness;
   base::Optional<int32_t> tilt;
   base::Optional<int32_t> zoom;
@@ -256,6 +257,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   bool is_set_contrast_;
   bool is_set_exposure_time_;
   bool is_set_focus_distance_;
+  bool is_set_iso_;
   bool is_set_pan_;
   bool is_set_saturation_;
   bool is_set_sharpness_;
