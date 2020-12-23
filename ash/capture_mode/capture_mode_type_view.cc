@@ -52,7 +52,10 @@ CaptureModeTypeView::CaptureModeTypeView()
       kButtonSpacing));
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  OnCaptureTypeChanged(CaptureModeController::Get()->type());
+  auto* controller = CaptureModeController::Get();
+  // We can't have more than one recording at the same time.
+  video_toggle_button_->SetEnabled(!controller->is_recording_in_progress());
+  OnCaptureTypeChanged(controller->type());
 
   image_toggle_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SCREENSHOT));
@@ -63,6 +66,8 @@ CaptureModeTypeView::CaptureModeTypeView()
 CaptureModeTypeView::~CaptureModeTypeView() = default;
 
 void CaptureModeTypeView::OnCaptureTypeChanged(CaptureModeType new_type) {
+  DCHECK(!CaptureModeController::Get()->is_recording_in_progress() ||
+      new_type == CaptureModeType::kImage);
   image_toggle_button_->SetToggled(new_type == CaptureModeType::kImage);
   video_toggle_button_->SetToggled(new_type == CaptureModeType::kVideo);
   DCHECK_NE(image_toggle_button_->GetToggled(),
@@ -75,8 +80,10 @@ void CaptureModeTypeView::OnImageToggle() {
 }
 
 void CaptureModeTypeView::OnVideoToggle() {
+  auto* controller = CaptureModeController::Get();
+  DCHECK(!controller->is_recording_in_progress());
   RecordCaptureModeBarButtonType(CaptureModeBarButtonType::kScreenRecord);
-  CaptureModeController::Get()->SetType(CaptureModeType::kVideo);
+  controller->SetType(CaptureModeType::kVideo);
 }
 
 BEGIN_METADATA(CaptureModeTypeView, views::View)

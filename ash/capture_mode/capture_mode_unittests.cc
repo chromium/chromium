@@ -2259,4 +2259,38 @@ TEST_F(CaptureModeTest, QuickActionHistograms) {
                                      CaptureQuickAction::kBacklight, 1);
 }
 
+TEST_F(CaptureModeTest, CannotDoMultipleRecordings) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  EXPECT_EQ(CaptureModeType::kVideo, controller->type());
+
+  // Start a new session with the current type which set to kVideo, the type
+  // should be switched automatically to kImage, and video toggle button should
+  // be disabled.
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_EQ(CaptureModeType::kImage, controller->type());
+  EXPECT_TRUE(GetImageToggleButton()->GetToggled());
+  EXPECT_FALSE(GetVideoToggleButton()->GetToggled());
+  EXPECT_FALSE(GetVideoToggleButton()->GetEnabled());
+
+  // Clicking on the video button should do nothing.
+  ClickOnView(GetVideoToggleButton(), GetEventGenerator());
+  EXPECT_TRUE(GetImageToggleButton()->GetToggled());
+  EXPECT_FALSE(GetVideoToggleButton()->GetToggled());
+  EXPECT_EQ(CaptureModeType::kImage, controller->type());
+
+  // Things should go back to normal when there's no recording going on.
+  controller->Stop();
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  EXPECT_EQ(CaptureModeType::kVideo, controller->type());
+  EXPECT_FALSE(GetImageToggleButton()->GetToggled());
+  EXPECT_TRUE(GetVideoToggleButton()->GetToggled());
+  EXPECT_TRUE(GetVideoToggleButton()->GetEnabled());
+}
+
 }  // namespace ash
