@@ -123,6 +123,10 @@ class ASH_EXPORT TabletModeController
   // clamshell.
   void StopObservingAnimation(bool record_stats, bool delete_screenshot);
 
+  // Returns true if we're in tablet mode for development purpose (please refer
+  // to kOnForDev for more details.)
+  bool IsInDevTabletMode() const;
+
   // TabletMode:
   void AddObserver(TabletModeObserver* observer) override;
   void RemoveObserver(TabletModeObserver* observer) override;
@@ -209,6 +213,16 @@ class ASH_EXPORT TabletModeController
     bool always_show_overview_button = false;
     ForcePhysicalTabletState force_physical_tablet_state =
         ForcePhysicalTabletState::kDefault;
+
+    bool operator==(const TabletModeBehavior& other) const {
+      return use_sensor == other.use_sensor &&
+             observe_display_events == other.observe_display_events &&
+             observe_pointer_device_events ==
+                 other.observe_pointer_device_events &&
+             block_internal_input_device == other.block_internal_input_device &&
+             always_show_overview_button == other.always_show_overview_button &&
+             force_physical_tablet_state == other.force_physical_tablet_state;
+    }
   };
 
  private:

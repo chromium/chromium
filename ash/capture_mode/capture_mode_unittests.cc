@@ -1206,6 +1206,15 @@ TEST_F(CaptureModeTest, FullscreenCursorStates) {
   EXPECT_FALSE(controller->IsActive());
   EXPECT_FALSE(cursor_manager->IsCursorLocked());
   EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
+
+  // Test that if we're in tablet mode for dev purpose, the cursor should still
+  // be visible.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForDev(true);
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kImage);
+  EXPECT_EQ(controller->type(), CaptureModeType::kImage);
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
+  event_generator->MoveMouseTo(gfx::Point(175, 175));
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
 
 TEST_F(CaptureModeTest, WindowCursorStates) {

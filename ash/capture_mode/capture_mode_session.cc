@@ -1461,7 +1461,9 @@ bool CaptureModeSession::IsInCountDownAnimation() const {
 void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
                                       bool is_touch) {
   // Hide mouse cursor in tablet mode.
-  if (TabletModeController::Get()->InTabletMode()) {
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  if (tablet_mode_controller->InTabletMode() &&
+      !tablet_mode_controller->IsInDevTabletMode()) {
     cursor_setter_->HideCursor();
     return;
   }

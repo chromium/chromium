@@ -527,6 +527,10 @@ void TabletModeController::StopObservingAnimation(bool record_stats,
     DeleteScreenshot();
 }
 
+bool TabletModeController::IsInDevTabletMode() const {
+  return tablet_mode_behavior_ == kOnForDev;
+}
+
 void TabletModeController::AddObserver(TabletModeObserver* observer) {
   tablet_mode_observers_.AddObserver(observer);
 }
