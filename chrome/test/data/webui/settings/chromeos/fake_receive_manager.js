@@ -78,7 +78,8 @@ cr.define('nearby_share', function() {
     }
 
     /**
-     * @return {!Promise<{success: !boolean}>}
+     * @return {!Promise<{result:
+     *     !nearbyShare.mojom.RegisterReceiveSurfaceResult}>}
      */
     async registerForegroundReceiveSurface() {
       this.inHighVisibility_ = true;
@@ -86,7 +87,10 @@ cr.define('nearby_share', function() {
         this.observer_.onHighVisibilityChanged(this.inHighVisibility_);
       }
       this.methodCalled('registerForegroundReceiveSurface');
-      return {success: this.nextResult_};
+      const result = this.nextResult_ ?
+          nearbyShare.mojom.RegisterReceiveSurfaceResult.kSuccess :
+          nearbyShare.mojom.RegisterReceiveSurfaceResult.kFailure;
+      return {result: result};
     }
 
     /**
