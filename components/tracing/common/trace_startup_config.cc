@@ -83,7 +83,7 @@ TraceStartupConfig::TraceStartupConfig() {
   if (EnableFromCommandLine()) {
     DCHECK(IsEnabled());
   } else if (EnableFromConfigFile()) {
-    DCHECK(IsEnabled() || IsUsingPerfettoOutput());
+    DCHECK(IsEnabled());
   } else if (EnableFromBackgroundTracing()) {
     DCHECK(IsEnabled());
     DCHECK(!IsTracingStartupForDuration());
@@ -99,12 +99,7 @@ TraceStartupConfig::TraceStartupConfig() {
 TraceStartupConfig::~TraceStartupConfig() = default;
 
 bool TraceStartupConfig::IsEnabled() const {
-  // TODO(oysteine): Support early startup tracing using Perfetto
-  // output; right now the early startup tracing gets controlled
-  // through the TracingController, and the Perfetto output is
-  // using the Consumer Mojo interface; the two can't be used
-  // together.
-  return is_enabled_ && !IsUsingPerfettoOutput();
+  return is_enabled_;
 }
 
 void TraceStartupConfig::SetDisabled() {
@@ -117,13 +112,18 @@ bool TraceStartupConfig::IsTracingStartupForDuration() const {
 }
 
 base::trace_event::TraceConfig TraceStartupConfig::GetTraceConfig() const {
-  DCHECK(IsEnabled() || IsUsingPerfettoOutput());
+  DCHECK(IsEnabled());
   return trace_config_;
 }
 
 int TraceStartupConfig::GetStartupDuration() const {
-  DCHECK(IsEnabled() || IsUsingPerfettoOutput());
+  DCHECK(IsEnabled());
   return startup_duration_in_seconds_;
+}
+
+TraceStartupConfig::OutputFormat TraceStartupConfig::GetOutputFormat() const {
+  DCHECK(IsEnabled());
+  return output_format_;
 }
 
 bool TraceStartupConfig::ShouldTraceToResultFile() const {
@@ -138,11 +138,6 @@ base::FilePath TraceStartupConfig::GetResultFile() const {
 
 void TraceStartupConfig::OnTraceToResultFileFinished() {
   finished_writing_to_file_ = true;
-}
-
-bool TraceStartupConfig::IsUsingPerfettoOutput() const {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kPerfettoOutputFile);
 }
 
 void TraceStartupConfig::SetBackgroundStartupTracingEnabled(bool enabled) {
@@ -168,7 +163,6 @@ bool TraceStartupConfig::AttemptAdoptBySessionOwner(SessionOwner owner) {
 bool TraceStartupConfig::EnableFromCommandLine() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
-  // Startup duration can be used by along with perfetto-output-file flag.
   if (command_line->HasSwitch(switches::kTraceStartupDuration)) {
     std::string startup_duration_str =
         command_line->GetSwitchValueASCII(switches::kTraceStartupDuration);
@@ -178,6 +172,12 @@ bool TraceStartupConfig::EnableFromCommandLine() {
                     << "=" << startup_duration_str << " defaulting to 5 (secs)";
       startup_duration_in_seconds_ = kDefaultStartupDurationInSeconds;
     }
+  }
+
+  if (command_line->GetSwitchValueASCII(switches::kTraceStartupFormat) ==
+      "proto") {
+    // Default is "json".
+    output_format_ = OutputFormat::kProto;
   }
 
   if (!command_line->HasSwitch(switches::kTraceStartup))

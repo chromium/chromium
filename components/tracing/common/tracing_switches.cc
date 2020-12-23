@@ -37,6 +37,14 @@ const char kTraceStartupDuration[]          = "trace-startup-duration";
 // all events since startup.
 const char kTraceStartupFile[]              = "trace-startup-file";
 
+// Sets the output format for the trace, valid values are "json" and "proto".
+// If not set, the current default is "json".
+// "proto", unlike json, supports writing the trace into the output file
+// incrementally and is more likely to retain more data if the browser process
+// unexpectedly terminates.
+// Ignored if "trace-startup-owner" is not "controller".
+const char kTraceStartupFormat[] = "trace-startup-format";
+
 // If supplied, sets the tracing record mode and options; otherwise, the default
 // "record-until-full" mode will be used.
 const char kTraceStartupRecordMode[] = "trace-startup-record-mode";
@@ -65,13 +73,6 @@ const char kTraceStartupEnablePrivacyFiltering[] =
 
 // Repeat internable data for each TraceEvent in the perfetto proto format.
 const char kPerfettoDisableInterning[] = "perfetto-disable-interning";
-
-// If supplied, will enable Perfetto startup tracing and stream the
-// output to the given file. On Android, if no file is provided, automatically
-// generate a file to write the output to.
-// TODO(oysteine): Remove once Perfetto starts early enough after
-// process startup to be able to replace the legacy startup tracing.
-const char kPerfettoOutputFile[] = "perfetto-output-file";
 
 // Sends a pretty-printed version of tracing info to the console.
 const char kTraceToConsole[]                = "trace-to-console";

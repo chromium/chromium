@@ -94,6 +94,11 @@ class TRACING_EXPORT TraceStartupConfig {
     kSystemTracing
   };
 
+  enum class OutputFormat {
+    kLegacyJSON,
+    kProto,
+  };
+
   static TraceStartupConfig* GetInstance();
 
   // Default minimum startup trace config with enough events to debug issues.
@@ -135,6 +140,8 @@ class TRACING_EXPORT TraceStartupConfig {
 
   SessionOwner GetSessionOwner() const;
 
+  OutputFormat GetOutputFormat() const;
+
   // Called by a potential session owner to determine if it should take
   // ownership of the startup tracing session and begin tracing. Returns |true|
   // if the passed |owner| should adopt the session.
@@ -152,8 +159,6 @@ class TRACING_EXPORT TraceStartupConfig {
   TraceStartupConfig();
   ~TraceStartupConfig();
 
-  bool IsUsingPerfettoOutput() const;
-
   bool EnableFromCommandLine();
   bool EnableFromConfigFile();
   bool EnableFromBackgroundTracing();
@@ -170,6 +175,7 @@ class TRACING_EXPORT TraceStartupConfig {
   bool finished_writing_to_file_ = false;
   SessionOwner session_owner_ = SessionOwner::kTracingController;
   bool session_adopted_ = false;
+  OutputFormat output_format_ = OutputFormat::kLegacyJSON;
 
   DISALLOW_COPY_AND_ASSIGN(TraceStartupConfig);
 };

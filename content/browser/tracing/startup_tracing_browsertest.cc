@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -11,7 +12,6 @@
 #include "build/build_config.h"
 #include "components/tracing/common/trace_startup_config.h"
 #include "components/tracing/common/tracing_switches.h"
-#include "content/browser/tracing/perfetto_file_tracer.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -73,12 +73,6 @@ IN_PROC_BROWSER_TEST_F(CommandlineStartupTracingTest,
                        MAYBE_TestStartupTracing) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
   WaitForCondition(base::BindRepeating([]() {
-                     return !TracingController::GetInstance()->IsTracing();
-                   }),
-                   "trace end");
-  EXPECT_FALSE(tracing::TraceStartupConfig::GetInstance()->IsEnabled());
-  EXPECT_FALSE(TracingController::GetInstance()->IsTracing());
-  WaitForCondition(base::BindRepeating([]() {
                      return tracing::TraceStartupConfig::GetInstance()
                          ->finished_writing_to_file_for_testing();
                    }),
@@ -87,9 +81,9 @@ IN_PROC_BROWSER_TEST_F(CommandlineStartupTracingTest,
   std::string trace;
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(base::ReadFileToString(temp_file_path_, &trace));
-  EXPECT_TRUE(
-      trace.find("TracingControllerImpl::InitStartupTracingForDuration") !=
-      std::string::npos);
+  EXPECT_TRUE(base::JSONReader::Read(trace));
+  EXPECT_TRUE(trace.find("StartupTracingController::Start") !=
+              std::string::npos);
 }
 
 #undef MAYBE_TestStartupTracing
@@ -158,57 +152,6 @@ IN_PROC_BROWSER_TEST_F(StartupTracingInProcessTest, TestFilledStartupBuffer) {
           },
           wait_for_stop.QuitClosure())));
   wait_for_stop.Run();
-}
-
-class BackgroundStartupTracingTest : public ContentBrowserTest {
- public:
-  BackgroundStartupTracingTest() = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    base::CreateTemporaryFile(&temp_file_path_);
-    auto* startup_config = tracing::TraceStartupConfig::GetInstance();
-    startup_config->enable_background_tracing_for_testing_ = true;
-    startup_config->EnableFromBackgroundTracing();
-    startup_config->startup_duration_in_seconds_ = 3;
-    command_line->AppendSwitchASCII(switches::kPerfettoOutputFile,
-                                    temp_file_path_.AsUTF8Unsafe());
-  }
-
- protected:
-  base::FilePath temp_file_path_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundStartupTracingTest);
-};
-
-#if !defined(OS_ANDROID)
-#define MAYBE_TestStartupTracing DISABLED_TestStartupTracing
-#else
-#define MAYBE_TestStartupTracing TestStartupTracing
-#endif
-IN_PROC_BROWSER_TEST_F(BackgroundStartupTracingTest, MAYBE_TestStartupTracing) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
-
-  EXPECT_FALSE(tracing::TraceStartupConfig::GetInstance()->IsEnabled());
-  EXPECT_FALSE(TracingController::GetInstance()->IsTracing());
-  WaitForCondition(base::BindRepeating([]() {
-                     return TracingControllerImpl::GetInstance()
-                         ->perfetto_file_tracer_for_testing()
-                         ->is_finished_for_testing();
-                   }),
-                   "finish file write");
-
-  std::string trace;
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  ASSERT_TRUE(base::ReadFileToString(temp_file_path_, &trace));
-  tracing::PrivacyFilteringCheck checker;
-  checker.CheckProtoForUnexpectedFields(trace);
-  EXPECT_GT(checker.stats().track_event, 0u);
-  EXPECT_GT(checker.stats().process_desc, 0u);
-  EXPECT_GT(checker.stats().thread_desc, 0u);
-  EXPECT_TRUE(checker.stats().has_interned_names);
-  EXPECT_TRUE(checker.stats().has_interned_categories);
-  EXPECT_TRUE(checker.stats().has_interned_source_locations);
 }
 
 }  // namespace content

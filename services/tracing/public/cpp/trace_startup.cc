@@ -44,11 +44,6 @@ void EnableStartupTracingIfNeeded() {
   // unique uuid for generating track ids.
   PerfettoTracedProcess::Get()->SetupClientLibrary();
 
-  // TODO(oysteine): Support startup tracing to a perfetto protobuf trace. This
-  // should also enable TraceLog and call SetupStartupTracing().
-  if (command_line.HasSwitch(switches::kPerfettoOutputFile))
-    return;
-
   // Ensure TraceLog is initialized first.
   // https://crbug.com/764357
   TraceLog::GetInstance();
