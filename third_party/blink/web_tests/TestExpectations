@@ -5919,5 +5919,7 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-image/MediaStreamTrack-getCon
 crbug.com/1046784 http/tests/devtools/console/console-context-selector.js [ Pass Timeout ]
 
 #Sheriff 2020-12-22
-crbug.com/1161244 [ Mac ] external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html [ Pass Timeout ]
-crbug.com/1161301 [ Mac ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Pass Timeout ]
+crbug.com/1161244 [ Mac10.15 ] external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html [ Pass Timeout ]
+crbug.com/1161301 [ Mac10.15 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Pass Timeout ]
+crbug.com/1161352 [ Mac10.14 ] virtual/controls-refresh-hc/fast/forms/color-scheme/search/search-appearance-basic.html [ Pass Timeout ]
+crbug.com/1161352 [ Mac10.14 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Pass Failure Timeout ]
