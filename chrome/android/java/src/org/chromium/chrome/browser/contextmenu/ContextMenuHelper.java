@@ -113,7 +113,7 @@ public class ContextMenuHelper {
 
         if (view == null || view.getVisibility() != View.VISIBLE || view.getParent() == null
                 || windowAndroid == null || windowAndroid.getActivity().get() == null
-                || mPopulatorFactory == null) {
+                || mPopulatorFactory == null || mCurrentContextMenu != null) {
             return;
         }
 
