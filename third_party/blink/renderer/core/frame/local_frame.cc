@@ -2060,7 +2060,7 @@ void LocalFrame::SetOpener(Frame* opener_frame) {
   // Only a local frame should be able to update another frame's opener.
   DCHECK(!opener_frame || opener_frame->IsLocalFrame());
 
-  auto* web_frame = WebFrame::FromFrame(this);
+  auto* web_frame = WebFrame::FromCoreFrame(this);
   if (web_frame && Opener() != opener_frame) {
     GetLocalFrameHostRemote().DidChangeOpener(
         opener_frame ? base::Optional<base::UnguessableToken>(
@@ -3294,7 +3294,7 @@ void LocalFrame::BindReportingObserver(
 
 void LocalFrame::UpdateOpener(
     const base::Optional<base::UnguessableToken>& opener_frame_token) {
-  if (auto* web_frame = WebFrame::FromFrame(this)) {
+  if (auto* web_frame = WebFrame::FromCoreFrame(this)) {
     Frame* opener_frame = nullptr;
     if (opener_frame_token)
       opener_frame = Frame::ResolveFrame(opener_frame_token.value());

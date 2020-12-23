@@ -802,7 +802,7 @@ RTCPeerConnection::RTCPeerConnection(
   }
 
   auto* web_frame =
-      static_cast<WebLocalFrame*>(WebFrame::FromFrame(window->GetFrame()));
+      static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(window->GetFrame()));
   if (!peer_handler_->Initialize(configuration, constraints, web_frame,
                                  exception_state)) {
     DCHECK(exception_state.HadException());

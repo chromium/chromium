@@ -320,7 +320,7 @@ void WebFrameSerializerImpl::OpenTagToString(Element* element,
   // Find out if we need to do frame-specific link rewriting.
   WebFrame* frame = nullptr;
   if (auto* frame_owner_element = DynamicTo<HTMLFrameOwnerElement>(element)) {
-    frame = WebFrame::FromFrame(frame_owner_element->ContentFrame());
+    frame = WebFrame::FromCoreFrame(frame_owner_element->ContentFrame());
   }
   WebString rewritten_frame_link;
   bool should_rewrite_frame_src =

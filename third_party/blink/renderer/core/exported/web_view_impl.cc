@@ -1872,7 +1872,7 @@ WebString WebViewImpl::PageEncoding() const {
 
 WebFrame* WebViewImpl::MainFrame() {
   Page* page = page_.Get();
-  return WebFrame::FromFrame(page ? page->MainFrame() : nullptr);
+  return WebFrame::FromCoreFrame(page ? page->MainFrame() : nullptr);
 }
 
 WebLocalFrameImpl* WebViewImpl::MainFrameImpl() const {

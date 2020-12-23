@@ -944,7 +944,8 @@ UserMediaProcessor::GetMediaStreamDeviceObserver() {
   auto* media_stream_device_observer =
       media_stream_device_observer_for_testing_;
   if (frame_) {  // Can be null for tests.
-    auto* web_frame = static_cast<WebLocalFrame*>(WebFrame::FromFrame(frame_));
+    auto* web_frame =
+        static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(frame_));
     if (!web_frame || !web_frame->Client())
       return nullptr;
 

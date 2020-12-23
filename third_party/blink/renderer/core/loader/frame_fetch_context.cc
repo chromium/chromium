@@ -797,7 +797,7 @@ FrameFetchContext::CreateWebSocketHandshakeThrottle() {
   }
   if (!GetFrame())
     return nullptr;
-  return WebFrame::FromFrame(GetFrame())
+  return WebFrame::FromCoreFrame(GetFrame())
       ->ToWebLocalFrame()
       ->Client()
       ->CreateWebSocketHandshakeThrottle();

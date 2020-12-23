@@ -167,8 +167,7 @@ class BLINK_EXPORT WebFrame {
   const base::UnguessableToken& GetFrameToken() const { return frame_token_; }
 
 #if INSIDE_BLINK
-  // TODO(mustaq): Should be named FromCoreFrame instead.
-  static WebFrame* FromFrame(Frame*);
+  static WebFrame* FromCoreFrame(Frame*);
   static Frame* ToCoreFrame(const WebFrame&);
 
   bool InShadowTree() const { return scope_ == mojom::TreeScopeType::kShadow; }

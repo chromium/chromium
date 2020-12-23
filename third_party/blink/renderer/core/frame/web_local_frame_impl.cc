@@ -624,13 +624,13 @@ int WebFrame::InstanceCount() {
 // static
 WebFrame* WebFrame::FromFrameToken(const base::UnguessableToken& frame_token) {
   auto* frame = Frame::ResolveFrame(frame_token);
-  return WebFrame::FromFrame(frame);
+  return WebFrame::FromCoreFrame(frame);
 }
 
 // static
 WebFrame* WebFrame::FromFrameToken(const FrameToken& frame_token) {
   auto* frame = Frame::ResolveFrame(frame_token);
-  return WebFrame::FromFrame(frame);
+  return WebFrame::FromCoreFrame(frame);
 }
 
 WebLocalFrame* WebLocalFrame::FrameForCurrentContext() {
@@ -758,7 +758,7 @@ bool WebLocalFrameImpl::IsFocused() const {
     return false;
 
   return this ==
-         WebFrame::FromFrame(
+         WebFrame::FromCoreFrame(
              ViewImpl()->GetPage()->GetFocusController().FocusedFrame());
 }
 
@@ -2280,7 +2280,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::LocalRoot() {
 }
 
 WebFrame* WebLocalFrameImpl::FindFrameByName(const WebString& name) {
-  return WebFrame::FromFrame(GetFrame()->Tree().FindFrameByName(name));
+  return WebFrame::FromCoreFrame(GetFrame()->Tree().FindFrameByName(name));
 }
 
 void WebLocalFrameImpl::SetEmbeddingToken(

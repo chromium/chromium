@@ -53,7 +53,7 @@ WebVector<unsigned> WebFrame::GetInsecureRequestToUpgrade() const {
 }
 
 WebFrame* WebFrame::Opener() const {
-  return FromFrame(ToCoreFrame(*this)->Opener());
+  return FromCoreFrame(ToCoreFrame(*this)->Opener());
 }
 
 void WebFrame::ClearOpener() {
@@ -63,42 +63,42 @@ void WebFrame::ClearOpener() {
 WebFrame* WebFrame::Parent() const {
   Frame* core_frame = ToCoreFrame(*this);
   CHECK(core_frame);
-  return FromFrame(core_frame->Parent());
+  return FromCoreFrame(core_frame->Parent());
 }
 
 WebFrame* WebFrame::Top() const {
   Frame* core_frame = ToCoreFrame(*this);
   CHECK(core_frame);
-  return FromFrame(core_frame->Top());
+  return FromCoreFrame(core_frame->Top());
 }
 
 WebFrame* WebFrame::FirstChild() const {
   Frame* core_frame = ToCoreFrame(*this);
   CHECK(core_frame);
-  return FromFrame(core_frame->FirstChild());
+  return FromCoreFrame(core_frame->FirstChild());
 }
 
 WebFrame* WebFrame::LastChild() const {
   Frame* core_frame = ToCoreFrame(*this);
   CHECK(core_frame);
-  return FromFrame(core_frame->LastChild());
+  return FromCoreFrame(core_frame->LastChild());
 }
 
 WebFrame* WebFrame::NextSibling() const {
   Frame* core_frame = ToCoreFrame(*this);
   CHECK(core_frame);
-  return FromFrame(core_frame->NextSibling());
+  return FromCoreFrame(core_frame->NextSibling());
 }
 
 WebFrame* WebFrame::PreviousSibling() const {
   Frame* core_frame = ToCoreFrame(*this);
   CHECK(core_frame);
-  return FromFrame(core_frame->PreviousSibling());
+  return FromCoreFrame(core_frame->PreviousSibling());
 }
 
 WebFrame* WebFrame::TraverseNext() const {
   if (Frame* frame = ToCoreFrame(*this))
-    return FromFrame(frame->Tree().TraverseNext());
+    return FromCoreFrame(frame->Tree().TraverseNext());
   return nullptr;
 }
 
@@ -106,7 +106,7 @@ WebFrame* WebFrame::FromFrameOwnerElement(const WebNode& web_node) {
   Node* node = web_node;
 
   if (auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(node))
-    return FromFrame(frame_owner->ContentFrame());
+    return FromCoreFrame(frame_owner->ContentFrame());
   return nullptr;
 }
 
@@ -116,7 +116,7 @@ bool WebFrame::IsLoading() const {
   return false;
 }
 
-WebFrame* WebFrame::FromFrame(Frame* frame) {
+WebFrame* WebFrame::FromCoreFrame(Frame* frame) {
   if (!frame)
     return nullptr;
 

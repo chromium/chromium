@@ -212,7 +212,7 @@ class WebRtcAudioRenderer::InternalFrame {
     if (!frame_)
       return nullptr;
 
-    return static_cast<WebLocalFrame*>(WebFrame::FromFrame(frame()));
+    return static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(frame()));
   }
 
  private:

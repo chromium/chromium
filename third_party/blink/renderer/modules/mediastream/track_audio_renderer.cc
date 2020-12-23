@@ -61,7 +61,7 @@ WebLocalFrame* ToWebLocalFrame(LocalFrame* frame) {
   if (!frame)
     return nullptr;
 
-  return static_cast<WebLocalFrame*>(WebFrame::FromFrame(frame));
+  return static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(frame));
 }
 
 }  // namespace

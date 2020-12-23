@@ -605,7 +605,7 @@ bool Frame::Swap(WebFrame* frame) {
   if (frame->IsWebRemoteFrame()) {
     CHECK(!WebFrame::ToCoreFrame(*frame));
     To<WebRemoteFrameImpl>(frame)->InitializeCoreFrame(
-        *page, owner, WebFrame::FromFrame(parent_), nullptr,
+        *page, owner, WebFrame::FromCoreFrame(parent_), nullptr,
         FrameInsertType::kInsertLater, name, &window_agent_factory());
     // At this point, a `RemoteFrame` will have already updated
     // `Page::MainFrame()` or `FrameOwner::ContentFrame()` as appropriate, and

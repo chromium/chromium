@@ -288,7 +288,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
       params.AsHumanReadableString().c_str(),
       GetAudioParameters().AsHumanReadableString().c_str()));
   auto* web_frame =
-      static_cast<WebLocalFrame*>(WebFrame::FromFrame(consumer_frame_));
+      static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(consumer_frame_));
   scoped_refptr<media::AudioCapturerSource> new_source =
       Platform::Current()->NewAudioCapturerSource(web_frame, source_params);
   new_source->Initialize(params, this);

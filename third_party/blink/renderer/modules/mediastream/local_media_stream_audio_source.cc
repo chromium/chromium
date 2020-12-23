@@ -85,7 +85,7 @@ bool LocalMediaStreamAudioSource::EnsureSourceIsStarted() {
           << GetAudioParameters().AsHumanReadableString() << "}.";
 
   auto* web_frame =
-      static_cast<WebLocalFrame*>(WebFrame::FromFrame(consumer_frame_));
+      static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(consumer_frame_));
   source_ = Platform::Current()->NewAudioCapturerSource(
       web_frame, media::AudioSourceParameters(device().session_id()));
   source_->Initialize(GetAudioParameters(), this);

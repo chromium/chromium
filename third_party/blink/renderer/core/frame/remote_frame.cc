@@ -568,7 +568,7 @@ void RemoteFrame::SetEmbeddingToken(
 }
 
 void RemoteFrame::SetPageFocus(bool is_focused) {
-  static_cast<WebViewImpl*>(WebFrame::FromFrame(this)->View())
+  static_cast<WebViewImpl*>(WebFrame::FromCoreFrame(this)->View())
       ->SetPageFocus(is_focused);
 }
 
@@ -625,7 +625,7 @@ void RemoteFrame::ScrollRectToVisible(
   // view on Android which also requires an automatic zoom into legible scale.
   // This is handled by main frame's WebView.
   WebViewImpl* web_view =
-      static_cast<WebViewImpl*>(WebFrame::FromFrame(this)->View());
+      static_cast<WebViewImpl*>(WebFrame::FromCoreFrame(this)->View());
   web_view->ZoomAndScrollToFocusedEditableElementRect(
       element_bounds_in_document, caret_bounds_in_document, true);
 }
@@ -698,7 +698,7 @@ void RemoteFrame::DidUpdateFramePolicy(const FramePolicy& frame_policy) {
 
 void RemoteFrame::UpdateOpener(
     const base::Optional<base::UnguessableToken>& opener_frame_token) {
-  if (auto* web_frame = WebFrame::FromFrame(this)) {
+  if (auto* web_frame = WebFrame::FromCoreFrame(this)) {
     Frame* opener_frame = nullptr;
     if (opener_frame_token)
       opener_frame = Frame::ResolveFrame(opener_frame_token.value());
@@ -724,7 +724,7 @@ void RemoteFrame::SetOpener(Frame* opener_frame) {
   if (Opener() == opener_frame)
     return;
 
-  auto* web_frame = WebFrame::FromFrame(this);
+  auto* web_frame = WebFrame::FromCoreFrame(this);
   if (web_frame) {
     // A proxy shouldn't normally be disowning its opener.  It is possible to
     // get here when a proxy that is being detached clears its opener, in
