@@ -17,6 +17,7 @@
 // #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {NetworkList} from 'chrome://resources/cr_components/chromeos/network/network_list_types.m.js';
 // clang-format on
 
 suite('NetworkListItemTest', function() {
@@ -71,7 +72,7 @@ suite('NetworkListItemTest', function() {
         OncMojo.getDefaultNetworkState(mojom.NetworkType.kEthernet, 'eth0');
     await flushAsync();
 
-    let providerName = listItem.$$('#networkProviderName');
+    let providerName = listItem.$$('#subtitle');
     assertFalse(!!providerName.textContent.trim());
 
     const cellular = OncMojo.getDefaultManagedProperties(
@@ -87,8 +88,37 @@ suite('NetworkListItemTest', function() {
 
     await flushAsync();
 
-    providerName = listItem.$$('#networkProviderName');
+    providerName = listItem.$$('#subtitle');
     assertTrue(!!providerName);
     assertEquals('Verizon Wireless', providerName.textContent.trim());
   });
+
+  test(
+      'Pending eSIM profile name, provider, download button visibilty',
+      async () => {
+        const itemName = 'Item Name';
+        const itemSubtitle = 'Item Subtitle';
+        listItem.item = {
+          customItemType: NetworkList.CustomItemType.ESIM_PENDING_PROFILE,
+          customItemName: itemName,
+          customItemSubtitle: itemSubtitle,
+          polymerIcon: 'network:cellular-0',
+          showBeforeNetworksList: false,
+          customData: {
+            iccid: 'iccid',
+          },
+        };
+        await flushAsync();
+
+        let networkName = listItem.$$('#networkName');
+        assertTrue(!!networkName);
+        assertEquals(itemName, networkName.textContent.trim());
+
+        let subtitle = listItem.$$('#subtitle');
+        assertTrue(!!subtitle);
+        assertEquals(itemSubtitle, subtitle.textContent.trim());
+
+        let downloadButton = listItem.$$('#downloadButton');
+        assertTrue(!!downloadButton);
+      });
 });

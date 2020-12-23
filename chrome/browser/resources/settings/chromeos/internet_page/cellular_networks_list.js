@@ -118,15 +118,24 @@ Polymer({
           throw new Error('No EUICCs available.');
         })
         .then(profiles => {
-          this.eSimPendingProfiles_ = profiles.map(profile => {
-            return {
-              // TODO(crbug.com/1093185) Populate with profile name and
-              // provider. Right now use any valid i18n string for
-              // customItemName so an error isn't thrown during test.
-              customItemName: 'cellularNetworkEsimLabel',
-              polymerIcon: 'network:cellular-0',
-              showBeforeNetworksList: false,
-            };
+          const pendingProfilePromises = profiles.map(profile => {
+            return profile.getProperties().then(response => {
+              return {
+                customItemType: NetworkList.CustomItemType.ESIM_PENDING_PROFILE,
+                customItemName:
+                    String.fromCharCode(...response.properties.name.data),
+                customItemSubtitle: String.fromCharCode(
+                    ...response.properties.serviceProvider.data),
+                polymerIcon: 'network:cellular-0',
+                showBeforeNetworksList: false,
+                customData: {
+                  iccid: response.properties.iccid,
+                },
+              };
+            });
+          });
+          Promise.all(pendingProfilePromises).then(profiles => {
+            this.eSimPendingProfiles_ = profiles;
           });
         })
         .catch(error => {

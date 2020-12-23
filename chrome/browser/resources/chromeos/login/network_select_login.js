@@ -114,6 +114,7 @@
       var items = [];
       if (this.isOfflineDemoModeSetup) {
         items.push({
+          customItemType: NetworkList.CustomItemType.OOBE,
           customItemName: 'offlineDemoSetupListItemName',
           polymerIcon: 'oobe-network-20:offline-demo-setup',
           showBeforeNetworksList: true,
@@ -124,6 +125,7 @@
       }
       if (this.isNetworkConnected) {
         items.push({
+          customItemType: NetworkList.CustomItemType.OOBE,
           customItemName: 'proxySettingsListItemName',
           polymerIcon: 'oobe-network-20:add-proxy',
           showBeforeNetworksList: false,
@@ -133,6 +135,7 @@
         });
       }
       items.push({
+        customItemType: NetworkList.CustomItemType.OOBE,
         customItemName: 'addWiFiListItemName',
         polymerIcon: 'oobe-network-20:add-wifi',
         showBeforeNetworksList: false,

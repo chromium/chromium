@@ -23,7 +23,10 @@
       }
 
       #divOuter {
-        height: 100%;
+        margin-bottom: 8px;
+        margin-top: 8px;
+        min-height: 48px;
+        overflow: auto;
         padding-inline-end: var(--cr-icon-ripple-padding);
       }
 
@@ -49,17 +52,31 @@
         color: var(--google-green-500);
       }
 
-      iron-icon {
+      iron-icon :not(.esim-pending-profile) {
         height: 24px;
         width: 24px;
+      }
+
+      iron-icon .esim-pending-profile {
+        height: 20px;
+        width: 20px;
       }
 
       cr-policy-indicator {
         padding: 0 var(--cr-controlled-by-spacing);
       }
 
+      .esim-pending-profile {
+        opacity: 0.4;
+      }
+
       #wrapper {
         height: 100%;
+      }
+
+      cr-button iron-icon {
+        --iron-icon-fill-color: #1A73E8;
+        margin-inline-end: 8px;
       }
     </style>
     <div id="wrapper" focus-row-container
@@ -82,14 +99,16 @@
           </network-icon>
         </template>
         <template is="dom-if" if="[[item.polymerIcon]]">
-          <iron-icon icon="[[item.polymerIcon]]"></iron-icon>
+          <iron-icon icon="[[item.polymerIcon]]" class$="[[getItemClassName_(item)]]"></iron-icon>
         </template>
-        <div id="divText" class="layout horizontal flex">
-          <div aria-hidden="true">[[getItemName_(item)]]</div>
-          <div id="networkProviderName"
-              hidden$="[[!isProviderNameVisible_(providerName_)]]"
+        <div id="divText" class$="layout horizontal flex [[getItemClassName_(item)]]">
+          <div id="networkName" aria-hidden="true">
+            [[getItemName_(item)]]
+          </div>
+          <div id="subtitle"
+              hidden$="[[!isSubtitleVisible_(subtitle_)]]"
               aria-hidden="true">
-            [[getProviderName_(providerName_)]]
+            [[getSubtitle(subtitle_)]]
           </div>
           <div id="networkStateText"
               class="cr-secondary-text"
@@ -115,6 +134,14 @@
                 focus-type="subpageButton">
             </cr-icon-button>
           </div>
+        </template>
+        <template is="dom-if" if="[[isESimPendingProfile_(item)]]" restamp>
+          <!-- TODO(crbug.com/1093185): Download profile when clicked. -->
+          <cr-button id="downloadButton"
+              aria-label$="[[getItemName_(item)]], $i18n{networkListItemDownload}">
+            <iron-icon icon="network:download"></iron-icon>
+            $i18n{networkListItemDownload}
+          </cr-button>
         </template>
       </div>
     </div>
