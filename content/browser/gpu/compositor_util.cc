@@ -124,13 +124,6 @@ const GpuFeatureData GetGpuFeatureData(
      DisableInfo::Problem(
          "WebGL has been disabled via blocklist or the command line."),
      false},
-    {"protected_video_decode",
-     SafeGetFeatureStatus(gpu_feature_info,
-                          gpu::GPU_FEATURE_TYPE_PROTECTED_VIDEO_DECODE),
-     false,
-     DisableInfo::Problem(
-         "Protected video decode has been disabled, via blocklist."),
-     false},
     {"video_decode",
      SafeGetFeatureStatus(gpu_feature_info,
                           gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE),
