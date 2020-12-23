@@ -7,7 +7,12 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_item_view_delegate.h"
+#include "base/auto_reset.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
+#include "ui/compositor/layer_animation_element.h"
+#include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_animation_sequence.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/platform_style.h"
@@ -16,9 +21,89 @@ namespace ash {
 
 namespace {
 
+// Animation.
+constexpr base::TimeDelta kAnimationDuration =
+    base::TimeDelta::FromMilliseconds(167);
+constexpr SkScalar kAnimationTranslationY = 20;
+
 // Value returned during notification of animation completion events in order to
 // delete the observer which provided notification.
 constexpr bool kDeleteObserver = true;
+
+// Helpers ---------------------------------------------------------------------
+
+// Initializes the layer for the specified `view` for animations.
+void InitLayerForAnimations(views::View* view) {
+  view->SetPaintToLayer();
+  view->layer()->SetFillsBoundsOpaquely(false);
+  view->layer()->GetAnimator()->set_preemption_strategy(
+      ui::LayerAnimator::PreemptionStrategy::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+}
+
+// Creates a `ui::LayerAnimationSequence` for the specified `element` observed
+// by the specified `observer`.
+std::unique_ptr<ui::LayerAnimationSequence> CreateObservedSequence(
+    std::unique_ptr<ui::LayerAnimationElement> element,
+    ui::LayerAnimationObserver* observer) {
+  auto sequence = std::make_unique<ui::LayerAnimationSequence>();
+  sequence->AddElement(std::move(element));
+  sequence->AddObserver(observer);
+  return sequence;
+}
+
+// Creates a `gfx:Transform` for the specified `x` and `y` offsets.
+gfx::Transform CreateTransformFromOffset(SkScalar x, SkScalar y) {
+  gfx::Transform transform;
+  transform.Translate(x, y);
+  return transform;
+}
+
+// Animates the specified `view` to a target `opacity` and `transform` with the
+// specified `duration`, associating `observer` with the created animation
+// sequences.
+void DoAnimateTo(views::View* view,
+                 float opacity,
+                 const gfx::Transform& transform,
+                 base::TimeDelta duration,
+                 ui::LayerAnimationObserver* observer) {
+  // Opacity animation.
+  auto opacity_element =
+      ui::LayerAnimationElement::CreateOpacityElement(opacity, duration);
+  opacity_element->set_tween_type(gfx::Tween::Type::LINEAR);
+
+  // Transform animation.
+  auto transform_element =
+      ui::LayerAnimationElement::CreateTransformElement(transform, duration);
+  transform_element->set_tween_type(gfx::Tween::Type::EASE_OUT_3);
+
+  // Note that the `ui::LayerAnimator` takes ownership of any animation
+  // sequences so they need to be released.
+  view->layer()->GetAnimator()->StartTogether(
+      {CreateObservedSequence(std::move(opacity_element), observer).release(),
+       CreateObservedSequence(std::move(transform_element), observer)
+           .release()});
+}
+
+// Animates in the specified `view` with the specified `duration`, associating
+// `observer` with the created animation sequences.
+void DoAnimateIn(views::View* view,
+                 base::TimeDelta duration,
+                 ui::LayerAnimationObserver* observer) {
+  view->layer()->SetOpacity(0.f);
+  view->layer()->SetTransform(
+      CreateTransformFromOffset(0, kAnimationTranslationY));
+  DoAnimateTo(view, /*opacity=*/1.f, gfx::Transform(), duration, observer);
+}
+
+// Animates out the specified `view` with the specified `duration, associating
+// `observer` with the created animation sequences.
+void DoAnimateOut(views::View* view,
+                  base::TimeDelta duration,
+                  ui::LayerAnimationObserver* observer) {
+  DoAnimateTo(view, /*opacity=*/0.f,
+              CreateTransformFromOffset(0, -kAnimationTranslationY), duration,
+              observer);
+}
 
 // HoldingSpaceScrollView ------------------------------------------------------
 
@@ -109,28 +194,34 @@ void HoldingSpaceItemViewsSection::Init() {
   // access to all contained item views.
   if (max_count_.has_value()) {
     container_ = AddChildView(CreateContainer());
-    container_->SetVisible(false);
   } else {
     auto* scroll = AddChildView(std::make_unique<HoldingSpaceScrollView>());
     scroll->SetBackgroundColor(base::nullopt);
     scroll->ClipHeightTo(0, INT_MAX);
     scroll->SetDrawOverflowIndicator(false);
     container_ = scroll->SetContents(CreateContainer());
-    container_->SetVisible(false);
   }
+
+  InitLayerForAnimations(container_);
+  container_->SetVisible(false);
 
   // Placeholder.
   auto placeholder = CreatePlaceholder();
   if (placeholder) {
     placeholder_ = AddChildView(std::move(placeholder));
+    InitLayerForAnimations(placeholder_);
     placeholder_->SetVisible(true);
     header_->SetVisible(true);
   }
 
   // Views.
   HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
-  if (model)
+  if (model) {
+    // Sections are not animated during initialization as their respective
+    // bubbles will be animated in instead.
+    base::AutoReset<bool> scoped_disable_animations(&disable_animations_, true);
     OnHoldingSpaceModelAttached(model);
+  }
 }
 
 void HoldingSpaceItemViewsSection::Reset() {
@@ -266,29 +357,29 @@ void HoldingSpaceItemViewsSection::MaybeAnimateOut() {
   animate_out_observer->SetActive();
 }
 
-// TODO(dmblack): Handle animate in of `placeholder_`.
 // TODO(dmblack): Handle grow/shrink of container.
 void HoldingSpaceItemViewsSection::AnimateIn(
     ui::LayerAnimationObserver* observer) {
+  const base::TimeDelta animation_duration =
+      disable_animations_ ? base::TimeDelta() : kAnimationDuration;
   if (views_by_item_id_.empty() && placeholder_) {
-    DCHECK(placeholder_->GetVisible());
+    DoAnimateIn(placeholder_, animation_duration, observer);
     return;
   }
-  for (auto& view_by_item_id : views_by_item_id_)
-    view_by_item_id.second->AnimateIn(observer);
+  DoAnimateIn(container_, animation_duration, observer);
 }
 
-// TODO(dmblack): Handle animate out of `placeholder_`.
 // TODO(dmblack): Handle animate out of `header_` if this section is leaving.
 void HoldingSpaceItemViewsSection::AnimateOut(
     ui::LayerAnimationObserver* observer) {
+  const base::TimeDelta animation_duration =
+      disable_animations_ ? base::TimeDelta() : kAnimationDuration;
   if (placeholder_ && placeholder_->GetVisible()) {
     DCHECK(views_by_item_id_.empty());
-    placeholder_->SetVisible(false);
+    DoAnimateOut(placeholder_, animation_duration, observer);
     return;
   }
-  for (auto& view_by_item_id : views_by_item_id_)
-    view_by_item_id.second->AnimateOut(observer);
+  DoAnimateOut(container_, animation_duration, observer);
 }
 
 bool HoldingSpaceItemViewsSection::OnAnimateInCompleted(

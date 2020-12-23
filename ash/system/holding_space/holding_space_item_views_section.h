@@ -133,6 +133,10 @@ class HoldingSpaceItemViewsSection : public views::View,
   // animation is preempting another.
   uint32_t animation_state_ = AnimationState::kNotAnimating;
 
+  // Whether or not animations are disabled. Animations are only disabled during
+  // initialization as holding space child bubbles are animated in instead.
+  bool disable_animations_ = false;
+
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>
       controller_observer_{this};
