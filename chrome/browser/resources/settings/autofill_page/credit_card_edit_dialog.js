@@ -71,18 +71,6 @@ Polymer({
     expirationMonth_: String,
 
     /**
-     * True if nickname management is enabled.
-     * @private
-     */
-    nicknameManagementEnabled_: {
-      type: Boolean,
-      reflectToAttribute: true,
-      value() {
-        return loadTimeData.getBoolean('nicknameManagementEnabled');
-      }
-    },
-
-    /**
      * Whether the current nickname input is invalid.
      * @private
      */
@@ -212,23 +200,11 @@ Polymer({
   },
 
   /**
-   * @return {boolean} True iff the card is expired and nickname management is
-   *     disabled.
-   * @private
-   */
-  // TODO(crbug.com/1082013): Remove legacy expired error message when nickname
-  // management is fully enabled.
-  showLegacyExpiredError_() {
-    return !this.nicknameManagementEnabled_ && this.expired_;
-  },
-
-  /**
    * Handles a11y error announcement the same way as in cr-input.
    * @private
    */
   onExpiredChanged_() {
-    const ERROR_ID =
-        this.nicknameManagementEnabled_ ? 'expired-error' : 'expired';
+    const ERROR_ID = 'expired-error';
     const errorElement = this.$$(`#${ERROR_ID}`);
     // Readding attributes is needed for consistent announcement by VoiceOver
     if (this.expired_) {

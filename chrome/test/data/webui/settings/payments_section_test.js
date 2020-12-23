@@ -309,14 +309,15 @@ suite('PaymentsSection', function() {
         .then(function() {
           // Not expired, but still can't be saved, because there's no
           // name.
-          assertTrue(creditCardDialog.$.expired.hidden);
+          const expiredError = creditCardDialog.$$('#expired-error');
+          assertEquals('hidden', getComputedStyle(expiredError).visibility);
           assertTrue(creditCardDialog.$.saveButton.disabled);
 
           // Add a name.
           creditCardDialog.set('creditCard.name', 'Jane Doe');
           flush();
 
-          assertTrue(creditCardDialog.$.expired.hidden);
+          assertEquals('hidden', getComputedStyle(expiredError).visibility);
           assertFalse(creditCardDialog.$.saveButton.disabled);
 
           const savedPromise =

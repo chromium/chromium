@@ -105,28 +105,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     return (new Date().getFullYear() - 1).toString();
   }
 
-  test('add card dialog when nickname management disabled', async function() {
-    loadTimeData.overrideValues({nicknameManagementEnabled: false});
-    const creditCardDialog = createAddCreditCardDialog();
-
-    // Wait for the dialog to open.
-    await whenAttributeIs(creditCardDialog.$$('#dialog'), 'open', '');
-
-    // Verify the nickname input field is not shown when nickname management is
-    // disabled.
-    assertFalse(!!creditCardDialog.$$('#nicknameInput'));
-    assertFalse(!!creditCardDialog.$$('#nameInput'));
-    // Legacy cardholder name input field is not hidden.
-    assertFalse(creditCardDialog.$$('#legacyNameInput').hidden);
-
-    // Verify the legacy cardholder name field is autofocused when nickname
-    // management is enabled.
-    assertTrue(
-        creditCardDialog.$$('#legacyNameInput').matches(':focus-within'));
-  });
-
-  test('add card dialog when nickname management is enabled', async function() {
-    loadTimeData.overrideValues({nicknameManagementEnabled: true});
+  test('add card dialog', async function() {
     const creditCardDialog = createAddCreditCardDialog();
 
     // Wait for the dialog to open.
@@ -136,46 +115,13 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // enabled.
     assertTrue(!!creditCardDialog.$$('#nicknameInput'));
     assertTrue(!!creditCardDialog.$$('#nameInput'));
-    // Legacy cardholder name input field is hidden.
-    assertTrue(creditCardDialog.$$('#legacyNameInput').hidden);
 
     // Verify the card number field is autofocused when nickname management is
     // enabled.
     assertTrue(creditCardDialog.$$('#numberInput').matches(':focus-within'));
   });
 
-  test('save new card when nickname management is disabled', async function() {
-    loadTimeData.overrideValues({nicknameManagementEnabled: false});
-    const creditCardDialog = createAddCreditCardDialog();
-
-    // Wait for the dialog to open.
-    await whenAttributeIs(creditCardDialog.$$('#dialog'), 'open', '');
-
-    // Fill in name to the legacy name input field and card number.
-    creditCardDialog.$$('#legacyNameInput').value = 'Jane Doe';
-    creditCardDialog.$$('#numberInput').value = '4111111111111111';
-    // Select next year as the expiration year.
-    creditCardDialog.$.year.value = nextYear();
-    creditCardDialog.$.year.dispatchEvent(new CustomEvent('change'));
-    flush();
-
-    assertTrue(creditCardDialog.$.expired.hidden);
-    assertFalse(creditCardDialog.$.saveButton.disabled);
-
-    const savedPromise = eventToPromise('save-credit-card', creditCardDialog);
-    creditCardDialog.$.saveButton.click();
-    const saveEvent = await savedPromise;
-
-    // Verify the input values are correctly passed to save-credit-card.
-    // guid is empty when saving a new card.
-    assertEquals(saveEvent.detail.guid, undefined);
-    assertEquals(saveEvent.detail.name, 'Jane Doe');
-    assertEquals(saveEvent.detail.cardNumber, '4111111111111111');
-    assertEquals(saveEvent.detail.expirationYear, nextYear());
-  });
-
-  test('save new card when nickname management is enabled', async function() {
-    loadTimeData.overrideValues({nicknameManagementEnabled: true});
+  test('save new card', async function() {
     const creditCardDialog = createAddCreditCardDialog();
 
     // Wait for the dialog to open.
@@ -190,7 +136,8 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     creditCardDialog.$.year.dispatchEvent(new CustomEvent('change'));
     flush();
 
-    assertTrue(creditCardDialog.$.expired.hidden);
+    const expiredError = creditCardDialog.$$('#expired-error');
+    assertEquals('hidden', getComputedStyle(expiredError).visibility);
     assertFalse(creditCardDialog.$.saveButton.disabled);
 
     const savedPromise = eventToPromise('save-credit-card', creditCardDialog);
@@ -207,7 +154,6 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   });
 
   test('trim credit card when save', async function() {
-    loadTimeData.overrideValues({nicknameManagementEnabled: true});
     const creditCardDialog = createAddCreditCardDialog();
 
     // Wait for the dialog to open.
@@ -222,7 +168,8 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     creditCardDialog.$.year.dispatchEvent(new CustomEvent('change'));
     flush();
 
-    assertTrue(creditCardDialog.$.expired.hidden);
+    const expiredError = creditCardDialog.$$('#expired-error');
+    assertEquals('hidden', getComputedStyle(expiredError).visibility);
     assertFalse(creditCardDialog.$.saveButton.disabled);
 
     const savedPromise = eventToPromise('save-credit-card', creditCardDialog);
@@ -239,7 +186,6 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   });
 
   test('update local card value', async function() {
-    loadTimeData.overrideValues({nicknameManagementEnabled: true});
     const creditCard = createCreditCardEntry();
     creditCard.name = 'Wrong name';
     creditCard.nickname = 'Shopping Card';
@@ -257,7 +203,8 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     assertEquals(creditCardDialog.$$('#numberInput').value, '4444333322221111');
     assertEquals(creditCardDialog.$.year.value, nextYear());
 
-    assertTrue(creditCardDialog.$.expired.hidden);
+    const expiredError = creditCardDialog.$$('#expired-error');
+    assertEquals('hidden', getComputedStyle(expiredError).visibility);
     assertFalse(creditCardDialog.$.saveButton.disabled);
 
     // Update cardholder name, card number, expiration year and nickname, and
@@ -282,7 +229,6 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   });
 
   test('show error message when input nickname is invalid', async function() {
-    loadTimeData.overrideValues({nicknameManagementEnabled: true});
     const creditCardDialog = createAddCreditCardDialog();
 
     // Wait for the dialog to open.
@@ -326,7 +272,6 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   });
 
   test('disable save button when input nickname is invalid', async function() {
-    loadTimeData.overrideValues({nicknameManagementEnabled: true});
     const creditCard = createCreditCardEntry();
     creditCard.name = 'Wrong name';
     // Set the expiration year to next year to avoid expired card.
@@ -351,7 +296,6 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   });
 
   test('only show nickname character count when focused', async function() {
-    loadTimeData.overrideValues({nicknameManagementEnabled: true});
     const creditCardDialog = createAddCreditCardDialog();
 
     // Wait for the dialog to open.
@@ -390,49 +334,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     assertTrue(characterCount.textContent.includes('5/25'));
   });
 
-  test('expired card when nickname management is disabled', async function() {
-    loadTimeData.overrideValues({nicknameManagementEnabled: false});
-    const creditCard = createCreditCardEntry();
-    // Set the expiration year to the previous year to simulate expired card.
-    creditCard.expirationYear = lastYear();
-    // Edit dialog for an existing card with no nickname.
-    const creditCardDialog = createEditCreditCardDialog([creditCard]);
-
-    // Wait for the dialog to open.
-    await whenAttributeIs(creditCardDialog.$$('#dialog'), 'open', '');
-
-    // Verify save button is disabled for expired credit card.
-    assertTrue(creditCardDialog.$.saveButton.disabled);
-    // Legacy expired error message is shown, the new error message is still
-    // hidden.
-    assertFalse(creditCardDialog.$.expired.hidden);
-    assertTrue(creditCardDialog.$$('#expired-error').hidden);
-    // Check a11y attributes added for correct error announcement.
-    assertEquals('alert', creditCardDialog.$.expired.getAttribute('role'));
-    for (const select of [creditCardDialog.$.month, creditCardDialog.$.year]) {
-      assertEquals('true', select.getAttribute('aria-invalid'));
-      assertEquals('expired', select.getAttribute('aria-errormessage'));
-    }
-
-    // Update the expiration year to next year to avoid expired card.
-    creditCardDialog.$.year.value = nextYear();
-    creditCardDialog.$.year.dispatchEvent(new CustomEvent('change'));
-    flush();
-
-    // Expired error message is hidden for valid expiration date.
-    assertTrue(creditCardDialog.$.expired.hidden);
-    assertTrue(creditCardDialog.$$('#expired-error').hidden);
-    assertFalse(creditCardDialog.$.saveButton.disabled);
-    // Check a11y attributes for expiration error removed.
-    assertEquals(null, creditCardDialog.$.expired.getAttribute('role'));
-    for (const select of [creditCardDialog.$.month, creditCardDialog.$.year]) {
-      assertEquals('false', select.getAttribute('aria-invalid'));
-      assertEquals(null, select.getAttribute('aria-errormessage'));
-    }
-  });
-
-  test('expired card when nickname management is enabled', async function() {
-    loadTimeData.overrideValues({nicknameManagementEnabled: true});
+  test('expired card', async function() {
     const creditCard = createCreditCardEntry();
     // Set the expiration year to the previous year to simulate expired card.
     creditCard.expirationYear = lastYear();
@@ -445,10 +347,8 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Verify save button is disabled for expired credit card.
     assertTrue(creditCardDialog.$.saveButton.disabled);
     const expiredError = creditCardDialog.$$('#expired-error');
-    // The new expired error message is shown, the legacy error message is still
-    // hidden.
+    // The expired error message is shown.
     assertEquals('visible', getComputedStyle(expiredError).visibility);
-    assertTrue(creditCardDialog.$.expired.hidden);
     // Check a11y attributes added for correct error announcement.
     assertEquals('alert', expiredError.getAttribute('role'));
     for (const select of [creditCardDialog.$.month, creditCardDialog.$.year]) {
@@ -463,7 +363,6 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     // Expired error message is hidden for valid expiration date.
     assertEquals('hidden', getComputedStyle(expiredError).visibility);
-    assertTrue(creditCardDialog.$.expired.hidden);
     assertFalse(creditCardDialog.$.saveButton.disabled);
     // Check a11y attributes for expiration error removed.
     assertEquals(null, expiredError.getAttribute('role'));

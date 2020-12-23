@@ -1118,10 +1118,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                           base::FeatureList::IsEnabled(
                               autofill::features::kAutofillSaveAndFillVPA));
 
-  html_source->AddBoolean(
-      "nicknameManagementEnabled",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCardNicknameManagement));
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 }
 
