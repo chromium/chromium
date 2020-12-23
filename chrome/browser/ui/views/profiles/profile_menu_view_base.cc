@@ -548,23 +548,6 @@ gfx::ImageSkia ProfileMenuViewBase::GetSyncIcon() const {
   return gfx::ImageSkia();
 }
 
-const base::string16 ProfileMenuViewBase::GetAccessibleMenuName(
-    const base::string16& title,
-    const base::string16& subtitle) {
-  if (title.empty()) {
-    if (subtitle.empty())
-      return GetAccessibleWindowTitle();
-
-    return subtitle;
-  } else {
-    if (subtitle.empty())
-      return title;
-
-    return l10n_util::GetStringFUTF16(IDS_CONCAT_TWO_STRINGS_WITH_COMMA, title,
-                                      subtitle);
-  }
-}
-
 void ProfileMenuViewBase::SetProfileIdentityInfo(
     const base::string16& profile_name,
     SkColor profile_background_color,
@@ -590,9 +573,12 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 
   auto avatar_image_view = std::make_unique<AvatarImageView>(image_model, this);
 
-  // Use the profile identity info to label the entire menu, for accessibility
-  // users to get the user account as context information when they open it.
-  GetViewAccessibility().OverrideName(GetAccessibleMenuName(title, subtitle));
+#if defined(OS_LINUX)
+  // crbug.com/1161166: Orca does not read the accessible window title of the
+  // bubble, so we duplicate it in the top-level menu item. To be revisited
+  // after considering other options, including fixes on the AT side.
+  GetViewAccessibility().OverrideName(GetAccessibleWindowTitle());
+#endif
 
   if (!new_design) {
     if (!profile_name.empty()) {

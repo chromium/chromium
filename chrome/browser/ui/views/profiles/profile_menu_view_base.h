@@ -111,6 +111,9 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
                       Browser* browser);
   ~ProfileMenuViewBase() override;
 
+  ProfileMenuViewBase(const ProfileMenuViewBase&) = delete;
+  ProfileMenuViewBase& operator=(const ProfileMenuViewBase&) = delete;
+
   // This method is called once to add all menu items.
   virtual void BuildMenu() = 0;
 
@@ -190,9 +193,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   void UpdateSyncInfoContainerBackground();
 
-  const base::string16 GetAccessibleMenuName(const base::string16& title,
-                                             const base::string16& subtitle);
-
   Browser* const browser_;
 
   views::Button* const anchor_button_;
@@ -226,8 +226,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   base::string16 profile_mgmt_heading_;
 
   std::unique_ptr<AXMenuWidgetObserver> ax_widget_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileMenuViewBase);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MENU_VIEW_BASE_H_

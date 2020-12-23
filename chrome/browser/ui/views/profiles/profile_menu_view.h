@@ -36,6 +36,9 @@ class ProfileMenuView : public ProfileMenuViewBase {
   ProfileMenuView(views::Button* anchor_button, Browser* browser);
   ~ProfileMenuView() override;
 
+  ProfileMenuView(const ProfileMenuView&) = delete;
+  ProfileMenuView& operator=(const ProfileMenuView&) = delete;
+
   // ProfileMenuViewBase:
   void BuildMenu() override;
   gfx::ImageSkia GetSyncIcon() const override;
@@ -84,7 +87,8 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void BuildProfileManagementFeatureButtons();
 #endif
 
-  DISALLOW_COPY_AND_ASSIGN(ProfileMenuView);
+  base::string16 menu_title_;
+  base::string16 menu_subtitle_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MENU_VIEW_H_

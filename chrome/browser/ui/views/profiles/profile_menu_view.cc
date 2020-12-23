@@ -61,6 +61,7 @@
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 namespace {
@@ -255,8 +256,18 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
 }
 
 base::string16 ProfileMenuView::GetAccessibleWindowTitle() const {
-  return l10n_util::GetStringUTF16(
-      IDS_PROFILES_PROFILE_BUBBLE_ACCESSIBLE_TITLE);
+  base::string16 title =
+      l10n_util::GetStringUTF16(IDS_PROFILES_PROFILE_BUBBLE_ACCESSIBLE_TITLE);
+
+  if (!menu_title_.empty()) {
+    title = l10n_util::GetStringFUTF16(IDS_CONCAT_TWO_STRINGS_WITH_COMMA, title,
+                                       menu_title_);
+  }
+  if (!menu_subtitle_.empty()) {
+    title = l10n_util::GetStringFUTF16(IDS_CONCAT_TWO_STRINGS_WITH_COMMA, title,
+                                       menu_subtitle_);
+  }
+  return title;
 }
 
 void ProfileMenuView::OnManageGoogleAccountButtonClicked() {
@@ -492,31 +503,36 @@ void ProfileMenuView::BuildIdentity() {
   SkColor background_color =
       profile_attributes->GetProfileThemeColors().profile_highlight_color;
   if (account_info.has_value()) {
+    menu_title_ = base::UTF8ToUTF16(account_info.value().full_name);
+    menu_subtitle_ =
+        IsSyncPaused(profile)
+            ? l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE)
+            : base::UTF8ToUTF16(account_info.value().email);
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,
         ui::ImageModel::FromImage(account_info.value().account_image),
-        base::UTF8ToUTF16(account_info.value().full_name),
-        IsSyncPaused(profile)
-            ? l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE)
-            : base::UTF8ToUTF16(account_info.value().email));
+        menu_title_, menu_subtitle_);
   } else {
+    menu_title_ = base::string16();
+    menu_subtitle_ =
+        l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,
         ui::ImageModel::FromImage(
             profile_attributes->GetAvatarIcon(kIdentityImageSize)),
-        /*title=*/base::string16(),
-        l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE));
+        menu_title_, menu_subtitle_);
   }
 }
 
 void ProfileMenuView::BuildGuestIdentity() {
   int guest_window_count = BrowserList::GetGuestBrowserCount();
 
-  base::string16 subtitle;
+  menu_title_ = l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
+  menu_subtitle_ = base::string16();
   if (guest_window_count > 1 &&
       base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
-    subtitle = l10n_util::GetPluralStringFUTF16(IDS_GUEST_WINDOW_COUNT_MESSAGE,
-                                                guest_window_count);
+    menu_subtitle_ = l10n_util::GetPluralStringFUTF16(
+        IDS_GUEST_WINDOW_COUNT_MESSAGE, guest_window_count);
   }
 
   ui::ThemedVectorIcon header_art_icon(
@@ -524,9 +540,8 @@ void ProfileMenuView::BuildGuestIdentity() {
   SetProfileIdentityInfo(
       /*profile_name=*/base::string16(),
       /*background_color=*/SK_ColorTRANSPARENT,
-      /*edit_button=*/base::nullopt, profiles::GetGuestAvatar(),
-      l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME), subtitle,
-      header_art_icon);
+      /*edit_button=*/base::nullopt, profiles::GetGuestAvatar(), menu_title_,
+      menu_subtitle_, header_art_icon);
 }
 
 void ProfileMenuView::BuildAutofillButtons() {
