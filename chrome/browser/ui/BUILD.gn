@@ -1792,6 +1792,8 @@ static_library("ui") {
       "app_list/search/omnibox_result.h",
       "app_list/search/os_settings_provider.cc",
       "app_list/search/os_settings_provider.h",
+      "app_list/search/score_normalizer/score_normalizer.cc",
+      "app_list/search/score_normalizer/score_normalizer.h",
       "app_list/search/search_controller.cc",
       "app_list/search/search_controller.h",
       "app_list/search/search_controller_factory.cc",

@@ -133,5 +133,10 @@ const char kLauncherResultEverLaunched[] = "launcher.result_ever_launched";
 // SWA.
 const char kHasCameraAppMigratedToSWA[] = "camera.has_migrated_to_swa";
 
+// Dictioanry pref to store data on the distribution of provider relevance
+// scores for the launcher normalizer.
+const char kLauncherSearchNormalizerParameters[] =
+    "launcher.search_normalizer_parameters";
+
 }  // namespace prefs
 }  // namespace chromeos

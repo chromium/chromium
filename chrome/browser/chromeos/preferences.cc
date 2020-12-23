@@ -501,6 +501,9 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       chromeos::prefs::kHasCameraAppMigratedToSWA, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+
+  registry->RegisterDictionaryPref(
+      chromeos::prefs::kLauncherSearchNormalizerParameters);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
