@@ -82,6 +82,9 @@ public class IncognitoTabModelTest {
     @MediumTest
     @Feature({"OffTheRecord"})
     public void testRecreateInIncognito() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity().getActivityTab().setIsTabSaveEnabled(false);
+        });
         createTabOnUiThread();
         // Need to wait for contentsState to be initialized for the tab to restore correctly.
         CriteriaHelper.pollUiThread(() -> {

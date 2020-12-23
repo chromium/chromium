@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests for {@link TabModelImpl}.
@@ -121,6 +122,9 @@ public class TabModelImplTest {
     @Test
     @SmallTest
     public void validIndexAfterRestored_FromPreviousActivity_WithIncognitoTabs() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity().getActivityTab().setIsTabSaveEnabled(false);
+        });
         createTabs(1, true, "about:blank");
 
         // Need to wait for contentsState to be initialized for the tab to restore correctly.

@@ -58,6 +58,7 @@ android_library("java") {
     "//components/browser_ui/util/android:java",
     "//components/embedder_support/android:browser_context_java",
     "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/external_intents/android:java",
     "//components/find_in_page/android:java",
