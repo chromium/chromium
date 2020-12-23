@@ -123,6 +123,8 @@ void VulkanSwapChain::Destroy() {
 gfx::SwapResult VulkanSwapChain::PostSubBuffer(const gfx::Rect& rect) {
   base::AutoLock auto_lock(lock_);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  WaitUntilPostSubBufferAsyncFinished();
   DCHECK(!has_pending_post_sub_buffer_);
 
   if (UNLIKELY(!PresentBuffer(rect)))
@@ -139,6 +141,8 @@ void VulkanSwapChain::PostSubBufferAsync(
     PostSubBufferCompletionCallback callback) {
   base::AutoLock auto_lock(lock_);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  WaitUntilPostSubBufferAsyncFinished();
   DCHECK(!has_pending_post_sub_buffer_);
 
   if (UNLIKELY(!PresentBuffer(rect))) {
