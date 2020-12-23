@@ -30,7 +30,6 @@ js_type_check("closure_compile_jsmodules") {
   deps = [
     ":background.m",
     ":error_util.m",
-    ":main.m",
     ":metadata_worker.m",
   ]
 }
@@ -38,7 +37,10 @@ js_type_check("closure_compile_jsmodules") {
 js_type_check("closure_compile_polymer") {
   is_polymer3 = true
   closure_flags = default_closure_args + [ "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=../../ui/file_manager/file_manager/\"" ]
-  deps = [ ":audio_player.m" ]
+  deps = [
+    ":audio_player.m",
+    ":main.m",
+  ]
 }
 
 js_library("closure_compile_externs") {
@@ -137,21 +139,22 @@ js_library("test_util") {
 
 js_library("test_util.m") {
   sources = [ "$root_gen_dir/ui/file_manager/audio_player/js/test_util.m.js" ]
+  deps = [
+    ":background.m",
+    "//ui/file_manager/file_manager/background/js:test_util_base.m",
+  ]
   extra_deps = [ ":modulize" ]
 }
 
 js_library("main.m") {
-  deps = [
-    "//ui/file_manager/base/js:app_util.m",
-    "//ui/file_manager/base/js:volume_manager_types.m",
-  ]
+  deps = [ ":audio_player.m" ]
 }
 
 js_library("main_background.m") {
   deps = [
     ":background.m",
     ":error_util.m",
-    "//ui/file_manager/file_manager/background/js:test_util_base.m",
+    ":test_util.m",
   ]
 }
 

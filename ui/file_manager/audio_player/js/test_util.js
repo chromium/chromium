@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 // #import {open} from './background.m.js';
-// #import * as wrappedTest from '../../file_manager/background/js/test_util_base.m.js'; const {test} = wrappedTest;
-// clang-format on
+// #import {test} from '../../file_manager/background/js/test_util_base.m.js';
 
 /**
  * Opens the audio player and waits until it is ready.
