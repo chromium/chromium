@@ -44,7 +44,7 @@ class CORE_EXPORT ModuleRecordResolverImpl final
 
   // Implements "Runtime Semantics: HostResolveImportedModule" per HTML spec.
   // https://html.spec.whatwg.org/C/#hostresolveimportedmodule(referencingscriptormodule,-specifier))
-  v8::Local<v8::Module> Resolve(const String& specifier,
+  v8::Local<v8::Module> Resolve(const ModuleRequest& module_request,
                                 v8::Local<v8::Module> referrer,
                                 ExceptionState&) final;
 

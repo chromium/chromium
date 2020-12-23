@@ -56,10 +56,10 @@ class TestModuleRecordResolver final : public ModuleRecordResolver {
     return nullptr;
   }
 
-  v8::Local<v8::Module> Resolve(const String& specifier,
+  v8::Local<v8::Module> Resolve(const ModuleRequest& module_request,
                                 v8::Local<v8::Module> module,
                                 ExceptionState&) override {
-    specifiers_.push_back(specifier);
+    specifiers_.push_back(module_request.specifier);
     return module_records_.TakeFirst()->NewLocal(isolate_);
   }
 
@@ -139,7 +139,37 @@ TEST_P(ModuleRecordTest, moduleRequests) {
   auto requests = ModuleRecord::ModuleRequests(scope.GetScriptState(), module);
   EXPECT_EQ(2u, requests.size());
   EXPECT_EQ("a", requests[0].specifier);
+  EXPECT_EQ(0u, requests[0].import_assertions.size());
   EXPECT_EQ("b", requests[1].specifier);
+  EXPECT_EQ(0u, requests[1].import_assertions.size());
+}
+
+TEST_P(ModuleRecordTest, moduleRequestsWithImportAssertions) {
+  V8TestingScope scope;
+  v8::V8::SetFlagsFromString("--harmony-import-assertions");
+  const KURL js_url("https://example.com/foo.js");
+  v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
+      scope.GetIsolate(),
+      "import 'a' assert { };"
+      "import 'b' assert { type: 'x'};"
+      "import 'c' assert { foo: 'y', type: 'z' };",
+      js_url);
+  ASSERT_FALSE(module.IsEmpty());
+
+  auto requests = ModuleRecord::ModuleRequests(scope.GetScriptState(), module);
+  EXPECT_EQ(3u, requests.size());
+  EXPECT_EQ("a", requests[0].specifier);
+  EXPECT_EQ(0u, requests[0].import_assertions.size());
+
+  EXPECT_EQ("b", requests[1].specifier);
+  EXPECT_EQ(1u, requests[1].import_assertions.size());
+  EXPECT_EQ("type", requests[1].import_assertions[0].key);
+  EXPECT_EQ("x", requests[1].import_assertions[0].value);
+
+  EXPECT_EQ("c", requests[2].specifier);
+  EXPECT_EQ(1u, requests[2].import_assertions.size());
+  EXPECT_EQ("type", requests[2].import_assertions[0].key);
+  EXPECT_EQ("z", requests[2].import_assertions[0].value);
 }
 
 TEST_P(ModuleRecordTest, instantiateNoDeps) {

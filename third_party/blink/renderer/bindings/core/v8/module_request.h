@@ -10,11 +10,32 @@
 
 namespace blink {
 
+// An import assertion key/value pair per spec:
+// https://tc39.es/proposal-import-assertions/
+struct ImportAssertion {
+  String key;
+  String value;
+  TextPosition position;
+  ImportAssertion(const String& key,
+                  const String& value,
+                  const TextPosition& position)
+      : key(key), value(value), position(position) {}
+};
+
+// An instance of a ModuleRequest record:
+// https://tc39.es/proposal-import-assertions/#sec-modulerequest-record
+// Represents a module script's request to import a module given a specifier and
+// list of import assertions.
 struct ModuleRequest {
   String specifier;
   TextPosition position;
-  ModuleRequest(const String& specifier, const TextPosition& position)
-      : specifier(specifier), position(position) {}
+  Vector<ImportAssertion> import_assertions;
+  ModuleRequest(const String& specifier,
+                const TextPosition& position,
+                const Vector<ImportAssertion>& import_assertions)
+      : specifier(specifier),
+        position(position),
+        import_assertions(import_assertions) {}
 };
 
 }  // namespace blink

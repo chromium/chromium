@@ -143,9 +143,9 @@ TEST_P(ModuleRecordResolverImplTest, RegisterResolveSuccess) {
       CreateTargetModuleScript(modulator_, scope);
   Modulator()->SetModuleScript(target_module_script);
 
-  v8::Local<v8::Module> resolved =
-      resolver->Resolve("./target.js", referrer_module_script->V8Module(),
-                        scope.GetExceptionState());
+  v8::Local<v8::Module> resolved = resolver->Resolve(
+      ModuleRequest("./target.js", TextPosition(), Vector<ImportAssertion>()),
+      referrer_module_script->V8Module(), scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_EQ(resolved, target_module_script->V8Module());
   EXPECT_EQ(1, modulator_->GetFetchedModuleScriptCalled());

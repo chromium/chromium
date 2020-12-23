@@ -90,7 +90,8 @@ class ModuleScriptLoaderTestModulator final : public DummyModulator {
   void SetModuleRequests(const Vector<String>& requests) {
     requests_.clear();
     for (const String& request : requests) {
-      requests_.emplace_back(request, TextPosition::MinimumPosition());
+      requests_.emplace_back(request, TextPosition::MinimumPosition(),
+                             Vector<ImportAssertion>());
     }
   }
   Vector<ModuleRequest> ModuleRequestsFromModuleRecord(

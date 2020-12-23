@@ -27,7 +27,7 @@ class EmptyModuleRecordResolver final : public ModuleRecordResolver {
     return nullptr;
   }
 
-  v8::Local<v8::Module> Resolve(const String& specifier,
+  v8::Local<v8::Module> Resolve(const ModuleRequest& module_request,
                                 v8::Local<v8::Module> referrer,
                                 ExceptionState&) override {
     NOTREACHED();

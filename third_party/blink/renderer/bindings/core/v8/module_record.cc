@@ -146,9 +146,15 @@ Vector<ModuleRequest> ModuleRecord::ModuleRequests(
     TextPosition position(
         OrdinalNumber::FromZeroBasedInt(v8_loc.GetLineNumber()),
         OrdinalNumber::FromZeroBasedInt(v8_loc.GetColumnNumber()));
+    Vector<ImportAssertion> import_assertions =
+        ModuleRecord::ToBlinkImportAssertions(
+            script_state->GetContext(), record,
+            v8_module_request->GetImportAssertions());
 
-    requests.emplace_back(ToCoreString(v8_specifier), position);
+    requests.emplace_back(ToCoreString(v8_specifier), position,
+                          import_assertions);
   }
+
   return requests;
 }
 
@@ -166,14 +172,58 @@ v8::MaybeLocal<v8::Module> ModuleRecord::ResolveModuleCallback(
   Modulator* modulator = Modulator::From(ScriptState::From(context));
   DCHECK(modulator);
 
+  ModuleRequest module_request(ToCoreStringWithNullCheck(specifier),
+                               TextPosition(),
+                               ModuleRecord::ToBlinkImportAssertions(
+                                   context, referrer, import_assertions));
+
   ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
                                  "ModuleRecord", "resolveModuleCallback");
   v8::Local<v8::Module> resolved =
-      modulator->GetModuleRecordResolver()->Resolve(
-          ToCoreStringWithNullCheck(specifier), referrer, exception_state);
+      modulator->GetModuleRecordResolver()->Resolve(module_request, referrer,
+                                                    exception_state);
   DCHECK(!resolved.IsEmpty());
   DCHECK(!exception_state.HadException());
+
   return resolved;
+}
+
+Vector<ImportAssertion> ModuleRecord::ToBlinkImportAssertions(
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Module> record,
+    v8::Local<v8::FixedArray> v8_import_assertions) {
+  // The list of import assertions obtained from V8 for a ModuleRequest is given
+  // in the form: [key1, value1, source_offset1, key2, value2, source_offset2,
+  // ...].
+  constexpr int kV8AssertionEntrySize = 3;
+
+  Vector<ImportAssertion> import_assertions;
+  int number_of_import_assertions =
+      v8_import_assertions->Length() / kV8AssertionEntrySize;
+  import_assertions.ReserveInitialCapacity(number_of_import_assertions);
+  for (int i = 0; i < number_of_import_assertions; ++i) {
+    v8::Local<v8::String> v8_assertion_key =
+        v8_import_assertions->Get(context, i * kV8AssertionEntrySize)
+            .As<v8::String>();
+    v8::Local<v8::String> v8_assertion_value =
+        v8_import_assertions->Get(context, (i * kV8AssertionEntrySize) + 1)
+            .As<v8::String>();
+    int32_t v8_assertion_source_offset =
+        v8_import_assertions->Get(context, (i * kV8AssertionEntrySize) + 2)
+            .As<v8::Int32>()
+            ->Value();
+    v8::Location v8_assertion_loc =
+        record->SourceOffsetToLocation(v8_assertion_source_offset);
+    TextPosition assertion_position(
+        OrdinalNumber::FromZeroBasedInt(v8_assertion_loc.GetLineNumber()),
+        OrdinalNumber::FromZeroBasedInt(v8_assertion_loc.GetColumnNumber()));
+
+    import_assertions.emplace_back(ToCoreString(v8_assertion_key),
+                                   ToCoreString(v8_assertion_value),
+                                   assertion_position);
+  }
+
+  return import_assertions;
 }
 
 }  // namespace blink

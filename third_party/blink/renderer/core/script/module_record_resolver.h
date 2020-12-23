@@ -42,7 +42,7 @@ class CORE_EXPORT ModuleRecordResolver
   // Implements "Runtime Semantics: HostResolveImportedModule"
   // https://tc39.github.io/ecma262/#sec-hostresolveimportedmodule
   // This returns a null ModuleRecord when an exception is thrown.
-  virtual v8::Local<v8::Module> Resolve(const String& specifier,
+  virtual v8::Local<v8::Module> Resolve(const ModuleRequest& module_request,
                                         v8::Local<v8::Module> referrer,
                                         ExceptionState&) = 0;
 };

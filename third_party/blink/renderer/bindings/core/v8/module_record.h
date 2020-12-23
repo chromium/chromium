@@ -84,6 +84,11 @@ class CORE_EXPORT ModuleRecord final {
   static v8::Local<v8::Value> V8Namespace(v8::Local<v8::Module> record);
 
  private:
+  static Vector<ImportAssertion> ToBlinkImportAssertions(
+      v8::Local<v8::Context> context,
+      v8::Local<v8::Module> record,
+      v8::Local<v8::FixedArray> v8_import_assertions);
+
   static v8::MaybeLocal<v8::Module> ResolveModuleCallback(
       v8::Local<v8::Context>,
       v8::Local<v8::String> specifier,

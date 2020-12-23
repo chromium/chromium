@@ -59,12 +59,12 @@ const ModuleScript* ModuleRecordResolverImpl::GetModuleScriptFromModuleRecord(
 // <specdef
 // href="https://html.spec.whatwg.org/C/#hostresolveimportedmodule(referencingscriptormodule,-specifier)">
 v8::Local<v8::Module> ModuleRecordResolverImpl::Resolve(
-    const String& specifier,
+    const ModuleRequest& module_request,
     v8::Local<v8::Module> referrer,
     ExceptionState& exception_state) {
   v8::Isolate* isolate = modulator_->GetScriptState()->GetIsolate();
-  DVLOG(1) << "ModuleRecordResolverImpl::resolve(specifier=\"" << specifier
-           << ", referrer.hash="
+  DVLOG(1) << "ModuleRecordResolverImpl::resolve(specifier=\""
+           << module_request.specifier << ", referrer.hash="
            << BoxedV8ModuleHash::GetHash(
                   MakeGarbageCollected<BoxedV8Module>(isolate, referrer))
            << ")";
@@ -91,7 +91,7 @@ v8::Local<v8::Module> ModuleRecordResolverImpl::Resolve(
   // <spec step="3.3">Set base URL to referencing script's base URL.</spec>
   // <spec step="5">Let url be the result of resolving a module specifier given
   // base URL and specifier.</spec>
-  KURL url = referrer_module->ResolveModuleSpecifier(specifier);
+  KURL url = referrer_module->ResolveModuleSpecifier(module_request.specifier);
 
   // <spec step="6">Assert: url is never failure, because resolving a module
   // specifier must have been previously successful with these same two
@@ -100,6 +100,8 @@ v8::Local<v8::Module> ModuleRecordResolverImpl::Resolve(
 
   // <spec step="7">Let resolved module script be moduleMap[url]. (This entry
   // must exist for us to have gotten to this point.)</spec>
+  // TODO(crbug.com/1132413): Use import assertions along with URL to get
+  // resolved module script.
   ModuleScript* module_script = modulator_->GetFetchedModuleScript(url);
 
   // <spec step="8">Assert: resolved module script is a module script (i.e., is
