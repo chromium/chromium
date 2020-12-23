@@ -3162,9 +3162,7 @@ void Node::SetCustomElementState(CustomElementState new_state) {
 
 void Node::CheckSlotChange(SlotChangeType slot_change_type) {
   // Common check logic is used in both cases, "after inserted" and "before
-  // removed". This function calls DidSlotChange() on the appropriate nodes,
-  // e.g. the assigned slot for this node, or the parent slot for a slot's
-  // fallback content.
+  // removed".
 
   // Relevant DOM Standard:
   // https://dom.spec.whatwg.org/#concept-node-insert
@@ -3189,16 +3187,11 @@ void Node::CheckSlotChange(SlotChangeType slot_change_type) {
   } else if (IsInShadowTree()) {
     // Checking for fallback content if the node is in a shadow tree.
     if (auto* parent_slot = DynamicTo<HTMLSlotElement>(parentElement())) {
+      DCHECK(parent_slot->SupportsAssignment());
       // The parent_slot's assigned nodes might not be calculated because they
       // are lazy evaluated later at UpdateDistribution() so we have to check it
-      // here. Also, parent_slot may have already been removed, if this was the
-      // removal of nested slots, e.g.
-      //   <slot name=parent-slot><slot name=this-slot>fallback</slot></slot>.
-      // In that case, parent-slot has already been removed, so parent_slot->
-      // SupportsAssignment() is false, but this-slot is still in the process
-      // of being removed, so IsInShadowTree() is still true.
-      if (parent_slot->SupportsAssignment() &&
-          !parent_slot->HasAssignedNodesSlow())
+      // here.
+      if (!parent_slot->HasAssignedNodesSlow())
         parent_slot->DidSlotChange(slot_change_type);
     }
   }
