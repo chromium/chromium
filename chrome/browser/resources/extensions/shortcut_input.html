@@ -15,23 +15,18 @@
     right: inherit;
   }
 
-  /* Invisible so the element is still in the tab order. */
-  [invisible] {
-    opacity: 0;
-  }
 </style>
 <div id="main">
-  <cr-input id="input" placeholder="$i18n{shortcutTypeAShortcut}"
+    <cr-input id="input" readonly="[[readonly_]]"
+      placeholder="[[computePlaceholder_(readonly_)]]"
       invalid="[[getIsInvalid_(error_)]]"
       error-message="[[getErrorString_(error_,
           '$i18nPolymer{shortcutIncludeStartModifier}',
           '$i18nPolymer{shortcutTooManyModifiers}',
           '$i18nPolymer{shortcutNeedCharacter}')]]"
-      value="[[computeText_(capturing_, shortcut, pendingShortcut_)]]">
-    <cr-icon-button id="clear" aria-label="$i18nPolymer{clear}"
-        slot="suffix" class="icon-cancel no-overlap"
-        invisible$="[[computeClearInvisible_(capturing_, shortcut)]]"
-        hidden$="[[computeClearHidden_(shortcut)]]"
-        on-click="onClearClick_"></cr-icon-button>
+      value="[[computeText_(shortcut)]]">
+    <cr-icon-button id="edit" aria-label="$i18nPolymer{editShortcut}"
+        slot="suffix" class="icon-edit no-overlap"
+        on-click="onEditClick_"></cr-icon-button>
   </cr-input>
 </div>

@@ -14,8 +14,6 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {keyDownOn, keyUpOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isChildVisible} from '../test_util.m.js';
-
 import {TestService} from './test_service.js';
 
 window.extension_shortcut_input_tests = {};
@@ -42,18 +40,14 @@ suite(extension_shortcut_input_tests.suiteName, function() {
   test(assert(extension_shortcut_input_tests.TestNames.Basic), function() {
     const field = input.$['input'];
     assertEquals('', field.value);
-    const isClearVisible = isChildVisible.bind(null, input, '#clear', false);
-    expectFalse(isClearVisible());
 
-    // Focus the input. Capture should start.
-    field.focus();
+    // Click the edit button. Capture should start.
+    input.$['edit'].click();
     return input.delegate.whenCalled('setShortcutHandlingSuspended')
         .then((arg) => {
           assertTrue(arg);
           input.delegate.reset();
-
           assertEquals('', field.value);
-          expectFalse(isClearVisible());
 
           // Press character.
           keyDownOn(field, 'A', []);
@@ -65,22 +59,22 @@ suite(extension_shortcut_input_tests.suiteName, function() {
           expectTrue(field.errorMessage.startsWith('Include'));
           // Press ctrl.
           keyDownOn(field, 17, ['ctrl']);
-          assertEquals('Ctrl', field.value);
+          assertEquals('', field.value);
           assertEquals('Type a letter', field.errorMessage);
           // Add shift.
           keyDownOn(field, 16, ['ctrl', 'shift']);
-          assertEquals('Ctrl + Shift', field.value);
+          assertEquals('', field.value);
           assertEquals('Type a letter', field.errorMessage);
           // Remove shift.
           keyUpOn(field, 16, ['ctrl']);
-          assertEquals('Ctrl', field.value);
+          assertEquals('', field.value);
           assertEquals('Type a letter', field.errorMessage);
           // Add alt (ctrl + alt is invalid).
           keyDownOn(field, 18, ['ctrl', 'alt']);
-          assertEquals('Ctrl', field.value);
+          assertEquals('', field.value);
           // Remove alt.
           keyUpOn(field, 18, ['ctrl']);
-          assertEquals('Ctrl', field.value);
+          assertEquals('', field.value);
           assertEquals('Type a letter', field.errorMessage);
 
           // Add 'A'. Once a valid shortcut is typed (like Ctrl + A), it is
@@ -93,10 +87,9 @@ suite(extension_shortcut_input_tests.suiteName, function() {
           expectDeepEquals(['itemid', 'Command', 'Ctrl+A'], arg);
           assertEquals('Ctrl + A', field.value);
           assertEquals('Ctrl+A', input.shortcut);
-          expectTrue(isClearVisible());
 
           // Test clearing the shortcut.
-          input.$['clear'].click();
+          input.$['edit'].click();
           assertEquals(input.$.input, input.shadowRoot.activeElement);
           return input.delegate.whenCalled('updateExtensionCommandKeybinding');
         })
@@ -105,9 +98,8 @@ suite(extension_shortcut_input_tests.suiteName, function() {
           input.delegate.reset();
           expectDeepEquals(['itemid', 'Command', ''], arg);
           assertEquals('', input.shortcut);
-          expectFalse(isClearVisible());
 
-          field.focus();
+          input.$['edit'].click();
           return input.delegate.whenCalled('setShortcutHandlingSuspended');
         })
         .then((arg) => {
@@ -115,6 +107,7 @@ suite(extension_shortcut_input_tests.suiteName, function() {
           expectTrue(arg);
 
           // Test ending capture using the escape key.
+          input.$['edit'].click();
           keyDownOn(field, 27);  // Escape key.
           return input.delegate.whenCalled('setShortcutHandlingSuspended');
         })

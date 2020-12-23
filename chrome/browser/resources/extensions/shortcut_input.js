@@ -63,6 +63,14 @@ Polymer({
       value: ShortcutError.NO_ERROR,
     },
 
+
+    /** @private */
+    readonly_: {
+      type: Boolean,
+      value: true,
+      reflectToAttribute: true,
+    },
+
     /** @private */
     pendingShortcut_: {
       type: String,
@@ -82,7 +90,7 @@ Polymer({
 
   /** @private */
   startCapture_() {
-    if (this.capturing_) {
+    if (this.capturing_ || this.readonly_) {
       return;
     }
     this.capturing_ = true;
@@ -99,6 +107,17 @@ Polymer({
     this.$.input.blur();
     this.error_ = ShortcutError.NO_ERROR;
     this.delegate.setShortcutHandlingSuspended(false);
+    this.readonly_ = true;
+  },
+
+  /** @private */
+  clearShortcut_() {
+    this.pendingShortcut_ = '';
+    this.shortcut = '';
+    // We commit the empty shortcut in order to clear the current shortcut
+    // for the extension.
+    this.commitPending_();
+    this.endCapture_();
   },
 
   /**
@@ -106,7 +125,11 @@ Polymer({
    * @private
    */
   onKeyDown_(e) {
-    if (e.target === this.$.clear) {
+    if (this.readonly_) {
+      return;
+    }
+
+    if (e.target === this.$.edit) {
       return;
     }
 
@@ -138,11 +161,15 @@ Polymer({
    * @private
    */
   onKeyUp_(e) {
-    // Ignores pressing 'Space' or 'Enter' on the clear button. In 'Enter's
-    // case, the clear button disappears before key-up, so 'Enter's key-up
-    // target becomes the input field, not the clear button, and needs to
+    // Ignores pressing 'Space' or 'Enter' on the edit button. In 'Enter's
+    // case, the edit button disappears before key-up, so 'Enter's key-up
+    // target becomes the input field, not the edit button, and needs to
     // be caught explicitly.
-    if (e.target === this.$.clear || e.key === 'Enter') {
+    if (this.readonly_) {
+      return;
+    }
+
+    if (e.target === this.$.edit || e.key === 'Enter') {
       return;
     }
 
@@ -224,6 +251,18 @@ Polymer({
   },
 
   /**
+   * @return {string} The placeholder text.
+   * @private
+   */
+  computePlaceholder_() {
+    if (this.readonly_) {
+      return this.i18n('shortcutNotSet');
+    }
+    return this.i18n('shortcutTypeAShortcut');
+  },
+
+
+  /**
    * @return {string} The text to be displayed in the shortcut field.
    * @private
    */
@@ -231,24 +270,6 @@ Polymer({
     const shortcutString =
         this.capturing_ ? this.pendingShortcut_ : this.shortcut;
     return shortcutString.split('+').join(' + ');
-  },
-
-  /**
-   * Invisible when capturing AND we have a shortcut.
-   * @return {boolean} Whether the clear button is invisible.
-   * @private
-   */
-  computeClearInvisible_() {
-    return this.capturing_ && !!this.shortcut;
-  },
-
-  /**
-   * Hidden when no shortcut is set.
-   * @return {boolean} Whether the clear button is hidden.
-   * @private
-   */
-  computeClearHidden_() {
-    return !this.shortcut;
   },
 
   /**
@@ -260,12 +281,13 @@ Polymer({
   },
 
   /** @private */
-  onClearClick_() {
-    assert(this.shortcut);
-
-    this.pendingShortcut_ = '';
-    this.commitPending_();
-    this.endCapture_();
+  onEditClick_() {
+    // TODO(ghazale): The clearing functionality should be improved.
+    // Instead of clicking the edit button, and then clicking elsewhere to
+    // commit the "empty" shortcut, we want to introduce a separate clear
+    // button.
+    this.clearShortcut_();
+    this.readonly_ = false;
     this.$.input.focus();
   },
 });

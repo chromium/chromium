@@ -349,6 +349,9 @@
   <message name="IDS_EXTENSIONS_SEARCH" desc="The text displayed in the search box on the chrome://extensions page.">
     Search extensions
   </message>
+  <message name="IDS_EXTENSIONS_EDIT_SHORTCUT" desc="The label for a button to edit the shortcut.">
+    Edit shortcut
+  </message>
   <message name="IDS_EXTENSIONS_SHORTCUT_NOT_SET" desc="The label to indicate that an extension has no shortcut set for a given command.">
     Not set
   </message>
