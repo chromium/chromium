@@ -59,7 +59,7 @@ class ThumbnailTracker::ContentsData : public content::WebContentsObserver,
 
 ThumbnailTracker::ThumbnailTracker(ThumbnailUpdatedCallback callback)
     : ThumbnailTracker(std::move(callback),
-                       base::Bind(GetThumbnailFromTabHelper)) {}
+                       base::BindRepeating(GetThumbnailFromTabHelper)) {}
 
 ThumbnailTracker::ThumbnailTracker(ThumbnailUpdatedCallback callback,
                                    GetThumbnailCallback thumbnail_getter)

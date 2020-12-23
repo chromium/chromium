@@ -44,8 +44,8 @@ class ThumbnailTrackerTest : public ::testing::Test,
   ThumbnailTrackerTest()
       : thumbnail_tracker_(
             thumbnail_updated_callback_.Get(),
-            base::Bind(&ThumbnailTrackerTest::GetTestingThumbnail,
-                       base::Unretained(this))) {}
+            base::BindRepeating(&ThumbnailTrackerTest::GetTestingThumbnail,
+                                base::Unretained(this))) {}
 
   static SkBitmap CreateTestingBitmap() {
     SkBitmap bitmap;

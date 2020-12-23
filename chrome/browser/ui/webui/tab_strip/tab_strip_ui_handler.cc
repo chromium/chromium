@@ -169,11 +169,12 @@ TabStripUIHandler::TabStripUIHandler(Browser* browser,
                                      TabStripUIEmbedder* embedder)
     : browser_(browser),
       embedder_(embedder),
-      thumbnail_tracker_(base::Bind(&TabStripUIHandler::HandleThumbnailUpdate,
-                                    base::Unretained(this))),
+      thumbnail_tracker_(
+          base::BindRepeating(&TabStripUIHandler::HandleThumbnailUpdate,
+                              base::Unretained(this))),
       tab_before_unload_tracker_(
-          base::Bind(&TabStripUIHandler::OnTabCloseCancelled,
-                     base::Unretained(this))) {}
+          base::BindRepeating(&TabStripUIHandler::OnTabCloseCancelled,
+                              base::Unretained(this))) {}
 TabStripUIHandler::~TabStripUIHandler() = default;
 
 void TabStripUIHandler::NotifyLayoutChanged() {
@@ -350,67 +351,71 @@ void TabStripUIHandler::TabBlockedStateChanged(content::WebContents* contents,
 // content::WebUIMessageHandler:
 void TabStripUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "createNewTab", base::Bind(&TabStripUIHandler::HandleCreateNewTab,
-                                 base::Unretained(this)));
+      "createNewTab",
+      base::BindRepeating(&TabStripUIHandler::HandleCreateNewTab,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getTabs",
-      base::Bind(&TabStripUIHandler::HandleGetTabs, base::Unretained(this)));
+      "getTabs", base::BindRepeating(&TabStripUIHandler::HandleGetTabs,
+                                     base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getGroupVisualData",
-      base::Bind(&TabStripUIHandler::HandleGetGroupVisualData,
-                 base::Unretained(this)));
+      base::BindRepeating(&TabStripUIHandler::HandleGetGroupVisualData,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getThemeColors", base::Bind(&TabStripUIHandler::HandleGetThemeColors,
-                                   base::Unretained(this)));
+      "getThemeColors",
+      base::BindRepeating(&TabStripUIHandler::HandleGetThemeColors,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "groupTab",
-      base::Bind(&TabStripUIHandler::HandleGroupTab, base::Unretained(this)));
+      "groupTab", base::BindRepeating(&TabStripUIHandler::HandleGroupTab,
+                                      base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "ungroupTab",
-      base::Bind(&TabStripUIHandler::HandleUngroupTab, base::Unretained(this)));
+      "ungroupTab", base::BindRepeating(&TabStripUIHandler::HandleUngroupTab,
+                                        base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "moveGroup",
-      base::Bind(&TabStripUIHandler::HandleMoveGroup, base::Unretained(this)));
+      "moveGroup", base::BindRepeating(&TabStripUIHandler::HandleMoveGroup,
+                                       base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "moveTab",
-      base::Bind(&TabStripUIHandler::HandleMoveTab, base::Unretained(this)));
+      "moveTab", base::BindRepeating(&TabStripUIHandler::HandleMoveTab,
+                                     base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "setThumbnailTracked",
-      base::Bind(&TabStripUIHandler::HandleSetThumbnailTracked,
-                 base::Unretained(this)));
+      base::BindRepeating(&TabStripUIHandler::HandleSetThumbnailTracked,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "closeContainer", base::Bind(&TabStripUIHandler::HandleCloseContainer,
-                                   base::Unretained(this)));
+      "closeContainer",
+      base::BindRepeating(&TabStripUIHandler::HandleCloseContainer,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "closeTab",
-      base::Bind(&TabStripUIHandler::HandleCloseTab, base::Unretained(this)));
+      "closeTab", base::BindRepeating(&TabStripUIHandler::HandleCloseTab,
+                                      base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "showBackgroundContextMenu",
-      base::Bind(&TabStripUIHandler::HandleShowBackgroundContextMenu,
-                 base::Unretained(this)));
+      base::BindRepeating(&TabStripUIHandler::HandleShowBackgroundContextMenu,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "showEditDialogForGroup",
-      base::Bind(&TabStripUIHandler::HandleShowEditDialogForGroup,
-                 base::Unretained(this)));
+      base::BindRepeating(&TabStripUIHandler::HandleShowEditDialogForGroup,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "showTabContextMenu",
-      base::Bind(&TabStripUIHandler::HandleShowTabContextMenu,
-                 base::Unretained(this)));
+      base::BindRepeating(&TabStripUIHandler::HandleShowTabContextMenu,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getLayout",
-      base::Bind(&TabStripUIHandler::HandleGetLayout, base::Unretained(this)));
+      "getLayout", base::BindRepeating(&TabStripUIHandler::HandleGetLayout,
+                                       base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "reportTabActivationDuration",
-      base::Bind(&TabStripUIHandler::HandleReportTabActivationDuration,
-                 base::Unretained(this)));
+      base::BindRepeating(&TabStripUIHandler::HandleReportTabActivationDuration,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "reportTabDataReceivedDuration",
-      base::Bind(&TabStripUIHandler::HandleReportTabDataReceivedDuration,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &TabStripUIHandler::HandleReportTabDataReceivedDuration,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "reportTabCreationDuration",
-      base::Bind(&TabStripUIHandler::HandleReportTabCreationDuration,
-                 base::Unretained(this)));
+      base::BindRepeating(&TabStripUIHandler::HandleReportTabCreationDuration,
+                          base::Unretained(this)));
 }
 
 void TabStripUIHandler::HandleCreateNewTab(const base::ListValue* args) {
