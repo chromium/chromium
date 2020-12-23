@@ -714,6 +714,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_DONE},
       {"eSimRenameProfileDialogCancel",
        IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_CANCEL},
+      {"eSimRenameProfileDialogError",
+       IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_ERROR_MESSAGE},
       {"eSimRemoveProfileDialogCancel",
        IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_CANCEL},
       {"esimRemoveProfileDialogTitle",

@@ -2196,6 +2196,9 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_RENAME_PROFILE" desc="Settings > Internet > Network details > Rename profile dialog: Label for the dialog informing the user to rename an eSIM cellular network">
     Rename Profile
   </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_ERROR_MESSAGE" desc="Settings > Internet > Network details > Rename eSIM cellular profile dialog: Error message shown when rename fails">
+    Profile could not be renamed. Please try again or contact your carrier for technical support.
+  </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_DONE" desc="Settings > Internet > Network details >Rename profile dialog: The Label for the dialog done button to rename an eSIM cellular network">
     Done
   </message>
@@ -2208,7 +2211,7 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_CANCEL" desc="Settings > Internet > Network details >Remove profile dialog: The Label for the dialog cancel button to remove an eSIM cellular network">
     Cancel
   </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_REMOVE" desc="Settings > Internet > Network details >ReMOVE profile dialog: The Label for the dialog remove button to remove an eSIM cellular network">
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_REMOVE" desc="Settings > Internet > Network details > Remove profile dialog: The Label for the dialog remove button to remove an eSIM cellular network">
     Remove
   </message>
   <message name="IDS_SETTINGS_INTERNET_BUTTON_ACTIVATE" desc="Settings > Internet > Network details: The label for the button to activate a Cellular network.">

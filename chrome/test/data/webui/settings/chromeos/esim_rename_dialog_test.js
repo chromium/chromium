@@ -80,4 +80,53 @@ suite('EsimRenameDialog', function() {
           'new profile nickname');
     });
   });
+
+  test('Rename esim profile fails', async function() {
+    eSimManagerRemote.addEuiccForTest(1);
+    await flushAsync();
+    init('1');
+
+    return flushAsync().then(async () => {
+      const inputBox = esimRenameDialog.$$('#eSimprofileName');
+      assertTrue(!!inputBox);
+      const profileName = inputBox.value;
+
+      assertEquals(profileName, 'profile1');
+
+      assertEquals(
+          'none',
+          window.getComputedStyle(esimRenameDialog.$$('#errorMessage'))
+              .display);
+
+      const euicc = (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
+      const profile = (await euicc.getProfileList()).profiles[0];
+
+      profile.setEsimOperationResultForTest(
+          chromeos.cellularSetup.mojom.ESimOperationResult.kFailure);
+
+      inputBox.value = 'new profile nickname';
+      await flushAsync();
+
+      const doneBtn = esimRenameDialog.$$('#done');
+      assertTrue(!!doneBtn);
+      assertFalse(doneBtn.disabled);
+      doneBtn.click();
+      await flushAsync();
+      assertTrue(doneBtn.disabled);
+
+      profile.resolveSetProfileNicknamePromise_();
+      await flushAsync();
+      assertFalse(doneBtn.disabled);
+
+      const profileProperties = (await profile.getProperties()).properties;
+
+      assertEquals(
+          'block',
+          window.getComputedStyle(esimRenameDialog.$$('#errorMessage'))
+              .display);
+      assertNotEquals(
+          convertString16ToJSString_(profileProperties.nickname),
+          'new profile nickname');
+    });
+  });
 });

@@ -59,8 +59,15 @@ cr.define('cellular_setup', function() {
     }
 
     /**
-     * @private
+     * @param {chromeos.cellularSetup.mojom.ESimOperationResult} result
+     */
+    setEsimOperationResultForTest(result) {
+      this.esimOperationResult_ = result;
+    }
+
+    /**
      * @param {string} string
+     * @private
      */
     stringToCharCodeArray_(string) {
       const res = [];
@@ -71,17 +78,42 @@ cr.define('cellular_setup', function() {
     }
 
     /**
+     * @return {Object}
+     * @private
+     */
+    deferedPromise_() {
+      let deferred = {};
+      let promise = new Promise(function(resolve, reject) {
+        deferred.resolve = resolve;
+        deferred.reject = reject;
+      });
+      deferred.promise = promise;
+      return deferred;
+    }
+
+    /**
      * @override
      * @param {?mojoBase.mojom.String16} nickname
      * @return {!Promise<{result:
      *     chromeos.cellularSetup.mojom.ESimOperationResult},}>}
      */
     setProfileNickname(nickname) {
-      this.properties_.nickname = nickname;
-      return new Promise((res) => {
-        res({
-          result: chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess
-        });
+      if (!this.esimOperationResult_ ||
+          this.esimOperationResult_ ===
+              chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess) {
+        this.properties_.nickname = nickname;
+      }
+
+      this.deferredSetProfileNicknamePromise_ = this.deferedPromise_();
+      return this.deferredSetProfileNicknamePromise_.promise;
+    }
+
+    /** @private */
+    resolveSetProfileNicknamePromise_() {
+      this.deferredSetProfileNicknamePromise_.resolve({
+        result: this.esimOperationResult_ ?
+            this.esimOperationResult_ :
+            chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess
       });
     }
 

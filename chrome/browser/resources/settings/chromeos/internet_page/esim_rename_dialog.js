@@ -14,16 +14,28 @@ Polymer({
   ],
 
   properties: {
+    /** @type {string} */
+    iccid: {
+      type: String,
+      value: '',
+    },
+
     /** @private {string} */
     esimProfileName_: {
       type: String,
       value: '',
     },
 
-    /** @type {string} */
-    iccid: {
+    /** @private {string} */
+    errorMessage_: {
       type: String,
       value: '',
+    },
+
+    /** @private {boolean} */
+    isRenameInProgress_: {
+      type: Boolean,
+      value: false,
     }
   },
 
@@ -83,18 +95,33 @@ Polymer({
    * @private
    */
   async onRenameDialogDoneTap_(event) {
+    if (this.errorMessage_) {
+      this.$.profileRenameDialog.close();
+      return;
+    }
+
+    this.isRenameInProgress_ = true;
+
     // The C++ layer uses base::string16, which use 16 bit characters. JS
     // strings support either 8 or 16 bit characters, and must be converted
     // to an array of 16 bit character codes that match base::string16.
     const name = {data: Array.from(this.esimProfileName_, c => c.charCodeAt())};
-    const response = await this.esimProfileRemote_.setProfileNickname(name);
-    if (response.result ===
-        chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
-      console.error(
-          'Unable to update profile Nickname: ' + this.esimProfileName_);
-      // TODO(crbug.com/1093185): Show useful error to user when rename fails
-    }
 
+    this.esimProfileRemote_.setProfileNickname(name).then(response => {
+      this.handleSetProfileNicknameResponse_(response.result);
+    });
+  },
+
+  /**
+   * @param {chromeos.cellularSetup.mojom.ESimOperationResult} result
+   * @private
+   */
+  handleSetProfileNicknameResponse_(result) {
+    this.isRenameInProgress_ = false;
+    if (result === chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
+      this.errorMessage_ = this.i18n('eSimRenameProfileDialogError');
+      return;
+    }
     this.$.profileRenameDialog.close();
   },
 
@@ -104,5 +131,5 @@ Polymer({
    */
   onCancelTap_(event) {
     this.$.profileRenameDialog.close();
-  }
+  },
 });
