@@ -186,20 +186,20 @@ class FileAccessProvider
  public:
   // The first parameter is 0 on success or errno on failure. The second
   // parameter is read result.
-  typedef base::Callback<void(const int*, const std::string*)> ReadCallback;
+  typedef base::OnceCallback<void(const int*, const std::string*)> ReadCallback;
 
   // The first parameter is 0 on success or errno on failure. The second
   // parameter is the number of bytes written on success.
-  typedef base::Callback<void(const int*, const int*)> WriteCallback;
+  typedef base::OnceCallback<void(const int*, const int*)> WriteCallback;
 
   base::CancelableTaskTracker::TaskId StartRead(
       const base::FilePath& path,
-      const ReadCallback& callback,
+      ReadCallback callback,
       base::CancelableTaskTracker* tracker);
   base::CancelableTaskTracker::TaskId StartWrite(
       const base::FilePath& path,
       const std::string& data,
-      const WriteCallback& callback,
+      WriteCallback callback,
       base::CancelableTaskTracker* tracker);
 
  private:
@@ -219,7 +219,7 @@ class FileAccessProvider
 
 base::CancelableTaskTracker::TaskId FileAccessProvider::StartRead(
     const base::FilePath& path,
-    const ReadCallback& callback,
+    ReadCallback callback,
     base::CancelableTaskTracker* tracker) {
   // Owned by reply callback posted below.
   int* saved_errno = new int(0);
@@ -232,13 +232,14 @@ base::CancelableTaskTracker::TaskId FileAccessProvider::StartRead(
       task_runner.get(), FROM_HERE,
       base::BindOnce(&FileAccessProvider::DoRead, this, path, saved_errno,
                      data),
-      base::BindOnce(callback, base::Owned(saved_errno), base::Owned(data)));
+      base::BindOnce(std::move(callback), base::Owned(saved_errno),
+                     base::Owned(data)));
 }
 
 base::CancelableTaskTracker::TaskId FileAccessProvider::StartWrite(
     const base::FilePath& path,
     const std::string& data,
-    const WriteCallback& callback,
+    WriteCallback callback,
     base::CancelableTaskTracker* tracker) {
   // Owned by reply callback posted below.
   int* saved_errno = new int(0);
@@ -252,7 +253,7 @@ base::CancelableTaskTracker::TaskId FileAccessProvider::StartWrite(
       task_runner.get(), FROM_HERE,
       base::BindOnce(&FileAccessProvider::DoWrite, this, path, data,
                      saved_errno, bytes_written),
-      base::BindOnce(callback, base::Owned(saved_errno),
+      base::BindOnce(std::move(callback), base::Owned(saved_errno),
                      base::Owned(bytes_written)));
 }
 
@@ -553,8 +554,8 @@ void CertificatesHandler::ExportPersonalSlotsUnlocked() {
   }
   file_access_provider_->StartWrite(
       file_path_, output,
-      base::Bind(&CertificatesHandler::ExportPersonalFileWritten,
-                 base::Unretained(this)),
+      base::BindOnce(&CertificatesHandler::ExportPersonalFileWritten,
+                     base::Unretained(this)),
       &tracker_);
 }
 
@@ -610,8 +611,8 @@ void CertificatesHandler::ImportPersonalFileSelected(
     const base::FilePath& path) {
   file_access_provider_->StartRead(
       path,
-      base::Bind(&CertificatesHandler::ImportPersonalFileRead,
-                 base::Unretained(this)),
+      base::BindOnce(&CertificatesHandler::ImportPersonalFileRead,
+                     base::Unretained(this)),
       &tracker_);
 }
 
@@ -759,8 +760,8 @@ void CertificatesHandler::HandleImportServer(const base::ListValue* args) {
 void CertificatesHandler::ImportServerFileSelected(const base::FilePath& path) {
   file_access_provider_->StartRead(
       path,
-      base::Bind(&CertificatesHandler::ImportServerFileRead,
-                 base::Unretained(this)),
+      base::BindOnce(&CertificatesHandler::ImportServerFileRead,
+                     base::Unretained(this)),
       &tracker_);
 }
 
@@ -835,8 +836,8 @@ void CertificatesHandler::HandleImportCA(const base::ListValue* args) {
 void CertificatesHandler::ImportCAFileSelected(const base::FilePath& path) {
   file_access_provider_->StartRead(
       path,
-      base::Bind(&CertificatesHandler::ImportCAFileRead,
-                 base::Unretained(this)),
+      base::BindOnce(&CertificatesHandler::ImportCAFileRead,
+                     base::Unretained(this)),
       &tracker_);
 }
 
