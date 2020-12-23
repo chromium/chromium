@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -74,17 +75,22 @@ void LoginDetectionTabHelper::DidFinishNavigation(
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())
     return;
 
+  GURL prev_navigation_url;
+  if (auto* prev_navigation =
+          web_contents()->GetController().GetEntryAtOffset(-1)) {
+    prev_navigation_url = prev_navigation->GetURL();
+  }
+
   // Check if OAuth login on the site happened now. This check should happen
   // first before other checks since this could be a repeated OAuth login and
   // the time of login will be updated.
-  for (const auto& redirect_url : navigation_handle->GetRedirectChain()) {
-    if (oauth_login_detector_.CheckSuccessfulLoginFlow(redirect_url)) {
-      prefs::SaveSiteToOAuthSignedInList(GetPrefs(web_contents()),
-                                         redirect_url);
-      RecordLoginDetectionMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow,
-                                  navigation_handle->GetNextPageUkmSourceId());
-      return;
-    }
+  if (auto signedin_site = oauth_login_detector_.GetSuccessfulLoginFlowSite(
+          prev_navigation_url, navigation_handle->GetRedirectChain())) {
+    prefs::SaveSiteToOAuthSignedInList(GetPrefs(web_contents()),
+                                       *signedin_site);
+    RecordLoginDetectionMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow,
+                                navigation_handle->GetNextPageUkmSourceId());
+    return;
   }
 
   LoginDetectionKeyedService* login_detection_keyed_service =

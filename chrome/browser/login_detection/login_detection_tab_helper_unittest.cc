@@ -65,6 +65,10 @@ TEST_F(LoginDetectionTabHelperTest, NoLogin) {
 }
 
 TEST_F(LoginDetectionTabHelperTest, SimpleOAuthLogin) {
+  NavigateAndCommit(GURL("https://foo.com/page.html"));
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
+  ResetMetricsTesters();
+
   // OAuth login start
   NavigateAndCommit(GURL("https://oauth.com/authenticate?client_id=123"));
   VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
@@ -81,6 +85,10 @@ TEST_F(LoginDetectionTabHelperTest, SimpleOAuthLogin) {
 }
 
 TEST_F(LoginDetectionTabHelperTest, NavigationToOAuthLoggedInSite) {
+  NavigateAndCommit(GURL("https://foo.com/page.html"));
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
+  ResetMetricsTesters();
+
   // Trigger OAuth login so that the site is saved in prefs.
   NavigateAndCommit(GURL("https://oauth.com/authenticate?client_id=123"));
   NavigateAndCommit(GURL("https://foo.com/redirect?code=secret"));
@@ -97,6 +105,10 @@ TEST_F(LoginDetectionTabHelperTest, NavigationToOAuthLoggedInSite) {
 }
 
 TEST_F(LoginDetectionTabHelperTest, OAuthLoginViaRedirect) {
+  NavigateAndCommit(GURL("https://foo.com/page.html"));
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
+  ResetMetricsTesters();
+
   // OAuth login start and complete via redirects.
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
       GURL("https://foo.com/oauth_signin"), web_contents());
@@ -116,32 +128,39 @@ TEST_F(LoginDetectionTabHelperTest, OAuthLoginViaRedirect) {
   VerifyLoginDetectionTypeMetrics(LoginDetectionType::kOauthLogin);
 }
 
-// Test that OAuth login is not detected when there are intermediate navigations
-// to other sites.
+// Test that OAuth login is still detected when there are intermediate
+// navigations to other sites.
 TEST_F(LoginDetectionTabHelperTest, InvalidOAuthLogins) {
+  NavigateAndCommit(GURL("https://foo.com/page.html"));
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
+  ResetMetricsTesters();
+
   // OAuth login start
   NavigateAndCommit(GURL("https://oauth.com/authenticate?client_id=123"));
   VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
 
-  // Invalid intermediate navigation
+  // Intermediate navigation just ignored
   ResetMetricsTesters();
   NavigateAndCommit(GURL("https://bar.com/page.html"));
   VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
 
-  // OAuth login complete will not be detected
+  // OAuth login complete will be detected
   ResetMetricsTesters();
   NavigateAndCommit(GURL("https://foo.com/redirect?code=secret"));
-  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow);
 
-  // Subsequent navigations is also no login.
   ResetMetricsTesters();
   NavigateAndCommit(GURL("https://images.foo.com/page.html"));
-  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kOauthLogin);
 }
 
-// Test that OAuth login is not detected when there are intermediate redirect
+// Test that OAuth login is still detected when there are intermediate redirect
 // navigations to other sites.
 TEST_F(LoginDetectionTabHelperTest, InvalidOAuthLoginsWithRedirect) {
+  NavigateAndCommit(GURL("https://foo.com/page.html"));
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
+  ResetMetricsTesters();
+
   // OAuth login start and complete via redirects.
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
       GURL("https://foo.com/oauth_signin"), web_contents());
@@ -154,7 +173,7 @@ TEST_F(LoginDetectionTabHelperTest, InvalidOAuthLoginsWithRedirect) {
   simulator->Redirect(GURL("https://foo.com/redirect?code=secret"));
   simulator->Commit();
 
-  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow);
 }
 
 class LoginDetectionTabHelperTestWithFieldTrialLoggedInList
