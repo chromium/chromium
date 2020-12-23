@@ -525,7 +525,8 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
       auto* ri = raster_context_provider->RasterInterface();
       gpu::SharedImageInterface* shared_image_interface =
           raster_context_provider->SharedImageInterface();
-      uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2;
+      uint32_t usage =
+          gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY;
       if (raster_context_provider->ContextCapabilities().supports_oop_raster) {
         usage |= gpu::SHARED_IMAGE_USAGE_RASTER |
                  gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
