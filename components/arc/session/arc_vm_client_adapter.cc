@@ -229,6 +229,12 @@ std::vector<std::string> GenerateKernelCmdline(
       "androidboot.chromeos_channel=" + channel,
       "androidboot.boottime_offset=" + MonotonicTimestamp(),
   };
+
+  // We run vshd under a restricted domain on non-test images.
+  // (go/arcvm-android-sh-restricted)
+  if (channel == "testimage")
+    result.push_back("androidboot.vshd_service_override=vshd_for_test");
+
   // Since we don't do mini VM yet, set not only |start_params| but also
   // |upgrade_params| here for now.
   const std::vector<std::string> upgrade_props =

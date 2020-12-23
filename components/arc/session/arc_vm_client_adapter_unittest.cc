@@ -1286,6 +1286,45 @@ TEST_F(ArcVmClientAdapterTest, ChromeOsChannelUnknown) {
                      "androidboot.chromeos_channel=unknown"));
 }
 
+TEST_F(ArcVmClientAdapterTest, VshdForTest) {
+  base::test::ScopedChromeOSVersionInfo info(
+      "CHROMEOS_RELEASE_TRACK=testimage-channel", base::Time::Now());
+
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  UpgradeArc(true);
+  EXPECT_TRUE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.vshd_service_override=vshd_for_test"));
+}
+
+TEST_F(ArcVmClientAdapterTest, VshdForRelease) {
+  base::test::ScopedChromeOSVersionInfo info(
+      "CHROMEOS_RELEASE_TRACK=stable-channel", base::Time::Now());
+
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  UpgradeArc(true);
+  EXPECT_FALSE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.vshd_service_override=vshd_for_test"));
+}
+
+TEST_F(ArcVmClientAdapterTest, VshdForUnknownChannel) {
+  base::test::ScopedChromeOSVersionInfo info("CHROMEOS_RELEASE_TRACK=unknown",
+                                             base::Time::Now());
+
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  UpgradeArc(true);
+  EXPECT_FALSE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.vshd_service_override=vshd_for_test"));
+}
+
 // Tests that the binary translation type is set to None when no library is
 // enabled by USE flags.
 TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNone) {
