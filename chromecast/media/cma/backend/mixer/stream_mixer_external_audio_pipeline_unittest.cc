@@ -83,7 +83,7 @@ class ExternalAudioPipelineTest : public ::testing::Test {
     external_audio_pipeline_support_->SetSupported();
 
     mixer_ = std::make_unique<StreamMixer>(
-        nullptr, nullptr, base::ThreadTaskRunnerHandle::Get(), "{}");
+        nullptr, base::ThreadTaskRunnerHandle::Get(), "{}");
   }
 
   void TearDown() override {

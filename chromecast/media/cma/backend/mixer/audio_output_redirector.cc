@@ -62,7 +62,7 @@ class AudioOutputRedirector::RedirectionConnection
  public:
   explicit RedirectionConnection(
       std::unique_ptr<mixer_service::MixerSocket> socket,
-      scoped_refptr<base::SequencedTaskRunner> mixer_task_runner,
+      scoped_refptr<base::TaskRunner> mixer_task_runner,
       base::WeakPtr<AudioOutputRedirector> redirector)
       : socket_(std::move(socket)),
         mixer_task_runner_(std::move(mixer_task_runner)),
@@ -135,7 +135,7 @@ class AudioOutputRedirector::RedirectionConnection
   }
 
   const std::unique_ptr<mixer_service::MixerSocket> socket_;
-  const scoped_refptr<base::SequencedTaskRunner> mixer_task_runner_;
+  const scoped_refptr<base::TaskRunner> mixer_task_runner_;
   const base::WeakPtr<AudioOutputRedirector> redirector_;
 
   bool error_ = false;
