@@ -781,8 +781,12 @@ class SessionManagerClientImpl : public SessionManagerClient {
     writer.AppendArrayOfBytes(
         reinterpret_cast<const uint8_t*>(policy_blob.data()),
         policy_blob.size());
+    // TODO(crbug/1155533) On grunt devices, initially storing device policy may
+    // take about 45s, which is longer than the default timeout for dbus calls.
+    // We need to investiage why this is happening. In the meantime, increase
+    // the timeout to make sure enrollment does not fail.
     session_manager_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, /*timeout_ms=*/90000,
         base::BindOnce(&SessionManagerClientImpl::OnVoidMethod,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
