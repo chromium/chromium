@@ -301,7 +301,7 @@ void OnSyncSetupComplete(Profile* profile,
 
   if (!has_primary_account) {
     BrowserList::CloseAllBrowsersWithProfile(
-        profile, base::Bind(&LockProfileAndShowUserManager),
+        profile, base::BindRepeating(&LockProfileAndShowUserManager),
         // Cannot be called because skip_beforeunload is true.
         BrowserList::CloseCallback(),
         /*skip_beforeunload=*/true);
@@ -351,8 +351,9 @@ void InlineSigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
     // window won't be opened until now.
     UnlockProfileAndHideLoginUI(profile_->GetPath(), handler_.get());
     profiles::OpenBrowserWindowForProfile(
-        base::Bind(&InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened,
-                   base::Unretained(this), result),
+        base::BindRepeating(
+            &InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened,
+            base::Unretained(this), result),
         true, false, true, profile_, create_status_);
   } else {
     OnClientOAuthSuccessAndBrowserOpened(result, profile_, create_status_);
@@ -465,7 +466,7 @@ void InlineSigninHelper::UntrustedSigninConfirmed(
 
   base::RecordAction(base::UserMetricsAction("Signin_Undo_Signin"));
   BrowserList::CloseAllBrowsersWithProfile(
-      profile_, base::Bind(&LockProfileAndShowUserManager),
+      profile_, base::BindRepeating(&LockProfileAndShowUserManager),
       // Cannot be called because  skip_beforeunload is true.
       BrowserList::CloseCallback(),
       /*skip_beforeunload=*/true);

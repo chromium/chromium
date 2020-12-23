@@ -441,9 +441,9 @@ void UserManagerScreenHandler::HandleRemoveUser(const base::ListValue* args) {
 
 void UserManagerScreenHandler::HandleLaunchGuest(const base::ListValue* args) {
   if (IsGuestModeEnabled()) {
-    profiles::SwitchToGuestProfile(
-        base::Bind(&UserManagerScreenHandler::OnSwitchToProfileComplete,
-                   weak_ptr_factory_.GetWeakPtr()));
+    profiles::SwitchToGuestProfile(base::BindRepeating(
+        &UserManagerScreenHandler::OnSwitchToProfileComplete,
+        weak_ptr_factory_.GetWeakPtr()));
   } else {
     // The UI should have prevented the user from allowing the selection of
     // guest mode.
@@ -492,8 +492,8 @@ void UserManagerScreenHandler::HandleLaunchUser(const base::ListValue* args) {
 
   profiles::SwitchToProfile(
       *profile_path, false, /* reuse any existing windows */
-      base::Bind(&UserManagerScreenHandler::OnSwitchToProfileComplete,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(&UserManagerScreenHandler::OnSwitchToProfileComplete,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void UserManagerScreenHandler::HandleRemoveUserWarningLoadStats(
@@ -841,8 +841,9 @@ void UserManagerScreenHandler::ReportAuthenticationResult(
   if (success) {
     profiles::SwitchToProfile(
         authenticating_profile_path_, true,
-        base::Bind(&UserManagerScreenHandler::OnSwitchToProfileComplete,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindRepeating(
+            &UserManagerScreenHandler::OnSwitchToProfileComplete,
+            weak_ptr_factory_.GetWeakPtr()));
   } else {
     web_ui()->CallJavascriptFunctionUnsafe(
         "cr.ui.UserManager.showSignInError", base::Value(0),

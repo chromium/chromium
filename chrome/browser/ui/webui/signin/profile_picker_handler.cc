@@ -289,8 +289,8 @@ void ProfilePickerHandler::HandleLaunchGuestProfile(
   // TODO(crbug.com/1063856): Add check |IsGuestModeEnabled| once policy
   // checking has been added to the UI.
   profiles::SwitchToGuestProfile(
-      base::Bind(&ProfilePickerHandler::OnSwitchToProfileComplete,
-                 weak_factory_.GetWeakPtr(), false, false));
+      base::BindRepeating(&ProfilePickerHandler::OnSwitchToProfileComplete,
+                          weak_factory_.GetWeakPtr(), false, false));
 }
 
 void ProfilePickerHandler::HandleAskOnStartupChanged(
@@ -437,8 +437,8 @@ void ProfilePickerHandler::OnProfileCreationSuccess(
   RecordNewProfileSpec(profile_color, create_shortcut);
   // Launch profile and close the picker.
   profiles::OpenBrowserWindowForProfile(
-      base::Bind(&ProfilePickerHandler::OnSwitchToProfileComplete,
-                 weak_factory_.GetWeakPtr(), true, false),
+      base::BindRepeating(&ProfilePickerHandler::OnSwitchToProfileComplete,
+                          weak_factory_.GetWeakPtr(), true, false),
       false,  // Don't create a window if one already exists.
       true,   // Create a first run window.
       false,  // There is no need to unblock all extensions because we only open

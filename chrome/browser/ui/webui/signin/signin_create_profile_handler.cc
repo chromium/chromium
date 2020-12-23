@@ -92,8 +92,8 @@ void SigninCreateProfileHandler::OpenNewWindowForProfile(
     Profile* profile,
     Profile::CreateStatus status) {
   profiles::OpenBrowserWindowForProfile(
-      base::Bind(&SigninCreateProfileHandler::OnBrowserReadyCallback,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&SigninCreateProfileHandler::OnBrowserReadyCallback,
+                          weak_ptr_factory_.GetWeakPtr()),
       false,  // Don't create a window if one already exists.
       true,   // Create a first run window.
       false,  // There is no need to unblock all extensions because we only open

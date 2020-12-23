@@ -72,7 +72,8 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
                      base::Value edu_login_params) override;
 
   // This struct exists to pass parameters to the FinishCompleteLogin() method,
-  // since the base::Bind() call does not support this many template args.
+  // since the base::BindRepeating() call does not support this many template
+  // args.
   struct FinishCompleteLoginParams {
    public:
     FinishCompleteLoginParams(InlineLoginHandlerImpl* handler,

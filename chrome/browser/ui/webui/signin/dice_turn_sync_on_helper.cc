@@ -212,8 +212,9 @@ DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
       shutdown_subscription_(
           DiceTurnSyncOnHelperShutdownNotifierFactory::GetInstance()
               ->Get(profile)
-              ->Subscribe(base::Bind(&DiceTurnSyncOnHelper::AbortAndDelete,
-                                     base::Unretained(this)))) {
+              ->Subscribe(base::AdaptCallbackForRepeating(
+                  base::BindOnce(&DiceTurnSyncOnHelper::AbortAndDelete,
+                                 base::Unretained(this))))) {
   DCHECK(delegate_);
   DCHECK(profile_);
   // Should not start syncing if the profile is already authenticated
@@ -605,8 +606,8 @@ void DiceTurnSyncOnHelper::SwitchToProfile(Profile* new_profile) {
   shutdown_subscription_ =
       DiceTurnSyncOnHelperShutdownNotifierFactory::GetInstance()
           ->Get(profile_)
-          ->Subscribe(base::Bind(&DiceTurnSyncOnHelper::AbortAndDelete,
-                                 base::Unretained(this)));
+          ->Subscribe(base::AdaptCallbackForRepeating(base::BindOnce(
+              &DiceTurnSyncOnHelper::AbortAndDelete, base::Unretained(this))));
   delegate_->SwitchToProfile(new_profile);
   // Since this is a fresh profile, it's better to remove the token if the user
   // aborts the signin.
