@@ -1086,15 +1086,17 @@ void LocationBarView::OnPaintBorder(gfx::Canvas* canvas) {
 }
 
 bool LocationBarView::OnMousePressed(const ui::MouseEvent& event) {
-  return omnibox_view_->OnMousePressed(event);
+  return omnibox_view_->OnMousePressed(
+      AdjustMouseEventLocationForOmniboxView(event));
 }
 
 bool LocationBarView::OnMouseDragged(const ui::MouseEvent& event) {
-  return omnibox_view_->OnMouseDragged(event);
+  return omnibox_view_->OnMouseDragged(
+      AdjustMouseEventLocationForOmniboxView(event));
 }
 
 void LocationBarView::OnMouseReleased(const ui::MouseEvent& event) {
-  omnibox_view_->OnMouseReleased(event);
+  omnibox_view_->OnMouseReleased(AdjustMouseEventLocationForOmniboxView(event));
 }
 
 void LocationBarView::OnMouseMoved(const ui::MouseEvent& event) {
@@ -1312,4 +1314,11 @@ void LocationBarView::UpdatePermissionChipVisibility() {
   } else {
     permission_chip()->Reshow();
   }
+}
+
+ui::MouseEvent LocationBarView::AdjustMouseEventLocationForOmniboxView(
+    const ui::MouseEvent& event) const {
+  ui::MouseEvent adjusted(event);
+  adjusted.ConvertLocationToTarget<View>(this, omnibox_view_);
+  return adjusted;
 }

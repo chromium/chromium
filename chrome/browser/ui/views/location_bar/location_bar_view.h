@@ -354,6 +354,11 @@ class LocationBarView : public LocationBar,
   // mode.
   void UpdatePermissionChipVisibility();
 
+  // Adjusts |event|'s location to be relative to |omnibox_view_|'s origin; used
+  // for directing LocationBarView events to the |omnibox_view_|.
+  ui::MouseEvent AdjustMouseEventLocationForOmniboxView(
+      const ui::MouseEvent& event) const;
+
   // The Browser this LocationBarView is in.  Note that at least
   // chromeos::SimpleWebViewDialog uses a LocationBarView outside any browser
   // window, so this may be NULL.
