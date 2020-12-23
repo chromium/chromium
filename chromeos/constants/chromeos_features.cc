@@ -332,10 +332,6 @@ const base::Feature kFilesSinglePartitionFormat{
 // Enables the System Web App (SWA) version of file manager.
 const base::Feature kFilesSWA{"FilesSWA", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable file transfer details in progress center.
-const base::Feature kFilesTransferDetails{"FilesTransferDetails",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable files app trash.
 const base::Feature kFilesTrash{"FilesTrash",
                                 base::FEATURE_DISABLED_BY_DEFAULT};

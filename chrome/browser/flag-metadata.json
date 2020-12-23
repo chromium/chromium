@@ -2671,11 +2671,6 @@
     "expiry_milestone": 94
   },
   {
-    "name": "files-transfer-details",
-    "owners": [ "adanilo", "oto" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "files-trash",
     "owners": [ "joelhockey", "noel", "simmonsjosh" ],
     "expiry_milestone": 95

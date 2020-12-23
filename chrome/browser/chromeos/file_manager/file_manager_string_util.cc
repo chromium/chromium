@@ -1048,9 +1048,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->SetBoolean(
       "UNIFIED_MEDIA_VIEW_ENABLED",
       base::FeatureList::IsEnabled(chromeos::features::kUnifiedMediaView));
-  dict->SetBoolean(
-      "FILES_TRANSFER_DETAILS_ENABLED",
-      base::FeatureList::IsEnabled(chromeos::features::kFilesTransferDetails));
   dict->SetBoolean("FILES_TRASH_ENABLED", base::FeatureList::IsEnabled(
                                               chromeos::features::kFilesTrash));
   dict->SetBoolean("ZIP_MOUNT", base::FeatureList::IsEnabled(

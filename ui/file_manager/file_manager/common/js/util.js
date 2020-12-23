@@ -1488,7 +1488,7 @@ util.isZipUnpackEnabled = () => {
  * @return {boolean}
  */
 util.isTransferDetailsEnabled = () => {
-  return loadTimeData.getBoolean('FILES_TRANSFER_DETAILS_ENABLED');
+  return true;
 };
 
 /**

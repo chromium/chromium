@@ -2511,9 +2511,6 @@ extern const char kFilesSinglePartitionFormatDescription[];
 extern const char kFilesSWAName[];
 extern const char kFilesSWADescription[];
 
-extern const char kFilesTransferDetailsName[];
-extern const char kFilesTransferDetailsDescription[];
-
 extern const char kFilesTrashName[];
 extern const char kFilesTrashDescription[];
 
