@@ -2523,26 +2523,78 @@ TEST_F(LegacySWPictureLayerImplTest, HighResCreatedWhenBoundsShrink) {
       FakeRasterSource::CreateFilled(gfx::Size(10, 10));
   SetupPendingTree(pending_raster_source);
 
-  // Sanity checks.
   EXPECT_EQ(1u, pending_layer()->tilings()->num_tilings());
-  EXPECT_TRUE(pending_layer()->tilings()->FindTilingWithScaleKey(0.5f));
+  EXPECT_EQ(1, pending_layer()->tilings()->NumHighResTilings());
+  auto* high_res = pending_layer()->tilings()->FindTilingWithScaleKey(0.5f);
+  ASSERT_TRUE(high_res);
+  EXPECT_EQ(HIGH_RESOLUTION, high_res->resolution());
 
   ActivateTree();
+
+  EXPECT_EQ(1u, active_layer()->tilings()->num_tilings());
+  EXPECT_EQ(1, active_layer()->tilings()->NumHighResTilings());
+  high_res = active_layer()->tilings()->FindTilingWithScaleKey(0.5f);
+  ASSERT_TRUE(high_res);
+  EXPECT_EQ(HIGH_RESOLUTION, high_res->resolution());
 
   // Now, set the bounds to be 1x1, so that minimum contents scale becomes 1.
   pending_raster_source = FakeRasterSource::CreateFilled(gfx::Size(1, 1));
   SetupPendingTree(pending_raster_source);
 
-  // Another sanity check.
   EXPECT_EQ(1.f, pending_layer()->MinimumContentsScale());
 
   // Since the MinContentsScale is 1, the 0.5 tiling should have been replaced
   // by a 1.0 tiling during the UDP in SetupPendingTree.
   EXPECT_EQ(1u, pending_layer()->tilings()->num_tilings());
-  PictureLayerTiling* tiling =
-      pending_layer()->tilings()->FindTilingWithScaleKey(1.0f);
-  ASSERT_TRUE(tiling);
-  EXPECT_EQ(HIGH_RESOLUTION, tiling->resolution());
+  high_res = pending_layer()->tilings()->FindTilingWithScaleKey(1.0f);
+  ASSERT_TRUE(high_res);
+  EXPECT_EQ(HIGH_RESOLUTION, high_res->resolution());
+
+  ActivateTree();
+  EXPECT_EQ(1u, active_layer()->tilings()->num_tilings());
+  high_res = active_layer()->tilings()->FindTilingWithScaleKey(1.0f);
+  ASSERT_TRUE(high_res);
+  EXPECT_EQ(HIGH_RESOLUTION, high_res->resolution());
+}
+
+// Tests when directly committing to the active tree, a small raster source
+// makes the minimum scale bigger than the the previous high res tiling scale,
+// causing the high res tiling (if not previously used for quads) to be removed.
+// See crbug.com/1160003.
+TEST_F(LegacySWPictureLayerImplTest,
+       HighResCreatedWhenBoundsShrinkOnActiveLayerWithUsedNonIdealScaleTiling) {
+  // Put 0.5 as high res.
+  SetInitialDeviceScaleFactor(0.5f);
+
+  SetupPendingTree(FakeRasterSource::CreateFilled(gfx::Size(10, 10)));
+  ActivateTree();
+  active_layer()
+      ->AddTiling(gfx::AxisTransform2d(1.0f, gfx::Vector2dF()))
+      ->set_resolution(NON_IDEAL_RESOLUTION);
+
+  EXPECT_EQ(2u, active_layer()->tilings()->num_tilings());
+  EXPECT_EQ(1, active_layer()->tilings()->NumHighResTilings());
+  auto* high_res = active_layer()->tilings()->FindTilingWithScaleKey(0.5f);
+  ASSERT_TRUE(high_res);
+  EXPECT_EQ(HIGH_RESOLUTION, high_res->resolution());
+  EXPECT_TRUE(active_layer()->tilings()->FindTilingWithScaleKey(1.0f));
+
+  // Now, set the bounds to be 1x1, so that minimum contents scale becomes 1.
+  active_layer()->SetBounds(gfx::Size(1, 1));
+  active_layer()->SetRasterSource(
+      FakeRasterSource::CreateFilled(gfx::Size(1, 1)), Region());
+  active_layer()->AddLastAppendQuadsTilingForTesting(
+      active_layer()->tilings()->FindTilingWithScaleKey(1.0f));
+  active_layer()->UpdateTiles();
+
+  EXPECT_EQ(1.f, active_layer()->MinimumContentsScale());
+
+  // Since the MinContentsScale is 1, the 0.5 tiling should have been replaced
+  // by a 1.0 tiling during UpdateRasterSource() and UpdateTiles().
+  EXPECT_EQ(1u, active_layer()->tilings()->num_tilings());
+  high_res = active_layer()->tilings()->FindTilingWithScaleKey(1.0f);
+  ASSERT_TRUE(high_res);
+  EXPECT_EQ(HIGH_RESOLUTION, high_res->resolution());
 }
 
 TEST_F(LegacySWPictureLayerImplTest, LowResTilingWithoutGpuRasterization) {

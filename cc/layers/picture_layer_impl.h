@@ -167,6 +167,10 @@ class CC_EXPORT PictureLayerImpl
     ideal_contents_scale_ = raster_contents_scale_ = scale;
   }
 
+  void AddLastAppendQuadsTilingForTesting(PictureLayerTiling* tiling) {
+    last_append_quads_tilings_.push_back(tiling);
+  }
+
  protected:
   PictureLayerImpl(LayerTreeImpl* tree_impl, int id);
   PictureLayerTiling* AddTiling(const gfx::AxisTransform2d& contents_transform);

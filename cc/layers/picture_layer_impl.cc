@@ -581,6 +581,7 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   // better scheme would be to maintain a tighter visible_layer_rect for the
   // finer tilings.
   CleanUpTilingsOnActiveLayer(last_append_quads_tilings_);
+  SanityCheckTilingState();
 }
 
 bool PictureLayerImpl::UpdateTiles() {
@@ -657,6 +658,8 @@ bool PictureLayerImpl::UpdateTiles() {
       viewport_rect_for_tile_priority_in_content_space_, ideal_contents_scale_,
       current_frame_time_in_seconds, occlusion_in_content_space,
       can_require_tiles_for_activation);
+  DCHECK_GT(tilings_->num_tilings(), 0u);
+  SanityCheckTilingState();
   return updated;
 }
 
@@ -1547,8 +1550,6 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer(
   tilings_->CleanUpTilings(min_acceptable_high_res_scale,
                            max_acceptable_high_res_scale, used_tilings,
                            twin_set);
-  DCHECK_GT(tilings_->num_tilings(), 0u);
-  SanityCheckTilingState();
 }
 
 float PictureLayerImpl::MinimumRasterContentsScaleForWillChangeTransform()
