@@ -68,16 +68,60 @@ That said, the `chrome-untrusted://` scheme is an implementation detail of the W
 
 ## How do I use chrome-untrusted://?
 
-(This will be out of date soon)
-### Create a URLDataSource and register it.
+### Create a standalone chrome-untrusted:// WebUI
 
-This will make its resources loadable in Chrome.
+1. Create a class overriding `ui::WebUIConfig` and another one overriding `ui::UntrustedWebUIController`
+
+`WebUIConfig` contains properties for the `chrome-untrusted://` page i.e. the host and scheme. In the future, this might also contain other properties like permissions or resources.
+
+`UntrustedWebUIController` register the resources for the page.
+
+```cpp
+const char kUntrustedExampleHost[] = "untrusted-example";
+const char kUntrustedExampleURL[] = "chrome-untrusted://untrusted-example";
+
+class UntrustedExampleUIConfig : public ui::WebUIConfig {
+ public:
+  UntrustedExampleUIConfig()
+    // Set scheme and host.
+    : WebUIConfig(content::kChromeUIUntrustedScheme, kUntrustedExampleHost) {}
+  ~UntrustedExampleUIConfig() override = default;
+
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui) override {
+    return std::make_unique<UntrustedExampleUI>(web_ui);
+  }
+};
+
+class UntrustedExampleUI : public ui::UntrustedWebUIController {
+ public:
+  UntrustedExampleUI::UntrustedExampleUI(content::WebUI* web_ui)
+    : ui::UntrustedWebUIController(web_ui) {
+
+    // Create a URLDataSource and add resources.
+    auto* untrusted_source =
+      content::WebUIDataSource::Create(kUntrustedExampleURL);
+    untrusted_source->AddResourcePath(...);
+
+    // Register the URLDataSource
+    auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
+    content::WebUIDataSource::Add(browser_context, untrusted_source);
+  }
+
+  UntrustedExampleUI(const UntrustedExampleUI&) = delete;
+  UntrustedExampleUI& operator=(const UntrustedExampleUI&) = delete;
+
+  UntrustedExampleUI::~UntrustedExampleUI() = default;
+};
 
 ```
-auto* data_source =
-    WebUIDataSource::Create(GURL(“chrome-untrusted://example/”));
-// Add resources i.e. data_source->SetRequestFilter
-WebUIDataSource::Add(browser_context, data_source);
+
+2. Register the WebUIConfig
+
+Add the `WebUIConfig` to the list of WebUIConfigs in `[ChromeUntrustedWebUIControllerFactory](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/webui/chrome_untrusted_web_ui_controller_factory.cc)`.
+
+```cpp
+register_config(std::make_unique<chromeos::UntrustedExampleUIConfig>());
 ```
 
 ### Embed chrome-untrusted:// in chrome:// WebUIs
@@ -85,18 +129,18 @@ WebUIDataSource::Add(browser_context, data_source);
 Developers can embed `chrome-untrusted://` iframes in `chrome://` pages. [Example CL](https://chromium-review.googlesource.com/c/chromium/src/+/2037186).
 
 The general steps are:
-1. Create and register a `URLDataSource` that serves necessary resources for the `chrome-untrusted://` page.
+1. Create a WebUIConfig and UntrustedWebUIController to register the resources for the `chrome-untrusted://` page.
 2. Allow the `chrome://` WebUI to embed the corresponding `chrome-untrusted://` WebUI.
-```
+```cpp
 untrusted_data_source->AddFrameAncestor(kWebUIPageURL)
 ```
 3. Make `chrome-untrusted://` requestable by the main `chrome://` WebUI.
-```
+```cpp
 web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme)
 ```
 4. Allow the `chrome://` WebUI to embed chrome-untrusted://.
-```
+```cpp
 trusted_data_source->OverrideContentSecurityPolicy(
-    “frame-src ” + kChromeUntrustedPageURL);
+    “frame-src ” + kUntrustedExampleURL);
 ```
 5. Add communication mechanism to `chrome-untrusted://` frames. For example, `iframe.postMessage()` and `window.onmessage`.
