@@ -56,11 +56,16 @@ bool NativeViewGLSurfaceEGLX11::Initialize(GLSurfaceFormat format) {
 
   auto* connection = x11::Connection::Get();
   // Query all child windows and store them. ANGLE creates a child window when
-  // eglCreateWidnowSurface is called on X11 and expose events from this window
-  // need to be received by this class.
+  // eglCreateWindowSurface is called on X11 and expose events from this window
+  // need to be received by this class.  Since ANGLE is using a separate
+  // connection, we have to select expose events on our own connection.
   if (auto reply =
           connection->QueryTree({static_cast<x11::Window>(window_)}).Sync()) {
     children_ = std::move(reply->children);
+  }
+  for (auto child : children_) {
+    connection->ChangeWindowAttributes(
+        {.window = child, .event_mask = x11::EventMask::Exposure});
   }
 
   dispatcher_set_ = true;
