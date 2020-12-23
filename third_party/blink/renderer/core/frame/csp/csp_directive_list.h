@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/frame/csp/media_list_directive.h"
 #include "third_party/blink/renderer/core/frame/csp/require_trusted_types_for_directive.h"
 #include "third_party/blink/renderer/core/frame/csp/source_list_directive.h"
-#include "third_party/blink/renderer/core/frame/csp/string_list_directive.h"
+#include "third_party/blink/renderer/core/frame/csp/trusted_types_directive.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
@@ -168,7 +168,7 @@ class CORE_EXPORT CSPDirectiveList final
   bool RequiresTrustedTypes() const;
 
   bool TrustedTypesAllowDuplicates() const {
-    return trusted_types_ && trusted_types_->IsAllowDuplicates();
+    return trusted_types_ && trusted_types_->allow_duplicates;
   }
 
   void Trace(Visitor*) const;
@@ -191,7 +191,6 @@ class CORE_EXPORT CSPDirectiveList final
   void EnforceStrictMixedContentChecking(const String& name,
                                          const String& value);
   void EnableInsecureRequestsUpgrade(const String& name, const String& value);
-  void AddTrustedTypes(const String& name, const String& value);
 
   CSPDirectiveName FallbackDirective(CSPDirectiveName current_directive,
                                      CSPDirectiveName original_directive) const;
@@ -321,7 +320,7 @@ class CORE_EXPORT CSPDirectiveList final
   network::mojom::blink::CSPSourceListPtr style_src_elem_;
   network::mojom::blink::CSPSourceListPtr worker_src_;
   network::mojom::blink::CSPSourceListPtr navigate_to_;
-  Member<StringListDirective> trusted_types_;
+  network::mojom::blink::CSPTrustedTypesPtr trusted_types_;
   network::mojom::blink::CSPRequireTrustedTypesFor require_trusted_types_for_;
 
   // If a "report-to" directive is used:

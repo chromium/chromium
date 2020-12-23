@@ -802,18 +802,20 @@ bool CSPDirectiveList::AllowTrustedTypePolicy(
     ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details)
     const {
   if (!trusted_types_ ||
-      trusted_types_->Allows(policy_name, is_duplicate, violation_details)) {
+      CSPTrustedTypesAllows(*trusted_types_, policy_name, is_duplicate,
+                            violation_details)) {
     return true;
   }
 
+  String raw_directive = GetRawDirectiveForMessage(
+      raw_directives_, network::mojom::blink::CSPDirectiveName::TrustedTypes);
   ReportViolation(
       "trusted-types", CSPDirectiveName::TrustedTypes,
       String::Format(
           "Refused to create a TrustedTypePolicy named '%s' because "
           "it violates the following Content Security Policy directive: "
           "\"%s\".",
-          policy_name.Utf8().c_str(),
-          trusted_types_.Get()->GetText().Utf8().c_str()),
+          policy_name.Utf8().c_str(), raw_directive.Utf8().c_str()),
       KURL(), RedirectStatus::kNoRedirect,
       ContentSecurityPolicy::kTrustedTypesPolicyViolation, policy_name);
 
@@ -1134,16 +1136,6 @@ void CSPDirectiveList::ApplyTreatAsPublicAddress() {
   // browser process.
 }
 
-void CSPDirectiveList::AddTrustedTypes(const String& name,
-                                       const String& value) {
-  if (trusted_types_) {
-    policy_->ReportDuplicateDirective(name);
-    return;
-  }
-  trusted_types_ =
-      MakeGarbageCollected<StringListDirective>(name, value, policy_);
-}
-
 void CSPDirectiveList::EnforceStrictMixedContentChecking(const String& name,
                                                          const String& value) {
   if (strict_mixed_content_checking_enforced_) {
@@ -1302,7 +1294,7 @@ void CSPDirectiveList::AddDirective(const String& name, const String& value) {
       ApplyTreatAsPublicAddress();
       return;
     case CSPDirectiveName::TrustedTypes:
-      AddTrustedTypes(name, value);
+      trusted_types_ = CSPTrustedTypesParse(value, policy_);
       return;
     case CSPDirectiveName::UpgradeInsecureRequests:
       EnableInsecureRequestsUpgrade(name, value);
@@ -1521,7 +1513,6 @@ bool CSPDirectiveList::IsScriptRestrictionReasonable() const {
 
 void CSPDirectiveList::Trace(Visitor* visitor) const {
   visitor->Trace(policy_);
-  visitor->Trace(trusted_types_);
 }
 
 }  // namespace blink

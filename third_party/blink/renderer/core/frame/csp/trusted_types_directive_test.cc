@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/csp/string_list_directive.h"
+#include "third_party/blink/renderer/core/frame/csp/trusted_types_directive.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/core/frame/csp/csp_directive_list.h"
 
 namespace blink {
 
-class StringListDirectiveTest : public testing::Test {
+class TrustedTypesDirectiveTest : public testing::Test {
  public:
-  StringListDirectiveTest()
+  TrustedTypesDirectiveTest()
       : csp_(MakeGarbageCollected<ContentSecurityPolicy>()) {}
 
  protected:
   Persistent<ContentSecurityPolicy> csp_;
 };
 
-TEST_F(StringListDirectiveTest, TestAllowLists) {
+TEST_F(TrustedTypesDirectiveTest, TestAllowLists) {
   struct {
     const char* directive;
     const char* should_be_allowed;
@@ -44,8 +43,8 @@ TEST_F(StringListDirectiveTest, TestAllowLists) {
   ContentSecurityPolicy::AllowTrustedTypePolicyDetails violation_details;
 
   for (const auto& test_case : test_cases) {
-    StringListDirective directive("trusted-types", test_case.directive,
-                                  csp_.Get());
+    network::mojom::blink::CSPTrustedTypesPtr directive =
+        CSPTrustedTypesParse(test_case.directive, csp_.Get());
 
     Vector<String> allowed;
     String(test_case.should_be_allowed).Split(' ', allowed);
@@ -53,11 +52,13 @@ TEST_F(StringListDirectiveTest, TestAllowLists) {
       SCOPED_TRACE(testing::Message()
                    << " trusted-types " << test_case.directive
                    << "; allow: " << value);
-      EXPECT_TRUE(directive.Allows(value, false, violation_details));
+      EXPECT_TRUE(
+          CSPTrustedTypesAllows(*directive, value, false, violation_details));
       EXPECT_EQ(violation_details,
                 ContentSecurityPolicy::AllowTrustedTypePolicyDetails::kAllowed);
-      EXPECT_EQ(directive.Allows(value, true, violation_details),
-                test_case.allow_dupes);
+      EXPECT_EQ(
+          CSPTrustedTypesAllows(*directive, value, true, violation_details),
+          test_case.allow_dupes);
       if (test_case.allow_dupes) {
         EXPECT_EQ(
             violation_details,
@@ -75,11 +76,13 @@ TEST_F(StringListDirectiveTest, TestAllowLists) {
       SCOPED_TRACE(testing::Message()
                    << " trusted-types " << test_case.directive
                    << "; do not allow: " << value);
-      EXPECT_FALSE(directive.Allows(value, false, violation_details));
+      EXPECT_FALSE(
+          CSPTrustedTypesAllows(*directive, value, false, violation_details));
       EXPECT_EQ(violation_details,
                 ContentSecurityPolicy::AllowTrustedTypePolicyDetails::
                     kDisallowedName);
-      EXPECT_FALSE(directive.Allows(value, true, violation_details));
+      EXPECT_FALSE(
+          CSPTrustedTypesAllows(*directive, value, true, violation_details));
       if (!test_case.allow_dupes || value == "default") {
         EXPECT_EQ(violation_details,
                   ContentSecurityPolicy::AllowTrustedTypePolicyDetails::

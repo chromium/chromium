@@ -1251,7 +1251,7 @@ source_set("unit_tests") {
     "frame/csp/csp_source_test.cc",
     "frame/csp/require_trusted_types_for_directive_test.cc",
     "frame/csp/source_list_directive_test.cc",
-    "frame/csp/string_list_directive_test.cc",
+    "frame/csp/trusted_types_directive_test.cc",
     "frame/deprecation_report_body_test.cc",
     "frame/document_loading_rendering_test.cc",
     "frame/document_policy_violation_report_body_test.cc",
