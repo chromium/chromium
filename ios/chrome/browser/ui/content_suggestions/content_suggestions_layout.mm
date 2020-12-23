@@ -30,6 +30,7 @@
     // content.
     return [super collectionViewContentSize];
   }
+  DCHECK(!IsRefactoredNTP());
   CGFloat collectionViewHeight = self.collectionView.bounds.size.height;
   CGFloat headerHeight = [self firstHeaderHeight];
 

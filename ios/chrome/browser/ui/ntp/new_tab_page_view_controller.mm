@@ -8,6 +8,8 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -22,6 +24,10 @@
 @property(nonatomic, strong)
     UICollectionViewController* contentSuggestionsViewController;
 
+// The overscroll actions controller managing accelerators over the toolbar.
+@property(nonatomic, strong)
+    OverscrollActionsController* overscrollActionsController;
+
 @end
 
 @implementation NewTabPageViewController
@@ -34,6 +40,10 @@
   }
 
   return self;
+}
+
+- (void)dealloc {
+  [self.overscrollActionsController invalidate];
 }
 
 - (void)viewDidLoad {
@@ -61,6 +71,26 @@
   [self.contentSuggestionsViewController
       didMoveToParentViewController:self.discoverFeedWrapperViewController
                                         .discoverFeed];
+
+  // Ensures that there is never any nested scrolling, since we are nesting the
+  // content suggestions collection view in the feed collection view.
+  self.contentSuggestionsViewController.collectionView.bounces = NO;
+  self.contentSuggestionsViewController.collectionView.alwaysBounceVertical =
+      NO;
+  self.contentSuggestionsViewController.collectionView.scrollEnabled = NO;
+
+  // Overscroll action does not work well with content offset, so set this
+  // to never and internally offset the UI to account for safe area insets.
+  self.discoverFeedWrapperViewController.feedCollectionView
+      .contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+
+  self.overscrollActionsController = [[OverscrollActionsController alloc]
+      initWithScrollView:self.discoverFeedWrapperViewController
+                             .feedCollectionView];
+  [self.overscrollActionsController
+      setStyle:OverscrollStyle::NTP_NON_INCOGNITO];
+  self.overscrollActionsController.delegate = self.overscrollDelegate;
+  [self updateOverscrollActionsState];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -77,25 +107,39 @@
       UIEdgeInsetsMake(collectionView.contentSize.height, 0, 0, 0);
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  [self updateOverscrollActionsState];
+}
+
+- (void)willUpdateSnapshot {
+  [self.overscrollActionsController clear];
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  // TODO(crbug.com/1114792): Handle scrolling.
+  [self.overscrollActionsController scrollViewDidScroll:scrollView];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
-  // TODO(crbug.com/1114792): Handle scrolling.
+  [self.overscrollActionsController scrollViewWillBeginDragging:scrollView];
+  // TODO(crbug.com/1114792): Add metrics recorder.
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
                      withVelocity:(CGPoint)velocity
               targetContentOffset:(inout CGPoint*)targetContentOffset {
-  // TODO(crbug.com/1114792): Handle scrolling.
+  [self.overscrollActionsController
+      scrollViewWillEndDragging:scrollView
+                   withVelocity:velocity
+            targetContentOffset:targetContentOffset];
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
                   willDecelerate:(BOOL)decelerate {
-  // TODO(crbug.com/1114792): Handle scrolling.
+  [self.overscrollActionsController scrollViewDidEndDragging:scrollView
+                                              willDecelerate:decelerate];
 }
 
 - (void)scrollViewDidScrollToTop:(UIScrollView*)scrollView {
@@ -115,7 +159,18 @@
 }
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView*)scrollView {
-  return NO;
+  return YES;
+}
+
+#pragma mark - Private
+
+// Enables or disables overscroll actions.
+- (void)updateOverscrollActionsState {
+  if (IsSplitToolbarMode(self)) {
+    [self.overscrollActionsController enableOverscrollActions];
+  } else {
+    [self.overscrollActionsController disableOverscrollActions];
+  }
 }
 
 @end

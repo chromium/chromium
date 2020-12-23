@@ -9,6 +9,7 @@
 
 @class ContentSuggestionsViewController;
 @class DiscoverFeedWrapperViewController;
+@protocol OverscrollActionsControllerDelegate;
 
 // View controller containing all the content presented on a standard,
 // non-incognito new tab page.
@@ -17,6 +18,10 @@
 // View controller wrapping the Discover feed.
 @property(nonatomic, strong)
     DiscoverFeedWrapperViewController* discoverFeedWrapperViewController;
+
+// Delegate for the overscroll actions.
+@property(nonatomic, weak) id<OverscrollActionsControllerDelegate>
+    overscrollDelegate;
 
 // Initializes view controller with NTP content view controllers.
 // |discoverFeedViewController| represents the Discover feed for suggesting
@@ -29,6 +34,9 @@
 - (instancetype)initWithNibName:(NSString*)name
                          bundle:(NSBundle*)bundle NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
+// Called when a snapshot of the content will be taken.
+- (void)willUpdateSnapshot;
 
 @end
 

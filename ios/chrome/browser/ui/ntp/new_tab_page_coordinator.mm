@@ -9,6 +9,11 @@
 #include "base/metrics/user_metrics_action.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
+#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -18,6 +23,7 @@
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
+#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
@@ -30,7 +36,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface NewTabPageCoordinator () <SceneStateObserver>
+@interface NewTabPageCoordinator () <OverscrollActionsControllerDelegate,
+                                     SceneStateObserver>
 
 // Coordinator for the ContentSuggestions.
 @property(nonatomic, strong)
@@ -113,6 +120,7 @@
 
       self.ntpViewController.discoverFeedWrapperViewController =
           self.discoverFeedWrapperViewController;
+      self.ntpViewController.overscrollDelegate = self;
     }
 
     base::RecordAction(base::UserMetricsAction("MobileNTPShowMostVisited"));
@@ -194,7 +202,11 @@
 }
 
 - (void)willUpdateSnapshot {
-  [self.contentSuggestionsCoordinator willUpdateSnapshot];
+  if (IsRefactoredNTP()) {
+    [self.ntpViewController willUpdateSnapshot];
+  } else {
+    [self.contentSuggestionsCoordinator willUpdateSnapshot];
+  }
 }
 
 - (void)focusFakebox {
@@ -202,6 +214,9 @@
 }
 
 - (void)reload {
+  if (IsRefactoredNTP()) {
+    ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->RefreshFeed();
+  }
   [self.contentSuggestionsCoordinator reload];
 }
 
@@ -236,6 +251,71 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   self.sceneInForeground = level >= SceneActivationLevelForegroundInactive;
   [self updateVisible];
+}
+
+#pragma mark - OverscrollActionsControllerDelegate
+
+- (void)overscrollActionsController:(OverscrollActionsController*)controller
+                   didTriggerAction:(OverscrollAction)action {
+  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // clean up.
+  id<ApplicationCommands, BrowserCommands, OmniboxCommands, SnackbarCommands>
+      handler = static_cast<id<ApplicationCommands, BrowserCommands,
+                               OmniboxCommands, SnackbarCommands>>(
+          self.browser->GetCommandDispatcher());
+  switch (action) {
+    case OverscrollAction::NEW_TAB: {
+      [handler openURLInNewTab:[OpenNewTabCommand command]];
+    } break;
+    case OverscrollAction::CLOSE_TAB: {
+      [handler closeCurrentTab];
+      base::RecordAction(base::UserMetricsAction("OverscrollActionCloseTab"));
+    } break;
+    case OverscrollAction::REFRESH:
+      [self reload];
+      break;
+    case OverscrollAction::NONE:
+      NOTREACHED();
+      break;
+  }
+}
+
+- (BOOL)shouldAllowOverscrollActionsForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  return YES;
+}
+
+- (UIView*)toolbarSnapshotViewForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  return [[self.contentSuggestionsCoordinator.headerController toolBarView]
+      snapshotViewAfterScreenUpdates:NO];
+}
+
+- (UIView*)headerViewForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  return self.discoverFeedWrapperViewController.view;
+}
+
+- (CGFloat)headerInsetForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  return self.contentSuggestionsCoordinator.viewController.collectionView
+      .contentSize.height;
+}
+
+- (CGFloat)headerHeightForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  CGFloat height =
+      [self.contentSuggestionsCoordinator.headerController toolBarView]
+          .bounds.size.height;
+  CGFloat topInset =
+      self.discoverFeedWrapperViewController.view.safeAreaInsets.top;
+  return height + topInset;
+}
+
+- (FullscreenController*)fullscreenControllerForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  // Fullscreen isn't supported here.
+  return nullptr;
 }
 
 @end

@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/theme_change_delegate.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
@@ -577,12 +578,15 @@
 }
 
 - (void)willUpdateSnapshot {
+  DCHECK(!IsRefactoredNTP());
   [self.suggestionsViewController clearOverscroll];
 }
 
 - (void)reload {
-  if (IsDiscoverFeedEnabled())
+  if (IsDiscoverFeedEnabled() && !IsRefactoredNTP()) {
+    DCHECK(!IsRefactoredNTP());
     ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->RefreshFeed();
+  }
   [self.contentSuggestionsMediator.dataSink reloadAllData];
 }
 
