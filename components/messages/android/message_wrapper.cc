@@ -74,6 +74,24 @@ void MessageWrapper::SetPrimaryButtonText(
                                            jprimary_button_text);
 }
 
+base::string16 MessageWrapper::GetSecondaryActionText() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> jsecondary_action_text =
+      Java_MessageWrapper_getSecondaryActionText(env, java_message_wrapper_);
+  return jsecondary_action_text.is_null()
+             ? base::string16()
+             : base::android::ConvertJavaStringToUTF16(jsecondary_action_text);
+}
+
+void MessageWrapper::SetSecondaryActionText(
+    const base::string16& secondary_action_text) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> jsecondary_action_text =
+      base::android::ConvertUTF16ToJavaString(env, secondary_action_text);
+  Java_MessageWrapper_setSecondaryActionText(env, java_message_wrapper_,
+                                             jsecondary_action_text);
+}
+
 int MessageWrapper::GetIconResourceId() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_MessageWrapper_getIconResourceId(env, java_message_wrapper_);
@@ -85,9 +103,30 @@ void MessageWrapper::SetIconResourceId(int resource_id) {
                                         resource_id);
 }
 
+int MessageWrapper::GetSecondaryIconResourceId() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_MessageWrapper_getSecondaryIconResourceId(env,
+                                                        java_message_wrapper_);
+}
+
+void MessageWrapper::SetSecondaryIconResourceId(int resource_id) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MessageWrapper_setSecondaryIconResourceId(env, java_message_wrapper_,
+                                                 resource_id);
+}
+
+void MessageWrapper::SetSecondaryActionCallback(base::OnceClosure callback) {
+  secondary_action_callback_ = std::move(callback);
+}
+
 void MessageWrapper::HandleActionClick(JNIEnv* env) {
   if (!action_callback_.is_null())
     std::move(action_callback_).Run();
+}
+
+void MessageWrapper::HandleSecondaryActionClick(JNIEnv* env) {
+  if (!secondary_action_callback_.is_null())
+    std::move(secondary_action_callback_).Run();
 }
 
 void MessageWrapper::HandleDismissCallback(JNIEnv* env) {

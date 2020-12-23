@@ -40,8 +40,9 @@ class SavePasswordMessageDelegate {
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
       bool is_saving_google_account);
 
-  // Called in response to user clicking "Save" button.
-  void HandleActionClick();
+  // Called in response to user clicking "Save" and "Never" buttons.
+  void HandleSaveClick();
+  void HandleNeverClick();
   // Called when the message is dismissed.
   void HandleDismissCallback();
 

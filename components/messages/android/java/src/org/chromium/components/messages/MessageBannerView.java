@@ -18,6 +18,13 @@ import androidx.annotation.Nullable;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
+import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * View representing the message banner.
@@ -27,8 +34,10 @@ public class MessageBannerView extends BoundedLinearLayout {
     private TextView mTitle;
     private TextView mDescription;
     private TextView mPrimaryButton;
-    private ImageView mSecondaryButton;
+    private ListMenuButton mSecondaryButton;
     private View mDivider;
+    private String mSecondaryActionText;
+    private Runnable mSecondaryActionCallback;
     private SwipeGestureListener mSwipeGestureDetector;
 
     public MessageBannerView(Context context, @Nullable AttributeSet attrs) {
@@ -44,6 +53,7 @@ public class MessageBannerView extends BoundedLinearLayout {
         mIconView = findViewById(R.id.message_icon);
         mSecondaryButton = findViewById(R.id.message_secondary_button);
         mDivider = findViewById(R.id.message_divider);
+        mSecondaryButton.setOnClickListener((View v) -> { displayMenu(); });
     }
 
     void setTitle(String title) {
@@ -74,12 +84,53 @@ public class MessageBannerView extends BoundedLinearLayout {
         mDivider.setVisibility(VISIBLE);
     }
 
+    void setSecondaryActionCallback(Runnable callback) {
+        mSecondaryActionCallback = callback;
+    }
+
+    void setSecondaryActionText(String text) {
+        mSecondaryActionText = text;
+    }
+
     void setSecondaryIconContentDescription(String description) {
         mSecondaryButton.setContentDescription(description);
     }
 
     void setSwipeHandler(SwipeHandler handler) {
         mSwipeGestureDetector = new MessageSwipeGestureListener(getContext(), handler);
+    }
+
+    // TODO(pavely): For the M88 experiment we decided to display single item menu in response to
+    // the tap on secondary button. The code below implements this logic. Past M88 it will be
+    // replaced with modal dialog driven from the feature code.
+    void displayMenu() {
+        final PropertyModel menuItemPropertyModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.TITLE, mSecondaryActionText)
+                        .with(ListMenuItemProperties.ENABLED, true)
+                        .build();
+
+        MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
+        menuItems.add(new MVCListAdapter.ListItem(
+                BasicListMenu.ListMenuItemType.MENU_ITEM, menuItemPropertyModel));
+
+        ListMenu.Delegate listMenuDelegate = (PropertyModel menuItem) -> {
+            assert menuItem == menuItemPropertyModel;
+            // There is only one menu item in the menu.
+            if (mSecondaryActionCallback != null) {
+                mSecondaryActionCallback.run();
+            }
+        };
+        BasicListMenu listMenu = new BasicListMenu(getContext(), menuItems, listMenuDelegate);
+
+        ListMenuButtonDelegate delegate = new ListMenuButtonDelegate() {
+            @Override
+            public ListMenu getListMenu() {
+                return listMenu;
+            }
+        };
+        mSecondaryButton.setDelegate(delegate);
+        mSecondaryButton.showMenu();
     }
 
     @SuppressLint("ClickableViewAccessibility")
