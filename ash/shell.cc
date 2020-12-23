@@ -934,6 +934,16 @@ void Shell::Init(
   accessibility_controller_ = std::make_unique<AccessibilityControllerImpl>();
   toast_manager_ = std::make_unique<ToastManagerImpl>();
 
+  peripheral_battery_listener_ = std::make_unique<PeripheralBatteryListener>();
+
+  peripheral_battery_notifier_ = std::make_unique<PeripheralBatteryNotifier>(
+      peripheral_battery_listener_.get());
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kShowBluetoothDeviceBattery)) {
+    peripheral_battery_tracker_ = std::make_unique<PeripheralBatteryTracker>();
+  }
+  power_event_observer_.reset(new PowerEventObserver());
+
   if (features::IsCaptureModeEnabled()) {
     capture_mode_controller_ = std::make_unique<CaptureModeController>(
         shell_delegate_->CreateCaptureModeDelegate());
@@ -1192,16 +1202,6 @@ void Shell::Init(
 
   cursor_manager_->HideCursor();  // Hide the mouse cursor on startup.
   cursor_manager_->SetCursor(ui::mojom::CursorType::kPointer);
-
-  peripheral_battery_listener_ = std::make_unique<PeripheralBatteryListener>();
-
-  peripheral_battery_notifier_ = std::make_unique<PeripheralBatteryNotifier>(
-      peripheral_battery_listener_.get());
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kShowBluetoothDeviceBattery)) {
-    peripheral_battery_tracker_ = std::make_unique<PeripheralBatteryTracker>();
-  }
-  power_event_observer_.reset(new PowerEventObserver());
 
   mojo::PendingRemote<device::mojom::Fingerprint> fingerprint;
   shell_delegate_->BindFingerprint(

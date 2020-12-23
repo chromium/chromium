@@ -21,7 +21,12 @@ constexpr int kStylusLowBatteryThreshold = 24;
 constexpr int kStylusMediumBatteryThreshold = 71;
 }  // namespace
 
-StylusBatteryDelegate::StylusBatteryDelegate() = default;
+StylusBatteryDelegate::StylusBatteryDelegate() {
+  if (Shell::Get()->peripheral_battery_listener())
+    battery_observation_.Observe(Shell::Get()->peripheral_battery_listener());
+}
+
+StylusBatteryDelegate::~StylusBatteryDelegate() = default;
 
 SkColor StylusBatteryDelegate::GetColorForBatteryLevel() const {
   if (battery_level_ <= kStylusLowBatteryThreshold) {
@@ -51,6 +56,19 @@ gfx::ImageSkia StylusBatteryDelegate::GetBatteryImage() const {
 
   return PowerStatus::GetBatteryImage(info, kUnifiedTrayIconSize, icon_bg_color,
                                       icon_fg_color);
+}
+
+void StylusBatteryDelegate::OnAddingBattery(
+    const PeripheralBatteryListener::BatteryInfo& battery) {
+  battery_level_ = battery.level;
+}
+
+void StylusBatteryDelegate::OnRemovingBattery(
+    const PeripheralBatteryListener::BatteryInfo& battery) {}
+
+void StylusBatteryDelegate::OnUpdatedBatteryLevel(
+    const PeripheralBatteryListener::BatteryInfo& battery) {
+  battery_level_ = battery.level;
 }
 
 }  // namespace ash

@@ -453,6 +453,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   PartialMagnificationController* partial_magnification_controller() {
     return partial_magnification_controller_.get();
   }
+  PeripheralBatteryListener* peripheral_battery_listener() {
+    return peripheral_battery_listener_.get();
+  }
   PolicyRecommendationRestorer* policy_recommendation_restorer() {
     return policy_recommendation_restorer_.get();
   }

@@ -6,17 +6,20 @@
 #define ASH_SYSTEM_PALETTE_STYLUS_BATTERY_DELEGATE_H_
 
 #include "ash/ash_export.h"
-#include "base/scoped_observer.h"
+#include "ash/system/power/peripheral_battery_listener.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
-class ASH_EXPORT StylusBatteryDelegate {
+class ASH_EXPORT StylusBatteryDelegate
+    : public PeripheralBatteryListener::Observer {
  public:
   StylusBatteryDelegate();
   StylusBatteryDelegate(const StylusBatteryDelegate& other) = delete;
   StylusBatteryDelegate& operator=(const StylusBatteryDelegate& other) = delete;
+  ~StylusBatteryDelegate() override;
 
   SkColor GetColorForBatteryLevel() const;
   int GetLabelIdForBatteryLevel() const;
@@ -25,9 +28,19 @@ class ASH_EXPORT StylusBatteryDelegate {
   base::Optional<uint8_t> battery_level() const { return battery_level_; }
 
  private:
+  // PeripheralBatteryListener::Observer:
+  void OnAddingBattery(
+      const PeripheralBatteryListener::BatteryInfo& battery) override;
+  void OnRemovingBattery(
+      const PeripheralBatteryListener::BatteryInfo& battery) override;
+  void OnUpdatedBatteryLevel(
+      const PeripheralBatteryListener::BatteryInfo& battery) override;
+
   base::Optional<uint8_t> battery_level_;
 
-  // Peripheral battery observer to be added here.
+  base::ScopedObservation<PeripheralBatteryListener,
+                          PeripheralBatteryListener::Observer>
+      battery_observation_{this};
 };
 
 }  // namespace ash
