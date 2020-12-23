@@ -80,15 +80,13 @@
       </div>
     </oobe-dialog>
     <oobe-dialog id="securitySettingsDialog" role="dialog" has-buttons
-      title-key="eulaSystemSecuritySettings" hidden
-      aria-label$="[[i18nDynamic(locale, 'eulaSystemSecuritySettings')]]">
+        title-key="eulaSystemSecuritySettings" hidden
+        aria-label$="[[i18nDynamic(locale, 'eulaSystemSecuritySettings')]]">
       <hd-iron-icon slot="oobe-icon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
       </hd-iron-icon>
       <div slot="subtitle" id="settingsSubtitle">
-        <div>
-          [[i18nDynamic(locale, 'eulaTpmDesc')]]
-        </div>
+        [[i18nDynamic(locale, 'eulaTpmDesc')]]
       </div>
       <div slot="bottom-buttons" class="flex layout horizontal">
         <div class="flex"></div>
@@ -107,7 +105,7 @@
       <webview slot="content" role="document" class="flex oobe-tos-webview"
           id="additionalChromeToSFrame">
       </webview>
-      <oobe-text-button id="close-additional-tos" slot="buttons"
+      <oobe-text-button id="closeAdditionalTos" slot="buttons"
           on-click="hideToSDialog_" text-key="oobeModalDialogClose" inverse>
       </oobe-text-button>
     </oobe-modal-dialog>

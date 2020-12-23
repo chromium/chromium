@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -57,8 +58,6 @@ const test::UIPath kAcceptEulaButton = {"oobe-eula-md", "acceptButton"};
 const test::UIPath kUsageStats = {"oobe-eula-md", "usageStats"};
 const test::UIPath kAdditionalTermsLink = {"oobe-eula-md", "additionalTerms"};
 const test::UIPath kAdditionalTermsDialog = {"oobe-eula-md", "additionalToS"};
-const test::UIPath kAdditionalTermsClose = {"oobe-eula-md",
-                                            "close-additional-tos"};
 const test::UIPath kLearnMoreLink = {"oobe-eula-md", "learnMore"};
 
 // Helper class to wait until the WebCotnents finishes loading.
@@ -361,12 +360,15 @@ IN_PROC_BROWSER_TEST_F(EulaTest, AdditionalToS) {
       .CreateWaiter(test::GetOobeElementPath(kAdditionalTermsDialog) + ".open")
       ->Wait();
 
-  test::OobeJS().TapOnPath(kAdditionalTermsClose);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      nullptr, ui::VKEY_RETURN, false /* control */, false /* shift */,
+      false /* alt */, false /* command */));
 
   test::OobeJS()
       .CreateWaiter(test::GetOobeElementPath(kAdditionalTermsDialog) +
                     ".open === false")
       ->Wait();
+  test::OobeJS().ExpectFocused(kAdditionalTermsLink);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("OOBE.EulaScreen.UserActions"),

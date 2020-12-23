@@ -412,7 +412,7 @@ Polymer({
    */
   showAdditionalTosDialog() {
     this.$.additionalToS.showDialog();
-    this.$.additionalToS.focus();
+    this.$.closeAdditionalTos.focus();
   },
 
   /**
@@ -422,6 +422,7 @@ Polymer({
    */
   hideToSDialog_() {
     this.$.additionalToS.hideDialog();
+    this.focusAdditionalTermsLink_();
   },
 
   /**
@@ -457,7 +458,6 @@ Polymer({
   onSecuritySettingsCloseClicked_() {
     this.$.securitySettingsDialog.hidden = true;
     this.$.eulaDialog.hidden = false;
-    this.$.eulaDialog.show();
     this.$.securitySettings.focus();
   },
 
