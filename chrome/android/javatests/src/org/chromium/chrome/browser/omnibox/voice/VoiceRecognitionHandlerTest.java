@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdow
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AssistantActionPerformed;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
@@ -58,6 +59,7 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.AndroidPermissionDelegate;
@@ -564,27 +566,27 @@ public class VoiceRecognitionHandlerTest {
     @Test
     @SmallTest
     public void testIsVoiceSearchEnabled_FalseOnNullTab() {
-        Assert.assertFalse(mHandler.isVoiceSearchEnabled());
+        Assert.assertFalse(isVoiceSearchEnabled());
     }
 
     @Test
     @SmallTest
     public void testIsVoiceSearchEnabled_FalseOnNullDataProvider() {
         mDataProvider = null;
-        Assert.assertFalse(mHandler.isVoiceSearchEnabled());
+        Assert.assertFalse(isVoiceSearchEnabled());
     }
 
     @Test
     @SmallTest
     public void testIsVoiceSearchEnabled_FalseWhenIncognito() {
         mDataProvider.setIncognito(true);
-        Assert.assertFalse(mHandler.isVoiceSearchEnabled());
+        Assert.assertFalse(isVoiceSearchEnabled());
     }
 
     @Test
     @SmallTest
     public void testIsVoiceSearchEnabled_FalseWhenNoPermissionAndCantRequestPermission() {
-        Assert.assertFalse(mHandler.isVoiceSearchEnabled());
+        Assert.assertFalse(isVoiceSearchEnabled());
         Assert.assertTrue(mPermissionDelegate.calledHasPermission());
         Assert.assertTrue(mPermissionDelegate.calledCanRequestPermission());
     }
@@ -594,7 +596,56 @@ public class VoiceRecognitionHandlerTest {
     public void testIsVoiceSearchEnabled_Success() {
         mPermissionDelegate.setCanRequestPermission(true);
         mPermissionDelegate.setHasPermission(true);
-        Assert.assertTrue(mHandler.isVoiceSearchEnabled());
+        Assert.assertTrue(isVoiceSearchEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @Feature("VoiceSearchAudioCapturePolicy")
+    @EnableFeatures({ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY})
+    public void testIsVoiceSearchEnabled_AllowedByPolicy() {
+        setAudioCapturePref(true);
+        mPermissionDelegate.setCanRequestPermission(true);
+        mPermissionDelegate.setHasPermission(true);
+        Assert.assertTrue(isVoiceSearchEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @Feature("VoiceSearchAudioCapturePolicy")
+    @EnableFeatures({ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY})
+    public void testIsVoiceSearchEnabled_DisabledByPolicy() {
+        setAudioCapturePref(false);
+        mPermissionDelegate.setCanRequestPermission(true);
+        mPermissionDelegate.setHasPermission(true);
+        Assert.assertFalse(isVoiceSearchEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @Feature("VoiceSearchAudioCapturePolicy")
+    @EnableFeatures({ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY})
+    public void testIsVoiceSearchEnabled_AudioCapturePolicyAllowsByDefault() {
+        mPermissionDelegate.setCanRequestPermission(true);
+        mPermissionDelegate.setHasPermission(true);
+        Assert.assertTrue(isVoiceSearchEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @Feature("VoiceSearchAudioCapturePolicy")
+    @DisableFeatures({ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY})
+    public void testIsVoiceSearchEnabled_SkipPolicyCheckWhenDisabled() {
+        setAudioCapturePref(false);
+        mPermissionDelegate.setCanRequestPermission(true);
+        mPermissionDelegate.setHasPermission(true);
+        Assert.assertTrue(isVoiceSearchEnabled());
+    }
+
+    /** Calls isVoiceSearchEnabled(), ensuring it is run on the UI thread. */
+    private boolean isVoiceSearchEnabled() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> mHandler.isVoiceSearchEnabled());
     }
 
     /**
@@ -744,6 +795,60 @@ public class VoiceRecognitionHandlerTest {
         Assert.assertEquals(
                 VoiceInteractionSource.OMNIBOX, mHandler.getVoiceSearchStartEventSource());
         Assert.assertFalse(mDelegate.updatedMicButtonState());
+    }
+
+    @Test
+    @SmallTest
+    @Feature("VoiceSearchAudioCapturePolicy")
+    @EnableFeatures({ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY,
+            ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH})
+    public void
+    testStartVoiceRecognition_AudioCaptureAllowedByPolicy() {
+        setAudioCapturePref(true);
+        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
+        startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+    }
+
+    @Test
+    @SmallTest
+    @Feature("VoiceSearchAudioCapturePolicy")
+    @EnableFeatures({ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY,
+            ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH})
+    public void
+    testStartVoiceRecognition_AudioCaptureDisabledByPolicy() {
+        setAudioCapturePref(false);
+        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
+        startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+
+        Assert.assertFalse(mWindowAndroid.wasCancelableIntentShown());
+    }
+
+    @Test
+    @SmallTest
+    @Feature("VoiceSearchAudioCapturePolicy")
+    @EnableFeatures({ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY,
+            ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH})
+    public void
+    testStartVoiceRecognition_AudioCapturePolicyAllowsByDefault() {
+        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
+        startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+    }
+
+    @Test
+    @SmallTest
+    @Feature("VoiceSearchAudioCapturePolicy")
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH})
+    @DisableFeatures({ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY})
+    public void testStartVoiceRecognition_SkipPolicyWhenFeatureDisabled() {
+        setAudioCapturePref(false);
+        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
+        startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
     }
 
     /**
@@ -1121,5 +1226,12 @@ public class VoiceRecognitionHandlerTest {
                 Assert.assertEquals("Languages not equal", result.getLanguage(), languages[i]);
             }
         }
+    }
+
+    private static void setAudioCapturePref(boolean value) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            UserPrefs.get(Profile.getLastUsedRegularProfile())
+                    .setBoolean(Pref.AUDIO_CAPTURE_ALLOWED, value);
+        });
     }
 }

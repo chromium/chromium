@@ -380,6 +380,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         features.put(ChromeFeatureList.SEARCH_ENGINE_PROMO_EXISTING_DEVICE, false);
         features.put(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO, false);
         features.put(ChromeFeatureList.SHARE_BY_DEFAULT_IN_CCT, true);
+        features.put(ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
         FeatureList.setTestFeatures(features);
     }
 }
