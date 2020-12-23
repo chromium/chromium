@@ -10,15 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/command_line.h"
-#include "base/containers/flat_set.h"
-#include "base/feature_list.h"
-#include "base/hash/sha1.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/no_destructor.h"
-#include "base/stl_util.h"
-#include "base/strings/string_split.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -27,11 +18,9 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/script_constants.h"
-#include "extensions/common/switches.h"
 #include "extensions/common/user_script.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -50,66 +39,13 @@ enum class FactoryUser {
   kExtensionProcess,
 };
 
-constexpr size_t kHashedExtensionIdLength = base::kSHA1Length * 2;
-bool IsValidHashedExtensionId(const std::string& hash) {
-  bool correct_chars = std::all_of(hash.begin(), hash.end(), [](char c) {
-    return ('A' <= c && c <= 'F') || ('0' <= c && c <= '9');
-  });
-  bool correct_length = (kHashedExtensionIdLength == hash.length());
-  return correct_chars && correct_length;
-}
-
-std::vector<std::string> CreateExtensionAllowlist() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceEmptyCorbAllowlist)) {
-    return std::vector<std::string>();
-  }
-
-  // Append extensions from the field trial param.
-  std::string field_trial_arg = base::GetFieldTrialParamValueByFeature(
-      extensions_features::kCorbCorsAllowlist,
-      extensions_features::kCorbCorsAllowlistParamName);
-  field_trial_arg = base::ToUpperASCII(field_trial_arg);
-  std::vector<std::string> field_trial_allowlist = base::SplitString(
-      field_trial_arg, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  base::EraseIf(field_trial_allowlist, [](const std::string& hash) {
-    // Filter out invalid data from |field_trial_allowlist|.
-    if (IsValidHashedExtensionId(hash))
-      return false;  // Don't remove.
-
-    LOG(ERROR) << "Invalid extension hash: " << hash;
-    return true;  // Remove.
-  });
-
-  return field_trial_allowlist;
-}
-
-// Returns a set of HashedExtensionId of extensions that depend on relaxed CORB
-// or CORS behavior in their content scripts.
-base::flat_set<std::string>& GetExtensionsAllowlist() {
-  static base::NoDestructor<base::flat_set<std::string>> s_allowlist([] {
-    base::flat_set<std::string> result(CreateExtensionAllowlist());
-    result.shrink_to_fit();
-    return result;
-  }());
-  return *s_allowlist;
-}
-
 bool DoContentScriptsDependOnRelaxedCorbOrCors(const Extension& extension) {
   // Content scripts injected by Chrome Apps (e.g. into <webview> tag) need to
   // run with relaxed CORB.
   if (extension.is_platform_app())
     return true;
 
-  // Content scripts in manifest v2 might be allowlisted to depend on relaxed
-  // CORB and/or CORS.
-  if (extension.manifest_version() <= 2) {
-    const std::string& hash = extension.hashed_id().value();
-    DCHECK(IsValidHashedExtensionId(hash));
-    return base::Contains(GetExtensionsAllowlist(), hash);
-  }
-
-  // Safe fallback for future extension manifest versions.
+  // Content scripts are not granted an ability to relax CORB and/or CORS.
   return false;
 }
 

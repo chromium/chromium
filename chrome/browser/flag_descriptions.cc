@@ -887,15 +887,6 @@ const char kBlockInsecurePrivateNetworkRequestsDescription[] =
     "public. This is a first step towards full enforcement of CORS-RFC1918: "
     "https://wicg.github.io/cors-rfc1918";
 
-const char kForceEmptyCorbAndCorsAllowlistName[] =
-    "Force empty CORB and CORS allowlist";
-const char kForceEmptyCorbAndCorsAllowlistDescription[] =
-    "Removes all Chrome Extensions from the CORB and CORS allowlist. "
-    "For more information about the allowlist and the changes to the "
-    "security model of content scripts, please see: "
-    "https://www.chromium.org/Home/chromium-security/"
-    "extension-content-script-fetches";
-
 const char kCrossOriginOpenerPolicyReportingName[] =
     "Cross Origin Opener Policy reporting";
 const char kCrossOriginOpenerPolicyReportingDescription[] =

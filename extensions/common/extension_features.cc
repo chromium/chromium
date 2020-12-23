@@ -67,12 +67,4 @@ const base::Feature kReturnScopesInGetAuthToken{
 const base::Feature kSelectedUserIdInGetAuthToken{
     "SelectedUserIdInGetAuthToken", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Feature used mostly for exposing a field-trial-param-based mechanism for
-// adding remaining strugglers to the CORB/CORS allowlist which has been
-// deprecated in Chrome 87.
-const base::Feature kCorbCorsAllowlist{"CorbCorsAllowlist",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
-const char kCorbCorsAllowlistParamName[] =
-    "CorbCorsAllowlistDeprecationParamName";
-
 }  // namespace extensions_features

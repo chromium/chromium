@@ -35,9 +35,6 @@ extern const base::Feature kReturnScopesInGetAuthToken;
 
 extern const base::Feature kSelectedUserIdInGetAuthToken;
 
-extern const base::Feature kCorbCorsAllowlist;
-extern const char kCorbCorsAllowlistParamName[];
-
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

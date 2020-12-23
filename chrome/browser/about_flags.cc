@@ -4383,13 +4383,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBlockInsecurePrivateNetworkRequestsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kBlockInsecurePrivateNetworkRequests)},
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    {"force-empty-CORB-and-CORS-allowlist",
-     flag_descriptions::kForceEmptyCorbAndCorsAllowlistName,
-     flag_descriptions::kForceEmptyCorbAndCorsAllowlistDescription, kOsDesktop,
-     SINGLE_VALUE_TYPE(extensions::switches::kForceEmptyCorbAllowlist)},
-#endif
-
     {"cross-origin-opener-policy-reporting",
      flag_descriptions::kCrossOriginOpenerPolicyReportingName,
      flag_descriptions::kCrossOriginOpenerPolicyReportingDescription, kOsAll,

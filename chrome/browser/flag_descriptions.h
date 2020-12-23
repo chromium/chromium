@@ -502,9 +502,6 @@ extern const char kEnableWindowsGamingInputDataFetcherDescription[];
 extern const char kBlockInsecurePrivateNetworkRequestsName[];
 extern const char kBlockInsecurePrivateNetworkRequestsDescription[];
 
-extern const char kForceEmptyCorbAndCorsAllowlistName[];
-extern const char kForceEmptyCorbAndCorsAllowlistDescription[];
-
 extern const char kCrossOriginOpenerPolicyReportingName[];
 extern const char kCrossOriginOpenerPolicyReportingDescription[];
 

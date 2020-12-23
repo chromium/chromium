@@ -698,11 +698,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "cors-for-content-scripts",
-    "owners": [ "lukasza", "creis", "rdcronin" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "cpu-affinity-restrict-to-little-cores",
     "owners": [ "eseckler", "skyostil" ],
     "expiry_milestone": 92
@@ -2741,11 +2736,6 @@
     // ECT is a baked-in feature of Chrome. This flag is used for frequent
     // testing and should not be removed.
     "expiry_milestone": -1
-  },
-  {
-    "name": "force-empty-CORB-and-CORS-allowlist",
-    "owners": [ "lukasza", "creis", "rdcronin" ],
-    "expiry_milestone": 89
   },
   {
     "name": "force-enable-privet-printing",
