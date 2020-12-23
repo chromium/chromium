@@ -213,18 +213,19 @@ void DamageTracker::ComputeSurfaceDamage(
   if (!surfaces_with_no_damage_under.empty()) {
     gfx::Rect leftover_damage_rect;
     bool valid = damage_from_leftover_rects.GetAsRect(&leftover_damage_rect);
-    std::vector<std::pair<RenderSurfaceImpl*, gfx::Rect>>::iterator it =
-        surfaces_with_no_damage_under.begin();
-    while (it != surfaces_with_no_damage_under.end()) {
-      RenderSurfaceImpl* surface = it->first;
+    auto rit = surfaces_with_no_damage_under.rbegin();
+    while (rit != surfaces_with_no_damage_under.rend()) {
+      RenderSurfaceImpl* surface = rit->first;
       if (surface->render_target() == render_surface) {
         surface->set_intersects_damage_under(
-            !valid || it->second.Intersects(leftover_damage_rect));
-        it = surfaces_with_no_damage_under.erase(it);
+            !valid || rit->second.Intersects(leftover_damage_rect));
+        ++rit;
       } else {
-        ++it;
+        break;
       }
     }
+    surfaces_with_no_damage_under.erase(rit.base(),
+                                        surfaces_with_no_damage_under.end());
   }
 }
 
