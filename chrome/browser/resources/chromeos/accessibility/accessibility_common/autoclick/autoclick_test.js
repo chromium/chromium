@@ -18,12 +18,16 @@ AutoclickE2ETest = class extends E2ETestBase {
     window.RoleType = chrome.automation.RoleType;
 
     // Re-initialize AccessibilityCommon with mock AccessibilityPrivate API.
-    accessibilityCommon = new AccessibilityCommon();
+    const reinit = module => {
+      accessibilityCommon = new module.AccessibilityCommon();
+      chrome.accessibilityFeatures.autoclick.get({}, () => {
+        // Turn off focus ring blinking for test after autoclick is initialized.
+        accessibilityCommon.getAutoclickForTest().setNoBlinkFocusRingsForTest();
+      });
+    };
 
-    chrome.accessibilityFeatures.autoclick.get({}, () => {
-      // Turn off focus ring blinking for test after autoclick is initialized.
-      accessibilityCommon.getAutoclickForTest().setNoBlinkFocusRingsForTest();
-    });
+// TODO: Clang-format does this and below wrong.
+import('/accessibility_common/accessibility_common_loader.js').then(reinit);
   }
 
   /** @override */

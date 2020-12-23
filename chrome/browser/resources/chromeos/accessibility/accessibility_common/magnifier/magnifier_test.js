@@ -174,6 +174,9 @@ TEST_F(
 
 TEST_F('MagnifierE2ETest', 'ScreenMagnifierFocusFollowingPref', function() {
   this.newCallback(async () => {
+    const module = await import('/accessibility_common/magnifier/magnifier.js');
+    const Magnifier = module.Magnifier;
+
     // Disable focus following for full screen magnifier, and verify prefs and
     // state.
     await this.setPref(Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING, false);

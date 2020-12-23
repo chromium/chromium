@@ -19,7 +19,7 @@ const AUTOCLICK_FOCUS_RING_DISPLAY_TIME_MS = 250;
 /**
  * Class to manage Automatic Clicks' interaction with the accessibility tree.
  */
-class Autoclick {
+export class Autoclick {
   constructor() {
     /**
      * Whether to blink the focus rings. Disabled during tests due to

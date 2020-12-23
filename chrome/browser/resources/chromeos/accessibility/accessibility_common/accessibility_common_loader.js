@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Autoclick} from './autoclick/autoclick.js';
+import {Magnifier} from './magnifier/magnifier.js';
+
 /**
  * Class to manage loading resources depending on which Accessibility features
  * are enabled.
  */
-class AccessibilityCommon {
+export class AccessibilityCommon {
   constructor() {
     /** @private {Autoclick} */
     this.autoclick_ = null;
@@ -86,4 +89,4 @@ class AccessibilityCommon {
 
 InstanceChecker.closeExtraInstances();
 // Initialize the AccessibilityCommon extension.
-var accessibilityCommon = new AccessibilityCommon();
+window.accessibilityCommon = new AccessibilityCommon();

@@ -5,7 +5,7 @@
 /**
  * Main class for the Chrome OS magnifier.
  */
-class Magnifier {
+export class Magnifier {
   /**
    * @param {!Magnifier.Type} type The type of magnifier in use.
    */
