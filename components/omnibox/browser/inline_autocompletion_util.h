@@ -30,13 +30,14 @@ std::vector<std::pair<size_t, size_t>> FindWordsSequentiallyAtWordbreak(
     const base::string16& text,
     const base::string16& search);
 
-// Inverts and reverses |ranges| in a domain of [0, |length|). Ranges are
-// interpreted as {start, end}. E.g., if |length| is 10 and |ranges| are
-// {{2, 3} {5, 9}}, th |InvertRanges| will return {{10, 9}, {5, 3}, {2, 0}}.
-// Assumes |ranges| is in forward order; i.e. |ranges[i+1]| occurs after
-// |ranges[i]| and |ranges[i].second| after |ranges[i].first|.
-std::vector<gfx::Range> InvertAndReverseRanges(
+// Inverts and reverses term |matches| in a domain of [0, |length|) to determine
+// the selected non-matches. Ranges are interpreted as {start, end}. E.g., if
+// |length| is 10 and |matches| are {{2, 3} {5, 9}}, |InvertRanges| will return
+// {{10, 9}, {5, 3}, {2, 0}}. Assumes |matches| is in forward order; i.e.
+// |matches[i+1]| occurs after |matches[i]| and |matches[i].second| after
+// |matches[i].first|.
+std::vector<gfx::Range> TermMatchesToSelections(
     size_t length,
-    std::vector<std::pair<size_t, size_t>> ranges);
+    std::vector<std::pair<size_t, size_t>> matches);
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_INLINE_AUTOCOMPLETION_UTIL_H_

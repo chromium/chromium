@@ -1315,7 +1315,7 @@ bool AutocompleteMatch::TryRichAutocompletion(
     // |fill_into_edit| should already be set to |primary_text|.
     split_autocompletion = SplitAutocompletion(
         primary_text_lower,
-        InvertAndReverseRanges(primary_text_lower.length(), input_words));
+        TermMatchesToSelections(primary_text_lower.length(), input_words));
     allowed_to_be_default_match = true;
     RecordAdditionalInfo("autocompletion", "primary & split");
     return true;
@@ -1340,7 +1340,7 @@ bool AutocompleteMatch::TryRichAutocompletion(
     swapped_fill_into_edit = true;
     split_autocompletion = SplitAutocompletion(
         secondary_text_lower,
-        InvertAndReverseRanges(secondary_text_lower.length(), input_words));
+        TermMatchesToSelections(secondary_text_lower.length(), input_words));
     allowed_to_be_default_match = true;
     RecordAdditionalInfo("autocompletion", "secondary & split");
     return true;
