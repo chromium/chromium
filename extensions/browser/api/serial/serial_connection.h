@@ -225,11 +225,11 @@ class SerialConnection : public ApiResource,
 
   // Closure which will trigger a receive timeout unless cancelled. Reset on
   // initialization and after every successful Receive().
-  base::CancelableClosure receive_timeout_task_;
+  base::CancelableOnceClosure receive_timeout_task_;
 
   // Write timeout closure. Reset on initialization and after every successful
   // Send().
-  base::CancelableClosure send_timeout_task_;
+  base::CancelableOnceClosure send_timeout_task_;
 
   // Mojo interface remote corresponding with remote asynchronous I/O handler.
   mojo::Remote<device::mojom::SerialPort> serial_port_;
