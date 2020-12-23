@@ -180,7 +180,7 @@ void ChromeVirtualKeyboardDelegate::GetKeyboardConfig(
 
 void ChromeVirtualKeyboardDelegate::OnKeyboardConfigChanged() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  GetKeyboardConfig(base::Bind(
+  GetKeyboardConfig(base::BindOnce(
       &ChromeVirtualKeyboardDelegate::DispatchConfigChangeEvent, weak_this_));
 }
 

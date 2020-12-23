@@ -24,7 +24,7 @@ class VirtualKeyboardDelegate {
   virtual ~VirtualKeyboardDelegate() {}
 
   using OnKeyboardSettingsCallback =
-      base::Callback<void(std::unique_ptr<base::DictionaryValue> settings)>;
+      base::OnceCallback<void(std::unique_ptr<base::DictionaryValue> settings)>;
 
   using OnSetModeCallback = base::OnceCallback<void(bool success)>;
 

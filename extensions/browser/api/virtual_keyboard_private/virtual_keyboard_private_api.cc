@@ -115,7 +115,7 @@ VirtualKeyboardPrivateKeyboardLoadedFunction::Run() {
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateGetKeyboardConfigFunction::Run() {
-  delegate()->GetKeyboardConfig(base::Bind(
+  delegate()->GetKeyboardConfig(base::BindOnce(
       &VirtualKeyboardPrivateGetKeyboardConfigFunction::OnKeyboardConfig,
       this));
   return RespondLater();

@@ -18,7 +18,7 @@ void ShellVirtualKeyboardDelegate::GetKeyboardConfig(
     OnKeyboardSettingsCallback on_settings_callback) {
   std::unique_ptr<base::DictionaryValue> settings(new base::DictionaryValue());
   settings->SetBoolean("hotrodmode", is_hotrod_keyboard_);
-  on_settings_callback.Run(std::move(settings));
+  std::move(on_settings_callback).Run(std::move(settings));
 }
 
 void ShellVirtualKeyboardDelegate::OnKeyboardConfigChanged() {
