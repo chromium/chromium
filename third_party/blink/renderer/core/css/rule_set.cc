@@ -531,12 +531,14 @@ void RuleSet::CompactRules() {
   spatial_navigation_interest_class_rules_.ShrinkToFit();
   universal_rules_.ShrinkToFit();
   shadow_host_rules_.ShrinkToFit();
+  part_pseudo_rules_.ShrinkToFit();
+  visited_dependent_rules_.ShrinkToFit();
   page_rules_.ShrinkToFit();
   font_face_rules_.ShrinkToFit();
   keyframes_rules_.ShrinkToFit();
-  counter_style_rules_.ShrinkToFit();
   property_rules_.ShrinkToFit();
-  part_pseudo_rules_.ShrinkToFit();
+  counter_style_rules_.ShrinkToFit();
+  scroll_timeline_rules_.ShrinkToFit();
   slotted_pseudo_element_rules_.ShrinkToFit();
 }
 
@@ -602,14 +604,14 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(spatial_navigation_interest_class_rules_);
   visitor->Trace(universal_rules_);
   visitor->Trace(shadow_host_rules_);
+  visitor->Trace(part_pseudo_rules_);
+  visitor->Trace(visited_dependent_rules_);
   visitor->Trace(page_rules_);
   visitor->Trace(font_face_rules_);
   visitor->Trace(keyframes_rules_);
   visitor->Trace(property_rules_);
   visitor->Trace(counter_style_rules_);
   visitor->Trace(scroll_timeline_rules_);
-  visitor->Trace(part_pseudo_rules_);
-  visitor->Trace(visited_dependent_rules_);
   visitor->Trace(slotted_pseudo_element_rules_);
   visitor->Trace(pending_rules_);
 #ifndef NDEBUG
