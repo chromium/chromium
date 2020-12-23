@@ -8,29 +8,33 @@
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 
 <dom-module id="packaged-license-element">
   <template>
     <style include="oobe-dialog-host"></style>
-    <oobe-dialog id="packagedLicenseDialog"
-        title-key="oobePackagedLicenseTitle"
+    <oobe-adaptive-dialog id="packagedLicenseDialog"
         aria-label$="[[i18nDynamic(locale, 'oobePackagedLicenseTitle')]]"
-        role="dialog" has-buttons>
-      <hd-iron-icon slot="oobe-icon"
+        role="dialog">
+      <hd-iron-icon slot="icon"
           icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
       </hd-iron-icon>
-      <div slot="subtitle">
-        <p>[[i18nDynamic(locale, 'oobePackagedLicenseSubtitleP1')]]</p>
-        <p>[[i18nDynamic(locale, 'oobePackagedLicenseSubtitleP2')]]</p>
-      </div>
-      <div slot="footer" class="flex layout vertical center center-justified">
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'oobePackagedLicenseTitle')]]
+      </h1>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'oobePackagedLicenseSubtitleP1')]]
+      </p>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'oobePackagedLicenseSubtitleP2')]]
+      </p>
+      <div slot="content" class="flex layout vertical center center-justified">
         <img srcset="images/illustration_complete_1x.png 1x,
             images/illustration_complete_2x.png 2x" class="oobe-illustration"
             alt$="[[i18nDynamic(locale, 'oobePackagedLicenseTitle')]]">
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-text-button id="dont-enroll-button"
             text-key="oobePackagedLicenseDontEnroll"
             on-click="onDontEnrollButtonPressed_"></oobe-text-button>
@@ -38,6 +42,6 @@
             text-key="oobePackagedLicenseEnroll" class="focus-on-show"
             inverse on-click="onEnrollButtonPressed_"></oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>
