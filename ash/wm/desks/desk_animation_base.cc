@@ -138,10 +138,6 @@ void DeskAnimationBase::OnDeskSwitchAnimationFinished() {
   // `this` is now deleted.
 }
 
-void DeskAnimationBase::OnVisibleDeskChanged() {
-  ++visible_desk_changes_;
-}
-
 RootWindowDeskSwitchAnimator*
 DeskAnimationBase::GetDeskSwitchAnimatorAtIndexForTesting(size_t index) const {
   DCHECK_LT(index, desk_switch_animators_.size());

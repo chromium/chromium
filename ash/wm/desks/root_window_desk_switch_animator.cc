@@ -132,7 +132,6 @@ RootWindowDeskSwitchAnimator::RootWindowDeskSwitchAnimator(
     : root_window_(root),
       starting_desk_index_(starting_desk_index),
       ending_desk_index_(ending_desk_index),
-      visible_desk_index_(starting_desk_index),
       delegate_(delegate),
       animation_layer_owner_(CreateAnimationLayerOwner(root)),
       root_window_size_(
@@ -305,20 +304,13 @@ base::Optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
           : transformed_animation_layer_bounds.x() >
                 -kMinDistanceBeforeScreenshotDp;
 
-  // TODO(sammiequon): Make GetIndexOfMostVisibleDeskScreenshot() public and
-  // have DeskActivationAnimation keep track of |visible_desk_index_|. Right now
-  // OnVisibleDeskChanged will get called once for each display.
-  const int old_visible_desk_index = visible_desk_index_;
-  visible_desk_index_ = GetIndexOfMostVisibleDeskScreenshot();
-  if (old_visible_desk_index != visible_desk_index_)
-    delegate_->OnVisibleDeskChanged();
-
   if (!going_out_of_bounds)
     return base::nullopt;
 
   // The upcoming desk we need to show will be an adjacent desk to the desk at
-  // |visible_desk_index_| based on |moving_left|.
-  const int new_desk_index = visible_desk_index_ + (moving_left ? 1 : -1);
+  // the visible desk index based on |moving_left|.
+  const int new_desk_index =
+      GetIndexOfMostVisibleDeskScreenshot() + (moving_left ? 1 : -1);
 
   if (new_desk_index < 0 ||
       new_desk_index >= int{DesksController::Get()->desks().size()}) {
@@ -348,7 +340,8 @@ int RootWindowDeskSwitchAnimator::EndSwipeAnimation() {
     return ending_desk_index;
   }
 
-  // If the ending desk screenshot has not finished, |visible_desk_index_| will
+  // If the ending desk screenshot has not finished,
+  // GetIndexOfMostVisibleDeskScreenshot() will
   // still return a valid desk index that we can animate to, but we need to make
   // sure the ending desk screenshot callback does not get called.
   if (!ending_desk_screenshot_taken_)
@@ -357,10 +350,38 @@ int RootWindowDeskSwitchAnimator::EndSwipeAnimation() {
   // In tests, StartAnimation() may trigger OnDeskSwitchAnimationFinished()
   // right away which may delete |this|. Store the target index in a
   // local so we do not try to access a member of a deleted object.
-  const int ending_desk_index = visible_desk_index_;
+  const int ending_desk_index = GetIndexOfMostVisibleDeskScreenshot();
   ending_desk_index_ = ending_desk_index;
   StartAnimation();
   return ending_desk_index;
+}
+
+int RootWindowDeskSwitchAnimator::GetIndexOfMostVisibleDeskScreenshot() const {
+  int index = -1;
+
+  // The most visible desk is the one whose screenshot layer bounds, including
+  // the transform of its parent that has its origin closest to the root window
+  // origin (0, 0).
+  const gfx::Transform transform = animation_layer_owner_->root()->transform();
+  int min_distance = INT_MAX;
+  for (int i = 0; i < int{screenshot_layers_.size()}; ++i) {
+    ui::Layer* layer = screenshot_layers_[i];
+    if (!layer)
+      continue;
+
+    gfx::RectF bounds(layer->bounds());
+    transform.TransformRect(&bounds);
+    const int distance = std::abs(bounds.x());
+    if (distance < min_distance) {
+      min_distance = distance;
+      index = i;
+    }
+  }
+
+  // TODO(crbug.com/1134390): Convert back to DCHECK when the issue is fixed.
+  CHECK_GE(index, 0);
+  CHECK_LT(index, int{DesksController::Get()->desks().size()});
+  return index;
 }
 
 void RootWindowDeskSwitchAnimator::OnImplicitAnimationsCompleted() {
@@ -599,34 +620,6 @@ int RootWindowDeskSwitchAnimator::GetXPositionOfScreenshot(int index) {
   ui::Layer* layer = screenshot_layers_[index];
   DCHECK(layer);
   return layer->bounds().x();
-}
-
-int RootWindowDeskSwitchAnimator::GetIndexOfMostVisibleDeskScreenshot() const {
-  int index = -1;
-
-  // The most visible desk is the one whose screenshot layer bounds, including
-  // the transform of its parent that has its origin closest to the root window
-  // origin (0, 0).
-  const gfx::Transform transform = animation_layer_owner_->root()->transform();
-  int min_distance = INT_MAX;
-  for (int i = 0; i < int{screenshot_layers_.size()}; ++i) {
-    ui::Layer* layer = screenshot_layers_[i];
-    if (!layer)
-      continue;
-
-    gfx::RectF bounds(layer->bounds());
-    transform.TransformRect(&bounds);
-    const int distance = std::abs(bounds.x());
-    if (distance < min_distance) {
-      min_distance = distance;
-      index = i;
-    }
-  }
-
-  // TODO(crbug.com/1134390): Convert back to DCHECK when the issue is fixed.
-  CHECK_GE(index, 0);
-  CHECK_LT(index, int{DesksController::Get()->desks().size()});
-  return index;
 }
 
 }  // namespace ash

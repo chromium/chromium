@@ -59,6 +59,7 @@ DeskActivationAnimation::DeskActivationAnimation(DesksController* controller,
                         IsForContinuousGestures(source)),
       switch_source_(source),
       update_window_activation_(update_window_activation),
+      visible_desk_index_(starting_desk_index),
       presentation_time_recorder_(CreatePresentationTimeHistogramRecorder(
           desks_util::GetSelectedCompositorForPerformanceMetrics(),
           kDeskUpdateGestureHistogramName,
@@ -152,6 +153,18 @@ bool DeskActivationAnimation::UpdateSwipeAnimation(float scroll_delta_x) {
       ending_desk_index = animator->UpdateSwipeAnimation(scroll_delta_x);
     else
       animator->UpdateSwipeAnimation(scroll_delta_x);
+  }
+
+  // See if the animator of the first display has visibly changed desks. If so,
+  // update |visible_desk_changes_| for metrics collection purposes.
+  auto* first_animator = desk_switch_animators_.front().get();
+  DCHECK(first_animator);
+  if (first_animator->starting_desk_screenshot_taken() &&
+      first_animator->ending_desk_screenshot_taken()) {
+    const int old_visible_desk_index = visible_desk_index_;
+    visible_desk_index_ = first_animator->GetIndexOfMostVisibleDeskScreenshot();
+    if (visible_desk_index_ != old_visible_desk_index)
+      ++visible_desk_changes_;
   }
 
   // No screenshot needed.

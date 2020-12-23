@@ -3770,8 +3770,7 @@ class DesksMockTimeTest : public AshTestBase {
   ~DesksMockTimeTest() override = default;
 };
 
-// TODO(crbug.com/1151856) flaky test
-TEST_F(DesksMockTimeTest, DISABLED_DeskTraversalNonTouchpadMetrics) {
+TEST_F(DesksMockTimeTest, DeskTraversalNonTouchpadMetrics) {
   NewDesk();
   NewDesk();
   NewDesk();
@@ -3795,7 +3794,7 @@ TEST_F(DesksMockTimeTest, DISABLED_DeskTraversalNonTouchpadMetrics) {
   histogram_tester.ExpectBucketCount(kDeskTraversalsHistogramName, 5, 0);
 
   // Advance the time to end the timer. There should be 5 desks recorded.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(8));
   histogram_tester.ExpectBucketCount(kDeskTraversalsHistogramName, 5, 1);
 }
 

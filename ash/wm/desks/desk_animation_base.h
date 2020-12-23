@@ -56,7 +56,6 @@ class ASH_EXPORT DeskAnimationBase
   void OnStartingDeskScreenshotTaken(int ending_desk_index) override;
   void OnEndingDeskScreenshotTaken() override;
   void OnDeskSwitchAnimationFinished() override;
-  void OnVisibleDeskChanged() override;
 
   void set_skip_notify_controller_on_animation_finished_for_testing(bool val) {
     skip_notify_controller_on_animation_finished_for_testing_ = val;

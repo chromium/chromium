@@ -197,10 +197,6 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
     // desk screenshot is now showing on the screen.
     virtual void OnDeskSwitchAnimationFinished() = 0;
 
-    // Called while doing a continuous gesture to notify when the desk that is
-    // visible to the user has changed. Used for metrics collection.
-    virtual void OnVisibleDeskChanged() = 0;
-
    protected:
     virtual ~Delegate() = default;
   };
@@ -279,6 +275,11 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // visible desk, whose index is also returned.
   int EndSwipeAnimation();
 
+  // Gets the index of the desk whose screenshot of the animation layer is most
+  // visible to the user. That desk screenshot is the one which aligns the most
+  // with the root window bounds.
+  int GetIndexOfMostVisibleDeskScreenshot() const;
+
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
@@ -311,11 +312,6 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // its parent layer's coordinates (|animation_layer_owner_->root()|).
   int GetXPositionOfScreenshot(int index);
 
-  // Gets the index of the desk whose screenshot of the animation layer is most
-  // visible to the user. That desk screenshot is the one which aligns the most
-  // with the root window bounds.
-  int GetIndexOfMostVisibleDeskScreenshot() const;
-
   // The root window that this animator is associated with.
   aura::Window* const root_window_;
 
@@ -324,10 +320,6 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
 
   // The index of the desk to activate and animate to with this animator.
   int ending_desk_index_;
-
-  // The index of the desk that is most visible to the user based on the
-  // transform of the animation layer.
-  int visible_desk_index_;
 
   Delegate* const delegate_;
 

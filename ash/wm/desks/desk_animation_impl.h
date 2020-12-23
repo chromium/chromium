@@ -47,6 +47,10 @@ class ASH_EXPORT DeskActivationAnimation : public DeskAnimationBase {
   // when the desk is switched.
   const bool update_window_activation_;
 
+  // The index of the desk that is most visible to the user based on the
+  // transform of the animation layer.
+  int visible_desk_index_;
+
   // Used to measure the presentation time of a continuous gesture swipe.
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
 };
