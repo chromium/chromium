@@ -66,5 +66,9 @@ StatefulSSLHostStateDelegateFactory::GetBrowserContextToUse(
 }
 
 bool StatefulSSLHostStateDelegateFactory::ServiceIsNULLWhileTesting() const {
-  return true;
+  // PageInfoBubbleViewTest tests require a StatefulSSLHostDelegateFactory.
+  // If this returns false, DependencyManager::CreateContextServices for
+  // PageInfoBubbleViewTest tests after the first one will set an
+  // EmptyTestFactory, and cause the test to check fail.
+  return false;
 }
