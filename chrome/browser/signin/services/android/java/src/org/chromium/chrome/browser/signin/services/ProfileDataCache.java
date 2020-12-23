@@ -246,18 +246,6 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
     }
 
     @Override
-    public void onProfileDataUpdated(String accountEmail) {
-        assert mProfileDataSource != null;
-        ProfileDataSource.ProfileData profileData =
-                mProfileDataSource.getProfileDataForAccount(accountEmail);
-        if (profileData == null) {
-            removeProfileData(accountEmail);
-        } else {
-            onProfileDataUpdated(profileData);
-        }
-    }
-
-    @Override
     public void removeProfileData(String accountEmail) {
         mCachedProfileData.remove(accountEmail);
         notifyObservers(accountEmail);
