@@ -220,8 +220,8 @@ void LoginScreenClient::RequestPublicSessionKeyboardLayouts(
     const AccountId& account_id,
     const std::string& locale) {
   chromeos::GetKeyboardLayoutsForLocale(
-      base::BindRepeating(&LoginScreenClient::SetPublicSessionKeyboardLayout,
-                          weak_ptr_factory_.GetWeakPtr(), account_id, locale),
+      base::BindOnce(&LoginScreenClient::SetPublicSessionKeyboardLayout,
+                     weak_ptr_factory_.GetWeakPtr(), account_id, locale),
       locale);
 }
 

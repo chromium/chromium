@@ -1175,8 +1175,8 @@ void SigninScreenHandler::HandleGetPublicSessionKeyboardLayouts(
     const AccountId& account_id,
     const std::string& locale) {
   GetKeyboardLayoutsForLocale(
-      base::Bind(&SigninScreenHandler::SendPublicSessionKeyboardLayouts,
-                 weak_factory_.GetWeakPtr(), account_id, locale),
+      base::BindOnce(&SigninScreenHandler::SendPublicSessionKeyboardLayouts,
+                     weak_factory_.GetWeakPtr(), account_id, locale),
       locale);
 }
 

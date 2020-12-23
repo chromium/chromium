@@ -1370,7 +1370,7 @@ void ExistingUserController::LoginAsPublicSessionWithPolicyStoreReady(
     // select the first layout from the list and continue login.
     VLOG(2) << "Requesting keyboard layouts for public session";
     GetKeyboardLayoutsForLocale(
-        base::Bind(
+        base::BindOnce(
             &ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin,
             weak_factory_.GetWeakPtr(), new_user_context),
         locale);

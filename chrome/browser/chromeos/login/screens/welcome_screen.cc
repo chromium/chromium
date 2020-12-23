@@ -514,9 +514,9 @@ void WelcomeScreen::ScheduleResolveLanguageList(
   // Cancel pending requests.
   weak_factory_.InvalidateWeakPtrs();
 
-  UILanguageListResolvedCallback callback = base::Bind(
-      &WelcomeScreen::OnLanguageListResolved, weak_factory_.GetWeakPtr());
-  ResolveUILanguageList(std::move(language_switch_result), callback);
+  ResolveUILanguageList(std::move(language_switch_result),
+                        base::BindOnce(&WelcomeScreen::OnLanguageListResolved,
+                                       weak_factory_.GetWeakPtr()));
 }
 
 void WelcomeScreen::OnLanguageListResolved(

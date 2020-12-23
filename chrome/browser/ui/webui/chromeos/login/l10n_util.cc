@@ -303,7 +303,7 @@ void GetAndMergeKeyboardLayoutsForLocale(input_method::InputMethodUtil* util,
 // `resolved_locale`.
 void GetKeyboardLayoutsForResolvedLocale(
     const std::string& requested_locale,
-    const GetKeyboardLayoutsForLocaleCallback& callback,
+    GetKeyboardLayoutsForLocaleCallback callback,
     const std::string& resolved_locale) {
   input_method::InputMethodUtil* util =
       input_method::InputMethodManager::Get()->GetInputMethodUtil();
@@ -327,7 +327,7 @@ void GetKeyboardLayoutsForResolvedLocale(
     input_methods_list->Append(CreateInputMethodsEntry(*ime, selected));
   }
 
-  callback.Run(std::move(input_methods_list));
+  std::move(callback).Run(std::move(input_methods_list));
 }
 
 // For "UI Language" drop-down menu at OOBE screen we need to decide which
@@ -351,7 +351,7 @@ void ResolveLanguageListInThreadPool(
     std::unique_ptr<chromeos::locale_util::LanguageSwitchResult>
         language_switch_result,
     const scoped_refptr<base::TaskRunner> task_runner,
-    const UILanguageListResolvedCallback& resolved_callback) {
+    UILanguageListResolvedCallback resolved_callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -384,8 +384,9 @@ void ResolveLanguageListInThreadPool(
       chromeos::GetUILanguageList(nullptr, selected_code));
 
   task_runner->PostTask(
-      FROM_HERE, base::BindOnce(resolved_callback, std::move(language_list),
-                                list_locale, selected_language));
+      FROM_HERE,
+      base::BindOnce(std::move(resolved_callback), std::move(language_list),
+                     list_locale, selected_language));
 }
 
 void AdjustUILanguageList(const std::string& selected,
@@ -426,7 +427,7 @@ void AdjustUILanguageList(const std::string& selected,
 void ResolveUILanguageList(
     std::unique_ptr<chromeos::locale_util::LanguageSwitchResult>
         language_switch_result,
-    const UILanguageListResolvedCallback& callback) {
+    UILanguageListResolvedCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::ThreadPool::PostTask(
@@ -434,7 +435,8 @@ void ResolveUILanguageList(
       base::BindOnce(&ResolveLanguageListInThreadPool,
                      g_browser_process->GetApplicationLocale(),
                      std::move(language_switch_result),
-                     base::SequencedTaskRunnerHandle::Get(), callback));
+                     base::SequencedTaskRunnerHandle::Get(),
+                     std::move(callback)));
 }
 
 std::unique_ptr<base::ListValue> GetMinimalUILanguageList() {
@@ -566,9 +568,8 @@ std::unique_ptr<base::ListValue> GetAndActivateLoginKeyboardLayouts(
   return input_methods_list;
 }
 
-void GetKeyboardLayoutsForLocale(
-    const GetKeyboardLayoutsForLocaleCallback& callback,
-    const std::string& locale) {
+void GetKeyboardLayoutsForLocale(GetKeyboardLayoutsForLocaleCallback callback,
+                                 const std::string& locale) {
   // Resolve `locale` on a background thread, then continue on the current
   // thread.
   std::string (*get_application_locale)(const std::string&, bool) =
@@ -578,7 +579,8 @@ void GetKeyboardLayoutsForLocale(
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(get_application_locale, locale,
                      false /* set_icu_locale */),
-      base::BindOnce(&GetKeyboardLayoutsForResolvedLocale, locale, callback));
+      base::BindOnce(&GetKeyboardLayoutsForResolvedLocale, locale,
+                     std::move(callback)));
 }
 
 }  // namespace chromeos

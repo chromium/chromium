@@ -19,7 +19,7 @@ class ListValue;
 
 namespace chromeos {
 
-typedef base::Callback<void(
+typedef base::OnceCallback<void(
     std::unique_ptr<base::ListValue> /* new_language_list */,
     const std::string& /* new_language_list_locale */,
     const std::string& /* new_selected_language */)>
@@ -50,7 +50,7 @@ std::unique_ptr<base::ListValue> GetUILanguageList(
 // correct and has been successfully loaded.
 void ResolveUILanguageList(
     std::unique_ptr<locale_util::LanguageSwitchResult> language_switch_result,
-    const UILanguageListResolvedCallback& callback);
+    UILanguageListResolvedCallback callback);
 
 // Returns a minimal list of UI languages, which consists of active language
 // only. It is used as a placeholder until ResolveUILanguageList() finishes
@@ -86,11 +86,10 @@ std::unique_ptr<base::ListValue> GetAndActivateLoginKeyboardLayouts(
 // followed by a divider and locale-specific keyboard layouts, if any. All
 // layouts supported for `locale` are returned, including those that produce
 // non-Latin characters by default.
-typedef base::Callback<void(std::unique_ptr<base::ListValue>)>
+typedef base::OnceCallback<void(std::unique_ptr<base::ListValue>)>
     GetKeyboardLayoutsForLocaleCallback;
-void GetKeyboardLayoutsForLocale(
-    const GetKeyboardLayoutsForLocaleCallback& callback,
-    const std::string& locale);
+void GetKeyboardLayoutsForLocale(GetKeyboardLayoutsForLocaleCallback callback,
+                                 const std::string& locale);
 
 }  // namespace chromeos
 
