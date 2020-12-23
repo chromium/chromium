@@ -152,13 +152,14 @@ class ContentsImage : public gfx::ImageSkia {
 // HoldingSpaceTrayIconPreview -------------------------------------------------
 
 HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
-    HoldingSpaceTrayIcon* icon,
+    Shelf* shelf,
+    views::View* container,
     const HoldingSpaceItem* item)
-    : icon_(icon), item_(item) {
+    : shelf_(shelf), container_(container), item_(item) {
   contents_image_ = std::make_unique<ContentsImage>(
       item_, base::BindRepeating(&HoldingSpaceTrayIconPreview::InvalidateLayer,
                                  base::Unretained(this)));
-  icon_observer_.Add(icon_);
+  container_observer_.Observe(container_);
 }
 
 HoldingSpaceTrayIconPreview::~HoldingSpaceTrayIconPreview() = default;
@@ -367,7 +368,7 @@ void HoldingSpaceTrayIconPreview::OnDeviceScaleFactorChanged(
 
 void HoldingSpaceTrayIconPreview::OnImplicitAnimationsCompleted() {
   if (!NeedsLayer()) {
-    icon_->layer()->Remove(layer_.get());
+    container_->layer()->Remove(layer_.get());
     layer_.reset();
   }
 
@@ -377,14 +378,14 @@ void HoldingSpaceTrayIconPreview::OnImplicitAnimationsCompleted() {
 }
 
 void HoldingSpaceTrayIconPreview::OnViewBoundsChanged(views::View* view) {
-  DCHECK_EQ(icon_, view);
+  DCHECK_EQ(container_, view);
   if (layer_)
     UpdateLayerBounds();
 }
 
 void HoldingSpaceTrayIconPreview::OnViewIsDeleting(views::View* view) {
-  DCHECK_EQ(icon_, view);
-  icon_observer_.Remove(icon_);
+  DCHECK_EQ(container_, view);
+  container_observer_.Reset();
 }
 
 void HoldingSpaceTrayIconPreview::CreateLayer(
@@ -396,7 +397,7 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
   layer_->set_delegate(this);
   UpdateLayerBounds();
 
-  icon_->layer()->Add(layer_.get());
+  container_->layer()->Add(layer_.get());
 }
 
 bool HoldingSpaceTrayIconPreview::NeedsLayer() const {
@@ -410,7 +411,7 @@ void HoldingSpaceTrayIconPreview::InvalidateLayer() {
 
 void HoldingSpaceTrayIconPreview::AdjustForShelfAlignmentAndTextDirection(
     gfx::Vector2dF* vector_2df) {
-  if (!icon_->shelf()->IsHorizontalAlignment()) {
+  if (!shelf_->IsHorizontalAlignment()) {
     const float x = vector_2df->x();
     vector_2df->set_x(vector_2df->y());
     vector_2df->set_y(x);
@@ -430,9 +431,9 @@ void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
   // with a positive offset.
   const gfx::Size size = GetPreviewSize();
   gfx::Point origin;
-  if (icon_->shelf()->IsHorizontalAlignment() && base::i18n::IsRTL()) {
-    origin =
-        icon_->GetLocalBounds().top_right() - gfx::Vector2d(size.width(), 0);
+  if (shelf_->IsHorizontalAlignment() && base::i18n::IsRTL()) {
+    origin = container_->GetLocalBounds().top_right() -
+             gfx::Vector2d(size.width(), 0);
   }
   gfx::Rect bounds(origin, size);
   if (bounds != layer_->bounds())

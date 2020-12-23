@@ -19,7 +19,10 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/stl_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
@@ -33,6 +36,74 @@ constexpr base::TimeDelta kPreviewItemUpdateDelayIncrement =
     base::TimeDelta::FromMilliseconds(50);
 
 }  // namespace
+
+// Animation for resizing the previews icon. The animation updates the icon
+// view's preferred size, which causes the status area (and the shelf) to
+// relayout.
+class HoldingSpaceTrayIcon::ResizeAnimation
+    : public views::AnimationDelegateViews {
+ public:
+  ResizeAnimation(HoldingSpaceTrayIcon* icon,
+                  views::View* previews_container,
+                  const gfx::Size& initial_size,
+                  const gfx::Size& target_size)
+      : views::AnimationDelegateViews(icon),
+        icon_(icon),
+        previews_container_(previews_container),
+        initial_size_(initial_size),
+        target_size_(target_size),
+        animation_(this) {
+    animation_.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
+    animation_.SetSlideDuration(
+        ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
+        base::TimeDelta::FromMilliseconds(250));
+  }
+  ResizeAnimation(const ResizeAnimation&) = delete;
+  ResizeAnimation operator=(const ResizeAnimation&) = delete;
+  ~ResizeAnimation() override = default;
+
+  // views::AnimationDelegateViews:
+  void AnimationEnded(const gfx::Animation* animation) override {
+    icon_->SetPreferredSize(target_size_);
+    previews_container_->SetTransform(gfx::Transform());
+  }
+
+  void AnimationProgressed(const gfx::Animation* animation) override {
+    const gfx::Size current_size = gfx::Tween::SizeValueBetween(
+        animation->GetCurrentValue(), initial_size_, target_size_);
+
+    // Bounds grow from start to the end by default - for holding space tray
+    // icon, the bounds are expected to grow from end to start. To achieve
+    // growth from end to start, the position of previews is adjusted for target
+    // bounds, and the previews container is translated so previews position
+    // remains constant relative to the end of the icon.
+    const gfx::Vector2d offset(current_size.width() - target_size_.width(),
+                               current_size.height() - target_size_.height());
+    gfx::Transform transform;
+    const int direction = base::i18n::IsRTL() ? -1 : 1;
+    transform.Translate(direction * offset.x(), offset.y());
+    previews_container_->SetTransform(transform);
+
+    // This will update the shelf and status area layout.
+    if (icon_->GetPreferredSize() != current_size)
+      icon_->SetPreferredSize(current_size);
+  }
+
+  void Start() {
+    animation_.Show();
+    AnimationProgressed(&animation_);
+  }
+
+  void AdvanceToEnd() { animation_.End(); }
+
+ private:
+  HoldingSpaceTrayIcon* const icon_;
+  views::View* const previews_container_;
+  const gfx::Size initial_size_;
+  const gfx::Size target_size_;
+
+  gfx::SlideAnimation animation_;
+};
 
 // HoldingSpaceTrayIcon --------------------------------------------------------
 
@@ -67,21 +138,35 @@ int HoldingSpaceTrayIcon::GetHeightForWidth(int width) const {
   return GetPreferredSize().height();
 }
 
+gfx::Size HoldingSpaceTrayIcon::CalculatePreferredSize() const {
+  const int num_visible_previews =
+      std::min(kHoldingSpaceTrayIconMaxVisiblePreviews,
+               static_cast<int>(previews_by_id_.size()));
+
+  int primary_axis_size = kTrayItemSize;
+  if (num_visible_previews > 1)
+    primary_axis_size += (num_visible_previews - 1) * kTrayItemSize / 2;
+
+  return shelf_->PrimaryAxisValue(
+      /*horizontal=*/gfx::Size(primary_axis_size, kTrayItemSize),
+      /*vertical=*/gfx::Size(kTrayItemSize, primary_axis_size));
+}
+
 void HoldingSpaceTrayIcon::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
 
-  // As holding space items are added to the model, child layers will be added
-  // to `this` view's layer to represent them.
-  SetPaintToLayer();
+  SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   layer()->SetFillsBoundsOpaquely(false);
-
   const int radius = ShelfConfig::Get()->control_border_radius();
   gfx::RoundedCornersF rounded_corners(radius);
   layer()->SetRoundedCornerRadius(rounded_corners);
   layer()->SetIsFastRoundedCorner(true);
 
-  layer()->SetMasksToBounds(true);
+  previews_container_ = AddChildView(std::make_unique<views::View>());
+  // As holding space items are added to the model, child layers will be added
+  // to `previews_container_` view's layer to represent them.
+  previews_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 }
 
 void HoldingSpaceTrayIcon::UpdatePreviews(
@@ -107,7 +192,8 @@ void HoldingSpaceTrayIcon::UpdatePreviews(
       continue;
     }
 
-    auto preview = std::make_unique<HoldingSpaceTrayIconPreview>(this, item);
+    auto preview = std::make_unique<HoldingSpaceTrayIconPreview>(
+        shelf_, previews_container_, item);
     preview->set_pending_index(index);
     previews_by_id_.emplace(item->id(), std::move(preview));
   }
@@ -149,24 +235,13 @@ void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
   for (const auto& preview : previews_by_id_)
     preview.second->OnShelfAlignmentChanged(old_alignment, shelf_->alignment());
 
-  UpdatePreferredSize();
-}
+  if (resize_animation_) {
+    resize_animation_->AdvanceToEnd();
+    resize_animation_.reset();
+  }
 
-void HoldingSpaceTrayIcon::UpdatePreferredSize() {
-  const int num_visible_previews =
-      std::min(kHoldingSpaceTrayIconMaxVisiblePreviews,
-               static_cast<int>(previews_by_id_.size()));
-
-  int primary_axis_size = kTrayItemSize;
-  if (num_visible_previews > 1)
-    primary_axis_size += (num_visible_previews - 1) * kTrayItemSize / 2;
-
-  gfx::Size preferred_size = shelf_->PrimaryAxisValue(
-      /*horizontal=*/gfx::Size(primary_axis_size, kTrayItemSize),
-      /*vertical=*/gfx::Size(kTrayItemSize, primary_axis_size));
-
-  if (preferred_size != GetPreferredSize())
-    SetPreferredSize(preferred_size);
+  SetPreferredSize(CalculatePreferredSize());
+  previews_container_->SetTransform(gfx::Transform());
 }
 
 void HoldingSpaceTrayIcon::OnOldItemAnimatedOut(
@@ -177,17 +252,30 @@ void HoldingSpaceTrayIcon::OnOldItemAnimatedOut(
 }
 
 void HoldingSpaceTrayIcon::OnOldItemsRemoved() {
-  // Now that the old items have been removed, update the icon preferred size.
-  // Note that this may change the icon bounds, and the relative position of
-  // existing items within the icon (as the icon origin will move). Adjust the
-  // position of existing items to maintain their position relative to the "end"
-  // visible bounds.
-  gfx::Size initial_size = GetPreferredSize();
-  UpdatePreferredSize();
-  gfx::Vector2d adjustment(GetPreferredSize().width() - initial_size.width(),
-                           GetPreferredSize().height() - initial_size.height());
-  for (auto& preview_pair : previews_by_id_)
-    preview_pair.second->AdjustTransformForContainerSizeChange(adjustment);
+  if (resize_animation_) {
+    resize_animation_->AdvanceToEnd();
+    resize_animation_.reset();
+  }
+
+  // Now that the old items have been removed, resize the icon, and update
+  // previews position within the icon.
+  const gfx::Size initial_size = size();
+  const gfx::Size target_size = CalculatePreferredSize();
+
+  if (initial_size != target_size) {
+    // Changing icon bounds changes the relative position of existing item
+    // layers within the icon (as the icon origin moves). Adjust the
+    // position of existing items to maintain their position relative to the
+    // "end" visible bounds.
+    gfx::Vector2d adjustment(target_size.width() - initial_size.width(),
+                             target_size.height() - initial_size.height());
+    for (auto& preview_pair : previews_by_id_)
+      preview_pair.second->AdjustTransformForContainerSizeChange(adjustment);
+
+    resize_animation_ = std::make_unique<ResizeAnimation>(
+        this, previews_container_, initial_size, target_size);
+    resize_animation_->Start();
+  }
 
   // Note: the order is important - `AnimateInNewItems()` will set the new item
   // indices, and `ShiftExistingItems()` depends on the preview index value to
@@ -200,7 +288,7 @@ void HoldingSpaceTrayIcon::OnOldItemsRemoved() {
     auto preview_it = previews_by_id_.find(item_id);
     HoldingSpaceTrayIconPreview* preview_ptr = preview_it->second.get();
     if (preview_ptr->layer())
-      layer()->StackAtBottom(preview_ptr->layer());
+      previews_container_->layer()->StackAtBottom(preview_ptr->layer());
   }
 }
 

@@ -10,7 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/views/view.h"
@@ -27,7 +27,7 @@ class Layer;
 namespace ash {
 
 class HoldingSpaceItem;
-class HoldingSpaceTrayIcon;
+class Shelf;
 enum class ShelfAlignment;
 
 // Class to visually represent a single holding space item within the holding
@@ -38,7 +38,9 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
       public ui::ImplicitAnimationObserver,
       public views::ViewObserver {
  public:
-  HoldingSpaceTrayIconPreview(HoldingSpaceTrayIcon*, const HoldingSpaceItem*);
+  HoldingSpaceTrayIconPreview(Shelf* shelf,
+                              views::View* container,
+                              const HoldingSpaceItem* item);
   HoldingSpaceTrayIconPreview(const HoldingSpaceTrayIconPreview&) = delete;
   HoldingSpaceTrayIconPreview& operator=(const HoldingSpaceTrayIconPreview&) =
       delete;
@@ -62,8 +64,8 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // Transform is updated without animation.
   void AdjustTransformForContainerSizeChange(const gfx::Vector2d& size_change);
 
-  // Invoked when the shelf associated with `icon_` has changed from
-  // `old_shelf_alignment` to `new_shelf_alignment`.
+  // Invoked when the `shelf_` has changed from `old_shelf_alignment` to
+  // `new_shelf_alignment`.
   void OnShelfAlignmentChanged(ShelfAlignment old_shelf_alignment,
                                ShelfAlignment new_shelf_alignment);
 
@@ -92,13 +94,13 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
 
   // Creates the `layer_` for this preview. Note that `layer_` may be created
   // multiple times throughout this preview's lifetime as `layer_` will only
-  // exist while in the viewport for the holding space tray `icon_`.
+  // exist while in the viewport for the holding space tray `container_`.
   // |initial_transform| - The transform that should be set on the layer.
   void CreateLayer(const gfx::Transform& initial_transform);
 
   // Returns whether this preview needs a layer for its current `transform_`.
   // Since we only maintain `layer_` while it appears in the viewport for the
-  // holding space tray `icon_`, this is used to gate creation/deletion of
+  // holding space tray `container_`, this is used to gate creation/deletion of
   // `layer_`.
   bool NeedsLayer() const;
 
@@ -113,7 +115,14 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // alignment in LTR and will be adjusted for vertical alignment and/or RTL.
   void AdjustForShelfAlignmentAndTextDirection(gfx::Vector2dF* vector_2df);
 
-  HoldingSpaceTrayIcon* const icon_;
+  // The shelf whose holding space tray icon this preview belongs.
+  Shelf* const shelf_;
+
+  // The view that contains all preview layers belonging to the holding space
+  // icon.
+  views::View* const container_;
+
+  // The holding space item this preview represents.
   const HoldingSpaceItem* item_;
 
   // A cached representation of the associated holding space `item_`'s image
@@ -122,14 +131,15 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   std::unique_ptr<gfx::ImageSkia> contents_image_;
 
   // This is a proxy for `layer_`'s transform and represents the target
-  // position of this preview. Because `layer_` only exists while in `icon_`'s
-  // viewport, we need to manage transform ourselves and continue to update it
-  // even when `layer_` doesn't exist.
+  // position of this preview. Because `layer_` only exists while in
+  // `container_`'s viewport, we need to manage transform ourselves and continue
+  // to update it even when `layer_` doesn't exist.
   gfx::Transform transform_;
 
   // The layer serving as the visual representation of the associated holding
-  // space `item_` in the holding space `icon_` in the shelf. This only exists
-  // while in the `icon_`s viewport as determined by the current `transform_`.
+  // space `item_` in the holding space icon in the shelf. This only exists
+  // while in the `container_`s viewport as determined by the current
+  // `transform_`.
   std::unique_ptr<ui::Layer> layer_;
 
   // Closure to invoke on completion of `AnimateOut()`. It is expected that this
@@ -144,10 +154,11 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // is about to move. Set while the holding space tray icon is updating.
   base::Optional<size_t> pending_index_;
 
-  // The `layer_` for this preview is parented by `icon_`'s layer. It is
-  // necessary to observe and react to bounds changes in `icon_` to keep
+  // The `layer_` for this preview is parented by `container_`'s layer. It is
+  // necessary to observe and react to bounds changes in `container_` to keep
   // `layer_`'s bounds in sync.
-  ScopedObserver<views::View, views::ViewObserver> icon_observer_{this};
+  base::ScopedObservation<views::View, views::ViewObserver> container_observer_{
+      this};
 
   base::WeakPtrFactory<HoldingSpaceTrayIconPreview> weak_factory_{this};
 };

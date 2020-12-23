@@ -60,16 +60,18 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item);
 
  private:
+  class ResizeAnimation;
+
   // views::View:
   base::string16 GetTooltipText(const gfx::Point& point) const override;
   int GetHeightForWidth(int width) const override;
+  gfx::Size CalculatePreferredSize() const override;
 
   // ShellObserver:
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
 
   void InitLayout();
-  void UpdatePreferredSize();
 
   // Invoked when the specified preview has completed animating out. At this
   // point it is owned by `removed_previews_` and should be destroyed.
@@ -103,6 +105,13 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   // Ordered list of holding space item IDs represented in the tray icon
   // (including items that are not currently visible).
   std::vector<std::string> item_ids_;
+
+  // A view that serves as a parent for previews' layers. Used to easily
+  // translate all the previews within the icon during resize animation.
+  views::View* previews_container_ = nullptr;
+
+  // Helper to run icon resize animation.
+  std::unique_ptr<ResizeAnimation> resize_animation_;
 
   ScopedObserver<Shell,
                  ShellObserver,
