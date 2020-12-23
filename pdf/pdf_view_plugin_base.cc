@@ -20,6 +20,10 @@ PdfViewPluginBase::PdfViewPluginBase() = default;
 
 PdfViewPluginBase::~PdfViewPluginBase() = default;
 
+uint32_t PdfViewPluginBase::GetBackgroundColor() {
+  return background_color_;
+}
+
 void PdfViewPluginBase::InitializeEngine(
     PDFiumFormFiller::ScriptOption script_option) {
   engine_ = std::make_unique<PDFiumEngine>(this, script_option);

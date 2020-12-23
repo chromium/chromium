@@ -591,7 +591,6 @@ bool OutOfProcessInstance::Init(uint32_t argc,
   const char* top_level_url = nullptr;
   const char* headers = nullptr;
   for (uint32_t i = 0; i < argc; ++i) {
-    bool success = true;
     if (strcmp(argn[i], "src") == 0) {
       original_url = argv[i];
     } else if (strcmp(argn[i], "stream-url") == 0) {
@@ -601,18 +600,21 @@ bool OutOfProcessInstance::Init(uint32_t argc,
     } else if (strcmp(argn[i], "headers") == 0) {
       headers = argv[i];
     } else if (strcmp(argn[i], "background-color") == 0) {
-      success = base::HexStringToUInt(argv[i], &background_color_);
+      uint32_t background_color;
+      if (!base::HexStringToUInt(argv[i], &background_color))
+        return false;
+      SetBackgroundColor(background_color);
     } else if (strcmp(argn[i], "top-toolbar-height") == 0) {
-      success =
-          base::StringToInt(argv[i], &top_toolbar_height_in_viewport_coords_);
+      int toolbar_height;
+      if (!base::StringToInt(argv[i], &toolbar_height))
+        return false;
+      set_top_toolbar_height_in_viewport_coords(toolbar_height);
     } else if (strcmp(argn[i], "javascript") == 0) {
       if (strcmp(argv[i], "allow") != 0)
         script_option = PDFiumFormFiller::ScriptOption::kNoJavaScript;
     } else if (strcmp(argn[i], "has-edits") == 0) {
       has_edits = true;
     }
-    if (!success)
-      return false;
   }
 
   if (!original_url)
@@ -811,7 +813,7 @@ void OutOfProcessInstance::UpdateScroll() {
   // viewport coordinates.
   pp::FloatPoint scroll_offset_float(
       scroll_offset_.x(),
-      scroll_offset_.y() - top_toolbar_height_in_viewport_coords_);
+      scroll_offset_.y() - top_toolbar_height_in_viewport_coords());
   scroll_offset_float = BoundScrollOffsetToDocument(scroll_offset_float);
   engine()->ScrolledToXPosition(scroll_offset_float.x() * device_scale_);
   engine()->ScrolledToYPosition(scroll_offset_float.y() * device_scale_);
@@ -912,7 +914,7 @@ void OutOfProcessInstance::SendAccessibilityViewportInfo() {
   PP_PrivateAccessibilityViewportInfo viewport_info;
   viewport_info.scroll.x = -plugin_offset_.x();
   viewport_info.scroll.y =
-      -top_toolbar_height_in_viewport_coords_ - plugin_offset_.y();
+      -top_toolbar_height_in_viewport_coords() - plugin_offset_.y();
   viewport_info.offset.x =
       available_area_.point().x() / (device_scale_ * zoom_);
   viewport_info.offset.y =
@@ -1119,7 +1121,8 @@ void OutOfProcessInstance::CalculateBackgroundParts() {
 
   // Add the left, right, and bottom rectangles.  Note: we assume only
   // horizontal centering.
-  BackgroundPart part = {pp::Rect(0, 0, left_width, bottom), background_color_};
+  BackgroundPart part = {pp::Rect(0, 0, left_width, bottom),
+                         GetBackgroundColor()};
   if (!part.location.IsEmpty())
     background_parts_.push_back(part);
   part.location = pp::Rect(right_start, 0, right_width, bottom);
@@ -1230,7 +1233,7 @@ void OutOfProcessInstance::ScrollToY(int y_in_screen_coords,
   position.Set(kType, kJSSetScrollPositionType);
   float new_y_viewport_coords = y_in_screen_coords / device_scale_;
   if (compensate_for_toolbar) {
-    new_y_viewport_coords -= top_toolbar_height_in_viewport_coords_;
+    new_y_viewport_coords -= top_toolbar_height_in_viewport_coords();
   }
   position.Set(kJSPositionY, pp::Var(new_y_viewport_coords));
   PostMessage(position);
@@ -1614,8 +1617,11 @@ void OutOfProcessInstance::HandleBackgroundColorChangedMessage(
     NOTREACHED();
     return;
   }
-  base::HexStringToUInt(dict.Get(pp::Var(kJSBackgroundColor)).AsString(),
-                        &background_color_);
+  uint32_t background_color;
+  if (base::HexStringToUInt(dict.Get(pp::Var(kJSBackgroundColor)).AsString(),
+                            &background_color)) {
+    SetBackgroundColor(background_color);
+  }
 }
 
 void OutOfProcessInstance::HandleDisplayAnnotations(
@@ -2119,7 +2125,7 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
   }
   int bottom_of_document =
       GetDocumentPixelHeight() +
-      (top_toolbar_height_in_viewport_coords_ * device_scale_);
+      (top_toolbar_height_in_viewport_coords() * device_scale_);
   if (bottom_of_document < available_area_.height())
     available_area_.set_height(bottom_of_document);
 
@@ -2160,10 +2166,6 @@ bool OutOfProcessInstance::IsPrintPreview() {
   return is_print_preview_;
 }
 
-uint32_t OutOfProcessInstance::GetBackgroundColor() {
-  return background_color_;
-}
-
 void OutOfProcessInstance::IsSelectingChanged(bool is_selecting) {
   pp::VarDictionary message;
   message.Set(kType, kJSSetIsSelectingType);
@@ -2182,7 +2184,7 @@ void OutOfProcessInstance::EnteredEditMode() {
 }
 
 float OutOfProcessInstance::GetToolbarHeightInScreenCoords() {
-  return top_toolbar_height_in_viewport_coords_ * device_scale_;
+  return top_toolbar_height_in_viewport_coords() * device_scale_;
 }
 
 void OutOfProcessInstance::DocumentFocusChanged(bool document_has_focus) {
@@ -2227,7 +2229,7 @@ void OutOfProcessInstance::OnPaint(const std::vector<gfx::Rect>& paint_rects,
   if (first_paint_) {
     first_paint_ = false;
     pp::Rect rect = pp::Rect(pp::Point(), image_data_.size());
-    FillRect(rect, background_color_);
+    FillRect(rect, GetBackgroundColor());
     ready->push_back(PaintReadyRect(rect, image_data_, /*flush_now=*/true));
   }
 
@@ -2271,7 +2273,7 @@ void OutOfProcessInstance::OnPaint(const std::vector<gfx::Rect>& paint_rects,
       pp::Rect region = rect.Intersect(pp::Rect(
           pp::Point(), pp::Size(plugin_size_.width(), first_page_ypos)));
       ready->push_back(PaintReadyRect(region, image_data_));
-      FillRect(region, background_color_);
+      FillRect(region, GetBackgroundColor());
     }
 
     for (const auto& background_part : background_parts_) {
@@ -2419,7 +2421,7 @@ pp::FloatPoint OutOfProcessInstance::BoundScrollOffsetToDocument(
   float max_x = std::max(
       document_size_.width() * float{zoom_} - plugin_dip_size_.width(), 0.0f);
   float x = base::ClampToRange(scroll_offset.x(), 0.0f, max_x);
-  float min_y = -top_toolbar_height_in_viewport_coords_;
+  float min_y = -top_toolbar_height_in_viewport_coords();
   float max_y = std::max(
       document_size_.height() * float{zoom_} - plugin_dip_size_.height(),
       min_y);

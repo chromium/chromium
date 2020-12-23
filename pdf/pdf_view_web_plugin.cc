@@ -109,15 +109,19 @@ bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
     if (initial_params_.attribute_names[i] == "stream-url") {
       stream_url = initial_params_.attribute_values[i].Utf8();
     } else if (initial_params_.attribute_names[i] == "background-color") {
+      uint32_t background_color;
       if (!base::HexStringToUInt(initial_params_.attribute_values[i].Utf8(),
-                                 &background_color_)) {
+                                 &background_color)) {
         return false;
       }
+      SetBackgroundColor(background_color);
     } else if (initial_params_.attribute_names[i] == "top-toolbar-height") {
+      int toolbar_height;
       if (!base::StringToInt(initial_params_.attribute_values[i].Utf8(),
-                             &top_toolbar_height_in_viewport_coords_)) {
+                             &toolbar_height)) {
         return false;
       }
+      set_top_toolbar_height_in_viewport_coords(toolbar_height);
     }
   }
 
@@ -279,10 +283,6 @@ void PdfViewWebPlugin::FormTextFieldFocusChange(bool in_focus) {}
 
 bool PdfViewWebPlugin::IsPrintPreview() {
   return false;
-}
-
-uint32_t PdfViewWebPlugin::GetBackgroundColor() {
-  return background_color_;
 }
 
 void PdfViewWebPlugin::IsSelectingChanged(bool is_selecting) {}

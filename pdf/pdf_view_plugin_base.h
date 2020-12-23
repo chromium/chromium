@@ -29,6 +29,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   PdfViewPluginBase(const PdfViewPluginBase& other) = delete;
   PdfViewPluginBase& operator=(const PdfViewPluginBase& other) = delete;
 
+  // PDFEngine::Client:
+  uint32_t GetBackgroundColor() override;
+
  protected:
   PdfViewPluginBase();
   ~PdfViewPluginBase() override;
@@ -62,9 +65,28 @@ class PdfViewPluginBase : public PDFEngine::Client,
   virtual void DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                               int32_t result) = 0;
 
+  void SetBackgroundColor(uint32_t background_color) {
+    background_color_ = background_color;
+  }
+
+  int top_toolbar_height_in_viewport_coords() const {
+    return top_toolbar_height_in_viewport_coords_;
+  }
+
+  void set_top_toolbar_height_in_viewport_coords(int height) {
+    top_toolbar_height_in_viewport_coords_ = height;
+  }
+
  private:
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};
+
+  // The background color of the PDF viewer.
+  uint32_t background_color_ = 0;
+
+  // The blank space above the first page of the document reserved for the
+  // toolbar.
+  int top_toolbar_height_in_viewport_coords_ = 0;
 };
 
 }  // namespace chrome_pdf

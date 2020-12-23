@@ -95,7 +95,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
   void FormTextFieldFocusChange(bool in_focus) override;
   bool IsPrintPreview() override;
-  uint32_t GetBackgroundColor() override;
   void IsSelectingChanged(bool is_selecting) override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
   void EnteredEditMode() override;
@@ -138,12 +137,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   blink::WebPluginParams initial_params_;
   blink::WebPluginContainer* container_ = nullptr;
-
-  // The background color of the PDF viewer.
-  uint32_t background_color_ = 0;
-  // The blank space above the first page of the document reserved for the
-  // toolbar.
-  int top_toolbar_height_in_viewport_coords_ = 0;
 
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
 };
