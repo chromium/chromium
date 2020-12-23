@@ -1709,6 +1709,18 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-hardware_mirror-mode",
+    "owners": [
+      "gildekel",
+      "//ui/display/OWNERS"
+    ],
+    // Temporary flag to control hardware mirroring as the first step
+    // towards permanently disabling hardware mirroring. This flag will be removed
+    // once we verify no critical regression is seen by removing HW mirroring.
+    // See crbug.com/1161556 for more details.
+    "expiry_milestone": 92
+  },
+  {
     "name": "enable-heavy-ad-intervention",
     "owners": [ "johnidel", "jkarlin" ],
     "expiry_milestone": 90

@@ -2604,6 +2604,9 @@ extern const char kLimitShelfItemsToActiveDeskDescription[];
 extern const char kListAllDisplayModesName[];
 extern const char kListAllDisplayModesDescription[];
 
+extern const char kEnableHardwareMirrorModeName[];
+extern const char kEnableHardwareMirrorModeDescription[];
+
 extern const char kLockScreenMediaControlsName[];
 extern const char kLockScreenMediaControlsDescription[];
 
