@@ -10,6 +10,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -209,9 +210,12 @@ class MockUploadClient : public Storage::UploaderInterface {
                                                   uint64_t /*sequencing id*/>,
                                        std::string /*digest*/>;
 
-  explicit MockUploadClient(LastRecordDigestMap* last_record_digest_map,
-                            scoped_refptr<Decryptor> decryptor)
+  explicit MockUploadClient(
+      LastRecordDigestMap* last_record_digest_map,
+      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
+      scoped_refptr<Decryptor> decryptor)
       : last_record_digest_map_(last_record_digest_map),
+        sequenced_task_runner_(sequenced_task_runner),
         decryptor_(decryptor) {}
 
   void ProcessRecord(EncryptedRecord encrypted_record,
@@ -223,8 +227,8 @@ class MockUploadClient : public Storage::UploaderInterface {
       WrappedRecord wrapped_record;
       ASSERT_TRUE(wrapped_record.ParseFromString(
           encrypted_record.encrypted_wrapped_record()));
-      VerifyRecord(sequencing_information, std::move(wrapped_record),
-                   std::move(processed_cb));
+      ScheduleVerifyRecord(sequencing_information, std::move(wrapped_record),
+                           std::move(processed_cb));
       return;
     }
     // Decrypt encrypted_record.
@@ -239,9 +243,9 @@ class MockUploadClient : public Storage::UploaderInterface {
                ASSERT_TRUE(wrapped_record.ParseFromArray(
                    result.ValueOrDie().data(), result.ValueOrDie().size()));
                // Verify wrapped record once decrypted.
-               client->VerifyRecord(sequencing_information,
-                                    std::move(wrapped_record),
-                                    std::move(processed_cb));
+               client->ScheduleVerifyRecord(sequencing_information,
+                                            std::move(wrapped_record),
+                                            std::move(processed_cb));
              },
              sequencing_information, std::move(processed_cb),
              base::Unretained(this))))
@@ -344,6 +348,16 @@ class MockUploadClient : public Storage::UploaderInterface {
   };
 
  private:
+  void ScheduleVerifyRecord(SequencingInformation sequencing_information,
+                            WrappedRecord wrapped_record,
+                            base::OnceCallback<void(bool)> processed_cb) {
+    sequenced_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MockUploadClient::VerifyRecord, base::Unretained(this),
+                       sequencing_information, std::move(wrapped_record),
+                       std::move(processed_cb)));
+  }
+
   void VerifyRecord(SequencingInformation sequencing_information,
                     WrappedRecord wrapped_record,
                     base::OnceCallback<void(bool)> processed_cb) {
@@ -406,6 +420,8 @@ class MockUploadClient : public Storage::UploaderInterface {
 
   base::Optional<uint64_t> generation_id_;
   LastRecordDigestMap* const last_record_digest_map_;
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+
   const scoped_refptr<Decryptor> decryptor_;
 
   Sequence test_upload_sequence_;
@@ -486,8 +502,8 @@ class StorageTest
 
   StatusOr<std::unique_ptr<Storage::UploaderInterface>> BuildMockUploader(
       Priority priority) {
-    auto uploader = std::make_unique<MockUploadClient>(&last_record_digest_map_,
-                                                       decryptor_);
+    auto uploader = std::make_unique<MockUploadClient>(
+        &last_record_digest_map_, sequenced_task_runner_, decryptor_);
     set_mock_uploader_expectations_.Call(priority, uploader.get());
     return uploader;
   }
@@ -553,6 +569,9 @@ class StorageTest
   // Test-wide global mapping of <generation id, sequencing id> to record
   // digest. Serves all MockUploadClients created by test fixture.
   MockUploadClient::LastRecordDigestMap last_record_digest_map_;
+  // Guard Access to last_record_digest_map_
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_{
+      base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits())};
 
   ::testing::MockFunction<void(Priority, MockUploadClient*)>
       set_mock_uploader_expectations_;
@@ -806,9 +825,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
                    data[2]);  // Immediately uploads and verifies.
 }
 
-// TODO(crbug.com/1161038): Re-enable flaky test.
-TEST_P(StorageTest,
-       DISABLED_WriteAndRepeatedlyImmediateUploadWithConfirmations) {
+TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   CreateTestStorageOrDie(BuildTestStorageOptions());
 
   // Upload is initiated asynchronously, so it may happen after the next
