@@ -52,13 +52,13 @@ extensions
 A cookie starts as a `Set-Cookie` header sent in the server's response to an
 HTTP request:
 
-<pre>
+```
 HTTP/1.1 200 OK
 Date: ...
 Server: ...
 ...
-<b>Set-Cookie: chocolate_chip=tasty; Secure; SameSite=Lax; Max-Age=3600</b>
-</pre>
+Set-Cookie: chocolate_chip=tasty; Secure; SameSite=Lax; Max-Age=3600
+```
 
 The response passes through the `HttpNetworkTransaction` and
 `HttpCache::Transaction` to the `URLRequestHttpJob`. (See
@@ -188,13 +188,13 @@ The included cookies are serialized into a `Cookie` header string (if the
 settings). The `URLRequestHttpJob` attaches this `Cookie` header to the outgoing
 request headers:
 
-<pre>
+```
 GET /me/want/cookie/omnomnomnom HTTP/1.1
 Host: ...
 User-Agent: ...
-<b>Cookie: chocolate_chip=tasty</b>
+Cookie: chocolate_chip=tasty
 ...
-</pre>
+```
 
 The included cookies, excluded cookies, and their corresponding
 `CookieInclusionStatus`es are also stored in the `URLRequest` to notify
