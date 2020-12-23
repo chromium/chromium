@@ -242,6 +242,13 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   create_network_manager_event.Wait();
   CHECK(network_thread_);
 
+  // Wait for the worker thread, since `InitializeSignalingThread` needs to
+  // refer to `worker_thread_`.
+  if (chrome_worker_thread_) {
+    start_worker_event.Wait();
+    CHECK(worker_thread_);
+  }
+
   base::WaitableEvent start_signaling_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
@@ -254,10 +261,6 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
           CrossThreadUnretained(Platform::Current()->GetMediaDecoderFactory()),
           CrossThreadUnretained(&start_signaling_event)));
 
-  if (chrome_worker_thread_) {
-    start_worker_event.Wait();
-    CHECK(worker_thread_);
-  }
   start_signaling_event.Wait();
   CHECK(signaling_thread_);
 }
