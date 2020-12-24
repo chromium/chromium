@@ -775,6 +775,22 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageData) {
   EXPECT_EQ(100u, new_pm.addr32(1, 0)[0]);
 }
 
+TEST(V8ScriptValueSerializerTest, RoundTripDetachedImageData) {
+  // If an ImageData is detached, it can be serialized, but will fail when being
+  // deserialized.
+  V8TestingScope scope;
+  ImageData* image_data = ImageData::ValidateAndCreate(
+      2, 1, base::nullopt, nullptr, ASSERT_NO_EXCEPTION);
+  SkPixmap pm = image_data->GetSkPixmap();
+  pm.writable_addr32(0, 0)[0] = 200u;
+  image_data->data().GetAsUint8ClampedArray()->BufferBase()->Detach();
+
+  v8::Local<v8::Value> wrapper =
+      ToV8(image_data, scope.GetContext()->Global(), scope.GetIsolate());
+  v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
+  EXPECT_FALSE(V8ImageData::HasInstance(result, scope.GetIsolate()));
+}
+
 TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
   // ImageData objects with color space information should serialize and
   // deserialize correctly.
