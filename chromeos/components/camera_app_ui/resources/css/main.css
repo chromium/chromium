@@ -3,6 +3,7 @@
  * found in the LICENSE file. */
 
 :root {
+  /* Standard CrOS styles */
   --blue-300-rgb: 138, 180, 248;
   --blue-300: rgb(var(--blue-300-rgb));
   --blue-600-dark-rgb: 37, 129, 223;
@@ -11,6 +12,18 @@
   --grey-200: rgb(232, 234, 237);
   --grey-900: rgb(32, 33, 36);
 
+  --fast1-duration: 100ms;
+  --fast2-duration: 200ms;
+  --moderate1-duration: 250ms;
+  --moderate2-duration: 500ms;
+  --slow1-duration: 600ms;
+  --slow2-duration: 1000ms;
+
+  --standard-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --enter-easing: cubic-bezier(0, 0, 0.2, 1);
+  --exit-easing: cubic-bezier(0.4, 0, 1, 1);
+
+  /* App specific settings */
   --focus-color: rgba(var(--blue-600-dark-rgb), 0.7);
 }
 
@@ -134,13 +147,13 @@ body.tab-navigation .circle input:focus::after {
   opacity: 1;
   position: absolute;
   transform: translateX(-50%);
-  transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity var(--fast2-duration) var(--standard-easing);
   visibility: visible;
 }
 
 body.taking.video .left-stripe {
   opacity: 0;
-  transition: visibility 0ms 225ms, opacity 225ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: visibility 0ms 225ms, opacity 225ms var(--standard-easing);
   visibility: hidden;
 }
 
@@ -418,7 +431,6 @@ body.should-handle-intent-result #pause-recordvideo {
 
 #recordvideo,
 #pause-recordvideo {
-  --curve: cubic-bezier(0.4, 0, 0.2, 1);
   --dot-size: 25%;
   --durtaion: 180ms;
   --red: #f44336;
@@ -430,7 +442,7 @@ body.should-handle-intent-result #pause-recordvideo {
   border-radius: 50%;
   height: var(--size);
   position: relative;
-  transition: var(--durtaion) var(--curve);
+  transition: var(--durtaion) var(--standard-easing);
   width: var(--size);
 }
 
@@ -454,7 +466,7 @@ body.taking.video #recordvideo:hover {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  transition: var(--durtaion) var(--curve);
+  transition: var(--durtaion) var(--standard-easing);
   width: var(--dot-size);
 }
 
@@ -475,7 +487,7 @@ body:not(.recording-ui-paused).video #pause-recordvideo .red-dot {
   opacity: 0;
   position: absolute;
   top: 50%;
-  transition: var(--durtaion) var(--square-delay) var(--curve);
+  transition: var(--durtaion) var(--square-delay) var(--standard-easing);
   width: 0;
 }
 
@@ -553,7 +565,8 @@ body.mode-switching:not(.streaming) #camera-mode {
 #timer-tick-msg.animate {
   opacity: 0.2;
   transform: scale(1.8, 1.8);
-  transition: transform 500ms ease-out, opacity 500ms ease-out;
+  transition: transform var(--moderate1-duration) ease-out,
+              opacity var(--moderate1-duration) ease-out;
   visibility: visible;
 }
 
@@ -718,7 +731,7 @@ body.view-message-dialog #view-message-dialog,
 body.view-warning #view-warning,
 body.view-splash #view-splash {
   opacity: 1;
-  transition: opacity 100ms;
+  transition: opacity var(--fast1-duration);
   visibility: visible;
 }
 
@@ -826,7 +839,7 @@ body.mirror #preview-focus {
 }
 
 #preview-video {
-  transition: opacity 200ms ease-in-out;
+  transition: opacity var(--fast2-duration) ease-in-out;
 }
 
 #preview-video.animate {
@@ -1144,7 +1157,7 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
 }
 
 #banner.animate {
-  animation: emerge 6000ms cubic-bezier(0.0, 0.0, 0.2, 1);
+  animation: emerge 6000ms var(--enter-easing);
   display: block;
 }
 
@@ -1155,7 +1168,7 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
   }
   8%,
   92% {
-    animation-timing-function: cubic-bezier(0.4, 0.0, 1.0, 1.0);
+    animation-timing-function: var(--exit-easing);
     bottom: 31px;
   }
 }
@@ -1258,7 +1271,7 @@ label.menu-item::before {
 
 button.menu-item.animate::before,
 label.menu-item.animate::before {
-  animation: inkdrop 500ms ease-out;
+  animation: inkdrop var(--moderate1-duration) ease-out;
 }
 
 @keyframes inkdrop {
@@ -1344,7 +1357,7 @@ body._10sec .description span[i18n-content=label_timer_10s],
   left: 12px;
   right: 12px;
   top: 12px;
-  transition: border-width 100ms ease-in;
+  transition: border-width var(--fast1-duration) ease-in;
 }
 
 body.tab-navigation button.menu-item:focus::after {
@@ -1436,7 +1449,7 @@ html[dir=rtl] .icon.end {
   flex-direction: column;
   padding: 20px;
   transform: translateY(20px);
-  transition: transform 200ms;
+  transition: transform var(--fast2-duration);
 }
 
 .dialog .dialog-popup {
