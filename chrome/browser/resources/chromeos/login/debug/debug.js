@@ -499,6 +499,7 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'gaia-signin',
       kind: ScreenKind.NORMAL,
+      handledSteps: 'allowlist-error',
       states: [
         {
           id: 'allowlist-customer',

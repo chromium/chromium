@@ -57,7 +57,11 @@ const DialogMode = {
 Polymer({
   is: 'gaia-signin-element',
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+  behaviors: [
+    OobeI18nBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior,
+  ],
 
   EXTERNAL_API: [
     'loadAuthExtension',
@@ -77,16 +81,6 @@ Polymer({
       type: Number,
       value: AuthMode.DEFAULT,
       observer: 'screenModeChanged_',
-    },
-
-    /**
-     * Current step displayed.
-     * @type {DialogMode}
-     * @private
-     */
-    step_: {
-      type: String,
-      value: DialogMode.GAIA,
     },
 
     /**
@@ -313,6 +307,12 @@ Polymer({
    * @private
    */
   clickPrimaryActionButtonForTesting_: false,
+
+  defaultUIStep() {
+    return DialogMode.GAIA;
+  },
+
+  UI_STEPS: DialogMode,
 
   /** @override */
   ready() {
@@ -1357,18 +1357,6 @@ Polymer({
   },
 
   /**
-   * Checks if current step is one of specified steps.
-   * @param {DialogMode} currentStep Name of current step.
-   * @param {...string} stepsVarArgs List of steps to compare with.
-   * @return {boolean}
-   */
-  isStep_(currentStep, ...stepsVarArgs) {
-    if (stepsVarArgs.length < 1)
-      throw Error('At least one step to compare is required.');
-    return stepsVarArgs.some(step => currentStep === step);
-  },
-
-  /**
    * Updates current UI step based on internal state.
    * @param {number} mode
    * @param {OobeTypes.SecurityTokenPinDialogParameter} pinParams
@@ -1378,27 +1366,27 @@ Polymer({
    */
   refreshDialogStep_(mode, pinParams, isLoading, isAllowlistError) {
     if (pinParams !== null) {
-      this.step_ = DialogMode.PIN_DIALOG;
+      this.setUIStep(DialogMode.PIN_DIALOG);
       return;
     }
     if (isLoading) {
       if (mode == AuthMode.DEFAULT) {
-        this.step_ = DialogMode.GAIA_LOADING;
+        this.setUIStep(DialogMode.GAIA_LOADING);
       } else {
-        this.step_ = DialogMode.LOADING;
+        this.setUIStep(DialogMode.LOADING);
       }
       return;
     }
     if (isAllowlistError) {
-      this.step_ = DialogMode.GAIA_ALLOWLIST_ERROR;
+      this.setUIStep(DialogMode.GAIA_ALLOWLIST_ERROR);
       return;
     }
     switch (mode) {
       case AuthMode.DEFAULT:
-        this.step_ = DialogMode.GAIA;
+        this.setUIStep(DialogMode.GAIA);
         break;
       case AuthMode.SAML_INTERSTITIAL:
-        this.step_ = DialogMode.SAML_INTERSTITIAL;
+        this.setUIStep(DialogMode.SAML_INTERSTITIAL);
         break;
     }
   },

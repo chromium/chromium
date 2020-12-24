@@ -28,22 +28,12 @@ element during loading, without affecting its loading events. */
    * border-top-right-radius: 4px; */
   display: block;
   overflow: hidden;
-  position: static;
-}
-
-:host .step-contents {
-  -webkit-box-pack: center;
-  display: -webkit-box;
-  height: 100%;
 }
 
 #saml-notice-container {
-  align-items: center;
   background: rgb(241, 243, 244); /* #F1F3F4 */
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
-  display: flex;
   height: 44px;
-  min-height: 0;
 }
 
 #saml-notice-recording-indicator {
@@ -56,30 +46,9 @@ element during loading, without affecting its loading events. */
   font-size: 13px;
 }
 
-.step-loading {
-  align-items: center;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  left: 0;
-  min-height: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
 .icon20 {
   height: 20px;
   width: 20px;
-}
-
-#gaia-allowlist-error {
-  bottom: 0;
-  display: block;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
 }
 
 #signin-frame-container {

@@ -22,14 +22,14 @@
     <oobe-dialog id="signin-frame-dialog" class="gaia-dialog" role="dialog"
         has-buttons="[[!isSamlSsoVisible_]]"
         no-header no-footer-padding no-lazy
-        hidden="[[!isStep_(step_, 'online-gaia', 'gaia-loading')]]">
+        for-step="online-gaia, gaia-loading">
       <div slot="footer" class="flex layout vertical">
         <div id="signin-frame-container" transparent$="[[isLoadingUiShown_]]"
             animated-transparency$="[[!usedSaml_]]"
             hideshadows$="[[isPopUpOverlayVisible_]]"
             class="flex layout vertical">
           <div id="saml-notice-container"
-               class="layout horizontal"
+               class="layout horizontal center"
                hidden="[[!isSamlSsoVisible_]]">
             <div class="flex layout horizontal center-justified">
               <span id="saml-notice-recording-indicator"
@@ -71,12 +71,11 @@
       </div>
     </oobe-dialog>
     <security-token-pin id="pinDialog" parameters="[[pinDialogParameters_]]"
-        hidden="[[!isStep_(step_, 'pin')]]"
-        on-cancel="onPinDialogCanceled_" on-completed="onPinDialogCompleted_">
+        for-step="pin" on-cancel="onPinDialogCanceled_"
+        on-completed="onPinDialogCompleted_">
     </security-token-pin>
     <oobe-dialog id="saml-interstitial" role="dialog" has-buttons
-        title-key="loginWelcomeMessage"
-        hidden="[[!isStep_(step_, 'saml-interstitial')]]">
+        title-key="loginWelcomeMessage" for-step="saml-interstitial">
       <hd-iron-icon slot="oobe-icon" icon1x="oobe-32:googleg"
           icon2x="oobe-64:googleg">
       </hd-iron-icon>
@@ -100,12 +99,12 @@
             id="interstitial-next" class="focus-on-show"></oobe-next-button>
       </div>
     </oobe-dialog>
-    <div id="gaia-loading" class="step-loading gaia-dialog"
-        hidden="[[!isStep_(step_, 'loading', 'gaia-loading')]]">
+    <div id="gaia-loading" class="layout center center-justified vertical fit"
+        for-step="loading, gaia-loading">
       <throbber-notice text-key="gaiaLoading"></throbber-notice>
     </div>
-    <notification-card id="gaia-allowlist-error" type="fail" class="gaia-dialog"
-        hidden="[[!isStep_(step_, 'allowlist-error')]]"
+    <notification-card id="gaia-allowlist-error" type="fail" class="fit"
+        for-step="allowlist-error"
         button-label="[[i18nDynamic(locale, 'tryAgainButton')]]"
         link-label="[[i18nDynamic(locale, 'learnMoreButton')]]">
     </notification-card>
