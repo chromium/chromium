@@ -1252,8 +1252,16 @@ void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
       ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection)) {
     base::string16 text;
+
+    // Since ReadText() runs a nested message loop, |this| may be deleted before
+    // it returns. See https://crbug.com/1161143
+    auto weak_this = weak_factory_.GetWeakPtr();
     ui::Clipboard::GetForCurrentThread()->ReadText(
         ui::ClipboardBuffer::kSelection, /* data_dst = */ nullptr, &text);
+    if (!weak_this) {
+      return;
+    }
+
     text = OmniboxView::SanitizeTextForPaste(text);
 
     if (!GetOmniboxView()->model()->CanPasteAndGo(text)) {
