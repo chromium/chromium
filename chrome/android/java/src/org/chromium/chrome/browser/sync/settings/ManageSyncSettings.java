@@ -797,12 +797,13 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     // SignOutDialogListener implementation:
     @Override
     public void onSignOutClicked(boolean forceWipeUserData) {
+        final Profile profile = Profile.getLastUsedRegularProfile();
         // In case sign-out happened while the dialog was displayed, we guard the sign out so
         // we do not hit a native crash.
-        if (!IdentityServicesProvider.get().getIdentityManager().hasPrimaryAccount()) return;
+        if (!IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount()) return;
 
         final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();
-        IdentityServicesProvider.get().getSigninManager().signOut(
+        IdentityServicesProvider.get().getSigninManager(profile).signOut(
                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, new SigninManager.SignOutCallback() {
                     @Override
                     public void preWipeData() {
