@@ -398,11 +398,11 @@ AccountInfo IdentityTestEnvironment::MakeUnconsentedPrimaryAccountAvailable(
   AccountInfo account_info = MakeAccountAvailable(email);
   identity_manager()->GetPrimaryAccountMutator()->SetUnconsentedPrimaryAccount(
       account_info.account_id);
-#elif defined(OS_IOS) || defined(OS_ANDROID)
-  // iOS and Android only support the primary account.
+#elif defined(OS_IOS)
+  // iOS only support the primary account.
   AccountInfo account_info = MakePrimaryAccountAvailable(email);
 #else
-  // Desktop platforms.
+  // Android and Desktop platforms.
   AccountInfo account_info =
       MakeAccountAvailableWithCookies(email, GetTestGaiaIdForEmail(email));
   base::RunLoop().RunUntilIdle();
