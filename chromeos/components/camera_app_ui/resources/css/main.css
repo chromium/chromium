@@ -5,9 +5,13 @@
 :root {
   --blue-300-rgb: 138, 180, 248;
   --blue-300: rgb(var(--blue-300-rgb));
+  --blue-600-dark-rgb: 37, 129, 223;
+  --blue-600-dark: rgb(var(--blue-600-rgb));
   --grey-100: rgb(241, 243, 244);
   --grey-200: rgb(232, 234, 237);
   --grey-900: rgb(32, 33, 36);
+
+  --focus-color: rgba(var(--blue-600-dark-rgb), 0.7);
 }
 
 html {
@@ -54,7 +58,7 @@ body.tab-navigation button:focus::after,
 body.tab-navigation input:focus::after {
   --focus-ring-size: 3px;
 
-  border: 2px solid rgba(37, 129, 223, 0.7);
+  border: 2px solid var(--focus-color);
   border-radius: 4px;
   bottom: calc(0px - var(--focus-ring-size));
   content: '';
@@ -330,7 +334,7 @@ body.tab-navigation .mode-item>input:focus::after {
 body.tab-navigation .mode-item>input:focus + span::after {
   --negative-size: calc(0px - var(--focus-ring-gap));
 
-  border: var(--focus-ring-border) solid rgba(37, 129, 223, 0.7);
+  border: var(--focus-ring-border) solid var(--focus-color);
   border-radius: 23px/50%;
   bottom: var(--negative-size);
   content: '';
@@ -1476,15 +1480,15 @@ html[dir=rtl] .icon.end {
 .dialog-buttons button {
   background-color: white;
   border-style: solid;
-  color: rgb(37, 129, 223);
+  color: var(--blue-600-dark);
   font-size: 12px;
   margin: 4px;
   padding: 6px 18px;
 }
 
 body.tab-navigation .dialog-buttons button:focus {
-  background-color: rgb(37, 129, 223);
-  border-color: rgb(37, 129, 223);
+  background-color: var(--blue-600-dark);
+  border-color: var(--blue-600-dark);
   color: white;
 }
 
