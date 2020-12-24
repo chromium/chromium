@@ -1564,7 +1564,6 @@ body.photo.scan-barcode .barcode-scan-box {
   position: absolute;
   top: 10%;
   transform: translateX(-50%);
-  visibility: hidden;
   z-index: 50;
 }
 
@@ -1572,7 +1571,6 @@ body.photo.scan-barcode .barcode-scan-box {
 .barcode-chip-container.animate {
   /* TODO(b/172879638): This might be too short for long text. */
   animation: 8s show-barcode-chip ease-out;
-  visibility: visible;
 }
 
 @keyframes show-barcode-chip {
@@ -1617,6 +1615,10 @@ body.photo.scan-barcode .barcode-scan-box {
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.barcode-chip-url > a:focus {
+  outline: none;
 }
 
 .barcode-copy-button:hover {
@@ -1719,4 +1721,8 @@ body.photo.scan-barcode .barcode-scan-box {
   100% {
     opacity: 0;
   }
+}
+
+.hidden {
+  display: none;
 }

@@ -333,6 +333,9 @@
       <message desc="Label for the copy button of the barcode text chip." name="IDS_BARCODE_COPY_TEXT_BUTTON">
         Copy text
       </message>
+      <message desc="Label for the copy button of the barcode text chip." name="IDS_BARCODE_LINK_DETECTED">
+        Link detected. <ph name="hostname">$1<ex>www.google.com</ex></ph>
+      </message>
       <message desc="Label for the button of expert mode options." name="IDS_EXPERT_MODE_BUTTON">
         Expert mode
       </message>

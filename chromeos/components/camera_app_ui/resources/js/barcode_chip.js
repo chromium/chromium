@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {browserProxy} from './browser_proxy/browser_proxy.js';
 import * as dom from './dom.js';
 import * as snackbar from './snackbar.js';
 import * as util from './util.js';
@@ -22,6 +23,9 @@ let currentChip = null;
  * Resets the variables of the current state.
  */
 function resetCurrentState() {
+  if (currentChip !== null) {
+    currentChip.classList.add('hidden');
+  }
   currentCode = null;
   currentChip = null;
 }
@@ -66,16 +70,21 @@ function setupCopyButton(container, content, snackbarLabel) {
  */
 function showUrl(url) {
   const container = dom.get('#barcode-chip-url-container', HTMLDivElement);
+  container.classList.remove('hidden');
 
   const anchor = dom.getFrom(container, 'a', HTMLAnchorElement);
   Object.assign(anchor, {
     href: url,
     textContent: url,
   });
+  const hostname = new URL(url).hostname;
+  const label = browserProxy.getI18nMessage('barcode_link_detected', hostname);
+  anchor.setAttribute('aria-label', label);
+  anchor.setAttribute('aria-description', url);
+  anchor.focus();
 
   setupCopyButton(container, url, 'snackbar_link_copied');
 
-  // TODO(b/172879638): Handle a11y.
   currentChip = container;
   util.animateOnce(container, resetCurrentState);
 }
@@ -86,7 +95,7 @@ function showUrl(url) {
  */
 function showText(text) {
   const container = dom.get('#barcode-chip-text-container', HTMLDivElement);
-  container.classList.remove('expanded');
+  container.classList.remove('hidden', 'expanded');
 
   const textEl = dom.get('#barcode-chip-text-content', HTMLDivElement);
   textEl.textContent = text;
