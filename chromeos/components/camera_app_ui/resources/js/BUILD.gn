@@ -82,6 +82,7 @@ js_library("compile_resources") {
     "models/file_system.js",
     "models/file_system_entry.js",
     "models/file_util.js",
+    "models/idb.js",
     "models/lazy_directory_entry.js",
     "models/mp4_video_processor.js",
     "models/native_file_system_entry.js",

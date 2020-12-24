@@ -44,6 +44,7 @@
       <structure name="IDR_CAMERA_FILE_SYSTEM_JS" file="js/models/file_system.js" type="chrome_html" />
       <structure name="IDR_CAMERA_FILE_UTIL_JS" file="js/models/file_util.js" type="chrome_html" />
       <structure name="IDR_CAMERA_GALLERYBUTTON_JS" file="js/gallerybutton.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_IDB_JS" file="js/models/idb.js" type="chrome_html" />
       <structure name="IDR_CAMERA_IMAGECAPTURE_JS" file="js/mojo/image_capture.js" type="chrome_html" />
       <structure name="IDR_CAMERA_INIT_JS" file="js/init.js" type="chrome_html" />
       <structure name="IDR_CAMERA_INTENT_JS" file="js/intent.js" type="chrome_html" />
