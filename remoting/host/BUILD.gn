@@ -312,9 +312,21 @@ static_library("common") {
   }
 
   if (is_linux || is_chromeos_lacros) {
-    sources += [ "desktop_resizer_linux.cc" ]
-    public_deps += [ "//remoting/host/linux" ]
+    sources += [
+      "desktop_resizer_linux.cc",
+      "linux/audio_pipe_reader.cc",
+      "linux/audio_pipe_reader.h",
+      "linux/certificate_watcher.cc",
+      "linux/certificate_watcher.h",
+    ]
+
     libs += [ "pam" ]
+
+    deps += [ "//build/config/linux/gtk" ]
+
+    if (use_x11) {
+      deps += [ "linux:x11" ]
+    }
   }
 
   if (use_x11 && (!is_chromeos_ash || !use_ozone)) {
@@ -565,10 +577,7 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos_ash) {
-    deps += [
-      "//remoting/host/chromeos:unit_tests",
-      "//remoting/host/linux",  # for AudioPipeReader
-    ]
+    deps += [ "//remoting/host/chromeos:unit_tests" ]
   }
 
   if (is_win) {

@@ -63,28 +63,6 @@ if (enable_me2me_host) {
   }
 }
 
-source_set("linux") {
-  sources = [
-    "audio_pipe_reader.cc",
-    "audio_pipe_reader.h",
-    "certificate_watcher.cc",
-    "certificate_watcher.h",
-  ]
-
-  deps = [
-    "//remoting/protocol",
-    "//third_party/webrtc_overrides:webrtc_component",
-  ]
-  public_deps = []
-
-  if (use_x11) {
-    deps += [ ":x11" ]
-  }
-  if (is_linux || is_chromeos_lacros) {
-    deps += [ "//build/config/linux/gtk" ]
-  }
-}
-
 if (use_x11) {
   source_set("x11") {
     sources = [
@@ -100,7 +78,11 @@ if (use_x11) {
       "x_server_clipboard.h",
     ]
     public_deps = [ "//ui/gfx/x" ]
-    deps = [ "//third_party/webrtc_overrides:webrtc_component" ]
+    deps = [
+      "//base",
+      "//remoting/base",
+      "//third_party/webrtc_overrides:webrtc_component",
+    ]
   }
 }
 
@@ -116,12 +98,18 @@ executable("remoting_native_messaging_host") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//mojo/core/embedder",
     "//net",
+    "//remoting/base",
+    "//remoting/base:authorization",
     "//remoting/base:breakpad",
     "//remoting/host",
+    "//remoting/host:base",
     "//remoting/host:remoting_infoplist_strings",
     "//remoting/host/native_messaging",
     "//remoting/host/setup",
+    "//services/network:network_service",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
 
@@ -166,6 +154,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (use_x11) {
+    deps += [ ":x11" ]
+  }
 
   if (!is_ios) {
     deps += [ "//components/policy/core/browser:test_support" ]

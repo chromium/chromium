@@ -168,7 +168,6 @@ no_check_targets = [
   "//remoting/host/input_monitor:*",  # 3 errors
   "//remoting/host/installer/mac:*",  # 1 error
   "//remoting/host/it2me:*",  # 18 errors
-  "//remoting/host/linux:*",  # 64 errors
   "//remoting/host/mac:*",  # 49 errors
   "//remoting/host/native_messaging:*",  # 3 errors
   "//remoting/host/security_key:*",  # 68 errors
