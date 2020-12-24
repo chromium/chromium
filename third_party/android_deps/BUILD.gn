@@ -899,18 +899,6 @@ android_aar_prebuilt("androidx_webkit_webkit_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_window_window_java") {
-  aar_path = "libs/androidx_window_window/window-1.0.0-alpha01.aar"
-  info_path = "libs/androidx_window_window/androidx_window_window.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_core_core_java",
-  ]
-  resource_overlay = true
-  enable_bytecode_checks = false
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("com_android_support_asynclayoutinflater_java") {
   aar_path = "libs/com_android_support_asynclayoutinflater/asynclayoutinflater-28.0.0.aar"
   info_path = "libs/com_android_support_asynclayoutinflater/com_android_support_asynclayoutinflater.info"

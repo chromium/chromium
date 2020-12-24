@@ -75,7 +75,6 @@
     "libs/androidx_viewpager2_viewpager2",
     "libs/androidx_viewpager_viewpager",
     "libs/androidx_webkit_webkit",
-    "libs/androidx_window_window",
     "libs/backport_util_concurrent_backport_util_concurrent",
     "libs/classworlds_classworlds",
     "libs/com_android_support_animated_vector_drawable",

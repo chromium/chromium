@@ -83,7 +83,6 @@ dependencies {
     compile "androidx.vectordrawable:vectordrawable-animated:1.2.0-SNAPSHOT"
     compile "androidx.tvprovider:tvprovider:1.1.0-SNAPSHOT"
     compile "androidx.viewpager:viewpager:1.1.0-SNAPSHOT"
-    compile "androidx.window:window:1.0.0-alpha01"
     compile "androidx.exifinterface:exifinterface:1.4.0-SNAPSHOT"
 
     // Those are for use by doubledown libraries.
