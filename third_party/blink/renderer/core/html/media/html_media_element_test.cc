@@ -110,6 +110,16 @@ class MockMediaPlayerObserverReceiverForTesting
   }
 
   // media::mojom::blink::MediaPlayerObserver implementation.
+  void OnMediaPlaying() override {
+    received_media_playing_ = true;
+    run_loop_->Quit();
+  }
+
+  void OnMediaPaused(bool stream_ended) override {
+    received_media_paused_stream_ended_ = stream_ended;
+    run_loop_->Quit();
+  }
+
   void OnMutedStatusChanged(bool muted) override {
     received_muted_status_type_ = muted;
     run_loop_->Quit();
@@ -135,6 +145,12 @@ class MockMediaPlayerObserverReceiverForTesting
   void OnSeek() override {}
 
   // Getters used from HTMLMediaElementTest.
+  bool received_media_playing() const { return received_media_playing_; }
+
+  const base::Optional<bool>& received_media_paused_stream_ended() const {
+    return received_media_paused_stream_ended_;
+  }
+
   const base::Optional<bool>& received_muted_status() const {
     return received_muted_status_type_;
   }
@@ -146,6 +162,8 @@ class MockMediaPlayerObserverReceiverForTesting
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   mojo::Receiver<media::mojom::blink::MediaPlayerObserver> receiver_{this};
+  bool received_media_playing_{false};
+  base::Optional<bool> received_media_paused_stream_ended_;
   base::Optional<bool> received_muted_status_type_;
   gfx::Size received_media_size_{0, 0};
   bool received_buffer_underflow_{false};
@@ -240,6 +258,25 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
 
  protected:
   // Helpers to call MediaPlayerObserver mojo methods and check their results.
+  void NotifyMediaPlaying() {
+    media_->DidPlayerStartPlaying();
+    media_player_observer_receiver_->WaitUntilReceivedMessage();
+  }
+
+  bool ReceivedMessageMediaPlaying() {
+    return media_player_observer_receiver_->received_media_playing();
+  }
+
+  void NotifyMediaPaused(bool stream_ended) {
+    media_->DidPlayerPaused(stream_ended);
+    media_player_observer_receiver_->WaitUntilReceivedMessage();
+  }
+
+  bool ReceivedMessageMediaPaused(bool stream_ended) {
+    return media_player_observer_receiver_
+               ->received_media_paused_stream_ended() == stream_ended;
+  }
+
   void NotifyMutedStatusChange(bool muted) {
     media_->DidPlayerMutedStatusChange(muted);
     media_player_observer_receiver_->WaitUntilReceivedMessage();
@@ -901,6 +938,19 @@ TEST_P(HTMLMediaElementTest, ShowPosterFlag_FalseAfterPlayBeforeReady) {
   EXPECT_FALSE(Media()->paused());
   EXPECT_TRUE(PotentiallyPlaying());
   EXPECT_FALSE(Media()->IsShowPosterFlagSet());
+}
+
+TEST_P(HTMLMediaElementTest, SendMediaPlayingToObserver) {
+  NotifyMediaPlaying();
+  EXPECT_TRUE(ReceivedMessageMediaPlaying());
+}
+
+TEST_P(HTMLMediaElementTest, SendMediaPausedToObserver) {
+  NotifyMediaPaused(true);
+  EXPECT_TRUE(ReceivedMessageMediaPaused(true));
+
+  NotifyMediaPaused(false);
+  EXPECT_TRUE(ReceivedMessageMediaPaused(false));
 }
 
 TEST_P(HTMLMediaElementTest, SendMutedStatusChangeToObserver) {

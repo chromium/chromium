@@ -255,11 +255,8 @@ bool MediaWebContentsObserver::OnMessageReceived(
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(MediaWebContentsObserver, msg,
                                    render_frame_host)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnMediaPaused, OnMediaPaused)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnMediaMetadataChanged,
                         OnMediaMetadataChanged)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnMediaPlaying,
-                        OnMediaPlaying)
     IPC_MESSAGE_HANDLER(
         MediaPlayerDelegateHostMsg_OnMediaEffectivelyFullscreenChanged,
         OnMediaEffectivelyFullscreenChanged)
@@ -396,23 +393,41 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnSeek() {
       media_player_id_);
 }
 
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnMediaPlaying() {
+  PlayerInfo* player_info =
+      media_web_contents_observer_->GetPlayerInfo(media_player_id_);
+  if (!player_info)
+    return;
+
+  if (!media_web_contents_observer_->session_controllers_manager()->RequestPlay(
+          media_player_id_)) {
+    // Return early to avoid spamming WebContents with playing/stopped
+    // notifications.  If RequestPlay() fails, media session will send a pause
+    // signal right away.
+    return;
+  }
+
+  if (!player_info->is_playing())
+    player_info->SetIsPlaying();
+}
+
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnMediaPaused(
+    bool stream_ended) {
+  PlayerInfo* player_info =
+      media_web_contents_observer_->GetPlayerInfo(media_player_id_);
+  if (!player_info || !player_info->is_playing())
+    return;
+
+  player_info->SetIsStopped(stream_ended);
+
+  media_web_contents_observer_->session_controllers_manager()->OnPause(
+      media_player_id_, stream_ended);
+}
+
 MediaWebContentsObserver::PlayerInfo* MediaWebContentsObserver::GetPlayerInfo(
     const MediaPlayerId& id) const {
   const auto it = player_info_map_.find(id);
   return it != player_info_map_.end() ? it->second.get() : nullptr;
-}
-
-void MediaWebContentsObserver::OnMediaPaused(RenderFrameHost* render_frame_host,
-                                             int delegate_id,
-                                             bool reached_end_of_stream) {
-  const MediaPlayerId player_id(render_frame_host, delegate_id);
-  PlayerInfo* player_info = GetPlayerInfo(player_id);
-  if (!player_info || !player_info->is_playing())
-    return;
-
-  player_info->SetIsStopped(reached_end_of_stream);
-
-  session_controllers_manager_.OnPause(player_id, reached_end_of_stream);
 }
 
 void MediaWebContentsObserver::OnMediaMetadataChanged(
@@ -436,26 +451,6 @@ void MediaWebContentsObserver::OnMediaMetadataChanged(
 
   session_controllers_manager_.OnMetadata(player_id, has_audio, has_video,
                                           media_content_type);
-}
-
-void MediaWebContentsObserver::OnMediaPlaying(
-    RenderFrameHost* render_frame_host,
-    int delegate_id) {
-  const MediaPlayerId player_id(render_frame_host, delegate_id);
-
-  PlayerInfo* player_info = GetPlayerInfo(player_id);
-  if (!player_info)
-    return;
-
-  if (!session_controllers_manager_.RequestPlay(player_id)) {
-    // Return early to avoid spamming WebContents with playing/stopped
-    // notifications.  If RequestPlay() fails, media session will send a pause
-    // signal right away.
-    return;
-  }
-
-  if (!player_info->is_playing())
-    player_info->SetIsPlaying();
 }
 
 void MediaWebContentsObserver::OnMediaEffectivelyFullscreenChanged(

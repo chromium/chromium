@@ -36,6 +36,13 @@ interface MediaPlayer {
 // Implemented by MediaWebContentsObserver::MediaPlayerObserverHostImpl in the
 // browser process.
 interface MediaPlayerObserver {
+  // Notifies the browser process that the media player started playing content.
+  OnMediaPlaying();
+
+  // Notifies the browser process that the media player stopped playing content,
+  // indicating in |stream_ended| if playback has reached the end of the stream.
+  OnMediaPaused(bool stream_ended);
+
   // Notifies that the muted status of the media player has changed.
   OnMutedStatusChanged(bool muted);
 

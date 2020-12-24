@@ -54,6 +54,11 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
     // Called when external controls are activated.
     virtual void OnSetAudioSink(const std::string& sink_id) = 0;
 
+    // Called when media playback-related events happen in the renderer, and
+    // which need to be notified to the browser process via the MediaPlayer.
+    virtual void OnMediaPlaying() {}
+    virtual void OnMediaPaused(bool stream_ended) {}
+
     // Called to control audio ducking. Output volume should be set to
     // |player_volume| * |multiplier|. The range of |multiplier| is [0, 1],
     // where 1 indicates normal (non-ducked) playback.
