@@ -81,3 +81,36 @@ source_set("client_side_model_loader_unittest") {
     "//testing/gtest",
   ]
 }
+
+source_set("client_side_detection") {
+  sources = [
+    "client_side_detection_host.cc",
+    "client_side_detection_host.h",
+    "client_side_detection_service.cc",
+    "client_side_detection_service.h",
+  ]
+  deps = [
+    ":client_side_model_loader",
+    "//base:base",
+    "//components/prefs",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/content",
+    "//components/safe_browsing/content/common:interfaces",
+    "//components/safe_browsing/core:client_model_proto",
+    "//components/safe_browsing/core:csd_proto",
+    "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/db:allowlist_checker_client",
+    "//components/safe_browsing/core/db:database_manager",
+    "//components/safe_browsing/core/db:v4_protocol_manager_util",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/variations",
+    "//content/public/browser",
+    "//google_apis:google_apis",
+    "//net:net",
+    "//net/traffic_annotation:traffic_annotation",
+    "//services/network/public/cpp",
+    "//url:url",
+  ]
+}

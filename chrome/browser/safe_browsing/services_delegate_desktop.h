@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "chrome/browser/safe_browsing/client_side_detection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"

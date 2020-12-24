@@ -59,7 +59,6 @@
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/client_side_detection_service.h"
 #include "components/safe_browsing/content/password_protection/password_protection_service.h"
 #endif
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_host.h"
+#include "chrome/browser/safe_browsing/client_side_detection_host_delegate.h"
 
 #include <memory>
 #include <tuple>
@@ -19,13 +19,13 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "chrome/browser/safe_browsing/client_side_detection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_model_loader.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -278,7 +278,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         static_cast<safe_browsing::SafeBrowsingService*>(
             SafeBrowsingService::CreateSafeBrowsingService()));
 
-    csd_host_ = ClientSideDetectionHost::Create(web_contents());
+    csd_host_ = ClientSideDetectionHostDelegate::CreateHost(web_contents());
     csd_host_->set_client_side_detection_service(csd_service_.get());
     csd_host_->set_ui_manager(ui_manager_.get());
     csd_host_->set_database_manager(database_manager_.get());

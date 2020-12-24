@@ -1,8 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_service.h"
+#include "components/safe_browsing/content/browser/client_side_detection_service.h"
 
 #include <algorithm>
 #include <memory>
@@ -18,12 +18,8 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/client_side_detection_host.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -68,22 +64,17 @@ struct ClientSideDetectionService::ClientPhishingReportInfo {
 ClientSideDetectionService::CacheState::CacheState(bool phish, base::Time time)
     : is_phishing(phish), timestamp(time) {}
 
-ClientSideDetectionService::ClientSideDetectionService(Profile* profile)
-    : profile_(profile),
-      enabled_(false),
-      extended_reporting_(false),
-      url_loader_factory_(nullptr) {
-  // |profile_| can be null in unit tests
-  if (!profile_)
+ClientSideDetectionService::ClientSideDetectionService(
+    std::unique_ptr<Delegate> delegate)
+    : delegate_(std::move(delegate)) {
+  // delegate and prefs can be null in unit tests.
+  if (!delegate_ || !delegate_->GetPrefs()) {
     return;
-
-  if (g_browser_process->safe_browsing_service()) {
-    url_loader_factory_ =
-        g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
-            profile);
   }
 
-  pref_change_registrar_.Init(profile_->GetPrefs());
+  url_loader_factory_ = delegate_->GetSafeBrowsingURLLoaderFactory();
+
+  pref_change_registrar_.Init(delegate_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kSafeBrowsingEnabled,
       base::BindRepeating(&ClientSideDetectionService::OnPrefsUpdated,
@@ -96,7 +87,6 @@ ClientSideDetectionService::ClientSideDetectionService(Profile* profile)
       prefs::kSafeBrowsingScoutReportingEnabled,
       base::BindRepeating(&ClientSideDetectionService::OnPrefsUpdated,
                           base::Unretained(this)));
-
   // Do an initial check of the prefs.
   OnPrefsUpdated();
 }
@@ -111,10 +101,10 @@ void ClientSideDetectionService::Shutdown() {
 
 void ClientSideDetectionService::OnPrefsUpdated() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  bool enabled = IsSafeBrowsingEnabled(*profile_->GetPrefs());
+  bool enabled = IsSafeBrowsingEnabled(*delegate_->GetPrefs());
   bool extended_reporting =
-      IsEnhancedProtectionEnabled(*profile_->GetPrefs()) ||
-      IsExtendedReportingEnabled(*profile_->GetPrefs());
+      IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) ||
+      IsExtendedReportingEnabled(*delegate_->GetPrefs());
   if (enabled == enabled_ && extended_reporting_ == extended_reporting)
     return;
 
@@ -128,7 +118,7 @@ void ClientSideDetectionService::OnPrefsUpdated() {
       model_loader_ = std::make_unique<ModelLoader>(
           base::BindRepeating(&ClientSideDetectionService::SendModelToRenderers,
                               base::Unretained(this)),
-          profile_->GetURLLoaderFactory(), extended_reporting_);
+          delegate_->GetURLLoaderFactory(), extended_reporting_);
     }
     // Refresh the models when the service is enabled.  This can happen when
     // either of the preferences are toggled, or early during startup if
@@ -142,9 +132,8 @@ void ClientSideDetectionService::OnPrefsUpdated() {
       model_loader_->CancelFetcher();
     }
     // Invoke pending callbacks with a false verdict.
-    for (auto it = client_phishing_reports_.begin();
-         it != client_phishing_reports_.end(); ++it) {
-      ClientPhishingReportInfo* info = it->second.get();
+    for (auto& client_phishing_report : client_phishing_reports_) {
+      ClientPhishingReportInfo* info = client_phishing_report.second.get();
       if (!info->callback.is_null())
         std::move(info->callback).Run(info->phishing_url, false);
     }
@@ -242,8 +231,7 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
         ChromeUserPopulation::SAFE_BROWSING);
   }
   request->mutable_population()->set_profile_management_status(
-      GetProfileManagementStatus(
-          g_browser_process->browser_policy_connector()));
+      delegate_->GetManagementStatus());
 
   std::string request_data;
   request->SerializeToString(&request_data);

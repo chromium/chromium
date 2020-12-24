@@ -18,10 +18,11 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/client_side_detection_host.h"
-#include "chrome/browser/safe_browsing/client_side_detection_service.h"
+#include "chrome/browser/safe_browsing/client_side_detection_host_delegate.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/safe_browsing/content/browser/client_side_detection_host.h"
+#include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #endif
 
@@ -55,7 +56,7 @@ SafeBrowsingTabObserver::SafeBrowsingTabObserver(
     if (IsSafeBrowsingEnabled(*prefs) &&
         g_browser_process->safe_browsing_service() && csd_service) {
       safebrowsing_detection_host_ =
-          ClientSideDetectionHost::Create(web_contents);
+          ClientSideDetectionHostDelegate::CreateHost(web_contents);
       csd_service->AddClientSideDetectionHost(
           safebrowsing_detection_host_.get());
     }
@@ -80,7 +81,7 @@ void SafeBrowsingTabObserver::UpdateSafebrowsingDetectionHost() {
   if (safe_browsing && csd_service) {
     if (!safebrowsing_detection_host_.get()) {
       safebrowsing_detection_host_ =
-          ClientSideDetectionHost::Create(web_contents_);
+          ClientSideDetectionHostDelegate::CreateHost(web_contents_);
       csd_service->AddClientSideDetectionHost(
           safebrowsing_detection_host_.get());
     }

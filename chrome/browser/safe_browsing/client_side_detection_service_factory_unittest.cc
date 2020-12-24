@@ -5,7 +5,6 @@
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 
 #include "base/command_line.h"
-#include "chrome/browser/safe_browsing/client_side_detection_service.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"

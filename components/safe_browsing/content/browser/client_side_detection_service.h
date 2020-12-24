@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -10,8 +10,8 @@
 // This class is not thread-safe and expects all calls to be made on the UI
 // thread.  We also expect that the calling thread runs a message loop.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_SERVICE_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_SERVICE_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CLIENT_SIDE_DETECTION_SERVICE_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CLIENT_SIDE_DETECTION_SERVICE_H_
 
 #include <map>
 #include <memory>
@@ -30,13 +30,12 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/content/browser/client_side_model_loader.h"
+#include "components/safe_browsing/core/proto/csd.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
-
-class Profile;
 
 namespace network {
 class SimpleURLLoader;
@@ -55,7 +54,24 @@ class ClientSideDetectionService : public KeyedService {
   typedef base::OnceCallback<void(GURL, bool)>
       ClientReportPhishingRequestCallback;
 
-  explicit ClientSideDetectionService(Profile* profile);
+  // Delegate which allows to provide embedder specific implementations.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Returns the pref service associated with the current profile.
+    virtual PrefService* GetPrefs() = 0;
+    // Returns the main URLLoaderFactory.
+    virtual scoped_refptr<network::SharedURLLoaderFactory>
+    GetURLLoaderFactory() = 0;
+    virtual scoped_refptr<network::SharedURLLoaderFactory>
+    GetSafeBrowsingURLLoaderFactory() = 0;
+    // Returns the management status for current profile.
+    virtual ChromeUserPopulation::ProfileManagementStatus
+    GetManagementStatus() = 0;
+  };
+
+  explicit ClientSideDetectionService(std::unique_ptr<Delegate> delegate);
   ~ClientSideDetectionService() override;
 
   void Shutdown() override;
@@ -110,8 +126,6 @@ class ClientSideDetectionService : public KeyedService {
 
   // Sends a model to each renderer.
   virtual void SendModelToRenderers();
-
-  base::WeakPtr<ClientSideDetectionService> GetWeakPtr();
 
   // Get the model status for the given client-side model.
   ModelLoader::ClientModelStatus GetLastModelStatus();
@@ -194,16 +208,13 @@ class ClientSideDetectionService : public KeyedService {
   // Returns the URL that will be used for phishing requests.
   static GURL GetClientReportUrl(const std::string& report_url);
 
-  // The profile this ClientSideDetectionService is attached to.
-  Profile* profile_;
-
   // Whether the service is running or not.  When the service is not running,
   // it won't download the model nor report detected phishing URLs.
-  bool enabled_;
+  bool enabled_ = false;
 
   // Whether the service is in extended reporting mode or not. This affects the
   // choice of model.
-  bool extended_reporting_;
+  bool extended_reporting_ = false;
 
   std::unique_ptr<ModelLoader> model_loader_;
 
@@ -238,6 +249,8 @@ class ClientSideDetectionService : public KeyedService {
   // Factory used for constructing ModelLoaders
   base::RepeatingCallback<std::unique_ptr<ModelLoader>()> model_factory_;
 
+  std::unique_ptr<Delegate> delegate_;
+
   // Used to asynchronously call the callbacks for
   // SendClientReportPhishingRequest.
   base::WeakPtrFactory<ClientSideDetectionService> weak_factory_{this};
@@ -247,4 +260,4 @@ class ClientSideDetectionService : public KeyedService {
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_SERVICE_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CLIENT_SIDE_DETECTION_SERVICE_H_

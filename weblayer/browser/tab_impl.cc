@@ -113,10 +113,12 @@
 #include "weblayer/browser/java/jni/TabImpl_jni.h"
 #include "weblayer/browser/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "weblayer/browser/js_communication/web_message_host_factory_proxy.h"
+#include "weblayer/browser/safe_browsing/safe_browsing_tab_observer.h"
 #include "weblayer/browser/translate_client_impl.h"
 #include "weblayer/browser/url_bar/trusted_cdn_observer.h"
 #include "weblayer/browser/weblayer_factory_impl_android.h"
 #include "weblayer/browser/webrtc/media_stream_manager.h"
+#include "weblayer/common/features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
@@ -355,6 +357,11 @@ TabImpl::TabImpl(ProfileImpl* profile,
           web_contents_.get(), this);
 
   TrustedCDNObserver::CreateForWebContents(web_contents_.get());
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebLayerClientSidePhishingDetection)) {
+    SafeBrowsingTabObserver::CreateForWebContents(web_contents_.get());
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)

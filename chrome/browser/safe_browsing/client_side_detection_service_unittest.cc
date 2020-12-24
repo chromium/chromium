@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_service.h"
+#include "chrome/browser/safe_browsing/client_side_detection_service_delegate.h"
 
 #include <stdint.h>
 
@@ -23,6 +23,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
@@ -227,7 +228,8 @@ class ClientSideDetectionServiceTest : public testing::Test {
 
 TEST_F(ClientSideDetectionServiceTest, ServiceObjectDeletedBeforeCallbackDone) {
   SetModelFetchResponses();
-  csd_service_ = std::make_unique<ClientSideDetectionService>(profile_);
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   EXPECT_NE(csd_service_.get(), nullptr);
   // We delete the client-side detection service class even though the callbacks
@@ -240,7 +242,8 @@ TEST_F(ClientSideDetectionServiceTest, ServiceObjectDeletedBeforeCallbackDone) {
 
 TEST_F(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
   SetModelFetchResponses();
-  csd_service_ = std::make_unique<ClientSideDetectionService>(profile_);
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
   csd_service_->SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
 
   GURL url("http://a.com/");
@@ -296,7 +299,8 @@ TEST_F(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
 
 TEST_F(ClientSideDetectionServiceTest, GetNumReportTest) {
   SetModelFetchResponses();
-  csd_service_ = std::make_unique<ClientSideDetectionService>(profile_);
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
 
   base::queue<base::Time>& report_times = GetPhishingReportTimes();
   base::Time now = base::Time::Now();
@@ -312,14 +316,16 @@ TEST_F(ClientSideDetectionServiceTest, GetNumReportTest) {
 
 TEST_F(ClientSideDetectionServiceTest, CacheTest) {
   SetModelFetchResponses();
-  csd_service_ = std::make_unique<ClientSideDetectionService>(profile_);
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
 
   TestCache();
 }
 
 TEST_F(ClientSideDetectionServiceTest, IsPrivateIPAddress) {
   SetModelFetchResponses();
-  csd_service_ = std::make_unique<ClientSideDetectionService>(profile_);
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
 
   EXPECT_TRUE(csd_service_->IsPrivateIPAddress("10.1.2.3"));
   EXPECT_TRUE(csd_service_->IsPrivateIPAddress("127.0.0.1"));
@@ -343,7 +349,8 @@ TEST_F(ClientSideDetectionServiceTest, IsPrivateIPAddress) {
 TEST_F(ClientSideDetectionServiceTest, SetEnabledAndRefreshState) {
   // Check that the model isn't downloaded until the service is enabled.
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
-  csd_service_ = std::make_unique<ClientSideDetectionService>(profile_);
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
   EXPECT_FALSE(csd_service_->enabled());
   EXPECT_TRUE(csd_service_->model_loader_ == nullptr);
 
@@ -391,7 +398,8 @@ TEST_F(ClientSideDetectionServiceTest, TestModelFollowsPrefs) {
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled,
                                    false);
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
-  csd_service_ = std::make_unique<ClientSideDetectionService>(profile_);
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
 
   // Safe Browsing is not enabled.
   EXPECT_EQ(csd_service_->model_loader_, nullptr);

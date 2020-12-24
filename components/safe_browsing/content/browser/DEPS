@@ -3,6 +3,7 @@ include_rules = [
   "+components/safe_browsing/core/proto/csd.pb.h",
   "+components/sessions/core/session_id.h",
   "+content/public/browser",
+  "+crypto/sha2.h",
   "+ipc/ipc_message.h",
   "+net/cookies",
   "+net/extras",
@@ -12,6 +13,7 @@ include_rules = [
   "+services/network/network_context.h",
   "+services/network/public",
   "+services/service_manager/public/cpp",
+  "+third_party/blink/public/mojom/loader",
 ]
 
 specific_include_rules = {

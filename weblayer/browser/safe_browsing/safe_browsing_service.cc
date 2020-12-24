@@ -127,7 +127,7 @@ std::unique_ptr<content::NavigationThrottle>
 SafeBrowsingService::CreateSafeBrowsingNavigationThrottle(
     content::NavigationHandle* handle) {
   return std::make_unique<SafeBrowsingNavigationThrottle>(
-      handle, GetSafeBrowsingUIManager());
+      handle, GetSafeBrowsingUIManager().get());
 }
 
 scoped_refptr<safe_browsing::UrlCheckerDelegate>
@@ -142,16 +142,17 @@ SafeBrowsingService::GetSafeBrowsingUrlCheckerDelegate() {
   return safe_browsing_url_checker_delegate_;
 }
 
-safe_browsing::RemoteSafeBrowsingDatabaseManager*
+scoped_refptr<safe_browsing::RemoteSafeBrowsingDatabaseManager>
 SafeBrowsingService::GetSafeBrowsingDBManager() {
   if (!safe_browsing_db_manager_) {
     CreateAndStartSafeBrowsingDBManager();
   }
-  return safe_browsing_db_manager_.get();
+  return safe_browsing_db_manager_;
 }
 
-SafeBrowsingUIManager* SafeBrowsingService::GetSafeBrowsingUIManager() {
-  return ui_manager_.get();
+scoped_refptr<SafeBrowsingUIManager>
+SafeBrowsingService::GetSafeBrowsingUIManager() {
+  return ui_manager_;
 }
 
 void SafeBrowsingService::CreateSafeBrowsingUIManager() {

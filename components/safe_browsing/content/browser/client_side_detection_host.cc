@@ -1,8 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_host.h"
+#include "components/safe_browsing/content/browser/client_side_detection_host.h"
 
 #include <memory>
 #include <utility>
@@ -18,18 +18,14 @@
 #include "base/sequenced_task_runner_helpers.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/client_side_detection_service.h"
-#include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/db/allowlist_checker_client.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -111,15 +107,14 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     }
 
     // Don't start classification if |url_| is whitelisted by enterprise policy.
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-    if (profile && IsURLWhitelistedByPolicy(url_, *profile->GetPrefs())) {
-      DontClassifyForPhishing(NO_CLASSIFY_ALLOWLISTED_BY_POLICY);
+    if (host_->delegate_->GetPrefs() &&
+        IsURLWhitelistedByPolicy(url_, *host_->delegate_->GetPrefs())) {
+      DontClassifyForPhishing(NO_CLASSIFY_WHITELISTED_BY_POLICY);
     }
 
     // If the tab has a delayed warning, ignore this second verdict. We don't
     // want to immediately undelay a page that's already blocked as phishy.
-    if (SafeBrowsingUserInteractionObserver::FromWebContents(web_contents_)) {
+    if (host_->delegate_->HasSafeBrowsingUserInteractionObserver()) {
       DontClassifyForPhishing(NO_CLASSIFY_HAS_DELAYED_WARNING);
     }
 
@@ -164,7 +159,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     NO_CLASSIFY_RESULT_FROM_CACHE = 9,
     DEPRECATED_NO_CLASSIFY_NOT_HTTP_URL = 10,
     NO_CLASSIFY_SCHEME_NOT_SUPPORTED = 11,
-    NO_CLASSIFY_ALLOWLISTED_BY_POLICY = 12,
+    NO_CLASSIFY_WHITELISTED_BY_POLICY = 12,
     CLASSIFY = 13,
     NO_CLASSIFY_HAS_DELAYED_WARNING = 14,
 
@@ -172,7 +167,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   };
 
   // The destructor can be called either from the UI or the IO thread.
-  virtual ~ShouldClassifyUrlRequest() { }
+  virtual ~ShouldClassifyUrlRequest() = default;
 
   bool ShouldClassifyForPhishing() const {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -288,27 +283,29 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
 
 // static
 std::unique_ptr<ClientSideDetectionHost> ClientSideDetectionHost::Create(
-    WebContents* tab) {
-  return base::WrapUnique(new ClientSideDetectionHost(tab));
+    content::WebContents* tab,
+    std::unique_ptr<Delegate> delegate) {
+  return base::WrapUnique(
+      new ClientSideDetectionHost(tab, std::move(delegate)));
 }
 
-ClientSideDetectionHost::ClientSideDetectionHost(WebContents* tab)
+ClientSideDetectionHost::ClientSideDetectionHost(
+    WebContents* tab,
+    std::unique_ptr<Delegate> delegate)
     : content::WebContentsObserver(tab),
       csd_service_(nullptr),
       tab_(tab),
       classification_request_(nullptr),
-      tick_clock_(base::DefaultTickClock::GetInstance()) {
+      tick_clock_(base::DefaultTickClock::GetInstance()),
+      delegate_(std::move(delegate)) {
   DCHECK(tab);
   // Note: csd_service_ and sb_service will be nullptr here in testing.
-  csd_service_ = ClientSideDetectionServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(tab->GetBrowserContext()));
+  csd_service_ = delegate_->GetClientSideDetectionService();
 
-  scoped_refptr<SafeBrowsingService> sb_service =
-      g_browser_process->safe_browsing_service();
-  if (sb_service.get()) {
-    ui_manager_ = sb_service->ui_manager();
-    database_manager_ = sb_service->database_manager();
-  }
+  // ui_manager_ and database_manager_ can be null if safe browsing
+  // service is not available in the embedder.
+  ui_manager_ = delegate_->GetSafeBrowsingUIManager();
+  database_manager_ = delegate_->GetSafeBrowsingDBManager();
 }
 
 ClientSideDetectionHost::~ClientSideDetectionHost() {
@@ -428,8 +425,7 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   // We parse the protocol buffer here.  If we're unable to parse it we won't
   // send the verdict further.
   std::unique_ptr<ClientPhishingRequest> verdict(new ClientPhishingRequest);
-  if (csd_service_ &&
-      verdict->ParseFromString(verdict_str) &&
+  if (csd_service_ && verdict->ParseFromString(verdict_str) &&
       verdict->IsInitialized()) {
     VLOG(2) << "Phishing classification score: " << verdict->client_score();
     for (auto& match : verdict->vision_match()) {
@@ -437,10 +433,8 @@ void ClientSideDetectionHost::PhishingDetectionDone(
       VLOG(2) << "Phash Score: " << match.vision_matched_phash_score();
       VLOG(2) << "EMD Score: " << match.vision_matched_emd_score();
     }
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    if (!IsExtendedReportingEnabled(*profile->GetPrefs()) &&
-        !IsEnhancedProtectionEnabled(*profile->GetPrefs())) {
+    if (!IsExtendedReportingEnabled(*delegate_->GetPrefs()) &&
+        !IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
       // These fields should only be set for SBER users.
       verdict->clear_screenshot_digest();
       verdict->clear_screenshot_phash();
@@ -456,11 +450,10 @@ void ClientSideDetectionHost::PhishingDetectionDone(
           base::BindOnce(&ClientSideDetectionHost::MaybeShowPhishingWarning,
                          weak_factory_.GetWeakPtr(),
                          /*is_from_cache=*/false);
-      Profile* profile =
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext());
       csd_service_->SendClientReportPhishingRequest(
-          std::move(verdict), IsExtendedReportingEnabled(*profile->GetPrefs()),
-          IsEnhancedProtectionEnabled(*profile->GetPrefs()),
+          std::move(verdict),
+          IsExtendedReportingEnabled(*delegate_->GetPrefs()),
+          IsEnhancedProtectionEnabled(*delegate_->GetPrefs()),
           std::move(callback));
     }
   }
@@ -510,8 +503,7 @@ void ClientSideDetectionHost::set_client_side_detection_service(
   csd_service_ = service;
 }
 
-void ClientSideDetectionHost::set_ui_manager(
-    SafeBrowsingUIManager* ui_manager) {
+void ClientSideDetectionHost::set_ui_manager(BaseUIManager* ui_manager) {
   ui_manager_ = ui_manager;
 }
 

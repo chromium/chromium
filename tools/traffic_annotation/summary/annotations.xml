@@ -294,7 +294,7 @@ Refer to README.md for content description and update process.
  <item id="safe_browsing_certificate_error_reporting" added_in_milestone="62" hash_code="66590631" type="0" content_hash_code="26108454" os_list="linux,windows" file_path="chrome/browser/ssl/certificate_error_reporter.cc"/>
  <item id="safe_browsing_chunk_backup_request" added_in_milestone="62" hash_code="79957943" type="0" deprecated="2018-08-14" content_hash_code="133850277" file_path=""/>
  <item id="safe_browsing_client_side_malware_detector" added_in_milestone="62" hash_code="102935425" type="0" deprecated="2019-12-07" content_hash_code="79591279" file_path=""/>
- <item id="safe_browsing_client_side_phishing_detector" added_in_milestone="62" hash_code="1313982" type="0" content_hash_code="50199143" os_list="linux,windows" file_path="chrome/browser/safe_browsing/client_side_detection_service.cc"/>
+ <item id="safe_browsing_client_side_phishing_detector" added_in_milestone="62" hash_code="1313982" type="0" content_hash_code="50199143" os_list="linux,windows" file_path="components/safe_browsing/content/browser/client_side_detection_service.cc"/>
  <item id="safe_browsing_extended_reporting" added_in_milestone="62" hash_code="42848942" type="0" content_hash_code="81193513" os_list="linux,windows" file_path="components/safe_browsing/core/ping_manager.cc"/>
  <item id="safe_browsing_feedback" added_in_milestone="62" hash_code="44583821" type="0" content_hash_code="27116846" os_list="linux,windows" file_path="chrome/browser/safe_browsing/download_protection/download_feedback.cc"/>
  <item id="safe_browsing_get_full_hash" added_in_milestone="62" hash_code="68745894" type="0" deprecated="2018-08-14" content_hash_code="21739198" file_path=""/>

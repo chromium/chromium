@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_host.h"
+#include "chrome/browser/safe_browsing/client_side_detection_host_delegate.h"
 
 #include "base/run_loop.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/client_side_detection_service.h"
+#include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -112,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostBrowserTest,
 
   ASSERT_TRUE(embedded_test_server()->Start());
   std::unique_ptr<ClientSideDetectionHost> csd_host =
-      ClientSideDetectionHost::Create(
+      ClientSideDetectionHostDelegate::CreateHost(
           browser()->tab_strip_model()->GetActiveWebContents());
   csd_host->set_client_side_detection_service(&fake_csd_service);
   csd_host->SendModelToRenderFrame();
