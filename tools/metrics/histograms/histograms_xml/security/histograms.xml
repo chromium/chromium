@@ -98,6 +98,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Security.MixedForm.InterstitialTriggerState"
+    enum="MixedFormInterstitialTriggeredState" expires_after="M92">
+  <owner>carlosil@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Logs when an interstitial was triggered (or would have been triggered but
+    was not due to the currently enabled experiment mode) and whether it was a
+    direct submission to an insecure URL, or a redirect through one.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Security.PageEndReason" enum="PageEndReason"
     expires_after="2021-04-04">
   <owner>cthomp@chromium.org</owner>

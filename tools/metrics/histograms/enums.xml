@@ -49443,6 +49443,16 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Scripting Content with Certificate Errors"/>
 </enum>
 
+<enum name="MixedFormInterstitialTriggeredState">
+  <int value="0" label="Mixed Form that submits directly to HTTP"/>
+  <int value="1"
+      label="Mixed Form that includes HTTP in redirect chain, with exposed
+             data"/>
+  <int value="2"
+      label="Mixed Form that includes HTTP in redirect chain, without exposed
+             data"/>
+</enum>
+
 <enum name="MjpegDecodeAcceleratorErrorCode">
   <int value="0" label="NO_ERRORS"/>
   <int value="1" label="INVALID_ARGUMENT"/>

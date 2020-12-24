@@ -18,6 +18,16 @@ namespace security_interstitials {
 
 class InsecureFormNavigationThrottle : public content::NavigationThrottle {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // Exposed for testing.
+  enum class InterstitialTriggeredState {
+    kMixedFormDirect = 0,
+    kMixedFormRedirectWithFormData = 1,
+    kMixedFormRedirectNoFormData = 2,
+    kMaxValue = kMixedFormRedirectNoFormData,
+  };
+
   InsecureFormNavigationThrottle(
       content::NavigationHandle* navigation_handle,
       std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory);
@@ -36,6 +46,9 @@ class InsecureFormNavigationThrottle : public content::NavigationThrottle {
       PrefService* prefs);
 
  private:
+  content::NavigationThrottle::ThrottleCheckResult
+  GetThrottleResultForMixedForm(bool is_redirect);
+
   std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory_;
 };
 
