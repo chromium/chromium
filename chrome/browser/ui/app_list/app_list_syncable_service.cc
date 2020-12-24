@@ -204,10 +204,9 @@ bool IsSystemCreatedSyncFolder(AppListSyncableService::SyncItem* folder_item) {
 // AppListSyncableService::ScopedModelUpdaterFactoryForTest
 
 AppListSyncableService::ScopedModelUpdaterFactoryForTest::
-    ScopedModelUpdaterFactoryForTest(
-        const ModelUpdaterFactoryCallback& factory) {
+    ScopedModelUpdaterFactoryForTest(ModelUpdaterFactoryCallback factory) {
   DCHECK(factory);
-  factory_ = factory;
+  factory_ = std::move(factory);
   g_model_updater_factory_callback_for_test_ = &factory_;
 }
 

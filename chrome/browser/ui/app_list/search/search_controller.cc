@@ -142,8 +142,8 @@ size_t SearchController::AddGroup(size_t max_results) {
 void SearchController::AddProvider(size_t group_id,
                                    std::unique_ptr<SearchProvider> provider) {
   provider->set_result_changed_callback(
-      base::Bind(&SearchController::OnResultsChangedWithType,
-                 base::Unretained(this), provider->ResultType()));
+      base::BindRepeating(&SearchController::OnResultsChangedWithType,
+                          base::Unretained(this), provider->ResultType()));
   mixer_->AddProviderToGroup(group_id, provider.get());
   providers_.emplace_back(std::move(provider));
 }

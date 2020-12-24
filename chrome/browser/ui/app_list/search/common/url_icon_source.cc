@@ -23,12 +23,12 @@ using content::BrowserThread;
 
 namespace app_list {
 
-UrlIconSource::UrlIconSource(const IconLoadedCallback& icon_loaded_callback,
+UrlIconSource::UrlIconSource(IconLoadedCallback icon_loaded_callback,
                              content::BrowserContext* browser_context,
                              const GURL& icon_url,
                              int icon_size,
                              int default_icon_resource_id)
-    : icon_loaded_callback_(icon_loaded_callback),
+    : icon_loaded_callback_(std::move(icon_loaded_callback)),
       browser_context_(browser_context),
       icon_url_(icon_url),
       icon_size_(icon_size),
@@ -101,7 +101,8 @@ void UrlIconSource::OnSimpleLoaderComplete(
 void UrlIconSource::OnImageDecoded(const SkBitmap& decoded_image) {
   const float scale = decoded_image.width() / icon_size_;
   icon_ = gfx::ImageSkia::CreateFromBitmap(decoded_image, scale);
-  icon_loaded_callback_.Run();
+  DCHECK(!icon_loaded_callback_.is_null());
+  std::move(icon_loaded_callback_).Run();
 }
 
 void UrlIconSource::OnDecodeImageFailed() {

@@ -393,9 +393,8 @@ void ArcAppReinstallSearchProvider::UpdateResults() {
         // this icon is not loaded, nor is it in the loading set. Add it.
         loading_icon_urls_[icon_url] = gfx::ImageSkia(
             std::make_unique<UrlIconSource>(
-                base::BindRepeating(
-                    &ArcAppReinstallSearchProvider::OnIconLoaded,
-                    weak_ptr_factory_.GetWeakPtr(), icon_url),
+                base::BindOnce(&ArcAppReinstallSearchProvider::OnIconLoaded,
+                               weak_ptr_factory_.GetWeakPtr(), icon_url),
                 profile_,
                 GURL(LimitIconSizeWithFife(icon_url, icon_dimension_)),
                 icon_dimension_, IDR_APP_DEFAULT_ICON),

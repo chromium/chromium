@@ -65,7 +65,7 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
   void SearchAndWaitForProviders(const std::string& query,
                                  const std::set<ResultType> providers) {
     base::RunLoop run_loop;
-    base::Closure quit_closure = run_loop.QuitClosure();
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
     std::set<ResultType> finished_providers;
     const SearchController::ResultsChangedCallback callback =
         base::BindLambdaForTesting([&](ResultType provider) {

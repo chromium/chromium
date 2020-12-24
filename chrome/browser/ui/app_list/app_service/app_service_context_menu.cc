@@ -291,7 +291,8 @@ void AppServiceContextMenu::OnGetMenuModel(
 void AppServiceContextMenu::BuildExtensionAppShortcutsMenu(
     ui::SimpleMenuModel* menu_model) {
   extension_menu_items_ = std::make_unique<extensions::ContextMenuMatcher>(
-      profile(), this, menu_model, base::Bind(MenuItemHasLauncherContext));
+      profile(), this, menu_model,
+      base::BindRepeating(MenuItemHasLauncherContext));
 
   // Assign unique IDs to commands added by the app itself.
   int index = ash::USE_LAUNCH_TYPE_COMMAND_END;

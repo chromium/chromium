@@ -37,7 +37,7 @@ class LauncherSearchProvider : public SearchProvider {
  private:
   // Delays query for |kLauncherSearchProviderQueryDelayInMs|. This dispatches
   // the latest query after no more calls to Start() for the delay duration.
-  void DelayQuery(const base::Closure& closure);
+  void DelayQuery(base::OnceClosure closure);
 
   // Dispatches |query| to LauncherSearchProvider service.
   void StartInternal(const base::string16& query);

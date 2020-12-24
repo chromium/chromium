@@ -236,7 +236,7 @@ class AppListSyncableServiceTest : public AppListTestBase {
 
     model_updater_factory_scope_ = std::make_unique<
         app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>(
-        base::Bind([]() -> std::unique_ptr<AppListModelUpdater> {
+        base::BindRepeating([]() -> std::unique_ptr<AppListModelUpdater> {
           return std::make_unique<FakeAppListModelUpdater>();
         }));
 

@@ -83,8 +83,8 @@ void LauncherSearchProvider::Start(const base::string16& query) {
     return;
 
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
-  DelayQuery(base::Bind(&LauncherSearchProvider::StartInternal,
-                        weak_ptr_factory_.GetWeakPtr(), query));
+  DelayQuery(base::BindOnce(&LauncherSearchProvider::StartInternal,
+                            weak_ptr_factory_.GetWeakPtr(), query));
 }
 
 void LauncherSearchProvider::SetSearchResults(
@@ -125,14 +125,14 @@ ash::AppListSearchResultType LauncherSearchProvider::ResultType() {
   return ash::AppListSearchResultType::kLauncher;
 }
 
-void LauncherSearchProvider::DelayQuery(const base::Closure& closure) {
+void LauncherSearchProvider::DelayQuery(base::OnceClosure closure) {
   base::TimeDelta delay =
       base::TimeDelta::FromMilliseconds(kLauncherSearchProviderQueryDelayInMs);
   if (base::Time::Now() - last_query_time_ > delay) {
     query_timer_.Stop();
-    closure.Run();
+    std::move(closure).Run();
   } else {
-    query_timer_.Start(FROM_HERE, delay, closure);
+    query_timer_.Start(FROM_HERE, delay, std::move(closure));
   }
   last_query_time_ = base::Time::Now();
 }

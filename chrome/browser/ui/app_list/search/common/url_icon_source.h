@@ -31,11 +31,11 @@ namespace app_list {
 class UrlIconSource : public gfx::ImageSkiaSource,
                       public ImageDecoder::ImageRequest {
  public:
-  typedef base::Closure IconLoadedCallback;
+  typedef base::OnceClosure IconLoadedCallback;
 
   // Create a URL Icon source with the given URL. The post_process parameter
   // specifies a function to post-process the result icon before displaying it.
-  UrlIconSource(const IconLoadedCallback& icon_loaded_callback,
+  UrlIconSource(IconLoadedCallback icon_loaded_callback,
                 content::BrowserContext* browser_context,
                 const GURL& icon_url,
                 int icon_size,

@@ -75,13 +75,13 @@ class AppListSyncableService : public syncer::SyncableService,
 
   // An app list model updater factory function used by tests.
   using ModelUpdaterFactoryCallback =
-      base::Callback<std::unique_ptr<AppListModelUpdater>()>;
+      base::RepeatingCallback<std::unique_ptr<AppListModelUpdater>()>;
 
   // Sets and resets an app list model updater factory function for tests.
   class ScopedModelUpdaterFactoryForTest {
    public:
     explicit ScopedModelUpdaterFactoryForTest(
-        const ModelUpdaterFactoryCallback& factory);
+        ModelUpdaterFactoryCallback factory);
     ScopedModelUpdaterFactoryForTest(const ScopedModelUpdaterFactoryForTest&) =
         delete;
     ScopedModelUpdaterFactoryForTest& operator=(

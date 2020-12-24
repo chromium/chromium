@@ -23,7 +23,7 @@ enum class RankingItemType;
 class SearchProvider {
  public:
   using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
-  using ResultChangedCallback = base::Closure;
+  using ResultChangedCallback = base::RepeatingClosure;
 
   SearchProvider();
   virtual ~SearchProvider();
@@ -43,8 +43,8 @@ class SearchProvider {
   // Returns the main result type created by this provider.
   virtual ash::AppListSearchResultType ResultType() = 0;
 
-  void set_result_changed_callback(const ResultChangedCallback& callback) {
-    result_changed_callback_ = callback;
+  void set_result_changed_callback(ResultChangedCallback callback) {
+    result_changed_callback_ = std::move(callback);
   }
 
   const Results& results() const { return results_; }

@@ -2772,7 +2772,7 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderCompressed) {
                                                       fake_apps().begin() + 1));
 
   base::RunLoop run_loop;
-  base::Closure quit = run_loop.QuitClosure();
+  base::RepeatingClosure quit = run_loop.QuitClosure();
 
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
     apps::AppServiceProxy* proxy =
