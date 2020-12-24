@@ -41,7 +41,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -123,7 +123,7 @@ public class ReadLaterIphTest {
     @Test
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @FlakyTest(message = "https://crbug.com/1155085")
+    @DisabledTest(message = "Flaky test, see https://crbug.com/1161737, https://crbug.com/1155085")
     public void testShowBookmarksReadLaterIPH() throws Throwable {
         mActivityTestRule.loadUrl(mTestServer.getServer().getURL(CONTEXT_MENU_TEST_URL));
         ChromeActivity activity = mActivityTestRule.getActivity();
