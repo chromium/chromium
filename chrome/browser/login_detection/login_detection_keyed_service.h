@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chrome/browser/login_detection/login_detection_type.h"
+#include "chrome/browser/login_detection/password_store_sites.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -43,6 +44,9 @@ class LoginDetectionKeyedService : public KeyedService {
   // Set of sites that should be treated as logged-in, retrieved from field
   // trial.
   const std::set<std::string, OriginComparator> field_trial_logged_in_sites_;
+
+  const PasswordStoreSites profile_password_sites_;
+  const PasswordStoreSites account_password_sites_;
 };
 
 }  // namespace login_detection

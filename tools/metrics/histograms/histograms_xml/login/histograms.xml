@@ -176,6 +176,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Login.PasswordStoreSites.InitializedBeforeQuery"
+    enum="Boolean" expires_after="2021-11-30">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records whether the passworded sites list is initialized when the query for
+    sites happens. This is used to measure how many queries happened before the
+    list got populated the first time. Recorded on every query to the password
+    store.
+  </summary>
+</histogram>
+
 <histogram name="Login.PolicyFilesStatePerBoot" enum="LoginPolicyFilesState"
     expires_after="M81">
   <owner>cmasone@chromium.org</owner>

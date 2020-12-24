@@ -33,7 +33,10 @@ enum class LoginDetectionType {
   // commonly logged-in.
   kFieldTrialLoggedInSite,
 
-  kMaxValue = kFieldTrialLoggedInSite
+  // The site has credentials saved in the password manager.
+  kPasswordManagerSavedSite,
+
+  kMaxValue = kPasswordManagerSavedSite
 };
 }  // namespace login_detection
 

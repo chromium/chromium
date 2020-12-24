@@ -46616,6 +46616,7 @@ from previous Chrome versions.
   <int value="3" label="Password entered login"/>
   <int value="4" label="Preloaded password sites list"/>
   <int value="5" label="Field trial logged-in site"/>
+  <int value="6" label="Password manager saved site"/>
 </enum>
 
 <enum name="LoginFailureReason">

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/login_detection/login_detection_prefs.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "url/gurl.h"
@@ -29,7 +30,14 @@ bool OriginComparator::operator()(const std::string& a,
 }
 
 LoginDetectionKeyedService::LoginDetectionKeyedService(Profile* profile)
-    : profile_(profile), field_trial_logged_in_sites_(GetLoggedInSites()) {}
+    : profile_(profile),
+      field_trial_logged_in_sites_(GetLoggedInSites()),
+      profile_password_sites_(PasswordStoreFactory::GetForProfile(
+          profile,
+          ServiceAccessType::EXPLICIT_ACCESS)),
+      account_password_sites_(AccountPasswordStoreFactory::GetForProfile(
+          profile,
+          ServiceAccessType::EXPLICIT_ACCESS)) {}
 
 LoginDetectionKeyedService::~LoginDetectionKeyedService() = default;
 
@@ -64,6 +72,12 @@ LoginDetectionType LoginDetectionKeyedService::GetPersistentLoginDetection(
           url_origin, content::ChildProcessSecurityPolicy::
                           IsolatedOriginSource::BUILT_IN)) {
     return LoginDetectionType::kPreloadedPasswordSiteLogin;
+  }
+
+  // Check for sites saved in the password manager.
+  if (profile_password_sites_.IsSiteInPasswordStore(url) ||
+      account_password_sites_.IsSiteInPasswordStore(url)) {
+    return LoginDetectionType::kPasswordManagerSavedSite;
   }
 
   return LoginDetectionType::kNoLogin;
