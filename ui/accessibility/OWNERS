@@ -1,10 +1,10 @@
+abigailbklein@google.com
+aboxhall@chromium.org
+aleventhal@chromium.org
 dmazzoni@chromium.org
 dtseng@chromium.org
-aboxhall@chromium.org
-nektar@chromium.org
-dougt@chromium.org
-aleventhal@chromium.org
 katie@chromium.org
+nektar@chromium.org
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
