@@ -3458,6 +3458,11 @@
     "expiry_milestone": 91
   },
   {
+    "name": "ntp-drive-module",
+    "owners": [ "aee", "andrevincent", "mahmadi", "tiborg" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "ntp-iframe-one-google-bar",
     "owners": [ "aee", "mahmadi", "tiborg" ],
     "expiry_milestone": 88

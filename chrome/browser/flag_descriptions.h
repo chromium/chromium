@@ -1964,6 +1964,9 @@ extern const char kNtpWebUIDescription[];
 extern const char kNtpModulesName[];
 extern const char kNtpModulesDescription[];
 
+extern const char kNtpDriveModuleName[];
+extern const char kNtpDriveModuleDescription[];
+
 extern const char kNtpRecipeTasksModuleName[];
 extern const char kNtpRecipeTasksModuleDescription[];
 

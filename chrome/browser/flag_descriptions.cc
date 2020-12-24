@@ -3406,6 +3406,10 @@ const char kNtpWebUIDescription[] =
 const char kNtpModulesName[] = "NTP Modules";
 const char kNtpModulesDescription[] = "Shows modules on the New Tab Page.";
 
+const char kNtpDriveModuleName[] = "NTP Drive Module";
+const char kNtpDriveModuleDescription[] =
+    "Shows the Google Drive module on the New Tab Page";
+
 const char kNtpRecipeTasksModuleName[] = "NTP Recipe Tasks Module";
 const char kNtpRecipeTasksModuleDescription[] =
     "Shows the recipe tasks module on the New Tab Page.";

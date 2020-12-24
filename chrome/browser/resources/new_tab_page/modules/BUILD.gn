@@ -17,6 +17,7 @@ js_library("modules") {
   deps = [
     ":module_registry",
     "cart:module",
+    "drive:module",
     "kaleidoscope:module",
     "task_module:module",
   ]
@@ -56,6 +57,7 @@ group("web_components") {
   public_deps = [
     ":web_components_local",
     "cart:web_components",
+    "drive:web_components",
     "dummy:web_components",
     "kaleidoscope:web_components",
     "task_module:web_components",
@@ -112,6 +114,7 @@ preprocess_if_expr("preprocess_gen") {
     "module_wrapper.js",
     "task_module/module.js",
     "cart/module.js",
+    "drive/module.js",
   ]
   if (!is_official_build) {
     in_files += [ "dummy/module.js" ]

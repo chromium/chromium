@@ -236,6 +236,17 @@ TEST_F('NewTabPageMiddleSlotPromoTest', 'All', function() {
   mocha.run();
 });
 
+var NewTabPageModulesDriveModuleTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/drive/module_test.js';
+  }
+};
+
+TEST_F('NewTabPageModulesDriveModuleTest', 'All', function() {
+  mocha.run();
+});
+
 // eslint-disable-next-line no-var
 var NewTabPageModulesTaskModuleTest = class extends NewTabPageBrowserTest {
   /** @override */

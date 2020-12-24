@@ -86,6 +86,10 @@ const base::Feature kNtpShoppingTasksModule{"NtpShoppingTasksModule",
 const base::Feature kNtpChromeCartModule{"NtpChromeCartModule",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, Google Drive module will be shown.
+const base::Feature kNtpDriveModule{"NtpDriveModule",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kNtpRepeatableQueriesAgeThresholdDaysParam[] =
     "NtpRepeatableQueriesAgeThresholdDays";
 const char kNtpRepeatableQueriesRecencyHalfLifeSecondsParam[] =

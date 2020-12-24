@@ -4542,6 +4542,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpModulesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kModules)},
 
+    {"ntp-drive-module", flag_descriptions::kNtpDriveModuleName,
+     flag_descriptions::kNtpDriveModuleDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpDriveModule)},
+
     {"ntp-recipe-tasks-module", flag_descriptions::kNtpRecipeTasksModuleName,
      flag_descriptions::kNtpRecipeTasksModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpRecipeTasksModule,

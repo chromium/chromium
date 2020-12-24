@@ -29,7 +29,7 @@ extern const base::Feature kModules;
 extern const base::Feature kNtpRecipeTasksModule;
 extern const base::Feature kNtpShoppingTasksModule;
 extern const base::Feature kNtpChromeCartModule;
-
+extern const base::Feature kNtpDriveModule;
 extern const base::Feature kSearchSuggestChips;
 extern const base::Feature kDisableSearchSuggestChips;
 
