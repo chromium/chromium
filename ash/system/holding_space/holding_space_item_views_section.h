@@ -62,8 +62,10 @@ class HoldingSpaceItemViewsSection : public views::View,
   void OnHoldingSpaceModelDetached(HoldingSpaceModel* model) override;
 
   // HoldingSpaceModelObserver:
-  void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) override;
-  void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
+  void OnHoldingSpaceItemsAdded(
+      const std::vector<const HoldingSpaceItem*>& items) override;
+  void OnHoldingSpaceItemsRemoved(
+      const std::vector<const HoldingSpaceItem*>& items) override;
   void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
 
  protected:

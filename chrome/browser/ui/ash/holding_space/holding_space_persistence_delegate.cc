@@ -43,26 +43,31 @@ void HoldingSpacePersistenceDelegate::Init() {
   RestoreModelFromPersistence();
 }
 
-void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemAdded(
-    const HoldingSpaceItem* item) {
+void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsAdded(
+    const std::vector<const HoldingSpaceItem*>& items) {
   if (is_restoring_persistence())
     return;
 
-  // Write the new |item| to persistent storage.
+  // Write the new `items` to persistent storage.
   ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
-  update->Append(item->Serialize());
+  for (const HoldingSpaceItem* item : items)
+    update->Append(item->Serialize());
 }
 
-void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemRemoved(
-    const HoldingSpaceItem* item) {
+void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsRemoved(
+    const std::vector<const HoldingSpaceItem*>& items) {
   if (is_restoring_persistence())
     return;
 
-  // Remove the |item| from persistent storage.
+  // Remove the `items` from persistent storage.
   ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
-  update->EraseListValueIf([&item](const base::Value& persisted_item) {
-    return HoldingSpaceItem::DeserializeId(
-               base::Value::AsDictionaryValue(persisted_item)) == item->id();
+  update->EraseListValueIf([&items](const base::Value& persisted_item) {
+    const std::string& persisted_item_id = HoldingSpaceItem::DeserializeId(
+        base::Value::AsDictionaryValue(persisted_item));
+    return std::any_of(items.begin(), items.end(),
+                       [&persisted_item_id](const HoldingSpaceItem* item) {
+                         return persisted_item_id == item->id();
+                       });
   });
 }
 

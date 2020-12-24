@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_FILE_SYSTEM_DELEGATE_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/scoped_observation.h"
@@ -46,8 +47,10 @@ class HoldingSpaceFileSystemDelegate
 
   // HoldingSpaceKeyedServiceDelegate:
   void Init() override;
-  void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) override;
-  void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
+  void OnHoldingSpaceItemsAdded(
+      const std::vector<const HoldingSpaceItem*>& items) override;
+  void OnHoldingSpaceItemsRemoved(
+      const std::vector<const HoldingSpaceItem*>& items) override;
   void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
   void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
 

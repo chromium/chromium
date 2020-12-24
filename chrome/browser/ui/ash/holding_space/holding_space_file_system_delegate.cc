@@ -120,46 +120,48 @@ void HoldingSpaceFileSystemDelegate::Init() {
                      base::Unretained(this)));
 }
 
-void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemAdded(
-    const HoldingSpaceItem* item) {
+void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
+    const std::vector<const HoldingSpaceItem*>& items) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  for (const HoldingSpaceItem* item : items) {
+    if (item->IsFinalized()) {
+      // Watch the directory containing `item`'s backing file. If the directory
+      // is already being watched, this will no-op.
+      AddWatchForParent(item->file_path());
+      continue;
+    }
 
-  if (item->IsFinalized()) {
-    // Watch the directory containing `items`'s backing file. If the directory
-    // is already being watched, this will no-op.
-    AddWatchForParent(item->file_path());
-    return;
+    // If the item has not yet been finalized, check whether it's path can be
+    // resolved to a file system URL - failure to do so may indicate that the
+    // volume to which it path belongs is not mounted there. If the file system
+    // URL cannot be resolved, leave the item in partially initialized state.
+    // Validity will be checked when the associated mount point is mounted.
+    // NOTE: Items will not be kept in partially initialized state indefinitely
+    // - see `clear_non_finalized_items_timer_`.
+    // NOTE: This does not work well for removable devices, as all removable
+    // devices have the same top level "external" mount point (media/removable),
+    // so a removable device path will be successfully resolved even if the
+    // device is not currently mounted. The logic will have to be updated if
+    // support for restoring items across removable device mounts becomes a
+    // requirement.
+    const GURL file_system_url =
+        holding_space_util::ResolveFileSystemUrl(profile(), item->file_path());
+    if (file_system_url.is_empty())
+      continue;
+
+    holding_space_util::ValidityRequirement requirements;
+    if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
+      requirements.must_be_newer_than = kMaxFileAge;
+
+    ScheduleFilePathValidityCheck({item->file_path(), requirements});
   }
-
-  // If the item has not yet been finalized, check whether it's path can be
-  // resolved to a file system URL - failure to do so may indicate that the
-  // volume to which it path belongs is not mounted there. If the file system
-  // URL cannot be resolved, leave the item in partially initialized state.
-  // Validity will be checked when the associated mount point is mounted.
-  // NOTE: Items will not be kept in partially initialized state indefinitely
-  // - see `clear_non_finalized_items_timer_`.
-  // NOTE: This does not work well for removable devices, as all removable
-  // devices have the same top level "external" mount point (media/removable),
-  // so a removable device path will be successfully resolved even if the
-  // device is not currently mounted. The logic will have to be updated if
-  // support for restoring items across removable device mounts becomes a
-  // requirement.
-  const GURL file_system_url =
-      holding_space_util::ResolveFileSystemUrl(profile(), item->file_path());
-  if (file_system_url.is_empty())
-    return;
-
-  holding_space_util::ValidityRequirement requirements;
-  if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
-    requirements.must_be_newer_than = kMaxFileAge;
-
-  ScheduleFilePathValidityCheck({item->file_path(), requirements});
 }
 
-void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemRemoved(
-    const HoldingSpaceItem* item) {
+void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsRemoved(
+    const std::vector<const HoldingSpaceItem*>& items) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  MaybeRemoveWatch(item->file_path().DirName());
+  for (const HoldingSpaceItem* item : items)
+    MaybeRemoveWatch(item->file_path().DirName());
 }
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemUpdated(

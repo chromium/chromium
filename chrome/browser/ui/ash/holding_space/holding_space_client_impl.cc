@@ -222,6 +222,8 @@ void HoldingSpaceClientImpl::ShowItemInFolder(const HoldingSpaceItem& item,
 
 void HoldingSpaceClientImpl::PinItems(
     const std::vector<const HoldingSpaceItem*>& items) {
+  std::vector<storage::FileSystemURL> file_system_urls;
+
   HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
   for (const HoldingSpaceItem* item : items) {
     const storage::FileSystemURL& file_system_url =
@@ -229,12 +231,17 @@ void HoldingSpaceClientImpl::PinItems(
             profile_, file_manager::kFileManagerAppId)
             ->CrackURL(item->file_system_url());
     if (!service->ContainsPinnedFile(file_system_url))
-      service->AddPinnedFile(file_system_url);
+      file_system_urls.push_back(file_system_url);
   }
+
+  if (!file_system_urls.empty())
+    service->AddPinnedFiles(file_system_urls);
 }
 
 void HoldingSpaceClientImpl::UnpinItems(
     const std::vector<const HoldingSpaceItem*>& items) {
+  std::vector<storage::FileSystemURL> file_system_urls;
+
   HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
   for (const HoldingSpaceItem* item : items) {
     const storage::FileSystemURL& file_system_url =
@@ -242,8 +249,11 @@ void HoldingSpaceClientImpl::UnpinItems(
             profile_, file_manager::kFileManagerAppId)
             ->CrackURL(item->file_system_url());
     if (service->ContainsPinnedFile(file_system_url))
-      service->RemovePinnedFile(file_system_url);
+      file_system_urls.push_back(file_system_url);
   }
+
+  if (!file_system_urls.empty())
+    service->RemovePinnedFiles(file_system_urls);
 }
 
 }  // namespace ash

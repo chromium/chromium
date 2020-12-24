@@ -53,12 +53,15 @@ class HoldingSpaceKeyedService : public KeyedService,
   // Registers profile preferences for holding space.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Adds a pinned file item identified by the provided file system URL.
-  void AddPinnedFile(const storage::FileSystemURL& file_system_url);
+  // Adds multiple pinned file items identified by the provided file system
+  // URLs.
+  void AddPinnedFiles(
+      const std::vector<storage::FileSystemURL>& file_system_urls);
 
-  // Removes a pinned file item identified by the provided file system URL.
-  // No-op if the file is not present in the holding space.
-  void RemovePinnedFile(const storage::FileSystemURL& file_system_url);
+  // Removes multiple pinned file items identified by the provided file system
+  // URLs. No-ops for files that are not present in the holding space.
+  void RemovePinnedFiles(
+      const std::vector<storage::FileSystemURL>& file_system_urls);
 
   // Returns whether the holding space contains a pinned file identified by a
   // file system URL.
@@ -84,6 +87,9 @@ class HoldingSpaceKeyedService : public KeyedService,
 
   // Adds the specified `item` to the holding space model.
   void AddItem(std::unique_ptr<HoldingSpaceItem> item);
+
+  // Adds multiple `items` to the holding space model.
+  void AddItems(std::vector<std::unique_ptr<HoldingSpaceItem>> items);
 
   const HoldingSpaceClient* client_for_testing() const {
     return &holding_space_client_;

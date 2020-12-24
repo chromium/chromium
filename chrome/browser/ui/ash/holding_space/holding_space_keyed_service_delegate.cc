@@ -34,11 +34,11 @@ HoldingSpaceKeyedServiceDelegate::HoldingSpaceKeyedServiceDelegate(
   holding_space_model_observer_.Add(model);
 }
 
-void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemAdded(
-    const HoldingSpaceItem* item) {}
+void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemsAdded(
+    const std::vector<const HoldingSpaceItem*>& items) {}
 
-void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemRemoved(
-    const HoldingSpaceItem* item) {}
+void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemsRemoved(
+    const std::vector<const HoldingSpaceItem*>& items) {}
 
 void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemFinalized(
     const HoldingSpaceItem* item) {}

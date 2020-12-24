@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_MODEL_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -42,8 +43,14 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   // Adds a single holding space item to the model.
   void AddItem(std::unique_ptr<HoldingSpaceItem> item);
 
+  // Adds multiple holding space items to the model.
+  void AddItems(std::vector<std::unique_ptr<HoldingSpaceItem>> items);
+
   // Removes a single holding space item from the model.
   void RemoveItem(const std::string& id);
+
+  // Removes multiple holding space items from the model.
+  void RemoveItems(const std::set<std::string>& ids);
 
   // Finalizes a partially initialized holding space item using the provided
   // file system URL. The item will be removed if the file system url is empty.

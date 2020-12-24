@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
 
+#include <vector>
+
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/capture_mode_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
@@ -136,12 +138,12 @@ class MockActivationChangeObserver : public wm::ActivationChangeObserver {
 class MockHoldingSpaceModelObserver : public HoldingSpaceModelObserver {
  public:
   MOCK_METHOD(void,
-              OnHoldingSpaceItemAdded,
-              (const HoldingSpaceItem* item),
+              OnHoldingSpaceItemsAdded,
+              (const std::vector<const HoldingSpaceItem*>& items),
               (override));
   MOCK_METHOD(void,
-              OnHoldingSpaceItemRemoved,
-              (const HoldingSpaceItem* item),
+              OnHoldingSpaceItemsRemoved,
+              (const std::vector<const HoldingSpaceItem*>& items),
               (override));
   MOCK_METHOD(void,
               OnHoldingSpaceItemFinalized,
@@ -622,10 +624,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiScreenshotBrowserTest, AddScreenshot) {
 
   // Expect and wait for a screenshot item to be added to holding space.
   base::RunLoop run_loop;
-  EXPECT_CALL(mock, OnHoldingSpaceItemAdded)
-      .WillOnce([&](const HoldingSpaceItem* item) {
-        if (item->type() == HoldingSpaceItem::Type::kScreenshot)
-          run_loop.Quit();
+  EXPECT_CALL(mock, OnHoldingSpaceItemsAdded)
+      .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
+        ASSERT_EQ(items.size(), 1u);
+        ASSERT_EQ(items[0]->type(), HoldingSpaceItem::Type::kScreenshot);
+        run_loop.Quit();
       });
   run_loop.Run();
 
@@ -676,10 +679,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiScreenCaptureBrowserTest,
 
   base::RunLoop wait_for_item;
   // Expect and wait for a screen recording item to be added to holding space.
-  EXPECT_CALL(mock, OnHoldingSpaceItemAdded)
-      .WillOnce([&](const HoldingSpaceItem* item) {
-        if (item->type() == HoldingSpaceItem::Type::kScreenRecording)
-          wait_for_item.Quit();
+  EXPECT_CALL(mock, OnHoldingSpaceItemsAdded)
+      .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
+        ASSERT_EQ(items.size(), 1u);
+        ASSERT_EQ(items[0]->type(), HoldingSpaceItem::Type::kScreenRecording);
+        wait_for_item.Quit();
       });
   wait_for_item.Run();
 

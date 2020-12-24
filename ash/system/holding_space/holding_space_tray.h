@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_TRAY_H_
 
 #include <memory>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -81,8 +82,10 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   void OnHoldingSpaceModelDetached(HoldingSpaceModel* model) override;
 
   // HoldingSpaceModelObserver:
-  void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) override;
-  void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
+  void OnHoldingSpaceItemsAdded(
+      const std::vector<const HoldingSpaceItem*>& items) override;
+  void OnHoldingSpaceItemsRemoved(
+      const std::vector<const HoldingSpaceItem*>& items) override;
   void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
 
   // SessionObserver:

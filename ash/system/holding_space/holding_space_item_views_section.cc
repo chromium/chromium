@@ -272,8 +272,13 @@ void HoldingSpaceItemViewsSection::ViewHierarchyChanged(
 void HoldingSpaceItemViewsSection::OnHoldingSpaceModelAttached(
     HoldingSpaceModel* model) {
   model_observer_.Observe(model);
+
+  std::vector<const HoldingSpaceItem*> item_ptrs;
   for (const auto& item : model->items())
-    OnHoldingSpaceItemAdded(item.get());
+    item_ptrs.push_back(item.get());
+
+  if (!item_ptrs.empty())
+    OnHoldingSpaceItemsAdded(item_ptrs);
 }
 
 void HoldingSpaceItemViewsSection::OnHoldingSpaceModelDetached(
@@ -283,17 +288,24 @@ void HoldingSpaceItemViewsSection::OnHoldingSpaceModelDetached(
     MaybeAnimateOut();
 }
 
-void HoldingSpaceItemViewsSection::OnHoldingSpaceItemAdded(
-    const HoldingSpaceItem* item) {
-  if (!item->IsFinalized())
-    return;
-  if (base::Contains(supported_types_, item->type()))
+void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsAdded(
+    const std::vector<const HoldingSpaceItem*>& items) {
+  const bool needs_update = std::any_of(
+      items.begin(), items.end(), [this](const HoldingSpaceItem* item) {
+        return item->IsFinalized() &&
+               base::Contains(supported_types_, item->type());
+      });
+  if (needs_update)
     MaybeAnimateOut();
 }
 
-void HoldingSpaceItemViewsSection::OnHoldingSpaceItemRemoved(
-    const HoldingSpaceItem* item) {
-  if (base::Contains(views_by_item_id_, item->id()))
+void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsRemoved(
+    const std::vector<const HoldingSpaceItem*>& items) {
+  const bool needs_update = std::any_of(
+      items.begin(), items.end(), [this](const HoldingSpaceItem* item) {
+        return base::Contains(views_by_item_id_, item->id());
+      });
+  if (needs_update)
     MaybeAnimateOut();
 }
 

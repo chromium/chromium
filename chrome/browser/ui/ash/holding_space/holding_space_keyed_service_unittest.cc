@@ -17,7 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -174,10 +174,14 @@ class ItemsFinalizedWaiter : public HoldingSpaceModelObserver {
   // NOTE: The filter defaults to all items.
   void Wait(const ItemFilter& filter = ItemFilter()) {
     ASSERT_FALSE(wait_loop_);
+
     filter_ = filter;
     if (FilteredItemsFinalized())
       return;
-    model_observer_.Add(model_);
+
+    base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+        model_observer{this};
+    model_observer.Observe(model_);
 
     wait_loop_ = std::make_unique<base::RunLoop>();
     wait_loop_->Run();
@@ -185,20 +189,15 @@ class ItemsFinalizedWaiter : public HoldingSpaceModelObserver {
     filter_ = ItemFilter();
   }
 
-  void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) override {}
-
-  void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override {
-    if (item->IsFinalized())
-      return;
+  void OnHoldingSpaceItemsRemoved(
+      const std::vector<const HoldingSpaceItem*>& items) override {
     if (FilteredItemsFinalized())
       wait_loop_->Quit();
   }
 
   void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override {
-    if (FilteredItemsFinalized()) {
-      model_observer_.RemoveAll();
+    if (FilteredItemsFinalized())
       wait_loop_->Quit();
-    }
   }
 
  private:
@@ -214,9 +213,6 @@ class ItemsFinalizedWaiter : public HoldingSpaceModelObserver {
 
   HoldingSpaceModel* const model_;
   ItemFilter filter_;
-
-  ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver> model_observer_{
-      this};
   std::unique_ptr<base::RunLoop> wait_loop_;
 };
 

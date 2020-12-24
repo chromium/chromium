@@ -55,14 +55,20 @@ FileManagerPrivateInternalToggleAddedToHoldingSpaceFunction::Run() {
     file_system_urls.push_back(file_system_url);
   }
 
-  for (const auto& file_system_url : file_system_urls) {
-    const bool in_holding_space =
-        holding_space->ContainsPinnedFile(file_system_url);
-    if (params->add && !in_holding_space) {
-      holding_space->AddPinnedFile(file_system_url);
-    } else if (!params->add && in_holding_space) {
-      holding_space->RemovePinnedFile(file_system_url);
-    }
+  if (params->add) {
+    base::EraseIf(
+        file_system_urls,
+        [holding_space](const storage::FileSystemURL& file_system_url) {
+          return holding_space->ContainsPinnedFile(file_system_url);
+        });
+    holding_space->AddPinnedFiles(file_system_urls);
+  } else {
+    base::EraseIf(
+        file_system_urls,
+        [holding_space](const storage::FileSystemURL& file_system_url) {
+          return !holding_space->ContainsPinnedFile(file_system_url);
+        });
+    holding_space->RemovePinnedFiles(file_system_urls);
   }
 
   return RespondNow(NoArguments());

@@ -241,12 +241,14 @@ void HoldingSpaceTray::OnHoldingSpaceModelDetached(HoldingSpaceModel* model) {
   UpdatePreviewsState();
 }
 
-void HoldingSpaceTray::OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) {
+void HoldingSpaceTray::OnHoldingSpaceItemsAdded(
+    const std::vector<const HoldingSpaceItem*>& items) {
   UpdateVisibility();
   UpdatePreviewsState();
 }
 
-void HoldingSpaceTray::OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) {
+void HoldingSpaceTray::OnHoldingSpaceItemsRemoved(
+    const std::vector<const HoldingSpaceItem*>& items) {
   UpdateVisibility();
   UpdatePreviewsState();
 }

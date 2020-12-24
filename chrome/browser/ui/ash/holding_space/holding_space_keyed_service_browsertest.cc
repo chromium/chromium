@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 
+#include <vector>
+
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -54,12 +56,12 @@ enum class FileSystemType { kDownloads, kDriveFs };
 class MockHoldingSpaceModelObserver : public HoldingSpaceModelObserver {
  public:
   MOCK_METHOD(void,
-              OnHoldingSpaceItemAdded,
-              (const HoldingSpaceItem* item),
+              OnHoldingSpaceItemsAdded,
+              (const std::vector<const HoldingSpaceItem*>& items),
               (override));
   MOCK_METHOD(void,
-              OnHoldingSpaceItemRemoved,
-              (const HoldingSpaceItem* item),
+              OnHoldingSpaceItemsRemoved,
+              (const std::vector<const HoldingSpaceItem*>& items),
               (override));
   MOCK_METHOD(void,
               OnHoldingSpaceItemFinalized,
@@ -113,10 +115,14 @@ void WaitForItemAddition(
   observer.Observe(model);
 
   base::RunLoop run_loop;
-  ON_CALL(mock, OnHoldingSpaceItemAdded)
-      .WillByDefault([&](const HoldingSpaceItem* item) {
-        if (predicate.Run(item))
-          run_loop.Quit();
+  ON_CALL(mock, OnHoldingSpaceItemsAdded)
+      .WillByDefault([&](const std::vector<const HoldingSpaceItem*>& items) {
+        for (const HoldingSpaceItem* item : items) {
+          if (predicate.Run(item)) {
+            run_loop.Quit();
+            return;
+          }
+        }
       });
   run_loop.Run();
 }
@@ -149,10 +155,14 @@ void WaitForItemRemoval(
   observer.Observe(model);
 
   base::RunLoop run_loop;
-  ON_CALL(mock, OnHoldingSpaceItemRemoved)
-      .WillByDefault([&](const HoldingSpaceItem* item) {
-        if (predicate.Run(item))
-          run_loop.Quit();
+  ON_CALL(mock, OnHoldingSpaceItemsRemoved)
+      .WillByDefault([&](const std::vector<const HoldingSpaceItem*>& items) {
+        for (const HoldingSpaceItem* item : items) {
+          if (predicate.Run(item)) {
+            run_loop.Quit();
+            return;
+          }
+        }
       });
   run_loop.Run();
 }
@@ -194,12 +204,15 @@ void WaitForItemFinalization(
         if (item == item_it->get())
           run_loop.Quit();
       });
-  ON_CALL(mock, OnHoldingSpaceItemRemoved)
-      .WillByDefault([&](const HoldingSpaceItem* item) {
-        if (item != item_it->get())
+  ON_CALL(mock, OnHoldingSpaceItemsRemoved)
+      .WillByDefault([&](const std::vector<const HoldingSpaceItem*>& items) {
+        for (const HoldingSpaceItem* item : items) {
+          if (item != item_it->get())
+            continue;
+          ADD_FAILURE() << "Item unexpectedly removed: " << item->id();
+          run_loop.Quit();
           return;
-        ADD_FAILURE() << "Item unexpectedly removed: " << item->id();
-        run_loop.Quit();
+        }
       });
   run_loop.Run();
 }
@@ -502,7 +515,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
   HoldingSpaceKeyedService* const holding_space_service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
           browser()->profile());
-  holding_space_service->AddPinnedFile(file_system_url);
+  holding_space_service->AddPinnedFiles({file_system_url});
 
   base::FilePath relative_path;
   ASSERT_TRUE(integration_service()->GetRelativeDrivePath(
