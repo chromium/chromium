@@ -1970,6 +1970,9 @@ extern const char kNtpRecipeTasksModuleDescription[];
 extern const char kNtpShoppingTasksModuleName[];
 extern const char kNtpShoppingTasksModuleDescription[];
 
+extern const char kNtpChromeCartModuleName[];
+extern const char kNtpChromeCartModuleDescription[];
+
 extern const char kEnableReaderModeName[];
 extern const char kEnableReaderModeDescription[];
 

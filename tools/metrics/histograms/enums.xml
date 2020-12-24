@@ -43456,6 +43456,7 @@ from previous Chrome versions.
   <int value="-872764392" label="ContextualSuggestionsBottomSheet:disabled"/>
   <int value="-871520682"
       label="AccessibilityInternalsPageImprovements:enabled"/>
+  <int value="-870994173" label="NtpChromeCartModule:enabled"/>
   <int value="-870120067" label="EnableSearchBoxSelection:enabled"/>
   <int value="-868138290" label="CrostiniPortForwarding:disabled"/>
   <int value="-867087281" label="enable-virtual-keyboard"/>
@@ -45616,6 +45617,7 @@ from previous Chrome versions.
       label="kAutofillRationalizeRepeatedServerPredictions:enabled"/>
   <int value="1222808563" label="DisableInitialMostVisitedFadeIn:disabled"/>
   <int value="1226624874" label="Mus:disabled"/>
+  <int value="1227633129" label="NtpChromeCartModule:disabled"/>
   <int value="1228115769" label="SiteCharacteristicsDatabase:disabled"/>
   <int value="1229299518" label="SingleTabMode:disabled"/>
   <int value="1229388323" label="AutofillEnableGoogleIssuedCard:disabled"/>

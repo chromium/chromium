@@ -4554,6 +4554,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpShoppingTasksModule,
                                     kNtpShoppingTasksModuleVariations,
                                     "NtpShoppingTasksModule")},
+
+    {"ntp-chrome-cart-module", flag_descriptions::kNtpChromeCartModuleName,
+     flag_descriptions::kNtpChromeCartModuleDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpChromeCartModule)},
 #endif  // !defined(OS_ANDROID)
 
 #if defined(DCHECK_IS_CONFIGURABLE)
