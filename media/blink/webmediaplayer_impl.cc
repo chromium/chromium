@@ -2583,14 +2583,6 @@ void WebMediaPlayerImpl::OnSetAudioSink(const std::string& sink_id) {
             base::DoNothing::Once<base::Optional<blink::WebSetSinkIdError>>());
 }
 
-void WebMediaPlayerImpl::OnMediaPlaying() {
-  client_->DidPlayerStartPlaying();
-}
-
-void WebMediaPlayerImpl::OnMediaPaused(bool stream_ended) {
-  client_->DidPlayerPaused(stream_ended);
-}
-
 void WebMediaPlayerImpl::OnVolumeMultiplierUpdate(double multiplier) {
   volume_multiplier_ = multiplier;
   SetVolume(volume_);

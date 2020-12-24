@@ -585,8 +585,6 @@ class WebMediaPlayerMSTest
   void MediaRemotingStopped(int error_code) override {}
   void ResumePlayback() override {}
   void PausePlayback() override {}
-  void DidPlayerStartPlaying() override {}
-  void DidPlayerPaused(bool) override {}
   void DidPlayerMutedStatusChange(bool muted) override {}
   void DidPlayerMediaPositionStateChange(double playback_rate,
                                          base::TimeDelta duration,

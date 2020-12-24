@@ -122,6 +122,36 @@ TEST_F(RendererWebMediaPlayerDelegateTest, SendsMessagesCorrectly) {
     EXPECT_EQ(kHasVideo, std::get<2>(result));
     EXPECT_EQ(kMediaContentType, std::get<3>(result));
   }
+
+  // Verify the playing message.
+  {
+    test_sink().ClearMessages();
+    delegate_manager_->DidPlay(delegate_id);
+
+    const IPC::Message* msg = test_sink().GetUniqueMessageMatching(
+        MediaPlayerDelegateHostMsg_OnMediaPlaying::ID);
+    ASSERT_TRUE(msg);
+
+    std::tuple<int> result;
+    ASSERT_TRUE(MediaPlayerDelegateHostMsg_OnMediaPlaying::Read(msg, &result));
+    EXPECT_EQ(delegate_id, std::get<0>(result));
+  }
+
+  // Verify the paused message.
+  {
+    test_sink().ClearMessages();
+    const bool kReachedEndOfStream = false;
+    delegate_manager_->DidPause(delegate_id, kReachedEndOfStream);
+
+    const IPC::Message* msg = test_sink().GetUniqueMessageMatching(
+        MediaPlayerDelegateHostMsg_OnMediaPaused::ID);
+    ASSERT_TRUE(msg);
+
+    std::tuple<int, bool> result;
+    ASSERT_TRUE(MediaPlayerDelegateHostMsg_OnMediaPaused::Read(msg, &result));
+    EXPECT_EQ(delegate_id, std::get<0>(result));
+    EXPECT_EQ(kReachedEndOfStream, std::get<1>(result));
+  }
 }
 
 TEST_F(RendererWebMediaPlayerDelegateTest, DeliversObserverNotifications) {

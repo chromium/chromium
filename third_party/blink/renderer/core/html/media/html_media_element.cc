@@ -4384,22 +4384,6 @@ void HTMLMediaElement::PausePlayback() {
   RequestPause(false);
 }
 
-void HTMLMediaElement::DidPlayerStartPlaying() {
-  for (auto& observer : media_player_observer_remote_set_) {
-    if (!observer.is_bound())
-      continue;
-    observer->OnMediaPlaying();
-  }
-}
-
-void HTMLMediaElement::DidPlayerPaused(bool stream_ended) {
-  for (auto& observer : media_player_observer_remote_set_) {
-    if (!observer.is_bound())
-      continue;
-    observer->OnMediaPaused(stream_ended);
-  }
-}
-
 void HTMLMediaElement::DidPlayerMutedStatusChange(bool muted) {
   for (auto& observer : media_player_observer_remote_set_) {
     if (!observer.is_bound())

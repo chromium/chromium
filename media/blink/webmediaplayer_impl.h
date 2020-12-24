@@ -246,8 +246,6 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   void OnFrameShown() override;
   void OnIdleTimeout() override;
   void OnSetAudioSink(const std::string& sink_id) override;
-  void OnMediaPlaying() override;
-  void OnMediaPaused(bool stream_ended) override;
   void OnVolumeMultiplierUpdate(double multiplier) override;
   void OnBecamePersistentVideo(bool value) override;
   void OnPowerExperimentState(bool state) override;

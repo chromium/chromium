@@ -119,9 +119,7 @@ void RendererWebMediaPlayerDelegate::DidPlay(int player_id) {
     has_played_video_ = true;
   }
 
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer)
-    observer->OnMediaPlaying();
+  Send(new MediaPlayerDelegateHostMsg_OnMediaPlaying(routing_id(), player_id));
 
   ScheduleUpdateTask();
 }
@@ -132,10 +130,8 @@ void RendererWebMediaPlayerDelegate::DidPause(int player_id,
            << ")";
   DCHECK(id_map_.Lookup(player_id));
   playing_videos_.erase(player_id);
-
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer)
-    observer->OnMediaPaused(reached_end_of_stream);
+  Send(new MediaPlayerDelegateHostMsg_OnMediaPaused(routing_id(), player_id,
+                                                    reached_end_of_stream));
 
   // Required to keep background playback statistics up to date.
   ScheduleUpdateTask();
