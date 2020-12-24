@@ -45,7 +45,6 @@ class CameraAppWindowManager : public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
-  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   CameraAppWindowManager();

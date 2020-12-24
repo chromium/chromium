@@ -130,15 +130,11 @@ void CameraAppWindowManager::OnWidgetActivationChanged(views::Widget* widget,
   }
 }
 
-void CameraAppWindowManager::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  widget->RemoveObserver(this);
-}
-
 CameraAppWindowManager::CameraAppWindowManager() = default;
 
 void CameraAppWindowManager::OnMonitorMojoConnectionError(
     views::Widget* widget) {
+  widget->RemoveObserver(this);
   camera_usage_monitors_.erase(widget);
 
   if (pending_transfer_.has_value() && widget == *pending_transfer_) {

@@ -111,6 +111,12 @@ export class ChromeHelper {
 
     const {controller} = await this.remote_.getWindowStateController();
     await windowController.bind(controller);
+
+    const closeConnection = () => {
+      usageCallbackRouter.$.close();
+      window.removeEventListener('beforeunload', closeConnection);
+    };
+    window.addEventListener('beforeunload', closeConnection);
   }
 
   /**
