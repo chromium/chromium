@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:1.0.0-cr0
+# cipd create --pkg-def cipd.yaml -tag version:1.2.0-SNAPSHOT-cr0
 package: chromium/third_party/android_deps/libs/androidx_drawerlayout_drawerlayout
 description: "Android Support Library Drawer Layout"
 data:
-- file: drawerlayout-1.0.0.aar
+- file: drawerlayout-1.2.0-SNAPSHOT.aar

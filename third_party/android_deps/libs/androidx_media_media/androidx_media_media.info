@@ -14,7 +14,7 @@ has_classes_jar = true
 has_native_libraries = false
 has_proguard_flags = true
 has_r_text_file = true
-is_manifest_empty = true
+is_manifest_empty = false
 manifest_package = "androidx.media"
 resources = [
   "res/layout/notification_media_action.xml",

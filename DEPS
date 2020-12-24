@@ -1832,7 +1832,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/androidx_collection_collection',
-              'version': 'version:1.1.0-cr0',
+              'version': 'version:1.2.0-SNAPSHOT-cr0',
           },
       ],
       'condition': 'checkout_android',
@@ -1898,7 +1898,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/androidx_customview_customview',
-              'version': 'version:1.0.0-cr0',
+              'version': 'version:1.2.0-SNAPSHOT-cr0',
           },
       ],
       'condition': 'checkout_android',
@@ -1920,7 +1920,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/androidx_drawerlayout_drawerlayout',
-              'version': 'version:1.0.0-cr0',
+              'version': 'version:1.2.0-SNAPSHOT-cr0',
           },
       ],
       'condition': 'checkout_android',
@@ -2140,7 +2140,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/androidx_media_media',
-              'version': 'version:1.2.0-cr0',
+              'version': 'version:1.3.0-SNAPSHOT-cr0',
           },
       ],
       'condition': 'checkout_android',

@@ -250,7 +250,7 @@ android_aar_prebuilt("androidx_cardview_cardview_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("androidx_collection_collection_java") {
-  jar_path = "libs/androidx_collection_collection/collection-1.1.0.jar"
+  jar_path = "libs/androidx_collection_collection/collection-1.2.0-SNAPSHOT.jar"
   output_name = "androidx_collection_collection"
   supports_android = true
   deps = [ ":androidx_annotation_annotation_java" ]
@@ -322,11 +322,12 @@ android_aar_prebuilt("androidx_core_core_animation_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_customview_customview_java") {
-  aar_path = "libs/androidx_customview_customview/customview-1.0.0.aar"
+  aar_path = "libs/androidx_customview_customview/customview-1.2.0-SNAPSHOT.aar"
   info_path =
       "libs/androidx_customview_customview/androidx_customview_customview.info"
   deps = [
     ":androidx_annotation_annotation_java",
+    ":androidx_collection_collection_java",
     ":androidx_core_core_java",
   ]
   resource_overlay = true
@@ -334,7 +335,8 @@ android_aar_prebuilt("androidx_customview_customview_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_drawerlayout_drawerlayout_java") {
-  aar_path = "libs/androidx_drawerlayout_drawerlayout/drawerlayout-1.0.0.aar"
+  aar_path =
+      "libs/androidx_drawerlayout_drawerlayout/drawerlayout-1.2.0-SNAPSHOT.aar"
   info_path = "libs/androidx_drawerlayout_drawerlayout/androidx_drawerlayout_drawerlayout.info"
   deps = [
     ":androidx_annotation_annotation_java",
@@ -534,7 +536,7 @@ android_aar_prebuilt(
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_media_media_java") {
-  aar_path = "libs/androidx_media_media/media-1.2.0.aar"
+  aar_path = "libs/androidx_media_media/media-1.3.0-SNAPSHOT.aar"
   info_path = "libs/androidx_media_media/androidx_media_media.info"
   deps = [
     ":androidx_collection_collection_java",

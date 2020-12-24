@@ -12,6 +12,11 @@
   <permission android:label="Debug web pages" android:name="$PACKAGE.permission.DEBUG" android:protectionLevel="signature"/>
   <permission android:name="$PACKAGE.permission.READ_WRITE_BOOKMARK_FOLDERS" android:protectionLevel="signatureOrSystem"/>
   <permission android:name="$PACKAGE.permission.TRANSLATE" android:protectionLevel="signature"/>
+  <queries>  # DIFF-ANCHOR: 0c3a615d
+    <intent>  # DIFF-ANCHOR: 28c960ba
+      <action android:name="android.media.browse.MediaBrowserService"/>
+    </intent>  # DIFF-ANCHOR: 28c960ba
+  </queries>  # DIFF-ANCHOR: 0c3a615d
   <uses-feature android:name="android.hardware.camera" android:required="false"/>
   <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
   <uses-feature android:name="android.hardware.microphone" android:required="false"/>
