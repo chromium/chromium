@@ -479,35 +479,90 @@ AccountInfo IdentityManager::GetAccountInfoForAccountWithRefreshToken(
   return account_info;
 }
 
-void IdentityManager::GoogleSigninSucceeded(
+void IdentityManager::OnPrimaryAccountChanged(
+    const PrimaryAccountChangeEvent& event_details) {
+  // TODO(crbug.com/1158855): Remove this switch statement once all observers
+  // are converted to OnPrimaryAccountChanged().
+  switch (event_details.GetEventTypeFor(ConsentLevel::kSync)) {
+    case PrimaryAccountChangeEvent::Type::kSet:
+      FirePrimaryAccountSet(event_details);
+      break;
+    case PrimaryAccountChangeEvent::Type::kCleared:
+      FirePrimaryAccountCleared(event_details);
+      break;
+    case PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
+  switch (event_details.GetEventTypeFor(ConsentLevel::kNotRequired)) {
+    case PrimaryAccountChangeEvent::Type::kSet:
+    case PrimaryAccountChangeEvent::Type::kCleared:
+      FireUnconsentedPrimaryAccountChanged(event_details);
+      break;
+    case PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
+
+  for (auto& observer : observer_list_)
+    observer.OnPrimaryAccountChanged(event_details);
+
+#if defined(OS_ANDROID)
+  if (!java_identity_manager_)
+    return;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  switch (event_details.GetEventTypeFor(ConsentLevel::kSync)) {
+    case PrimaryAccountChangeEvent::Type::kSet:
+      Java_IdentityManager_onPrimaryAccountSet(
+          env, java_identity_manager_,
+          ConvertToJavaCoreAccountInfo(
+              env, event_details.GetCurrentState().primary_account));
+      return;
+    case PrimaryAccountChangeEvent::Type::kCleared:
+      Java_IdentityManager_onPrimaryAccountCleared(
+          env, java_identity_manager_,
+          ConvertToJavaCoreAccountInfo(
+              env, event_details.GetPreviousState().primary_account));
+      return;
+    case PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
+  switch (event_details.GetEventTypeFor(ConsentLevel::kNotRequired)) {
+    // TODO(http://crbug.com/1158855): This is a hack as the Java code expects
+    // a call to onPrimaryAccountCleared() when the unconsented primary account
+    // is cleared. This does not match the intent of OnPrimaryAccountCleared
+    // which is supposed to be fired only when sync account is being cleared.
+    // This hack *must* be removed quickly as it has a high misusage risk.
+    case PrimaryAccountChangeEvent::Type::kCleared:
+      Java_IdentityManager_onPrimaryAccountCleared(
+          env, java_identity_manager_,
+          ConvertToJavaCoreAccountInfo(
+              env, event_details.GetPreviousState().primary_account));
+      break;
+    case PrimaryAccountChangeEvent::Type::kSet:
+    case PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
+#endif
+}
+
+void IdentityManager::FirePrimaryAccountSet(
     const PrimaryAccountChangeEvent& event_details) {
   const CoreAccountInfo& account_info =
       event_details.GetCurrentState().primary_account;
   for (auto& observer : observer_list_) {
     observer.OnPrimaryAccountSet(account_info);
-    observer.OnPrimaryAccountChanged(event_details);
   }
-#if defined(OS_ANDROID)
-  if (java_identity_manager_) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_IdentityManager_onPrimaryAccountSet(
-        env, java_identity_manager_,
-        ConvertToJavaCoreAccountInfo(env, account_info));
-  }
-#endif
 }
 
-void IdentityManager::UnconsentedPrimaryAccountChanged(
+void IdentityManager::FireUnconsentedPrimaryAccountChanged(
     const PrimaryAccountChangeEvent& event_details) {
   const CoreAccountInfo& account_info =
       event_details.GetCurrentState().primary_account;
   for (auto& observer : observer_list_) {
     observer.OnUnconsentedPrimaryAccountChanged(account_info);
-    observer.OnPrimaryAccountChanged(event_details);
   }
 }
 
-void IdentityManager::GoogleSignedOut(
+void IdentityManager::FirePrimaryAccountCleared(
     const PrimaryAccountChangeEvent& event_details) {
   const CoreAccountInfo& account_info =
       event_details.GetPreviousState().primary_account;
@@ -519,17 +574,7 @@ void IdentityManager::GoogleSignedOut(
 
   for (auto& observer : observer_list_) {
     observer.OnPrimaryAccountCleared(account_info);
-    observer.OnPrimaryAccountChanged(event_details);
   }
-
-#if defined(OS_ANDROID)
-  if (java_identity_manager_) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_IdentityManager_onPrimaryAccountCleared(
-        env, java_identity_manager_,
-        ConvertToJavaCoreAccountInfo(env, account_info));
-  }
-#endif
 }
 
 void IdentityManager::OnRefreshTokenAvailable(const CoreAccountId& account_id) {

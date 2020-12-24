@@ -104,7 +104,7 @@ public class UkmTest {
                 () -> UmaSessionStats.updateMetricsAndCrashReportingForTesting(true));
 
         // Enable a Syncing account.
-        CoreAccountInfo account = mSyncTestRule.setUpAccountAndSignInForTesting();
+        CoreAccountInfo account = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         Tab normalTab = mSyncTestRule.getActivity().getActivityTab();
         Assert.assertTrue("UKM Enabled:", isUkmEnabled(normalTab));
 

@@ -121,14 +121,32 @@ class PrimaryAccountManagerTest : public testing::Test,
     EXPECT_EQ(1, num_successful_signins_);
   }
 
-  void GoogleSigninSucceeded(
-      const signin::PrimaryAccountChangeEvent& account_info) override {
-    num_successful_signins_++;
-  }
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override {
+    DCHECK(event_details.GetEventTypeFor(signin::ConsentLevel::kSync) !=
+               signin::PrimaryAccountChangeEvent::Type::kNone ||
+           event_details.GetEventTypeFor(signin::ConsentLevel::kNotRequired) !=
+               signin::PrimaryAccountChangeEvent::Type::kNone)
+        << "PrimaryAccountChangeEvent with no change: " << event_details;
 
-  void UnconsentedPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& info) override {
-    num_unconsented_account_changed_++;
+    switch (event_details.GetEventTypeFor(ConsentLevel::kSync)) {
+      case signin::PrimaryAccountChangeEvent::Type::kSet:
+        num_successful_signins_++;
+        break;
+      case signin::PrimaryAccountChangeEvent::Type::kCleared:
+        // ignored
+        break;
+      case signin::PrimaryAccountChangeEvent::Type::kNone:
+        break;
+    }
+    switch (event_details.GetEventTypeFor(ConsentLevel::kNotRequired)) {
+      case signin::PrimaryAccountChangeEvent::Type::kSet:
+      case signin::PrimaryAccountChangeEvent::Type::kCleared:
+        num_unconsented_account_changed_++;
+        break;
+      case signin::PrimaryAccountChangeEvent::Type::kNone:
+        break;
+    }
   }
 
   base::test::TaskEnvironment task_environment_;

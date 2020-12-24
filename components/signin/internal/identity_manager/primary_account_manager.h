@@ -47,19 +47,10 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Called whenever a user signs into Google services such as sync.
-    // Not called during a reauth.
-    virtual void GoogleSigninSucceeded(
-        const signin::PrimaryAccountChangeEvent& event_details) {}
-
-    // Called whenever the unconsented primary account changes. This includes
-    // the changes for the consented primary account as well.
-    virtual void UnconsentedPrimaryAccountChanged(
-        const signin::PrimaryAccountChangeEvent& event_details) {}
-
-    // Called whenever the currently signed-in user has been signed out.
-    virtual void GoogleSignedOut(
-        const signin::PrimaryAccountChangeEvent& event_details) {}
+    // Called when there is a change in the primary account or in the consent
+    // level for the primary account.
+    virtual void OnPrimaryAccountChanged(
+        const signin::PrimaryAccountChangeEvent& event_details) = 0;
   };
 
   // Used to remove accounts from the token service and the account tracker.
@@ -174,6 +165,13 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
       RemoveAccountsOption remove_option,
       bool assert_signout_allowed,
       SigninClient::SignoutDecision signout_decision);
+
+  // Returns the current state of the primary account.
+  signin::PrimaryAccountChangeEvent::State GetPrimaryAccountState() const;
+
+  // Fires OnPrimaryAccountChanged() notifications on all observers.
+  void FirePrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent::State& previous_state);
 
   // ProfileOAuth2TokenServiceObserver:
   void OnRefreshTokensLoaded() override;

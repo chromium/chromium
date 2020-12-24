@@ -635,11 +635,8 @@ class IdentityManager : public KeyedService,
       const CoreAccountId& account_id) const;
 
   // PrimaryAccountManager::Observer:
-  void GoogleSigninSucceeded(
+  void OnPrimaryAccountChanged(
       const PrimaryAccountChangeEvent& event_details) override;
-  void UnconsentedPrimaryAccountChanged(
-      const PrimaryAccountChangeEvent& event_details) override;
-  void GoogleSignedOut(const PrimaryAccountChangeEvent& event_details) override;
 
   // ProfileOAuth2TokenServiceObserver:
   void OnRefreshTokenAvailable(const CoreAccountId& account_id) override;
@@ -678,6 +675,14 @@ class IdentityManager : public KeyedService,
   // AccountTrackerService callbacks:
   void OnAccountUpdated(const AccountInfo& info);
   void OnAccountRemoved(const AccountInfo& info);
+
+  // Fire the deprecated observer methods for settings and clearing the primary
+  // account.
+  void FirePrimaryAccountSet(const PrimaryAccountChangeEvent& event_details);
+  void FireUnconsentedPrimaryAccountChanged(
+      const PrimaryAccountChangeEvent& event_details);
+  void FirePrimaryAccountCleared(
+      const PrimaryAccountChangeEvent& event_details);
 
   // Backing signin classes.
   std::unique_ptr<AccountTrackerService> account_tracker_service_;

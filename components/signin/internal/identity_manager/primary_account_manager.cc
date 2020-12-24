@@ -157,17 +157,10 @@ void PrimaryAccountManager::SetUnconsentedPrimaryAccountInfo(
   }
 
   bool account_changed = account_info != primary_account_info();
-  PrimaryAccountChangeEvent::State previous_state(
-      primary_account_info(), signin::ConsentLevel::kNotRequired);
+  PrimaryAccountChangeEvent::State previous_state = GetPrimaryAccountState();
   SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false);
-
-  if (account_changed) {
-    PrimaryAccountChangeEvent::State current_state(
-        account_info, signin::ConsentLevel::kNotRequired);
-    PrimaryAccountChangeEvent event_details(previous_state, current_state);
-    for (Observer& observer : observers_)
-      observer.UnconsentedPrimaryAccountChanged(event_details);
-  }
+  if (account_changed)
+    FirePrimaryAccountChanged(previous_state);
 }
 
 void PrimaryAccountManager::SetAuthenticatedAccountInfo(
@@ -249,23 +242,9 @@ void PrimaryAccountManager::SignIn(const std::string& username) {
     return;
   }
 
-  bool account_changed = info != primary_account_info();
-  PrimaryAccountChangeEvent::State previous_state(
-      primary_account_info(), signin::ConsentLevel::kNotRequired);
-  PrimaryAccountChangeEvent::State current_state(info,
-                                                 signin::ConsentLevel::kSync);
-  PrimaryAccountChangeEvent event_details(previous_state, current_state);
-
+  PrimaryAccountChangeEvent::State previous_state = GetPrimaryAccountState();
   SetAuthenticatedAccountInfo(info);
-
-  for (Observer& observer : observers_) {
-    // TODO(https://crbug.com/1158855): Remove call to
-    // UnconsentedPrimaryAccountChanged() after IdentityManager::Observer
-    // migration has been completed.
-    if (account_changed)
-      observer.UnconsentedPrimaryAccountChanged(event_details);
-    observer.GoogleSigninSucceeded(event_details);
-  }
+  FirePrimaryAccountChanged(previous_state);
 }
 
 void PrimaryAccountManager::UpdateAuthenticatedAccountInfo() {
@@ -350,39 +329,52 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
     return;
   }
 
-  const CoreAccountInfo account_info = primary_account_info();
-  const bool has_sync_consent = HasPrimaryAccount(signin::ConsentLevel::kSync);
+  PrimaryAccountChangeEvent::State previous_state = GetPrimaryAccountState();
   client_->GetPrefs()->ClearPref(prefs::kGoogleServicesHostedDomain);
-  // Revoke the sync consent.
-  if (has_sync_consent)
-    SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false);
 
-  DCHECK(!HasPrimaryAccount(signin::ConsentLevel::kSync));
   // Revoke all tokens before sending signed_out notification, because there
   // may be components that don't listen for token service events when the
   // profile is not connected to an account.
   switch (remove_option) {
     case RemoveAccountsOption::kRemoveAllAccounts:
       VLOG(0) << "Revoking all refresh tokens on server. Reason: sign out";
-      SetUnconsentedPrimaryAccountInfo(CoreAccountInfo());
+      SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false);
       token_service_->RevokeAllCredentials(
           signin_metrics::SourceForRefreshTokenOperation::
               kPrimaryAccountManager_ClearAccount);
       break;
     case RemoveAccountsOption::kKeepAllAccounts:
-      // Do nothing.
+      SetPrimaryAccountInternal(primary_account_info(),
+                                /*consented_to_sync=*/false);
       break;
   }
 
-  PrimaryAccountChangeEvent::State previous_state;
-  previous_state.primary_account = account_info;
-  previous_state.consent_level = has_sync_consent
-                                     ? signin::ConsentLevel::kSync
-                                     : signin::ConsentLevel::kNotRequired;
-  PrimaryAccountChangeEvent event_details(previous_state,
-                                          PrimaryAccountChangeEvent::State());
+  DCHECK(!HasPrimaryAccount(signin::ConsentLevel::kSync));
+  FirePrimaryAccountChanged(previous_state);
+}
+
+PrimaryAccountChangeEvent::State PrimaryAccountManager::GetPrimaryAccountState()
+    const {
+  PrimaryAccountChangeEvent::State state(primary_account_info(),
+                                         signin::ConsentLevel::kNotRequired);
+  if (HasPrimaryAccount(signin::ConsentLevel::kSync))
+    state.consent_level = signin::ConsentLevel::kSync;
+  return state;
+}
+
+void PrimaryAccountManager::FirePrimaryAccountChanged(
+    const PrimaryAccountChangeEvent::State& previous_state) {
+  PrimaryAccountChangeEvent::State current_state = GetPrimaryAccountState();
+  PrimaryAccountChangeEvent event_details(previous_state, current_state);
+
+  DCHECK(event_details.GetEventTypeFor(signin::ConsentLevel::kSync) !=
+             PrimaryAccountChangeEvent::Type::kNone ||
+         event_details.GetEventTypeFor(signin::ConsentLevel::kNotRequired) !=
+             PrimaryAccountChangeEvent::Type::kNone)
+      << "PrimaryAccountChangeEvent with no change: " << event_details;
+
   for (Observer& observer : observers_)
-    observer.GoogleSignedOut(event_details);
+    observer.OnPrimaryAccountChanged(event_details);
 }
 
 void PrimaryAccountManager::OnRefreshTokensLoaded() {

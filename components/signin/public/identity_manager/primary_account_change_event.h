@@ -55,6 +55,10 @@ class PrimaryAccountChangeEvent {
 bool operator==(const PrimaryAccountChangeEvent::State& lhs,
                 const PrimaryAccountChangeEvent::State& rhs);
 
+std::ostream& operator<<(std::ostream& os,
+                         const PrimaryAccountChangeEvent::State& state);
+std::ostream& operator<<(std::ostream& os,
+                         const PrimaryAccountChangeEvent& event);
 }  // namespace signin
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_PRIMARY_ACCOUNT_CHANGE_EVENT_H_

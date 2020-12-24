@@ -77,4 +77,21 @@ bool operator==(const PrimaryAccountChangeEvent::State& lhs,
          lhs.consent_level == rhs.consent_level;
 }
 
+std::ostream& operator<<(std::ostream& os,
+                         const PrimaryAccountChangeEvent::State& state) {
+  os << "{ primary_account: " << state.primary_account.account_id << ", "
+     << "consent_level:"
+     << (state.consent_level == ConsentLevel::kNotRequired ? "NotRequired"
+                                                           : "Sync")
+     << " }";
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const PrimaryAccountChangeEvent& event) {
+  os << "{ previous_state: " << event.GetPreviousState() << ", "
+     << "current_state: " << event.GetCurrentState() << " }";
+  return os;
+}
+
 }  // namespace signin
