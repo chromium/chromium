@@ -26,10 +26,6 @@ constexpr base::TimeDelta kAnimationDuration =
     base::TimeDelta::FromMilliseconds(167);
 constexpr SkScalar kAnimationTranslationY = 20;
 
-// Value returned during notification of animation completion events in order to
-// delete the observer which provided notification.
-constexpr bool kDeleteObserver = true;
-
 // Helpers ---------------------------------------------------------------------
 
 // Initializes the layer for the specified `view` for animations.
@@ -103,6 +99,24 @@ void DoAnimateOut(views::View* view,
   DoAnimateTo(view, /*opacity=*/0.f,
               CreateTransformFromOffset(0, -kAnimationTranslationY), duration,
               observer);
+}
+
+// Returns a callback which deletes the associated animation observer after
+// running another `callback`.
+using AnimationCompletedCallback =
+    base::OnceCallback<void(const ui::CallbackLayerAnimationObserver&)>;
+base::RepeatingCallback<bool(const ui::CallbackLayerAnimationObserver&)>
+DeleteObserverAfterRunning(AnimationCompletedCallback callback) {
+  return base::BindRepeating(
+      [](AnimationCompletedCallback callback,
+         const ui::CallbackLayerAnimationObserver& observer) {
+        // NOTE: It's safe to move `callback` since this code will only run
+        // once due to deletion of the associated `observer`. The `observer` is
+        // deleted by returning `true`.
+        std::move(callback).Run(observer);
+        return true;
+      },
+      base::Passed(std::move(callback)));
 }
 
 // HoldingSpaceScrollView ------------------------------------------------------
@@ -340,9 +354,9 @@ void HoldingSpaceItemViewsSection::MaybeAnimateIn() {
 
   // NOTE: `animate_in_observer` is deleted after `OnAnimateInCompleted()`.
   ui::CallbackLayerAnimationObserver* animate_in_observer =
-      new ui::CallbackLayerAnimationObserver(base::BindRepeating(
-          &HoldingSpaceItemViewsSection::OnAnimateInCompleted,
-          base::Unretained(this)));
+      new ui::CallbackLayerAnimationObserver(DeleteObserverAfterRunning(
+          base::BindOnce(&HoldingSpaceItemViewsSection::OnAnimateInCompleted,
+                         weak_factory_.GetWeakPtr())));
 
   AnimateIn(animate_in_observer);
   animate_in_observer->SetActive();
@@ -361,9 +375,9 @@ void HoldingSpaceItemViewsSection::MaybeAnimateOut() {
 
   // NOTE: `animate_out_observer` is deleted after `OnAnimateOutCompleted()`.
   ui::CallbackLayerAnimationObserver* animate_out_observer =
-      new ui::CallbackLayerAnimationObserver(base::BindRepeating(
-          &HoldingSpaceItemViewsSection::OnAnimateOutCompleted,
-          base::Unretained(this)));
+      new ui::CallbackLayerAnimationObserver(DeleteObserverAfterRunning(
+          base::BindOnce(&HoldingSpaceItemViewsSection::OnAnimateOutCompleted,
+                         weak_factory_.GetWeakPtr())));
 
   AnimateOut(animate_out_observer);
   animate_out_observer->SetActive();
@@ -394,13 +408,13 @@ void HoldingSpaceItemViewsSection::AnimateOut(
   DoAnimateOut(container_, animation_duration, observer);
 }
 
-bool HoldingSpaceItemViewsSection::OnAnimateInCompleted(
+void HoldingSpaceItemViewsSection::OnAnimateInCompleted(
     const ui::CallbackLayerAnimationObserver& observer) {
   DCHECK(animation_state_ & AnimationState::kAnimatingIn);
   animation_state_ &= ~AnimationState::kAnimatingIn;
 
   if (observer.aborted_count())
-    return kDeleteObserver;
+    return;
 
   DCHECK_EQ(animation_state_, AnimationState::kNotAnimating);
 
@@ -408,17 +422,15 @@ bool HoldingSpaceItemViewsSection::OnAnimateInCompleted(
   // that have been animated in should all be associated with holding space
   // items that exist in the model.
   SetCanProcessEventsWithinSubtree(true);
-
-  return kDeleteObserver;
 }
 
-bool HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
+void HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
     const ui::CallbackLayerAnimationObserver& observer) {
   DCHECK(animation_state_ & AnimationState::kAnimatingOut);
   animation_state_ &= ~AnimationState::kAnimatingOut;
 
   if (observer.aborted_count())
-    return kDeleteObserver;
+    return;
 
   DCHECK_EQ(animation_state_, AnimationState::kNotAnimating);
 
@@ -437,7 +449,7 @@ bool HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
 
   HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
   if (!model)
-    return kDeleteObserver;
+    return;
 
   for (const auto& item : model->items()) {
     if (item->IsFinalized() && base::Contains(supported_types_, item->type())) {
@@ -457,8 +469,6 @@ bool HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
   }
 
   MaybeAnimateIn();
-
-  return kDeleteObserver;
 }
 
 }  // namespace ash

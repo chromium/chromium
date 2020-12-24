@@ -115,10 +115,9 @@ class HoldingSpaceItemViewsSection : public views::View,
   void AnimateOut(ui::LayerAnimationObserver* observer);
 
   // Invoked when an animate in/out of the contents of this section has been
-  // completed. These methods always return true to delete the observer which
-  // notified the event.
-  bool OnAnimateInCompleted(const ui::CallbackLayerAnimationObserver&);
-  bool OnAnimateOutCompleted(const ui::CallbackLayerAnimationObserver&);
+  // completed. Note that the provided observer will be deleted after returning.
+  void OnAnimateInCompleted(const ui::CallbackLayerAnimationObserver&);
+  void OnAnimateOutCompleted(const ui::CallbackLayerAnimationObserver&);
 
   HoldingSpaceItemViewDelegate* const delegate_;
   const std::vector<HoldingSpaceItem::Type> supported_types_;
@@ -142,8 +141,11 @@ class HoldingSpaceItemViewsSection : public views::View,
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>
       controller_observer_{this};
+
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       model_observer_{this};
+
+  base::WeakPtrFactory<HoldingSpaceItemViewsSection> weak_factory_{this};
 };
 
 }  // namespace ash
