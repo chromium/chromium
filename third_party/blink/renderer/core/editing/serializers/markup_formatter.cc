@@ -385,18 +385,28 @@ EntityMask MarkupFormatter::EntityMaskForText(const Text& text) const {
   if (text.parentElement())
     parent_name = &(text.parentElement())->TagQName();
 
-  if (parent_name && (*parent_name == html_names::kScriptTag ||
-                      *parent_name == html_names::kStyleTag ||
-                      *parent_name == html_names::kXmpTag ||
-                      *parent_name == html_names::kIFrameTag ||
-                      *parent_name == html_names::kPlaintextTag ||
-                      *parent_name == html_names::kNoembedTag ||
-                      *parent_name == html_names::kNoframesTag ||
-                      (*parent_name == html_names::kNoscriptTag &&
-                       text.GetExecutionContext() &&
-                       text.GetExecutionContext()->CanExecuteScripts(
-                           kNotAboutToExecuteScript))))
-    return kEntityMaskInCDATA;
+  if (parent_name) {
+    // For a NOSCRIPT tag, escape the string unless there's an execution context
+    // and scripting is enabled. Note that some documents (e.g. the one created
+    // by DOMParser) are created with a script-enabled execution context, but no
+    // DOMWindow. But per spec [1], they should behave as if they have no
+    // execution context. So check for a DOMWindow here.
+    // [1] https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html
+    bool is_noscript_tag_with_script_enabled =
+        *parent_name == html_names::kNoscriptTag &&
+        text.GetExecutionContext() && text.GetDocument().domWindow() &&
+        text.GetExecutionContext()->CanExecuteScripts(kNotAboutToExecuteScript);
+    if (*parent_name == html_names::kScriptTag ||
+        *parent_name == html_names::kStyleTag ||
+        *parent_name == html_names::kXmpTag ||
+        *parent_name == html_names::kIFrameTag ||
+        *parent_name == html_names::kPlaintextTag ||
+        *parent_name == html_names::kNoembedTag ||
+        *parent_name == html_names::kNoframesTag ||
+        is_noscript_tag_with_script_enabled) {
+      return kEntityMaskInCDATA;
+    }
+  }
   return kEntityMaskInHTMLPCDATA;
 }
 
