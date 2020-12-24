@@ -33,7 +33,8 @@ bool AwTracingDelegate::IsAllowedToBeginBackgroundScenario(
 
 bool AwTracingDelegate::IsAllowedToEndBackgroundScenario(
     const content::BackgroundTracingConfig& config,
-    bool requires_anonymized_data) {
+    bool requires_anonymized_data,
+    bool is_crash_scenario) {
   // Background tracing is allowed in general and can be restricted when
   // configuring BackgroundTracingManager.
   return true;

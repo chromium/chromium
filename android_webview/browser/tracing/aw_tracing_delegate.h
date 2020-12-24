@@ -28,7 +28,8 @@ class AwTracingDelegate : public content::TracingDelegate {
       bool requires_anonymized_data) override;
   bool IsAllowedToEndBackgroundScenario(
       const content::BackgroundTracingConfig& config,
-      bool requires_anonymized_data) override;
+      bool requires_anonymized_data,
+      bool is_crash_scenario) override;
   std::unique_ptr<base::DictionaryValue> GenerateMetadataDict() override;
 };
 

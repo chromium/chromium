@@ -34,6 +34,7 @@ const char kConfigRuleStopTracingOnRepeatedReactive[] =
     "stop_tracing_on_repeated_reactive";
 const char kConfigRuleArgsKey[] = "args";
 const char kConfigRuleIdKey[] = "rule_id";
+const char kConfigIsCrashKey[] = "is_crash";
 
 const char kConfigRuleHistogramNameKey[] = "histogram_name";
 const char kConfigRuleHistogramValueOldKey[] = "histogram_value";
@@ -67,19 +68,11 @@ const int kReactiveTraceRandomStartTimeMax = 120;
 
 namespace content {
 
-BackgroundTracingRule::BackgroundTracingRule()
-    : trigger_chance_(1.0),
-      trigger_delay_(-1),
-      stop_tracing_on_repeated_reactive_(false),
-      category_preset_(BackgroundTracingConfigImpl::CATEGORY_PRESET_UNSET) {}
-
+BackgroundTracingRule::BackgroundTracingRule() = default;
 BackgroundTracingRule::BackgroundTracingRule(int trigger_delay)
-    : trigger_chance_(1.0),
-      trigger_delay_(trigger_delay),
-      stop_tracing_on_repeated_reactive_(false),
-      category_preset_(BackgroundTracingConfigImpl::CATEGORY_PRESET_UNSET) {}
+    : trigger_delay_(trigger_delay) {}
 
-BackgroundTracingRule::~BackgroundTracingRule() {}
+BackgroundTracingRule::~BackgroundTracingRule() = default;
 
 bool BackgroundTracingRule::ShouldTriggerNamedEvent(
     const std::string& named_event) const {
@@ -115,6 +108,10 @@ void BackgroundTracingRule::IntoDict(base::DictionaryValue* dict) const {
         kConfigCategoryKey,
         BackgroundTracingConfigImpl::CategoryPresetToString(category_preset_));
   }
+
+  if (is_crash_) {
+    dict->SetBoolean(kConfigIsCrashKey, is_crash_);
+  }
 }
 
 void BackgroundTracingRule::GenerateMetadataProto(
@@ -130,6 +127,7 @@ void BackgroundTracingRule::Setup(const base::DictionaryValue* dict) {
   } else {
     rule_id_ = GetDefaultRuleId();
   }
+  dict->GetBoolean(kConfigIsCrashKey, &is_crash_);
 }
 
 namespace {

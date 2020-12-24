@@ -40,7 +40,8 @@ class CONTENT_EXPORT TracingDelegate {
 
   virtual bool IsAllowedToEndBackgroundScenario(
       const content::BackgroundTracingConfig& config,
-      bool requires_anonymized_data);
+      bool requires_anonymized_data,
+      bool is_crash_scenario);
 
   virtual bool IsProfileLoaded();
 

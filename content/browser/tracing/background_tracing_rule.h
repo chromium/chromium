@@ -65,17 +65,21 @@ class CONTENT_EXPORT BackgroundTracingRule {
 
   const std::string& rule_id() const { return rule_id_; }
 
+  bool is_crash() const { return is_crash_; }
+
  protected:
   virtual std::string GetDefaultRuleId() const;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(BackgroundTracingRule);
 
-  double trigger_chance_;
-  int trigger_delay_;
-  bool stop_tracing_on_repeated_reactive_;
+  double trigger_chance_ = 1.0;
+  int trigger_delay_ = -1;
+  bool stop_tracing_on_repeated_reactive_ = false;
   std::string rule_id_;
-  BackgroundTracingConfigImpl::CategoryPreset category_preset_;
+  BackgroundTracingConfigImpl::CategoryPreset category_preset_ =
+      BackgroundTracingConfigImpl::CATEGORY_PRESET_UNSET;
+  bool is_crash_ = false;
   std::unique_ptr<base::DictionaryValue> args_;
 };
 

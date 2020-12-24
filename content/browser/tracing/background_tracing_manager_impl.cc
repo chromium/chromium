@@ -454,12 +454,14 @@ void BackgroundTracingManagerImpl::WhenIdle(
   }
 }
 
-bool BackgroundTracingManagerImpl::IsAllowedFinalization() const {
+bool BackgroundTracingManagerImpl::IsAllowedFinalization(
+    bool is_crash_scenario) const {
   return !delegate_ ||
          (active_scenario_ &&
           delegate_->IsAllowedToEndBackgroundScenario(
               *active_scenario_->GetConfig(),
-              active_scenario_->GetConfig()->requires_anonymized_data()));
+              active_scenario_->GetConfig()->requires_anonymized_data(),
+              is_crash_scenario));
 }
 
 std::unique_ptr<base::DictionaryValue>

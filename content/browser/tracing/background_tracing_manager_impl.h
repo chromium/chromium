@@ -133,7 +133,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
 
   void AddMetadataGeneratorFunction();
 
-  bool IsAllowedFinalization() const;
+  bool IsAllowedFinalization(bool is_crash_scenario) const;
 
   // Called by BackgroundTracingActiveScenario
   void OnStartTracingDone(BackgroundTracingConfigImpl::CategoryPreset preset);

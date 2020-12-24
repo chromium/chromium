@@ -44,7 +44,8 @@ class ChromeTracingDelegate : public content::TracingDelegate,
 
   bool IsAllowedToEndBackgroundScenario(
       const content::BackgroundTracingConfig& config,
-      bool requires_anonymized_data) override;
+      bool requires_anonymized_data,
+      bool is_crash_scenario) override;
 
   bool IsProfileLoaded() override;
 
