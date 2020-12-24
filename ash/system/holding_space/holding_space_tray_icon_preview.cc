@@ -219,9 +219,7 @@ void HoldingSpaceTrayIconPreview::AnimateIn(base::TimeDelta additional_delay) {
 void HoldingSpaceTrayIconPreview::AnimateOut(
     base::OnceClosure animate_out_closure) {
   animate_out_closure_ = std::move(animate_out_closure);
-  DCHECK(index_.has_value());
-  DCHECK(!pending_index_.has_value());
-
+  pending_index_.reset();
   index_.reset();
 
   if (!layer_) {
