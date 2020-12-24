@@ -210,20 +210,20 @@ AccelerometerSamplesObserver::GetPendingRemote() {
 
   auto pending_remote = receiver_.BindNewPipeAndPassRemote();
 
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &AccelerometerSamplesObserver::ObserverConnectionErrorCallback,
-      weak_factory_.GetWeakPtr()));
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&AccelerometerSamplesObserver::OnObserverDisconnect,
+                     weak_factory_.GetWeakPtr()));
   return pending_remote;
 }
 
-void AccelerometerSamplesObserver::ObserverConnectionErrorCallback() {
+void AccelerometerSamplesObserver::OnObserverDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  LOG(ERROR) << "Observer connection error";
+  LOG(ERROR) << "OnObserverDisconnect error, assuming IIO Service crashes and "
+                "waiting for its relaunch.";
+  // Don't reset |sensor_device_remote_| so that LightProviderMojo can get the
+  // disconnection.
   receiver_.reset();
-
-  if (sensor_device_remote_.is_bound())
-    StartReading();
 }
 
 void AccelerometerSamplesObserver::SetFrequencyCallback(

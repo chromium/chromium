@@ -124,16 +124,6 @@ TEST_F(AccelerometerSamplesObserverTest, GetSamples) {
   EXPECT_TRUE(sensor_device_->HasReceivers());
   EXPECT_EQ(num_samples_, 1);
 
-  // Simulate a disconnection of the observer's mojo channel in IIO Service.
-  sensor_device_->StopReadingSamples();
-
-  // Wait until the observer's mojo channel is re-established and a sample is
-  // received.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(sensor_device_->HasReceivers());
-  EXPECT_EQ(num_samples_, 2);
-
   DisableFirstChannel();
 
   // Wait until a sample is received.
@@ -141,7 +131,17 @@ TEST_F(AccelerometerSamplesObserverTest, GetSamples) {
 
   EXPECT_TRUE(sensor_device_->HasReceivers());
   // The updated sample is not sent to |OnSampleUpdatedCallback|.
-  EXPECT_EQ(num_samples_, 2);
+  EXPECT_EQ(num_samples_, 1);
+
+  // Simulate a disconnection of the observer's mojo channel in IIO Service.
+  sensor_device_->StopReadingSamples();
+
+  // Wait until the disconnection is done.
+  base::RunLoop().RunUntilIdle();
+
+  // OnObserverDisconnect shouldn't reset SensorDevice's mojo endpoint so that
+  // LightProviderMojo can get the disconnection.
+  EXPECT_TRUE(sensor_device_->HasReceivers());
 }
 
 }  // namespace

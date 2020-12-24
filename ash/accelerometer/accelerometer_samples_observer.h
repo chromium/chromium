@@ -64,7 +64,7 @@ class ASH_EXPORT AccelerometerSamplesObserver
   mojo::PendingRemote<chromeos::sensors::mojom::SensorDeviceSamplesObserver>
   GetPendingRemote();
 
-  void ObserverConnectionErrorCallback();
+  void OnObserverDisconnect();
   void SetFrequencyCallback(double result_frequency);
   void SetChannelsEnabledCallback(const std::vector<int32_t>& failed_indices);
 

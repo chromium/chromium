@@ -286,16 +286,11 @@ void AccelerometerProviderMojo::RegisterAccelerometerWithId(int32_t id) {
 void AccelerometerProviderMojo::OnAccelerometerRemoteDisconnect(int32_t id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto& accelerometer = accelerometers_[id];
-
-  LOG(ERROR) << "Accelerometer with id: " << id << " disconnected";
-  accelerometer.remote.reset();
-  accelerometer.samples_observer.reset();
-
-  if (!sensor_service_remote_.is_bound())
-    return;
-
-  RegisterAccelerometerWithId(id);
+  LOG(ERROR)
+      << "OnAccelerometerRemoteDisconnect: " << id
+      << ", resetting SensorService as IIO Service should be destructed and "
+         "waiting for the relaunch of it.";
+  ResetSensorService();
 }
 
 void AccelerometerProviderMojo::GetAttributesCallback(

@@ -152,21 +152,6 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesOfOneAccel) {
   EXPECT_FALSE(observer_.update_->has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
 
   observer_.update_.reset();
-
-  // Simulate a disconnection of the accelerometer's mojo channel in IIO
-  // Service.
-  AddDevice(kFakeLidAccelerometerId,
-            chromeos::sensors::mojom::DeviceType::ACCEL,
-            base::NumberToString(kFakeScaleValue),
-            kLocationStrings[ACCELEROMETER_SOURCE_SCREEN]);
-
-  // Wait until the accelerometer's mojo channel is re-established and a sample
-  // is received.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(observer_.update_.get());
-  EXPECT_TRUE(observer_.update_->has(ACCELEROMETER_SOURCE_SCREEN));
-  EXPECT_FALSE(observer_.update_->has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
 }
 
 TEST_F(AccelerometerProviderMojoTest, GetSamplesWithNoLidAngle) {
@@ -196,27 +181,10 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesWithNoLidAngle) {
             base::NumberToString(kFakeScaleValue),
             kLocationStrings[ACCELEROMETER_SOURCE_SCREEN]);
 
-  // Wait until the accelerometer's mojo channel is re-established and a sample
-  // is received.
+  // Wait until the disconnection is done.
   base::RunLoop().RunUntilIdle();
 
-  // Get the second sample from only one accelerometer.
-  EXPECT_FALSE(observer_.update_.get());
-
-  // Simulate a disconnection of the other accelerometer's mojo channel in IIO
-  // Service.
-  AddDevice(kFakeBaseAccelerometerId,
-            chromeos::sensors::mojom::DeviceType::ACCEL,
-            base::NumberToString(kFakeScaleValue),
-            kLocationStrings[ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD]);
-
-  // Wait until the other accelerometer's mojo channel is re-established and a
-  // sample is received.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(observer_.update_.get());
-  EXPECT_TRUE(observer_.update_->has(ACCELEROMETER_SOURCE_SCREEN));
-  EXPECT_TRUE(observer_.update_->has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+  EXPECT_FALSE(sensor_hal_server_->GetSensorService()->is_bound());
 }
 
 TEST_F(AccelerometerProviderMojoTest, GetSamplesWithLidAngle) {
