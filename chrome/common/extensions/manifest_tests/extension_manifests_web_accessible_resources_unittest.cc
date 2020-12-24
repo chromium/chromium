@@ -266,3 +266,38 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV2Type) {
                      "Invalid value for 'web_accessible_resources[0]'. Value "
                      "is not a string.");
 }
+
+// Restrict resource access by specifying |extension_ids|.
+TEST_F(WebAccessibleResourcesManifestTest,
+       WebAccessibleResourcesTestExtensionIds) {
+  auto get_manifest_data = [](std::string extension_id =
+                                  "abcdefghijklmnopabcdefghijklmnop") {
+    constexpr char kManifestStub[] =
+        R"({
+        "name": "Test",
+        "version": "0.1",
+        "manifest_version": 3,
+        "web_accessible_resources": [
+          {
+            "resources": ["test"],
+            "extension_ids": ["%s"]
+          }
+        ]
+      })";
+    base::Value manifest_value = base::test::ParseJson(
+        base::StringPrintf(kManifestStub, extension_id.c_str()));
+    EXPECT_EQ(base::Value::Type::DICTIONARY, manifest_value.type());
+    return ManifestData(std::move(manifest_value), "test");
+  };
+  scoped_refptr<const Extension> extension1 =
+      LoadAndExpectSuccess(get_manifest_data());
+  scoped_refptr<const Extension> extension2 =
+      LoadAndExpectSuccess(get_manifest_data(extension1->id()));
+  auto initiator_origin = url::Origin::Create(extension2->url());
+  EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      extension2.get(), "test", initiator_origin));
+  EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      extension2.get(), "inaccessible", initiator_origin));
+  EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      extension1.get(), "test", initiator_origin));
+}

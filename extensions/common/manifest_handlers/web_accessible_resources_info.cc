@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
@@ -207,6 +208,10 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
 
       if (entry.matches.MatchesURL(initiator_url))
         return true;
+      if (initiator_url.SchemeIs(extensions::kExtensionScheme) &&
+          base::Contains(entry.extension_ids, initiator_url.host())) {
+        return true;
+      }
     }
   }
   return false;
