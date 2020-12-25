@@ -35,7 +35,9 @@ void CameraAppWindowManager::SetCameraUsageMonitor(
                      base::Unretained(this), widget));
   camera_usage_monitors_.emplace(widget, std::move(remote));
 
-  widget->AddObserver(this);
+  if (!widget->HasObserver(this)) {
+    widget->AddObserver(this);
+  }
   std::move(callback).Run();
 
   if (widget->IsVisible()) {
@@ -130,11 +132,15 @@ void CameraAppWindowManager::OnWidgetActivationChanged(views::Widget* widget,
   }
 }
 
+void CameraAppWindowManager::OnWidgetDestroying(views::Widget* widget) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  widget->RemoveObserver(this);
+}
+
 CameraAppWindowManager::CameraAppWindowManager() = default;
 
 void CameraAppWindowManager::OnMonitorMojoConnectionError(
     views::Widget* widget) {
-  widget->RemoveObserver(this);
   camera_usage_monitors_.erase(widget);
 
   if (pending_transfer_.has_value() && widget == *pending_transfer_) {
