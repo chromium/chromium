@@ -157,7 +157,7 @@
   {
     "name": "arc-file-picker-experiment",
     "owners": [ "niwa" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 95
   },
   {
     "name": "arc-native-bridge-64bit-support-experiment",
