@@ -6,7 +6,7 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {createScrollBorders, decodeString16, mojoString16} from 'chrome://new-tab-page/new_tab_page.js';
-import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
 
 suite('scroll borders', () => {
   /** @type {!HTMLElement} */
@@ -44,6 +44,7 @@ suite('scroll borders', () => {
     bottom = document.body.lastElementChild;
     observer = createScrollBorders(container, top, bottom, 'show');
     await waitAfterNextRender();
+    await flushTasks();
   });
 
   teardown(() => {
@@ -58,6 +59,7 @@ suite('scroll borders', () => {
   test('borders shown when content available above and below', async () => {
     container.scrollTop = 10;
     await waitAfterNextRender();
+    await flushTasks();
     assertShown(top);
     assertShown(bottom);
   });
@@ -65,6 +67,7 @@ suite('scroll borders', () => {
   test('bottom border hidden when no content available below', async () => {
     container.scrollTop = 200;
     await waitAfterNextRender();
+    await flushTasks();
     assertShown(top);
     assertHidden(bottom);
   });
@@ -72,6 +75,7 @@ suite('scroll borders', () => {
   test('borders hidden when all content is shown', async () => {
     content.style.height = '100px';
     await waitAfterNextRender();
+    await flushTasks();
     assertHidden(top);
     assertHidden(bottom);
   });
