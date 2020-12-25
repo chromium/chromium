@@ -417,10 +417,12 @@
       </div>
     </div>
     <div id="barcode-chip-text-container"
-         class="invisible barcode-chip-container">
+         class="invisible barcode-chip-container"
+         role="dialog" i18n-label="barcode_text_detected"
+         aria-live="polite" aria-describedby="barcode-chip-text-content">
       <div class="barcode-chip-text">
         <div id="barcode-chip-text-content"></div>
-        <button id="barcode-chip-text-expand"></button>
+        <button id="barcode-chip-text-expand" aria-expanded="false"></button>
       </div>
       <div class="circle">
         <button class="barcode-copy-button" tabindex="0"

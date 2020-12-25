@@ -34,41 +34,44 @@ export class OneShotTimer {
      */
     this.timeoutId_ = 0;
 
-    this.start_();
+    this.start();
   }
 
   /**
-   * Resets the timer delay.
+   * Starts the timer.
+   */
+  start() {
+    assert(this.timeoutId_ === 0);
+    this.timeoutId_ = setTimeout(this.handler_, this.timeout_);
+  }
+
+  /**
+   * Stops the pending timeout.
+   */
+  stop() {
+    assert(this.timeoutId_ !== 0);
+    clearTimeout(this.timeoutId_);
+    this.timeoutId_ = 0;
+  }
+
+  /**
+   * Resets the timer delay. It's a no-op if the timer is already stopped.
    */
   resetTimeout() {
-    this.clearPendingTimeout_();
-    this.start_();
+    if (this.timeoutId_ === 0) {
+      return;
+    }
+    this.stop();
+    this.start();
   }
 
   /**
    * Stops the timer and runs the scheduled handler immediately.
    */
   fireNow() {
-    this.clearPendingTimeout_();
+    if (this.timeoutId_ !== 0) {
+      this.stop();
+    }
     this.handler_();
-  }
-
-  /**
-   * Starts the timer.
-   * @private
-   */
-  start_() {
-    assert(this.timeoutId_ === 0);
-    this.timeoutId_ = setTimeout(this.handler_, this.timeout_);
-  }
-
-  /**
-   * Clears the pending timeout.
-   * @private
-   */
-  clearPendingTimeout_() {
-    assert(this.timeoutId_ !== 0);
-    clearTimeout(this.timeoutId_);
-    this.timeoutId_ = 0;
   }
 }

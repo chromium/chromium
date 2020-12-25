@@ -58,6 +58,7 @@ const struct {
     {"barcode_copy_link_button", IDS_BARCODE_COPY_LINK_BUTTON},
     {"barcode_copy_text_button", IDS_BARCODE_COPY_TEXT_BUTTON},
     {"barcode_link_detected", IDS_BARCODE_LINK_DETECTED},
+    {"barcode_text_detected", IDS_BARCODE_TEXT_DETECTED},
     {"expert_mode_button", IDS_EXPERT_MODE_BUTTON},
     {"expert_preview_metadata", IDS_EXPERT_PREVIEW_METADATA},
     {"expert_save_metadata", IDS_EXPERT_SAVE_METADATA},

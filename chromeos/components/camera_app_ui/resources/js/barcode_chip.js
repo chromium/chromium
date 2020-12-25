@@ -6,6 +6,7 @@ import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assert} from './chrome_util.js';
 import * as dom from './dom.js';
 import * as snackbar from './snackbar.js';
+import * as state from './state.js';
 import {OneShotTimer} from './timer.js';
 
 // TODO(b/172879638): Tune the duration according to the final motion spec.
@@ -48,7 +49,13 @@ function deactivate() {
 function activate(container) {
   container.classList.remove('invisible');
   currentChip = container;
+
   currentTimer = new OneShotTimer(deactivate, CHIP_DURATION);
+  if (state.get(state.State.TAB_NAVIGATION)) {
+    // Do not auto dismiss the chip when using keyboard for a11y. Screen reader
+    // might need long time to read the detected content.
+    currentTimer.stop();
+  }
 }
 
 /**
@@ -75,6 +82,7 @@ function isSafeUrl(s) {
  * @param {string} content The content to be copied.
  * @param {string} snackbarLabel The label to be displayed on snackbar when the
  *     content is copied.
+ * @return {!HTMLElement} The copy button element.
  */
 function setupCopyButton(container, content, snackbarLabel) {
   const copyButton =
@@ -83,6 +91,7 @@ function setupCopyButton(container, content, snackbarLabel) {
     await navigator.clipboard.writeText(content);
     snackbar.show(snackbarLabel);
   };
+  return copyButton;
 }
 
 /**
@@ -108,7 +117,6 @@ function showUrl(url) {
 }
 
 /**
- * TODO(b/172879638): Handle a11y.
  * Shows an actionable text chip.
  * @param {string} text
  */
@@ -125,9 +133,19 @@ function showText(text) {
   expandEl.classList.toggle('hidden', !expandable);
   expandEl.onclick = () => {
     container.classList.toggle('expanded');
+    const expanded = container.classList.contains('expanded');
+    expandEl.setAttribute('aria-expanded', expanded.toString());
   };
 
-  setupCopyButton(container, text, 'snackbar_text_copied');
+  const copyButton = setupCopyButton(container, text, 'snackbar_text_copied');
+
+  // TODO(b/172879638): There is a race in ChromeVox which will speak the
+  // focused element twice.
+  if (expandable) {
+    expandEl.focus();
+  } else {
+    copyButton.focus();
+  }
 }
 
 /**
