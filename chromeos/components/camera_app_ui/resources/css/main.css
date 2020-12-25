@@ -216,19 +216,41 @@ body.tablet-landscape .actions-group {
   flex-direction: column-reverse;
 }
 
-#modes-group {
+#mode-selector {
   --fade-padding: 16px;
+  --scrollbar-height: 5px;
 
-  -webkit-mask-image: linear-gradient(to left,
-    rgba(0, 0, 0, 0) 0,
-    rgba(0, 0, 0, 1) var(--fade-padding) calc(100% - var(--fade-padding)),
-    rgba(0, 0, 0, 0) 100%);
-  display: block;
   left: calc(var(--left-line) * 2);
+  right: calc(var(--right-line) * 2);
+}
+
+#mode-selector::before,
+#mode-selector::after {
+  background: linear-gradient(to right, black, transparent);
+  content: '';
+  display: block;
+  height: calc(100% - var(--scrollbar-height));
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  width: var(--fade-padding);
+  z-index: 2;
+}
+
+#mode-selector::before {
+  left: 0;
+}
+
+#mode-selector::after {
+  right: 0;
+  transform: scaleX(-1);
+}
+
+#modes-group {
+  display: block;
   overflow: auto;
   padding: 5px 0;
   pointer-events: auto;
-  right: calc(var(--right-line) * 2);
   text-align: center;
   white-space: nowrap;
 }
@@ -247,7 +269,7 @@ body.taking:not(.video) #shutters-group {
 }
 
 #modes-group::-webkit-scrollbar {
-  height: 5px;
+  height: var(--scrollbar-height);
   width: auto;
 }
 
