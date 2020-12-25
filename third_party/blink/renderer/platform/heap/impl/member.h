@@ -348,7 +348,7 @@ class Member : public MemberBase<T, TracenessMemberConfiguration::kTraced> {
 // heap allocated objects.
 // However instead of creating a strong pointer to the object, the WeakMember
 // creates a weak pointer, which does not keep the pointee alive. Hence if all
-// pointers to to a heap allocated object are weak the object will be garbage
+// pointers to a heap allocated object are weak the object will be garbage
 // collected. At the time of GC the weak pointers will automatically be set to
 // null.
 template <typename T>
