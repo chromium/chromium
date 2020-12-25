@@ -100,7 +100,7 @@ void AccountsMutatorImpl::InvalidateRefreshTokenForPrimaryAccount(
 #endif
   DCHECK(primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));
   CoreAccountInfo primary_account_info =
-      primary_account_manager_->GetAuthenticatedAccountInfo();
+      primary_account_manager_->GetPrimaryAccountInfo(ConsentLevel::kSync);
   AddOrUpdateAccount(primary_account_info.gaia, primary_account_info.email,
                      GaiaConstants::kInvalidRefreshToken,
                      primary_account_info.is_under_advanced_protection, source);

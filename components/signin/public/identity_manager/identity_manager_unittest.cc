@@ -410,8 +410,10 @@ class IdentityManagerTest : public testing::Test {
 
     if (primary_account_manager_setup ==
         PrimaryAccountManagerSetup::kWithAuthenticatedAccout) {
-      account_tracker_service->SeedAccountInfo(kTestGaiaId, kTestEmail);
-      primary_account_manager->SignIn(kTestEmail);
+      CoreAccountId account_id =
+          account_tracker_service->SeedAccountInfo(kTestGaiaId, kTestEmail);
+      primary_account_manager->SetSyncPrimaryAccountInfo(
+          account_tracker_service->GetAccountInfo(account_id));
     }
 
     IdentityManager::InitParameters init_params;
@@ -1219,7 +1221,8 @@ TEST_F(IdentityManagerTest, RemoveAccessTokenFromCache) {
 
   identity_manager()->GetAccountTrackerService()->SeedAccountInfo(kTestGaiaId,
                                                                   kTestEmail);
-  identity_manager()->GetPrimaryAccountManager()->SignIn(kTestEmail);
+  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      primary_account_id());
   UpdateCredentials(primary_account_id(), kTestGaiaId, kTestEmail,
                     "refresh_token");
 
@@ -1260,7 +1263,8 @@ TEST_F(IdentityManagerTest,
 
   identity_manager()->GetAccountTrackerService()->SeedAccountInfo(kTestGaiaId,
                                                                   kTestEmail);
-  identity_manager()->GetPrimaryAccountManager()->SignIn(kTestEmail);
+  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      primary_account_id());
   UpdateCredentials(primary_account_id(), kTestGaiaId, kTestEmail,
                     "refresh_token");
 
@@ -1352,7 +1356,8 @@ TEST_F(IdentityManagerTest, ObserveAccessTokenFetch) {
 
   identity_manager()->GetAccountTrackerService()->SeedAccountInfo(kTestGaiaId,
                                                                   kTestEmail);
-  identity_manager()->GetPrimaryAccountManager()->SignIn(kTestEmail);
+  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      primary_account_id());
   UpdateCredentials(primary_account_id(), kTestGaiaId, kTestEmail,
                     "refresh_token");
 
@@ -1407,7 +1412,8 @@ TEST_F(IdentityManagerTest,
 
   identity_manager()->GetAccountTrackerService()->SeedAccountInfo(kTestGaiaId,
                                                                   kTestEmail);
-  identity_manager()->GetPrimaryAccountManager()->SignIn(kTestEmail);
+  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      primary_account_id());
   UpdateCredentials(primary_account_id(), kTestGaiaId, kTestEmail,
                     "refresh_token");
   token_service()->set_auto_post_fetch_response_on_message_loop(true);
@@ -2097,7 +2103,8 @@ TEST_F(IdentityManagerTest,
        BatchChangeObserversAreNotifiedOnCredentialsUpdate) {
   identity_manager()->GetAccountTrackerService()->SeedAccountInfo(kTestGaiaId,
                                                                   kTestEmail);
-  identity_manager()->GetPrimaryAccountManager()->SignIn(kTestEmail);
+  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      primary_account_id());
   UpdateCredentials(primary_account_id(), kTestGaiaId, kTestEmail,
                     "refresh_token");
 

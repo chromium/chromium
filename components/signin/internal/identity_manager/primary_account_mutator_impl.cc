@@ -62,7 +62,7 @@ bool PrimaryAccountMutatorImpl::SetPrimaryAccount(
   // TODO(crbug.com/889899): should check that the account email is allowed.
 #endif
 
-  primary_account_manager_->SignIn(account_info.email);
+  primary_account_manager_->SetSyncPrimaryAccountInfo(account_info);
   return true;
 }
 
@@ -101,7 +101,7 @@ bool PrimaryAccountMutatorImpl::RevokeConsentShouldClearPrimaryAccount() const {
       // TODO(msarda): The logic in this function is platform specific and we
       // should consider moving it to |SigninManager|.
       return token_service_->RefreshTokenHasError(
-          primary_account_manager_->GetAuthenticatedAccountId());
+          primary_account_manager_->GetPrimaryAccountId(ConsentLevel::kSync));
     case AccountConsistencyMethod::kDisabled:
     case AccountConsistencyMethod::kMirror:
       return true;

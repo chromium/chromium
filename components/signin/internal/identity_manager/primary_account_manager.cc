@@ -113,10 +113,10 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
       account_tracker_service_->GetAccountInfo(account_id);
   if (consented) {
     DCHECK(!account_info.account_id.empty());
-    // First reset the state, because SetAuthenticatedAccountInfo can only be
-    // called if the user is not already signed in.
-    SetPrimaryAccountInternal(CoreAccountInfo(), /*consented=*/false);
-    SetAuthenticatedAccountInfo(account_info);
+    // First reset the state, because SetSyncPrimaryAccountInternal() can
+    // only be called if there is no primary account.
+    SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false);
+    SetSyncPrimaryAccountInternal(account_info);
   } else {
     SetPrimaryAccountInternal(account_info, consented);
   }
@@ -127,32 +127,30 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
   // It is important to only load credentials after starting to observe the
   // token service.
   token_service_->AddObserver(this);
-  token_service_->LoadCredentials(GetAuthenticatedAccountId());
+  token_service_->LoadCredentials(
+      GetPrimaryAccountId(signin::ConsentLevel::kSync));
 }
 
 bool PrimaryAccountManager::IsInitialized() const {
   return initialized_;
 }
 
-CoreAccountInfo PrimaryAccountManager::GetAuthenticatedAccountInfo() const {
-  if (!HasPrimaryAccount(signin::ConsentLevel::kSync))
+CoreAccountInfo PrimaryAccountManager::GetPrimaryAccountInfo(
+    signin::ConsentLevel consent_level) const {
+  if (!HasPrimaryAccount(consent_level))
     return CoreAccountInfo();
   return primary_account_info();
 }
 
-CoreAccountId PrimaryAccountManager::GetAuthenticatedAccountId() const {
-  return GetAuthenticatedAccountInfo().account_id;
-}
-
-CoreAccountInfo PrimaryAccountManager::GetUnconsentedPrimaryAccountInfo()
-    const {
-  return primary_account_info();
+CoreAccountId PrimaryAccountManager::GetPrimaryAccountId(
+    signin::ConsentLevel consent_level) const {
+  return GetPrimaryAccountInfo(consent_level).account_id;
 }
 
 void PrimaryAccountManager::SetUnconsentedPrimaryAccountInfo(
-    CoreAccountInfo account_info) {
+    const CoreAccountInfo& account_info) {
   if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    DCHECK_EQ(account_info, GetAuthenticatedAccountInfo());
+    DCHECK_EQ(account_info, GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
     return;
   }
 
@@ -163,7 +161,7 @@ void PrimaryAccountManager::SetUnconsentedPrimaryAccountInfo(
     FirePrimaryAccountChanged(previous_state);
 }
 
-void PrimaryAccountManager::SetAuthenticatedAccountInfo(
+void PrimaryAccountManager::SetSyncPrimaryAccountInternal(
     const CoreAccountInfo& account_info) {
   DCHECK(!account_info.account_id.empty());
   DCHECK(!HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -192,7 +190,7 @@ void PrimaryAccountManager::SetAuthenticatedAccountInfo(
   client_->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
                                  account_info.email);
 
-  // Commit authenticated account info immediately so that it does not get lost
+  // Commit primary sync account info immediately so that it does not get lost
   // if Chrome crashes before the next commit interval.
   client_->GetPrefs()->CommitPendingWrite();
 }
@@ -230,24 +228,29 @@ bool PrimaryAccountManager::HasPrimaryAccount(
   }
 }
 
-void PrimaryAccountManager::SignIn(const std::string& username) {
-  CoreAccountInfo info =
-      account_tracker_service_->FindAccountInfoByEmail(username);
-  DCHECK(!info.gaia.empty());
-  DCHECK(!info.email.empty());
-  DCHECK(!info.account_id.empty());
+void PrimaryAccountManager::SetSyncPrimaryAccountInfo(
+    const CoreAccountInfo& account_info) {
+#if DCHECK_IS_ON()
+  DCHECK(!account_info.account_id.empty());
+  DCHECK(!account_info.gaia.empty());
+  DCHECK(!account_info.email.empty());
+  DCHECK(!account_tracker_service_->GetAccountInfo(account_info.account_id)
+              .IsEmpty())
+      << "Account should have been seeded before being set as primary account";
+#endif
   if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    DCHECK_EQ(info.account_id, GetAuthenticatedAccountId())
-        << "Changing the authenticated account while it is not allowed.";
+    DCHECK_EQ(account_info.account_id,
+              GetPrimaryAccountId(signin::ConsentLevel::kSync))
+        << "Changing the primary sync account is not allowed.";
     return;
   }
 
   PrimaryAccountChangeEvent::State previous_state = GetPrimaryAccountState();
-  SetAuthenticatedAccountInfo(info);
+  SetSyncPrimaryAccountInternal(account_info);
   FirePrimaryAccountChanged(previous_state);
 }
 
-void PrimaryAccountManager::UpdateAuthenticatedAccountInfo() {
+void PrimaryAccountManager::UpdateSyncPrimaryAccountInfo() {
   DCHECK(!primary_account_info().account_id.empty());
   DCHECK(HasPrimaryAccount(signin::ConsentLevel::kSync));
   const CoreAccountInfo info = account_tracker_service_->GetAccountInfo(
@@ -389,9 +392,10 @@ void PrimaryAccountManager::OnRefreshTokensLoaded() {
   if (token_service_->HasLoadCredentialsFinishedWithNoErrors()) {
     std::vector<AccountInfo> accounts_in_tracker_service =
         account_tracker_service_->GetAccounts();
-    const CoreAccountId authenticated_account_id = GetAuthenticatedAccountId();
+    const CoreAccountId sync_account_id =
+        GetPrimaryAccountId(signin::ConsentLevel::kSync);
     for (const auto& account : accounts_in_tracker_service) {
-      if (authenticated_account_id != account.account_id &&
+      if (sync_account_id != account.account_id &&
           !token_service_->RefreshTokenIsAvailable(account.account_id)) {
         VLOG(0) << "Removed account from account tracker service: "
                 << account.account_id;

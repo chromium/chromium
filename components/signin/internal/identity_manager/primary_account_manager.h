@@ -78,48 +78,52 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   void Initialize(PrefService* local_state);
   bool IsInitialized() const;
 
-  // If a user has previously signed in (and has not signed out), this returns
-  // the know information of the account. Otherwise, it returns an empty struct.
-  CoreAccountInfo GetAuthenticatedAccountInfo() const;
-
-  // If a user has previously signed in (and has not signed out), this returns
-  // the account id. Otherwise, it returns an empty CoreAccountId.  This id is
-  // the G+/Focus obfuscated gaia id of the user. It can be used to uniquely
-  // identify an account, so for example as a key to map accounts to data. For
-  // code that needs a unique id to represent the connected account, call this
-  // method. Example: the AccountStatusMap type in
-  // MutableProfileOAuth2TokenService. For code that needs to know the
-  // normalized email address of the connected account, use
-  // GetAuthenticatedAccountInfo().email.  Example: to show the string
-  // "Signed in as XXX" in the hotdog menu.
-  CoreAccountId GetAuthenticatedAccountId() const;
-
   // Returns whether the user's primary account is available. If consent is
   // |ConsentLevel::kSync| then true implies that the user has blessed this
   // account for sync.
   bool HasPrimaryAccount(signin::ConsentLevel consent_level) const;
 
+  // Provides access to the core information of the user's primary account.
+  // The primary account may or may not be blessed with the sync consent.
+  // Returns an empty struct if no such info is available, either because there
+  // is no primary account yet or because the user signed out or the |consent|
+  // level required |ConsentLevel::kSync| was not granted.
+  // Returns a non-empty struct if the primary account exists and was granted
+  // the required consent level.
+  CoreAccountInfo GetPrimaryAccountInfo(
+      signin::ConsentLevel consent_level) const;
+
+  // Provides access to the account ID of the user's primary account. Simple
+  // convenience wrapper over GetPrimaryAccountInfo().account_id.
+  CoreAccountId GetPrimaryAccountId(signin::ConsentLevel consent_level) const;
+
   // Signs a user in. PrimaryAccountManager assumes that |username| can be used
   // to look up the corresponding account_id and gaia_id for this email.
-  void SignIn(const std::string& username);
+  void SetSyncPrimaryAccountInfo(const CoreAccountInfo& account_info);
 
-  // Updates the authenticated account information from AccountTrackerService.
-  void UpdateAuthenticatedAccountInfo();
+  // Sets the unconsented primary account. The unconsented primary account can
+  // only be changed if the user has not consented for sync If the user has
+  // consented for sync already, then use ClearPrimaryAccount() or RevokeSync()
+  // instead.
+  void SetUnconsentedPrimaryAccountInfo(const CoreAccountInfo& account_info);
+
+  // Updates the primary account information from AccountTrackerService.
+  void UpdateSyncPrimaryAccountInfo();
 
   // Signout API surfaces (not supported on ChromeOS, where signout is not
   // permitted).
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Signs a user out, removing the preference, erasing all keys
-  // associated with the authenticated user, and canceling all auth in progress.
-  // It removes all accounts from Chrome by revoking all refresh tokens.
+  // Clears the primary account, erasing all keys associated with the primary
+  // account (also cancels all auth in progress).
+  // It removes all accounts from the identity manager by revoking all refresh
+  // tokens.
   void ClearPrimaryAccount(signin_metrics::ProfileSignout signout_source_metric,
                            signin_metrics::SignoutDelete signout_delete_metric);
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Signs a user out, removing the preference, erasing all keys
-  // associated with the authenticated user, and canceling all auth in progress.
-  // Does not remove the accounts from the token service.
+  // Rovokes the sync consent but leaves the primary account and the rest of
+  // the accounts untouched.
   void RevokeSyncConsent(signin_metrics::ProfileSignout signout_source_metric,
                          signin_metrics::SignoutDelete signout_delete_metric);
 
@@ -127,25 +131,14 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Provides access to the core information of the user's unconsented primary
-  // account. Returns an empty info, if there is no such account.
-  CoreAccountInfo GetUnconsentedPrimaryAccountInfo() const;
-
-  // Sets the unconsented primary account. The unconsented primary account can
-  // only be changed if the user is not authenticated. If the user is
-  // authenticated, use Signout() instead.
-  void SetUnconsentedPrimaryAccountInfo(CoreAccountInfo account_info);
-
  private:
-  // Sets the authenticated user's account id, when the user has consented to
-  // sync.
-  // If the user is already authenticated with the same account id, then this
-  // method is a no-op.
-  // It is forbidden to call this method if the user is already authenticated
-  // with a different account (this method will DCHECK in that case).
-  // |account_id| must not be empty. To log the user out, use
-  // ClearAuthenticatedAccountId() instead.
-  void SetAuthenticatedAccountInfo(const CoreAccountInfo& account_info);
+  // Sets the primary account id, when the user has consented to sync.
+  // If the user has consented for sync with the same account, then this method
+  // is a no-op.
+  // It is forbidden to call this method if the user has already consented for
+  // sync  with a different account (this method will DCHECK in that case).
+  // |account_id| must not be empty.
+  void SetSyncPrimaryAccountInternal(const CoreAccountInfo& account_info);
 
   // Sets |primary_account_info_| and updates the associated preferences.
   void SetPrimaryAccountInternal(const CoreAccountInfo& account_info,
@@ -189,8 +182,8 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
 
   bool initialized_ = false;
 
-  // Account id after successful authentication. The account may or may not be
-  // consented to Sync.
+  // The primary account information. The account may or may not be consented
+  // for Sync.
   // Must be kept in sync with prefs. Use SetPrimaryAccountInternal() to change
   // this field.
   CoreAccountInfo primary_account_info_;

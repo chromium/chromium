@@ -40,8 +40,8 @@ void PrimaryAccountPolicyManagerImpl::InitializePolicy(
           &PrimaryAccountPolicyManagerImpl::OnSigninAllowedPrefChanged,
           base::Unretained(this), primary_account_manager));
 
-  CoreAccountInfo account_info =
-      primary_account_manager->GetAuthenticatedAccountInfo();
+  CoreAccountInfo account_info = primary_account_manager->GetPrimaryAccountInfo(
+      signin::ConsentLevel::kSync);
   if (!account_info.account_id.empty() &&
       (!IsAllowedUsername(account_info.email) || !IsSigninAllowed())) {
     // User is signed in, but the username is invalid or signin is no longer
@@ -73,7 +73,9 @@ void PrimaryAccountPolicyManagerImpl::OnGoogleServicesUsernamePatternChanged(
     PrimaryAccountManager* primary_account_manager) {
   if (primary_account_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
       !IsAllowedUsername(
-          primary_account_manager->GetAuthenticatedAccountInfo().email)) {
+          primary_account_manager
+              ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+              .email)) {
     // Signed in user is invalid according to the current policy so sign
     // the user out.
     primary_account_manager->ClearPrimaryAccount(

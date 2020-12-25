@@ -125,7 +125,7 @@ CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
       EnsureAccountExists(identity_manager->GetAccountTrackerService(), email);
   DCHECK(!account_info.gaia.empty());
 
-  primary_account_manager->SignIn(email);
+  primary_account_manager->SetSyncPrimaryAccountInfo(account_info);
 
   DCHECK(primary_account_manager->HasPrimaryAccount(ConsentLevel::kSync));
   DCHECK(identity_manager->HasPrimaryAccount());

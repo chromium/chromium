@@ -115,10 +115,7 @@ void IdentityManager::RemoveObserver(Observer* observer) {
 // TODO(862619) change return type to base::Optional<CoreAccountInfo>
 CoreAccountInfo IdentityManager::GetPrimaryAccountInfo(
     ConsentLevel consent) const {
-  if (consent == ConsentLevel::kNotRequired) {
-    return primary_account_manager_->GetUnconsentedPrimaryAccountInfo();
-  }
-  return primary_account_manager_->GetAuthenticatedAccountInfo();
+  return primary_account_manager_->GetPrimaryAccountInfo(consent);
 }
 
 CoreAccountId IdentityManager::GetPrimaryAccountId(ConsentLevel consent) const {
@@ -683,7 +680,7 @@ void IdentityManager::OnAccountUpdated(const AccountInfo& info) {
   if (HasPrimaryAccount()) {
     const CoreAccountId primary_account_id = GetPrimaryAccountId();
     if (primary_account_id == info.account_id) {
-      primary_account_manager_->UpdateAuthenticatedAccountInfo();
+      primary_account_manager_->UpdateSyncPrimaryAccountInfo();
     }
   }
 

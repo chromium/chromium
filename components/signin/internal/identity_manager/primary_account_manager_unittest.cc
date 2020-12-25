@@ -111,11 +111,12 @@ class PrimaryAccountManagerTest : public testing::Test,
 
   void ExpectSignInWithRefreshTokenSuccess() {
     EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-    EXPECT_FALSE(manager_->GetAuthenticatedAccountId().empty());
-    EXPECT_FALSE(manager_->GetAuthenticatedAccountInfo().email.empty());
+    EXPECT_FALSE(manager_->GetPrimaryAccountId(ConsentLevel::kSync).empty());
+    EXPECT_FALSE(
+        manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email.empty());
 
     EXPECT_TRUE(token_service_.RefreshTokenIsAvailable(
-        manager_->GetAuthenticatedAccountId()));
+        manager_->GetPrimaryAccountId(ConsentLevel::kSync)));
 
     // Should go into token service and stop.
     EXPECT_EQ(1, num_successful_signins_);
@@ -171,20 +172,25 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
   CreatePrimaryAccountManager();
   CoreAccountId main_account_id =
       AddToAccountTracker("account_id", "user@gmail.com");
-  manager_->SignIn("user@gmail.com");
+  manager_->SetSyncPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(main_account_id));
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
                                 signin_metrics::SignoutDelete::IGNORE_METRIC);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_TRUE(manager_->GetAuthenticatedAccountInfo().email.empty());
-  EXPECT_TRUE(manager_->GetAuthenticatedAccountId().empty());
-  EXPECT_TRUE(manager_->GetUnconsentedPrimaryAccountInfo().IsEmpty());
+  EXPECT_TRUE(
+      manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email.empty());
+  EXPECT_TRUE(manager_->GetPrimaryAccountId(ConsentLevel::kSync).empty());
+  EXPECT_TRUE(
+      manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired).IsEmpty());
   // Should not be persisted anymore
   ShutDownManager();
   CreatePrimaryAccountManager();
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_TRUE(manager_->GetAuthenticatedAccountInfo().email.empty());
-  EXPECT_TRUE(manager_->GetAuthenticatedAccountId().empty());
-  EXPECT_TRUE(manager_->GetUnconsentedPrimaryAccountInfo().IsEmpty());
+  EXPECT_TRUE(
+      manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email.empty());
+  EXPECT_TRUE(manager_->GetPrimaryAccountId(ConsentLevel::kSync).empty());
+  EXPECT_TRUE(
+      manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired).IsEmpty());
 }
 
 TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
@@ -195,9 +201,11 @@ TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
       AddToAccountTracker("other_id", "other@gmail.com");
   token_service_.UpdateCredentials(main_account_id, "token");
   token_service_.UpdateCredentials(other_account_id, "token");
-  manager_->SignIn("user@gmail.com");
+  manager_->SetSyncPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(main_account_id));
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_EQ(main_account_id, manager_->GetAuthenticatedAccountId());
+  EXPECT_EQ(main_account_id,
+            manager_->GetPrimaryAccountId(ConsentLevel::kSync));
 
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
                                 signin_metrics::SignoutDelete::IGNORE_METRIC);
@@ -210,11 +218,14 @@ TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
 TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
   CreatePrimaryAccountManager();
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_TRUE(manager_->GetAuthenticatedAccountInfo().email.empty());
-  EXPECT_TRUE(manager_->GetAuthenticatedAccountId().empty());
+  EXPECT_TRUE(
+      manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email.empty());
+  EXPECT_TRUE(manager_->GetPrimaryAccountId(ConsentLevel::kSync).empty());
 
-  AddToAccountTracker("gaia_id", "user@gmail.com");
-  manager_->SignIn("user@gmail.com");
+  CoreAccountId main_account_id =
+      AddToAccountTracker("gaia_id", "user@gmail.com");
+  manager_->SetSyncPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(main_account_id));
   signin_client()->set_is_signout_allowed(false);
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
                                 signin_metrics::SignoutDelete::IGNORE_METRIC);
@@ -228,8 +239,9 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
 TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
   CreatePrimaryAccountManager();
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_TRUE(manager_->GetAuthenticatedAccountInfo().email.empty());
-  EXPECT_TRUE(manager_->GetAuthenticatedAccountId().empty());
+  EXPECT_TRUE(
+      manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email.empty());
+  EXPECT_TRUE(manager_->GetPrimaryAccountId(ConsentLevel::kSync).empty());
 
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
   CoreAccountInfo account_info = account_tracker()->GetAccountInfo(account_id);
@@ -249,61 +261,72 @@ TEST_F(PrimaryAccountManagerTest, ProhibitedAtStartup) {
                          ".*@google.com");
   CreatePrimaryAccountManager();
   // Currently signed in user is prohibited by policy, so should be signed out.
-  EXPECT_EQ("", manager_->GetAuthenticatedAccountInfo().email);
-  EXPECT_EQ(CoreAccountId(), manager_->GetAuthenticatedAccountId());
+  EXPECT_EQ("", manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
+  EXPECT_EQ(CoreAccountId(),
+            manager_->GetPrimaryAccountId(ConsentLevel::kSync));
 }
 
 TEST_F(PrimaryAccountManagerTest, ProhibitedAfterStartup) {
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
   user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
   CreatePrimaryAccountManager();
-  EXPECT_EQ("user@gmail.com", manager_->GetAuthenticatedAccountInfo().email);
-  EXPECT_EQ(account_id, manager_->GetAuthenticatedAccountId());
+  EXPECT_EQ("user@gmail.com",
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
+  EXPECT_EQ(account_id, manager_->GetPrimaryAccountId(ConsentLevel::kSync));
   // Update the profile - user should be signed out.
   local_state_.SetString(prefs::kGoogleServicesUsernamePattern,
                          ".*@google.com");
-  EXPECT_EQ("", manager_->GetAuthenticatedAccountInfo().email);
-  EXPECT_EQ(CoreAccountId(), manager_->GetAuthenticatedAccountId());
+  EXPECT_EQ("", manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
+  EXPECT_EQ(CoreAccountId(),
+            manager_->GetPrimaryAccountId(ConsentLevel::kSync));
 }
 #endif
 
 TEST_F(PrimaryAccountManagerTest, SignIn) {
   CreatePrimaryAccountManager();
-  EXPECT_EQ("", manager_->GetAuthenticatedAccountInfo().email);
-  EXPECT_EQ(CoreAccountId(), manager_->GetAuthenticatedAccountId());
+  EXPECT_EQ("", manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
+  EXPECT_EQ(CoreAccountId(),
+            manager_->GetPrimaryAccountId(ConsentLevel::kSync));
   EXPECT_EQ(0, num_successful_signins_);
   EXPECT_EQ(0, num_unconsented_account_changed_);
 
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
-  manager_->SignIn("user@gmail.com");
+  manager_->SetSyncPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id));
   EXPECT_EQ(1, num_successful_signins_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
-  EXPECT_EQ("user@gmail.com", manager_->GetAuthenticatedAccountInfo().email);
-  EXPECT_EQ(account_id, manager_->GetAuthenticatedAccountId());
-  EXPECT_EQ(manager_->GetUnconsentedPrimaryAccountInfo(),
-            manager_->GetAuthenticatedAccountInfo());
+  EXPECT_EQ("user@gmail.com",
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
+  EXPECT_EQ(account_id, manager_->GetPrimaryAccountId(ConsentLevel::kSync));
+  EXPECT_EQ(manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired),
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync));
 }
 
 TEST_F(PrimaryAccountManagerTest,
        ExternalSignIn_ReauthShouldNotSendNotification) {
   CreatePrimaryAccountManager();
-  EXPECT_EQ("", manager_->GetAuthenticatedAccountInfo().email);
-  EXPECT_EQ(CoreAccountId(), manager_->GetAuthenticatedAccountId());
+  EXPECT_EQ("", manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
+  EXPECT_EQ(CoreAccountId(),
+            manager_->GetPrimaryAccountId(ConsentLevel::kSync));
   EXPECT_EQ(0, num_successful_signins_);
   EXPECT_EQ(0, num_unconsented_account_changed_);
 
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
-  manager_->SignIn("user@gmail.com");
+  manager_->SetSyncPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id));
   EXPECT_EQ(1, num_successful_signins_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
-  EXPECT_EQ("user@gmail.com", manager_->GetAuthenticatedAccountInfo().email);
-  EXPECT_EQ(account_id, manager_->GetAuthenticatedAccountId());
+  EXPECT_EQ("user@gmail.com",
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
+  EXPECT_EQ(account_id, manager_->GetPrimaryAccountId(ConsentLevel::kSync));
 
-  manager_->SignIn("user@gmail.com");
+  manager_->SetSyncPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id));
   EXPECT_EQ(1, num_successful_signins_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
-  EXPECT_EQ("user@gmail.com", manager_->GetAuthenticatedAccountInfo().email);
-  EXPECT_EQ(account_id, manager_->GetAuthenticatedAccountId());
+  EXPECT_EQ("user@gmail.com",
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
+  EXPECT_EQ(account_id, manager_->GetPrimaryAccountId(ConsentLevel::kSync));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -314,8 +337,8 @@ TEST_F(PrimaryAccountManagerTest, SigninNotAllowed) {
   user_prefs_.SetBoolean(prefs::kSigninAllowed, false);
   CreatePrimaryAccountManager();
   // Currently signing in is prohibited by policy, so should be signed out.
-  EXPECT_EQ("", manager_->GetAuthenticatedAccountInfo().email);
-  EXPECT_TRUE(manager_->GetAuthenticatedAccountId().empty());
+  EXPECT_EQ("", manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
+  EXPECT_TRUE(manager_->GetPrimaryAccountId(ConsentLevel::kSync).empty());
 }
 #endif
 
@@ -348,7 +371,8 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
 
   CreatePrimaryAccountManager();
 
-  EXPECT_EQ(CoreAccountId(gaia_id), manager_->GetAuthenticatedAccountId());
+  EXPECT_EQ(CoreAccountId(gaia_id),
+            manager_->GetPrimaryAccountId(ConsentLevel::kSync));
   EXPECT_EQ(gaia_id, user_prefs_.GetString(prefs::kGoogleServicesAccountId));
 }
 
@@ -380,7 +404,8 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
   client_prefs->SetString(prefs::kGoogleServicesAccountId, gaia_id);
 
   CreatePrimaryAccountManager();
-  EXPECT_EQ(CoreAccountId(gaia_id), manager_->GetAuthenticatedAccountId());
+  EXPECT_EQ(CoreAccountId(gaia_id),
+            manager_->GetPrimaryAccountId(ConsentLevel::kSync));
   EXPECT_EQ(gaia_id, user_prefs_.GetString(prefs::kGoogleServicesAccountId));
 
   base::RunLoop().RunUntilIdle();
@@ -393,10 +418,11 @@ TEST_F(PrimaryAccountManagerTest, RestoreFromPrefsConsented) {
   user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
   user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
   CreatePrimaryAccountManager();
-  EXPECT_EQ("user@gmail.com", manager_->GetAuthenticatedAccountInfo().email);
-  EXPECT_EQ(account_id, manager_->GetAuthenticatedAccountId());
-  EXPECT_EQ(manager_->GetUnconsentedPrimaryAccountInfo(),
-            manager_->GetAuthenticatedAccountInfo());
+  EXPECT_EQ("user@gmail.com",
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
+  EXPECT_EQ(account_id, manager_->GetPrimaryAccountId(ConsentLevel::kSync));
+  EXPECT_EQ(manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired),
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync));
 }
 
 TEST_F(PrimaryAccountManagerTest, RestoreFromPrefsUnconsented) {
@@ -405,10 +431,11 @@ TEST_F(PrimaryAccountManagerTest, RestoreFromPrefsUnconsented) {
   user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
   CreatePrimaryAccountManager();
   EXPECT_EQ("user@gmail.com",
-            manager_->GetUnconsentedPrimaryAccountInfo().email);
-  EXPECT_EQ(account_id,
-            manager_->GetUnconsentedPrimaryAccountInfo().account_id);
-  EXPECT_TRUE(manager_->GetAuthenticatedAccountInfo().IsEmpty());
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired).email);
+  EXPECT_EQ(
+      account_id,
+      manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired).account_id);
+  EXPECT_TRUE(manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).IsEmpty());
 }
 
 // If kGoogleServicesConsentedToSync is missing, the account is fully
@@ -424,15 +451,17 @@ TEST_F(PrimaryAccountManagerTest, RestoreFromPrefsMissingConsentPref) {
 
   CreatePrimaryAccountManager();
   EXPECT_TRUE(user_prefs_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
-  EXPECT_EQ("user@gmail.com", manager_->GetAuthenticatedAccountInfo().email);
-  EXPECT_EQ(account_id, manager_->GetAuthenticatedAccountId());
-  EXPECT_EQ(manager_->GetUnconsentedPrimaryAccountInfo(),
-            manager_->GetAuthenticatedAccountInfo());
+  EXPECT_EQ("user@gmail.com",
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
+  EXPECT_EQ(account_id, manager_->GetPrimaryAccountId(ConsentLevel::kSync));
+  EXPECT_EQ(manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired),
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync));
 }
 
 TEST_F(PrimaryAccountManagerTest, SetUnconsentedPrimaryAccountInfo) {
   CreatePrimaryAccountManager();
-  EXPECT_EQ(CoreAccountInfo(), manager_->GetUnconsentedPrimaryAccountInfo());
+  EXPECT_EQ(CoreAccountInfo(),
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired));
   EXPECT_EQ(0, num_unconsented_account_changed_);
   EXPECT_EQ(0, num_successful_signins_);
 
@@ -444,15 +473,19 @@ TEST_F(PrimaryAccountManagerTest, SetUnconsentedPrimaryAccountInfo) {
   manager_->SetUnconsentedPrimaryAccountInfo(account_info);
   EXPECT_EQ(0, num_successful_signins_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
-  EXPECT_EQ(account_info, manager_->GetUnconsentedPrimaryAccountInfo());
-  EXPECT_EQ(CoreAccountInfo(), manager_->GetAuthenticatedAccountInfo());
+  EXPECT_EQ(account_info,
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired));
+  EXPECT_EQ(CoreAccountInfo(),
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync));
 
   // Set the same account again.
   manager_->SetUnconsentedPrimaryAccountInfo(account_info);
   EXPECT_EQ(0, num_successful_signins_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
-  EXPECT_EQ(account_info, manager_->GetUnconsentedPrimaryAccountInfo());
-  EXPECT_EQ(CoreAccountInfo(), manager_->GetAuthenticatedAccountInfo());
+  EXPECT_EQ(account_info,
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired));
+  EXPECT_EQ(CoreAccountInfo(),
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync));
 
   // Change the email to another equivalent email. The account is updated but
   // observers are not notified.
@@ -460,36 +493,43 @@ TEST_F(PrimaryAccountManagerTest, SetUnconsentedPrimaryAccountInfo) {
   manager_->SetUnconsentedPrimaryAccountInfo(account_info);
   EXPECT_EQ(0, num_successful_signins_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
-  EXPECT_EQ(account_info, manager_->GetUnconsentedPrimaryAccountInfo());
-  EXPECT_EQ(CoreAccountInfo(), manager_->GetAuthenticatedAccountInfo());
+  EXPECT_EQ(account_info,
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired));
+  EXPECT_EQ(CoreAccountInfo(),
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync));
 
   // Clear it.
   manager_->SetUnconsentedPrimaryAccountInfo(CoreAccountInfo());
   EXPECT_EQ(0, num_successful_signins_);
   EXPECT_EQ(2, num_unconsented_account_changed_);
-  EXPECT_EQ(CoreAccountInfo(), manager_->GetUnconsentedPrimaryAccountInfo());
-  EXPECT_EQ(CoreAccountInfo(), manager_->GetAuthenticatedAccountInfo());
+  EXPECT_EQ(CoreAccountInfo(),
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired));
+  EXPECT_EQ(CoreAccountInfo(),
+            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync));
 }
 
 TEST_F(PrimaryAccountManagerTest, RevokeSyncConsent) {
   CreatePrimaryAccountManager();
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
-  manager_->SignIn("user@gmail.com");
+  manager_->SetSyncPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id));
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
   manager_->RevokeSyncConsent(signin_metrics::ProfileSignout::SIGNOUT_TEST,
                               signin_metrics::SignoutDelete::IGNORE_METRIC);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
-  EXPECT_EQ(account_id,
-            manager_->GetUnconsentedPrimaryAccountInfo().account_id);
+  EXPECT_EQ(
+      account_id,
+      manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired).account_id);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PrimaryAccountManagerTest, ClearPrimaryAccount) {
   CreatePrimaryAccountManager();
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
-  manager_->SignIn("user@gmail.com");
+  manager_->SetSyncPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id));
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::SIGNOUT_TEST,
