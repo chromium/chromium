@@ -97,20 +97,6 @@ bool HasNonEmptyStringProperty(InfoDataType* node, PropType prop) {
   return !it->second.empty();
 }
 
-// Sets property to mojom struct. Used in test.
-template <class PropType, class ValueType>
-void SetProperty(
-    base::Optional<base::flat_map<PropType, ValueType>>& properties,
-    PropType prop,
-    const ValueType& value) {
-  if (!properties.has_value())
-    properties = base::flat_map<PropType, ValueType>();
-
-  auto& prop_map = properties.value();
-  base::EraseIf(prop_map, [prop](auto it) { return it.first == prop; });
-  prop_map.insert(std::make_pair(prop, value));
-}
-
 }  // namespace arc
 
 #endif  // CHROME_BROWSER_CHROMEOS_ARC_ACCESSIBILITY_ARC_ACCESSIBILITY_UTIL_H_

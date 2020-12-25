@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_window_info_data_wrapper.h"
+#include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_test_util.h"
 #include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/chromeos/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/grit/generated_resources.h"
@@ -32,30 +33,6 @@ using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
 using AXRangeInfoData = mojom::AccessibilityRangeInfoData;
 using AXStringListProperty = mojom::AccessibilityStringListProperty;
 using AXStringProperty = mojom::AccessibilityStringProperty;
-
-namespace {
-
-void SetProperty(AXNodeInfoData* node, AXBooleanProperty prop, bool value) {
-  arc::SetProperty(node->boolean_properties, prop, value);
-}
-
-void SetProperty(AXNodeInfoData* node, AXIntProperty prop, int value) {
-  arc::SetProperty(node->int_properties, prop, value);
-}
-
-void SetProperty(AXNodeInfoData* node,
-                 AXIntListProperty prop,
-                 const std::vector<int>& value) {
-  arc::SetProperty(node->int_list_properties, prop, value);
-}
-
-void SetProperty(AXNodeInfoData* node,
-                 AXStringProperty prop,
-                 const std::string& value) {
-  arc::SetProperty(node->string_properties, prop, value);
-}
-
-}  // namespace
 
 class AccessibilityNodeInfoDataWrapperTest : public testing::Test,
                                              public AXTreeSourceArc::Delegate {
@@ -133,7 +110,7 @@ class AccessibilityNodeInfoDataWrapperTest : public testing::Test,
 
 TEST_F(AccessibilityNodeInfoDataWrapperTest, Name) {
   AXNodeInfoData node;
-  SetProperty(&node, AXStringProperty::CLASS_NAME, "");
+  SetProperty(node, AXStringProperty::CLASS_NAME, "");
 
   AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &node);
 
@@ -144,14 +121,14 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, Name) {
       data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
 
   // Text (empty).
-  SetProperty(&node, AXStringProperty::TEXT, "");
+  SetProperty(node, AXStringProperty::TEXT, "");
 
   data = CallSerialize(wrapper);
   ASSERT_FALSE(
       data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
 
   // Text (non-empty).
-  SetProperty(&node, AXStringProperty::TEXT, "label text");
+  SetProperty(node, AXStringProperty::TEXT, "label text");
 
   data = CallSerialize(wrapper);
   ASSERT_TRUE(
@@ -159,7 +136,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, Name) {
   EXPECT_EQ("label text", name);
 
   // Content description (empty), text (non-empty).
-  SetProperty(&node, AXStringProperty::CONTENT_DESCRIPTION, "");
+  SetProperty(node, AXStringProperty::CONTENT_DESCRIPTION, "");
 
   data = CallSerialize(wrapper);
   ASSERT_TRUE(
@@ -167,8 +144,8 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, Name) {
   EXPECT_EQ("label text", name);
 
   // Content description (non-empty), text (empty).
-  SetProperty(&node, AXStringProperty::TEXT, "");
-  SetProperty(&node, AXStringProperty::CONTENT_DESCRIPTION,
+  SetProperty(node, AXStringProperty::TEXT, "");
+  SetProperty(node, AXStringProperty::CONTENT_DESCRIPTION,
               "label content description");
 
   data = CallSerialize(wrapper);
@@ -177,7 +154,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, Name) {
   EXPECT_EQ("label content description", name);
 
   // Content description (non-empty), text (non-empty).
-  SetProperty(&node, AXStringProperty::TEXT, "label text");
+  SetProperty(node, AXStringProperty::TEXT, "label text");
 
   data = CallSerialize(wrapper);
   ASSERT_TRUE(
@@ -190,31 +167,31 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
   root.id = 10;
   AccessibilityNodeInfoDataWrapper root_wrapper(tree_source(), &root);
   SetIdToWrapper(&root_wrapper);
-  SetProperty(&root, AXStringProperty::CLASS_NAME, "");
-  SetProperty(&root, AXBooleanProperty::IMPORTANCE, true);
-  SetProperty(&root, AXIntListProperty::CHILD_NODE_IDS,
+  SetProperty(root, AXStringProperty::CLASS_NAME, "");
+  SetProperty(root, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(root, AXIntListProperty::CHILD_NODE_IDS,
               std::vector<int>({1, 2}));
 
   AXNodeInfoData child1;
   child1.id = 1;
   AccessibilityNodeInfoDataWrapper child1_wrapper(tree_source(), &child1);
   SetIdToWrapper(&child1_wrapper);
-  SetProperty(&child1, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(child1, AXBooleanProperty::IMPORTANCE, true);
 
   AXNodeInfoData child2;
   child2.id = 2;
   AccessibilityNodeInfoDataWrapper child2_wrapper(tree_source(), &child2);
   SetIdToWrapper(&child2_wrapper);
-  SetProperty(&child2, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(child2, AXBooleanProperty::IMPORTANCE, true);
 
   SetParentId(child1.id, root.id);
   SetParentId(child2.id, root.id);
 
   // Root node has no name, but has descendants with name.
   // Name from contents can happen if a node is focusable.
-  SetProperty(&root, AXBooleanProperty::FOCUSABLE, true);
-  SetProperty(&child1, AXStringProperty::TEXT, "child1 label text");
-  SetProperty(&child2, AXStringProperty::TEXT, "child2 label text");
+  SetProperty(root, AXBooleanProperty::FOCUSABLE, true);
+  SetProperty(child1, AXStringProperty::TEXT, "child1 label text");
+  SetProperty(child2, AXStringProperty::TEXT, "child2 label text");
 
   // If the screen reader mode is off, do not compute from descendants.
   set_full_focus_mode(false);
@@ -251,13 +228,13 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
   ASSERT_TRUE(data.IsIgnored());
 
   // Don't compute name from descendants for scrollable, e.g. ScrollView.
-  SetProperty(&root, AXBooleanProperty::SCROLLABLE, true);
+  SetProperty(root, AXBooleanProperty::SCROLLABLE, true);
 
   data = CallSerialize(root_wrapper);
   ASSERT_FALSE(
       data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
 
-  SetProperty(&root, AXBooleanProperty::SCROLLABLE, false);
+  SetProperty(root, AXBooleanProperty::SCROLLABLE, false);
 
   // Don't compute name from descendants for virtual views, e.g. WebView.
   root.is_virtual_node = true;
@@ -273,7 +250,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
   child2.is_virtual_node = false;
 
   // If one child is clickable, do not use clickable child.
-  SetProperty(&child1, AXBooleanProperty::CLICKABLE, true);
+  SetProperty(child1, AXBooleanProperty::CLICKABLE, true);
 
   data = CallSerialize(root_wrapper);
   ASSERT_TRUE(
@@ -290,7 +267,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
   ASSERT_TRUE(data.IsIgnored());
 
   // If both children are also clickable, do not use child properties.
-  SetProperty(&child2, AXBooleanProperty::CLICKABLE, true);
+  SetProperty(child2, AXBooleanProperty::CLICKABLE, true);
 
   data = CallSerialize(root_wrapper);
   ASSERT_FALSE(
@@ -299,7 +276,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
   // If the node has a name, it should override the contents.
   child1.boolean_properties->clear();
   child2.boolean_properties->clear();
-  SetProperty(&root, AXStringProperty::TEXT, "root label text");
+  SetProperty(root, AXStringProperty::TEXT, "root label text");
 
   data = CallSerialize(root_wrapper);
   ASSERT_TRUE(
@@ -320,11 +297,11 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromTextProperties) {
   root.id = 10;
   AccessibilityNodeInfoDataWrapper root_wrapper(tree_source(), &root);
   SetIdToWrapper(&root_wrapper);
-  SetProperty(&root, AXStringProperty::CLASS_NAME, "");
-  SetProperty(&root, AXBooleanProperty::IMPORTANCE, true);
-  SetProperty(&root, AXBooleanProperty::CLICKABLE, true);
-  SetProperty(&root, AXBooleanProperty::FOCUSABLE, true);
-  SetProperty(&root, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({1}));
+  SetProperty(root, AXStringProperty::CLASS_NAME, "");
+  SetProperty(root, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(root, AXBooleanProperty::CLICKABLE, true);
+  SetProperty(root, AXBooleanProperty::FOCUSABLE, true);
+  SetProperty(root, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({1}));
 
   AXNodeInfoData child1;
   child1.id = 1;
@@ -332,11 +309,10 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromTextProperties) {
   SetIdToWrapper(&child1_wrapper);
 
   // Set all properties that will be used in name computation.
-  SetProperty(&child1, AXStringProperty::TEXT, "text");
-  SetProperty(&child1, AXStringProperty::CONTENT_DESCRIPTION,
+  SetProperty(child1, AXStringProperty::TEXT, "text");
+  SetProperty(child1, AXStringProperty::CONTENT_DESCRIPTION,
               "content_description");
-  SetProperty(&child1, AXStringProperty::STATE_DESCRIPTION,
-              "state_description");
+  SetProperty(child1, AXStringProperty::STATE_DESCRIPTION, "state_description");
 
   AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &root);
 
@@ -349,7 +325,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromTextProperties) {
   ASSERT_EQ("text", name);
 
   // Unset TEXT property, and confirm that CONTENT_DESCRIPTION is used as name.
-  SetProperty(&child1, AXStringProperty::TEXT, "");
+  SetProperty(child1, AXStringProperty::TEXT, "");
   data = CallSerialize(wrapper);
   ASSERT_TRUE(
       data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
@@ -357,7 +333,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromTextProperties) {
 
   // Unset CONTENT_DESCRIPTION property, and confirm that STATE_DESCRIPTION is
   // used as name.
-  SetProperty(&child1, AXStringProperty::CONTENT_DESCRIPTION, "");
+  SetProperty(child1, AXStringProperty::CONTENT_DESCRIPTION, "");
   data = CallSerialize(wrapper);
   ASSERT_TRUE(
       data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
@@ -366,8 +342,8 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromTextProperties) {
 
 TEST_F(AccessibilityNodeInfoDataWrapperTest, TextFieldNameAndValue) {
   AXNodeInfoData node;
-  SetProperty(&node, AXStringProperty::CLASS_NAME, "");
-  SetProperty(&node, AXBooleanProperty::EDITABLE, true);
+  SetProperty(node, AXStringProperty::CLASS_NAME, "");
+  SetProperty(node, AXBooleanProperty::EDITABLE, true);
 
   struct AndroidState {
     std::string content_description, text, hint_text;
@@ -421,11 +397,11 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, TextFieldNameAndValue) {
   };
 
   for (const auto& test_case : test_cases) {
-    SetProperty(&node, AXStringProperty::CONTENT_DESCRIPTION,
+    SetProperty(node, AXStringProperty::CONTENT_DESCRIPTION,
                 test_case.first.content_description);
-    SetProperty(&node, AXStringProperty::TEXT, test_case.first.text);
-    SetProperty(&node, AXStringProperty::HINT_TEXT, test_case.first.hint_text);
-    SetProperty(&node, AXBooleanProperty::SHOWING_HINT_TEXT,
+    SetProperty(node, AXStringProperty::TEXT, test_case.first.text);
+    SetProperty(node, AXStringProperty::HINT_TEXT, test_case.first.hint_text);
+    SetProperty(node, AXBooleanProperty::SHOWING_HINT_TEXT,
                 test_case.first.showingHint);
 
     AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &node);
@@ -449,9 +425,9 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, TextFieldNameAndValue) {
 TEST_F(AccessibilityNodeInfoDataWrapperTest, StringProperties) {
   AXNodeInfoData node;
   node.id = 10;
-  SetProperty(&node, AXStringProperty::CLASS_NAME, "");
-  SetProperty(&node, AXStringProperty::PACKAGE_NAME, "com.android.vending");
-  SetProperty(&node, AXStringProperty::TOOLTIP, "tooltip text");
+  SetProperty(node, AXStringProperty::CLASS_NAME, "");
+  SetProperty(node, AXStringProperty::PACKAGE_NAME, "com.android.vending");
+  SetProperty(node, AXStringProperty::TOOLTIP, "tooltip text");
 
   SetNodeRootId(node.id);
 
@@ -474,20 +450,20 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, States) {
   AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &node);
 
   // Node is checkable, but not checked.
-  SetProperty(&node, AXBooleanProperty::CHECKABLE, true);
-  SetProperty(&node, AXBooleanProperty::CHECKED, false);
+  SetProperty(node, AXBooleanProperty::CHECKABLE, true);
+  SetProperty(node, AXBooleanProperty::CHECKED, false);
 
   ui::AXNodeData data = CallSerialize(wrapper);
   EXPECT_EQ(ax::mojom::CheckedState::kFalse, data.GetCheckedState());
 
   // Make the node checked.
-  SetProperty(&node, AXBooleanProperty::CHECKED, true);
+  SetProperty(node, AXBooleanProperty::CHECKED, true);
 
   data = CallSerialize(wrapper);
   EXPECT_EQ(ax::mojom::CheckedState::kTrue, data.GetCheckedState());
 
   // Make the node expandable (i.e. collapsed).
-  SetProperty(&node, AXIntListProperty::STANDARD_ACTION_IDS,
+  SetProperty(node, AXIntListProperty::STANDARD_ACTION_IDS,
               std::vector<int>({static_cast<int>(AXActionType::EXPAND)}));
 
   data = CallSerialize(wrapper);
@@ -495,7 +471,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, States) {
   EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
 
   // Make the node collapsible (i.e. expanded).
-  SetProperty(&node, AXIntListProperty::STANDARD_ACTION_IDS,
+  SetProperty(node, AXIntListProperty::STANDARD_ACTION_IDS,
               std::vector<int>({static_cast<int>(AXActionType::COLLAPSE)}));
 
   data = CallSerialize(wrapper);
@@ -506,7 +482,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, States) {
 TEST_F(AccessibilityNodeInfoDataWrapperTest, SelectedState) {
   AXNodeInfoData grid;
   grid.id = 1;
-  SetProperty(&grid, AXIntListProperty::CHILD_NODE_IDS,
+  SetProperty(grid, AXIntListProperty::CHILD_NODE_IDS,
               std::vector<int>({10, 11, 12, 13}));
   grid.collection_info = AXCollectionInfoData::New();
   grid.collection_info->row_count = 2;
@@ -523,7 +499,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, SelectedState) {
     node.collection_item_info = AXCollectionItemInfoData::New();
     node.collection_item_info->row_index = i % 2;
     node.collection_item_info->column_index = i / 2;
-    SetProperty(&node, AXBooleanProperty::SELECTED, true);
+    SetProperty(node, AXBooleanProperty::SELECTED, true);
 
     SetParentId(node.id, grid.id);
   }
@@ -539,8 +515,8 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, SelectedState) {
   // text_node is simple static text, which doesn't supports selected state in
   // the web.
   AXNodeInfoData text_node;
-  SetProperty(&text_node, AXStringProperty::TEXT, "text.");
-  SetProperty(&text_node, AXBooleanProperty::SELECTED, true);
+  SetProperty(text_node, AXStringProperty::TEXT, "text.");
+  SetProperty(text_node, AXBooleanProperty::SELECTED, true);
 
   AccessibilityNodeInfoDataWrapper text_wrapper(tree_source(), &text_node);
 
@@ -559,8 +535,8 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, EditTextRole) {
   AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &node);
 
   // Editable node is textField.
-  SetProperty(&node, AXStringProperty::CLASS_NAME, ui::kAXEditTextClassname);
-  SetProperty(&node, AXBooleanProperty::EDITABLE, true);
+  SetProperty(node, AXStringProperty::CLASS_NAME, ui::kAXEditTextClassname);
+  SetProperty(node, AXBooleanProperty::EDITABLE, true);
 
   ui::AXNodeData data = CallSerialize(wrapper);
   EXPECT_EQ(ax::mojom::Role::kTextField, data.role);
@@ -568,14 +544,14 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, EditTextRole) {
   // Non-editable node is not textField even if it has EditTextClassname.
   // When it has text and no children, it is staticText. Otherwise, it's
   // genericContainer.
-  SetProperty(&node, AXBooleanProperty::EDITABLE, false);
-  SetProperty(&node, AXStringProperty::TEXT, "text");
+  SetProperty(node, AXBooleanProperty::EDITABLE, false);
+  SetProperty(node, AXStringProperty::TEXT, "text");
 
   data = CallSerialize(wrapper);
   EXPECT_EQ(ax::mojom::Role::kStaticText, data.role);
 
   // Add a child.
-  SetProperty(&node, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({2}));
+  SetProperty(node, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({2}));
   AXNodeInfoData child;
   child.id = 2;
   AccessibilityNodeInfoDataWrapper child_wrapper(tree_source(), &node);
@@ -605,7 +581,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, StateDescription) {
       &checked_state_description));
 
   // State Description without Range Value should be stored as kDescription
-  SetProperty(&node, AXStringProperty::STATE_DESCRIPTION, "state description");
+  SetProperty(node, AXStringProperty::STATE_DESCRIPTION, "state description");
 
   data = CallSerialize(wrapper);
   ASSERT_TRUE(data.GetStringAttribute(ax::mojom::StringAttribute::kDescription,
@@ -633,7 +609,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, StateDescription) {
   // State Description for compound button should be stores as
   // checkedDescription.
   node.range_info.reset();
-  SetProperty(&node, AXBooleanProperty::CHECKABLE, true);
+  SetProperty(node, AXBooleanProperty::CHECKABLE, true);
 
   data = CallSerialize(wrapper);
   ASSERT_FALSE(data.GetStringAttribute(ax::mojom::StringAttribute::kDescription,
@@ -649,7 +625,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, StateDescription) {
 TEST_F(AccessibilityNodeInfoDataWrapperTest, LabeledByLoop) {
   AXNodeInfoData root;
   root.id = 1;
-  SetProperty(&root, AXIntProperty::LABELED_BY, 2);
+  SetProperty(root, AXIntProperty::LABELED_BY, 2);
   AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &root);
   SetIdToWrapper(&wrapper);
 
@@ -657,8 +633,8 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, LabeledByLoop) {
   node2.id = 2;
   AccessibilityNodeInfoDataWrapper child1_wrapper(tree_source(), &node2);
   SetIdToWrapper(&child1_wrapper);
-  SetProperty(&node2, AXStringProperty::CONTENT_DESCRIPTION, "node2");
-  SetProperty(&node2, AXIntProperty::LABELED_BY, 1);
+  SetProperty(node2, AXStringProperty::CONTENT_DESCRIPTION, "node2");
+  SetProperty(node2, AXIntProperty::LABELED_BY, 1);
 
   ui::AXNodeData data = CallSerialize(wrapper);
   std::string name;
@@ -683,9 +659,9 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, AppendkDescription) {
   ASSERT_FALSE(data.GetStringAttribute(ax::mojom::StringAttribute::kDescription,
                                        &description));
 
-  SetProperty(&node, AXStringProperty::STATE_DESCRIPTION, "state description");
-  SetProperty(&node, AXBooleanProperty::SELECTED, true);
-  SetProperty(&node, AXStringProperty::TEXT, "text");
+  SetProperty(node, AXStringProperty::STATE_DESCRIPTION, "state description");
+  SetProperty(node, AXBooleanProperty::SELECTED, true);
+  SetProperty(node, AXStringProperty::TEXT, "text");
 
   data = CallSerialize(wrapper);
   ASSERT_TRUE(data.GetStringAttribute(ax::mojom::StringAttribute::kDescription,
@@ -698,10 +674,10 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, AppendkDescription) {
 TEST_F(AccessibilityNodeInfoDataWrapperTest, ControlIsFocusable) {
   AXNodeInfoData root;
   root.id = 1;
-  SetProperty(&root, AXStringProperty::CLASS_NAME, ui::kAXSeekBarClassname);
-  SetProperty(&root, AXStringProperty::TEXT, "");
-  SetProperty(&root, AXBooleanProperty::FOCUSABLE, true);
-  SetProperty(&root, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(root, AXStringProperty::CLASS_NAME, ui::kAXSeekBarClassname);
+  SetProperty(root, AXStringProperty::TEXT, "");
+  SetProperty(root, AXBooleanProperty::FOCUSABLE, true);
+  SetProperty(root, AXBooleanProperty::IMPORTANCE, true);
   AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &root);
 
   // Check the pre conditions required, before checking whether this
@@ -720,29 +696,28 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, FocusAndClickAction) {
   root.id = 10;
   AccessibilityNodeInfoDataWrapper root_wrapper(tree_source(), &root);
   SetIdToWrapper(&root_wrapper);
-  SetProperty(&root, AXStringProperty::CLASS_NAME, "");
-  SetProperty(&root, AXBooleanProperty::IMPORTANCE, true);
-  SetProperty(&root, AXBooleanProperty::FOCUSABLE, true);
-  SetProperty(&root, AXBooleanProperty::CLICKABLE, true);
-  SetProperty(&root, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({1}));
+  SetProperty(root, AXStringProperty::CLASS_NAME, "");
+  SetProperty(root, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(root, AXBooleanProperty::FOCUSABLE, true);
+  SetProperty(root, AXBooleanProperty::CLICKABLE, true);
+  SetProperty(root, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({1}));
 
   AXNodeInfoData child1;
   child1.id = 1;
   AccessibilityNodeInfoDataWrapper child1_wrapper(tree_source(), &child1);
   SetIdToWrapper(&child1_wrapper);
-  SetProperty(&child1, AXBooleanProperty::IMPORTANCE, true);
-  SetProperty(&child1, AXIntListProperty::CHILD_NODE_IDS,
-              std::vector<int>({2}));
+  SetProperty(child1, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(child1, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({2}));
   SetParentId(child1.id, root.id);
 
   AXNodeInfoData child2;
   child2.id = 2;
   AccessibilityNodeInfoDataWrapper child2_wrapper(tree_source(), &child2);
   SetIdToWrapper(&child2_wrapper);
-  SetProperty(&child2, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(child2, AXBooleanProperty::IMPORTANCE, true);
   SetParentId(child2.id, child1.id);
 
-  SetProperty(&child2, AXStringProperty::CONTENT_DESCRIPTION, "test text");
+  SetProperty(child2, AXStringProperty::CONTENT_DESCRIPTION, "test text");
 
   set_full_focus_mode(true);
 
@@ -762,7 +737,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, FocusAndClickAction) {
 
   // Set click and focus action to child1. child1 will be clickable and
   // focusable, and gets ax name from descendants.
-  SetProperty(&child1, AXIntListProperty::STANDARD_ACTION_IDS,
+  SetProperty(child1, AXIntListProperty::STANDARD_ACTION_IDS,
               std::vector<int>({static_cast<int>(AXActionType::CLICK),
                                 static_cast<int>(AXActionType::FOCUS)}));
 
@@ -780,7 +755,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, FocusAndClickAction) {
   EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
 
   // Same for clear_focus action instead of focus action.
-  SetProperty(&child1, AXIntListProperty::STANDARD_ACTION_IDS,
+  SetProperty(child1, AXIntListProperty::STANDARD_ACTION_IDS,
               std::vector<int>({static_cast<int>(AXActionType::CLICK),
                                 static_cast<int>(AXActionType::CLEAR_FOCUS)}));
 

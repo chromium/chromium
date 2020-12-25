@@ -3349,6 +3349,7 @@ source_set("unit_tests") {
     "apps/metrics/intent_handling_metrics_unittest.cc",
     "arc/accessibility/accessibility_node_info_data_wrapper_unittest.cc",
     "arc/accessibility/arc_accessibility_helper_bridge_unittest.cc",
+    "arc/accessibility/arc_accessibility_test_util.h",
     "arc/accessibility/arc_accessibility_util_unittest.cc",
     "arc/accessibility/auto_complete_handler_unittest.cc",
     "arc/accessibility/ax_tree_source_arc_unittest.cc",

@@ -10,6 +10,7 @@
 #include "base/stl_util.h"
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_window_info_data_wrapper.h"
+#include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_test_util.h"
 #include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_util.h"
 #include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
@@ -41,64 +42,6 @@ using AXWindowInfoData = mojom::AccessibilityWindowInfoData;
 using AXWindowIntProperty = mojom::AccessibilityWindowIntProperty;
 using AXWindowIntListProperty = mojom::AccessibilityWindowIntListProperty;
 using AXWindowStringProperty = mojom::AccessibilityWindowStringProperty;
-
-namespace {
-
-void SetProperty(AXNodeInfoData* node, AXBooleanProperty prop, bool value) {
-  arc::SetProperty(node->boolean_properties, prop, value);
-}
-
-void SetProperty(AXNodeInfoData* node,
-                 AXStringProperty prop,
-                 const std::string& value) {
-  arc::SetProperty(node->string_properties, prop, value);
-}
-
-void SetProperty(AXNodeInfoData* node, AXIntProperty prop, int32_t value) {
-  arc::SetProperty(node->int_properties, prop, value);
-}
-
-void SetProperty(AXWindowInfoData* window,
-                 AXWindowStringProperty prop,
-                 const std::string& value) {
-  arc::SetProperty(window->string_properties, prop, value);
-}
-
-void SetProperty(AXNodeInfoData* node,
-                 AXIntListProperty prop,
-                 const std::vector<int>& value) {
-  arc::SetProperty(node->int_list_properties, prop, value);
-}
-
-void SetProperty(AXWindowInfoData* window,
-                 AXWindowBooleanProperty prop,
-                 bool value) {
-  arc::SetProperty(window->boolean_properties, prop, value);
-}
-
-void SetProperty(AXWindowInfoData* window,
-                 AXWindowIntProperty prop,
-                 int value) {
-  arc::SetProperty(window->int_properties, prop, value);
-}
-
-void SetProperty(AXWindowInfoData* window,
-                 AXWindowIntListProperty prop,
-                 const std::vector<int>& value) {
-  arc::SetProperty(window->int_list_properties, prop, value);
-}
-
-void SetProperty(AXEventData* event, AXEventIntProperty prop, int32_t value) {
-  arc::SetProperty(event->int_properties, prop, value);
-}
-
-void SetProperty(AXEventData* event,
-                 AXEventIntListProperty prop,
-                 const std::vector<int>& value) {
-  arc::SetProperty(event->int_list_properties, prop, value);
-}
-
-}  // namespace
 
 class MockAutomationEventRouter
     : public extensions::AutomationEventRouterInterface {
@@ -601,8 +544,7 @@ TEST_F(AXTreeSourceArcTest, GetTreeDataAppliesFocus) {
   AXWindowInfoData* root = event->window_data->back().get();
   root->window_id = 5;
   SetProperty(root, AXWindowIntListProperty::CHILD_WINDOW_IDS, {1});
-  SetProperty(root->boolean_properties,
-              mojom::AccessibilityWindowBooleanProperty::FOCUSED, true);
+  SetProperty(root, mojom::AccessibilityWindowBooleanProperty::FOCUSED, true);
 
   // Add a child window.
   event->window_data->push_back(AXWindowInfoData::New());
@@ -635,8 +577,8 @@ TEST_F(AXTreeSourceArcTest, OnViewSelectedEvent) {
   AXWindowInfoData* root_window = event->window_data->back().get();
   root_window->window_id = 100;
   root_window->root_node_id = 10;
-  SetProperty(root_window->boolean_properties,
-              mojom::AccessibilityWindowBooleanProperty::FOCUSED, true);
+  SetProperty(root_window, mojom::AccessibilityWindowBooleanProperty::FOCUSED,
+              true);
 
   event->node_data.push_back(AXNodeInfoData::New());
   AXNodeInfoData* root = event->node_data.back().get();
@@ -748,8 +690,8 @@ TEST_F(AXTreeSourceArcTest, OnWindowStateChangedEvent) {
   AXWindowInfoData* root_window = event->window_data->back().get();
   root_window->window_id = 100;
   root_window->root_node_id = 10;
-  SetProperty(root_window->boolean_properties,
-              mojom::AccessibilityWindowBooleanProperty::FOCUSED, true);
+  SetProperty(root_window, mojom::AccessibilityWindowBooleanProperty::FOCUSED,
+              true);
 
   event->node_data.push_back(AXNodeInfoData::New());
   AXNodeInfoData* root = event->node_data.back().get();
@@ -848,8 +790,8 @@ TEST_F(AXTreeSourceArcTest, OnFocusEvent) {
   AXWindowInfoData* root_window = event->window_data->back().get();
   root_window->window_id = 100;
   root_window->root_node_id = 10;
-  SetProperty(root_window->boolean_properties,
-              mojom::AccessibilityWindowBooleanProperty::FOCUSED, true);
+  SetProperty(root_window, mojom::AccessibilityWindowBooleanProperty::FOCUSED,
+              true);
 
   event->node_data.push_back(AXNodeInfoData::New());
   AXNodeInfoData* root = event->node_data.back().get();
@@ -1134,8 +1076,8 @@ TEST_F(AXTreeSourceArcTest, SyncFocus) {
   AXWindowInfoData* root_window = event->window_data->back().get();
   root_window->window_id = 100;
   root_window->root_node_id = 10;
-  SetProperty(root_window->boolean_properties,
-              mojom::AccessibilityWindowBooleanProperty::FOCUSED, true);
+  SetProperty(root_window, mojom::AccessibilityWindowBooleanProperty::FOCUSED,
+              true);
 
   event->node_data.push_back(AXNodeInfoData::New());
   AXNodeInfoData* root = event->node_data.back().get();
@@ -1344,8 +1286,8 @@ TEST_F(AXTreeSourceArcTest, EnsureNodeIdMapCleared) {
   AXWindowInfoData* root_window = event->window_data->back().get();
   root_window->window_id = 2;
   root_window->root_node_id = 1;
-  SetProperty(root_window->boolean_properties,
-              mojom::AccessibilityWindowBooleanProperty::FOCUSED, true);
+  SetProperty(root_window, mojom::AccessibilityWindowBooleanProperty::FOCUSED,
+              true);
 
   event->node_data.push_back(AXNodeInfoData::New());
   AXNodeInfoData* node = event->node_data.back().get();

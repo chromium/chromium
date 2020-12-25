@@ -11,6 +11,7 @@
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_window_info_data_wrapper.h"
+#include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_test_util.h"
 #include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/chromeos/arc/accessibility/ax_tree_source_arc.h"
 #include "components/arc/mojom/accessibility_helper.mojom.h"
@@ -27,26 +28,6 @@ using AXIntListProperty = mojom::AccessibilityIntListProperty;
 using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
 using AXStringProperty = mojom::AccessibilityStringProperty;
 using AXWindowInfoData = mojom::AccessibilityWindowInfoData;
-
-namespace {
-
-void SetProperty(AXNodeInfoData* node, AXBooleanProperty prop, bool value) {
-  arc::SetProperty(node->boolean_properties, prop, value);
-}
-
-void SetProperty(AXNodeInfoData* node,
-                 AXIntListProperty prop,
-                 const std::vector<int>& value) {
-  arc::SetProperty(node->int_list_properties, prop, value);
-}
-
-void SetProperty(AXNodeInfoData* node,
-                 AXStringProperty prop,
-                 const std::string& value) {
-  arc::SetProperty(node->string_properties, prop, value);
-}
-
-}  // namespace
 
 class DrawerLayoutHandlerTest : public testing::Test,
                                 public AXTreeSourceArc::Delegate {
