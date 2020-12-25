@@ -73,12 +73,12 @@ body.tab-navigation input:focus::after {
 
   border: 2px solid var(--focus-color);
   border-radius: 4px;
-  bottom: calc(0px - var(--focus-ring-size));
+  bottom: calc(-1 * var(--focus-ring-size));
   content: '';
-  left: calc(0px - var(--focus-ring-size));
+  left: calc(-1 * var(--focus-ring-size));
   position: absolute;
-  right: calc(0px - var(--focus-ring-size));
-  top: calc(0px - var(--focus-ring-size));
+  right: calc(-1 * var(--focus-ring-size));
+  top: calc(-1 * var(--focus-ring-size));
 }
 
 .cancel-animate {
@@ -367,7 +367,7 @@ body.tab-navigation .mode-item>input:focus::after {
 }
 
 body.tab-navigation .mode-item>input:focus + span::after {
-  --negative-size: calc(0px - var(--focus-ring-gap));
+  --negative-size: calc(-1 * var(--focus-ring-gap));
 
   border: var(--focus-ring-border) solid var(--focus-color);
   border-radius: 23px/50%;
