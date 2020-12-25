@@ -344,14 +344,25 @@ export class Modes {
    */
   async updateModeSelectionUI(deviceId) {
     const supportedModes = await this.getSupportedModes(deviceId);
-    dom.getAll('div.mode-item', HTMLDivElement).forEach((element) => {
-      const radio = dom.getFrom(element, 'input[type=radio]', HTMLInputElement);
-      element.classList.toggle(
-          'hide',
-          !supportedModes.includes(
-              /** @type {!Mode} */ (radio.dataset['mode'])));
+    const items = dom.getAll('div.mode-item', HTMLDivElement);
+    let first = null;
+    let last = null;
+    items.forEach((el) => {
+      const radio = dom.getFrom(el, 'input[type=radio]', HTMLInputElement);
+      const supported =
+          supportedModes.includes(/** @type {!Mode} */ (radio.dataset['mode']));
+      el.classList.toggle('hide', !supported);
+      if (supported) {
+        if (first === null) {
+          first = el;
+        }
+        last = el;
+      }
     });
-    this.modesGroup_.classList.remove('hide');
+    items.forEach((el) => {
+      el.classList.toggle('first', el === first);
+      el.classList.toggle('last', el === last);
+    });
   }
 
   /**

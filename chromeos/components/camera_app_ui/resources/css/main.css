@@ -332,6 +332,14 @@ body.playing-result-video #play-result-video {
   display: none;
 }
 
+#modes-group .mode-item.first {
+  margin-inline-start: var(--fade-padding);
+}
+
+#modes-group .mode-item.last {
+  margin-inline-end: var(--fade-padding);
+}
+
 div.mode-item>span {
   border-radius: 16px/50%;
   color: white;
@@ -342,10 +350,6 @@ div.mode-item>span {
   padding: 8px 12px;
   position: relative;
   z-index: 0;
-}
-
-#modes-group.hide {
-  visibility: hidden;
 }
 
 .mode-item>input {
