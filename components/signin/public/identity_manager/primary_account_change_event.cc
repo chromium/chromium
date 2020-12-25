@@ -32,15 +32,14 @@ PrimaryAccountChangeEvent::Type PrimaryAccountChangeEvent::GetEventTypeFor(
   if (previous_state_ == current_state_)
     return Type::kNone;
 
-  if (previous_state_.consent_level == ConsentLevel::kSync) {
-    // Cannot change the Sync account without signing out first.
-    DCHECK(previous_state_.primary_account == current_state_.primary_account ||
-           current_state_.primary_account.IsEmpty());
-  }
-  if (previous_state_.primary_account == current_state_.primary_account) {
-    // Cannot change the consent level for the empty account.
-    DCHECK(!previous_state_.primary_account.IsEmpty());
-  }
+  // Cannot change the Sync account without clearing the primary account first.
+  DCHECK(previous_state_.consent_level != ConsentLevel::kSync ||
+         previous_state_.primary_account == current_state_.primary_account ||
+         current_state_.primary_account.IsEmpty());
+
+  // Cannot change the consent level for the empty account.
+  DCHECK(previous_state_.primary_account != current_state_.primary_account ||
+         !previous_state_.primary_account.IsEmpty());
 
   switch (consent_level) {
     case ConsentLevel::kNotRequired:
@@ -55,7 +54,8 @@ PrimaryAccountChangeEvent::Type PrimaryAccountChangeEvent::GetEventTypeFor(
                    ? Type::kSet
                    : Type::kCleared;
       }
-      // Cannot change the Sync account without signing out first.
+      // Cannot change the Sync account without clearing the primary account
+      // first.
       DCHECK_EQ(current_state_.consent_level, ConsentLevel::kNotRequired);
       return Type::kNone;
   }
