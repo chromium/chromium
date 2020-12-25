@@ -1577,30 +1577,18 @@ body.photo.scan-barcode .barcode-scan-box {
 .barcode-chip-container {
   --chip-height: 32px;
   left: 50%;
-  opacity: 0;
+  opacity: 1;
   position: absolute;
   top: 10%;
   transform: translateX(-50%);
+  transition: opacity var(--moderate1-duration) var(--standard-easing);
   z-index: 50;
 }
 
-/* TODO(b/172879638): Tune the animation according to the final motion spec. */
-.barcode-chip-container.animate {
-  /* TODO(b/172879638): This might be too short for long text. */
-  animation: 8s show-barcode-chip ease-out;
-}
-
-@keyframes show-barcode-chip {
-  0% {
-    opacity: 0;
-  }
-  3%,
-  97% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+.barcode-chip-container.invisible {
+  opacity: 0;
+  transition: opacity var(--moderate1-duration) var(--standard-easing),
+              visibility 0s var(--moderate1-duration);
 }
 
 .barcode-chip-url {
@@ -1685,10 +1673,6 @@ body.photo.scan-barcode .barcode-scan-box {
   width: 416px;
 }
 
-#barcode-chip-text-expand.hide {
-  display: none;
-}
-
 #barcode-chip-text-expand {
   background: url(/images/barcode_chevron_down.svg) center no-repeat;
   height: 40px;
@@ -1742,4 +1726,8 @@ body.photo.scan-barcode .barcode-scan-box {
 
 .hidden {
   display: none;
+}
+
+.invisible {
+  visibility: hidden;
 }

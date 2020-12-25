@@ -91,6 +91,7 @@ copy("chrome_camera_app_js") {
     "js/sound.js",
     "js/state.js",
     "js/test_bridge.js",
+    "js/timer.js",
     "js/toast.js",
     "js/tooltip.js",
     "js/type.js",

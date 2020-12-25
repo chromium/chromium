@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 import {browserProxy} from './browser_proxy/browser_proxy.js';
+import {assert} from './chrome_util.js';
 import * as dom from './dom.js';
 import * as snackbar from './snackbar.js';
-import * as util from './util.js';
+import {OneShotTimer} from './timer.js';
+
+// TODO(b/172879638): Tune the duration according to the final motion spec.
+const CHIP_DURATION = 8000;
 
 /**
  * The detected string that is being shown currently.
@@ -20,14 +24,31 @@ let currentCode = null;
 let currentChip = null;
 
 /**
- * Resets the variables of the current state.
+ * The countdown timer for dismissing the chip.
+ * @type {?OneShotTimer}
  */
-function resetCurrentState() {
+let currentTimer = null;
+
+/**
+ * Resets the variables of the current state and dismisses the chip.
+ */
+function deactivate() {
   if (currentChip !== null) {
-    currentChip.classList.add('hidden');
+    currentChip.classList.add('invisible');
   }
   currentCode = null;
   currentChip = null;
+  currentTimer = null;
+}
+
+/**
+ * Activates the chip on container and starts the timer.
+ * @param {!HTMLElement} container The container of the chip.
+ */
+function activate(container) {
+  container.classList.remove('invisible');
+  currentChip = container;
+  currentTimer = new OneShotTimer(deactivate, CHIP_DURATION);
 }
 
 /**
@@ -70,7 +91,7 @@ function setupCopyButton(container, content, snackbarLabel) {
  */
 function showUrl(url) {
   const container = dom.get('#barcode-chip-url-container', HTMLDivElement);
-  container.classList.remove('hidden');
+  activate(container);
 
   const anchor = dom.getFrom(container, 'a', HTMLAnchorElement);
   Object.assign(anchor, {
@@ -84,34 +105,29 @@ function showUrl(url) {
   anchor.focus();
 
   setupCopyButton(container, url, 'snackbar_link_copied');
-
-  currentChip = container;
-  util.animateOnce(container, resetCurrentState);
 }
 
 /**
+ * TODO(b/172879638): Handle a11y.
  * Shows an actionable text chip.
  * @param {string} text
  */
 function showText(text) {
   const container = dom.get('#barcode-chip-text-container', HTMLDivElement);
-  container.classList.remove('hidden', 'expanded');
+  activate(container);
+  container.classList.remove('expanded');
 
   const textEl = dom.get('#barcode-chip-text-content', HTMLDivElement);
   textEl.textContent = text;
   const expandable = textEl.scrollWidth > textEl.clientWidth;
 
   const expandEl = dom.get('#barcode-chip-text-expand', HTMLButtonElement);
-  expandEl.classList.toggle('hide', !expandable);
+  expandEl.classList.toggle('hidden', !expandable);
   expandEl.onclick = () => {
     container.classList.toggle('expanded');
   };
 
   setupCopyButton(container, text, 'snackbar_text_copied');
-
-  // TODO(b/172879638): Handle a11y.
-  currentChip = container;
-  util.animateOnce(container, resetCurrentState);
 }
 
 /**
@@ -120,11 +136,17 @@ function showText(text) {
  */
 export async function show(code) {
   if (code === currentCode) {
+    if (currentTimer !== null) {
+      // Extend the duration by resetting the timeout.
+      currentTimer.resetTimeout();
+    }
     return;
   }
 
-  if (currentChip !== null) {
-    await util.animateCancel(currentChip);
+  if (currentTimer !== null) {
+    // Dismiss the previous chip.
+    currentTimer.fireNow();
+    assert(currentTimer === null, 'The timer should be cleared.');
   }
 
   currentCode = code;
