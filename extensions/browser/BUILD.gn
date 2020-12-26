@@ -529,7 +529,6 @@ source_set("browser_tests") {
       "api/audio/audio_apitest_chromeos.cc",
       "api/cec_private/cec_private_apitest.cc",
       "api/media_perception_private/media_perception_private_apitest.cc",
-      "api/system_power_source/system_power_source_apitest.cc",
       "api/virtual_keyboard/virtual_keyboard_apitest.cc",
     ]
 
@@ -773,7 +772,6 @@ source_set("unit_tests") {
       "api/media_perception_private/conversion_utils_unittest.cc",
       "api/media_perception_private/media_perception_api_manager_unittest.cc",
       "api/networking_private/networking_private_chromeos_unittest.cc",
-      "api/system_power_source/system_power_source_api_unittest.cc",
       "api/virtual_keyboard_private/virtual_keyboard_private_api_unittest.cc",
       "api/webcam_private/visca_webcam_unittest.cc",
     ]

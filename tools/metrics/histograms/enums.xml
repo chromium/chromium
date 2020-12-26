@@ -24118,7 +24118,7 @@ Called by update_extension_histograms.py.-->
   <int value="421"
       label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_STATE_CHANGE_REQUESTED"/>
   <int value="422" label="INPUT_METHOD_PRIVATE_ON_FOCUS"/>
-  <int value="423" label="SYSTEM_POWER_SOURCE_ONPOWERCHANGED"/>
+  <int value="423" label="DELETED_SYSTEM_POWER_SOURCE_ONPOWERCHANGED"/>
   <int value="424" label="WEB_REQUEST_ON_ACTION_IGNORED"/>
   <int value="425" label="ARC_APPS_PRIVATE_ON_INSTALLED"/>
   <int value="426" label="FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED"/>
@@ -25493,8 +25493,8 @@ Called by update_extension_histograms.py.-->
   <int value="1256" label="USERSPRIVATE_GETCURRENTUSER"/>
   <int value="1257" label="WALLPAPERPRIVATE_GETSURPRISEMEIMAGE"/>
   <int value="1258" label="VIRTUALKEYBOARDPRIVATE_SETOCCLUDEDBOUNDS"/>
-  <int value="1259" label="SYSTEM_POWER_SOURCE_GETPOWERSOURCEINFO"/>
-  <int value="1260" label="SYSTEM_POWER_SOURCE_REQUESTSTATUSUPDATE"/>
+  <int value="1259" label="DELETED_SYSTEM_POWER_SOURCE_GETPOWERSOURCEINFO"/>
+  <int value="1260" label="DELETED_SYSTEM_POWER_SOURCE_REQUESTSTATUSUPDATE"/>
   <int value="1261" label="INPUTMETHODPRIVATE_GETSURROUNDINGTEXT"/>
   <int value="1262" label="USERSPRIVATE_GETLOGINSTATUS"/>
   <int value="1263" label="FILEMANAGERPRIVATEINTERNAL_INSTALLLINUXPACKAGE"/>
@@ -26372,7 +26372,7 @@ Called by update_extension_permission.py.-->
   <int value="211" label="kCecPrivate"/>
   <int value="212" label="kSafeBrowsingPrivate"/>
   <int value="213" label="kFileSystemRequestDownloads"/>
-  <int value="214" label="kSystemPowerSource"/>
+  <int value="214" label="kDeleted_SystemPowerSource"/>
   <int value="215" label="kArcAppsPrivate"/>
   <int value="216" label="kEnterpriseHardwarePlatform"/>
   <int value="217" label="kLoginScreenUi"/>

@@ -51,7 +51,6 @@ extensions_api_schema_files_ = [
   "system_display.idl",
   "system_memory.idl",
   "system_network.idl",
-  "system_power_source.idl",
   "system_storage.idl",
   "test.json",
   "usb.idl",

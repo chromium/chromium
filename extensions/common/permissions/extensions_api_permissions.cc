@@ -130,8 +130,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermission::kSystemDisplay, "system.display",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
-    {APIPermission::kSystemPowerSource, "system.powerSource",
-     APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermission::kSystemStorage, "system.storage"},
     {APIPermission::kU2fDevices, "u2fDevices"},
     {APIPermission::kUnlimitedStorage, "unlimitedStorage",

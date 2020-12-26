@@ -565,10 +565,6 @@
     "dependencies": ["permission:system.network"],
     "contexts": ["blessed_extension"]
   },
-  "system.powerSource": {
-    "dependencies": ["permission:system.powerSource"],
-    "contexts": ["blessed_extension"]
-  },
   "system.storage": {
     "dependencies": ["permission:system.storage"],
     "contexts": ["blessed_extension"]

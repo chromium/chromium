@@ -255,7 +255,7 @@ class APIPermission {
     kCecPrivate = 211,
     kSafeBrowsingPrivate = 212,
     kFileSystemRequestDownloads = 213,
-    kSystemPowerSource = 214,
+    kDeleted_SystemPowerSource = 214,
     kArcAppsPrivate = 215,
     kEnterpriseHardwarePlatform = 216,
     kLoginScreenUi = 217,

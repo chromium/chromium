@@ -48,14 +48,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/clipboard/clipboard_api.h"
-#include "extensions/browser/api/system_power_source/system_power_source_api.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
 #include "extensions/browser/api/vpn_provider/vpn_service_factory.h"
 #include "extensions/browser/api/webcam_private/webcam_private_api.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "extensions/browser/api/system_power_source/system_power_source_api.h"
 #endif
 
 namespace extensions {
@@ -103,9 +98,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   RuntimeAPI::GetFactoryInstance();
   StorageFrontend::GetFactoryInstance();
   SystemInfoAPI::GetFactoryInstance();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  SystemPowerSourceAPI::GetFactoryInstance();
-#endif
   UpdateServiceFactory::GetInstance();
   UsbDeviceManager::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)

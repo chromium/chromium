@@ -633,12 +633,6 @@
       "whitelist": ["B44D08FD98F1523ED5837D78D0A606EA9D6206E5"]  // Web Store
     }
   ],
-  "system.powerSource": {
-    "channel": "stable",
-    "extension_types": ["platform_app"],
-    "platforms": ["chromeos"],
-    "session_types": ["kiosk"]
-  },
   "u2fDevices": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
