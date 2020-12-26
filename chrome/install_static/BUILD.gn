@@ -31,7 +31,7 @@ if (is_win) {
 
     sources = [
       "../app/chrome_dll_resource.h",
-      "../chrome/common/chrome_icon_resources_win.h",
+      "../common/chrome_icon_resources_win.h",
       "install_constants.h",
       "install_details.cc",
       "install_details.h",
@@ -71,6 +71,7 @@ if (is_win) {
   # process-wide InstallDetails instance (i.e., chrome_elf.dll).
   source_set("primary_module") {
     sources = [ "get_install_details_payload.cc" ]
+    deps = [ ":install_static_util" ]
   }
 
   # A source set for use by modules in a process that fetch the process-wide
@@ -102,6 +103,7 @@ if (is_win) {
       "//build:branding_buildflags",
       "//chrome/install_static:install_static_util",
       "//chrome/install_static/test:test_support",
+      "//components/version_info",
       "//testing/gmock",
       "//testing/gtest",
     ]

@@ -78,7 +78,6 @@ no_check_targets = [
   "//chrome/browser/updates/announcement_notification:*",  # 15 errors
   "//chrome/browser/updates/internal:*",  # 8 errors
   "//chrome/browser/updates:*",  # 21 errors
-  "//chrome/install_static:*",  # 4 errors
   "//chrome/notification_helper:*",  # 4 errors
   "//chrome/services/cups_proxy/public/cpp:*",  # 2 errors
   "//chrome/services/cups_proxy:*",  # 6 errors
