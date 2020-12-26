@@ -80,7 +80,9 @@ if (typeof(goog) != 'undefined' && goog.require) {
      }
 
      channel = new MessageChannel();
-     window.postMessage(PORT_SETUP_MSG, [channel.port2], '*');
+     window.postMessage(
+         PORT_SETUP_MSG, '*' /* target origin */,
+         [channel.port2] /* transfer */);
      channel.port1.onmessage = function(event) {
        if (event.data == DISCONNECT_MSG) {
          channel = null;

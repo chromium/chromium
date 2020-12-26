@@ -73,7 +73,7 @@ cvox.PdfProcessor.processEmbeddedPdfs = function() {
 cvox.PdfProcessor.process = function() {
   cvox.PdfProcessor.pageCount = null;
   cvox.PdfProcessor.pageIndex = null;
-  window.postMessage({'type': 'getAccessibilityJSON'}, '*');
+  window.postMessage({'type': 'getAccessibilityJSON'}, '*' /* target origin */);
 };
 
 /**

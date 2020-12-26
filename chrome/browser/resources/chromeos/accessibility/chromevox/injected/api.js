@@ -92,7 +92,8 @@ function connect_() {
     } catch (e) {
     }
   };
-  window.postMessage(PORT_SETUP_MSG, '*', [channel.port2]);
+  window.postMessage(
+      PORT_SETUP_MSG, '*' /* target origin */, [channel.port2] /* transfer */);
 }
 
 /**
