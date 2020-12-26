@@ -484,6 +484,10 @@ def _RunDiskUsage(devices, package_name):
     awful_wrapping = r'\s*'.join('compilation_filter=')
     for m in re.finditer(awful_wrapping + r'([\s\S]+?)[\],]', package_output):
       compilation_filters.add(re.sub(r'\s+', '', m.group(1)))
+    # Starting Android Q, output looks like:
+    #  arm: [status=speed-profile] [reason=install]
+    for m in re.finditer(r'\[status=(.+?)\]', package_output):
+      compilation_filters.add(m.group(1))
     compilation_filter = ','.join(sorted(compilation_filters))
 
     data_dir_sizes = _DuHelper(d, '%s/{*,.*}' % data_dir, run_as=package_name)
