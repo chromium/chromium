@@ -455,13 +455,20 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
         auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
             isSyncUser, /*password_update*/ true, std::move(form));
         delegate->set_handler(self.applicationCommandsHandler);
-        InfobarPasswordCoordinator* coordinator = [[InfobarPasswordCoordinator
-            alloc]
-            initWithInfoBarDelegate:delegate.get()
-                               type:InfobarType::kInfobarTypePasswordUpdate];
+        std::unique_ptr<InfoBarIOS> infobar;
         // If manual save, skip showing banner.
-        std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
-            coordinator, std::move(delegate), /*skip_banner=*/manual);
+        if (IsInfobarOverlayUIEnabled()) {
+          infobar = std::make_unique<InfoBarIOS>(
+              InfobarType::kInfobarTypePasswordUpdate, std::move(delegate),
+              /*=skip_banner*/ manual);
+        } else {
+          InfobarPasswordCoordinator* coordinator = [[InfobarPasswordCoordinator
+              alloc]
+              initWithInfoBarDelegate:delegate.get()
+                                 type:InfobarType::kInfobarTypePasswordUpdate];
+          infobar = std::make_unique<InfoBarIOS>(
+              coordinator, std::move(delegate), /*skip_banner=*/manual);
+        }
         infoBarManager->AddInfoBar(std::move(infobar),
                                    /*replace_existing=*/true);
       break;
