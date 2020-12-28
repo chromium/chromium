@@ -52,7 +52,10 @@ void TileBackgroundTask::StartFetchTask(SimpleFactoryKey* key,
     return;
   auto* tile_service = TileServiceFactory::GetInstance()->GetForKey(key);
   DCHECK(tile_service);
-  if (!base::FeatureList::IsEnabled(query_tiles::features::kQueryTiles)) {
+  if (!base::FeatureList::IsEnabled(query_tiles::features::kQueryTiles) ||
+      (!base::FeatureList::IsEnabled(query_tiles::features::kQueryTilesInNTP) &&
+       !base::FeatureList::IsEnabled(
+           query_tiles::features::kQueryTilesInOmnibox))) {
     tile_service->CancelTask();
   } else {
     tile_service->StartFetchForTiles(is_from_reduced_mode, std::move(callback));
