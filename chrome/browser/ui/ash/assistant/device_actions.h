@@ -39,7 +39,7 @@ class DeviceActions : public ash::AndroidIntentHelper,
   chromeos::assistant::AppStatus GetAndroidAppStatus(
       const chromeos::assistant::AndroidAppInfo& app_info) override;
   void LaunchAndroidIntent(const std::string& intent) override;
-  void AddAppListEventSubscriber(
+  void AddAndFireAppListEventSubscriber(
       chromeos::assistant::AppListEventSubscriber* subscriber) override;
   void RemoveAppListEventSubscriber(
       chromeos::assistant::AppListEventSubscriber* subscriber) override;

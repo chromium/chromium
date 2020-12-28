@@ -208,7 +208,7 @@ void DeviceActions::LaunchAndroidIntent(const std::string& intent) {
   app->LaunchIntent(intent, display::kDefaultDisplayId);
 }
 
-void DeviceActions::AddAppListEventSubscriber(
+void DeviceActions::AddAndFireAppListEventSubscriber(
     chromeos::assistant::AppListEventSubscriber* subscriber) {
   auto* prefs = ArcAppListPrefs::Get(ProfileManager::GetActiveUserProfile());
   if (prefs && prefs->package_list_initial_refreshed()) {

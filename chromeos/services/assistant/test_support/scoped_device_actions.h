@@ -29,7 +29,8 @@ class ScopedDeviceActions : DeviceActions {
   bool OpenAndroidApp(const AndroidAppInfo& app_info) override;
   AppStatus GetAndroidAppStatus(const AndroidAppInfo& app_info) override;
   void LaunchAndroidIntent(const std::string& intent) override {}
-  void AddAppListEventSubscriber(AppListEventSubscriber* subscriber) override {}
+  void AddAndFireAppListEventSubscriber(
+      AppListEventSubscriber* subscriber) override {}
   void RemoveAppListEventSubscriber(
       AppListEventSubscriber* subscriber) override {}
 

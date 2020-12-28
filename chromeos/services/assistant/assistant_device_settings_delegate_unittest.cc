@@ -65,7 +65,7 @@ class ScopedDeviceActionsMock : public ScopedDeviceActions {
               (const chromeos::assistant::AndroidAppInfo& app_info));
   MOCK_METHOD(void, LaunchAndroidIntent, (const std::string& intent));
   MOCK_METHOD(void,
-              AddAppListEventSubscriber,
+              AddAndFireAppListEventSubscriber,
               (chromeos::assistant::AppListEventSubscriber * subscriber));
   MOCK_METHOD(void,
               RemoveAppListEventSubscriber,

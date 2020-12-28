@@ -70,8 +70,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) DeviceActions {
   // See Intent.toUri().
   virtual void LaunchAndroidIntent(const std::string& intent) = 0;
 
-  // Register App list event subscriber.
-  virtual void AddAppListEventSubscriber(
+  // Register App list event subscriber. The subscriber will be immediately
+  // called with the current App list, and then for every change.
+  virtual void AddAndFireAppListEventSubscriber(
       AppListEventSubscriber* subscriber) = 0;
   virtual void RemoveAppListEventSubscriber(
       AppListEventSubscriber* subscriber) = 0;

@@ -14,7 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
 #include "chromeos/assistant/internal/action/cros_action_module.h"
@@ -353,10 +353,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // Configuration passed to libassistant.
   std::string libassistant_config_;
 
-  ScopedObserver<DeviceActions,
-                 AppListEventSubscriber,
-                 &DeviceActions::AddAppListEventSubscriber,
-                 &DeviceActions::RemoveAppListEventSubscriber>
+  base::ScopedObservation<DeviceActions,
+                          AppListEventSubscriber,
+                          &DeviceActions::AddAndFireAppListEventSubscriber,
+                          &DeviceActions::RemoveAppListEventSubscriber>
       scoped_app_list_event_subscriber_{this};
   base::ObserverList<CommunicationErrorObserver> error_observers_;
   base::ObserverList<StateObserver> state_observers_;
