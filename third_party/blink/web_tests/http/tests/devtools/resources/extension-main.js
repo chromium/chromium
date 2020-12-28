@@ -50,11 +50,6 @@ function evaluateOnFrontend(expression, callback)
     window._extensionServerForTests.sendRequest({ command: "evaluateForTestInFrontEnd", expression: expression }, callback);
 }
 
-function evaluateOnFrontendPromise(expression, callback)
-{
-    return new Promise(resolve => evaluateOnFrontend(expression, resolve));
-}
-
 function invokePageFunctionAsync(functionName, callback)
 {
     evaluateOnFrontend("TestRunner.callFunctionInPageAsync('" + functionName + "').then(() => reply())", callback);
