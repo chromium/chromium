@@ -1603,11 +1603,19 @@ body.photo.scan-barcode .barcode-scan-box {
 .barcode-chip-container {
   --chip-height: 32px;
   --chip-max-width: 420px;
+  --min-scanbox-distance: 40px;
+  --text-expand-button-height: 40px;
+  --text-line-height: 24px;
+  --text-padding-vertical: 8px;
+
   left: 50%;
   max-width: min(80%, var(--chip-max-width));
   opacity: 1;
   position: absolute;
-  top: 10%;
+  /* Avoid collision with scan-box and preview-box */
+  top: max(8px, min(10%, 33.33% - var(--text-line-height) -
+      var(--text-expand-button-height) - 2 * var(--text-padding-vertical) -
+      var(--min-scanbox-distance)));
   transform: translateX(-50%);
   transition: opacity var(--moderate1-duration) var(--standard-easing);
   z-index: 50;
@@ -1680,13 +1688,12 @@ body.photo.scan-barcode .barcode-scan-box {
   display: flex;
   flex-direction: column;
   font: 400 15px Roboto;
-  padding: 8px 20px;
+  padding: var(--text-padding-vertical) 20px;
 }
 
 #barcode-chip-text-content {
-  --line-height: 24px;
   color: var(--grey-200);
-  line-height: var(--line-height);
+  line-height: var(--text-line-height);
   max-width: 100%;
   overflow: hidden;
   text-decoration: none;
@@ -1696,7 +1703,7 @@ body.photo.scan-barcode .barcode-scan-box {
 
 .expanded #barcode-chip-text-content {
   /* TODO(b/172879638): Make this responsive */
-  max-height: calc(var(--line-height) * 10);
+  max-height: calc(var(--text-line-height) * 10);
   white-space: normal;
   /* Keep the same width as before to avoid text jumping. */
   width: var(--chip-max-width);
@@ -1704,7 +1711,7 @@ body.photo.scan-barcode .barcode-scan-box {
 
 #barcode-chip-text-expand {
   background: url(/images/barcode_chevron_down.svg) center no-repeat;
-  height: 40px;
+  height: var(--text-expand-button-height);
   width: 100%;
 }
 
