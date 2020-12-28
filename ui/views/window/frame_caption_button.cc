@@ -190,7 +190,9 @@ void FrameCaptionButton::OnGestureEvent(ui::GestureEvent* event) {
       event->StopPropagation();
     }
   }
-  Button::OnGestureEvent(event);
+
+  if (!event->handled())
+    Button::OnGestureEvent(event);
 }
 
 views::PaintInfo::ScaleType FrameCaptionButton::GetPaintScaleType() const {
