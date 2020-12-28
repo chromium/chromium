@@ -130,6 +130,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DoPaint(const std::vector<gfx::Rect>& paint_rects,
                std::vector<PaintReadyRect>* ready,
                std::vector<gfx::Rect>* pending) override;
+  void OnGeometryChanged(double old_zoom, float old_device_scale) override;
 
  private:
   // Call `Destroy()` instead.

@@ -17,6 +17,9 @@
 
 namespace chrome_pdf {
 
+// static
+constexpr double PdfViewPluginBase::kMinZoom;
+
 PdfViewPluginBase::PdfViewPluginBase() = default;
 
 PdfViewPluginBase::~PdfViewPluginBase() = default;
@@ -54,6 +57,12 @@ void PdfViewPluginBase::LoadUrl(const std::string& url, bool is_print_preview) {
       base::BindOnce(is_print_preview ? &PdfViewPluginBase::DidOpenPreview
                                       : &PdfViewPluginBase::DidOpen,
                      GetWeakPtr(), std::move(loader)));
+}
+
+void PdfViewPluginBase::SetZoom(double scale) {
+  double old_zoom = zoom_;
+  zoom_ = scale;
+  OnGeometryChanged(old_zoom, device_scale_);
 }
 
 }  // namespace chrome_pdf

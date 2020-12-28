@@ -187,6 +187,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void DoPaint(const std::vector<gfx::Rect>& paint_rects,
                std::vector<PaintReadyRect>* ready,
                std::vector<gfx::Rect>* pending) override;
+  void OnGeometryChanged(double old_zoom, float old_device_scale) override;
 
  private:
   // Message handlers.
@@ -209,10 +210,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void UpdateScroll();
 
   void ResetRecentlySentFindUpdate(int32_t);
-
-  // Called whenever the plugin geometry changes to update the location of the
-  // background parts, and notifies the pdf engine.
-  void OnGeometryChanged(double old_zoom, float old_device_scale);
 
   // Figures out the location of any background rectangles (i.e. those that
   // aren't painted by the PDF engine).
@@ -266,9 +263,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
     kOriginal = 1,
     kEdited = 2,
   };
-
-  // Set new zoom scale.
-  void SetZoom(double scale);
 
   // Reduces the document to 1 page and appends |print_preview_page_count_| - 1
   // blank pages to the document for print preview.

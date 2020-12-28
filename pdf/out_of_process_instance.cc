@@ -261,8 +261,6 @@ constexpr int kInvalidPDFIndex = -2;
 constexpr base::TimeDelta kAccessibilityPageDelay =
     base::TimeDelta::FromMilliseconds(100);
 
-constexpr double kMinZoom = 0.01;
-
 constexpr char kPPPPdfInterface[] = PPP_PDF_INTERFACE_1;
 
 PP_Var GetLinkAtPosition(PP_Instance instance, PP_Point point) {
@@ -2226,12 +2224,6 @@ std::unique_ptr<UrlLoader> OutOfProcessInstance::CreateUrlLoaderInternal() {
   auto loader = std::make_unique<PepperUrlLoader>(this);
   loader->GrantUniversalAccess();
   return loader;
-}
-
-void OutOfProcessInstance::SetZoom(double scale) {
-  double old_zoom = zoom();
-  set_zoom(scale);
-  OnGeometryChanged(old_zoom, device_scale());
 }
 
 void OutOfProcessInstance::AppendBlankPrintPreviewPages() {

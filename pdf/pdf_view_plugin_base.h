@@ -38,6 +38,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
                std::vector<gfx::Rect>* pending) override;
 
  protected:
+  // The mininum zoom level allowed.
+  static constexpr double kMinZoom = 0.01;
+
   PdfViewPluginBase();
   ~PdfViewPluginBase() override;
 
@@ -76,6 +79,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
                        std::vector<PaintReadyRect>* ready,
                        std::vector<gfx::Rect>* pending) = 0;
 
+  // Called whenever the plugin geometry changes to update the location of the
+  // background parts, and notifies the pdf engine.
+  virtual void OnGeometryChanged(double old_zoom, float old_device_scale) = 0;
+
   void SetBackgroundColor(uint32_t background_color) {
     background_color_ = background_color;
   }
@@ -88,8 +95,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
     top_toolbar_height_in_viewport_coords_ = height;
   }
 
+  // Sets the new zoom scale.
+  void SetZoom(double scale);
+
   double zoom() const { return zoom_; }
-  void set_zoom(double zoom) { zoom_ = zoom; }
 
   float device_scale() const { return device_scale_; }
   void set_device_scale(float device_scale) { device_scale_ = device_scale; }
