@@ -3406,6 +3406,10 @@ void AXNodeObject::AddChildren() {
           child_obj->CanIgnoreTextAsEmpty())
         continue;
 
+      // TODO(crbug.com/1158511) This shouldn't be needed!
+      if (IsDetached())
+        return;
+
       AddChild(child_obj);
     }
   } else {
@@ -3418,6 +3422,10 @@ void AXNodeObject::AddChildren() {
       AddChild(obj);
     }
   }
+
+  // TODO(crbug.com/1158511) This shouldn't be needed!
+  if (IsDetached())
+    return;
 
   AddHiddenChildren();
   AddPopupChildren();
