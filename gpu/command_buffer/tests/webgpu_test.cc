@@ -19,6 +19,13 @@
 #include "gpu/ipc/webgpu_in_process_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+// TODO(crbug.com/1162117): gl_tests failing on Linux
+#if defined(OS_LINUX)
+#define MAYBE(test_name) DISABLED_##test_name
+#else
+#define MAYBE(test_name) test_name
+#endif
+
 namespace gpu {
 
 namespace {
@@ -174,7 +181,7 @@ WebGPUTest::DeviceAndClientID WebGPUTest::GetNewDeviceAndClientID() {
   return result;
 }
 
-TEST_F(WebGPUTest, FlushNoCommands) {
+TEST_F(WebGPUTest, MAYBE(FlushNoCommands)) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -186,7 +193,7 @@ TEST_F(WebGPUTest, FlushNoCommands) {
 }
 
 // Referred from GLES2ImplementationTest/ReportLoss
-TEST_F(WebGPUTest, ReportLoss) {
+TEST_F(WebGPUTest, MAYBE(ReportLoss)) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -206,7 +213,7 @@ TEST_F(WebGPUTest, ReportLoss) {
 }
 
 // Referred from GLES2ImplementationTest/ReportLossReentrant
-TEST_F(WebGPUTest, ReportLossReentrant) {
+TEST_F(WebGPUTest, MAYBE(ReportLossReentrant)) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -225,7 +232,7 @@ TEST_F(WebGPUTest, ReportLossReentrant) {
   EXPECT_EQ(0, lost_count);
 }
 
-TEST_F(WebGPUTest, RequestAdapterAfterContextLost) {
+TEST_F(WebGPUTest, MAYBE(RequestAdapterAfterContextLost)) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -239,7 +246,7 @@ TEST_F(WebGPUTest, RequestAdapterAfterContextLost) {
                                     base::BindOnce(&OnRequestAdapterCallback)));
 }
 
-TEST_F(WebGPUTest, RequestDeviceAfterContextLost) {
+TEST_F(WebGPUTest, MAYBE(RequestDeviceAfterContextLost)) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;

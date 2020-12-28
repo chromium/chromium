@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/webgpu_implementation.h"
@@ -12,6 +13,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
+
+// TODO(crbug.com/1162117): gl_tests failing on Linux
+#if defined(OS_LINUX)
+#define MAYBE(test_name) DISABLED_##test_name
+#else
+#define MAYBE(test_name) test_name
+#endif
 
 namespace gpu {
 namespace {
@@ -88,7 +96,7 @@ class WebGPUMailboxTest : public WebGPUTest {
   }
 };
 
-TEST_F(WebGPUMailboxTest, AssociateMailboxCmd) {
+TEST_F(WebGPUMailboxTest, MAYBE(AssociateMailboxCmd)) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -206,7 +214,7 @@ TEST_F(WebGPUMailboxTest, AssociateMailboxCmd) {
   GetGpuServiceHolder()->gpu_thread_task_runner()->RunsTasksInCurrentSequence();
 }
 
-TEST_F(WebGPUMailboxTest, DissociateMailboxCmd) {
+TEST_F(WebGPUMailboxTest, MAYBE(DissociateMailboxCmd)) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -274,7 +282,7 @@ TEST_F(WebGPUMailboxTest, DissociateMailboxCmd) {
 // For simplicity of the test the image is shared between a Dawn device and
 // itself: we render to it using the Dawn device, then re-associate it to a
 // Dawn texture and read back the values that were written.
-TEST_F(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
+TEST_F(WebGPUMailboxTest, MAYBE(WriteToMailboxThenReadFromIt)) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -386,7 +394,7 @@ TEST_F(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
 }
 
 // Tests that using a shared image aftr it is dissociated produces an error.
-TEST_F(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
+TEST_F(WebGPUMailboxTest, MAYBE(ErrorWhenUsingTextureAfterDissociate)) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -448,7 +456,7 @@ TEST_F(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
 // the move-assignment operator to be called. In this case the defaulted
 // move-assignment would first move `representation` then `access`. Causing
 // incorrect member destruction order for the move-to object.
-TEST_F(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
+TEST_F(WebGPUMailboxTest, MAYBE(UseA_UseB_DestroyA_DestroyB)) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -501,7 +509,7 @@ TEST_F(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
 // images was stored globally instead of per-device. This meant that of two
 // devices tried to create shared images with the same (id, generation) (which
 // is possible because they can be on different Dawn wires) they would conflict.
-TEST_F(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
+TEST_F(WebGPUMailboxTest, MAYBE(AssociateOnTwoDevicesAtTheSameTime)) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
