@@ -560,6 +560,21 @@ public class ShoppingPersistedTabDataTest {
         acquireSemaphore(semaphore);
     }
 
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testSerializationBug() {
+        Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
+        ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+        shoppingPersistedTabData.setPriceMicros(42_000_000L, null);
+        byte[] serialized = shoppingPersistedTabData.serialize();
+        PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
+                ShoppingPersistedTabData.class, tab.isIncognito());
+        ShoppingPersistedTabData deserialized =
+                new ShoppingPersistedTabData(tab, serialized, config.getStorage(), config.getId());
+        Assert.assertEquals(42_000_000L, deserialized.getPriceMicros());
+    }
+
     private void verifyEndpointFetcherCalled(int numTimes) {
         verify(mEndpointFetcherJniMock, times(numTimes))
                 .nativeFetchChromeAPIKey(any(Profile.class), anyString(), anyString(), anyString(),
