@@ -5918,12 +5918,12 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-image/MediaStreamTrack-getCon
 # Wpt importer sheriff 2020-12-23
 crbug.com/626703 external/wpt/cookies/samesite/multiple-samesite-attributes.https.html?legacy-samesite [ Failure ]
 crbug.com/626703 virtual/legacy-samesite/external/wpt/cookies/samesite/multiple-samesite-attributes.https.html [ Failure ]
-crbug.com/626703 external/wpt/html/semantics/forms/textfieldselection/select-event.html [ Failure ]
+crbug.com/626703 external/wpt/html/semantics/forms/textfieldselection/select-event.html [ Failure Timeout ]
 
 # Sheriff 2020-12-14
 crbug.com/1046784 http/tests/devtools/console/console-context-selector.js [ Pass Timeout ]
 
-#Sheriff 2020-12-22
+# Sheriff 2020-12-22
 crbug.com/1161244 [ Mac10.15 ] external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html [ Pass Timeout ]
 crbug.com/1161301 [ Mac10.15 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Pass Timeout ]
 crbug.com/1161352 [ Mac10.14 ] virtual/controls-refresh-hc/fast/forms/color-scheme/search/search-appearance-basic.html [ Pass Timeout ]
