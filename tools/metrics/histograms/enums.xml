@@ -59679,6 +59679,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="59" label="FINAL_STATUS_GWS_HOLDBACK"/>
   <int value="60" label="FINAL_STATUS_UNKNOWN"/>
   <int value="61" label="FINAL_STATUS_NAVIGATION_PREDICTOR_HOLDBACK"/>
+  <int value="62" label="SINGLE PROCESS"/>
+  <int value="63" label="LINK REL NEXT NOT ALLOWED"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

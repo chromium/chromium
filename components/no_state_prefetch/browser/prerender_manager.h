@@ -266,6 +266,14 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   // Returns true iff the |url| is found in the list of recent prefetches.
   bool HasRecentlyPrefetchedUrlForTesting(const GURL& url);
 
+  // Adds a prerender for |url| from |initiator_origin|. The |origin| specifies
+  // how the prerender was added. Returns a PrerenderHandle or nullptr. Only for
+  // testing.
+  std::unique_ptr<PrerenderHandle> AddPrerenderWithPreconnectFallbackForTesting(
+      Origin origin,
+      const GURL& url,
+      const base::Optional<url::Origin>& initiator_origin);
+
  protected:
   class PrerenderData : public base::SupportsWeakPtr<PrerenderData> {
    public:

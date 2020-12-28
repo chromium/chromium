@@ -491,6 +491,14 @@ PrerenderManager::AddPrerenderWithPreconnectFallback(
     SessionStorageNamespace* session_storage_namespace) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // Disallow NSPing link-rel:next URLs.
+  // See https://bugs.chromium.org/p/chromium/issues/detail?id=1158209.
+  if (origin == ORIGIN_LINK_REL_NEXT) {
+    SkipPrerenderContentsAndMaybePreconnect(
+        url_arg, origin, FINAL_STATUS_LINK_REL_NEXT_NOT_ALLOWED);
+    return nullptr;
+  }
+
   // Disallow prerendering on low end devices.
   if (IsLowEndDevice()) {
     SkipPrerenderContentsAndMaybePreconnect(url_arg, origin,
@@ -917,6 +925,9 @@ void PrerenderManager::SkipPrerenderContentsAndMaybePreconnect(
     return;
   }
 
+  if (origin == ORIGIN_LINK_REL_NEXT)
+    return;
+
   if (final_status == FINAL_STATUS_LOW_END_DEVICE ||
       final_status == FINAL_STATUS_CELLULAR_NETWORK ||
       final_status == FINAL_STATUS_DUPLICATE ||
@@ -925,7 +936,7 @@ void PrerenderManager::SkipPrerenderContentsAndMaybePreconnect(
   }
 
   static_assert(
-      FINAL_STATUS_MAX == FINAL_STATUS_NAVIGATION_PREDICTOR_HOLDBACK + 1,
+      FINAL_STATUS_MAX == FINAL_STATUS_LINK_REL_NEXT_NOT_ALLOWED + 1,
       "Consider whether a failed prerender should fallback to preconnect");
 }
 
@@ -969,6 +980,15 @@ base::WeakPtr<PrerenderManager> PrerenderManager::AsWeakPtr() {
 
 void PrerenderManager::ClearPrefetchInformationForTesting() {
   prefetches_.clear();
+}
+
+std::unique_ptr<PrerenderHandle>
+PrerenderManager::AddPrerenderWithPreconnectFallbackForTesting(
+    Origin origin,
+    const GURL& url,
+    const base::Optional<url::Origin>& initiator_origin) {
+  return AddPrerenderWithPreconnectFallback(
+      origin, url, content::Referrer(), initiator_origin, gfx::Rect(), nullptr);
 }
 
 void PrerenderManager::SetPrerenderContentsFactoryForTest(

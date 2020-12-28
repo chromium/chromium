@@ -562,6 +562,20 @@ TEST_F(PrerenderTest, PredictorPrefetchHoldbackPredictorReferrer) {
                          url, nullptr, gfx::Size()));
 }
 
+// Verify that link-rel:next URLs are not prefetched.
+TEST_F(PrerenderTest, LinkRelNextWithNSPDisabled) {
+  GURL url("http://www.notgoogle.com/");
+  prerender_manager()->CreateNextPrerenderContents(
+      url, url::Origin::Create(GURL("www.notgoogle.com")), ORIGIN_LINK_REL_NEXT,
+      FINAL_STATUS_PROFILE_DESTROYED);
+  EXPECT_EQ(nullptr,
+            prerender_manager()->AddPrerenderWithPreconnectFallbackForTesting(
+                ORIGIN_LINK_REL_NEXT, url,
+                url::Origin::Create(GURL("www.notgoogle.com"))));
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.FinalStatus", FINAL_STATUS_LINK_REL_NEXT_NOT_ALLOWED, 1);
+}
+
 TEST_F(PrerenderTest, PredictorPrefetchHoldbackOffNonPredictorReferrer) {
   GURL url("http://www.notgoogle.com/");
   base::test::ScopedFeatureList scoped_feature_list;

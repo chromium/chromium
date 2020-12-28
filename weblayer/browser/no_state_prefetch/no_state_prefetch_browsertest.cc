@@ -197,14 +197,12 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   prerendered_page_fetched_->Run();
 }
 
-// link-rel="next" happens even when NoStatePrefetch has been disabled.
+// link-rel="next" URLs should not be prefetched.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, LinkRelNextWithNSPDisabled) {
-  GetProfile()->SetBooleanSetting(SettingType::NETWORK_PREDICTION_ENABLED,
-                                  false);
   NavigateAndWaitForCompletion(
       GURL(https_server_->GetURL("/link_rel_next_parent.html")), shell());
-
-  prerendered_page_fetched_->Run();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(prerendered_page_was_fetched_);
 }
 
 // Non-web initiated prerender succeeds and subsequent navigations reuse
