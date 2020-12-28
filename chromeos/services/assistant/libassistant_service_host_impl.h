@@ -51,7 +51,7 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
   // methods will be called from the main thread.
   base::Lock libassistant_service_lock_;
   std::unique_ptr<chromeos::libassistant::LibassistantService>
-      libassistant_service_;
+      libassistant_service_ GUARDED_BY(libassistant_service_lock_);
   // Used when SetInitializeCallback() is called before Launch().
   InitializeCallback pending_initialize_callback_;
 };

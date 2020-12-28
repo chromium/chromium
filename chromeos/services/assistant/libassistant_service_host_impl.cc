@@ -23,9 +23,8 @@ LibassistantServiceHostImpl::~LibassistantServiceHostImpl() = default;
 
 void LibassistantServiceHostImpl::Launch(
     mojo::PendingReceiver<LibassistantServiceMojom> receiver) {
-  DCHECK_EQ(libassistant_service_, nullptr);
-
   base::AutoLock lock(libassistant_service_lock_);
+  DCHECK(!libassistant_service_);
   libassistant_service_ =
       std::make_unique<chromeos::libassistant::LibassistantService>(
           std::move(receiver), platform_api_, delegate_);
