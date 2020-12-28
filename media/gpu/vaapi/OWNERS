@@ -1,13 +1,10 @@
-dstaessens@chromium.org
-kcwu@chromium.org
 mcasas@chromium.org
-posciak@chromium.org
-
-# (M)JPEG related stuff
-per-file *jpeg*=andrescj@chromium.org
-
-# General VA-API decoding related stuff
-per-file *image_decoder*=andrescj@chromium.org
+andrescj@chromium.org
 
 # For protected-mode video decoding.
 jkardatzke@google.com
+
+# Legacy owners.
+dstaessens@chromium.org
+kcwu@chromium.org
+posciak@chromium.org
