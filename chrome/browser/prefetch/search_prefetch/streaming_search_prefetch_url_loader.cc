@@ -272,7 +272,12 @@ void StreamingSearchPrefetchURLLoader::OnComplete(
 
   if (!forwarding_client_) {
     DCHECK(streaming_prefetch_request_);
-    streaming_prefetch_request_->MarkPrefetchAsComplete();
+    if (status.error_code == net::OK) {
+      streaming_prefetch_request_->MarkPrefetchAsComplete();
+    } else {
+      streaming_prefetch_request_->ErrorEncountered();
+      return;
+    }
   }
 
   status_ = status;
