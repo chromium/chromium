@@ -66,9 +66,7 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
                     }
                 }
                 return result;
-            } catch (IOException e) {
-                Log.w(TAG, "Failed to get change events", e);
-            } catch (GoogleAuthException e) {
+            } catch (IOException | GoogleAuthException e) {
                 Log.w(TAG, "Failed to get change events", e);
             }
             return new ArrayList<>(0);
@@ -113,27 +111,29 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
             return;
         }
 
-        Account syncAccount = CoreAccountInfo.getAndroidAccountFrom(
-                mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SYNC));
+        final CoreAccountInfo syncAccount =
+                mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SYNC);
         if (syncAccount == null) {
             return;
         }
 
         String renamedAccount = mPrefsManager.getNewSignedInAccountName();
         if (accountsChanged && renamedAccount != null) {
-            handleAccountRename(syncAccount.name, renamedAccount);
+            handleAccountRename(syncAccount.getEmail(), renamedAccount);
             return;
         }
 
+        final List<Account> accounts =
+                AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
         // Always check for account deleted.
-        if (!accountExists(syncAccount)) {
+        if (AccountUtils.findAccountByName(accounts, syncAccount.getEmail()) == null) {
             // It is possible that Chrome got to this point without account
             // rename notification. Let us signout before doing a rename.
             AsyncTask<Void> task = new AsyncTask<Void>() {
                 @Override
                 protected Void doInBackground() {
                     updateAccountRenameData(
-                            new SystemAccountChangeEventChecker(), syncAccount.name);
+                            new SystemAccountChangeEventChecker(), syncAccount.getEmail());
                     return null;
                 }
 
@@ -199,17 +199,6 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
                 });
     }
 
-    private static boolean accountExists(Account account) {
-        List<Account> accounts = AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
-        for (int i = 0; i < accounts.size(); i++) {
-            Account a = accounts.get(i);
-            if (a.equals(account)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @VisibleForTesting
     public static void updateAccountRenameData(
             AccountChangeEventChecker checker, String currentName) {
@@ -225,15 +214,16 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
         try {
         outerLoop:
             while (true) {
+                final List<Account> accounts =
+                        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
                 List<String> nameChanges = checker.getAccountChangeEvents(
                         ContextUtils.getApplicationContext(), newIndex, newName);
-
                 for (String name : nameChanges) {
                     if (name != null) {
                         // We have found a rename event of the current account.
                         // We need to check if that account is further renamed.
                         newName = name;
-                        if (!accountExists(AccountUtils.createAccountFromName(newName))) {
+                        if (AccountUtils.findAccountByName(accounts, newName) == null) {
                             newIndex = 0; // Start from the beginning of the new account.
                             continue outerLoop;
                         }
