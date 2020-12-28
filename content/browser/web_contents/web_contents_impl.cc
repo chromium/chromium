@@ -1576,6 +1576,11 @@ void WebContentsImpl::SetUserAgentOverride(
   if (GetUserAgentOverride() == ua_override)
     return;
 
+  if (!ua_override.ua_string_override.empty() &&
+      !net::HttpUtil::IsValidHeaderValue(ua_override.ua_string_override)) {
+    return;
+  }
+
   should_override_user_agent_in_new_tabs_ = override_in_new_tabs;
 
   renderer_preferences_.user_agent_override = ua_override;

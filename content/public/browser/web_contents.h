@@ -403,6 +403,9 @@ class WebContents : public PageNavigator,
   // renderer initiated, then is-overriding-user-agent is set to true for the
   // NavigationEntry. See SetRendererInitiatedUserAgentOverrideOption() for
   // details on how renderer initiated navigations are configured.
+  //
+  // If nonempty, |ua_override|'s value must not contain '\0', '\r', or '\n' (in
+  // other words, it must be a valid HTTP header value).
   virtual void SetUserAgentOverride(const blink::UserAgentOverride& ua_override,
                                     bool override_in_new_tabs) = 0;
 
