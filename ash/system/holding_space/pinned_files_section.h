@@ -21,6 +21,7 @@ class PinnedFilesSection : public HoldingSpaceItemViewsSection {
 
   // HoldingSpaceItemViewsSection:
   const char* GetClassName() const override;
+  gfx::Size GetMinimumSize() const override;
   std::unique_ptr<views::View> CreateHeader() override;
   std::unique_ptr<views::View> CreateContainer() override;
   std::unique_ptr<HoldingSpaceItemView> CreateView(

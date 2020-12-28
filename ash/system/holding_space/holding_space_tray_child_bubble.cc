@@ -12,6 +12,60 @@
 
 namespace ash {
 
+namespace {
+
+// TopAlignedBoxLayout ---------------------------------------------------------
+
+// A vertical `views::BoxLayout` which overrides layout behavior when there is
+// insufficient layout space to accommodate all children's preferred sizes.
+// Unlike `views::BoxLayout` which will not allow children to exceed its content
+// bounds, TopAlignedBoxLayout will ensure that children still receive their
+// preferred sizes. This prevents layout jank that would otherwise occur when
+// the host view's bounds are being animated due to content changes.
+class TopAlignedBoxLayout : public views::BoxLayout {
+ public:
+  TopAlignedBoxLayout(const gfx::Insets& insets, int spacing)
+      : views::BoxLayout(views::BoxLayout::Orientation::kVertical,
+                         insets,
+                         spacing) {}
+
+ private:
+  // views::BoxLayout:
+  void Layout(views::View* host) override {
+    if (host->height() >= host->GetPreferredSize().height()) {
+      views::BoxLayout::Layout(host);
+      return;
+    }
+
+    gfx::Rect contents_bounds(host->GetContentsBounds());
+    contents_bounds.Inset(inside_border_insets());
+
+    // If we only have a single child view and that child view is okay with
+    // being sized arbitrarily small, short circuit layout logic and give that
+    // child all available layout space. This is the case for the
+    // `PinnedFileSection` which supports scrolling its content when necessary.
+    if (host->children().size() == 1u &&
+        host->children()[0]->GetMinimumSize().IsEmpty()) {
+      host->children()[0]->SetBoundsRect(contents_bounds);
+      return;
+    }
+
+    int top = contents_bounds.y();
+    int left = contents_bounds.x();
+    int width = contents_bounds.width();
+
+    for (views::View* child : host->children()) {
+      gfx::Size size(width, child->GetHeightForWidth(width));
+      child->SetBounds(left, top, size.width(), size.height());
+      top += size.height() + between_child_spacing();
+    }
+  }
+};
+
+}  // namespace
+
+// HoldingSpaceTrayChildBubble -------------------------------------------------
+
 HoldingSpaceTrayChildBubble::HoldingSpaceTrayChildBubble(
     HoldingSpaceItemViewDelegate* delegate)
     : delegate_(delegate) {}
@@ -19,9 +73,9 @@ HoldingSpaceTrayChildBubble::HoldingSpaceTrayChildBubble(
 HoldingSpaceTrayChildBubble::~HoldingSpaceTrayChildBubble() = default;
 
 void HoldingSpaceTrayChildBubble::Init() {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kHoldingSpaceChildBubblePadding,
-      kHoldingSpaceChildBubbleChildSpacing));
+  // Layout.
+  SetLayoutManager(std::make_unique<TopAlignedBoxLayout>(
+      kHoldingSpaceChildBubblePadding, kHoldingSpaceChildBubbleChildSpacing));
 
   // Layer.
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);

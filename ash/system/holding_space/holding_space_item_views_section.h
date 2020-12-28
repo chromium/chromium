@@ -24,6 +24,10 @@ class CallbackLayerAnimationObserver;
 class LayerAnimationObserver;
 }  // namespace ui
 
+namespace views {
+class ScrollView;
+}  // namespace views
+
 namespace ash {
 
 class HoldingSpaceItemView;
@@ -55,6 +59,7 @@ class HoldingSpaceItemViewsSection : public views::View,
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
+  void PreferredSizeChanged() override;
   void ViewHierarchyChanged(const views::ViewHierarchyChangedDetails&) override;
 
   // HoldingSpaceControllerObserver:
@@ -127,6 +132,7 @@ class HoldingSpaceItemViewsSection : public views::View,
   views::View* header_ = nullptr;
   views::View* container_ = nullptr;
   views::View* placeholder_ = nullptr;
+  views::ScrollView* scroll_view_ = nullptr;
   std::map<std::string, HoldingSpaceItemView*> views_by_item_id_;
 
   // Bit flag representation of current `AnimationState`. Note that it is
@@ -137,6 +143,11 @@ class HoldingSpaceItemViewsSection : public views::View,
   // Whether or not animations are disabled. Animations are only disabled during
   // initialization as holding space child bubbles are animated in instead.
   bool disable_animations_ = false;
+
+  // Whether or not `PreferredSizeChanged()` is allowed to propagate up the
+  // view hierarchy. This is disabled during batch child additions, removals,
+  // and visibility change operations to reduce the number of layout events.
+  bool disable_preferred_size_changed_ = false;
 
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>

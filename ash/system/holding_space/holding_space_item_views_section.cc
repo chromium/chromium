@@ -21,10 +21,11 @@ namespace ash {
 
 namespace {
 
+using ScrollBarMode = views::ScrollView::ScrollBarMode;
+
 // Animation.
 constexpr base::TimeDelta kAnimationDuration =
     base::TimeDelta::FromMilliseconds(167);
-constexpr SkScalar kAnimationTranslationY = 20;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -36,59 +37,50 @@ void InitLayerForAnimations(views::View* view) {
       ui::LayerAnimator::PreemptionStrategy::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 }
 
-// Creates a `ui::LayerAnimationSequence` for the specified `element` observed
-// by the specified `observer`.
+// Creates a `ui::LayerAnimationSequence` for the specified `element` with
+// optional `delay`, observed by the specified `observer`.
 std::unique_ptr<ui::LayerAnimationSequence> CreateObservedSequence(
     std::unique_ptr<ui::LayerAnimationElement> element,
+    base::TimeDelta delay,
     ui::LayerAnimationObserver* observer) {
   auto sequence = std::make_unique<ui::LayerAnimationSequence>();
+  if (!delay.is_zero()) {
+    sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
+        element->properties(), delay));
+  }
   sequence->AddElement(std::move(element));
   sequence->AddObserver(observer);
   return sequence;
 }
 
-// Creates a `gfx:Transform` for the specified `x` and `y` offsets.
-gfx::Transform CreateTransformFromOffset(SkScalar x, SkScalar y) {
-  gfx::Transform transform;
-  transform.Translate(x, y);
-  return transform;
-}
-
-// Animates the specified `view` to a target `opacity` and `transform` with the
-// specified `duration`, associating `observer` with the created animation
-// sequences.
+// Animates the specified `view` to a target `opacity` with the specified
+// `duration` and optional `delay`, associating `observer` with the created
+// animation sequences.
 void DoAnimateTo(views::View* view,
                  float opacity,
-                 const gfx::Transform& transform,
                  base::TimeDelta duration,
+                 base::TimeDelta delay,
                  ui::LayerAnimationObserver* observer) {
   // Opacity animation.
   auto opacity_element =
       ui::LayerAnimationElement::CreateOpacityElement(opacity, duration);
   opacity_element->set_tween_type(gfx::Tween::Type::LINEAR);
 
-  // Transform animation.
-  auto transform_element =
-      ui::LayerAnimationElement::CreateTransformElement(transform, duration);
-  transform_element->set_tween_type(gfx::Tween::Type::EASE_OUT_3);
-
   // Note that the `ui::LayerAnimator` takes ownership of any animation
   // sequences so they need to be released.
-  view->layer()->GetAnimator()->StartTogether(
-      {CreateObservedSequence(std::move(opacity_element), observer).release(),
-       CreateObservedSequence(std::move(transform_element), observer)
-           .release()});
+  view->layer()->GetAnimator()->StartAnimation(
+      CreateObservedSequence(std::move(opacity_element), delay, observer)
+          .release());
 }
 
-// Animates in the specified `view` with the specified `duration`, associating
-// `observer` with the created animation sequences.
+// Animates in the specified `view` with the specified `duration` and optional
+// `delay`, associating `observer` with the created animation sequences.
 void DoAnimateIn(views::View* view,
                  base::TimeDelta duration,
+                 base::TimeDelta delay,
                  ui::LayerAnimationObserver* observer) {
   view->layer()->SetOpacity(0.f);
-  view->layer()->SetTransform(
-      CreateTransformFromOffset(0, kAnimationTranslationY));
-  DoAnimateTo(view, /*opacity=*/1.f, gfx::Transform(), duration, observer);
+  DoAnimateTo(view, /*opacity=*/1.f, duration, delay, observer);
 }
 
 // Animates out the specified `view` with the specified `duration, associating
@@ -96,8 +88,7 @@ void DoAnimateIn(views::View* view,
 void DoAnimateOut(views::View* view,
                   base::TimeDelta duration,
                   ui::LayerAnimationObserver* observer) {
-  DoAnimateTo(view, /*opacity=*/0.f,
-              CreateTransformFromOffset(0, -kAnimationTranslationY), duration,
+  DoAnimateTo(view, /*opacity=*/0.f, duration, /*delay=*/base::TimeDelta(),
               observer);
 }
 
@@ -191,14 +182,20 @@ HoldingSpaceItemViewsSection::HoldingSpaceItemViewsSection(
 HoldingSpaceItemViewsSection::~HoldingSpaceItemViewsSection() = default;
 
 void HoldingSpaceItemViewsSection::Init() {
+  // Disable propagation of `PreferredSizeChanged()` while initializing this
+  // view to reduce the number of layout events bubbling up.
+  disable_preferred_size_changed_ = true;
+
   SetVisible(false);
 
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kHoldingSpaceSectionChildSpacing));
 
   // Header.
   header_ = AddChildView(CreateHeader());
+  InitLayerForAnimations(header_);
+  header_->layer()->SetOpacity(0.f);
   header_->SetVisible(false);
 
   // Container.
@@ -213,7 +210,10 @@ void HoldingSpaceItemViewsSection::Init() {
     scroll->SetBackgroundColor(base::nullopt);
     scroll->ClipHeightTo(0, INT_MAX);
     scroll->SetDrawOverflowIndicator(false);
+    scroll->SetVerticalScrollBarMode(ScrollBarMode::kHiddenButEnabled);
+    layout->SetFlexForView(scroll, 1);
     container_ = scroll->SetContents(CreateContainer());
+    scroll_view_ = scroll;
   }
 
   InitLayerForAnimations(container_);
@@ -225,6 +225,7 @@ void HoldingSpaceItemViewsSection::Init() {
     placeholder_ = AddChildView(std::move(placeholder));
     InitLayerForAnimations(placeholder_);
     placeholder_->SetVisible(true);
+    header_->layer()->SetOpacity(1.f);
     header_->SetVisible(true);
   }
 
@@ -236,6 +237,10 @@ void HoldingSpaceItemViewsSection::Init() {
     base::AutoReset<bool> scoped_disable_animations(&disable_animations_, true);
     OnHoldingSpaceModelAttached(model);
   }
+
+  // Re-enable propagation of `PreferredSizeChanged()` after initializing.
+  disable_preferred_size_changed_ = false;
+  PreferredSizeChanged();
 }
 
 void HoldingSpaceItemViewsSection::Reset() {
@@ -264,6 +269,11 @@ void HoldingSpaceItemViewsSection::ChildVisibilityChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
+void HoldingSpaceItemViewsSection::PreferredSizeChanged() {
+  if (!disable_preferred_size_changed_)
+    views::View::PreferredSizeChanged();
+}
+
 void HoldingSpaceItemViewsSection::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
   if (details.parent != container_)
@@ -276,11 +286,20 @@ void HoldingSpaceItemViewsSection::ViewHierarchyChanged(
   if (container_->children().size() != 1u)
     return;
 
+  // Disable propagation of `PreferredSizeChanged()` while modifying child
+  // view visibility to reduce the number of layout events bubbling up.
+  disable_preferred_size_changed_ = true;
+
   header_->SetVisible(placeholder_ || details.is_add);
   container_->SetVisible(details.is_add);
 
   if (placeholder_)
     placeholder_->SetVisible(!details.is_add);
+
+  // Re-enable propagation of `PreferredSizeChanged()` after modifying child
+  // view visibility.
+  disable_preferred_size_changed_ = false;
+  PreferredSizeChanged();
 }
 
 void HoldingSpaceItemViewsSection::OnHoldingSpaceModelAttached(
@@ -373,6 +392,12 @@ void HoldingSpaceItemViewsSection::MaybeAnimateOut() {
   // so should not be acted upon by the user during this time.
   SetCanProcessEventsWithinSubtree(false);
 
+  // Hide the vertical scroll bar when swapping out section contents to prevent
+  // it from showing as views are being added/removed and while the holding
+  // space bubble is animating bounds.
+  if (scroll_view_)
+    scroll_view_->SetVerticalScrollBarMode(ScrollBarMode::kHiddenButEnabled);
+
   // NOTE: `animate_out_observer` is deleted after `OnAnimateOutCompleted()`.
   ui::CallbackLayerAnimationObserver* animate_out_observer =
       new ui::CallbackLayerAnimationObserver(DeleteObserverAfterRunning(
@@ -383,28 +408,63 @@ void HoldingSpaceItemViewsSection::MaybeAnimateOut() {
   animate_out_observer->SetActive();
 }
 
-// TODO(dmblack): Handle grow/shrink of container.
 void HoldingSpaceItemViewsSection::AnimateIn(
     ui::LayerAnimationObserver* observer) {
   const base::TimeDelta animation_duration =
       disable_animations_ ? base::TimeDelta() : kAnimationDuration;
+
+  // Delay animations slightly to allow time for bubble layout animations to
+  // complete which animate size changes for this view when needed.
+  const base::TimeDelta animation_delay =
+      disable_animations_ ? base::TimeDelta() : kAnimationDuration;
+
+  // If the `header_` is not opaque, this section was not previously visible
+  // to the user so the `header_` needs to be animated in alongside any content.
+  const bool animate_in_header = header_->layer()->GetTargetOpacity() != 1.f;
+  if (animate_in_header)
+    DoAnimateIn(header_, animation_duration, animation_delay, observer);
+
   if (views_by_item_id_.empty() && placeholder_) {
-    DoAnimateIn(placeholder_, animation_duration, observer);
+    DoAnimateIn(placeholder_, animation_duration, animation_delay, observer);
     return;
   }
-  DoAnimateIn(container_, animation_duration, observer);
+
+  DoAnimateIn(container_, animation_duration, animation_delay, observer);
 }
 
-// TODO(dmblack): Handle animate out of `header_` if this section is leaving.
 void HoldingSpaceItemViewsSection::AnimateOut(
     ui::LayerAnimationObserver* observer) {
+  // If this view is not drawn, animating will only cause latency to the user.
+  const bool disable_animations = disable_animations_ || !IsDrawn();
   const base::TimeDelta animation_duration =
-      disable_animations_ ? base::TimeDelta() : kAnimationDuration;
+      disable_animations ? base::TimeDelta() : kAnimationDuration;
+
+  // If this section does not have a `placeholder_` and the model does not
+  // contain any associated and finalized items, then this section is becoming
+  // invisible to the user and the `header_` needs to be animated out alongside
+  // any content.
+  bool animate_out_header = !placeholder_;
+  if (animate_out_header) {
+    HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
+    if (model) {
+      animate_out_header =
+          std::none_of(model->items().begin(), model->items().end(),
+                       [this](const auto& item) {
+                         return item->IsFinalized() &&
+                                base::Contains(supported_types_, item->type());
+                       });
+    }
+  }
+
+  if (animate_out_header)
+    DoAnimateOut(header_, animation_duration, observer);
+
   if (placeholder_ && placeholder_->GetVisible()) {
     DCHECK(views_by_item_id_.empty());
     DoAnimateOut(placeholder_, animation_duration, observer);
     return;
   }
+
   DoAnimateOut(container_, animation_duration, observer);
 }
 
@@ -422,6 +482,11 @@ void HoldingSpaceItemViewsSection::OnAnimateInCompleted(
   // that have been animated in should all be associated with holding space
   // items that exist in the model.
   SetCanProcessEventsWithinSubtree(true);
+
+  // Once contents have animated in the holding space bubble should have reached
+  // its target bounds and the vertical scroll bar can be re-enabled.
+  if (scroll_view_)
+    scroll_view_->SetVerticalScrollBarMode(ScrollBarMode::kEnabled);
 }
 
 void HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
@@ -439,6 +504,16 @@ void HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
   // will serve to persist the current selection during this modification.
   HoldingSpaceItemViewDelegate::ScopedSelectionRestore scoped_selection_restore(
       delegate_);
+
+  // Disable propagation of `PreferredSizeChanged()` while performing batch
+  // child additions/removals to reduce the number of layout events bubbling up.
+  disable_preferred_size_changed_ = true;
+  base::ScopedClosureRunner scoped_preferred_size_changed(base::BindOnce(
+      [](HoldingSpaceItemViewsSection* section) {
+        section->disable_preferred_size_changed_ = false;
+        section->PreferredSizeChanged();
+      },
+      base::Unretained(this)));
 
   if (!container_->children().empty()) {
     container_->RemoveAllChildViews(/*delete_children=*/true);
@@ -468,7 +543,9 @@ void HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
     }
   }
 
-  MaybeAnimateIn();
+  // Only animate this section in if it has content to show.
+  if (placeholder_ || !container_->children().empty())
+    MaybeAnimateIn();
 }
 
 }  // namespace ash

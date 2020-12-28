@@ -21,13 +21,22 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/containers/adapters.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/proposed_layout.h"
 
 namespace ash {
 
 namespace {
+
+// Animation.
+constexpr base::TimeDelta kAnimationDuration =
+    base::TimeDelta::FromMilliseconds(167);
 
 // Helpers ---------------------------------------------------------------------
 
@@ -52,36 +61,189 @@ void RecordTimeFromFirstAvailabilityToFirstEntry(PrefService* prefs) {
       time_of_first_entry - time_of_first_availability);
 }
 
-// HoldingSpaceBubbleContainer -------------------------------------------------
+// ChildBubbleContainerLayout --------------------------------------------------
 
-class HoldingSpaceBubbleContainer : public views::View {
+// A class similar to a `views::LayoutManager` which supports calculating and
+// applying `views::ProposedLayout`s. Views are laid out similar to a vertical
+// `views::BoxLayout` with the first child flexing to cede layout space if the
+// layout would otherwise exceed maximum height restrictions. Subsequent child
+// views will be laid outside of `host` bounds if there is insufficient space.
+class ChildBubbleContainerLayout {
  public:
-  HoldingSpaceBubbleContainer() {
-    layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-        kHoldingSpaceBubbleContainerChildSpacing));
+  ChildBubbleContainerLayout(views::View* host, int child_spacing)
+      : host_(host), child_spacing_(child_spacing) {}
+
+  // Sets the maximum height restriction for the layout.
+  void SetMaxHeight(int max_height) { max_height_ = max_height; }
+
+  // Calculates and returns a `views::ProposedLayout` given current maximum
+  // height restrictions and the current state of the view hierarchy. Note that
+  // views are laid out similar to a vertical `views::BoxLayout` with the first
+  // child flexing to cede layout space if the layout would otherwise exceed
+  // maximum height restrictions.
+  views::ProposedLayout CalculateProposedLayout() const {
+    views::ProposedLayout layout;
+    layout.host_size = gfx::Size(kHoldingSpaceBubbleWidth, 0);
+
+    int top = 0;
+    for (views::View* child : host_->children()) {
+      if (!child->GetVisible()) {
+        views::ChildLayout child_layout;
+        child_layout.child_view = child;
+        child_layout.bounds = gfx::Rect(0, top, layout.host_size.width(), 0);
+        child_layout.visible = false;
+        layout.child_layouts.push_back(std::move(child_layout));
+        continue;
+      }
+
+      // Apply child spacing.
+      if (top != 0) {
+        top += child_spacing_;
+        layout.host_size.Enlarge(0, child_spacing_);
+      }
+
+      const int height = child->GetHeightForWidth(layout.host_size.width());
+
+      views::ChildLayout child_layout;
+      child_layout.child_view = child;
+      child_layout.bounds = gfx::Rect(0, top, layout.host_size.width(), height);
+      child_layout.visible = true;
+      layout.child_layouts.push_back(std::move(child_layout));
+      layout.host_size.Enlarge(0, height);
+
+      top += height;
+    }
+
+    // If maximum height restrictions are present and preferred height exceeds
+    // maximum height, the first child view should cede layout space for others.
+    // Note that subsequent child views will still be given their preferred
+    // height so its possible they will be laid outside of `host_` view bounds.
+    if (max_height_ && layout.host_size.height() > max_height_) {
+      const int height_to_cede =
+          std::min(layout.child_layouts[0].bounds.height(),
+                   layout.host_size.height() - max_height_);
+      layout.child_layouts[0].bounds.Inset(0, 0, 0, height_to_cede);
+      for (size_t i = 1; i < layout.child_layouts.size(); ++i)
+        layout.child_layouts[i].bounds.Offset(0, -height_to_cede);
+      layout.host_size.Enlarge(0, -height_to_cede);
+    }
+
+    return layout;
   }
 
-  void SetFlexForChild(views::View* child, int flex) {
-    layout_->SetFlexForView(child, flex);
+  // Applies the specified `layout` to the view hierarchy.
+  void ApplyLayout(const views::ProposedLayout& layout) {
+    for (const auto& child_layout : layout.child_layouts)
+      child_layout.child_view->SetBoundsRect(child_layout.bounds);
   }
 
- private:
-  // views::View:
-  void ChildPreferredSizeChanged(views::View* child) override {
-    if (GetWidget())
-      PreferredSizeChanged();
-  }
+  views::View* const host_;
+  const int child_spacing_;
 
-  void ChildVisibilityChanged(views::View* child) override {
-    if (GetWidget())
-      PreferredSizeChanged();
-  }
-
-  views::BoxLayout* layout_ = nullptr;
+  // Maximum height restriction for the layout. If zero, it is assumed that
+  // there is no maximum height restriction.
+  int max_height_ = 0;
 };
 
 }  // namespace
+
+// HoldingSpaceTrayBubble::ChildBubbleContainer --------------------------------
+
+// The container for `HoldingSpaceTrayBubble` which parents its child bubbles
+// and animates layout changes. Note that this view uses a pseudo layout manager
+// to calculate bounds for its children, but animates any layout changes itself.
+class HoldingSpaceTrayBubble::ChildBubbleContainer
+    : public views::View,
+      public views::AnimationDelegateViews {
+ public:
+  ChildBubbleContainer()
+      : views::AnimationDelegateViews(this),
+        layout_manager_(this, kHoldingSpaceBubbleContainerChildSpacing) {}
+
+  // Sets the maximum height restriction for the layout.
+  void SetMaxHeight(int max_height) {
+    layout_manager_.SetMaxHeight(max_height);
+    PreferredSizeChanged();
+  }
+
+  // views::View:
+  int GetHeightForWidth(int width) const override {
+    DCHECK_EQ(width, kHoldingSpaceBubbleWidth);
+    if (current_layout_.host_size.IsEmpty())
+      current_layout_ = layout_manager_.CalculateProposedLayout();
+    return current_layout_.host_size.height();
+  }
+
+  void ChildPreferredSizeChanged(views::View* child) override {
+    PreferredSizeChanged();
+  }
+
+  void ChildVisibilityChanged(views::View* child) override {
+    PreferredSizeChanged();
+  }
+
+  void PreferredSizeChanged() override {
+    if (!GetWidget())
+      return;
+
+    const views::ProposedLayout target_layout(
+        layout_manager_.CalculateProposedLayout());
+
+    // If `target_layout_` is unchanged then a layout animation is in progress
+    // and the only thing needed is to propagate the event up the tree so that
+    // the widget will be resized and re-anchored.
+    if (target_layout == target_layout_) {
+      views::View::PreferredSizeChanged();
+      return;
+    }
+
+    // If `current_layout_` is empty then this is the first layout. Don't
+    // animate the first layout.
+    if (current_layout_.host_size.IsEmpty()) {
+      current_layout_ = target_layout_ = target_layout;
+      views::View::PreferredSizeChanged();
+      return;
+    }
+
+    start_layout_ = current_layout_;
+    target_layout_ = target_layout;
+
+    // Animate changes from the `current_layout_` to the `target_layout_`.
+    layout_animation_ = std::make_unique<gfx::SlideAnimation>(this);
+    layout_animation_->SetSlideDuration(
+        ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
+        kAnimationDuration);
+    layout_animation_->SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
+    layout_animation_->Show();
+  }
+
+  void Layout() override { layout_manager_.ApplyLayout(current_layout_); }
+
+  // views::AnimationDelegateViews:
+  void AnimationProgressed(const gfx::Animation* animation) override {
+    current_layout_ = views::ProposedLayoutBetween(
+        animation->GetCurrentValue(), start_layout_, target_layout_);
+    PreferredSizeChanged();
+  }
+
+  void AnimationEnded(const gfx::Animation* animation) override {
+    current_layout_ = target_layout_;
+    PreferredSizeChanged();
+  }
+
+ private:
+  // A pseudo layout manager which supports calculating and applying
+  // `views::ProposedLayouts`. It lays out views similarly to a vertical
+  // `views::BoxLayout` with the first view flexing to cede layout space to
+  // siblings if maximum height restrictions would otherwise be exceeded.
+  ChildBubbleContainerLayout layout_manager_;
+
+  mutable views::ProposedLayout start_layout_;    // Layout being animated from.
+  mutable views::ProposedLayout current_layout_;  // Current layout.
+  mutable views::ProposedLayout target_layout_;   // Layout being animated to.
+
+  std::unique_ptr<gfx::SlideAnimation> layout_animation_;
+};
 
 // HoldingSpaceTrayBubble ------------------------------------------------------
 
@@ -105,18 +267,16 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
 
   // Create and customize bubble view.
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
-  bubble_view->SetMaxHeight(CalculateMaxHeight());
-
-  HoldingSpaceBubbleContainer* bubble_container = bubble_view->AddChildView(
-      std::make_unique<HoldingSpaceBubbleContainer>());
+  child_bubble_container_ =
+      bubble_view->AddChildView(std::make_unique<ChildBubbleContainer>());
+  child_bubble_container_->SetMaxHeight(CalculateMaxHeight());
 
   // Add pinned files child bubble.
-  child_bubbles_.push_back(bubble_container->AddChildView(
+  child_bubbles_.push_back(child_bubble_container_->AddChildView(
       std::make_unique<PinnedFilesBubble>(&delegate_)));
-  bubble_container->SetFlexForChild(child_bubbles_.back(), 1);
 
   // Add recent files child bubble.
-  child_bubbles_.push_back(bubble_container->AddChildView(
+  child_bubbles_.push_back(child_bubble_container_->AddChildView(
       std::make_unique<RecentFilesBubble>(&delegate_)));
 
   // Initialize child bubbles.
@@ -191,7 +351,7 @@ int HoldingSpaceTrayBubble::CalculateMaxHeight() const {
 }
 
 void HoldingSpaceTrayBubble::UpdateBubbleBounds() {
-  bubble_wrapper_->bubble_view()->SetMaxHeight(CalculateMaxHeight());
+  child_bubble_container_->SetMaxHeight(CalculateMaxHeight());
   bubble_wrapper_->bubble_view()->ChangeAnchorRect(
       holding_space_tray_->shelf()->GetSystemTrayAnchorRect());
 }

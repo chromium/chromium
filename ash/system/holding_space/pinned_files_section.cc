@@ -139,6 +139,12 @@ const char* PinnedFilesSection::GetClassName() const {
   return "PinnedFilesSection";
 }
 
+gfx::Size PinnedFilesSection::GetMinimumSize() const {
+  // The pinned files section is scrollable so can be laid out smaller than its
+  // preferred size if there is insufficient layout space available.
+  return gfx::Size();
+}
+
 std::unique_ptr<views::View> PinnedFilesSection::CreateHeader() {
   auto header = holding_space_util::CreateLabel(
       holding_space_util::LabelStyle::kHeader,
