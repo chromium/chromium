@@ -5,7 +5,30 @@
 GEN_INCLUDE(['../switch_access_e2e_test_base.js']);
 
 /** Test fixture for the node wrapper type. */
-SwitchAccessBasicNodeTest = class extends SwitchAccessE2ETest {};
+SwitchAccessBasicNodeTest = class extends SwitchAccessE2ETest {
+  setUp() {
+    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
+    (async function() {
+      let module = await import('/switch_access/nodes/basic_node.js');
+      window.BasicNode = module.BasicNode;
+      window.BasicRootNode = module.BasicRootNode;
+
+      module = await import('/switch_access/nodes/back_button_node.js');
+      window.BackButtonNode = module.BackButtonNode;
+
+      module = await import('/switch_access/nodes/desktop_node.js');
+      window.DesktopNode = module.DesktopNode;
+
+      module = await import('/switch_access/nodes/switch_access_node.js');
+      window.SARootNode = module.SARootNode;
+
+      module = await import('/switch_access/switch_access_constants.js');
+      window.SwitchAccessMenuAction = module.SwitchAccessMenuAction;
+
+      runTest();
+    })();
+  }
+};
 
 TEST_F('SwitchAccessBasicNodeTest', 'AsRootNode', function() {
   const website = `<div aria-label="outer">

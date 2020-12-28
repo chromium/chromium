@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BasicNode, BasicRootNode} from './basic_node.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /** This class represents the group rooted at a modal dialog. */
-class ModalDialogRootNode extends BasicRootNode {
+export class ModalDialogRootNode extends BasicRootNode {
   /** @override */
   onExit() {
     // To close a modal dialog, we need to send an escape key event.

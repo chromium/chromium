@@ -2,10 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Navigator} from '../navigator.js';
+import {SwitchAccess} from '../switch_access.js';
+import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+import {SwitchAccessPredicate} from '../switch_access_predicate.js';
+import {TextNavigationManager} from '../text_navigation_manager.js';
+
+import {BasicNode} from './basic_node.js';
+import {SAChildNode, SARootNode} from './switch_access_node.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /**
  * This class handles interactions with editable text fields.
  */
-class EditableTextNode extends BasicNode {
+export class EditableTextNode extends BasicNode {
   /**
    * @param {!AutomationNode} baseNode
    * @param {?SARootNode} parent
@@ -68,7 +79,7 @@ class EditableTextNode extends BasicNode {
   performAction(action) {
     switch (action) {
       case SwitchAccessMenuAction.KEYBOARD:
-        NavigationManager.enterKeyboard();
+        Navigator.instance.enterKeyboard();
         return SAConstants.ActionResponse.CLOSE_MENU;
       case SwitchAccessMenuAction.DICTATION:
         if (this.automationNode.state[chrome.automation.StateType.FOCUSED]) {
@@ -130,3 +141,8 @@ class EditableTextNode extends BasicNode {
     return super.performAction(action);
   }
 }
+
+BasicNode.creators.push({
+  predicate: SwitchAccessPredicate.isTextInput,
+  creator: (node, parentNode) => new EditableTextNode(node, parentNode)
+});

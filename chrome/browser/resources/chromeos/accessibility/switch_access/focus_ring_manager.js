@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {MenuManager} from './menu_manager.js';
+import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
+import {SwitchAccess} from './switch_access.js';
+import {SAConstants} from './switch_access_constants.js';
+
 /**
  * Class to handle focus rings.
  */
-class FocusRingManager {
+export class FocusRingManager {
   /** @private */
   constructor() {
     /**
@@ -56,11 +61,10 @@ class FocusRingManager {
   static setFocusedNode(node) {
     const manager = FocusRingManager.instance;
 
-    if (node instanceof BackButtonNode) {
-      const backButton = /** @type {!BackButtonNode} */ (node);
-      // The back button node handles setting its own focus, as it has special
-      // requirements (a round focus ring that has no gap with the edges of the
-      // view).
+    if (node.ignoreWhenComputingUnionOfBoundingBoxes()) {
+      // Nodes of this type, e.g. the back button node, handles setting its own
+      // focus, as it has special requirements (a round focus ring that has no
+      // gap with the edges of the view).
       manager.rings_.get(SAConstants.Focus.ID.PRIMARY).rects = [];
       // Clear the dashed ring between transitions, as the animation is
       // distracting.
@@ -70,7 +74,7 @@ class FocusRingManager {
       // The dashed focus ring should not be shown around the menu when exiting.
       if (!MenuManager.isMenuOpen()) {
         manager.rings_.get(SAConstants.Focus.ID.PREVIEW).rects =
-            [backButton.group.location];
+            [node.group.location];
         manager.updateFocusRings_(node, null);
       }
       return;
@@ -95,8 +99,9 @@ class FocusRingManager {
       let focusRect = node.location;
       const childRect = firstChild ? firstChild.location : null;
       if (childRect) {
-        // If the current element is not the back button, the focus rect should
-        // expand to contain the child rect.
+        // If the current element is not specialized in location handling, e.g.
+        // the back button, the focus rect should expand to contain the child
+        // rect.
         focusRect = RectUtil.expandToFitWithPadding(
             SAConstants.Focus.GROUP_BUFFER, focusRect, childRect);
         manager.rings_.get(SAConstants.Focus.ID.PREVIEW).rects = [childRect];
@@ -177,6 +182,3 @@ class FocusRingManager {
     }
   }
 }
-
-// Needed for switch_access_browsertest.cc
-window.FocusRingManager = FocusRingManager;

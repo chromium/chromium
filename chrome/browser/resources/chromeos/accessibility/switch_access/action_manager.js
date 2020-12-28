@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {MenuManager} from './menu_manager.js';
+import {Navigator} from './navigator.js';
+import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
+import {SwitchAccess} from './switch_access.js';
+import {SAConstants, SwitchAccessMenuAction} from './switch_access_constants.js';
+
 /**
  * Class to handle performing actions with Switch Access, including determining
  * which actions are available in the given context.
  */
-class ActionManager {
+export class ActionManager {
   /** @private */
   constructor() {
     /**
@@ -63,7 +69,7 @@ class ActionManager {
    * opens the action menu. Otherwise performs the node's default action.
    */
   static onSelect() {
-    const node = NavigationManager.currentNode;
+    const node = Navigator.instance.currentNode;
     if (node.actions.length <= 1 || !node.location) {
       node.doDefaultAction();
       return;
@@ -274,12 +280,12 @@ class ActionManager {
     // having the menu on the group stack interferes with some actions. We do
     // not close the menu bubble until we receive the ActionResponse CLOSE_MENU.
     // If we receive a different response, we re-enter the menu.
-    NavigationManager.exitIfInGroup(MenuManager.menuAutomationNode);
+    Navigator.instance.exitIfInGroup(MenuManager.menuAutomationNode);
     const response = this.actionNode_.performAction(action);
     if (response === SAConstants.ActionResponse.CLOSE_MENU) {
       MenuManager.close();
     } else {
-      NavigationManager.jumpToSwitchAccessMenu();
+      Navigator.instance.jumpToSwitchAccessMenu();
     }
 
     switch (response) {

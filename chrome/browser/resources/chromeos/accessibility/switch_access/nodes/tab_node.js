@@ -2,11 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Navigator} from '../navigator.js';
+import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+
+import {BackButtonNode} from './back_button_node.js';
+import {BasicNode, BasicRootNode} from './basic_node.js';
+import {SAChildNode, SARootNode} from './switch_access_node.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /**
  * This class handles the behavior of tab nodes at the top level (i.e. as
  * groups).
  */
-class TabNode extends BasicNode {
+export class TabNode extends BasicNode {
   /**
    * @param {!AutomationNode} node The node in the automation
    *    tree
@@ -45,7 +54,7 @@ class TabNode extends BasicNode {
     if (action !== SwitchAccessMenuAction.SELECT) {
       return SAConstants.ActionResponse.NO_ACTION_TAKEN;
     }
-    NavigationManager.enterGroup();
+    Navigator.instance.enterGroup();
     return SAConstants.ActionResponse.CLOSE_MENU;
   }
 
@@ -117,3 +126,9 @@ class ActionableTabNode extends BasicNode {
     return false;
   }
 }
+
+BasicNode.creators.push({
+  predicate: baseNode => baseNode.role === chrome.automation.RoleType.TAB &&
+      baseNode.root.role === chrome.automation.RoleType.DESKTOP,
+  creator: TabNode.create
+});

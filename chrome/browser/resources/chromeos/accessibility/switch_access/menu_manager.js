@@ -2,12 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ActionManager} from './action_manager.js';
+import {Navigator} from './navigator.js';
+import {SwitchAccess} from './switch_access.js';
+import {SwitchAccessMenuAction} from './switch_access_constants.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /**
  * Class to handle interactions with the Switch Access action menu, including
  * opening and closing the menu and setting its location / the actions to be
  * displayed.
  */
-class MenuManager {
+export class MenuManager {
   /** @private */
   constructor() {
     /** @private {?Array<!SwitchAccessMenuAction>} */
@@ -64,7 +71,7 @@ class MenuManager {
     MenuManager.instance.actionNode_ = null;
     MenuManager.instance.displayedActions_ = null;
     MenuManager.instance.displayedLocation_ = null;
-    NavigationManager.exitIfInGroup(MenuManager.instance.menuAutomationNode_);
+    Navigator.instance.exitIfInGroup(MenuManager.instance.menuAutomationNode_);
     MenuManager.instance.menuAutomationNode_ = null;
 
     chrome.accessibilityPrivate.updateSwitchAccessBubble(
@@ -164,7 +171,7 @@ class MenuManager {
     this.menuAutomationNode_ = node;
     this.clickHandler_.setNodes(this.menuAutomationNode_);
     this.clickHandler_.start();
-    NavigationManager.jumpToSwitchAccessMenu();
+    Navigator.instance.jumpToSwitchAccessMenu();
   }
 
   /**

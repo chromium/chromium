@@ -28,6 +28,7 @@ run_jsbundler("switch_access_copied_files") {
   sources = [
     "action_manager.js",
     "auto_scan_manager.js",
+    "background.html",
     "background.js",
     "cache.js",
     "commands.js",
@@ -62,6 +63,7 @@ run_jsbundler("switch_access_copied_files") {
     "menu_manager.js",
     "metrics.js",
     "navigation_manager.js",
+    "navigator.js",
     "nodes/back_button_node.js",
     "nodes/basic_node.js",
     "nodes/combo_box_node.js",
@@ -150,6 +152,7 @@ js_type_check("closure_compile") {
     ":metrics",
     ":modal_dialog_node",
     ":navigation_manager",
+    ":navigator",
     ":preference_manager",
     ":slider_node",
     ":switch_access",
@@ -350,6 +353,14 @@ js_library("navigation_manager") {
     "../common:event_handler",
     "../common:repeated_event_handler",
   ]
+  externs_list = [
+    "$externs_path/accessibility_private.js",
+    "$externs_path/automation.js",
+  ]
+}
+
+js_library("navigator") {
+  deps = [ ":basic_node" ]
   externs_list = [
     "$externs_path/accessibility_private.js",
     "$externs_path/automation.js",

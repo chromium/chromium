@@ -2,11 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SACache} from '../cache.js';
+import {FocusRingManager} from '../focus_ring_manager.js';
+import {Navigator} from '../navigator.js';
+import {SwitchAccess} from '../switch_access.js';
+import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+import {SwitchAccessPredicate} from '../switch_access_predicate.js';
+
+import {BackButtonNode} from './back_button_node.js';
+import {SAChildNode, SARootNode} from './switch_access_node.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /**
  * This class handles interactions with an onscreen element based on a single
  * AutomationNode.
  */
-class BasicNode extends SAChildNode {
+export class BasicNode extends SAChildNode {
   /**
    * @param {!AutomationNode} baseNode
    * @param {?SARootNode} parent
@@ -124,7 +136,7 @@ class BasicNode extends SAChildNode {
           if (this.isValidAndVisible()) {
             FocusRingManager.setFocusedNode(this);
           } else {
-            NavigationManager.moveToValidNode();
+            Navigator.instance.moveToValidNode();
           }
         }, {exactMatch: true, allAncestors: true});
   }
@@ -143,7 +155,7 @@ class BasicNode extends SAChildNode {
     switch (action) {
       case SwitchAccessMenuAction.SELECT:
         if (this.isGroup()) {
-          NavigationManager.enterGroup();
+          Navigator.instance.enterGroup();
         } else {
           this.baseNode_.doDefault();
         }
@@ -203,32 +215,30 @@ class BasicNode extends SAChildNode {
    * @return {!BasicNode}
    */
   static create(baseNode, parent) {
-    if (SwitchAccessPredicate.isTextInput(baseNode)) {
-      return new EditableTextNode(baseNode, parent);
+    const item =
+        BasicNode.creators.find(({predicate, creator}) => predicate(baseNode));
+    if (item) {
+      return item.creator(baseNode, parent);
     }
+    return new BasicNode(baseNode, parent);
+  }
 
-    if (AutomationPredicate.comboBox(baseNode)) {
-      return new ComboBoxNode(baseNode, parent);
-    }
-    switch (baseNode.role) {
-      case chrome.automation.RoleType.SLIDER:
-        return new SliderNode(baseNode, parent);
-      case chrome.automation.RoleType.TAB:
-        if (baseNode.root.role === RoleType.DESKTOP) {
-          return TabNode.create(baseNode, parent);
-        }
-        // else, fall through to default case
-      default:
-        return new BasicNode(baseNode, parent);
-    }
+  /**
+   * @return {!Array<!{predicate: function(AutomationNode), creator:
+   *     function(AutomationNode, SARootNode)}>}
+   */
+  static get creators() {
+    return BasicNode.creators_;
   }
 }
+
+BasicNode.creators_ = [];
 
 /**
  * This class handles constructing and traversing a group of onscreen elements
  * based on all the interesting descendants of a single AutomationNode.
  */
-class BasicRootNode extends SARootNode {
+export class BasicRootNode extends SARootNode {
   /**
    * WARNING: If you call this constructor, you must *explicitly* set children.
    *     Use the static function BasicRootNode.buildTree for most use cases.
@@ -325,7 +335,7 @@ class BasicRootNode extends SARootNode {
     this.refreshChildren();
     if (this.invalidated_) {
       this.onUnfocus();
-      NavigationManager.moveToValidNode();
+      Navigator.instance.moveToValidNode();
       return;
     }
 
@@ -333,14 +343,14 @@ class BasicRootNode extends SARootNode {
     if (focusedChild) {
       for (const child of this.children) {
         if (child.isEquivalentTo(focusedChild)) {
-          NavigationManager.forceFocusedNode(child);
+          Navigator.instance.forceFocusedNode(child);
           return;
         }
       }
     }
 
     // If we didn't find a match, fall back and reset.
-    NavigationManager.moveToValidNode();
+    Navigator.instance.moveToValidNode();
   }
 
   // ================= Static methods =================
@@ -350,11 +360,10 @@ class BasicRootNode extends SARootNode {
    * @return {!BasicRootNode}
    */
   static buildTree(rootNode) {
-    if (rootNode.role === chrome.automation.RoleType.KEYBOARD) {
-      return KeyboardRootNode.buildTree();
-    }
-    if (SwitchAccessPredicate.isWindow(rootNode)) {
-      return WindowRootNode.buildTree(rootNode);
+    const item = BasicRootNode.builders.find(
+        ({predicate, builder}) => predicate(rootNode));
+    if (item) {
+      return item.builder(rootNode);
     }
 
     const root = new BasicRootNode(rootNode);
@@ -410,4 +419,14 @@ class BasicRootNode extends SARootNode {
 
     return interestingChildren;
   }
+
+  /**
+   * @return {!Array<!{predicate: function(AutomationNode), builder:
+   *     function(AutomationNode)}>}
+   */
+  static get builders() {
+    return BasicRootNode.builders_;
+  }
 }
+
+BasicRootNode.builders_ = [];

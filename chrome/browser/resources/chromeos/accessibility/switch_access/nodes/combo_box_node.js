@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Navigator} from '../navigator.js';
+import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+
+import {BasicNode} from './basic_node.js';
+import {SAChildNode, SARootNode} from './switch_access_node.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /**
  * This class handles interactions with combo boxes.
  * TODO(anastasi): Add a test for this class.
@@ -69,8 +77,13 @@ class ComboBoxNode extends BasicNode {
     // TODO: figure out why a short timeout is needed here.
     window.setTimeout(() => {
       if (this.isGroup()) {
-        NavigationManager.enterGroup();
+        Navigator.instance.enterGroup();
       }
     }, 250);
   }
 }
+
+BasicNode.creators.push({
+  predicate: AutomationPredicate.comboBox,
+  creator: (node, parent) => new ComboBoxNode(node, parent)
+});

@@ -8,9 +8,19 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 SwitchAccessTextNavigationManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   setUp() {
-    TextNavigationManager.initialize();
-    this.textNavigationManager = TextNavigationManager.instance;
-    this.navigationManager = NavigationManager.instance;
+    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
+    (async () => {
+      let module = await import('/switch_access/text_navigation_manager.js');
+      window.TextNavigationManager = module.TextNavigationManager;
+
+      module = await import('/switch_access/navigator.js');
+      window.Navigator = module.Navigator;
+
+      this.textNavigationManager = TextNavigationManager.instance;
+      this.navigationManager = Navigator.instance;
+
+      runTest();
+    })();
   }
 };
 

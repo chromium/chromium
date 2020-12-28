@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SACache} from './cache.js';
+import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
 const StateType = chrome.automation.StateType;
 const RoleType = chrome.automation.RoleType;
 const DefaultActionVerb = chrome.automation.DefaultActionVerb;
@@ -19,7 +23,7 @@ const DefaultActionVerb = chrome.automation.DefaultActionVerb;
  * In addition to these basic predicates, there are also methods to get the
  * restrictions required by TreeWalker for specific traversal situations.
  */
-const SwitchAccessPredicate = {
+export const SwitchAccessPredicate = {
   GROUP_INTERESTING_CHILD_THRESHOLD: 2,
 
   /**

@@ -2,10 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Navigator} from '../navigator.js';
+import {SwitchAccess} from '../switch_access.js';
+import {SAConstants} from '../switch_access_constants.js';
+import {SwitchAccessPredicate} from '../switch_access_predicate.js';
+
+import {BasicNode, BasicRootNode} from './basic_node.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /**
  * This class handles interactions with the desktop automation node.
  */
-class DesktopNode extends BasicRootNode {
+export class DesktopNode extends BasicRootNode {
   /**
    * @param {!AutomationNode} autoNode The automation node representing the
    *     desktop.
@@ -46,14 +55,14 @@ class DesktopNode extends BasicRootNode {
     // Set the new instance of that child to be the focused node.
     for (const child of this.children) {
       if (child.isEquivalentTo(focusedChild)) {
-        NavigationManager.forceFocusedNode(child);
+        Navigator.instance.forceFocusedNode(child);
         return;
       }
     }
 
     // If the previously focused node no longer exists, focus the first node in
     // the group.
-    NavigationManager.forceFocusedNode(this.children[0]);
+    Navigator.instance.forceFocusedNode(this.children[0]);
   }
 
   // ================= Static methods =================

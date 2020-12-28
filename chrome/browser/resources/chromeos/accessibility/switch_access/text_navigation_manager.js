@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ActionManager} from './action_manager.js';
+import {Navigator} from './navigator.js';
+import {SwitchAccess} from './switch_access.js';
+import {SAConstants, SwitchAccessMenuAction} from './switch_access_constants.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /**
  * Class to handle navigating text. Currently, only
  * navigation and selection in editable text fields is supported.
  */
-class TextNavigationManager {
+export class TextNavigationManager {
   /** @private */
   constructor() {
     /** @private {number} */
@@ -386,7 +393,7 @@ class TextNavigationManager {
    */
   updateClipboardHasData_() {
     this.clipboardHasData_ = true;
-    const node = NavigationManager.currentNode;
+    const node = Navigator.instance.currentNode;
     if (node.hasAction(SwitchAccessMenuAction.PASTE)) {
       ActionManager.refreshMenuForNode(node);
     }

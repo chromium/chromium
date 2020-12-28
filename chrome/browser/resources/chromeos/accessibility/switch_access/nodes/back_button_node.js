@@ -2,10 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ActionManager} from '../action_manager.js';
+import {FocusRingManager} from '../focus_ring_manager.js';
+import {MenuManager} from '../menu_manager.js';
+import {Navigator} from '../navigator.js';
+import {SwitchAccess} from '../switch_access.js';
+import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+
+import {SAChildNode, SARootNode} from './switch_access_node.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /**
  * This class handles the behavior of the back button.
  */
-class BackButtonNode extends SAChildNode {
+export class BackButtonNode extends SAChildNode {
   /**
    * @param {!SARootNode} group
    */
@@ -33,7 +44,7 @@ class BackButtonNode extends SAChildNode {
     return BackButtonNode.automationNode_;
   }
 
-  /** @return {!SARootNode} */
+  /** @override */
   get group() {
     return this.group_;
   }
@@ -116,6 +127,11 @@ class BackButtonNode extends SAChildNode {
     return SAConstants.ActionResponse.NO_ACTION_TAKEN;
   }
 
+  /** @override */
+  ignoreWhenComputingUnionOfBoundingBoxes() {
+    return true;
+  }
+
   // ================= Debug methods =================
 
   /** @override */
@@ -153,7 +169,7 @@ class BackButtonNode extends SAChildNode {
     if (MenuManager.isMenuOpen()) {
       ActionManager.exitCurrentMenu();
     } else {
-      NavigationManager.exitGroupUnconditionally();
+      Navigator.instance.exitGroupUnconditionally();
     }
   }
 

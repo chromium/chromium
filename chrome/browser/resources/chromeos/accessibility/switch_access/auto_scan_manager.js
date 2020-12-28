@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Navigator} from './navigator.js';
+import {SwitchAccess} from './switch_access.js';
+
 /**
  * Class to handle auto-scan behavior.
  */
-class AutoScanManager {
+export class AutoScanManager {
   /** @private */
   constructor() {
     /**
@@ -138,8 +141,9 @@ class AutoScanManager {
       currentScanTime = this.keyboardScanTime_;
     }
 
-    this.intervalID_ =
-        window.setInterval(NavigationManager.moveForward, currentScanTime);
+    this.intervalID_ = window.setInterval(
+        Navigator.instance.moveForward.bind(Navigator.instance),
+        currentScanTime);
   }
 
   /**

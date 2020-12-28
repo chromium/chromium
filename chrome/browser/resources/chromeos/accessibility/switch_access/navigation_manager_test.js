@@ -8,9 +8,30 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 SwitchAccessNavigationManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   setUp() {
-    this.navigator = NavigationManager.instance;
-    BackButtonNode
-        .locationForTesting = {top: 10, left: 10, width: 20, height: 20};
+    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
+    (async () => {
+      let module = await import('/switch_access/nodes/back_button_node.js');
+      window.BackButtonNode = module.BackButtonNode;
+
+      module = await import('/switch_access/nodes/basic_node.js');
+      window.BasicNode = module.BasicNode;
+      window.BasicRootNode = module.BasicRootNode;
+
+      module = await import('/switch_access/cache.js');
+      window.SACache = module.SACache;
+
+      module = await import('/switch_access/switch_access_predicate.js');
+      window.SwitchAccessPredicate = module.SwitchAccessPredicate;
+
+      module = await import('/switch_access/navigator.js');
+      window.Navigator = module.Navigator;
+
+      this.navigator = Navigator.instance;
+      BackButtonNode
+          .locationForTesting = {top: 10, left: 10, width: 20, height: 20};
+
+      runTest();
+    })();
   }
 
   moveToPageContents(pageContents) {
@@ -26,12 +47,12 @@ SwitchAccessNavigationManagerTest = class extends SwitchAccessE2ETest {
     assertNotNullNorUndefined(
         pageContents, 'Could not find group corresponding to page contents');
     this.navigator.moveTo_(pageContents);
-    NavigationManager.enterGroup();
+    Navigator.instance.enterGroup();
   }
 };
 
 function currentNode() {
-  return NavigationManager.instance.node_;
+  return Navigator.instance.node_;
 }
 
 TEST_F('SwitchAccessNavigationManagerTest', 'MoveTo', function() {
@@ -164,7 +185,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'SelectButton', function() {
               'Checked state changed on unexpected node');
         }));
 
-    NavigationManager.instance.node_.performAction('select');
+    Navigator.instance.node_.performAction('select');
   });
 });
 
@@ -183,7 +204,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'EnterGroup', function() {
         this.navigator.node_.automationNode.htmlAttributes.id, 'group',
         'Did not move to group properly');
 
-    NavigationManager.enterGroup();
+    Navigator.instance.enterGroup();
     assertEquals(
         chrome.automation.RoleType.BUTTON, this.navigator.node_.role,
         'Current node is not a button');
@@ -214,7 +235,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'MoveForward', function() {
         'button1', button1.automationNode.htmlAttributes.id,
         'Current node is not button1');
 
-    NavigationManager.moveForward();
+    Navigator.instance.moveForward();
     assertFalse(
         button1.equals(this.navigator.node_),
         'Still on button1 after moveForward()');
@@ -226,7 +247,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'MoveForward', function() {
         'button2', button2.automationNode.htmlAttributes.id,
         'Current node is not button2');
 
-    NavigationManager.moveForward();
+    Navigator.instance.moveForward();
     assertFalse(
         button1.equals(this.navigator.node_),
         'Unexpected navigation to button1');
@@ -241,12 +262,12 @@ TEST_F('SwitchAccessNavigationManagerTest', 'MoveForward', function() {
         'button3', button3.automationNode.htmlAttributes.id,
         'Current node is not button3');
 
-    NavigationManager.moveForward();
+    Navigator.instance.moveForward();
     assertTrue(
         this.navigator.node_ instanceof BackButtonNode,
         'BackButtonNode should come after button3');
 
-    NavigationManager.moveForward();
+    Navigator.instance.moveForward();
     assertTrue(
         button1.equals(this.navigator.node_),
         'button1 should come after the BackButtonNode');
@@ -269,12 +290,12 @@ TEST_F('SwitchAccessNavigationManagerTest', 'MoveBackward', function() {
         'button1', button1.automationNode.htmlAttributes.id,
         'Current node is not button1');
 
-    NavigationManager.moveBackward();
+    Navigator.instance.moveBackward();
     assertTrue(
         this.navigator.node_ instanceof BackButtonNode,
         'BackButtonNode should come before button1');
 
-    NavigationManager.moveBackward();
+    Navigator.instance.moveBackward();
     assertFalse(
         button1.equals(this.navigator.node_),
         'Unexpected navigation to button1');
@@ -286,7 +307,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'MoveBackward', function() {
         'button3', button3.automationNode.htmlAttributes.id,
         'Current node is not button3');
 
-    NavigationManager.moveBackward();
+    Navigator.instance.moveBackward();
     assertFalse(
         button3.equals(this.navigator.node_),
         'Still on button3 after moveBackward()');
@@ -299,7 +320,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'MoveBackward', function() {
         'button2', button2.automationNode.htmlAttributes.id,
         'Current node is not button2');
 
-    NavigationManager.moveBackward();
+    Navigator.instance.moveBackward();
     assertTrue(
         button1.equals(this.navigator.node_),
         'button1 should come before button2');
@@ -326,11 +347,11 @@ TEST_F(
         // than an orphaned node (which can have a valid AutomationNode
         // instance, but no backing C++ object, so attributes returned like role
         // are undefined).
-        NavigationManager.instance.node_.baseNode_ = undefined;
+        Navigator.instance.node_.baseNode_ = undefined;
 
         // Tree change removed gets sent by C++ after the tree has already
         // applied changes (so this comes after the above clearing).
-        NavigationManager.instance.onTreeChange_(
+        Navigator.instance.onTreeChange_(
             {type: chrome.automation.TreeChangeType.NODE_REMOVED});
       });
     });

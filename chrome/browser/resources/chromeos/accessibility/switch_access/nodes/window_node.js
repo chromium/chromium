@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SwitchAccessPredicate} from '../switch_access_predicate.js';
+
+import {BasicNode, BasicRootNode} from './basic_node.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /** This class represents a window. */
-class WindowRootNode extends BasicRootNode {
+export class WindowRootNode extends BasicRootNode {
   /** @override */
   onFocus() {
     super.onFocus();
@@ -29,3 +35,8 @@ class WindowRootNode extends BasicRootNode {
     return root;
   }
 }
+
+BasicRootNode.builders.push({
+  predicate: rootNode => SwitchAccessPredicate.isWindow(rootNode),
+  builder: WindowRootNode.buildTree
+});

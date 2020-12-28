@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FocusRingManager} from '../focus_ring_manager.js';
+import {SwitchAccess} from '../switch_access.js';
+import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /**
  * This interface represents some object or group of objects on screen
  *     that Switch Access may be interested in interacting with.
@@ -12,7 +19,7 @@
  *     (calling .equals() returns true).
  * @abstract
  */
-class SAChildNode {
+export class SAChildNode {
   constructor() {
     /** @private {boolean} */
     this.isFocused_ = false;
@@ -244,12 +251,26 @@ class SAChildNode {
     this.valid_ = false;
     throw SwitchAccess.error(error, message, true /* shouldRecover */);
   }
+
+  /**
+   * @return {boolean} Whether to ignore when computing the SARootNode's
+   *     location.
+   */
+  ignoreWhenComputingUnionOfBoundingBoxes() {
+    return false;
+  }
+
+
+  /** @return {SARootNode} */
+  get group() {
+    return null;
+  }
 }
 
 /**
  * This class represents the root node of a Switch Access traversal group.
  */
-class SARootNode {
+export class SARootNode {
   /**
    * @param {!AutomationNode} autoNode The automation node that most closely
    *     contains all of this node's children.
@@ -307,8 +328,8 @@ class SARootNode {
 
   /** @return {!chrome.accessibilityPrivate.ScreenRect} */
   get location() {
-    const children =
-        this.children_.filter((c) => !(c instanceof BackButtonNode));
+    const children = this.children_.filter(
+        (c) => !c.ignoreWhenComputingUnionOfBoundingBoxes());
     const childLocations = children.map((c) => c.location);
     return RectUtil.unionAll(childLocations);
   }
@@ -371,10 +392,11 @@ class SARootNode {
 
   /** @return {boolean} */
   isValidGroup() {
-    // Must have one interesting child that is not the back button.
+    // Must have one interesting child whose location is important.
     return this.children_
                .filter(
-                   (child) => !(child instanceof BackButtonNode) &&
+                   (child) =>
+                       !(child.ignoreWhenComputingUnionOfBoundingBoxes()) &&
                        child.isValidAndVisible())
                .length >= 1;
   }

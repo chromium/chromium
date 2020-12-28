@@ -2,13 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Navigator} from '../navigator.js';
+import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+
+import {BackButtonNode} from './back_button_node.js';
+import {SAChildNode, SARootNode} from './switch_access_node.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /**
  * This class handles the grouping of nodes that are not grouped in the
  *     automation tree. They are defined by their parent and child nodes.
  * Ex: Nodes in the virtual keyboard have no intermediate grouping, but should
  *     be grouped by row.
  */
-class GroupNode extends SAChildNode {
+export class GroupNode extends SAChildNode {
   /**
    * @param {!Array<!SAChildNode>} children The nodes that this group contains.
    *     Should not include the back button.
@@ -116,7 +124,7 @@ class GroupNode extends SAChildNode {
   /** @override */
   performAction(action) {
     if (action === SwitchAccessMenuAction.SELECT) {
-      NavigationManager.enterGroup();
+      Navigator.instance.enterGroup();
       return SAConstants.ActionResponse.CLOSE_MENU;
     }
     return SAConstants.ActionResponse.NO_ACTION_TAKEN;

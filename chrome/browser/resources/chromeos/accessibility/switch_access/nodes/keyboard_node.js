@@ -2,6 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AutoScanManager} from '../auto_scan_manager.js';
+import {Navigator} from '../navigator.js';
+import {SwitchAccess} from '../switch_access.js';
+import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+import {SwitchAccessPredicate} from '../switch_access_predicate.js';
+
+import {BackButtonNode} from './back_button_node.js';
+import {BasicNode, BasicRootNode} from './basic_node.js';
+import {GroupNode} from './group_node.js';
+import {SAChildNode, SARootNode} from './switch_access_node.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /**
  * This class handles the behavior of keyboard nodes directly associated with a
  * single AutomationNode.
@@ -40,12 +53,12 @@ class KeyboardNode extends BasicNode {
       return true;
     }
     if (!KeyboardNode.resetting &&
-        NavigationManager.currentGroupHasChild(this)) {
+        Navigator.instance.currentGroupHasChild(this)) {
       // TODO(crbug/1130773): move this code to another location, if possible
       KeyboardNode.resetting = true;
       KeyboardRootNode.ignoreNextExit_ = true;
-      NavigationManager.exitKeyboard();
-      NavigationManager.enterKeyboard();
+      Navigator.instance.exitKeyboard();
+      Navigator.instance.enterKeyboard();
     }
 
     return false;
@@ -76,7 +89,7 @@ class KeyboardNode extends BasicNode {
  * This class handles the top-level Keyboard node, as well as the construction
  * of the Keyboard tree.
  */
-class KeyboardRootNode extends BasicRootNode {
+export class KeyboardRootNode extends BasicRootNode {
   /**
    * @param {!AutomationNode} groupNode
    * @private
@@ -184,9 +197,9 @@ class KeyboardRootNode extends BasicRootNode {
     }
 
     if (KeyboardRootNode.isVisible_) {
-      NavigationManager.enterKeyboard();
+      Navigator.instance.enterKeyboard();
     } else {
-      NavigationManager.exitKeyboard();
+      Navigator.instance.exitKeyboard();
     }
   }
 
@@ -213,7 +226,7 @@ class KeyboardRootNode extends BasicRootNode {
    */
   static getKeyboardObject() {
     if (!this.object_ || !this.object_.role) {
-      this.object_ = NavigationManager.desktopNode.find(
+      this.object_ = Navigator.instance.desktopNode.find(
           {role: chrome.automation.RoleType.KEYBOARD});
     }
     return this.object_;
@@ -232,3 +245,8 @@ class KeyboardRootNode extends BasicRootNode {
     chrome.accessibilityPrivate.setVirtualKeyboardVisible(true);
   }
 }
+
+BasicRootNode.builders.push({
+  predicate: rootNode => rootNode.role === chrome.automation.RoleType.KEYBOARD,
+  builder: KeyboardRootNode.buildTree
+});

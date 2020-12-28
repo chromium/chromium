@@ -2,8 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SACache} from './cache.js';
+import {Navigator} from './navigator.js';
+import {DesktopNode} from './nodes/desktop_node.js';
+import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
+import {SwitchAccessPredicate} from './switch_access_predicate.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /** This class is a structure to store previous state for restoration. */
-class FocusData {
+export class FocusData {
   /**
    * @param {!SARootNode} group
    * @param {!SAChildNode} focus Must be a child of |group|.
@@ -27,7 +35,7 @@ class FocusData {
 }
 
 /** This class handles saving and retrieving FocusData. */
-class FocusHistory {
+export class FocusHistory {
   constructor() {
     /** @private {!Array<!FocusData>} */
     this.dataStack_ = [];
@@ -121,7 +129,7 @@ class FocusHistory {
     }
 
     // If we don't have any valid history entries, fallback to the desktop node.
-    const desktop = new DesktopNode(NavigationManager.desktopNode);
+    const desktop = new DesktopNode(Navigator.instance.desktopNode);
     return new FocusData(desktop, desktop.firstChild);
   }
 
