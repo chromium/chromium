@@ -10,7 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.signin.AccessTokenData;
+import org.chromium.components.signin.AccountUtils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -99,6 +101,16 @@ public class AccountHolder {
                 && mAccount.equals(((AccountHolder) that).getAccount());
     }
 
+    /**
+     * Creates builder of {@link AccountHolder} for the given account email.
+     */
+    public static Builder builder(String accountEmail) {
+        return new Builder(AccountUtils.createAccountFromName(accountEmail));
+    }
+
+    /**
+     * Creates builder of {@link AccountHolder} for the given account.
+     */
     public static Builder builder(@NonNull Account account) {
         return new Builder(account);
     }
@@ -118,11 +130,11 @@ public class AccountHolder {
      * Used to construct AccountHolder instances.
      */
     public static class Builder {
-        private Account mAccount;
+        private final Account mAccount;
         private Map<String, String> mAuthTokens = new HashMap<>();
         private Map<String, Boolean> mHasBeenAccepted = new HashMap<>();
         private boolean mAlwaysAccept;
-        private Set<String> mFeatures = new HashSet<>();
+        private final Set<String> mFeatures = new HashSet<>();
 
         Builder(@NonNull Account account) {
             mAccount = account;
@@ -149,13 +161,10 @@ public class AccountHolder {
         }
 
         /**
-         * Sets the set of features for this account.
-         *
-         * @param features The set of account features.
-         * @return This object, for chaining method calls.
+         * Adds features to the set of features for this account.
          */
-        public Builder featureSet(@NonNull Set<String> features) {
-            mFeatures = features;
+        public Builder addFeatures(String... features) {
+            Collections.addAll(mFeatures, features);
             return this;
         }
 

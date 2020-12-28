@@ -37,8 +37,6 @@ import org.chromium.components.signin.test.util.AccountHolder;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 import org.chromium.testing.local.CustomShadowUserManager;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -225,15 +223,14 @@ public class AccountManagerFacadeRobolectricTest {
         assertChildAccountStatus(bothAccount, ChildAccountStatus.REGULAR_CHILD);
     }
 
-    private Account addTestAccount(String accountName, String... features) {
-        Account account = AccountUtils.createAccountFromName(accountName);
-        AccountHolder holder = AccountHolder.builder(account)
+    private Account addTestAccount(String accountEmail, String... features) {
+        AccountHolder holder = AccountHolder.builder(accountEmail)
                                        .alwaysAccept(true)
-                                       .featureSet(new HashSet<>(Arrays.asList(features)))
+                                       .addFeatures(features)
                                        .build();
         mDelegate.addAccountHolderExplicitly(holder);
         Assert.assertFalse(((AccountManagerFacadeImpl) mFacade).isUpdatePending().get());
-        return account;
+        return holder.getAccount();
     }
 
     private void removeTestAccount(Account account) {
