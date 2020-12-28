@@ -17,7 +17,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/accessibility/speech_monitor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -163,13 +162,7 @@ class SelectToSpeakTestWithLanguageDetection : public SelectToSpeakTest {
   }
 };
 
-// The status tray is not active on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_SpeakStatusTray DISABLED_SpeakStatusTray
-#else
-#define MAYBE_SpeakStatusTray SpeakStatusTray
-#endif
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_SpeakStatusTray) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, DISABLED_SpeakStatusTray) {
   gfx::Rect tray_bounds = ash::Shell::Get()
                               ->GetPrimaryRootWindowController()
                               ->GetStatusAreaWidget()
