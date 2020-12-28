@@ -19,7 +19,7 @@ class VersionUpdaterCros : public VersionUpdater,
                            public chromeos::UpdateEngineClient::Observer {
  public:
   // VersionUpdater implementation.
-  void CheckForUpdate(StatusCallback callback, const PromoteCallback&) override;
+  void CheckForUpdate(StatusCallback callback, PromoteCallback) override;
   void SetChannel(const std::string& channel,
                   bool is_powerwash_allowed) override;
   void GetChannel(bool get_current_channel, ChannelCallback callback) override;

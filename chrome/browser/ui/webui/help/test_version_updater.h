@@ -19,7 +19,7 @@ class TestVersionUpdater : public VersionUpdater {
   TestVersionUpdater();
   ~TestVersionUpdater() override;
 
-  void CheckForUpdate(StatusCallback callback, const PromoteCallback&) override;
+  void CheckForUpdate(StatusCallback callback, PromoteCallback) override;
 
   void SetReturnedStatus(Status status) { status_ = status; }
 

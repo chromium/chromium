@@ -135,9 +135,8 @@ VersionUpdaterMac::VersionUpdaterMac()
 
 VersionUpdaterMac::~VersionUpdaterMac() {}
 
-void VersionUpdaterMac::CheckForUpdate(
-    StatusCallback status_callback,
-    const PromoteCallback& promote_callback) {
+void VersionUpdaterMac::CheckForUpdate(StatusCallback status_callback,
+                                       PromoteCallback promote_callback) {
 #if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
   if (!update_client_)
     update_client_ = BrowserUpdaterClient::Create();
@@ -147,7 +146,7 @@ void VersionUpdaterMac::CheckForUpdate(
   return;
 #else
   status_callback_ = std::move(status_callback);
-  promote_callback_ = promote_callback;
+  promote_callback_ = std::move(promote_callback);
 
   KeystoneGlue* keystone_glue = [KeystoneGlue defaultKeystoneGlue];
   if (keystone_glue && ![keystone_glue isOnReadOnlyFilesystem]) {

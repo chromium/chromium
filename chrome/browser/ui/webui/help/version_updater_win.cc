@@ -27,7 +27,7 @@ VersionUpdaterWin::~VersionUpdaterWin() {
 }
 
 void VersionUpdaterWin::CheckForUpdate(StatusCallback callback,
-                                       const PromoteCallback&) {
+                                       PromoteCallback) {
   // There is no supported integration with Google Update for Chromium.
   callback_ = std::move(callback);
 

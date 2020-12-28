@@ -8,7 +8,7 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 
 void VersionUpdaterBasic::CheckForUpdate(StatusCallback status_callback,
-                                         const PromoteCallback&) {
+                                         PromoteCallback) {
   const Status status = UpgradeDetector::GetInstance()->notify_upgrade()
                             ? NEARLY_UPDATED
                             : DISABLED;

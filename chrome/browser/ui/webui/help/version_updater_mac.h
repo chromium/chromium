@@ -28,7 +28,7 @@ class VersionUpdaterMac : public VersionUpdater {
  public:
   // VersionUpdater implementation.
   void CheckForUpdate(StatusCallback status_callback,
-                      const PromoteCallback& promote_callback) override;
+                      PromoteCallback promote_callback) override;
   void PromoteUpdater() const override;
 
   // Process status updates received from Keystone. The dictionary will contain

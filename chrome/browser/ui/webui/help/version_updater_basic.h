@@ -13,7 +13,7 @@
 class VersionUpdaterBasic : public VersionUpdater {
  public:
   // VersionUpdater implementation.
-  void CheckForUpdate(StatusCallback callback, const PromoteCallback&) override;
+  void CheckForUpdate(StatusCallback callback, PromoteCallback) override;
 
  protected:
   friend class VersionUpdater;

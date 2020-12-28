@@ -153,7 +153,7 @@ void VersionUpdaterCros::GetUpdateStatus(StatusCallback callback) {
 }
 
 void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
-                                        const PromoteCallback&) {
+                                        PromoteCallback) {
   callback_ = std::move(callback);
 
   // User is actively checking for updates.

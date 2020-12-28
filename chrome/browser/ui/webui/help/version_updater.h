@@ -75,7 +75,7 @@ class VersionUpdater {
       StatusCallback;
 
   // Used to show or hide the promote UI elements. Mac-only.
-  typedef base::Callback<void(PromotionState)> PromoteCallback;
+  typedef base::RepeatingCallback<void(PromotionState)> PromoteCallback;
 
   virtual ~VersionUpdater() {}
 
@@ -90,7 +90,7 @@ class VersionUpdater {
   // (which is only used on the Mac) can be used to show or hide the promote UI
   // elements.
   virtual void CheckForUpdate(StatusCallback status_callback,
-                              const PromoteCallback& promote_callback) = 0;
+                              PromoteCallback promote_callback) = 0;
 
 #if defined(OS_MAC)
   // Make updates available for all users.
