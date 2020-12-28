@@ -4,6 +4,9 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.verify;
+
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
@@ -11,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
@@ -19,6 +23,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
@@ -334,6 +339,41 @@ public class RadioButtonWithDescriptionLayoutTest {
         Assert.assertTrue(b4.isEnabled());
         Assert.assertTrue(textView1.isEnabled());
         Assert.assertTrue(textView3.isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnButtonCheckedStateChanged() {
+        View content = LayoutInflater.from(mContext).inflate(
+                R.layout.radio_button_with_description_layout_test, null, false);
+        RadioButtonWithDescriptionLayout layout =
+                content.findViewById(R.id.test_radio_button_layout);
+        RadioButtonWithDescription b1 = content.findViewById(R.id.test_radio_description_1);
+
+        RadioGroup.OnCheckedChangeListener listener =
+                Mockito.mock(RadioGroup.OnCheckedChangeListener.class);
+        layout.setOnCheckedChangeListener(listener);
+
+        layout.onButtonCheckedStateChanged(b1);
+        verify(listener).onCheckedChanged(layout, b1.getId());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnButtonCheckedStateChanged_nullObserver() {
+        View content = LayoutInflater.from(mContext).inflate(
+                R.layout.radio_button_with_description_layout_test, null, false);
+        RadioButtonWithDescriptionLayout layout =
+                content.findViewById(R.id.test_radio_button_layout);
+        RadioButtonWithDescription b1 = content.findViewById(R.id.test_radio_description_1);
+
+        layout.setOnCheckedChangeListener(null);
+
+        try {
+            layout.onButtonCheckedStateChanged(b1);
+        } catch (NullPointerException e) {
+            fail("No exception should be thrown when the observer is null");
+        }
     }
 
     private RadioButtonWithDescription createRadioButtonWithDescription(
