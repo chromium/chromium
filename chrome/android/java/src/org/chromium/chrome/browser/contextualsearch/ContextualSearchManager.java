@@ -1056,7 +1056,7 @@ public class ContextualSearchManager
                 }
                 if (mSearchRequest != null
                         && (!mDidStartLoadingResolvedSearchRequest || mShouldLoadDelayedSearch)) {
-                    // mShouldLoadDelayedSearch is used in the long-press case to load content.
+                    // mShouldLoadDelayedSearch is used in the non-preloading case to load content.
                     // Since content is now created and destroyed for each request, was impossible
                     // to know if content was already loaded or recently needed to be; this is for
                     // the case where it needed to be.
