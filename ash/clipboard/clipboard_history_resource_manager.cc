@@ -11,6 +11,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/escape.h"
@@ -35,6 +36,17 @@ constexpr int kPlaceholderImageWidth = 234;
 constexpr int kPlaceholderImageHeight = 74;
 constexpr int kPlaceholderImageOutlineCornerRadius = 8;
 constexpr int kPlaceholderImageSVGSize = 32;
+
+// Used in histograms, each value corresponds with an underlying placeholder
+// string displayed by a ClipboardHistoryTextItemView. Do not reorder entries,
+// if you must add to it, add at the end.
+enum class ClipboardHistoryPlaceholderStringType {
+  kBitmap = 0,
+  kHtml = 1,
+  kRtf = 2,
+  kWebSmartPaste = 3,
+  kMaxValue = 3,
+};
 
 // Used to draw the UnrenderedHTMLPlaceholderImage, which is shown while HTML is
 // rendering. Drawn in order to turn the square and single colored SVG into a
@@ -108,6 +120,11 @@ base::string16 GetLabelForCustomData(const ui::ClipboardData& data) {
       base::UnescapeRule::SPACES));
 }
 
+void RecordPlaceholderString(ClipboardHistoryPlaceholderStringType type) {
+  base::UmaHistogramEnumeration(
+      "Ash.ClipboardHistory.ContextMenu.ShowPlaceholderString", type);
+}
+
 }  // namespace
 
 // ClipboardHistoryResourceManager ---------------------------------------------
@@ -143,6 +160,7 @@ base::string16 ClipboardHistoryResourceManager::GetLabel(
   const ui::ClipboardData& data = item.data();
   switch (ClipboardHistoryUtil::CalculateMainFormat(data).value()) {
     case ui::ClipboardInternalFormat::kBitmap:
+      RecordPlaceholderString(ClipboardHistoryPlaceholderStringType::kBitmap);
       return GetLocalizedString(IDS_CLIPBOARD_MENU_IMAGE);
     case ui::ClipboardInternalFormat::kText:
       return base::UTF8ToUTF16(data.text());
@@ -150,14 +168,18 @@ base::string16 ClipboardHistoryResourceManager::GetLabel(
       // Show plain-text if it exists, otherwise show the placeholder.
       if (!data.text().empty())
         return base::UTF8ToUTF16(data.text());
+      RecordPlaceholderString(ClipboardHistoryPlaceholderStringType::kHtml);
       return GetLocalizedString(IDS_CLIPBOARD_MENU_HTML);
     case ui::ClipboardInternalFormat::kSvg:
       return base::UTF8ToUTF16(data.svg_data());
     case ui::ClipboardInternalFormat::kRtf:
+      RecordPlaceholderString(ClipboardHistoryPlaceholderStringType::kRtf);
       return GetLocalizedString(IDS_CLIPBOARD_MENU_RTF_CONTENT);
     case ui::ClipboardInternalFormat::kBookmark:
       return base::UTF8ToUTF16(data.bookmark_title());
     case ui::ClipboardInternalFormat::kWeb:
+      RecordPlaceholderString(
+          ClipboardHistoryPlaceholderStringType::kWebSmartPaste);
       return GetLocalizedString(IDS_CLIPBOARD_MENU_WEB_SMART_PASTE);
     case ui::ClipboardInternalFormat::kCustom:
       return GetLabelForCustomData(data);

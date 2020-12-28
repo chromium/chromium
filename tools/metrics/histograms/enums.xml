@@ -11334,6 +11334,13 @@ histogram as enum -->
   <int value="2" label="Html"/>
 </enum>
 
+<enum name="ClipboardHistoryPlaceholderStringType">
+  <int value="0" label="Bitmap"/>
+  <int value="1" label="Html"/>
+  <int value="2" label="Rtf"/>
+  <int value="3" label="Web Smart Paste"/>
+</enum>
+
 <enum name="ClockdriftLevel">
   <int value="0" label="None"/>
   <int value="1" label="Probable"/>
