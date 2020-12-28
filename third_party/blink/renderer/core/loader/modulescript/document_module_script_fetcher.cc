@@ -28,9 +28,13 @@ void DocumentModuleScriptFetcher::Fetch(
   DCHECK(fetch_client_settings_object_fetcher);
   DCHECK(!client_);
   client_ = client;
-  // TODO(crbug.com/1061857): Enable streaming.
+  // Streaming can currently only be triggered from the main thread. This
+  // currently happens only for dynamic imports in worker modules.
+  ScriptResource::StreamingAllowed streaming_allowed =
+                        IsMainThread() ? ScriptResource::kAllowStreaming
+                                       : ScriptResource::kNoStreaming;
   ScriptResource::Fetch(fetch_params, fetch_client_settings_object_fetcher,
-                        this, ScriptResource::kNoStreaming);
+                        this, streaming_allowed);
 }
 
 void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {

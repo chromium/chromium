@@ -110,6 +110,9 @@ class ModuleScriptCreationParams {
   }
 
   ScriptStreamer* GetScriptStreamer() const { return script_streamer_; }
+  ScriptStreamer::NotStreamingReason NotStreamingReason() const {
+    return not_streaming_reason_;
+  }
 
  private:
   // Creates an isolated copy.

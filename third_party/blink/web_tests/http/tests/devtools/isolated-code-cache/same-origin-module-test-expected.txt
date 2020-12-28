@@ -6,7 +6,7 @@ v8.compileModule Properties:
     data : {
         columnNumber : 1
         lineNumber : 1
-        notStreamedReason : "module script"
+        notStreamedReason : "script too small"
         streamed : <boolean>
         url : .../devtools/resources/v8-cache-script.cgi
     }
@@ -20,7 +20,7 @@ v8.compileModule Properties:
     data : {
         columnNumber : 1
         lineNumber : 1
-        notStreamedReason : "module script"
+        notStreamedReason : "already used streamed data"
         streamed : <boolean>
         url : .../devtools/resources/v8-cache-script.cgi
     }
@@ -52,7 +52,7 @@ v8.compileModule Properties:
         columnNumber : 1
         consumedCacheSize : <number>
         lineNumber : 1
-        notStreamedReason : "module script"
+        notStreamedReason : "already used streamed data"
         streamed : <boolean>
         url : .../devtools/resources/v8-cache-script.cgi
     }
@@ -66,24 +66,7 @@ v8.compileModule Properties:
     data : {
         columnNumber : 1
         lineNumber : 1
-        notStreamedReason : "module script"
-        streamed : <boolean>
-        url : .../devtools/resources/v8-cache-script.cgi
-    }
-    endTime : <number>
-    startTime : <number>
-    type : "v8.compileModule"
-}
-Text details for v8.compileModule: v8-cache-script.cgi
-v8.compileModule Properties:
-{
-    data : {
-        cacheConsumeOptions : "code"
-        cacheRejected : false
-        columnNumber : 1
-        consumedCacheSize : <number>
-        lineNumber : 1
-        notStreamedReason : "module script"
+        notStreamedReason : "script too small"
         streamed : <boolean>
         url : .../devtools/resources/v8-cache-script.cgi
     }
@@ -100,7 +83,24 @@ v8.compileModule Properties:
         columnNumber : 1
         consumedCacheSize : <number>
         lineNumber : 1
-        notStreamedReason : "module script"
+        notStreamedReason : "already used streamed data"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compileModule"
+}
+Text details for v8.compileModule: v8-cache-script.cgi
+v8.compileModule Properties:
+{
+    data : {
+        cacheConsumeOptions : "code"
+        cacheRejected : false
+        columnNumber : 1
+        consumedCacheSize : <number>
+        lineNumber : 1
+        notStreamedReason : "script too small"
         streamed : <boolean>
         url : .../devtools/resources/v8-cache-script.cgi
     }

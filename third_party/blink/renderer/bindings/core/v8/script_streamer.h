@@ -60,6 +60,7 @@ class CORE_EXPORT ScriptStreamer final
     kModuleScript,
     kNoDataPipe,
     kLoadingCancelled,
+    kNonJavascriptModule,
     kDisabledByFeatureList,
 
     // Pseudo values that should never be seen in reported metrics

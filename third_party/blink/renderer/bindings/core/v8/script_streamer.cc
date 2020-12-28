@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader.h"
+#include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
@@ -523,6 +524,16 @@ bool ScriptStreamer::TryStartStreamingTask() {
   DCHECK(IsMainThread());
   if (!CanStartStreaming())
     return false;
+
+  // Skip non-JS modules based on the mime-type.
+  // TODO(crbug/1132413),TODO(crbug/1061857): Disable streaming for non-JS
+  // based the specific import statements.
+  if (script_resource_->GetScriptType() == mojom::blink::ScriptType::kModule &&
+      !MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
+          script_resource_->GetResponse().HttpContentType())) {
+    SuppressStreaming(NotStreamingReason::kNonJavascriptModule);
+    return false;
+  }
 
   // Even if the first data chunk is small, the script can still be big enough -
   // wait until the next data chunk comes before deciding whether to start the

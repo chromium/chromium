@@ -433,6 +433,8 @@ const char* NotStreamedReasonString(ScriptStreamer::NotStreamingReason reason) {
       return "no data pipe received";
     case ScriptStreamer::NotStreamingReason::kDisabledByFeatureList:
       return "streaming disabled from the feature list";
+    case ScriptStreamer::NotStreamingReason::kNonJavascriptModule:
+      return "not a javascript module";
     case ScriptStreamer::NotStreamingReason::kLoadingCancelled:
       return "loading was cancelled";
     case ScriptStreamer::NotStreamingReason::kDidntTryToStartStreaming:

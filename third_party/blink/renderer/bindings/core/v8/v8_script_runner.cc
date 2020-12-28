@@ -272,58 +272,58 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
                           referrer_info.ToV8HostDefinedOptions(isolate));
 
   v8::Local<v8::String> code = V8String(isolate, params.GetSourceText());
-  if (ScriptStreamer* streamer = params.GetScriptStreamer()) {
+  inspector_compile_script_event::V8CacheResult cache_result;
+  v8::MaybeLocal<v8::Module> script;
+  ScriptStreamer* streamer = params.GetScriptStreamer();
+  if (streamer) {
     // Final compile call for a streamed compilation.
     // Streaming compilation may involve use of code cache.
     // TODO(leszeks): Add compile timer to streaming compilation.
     DCHECK(streamer->IsFinished());
     DCHECK(!streamer->IsStreamingSuppressed());
-    return v8::ScriptCompiler::CompileModule(isolate->GetCurrentContext(),
-                                             streamer->Source(), code, origin);
-  }
-
-  v8::MaybeLocal<v8::Module> script;
-  inspector_compile_script_event::V8CacheResult cache_result;
-
-  switch (compile_options) {
-    case v8::ScriptCompiler::kNoCompileOptions:
-    case v8::ScriptCompiler::kEagerCompile: {
-      v8::ScriptCompiler::Source source(code, origin);
-      script = v8::ScriptCompiler::CompileModule(
-          isolate, &source, compile_options, no_cache_reason);
-      break;
-    }
-
-    case v8::ScriptCompiler::kConsumeCodeCache: {
-      // Compile a script, and consume a V8 cache that was generated previously.
-      SingleCachedMetadataHandler* cache_handler = params.CacheHandler();
-      DCHECK(cache_handler);
-      v8::ScriptCompiler::CachedData* cached_data =
-          V8CodeCache::CreateCachedData(cache_handler);
-      v8::ScriptCompiler::Source source(code, origin, cached_data);
-      script = v8::ScriptCompiler::CompileModule(
-          isolate, &source, compile_options, no_cache_reason);
-      if (cached_data->rejected) {
-        cache_handler->ClearCachedMetadata(
-            CachedMetadataHandler::kClearPersistentStorage);
-      } else if (InDiscardExperiment()) {
-        // Experimentally free code cache from memory after first use. See
-        // http://crbug.com/1045052.
-        cache_handler->ClearCachedMetadata(
-            CachedMetadataHandler::kDiscardLocally);
+    script = v8::ScriptCompiler::CompileModule(
+        isolate->GetCurrentContext(), streamer->Source(), code, origin);
+  } else {
+    switch (compile_options) {
+      case v8::ScriptCompiler::kNoCompileOptions:
+      case v8::ScriptCompiler::kEagerCompile: {
+        v8::ScriptCompiler::Source source(code, origin);
+        script = v8::ScriptCompiler::CompileModule(
+            isolate, &source, compile_options, no_cache_reason);
+        break;
       }
-      cache_result.consume_result = base::make_optional(
-          inspector_compile_script_event::V8CacheResult::ConsumeResult(
-              compile_options, cached_data->length, cached_data->rejected));
-      break;
+
+      case v8::ScriptCompiler::kConsumeCodeCache: {
+        // Compile a script, and consume a V8 cache that was generated
+        // previously.
+        SingleCachedMetadataHandler* cache_handler = params.CacheHandler();
+        DCHECK(cache_handler);
+        v8::ScriptCompiler::CachedData* cached_data =
+            V8CodeCache::CreateCachedData(cache_handler);
+        v8::ScriptCompiler::Source source(code, origin, cached_data);
+        script = v8::ScriptCompiler::CompileModule(
+            isolate, &source, compile_options, no_cache_reason);
+        if (cached_data->rejected) {
+          cache_handler->ClearCachedMetadata(
+              CachedMetadataHandler::kClearPersistentStorage);
+        } else if (InDiscardExperiment()) {
+          // Experimentally free code cache from memory after first use. See
+          // http://crbug.com/1045052.
+          cache_handler->ClearCachedMetadata(
+              CachedMetadataHandler::kDiscardLocally);
+        }
+        cache_result.consume_result = base::make_optional(
+            inspector_compile_script_event::V8CacheResult::ConsumeResult(
+                compile_options, cached_data->length, cached_data->rejected));
+        break;
+      }
     }
   }
 
   TRACE_EVENT_END1(kTraceEventCategoryGroup, "v8.compileModule", "data",
                    inspector_compile_script_event::Data(
-                       file_name, start_position, cache_result, false,
-                       ScriptStreamer::NotStreamingReason::kModuleScript));
-
+                       file_name, start_position, cache_result, streamer,
+                       params.NotStreamingReason()));
   return script;
 }
 
