@@ -14,6 +14,9 @@
 #include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
+#include "ui/views/view.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -67,6 +70,8 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   };
 
   DialogDelegate();
+  DialogDelegate(const DialogDelegate&) = delete;
+  DialogDelegate& operator=(const DialogDelegate&) = delete;
   ~DialogDelegate() override;
 
   // Creates a widget at a default location.
@@ -347,8 +352,6 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // Whether any of the three callbacks just above has been delivered yet, *or*
   // one of the Accept/Cancel methods have been called and returned true.
   bool already_started_close_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogDelegate);
 };
 
 // A DialogDelegate implementation that is-a View. Used to override GetWidget()
@@ -357,18 +360,23 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
 // view's hierarchy and is expected to be deleted on DeleteDelegate call.
 class VIEWS_EXPORT DialogDelegateView : public DialogDelegate, public View {
  public:
+  METADATA_HEADER(DialogDelegateView);
   DialogDelegateView();
+  DialogDelegateView(const DialogDelegateView&) = delete;
+  DialogDelegateView& operator=(const DialogDelegateView&) = delete;
   ~DialogDelegateView() override;
 
   // DialogDelegate:
   Widget* GetWidget() override;
   const Widget* GetWidget() const override;
   View* GetContentsView() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DialogDelegateView);
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, DialogDelegateView, View)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, DialogDelegateView)
 
 #endif  // UI_VIEWS_WINDOW_DIALOG_DELEGATE_H_

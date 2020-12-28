@@ -32,6 +32,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 // A model for a combobox selecting the launch options for a hosted app.
@@ -305,3 +306,6 @@ const std::vector<GURL> AppInfoSummaryPanel::GetLicenseUrls() const {
   }
   return license_urls;
 }
+
+BEGIN_METADATA(AppInfoSummaryPanel, AppInfoPanel)
+END_METADATA

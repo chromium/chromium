@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 class Profile;
@@ -23,8 +25,10 @@ class Label;
 // profile and app. Panels in the App Info dialog extend this class.
 class AppInfoPanel : public views::View {
  public:
+  METADATA_HEADER(AppInfoPanel);
   AppInfoPanel(Profile* profile, const extensions::Extension* app);
-
+  AppInfoPanel(const AppInfoPanel&) = delete;
+  AppInfoPanel& operator=(const AppInfoPanel&) = delete;
   ~AppInfoPanel() override;
 
  protected:
@@ -57,9 +61,11 @@ class AppInfoPanel : public views::View {
 
   Profile* profile_;
   const extensions::Extension* app_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppInfoPanel);
 };
+
+BEGIN_VIEW_BUILDER(/* no export */, AppInfoPanel, views::View)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, AppInfoPanel)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_INFO_DIALOG_APP_INFO_PANEL_H_

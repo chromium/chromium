@@ -10,6 +10,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 class Profile;
@@ -30,7 +32,10 @@ class ScrollView;
 class AppInfoDialog : public views::View,
                       public extensions::ExtensionRegistryObserver {
  public:
+  METADATA_HEADER(AppInfoDialog);
   AppInfoDialog(Profile* profile, const extensions::Extension* app);
+  AppInfoDialog(const AppInfoDialog&) = delete;
+  AppInfoDialog& operator=(const AppInfoDialog&) = delete;
   ~AppInfoDialog() override;
 
   views::View* arc_app_info_links_for_test() { return arc_app_info_links_; }
@@ -59,8 +64,11 @@ class AppInfoDialog : public views::View,
   Profile* profile_;
   std::string app_id_;
   extensions::ExtensionRegistry* extension_registry_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AppInfoDialog);
 };
+
+BEGIN_VIEW_BUILDER(/* no export */, AppInfoDialog, views::View)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, AppInfoDialog)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_INFO_DIALOG_APP_INFO_DIALOG_VIEWS_H_

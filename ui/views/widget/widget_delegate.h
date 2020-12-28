@@ -12,6 +12,8 @@
 #include "base/macros.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -116,6 +118,8 @@ class VIEWS_EXPORT WidgetDelegate {
   };
 
   WidgetDelegate();
+  WidgetDelegate(const WidgetDelegate&) = delete;
+  WidgetDelegate& operator=(const WidgetDelegate&) = delete;
   virtual ~WidgetDelegate();
 
   // Sets the return value of CanActivate(). Default is true.
@@ -423,8 +427,6 @@ class VIEWS_EXPORT WidgetDelegate {
   ClientViewFactory client_view_factory_;
   NonClientFrameViewFactory non_client_frame_view_factory_;
   OverlayViewFactory overlay_view_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetDelegate);
 };
 
 // A WidgetDelegate implementation that is-a View. Used to override GetWidget()
@@ -436,17 +438,21 @@ class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
   METADATA_HEADER(WidgetDelegateView);
 
   WidgetDelegateView();
+  WidgetDelegateView(const WidgetDelegateView&) = delete;
+  WidgetDelegateView& operator=(const WidgetDelegateView&) = delete;
   ~WidgetDelegateView() override;
 
   // WidgetDelegate:
   Widget* GetWidget() override;
   const Widget* GetWidget() const override;
   View* GetContentsView() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WidgetDelegateView);
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, WidgetDelegateView, View)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, WidgetDelegateView)
 
 #endif  // UI_VIEWS_WIDGET_WIDGET_DELEGATE_H_

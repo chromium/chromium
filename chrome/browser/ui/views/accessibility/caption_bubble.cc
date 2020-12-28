@@ -45,6 +45,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -100,6 +101,7 @@ namespace captions {
 // Caption Bubble is focused.
 class CaptionBubbleFrameView : public views::BubbleFrameView {
  public:
+  METADATA_HEADER(CaptionBubbleFrameView);
   explicit CaptionBubbleFrameView(views::View* close_button,
                                   views::View* expand_button,
                                   views::View* collapse_button)
@@ -180,8 +182,6 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
     focus_ring_->Layout();
   }
 
-  const char* GetClassName() const override { return "CaptionBubbleFrameView"; }
-
  private:
   views::View* close_button_;
   views::View* expand_button_;
@@ -189,6 +189,9 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
   views::FocusRing* focus_ring_ = nullptr;
   bool contents_focused_ = false;
 };
+
+BEGIN_METADATA(CaptionBubbleFrameView, views::BubbleFrameView)
+END_METADATA
 
 CaptionBubble::CaptionBubble(views::View* anchor,
                              BrowserView* browser_view,
@@ -773,10 +776,6 @@ void CaptionBubble::OnInactivityTimeout() {
     GetWidget()->Hide();
 }
 
-const char* CaptionBubble::GetClassName() const {
-  return "CaptionBubble";
-}
-
 std::string CaptionBubble::GetLabelTextForTesting() {
   return base::UTF16ToUTF8(label_->GetText());
 }
@@ -794,5 +793,8 @@ std::vector<std::string> CaptionBubble::GetVirtualChildrenTextForTesting() {
 base::RetainingOneShotTimer* CaptionBubble::GetInactivityTimerForTesting() {
   return inactivity_timer_.get();
 }
+
+BEGIN_METADATA(CaptionBubble, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace captions

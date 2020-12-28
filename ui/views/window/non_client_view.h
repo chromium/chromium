@@ -9,6 +9,8 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
 
@@ -249,6 +251,16 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   base::string16 accessible_name_;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, NonClientFrameView, View)
+END_VIEW_BUILDER
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, NonClientView, View)
+VIEW_BUILDER_VIEW_PROPERTY(NonClientFrameView, FrameView)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, NonClientFrameView)
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, NonClientView)
 
 #endif  // UI_VIEWS_WINDOW_NON_CLIENT_VIEW_H_

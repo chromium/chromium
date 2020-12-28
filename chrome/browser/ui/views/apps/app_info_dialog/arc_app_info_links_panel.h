@@ -13,6 +13,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 
 class Profile;
 
@@ -28,7 +30,10 @@ class Link;
 class ArcAppInfoLinksPanel : public AppInfoPanel,
                              public ArcAppListPrefs::Observer {
  public:
+  METADATA_HEADER(ArcAppInfoLinksPanel);
   ArcAppInfoLinksPanel(Profile* profile, const extensions::Extension* app);
+  ArcAppInfoLinksPanel(const ArcAppInfoLinksPanel&) = delete;
+  ArcAppInfoLinksPanel& operator=(const ArcAppInfoLinksPanel&) = delete;
   ~ArcAppInfoLinksPanel() override;
 
  private:
@@ -45,8 +50,11 @@ class ArcAppInfoLinksPanel : public AppInfoPanel,
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       app_list_observation_{this};
   views::Link* manage_link_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppInfoLinksPanel);
 };
+
+BEGIN_VIEW_BUILDER(/* no export */, ArcAppInfoLinksPanel, AppInfoPanel)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, ArcAppInfoLinksPanel)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_INFO_DIALOG_ARC_APP_INFO_LINKS_PANEL_H_

@@ -38,6 +38,7 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -123,3 +124,6 @@ bool AppInfoHeaderPanel::CanShowAppInWebStore() const {
   return app_->from_webstore() && !app_->was_installed_by_default() &&
       !app_->is_shared_module();
 }
+
+BEGIN_METADATA(AppInfoHeaderPanel, AppInfoPanel)
+END_METADATA

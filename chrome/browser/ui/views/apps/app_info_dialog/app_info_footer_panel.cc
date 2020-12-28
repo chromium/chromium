@@ -20,6 +20,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -182,3 +183,6 @@ bool AppInfoFooterPanel::CanUninstallApp(Profile* profile,
   return policy->UserMayModifySettings(app, nullptr) &&
          !policy->MustRemainInstalled(app, nullptr);
 }
+
+BEGIN_METADATA(AppInfoFooterPanel, AppInfoPanel)
+END_METADATA

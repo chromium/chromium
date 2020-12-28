@@ -12,6 +12,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -77,3 +78,6 @@ std::unique_ptr<views::View> AppInfoPanel::CreateKeyValueField(
   horizontal_stack->AddChildView(std::move(value));
   return horizontal_stack;
 }
+
+BEGIN_METADATA(AppInfoPanel, views::View)
+END_METADATA

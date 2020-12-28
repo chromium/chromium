@@ -13,6 +13,8 @@
 #include "ui/native_theme/caption_style.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace base {
 class RetainingOneShotTimer;
@@ -45,12 +47,13 @@ class CaptionBubbleFrameView;
 //
 class CaptionBubble : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(CaptionBubble);
   CaptionBubble(views::View* anchor,
                 BrowserView* browser_view,
                 base::OnceClosure destroyed_callback);
-  ~CaptionBubble() override;
   CaptionBubble(const CaptionBubble&) = delete;
   CaptionBubble& operator=(const CaptionBubble&) = delete;
+  ~CaptionBubble() override;
 
   // Sets the caption bubble model currently being used for this caption bubble.
   // There exists one CaptionBubble per browser, but one CaptionBubbleModel
@@ -72,8 +75,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
 
   // Returns the number of lines in the caption bubble label that are rendered.
   size_t GetNumLinesInLabel() const;
-
-  const char* GetClassName() const override;
 
   std::string GetLabelTextForTesting();
   base::RetainingOneShotTimer* GetInactivityTimerForTesting();
@@ -182,6 +183,13 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   const base::TickClock* tick_clock_;
 };
 
+BEGIN_VIEW_BUILDER(/* no export */,
+                   CaptionBubble,
+                   views::BubbleDialogDelegateView)
+END_VIEW_BUILDER
+
 }  // namespace captions
+
+DEFINE_VIEW_BUILDER(/* no export */, captions::CaptionBubble)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CAPTION_BUBBLE_H_

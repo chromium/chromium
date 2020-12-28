@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -81,3 +82,6 @@ void ArcAppInfoLinksPanel::LinkClicked() {
     Close();
   }
 }
+
+BEGIN_METADATA(ArcAppInfoLinksPanel, AppInfoPanel)
+END_METADATA

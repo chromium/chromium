@@ -11,6 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 
 class Profile;
 namespace extensions {
@@ -31,7 +33,10 @@ class AppInfoHeaderPanel : public AppInfoPanel,
                            public base::SupportsWeakPtr<AppInfoHeaderPanel>,
                            public extensions::ChromeAppIconDelegate {
  public:
+  METADATA_HEADER(AppInfoHeaderPanel);
   AppInfoHeaderPanel(Profile* profile, const extensions::Extension* app);
+  AppInfoHeaderPanel(const AppInfoHeaderPanel&) = delete;
+  AppInfoHeaderPanel& operator=(const AppInfoHeaderPanel&) = delete;
   ~AppInfoHeaderPanel() override;
 
  private:
@@ -53,8 +58,11 @@ class AppInfoHeaderPanel : public AppInfoPanel,
   std::unique_ptr<extensions::ChromeAppIcon> app_icon_;
 
   base::WeakPtrFactory<AppInfoHeaderPanel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppInfoHeaderPanel);
 };
+
+BEGIN_VIEW_BUILDER(/* no export */, AppInfoHeaderPanel, AppInfoPanel)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, AppInfoHeaderPanel)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_INFO_DIALOG_APP_INFO_HEADER_PANEL_H_

@@ -5,6 +5,7 @@
 #include "ui/views/window/native_frame_view.h"
 
 #include "build/build_config.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 
@@ -16,9 +17,6 @@ namespace views {
 
 ////////////////////////////////////////////////////////////////////////////////
 // NativeFrameView, public:
-
-// static
-const char NativeFrameView::kViewClassName[] = "NativeFrameView";
 
 NativeFrameView::NativeFrameView(Widget* frame) : frame_(frame) {}
 
@@ -94,8 +92,7 @@ gfx::Size NativeFrameView::GetMaximumSize() const {
   return frame_->client_view()->GetMaximumSize();
 }
 
-const char* NativeFrameView::GetClassName() const {
-  return kViewClassName;
-}
+BEGIN_METADATA(NativeFrameView, NonClientFrameView)
+END_METADATA
 
 }  // namespace views

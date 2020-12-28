@@ -41,6 +41,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -228,3 +229,6 @@ void AppInfoDialog::OnShutdown(extensions::ExtensionRegistry* registry) {
   StopObservingExtensionRegistry();
   Close();
 }
+
+BEGIN_METADATA(AppInfoDialog, views::View)
+END_METADATA

@@ -32,6 +32,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -50,6 +51,7 @@ const int kIndentationBeforeNestedBullet = 13;
 // revoke message containing the given |permission_message|.
 class RevokeButton : public views::ImageButton {
  public:
+  METADATA_HEADER(RevokeButton);
   explicit RevokeButton(PressedCallback callback,
                         base::string16 permission_message)
       : views::ImageButton(std::move(callback)) {
@@ -74,11 +76,15 @@ class RevokeButton : public views::ImageButton {
   ~RevokeButton() override = default;
 };
 
+BEGIN_METADATA(RevokeButton, views::ImageButton)
+END_METADATA
+
 // A bulleted list of permissions.
 // TODO(sashab): Fix BoxLayout to correctly display multi-line strings and then
 // remove this class (since the GridLayout will no longer be needed).
 class BulletedPermissionsList : public views::View {
  public:
+  METADATA_HEADER(BulletedPermissionsList);
   BulletedPermissionsList() {
     layout_ = SetLayoutManager(std::make_unique<views::GridLayout>());
 
@@ -117,7 +123,9 @@ class BulletedPermissionsList : public views::View {
         views::GridLayout::FILL, views::GridLayout::LEADING,
         views::GridLayout::kFixedSize, ColumnSize::kUsePreferred, 0, 0);
   }
-  ~BulletedPermissionsList() override {}
+  BulletedPermissionsList(const BulletedPermissionsList&) = delete;
+  BulletedPermissionsList& operator=(const BulletedPermissionsList&) = delete;
+  ~BulletedPermissionsList() override = default;
 
   // Given a set of strings for a given permission (|message| for the topmost
   // bullet and a potentially-empty |submessages| for sub-bullets), adds these
@@ -171,9 +179,10 @@ class BulletedPermissionsList : public views::View {
   }
 
   views::GridLayout* layout_;
-
-  DISALLOW_COPY_AND_ASSIGN(BulletedPermissionsList);
 };
+
+BEGIN_METADATA(BulletedPermissionsList, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -315,3 +324,6 @@ void AppInfoPermissionsPanel::RevokeDevicePermissions() {
 
   Close();
 }
+
+BEGIN_METADATA(AppInfoPermissionsPanel, AppInfoPanel)
+END_METADATA

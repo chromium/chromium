@@ -13,6 +13,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 
 class Profile;
 
@@ -27,7 +29,10 @@ class AppInfoFooterPanel
       public extensions::ExtensionUninstallDialog::Delegate,
       public base::SupportsWeakPtr<AppInfoFooterPanel> {
  public:
+  METADATA_HEADER(AppInfoFooterPanel);
   AppInfoFooterPanel(Profile* profile, const extensions::Extension* app);
+  AppInfoFooterPanel(const AppInfoFooterPanel&) = delete;
+  AppInfoFooterPanel& operator=(const AppInfoFooterPanel&) = delete;
   ~AppInfoFooterPanel() override;
 
   // This can return null if the footer panel contains no shortcuts, cannot be
@@ -82,8 +87,11 @@ class AppInfoFooterPanel
       extension_uninstall_dialog_;
 
   base::WeakPtrFactory<AppInfoFooterPanel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppInfoFooterPanel);
 };
+
+BEGIN_VIEW_BUILDER(/* no export */, AppInfoFooterPanel, AppInfoPanel)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, AppInfoFooterPanel)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_INFO_DIALOG_APP_INFO_FOOTER_PANEL_H_

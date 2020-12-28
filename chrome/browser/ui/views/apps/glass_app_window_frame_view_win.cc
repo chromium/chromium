@@ -11,6 +11,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/win/hwnd_metrics.h"
 #include "ui/display/win/screen_win.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/win/hwnd_util.h"
@@ -20,9 +21,6 @@ namespace {
 const int kResizeAreaCornerSize = 16;
 
 }  // namespace
-
-const char GlassAppWindowFrameViewWin::kViewClassName[] =
-    "ui/views/apps/GlassAppWindowFrameViewWin";
 
 GlassAppWindowFrameViewWin::GlassAppWindowFrameViewWin(views::Widget* widget)
     : widget_(widget) {}
@@ -139,10 +137,6 @@ gfx::Size GlassAppWindowFrameViewWin::CalculatePreferredSize() const {
       .size();
 }
 
-const char* GlassAppWindowFrameViewWin::GetClassName() const {
-  return kViewClassName;
-}
-
 gfx::Size GlassAppWindowFrameViewWin::GetMinimumSize() const {
   gfx::Size min_size = widget_->client_view()->GetMinimumSize();
 
@@ -164,3 +158,6 @@ gfx::Size GlassAppWindowFrameViewWin::GetMaximumSize() const {
 
   return max_size;
 }
+
+BEGIN_METADATA(GlassAppWindowFrameViewWin, views::NonClientFrameView)
+END_METADATA
