@@ -59,7 +59,7 @@ class ContextualSearchInternalStateController {
             InternalState.UNDEFINED,
             InternalState.IDLE,
             InternalState.LONG_PRESS_RECOGNIZED,
-            InternalState.SHOWING_LONGPRESS_SEARCH,
+            InternalState.SHOWING_LITERAL_SEARCH,
             InternalState.SELECTION_CLEARED_RECOGNIZED,
             InternalState.WAITING_FOR_POSSIBLE_TAP_NEAR_PREVIOUS,
             InternalState.TAP_RECOGNIZED,
@@ -86,13 +86,13 @@ class ContextualSearchInternalStateController {
          */
         int IDLE = 1;
         /**
-         * This starts a transition that leads to the SHOWING_LONGPRESS_SEARCH resting state.
+         * This starts a transition that leads to the SHOWING_LITERAL_SEARCH resting state.
          */
         int LONG_PRESS_RECOGNIZED = 2;
         /**
-         * Resting state when showing the panel in response to a Long-press gesture.
+         * Resting state when showing the panel in response to a literal non-resolving search.
          */
-        int SHOWING_LONGPRESS_SEARCH = 3;
+        int SHOWING_LITERAL_SEARCH = 3;
         /**
          * This is a start state when the selection is cleared typically due to a tap on the base
          * page. If the previous state wasn't IDLE then it could be a tap near a previous Tap.
@@ -147,14 +147,14 @@ class ContextualSearchInternalStateController {
          */
         int SHOWING_TAP_SEARCH = 14;
         /**
-         * This starts resolving transition that leads to the SHOWING_LONGPRESS_SEARCH resting
+         * This starts resolving transition that leads to the SHOWING_LITERAL_SEARCH resting
          * state.
          */
-        int RESOLVING_LONG_PRESS_RECOGNIZED = 14;
+        int RESOLVING_LONG_PRESS_RECOGNIZED = 15;
         /**
          * Resting state when showing the panel in response to a longpress gesture that resolved.
          */
-        int SHOWING_RESOLVED_LONG_PRESS_SEARCH = 15;
+        int SHOWING_RESOLVED_LONG_PRESS_SEARCH = 16;
     }
 
     // The current state of this instance.
@@ -311,8 +311,8 @@ class ContextualSearchInternalStateController {
                 assert reason != null;
                 mStateHandler.hideContextualSearchUi(reason);
                 break;
-            case InternalState.SHOWING_LONGPRESS_SEARCH:
-                mStateHandler.showContextualSearchLongpressUi();
+            case InternalState.SHOWING_LITERAL_SEARCH:
+                mStateHandler.showContextualSearchLiteralSearchUi();
                 break;
             case InternalState.WAITING_FOR_POSSIBLE_TAP_NEAR_PREVIOUS:
                 mStateHandler.waitForPossibleTapNearPrevious();
@@ -369,7 +369,7 @@ class ContextualSearchInternalStateController {
             case InternalState.LONG_PRESS_RECOGNIZED:
                 transitionTo(InternalState.GATHERING_SURROUNDINGS);
                 break;
-            case InternalState.SHOWING_LONGPRESS_SEARCH:
+            case InternalState.SHOWING_LITERAL_SEARCH:
                 break;
             case InternalState.SELECTION_CLEARED_RECOGNIZED:
                 if (mPreviousState != InternalState.UNDEFINED
@@ -400,7 +400,7 @@ class ContextualSearchInternalStateController {
             case InternalState.GATHERING_SURROUNDINGS:
                 // We gather surroundings for both Tap and Long-press in order to notify icing.
                 if (mSelectionType == SelectionType.LONG_PRESS) {
-                    transitionTo(InternalState.SHOWING_LONGPRESS_SEARCH);
+                    transitionTo(InternalState.SHOWING_LITERAL_SEARCH);
                 } else if (mSelectionType == SelectionType.RESOLVING_LONG_PRESS) {
                     transitionTo(InternalState.SHOW_RESOLVING_UI);
                 } else {
@@ -411,7 +411,9 @@ class ContextualSearchInternalStateController {
                 transitionTo(InternalState.START_SHOWING_TAP_UI);
                 break;
             case InternalState.START_SHOWING_TAP_UI:
-                transitionTo(InternalState.SHOW_RESOLVING_UI);
+                transitionTo(mPolicy.isLiteralSearchTapEnabled()
+                                ? InternalState.SHOWING_LITERAL_SEARCH
+                                : InternalState.SHOW_RESOLVING_UI);
                 break;
             case InternalState.SHOW_RESOLVING_UI:
                 transitionTo(mPolicy.shouldPreviousGestureResolve()

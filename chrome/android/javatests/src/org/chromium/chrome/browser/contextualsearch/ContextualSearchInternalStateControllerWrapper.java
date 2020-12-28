@@ -21,7 +21,7 @@ class ContextualSearchInternalStateControllerWrapper
                     InternalState.RESOLVING);
     static final List<Integer> EXPECTED_LONGPRESS_SEQUENCE =
             Arrays.asList(InternalState.LONG_PRESS_RECOGNIZED, InternalState.GATHERING_SURROUNDINGS,
-                    InternalState.SHOWING_LONGPRESS_SEARCH);
+                    InternalState.SHOWING_LITERAL_SEARCH);
     static final List<Integer> EXPECTED_LONGPRESS_RESOLVE_SEQUENCE = Arrays.asList(
             InternalState.RESOLVING_LONG_PRESS_RECOGNIZED, InternalState.GATHERING_SURROUNDINGS,
             InternalState.SHOW_RESOLVING_UI, InternalState.RESOLVING);

@@ -151,6 +151,18 @@ class ContextualSearchPolicy {
     }
 
     /**
+     * Determines whether the current gesture can trigger a resolve request to use page context.
+     * This only checks the gesture, not privacy status -- {@see #shouldPreviousGestureResolve}.
+     */
+    boolean isResolvingGesture() {
+        return (mSelectionController.getSelectionType() == SelectionType.TAP
+                       && !isLiteralSearchTapEnabled())
+                || mSelectionController.getSelectionType() == SelectionType.RESOLVING_LONG_PRESS;
+    }
+
+    /**
+     * Determines whether the gesture being processed is allowed to resolve.
+     * TODO(donnd): rename to be more descriptive. Maybe isGestureAllowedToResolve?
      * @return Whether the previous gesture should resolve.
      */
     boolean shouldPreviousGestureResolve() {
@@ -271,13 +283,17 @@ class ContextualSearchPolicy {
                 && (selectionType == SelectionType.LONG_PRESS || !shouldPreviousGestureResolve()));
     }
 
+    /**
+     * @return whether the experiment that causes a tap gesture to trigger a literal search for the
+     *         selection (rather than sending context to resolve a search term) is enabled.
+     */
+    boolean isLiteralSearchTapEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP);
+    }
+
     /** @return whether Tap is disabled due to the longpress experiment. */
     private boolean isTapDisabledDueToLongpress() {
-        return canResolveLongpress()
-                && !ContextualSearchFieldTrial.LONGPRESS_RESOLVE_PRESERVE_TAP.equals(
-                        ChromeFeatureList.getFieldTrialParamByFeature(
-                                ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE,
-                                ContextualSearchFieldTrial.LONGPRESS_RESOLVE_PARAM_NAME));
+        return canResolveLongpress() && !isLiteralSearchTapEnabled();
     }
 
     /**

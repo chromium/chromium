@@ -100,6 +100,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.navigation_interception.NavigationParams;
 import org.chromium.content_public.browser.SelectionClient;
@@ -3235,8 +3236,7 @@ public class ContextualSearchManagerTest {
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1075895")
     @DisabledTest(message = "Flaky https://crbug.com/1127796")
-    public void testQuickActionUrl_Longpress_DLD(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testQuickActionUrl_Longpress(@EnabledFeature int enabledFeature) throws Exception {
         // TODO(donnd): figure out why this fails to select on Longpress, but works fine on the
         // other experiment configurations including Translations (which should be identical for
         // this test). Probably something needs to be initialized between test runs.
@@ -3648,15 +3648,10 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    // Force Long-press enable with the preserve-tap gesture arm variation.
-    @CommandLineFlags.
-    Add({"enable-features=ContextualSearchLongpressResolve<ContextualSearchLongpressStudy",
-            "force-fieldtrials=ContextualSearchLongpressStudy/TapEnabled",
-            "force-fieldtrial-params="
-                    + "ContextualSearchLongpressStudy.TapEnabled:longpress_resolve_variation/"
-                    + ContextualSearchFieldTrial.LONGPRESS_RESOLVE_PRESERVE_TAP})
-    public void
-    testTapNotIgnoredWithLongpressResolveEnabledAndVariationPreserveTap() throws Exception {
+    // Enable the literal-tap gesture Feature.
+    @Features.EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP)
+    public void testTapNotIgnoredWithLongpressResolveEnabledAndLiteralSearchTap() throws Exception {
+        FeatureList.setTestFeatures(ENABLE_LONGPRESS);
         clickWordNode("states");
         Assert.assertEquals("States", getSelectedText());
         waitForPanelToPeek();

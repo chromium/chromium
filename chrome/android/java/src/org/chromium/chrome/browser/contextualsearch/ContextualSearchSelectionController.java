@@ -571,6 +571,13 @@ public class ContextualSearchSelectionController {
         return isValidSelection(selection, getSelectionPopupController());
     }
 
+    /**
+     * Determines if the given selection is text and some other conditions needed to trigger the
+     * feature.
+     * @param selection The selection string to evaluate.
+     * @param controller The popup controller so we can look at the focused node.
+     * @return If the selection is OK for this feature.
+     */
     @VisibleForTesting
     boolean isValidSelection(String selection, SelectionPopupController controller) {
         if (selection.length() > MAX_SELECTION_LENGTH) return false;
