@@ -15,15 +15,27 @@ Polymer({
 
   properties: {
     /** @type {string} */
-    esimProfileName_: {
+    iccid: {
       type: String,
       value: '',
     },
 
     /** @type {string} */
-    iccid: {
+    esimProfileName_: {
       type: String,
       value: '',
+    },
+
+    /** @private {string} */
+    errorMessage_: {
+      type: String,
+      value: '',
+    },
+
+    /** @private {boolean} */
+    isRemoveInProgress_: {
+      type: Boolean,
+      value: false,
     }
   },
 
@@ -91,14 +103,23 @@ Polymer({
    * @param {Event} event
    * @private
    */
-  async onRemoveProfileTap_(event) {
-    const response = await this.esimProfileRemote_.uninstallProfile();
-    if (response.result ===
-        chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
-      console.error('Unable to remove profile');
-      // TODO(crbug.com/1093185): Show useful error to user when uninstall fails
-    }
+  onRemoveProfileTap_(event) {
+    this.isRemoveInProgress_ = true;
+    this.esimProfileRemote_.uninstallProfile().then(response => {
+      this.handleRemoveProfileResponse(response.result);
+    });
+  },
 
+  /**
+   * @param {chromeos.cellularSetup.mojom.ESimOperationResult} result
+   * @private
+   */
+  handleRemoveProfileResponse(result) {
+    this.isRemoveInProgress_ = false;
+    if (result === chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
+      this.errorMessage_ = this.i18n('eSimRemoveProfileDialogError');
+      return;
+    }
     this.$.dialog.close();
   },
 

@@ -81,7 +81,7 @@ cr.define('cellular_setup', function() {
      * @return {Object}
      * @private
      */
-    deferedPromise_() {
+    deferredPromise_() {
       let deferred = {};
       let promise = new Promise(function(resolve, reject) {
         deferred.resolve = resolve;
@@ -104,7 +104,7 @@ cr.define('cellular_setup', function() {
         this.properties_.nickname = nickname;
       }
 
-      this.deferredSetProfileNicknamePromise_ = this.deferedPromise_();
+      this.deferredSetProfileNicknamePromise_ = this.deferredPromise_();
       return this.deferredSetProfileNicknamePromise_.promise;
     }
 
@@ -119,18 +119,26 @@ cr.define('cellular_setup', function() {
 
     /** @override */
     uninstallProfile() {
-      return this.fakeEuicc_.removeProfileForTest(this.properties_.iccid)
-          .then(saved => {
-            if (saved) {
-              return {
-                result:
-                    chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess
-              };
-            }
-            return {
-              result: chromeos.cellularSetup.mojom.ESimOperationResult.kFailure
-            };
-          });
+      this.defferedUninstallProfilePromise_ = this.deferredPromise_();
+      return this.defferedUninstallProfilePromise_.promise;
+    }
+
+    /** @return {Promise<void>} */
+    async resolveUninstallProfilePromise() {
+      if (!this.esimOperationResult_ ||
+          this.esimOperationResult_ ===
+              chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess) {
+        const removeProfileResult =
+            await this.fakeEuicc_.removeProfileForTest(this.properties_.iccid);
+        this.defferedUninstallProfilePromise_.resolve(removeProfileResult);
+        return;
+      }
+
+      this.defferedUninstallProfilePromise_.resolve({
+        result: this.esimOperationResult_ ?
+            this.esimOperationResult_ :
+            chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess
+      });
     }
   }
 
@@ -198,18 +206,25 @@ cr.define('cellular_setup', function() {
      */
     async removeProfileForTest(iccid) {
       const result = [];
-      let resp = false;
+      let profileRemoved = false;
       for (let profile of this.profiles_) {
         const property = await profile.getProperties();
         if (property.properties.iccid === iccid) {
-          resp = true;
+          profileRemoved = true;
           continue;
         }
         result.push(profile);
       }
       this.profiles_ = result;
 
-      return resp;
+      if (profileRemoved) {
+        return {
+          result: chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess
+        };
+      }
+      return {
+        result: chromeos.cellularSetup.mojom.ESimOperationResult.kFailure
+      };
     }
   }
 

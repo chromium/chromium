@@ -19,15 +19,29 @@
     </style>
     <cr-dialog id="dialog" show-on-attach>
       <div slot="title">[[getTitleString_(esimProfileName_)]]</div>
+      <div slot="body">
+        <div id="errorMessage" hidden$="[[!errorMessage_]]">
+          [[errorMessage_]]
+        </div>
+      </div>
       <div slot="button-container">
-        <cr-button id="cancel" on-click="onCancelTap_"
-            class="cancel-button">
-          $i18n{eSimRemoveProfileDialogCancel}
-        </cr-button>
-        <cr-button id="remove" on-click="onRemoveProfileTap_"
-            class="action-button">
-          $i18n{eSimRemoveProfileDialogRemove}
-        </cr-button>
+        <template is="dom-if" if="[[!errorMessage_]]" restamp>
+          <cr-button id="cancel" on-click="onCancelTap_"
+              class="cancel-button">
+            $i18n{eSimRemoveProfileDialogCancel}
+          </cr-button>
+          <cr-button id="remove" on-click="onRemoveProfileTap_"
+              disabled="[[isRemoveInProgress_]]"
+              class="action-button">
+            $i18n{eSimRemoveProfileDialogRemove}
+          </cr-button>
+        </template>
+        <template is="dom-if" if="[[errorMessage_]]" restamp>
+          <cr-button id="done" on-click="onCancelTap_"
+              class="action-button">
+            $i18n{eSimRemoveProfileDialogOkay}
+          </cr-button>
+        </template>
       </div>
     </cr-dialog>
   </template>

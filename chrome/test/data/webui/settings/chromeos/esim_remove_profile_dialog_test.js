@@ -43,27 +43,69 @@ suite('EsimRemoveProfileDialog', function() {
     return new Promise(resolve => setTimeout(resolve));
   }
 
+  async function getProfileForIccid(profiles, iccid) {
+    for (const profile of profiles) {
+      const properties = await profile.getProperties();
+      if (properties.properties && properties.properties.iccid === iccid) {
+        return profile;
+      }
+    }
+
+    return null;
+  }
+
   test('Remove esim profile', async function() {
     eSimManagerRemote.addEuiccForTest(2);
     init('1');
 
     await flushAsync();
 
+    const euicc = (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
+    let profiles = (await euicc.getProfileList()).profiles;
+    let foundProfile = await getProfileForIccid(profiles, '1');
+    assertTrue(!!foundProfile);
+
     const removeBtn = esimRemoveProfileDialog.$$('#remove');
     assertTrue(!!removeBtn);
     removeBtn.click();
     await flushAsync();
+    foundProfile.resolveUninstallProfilePromise();
+    await flushAsync();
+
+    profiles = (await euicc.getProfileList()).profiles;
+    foundProfile = await getProfileForIccid(profiles, '1');
+    assertFalse(!!foundProfile);
+  });
+
+  test('Remove esim profile fails', async function() {
+    eSimManagerRemote.addEuiccForTest(2);
+    init('1');
+
+    await flushAsync();
+
+    assertTrue(esimRemoveProfileDialog.$$('#errorMessage').hidden);
 
     const euicc = (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
-    const profiles = (await euicc.getProfileList()).profiles;
+    let profiles = (await euicc.getProfileList()).profiles;
 
-    const foundProfile = null;
-    for (const profile of profiles) {
-      const properties = await profile.getProperties();
-      if (properties.properties && properties.properties.iccid === '1') {
-        foundProfile = profile;
-      }
-    }
-    assertFalse(!!foundProfile);
+    let foundProfile = await getProfileForIccid(profiles, '1');
+    assertTrue(!!foundProfile);
+    foundProfile.setEsimOperationResultForTest(
+        chromeos.cellularSetup.mojom.ESimOperationResult.kFailure);
+
+    const removeBtn = esimRemoveProfileDialog.$$('#remove');
+    assertTrue(!!removeBtn);
+    assertFalse(removeBtn.disabled);
+    removeBtn.click();
+    await flushAsync();
+    assertTrue(removeBtn.disabled);
+    foundProfile.resolveUninstallProfilePromise();
+    await flushAsync();
+    assertFalse(removeBtn.disabled);
+
+    profiles = (await euicc.getProfileList()).profiles;
+    foundProfile = await getProfileForIccid(profiles, '1');
+    assertTrue(!!foundProfile);
+    assertFalse(esimRemoveProfileDialog.$$('#errorMessage').hidden);
   });
 });
