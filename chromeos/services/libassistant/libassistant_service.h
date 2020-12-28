@@ -14,18 +14,19 @@
 namespace assistant_client {
 class AssistantManager;
 class AssistantManagerInternal;
-class PlatformApi;
 }  // namespace assistant_client
 
 namespace chromeos {
 namespace assistant {
 class AssistantManagerServiceDelegate;
+class CrosPlatformApi;
 }  // namespace assistant
 }  // namespace chromeos
 
 namespace chromeos {
 namespace libassistant {
 
+class PlatformApi;
 class ServiceController;
 
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
@@ -37,7 +38,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
 
   explicit LibassistantService(
       mojo::PendingReceiver<mojom::LibassistantService> receiver,
-      assistant_client::PlatformApi* platform_api,
+      chromeos::assistant::CrosPlatformApi* platform_api,
       assistant::AssistantManagerServiceDelegate* delegate);
   LibassistantService(LibassistantService&) = delete;
   LibassistantService& operator=(LibassistantService&) = delete;
@@ -56,6 +57,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   void BindInteractionController() override {}
 
   mojo::Receiver<mojom::LibassistantService> receiver_;
+  std::unique_ptr<PlatformApi> platform_api_;
   std::unique_ptr<ServiceController> service_controller_;
 };
 

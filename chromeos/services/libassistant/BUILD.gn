@@ -16,6 +16,7 @@ component("libassistant") {
 
   deps = [
     ":internal",
+    "//chromeos/services/assistant/public/cpp/migration",
     "//chromeos/services/libassistant/public/mojom",
   ]
 
@@ -32,6 +33,8 @@ source_set("internal") {
 
   sources = [
     "assistant_manager_observer.h",
+    "platform_api.cc",
+    "platform_api.h",
     "service_controller.cc",
     "service_controller.h",
   ]

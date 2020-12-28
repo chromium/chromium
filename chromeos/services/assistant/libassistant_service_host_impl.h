@@ -10,10 +10,6 @@
 #include "base/synchronization/lock.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 
-namespace assistant_client {
-class PlatformApi;
-}  // namespace assistant_client
-
 namespace chromeos {
 namespace libassistant {
 class LibassistantService;
@@ -24,6 +20,7 @@ namespace chromeos {
 namespace assistant {
 
 class AssistantManagerServiceDelegate;
+class CrosPlatformApi;
 
 class LibassistantServiceHostImpl : public LibassistantServiceHost {
  public:
@@ -31,7 +28,7 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
       base::OnceCallback<void(assistant_client::AssistantManager*,
                               assistant_client::AssistantManagerInternal*)>;
 
-  LibassistantServiceHostImpl(assistant_client::PlatformApi* platform_api,
+  LibassistantServiceHostImpl(CrosPlatformApi* platform_api,
                               AssistantManagerServiceDelegate* delegate);
   LibassistantServiceHostImpl(LibassistantServiceHostImpl&) = delete;
   LibassistantServiceHostImpl& operator=(LibassistantServiceHostImpl&) = delete;
@@ -45,7 +42,7 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
 
  private:
   // Owned by |AssistantManagerServiceImpl| which also owns |this|.
-  assistant_client::PlatformApi* const platform_api_;
+  CrosPlatformApi* const platform_api_;
   // Owned by |AssistantManagerServiceImpl| which also owns |this|.
   AssistantManagerServiceDelegate* const delegate_;
 

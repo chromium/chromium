@@ -12,7 +12,7 @@ namespace chromeos {
 namespace assistant {
 
 LibassistantServiceHostImpl::LibassistantServiceHostImpl(
-    assistant_client::PlatformApi* platform_api,
+    CrosPlatformApi* platform_api,
     AssistantManagerServiceDelegate* delegate)
     : platform_api_(platform_api), delegate_(delegate) {
   DCHECK(platform_api_);
