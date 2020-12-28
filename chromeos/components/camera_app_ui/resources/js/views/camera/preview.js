@@ -8,8 +8,8 @@ import {BarcodeScanner} from '../../models/barcode.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
-import * as util from '../../util.js';
 import {Mode} from '../../type.js';
+import * as util from '../../util.js';
 
 /**
  * Creates a controller for the video preview of Camera view.
@@ -208,6 +208,7 @@ export class Preview {
       this.scanner_.start();
     } else {
       this.scanner_.stop();
+      barcodeChip.dismiss();
     }
   }
 

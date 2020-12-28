@@ -175,3 +175,13 @@ export async function show(code) {
     showText(code);
   }
 }
+
+/**
+ * Dismisses the current barcode chip if it's being shown.
+ */
+export function dismiss() {
+  if (currentTimer === null) {
+    return;
+  }
+  currentTimer.fireNow();
+}
