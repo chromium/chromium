@@ -1126,7 +1126,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUpgradeBrowserTest, PRE_Upgrade) {
             GetManager().GetAppIds().size());
 }
 
-IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUpgradeBrowserTest, Upgrade) {
+// Test is consistently failing: crbug/1162044
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUpgradeBrowserTest,
+                       DISABLED_Upgrade) {
   WaitForSystemAppsSynchronized();
   const auto& app_ids = GetManager().GetAppIds();
 
