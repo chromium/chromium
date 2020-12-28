@@ -11,7 +11,7 @@ namespace ash {
 namespace ClipboardHistoryViews {
 
 // The insets within the contents view.
-constexpr int kContentsVerticalInset = 4;
+constexpr int kContentsVerticalInset = 8;
 constexpr gfx::Insets kContentsInsets(kContentsVerticalInset,
                                       /*horizontal=*/16);
 
@@ -29,7 +29,7 @@ constexpr gfx::Insets kBitmapItemDeleteButtonMargins =
     gfx::Insets(/*top=*/4, /*left=*/0, /*bottom=*/0, /*right=*/4);
 
 // The preferred height of `ClipboardHistoryLabel`.
-constexpr int kLabelPreferredHeight = 28;
+constexpr int kLabelPreferredHeight = 20;
 
 // The preferred height of the image view showing on
 // `ClipboardHistoryBitmapItemView`.
