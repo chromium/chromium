@@ -718,7 +718,8 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, DismissAfterHint) {
 
 // Assert that the ChromeVox hint dialog behaves as a modal dialog and traps
 // focus when using tab.
-IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, TrapFocus) {
+// TODO(crbug/1161398): The test is flaky.
+IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, DISABLED_TrapFocus) {
   WelcomeScreen* screen = welcome_screen();
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
