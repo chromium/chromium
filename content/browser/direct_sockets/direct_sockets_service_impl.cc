@@ -74,8 +74,8 @@ void DirectSocketsServiceImpl::OpenTcpSocket(
     return;
   }
 
-  // TODO(crbug.com/905818): Populate local_addr from options.
-  const base::Optional<net::IPEndPoint> local_addr = base::nullopt;
+  base::Optional<net::IPEndPoint> local_addr = base::nullopt;
+  PopulateLocalAddr(*options, local_addr);
 
   network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options =
       network::mojom::TCPConnectedSocketOptions::New();
@@ -180,6 +180,19 @@ net::Error DirectSocketsServiceImpl::ValidateOptions(
     return net::ERR_NAME_NOT_RESOLVED;
 
   return net::ERR_NOT_IMPLEMENTED;
+}
+
+void DirectSocketsServiceImpl::PopulateLocalAddr(
+    const blink::mojom::DirectSocketOptions& options,
+    base::Optional<net::IPEndPoint>& local_addr) {
+  DCHECK(!local_addr);
+  if (!options.local_hostname)
+    return;
+
+  net::IPAddress local_address;
+  bool success = local_address.AssignFromIPLiteral(*options.local_hostname);
+  if (success)
+    local_addr = net::IPEndPoint(local_address, options.local_port);
 }
 
 network::mojom::NetworkContext* DirectSocketsServiceImpl::GetNetworkContext() {

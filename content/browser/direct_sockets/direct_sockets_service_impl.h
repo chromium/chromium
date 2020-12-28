@@ -71,6 +71,10 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
   net::Error ValidateOptions(const blink::mojom::DirectSocketOptions& options,
                              net::IPAddress& remote_address);
 
+  // Populate |local_addr| from options.
+  void PopulateLocalAddr(const blink::mojom::DirectSocketOptions& options,
+                         base::Optional<net::IPEndPoint>& local_addr);
+
   network::mojom::NetworkContext* GetNetworkContext();
 
   RenderFrameHost* frame_host_;
