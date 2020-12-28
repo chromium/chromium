@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
+#include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -153,12 +154,13 @@ bool LegacyDomStorageDatabase::LazyOpen(bool create_if_needed) {
     return false;
   }
 
-  db_ = std::make_unique<sql::Database>();
+  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
+      // This database should only be accessed from the process hosting the
+      // storage service, so exclusive locking is appropriate.
+      .exclusive_locking = true,
+      .page_size = 4096,
+      .cache_size = 500});
   db_->set_histogram_tag("DOMStorageDatabase");
-
-  // This database should only be accessed from the process hosting the storage
-  // service, so exclusive locking is appropriate.
-  db_->set_exclusive_locking();
 
   // This database is only opened to migrate DOMStorage data to a new backend.
   // Given the use case, mmap()'s performance improvements are not worth the
