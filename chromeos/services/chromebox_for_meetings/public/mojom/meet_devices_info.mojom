@@ -14,7 +14,7 @@ interface MeetDevicesInfo {
 
   // Request device policy information
   // Note: will return nullptr on failure to query policy information
-  GetPolicyInfo@1()=>(PolicyInfo info);
+  GetPolicyInfo@1()=>(PolicyInfo? info);
 
   // Request device system information
   GetSysInfo@2()=>(SysInfo info);
