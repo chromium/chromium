@@ -45,6 +45,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
@@ -118,7 +119,7 @@ BEGIN_METADATA(ImeMenuImageView, views::ImageView)
 END_METADATA
 
 // The view that contains IME menu title.
-class ImeTitleView : public views::View {
+class ImeTitleView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(ImeTitleView);
   ImeTitleView() {
@@ -129,10 +130,10 @@ class ImeTitleView : public views::View {
             color_provider->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kSeparatorColor)),
         gfx::Insets(kMenuSeparatorVerticalPadding - kMenuSeparatorWidth, 0)));
-    auto box_layout = std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, kTitleViewPadding);
-    box_layout->set_minimum_cross_axis_size(kTrayPopupItemMinHeight);
-    views::BoxLayout* layout_ptr = SetLayoutManager(std::move(box_layout));
+    SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+    SetInsideBorderInsets(kTitleViewPadding);
+    SetMinimumCrossAxisSize(kTrayPopupItemMinHeight);
+
     auto* title_label = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME)));
     title_label->SetBorder(
@@ -142,7 +143,7 @@ class ImeTitleView : public views::View {
         AshColorProvider::ContentLayerType::kTextColorPrimary));
     TrayPopupUtils::SetLabelFontList(title_label,
                                      TrayPopupUtils::FontStyle::kPodMenuHeader);
-    layout_ptr->SetFlexForView(title_label, 1);
+    SetFlexForView(title_label, 1);
 
     settings_button_ = AddChildView(std::make_unique<TopShortcutButton>(
         base::BindRepeating([]() {
@@ -162,7 +163,7 @@ class ImeTitleView : public views::View {
   TopShortcutButton* settings_button_ = nullptr;
 };
 
-BEGIN_METADATA(ImeTitleView, views::View)
+BEGIN_METADATA(ImeTitleView, views::BoxLayoutView)
 END_METADATA
 
 // The view that contains buttons shown on the bottom of IME menu.
