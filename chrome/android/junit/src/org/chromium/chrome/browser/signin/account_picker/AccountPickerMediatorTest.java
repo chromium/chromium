@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -129,10 +128,8 @@ public class AccountPickerMediatorTest {
         mMediator = new AccountPickerMediator(
                 RuntimeEnvironment.application, mModelList, mListenerMock, ACCOUNT_NAME1, false);
         String fullName2 = "Full Name2";
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mFakeProfileDataSource.addProfileData(
-                    new ProfileDataSource.ProfileData(ACCOUNT_NAME2, null, fullName2, null));
-        });
+        mFakeProfileDataSource.addProfileData(
+                new ProfileDataSource.ProfileData(ACCOUNT_NAME2, null, fullName2, null));
         // ACCOUNT_NAME1, ACCOUNT_NAME2, ADD_ACCOUNT
         Assert.assertEquals(3, mModelList.size());
         checkItemForExistingAccountRow(0, ACCOUNT_NAME1, FULL_NAME1, /* isSelectedAccount= */ true);

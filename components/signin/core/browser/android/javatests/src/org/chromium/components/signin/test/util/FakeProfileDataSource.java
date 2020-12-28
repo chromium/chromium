@@ -4,7 +4,6 @@
 
 package org.chromium.components.signin.test.util;
 
-import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
@@ -55,12 +54,12 @@ public class FakeProfileDataSource implements ProfileDataSource {
      * If the account email of the {@link ProfileData} already exists, replace the old
      * {@link ProfileData} with the given one.
      */
-    @MainThread
     public void addProfileData(ProfileData profileData) {
-        ThreadUtils.assertOnUiThread();
-        mProfileDataMap.put(profileData.getAccountEmail(), profileData);
-        for (Observer observer : mObservers) {
-            observer.onProfileDataUpdated(profileData);
-        }
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            mProfileDataMap.put(profileData.getAccountEmail(), profileData);
+            for (Observer observer : mObservers) {
+                observer.onProfileDataUpdated(profileData);
+            }
+        });
     }
 }

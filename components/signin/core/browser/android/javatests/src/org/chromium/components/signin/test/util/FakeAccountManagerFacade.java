@@ -177,7 +177,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
      */
     public void addProfileData(ProfileDataSource.ProfileData profileData) {
         assert mFakeProfileDataSource != null : "ProfileDataSource was disabled!";
-        ThreadUtils.runOnUiThreadBlocking(() -> mFakeProfileDataSource.addProfileData(profileData));
+        mFakeProfileDataSource.addProfileData(profileData);
     }
 
     @GuardedBy("mLock")

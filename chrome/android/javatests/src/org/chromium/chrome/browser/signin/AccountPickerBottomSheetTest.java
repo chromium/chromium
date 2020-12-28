@@ -363,10 +363,8 @@ public class AccountPickerBottomSheetTest {
         buildAndShowExpandedBottomSheet();
         String newFullName = "New Full Name1";
         String newGivenName = "New Given Name1";
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mFakeProfileDataSource.addProfileData(new ProfileDataSource.ProfileData(
-                    PROFILE_DATA1.getAccountEmail(), null, newFullName, newGivenName));
-        });
+        mFakeProfileDataSource.addProfileData(new ProfileDataSource.ProfileData(
+                PROFILE_DATA1.getAccountEmail(), null, newFullName, newGivenName));
         onVisibleView(withText(PROFILE_DATA1.getAccountEmail())).check(matches(isDisplayed()));
         onVisibleView(withText(newFullName)).check(matches(isDisplayed()));
         // Check that profile data update when the bottom sheet is expanded won't

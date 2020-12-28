@@ -141,10 +141,8 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
                 .thenReturn(new AccountInfo(
                         new CoreAccountId("gaia-id-test"), accountEmail, "gaia-id-test", null));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfileDataSource.addProfileData(new ProfileDataSource.ProfileData(
-                    accountEmail, null, "Full Name", "Given Name"));
-        });
+        mProfileDataSource.addProfileData(
+                new ProfileDataSource.ProfileData(accountEmail, null, "Full Name", "Given Name"));
         mIdentityManager.onExtendedAccountInfoUpdated(new AccountInfo(
                 new CoreAccountId("gaia-id-test"), accountEmail, "gaia-id-test", createAvatar()));
         TestThreadUtils.runOnUiThreadBlocking(() -> { checkImageIsScaled(accountEmail); });
@@ -165,14 +163,13 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     @MediumTest
     @Feature("RenderTest")
     public void testAvatarIsScaled() throws IOException {
+        String accountName = "test@example.com";
+        ProfileDataSource.ProfileData profileData = new ProfileDataSource.ProfileData(
+                accountName, createAvatar(), "Full Name", "Given Name");
+        mProfileDataSource.addProfileData(profileData);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            String accountName = "test@example.com";
-            ProfileDataSource.ProfileData profileData = new ProfileDataSource.ProfileData(
-                    accountName, createAvatar(), "Full Name", "Given Name");
-            mProfileDataSource.addProfileData(profileData);
             checkImageIsScaled(accountName);
         });
-
         mRenderTestRule.render(mImageView, "profile_data_cache_avatar" + mImageSize);
     }
 
