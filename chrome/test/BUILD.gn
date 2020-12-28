@@ -6795,8 +6795,6 @@ if (!is_android) {
       sources += [
         "../browser/apps/platform_apps/app_shim_interactive_uitest_mac.mm",
         "../browser/apps/platform_apps/app_shim_quit_interactive_uitest_mac.mm",
-        "../browser/focus_ring_browsertest_mac.h",
-        "../browser/focus_ring_browsertest_mac.mm",
         "../browser/global_keyboard_shortcuts_mac_browsertest.mm",
         "../browser/notifications/notification_interactive_uitest_mac.mm",
         "../browser/spellchecker/spellcheck_mac_view_interactive_uitest.mm",
