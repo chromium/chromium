@@ -91,7 +91,7 @@ void WorkerModuleScriptFetcher::NotifyFinished(Resource* resource) {
   ClearResource();
 
   auto* script_resource = To<ScriptResource>(resource);
-  ModuleScriptCreationParams::ModuleType module_type;
+  ModuleType module_type;
   {
     HeapVector<Member<ConsoleMessage>> error_messages;
     if (!WasModuleLoadSuccessful(script_resource, &error_messages,
@@ -109,7 +109,7 @@ void WorkerModuleScriptFetcher::NotifyFinished(Resource* resource) {
 
 void WorkerModuleScriptFetcher::NotifyClient(
     const KURL& request_url,
-    ModuleScriptCreationParams::ModuleType module_type,
+    ModuleType module_type,
     const network::mojom::CredentialsMode credentials_mode,
     const ParkableString& source_text,
     const ResourceResponse& response,
@@ -229,7 +229,7 @@ void WorkerModuleScriptFetcher::OnFinishedLoadingWorkerMainScript() {
   if (decoder_)
     source_text_.Append(decoder_->Flush());
   NotifyClient(worker_main_script_loader_->GetRequestURL(),
-               ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
+               ModuleType::kJavaScript,
                network::mojom::CredentialsMode::kSameOrigin,
                ParkableString(source_text_.ToString().ReleaseImpl()), response,
                worker_main_script_loader_->CreateCachedMetadataHandler());

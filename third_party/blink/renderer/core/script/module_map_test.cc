@@ -155,8 +155,8 @@ class ModuleMapTestModulator final : public DummyModulator {
     void NotifyFetchFinished() {
       client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
           url_, url_, ScriptSourceLocationType::kExternalFile,
-          ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
-          ParkableString(String("").ReleaseImpl()), nullptr, credential_mode_));
+          ModuleType::kJavaScript, ParkableString(String("").ReleaseImpl()),
+          nullptr, credential_mode_));
     }
     void Trace(Visitor* visitor) const { visitor->Trace(client_); }
 

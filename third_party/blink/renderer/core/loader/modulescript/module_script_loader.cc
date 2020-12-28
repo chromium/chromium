@@ -259,17 +259,17 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
   // module script given source text, module map settings object, response's
   // url, and options.</spec>
   switch (params.GetModuleType()) {
-    case ModuleScriptCreationParams::ModuleType::kJSONModule:
+    case ModuleType::kJSON:
       DCHECK(base::FeatureList::IsEnabled(blink::features::kJSONModules));
       module_script_ = ValueWrapperSyntheticModuleScript::
           CreateJSONWrapperSyntheticModuleScript(params, modulator_);
       break;
-    case ModuleScriptCreationParams::ModuleType::kCSSModule:
+    case ModuleType::kCSS:
       DCHECK(RuntimeEnabledFeatures::CSSModulesEnabled());
       module_script_ = ValueWrapperSyntheticModuleScript::
           CreateCSSWrapperSyntheticModuleScript(params, modulator_);
       break;
-    case ModuleScriptCreationParams::ModuleType::kJavaScriptModule: {
+    case ModuleType::kJavaScript: {
       // Step 9. "Let source text be the result of UTF-8 decoding response's
       // body." [spec text]
       // Step 10. "Let module script be the result of creating

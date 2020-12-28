@@ -42,7 +42,7 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
 
   auto* script_resource = To<ScriptResource>(resource);
 
-  ModuleScriptCreationParams::ModuleType module_type;
+  ModuleType module_type;
   {
     HeapVector<Member<ConsoleMessage>> error_messages;
     if (!WasModuleLoadSuccessful(script_resource, &error_messages,

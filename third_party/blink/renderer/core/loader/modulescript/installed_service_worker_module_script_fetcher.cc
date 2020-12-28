@@ -79,17 +79,17 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
                               mojom::blink::kAppCacheNoCacheId);
   }
 
-  ModuleScriptCreationParams::ModuleType module_type;
+  ModuleType module_type;
 
   // TODO(sasebree) De-duplicate similar logic that lives in
   // ModuleScriptFetcher::WasModuleLoadSuccessful
   if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
           script_data->GetHttpContentType())) {
-    module_type = ModuleScriptCreationParams::ModuleType::kJavaScriptModule;
+    module_type = ModuleType::kJavaScript;
   } else if (base::FeatureList::IsEnabled(blink::features::kJSONModules) &&
              MIMETypeRegistry::IsJSONMimeType(
                  script_data->GetHttpContentType())) {
-    module_type = ModuleScriptCreationParams::ModuleType::kJSONModule;
+    module_type = ModuleType::kJSON;
   } else {
     // This should never happen.
     // If we reach here, we know we received an incompatible mime type from the

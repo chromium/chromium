@@ -19,18 +19,18 @@
 
 namespace blink {
 
+enum class ModuleType { kJavaScript, kJSON, kCSS };
+
 // ModuleScriptCreationParams contains parameters for creating ModuleScript.
 class ModuleScriptCreationParams {
   DISALLOW_NEW();
-
-  enum class ModuleType { kJavaScriptModule, kJSONModule, kCSSModule };
 
  public:
   ModuleScriptCreationParams(
       const KURL& source_url,
       const KURL& base_url,
       ScriptSourceLocationType source_location_type,
-      const ModuleScriptCreationParams::ModuleType module_type,
+      const ModuleType module_type,
       const ParkableString& source_text,
       SingleCachedMetadataHandler* cache_handler,
       network::mojom::CredentialsMode credentials_mode,
@@ -70,9 +70,7 @@ class ModuleScriptCreationParams {
         GetModuleType(), isolated_source_text, GetFetchCredentialsMode());
   }
 
-  ModuleScriptCreationParams::ModuleType GetModuleType() const {
-    return module_type_;
-  }
+  ModuleType GetModuleType() const { return module_type_; }
 
   const KURL& SourceURL() const { return source_url_; }
   const KURL& BaseURL() const { return base_url_; }
@@ -116,13 +114,12 @@ class ModuleScriptCreationParams {
 
  private:
   // Creates an isolated copy.
-  ModuleScriptCreationParams(
-      const KURL& source_url,
-      const KURL& base_url,
-      ScriptSourceLocationType source_location_type,
-      const ModuleScriptCreationParams::ModuleType& module_type,
-      const String& isolated_source_text,
-      network::mojom::CredentialsMode credentials_mode)
+  ModuleScriptCreationParams(const KURL& source_url,
+                             const KURL& base_url,
+                             ScriptSourceLocationType source_location_type,
+                             const ModuleType& module_type,
+                             const String& isolated_source_text,
+                             network::mojom::CredentialsMode credentials_mode)
       : source_url_(source_url),
         base_url_(base_url),
         source_location_type_(source_location_type),

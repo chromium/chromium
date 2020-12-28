@@ -48,7 +48,7 @@ class CORE_EXPORT WorkerModuleScriptFetcher final
   String DebugName() const override { return "WorkerModuleScriptFetcher"; }
 
   void NotifyClient(const KURL& request_url,
-                    ModuleScriptCreationParams::ModuleType module_type,
+                    ModuleType module_type,
                     const network::mojom::CredentialsMode credentials_mode,
                     const ParkableString& source_text,
                     const ResourceResponse& response,

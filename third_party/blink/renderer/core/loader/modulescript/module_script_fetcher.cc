@@ -37,7 +37,7 @@ void ModuleScriptFetcher::Trace(Visitor* visitor) const {
 bool ModuleScriptFetcher::WasModuleLoadSuccessful(
     ScriptResource* resource,
     HeapVector<Member<ConsoleMessage>>* error_messages,
-    ModuleScriptCreationParams::ModuleType* module_type) {
+    ModuleType* module_type) {
   DCHECK(error_messages);
   DCHECK_EQ(resource->GetScriptType(), mojom::blink::ScriptType::kModule);
 
@@ -71,20 +71,20 @@ bool ModuleScriptFetcher::WasModuleLoadSuccessful(
   // <spec step="12">If type is a JavaScript MIME type, then:</spec>
   if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
           response.HttpContentType())) {
-    *module_type = ModuleScriptCreationParams::ModuleType::kJavaScriptModule;
+    *module_type = ModuleType::kJavaScript;
     return true;
   }
   // <spec step="13">If type is a JSON MIME type, then:</spec>
   if (base::FeatureList::IsEnabled(blink::features::kJSONModules) &&
       MIMETypeRegistry::IsJSONMimeType(response.HttpContentType())) {
-    *module_type = ModuleScriptCreationParams::ModuleType::kJSONModule;
+    *module_type = ModuleType::kJSON;
     return true;
   }
 
   if (RuntimeEnabledFeatures::CSSModulesEnabled() &&
       MIMETypeRegistry::IsSupportedStyleSheetMIMEType(
           response.HttpContentType())) {
-    *module_type = ModuleScriptCreationParams::ModuleType::kCSSModule;
+    *module_type = ModuleType::kCSS;
     return true;
   }
   String required_response_type = "JavaScript";

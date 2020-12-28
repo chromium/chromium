@@ -29,8 +29,7 @@ v8::Local<v8::Module> ModuleTestBase::CompileModule(
     ExceptionState& exception_state) {
   ModuleScriptCreationParams params(
       /*source_url=*/url, /*base_url=*/url,
-      ScriptSourceLocationType::kExternalFile,
-      ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
+      ScriptSourceLocationType::kExternalFile, ModuleType::kJavaScript,
       ParkableString(source.Impl()), nullptr,
       network::mojom::CredentialsMode::kOmit);
   return ModuleRecord::Compile(isolate, params, ScriptFetchOptions(),

@@ -48,7 +48,7 @@ void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
   base::Optional<ModuleScriptCreationParams> params;
   auto* script_resource = To<ScriptResource>(resource);
   HeapVector<Member<ConsoleMessage>> error_messages;
-  ModuleScriptCreationParams::ModuleType module_type;
+  ModuleType module_type;
   if (WasModuleLoadSuccessful(script_resource, &error_messages, &module_type)) {
     const KURL& url = script_resource->GetResponse().CurrentRequestUrl();
     // Create an external module script where base_url == source_url.

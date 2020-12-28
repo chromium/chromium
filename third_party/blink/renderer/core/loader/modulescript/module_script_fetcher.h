@@ -56,7 +56,7 @@ class CORE_EXPORT ModuleScriptFetcher : public ResourceClient {
   static bool WasModuleLoadSuccessful(
       ScriptResource* resource,
       HeapVector<Member<ConsoleMessage>>* error_messages,
-      ModuleScriptCreationParams::ModuleType* module_type);
+      ModuleType* module_type);
 };
 
 }  // namespace blink
