@@ -16,7 +16,7 @@ class ProfileInfoWatcher;
 // The handler for login-related messages from chrome://history.
 class HistoryLoginHandler : public content::WebUIMessageHandler {
  public:
-  explicit HistoryLoginHandler(const base::Closure& signin_callback);
+  explicit HistoryLoginHandler(base::RepeatingClosure signin_callback);
   ~HistoryLoginHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -38,7 +38,7 @@ class HistoryLoginHandler : public content::WebUIMessageHandler {
   // changes).
   std::unique_ptr<ProfileInfoWatcher> profile_info_watcher_;
 
-  base::Closure signin_callback_;
+  base::RepeatingClosure signin_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(HistoryLoginHandler);
 };

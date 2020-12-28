@@ -141,9 +141,9 @@ HistoryUI::HistoryUI(content::WebUI* web_ui) : WebUIController(web_ui) {
       foreign_session_handler.get();
   web_ui->AddMessageHandler(std::move(foreign_session_handler));
   foreign_session_handler_ptr->InitializeForeignSessions();
-  web_ui->AddMessageHandler(std::make_unique<HistoryLoginHandler>(
-      base::Bind(&HistoryUI::UpdateDataSource, base::Unretained(this))));
-
+  web_ui->AddMessageHandler(
+      std::make_unique<HistoryLoginHandler>(base::BindRepeating(
+          &HistoryUI::UpdateDataSource, base::Unretained(this))));
 }
 
 HistoryUI::~HistoryUI() {}

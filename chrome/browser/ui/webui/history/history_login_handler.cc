@@ -17,8 +17,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
-HistoryLoginHandler::HistoryLoginHandler(const base::Closure& signin_callback)
-    : signin_callback_(signin_callback) {}
+HistoryLoginHandler::HistoryLoginHandler(base::RepeatingClosure signin_callback)
+    : signin_callback_(std::move(signin_callback)) {}
 
 HistoryLoginHandler::~HistoryLoginHandler() {}
 
@@ -37,8 +37,8 @@ void HistoryLoginHandler::RegisterMessages() {
 void HistoryLoginHandler::OnJavascriptAllowed() {
   profile_info_watcher_ = std::make_unique<ProfileInfoWatcher>(
       Profile::FromWebUI(web_ui()),
-      base::Bind(&HistoryLoginHandler::ProfileInfoChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&HistoryLoginHandler::ProfileInfoChanged,
+                          base::Unretained(this)));
   ProfileInfoChanged();
 }
 

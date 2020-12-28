@@ -155,7 +155,7 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
 // Tests that BrowsingHistoryHandler is informed about WebHistoryService
 // deletions.
 TEST_F(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions) {
-  base::Callback<void(bool)> callback = base::DoNothing();
+  base::RepeatingCallback<void(bool)> callback = base::DoNothing();
 
   // BrowsingHistoryHandler is informed about WebHistoryService history
   // deletions.
