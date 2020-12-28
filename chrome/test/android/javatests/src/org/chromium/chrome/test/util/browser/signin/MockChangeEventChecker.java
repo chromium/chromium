@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public final class MockChangeEventChecker
         implements SigninHelper.AccountChangeEventChecker {
-    private Map<String, List<String>> mEvents = new HashMap<>();
+    private final Map<String, List<String>> mEvents = new HashMap<>();
 
     @Override
     public List<String> getAccountChangeEvents(
