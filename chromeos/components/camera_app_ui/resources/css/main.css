@@ -1602,7 +1602,9 @@ body.photo.scan-barcode .barcode-scan-box {
  * responsive window design. */
 .barcode-chip-container {
   --chip-height: 32px;
+  --chip-max-width: 420px;
   left: 50%;
+  max-width: min(80%, var(--chip-max-width));
   opacity: 1;
   position: absolute;
   top: 10%;
@@ -1633,6 +1635,7 @@ body.photo.scan-barcode .barcode-scan-box {
   background: url(/images/barcode_url.svg) no-repeat;
   content: '';
   display: inline-block;
+  flex-shrink: 0;
   height: 20px;
   margin-inline-end: 6px;
   vertical-align: middle;
@@ -1641,7 +1644,6 @@ body.photo.scan-barcode .barcode-scan-box {
 
 .barcode-chip-url > a {
   color: var(--blue-300);
-  max-width: 416px;
   overflow: hidden;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -1678,14 +1680,14 @@ body.photo.scan-barcode .barcode-scan-box {
   display: flex;
   flex-direction: column;
   font: 400 15px Roboto;
+  padding: 8px 20px;
 }
 
 #barcode-chip-text-content {
   --line-height: 24px;
   color: var(--grey-200);
   line-height: var(--line-height);
-  margin: 8px 20px;
-  max-width: 416px;
+  max-width: 100%;
   overflow: hidden;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -1696,7 +1698,8 @@ body.photo.scan-barcode .barcode-scan-box {
   /* TODO(b/172879638): Make this responsive */
   max-height: calc(var(--line-height) * 10);
   white-space: normal;
-  width: 416px;
+  /* Keep the same width as before to avoid text jumping. */
+  width: var(--chip-max-width);
 }
 
 #barcode-chip-text-expand {

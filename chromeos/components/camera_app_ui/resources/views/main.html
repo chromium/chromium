@@ -79,6 +79,30 @@
           <div class="snackbar" aria-live="polite"></div>
           <div id="camera-mode" class="centered-overlay"></div>
         </div>
+        <div id="barcode-chip-url-container"
+             class="invisible barcode-chip-container">
+          <div class="barcode-chip-url">
+            <a target="_blank"></a>
+          </div>
+          <div class="circle">
+            <button class="barcode-copy-button" tabindex="0"
+              i18n-label="barcode_copy_link_button"></button>
+          </div>
+        </div>
+        <div id="barcode-chip-text-container"
+             class="invisible barcode-chip-container"
+             role="dialog" i18n-label="barcode_text_detected"
+             aria-live="polite" aria-describedby="barcode-chip-text-content">
+          <div class="barcode-chip-text">
+            <div id="barcode-chip-text-content"></div>
+            <button id="barcode-chip-text-expand"
+                    aria-expanded="false"></button>
+          </div>
+          <div class="circle">
+            <button class="barcode-copy-button" tabindex="0"
+              i18n-label="barcode_copy_text_button"></button>
+          </div>
+        </div>
       </div>
       <div id="video-snapshot-holder" class="buttons right-stripe circle">
         <button id="video-snapshot" tabindex="0"
@@ -406,29 +430,6 @@
       </div>
     </div>
     <div id="toast" class="centered-overlay" aria-live="polite"></div>
-    <div id="barcode-chip-url-container"
-         class="invisible barcode-chip-container">
-      <div class="barcode-chip-url">
-        <a target="_blank"></a>
-      </div>
-      <div class="circle">
-        <button class="barcode-copy-button" tabindex="0"
-          i18n-label="barcode_copy_link_button"></button>
-      </div>
-    </div>
-    <div id="barcode-chip-text-container"
-         class="invisible barcode-chip-container"
-         role="dialog" i18n-label="barcode_text_detected"
-         aria-live="polite" aria-describedby="barcode-chip-text-content">
-      <div class="barcode-chip-text">
-        <div id="barcode-chip-text-content"></div>
-        <button id="barcode-chip-text-expand" aria-expanded="false"></button>
-      </div>
-      <div class="circle">
-        <button class="barcode-copy-button" tabindex="0"
-          i18n-label="barcode_copy_text_button"></button>
-      </div>
-    </div>
     <div id="tooltip" aria-hidden="true"></div>
     <audio id="sound-tick-final" src="/sounds/tick_final.ogg"
       data-timeout="1000">
