@@ -47,20 +47,26 @@ constexpr int kPreferredDialogWidthPx = 768;
 MultiDeviceSetupDialog* MultiDeviceSetupDialog::current_instance_ = nullptr;
 
 // static
+gfx::NativeWindow MultiDeviceSetupDialog::containing_window_ = nullptr;
+
+// static
 void MultiDeviceSetupDialog::Show() {
-  // The dialog is already showing, so there is nothing to do.
-  if (current_instance_)
+  // Focus the window hosting the dialog that has already been created.
+  if (containing_window_) {
+    DCHECK(current_instance_);
+    containing_window_->Focus();
     return;
+  }
 
   current_instance_ = new MultiDeviceSetupDialog();
-  gfx::NativeWindow window = chrome::ShowWebDialog(
+  containing_window_ = chrome::ShowWebDialog(
       nullptr /* parent */, ProfileManager::GetActiveUserProfile(),
       current_instance_);
 
   // Remove the black backdrop behind the dialog window which appears in tablet
   // and full-screen mode.
-  ash::WindowBackdrop::Get(window)->SetBackdropMode(
-      ash::WindowBackdrop::BackdropMode::kDisabled);
+  ash::WindowBackdrop::Get(containing_window_)
+      ->SetBackdropMode(ash::WindowBackdrop::BackdropMode::kDisabled);
 }
 
 // static
@@ -101,6 +107,7 @@ void MultiDeviceSetupDialog::GetDialogSize(gfx::Size* size) const {
 void MultiDeviceSetupDialog::OnDialogClosed(const std::string& json_retval) {
   DCHECK(this == current_instance_);
   current_instance_ = nullptr;
+  containing_window_ = nullptr;
 
   // Note: The call below deletes |this|, so there is no further need to keep
   // track of the pointer.

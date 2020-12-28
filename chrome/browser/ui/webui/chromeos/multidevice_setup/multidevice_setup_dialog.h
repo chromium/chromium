@@ -47,6 +47,7 @@ class MultiDeviceSetupDialog : public SystemWebDialogDelegate {
 
  private:
   static MultiDeviceSetupDialog* current_instance_;
+  static gfx::NativeWindow containing_window_;
 
   // List of callbacks that have registered themselves to be invoked once this
   // dialog is closed.
