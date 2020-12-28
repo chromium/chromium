@@ -5,6 +5,7 @@
 import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assert} from './chrome_util.js';
 import * as dom from './dom.js';
+import {BarcodeContentType, sendBarcodeDetectedEvent} from './metrics.js';
 import * as snackbar from './snackbar.js';
 import * as state from './state.js';
 import {OneShotTimer} from './timer.js';
@@ -170,8 +171,10 @@ export async function show(code) {
   currentCode = code;
 
   if (isSafeUrl(code)) {
+    sendBarcodeDetectedEvent({contentType: BarcodeContentType.URL});
     showUrl(code);
   } else {
+    sendBarcodeDetectedEvent({contentType: BarcodeContentType.TEXT});
     showText(code);
   }
 }

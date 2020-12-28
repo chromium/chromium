@@ -371,3 +371,41 @@ export function sendErrorEvent(
         [20, colNo],
       ]));
 }
+
+/**
+ * Sends the barcode enabled event.
+ */
+export function sendBarcodeEnabledEvent() {
+  sendEvent({
+    eventCategory: 'barcode',
+    eventAction: 'enable',
+  });
+}
+
+/**
+ * Types of the decoded barcode content.
+ * @enum {string}
+ */
+export const BarcodeContentType = {
+  TEXT: 'text',
+  URL: 'url',
+};
+
+/**
+ * @typedef {{
+ *   contentType: !BarcodeContentType,
+ * }}
+ */
+export let BarcodeDetectedEventParam;
+
+/**
+ * Sends the barcode detected event.
+ * @param {!BarcodeDetectedEventParam} param
+ */
+export function sendBarcodeDetectedEvent({contentType}) {
+  sendEvent({
+    eventCategory: 'barcode',
+    eventAction: 'detect',
+    eventLabel: contentType,
+  });
+}

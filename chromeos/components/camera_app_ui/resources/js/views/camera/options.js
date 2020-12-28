@@ -8,6 +8,7 @@ import {Camera3DeviceInfo} from '../../device/camera3_device_info.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';
+import {sendBarcodeEnabledEvent} from '../../metrics.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import {Facing, Mode, PerfEvent, ViewName} from '../../type.js';
@@ -264,6 +265,9 @@ export class Options {
    */
   updateBarcode_() {
     state.set(state.State.SCAN_BARCODE, this.toggleBarcode_.checked);
+    if (this.toggleBarcode_.checked) {
+      sendBarcodeEnabledEvent();
+    }
   }
 
   /**
