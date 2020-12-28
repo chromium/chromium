@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AsyncJobQueue} from '../async_job_queue.js';
 import {assert} from '../chrome_util.js';
 import {NotImplementedError} from '../type.js';
 
@@ -116,6 +117,12 @@ export class NativeFileEntry extends NativeFileSystemEntry {
 }
 
 /**
+ * Guards from name collision when creating files.
+ * @type {!AsyncJobQueue}
+ */
+const createFileJobs = new AsyncJobQueue();
+
+/**
  * The directory entry implementation for SWA.
  * @implements {AbstractDirectoryEntry}
  */
@@ -156,11 +163,40 @@ export class NativeDirectoryEntry extends NativeFileSystemEntry {
   }
 
   /**
+   * Checks if file or directory with the target name exists.
+   * @param {string} name
+   * @return {!Promise<boolean>}
+   * @private
+   */
+  async isExist_(name) {
+    try {
+      await this.getFile(name);
+      return true;
+    } catch (e) {
+      if (e.name === 'NotFoundError') {
+        return false;
+      }
+      if (e.name === 'TypeMismatchError' || e instanceof TypeError) {
+        // Directory with same name exists.
+        return true;
+      }
+      throw e;
+    }
+  }
+
+  /**
    * @override
    */
   async createFile(name) {
-    const handle = await this.handle_.getFileHandle(name, {create: true});
-    return new NativeFileEntry(handle);
+    return createFileJobs.push(async () => {
+      let uniqueName = name;
+      for (let i = 0; await this.isExist_(uniqueName);) {
+        uniqueName = name.replace(/^(.*?)(?=\.)/, `$& (${++i})`);
+      }
+      const handle =
+          await this.handle_.getFileHandle(uniqueName, {create: true});
+      return new NativeFileEntry(handle);
+    });
   }
 
   /**
