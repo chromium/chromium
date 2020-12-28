@@ -3957,6 +3957,11 @@ bool WebContentsImpl::IsJavaScriptDialogShowing() const {
 }
 
 bool WebContentsImpl::ShouldIgnoreUnresponsiveRenderer() {
+  // Suppress unresponsive renderers if the command line asks for it.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableHangMonitor))
+    return true;
+
   if (suppress_unresponsive_renderer_count_ > 0)
     return true;
 
