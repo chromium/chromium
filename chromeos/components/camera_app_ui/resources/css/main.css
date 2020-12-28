@@ -1563,7 +1563,6 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   padding-top: calc(100% / 3);
   visibility: hidden;
   width: calc(100% / 3);
-  z-index: 30;
 }
 
 body.photo.scan-barcode .barcode-scan-box {
