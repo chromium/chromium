@@ -114,6 +114,7 @@ android_library("javatests") {
   testonly = true
   sources = [
     "java/src/org/chromium/components/messages/MessageBannerRenderTest.java",
+    "java/src/org/chromium/components/messages/MessageBannerViewTest.java",
     "java/src/org/chromium/components/messages/SingleActionMessageTest.java",
   ]
   resources_package = "org.chromium.components.messages"
@@ -128,6 +129,7 @@ android_library("javatests") {
     "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
     "//third_party/android_deps:androidx_core_core_java",
     "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/android_deps:espresso_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/junit",

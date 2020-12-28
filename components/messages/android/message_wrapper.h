@@ -39,14 +39,21 @@ class MessageWrapper {
   void SetDescription(const base::string16& description);
   base::string16 GetPrimaryButtonText();
   void SetPrimaryButtonText(const base::string16& primary_button_text);
+  base::string16 GetSecondaryActionText();
+  void SetSecondaryActionText(const base::string16& secondary_action_text);
 
-  int GetIconResourceId();
   // When setting a message icon use ResourceMapper::MapToJavaDrawableId to
   // translate from chromium resource_id to Android drawable resource_id.
+  int GetIconResourceId();
   void SetIconResourceId(int resource_id);
+  int GetSecondaryIconResourceId();
+  void SetSecondaryIconResourceId(int resource_id);
+
+  void SetSecondaryActionCallback(base::OnceClosure callback);
 
   // Following methods forward calls from java to provided callbacks.
   void HandleActionClick(JNIEnv* env);
+  void HandleSecondaryActionClick(JNIEnv* env);
   void HandleDismissCallback(JNIEnv* env);
 
   const base::android::JavaRef<jobject>& GetJavaMessageWrapper() const;
@@ -54,6 +61,7 @@ class MessageWrapper {
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_message_wrapper_;
   base::OnceClosure action_callback_;
+  base::OnceClosure secondary_action_callback_;
   base::OnceClosure dismiss_callback_;
   bool message_dismissed_;
 };

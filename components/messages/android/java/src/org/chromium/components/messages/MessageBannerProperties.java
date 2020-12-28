@@ -20,6 +20,8 @@ public class MessageBannerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> ON_PRIMARY_ACTION =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Runnable> ON_SECONDARY_ACTION =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> DESCRIPTION =
             new WritableObjectPropertyKey<>();
@@ -28,6 +30,10 @@ public class MessageBannerProperties {
     public static final WritableIntPropertyKey ICON_RESOURCE_ID = new WritableIntPropertyKey();
     // Secondary icon is shown as a button, so content description should be always set.
     public static final WritableObjectPropertyKey<Drawable> SECONDARY_ICON =
+            new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey SECONDARY_ICON_RESOURCE_ID =
+            new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<String> SECONDARY_ACTION_TEXT =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> SECONDARY_ICON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
@@ -49,12 +55,13 @@ public class MessageBannerProperties {
     // up references.
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CLICK_LISTENER, TITLE,
-                    DESCRIPTION, ICON, ICON_RESOURCE_ID, SECONDARY_ICON,
-                    SECONDARY_ICON_CONTENT_DESCRIPTION, TRANSLATION_Y, ALPHA, ON_TOUCH_RUNNABLE,
-                    ON_PRIMARY_ACTION};
+                    DESCRIPTION, ICON, ICON_RESOURCE_ID, SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID,
+                    SECONDARY_ACTION_TEXT, SECONDARY_ICON_CONTENT_DESCRIPTION, TRANSLATION_Y, ALPHA,
+                    ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION, ON_SECONDARY_ACTION};
 
     public static final PropertyKey[] SINGLE_ACTION_MESSAGE_KEYS =
             new PropertyKey[] {PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CLICK_LISTENER, TITLE,
-                    DESCRIPTION, ICON, ICON_RESOURCE_ID, ON_DISMISSED, TRANSLATION_Y, ALPHA,
-                    ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION};
+                    DESCRIPTION, ICON, ICON_RESOURCE_ID, SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID,
+                    SECONDARY_ACTION_TEXT, ON_DISMISSED, TRANSLATION_Y, ALPHA, ON_TOUCH_RUNNABLE,
+                    ON_PRIMARY_ACTION, ON_SECONDARY_ACTION};
 }

@@ -67,7 +67,7 @@ void SavePasswordMessageDelegate::CreateMessage(
   // SavePasswordMessageDelegate owns message_. Callbacks won't be called after
   // the current object is destroyed.
   message_ = std::make_unique<messages::MessageWrapper>(
-      base::BindOnce(&SavePasswordMessageDelegate::HandleActionClick,
+      base::BindOnce(&SavePasswordMessageDelegate::HandleSaveClick,
                      base::Unretained(this)),
       base::BindOnce(&SavePasswordMessageDelegate::HandleDismissCallback,
                      base::Unretained(this)));
@@ -95,15 +95,28 @@ void SavePasswordMessageDelegate::CreateMessage(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SAVE_BUTTON));
   message_->SetIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD));
+  message_->SetSecondaryIconResourceId(
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_SETTINGS));
+  message_->SetSecondaryActionText(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON));
+
+  message_->SetSecondaryActionCallback(base::BindOnce(
+      &SavePasswordMessageDelegate::HandleNeverClick, base::Unretained(this)));
 
   // Recording metrics is not a part of message creation. It is included here to
   // ensure metrics recording test coverage.
   RecordMessageShownMetrics();
 }
 
-void SavePasswordMessageDelegate::HandleActionClick() {
+void SavePasswordMessageDelegate::HandleSaveClick() {
   form_to_save_->Save();
   ui_dismissal_reason_ = password_manager::metrics_util::CLICKED_ACCEPT;
+}
+
+void SavePasswordMessageDelegate::HandleNeverClick() {
+  form_to_save_->PermanentlyBlacklist();
+  ui_dismissal_reason_ = password_manager::metrics_util::CLICKED_NEVER;
+  DismissSavePasswordPrompt();
 }
 
 void SavePasswordMessageDelegate::HandleDismissCallback() {

@@ -34,6 +34,8 @@ public final class MessageWrapper {
         mMessageProperties =
                 new PropertyModel.Builder(MessageBannerProperties.SINGLE_ACTION_MESSAGE_KEYS)
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::handleActionClick)
+                        .with(MessageBannerProperties.ON_SECONDARY_ACTION,
+                                this::handleSecondaryActionClick)
                         .with(MessageBannerProperties.ON_DISMISSED, this::handleMessageDismissed)
                         .build();
     }
@@ -73,6 +75,16 @@ public final class MessageWrapper {
     }
 
     @CalledByNative
+    String getSecondaryActionText() {
+        return mMessageProperties.get(MessageBannerProperties.SECONDARY_ACTION_TEXT);
+    }
+
+    @CalledByNative
+    void setSecondaryActionText(String secondaryActionText) {
+        mMessageProperties.set(MessageBannerProperties.SECONDARY_ACTION_TEXT, secondaryActionText);
+    }
+
+    @CalledByNative
     @DrawableRes
     int getIconResourceId() {
         return mMessageProperties.get(MessageBannerProperties.ICON_RESOURCE_ID);
@@ -81,6 +93,17 @@ public final class MessageWrapper {
     @CalledByNative
     void setIconResourceId(@DrawableRes int resourceId) {
         mMessageProperties.set(MessageBannerProperties.ICON_RESOURCE_ID, resourceId);
+    }
+
+    @CalledByNative
+    @DrawableRes
+    int getSecondaryIconResourceId() {
+        return mMessageProperties.get(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID);
+    }
+
+    @CalledByNative
+    void setSecondaryIconResourceId(@DrawableRes int resourceId) {
+        mMessageProperties.set(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID, resourceId);
     }
 
     @CalledByNative
@@ -93,6 +116,11 @@ public final class MessageWrapper {
         MessageWrapperJni.get().handleActionClick(mNativeMessageWrapper);
     }
 
+    private void handleSecondaryActionClick() {
+        if (mNativeMessageWrapper == 0) return;
+        MessageWrapperJni.get().handleSecondaryActionClick(mNativeMessageWrapper);
+    }
+
     private void handleMessageDismissed() {
         // mNativeMessageWrapper can be null if the message was dismissed from native API.
         // In this case dismiss callback should have already been called.
@@ -103,6 +131,7 @@ public final class MessageWrapper {
     @NativeMethods
     interface Natives {
         void handleActionClick(long nativeMessageWrapper);
+        void handleSecondaryActionClick(long nativeMessageWrapper);
         void handleDismissCallback(long nativeMessageWrapper);
     }
 }

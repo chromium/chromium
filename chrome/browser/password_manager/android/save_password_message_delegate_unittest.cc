@@ -49,6 +49,7 @@ class SavePasswordMessageDelegateTest : public ChromeRenderViewHostTestHarness {
   void CreateMessage(std::unique_ptr<PasswordFormManagerForUI> form_to_save,
                      bool is_saving_google_account);
   void TriggerActionClick();
+  void TriggerBlocklistClick();
   void TriggerMessageDismissedCallback();
 
   messages::MessageWrapper* GetMessageWrapper();
@@ -109,6 +110,11 @@ void SavePasswordMessageDelegateTest::TriggerActionClick() {
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
 }
 
+void SavePasswordMessageDelegateTest::TriggerBlocklistClick() {
+  GetMessageWrapper()->HandleSecondaryActionClick(
+      base::android::AttachCurrentThread());
+}
+
 void SavePasswordMessageDelegateTest::TriggerMessageDismissedCallback() {
   GetMessageWrapper()->HandleDismissCallback(
       base::android::AttachCurrentThread());
@@ -158,9 +164,13 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues) {
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SAVE_BUTTON),
             GetMessageWrapper()->GetPrimaryButtonText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON),
+            GetMessageWrapper()->GetSecondaryActionText());
   EXPECT_EQ(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD),
       GetMessageWrapper()->GetIconResourceId());
+  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_SETTINGS),
+            GetMessageWrapper()->GetSecondaryIconResourceId());
 
   TriggerMessageDismissedCallback();
 }

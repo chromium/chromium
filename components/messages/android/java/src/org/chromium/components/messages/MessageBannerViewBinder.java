@@ -8,11 +8,14 @@ import static org.chromium.components.messages.MessageBannerProperties.ALPHA;
 import static org.chromium.components.messages.MessageBannerProperties.DESCRIPTION;
 import static org.chromium.components.messages.MessageBannerProperties.ICON;
 import static org.chromium.components.messages.MessageBannerProperties.ICON_RESOURCE_ID;
+import static org.chromium.components.messages.MessageBannerProperties.ON_SECONDARY_ACTION;
 import static org.chromium.components.messages.MessageBannerProperties.ON_TOUCH_RUNNABLE;
 import static org.chromium.components.messages.MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER;
 import static org.chromium.components.messages.MessageBannerProperties.PRIMARY_BUTTON_TEXT;
+import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ACTION_TEXT;
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ICON;
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ICON_CONTENT_DESCRIPTION;
+import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID;
 import static org.chromium.components.messages.MessageBannerProperties.TITLE;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_Y;
 
@@ -44,8 +47,15 @@ public class MessageBannerViewBinder {
                     AppCompatResources.getDrawable(view.getContext(), model.get(ICON_RESOURCE_ID)));
         } else if (propertyKey == SECONDARY_ICON) {
             view.setSecondaryIcon(model.get(SECONDARY_ICON));
+        } else if (propertyKey == SECONDARY_ICON_RESOURCE_ID) {
+            view.setSecondaryIcon(AppCompatResources.getDrawable(
+                    view.getContext(), model.get(SECONDARY_ICON_RESOURCE_ID)));
+        } else if (propertyKey == SECONDARY_ACTION_TEXT) {
+            view.setSecondaryActionText(model.get(SECONDARY_ACTION_TEXT));
         } else if (propertyKey == SECONDARY_ICON_CONTENT_DESCRIPTION) {
             view.setSecondaryIconContentDescription(model.get(SECONDARY_ICON_CONTENT_DESCRIPTION));
+        } else if (propertyKey == ON_SECONDARY_ACTION) {
+            view.setSecondaryActionCallback(model.get(ON_SECONDARY_ACTION));
         } else if (propertyKey == ON_TOUCH_RUNNABLE) {
             Runnable runnable = model.get(ON_TOUCH_RUNNABLE);
             if (runnable == null) {
