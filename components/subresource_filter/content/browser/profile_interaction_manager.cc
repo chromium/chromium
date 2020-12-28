@@ -83,4 +83,37 @@ void ProfileInteractionManager::OnAdsViolationTriggered(
   ads_violation_triggered_for_last_committed_navigation_ = true;
 }
 
+mojom::ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
+    content::NavigationHandle* navigation_handle,
+    mojom::ActivationLevel initial_activation_level,
+    ActivationDecision* decision) {
+  DCHECK(navigation_handle->IsInMainFrame());
+
+  mojom::ActivationLevel effective_activation_level = initial_activation_level;
+
+  if (profile_context_->ads_intervention_manager()->ShouldActivate(
+          navigation_handle)) {
+    effective_activation_level = mojom::ActivationLevel::kEnabled;
+    *decision = ActivationDecision::ACTIVATED;
+  }
+
+  const GURL& url(navigation_handle->GetURL());
+  if (url.SchemeIsHTTPOrHTTPS()) {
+    profile_context_->settings_manager()->SetSiteMetadataBasedOnActivation(
+        url, effective_activation_level == mojom::ActivationLevel::kEnabled,
+        SubresourceFilterContentSettingsManager::ActivationSource::
+            kSafeBrowsing);
+  }
+
+  if (profile_context_->settings_manager()->GetSitePermission(url) ==
+      CONTENT_SETTING_ALLOW) {
+    if (effective_activation_level == mojom::ActivationLevel::kEnabled) {
+      *decision = ActivationDecision::URL_ALLOWLISTED;
+    }
+    return mojom::ActivationLevel::kDisabled;
+  }
+
+  return effective_activation_level;
+}
+
 }  // namespace subresource_filter

@@ -103,38 +103,11 @@ ChromeSubresourceFilterClient::OnPageActivationComputed(
     content::NavigationHandle* navigation_handle,
     subresource_filter::mojom::ActivationLevel initial_activation_level,
     subresource_filter::ActivationDecision* decision) {
-  DCHECK(navigation_handle->IsInMainFrame());
-
-  subresource_filter::mojom::ActivationLevel effective_activation_level =
-      initial_activation_level;
-
-  if (profile_context_->ads_intervention_manager()->ShouldActivate(
-          navigation_handle)) {
-    effective_activation_level =
-        subresource_filter::mojom::ActivationLevel::kEnabled;
-    *decision = subresource_filter::ActivationDecision::ACTIVATED;
-  }
-
-  const GURL& url(navigation_handle->GetURL());
-  if (url.SchemeIsHTTPOrHTTPS()) {
-    profile_context_->settings_manager()->SetSiteMetadataBasedOnActivation(
-        url,
-        effective_activation_level ==
-            subresource_filter::mojom::ActivationLevel::kEnabled,
-        subresource_filter::SubresourceFilterContentSettingsManager::
-            ActivationSource::kSafeBrowsing);
-  }
-
-  if (profile_context_->settings_manager()->GetSitePermission(url) ==
-      CONTENT_SETTING_ALLOW) {
-    if (effective_activation_level ==
-        subresource_filter::mojom::ActivationLevel::kEnabled) {
-      *decision = subresource_filter::ActivationDecision::URL_ALLOWLISTED;
-    }
-    return subresource_filter::mojom::ActivationLevel::kDisabled;
-  }
-
-  return effective_activation_level;
+  // TODO(crbug.com/1116095): Once SafeBrowsingActivationThrottle knows about
+  // ProfileInteractionManager, it can invoke ProfileInteractionManager directly
+  // and SubresourceFilterClient::OnPageActivationComputed() can be eliminated.
+  return profile_interaction_manager_->OnPageActivationComputed(
+      navigation_handle, initial_activation_level, decision);
 }
 
 void ChromeSubresourceFilterClient::OnAdsViolationTriggered(
