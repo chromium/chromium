@@ -199,8 +199,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kLanguageSettingsUpdate;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kLoginDeviceManagementDisclosure;
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kLoginDisplayPasswordButton;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kMediaApp;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kMediaAppAnnotation;
@@ -346,7 +344,6 @@ bool IsInstantTetheringBackgroundAdvertisingSupported();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsKerberosSettingsSectionEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsLoginDeviceManagementDisclosureEnabled();
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsLoginDisplayPasswordButtonEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsMinimumChromeVersionEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsNewOobeLayoutEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsClipboardHistoryEnabled();

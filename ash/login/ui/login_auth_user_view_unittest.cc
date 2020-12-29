@@ -56,17 +56,14 @@ const std::map<LoginAuthUserView::InputFieldMode, InputFieldVisibility>
 
 }  // namespace
 
-class LoginAuthUserViewUnittest
-    : public LoginTestBase,
-      /*<autosubmit_feature, display_password_feature>*/
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+class LoginAuthUserViewUnittest : public LoginTestBase,
+                                  /*autosubmit_feature*/
+                                  public ::testing::WithParamInterface<bool> {
  public:
   static std::string ParamInfoToString(
       testing::TestParamInfo<LoginAuthUserViewUnittest::ParamType> info) {
     return base::StrCat(
-        {std::get<0>(info.param) ? "AutosubmitEnabled" : "AutosubmitDisabled",
-         std::get<1>(info.param) ? "DisplayPasswordEnabled"
-                                 : "DisplayPasswordDisabled"});
+        {info.param ? "AutosubmitEnabled" : "AutosubmitDisabled"});
   }
 
  protected:
@@ -98,18 +95,14 @@ class LoginAuthUserViewUnittest
   }
 
   void SetUpFeatures() {
-    auto param = GetParam();
-    autosubmit_feature_enabled_ = std::get<0>(param);
-    display_password_feature_enabled_ = std::get<1>(param);
-    std::vector<base::Feature> enabled;
-    std::vector<base::Feature> disabled;
-    autosubmit_feature_enabled_
-        ? enabled.push_back(chromeos::features::kQuickUnlockPinAutosubmit)
-        : disabled.push_back(chromeos::features::kQuickUnlockPinAutosubmit);
-    display_password_feature_enabled_
-        ? enabled.push_back(chromeos::features::kLoginDisplayPasswordButton)
-        : disabled.push_back(chromeos::features::kLoginDisplayPasswordButton);
-    feature_list_.InitWithFeatures(enabled, disabled);
+    autosubmit_feature_enabled_ = GetParam();
+    if (autosubmit_feature_enabled_) {
+      feature_list_.InitWithFeatures(
+          {chromeos::features::kQuickUnlockPinAutosubmit}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {chromeos::features::kQuickUnlockPinAutosubmit});
+    }
   }
 
   void SetAuthMethods(uint32_t auth_methods,
@@ -144,9 +137,8 @@ class LoginAuthUserViewUnittest
     EXPECT_EQ(test.pin_password_toggle()->GetVisible(), visibility.toggle);
   }
 
-  // Initialized by test parameters in `SetUpFeatures`
+  // Initialized by test parameter in `SetUpFeatures`
   bool autosubmit_feature_enabled_ = false;
-  bool display_password_feature_enabled_ = false;
 
   base::test::ScopedFeatureList feature_list_;
   LoginUserInfo user_;
@@ -315,16 +307,14 @@ TEST_P(LoginAuthUserViewUnittest, PasswordFieldChangeOnUpdateUser) {
   view_->UpdateForUser(another_user);
   EXPECT_TRUE(password_test.textfield()->GetText().empty());
 
-  if (display_password_feature_enabled_) {
-    password_test.textfield()->SetTextInputType(ui::TEXT_INPUT_TYPE_NULL);
-    EXPECT_EQ(password_test.textfield()->GetTextInputType(),
-              ui::TEXT_INPUT_TYPE_NULL);
+  password_test.textfield()->SetTextInputType(ui::TEXT_INPUT_TYPE_NULL);
+  EXPECT_EQ(password_test.textfield()->GetTextInputType(),
+            ui::TEXT_INPUT_TYPE_NULL);
 
-    // Updating user should make the textfield as a password again.
-    view_->UpdateForUser(user_);
-    EXPECT_EQ(password_test.textfield()->GetTextInputType(),
-              ui::TEXT_INPUT_TYPE_PASSWORD);
-  }
+  // Updating user should make the textfield as a password again.
+  view_->UpdateForUser(user_);
+  EXPECT_EQ(password_test.textfield()->GetTextInputType(),
+            ui::TEXT_INPUT_TYPE_PASSWORD);
 }
 
 // Tests the correctness of InputFieldMode::NONE
@@ -457,11 +447,9 @@ TEST_P(LoginAuthUserViewUnittest, PinAutosubmitFieldModes) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    LoginAuthUserViewTests,
-    LoginAuthUserViewUnittest,
-    testing::Combine(testing::Bool(),   // Display password feature
-                     testing::Bool()),  // PIN autosubmit feature
-    LoginAuthUserViewUnittest::ParamInfoToString);
+INSTANTIATE_TEST_SUITE_P(LoginAuthUserViewTests,
+                         LoginAuthUserViewUnittest,
+                         testing::Bool(),  // PIN autosubmit feature
+                         LoginAuthUserViewUnittest::ParamInfoToString);
 
 }  // namespace ash

@@ -28,21 +28,21 @@ class ArrowButtonView;
 enum class EasyUnlockIconId;
 
 // Contains a textfield and a submit button. When the display password button
-// feature is enabled, the textfield contains a button in the form of an eye
-// icon that the user can click on to reveal the password. Submitting a password
-// will make it read only and prevent further submissions until the controller
-// sets ReadOnly to false again.
+// is visible, the textfield contains a button in the form of an eye icon that
+// the user can click on to reveal the password. Submitting a password will
+// make it read only and prevent further submissions until the controller sets
+// ReadOnly to false again.
 //
 // This view is always rendered via layers.
 //
 //
-// When the display password button feature is disabled, the password view looks
+// When the display password button is hidden, the password view looks
 // like this:
 //
 // * * * * * *         (=>)
 // ------------------
 //
-// When the display password button feature is enabled, the password view looks
+// When the display password button is visible, the password view looks
 // like this by default:
 //
 //  * * * * * *    (\)  (=>)
@@ -86,8 +86,8 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   explicit LoginPasswordView(const LoginPalette& palette);
   ~LoginPasswordView() override;
 
-  // |on_submit| is called when the user hits enter (or pressed the submit arrow
-  // when the display password button feature is disabled).
+  // |on_submit| is called when the user hits enter or has pressed the submit
+  // arrow.
   // |on_password_text_changed| is called when the text in the password field
   // changes.
   void Init(const OnPasswordSubmit& on_submit,
@@ -105,9 +105,8 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   // Set the textfield name used for accessibility.
   void SetAccessibleName(const base::string16& name);
 
-  // Enable or disable focus on the child elements (i.e.: password field, and
-  // submit button if the display password button feature is disabled, or
-  // display password button if the feature is enabled).
+  // Enable or disable focus on the child elements (i.e.: password field and
+  // submit button, or display password button if it is shown).
   void SetFocusEnabledForTextfield(bool enable);
 
   // Sets whether the display password button is visible.
@@ -130,8 +129,7 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   // itself because it doesn't know which auth methods are enabled.
   void SetPlaceholderText(const base::string16& placeholder_text);
 
-  // Makes the textfield read-only, and enables/disables submitting if the
-  // display password button feature is disabled.
+  // Makes the textfield read-only and enables/disables submitting.
   void SetReadOnly(bool read_only);
 
   // views::View:
@@ -182,21 +180,18 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   // textfield is not empty or if |enabled_on_empty_password| is true.
   bool IsPasswordSubmittable();
 
-  // When the display password button feature is disabled, UpdateUiState
-  // enables/disables the submit button.
+  // UpdateUiState enables/disables the submit button, and the display password
+  // button when it is visible.
   void UpdateUiState();
 
   OnPasswordSubmit on_submit_;
   OnPasswordTextChanged on_password_text_changed_;
 
-  // True if the display password button feature is enabled.
-  const bool is_display_password_feature_enabled_;
-
   // Is the password field enabled when there is no text?
   bool enabled_on_empty_password_ = false;
 
   // Clears the password field after a time without action if the display
-  // password feature is enabled.
+  // password button is visible.
   std::unique_ptr<base::RetainingOneShotTimer> clear_password_timer_;
 
   // Hides the password after a short delay if the password is shown, except if

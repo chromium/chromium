@@ -21,7 +21,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -111,12 +110,13 @@ constexpr const int kPasswordRowCornerRadiusDp = 4;
 
 constexpr const int kPasswordRowFocusRingRadiusDp = 6;
 
-// Clears the password after some time if no action has been done and the
-// display password feature is enabled, for security reasons.
+// Delay after which the password gets cleared if nothing has been typed. It is
+// only effective if the display password button is shown, as there is no
+// potential security threat otherwise.
 constexpr base::TimeDelta kClearPasswordAfterDelay =
     base::TimeDelta::FromSeconds(30);
 
-// Hides the password after a short delay for security reasons.
+// Delay after which the password gets back to hidden state, for security.
 constexpr base::TimeDelta kHidePasswordAfterDelay =
     base::TimeDelta::FromSeconds(5);
 
@@ -532,9 +532,7 @@ void LoginPasswordView::TestApi::SetTimers(
 }
 
 LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
-    : is_display_password_feature_enabled_(
-          chromeos::features::IsLoginDisplayPasswordButtonEnabled()),
-      clear_password_timer_(std::make_unique<base::RetainingOneShotTimer>()),
+    : clear_password_timer_(std::make_unique<base::RetainingOneShotTimer>()),
       hide_password_timer_(std::make_unique<base::RetainingOneShotTimer>()),
       palette_(palette) {
   Shell::Get()->ime_controller()->AddObserver(this);
@@ -590,16 +588,13 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
   // OnCapsLockChanged with the actual caps lock state.
   capslock_icon_->SetVisible(false);
 
-  if (is_display_password_feature_enabled_) {
-    display_password_button_ =
-        password_row_->AddChildView(std::make_unique<DisplayPasswordButton>(
-            palette_, base::BindRepeating(
-                          [](LoginPasswordView* view) {
-                            if (view->is_display_password_feature_enabled_)
-                              view->InvertPasswordDisplayingState();
-                          },
-                          this)));
-  }
+  display_password_button_ =
+      password_row_->AddChildView(std::make_unique<DisplayPasswordButton>(
+          palette_, base::BindRepeating(
+                        [](LoginPasswordView* view) {
+                          view->InvertPasswordDisplayingState();
+                        },
+                        this)));
 
   submit_button_ = AddChildView(std::make_unique<ArrowButtonView>(
       base::BindRepeating(&LoginPasswordView::SubmitPassword,
@@ -672,8 +667,6 @@ void LoginPasswordView::SetFocusEnabledForTextfield(bool enable) {
 }
 
 void LoginPasswordView::SetDisplayPasswordButtonVisible(bool visible) {
-  if (!is_display_password_feature_enabled_)
-    return;
   display_password_button_->SetVisible(visible);
   // Only start the timer if the display password button is enabled.
   if (visible) {
@@ -686,11 +679,9 @@ void LoginPasswordView::SetDisplayPasswordButtonVisible(bool visible) {
 void LoginPasswordView::Reset() {
   Clear();
 
-  if (is_display_password_feature_enabled_) {
-    // A user could hit the display button, then quickly switch account and
-    // type; we want the password to be hidden in such a case.
-    HidePassword(false /*chromevox_exception*/);
-  }
+  // A user could hit the display button, then quickly switch account and
+  // type; we want the password to be hidden in such a case.
+  HidePassword(false /*chromevox_exception*/);
 }
 
 void LoginPasswordView::Clear() {
@@ -787,13 +778,11 @@ void LoginPasswordView::ContentsChanged(views::Textfield* sender,
   textfield_->UpdateFontListAndCursor();
   on_password_text_changed_.Run(new_contents.empty() /*is_empty*/);
 
-  if (!is_display_password_feature_enabled_)
-    return;
-
   // If the password is currently revealed.
   if (textfield_->GetTextInputType() == ui::TEXT_INPUT_TYPE_NULL)
     hide_password_timer_->Reset();
-  // The feature could be enabled on the device but disabled for this user by policy.
+
+  // The display password button could be hidden by user policy.
   if (display_password_button_->GetVisible())
     clear_password_timer_->Reset();
 }
@@ -833,9 +822,6 @@ void LoginPasswordView::UpdateUiState() {
   if (!enable_buttons && submit_button_->HasFocus())
     RequestFocus();
   submit_button_->SetEnabled(enable_buttons);
-
-  if (!is_display_password_feature_enabled_)
-    return;
   display_password_button_->SetEnabled(enable_buttons);
 }
 

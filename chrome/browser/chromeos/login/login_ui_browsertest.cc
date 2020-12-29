@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/login/lock/screen_locker_tester.h"
 #include "chrome/browser/chromeos/login/login_manager_test.h"
@@ -24,7 +23,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -168,10 +166,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIEnrolledTest, UserReverseRemoval) {
 
 class DisplayPasswordButtonTest : public LoginManagerTest {
  public:
-  DisplayPasswordButtonTest() : LoginManagerTest() {
-    feature_list_.InitWithFeatures(
-        {chromeos::features::kLoginDisplayPasswordButton}, {});
-  }
+  DisplayPasswordButtonTest() : LoginManagerTest() {}
 
   void LoginAndLock(const LoginManagerMixin::TestUserInfo& test_user) {
     chromeos::WizardController::SkipPostLoginScreensForTesting();
@@ -187,7 +182,7 @@ class DisplayPasswordButtonTest : public LoginManagerTest {
 
   void SetDisplayPasswordButtonEnabledLoginAndLock(
       bool display_password_button_enabled) {
-    // Sets the feature by user policy
+    // Enables the login display password buttonn by user policy.
     {
       std::unique_ptr<ScopedUserPolicyUpdate> scoped_user_policy_update =
           user_policy_mixin_.RequestPolicyUpdate();
@@ -219,9 +214,6 @@ class DisplayPasswordButtonTest : public LoginManagerTest {
       AccountId::FromUserEmailGaiaId("user@example.com", "22222")};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Check if the display password button is shown on the lock screen after having

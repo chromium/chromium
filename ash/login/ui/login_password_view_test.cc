@@ -10,9 +10,7 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
@@ -66,23 +64,6 @@ class LoginPasswordViewTest : public LoginTestBase {
   DISALLOW_COPY_AND_ASSIGN(LoginPasswordViewTest);
 };
 
-// LoginPasswordViewTest with display password button feature enabled.
-class LoginPasswordViewTestFeatureEnabled : public LoginPasswordViewTest {
- protected:
-  LoginPasswordViewTestFeatureEnabled() {
-    feature_list_.InitWithFeatures(
-        {chromeos::features::kLoginDisplayPasswordButton}, {});
-  }
-  LoginPasswordViewTestFeatureEnabled(
-      const LoginPasswordViewTestFeatureEnabled&) = delete;
-  LoginPasswordViewTestFeatureEnabled& operator=(
-      const LoginPasswordViewTestFeatureEnabled&) = delete;
-  ~LoginPasswordViewTestFeatureEnabled() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 }  // namespace
 
 // Verifies that the submit button updates its UI state.
@@ -122,8 +103,7 @@ TEST_F(LoginPasswordViewTest, SubmitButtonUpdatesUiState) {
 }
 
 // Verifies that the display password button updates its UI state.
-TEST_F(LoginPasswordViewTestFeatureEnabled,
-       DisplayPasswordButtonUpdatesUiState) {
+TEST_F(LoginPasswordViewTest, DisplayPasswordButtonUpdatesUiState) {
   LoginPasswordView::TestApi test_api(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
 
@@ -312,7 +292,7 @@ TEST_F(LoginPasswordViewTest, CtrlZDisabled) {
 
 // Verifies that the password textfield clears after a delay when the display
 // password button is shown.
-TEST_F(LoginPasswordViewTestFeatureEnabled, PasswordAutoClearsAndHides) {
+TEST_F(LoginPasswordViewTest, PasswordAutoClearsAndHides) {
   LoginPasswordView::TestApi test_api(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
 
@@ -356,8 +336,7 @@ TEST_F(LoginPasswordViewTestFeatureEnabled, PasswordAutoClearsAndHides) {
 
 // Verifies that the password textfield remains in the same visibility state
 // when the content changes.
-TEST_F(LoginPasswordViewTestFeatureEnabled,
-       ContentChangesDoNotImpactPasswordVisibility) {
+TEST_F(LoginPasswordViewTest, ContentChangesDoNotImpactPasswordVisibility) {
   LoginPasswordView::TestApi test_api(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
 
@@ -398,7 +377,7 @@ TEST_F(LoginPasswordViewTestFeatureEnabled,
 
 // Checks that the display password button is disabled when the textfield is
 // empty and enabled when it is not.
-TEST_F(LoginPasswordViewTestFeatureEnabled,
+TEST_F(LoginPasswordViewTest,
        DisplayPasswordButonIsEnabledIFFTextfieldIsNotEmpty) {
   LoginPasswordView::TestApi test_api(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -432,7 +411,7 @@ TEST_F(LoginPasswordViewTestFeatureEnabled,
 }
 
 // Verifies that focus returned to the textfield after InsertNumber is called.
-TEST_F(LoginPasswordViewTestFeatureEnabled, FocusReturn) {
+TEST_F(LoginPasswordViewTest, FocusReturn) {
   LoginPasswordView::TestApi test_api(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
   // Verify that focus is returned to view after the number insertion.

@@ -447,10 +447,6 @@ const base::Feature kLanguageSettingsUpdate{"LanguageSettingsUpdate",
 const base::Feature kLoginDeviceManagementDisclosure{
     "LoginDeviceManagementDisclosure", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables the display password button on login / lock screen.
-const base::Feature kLoginDisplayPasswordButton{
-    "LoginDisplayPasswordButton", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to enable the requirement of a minimum chrome version on the
 // device through the policy DeviceMinimumVersion. If the requirement is
 // not met and the warning time in the policy has expired, the user is
@@ -786,10 +782,6 @@ bool IsKerberosSettingsSectionEnabled() {
 
 bool IsLoginDeviceManagementDisclosureEnabled() {
   return base::FeatureList::IsEnabled(kLoginDeviceManagementDisclosure);
-}
-
-bool IsLoginDisplayPasswordButtonEnabled() {
-  return base::FeatureList::IsEnabled(kLoginDisplayPasswordButton);
 }
 
 bool IsMinimumChromeVersionEnabled() {
