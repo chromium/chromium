@@ -4382,8 +4382,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, InterstitialNotAffectedByHideShow) {
 // through the interstitial, the decision to proceed is initially remembered.
 // However, if this is followed by another visit, and a good certificate
 // is seen for the same host, the original exception is forgotten.
-// TODO(crbug.com/1150592): flaky.
-IN_PROC_BROWSER_TEST_F(SSLUITest, DISABLED_BadCertFollowedByGoodCert) {
+IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByGoodCert) {
   // It is necessary to use |https_server_expired_| rather than
   // |https_server_mismatched| because the former shares a host with
   // |https_server_| and cert exceptions are per host.
@@ -4404,19 +4403,28 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, DISABLED_BadCertFollowedByGoodCert) {
           profile->GetSSLHostStateDelegate());
 
   // First check that frame requests revoke the decision.
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_expired_.GetURL("/ssl/google.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_expired_.GetURL("/ssl/google.html")));
 
   ProceedThroughInterstitial(tab);
   EXPECT_TRUE(state->HasAllowException(https_server_host, tab));
 
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server_.GetURL("/ssl/google.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("/ssl/google.html")));
   EXPECT_FALSE(state->HasAllowException(https_server_host, tab));
+  // Rarely, an open connection with the bad cert might be reused for the next
+  // navigation, which is supposed to show an interstitial. Close open
+  // connections to ensure a fresh connection (and certificate validation) for
+  // the next navigation. See https://crbug.com/1150592. A deeper fix for this
+  // issue would be to unify certificate bypass logic which is currently split
+  // between the net stack and content layer; see https://crbug.com/488043.
+  state->RevokeUserAllowExceptionsHard(https_server_host);
 
   // Now check that subresource requests revoke the decision.
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_expired_.GetURL("/ssl/google.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_expired_.GetURL("/ssl/google.html")));
+
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(tab));
 
   ProceedThroughInterstitial(tab);
   EXPECT_TRUE(state->HasAllowException(https_server_host, tab));
