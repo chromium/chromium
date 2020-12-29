@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
@@ -234,7 +235,11 @@ public abstract class PersistedTabData implements UserData {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     protected void save() {
         if (mIsTabSaveEnabledSupplier != null && mIsTabSaveEnabledSupplier.get()) {
-            mPersistedTabDataStorage.save(mTab.getId(), mPersistedTabDataId, serializeAndLog());
+            byte[] serialized = serializeAndLog();
+            if (serialized == null) {
+                return;
+            }
+            mPersistedTabDataStorage.save(mTab.getId(), mPersistedTabDataId, serialized);
         }
     }
 
@@ -243,11 +248,17 @@ public abstract class PersistedTabData implements UserData {
      */
     abstract byte[] serialize();
 
-    private byte[] serializeAndLog() {
+    @VisibleForTesting
+    protected byte[] serializeAndLog() {
         byte[] res;
         try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Serialize")) {
             res = serialize();
+        } catch (OutOfMemoryError oe) {
+            Log.e(TAG, "Out of memory error when attempting to save PersistedTabData");
+            res = null;
         }
+        // TODO(crbug.com/1162293) convert to enum histogram and differentiate null/not null/out of
+        // memory
         RecordHistogram.recordBooleanHistogram(
                 "Tabs.PersistedTabData.Serialize." + getUmaTag(), res != null);
         return res;

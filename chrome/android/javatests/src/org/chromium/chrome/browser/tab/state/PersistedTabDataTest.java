@@ -59,6 +59,36 @@ public class PersistedTabDataTest {
         });
     }
 
+    @SmallTest
+    @UiThreadTest
+    @Test
+    public void testSerializeAndLogOutOfMemoryError() {
+        Tab tab = MockTab.createAndInitialize(1, false);
+        OutOfMemoryMockPersistedTabData outOfMemoryMockPersistedTabData =
+                new OutOfMemoryMockPersistedTabData(tab);
+        Assert.assertNull(outOfMemoryMockPersistedTabData.serializeAndLog());
+    }
+
+    @SmallTest
+    @UiThreadTest
+    @Test(expected = OutOfMemoryError.class)
+    public void testSerializeOutOfMemoryError() {
+        Tab tab = MockTab.createAndInitialize(1, false);
+        OutOfMemoryMockPersistedTabData outOfMemoryMockPersistedTabData =
+                new OutOfMemoryMockPersistedTabData(tab);
+        outOfMemoryMockPersistedTabData.serialize();
+    }
+
+    static class OutOfMemoryMockPersistedTabData extends MockPersistedTabData {
+        OutOfMemoryMockPersistedTabData(Tab tab) {
+            super(tab, 0 /** unused in OutOfMemoryMockPersistedTabData */);
+        }
+        @Override
+        public byte[] serialize() {
+            throw new OutOfMemoryError("Out of memory error");
+        }
+    }
+
     private static void registerObserverSupplier(MockPersistedTabData mockPersistedTabData) {
         ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
         supplier.set(true);
