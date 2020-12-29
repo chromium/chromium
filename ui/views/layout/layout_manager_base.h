@@ -106,7 +106,7 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
 
   // Returns whether the specified child view can be visible. To be able to be
   // visible, |child| must be a child of the host view, and must have been
-  // visible when it was added or most recently had GetVisible(true) called on
+  // visible when it was added or most recently had SetVisible(true) called on
   // it by non-layout code.
   bool CanBeVisible(const View* child) const;
 
@@ -171,13 +171,6 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
  private:
   friend class LayoutManagerBaseAvailableSizeTest;
 
-  // Holds bookkeeping data used to determine inclusion of children in the
-  // layout.
-  struct ChildInfo {
-    bool can_be_visible = true;
-    bool ignored = false;
-  };
-
   // LayoutManager:
   void InvalidateLayout() final;
   void Installed(View* host) final;
@@ -203,7 +196,6 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
   void PropagateInvalidateLayout();
 
   View* host_view_ = nullptr;
-  std::map<const View*, ChildInfo> child_infos_;
   std::vector<std::unique_ptr<LayoutManagerBase>> owned_layouts_;
   LayoutManagerBase* parent_layout_ = nullptr;
 

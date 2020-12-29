@@ -56,6 +56,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/drag_controller.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/views_features.h"
@@ -3125,14 +3126,18 @@ View::DefaultFillLayout::~DefaultFillLayout() = default;
 
 void View::DefaultFillLayout::Layout(View* host) {
   const gfx::Rect contents_bounds = host->GetContentsBounds();
-  for (auto* child : host->children())
-    child->SetBoundsRect(contents_bounds);
+  for (auto* child : host->children()) {
+    if (!child->GetProperty(kViewIgnoredByLayoutKey))
+      child->SetBoundsRect(contents_bounds);
+  }
 }
 
 gfx::Size View::DefaultFillLayout::GetPreferredSize(const View* host) const {
   gfx::Size preferred_size;
-  for (auto* child : host->children())
-    preferred_size.SetToMax(child->GetPreferredSize());
+  for (auto* child : host->children()) {
+    if (!child->GetProperty(kViewIgnoredByLayoutKey))
+      preferred_size.SetToMax(child->GetPreferredSize());
+  }
   return preferred_size;
 }
 
@@ -3140,10 +3145,13 @@ int View::DefaultFillLayout::GetPreferredHeightForWidth(const View* host,
                                                         int width) const {
   const gfx::Insets insets = host->GetInsets();
   int preferred_height = 0;
-  for (auto* child : host->children())
-    preferred_height = std::max(
-        preferred_height,
-        child->GetHeightForWidth(width - insets.width()) + insets.height());
+  for (auto* child : host->children()) {
+    if (!child->GetProperty(kViewIgnoredByLayoutKey)) {
+      preferred_height = std::max(
+          preferred_height,
+          child->GetHeightForWidth(width - insets.width()) + insets.height());
+    }
+  }
   return preferred_height;
 }
 

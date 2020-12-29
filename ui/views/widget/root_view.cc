@@ -22,8 +22,8 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/drag_controller.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/root_view_targeter.h"
 #include "ui/views/widget/widget.h"
@@ -210,7 +210,7 @@ void RootView::SetContentsView(View* contents_view) {
       << "Can't be called until after the native widget is created!";
   // The ContentsView must be set up _after_ the window is created so that its
   // Widget pointer is valid.
-  SetLayoutManager(std::make_unique<FillLayout>());
+  SetUseDefaultFillLayout(true);
   if (!children().empty())
     RemoveAllChildViews(true);
   AddChildView(contents_view);
@@ -268,8 +268,7 @@ void RootView::AnnounceText(const base::string16& text) {
   DCHECK(GetContentsView());
   if (!announce_view_) {
     announce_view_ = AddChildView(std::make_unique<AnnounceTextView>());
-    static_cast<FillLayout*>(GetLayoutManager())
-        ->SetChildViewIgnoredByLayout(announce_view_, true);
+    announce_view_->SetProperty(kViewIgnoredByLayoutKey, true);
   }
   announce_view_->Announce(text);
 #endif
