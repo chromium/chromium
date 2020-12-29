@@ -214,8 +214,8 @@ body.tablet-landscape .actions-group {
 }
 
 #mode-selector {
-  --fade-padding: 16px;
-  --scrollbar-height: 5px;
+  --fade-padding: 24px;
+  --scrollbar-height: 4px;
 
   left: calc(var(--left-line) * 2);
   right: calc(var(--right-line) * 2);
@@ -246,7 +246,6 @@ body.tablet-landscape .actions-group {
 #modes-group {
   display: block;
   overflow: auto;
-  padding: 5px 0;
   pointer-events: auto;
   text-align: center;
   white-space: nowrap;
@@ -259,8 +258,8 @@ body.taking:not(.video) #shutters-group {
 }
 
 #modes-group::-webkit-scrollbar-thumb {
-  background: gray;
-  border-radius: 3px/50%;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
   height: auto;
   width: auto;
 }
@@ -321,7 +320,7 @@ body.playing-result-video #play-result-video {
 
   display: inline-block;
   font-size: 0; /* Remove space between inline-block. */
-  margin: calc(var(--focus-ring-gap) + var(--focus-ring-border)) 12px;
+  margin: calc(var(--focus-ring-gap) + var(--focus-ring-border)) 8px;
   position: relative;
 }
 
