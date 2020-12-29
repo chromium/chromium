@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -78,13 +79,13 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   bool IsForCopyAndPaste() const { return transfer_type_ == kCopyAndPaste; }
   bool IsForDragAndDrop() const { return transfer_type_ == kDragAndDrop; }
 
-  String dropEffect() const {
+  AtomicString dropEffect() const {
     return DropEffectIsInitialized() ? drop_effect_ : "none";
   }
-  void setDropEffect(const String&);
+  void setDropEffect(const AtomicString&);
   bool DropEffectIsInitialized() const { return !drop_effect_.IsNull(); }
-  String effectAllowed() const { return effect_allowed_; }
-  void setEffectAllowed(const String&);
+  AtomicString effectAllowed() const { return effect_allowed_; }
+  void setEffectAllowed(const AtomicString&);
 
   void clearData(const String& type = String());
   String getData(const String& type) const;
@@ -165,8 +166,8 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   // Instead of using this member directly, prefer to use the can*() methods
   // above.
   DataTransferAccessPolicy policy_;
-  String drop_effect_;
-  String effect_allowed_;
+  AtomicString drop_effect_;
+  AtomicString effect_allowed_;
   DataTransferType transfer_type_;
   Member<DataObject> data_object_;
 

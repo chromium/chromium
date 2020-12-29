@@ -159,7 +159,7 @@ class DraggedNodeImageBuilder {
 };
 
 base::Optional<DragOperationsMask> ConvertEffectAllowedToDragOperationsMask(
-    const String& op) {
+    const AtomicString& op) {
   // Values specified in
   // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-effectallowed
   if (op == "uninitialized")
@@ -189,7 +189,7 @@ base::Optional<DragOperationsMask> ConvertEffectAllowedToDragOperationsMask(
   return base::nullopt;
 }
 
-String ConvertDragOperationsMaskToEffectAllowed(DragOperationsMask op) {
+AtomicString ConvertDragOperationsMaskToEffectAllowed(DragOperation op) {
   if (((op & kDragOperationMove) && (op & kDragOperationCopy) &&
        (op & kDragOperationLink)) ||
       (op == kDragOperationEvery))
@@ -245,7 +245,7 @@ DataTransfer* DataTransfer::Create(DataTransferType type,
 
 DataTransfer::~DataTransfer() = default;
 
-void DataTransfer::setDropEffect(const String& effect) {
+void DataTransfer::setDropEffect(const AtomicString& effect) {
   if (!IsForDragAndDrop())
     return;
 
@@ -260,7 +260,7 @@ void DataTransfer::setDropEffect(const String& effect) {
   drop_effect_ = effect;
 }
 
-void DataTransfer::setEffectAllowed(const String& effect) {
+void DataTransfer::setEffectAllowed(const AtomicString& effect) {
   if (!IsForDragAndDrop())
     return;
 
