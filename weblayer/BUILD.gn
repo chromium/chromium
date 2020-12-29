@@ -261,6 +261,8 @@ source_set("weblayer_lib_base") {
     "browser/stateful_ssl_host_state_delegate_factory.h",
     "browser/subresource_filter_client_impl.cc",
     "browser/subresource_filter_client_impl.h",
+    "browser/subresource_filter_profile_context_factory.cc",
+    "browser/subresource_filter_profile_context_factory.h",
     "browser/system_network_context_manager.cc",
     "browser/system_network_context_manager.h",
     "browser/tab_impl.cc",
