@@ -447,7 +447,7 @@ void StyleEngine::MediaQueryAffectingValueChanged(
       }
     }
 
-    if (style_needs_recalc) {
+    if (style_needs_recalc && text_track->Owner()) {
       // Use kSubtreeTreeStyleChange instead of RuleSet style invalidation
       // because it won't be expensive for tracks and we won't have dynamic
       // changes.
