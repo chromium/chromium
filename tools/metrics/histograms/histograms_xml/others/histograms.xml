@@ -3298,6 +3298,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CrashReport.Sender.ActiveRuntime" units="ms"
     expires_after="2021-05-23">
+  <obsolete>
+    As of 2020-12, we've decided on a timeout and no longer need this metric.
+  </obsolete>
   <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>cros-telemetry@google.com</owner>
@@ -3310,6 +3313,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CrashReport.Sender.Runtime" units="ms"
     expires_after="2021-01-15">
+  <obsolete>
+    As of 2020-12, we've decided on a timeout and no longer need this metric.
+  </obsolete>
   <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>cros-telemetry@google.com</owner>
