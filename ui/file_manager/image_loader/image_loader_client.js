@@ -99,6 +99,12 @@ ImageLoaderClient.sendMessage_ = function(request, callback) {
 ImageLoaderClient.CLIENT_URL_REGEX = /filesystem:chrome-extension:\/\/[a-z]+/;
 
 /**
+ * Image loader client chrome://file-manager request URL matcher.
+ * @const {!RegExp}
+ */
+ImageLoaderClient.CLIENT_SWA_REGEX = /filesystem:chrome:\/\/file-manager/;
+
+/**
  * All client request URL match ImageLoaderClient.CLIENT_URL_REGEX and all are
  * rewritten: the client extension id part of the request URL is replaced with
  * the image loader extension id.
@@ -119,9 +125,11 @@ ImageLoaderClient.prototype.load = function(request, callback) {
   ImageLoaderClient.recordPercentage('Cache.Usage',
       this.cache_.size() / ImageLoaderClient.CACHE_MEMORY_LIMIT * 100.0);
 
-  // Replace the client extension id with the image loader extension id.
+  // Replace the client origin with the image loader extension origin.
   request.url = request.url.replace(
       ImageLoaderClient.CLIENT_URL_REGEX, ImageLoaderClient.IMAGE_LOADER_URL);
+  request.url = request.url.replace(
+      ImageLoaderClient.CLIENT_SWA_REGEX, ImageLoaderClient.IMAGE_LOADER_URL);
 
   // Try to load from cache, if available.
   const cacheKey = LoadImageRequest.cacheKey(request);
