@@ -105,6 +105,7 @@ task_manager::TaskManagerTableModel* TaskManagerView::Show(Browser* browser) {
   window->SetProperty(ash::kShelfIDKey, shelf_id.Serialize());
   window->SetProperty(ash::kAppIDKey, shelf_id.app_id);
   window->SetProperty<int>(ash::kShelfItemTypeKey, ash::TYPE_DIALOG);
+  window->SetTitle(l10n_util::GetStringUTF16(IDS_TASK_MANAGER_TITLE));
 #endif
   return g_task_manager_view->table_model_.get();
 }
@@ -277,7 +278,10 @@ TaskManagerView::TaskManagerView()
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
   SetHasWindowSizeControls(true);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Chrome OS, the widget's frame should not show the window title.
   SetTitle(IDS_TASK_MANAGER_TITLE);
+#endif
 
   // Avoid calling Accept() when closing the dialog, since Accept() here means
   // "kill task" (!).
