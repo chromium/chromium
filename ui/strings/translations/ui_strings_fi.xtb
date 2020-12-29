@@ -32,7 +32,7 @@
 <translation id="1761785978543082658"><ph name="QUANTITY" /> t</translation>
 <translation id="1801827354178857021">Jakso</translation>
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 kuukausi}other{# kuukautta}}</translation>
-<translation id="1809410197924942083"><ph name="QUANTITY" /> Mt/s</translation>
+<translation id="1809410197924942083"><ph name="QUANTITY" /> Mb/s</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 tunti ja }other{# tuntia ja }}</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> irrotettiin</translation>
 <translation id="1842960171412779397">Valitse</translation>

@@ -145,7 +145,7 @@
 <translation id="1988733631391393183">Show braille commands in the ChromeVox menus</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{left bracket}other{# left brackets}}</translation>
 <translation id="2009187674653301682">Not superscript</translation>
-<translation id="2010555995361223825">ChromeVox Menus</translation>
+<translation id="2010555995361223825">ChromeVox menus</translation>
 <translation id="203030071582665758">No previous level 4 heading</translation>
 <translation id="2045055672832940894">No previous control</translation>
 <translation id="2045606329038304310">Form field control</translation>
@@ -187,7 +187,7 @@
 <translation id="2365384324219615024">You can also press Enter to activate items. For example, Enter can be used to submit text in a form. To continue, press Enter.</translation>
 <translation id="2381733276052567791">Toggle speech on or off</translation>
 <translation id="2390264819538553347">To advance, press enter; to go back, press backspace.</translation>
-<translation id="2398579267367951220">Type to search the page. Press enter to jump to the result, up or down arrows to browse results, keep typing to change your search, or escape to cancel.</translation>
+<translation id="2398579267367951220">Type to search the page. Press Enter to jump to the result, up or down arrows to browse results, keep typing to change your search, or Escape to cancel.</translation>
 <translation id="240709722712693803">Blue Violet</translation>
 <translation id="2416512023405990736">An unticked tick box</translation>
 <translation id="2417569100218200841">Content info</translation>

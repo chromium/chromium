@@ -153,7 +153,7 @@
 <translation id="1492194039220927094">မူဝါဒများ ထည့်သွင်းရန်-</translation>
 <translation id="1501859676467574491">သင့် Google အကောင့်မှ ကတ်များကို ပြရန်</translation>
 <translation id="1507202001669085618">&lt;p&gt;အွန်လိုင်း မရရှိမီ လက်မှတ်ထိုးဝင်ရသည့် Wi-Fi ပေါ်တယ်ကို အသုံးပြုသည့်အခါ ဤအမှားကို တွေ့ရပါမည်။&lt;/p&gt;
-    &lt;p&gt;ထိုအမှားအယွင်းကို ဖြေရှင်းရန် သင်ဖွင့်ရန် ကြိုးစားနေသည့် စာမျက်နှာတွင် &lt;strong&gt;ချိတ်ဆက်ရန်&lt;/strong&gt; ကို ကလစ်နှိပ်ပါ။&lt;/p&gt;</translation>
+    &lt;p&gt;ထိုအမှားအယွင်းကို ဖြေရှင်းရန် သင်ဖွင့်ရန် ကြိုးစားနေသည့် စာမျက်နှာတွင် &lt;strong&gt;ချိတ်ဆက်ရန်&lt;/strong&gt; ကို နှိပ်ပါ။&lt;/p&gt;</translation>
 <translation id="1513706915089223971">မှတ်တမ်း ထည့်သွင်းမှုများ စာရင်း</translation>
 <translation id="1517433312004943670">ဖုန်းနံပါတ်လိုအပ်ပါသည်</translation>
 <translation id="1519264250979466059">တည်ဆောက်သည့် ရက်စွဲ</translation>
@@ -1138,7 +1138,7 @@
 <translation id="5443468954631487277">ပြောင်းပြန်အစဉ်ဖြင့် အပေါ်လှန်ထားရန်</translation>
 <translation id="5447765697759493033">ဤဝဘ်ဆိုက်ကို ဘာသာပြန်မည် မဟုတ်ပါ</translation>
 <translation id="5452270690849572955">ဤ <ph name="HOST_NAME" /> စာမျက်နှာကို မတွေ့ပါ</translation>
-<translation id="5455374756549232013">မူဝါဒ အချိန်ထုမှု ညံ့ဖျင်း</translation>
+<translation id="5455374756549232013">ညံ့ဖျင်းသည့် မူဝါဒ အချိန်ဖော်ပြချက်</translation>
 <translation id="5457113250005438886">မမှန်ပါ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5470861586879999274">&amp;တည်းဖြတ်မှု ပြန်လုပ်ရန်</translation>
