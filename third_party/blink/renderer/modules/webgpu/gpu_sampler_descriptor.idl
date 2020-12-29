@@ -14,6 +14,7 @@ dictionary GPUSamplerDescriptor : GPUObjectDescriptorBase {
     float lodMinClamp = 0;
     float lodMaxClamp = 0xffffffff;
     GPUCompareFunction compare;
+    [Clamp] unsigned short maxAnisotropy = 1;
 };
 
 enum GPUAddressMode {
