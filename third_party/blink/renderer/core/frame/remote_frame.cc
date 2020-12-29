@@ -234,7 +234,6 @@ bool RemoteFrame::DetachImpl(FrameDetachType type) {
   // the parent is a local frame.
   if (view_)
     view_->Dispose();
-  GetWindowProxyManager()->ClearForClose();
   SetView(nullptr);
   // ... the RemoteDOMWindow will need to be informed of detachment,
   // as otherwise it will keep a strong reference back to this RemoteFrame.

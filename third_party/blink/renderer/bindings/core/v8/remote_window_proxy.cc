@@ -74,6 +74,7 @@ void RemoteWindowProxy::DisposeContext(Lifecycle next_status,
   if ((next_status == Lifecycle::kV8MemoryIsForciblyPurged ||
        next_status == Lifecycle::kGlobalObjectIsDetached) &&
       !global_proxy_.IsEmpty()) {
+    v8::HandleScope handle_scope(GetIsolate());
     global_proxy_.Get().SetWrapperClassId(0);
     V8DOMWrapper::ClearNativeInfo(GetIsolate(),
                                   global_proxy_.NewLocal(GetIsolate()));

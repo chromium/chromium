@@ -666,9 +666,6 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 
   DCHECK(!view_->IsAttached());
   Client()->WillBeDetached();
-  // Notify WindowProxyManager that the frame is closing, since its cleanup ends
-  // up calling back to LocalFrameClient via WindowProxy.
-  GetWindowProxyManager()->ClearForClose();
 
   // TODO(crbug.com/729196): Trace why LocalFrameView::DetachFromLayout crashes.
   CHECK(!view_->IsAttached());
