@@ -81,7 +81,8 @@ class BorealisStateManager {
         std::move(callback).Run(Expected<State*, OnError>(instance_.get()));
         break;
       case Phase::kTransitioningOff:
-        std::move(callback).Run(Unexpected<State*>(GetIsTurningOffError()));
+        std::move(callback).Run(
+            Unexpected<State*, OnError>(GetIsTurningOffError()));
         break;
     }
   }
@@ -157,7 +158,8 @@ class BorealisStateManager {
       pending_on_callbacks_.Notify(Expected<State*, OnError>(instance_.get()));
     } else {
       on_transition_.reset();
-      pending_on_callbacks_.Notify(Unexpected<State*>(on_result.Error()));
+      pending_on_callbacks_.Notify(
+          Unexpected<State*, OnError>(on_result.Error()));
     }
   }
 

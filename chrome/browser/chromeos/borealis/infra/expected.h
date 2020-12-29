@@ -22,26 +22,23 @@ namespace borealis {
 template <typename T, typename E>
 class Expected {
  public:
-  // Convenient typedefs.
-  using value_t = T;
-  using error_t = E;
-
   // TODO(b/172501195): This implementation is only partial, either complete it
   // or replace it with the standard. Until then |T| and |E| should probably be
-  // movable and copy-able respectively.
+  // movable.
   static_assert(std::is_move_constructible<T>::value,
                 "Expected's value type must be move-constructible");
-  static_assert(std::is_copy_constructible<E>::value,
-                "Expected's error type must be copy-constructible");
-  static_assert(std::is_copy_assignable<E>::value,
-                "Expected's error type must be copy-assignable");
+  static_assert(std::is_move_constructible<E>::value,
+                "Expected's error type must be move-constructible");
 
   // Construct an object with the expected type.
-  template <class TT>
+  template <typename TT>
   explicit Expected(TT&& value) : storage_(std::forward<T>(value)) {}
 
   // Construct an object with the error type.
-  static Expected<T, E> Unexpected(E error) { return Expected(error); }
+  template <typename EE>
+  static Expected<T, E> Unexpected(EE&& error) {
+    return Expected(Marker{.item_{std::forward<E>(error)}});
+  }
 
   // Returns true iff we are holding the expected value (i.e. a |T|).
   explicit operator bool() const {
@@ -58,41 +55,51 @@ class Expected {
 
   // Unsafe access to the underlying error. Use only if you know |this| is in
   // the requested state.
-  E& Error() { return absl::get<E>(storage_); }
-  const E& Error() const { return absl::get<E>(storage_); }
+  E& Error() { return absl::get<Marker>(storage_).item_; }
+  const E& Error() const { return absl::get<Marker>(storage_).item_; }
 
   // Safe access to the underlying value, or nullptr;
   T* MaybeValue() { return absl::get_if<T>(&storage_); }
 
   // Safe access to the underlying error, or nullptr;
-  E* MaybeError() { return absl::get_if<E>(&storage_); }
+  E* MaybeError() {
+    Marker* maybe_error = absl::get_if<Marker>(&storage_);
+    return maybe_error ? &(maybe_error->item_) : nullptr;
+  }
 
-  // Invoke exactly one of the |on_value| or |on_error| callbacks, depending on
-  // the state of |this|. Works a bit like absl::visit() but more chrome-ey.
-  // Returns whatever type those callbacks return (which must be the same).
+  // Invoke exactly one of the |on_value| or |on_error| callbacks, depending
+  // on the state of |this|. Works a bit like absl::visit() but more
+  // chrome-ey. Returns whatever type those callbacks return (which must be
+  // the same).
   template <typename R>
   R Handle(base::OnceCallback<R(T&)> on_value,
            base::OnceCallback<R(E&)> on_error) {
     if (*this) {
-      return std::move(on_value).Run(absl::get<T>(storage_));
+      return std::move(on_value).Run(Value());
     } else {
-      return std::move(on_error).Run(absl::get<E>(storage_));
+      return std::move(on_error).Run(Error());
     }
   }
 
  private:
-  // We want people to explicitly use Unexpected(E) rather than this
-  // constructor.
-  explicit Expected(E error) : storage_(error) {}
+  // This wrapper is used to distinguish between the expected and unexpected
+  // type, in case they are the same.
+  struct Marker {
+    E item_;
+  };
+
+  // Construct an unexpected object, using the Marker.
+  explicit Expected(Marker error) : storage_(std::move(error)) {}
 
   // Under-the-hood, the two states are recorded as a type-safe union.
-  absl::variant<T, E> storage_;
+  absl::variant<T, Marker> storage_;
 };
 
-// Convenience function for creating Expected<T, E> objects in the error state.
-template <typename T, typename E>
-Expected<T, E> Unexpected(E error) {
-  return Expected<T, E>::Unexpected(error);
+// Convenience function for creating Expected<T, E> objects in the error
+// state.
+template <typename T, typename E, typename EE>
+Expected<T, E> Unexpected(EE&& error) {
+  return Expected<T, E>::Unexpected(std::forward<E>(error));
 }
 
 }  // namespace borealis
