@@ -47,7 +47,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Omnibox.BitmapFetchLatency" units="ms"
-    expires_after="2021-04-23">
+    expires_after="2021-06-27">
 <!-- Name completed by histogram_suffixes name="Omnibox.BitmapFetchLatencyCacheSplit" -->
 
   <owner>manukh@chromium.org</owner>

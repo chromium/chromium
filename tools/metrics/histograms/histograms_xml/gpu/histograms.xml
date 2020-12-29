@@ -592,7 +592,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.VideoPresentationMode"
-    enum="DirectCompositionVideoPresentationMode" expires_after="2021-04-25">
+    enum="DirectCompositionVideoPresentationMode" expires_after="2021-06-27">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>

@@ -418,7 +418,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.DelayedPacketOutageEventsPerMinute"
-    units="events/minute" expires_after="2021-04-25">
+    units="events/minute" expires_after="2021-06-27">
   <owner>hlundin@chromium.org</owner>
   <summary>
     Counts the number of delayed packet outage events per minute. The range is
@@ -753,7 +753,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.ReceiverDeviceDelayMs" units="ms"
-    expires_after="2021-04-25">
+    expires_after="2021-06-27">
   <owner>hlundin@chromium.org</owner>
   <summary>
     The sound card's buffering delay for the receiving side. Sampled once every
@@ -762,7 +762,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.ReceiverJitterBufferDelayMs" units="ms"
-    expires_after="2021-04-25">
+    expires_after="2021-06-27">
   <owner>hlundin@chromium.org</owner>
   <summary>
     The jitter buffer delay for the receiving side. Sampled once every 10 ms

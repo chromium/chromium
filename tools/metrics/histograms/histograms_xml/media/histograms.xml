@@ -526,7 +526,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.FramesRequested" units="frames"
-    expires_after="2021-04-05">
+    expires_after="2021-06-27">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>

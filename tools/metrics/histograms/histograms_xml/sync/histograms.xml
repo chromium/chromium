@@ -517,7 +517,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeConfigurationTime.Ephemeral"
-    units="ms" expires_after="2021-04-25">
+    units="ms" expires_after="2021-06-27">
   <owner>jkrcal@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
