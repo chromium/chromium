@@ -14,8 +14,10 @@
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/assistant/platform/audio_input_host.h"
+#include "chromeos/services/assistant/platform/audio_stream_factory_delegate.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
+#include "media/audio/audio_device_description.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -93,12 +95,22 @@ class AudioInputImplTest : public testing::Test,
     return audio_input_impl_->IsRecordingForTesting();
   }
 
+  std::string GetOpenDeviceId() const {
+    return audio_input_impl_->GetOpenDeviceIdForTesting().value_or("<none>");
+  }
+
+  bool IsUsingDeadStreamDetection() const {
+    return audio_input_impl_->IsUsingDeadStreamDetectionForTesting().value_or(
+        false);
+  }
+
   bool IsUsingHotwordDevice() const {
     return audio_input_impl_->IsUsingHotwordDeviceForTesting();
   }
 
   void CreateNewAudioInputImpl() {
-    audio_input_impl_ = std::make_unique<AudioInputImpl>("fake-device-id");
+    audio_input_impl_ = std::make_unique<AudioInputImpl>(
+        &audio_stream_factory_delegate_, "fake-device-id");
 
     audio_input_host_ = std::make_unique<AudioInputHost>(
         audio_input_impl_.get(), CrasAudioHandler::Get(),
@@ -138,10 +150,20 @@ class AudioInputImplTest : public testing::Test,
 
   void SetLidState(LidState state) { ReportLidEvent(state); }
 
+  void StartAudioRecording() {
+    // We are guaranteed to start audio recording if the following conditions
+    // are all met.
+    SetLidState(LidState::OPEN);
+    audio_input_impl()->SetMicState(/*mic_open=*/true);
+    audio_input_impl_->AddObserver(this);
+    EXPECT_TRUE(GetRecordingStatus());
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   ScopedFakeAssistantClient fake_assistant_client_;
+  DefaultAudioStreamFactoryDelegate audio_stream_factory_delegate_;
   ::testing::NiceMock<ScopedCrasAudioClientMock> cras_audio_client_mock_;
   std::unique_ptr<AudioInputImpl> audio_input_impl_;
   std::unique_ptr<AudioInputHost> audio_input_host_;
@@ -224,10 +246,17 @@ TEST_F(AudioInputImplTest, ShouldReadCurrentLidStateWhenLaunching) {
   EXPECT_FALSE(GetRecordingStatus());
 }
 
+TEST_F(AudioInputImplTest, ShouldUseDefaultDeviceIdIfNoDeviceIdIsSet) {
+  audio_input_impl()->SetDeviceId(std::string());
+  audio_input_impl()->SetHotwordDeviceId(std::string());
+
+  StartAudioRecording();
+
+  EXPECT_EQ(media::AudioDeviceDescription::kDefaultDeviceId, GetOpenDeviceId());
+}
+
 TEST_F(AudioInputImplTest, SettingHotwordDeviceDoesNotAffectRecordingState) {
-  // Start as recording.
-  ReportLidEvent(LidState::OPEN);
-  EXPECT_TRUE(GetRecordingStatus());
+  StartAudioRecording();
 
   // Hotword device does not change recording state.
   audio_input_impl()->SetHotwordDeviceId(std::string());
@@ -238,9 +267,7 @@ TEST_F(AudioInputImplTest, SettingHotwordDeviceDoesNotAffectRecordingState) {
 }
 
 TEST_F(AudioInputImplTest, SettingHotwordDeviceUsesHotwordDeviceForRecording) {
-  // Start as recording.
-  ReportLidEvent(LidState::OPEN);
-  EXPECT_TRUE(GetRecordingStatus());
+  StartAudioRecording();
 
   // Hotword device does not change recording state.
   audio_input_impl()->SetHotwordDeviceId(std::string());
@@ -250,6 +277,17 @@ TEST_F(AudioInputImplTest, SettingHotwordDeviceUsesHotwordDeviceForRecording) {
   audio_input_impl()->SetHotwordDeviceId("fake-hotword-device");
   EXPECT_TRUE(GetRecordingStatus());
   EXPECT_TRUE(IsUsingHotwordDevice());
+}
+
+TEST_F(AudioInputImplTest,
+       DeadStreamDetectionShouldBeDisabledWhenUsingHotwordDevice) {
+  StartAudioRecording();
+
+  audio_input_impl()->SetHotwordDeviceId(std::string());
+  EXPECT_TRUE(IsUsingDeadStreamDetection());
+
+  audio_input_impl()->SetHotwordDeviceId("fake-hotword-device");
+  EXPECT_FALSE(IsUsingDeadStreamDetection());
 }
 
 TEST_F(AudioInputImplTest, ShouldSendHotwordLocaleToCrasAudioClient) {

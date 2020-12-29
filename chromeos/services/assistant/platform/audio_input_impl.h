@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
@@ -22,6 +23,9 @@
 namespace chromeos {
 namespace assistant {
 
+class AudioStream;
+class AudioStreamFactoryDelegate;
+
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
     : public assistant_client::AudioInput,
       public media::AudioCapturerSource::CaptureCallback {
@@ -31,7 +35,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
     kClosed,
   };
 
-  explicit AudioInputImpl(const std::string& device_id);
+  explicit AudioInputImpl(
+      AudioStreamFactoryDelegate* audio_stream_factory_delegate,
+      const std::string& device_id);
   ~AudioInputImpl() override;
 
   class HotwordStateManager {
@@ -90,13 +96,20 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
   bool IsRecordingForTesting() const;
   // Returns if the hotword device is used for recording now.
   bool IsUsingHotwordDeviceForTesting() const;
+  // Returns the id of the device that is currently recording audio.
+  // Returns nullopt if no audio is being recorded.
+  base::Optional<std::string> GetOpenDeviceIdForTesting() const;
+  // Returns if dead stream detection is being used for the current audio
+  // recording. Returns nullopt if no audio is being recorded.
+  base::Optional<bool> IsUsingDeadStreamDetectionForTesting() const;
 
  private:
   void StartRecording();
   void StopRecording();
   void UpdateRecordingState();
 
-  scoped_refptr<media::AudioCapturerSource> source_;
+  std::string GetDeviceId(bool use_dsp) const;
+  bool ShouldEnableDeadStreamDetection(bool use_dsp) const;
 
   // User explicitly requested to open microphone.
   bool mic_open_ = false;
@@ -123,12 +136,17 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
 
   std::unique_ptr<HotwordStateManager> state_manager_;
 
+  // It is the responsibility of the classes that own |this| to ensure
+  // |audio_stream_factory_deletate| outlives |this|.
+  AudioStreamFactoryDelegate* const audio_stream_factory_delegate_;
+
   // Preferred audio input device which will be used for capture.
   std::string preferred_device_id_;
   // Hotword input device used for hardware based hotword detection.
   std::string hotword_device_id_;
-  // Device currently being used for recording.
-  std::string device_id_;
+
+  // Currently open audio stream. nullptr if no audio stream is open.
+  std::unique_ptr<AudioStream> open_audio_stream_;
 
   // Start with lidstate |kClosed| so we do not open the microphone before we
   // know if the lid is open or closed.

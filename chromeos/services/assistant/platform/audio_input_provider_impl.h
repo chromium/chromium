@@ -27,6 +27,7 @@ class AudioInputProviderImpl : public assistant_client::AudioInputProvider {
   int64_t GetCurrentAudioTime() override;
 
  private:
+  std::unique_ptr<AudioStreamFactoryDelegate> audio_stream_factory_delegate_;
   AudioInputImpl audio_input_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioInputProviderImpl);

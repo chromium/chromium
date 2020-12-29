@@ -4,13 +4,17 @@
 
 #include "chromeos/services/assistant/platform/audio_input_provider_impl.h"
 
+#include "chromeos/services/assistant/platform/audio_stream_factory_delegate.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 
 namespace chromeos {
 namespace assistant {
 
 AudioInputProviderImpl::AudioInputProviderImpl()
-    : audio_input_(/*input_device_id=*/std::string()) {}
+    : audio_stream_factory_delegate_(
+          std::make_unique<DefaultAudioStreamFactoryDelegate>()),
+      audio_input_(audio_stream_factory_delegate_.get(),
+                   /*device_id=*/std::string()) {}
 
 AudioInputProviderImpl::~AudioInputProviderImpl() = default;
 

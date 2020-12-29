@@ -58,6 +58,7 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
   void BindStreamFactory(
       mojo::PendingReceiver<audio::mojom::StreamFactory> receiver);
 
+  std::unique_ptr<AudioStreamFactoryDelegate> audio_stream_factory_delegate_;
   AudioInputImpl loop_back_input_;
   VolumeControlImpl volume_control_impl_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
