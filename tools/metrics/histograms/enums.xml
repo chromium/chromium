@@ -14251,6 +14251,11 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="3" label="User disabled"/>
 </enum>
 
+<enum name="CrosCdmType">
+  <int value="0" label="Chrome CDM"/>
+  <int value="1" label="Platform CDM"/>
+</enum>
+
 <enum name="CrosComponentManagerError">
   <int value="0" label="NONE"/>
   <int value="1" label="UNKNOWN_COMPONENT"/>

@@ -233,6 +233,18 @@ class SeatbeltExtensionTokenProviderImpl
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS) && BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kChromeOsCdmFileSystemId[] =
     "application_chromeos-cdm-factory-daemon";
+
+// These are reported to UMA server. Do not renumber or reuse values.
+enum class CrosCdmType {
+  kChromeCdm = 0,
+  kPlatformCdm = 1,
+  // Note: Only add new values immediately before this line.
+  kMaxValue = kPlatformCdm,
+};
+
+void ReportCdmTypeUMA(CrosCdmType cdm_type) {
+  UMA_HISTOGRAM_ENUMERATION("Media.EME.CrosCdmType", cdm_type);
+}
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The amount of time to allow the secondary Media Service instance to idle
@@ -455,6 +467,7 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
       return;
     }
   }
+  ReportCdmTypeUMA(CrosCdmType::kChromeCdm);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   auto* factory = GetCdmFactory(key_system);
 #elif BUILDFLAG(ENABLE_CAST_RENDERER)
@@ -577,6 +590,7 @@ void MediaInterfaceProxy::OnChromeOsCdmCreated(
     mojo::PendingRemote<media::mojom::Decryptor> decryptor,
     const std::string& error_message) {
   if (receiver) {
+    ReportCdmTypeUMA(CrosCdmType::kPlatformCdm);
     // Success case, just pass it back through the callback.
     std::move(callback).Run(std::move(receiver), cdm_id, std::move(decryptor),
                             error_message);
@@ -592,6 +606,7 @@ void MediaInterfaceProxy::OnChromeOsCdmCreated(
                             mojo::NullRemote(), "Unable to find a CDM factory");
     return;
   }
+  ReportCdmTypeUMA(CrosCdmType::kChromeCdm);
   factory->CreateCdm(key_system, cdm_config, std::move(callback));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -1513,6 +1513,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The time it takes to create the CDM instance.</summary>
 </histogram>
 
+<histogram name="Media.EME.CrosCdmType" enum="CrosCdmType"
+    expires_after="2022-01-15">
+  <owner>jkardatzke@chromium.org</owner>
+  <owner>cros-gfx-video@google.com</owner>
+  <summary>
+    Whether we used the platform CDM on Chrome OS that includes HW secure
+    Widevine support, or fell back to the Chrome SW CDM.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CrosPlatformCdm.SystemCode" enum="CdmSystemCode"
+    expires_after="2022-01-15">
+  <owner>jkardatzke@chromium.org</owner>
+  <owner>cros-gfx-video@google.com</owner>
+  <summary>
+    System code count in promise rejection for ChromeOS platform CDM.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.EncryptedEvent" enum="BooleanEncryptedEvent"
     expires_after="2021-05-07">
   <owner>xhwang@chromium.org</owner>
@@ -1668,6 +1687,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
+  <summary>
+    Output protection query status and result. One query and one positive (no
+    unprotected external links) result (if any) are reported per CDM instance.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.OutputProtection.PlatformCdm"
+    enum="MediaOutputProtectionStatus" expires_after="2022-01-15">
+  <owner>jkardatzke@chromium.org</owner>
+  <owner>cros-gfx-video@google.com</owner>
   <summary>
     Output protection query status and result. One query and one positive (no
     unprotected external links) result (if any) are reported per CDM instance.

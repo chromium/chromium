@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/decoder_buffer.h"
@@ -89,6 +90,10 @@ scoped_refptr<media::DecoderBuffer> CopyDecryptedDataToDecoderBuffer(
 void RejectPromiseConnectionLost(std::unique_ptr<media::CdmPromise> promise) {
   promise->reject(media::CdmPromise::Exception::INVALID_STATE_ERROR, 0,
                   "Mojo connection lost");
+}
+
+void ReportSystemCodeUMA(uint32_t system_code) {
+  base::UmaHistogramSparse("Media.EME.CrosPlatformCdm.SystemCode", system_code);
 }
 
 }  // namespace
@@ -539,6 +544,7 @@ void ContentDecryptionModuleAdapter::OnConnectionError() {
 void ContentDecryptionModuleAdapter::RejectTrackedPromise(
     uint32_t promise_id,
     cdm::mojom::CdmPromiseResultPtr promise_result) {
+  ReportSystemCodeUMA(promise_result->system_code);
   cdm_promise_adapter_.RejectPromise(promise_id, promise_result->exception,
                                      promise_result->system_code,
                                      promise_result->error_message);
