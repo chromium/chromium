@@ -4,8 +4,6 @@
 
 #include "third_party/blink/public/common/page/drag_mojom_traits.h"
 
-#include "base/notreached.h"
-
 namespace {
 
 constexpr int allow_all = blink::kDragOperationCopy |
@@ -14,49 +12,6 @@ constexpr int allow_all = blink::kDragOperationCopy |
 }  // namespace
 
 namespace mojo {
-
-// static
-blink::mojom::DragOperation
-EnumTraits<blink::mojom::DragOperation, blink::DragOperation>::ToMojom(
-    blink::DragOperation op) {
-  switch (op) {
-    case blink::kDragOperationNone:
-      return blink::mojom::DragOperation::kNone;
-    case blink::kDragOperationCopy:
-      return blink::mojom::DragOperation::kCopy;
-    case blink::kDragOperationLink:
-      return blink::mojom::DragOperation::kLink;
-    case blink::kDragOperationMove:
-      return blink::mojom::DragOperation::kMove;
-    default:
-      // blink::kDragOperationEvery is not handled on purpose, as
-      // DragOperation should only represent a single operation.
-      NOTREACHED();
-      return blink::mojom::DragOperation::kNone;
-  }
-}
-
-// static
-bool EnumTraits<blink::mojom::DragOperation, blink::DragOperation>::FromMojom(
-    blink::mojom::DragOperation op,
-    blink::DragOperation* out) {
-  switch (op) {
-    case blink::mojom::DragOperation::kNone:
-      *out = blink::kDragOperationNone;
-      return true;
-    case blink::mojom::DragOperation::kCopy:
-      *out = blink::kDragOperationCopy;
-      return true;
-    case blink::mojom::DragOperation::kLink:
-      *out = blink::kDragOperationLink;
-      return true;
-    case blink::mojom::DragOperation::kMove:
-      *out = blink::kDragOperationMove;
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
 
 // static
 bool StructTraits<blink::mojom::AllowedDragOperationsDataView,

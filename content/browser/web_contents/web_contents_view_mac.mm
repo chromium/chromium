@@ -33,14 +33,14 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
-using blink::DragOperation;
 using blink::DragOperationsMask;
 using remote_cocoa::mojom::DraggingInfoPtr;
 using remote_cocoa::mojom::SelectionDirection;
 
-// Ensure that the blink::DragOperation enum values stay in sync with
+// Ensure that the blink::DragOperationsMask enum values stay in sync with
 // NSDragOperation constants, since the code below static_casts between 'em.
 #define STATIC_ASSERT_ENUM(a, b)                            \
   static_assert(static_cast<int>(a) == static_cast<int>(b), \
@@ -215,8 +215,8 @@ DropData* WebContentsViewMac::GetDropData() const {
   return [drag_dest_ currentDropData];
 }
 
-void WebContentsViewMac::UpdateDragCursor(DragOperation operation) {
-  [drag_dest_ setCurrentOperation:operation];
+void WebContentsViewMac::UpdateDragCursor(ui::mojom::DragOperation operation) {
+  [drag_dest_ setCurrentOperation:static_cast<NSDragOperation>(operation)];
 }
 
 void WebContentsViewMac::GotFocus(RenderWidgetHostImpl* render_widget_host) {
@@ -560,7 +560,7 @@ void WebContentsViewMac::EndDrag(uint32_t drag_operation,
   web_contents_->DragSourceEndedAt(
       transformed_point.x(), transformed_point.y(),
       transformed_screen_point.x(), transformed_screen_point.y(),
-      static_cast<blink::DragOperation>(drag_operation),
+      static_cast<ui::mojom::DragOperation>(drag_operation),
       drag_source_start_rwh_.get());
 }
 

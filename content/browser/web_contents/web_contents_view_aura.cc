@@ -70,6 +70,7 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
 #include "ui/base/hit_test.h"
@@ -378,13 +379,13 @@ blink::DragOperationsMask ConvertToDragOperationsMask(int drag_op) {
   return static_cast<blink::DragOperationsMask>(web_drag_op);
 }
 
-blink::DragOperation ConvertToDragOperation(int drag_ops) {
+ui::mojom::DragOperation ConvertToDragOperation(int drag_ops) {
   int op_mask = ConvertToDragOperationsMask(drag_ops);
   DCHECK(op_mask == blink::kDragOperationNone ||
          op_mask == blink::kDragOperationCopy ||
          op_mask == blink::kDragOperationLink ||
          op_mask == blink::kDragOperationMove);
-  return static_cast<blink::DragOperation>(op_mask);
+  return static_cast<ui::mojom::DragOperation>(op_mask);
 }
 
 GlobalRoutingID GetRenderViewHostID(RenderViewHost* rvh) {
@@ -695,7 +696,7 @@ WebContentsViewAura::WebContentsViewAura(WebContentsImpl* web_contents,
                                          WebContentsViewDelegate* delegate)
     : web_contents_(web_contents),
       delegate_(delegate),
-      current_drag_op_(blink::kDragOperationNone),
+      current_drag_op_(ui::mojom::DragOperation::kNone),
       drag_dest_delegate_(nullptr),
       current_rvh_for_drag_(ChildProcessHost::kInvalidUniqueID,
                             MSG_ROUTING_NONE),
@@ -725,7 +726,7 @@ WebContentsViewAura::~WebContentsViewAura() {
 
 void WebContentsViewAura::EndDrag(
     base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
-    blink::DragOperation op) {
+    ui::mojom::DragOperation op) {
   drag_start_process_id_ = ChildProcessHost::kInvalidUniqueID;
   drag_start_view_id_ = GlobalRoutingID(ChildProcessHost::kInvalidUniqueID,
                                         MSG_ROUTING_NONE);
@@ -1090,7 +1091,7 @@ void WebContentsViewAura::StartDragging(
   }
 }
 
-void WebContentsViewAura::UpdateDragCursor(blink::DragOperation operation) {
+void WebContentsViewAura::UpdateDragCursor(ui::mojom::DragOperation operation) {
   current_drag_op_ = operation;
 }
 

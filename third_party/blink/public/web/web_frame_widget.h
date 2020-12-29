@@ -43,6 +43,7 @@
 #include "third_party/blink/public/platform/web_touch_action.h"
 #include "third_party/blink/public/web/web_swap_result.h"
 #include "third_party/blink/public/web/web_widget.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 
 namespace blink {
 
@@ -83,13 +84,13 @@ class WebFrameWidget : public WebWidget {
       const gfx::PointF& screen_point,
       DragOperationsMask operations_allowed,
       uint32_t key_modifiers,
-      base::OnceCallback<void(blink::DragOperation)> callback) = 0;
+      base::OnceCallback<void(ui::mojom::DragOperation)> callback) = 0;
   virtual void DragTargetDragOver(
       const gfx::PointF& point_in_viewport,
       const gfx::PointF& screen_point,
       DragOperationsMask operations_allowed,
       uint32_t key_modifiers,
-      base::OnceCallback<void(blink::DragOperation)> callback) = 0;
+      base::OnceCallback<void(ui::mojom::DragOperation)> callback) = 0;
   virtual void DragTargetDragLeave(const gfx::PointF& point_in_viewport,
                                    const gfx::PointF& screen_point) = 0;
   virtual void DragTargetDrop(const WebDragData&,
@@ -100,7 +101,7 @@ class WebFrameWidget : public WebWidget {
   // Notifies the WebFrameWidget that a drag has terminated.
   virtual void DragSourceEndedAt(const gfx::PointF& point_in_viewport,
                                  const gfx::PointF& screen_point,
-                                 DragOperation) = 0;
+                                 ui::mojom::DragOperation) = 0;
 
   // Notifies the WebFrameWidget that the system drag and drop operation has
   // ended.

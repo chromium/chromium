@@ -15,7 +15,6 @@
 #include "ipc/ipc_message_macros.h"
 #include "services/network/public/cpp/network_ipc_param_traits.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
-#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -154,7 +153,6 @@ IPC_STRUCT_TRAITS_BEGIN(blink::RendererPreferences)
 #endif
 IPC_STRUCT_TRAITS_END()
 
-IPC_ENUM_TRAITS(blink::DragOperation)  // Bitmask.
 IPC_ENUM_TRAITS_MAX_VALUE(content::DropData::Kind,
                           content::DropData::Kind::LAST)
 

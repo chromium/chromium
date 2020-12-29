@@ -261,6 +261,8 @@ component("core") {
     "//third_party/blink/renderer/core/typed_arrays",
     "//third_party/blink/renderer/platform",
     "//ui/base/cursor:cursor_base",
+    "//ui/base/dragdrop/mojom:mojom_blink_headers",
+    "//ui/base/dragdrop/mojom:mojom_shared",
     "//url",
     "//v8",
   ]
@@ -1621,6 +1623,7 @@ source_set("unit_tests") {
     "//ui/accessibility:ax_base",
     "//ui/base/cursor:cursor_base",
     "//ui/base/cursor/mojom:cursor_type_blink",
+    "//ui/base/dragdrop/mojom:mojom_blink",
   ]
 
   data_deps = [ ":unit_tests_data" ]

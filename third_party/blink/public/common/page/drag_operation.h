@@ -35,23 +35,16 @@
 
 namespace blink {
 
-// "Verb" of a drag-and-drop operation as negotiated between the source and
-// destination.
+// Mask of the allowed of the allowed drag-and-drop operations.
 // These constants match their equivalents in NSDragOperation and
 // should not be renumbered.
-// TODO(https://crbug.com/1093536): replace this enum with
-// blink::mojom::DragOperation.
-enum DragOperation {
+enum DragOperationsMask {
   kDragOperationNone = 0,
   kDragOperationCopy = 1,
   kDragOperationLink = 2,
   kDragOperationMove = 16,
   kDragOperationEvery = UINT_MAX
 };
-
-// Alternate typedef to make it clear when this is being used as a mask
-// with potentially multiple value bits set.
-typedef DragOperation DragOperationsMask;
 
 }  // namespace blink
 

@@ -116,6 +116,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 
 namespace blink {
 
@@ -2304,8 +2305,9 @@ void EventHandler::DefaultKeyboardEventHandler(KeyboardEvent* event) {
       event, mouse_event_manager_->MousePressNode());
 }
 
-void EventHandler::DragSourceEndedAt(const WebMouseEvent& event,
-                                     DragOperation operation) {
+void EventHandler::DragSourceEndedAt(
+    const WebMouseEvent& event,
+    ui::mojom::blink::DragOperation operation) {
   // Asides from routing the event to the correct frame, the hit test is also an
   // opportunity for Layer to update the :hover and :active pseudoclasses.
   HitTestRequest request(HitTestRequest::kRelease |

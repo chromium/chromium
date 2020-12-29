@@ -173,6 +173,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_tree_combiner.h"
 #include "ui/base/device_form_factor.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #endif
@@ -4684,7 +4685,7 @@ void WebContentsImpl::DragSourceEndedAt(float client_x,
                                         float client_y,
                                         float screen_x,
                                         float screen_y,
-                                        blink::DragOperation operation,
+                                        ui::mojom::DragOperation operation,
                                         RenderWidgetHost* source_rwh) {
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::DragSourceEndedAt");

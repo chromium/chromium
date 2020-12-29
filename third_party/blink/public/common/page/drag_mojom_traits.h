@@ -15,14 +15,6 @@ namespace mojo {
 
 template <>
 struct BLINK_COMMON_EXPORT
-    EnumTraits<blink::mojom::DragOperation, blink::DragOperation> {
-  static blink::mojom::DragOperation ToMojom(blink::DragOperation op);
-  static bool FromMojom(blink::mojom::DragOperation op,
-                        blink::DragOperation* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::AllowedDragOperationsDataView,
                  blink::DragOperationsMask> {
   static bool allow_copy(const blink::DragOperationsMask& op_mask) {

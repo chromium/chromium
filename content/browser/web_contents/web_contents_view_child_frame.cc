@@ -11,10 +11,10 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-using blink::DragOperation;
 using blink::DragOperationsMask;
 
 namespace content {
@@ -134,7 +134,8 @@ DropData* WebContentsViewChildFrame::GetDropData() const {
   return nullptr;
 }
 
-void WebContentsViewChildFrame::UpdateDragCursor(DragOperation operation) {
+void WebContentsViewChildFrame::UpdateDragCursor(
+    ui::mojom::DragOperation operation) {
   if (auto* view = GetOuterDelegateView())
     view->UpdateDragCursor(operation);
 }

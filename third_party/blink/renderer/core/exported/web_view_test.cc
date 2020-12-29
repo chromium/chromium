@@ -152,6 +152,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "v8/include/v8.h"
@@ -2977,7 +2978,7 @@ TEST_F(WebViewTest, TouchDragContextMenuWithoutDrag) {
   // Simulate the end of a non-moving drag.
   const gfx::PointF dragend_point(250, 8);
   web_view->MainFrameViewWidget()->DragSourceEndedAt(
-      dragend_point, dragend_point, kDragOperationNone);
+      dragend_point, dragend_point, ui::mojom::blink::DragOperation::kNone);
   EXPECT_TRUE(
       web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
           web_view->MainFrameImpl()->GetFrame()));
@@ -3016,7 +3017,7 @@ TEST_F(WebViewTest, TouchDragContextMenuWithDrag) {
   // Simulate the end of a drag.
   const gfx::PointF dragend_point(270, 28);
   web_view->MainFrameViewWidget()->DragSourceEndedAt(
-      dragend_point, dragend_point, kDragOperationNone);
+      dragend_point, dragend_point, ui::mojom::blink::DragOperation::kNone);
   EXPECT_FALSE(
       web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
           web_view->MainFrameImpl()->GetFrame()));

@@ -58,7 +58,7 @@ class WebContentsViewChildFrame : public WebContentsView,
                      const gfx::Vector2d& image_offset,
                      const blink::mojom::DragEventSourceInfo& event_info,
                      RenderWidgetHostImpl* source_rwh) override;
-  void UpdateDragCursor(blink::DragOperation operation) override;
+  void UpdateDragCursor(ui::mojom::DragOperation operation) override;
   void GotFocus(RenderWidgetHostImpl* render_widget_host) override;
   void TakeFocus(bool reverse) override;
 

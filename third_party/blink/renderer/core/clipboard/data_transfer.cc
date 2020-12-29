@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 
 namespace blink {
 
@@ -189,7 +190,7 @@ base::Optional<DragOperationsMask> ConvertEffectAllowedToDragOperationsMask(
   return base::nullopt;
 }
 
-AtomicString ConvertDragOperationsMaskToEffectAllowed(DragOperation op) {
+AtomicString ConvertDragOperationsMaskToEffectAllowed(DragOperationsMask op) {
   if (((op & kDragOperationMove) && (op & kDragOperationCopy) &&
        (op & kDragOperationLink)) ||
       (op == kDragOperationEvery))
@@ -568,22 +569,18 @@ DragOperationsMask DataTransfer::SourceOperation() const {
   return *op;
 }
 
-DragOperation DataTransfer::DestinationOperation() const {
+ui::mojom::blink::DragOperation DataTransfer::DestinationOperation() const {
   DCHECK(DropEffectIsInitialized());
   base::Optional<DragOperationsMask> op =
       ConvertEffectAllowedToDragOperationsMask(drop_effect_);
-  DCHECK(op == kDragOperationCopy || op == kDragOperationNone ||
-         op == kDragOperationLink || op == kDragOperationMove);
-  return static_cast<DragOperation>(*op);
+  return static_cast<ui::mojom::blink::DragOperation>(*op);
 }
 
 void DataTransfer::SetSourceOperation(DragOperationsMask op) {
   effect_allowed_ = ConvertDragOperationsMaskToEffectAllowed(op);
 }
 
-void DataTransfer::SetDestinationOperation(DragOperation op) {
-  DCHECK(op == kDragOperationCopy || op == kDragOperationNone ||
-         op == kDragOperationLink || op == kDragOperationMove);
+void DataTransfer::SetDestinationOperation(ui::mojom::blink::DragOperation op) {
   drop_effect_ = ConvertDragOperationsMaskToEffectAllowed(
       static_cast<DragOperationsMask>(op));
 }

@@ -44,6 +44,7 @@ include_rules = [
     "+services/network/public/mojom/url_loader.mojom-shared.h",
     "+services/network/public/mojom/url_loader_factory.mojom-shared.h",
     "+services/service_manager/public",
+    "+ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h",
     "+ui/base/ime/ime_text_span.h",
     "+ui/events/types",
     "+ui/gfx/geometry",

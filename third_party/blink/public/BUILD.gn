@@ -440,6 +440,7 @@ source_set("blink_headers") {
     "//third_party/blink/public/common",
     "//ui/accessibility:ax_base",
     "//ui/base/cursor:cursor_base",
+    "//ui/base/dragdrop/mojom:mojom_shared",
     "//ui/base/ime",
     "//ui/base/ime/mojom",
     "//ui/base/prediction:prediction",

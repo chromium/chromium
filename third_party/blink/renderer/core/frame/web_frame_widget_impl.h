@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 
 namespace gfx {
@@ -377,7 +378,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       mojom::blink::ViewportIntersectionStatePtr intersection_state) override;
   void DragSourceEndedAt(const gfx::PointF& point_in_viewport,
                          const gfx::PointF& screen_point,
-                         DragOperation) override;
+                         ui::mojom::blink::DragOperation) override;
 
   // Sets the display mode, which comes from the top-level browsing context and
   // is applied to all widgets.
@@ -776,10 +777,11 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Consolidate some common code between starting a drag over a target and
   // updating a drag over a target. If we're starting a drag, |isEntering|
   // should be true.
-  DragOperation DragTargetDragEnterOrOver(const gfx::PointF& point_in_viewport,
-                                          const gfx::PointF& screen_point,
-                                          DragAction,
-                                          uint32_t key_modifiers);
+  ui::mojom::blink::DragOperation DragTargetDragEnterOrOver(
+      const gfx::PointF& point_in_viewport,
+      const gfx::PointF& screen_point,
+      DragAction,
+      uint32_t key_modifiers);
 
   // Helper function to call VisualViewport::viewportToRootFrame().
   gfx::PointF ViewportToRootFrame(const gfx::PointF& point_in_viewport) const;
@@ -852,7 +854,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // The current drag operation as negotiated by the source and destination.
   // When not equal to DragOperationNone, the drag data can be dropped onto the
   // current drop target in this WebView (the drop target can accept the drop).
-  DragOperation drag_operation_ = kDragOperationNone;
+  ui::mojom::blink::DragOperation drag_operation_ =
+      ui::mojom::blink::DragOperation::kNone;
 
   // This field stores drag/drop related info for the event that is currently
   // being handled. If the current event results in starting a drag/drop

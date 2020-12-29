@@ -24,6 +24,7 @@
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace blink {
@@ -193,7 +194,7 @@ class EventSender {
                              float* radius_x,
                              float* radius_y);
 
-  void FinishDragAndDrop(const blink::WebMouseEvent&, blink::DragOperation);
+  void FinishDragAndDrop(const blink::WebMouseEvent&, ui::mojom::DragOperation);
 
   int ModifiersForPointer(int pointer_id);
   void DoDragAfterMouseUp(const blink::WebMouseEvent&);
@@ -316,7 +317,7 @@ class EventSender {
   // Used to determine whether the click count continues to increment or not.
   static blink::WebMouseEvent::Button last_button_type_;
 
-  blink::DragOperation current_drag_effect_;
+  ui::mojom::DragOperation current_drag_effect_;
 
   base::TimeDelta time_offset_;
   int click_count_;

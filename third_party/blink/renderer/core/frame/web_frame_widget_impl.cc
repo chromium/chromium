@@ -136,6 +136,8 @@ namespace blink {
 
 namespace {
 
+using ::ui::mojom::blink::DragOperation;
+
 const int kCaretPadding = 10;
 const float kIdealPaddingRatio = 0.3f;
 
@@ -352,7 +354,7 @@ void WebFrameWidgetImpl::DragTargetDragEnter(
   current_drag_data_ = DataObject::Create(web_drag_data);
   operations_allowed_ = operations_allowed;
 
-  blink::DragOperation operation = DragTargetDragEnterOrOver(
+  DragOperation operation = DragTargetDragEnterOrOver(
       point_in_viewport, screen_point, kDragEnter, key_modifiers);
   std::move(callback).Run(operation);
 }
@@ -365,7 +367,7 @@ void WebFrameWidgetImpl::DragTargetDragOver(
     DragTargetDragOverCallback callback) {
   operations_allowed_ = operations_allowed;
 
-  blink::DragOperation operation = DragTargetDragEnterOrOver(
+  DragOperation operation = DragTargetDragEnterOrOver(
       point_in_viewport, screen_point, kDragOver, key_modifiers);
   std::move(callback).Run(operation);
 }
@@ -394,7 +396,7 @@ void WebFrameWidgetImpl::DragTargetDragLeave(
 
   // FIXME: why is the drag scroll timer not stopped here?
 
-  drag_operation_ = kDragOperationNone;
+  drag_operation_ = DragOperation::kNone;
   current_drag_data_ = nullptr;
 }
 
@@ -412,9 +414,9 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
   // flight, or else delayed by javascript processing in this webview.  If a
   // drop happens before our IPC reply has reached the browser process, then
   // the browser forwards the drop to this webview.  So only allow a drop to
-  // proceed if our webview m_dragOperation state is not DragOperationNone.
+  // proceed if our webview drag_operation_ state is not DragOperation::kNone.
 
-  if (drag_operation_ == kDragOperationNone) {
+  if (drag_operation_ == DragOperation::kNone) {
     // IPC RACE CONDITION: do not allow this drop.
     DragTargetDragLeave(point_in_viewport, screen_point);
     return;
@@ -429,7 +431,7 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
     GetPage()->GetDragController().PerformDrag(&drag_data,
                                                *local_root_->GetFrame());
   }
-  drag_operation_ = kDragOperationNone;
+  drag_operation_ = DragOperation::kNone;
   current_drag_data_ = nullptr;
 }
 
@@ -1065,7 +1067,7 @@ DragOperation WebFrameWidgetImpl::DragTargetDragEnterOrOver(
   // check for |!m_currentDragData| should be removed. (crbug.com/671504)
   if (IgnoreInputEvents() || !current_drag_data_) {
     CancelDrag();
-    return kDragOperationNone;
+    return DragOperation::kNone;
   }
 
   FloatPoint point_in_root_frame(ViewportToRootFrame(point_in_viewport));
@@ -1080,8 +1082,9 @@ DragOperation WebFrameWidgetImpl::DragTargetDragEnterOrOver(
 
   // Mask the drag operation against the drag source's allowed
   // operations.
-  if (!(drag_operation & drag_data.DraggingSourceOperationMask()))
-    drag_operation = kDragOperationNone;
+  if (!(static_cast<int>(drag_operation) &
+        drag_data.DraggingSourceOperationMask()))
+    drag_operation = DragOperation::kNone;
 
   drag_operation_ = drag_operation;
 

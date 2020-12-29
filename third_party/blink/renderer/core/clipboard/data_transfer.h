@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink-forward.h"
 
 namespace blink {
 
@@ -124,9 +125,9 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   bool CanSetDragImage() const;
 
   DragOperationsMask SourceOperation() const;
-  DragOperation DestinationOperation() const;
+  ui::mojom::blink::DragOperation DestinationOperation() const;
   void SetSourceOperation(DragOperationsMask);
-  void SetDestinationOperation(DragOperation);
+  void SetDestinationOperation(ui::mojom::blink::DragOperation);
 
   DataTransferItemList* items();
 

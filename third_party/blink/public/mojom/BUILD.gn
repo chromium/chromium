@@ -289,11 +289,6 @@ mojom("mojom_platform") {
     {
       types = [
         {
-          mojom = "blink.mojom.DragOperation"
-          cpp = "::blink::DragOperation"
-          copyable_pass_by_value = true
-        },
-        {
           mojom = "blink.mojom.AllowedDragOperations"
           cpp = "::blink::DragOperationsMask"
           copyable_pass_by_value = true

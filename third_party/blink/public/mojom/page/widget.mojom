@@ -21,6 +21,7 @@ import "third_party/blink/public/mojom/page/drag.mojom";
 import "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom";
 import "third_party/blink/public/mojom/widget/device_emulation_params.mojom";
 import "third_party/blink/public/mojom/widget/visual_properties.mojom";
+import "ui/base/dragdrop/mojom/drag_drop_types.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
 import "ui/base/ime/mojom/text_input_state.mojom";
 import "ui/base/cursor/mojom/cursor.mojom";
@@ -51,7 +52,7 @@ interface FrameWidget {
                       gfx.mojom.PointF screen_point,
                       AllowedDragOperations operations_allowed,
                       uint32 key_modifiers)
-      => (DragOperation operation);
+      => (ui.mojom.DragOperation operation);
 
   // Notifies the Widget of a drag over operation. Once the renderer has
   // completed processing the event the callback is called with the type of
@@ -61,7 +62,7 @@ interface FrameWidget {
                      gfx.mojom.PointF screen_point,
                      AllowedDragOperations operations_allowed,
                      uint32 key_modifiers)
-      => (DragOperation operation);
+      => (ui.mojom.DragOperation operation);
 
   // Notifies the Widget of a drag leave operation.
   DragTargetDragLeave(gfx.mojom.PointF point_in_viewport,
@@ -76,7 +77,7 @@ interface FrameWidget {
   // Notifies the Widget that a drag has terminated.
   DragSourceEndedAt(gfx.mojom.PointF point_in_viewport,
                     gfx.mojom.PointF screen_point,
-                    DragOperation drag_operation);
+                    ui.mojom.DragOperation drag_operation);
 
   // Notifies the Widget that the system drag and drop operation has ended.
   DragSourceSystemDragEnded();

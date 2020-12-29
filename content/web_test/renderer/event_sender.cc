@@ -49,6 +49,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_page_popup.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -1260,7 +1261,7 @@ EventSender::~EventSender() {}
 
 void EventSender::Reset() {
   current_drag_data_ = base::nullopt;
-  current_drag_effect_ = blink::kDragOperationNone;
+  current_drag_effect_ = ui::mojom::DragOperation::kNone;
   current_drag_effects_allowed_ = blink::kDragOperationNone;
   current_pointer_state_.clear();
   is_drag_mode_ = true;
@@ -1330,7 +1331,7 @@ void EventSender::DoDragDrop(const WebDragData& drag_data,
           current_pointer_state_[kRawMousePointerId].modifiers_,
           current_pointer_state_[kRawMousePointerId].current_buttons_),
       base::BindOnce(
-          [](base::WeakPtr<EventSender> sender, blink::DragOperation op) {
+          [](base::WeakPtr<EventSender> sender, ui::mojom::DragOperation op) {
             if (sender)
               sender->current_drag_effect_ = op;
           },
@@ -1682,7 +1683,7 @@ void EventSender::KeyDown(const std::string& code_str,
                    current_pointer_state_[kRawMousePointerId].current_buttons_,
                    current_pointer_state_[kRawMousePointerId].last_pos_,
                    click_count_, &event);
-    FinishDragAndDrop(event, blink::kDragOperationNone);
+    FinishDragAndDrop(event, ui::mojom::DragOperation::kNone);
   }
 
   web_frame_widget_->ClearEditCommands();
@@ -2465,7 +2466,7 @@ void EventSender::GestureEvent(WebInputEvent::Type type,
                    current_pointer_state_[kRawMousePointerId].current_buttons_,
                    gfx::PointF(x, y), click_count_, &mouse_event);
 
-    FinishDragAndDrop(mouse_event, blink::kDragOperationNone);
+    FinishDragAndDrop(mouse_event, ui::mojom::DragOperation::kNone);
   }
   args->Return(result != WebInputEventResult::kNotHandled);
 }
@@ -2624,13 +2625,13 @@ void EventSender::InitPointerProperties(gin::Arguments* args,
 }
 
 void EventSender::FinishDragAndDrop(const WebMouseEvent& event,
-                                    blink::DragOperation drag_effect) {
+                                    ui::mojom::DragOperation drag_effect) {
   // Bail if cancelled.
   if (!current_drag_data_)
     return;
 
   current_drag_effect_ = drag_effect;
-  if (current_drag_effect_) {
+  if (current_drag_effect_ != ui::mojom::DragOperation::kNone) {
     // Specifically pass any keyboard modifiers to the drop method. This allows
     // tests to control the drop type (i.e. copy or move).
     MainFrameWidget()->DragTargetDrop(
@@ -2671,7 +2672,7 @@ void EventSender::DoDragAfterMouseMove(const WebMouseEvent& event) {
       event.PositionInWidget(), event.PositionInScreen(),
       current_drag_effects_allowed_, event.GetModifiers(),
       base::BindOnce(
-          [](base::WeakPtr<EventSender> sender, blink::DragOperation op) {
+          [](base::WeakPtr<EventSender> sender, ui::mojom::DragOperation op) {
             if (sender)
               sender->current_drag_effect_ = op;
           },

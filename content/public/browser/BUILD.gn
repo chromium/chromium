@@ -444,13 +444,14 @@ source_set("browser_sources") {
     "//services/tracing/public/mojom",
     "//services/video_capture/public/mojom",
     "//services/viz/public/mojom",
-    "//third_party/webrtc_overrides:webrtc_component",
 
     # We expose skia headers in the public API.
     "//skia",
 
     # We expose storage headers for quota and blob storage context in the public API.
     "//storage/browser",
+    "//third_party/webrtc_overrides:webrtc_component",
+    "//ui/base/dragdrop/mojom:mojom_headers",
   ]
   deps = [
     "//build:chromeos_buildflags",

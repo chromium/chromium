@@ -30,7 +30,6 @@
 #include "base/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
-#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -53,6 +52,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink-forward.h"
 
 namespace blink {
 
@@ -238,7 +238,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
                             TextEventInputType = kTextEventInputKeyboard);
   void DefaultTextInputEventHandler(TextEvent*);
 
-  void DragSourceEndedAt(const WebMouseEvent&, DragOperation);
+  void DragSourceEndedAt(const WebMouseEvent&, ui::mojom::blink::DragOperation);
 
   void CapsLockStateMayHaveChanged();  // Only called by FrameSelection
 

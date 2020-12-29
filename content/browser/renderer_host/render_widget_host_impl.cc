@@ -115,6 +115,7 @@
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
 #include "third_party/blink/public/mojom/page/drag.mojom.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/screen.h"
@@ -143,7 +144,6 @@
 
 using base::TimeDelta;
 using base::TimeTicks;
-using blink::DragOperation;
 using blink::DragOperationsMask;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -1842,9 +1842,10 @@ void RenderWidgetHostImpl::DragTargetDrop(const DropData& drop_data,
   }
 }
 
-void RenderWidgetHostImpl::DragSourceEndedAt(const gfx::PointF& client_point,
-                                             const gfx::PointF& screen_point,
-                                             blink::DragOperation operation) {
+void RenderWidgetHostImpl::DragSourceEndedAt(
+    const gfx::PointF& client_point,
+    const gfx::PointF& screen_point,
+    ui::mojom::DragOperation operation) {
   // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
   if (blink_frame_widget_) {
     blink_frame_widget_->DragSourceEndedAt(
@@ -1995,7 +1996,8 @@ void RenderWidgetHostImpl::SelectionBoundsChanged(
                                   focus_dir, is_anchor_first);
 }
 
-void RenderWidgetHostImpl::OnUpdateDragCursor(DragOperation current_op) {
+void RenderWidgetHostImpl::OnUpdateDragCursor(
+    ui::mojom::DragOperation current_op) {
   RenderViewHostDelegateView* view = delegate_->GetDelegateView();
   if (view)
     view->UpdateDragCursor(current_op);

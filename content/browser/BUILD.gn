@@ -231,6 +231,7 @@ source_set("browser") {
     "//ui/base/clipboard",
     "//ui/base/cursor:cursor_base",
     "//ui/base/cursor/mojom:cursor_type",
+    "//ui/base/dragdrop/mojom",
     "//ui/base/idle",
     "//ui/base/ime/init",
     "//ui/display",
@@ -263,6 +264,7 @@ source_set("browser") {
     "//third_party/blink/public/mojom:embedded_frame_sink_mojo_bindings",
     "//third_party/blink/public/mojom:mojom_broadcastchannel_bindings",
     "//third_party/leveldatabase",
+    "//ui/base/dragdrop/mojom:mojom_headers",
   ]
 
   sources = [

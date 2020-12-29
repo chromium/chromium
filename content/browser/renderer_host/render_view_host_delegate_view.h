@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/drag.mojom-forward.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
 namespace blink {
 class WebGestureEvent;
@@ -62,7 +63,7 @@ class CONTENT_EXPORT RenderViewHostDelegateView {
 
   // The page wants to update the mouse cursor during a drag & drop operation.
   // |operation| describes the current operation (none, move, copy, link.)
-  virtual void UpdateDragCursor(blink::DragOperation operation) {}
+  virtual void UpdateDragCursor(ui::mojom::DragOperation operation) {}
 
   // Notification that view for this delegate got the focus.
   virtual void GotFocus(RenderWidgetHostImpl* render_widget_host) {}

@@ -31,6 +31,7 @@
 #include "ui/android/overscroll_refresh_handler.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/events/android/drag_event_android.h"
 #include "ui/events/android/gesture_event_android.h"
@@ -349,7 +350,7 @@ void WebContentsViewAndroid::StartDragging(
   }
 }
 
-void WebContentsViewAndroid::UpdateDragCursor(blink::DragOperation op) {
+void WebContentsViewAndroid::UpdateDragCursor(ui::mojom::DragOperation op) {
   // Intentional no-op because Android does not have cursor.
 }
 
@@ -455,7 +456,7 @@ void WebContentsViewAndroid::OnSystemDragEnded() {
 
 void WebContentsViewAndroid::OnDragEnded() {
   web_contents_->GetRenderViewHost()->GetWidget()->DragSourceEndedAt(
-      drag_location_, drag_screen_location_, blink::kDragOperationNone);
+      drag_location_, drag_screen_location_, ui::mojom::DragOperation::kNone);
   OnSystemDragEnded();
 
   drag_location_ = gfx::PointF();

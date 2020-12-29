@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
@@ -1006,7 +1007,7 @@ TEST_F(EventHandlerTest, dragEndInNewDrag) {
       WebInputEvent::kNoModifiers, base::TimeTicks::Now());
   mouse_up_event.SetFrameScale(1);
   GetDocument().GetFrame()->GetEventHandler().DragSourceEndedAt(
-      mouse_up_event, kDragOperationNone);
+      mouse_up_event, ui::mojom::blink::DragOperation::kNone);
 
   // This test passes if it doesn't crash.
 }
