@@ -734,6 +734,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   network_element::AddDetailsLocalizedStrings(html_source);
   network_element::AddConfigLocalizedStrings(html_source);
   network_element::AddErrorLocalizedStrings(html_source);
+  cellular_setup::AddNonStringLoadTimeData(html_source);
   if (base::FeatureList::IsEnabled(
           chromeos::features::kUpdatedCellularActivationUi)) {
     cellular_setup::AddLocalizedStrings(html_source);
@@ -747,10 +748,6 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString("networkGoogleNameserversLearnMoreUrl",
                          chrome::kGoogleNameserversLearnMoreURL);
-  html_source->AddBoolean(
-      "updatedCellularActivationUi",
-      base::FeatureList::IsEnabled(
-          chromeos::features::kUpdatedCellularActivationUi));
 
   html_source->AddString(
       "networkNotSynced",

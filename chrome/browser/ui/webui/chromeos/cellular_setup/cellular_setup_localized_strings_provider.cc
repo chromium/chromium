@@ -4,17 +4,20 @@
 
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h"
 
+#include "base/containers/span.h"
+#include "base/feature_list.h"
+#include "base/no_destructor.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace chromeos {
-
 namespace cellular_setup {
-
 namespace {
 
 constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
@@ -63,6 +66,21 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"qrCodeRetry", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_RETRY},
     {"scanQrCodeInvalid", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_INVALID},
     {"profileListPageMessage", IDS_CELLULAR_SETUP_PROFILE_LIST_PAGE_MESSAGE}};
+
+struct NamedBoolean {
+  const char* name;
+  bool value;
+};
+
+const std::vector<const NamedBoolean>& GetBooleanValues() {
+  static const base::NoDestructor<std::vector<const NamedBoolean>> named_bools({
+      {"updatedCellularActivationUi",
+       base::FeatureList::IsEnabled(
+           chromeos::features::kUpdatedCellularActivationUi)},
+  });
+  return *named_bools;
+}
+
 }  //  namespace
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
@@ -74,6 +92,15 @@ void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
     builder->Add(entry.name, entry.id);
 }
 
-}  // namespace cellular_setup
+void AddNonStringLoadTimeData(content::WebUIDataSource* html_source) {
+  for (const auto& entry : GetBooleanValues())
+    html_source->AddBoolean(entry.name, entry.value);
+}
 
+void AddNonStringLoadTimeDataToDict(base::DictionaryValue* dict) {
+  for (const auto& entry : GetBooleanValues())
+    dict->SetBoolean(entry.name, entry.value);
+}
+
+}  // namespace cellular_setup
 }  // namespace chromeos
