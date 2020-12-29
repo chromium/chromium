@@ -438,7 +438,8 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
 
 // Tests that the Password View Controller is dismissed when tapping the outside
 // the popover on iPad.
-- (void)testIPadTappingOutsidePopOverDismissPasswordController {
+// TODO(crbug.com/1162296): Re-enable this test after this issue is fixed.
+- (void)DISABLED_testIPadTappingOutsidePopOverDismissPasswordController {
   if (![ChromeEarlGrey isIPadIdiom]) {
     return;
   }
