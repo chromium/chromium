@@ -274,6 +274,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MultiDevice.SecureChannel.Nearby.EffectiveConnectionResult"
+    enum="BooleanSuccess" expires_after="2021-11-30">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the effective success rate for Nearby Connections attempts via
+    SecureChannel. In this context, &quot;effective&quot; means that (1) a
+    failure followed by a successful retry is counted as a success, and (2)
+    repeated failures (e.g., due to users stuck in an unrecoverable state due to
+    Bluetooth issues) are only counted as a single failure.
+
+    Emitted upon each successful connection and one minute after a failed
+    connection with no subsequent successful retries.
+  </summary>
+</histogram>
+
 <histogram name="MultiDevice.SecureChannel.Nearby.MessageAction"
     enum="MultiDeviceNearbyMessageAction" expires_after="2021-11-30">
   <owner>khorimoto@chromium.org</owner>
