@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/location.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/skia_util.h"
 
@@ -77,7 +78,7 @@ void HoldingSpaceImage::OnBitmapLoaded(float scale, const SkBitmap* bitmap) {
 
   // Update the placeholder image, so the newly loaded representation becomes
   // the default for any `ImageSkia` instances created when the holding space
-  // image gets refreshed.
+  // image gets invalidated.
   placeholder_.RemoveRepresentation(scale);
   placeholder_.AddRepresentation(gfx::ImageSkiaRep(*bitmap, scale));
   placeholder_.RemoveUnsupportedRepresentationsForScale(scale);
@@ -86,6 +87,26 @@ void HoldingSpaceImage::OnBitmapLoaded(float scale, const SkBitmap* bitmap) {
 }
 
 void HoldingSpaceImage::Invalidate() {
+  if (invalidate_timer_.IsRunning())
+    return;
+
+  // Schedule an invalidation task with a delay to reduce number of image loads
+  // when multiple image invalidations are requested in quick succession. The
+  // delay is selected somewhat arbitrarily to be non trivial but still not
+  // easily noticable by the user.
+  invalidate_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(250),
+                          base::BindOnce(&HoldingSpaceImage::OnInvalidateTimer,
+                                         base::Unretained(this)));
+}
+
+bool HoldingSpaceImage::FireInvalidateTimerForTesting() {
+  if (!invalidate_timer_.IsRunning())
+    return false;
+  invalidate_timer_.FireNow();
+  return true;
+}
+
+void HoldingSpaceImage::OnInvalidateTimer() {
   // Invalidate the existing pointers to:
   // *   Invalidate previous `image_skia_`'s host pointer, and prevent it from
   //     requesting bitmap loads.

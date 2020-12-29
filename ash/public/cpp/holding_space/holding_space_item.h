@@ -102,6 +102,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   const GURL& file_system_url() const { return file_system_url_; }
 
+  HoldingSpaceImage& image_for_testing() { return *image_; }
+
  private:
   // Constructor for file backed items.
   HoldingSpaceItem(Type type,

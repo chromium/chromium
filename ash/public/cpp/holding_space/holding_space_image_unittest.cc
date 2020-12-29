@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -140,8 +141,19 @@ std::unique_ptr<HoldingSpaceItem> CreateTestItem(
 
 }  // namespace
 
+class HoldingSpaceImageTest : public ::testing::Test {
+ public:
+  HoldingSpaceImageTest() = default;
+  HoldingSpaceImageTest(const HoldingSpaceImageTest&) = delete;
+  HoldingSpaceImageTest& operator=(const HoldingSpaceImageTest&) = delete;
+  ~HoldingSpaceImageTest() override = default;
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+};
+
 // Tests the basic flow for generating holding space image bitmaps.
-TEST(HoldingSpaceImageTest, ImageGeneration) {
+TEST_F(HoldingSpaceImageTest, ImageGeneration) {
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
       &image_generator, /*image_size=*/10, /*image_color=*/SK_ColorRED);
@@ -174,7 +186,7 @@ TEST(HoldingSpaceImageTest, ImageGeneration) {
 
 // Tests the basic flow for generating holding space image bitmaps where 2x
 // bitmap gets requested.
-TEST(HoldingSpaceImageTest, ImageGenerationWith2xScale) {
+TEST_F(HoldingSpaceImageTest, ImageGenerationWith2xScale) {
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
       &image_generator, /*image_size=*/10, /*image_color=*/SK_ColorRED);
@@ -215,7 +227,7 @@ TEST(HoldingSpaceImageTest, ImageGenerationWith2xScale) {
 
 // Verifies that the holding space image handles failed holding space image
 // requests.
-TEST(HoldingSpaceImageTest, ImageLoadFailure) {
+TEST_F(HoldingSpaceImageTest, ImageLoadFailure) {
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
       &image_generator, /*image_size=*/10, /*image_color=*/SK_ColorRED);
@@ -244,7 +256,7 @@ TEST(HoldingSpaceImageTest, ImageLoadFailure) {
 
 // Verifies that the holding space image can be updated using
 // `HoldingSpaceItem::InvalidateImage()`.
-TEST(HoldingSpaceImageTest, ImageRefresh) {
+TEST_F(HoldingSpaceImageTest, ImageRefresh) {
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
       &image_generator, /*image_size=*/10, /*image_color=*/SK_ColorRED);
@@ -262,6 +274,12 @@ TEST(HoldingSpaceImageTest, ImageRefresh) {
 
   // Request image refresh, and verify another image gets requested.
   holding_space_item->InvalidateImage();
+  EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
+  EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
+
+  ASSERT_TRUE(
+      holding_space_item->image_for_testing().FireInvalidateTimerForTesting());
+  EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
 
   // While image load request is in progress, use the previously loaded icon.
   image = holding_space_item->image().image_skia();
@@ -282,9 +300,53 @@ TEST(HoldingSpaceImageTest, ImageRefresh) {
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
 }
 
+// Verifies that image refresh requests issued in quick succession do not result
+// in multiple image load requests.
+TEST_F(HoldingSpaceImageTest, ImageRefreshThrottling) {
+  ImageGenerator image_generator;
+  std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
+      &image_generator, /*image_size=*/10, /*image_color=*/SK_ColorRED);
+
+  // Finish loading the initial image.
+  TestImageClient image_client(&holding_space_item->image());
+  EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
+  image_generator.FulfillRequest(0, SK_ColorBLUE);
+  EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
+
+  gfx::ImageSkia image = holding_space_item->image().image_skia();
+  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
+  EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
+
+  // Request image refresh multiple times, and verify that image load gets
+  // requested only once.
+  holding_space_item->InvalidateImage();
+  holding_space_item->InvalidateImage();
+  holding_space_item->InvalidateImage();
+  EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
+  EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
+
+  ASSERT_TRUE(
+      holding_space_item->image_for_testing().FireInvalidateTimerForTesting());
+  EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
+  EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
+
+  // Verify that image gets updated once the image load request completes.
+  EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
+  image_generator.FulfillRequest(0, SK_ColorGREEN);
+  EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
+
+  image = holding_space_item->image().image_skia();
+  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  EXPECT_EQ(SK_ColorGREEN, image.bitmap()->getColor(5, 5));
+
+  EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
+  EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
+}
+
 // Verifies that holding space image can be refreshed while the initial image
 // load is in progress.
-TEST(HoldingSpaceImageTest, ImageRefreshDuringInitialLoad) {
+TEST_F(HoldingSpaceImageTest, ImageRefreshDuringInitialLoad) {
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
       &image_generator, /*image_size=*/10, /*image_color=*/SK_ColorRED);
@@ -300,6 +362,8 @@ TEST(HoldingSpaceImageTest, ImageRefreshDuringInitialLoad) {
   EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
 
   holding_space_item->InvalidateImage();
+  ASSERT_TRUE(
+      holding_space_item->image_for_testing().FireInvalidateTimerForTesting());
 
   // Verify that placeholder image remains to be used.
   image = holding_space_item->image().image_skia();
@@ -333,8 +397,8 @@ TEST(HoldingSpaceImageTest, ImageRefreshDuringInitialLoad) {
 // Verifies that holding space image can be refreshed while the initial image
 // load is in progress - test the case where the initial load request finishes
 // after the request for refreshed image.
-TEST(HoldingSpaceImageTest,
-     ImageRefreshDuringInitialLoadWithOutOfOrderResponses) {
+TEST_F(HoldingSpaceImageTest,
+       ImageRefreshDuringInitialLoadWithOutOfOrderResponses) {
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
       &image_generator, /*image_size=*/10, /*image_color=*/SK_ColorRED);
@@ -350,6 +414,8 @@ TEST(HoldingSpaceImageTest,
   EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
 
   holding_space_item->InvalidateImage();
+  ASSERT_TRUE(
+      holding_space_item->image_for_testing().FireInvalidateTimerForTesting());
   EXPECT_EQ(2u, image_generator.NumberOfPendingRequests());
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
@@ -377,7 +443,7 @@ TEST(HoldingSpaceImageTest,
 // Verifies that holding space image representation can be requested even after
 // the holding space item gets deleted (in which case the image will continue
 // using the image placeholder).
-TEST(HoldingSpaceImageTest, ImageRequestsAfterItemDestruction) {
+TEST_F(HoldingSpaceImageTest, ImageRequestsAfterItemDestruction) {
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
       &image_generator, /*image_size=*/10, /*image_color=*/SK_ColorRED);
@@ -405,7 +471,7 @@ TEST(HoldingSpaceImageTest, ImageRequestsAfterItemDestruction) {
 
 // Tests that HoldingSpaceImage can handle holding space item destruction while
 // image load is still in progress.
-TEST(HoldingSpaceImageTest, ItemDestructionDuringImageLoad) {
+TEST_F(HoldingSpaceImageTest, ItemDestructionDuringImageLoad) {
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
       &image_generator, /*image_size=*/10, /*image_color=*/SK_ColorRED);
@@ -432,7 +498,7 @@ TEST(HoldingSpaceImageTest, ItemDestructionDuringImageLoad) {
 
 // Tests that HoldingSpaceImage can handle holding space item destruction while
 // image load is still in progress, in case the pending image load fails.
-TEST(HoldingSpaceImageTest, ItemDestructionDuringFailedImageLoad) {
+TEST_F(HoldingSpaceImageTest, ItemDestructionDuringFailedImageLoad) {
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
       &image_generator, /*image_size=*/10, /*image_color=*/SK_ColorRED);
@@ -461,7 +527,7 @@ TEST(HoldingSpaceImageTest, ItemDestructionDuringFailedImageLoad) {
 
 // Verifies that HoldingSpaceImage can handle holding space item destruction
 // while image refresh is in progress.
-TEST(HoldingSpaceImageTest, ItemDestructionDuringImageRefresh) {
+TEST_F(HoldingSpaceImageTest, ItemDestructionDuringImageRefresh) {
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
       &image_generator, /*image_size=*/10, /*image_color=*/SK_ColorRED);
@@ -477,6 +543,8 @@ TEST(HoldingSpaceImageTest, ItemDestructionDuringImageRefresh) {
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
 
   holding_space_item->InvalidateImage();
+  ASSERT_TRUE(
+      holding_space_item->image_for_testing().FireInvalidateTimerForTesting());
   EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 

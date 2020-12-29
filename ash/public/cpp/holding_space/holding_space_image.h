@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/timer/timer.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -47,6 +48,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   // representations will be reloaded.
   void Invalidate();
 
+  bool FireInvalidateTimerForTesting();
+
  private:
   class ImageSkiaSource;
 
@@ -61,10 +64,17 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   // source.
   void CreateImageSkia();
 
+  // `Invalidate()` requests are handled with a delay to reduce number of image
+  // loads if the backing file gets updated multiple times in quick succession.
+  void OnInvalidateTimer();
+
   gfx::ImageSkia placeholder_;
   AsyncBitmapResolver async_bitmap_resolver_;
 
   gfx::ImageSkia image_skia_;
+
+  // Timer used to throttle image invalidate requests.
+  base::OneShotTimer invalidate_timer_;
 
   // Mutable to allow const access from `AddImageSkiaChangedCallback()`.
   mutable CallbackList callback_list_;
