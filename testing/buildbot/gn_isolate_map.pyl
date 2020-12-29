@@ -837,14 +837,6 @@
     "label": "//extensions:extensions_browsertests",
     "type": "windowed_test_launcher",
   },
-  "extension_docserver_python_unittests": {
-    "args": [
-      "../../chrome/common/extensions/docs/server2/run_all_unittests.py",
-    ],
-    "label": "//chrome/common/extensions/docs/server2:extension_docserver_python_unittests",
-    "script": "//testing/scripts/run_isolated_script_test.py",
-    "type": "script",
-  },
   "extensions_unittests": {
     "label": "//extensions:extensions_unittests",
     "type": "windowed_test_launcher",

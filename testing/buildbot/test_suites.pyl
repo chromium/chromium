@@ -1241,11 +1241,6 @@
           'result_format': 'single'
         }
       },
-      'extension_docserver_python_unittests': {
-        'resultdb': {
-          'enable': True,
-        },
-      },
       'flatbuffers_unittests': {
         'resultdb': {
           'enable': True,
