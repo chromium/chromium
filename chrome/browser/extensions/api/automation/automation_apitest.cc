@@ -469,7 +469,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, AccessibilityFocus) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, TextareaAppendPerf) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+// TODO(http://crbug.com/1162238): flaky on ChromeOS.
+#define MAYBE_TextareaAppendPerf DISABLED_TextareaAppendPerf
+#else
+#define MAYBE_TextareaAppendPerf TextareaAppendPerf
+#endif
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_TextareaAppendPerf) {
   StartEmbeddedTestServer();
 
   {
