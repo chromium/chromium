@@ -105,6 +105,9 @@ enum class PermissionPromptDisposition {
   // There was no UI being shown. This is usually because the user closed an
   // inactive tab that had a pending permission request.
   NONE_VISIBLE = 7,
+
+  // Other custom modal dialogs.
+  CUSTOM_MODAL_DIALOG = 8,
 };
 
 // The reason why the permission prompt disposition was used. Enum used in UKMs,
