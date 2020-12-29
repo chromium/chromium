@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "components/autofill/content/browser/webauthn/internal_authenticator_impl.h"
 #include "components/autofill/core/browser/address_normalizer_impl.h"
@@ -272,7 +273,7 @@ std::string ChromePaymentRequestDelegate::GetTwaPackageName() const {
     return "";
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (!browser || !browser->app_controller())
+  if (!web_app::AppBrowserController::IsWebApp(browser))
     return "";
 
   auto* apk_web_app_service = chromeos::ApkWebAppService::Get(

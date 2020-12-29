@@ -7,6 +7,8 @@
 #include "base/optional.h"
 #include "chrome/browser/chromeos/apps/apk_web_app_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "content/public/browser/render_document_host_user_data.h"
@@ -15,9 +17,23 @@
 namespace apps {
 
 std::string GetTwaPackageName(content::RenderFrameHost* render_frame_host) {
-  auto* apk_web_app_service = chromeos::ApkWebAppService::Get(
-      Profile::FromBrowserContext(render_frame_host->GetBrowserContext()));
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  if (!web_contents)
+    return "";
 
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (!web_app::AppBrowserController::IsWebApp(browser)) {
+    return "";
+  }
+
+  auto* profile =
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
+  if (profile->IsIncognitoProfile()) {
+    return "";
+  }
+
+  auto* apk_web_app_service = chromeos::ApkWebAppService::Get(profile);
   if (!apk_web_app_service) {
     return "";
   }

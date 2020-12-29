@@ -13,6 +13,12 @@ class RenderFrameHost;
 
 namespace apps {
 
+/**
+ * Gets the TWA package name associated with the website present in the
+ * render frame host. An empty string will be retured if there is no associated
+ * TWA, if the website is in an Incognito tab, or if the website is not in a
+ * web app window.
+ */
 std::string GetTwaPackageName(content::RenderFrameHost* render_frame_host);
 std::string GetScope(content::RenderFrameHost* render_frame_host);
 
