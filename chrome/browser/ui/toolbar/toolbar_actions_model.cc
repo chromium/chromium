@@ -70,8 +70,8 @@ ToolbarActionsModel::ToolbarActionsModel(
   if (watch_toolbar_order || watch_pinned_extensions) {
     pref_change_registrar_.Init(prefs_);
     pref_change_callback_ =
-        base::Bind(&ToolbarActionsModel::OnActionToolbarPrefChange,
-                   base::Unretained(this));
+        base::BindRepeating(&ToolbarActionsModel::OnActionToolbarPrefChange,
+                            base::Unretained(this));
 
     if (watch_toolbar_order) {
       pref_change_registrar_.Add(extensions::pref_names::kToolbar,

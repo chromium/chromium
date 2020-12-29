@@ -59,7 +59,7 @@ std::string BlockedActionBubbleDelegate::GetAnchorActionId() {
 }
 
 void BlockedActionBubbleDelegate::OnBubbleShown(
-    const base::Closure& close_bubble_callback) {}
+    base::OnceClosure close_bubble_callback) {}
 
 void BlockedActionBubbleDelegate::OnBubbleClosed(CloseAction action) {
   std::move(callback_).Run(action);

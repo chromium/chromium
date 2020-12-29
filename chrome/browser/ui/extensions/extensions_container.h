@@ -61,7 +61,7 @@ class ExtensionsContainer {
   // |closure| will be called once any animation is complete.
   virtual void PopOutAction(ToolbarActionViewController* action,
                             bool is_sticky,
-                            const base::Closure& closure) = 0;
+                            base::OnceClosure closure) = 0;
 
   // Shows the popup for the action with |id| as the result of an API call,
   // returning true if a popup is shown.

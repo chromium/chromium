@@ -318,12 +318,12 @@ bool ExtensionsToolbarContainer::CloseOverflowMenuIfOpen() {
 void ExtensionsToolbarContainer::PopOutAction(
     ToolbarActionViewController* action,
     bool is_sticky,
-    const base::RepeatingClosure& closure) {
+    base::OnceClosure closure) {
   // TODO(pbos): Highlight popout differently.
   DCHECK(!popped_out_action_);
   popped_out_action_ = action;
   UpdateIconVisibility(action->GetId());
-  animating_layout_manager()->PostOrQueueAction(closure);
+  animating_layout_manager()->PostOrQueueAction(std::move(closure));
 }
 
 bool ExtensionsToolbarContainer::ShowToolbarActionPopupForAPICall(

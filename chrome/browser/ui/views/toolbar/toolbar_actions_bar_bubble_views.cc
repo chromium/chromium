@@ -209,6 +209,6 @@ void ToolbarActionsBarBubbleViews::OnWidgetVisibilityChanged(
   // ToolbarActionsBarBubbleDelegate. The ToolbarActionsBarBubbleDelegate is
   // an ExtensionMessageBubbleBridge, which owns the
   // ExtensionMessageBubbleController.
-  delegate_->OnBubbleShown(base::BindRepeating(&views::Widget::Close,
-                                               base::Unretained(GetWidget())));
+  delegate_->OnBubbleShown(
+      base::BindOnce(&views::Widget::Close, base::Unretained(GetWidget())));
 }

@@ -148,8 +148,8 @@ MediaRouterActionController::MediaRouterActionController(
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kShowCastIconInToolbar,
-      base::Bind(&MediaRouterActionController::MaybeAddOrRemoveAction,
-                 base::Unretained(this)));
+      base::BindRepeating(&MediaRouterActionController::MaybeAddOrRemoveAction,
+                          base::Unretained(this)));
   if (profile_->IsRegularProfile()) {
     media_router::MediaRouterMetrics::RecordIconStateAtInit(
         MediaRouterActionController::GetAlwaysShowActionPref(profile_));

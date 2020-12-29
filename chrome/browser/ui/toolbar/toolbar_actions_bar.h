@@ -242,7 +242,7 @@ class ToolbarActionsBar : public ExtensionsContainer,
   bool CloseOverflowMenuIfOpen() override;
   void PopOutAction(ToolbarActionViewController* action,
                     bool is_sticky,
-                    const base::Closure& closure) override;
+                    base::OnceClosure closure) override;
   bool ShowToolbarActionPopupForAPICall(const std::string& id) override;
   void ShowToolbarActionBubble(
       std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) override;
@@ -351,7 +351,7 @@ class ToolbarActionsBar : public ExtensionsContainer,
 
   // The task to alert the |popped_out_action_| that animation has finished, and
   // it is fully popped out.
-  base::Closure popped_out_closure_;
+  base::OnceClosure popped_out_closure_;
 
   // The controller for the toolbar action bubble to show once animation
   // finishes, if any.

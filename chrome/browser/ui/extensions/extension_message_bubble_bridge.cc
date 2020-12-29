@@ -85,8 +85,8 @@ std::string ExtensionMessageBubbleBridge::GetAnchorActionId() {
 }
 
 void ExtensionMessageBubbleBridge::OnBubbleShown(
-    const base::Closure& close_bubble_callback) {
-  controller_->OnShown(close_bubble_callback);
+    base::OnceClosure close_bubble_callback) {
+  controller_->OnShown(std::move(close_bubble_callback));
 }
 
 void ExtensionMessageBubbleBridge::OnBubbleClosed(CloseAction action) {

@@ -117,7 +117,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   bool CloseOverflowMenuIfOpen() override;
   void PopOutAction(ToolbarActionViewController* action,
                     bool is_sticky,
-                    const base::RepeatingClosure& closure) override;
+                    base::OnceClosure closure) override;
   bool ShowToolbarActionPopupForAPICall(const std::string& action_id) override;
   void ShowToolbarActionBubble(
       std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) override;

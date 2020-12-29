@@ -342,7 +342,7 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
 
   // For observing change of toolbar order preference by external entity (sync).
   PrefChangeRegistrar pref_change_registrar_;
-  base::Closure pref_change_callback_;
+  base::RepeatingClosure pref_change_callback_;
 
   ScopedObserver<extensions::LoadErrorReporter,
                  extensions::LoadErrorReporter::Observer>

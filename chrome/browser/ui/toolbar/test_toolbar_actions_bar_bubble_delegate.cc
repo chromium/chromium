@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/threading/thread_restrictions.h"
 
 class TestToolbarActionsBarBubbleDelegate::DelegateImpl
     : public ToolbarActionsBarBubbleDelegate {
@@ -38,7 +39,7 @@ class TestToolbarActionsBarBubbleDelegate::DelegateImpl
     return nullptr;
   }
   std::string GetAnchorActionId() override { return std::string(); }
-  void OnBubbleShown(const base::Closure& close_bubble_callback) override {
+  void OnBubbleShown(base::OnceClosure close_bubble_callback) override {
     CHECK(!parent_->shown_);
     parent_->shown_ = true;
   }

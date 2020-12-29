@@ -474,8 +474,7 @@ void ToolbarActionsBar::OnAnimationEnded() {
   if (pending_bubble_controller_) {
     ShowToolbarActionBubble(std::move(pending_bubble_controller_));
   } else if (!popped_out_closure_.is_null()) {
-    popped_out_closure_.Run();
-    popped_out_closure_.Reset();
+    std::move(popped_out_closure_).Run();
   }
 }
 
@@ -515,7 +514,7 @@ ToolbarActionsBar::GetActionVisibility(
 
 void ToolbarActionsBar::PopOutAction(ToolbarActionViewController* controller,
                                      bool is_sticky,
-                                     const base::Closure& closure) {
+                                     base::OnceClosure closure) {
   DCHECK(!in_overflow_mode()) << "Only the main bar can pop out actions.";
   DCHECK(!popped_out_action_) << "Only one action can be popped out at a time!";
   bool needs_redraw = !IsActionVisibleOnToolbar(controller);
@@ -531,9 +530,10 @@ void ToolbarActionsBar::PopOutAction(ToolbarActionViewController* controller,
   ResizeDelegate(gfx::Tween::LINEAR);
   if (!delegate_->IsAnimating()) {
     // Don't call the closure re-entrantly.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, closure);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(closure));
   } else {
-    popped_out_closure_ = closure;
+    popped_out_closure_ = std::move(closure);
   }
 }
 

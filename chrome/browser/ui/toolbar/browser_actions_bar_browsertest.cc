@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, RemovePoppedOutAction) {
   EXPECT_EQ(3, browser_actions_bar()->NumberOfBrowserActions());
 
   // Pop out Extension 3 (index 3).
-  base::Closure closure = base::DoNothing();
+  base::RepeatingClosure closure = base::DoNothing();
   ToolbarActionsBar* const toolbar_actions_bar =
       ToolbarActionsBar::FromBrowserWindow(browser()->window());
   EXPECT_EQ(extension3->id(), toolbar_actions_bar->GetActions()[2]->GetId());
