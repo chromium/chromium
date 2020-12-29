@@ -32,6 +32,9 @@ class BorealisWindowManager : public apps::InstanceRegistry::Observer {
   // and startup_id).
   static bool IsBorealisWindow(aura::Window* window);
 
+  // Returns true if this window's ID belongs to a borealis VM.
+  static bool IsBorealisWindowId(const std::string& window_id);
+
   // An observer for tracking the creation and deletion of anonymous windows.
   class AnonymousAppObserver : public base::CheckedObserver {
    public:

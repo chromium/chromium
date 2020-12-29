@@ -72,7 +72,12 @@ bool BorealisWindowManager::IsBorealisWindow(aura::Window* window) {
   const std::string* id = GetWindowId(window);
   if (!id)
     return false;
-  return base::StartsWith(*id, kBorealisWindowPrefix);
+  return IsBorealisWindowId(*id);
+}
+
+// static
+bool BorealisWindowManager::IsBorealisWindowId(const std::string& window_id) {
+  return base::StartsWith(window_id, kBorealisWindowPrefix);
 }
 
 BorealisWindowManager::BorealisWindowManager(Profile* profile)

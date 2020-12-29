@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/app_types.h"
 #include "base/strings/string_piece.h"
+#include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "components/arc/arc_util.h"
 #include "ui/aura/client/aura_constants.h"
@@ -31,5 +32,10 @@ void ExoAppTypeResolver::PopulateProperties(
   } else if (arc::GetTaskIdFromWindowAppId(app_id) != arc::kNoTaskId) {
     out_properties_container.SetProperty(
         aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+  } else if (borealis::BorealisWindowManager::IsBorealisWindowId(
+                 app_id.empty() ? startup_id : app_id)) {
+    // TODO(b/165865831): Stop using CROSTINI_APP for borealis windows.
+    out_properties_container.SetProperty(
+        aura::client::kAppType, static_cast<int>(ash::AppType::CROSTINI_APP));
   }
 }
