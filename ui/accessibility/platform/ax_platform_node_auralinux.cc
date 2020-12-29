@@ -3808,7 +3808,12 @@ void AXPlatformNodeAuraLinux::EmitCaretChangedSignal() {
     return;
   }
 
-  DCHECK(HasCaret());
+#if DCHECK_IS_ON()
+  AXTree::Selection unignored_selection =
+      GetDelegate()->GetUnignoredSelection();
+  DCHECK(HasCaret(&unignored_selection));
+#endif
+
   std::pair<int, int> selection = GetSelectionOffsetsForAtk();
 
   AtkObject* atk_object = GetOrCreateAtkObject();
@@ -4612,7 +4617,9 @@ bool AXPlatformNodeAuraLinux::IsNameExposed() {
 }
 
 int AXPlatformNodeAuraLinux::GetCaretOffset() {
-  if (!HasCaret()) {
+  AXTree::Selection unignored_selection =
+      GetDelegate()->GetUnignoredSelection();
+  if (!HasCaret(&unignored_selection)) {
     base::Optional<FindInPageResultInfo> result =
         GetSelectionOffsetsFromFindInPage();
     AtkObject* atk_object = GetOrCreateAtkObject();

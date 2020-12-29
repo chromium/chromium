@@ -225,8 +225,11 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 
   // Returns true if either a descendant has selection (sel_focus_object_id) or
   // if this node is a simple text element and has text selection attributes.
-  // Optionally accepts an unignored selection to avoid redundant computation.
-  bool HasCaret(const AXTree::Selection* unignored_selection = nullptr);
+  // Optionally accepts a selection, which can be useful if checking the
+  // unignored selection is required. If not provided, uses the selection from
+  // the tree data, which is safe and fast but does not take ignored nodes into
+  // account.
+  bool HasCaret(const AXTree::Selection* selection = nullptr);
 
   // See AXPlatformNodeDelegate::IsChildOfLeaf().
   bool IsChildOfLeaf() const;

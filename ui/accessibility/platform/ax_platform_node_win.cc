@@ -7366,8 +7366,8 @@ int AXPlatformNodeWin::MSAAState() const {
       msaa_state |= STATE_SYSTEM_HOTTRACKED;
   }
 
-  // If the role is IGNORED, we want these elements to be invisible so that
-  // these nodes are hidden from the screen reader.
+  // If the node is ignored, we want these elements to be invisible so that
+  // they are hidden from the screen reader.
   if (IsInvisibleOrIgnored())
     msaa_state |= STATE_SYSTEM_INVISIBLE;
 

@@ -889,8 +889,7 @@ base::Optional<float> AXPlatformNodeBase::GetFontSizeInPoints() const {
   return base::nullopt;
 }
 
-bool AXPlatformNodeBase::HasCaret(
-    const AXTree::Selection* unignored_selection) {
+bool AXPlatformNodeBase::HasCaret(const AXTree::Selection* selection) {
   if (IsPlainTextField() &&
       HasIntAttribute(ax::mojom::IntAttribute::kTextSelStart) &&
       HasIntAttribute(ax::mojom::IntAttribute::kTextSelEnd)) {
@@ -899,10 +898,10 @@ bool AXPlatformNodeBase::HasCaret(
 
   // The caret is always at the focus of the selection.
   int32_t focus_id;
-  if (unignored_selection)
-    focus_id = unignored_selection->focus_object_id;
+  if (selection)
+    focus_id = selection->focus_object_id;
   else
-    focus_id = delegate_->GetUnignoredSelection().focus_object_id;
+    focus_id = delegate_->GetTreeData().sel_focus_object_id;
 
   AXPlatformNodeBase* focus_object =
       static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(focus_id));
