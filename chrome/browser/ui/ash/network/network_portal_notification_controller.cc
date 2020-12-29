@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -188,7 +189,7 @@ void NetworkPortalNotificationController::OnDialogDestroyed(
     const NetworkPortalWebDialog* dialog) {
   if (dialog == dialog_) {
     dialog_ = nullptr;
-    ProfileHelper::Get()->ClearSigninProfile(base::Closure());
+    ProfileHelper::Get()->ClearSigninProfile(base::NullCallback());
   }
 }
 

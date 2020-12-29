@@ -152,7 +152,7 @@ class ImeControllerClientTest : public testing::Test {
  public:
   ImeControllerClientTest() {
     input_method_manager_.delegate_.set_get_localized_string_callback(
-        base::Bind(&GetLocalizedString));
+        base::BindRepeating(&GetLocalizedString));
   }
   ~ImeControllerClientTest() override = default;
 

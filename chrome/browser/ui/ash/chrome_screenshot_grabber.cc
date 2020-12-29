@@ -221,11 +221,11 @@ std::string ReadFileToString(const base::FilePath& path) {
 }
 
 using ShowNotificationCallback =
-    base::Callback<void(ScreenshotResult screenshot_result,
-                        const base::FilePath& screenshot_path)>;
+    base::OnceCallback<void(ScreenshotResult screenshot_result,
+                            const base::FilePath& screenshot_path)>;
 
 void SaveScreenshot(scoped_refptr<base::TaskRunner> ui_task_runner,
-                    const ShowNotificationCallback& callback,
+                    ShowNotificationCallback callback,
                     const base::FilePath& screenshot_path,
                     scoped_refptr<base::RefCountedMemory> png_data,
                     ScreenshotFileResult result,
@@ -258,7 +258,8 @@ void SaveScreenshot(scoped_refptr<base::TaskRunner> ui_task_runner,
 
   // Report the result on the UI thread.
   ui_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(callback, screenshot_result, screenshot_path));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), screenshot_result, screenshot_path));
 }
 
 void EnsureLocalDirectoryExists(
@@ -270,11 +271,11 @@ void EnsureLocalDirectoryExists(
   if (!base::CreateDirectory(path.DirName())) {
     LOG(ERROR) << "Failed to ensure the existence of "
                << path.DirName().value();
-    callback.Run(ScreenshotFileResult::CREATE_DIR_FAILED, path);
+    std::move(callback).Run(ScreenshotFileResult::CREATE_DIR_FAILED, path);
     return;
   }
 
-  callback.Run(ScreenshotFileResult::SUCCESS, path);
+  std::move(callback).Run(ScreenshotFileResult::SUCCESS, path);
 }
 
 }  // namespace
@@ -394,22 +395,23 @@ void ChromeScreenshotGrabber::OnTookScreenshot(
       screenshot_directory.AppendASCII(screenshot_basename + ".png");
 
   ShowNotificationCallback screenshot_complete_callback(
-      base::Bind(&ChromeScreenshotGrabber::OnScreenshotCompleted,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&ChromeScreenshotGrabber::OnScreenshotCompleted,
+                     weak_factory_.GetWeakPtr()));
 
   PrepareFileAndRunOnBlockingPool(
       screenshot_path,
-      base::Bind(&SaveScreenshot, base::ThreadTaskRunnerHandle::Get(),
-                 screenshot_complete_callback, screenshot_path, png_data));
+      base::BindOnce(&SaveScreenshot, base::ThreadTaskRunnerHandle::Get(),
+                     std::move(screenshot_complete_callback), screenshot_path,
+                     png_data));
 }
 
 void ChromeScreenshotGrabber::PrepareFileAndRunOnBlockingPool(
     const base::FilePath& path,
-    const FileCallback& callback) {
+    FileCallback callback) {
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(EnsureLocalDirectoryExists, path, callback));
+      base::BindOnce(EnsureLocalDirectoryExists, path, std::move(callback)));
 }
 
 void ChromeScreenshotGrabber::OnScreenshotCompleted(

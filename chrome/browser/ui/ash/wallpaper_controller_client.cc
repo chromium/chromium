@@ -87,10 +87,12 @@ bool CanGetFilesId() {
 }
 
 // Calls |callback| when system salt is ready. (|CanGetFilesId| returns true.)
-void AddCanGetFilesIdCallback(const base::Closure& callback) {
+void AddCanGetFilesIdCallback(base::OnceClosure callback) {
   // System salt may not be initialized in tests.
-  if (chromeos::SystemSaltGetter::IsInitialized())
-    chromeos::SystemSaltGetter::Get()->AddOnSystemSaltReady(callback);
+  if (chromeos::SystemSaltGetter::IsInitialized()) {
+    chromeos::SystemSaltGetter::Get()->AddOnSystemSaltReady(
+        std::move(callback));
+  }
 }
 
 // Returns true if |users| contains users other than device local accounts.
@@ -266,8 +268,8 @@ void WallpaperControllerClient::SetDefaultWallpaper(const AccountId& account_id,
         << "Cannot get wallpaper files id in SetDefaultWallpaper. This "
            "should never happen under normal circumstances.";
     AddCanGetFilesIdCallback(
-        base::Bind(&WallpaperControllerClient::SetDefaultWallpaper,
-                   weak_factory_.GetWeakPtr(), account_id, show_wallpaper));
+        base::BindOnce(&WallpaperControllerClient::SetDefaultWallpaper,
+                       weak_factory_.GetWeakPtr(), account_id, show_wallpaper));
     return;
   }
 
@@ -291,7 +293,7 @@ void WallpaperControllerClient::SetPolicyWallpaper(
   // Postpone setting the wallpaper until we can get files id. See
   // https://crbug.com/615239.
   if (!CanGetFilesId()) {
-    AddCanGetFilesIdCallback(base::Bind(
+    AddCanGetFilesIdCallback(base::BindOnce(
         &WallpaperControllerClient::SetPolicyWallpaper,
         weak_factory_.GetWeakPtr(), account_id, base::Passed(std::move(data))));
     return;
@@ -356,8 +358,8 @@ void WallpaperControllerClient::RemoveUserWallpaper(
         << "Cannot get wallpaper files id in RemoveUserWallpaper. This "
            "should never happen under normal circumstances.";
     AddCanGetFilesIdCallback(
-        base::Bind(&WallpaperControllerClient::RemoveUserWallpaper,
-                   weak_factory_.GetWeakPtr(), account_id));
+        base::BindOnce(&WallpaperControllerClient::RemoveUserWallpaper,
+                       weak_factory_.GetWeakPtr(), account_id));
     return;
   }
 
@@ -376,8 +378,8 @@ void WallpaperControllerClient::RemovePolicyWallpaper(
         << "Cannot get wallpaper files id in RemovePolicyWallpaper. This "
            "should never happen under normal circumstances.";
     AddCanGetFilesIdCallback(
-        base::Bind(&WallpaperControllerClient::RemovePolicyWallpaper,
-                   weak_factory_.GetWeakPtr(), account_id));
+        base::BindOnce(&WallpaperControllerClient::RemovePolicyWallpaper,
+                       weak_factory_.GetWeakPtr(), account_id));
     return;
   }
 

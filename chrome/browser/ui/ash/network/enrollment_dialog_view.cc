@@ -49,8 +49,7 @@ class EnrollmentDialogView : public views::DialogDelegateView {
 
   static void ShowDialog(const std::string& network_name,
                          Profile* profile,
-                         const GURL& target_uri,
-                         const base::Closure& connect);
+                         const GURL& target_uri);
 
   // views::DialogDelegateView overrides
   bool Accept() override;
@@ -65,15 +64,13 @@ class EnrollmentDialogView : public views::DialogDelegateView {
  private:
   EnrollmentDialogView(const std::string& network_name,
                        Profile* profile,
-                       const GURL& target_uri,
-                       const base::Closure& connect);
+                       const GURL& target_uri);
   void InitDialog();
 
   bool accepted_;
   std::string network_name_;
   Profile* profile_;
   GURL target_uri_;
-  base::Closure connect_;
   bool added_cert_;
 };
 
@@ -82,13 +79,11 @@ class EnrollmentDialogView : public views::DialogDelegateView {
 
 EnrollmentDialogView::EnrollmentDialogView(const std::string& network_name,
                                            Profile* profile,
-                                           const GURL& target_uri,
-                                           const base::Closure& connect)
+                                           const GURL& target_uri)
     : accepted_(false),
       network_name_(network_name),
       profile_(profile),
       target_uri_(target_uri),
-      connect_(connect),
       added_cert_(false) {
   SetTitle(l10n_util::GetStringUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_TITLE));
   DialogDelegate::SetButtonLabel(
@@ -104,10 +99,9 @@ EnrollmentDialogView::~EnrollmentDialogView() {}
 // static
 void EnrollmentDialogView::ShowDialog(const std::string& network_name,
                                       Profile* profile,
-                                      const GURL& target_uri,
-                                      const base::Closure& connect) {
+                                      const GURL& target_uri) {
   EnrollmentDialogView* dialog_view =
-      new EnrollmentDialogView(network_name, profile, target_uri, connect);
+      new EnrollmentDialogView(network_name, profile, target_uri);
 
   views::Widget::InitParams params =
       views::DialogDelegate::GetDialogWidgetInitParams(
@@ -198,9 +192,7 @@ class DialogEnrollmentDelegate {
                            Profile* profile);
   ~DialogEnrollmentDelegate();
 
-  // EnrollmentDelegate overrides
-  bool Enroll(const std::vector<std::string>& uri_list,
-              const base::Closure& connect);
+  bool Enroll(const std::vector<std::string>& uri_list);
 
  private:
   std::string network_guid_;
@@ -220,8 +212,8 @@ DialogEnrollmentDelegate::DialogEnrollmentDelegate(
 
 DialogEnrollmentDelegate::~DialogEnrollmentDelegate() {}
 
-bool DialogEnrollmentDelegate::Enroll(const std::vector<std::string>& uri_list,
-                                      const base::Closure& post_action) {
+bool DialogEnrollmentDelegate::Enroll(
+    const std::vector<std::string>& uri_list) {
   // Keep the closure for later activation if we notice that
   // a certificate has been added.
 
@@ -236,8 +228,7 @@ bool DialogEnrollmentDelegate::Enroll(const std::vector<std::string>& uri_list,
       // the enrollment dialog.
       NET_LOG(EVENT) << "Showing enrollment dialog for: "
                      << NetworkGuidId(network_guid_);
-      EnrollmentDialogView::ShowDialog(network_name_, profile_, uri,
-                                       post_action);
+      EnrollmentDialogView::ShowDialog(network_name_, profile_, uri);
       return true;
     }
     NET_LOG(DEBUG) << "Nonstandard URI: " + uri.spec()
@@ -248,10 +239,6 @@ bool DialogEnrollmentDelegate::Enroll(const std::vector<std::string>& uri_list,
   NET_LOG(ERROR) << "No usable enrollment URI for: "
                  << NetworkGuidId(network_guid_);
   return false;
-}
-
-void EnrollmentComplete(const std::string& network_id) {
-  NET_LOG(USER) << "Enrollment Complete for: " << NetworkGuidId(network_id);
 }
 
 // Decides if the enrollment dialog is allowed in the current login state.
@@ -335,8 +322,7 @@ bool CreateEnrollmentDialog(const std::string& network_id) {
 
   DialogEnrollmentDelegate* enrollment =
       new DialogEnrollmentDelegate(network_id, network->name(), profile);
-  return enrollment->Enroll(cert_config.pattern.enrollment_uri_list(),
-                            base::Bind(&EnrollmentComplete, network_id));
+  return enrollment->Enroll(cert_config.pattern.enrollment_uri_list());
 }
 
 }  // namespace enrollment

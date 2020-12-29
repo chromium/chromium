@@ -171,8 +171,8 @@ void InSessionAuthDialogClient::AuthenticateWithPassword(
       base::BindOnce(
           &ExtendedAuthenticator::AuthenticateToCheck,
           GetExtendedAuthenticator(), user_context,
-          base::Bind(&InSessionAuthDialogClient::OnPasswordAuthSuccess,
-                     weak_factory_.GetWeakPtr(), user_context)));
+          base::BindOnce(&InSessionAuthDialogClient::OnPasswordAuthSuccess,
+                         weak_factory_.GetWeakPtr(), user_context)));
 }
 
 void InSessionAuthDialogClient::OnPasswordAuthSuccess(

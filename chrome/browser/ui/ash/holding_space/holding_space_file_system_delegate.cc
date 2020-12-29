@@ -42,12 +42,15 @@ class HoldingSpaceFileSystemDelegate::FileSystemWatcher {
     // deletion.
     const base::FilePath path_to_watch = file_path.DirName();
 
-    if (!base::Contains(watchers_, path_to_watch)) {
-      watchers_[path_to_watch] = std::make_unique<base::FilePathWatcher>();
-      watchers_[path_to_watch]->Watch(
+    auto it = watchers_.lower_bound(path_to_watch);
+    if (it == watchers_.end() || it->first != path_to_watch) {
+      it = watchers_.emplace_hint(it, std::piecewise_construct,
+                                  std::forward_as_tuple(path_to_watch),
+                                  std::forward_as_tuple());
+      it->second.Watch(
           path_to_watch, base::FilePathWatcher::Type::kNonRecursive,
-          base::Bind(&FileSystemWatcher::OnFilePathChanged,
-                     weak_factory_.GetWeakPtr()));
+          base::BindRepeating(&FileSystemWatcher::OnFilePathChanged,
+                              weak_factory_.GetWeakPtr()));
     }
 
     // If the target path got deleted while request to add a watcher was in
@@ -74,7 +77,7 @@ class HoldingSpaceFileSystemDelegate::FileSystemWatcher {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::FilePathWatcher::Callback callback_;
-  std::map<base::FilePath, std::unique_ptr<base::FilePathWatcher>> watchers_;
+  std::map<base::FilePath, base::FilePathWatcher> watchers_;
   base::WeakPtrFactory<FileSystemWatcher> weak_factory_{this};
 };
 
@@ -99,8 +102,8 @@ HoldingSpaceFileSystemDelegate::~HoldingSpaceFileSystemDelegate() {
 void HoldingSpaceFileSystemDelegate::Init() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   file_system_watcher_ = std::make_unique<FileSystemWatcher>(
-      base::Bind(&HoldingSpaceFileSystemDelegate::OnFilePathChanged,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&HoldingSpaceFileSystemDelegate::OnFilePathChanged,
+                          weak_factory_.GetWeakPtr()));
 
   file_change_service_observer_.Observe(
       chromeos::FileChangeServiceFactory::GetInstance()->GetService(profile()));

@@ -75,7 +75,7 @@ class ImmersiveRevealEndedWaiter : public ImmersiveModeController::Observer {
   }
 
   ImmersiveModeController* immersive_controller_;
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(ImmersiveRevealEndedWaiter);
 };

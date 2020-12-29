@@ -44,8 +44,8 @@ class ChromeScreenshotGrabber : public ash::ScreenshotDelegate {
  public:
   // Callback called with the |result| of trying to create a local writable
   // |path| for the possibly remote path.
-  using FileCallback = base::Callback<void(ScreenshotFileResult result,
-                                           const base::FilePath& path)>;
+  using FileCallback = base::OnceCallback<void(ScreenshotFileResult result,
+                                               const base::FilePath& path)>;
 
   ChromeScreenshotGrabber();
   ~ChromeScreenshotGrabber() override;
@@ -81,7 +81,7 @@ class ChromeScreenshotGrabber : public ash::ScreenshotDelegate {
 
   // Prepares a writable file for |path|.
   void PrepareFileAndRunOnBlockingPool(const base::FilePath& path,
-                                       const FileCallback& callback);
+                                       FileCallback callback);
 
   // Called once all file writing is completed, or on error.
   void OnScreenshotCompleted(ui::ScreenshotResult result,

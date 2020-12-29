@@ -350,7 +350,7 @@ void AppServiceShelfContextMenu::BuildExtensionAppShortcutsMenu(
     ui::SimpleMenuModel* menu_model) {
   extension_menu_items_ = std::make_unique<extensions::ContextMenuMatcher>(
       controller()->profile(), this, menu_model,
-      base::Bind(MenuItemHasLauncherContext));
+      base::BindRepeating(MenuItemHasLauncherContext));
 
   int index = 0;
   extension_menu_items_->AppendExtensionItems(

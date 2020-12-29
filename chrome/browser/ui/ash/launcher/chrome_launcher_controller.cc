@@ -1307,15 +1307,16 @@ void ChromeLauncherController::AttachProfile(Profile* profile_to_attach) {
   pref_change_registrar_.Init(profile()->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kPolicyPinnedLauncherApps,
-      base::Bind(&ChromeLauncherController::UpdateAppLaunchersFromSync,
-                 base::Unretained(this)));
+      base::BindRepeating(&ChromeLauncherController::UpdateAppLaunchersFromSync,
+                          base::Unretained(this)));
   // Handling of prefs::kArcEnabled change should be called deferred to avoid
   // race condition when OnAppUninstalledPrepared for ARC apps is called after
   // UpdateAppLaunchersFromSync.
   pref_change_registrar_.Add(
       arc::prefs::kArcEnabled,
-      base::Bind(&ChromeLauncherController::ScheduleUpdateAppLaunchersFromSync,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &ChromeLauncherController::ScheduleUpdateAppLaunchersFromSync,
+          base::Unretained(this)));
 
   app_list::AppListSyncableService* app_list_syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile());

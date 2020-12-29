@@ -307,7 +307,7 @@ class HoldingSpaceKeyedServiceBrowserTest
       case FileSystemType::kDriveFs:
         // Set up drive integration service for test.
         ASSERT_TRUE(test_cache_root_.CreateUniqueTempDir());
-        create_drive_integration_service_ = base::Bind(
+        create_drive_integration_service_ = base::BindRepeating(
             &HoldingSpaceKeyedServiceBrowserTest::CreateDriveIntegrationService,
             base::Unretained(this));
         service_factory_for_test_ = std::make_unique<

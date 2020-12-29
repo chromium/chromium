@@ -82,7 +82,7 @@ void ShowErrorNotification(const std::string& identifier,
                            const std::string& network_type,
                            const base::string16& title,
                            const base::string16& message,
-                           const base::Closure& callback) {
+                           base::RepeatingClosure callback) {
   NET_LOG(ERROR) << "ShowErrorNotification: " << identifier << ": "
                  << base::UTF16ToUTF8(title);
   std::unique_ptr<message_center::Notification> notification =
@@ -93,7 +93,8 @@ void ShowErrorNotification(const std::string& identifier,
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierNetworkError),
           message_center::RichNotificationData(),
-          new message_center::HandleNotificationClickDelegate(callback),
+          new message_center::HandleNotificationClickDelegate(
+              std::move(callback)),
           GetErrorNotificationVectorIcon(network_type),
           message_center::SystemNotificationWarningLevel::WARNING);
   SystemNotificationHelper::GetInstance()->Display(*notification);
@@ -309,8 +310,9 @@ void NetworkStateNotifier::UpdateCellularOutOfCredits() {
         NetworkId(primary_network), kNetworkOutOfCreditsNotificationId,
         primary_network->type(),
         l10n_util::GetStringUTF16(IDS_NETWORK_OUT_OF_CREDITS_TITLE), error_msg,
-        base::Bind(&NetworkStateNotifier::ShowMobileSetup,
-                   weak_ptr_factory_.GetWeakPtr(), primary_network->guid()));
+        base::BindRepeating(&NetworkStateNotifier::ShowMobileSetup,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            primary_network->guid()));
   }
 }
 
@@ -343,8 +345,9 @@ void NetworkStateNotifier::UpdateCellularActivating(
               message_center::NotifierType::SYSTEM_COMPONENT, kNotifierNetwork),
           {},
           new message_center::HandleNotificationClickDelegate(
-              base::Bind(&NetworkStateNotifier::ShowNetworkSettings,
-                         weak_ptr_factory_.GetWeakPtr(), cellular_guid)),
+              base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  cellular_guid)),
           kNotificationMobileDataIcon,
           message_center::SystemNotificationWarningLevel::WARNING);
   SystemNotificationHelper::GetInstance()->Display(*notification);
@@ -363,8 +366,8 @@ void NetworkStateNotifier::ShowNetworkConnectErrorForGuid(
   // Get the up-to-date properties for the network and display the error.
   NetworkHandler::Get()->network_configuration_handler()->GetShillProperties(
       network->path(),
-      base::BindOnce(&NetworkStateNotifier::OnConnectErrorGetProperties,
-                     weak_ptr_factory_.GetWeakPtr(), error_name));
+      base::BindRepeating(&NetworkStateNotifier::OnConnectErrorGetProperties,
+                          weak_ptr_factory_.GetWeakPtr(), error_name));
 }
 
 void NetworkStateNotifier::ShowMobileActivationErrorForGuid(
@@ -388,8 +391,9 @@ void NetworkStateNotifier::ShowMobileActivationErrorForGuid(
               kNotifierNetworkError),
           {},
           new message_center::HandleNotificationClickDelegate(
-              base::Bind(&NetworkStateNotifier::ShowNetworkSettings,
-                         weak_ptr_factory_.GetWeakPtr(), cellular->guid())),
+              base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  cellular->guid())),
           kNotificationMobileDataOffIcon,
           message_center::SystemNotificationWarningLevel::WARNING);
   SystemNotificationHelper::GetInstance()->Display(*notification);
@@ -515,8 +519,8 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
   ShowErrorNotification(
       NetworkPathId(service_path), kNetworkConnectNotificationId, network_type,
       l10n_util::GetStringUTF16(IDS_NETWORK_CONNECTION_ERROR_TITLE), error_msg,
-      base::Bind(&NetworkStateNotifier::ShowNetworkSettings,
-                 weak_ptr_factory_.GetWeakPtr(), guid));
+      base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
+                          weak_ptr_factory_.GetWeakPtr(), guid));
 }
 
 void NetworkStateNotifier::ShowVpnDisconnectedNotification(VpnDetails* vpn) {
@@ -527,8 +531,8 @@ void NetworkStateNotifier::ShowVpnDisconnectedNotification(VpnDetails* vpn) {
       NetworkGuidId(vpn->guid), kNetworkConnectNotificationId, shill::kTypeVPN,
       l10n_util::GetStringUTF16(IDS_NETWORK_VPN_CONNECTION_LOST_TITLE),
       error_msg,
-      base::Bind(&NetworkStateNotifier::ShowNetworkSettings,
-                 weak_ptr_factory_.GetWeakPtr(), vpn->guid));
+      base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
+                          weak_ptr_factory_.GetWeakPtr(), vpn->guid));
 }
 
 void NetworkStateNotifier::ShowNetworkSettings(const std::string& network_id) {
