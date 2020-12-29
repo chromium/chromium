@@ -170,6 +170,7 @@ src:*ui/gl/gl_bindings_autogen_*
 # Calls to vulkan function pointers from shared library.
 src:*third_party/vulkan_memory_allocator/src/vk_mem_alloc.h
 src:*third_party/angle/third_party/vulkan-loader/src/loader*
+src:*third_party/vulkan-deps/vulkan-loader/src/loader*
 
 src:*components/os_crypt/*
 
