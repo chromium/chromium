@@ -8,6 +8,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -25,14 +26,12 @@ class LoginDetectionPasswordStoreSitesBrowserTest
 
   scoped_refptr<password_manager::PasswordStore> GetProfilePasswordStore() {
     return PasswordStoreFactory::GetForProfile(
-        ProfileManager::GetActiveUserProfile(),
-        ServiceAccessType::EXPLICIT_ACCESS);
+        browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
   }
 
   scoped_refptr<password_manager::PasswordStore> GetAccountPasswordStore() {
     return AccountPasswordStoreFactory::GetForProfile(
-        ProfileManager::GetActiveUserProfile(),
-        ServiceAccessType::EXPLICIT_ACCESS);
+        browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
   }
 
   void AddLoginForSite(password_manager::PasswordStore* password_store,
@@ -44,15 +43,15 @@ class LoginDetectionPasswordStoreSitesBrowserTest
     form.username_value = base::ASCIIToUTF16("my_username");
     form.password_value = base::ASCIIToUTF16("my_password");
     form.blocked_by_user = false;
-    password_store->AddLogin(form);
-    WaitForPasswordStoreUpdate(password_store);
+    passwords_helper::AddLogin(password_store, form);
+    base::RunLoop().RunUntilIdle();
   }
 
   // Wait for the password store taskrunner to complete its event processing.
   void WaitForPasswordStoreUpdate(
       password_manager::PasswordStore* password_store) {
     base::WaitableEvent waitable_event(
-        base::WaitableEvent::ResetPolicy::AUTOMATIC,
+        base::WaitableEvent::ResetPolicy::MANUAL,
         base::WaitableEvent::InitialState::NOT_SIGNALED);
     password_store->ScheduleTask(base::BindOnce(
         &base::WaitableEvent::Signal, base::Unretained(&waitable_event)));
