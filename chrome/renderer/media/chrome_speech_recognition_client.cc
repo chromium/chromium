@@ -215,7 +215,7 @@ void ChromeSpeechRecognitionClient::SendAudioToSpeechRecognitionService(
   if (IsSpeechRecognitionAvailable()) {
     speech_recognition_recognizer_->SendAudioToSpeechRecognitionService(
         std::move(audio_data));
-  } else {
+  } else if (is_recognizer_bound_) {
     speech_recognition_recognizer_->AudioReceivedAfterBubbleClosed(
         media::AudioTimestampHelper::FramesToTime(audio_data->frame_count,
                                                   audio_data->sample_rate));
