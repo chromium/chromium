@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="1175958423215084756">Линк је откривен. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Слике у галерији</translation>
 <translation id="1430915738399379752">Штампај</translation>
 <translation id="1473110567575736769">Тајмер за 3 секунде</translation>
@@ -79,6 +80,7 @@
 <translation id="7649070708921625228">Помоћ</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7670511624014457267">60 кадр/с</translation>
+<translation id="7983668134180549431">Текст је откривен.</translation>
 <translation id="8067883171444229417">Пусти видео</translation>
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8145038249676204903">Пређи на режим за снимање слика</translation>

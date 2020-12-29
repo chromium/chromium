@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1175958423215084756">A fost detectat un link. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Imagini din galerie</translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1473110567575736769">Cronometru de 3 secunde</translation>
@@ -79,6 +80,7 @@ Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează u
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7670511624014457267">60 CPS</translation>
+<translation id="7983668134180549431">A fost detectat text.</translation>
 <translation id="8067883171444229417">Redă videoclipul</translation>
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8145038249676204903">Comută pentru a fotografia</translation>

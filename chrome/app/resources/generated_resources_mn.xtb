@@ -1244,6 +1244,7 @@
 <translation id="2366260648632264559">Системийн текстийг энэ хэлээр харуулах</translation>
 <translation id="2367972762794486313">Аппликейшнүүдийг харуулах</translation>
 <translation id="2371076942591664043">Татаж авч дууссаны дараа нээ</translation>
+<translation id="23721837607121582">Мобайл профайл татах, <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" /> сүлжээ, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">Цаасанд багтаах</translation>
 <translation id="2375406435414127095">Утсандаа холбогдох</translation>
 <translation id="2377588536920405462">Та төхөөрөмжийнхөө үндсэн Байршлын тохиргоог унтрааснаар байршлыг унтраах боломжтой. Та мөн байршилд зориулж Wi-Fi, мобайл сүлжээ болон мэдрэгчийг ашиглахыг байршлын тохиргоонд унтраах боломжтой.</translation>
@@ -1436,7 +1437,6 @@
 <translation id="2602501489742255173">Эхлүүлэхийн тулд дээш шударна уу</translation>
 <translation id="2603115962224169880">Компьютерийг цэвэрлэх</translation>
 <translation id="2603463522847370204">Нууцлалтай цонхонд нээх</translation>
-<translation id="2603656971249947488">Таб зурвас</translation>
 <translation id="2604255671529671813">Сүлжээний холболтын алдаа</translation>
 <translation id="2606246518223360146">Өгөгдлийг холбох</translation>
 <translation id="2606454609872547359">Үгүй, ChromeVox-гүйгээр үргэлжлүүлнэ</translation>
@@ -2672,6 +2672,7 @@
 <translation id="3969092967100188979">Асаалттай, роумингтэй</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
+<translation id="3971140002794351170">Мобайл профайл татах, <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" /> сүлжээ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">Энэ аюулгүй байдлын түлхүүр дээр байгаа хурууны хээ</translation>
 <translation id="3973660817924297510">Нууц үгийг шалгаж байна (<ph name="TOTAL_PASSWORDS" />-н <ph name="CHECKED_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">Домэйнээр серверт холбогдох амжилтгүй боллоо</translation>
@@ -6457,6 +6458,7 @@
 <translation id="8398877366907290961">Ямарч байсан үргэлжлүүлье</translation>
 <translation id="8400146488506985033">Хүмүүсийг удирдах</translation>
 <translation id="8401432541486058167">Таны ухаалаг карттай холбоотой ПИН-г оруулна уу.</translation>
+<translation id="8403562727702715619">Саяхан Google Драйваас</translation>
 <translation id="8407199357649073301">Логийн түвшин:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> сүлжээ, холбогдож байна</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6895,6 +6897,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" /> дараах файл болон фолдерыг засах боломжтой</translation>
 <translation id="8890170499370378450">Мобайл дата төлбөр гарч болзошгүй</translation>
 <translation id="8890516388109605451">Эх сурвалж</translation>
+<translation id="8890529496706615641">Профайлын нэрийг өөрчлөх боломжгүй. Дахин оролдож эсвэл техникийн тусламж авахаар оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="8892168913673237979">Бүгд тохируулагдсан!</translation>
 <translation id="8893801527741465188">Амжилттай устгалаа</translation>
 <translation id="8893928184421379330">Уучлаарай, төхөөрөмжийг <ph name="DEVICE_LABEL" /> таних боломжгүй байна.</translation>

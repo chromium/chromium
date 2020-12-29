@@ -65,7 +65,7 @@
 <translation id="1535268707340844072">Your current setting may cause some sites to break. To manage cookies for all sites, see <ph name="BEGIN_LINK" />Cookie settings<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Address 1</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
-<translation id="1552525382687785070">Sync is Disabled by your Administrator</translation>
+<translation id="1552525382687785070">Sync is disabled by your administrator</translation>
 <translation id="1554477036522844996">New window</translation>
 <translation id="1580715474678097352">Stay protected from dangerous websites</translation>
 <translation id="1580783302095112590">Mail sent.</translation>
@@ -110,7 +110,7 @@
 <translation id="2073572773299281212">Active <ph name="DAYS" /> days ago</translation>
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Undo</translation>
-<translation id="209018056901015185">Request Desktop Site</translation>
+<translation id="209018056901015185">Request desktop site</translation>
 <translation id="2103075008456228677">Open history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items moved</translation>
 <translation id="2118594521750010466">Fix now</translation>

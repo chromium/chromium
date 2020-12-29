@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1175958423215084756">Tuvastati link. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Galerii pildid</translation>
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1473110567575736769">3-sekundiline taimer</translation>
@@ -79,6 +80,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7983668134180549431">Tuvastati tekst.</translation>
 <translation id="8067883171444229417">Esita video</translation>
 <translation id="8131740175452115882">Kinnita</translation>
 <translation id="8145038249676204903">Vaheta foto jäädvustamise režiimile</translation>

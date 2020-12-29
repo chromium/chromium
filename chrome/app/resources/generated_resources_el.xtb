@@ -1248,6 +1248,7 @@
 <translation id="2366260648632264559">Εμφάνιση κειμένου συστήματος σε αυτήν τη γλώσσα</translation>
 <translation id="2367972762794486313">Εμφάνιση εφαρμογών</translation>
 <translation id="2371076942591664043">Άνοιγμα κατά την &amp;ολοκλήρωση</translation>
+<translation id="23721837607121582">Λήψη προφίλ κινητού, Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">Προσαρμογή στο χαρτί</translation>
 <translation id="2375406435414127095">Συνδεθείτε στο τηλέφωνό σας</translation>
 <translation id="2377588536920405462">Μπορείτε να απενεργοποιήσετε την Τοποθεσία απενεργοποιώντας τη βασική ρύθμιση τοποθεσίας στη συσκευή σας. Μπορείτε επίσης να απενεργοποιήσετε τη χρήση δικτύων Wi-Fi και κινητής τηλεφωνίας και των αισθητήρων για την τοποθεσία στις ρυθμίσεις τοποθεσίας.</translation>
@@ -1441,7 +1442,6 @@
 <translation id="2602501489742255173">Σύρετε προς τα επάνω για να ξεκινήσετε</translation>
 <translation id="2603115962224169880">Εκκαθάριση υπολογιστή</translation>
 <translation id="2603463522847370204">Άνοιγμα σε παράθυρο για ανών&amp;υμη περιήγηση</translation>
-<translation id="2603656971249947488">Γραμμή καρτελών</translation>
 <translation id="2604255671529671813">Σφάλμα σύνδεσης δικτύου</translation>
 <translation id="2606246518223360146">Σύνδεση δεδομένων</translation>
 <translation id="2606454609872547359">Όχι, συνέχεια χωρίς το ChromeVox</translation>
@@ -2678,6 +2678,7 @@
 <translation id="3969092967100188979">Ενεργό, με περιαγωγή</translation>
 <translation id="3970114302595058915">Αναγνωριστικό</translation>
 <translation id="397105322502079400">Υπολογισμός…</translation>
+<translation id="3971140002794351170">Λήψη προφίλ κινητού, Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">Δακτυλικά αποτυπώματα σε αυτό το κλειδί ασφαλείας</translation>
 <translation id="3973660817924297510">Γίνεται έλεγχος κωδικών πρόσβασης (<ph name="CHECKED_PASSWORDS" /> από <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">Η επικοινωνία με τον διακομιστή για realm απέτυχε</translation>
@@ -6469,6 +6470,7 @@
 <translation id="8398877366907290961">Συνέχεια</translation>
 <translation id="8400146488506985033">Διαχείριση ατόμων</translation>
 <translation id="8401432541486058167">Καταχωρίστε το PIN που συσχετίζεται με την έξυπνη κάρτα σας.</translation>
+<translation id="8403562727702715619">Πρόσφατα από το Google Drive</translation>
 <translation id="8407199357649073301">Επίπεδο καταγραφής:</translation>
 <translation id="8408068190360279472">Δίκτυο <ph name="NETWORK_TYPE" />, σύνδεση σε εξέλιξη</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6907,6 +6909,7 @@
 <translation id="8889651696183044030">Ο ιστότοπος <ph name="ORIGIN" /> μπορεί να επεξεργαστεί τα παρακάτω αρχεία και φακέλους</translation>
 <translation id="8890170499370378450">Μπορεί να επιφέρει χρεώσεις δεδομένων κινητής τηλεφωνίας.</translation>
 <translation id="8890516388109605451">Πηγές</translation>
+<translation id="8890529496706615641">Δεν ήταν δυνατή η μετονομασία του προφίλ. Δοκιμάστε ξανά ή επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας για τεχνική υποστήριξη.</translation>
 <translation id="8892168913673237979">Έτοιμο!</translation>
 <translation id="8893801527741465188">Η απεγκατάσταση ολοκληρώθηκε</translation>
 <translation id="8893928184421379330">Λυπούμαστε, δεν ήταν δυνατή η αναγνώριση της συσκευής <ph name="DEVICE_LABEL" />.</translation>

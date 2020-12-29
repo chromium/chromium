@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1175958423215084756">リンクが検出されました。<ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">ギャラリー画像</translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1473110567575736769">3 秒タイマー</translation>
@@ -79,6 +80,7 @@
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7983668134180549431">テキストが検出されました。</translation>
 <translation id="8067883171444229417">動画を再生します</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8145038249676204903">写真の撮影に切り替え</translation>

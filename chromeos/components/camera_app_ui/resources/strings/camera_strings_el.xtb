@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
+<translation id="1175958423215084756">Εντοπίστηκε σύνδεσμος. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Εικόνες gallery</translation>
 <translation id="1430915738399379752">Εκτύπωση</translation>
 <translation id="1473110567575736769">Χρονόμετρο 3 δευτερολέπτων</translation>
@@ -79,6 +80,7 @@
 <translation id="7649070708921625228">Βοήθεια</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7670511624014457267">60 καρέ ανά δευτερόλεπτο</translation>
+<translation id="7983668134180549431">Εντοπίστηκε κείμενο.</translation>
 <translation id="8067883171444229417">Αναπαραγωγή βίντεο</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
 <translation id="8145038249676204903">Μετάβαση στη λειτουργία λήψης φωτογραφίας</translation>

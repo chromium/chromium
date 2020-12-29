@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">'రూపం ఉన్న రంగు మోడ్'లో ఇంటర్‌ఫేస్‌కు పలుచగా రంగులు అద్దడానికి మీ వాల్‌పేపర్‌లోని రంగులు సంగ్రహించి ఉపయోగించబడతాయి.</translation>
 <translation id="112308213915226829">అరను స్వయంచాలకంగా దాచు</translation>
 <translation id="1153356358378277386">జత చేసిన పరికరాలు</translation>
+<translation id="1165712434476988950">అప్‌డేట్‌ను వర్తింపజేయడానికి పరికరాన్ని రీస్టార్ట్ చేయాలి.</translation>
 <translation id="1175572348579024023">స్క్రోల్ చేస్తుంది</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
 <translation id="118532027333893379">ఫుల్ స్క్రీన్‌ను క్యాప్చర్ చేయడానికి ఎక్కడైనా ట్యాప్ చేయండి</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">వచన ఇన్‌పుట్</translation>
 <translation id="1993072747612765854">తాజా <ph name="SYSTEM_APP_NAME" /> అప్‌డేట్ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="1995660704900986789">పవర్ ఆఫ్ చేయి</translation>
+<translation id="1998100899771863792">ప్రస్తుత డెస్క్</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">సందేశాన్ని టైప్ చేయండి</translation>
 <translation id="2018630726571919839">ఒక జోక్ చెప్పు</translation>
@@ -898,6 +900,7 @@
 <translation id="9089416786594320554">ఇన్‌పుట్ పద్ధతులు</translation>
 <translation id="9091626656156419976">డిస్‌ప్లే <ph name="DISPLAY_NAME" /> తీసివేయబడింది</translation>
 <translation id="9098969848082897657">ఫోన్‌ను సైలెంట్ చేయండి</translation>
+<translation id="9099154003160514616">Lacros అప్‌డేట్ అందుబాటులో ఉంది</translation>
 <translation id="9151726767154816831">అప్‌డేట్ చేయ‌డానికి పునఃప్రారంభించి, పవర్‌వాష్ చేయండి</translation>
 <translation id="9166331175924255663">సమీప షేరింగ్ అధిక విజిబిలిటీ మోడ్‌ను టోగుల్ చేయండి.</translation>
 <translation id="9168436347345867845">దీనిని తర్వాత చేయి</translation>
@@ -908,6 +911,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> రిజల్యూషన్ <ph name="RESOLUTION" />కు మార్చబడింది. మార్పులను అలాగే ఉంచడానికి 'ధృవీకరించు'ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="9210037371811586452">ఏకీకృత డెస్క్‌టాప్ మోడ్ నుండి ఎగ్జిట్ అవుతోంది</translation>
+<translation id="9211490828691860325">అన్ని డెస్క్‌లు</translation>
 <translation id="9211681782751733685">బ్యాటరీ పూర్తిగా ఛార్జ్ కావడానికి పట్టే సమయం, <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">వాల్‌పేపర్‌ను సెట్ చేయండి</translation>
 <translation id="921989828232331238">మీ తల్లి/తండ్రి ఈ రోజుకి మీ పరికరాన్ని లాక్ చేసి ఉంచారు</translation>

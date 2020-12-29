@@ -55,7 +55,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1351937230027495976">Zwiń menu</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1391102559483454063">Włączono</translation>
-<translation id="1407069428457324124">Tryb ciemny</translation>
+<translation id="1407069428457324124">Ciemny motyw</translation>
 <translation id="1419738280318246476">Odblokuj urządzenie, by zareagować na powiadomienie</translation>
 <translation id="1420408895951708260">Włącz lub wyłącz Podświetlenie nocne. <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">Utworzono zrzut ekranu i zapisano go w schowku</translation>
@@ -268,7 +268,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3375634426936648815">Połączono</translation>
 <translation id="3386978599540877378">Lupa pełnoekranowa</translation>
 <translation id="3400357268283240774">Ustawienia dodatkowe</translation>
-<translation id="3410336247007142655">Pokaż ustawienia trybu ciemnego</translation>
+<translation id="3410336247007142655">Pokaż ustawienia ciemnego motywu</translation>
 <translation id="3413817803639110246">Na razie nie ma nic do pokazania</translation>
 <translation id="3428447136709161042">Odłączyć od sieci <ph name="NETWORK_NAME" />?</translation>
 <translation id="3430396595145920809">Aby wrócić, przesuń palcem od prawej strony</translation>
@@ -347,7 +347,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4129129681837227511">Aby wyświetlać powiadomienia na ekranie blokady, odblokuj ekran i zmień ustawienie</translation>
 <translation id="4146833061457621061">Włącz muzykę</translation>
 <translation id="415719264485676252">Zrzut ekranu jest zablokowany</translation>
-<translation id="4157822100366708405">Ustawienia trybu ciemnego</translation>
+<translation id="4157822100366708405">Ustawienia ciemnego motywu</translation>
 <translation id="4181841719683918333">Języki</translation>
 <translation id="4195877955194704651">Automatyczne klikanie przycisku</translation>
 <translation id="4197790712631116042">Wyłączono</translation>
@@ -405,7 +405,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4577274620589681794">Czas minął · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Pokaż podglądy</translation>
 <translation id="4585337515783392668">Zakończ przesyłanie do nieznanego odbiornika</translation>
-<translation id="4596144739579517758">Tryb ciemny jest wyłączony</translation>
+<translation id="4596144739579517758">Ciemny motyw jest wyłączony</translation>
 <translation id="4623167406982293031">Zweryfikuj konto</translation>
 <translation id="4628757576491864469">Urządzenia</translation>
 <translation id="4642092649622328492">Zrób zrzut części ekranu</translation>
@@ -482,7 +482,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5322611492012084517">Nie udało się znaleźć telefonu</translation>
 <translation id="5329548388331921293">Łączę…</translation>
 <translation id="5331975486040154427">Urządzenie USB-C (tylny port na lewym boku)</translation>
-<translation id="5352250171825660495">Tryb ciemny jest włączony</translation>
+<translation id="5352250171825660495">Ciemny motyw jest włączony</translation>
 <translation id="5379115545237091094">Zbyt wiele prób</translation>
 <translation id="5397578532367286026">Działania i historia tego użytkownika mogą być sprawdzane przez menedżera (<ph name="MANAGER_EMAIL" />) na chrome.com.</translation>
 <translation id="5400461572260843123">Szybkie ustawienia, naciśnij Wyszukaj + strzałka w lewo, by otworzyć centrum powiadomień.</translation>
@@ -866,7 +866,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8850991929411075241">Szukaj+Esc</translation>
 <translation id="8853703225951107899">Nadal nie udało się zweryfikować Twojego hasła ani kodu PIN. Uwaga: jeśli Twoje hasło zostało ostatnio zmienione, użyj starego hasła. Nowe hasło zacznie obowiązywać, gdy się wylogujesz.</translation>
 <translation id="8870509716567206129">Aplikacja nie obsługuje dzielonego ekranu.</translation>
-<translation id="8871580645200179206">Przełącz tryb ciemny. <ph name="STATE_TEXT" /></translation>
+<translation id="8871580645200179206">Przełącz ciemny motyw. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Brak połączenia</translation>
 <translation id="8876661425082386199">Sprawdź połączenie</translation>
 <translation id="8877788021141246043">Ustaw przypomnienie</translation>

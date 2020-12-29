@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1175958423215084756">Tengill greindist. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Myndir úr galleríi</translation>
 <translation id="1430915738399379752">Prenta</translation>
 <translation id="1473110567575736769">3 sekúndna teljari</translation>
@@ -79,6 +80,7 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7670511624014457267">60 rammar/sek.</translation>
+<translation id="7983668134180549431">Texti greindist.</translation>
 <translation id="8067883171444229417">Spila myndskeið</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
 <translation id="8145038249676204903">Skipta yfir í myndatöku</translation>

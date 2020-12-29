@@ -1248,6 +1248,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2366260648632264559">Wys stelselteks in hierdie taal</translation>
 <translation id="2367972762794486313">Wys programme</translation>
 <translation id="2371076942591664043">Maak oop wanneer klaar is</translation>
+<translation id="23721837607121582">Laai mobiele profiel af, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">Pas op papier</translation>
 <translation id="2375406435414127095">Koppel aan jou foon</translation>
 <translation id="2377588536920405462">Jy kan ligging afskakel deur die hoofligginginstelling op jou toestel af te skakel. Jy kan ook die gebruik van Wi-Fi, selnetwerke en sensors vir ligging in ligginginstellings afskakel.</translation>
@@ -1441,7 +1442,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2602501489742255173">Swiep op om te begin</translation>
 <translation id="2603115962224169880">Maak rekenaar skoon</translation>
 <translation id="2603463522847370204">Maak in incognitovenster oop</translation>
-<translation id="2603656971249947488">Oortjiestrook</translation>
 <translation id="2604255671529671813">Netwerkverbinding-fout</translation>
 <translation id="2606246518223360146">Koppel data</translation>
 <translation id="2606454609872547359">Nee, gaan voort sonder ChromeVox</translation>
@@ -2678,6 +2678,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3969092967100188979">Aan, swerf</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Bereken tans …</translation>
+<translation id="3971140002794351170">Laai mobiele profiel af, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">Vingerafdrukke op hierdie sekuriteitsleutel</translation>
 <translation id="3973660817924297510">Gaan tans wagwoorde na (<ph name="CHECKED_PASSWORDS" /> van <ph name="TOTAL_PASSWORDS" />) …</translation>
 <translation id="3975565978598857337">Kon nie bediener vir domein kontak nie</translation>
@@ -6467,6 +6468,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8398877366907290961">Gaan nogtans voort</translation>
 <translation id="8400146488506985033">Bestuur mense</translation>
 <translation id="8401432541486058167">Verskaf die PIN wat met jou slimkaart geassosieer word.</translation>
+<translation id="8403562727702715619">Onlangs uit Google Drive</translation>
 <translation id="8407199357649073301">Loglêervlak:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-netwerk; koppel tans</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6907,6 +6909,7 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> kan die volgende lêers en vouers wysig</translation>
 <translation id="8890170499370378450">Kan mobiele dataheffings aangaan</translation>
 <translation id="8890516388109605451">Bronne</translation>
+<translation id="8890529496706615641">Profiel kon nie hernoem word nie. Probeer weer of kontak jou diensverskaffer vir tegniese steundiens.</translation>
 <translation id="8892168913673237979">Gereed!</translation>
 <translation id="8893801527741465188">Deïnstallering is voltooi</translation>
 <translation id="8893928184421379330">Jammer, die toestel <ph name="DEVICE_LABEL" /> kon nie herken word nie.</translation>

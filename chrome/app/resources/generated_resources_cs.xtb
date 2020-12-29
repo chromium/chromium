@@ -1250,6 +1250,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2366260648632264559">Text systému zobrazit v tomto jazyce</translation>
 <translation id="2367972762794486313">Zobrazit aplikace</translation>
 <translation id="2371076942591664043">Po dokončení otevřít</translation>
+<translation id="23721837607121582">Stáhněte si mobilní profil, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">Přizpůsobit papíru</translation>
 <translation id="2375406435414127095">Připojte se k telefonu</translation>
 <translation id="2377588536920405462">Určování polohy můžete vypnout tím, že v zařízení deaktivujete hlavní nastavení polohy. V nastavení polohy můžete také vypnout používání sítí Wi-Fi, mobilních sítí a senzorů k určování polohy.</translation>
@@ -1442,7 +1443,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2602501489742255173">Začněte přejetím nahoru</translation>
 <translation id="2603115962224169880">Vyčištění počítače</translation>
 <translation id="2603463522847370204">Otevřít v &amp;anonymním okně</translation>
-<translation id="2603656971249947488">Lišta karet</translation>
 <translation id="2604255671529671813">Chyba připojení k síti</translation>
 <translation id="2606246518223360146">Propojit data</translation>
 <translation id="2606454609872547359">Ne, pokračovat bez čtečky ChromeVox</translation>
@@ -2678,6 +2678,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3969092967100188979">Roaming je povolen, ale neprobíhá</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Probíhá výpočet…</translation>
+<translation id="3971140002794351170">Stáhněte si mobilní profil, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">Otisky prstů na tomto bezpečnostním klíči</translation>
 <translation id="3973660817924297510">Probíhá kontrola hesel (<ph name="CHECKED_PASSWORDS" /> z <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">Kontaktování serveru pro sféru se nezdařilo</translation>
@@ -6467,6 +6468,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8398877366907290961">Přesto pokračovat</translation>
 <translation id="8400146488506985033">Správa uživatelů</translation>
 <translation id="8401432541486058167">Zadejte kód PIN přidružený k vaší chytré kartě.</translation>
+<translation id="8403562727702715619">Nedávný obsah z Disku Google</translation>
 <translation id="8407199357649073301">Úroveň protokolu:</translation>
 <translation id="8408068190360279472">Síť: <ph name="NETWORK_TYPE" />, připojování</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6909,6 +6911,7 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="8889651696183044030">Web <ph name="ORIGIN" /> může upravovat následující soubory a složky</translation>
 <translation id="8890170499370378450">Mohou být účtovány poplatky za mobilní data</translation>
 <translation id="8890516388109605451">Zdroje</translation>
+<translation id="8890529496706615641">Profil se nepodařilo přejmenovat. Zkuste to znovu nebo požádejte o technickou podporu operátora.</translation>
 <translation id="8892168913673237979">Vše je nastaveno!</translation>
 <translation id="8893801527741465188">Odinstalace byla dokončena</translation>
 <translation id="8893928184421379330">Je nám líto, zařízení <ph name="DEVICE_LABEL" /> nelze rozpoznat.</translation>

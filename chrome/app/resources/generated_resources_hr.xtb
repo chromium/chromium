@@ -1249,6 +1249,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2366260648632264559">Prikaži tekst sustava na ovom jeziku</translation>
 <translation id="2367972762794486313">Prikaz aplikacija</translation>
 <translation id="2371076942591664043">Otvori nakon &amp;dovršetka</translation>
+<translation id="23721837607121582">Preuzmi mobilni profil, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">Prilagodi papiru</translation>
 <translation id="2375406435414127095">Povežite se s telefonom</translation>
 <translation id="2377588536920405462">Lokaciju možete isključiti tako što ćete isključiti glavnu postavku lokacije na svojem uređaju. U postavkama lokacije također možete isključiti upotrebu Wi‑Fija, mobilnih mreža i senzora za lokaciju.</translation>
@@ -1442,7 +1443,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2602501489742255173">Prijeđite prstom prema gore za početak</translation>
 <translation id="2603115962224169880">Očistite računalo</translation>
 <translation id="2603463522847370204">Otvaranje u &amp;anonimnom prozoru</translation>
-<translation id="2603656971249947488">Vrpca kartica</translation>
 <translation id="2604255671529671813">Pogreška mrežne veze</translation>
 <translation id="2606246518223360146">Poveži podatke</translation>
 <translation id="2606454609872547359">Ne, nastavi bez ChromeVoxa</translation>
@@ -2679,6 +2679,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3969092967100188979">Uključeno, uz roaming</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Izračun u tijeku…</translation>
+<translation id="3971140002794351170">Preuzmi mobilni profil, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">Otisci prsta na ovom sigurnosnom ključu</translation>
 <translation id="3973660817924297510">Provjera zaporki (<ph name="CHECKED_PASSWORDS" /> od <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">Kontaktiranje poslužitelja za domenu nije uspjelo</translation>
@@ -6467,6 +6468,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8398877366907290961">Svejedno nastavi</translation>
 <translation id="8400146488506985033">Upravljaj korisnicima</translation>
 <translation id="8401432541486058167">Unesite PIN za pametnu karticu.</translation>
+<translation id="8403562727702715619">Nedavno s Google diska</translation>
 <translation id="8407199357649073301">Razina zapisnika:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> mreža, povezivanje</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6908,6 +6910,7 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu.</translation>
 <translation id="8889651696183044030">Web-lokacija <ph name="ORIGIN" /> može uređivati sljedeće datoteke i mape</translation>
 <translation id="8890170499370378450">Možda će se naplatiti mobilni podatkovni promet</translation>
 <translation id="8890516388109605451">Izvori</translation>
+<translation id="8890529496706615641">Preimenovanje profila nije uspjelo. Pokušajte ponovo ili se obratite mobilnom operateru za tehničku podršku.</translation>
 <translation id="8892168913673237979">Sve je spremno!</translation>
 <translation id="8893801527741465188">Deinstalacija je dovršena</translation>
 <translation id="8893928184421379330">Žao nam je, nije bilo moguće prepoznati uređaj <ph name="DEVICE_LABEL" />.</translation>

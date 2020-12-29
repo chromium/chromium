@@ -1248,6 +1248,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2366260648632264559">Kuva süsteemitekst selles keeles</translation>
 <translation id="2367972762794486313">Rakenduste kuvamine</translation>
 <translation id="2371076942591664043">Ava, kui on &amp;valmis</translation>
+<translation id="23721837607121582">Mobiiliprofiili allalaadimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">Sobita paberilehele</translation>
 <translation id="2375406435414127095">Looge ühendus telefoniga</translation>
 <translation id="2377588536920405462">Võite funktsiooni Asukoht välja lülitada, lülitades oma seadmes välja peamise asukohaseade. Peale selle saab asukohaseadetes välja lülitada ka WiFi, mobiilsidevõrkude ja andurite kasutamise asukoha tuvastamiseks.</translation>
@@ -1441,7 +1442,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2602501489742255173">Alustamiseks pühkige üles</translation>
 <translation id="2603115962224169880">Puhasta arvuti</translation>
 <translation id="2603463522847370204">Ava &amp;inkognito aknas</translation>
-<translation id="2603656971249947488">Vahelehtede riba</translation>
 <translation id="2604255671529671813">Võrguühenduse viga</translation>
 <translation id="2606246518223360146">Lingi andmed</translation>
 <translation id="2606454609872547359">Ei, jätka ilma ChromeVoxita</translation>
@@ -2678,6 +2678,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="3969092967100188979">Sees, rändlus toimib</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
+<translation id="3971140002794351170">Mobiiliprofiili allalaadimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">Sellel turvavõtmel olevad sõrmejäljed</translation>
 <translation id="3973660817924297510">Paroolide kontrollimine (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />) …</translation>
 <translation id="3975565978598857337">Valduse jaoks serveriga ühenduse loomine nurjus</translation>
@@ -6468,6 +6469,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8398877366907290961">Jätka ikkagi</translation>
 <translation id="8400146488506985033">Halda inimesi</translation>
 <translation id="8401432541486058167">Sisestage oma kiipkaardi PIN-kood.</translation>
+<translation id="8403562727702715619">Hiljuti Google Drive'ist</translation>
 <translation id="8407199357649073301">Logimistase:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-võrk, ühendamine</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6908,6 +6910,7 @@ Määratud toimingu eemaldamiseks vajutage määratud lülitit.</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> saab muuta järgmisi faile ja kaustu</translation>
 <translation id="8890170499370378450">Võib põhjustada mobiilse andmeside tasusid</translation>
 <translation id="8890516388109605451">Allikad</translation>
+<translation id="8890529496706615641">Profiili nime ei saanud muuta. Proovige uuesti või võtke tehnilise toe saamiseks ühendust operaatoriga.</translation>
 <translation id="8892168913673237979">Kõik on valmis!</translation>
 <translation id="8893801527741465188">Desinstallimine jõudis lõpule</translation>
 <translation id="8893928184421379330">Kahjuks ei õnnestu seadet <ph name="DEVICE_LABEL" /> ära tunda.</translation>

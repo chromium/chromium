@@ -1245,6 +1245,7 @@
 <translation id="2366260648632264559">Показване на системния текст на този език</translation>
 <translation id="2367972762794486313">Показване на приложенията</translation>
 <translation id="2371076942591664043">Отваряне &amp;след изтегляне</translation>
+<translation id="23721837607121582">Изтегляне на мобилния потребителски профил, мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">Уеднаквяване с размера на хартията</translation>
 <translation id="2375406435414127095">Свързване с телефона ви</translation>
 <translation id="2377588536920405462">Можете да изключите местоположението, като деактивирате главната настройка за него на устройството си. Също така от настройките за местоположението сте в състояние да изключите определянето му чрез Wi-Fi, мобилни мрежи и сензори.</translation>
@@ -1438,7 +1439,6 @@
 <translation id="2602501489742255173">Прекарайте пръст нагоре, за да започнете</translation>
 <translation id="2603115962224169880">Почистване на компютъра</translation>
 <translation id="2603463522847370204">Отваряне на прозорец в режим „&amp;инкогнито“</translation>
-<translation id="2603656971249947488">Лента с раздели</translation>
 <translation id="2604255671529671813">Грешка при свързване с мрежата</translation>
 <translation id="2606246518223360146">Свързване на данните</translation>
 <translation id="2606454609872547359">Не, продължаване без ChromeVox</translation>
@@ -2676,6 +2676,7 @@
 <translation id="3969092967100188979">Включено, използва се роуминг</translation>
 <translation id="3970114302595058915">Идентификатор</translation>
 <translation id="397105322502079400">Изчислява се...</translation>
+<translation id="3971140002794351170">Изтегляне на мобилния потребителски профил, мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">Отпечатъци, регистрирани на този ключ за сигурност</translation>
 <translation id="3973660817924297510">Паролите се проверяват (<ph name="CHECKED_PASSWORDS" /> от <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">Свързването със сървъра за областта не бе успешно</translation>
@@ -6467,6 +6468,7 @@
 <translation id="8398877366907290961">Продължаване напред въпреки това</translation>
 <translation id="8400146488506985033">Управление на хората</translation>
 <translation id="8401432541486058167">Въведете ПИН, свързан със смарткартата ви</translation>
+<translation id="8403562727702715619">Наскоро от Google Диск</translation>
 <translation id="8407199357649073301">Ниво на запис в регистрационния файл:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> мрежа – установява се връзка</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6907,6 +6909,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" /> може да редактира следните файлове и папки</translation>
 <translation id="8890170499370378450">Може да доведе до таксуване за мобилни данни</translation>
 <translation id="8890516388109605451">Източници</translation>
+<translation id="8890529496706615641">Потребителският профил не бе преименуван. Моля, опитайте отново или се обърнете към оператора си за техническа поддръжка.</translation>
 <translation id="8892168913673237979">Готово!</translation>
 <translation id="8893801527741465188">Деинсталирането завърши</translation>
 <translation id="8893928184421379330">За съжаление устройството <ph name="DEVICE_LABEL" /> не можа да бъде разпознато.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="si">
+<translation id="1175958423215084756">සබැඳිය අනාවරණය කර ගන්නා ලදි. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">ගැලරි රූප</translation>
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
 <translation id="1473110567575736769">තත්පර 3 කාල ගණකය</translation>
@@ -79,6 +80,7 @@
 <translation id="7649070708921625228">උදවු</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7983668134180549431">පෙළ අනාවරණය කර ගන්නා ලදි.</translation>
 <translation id="8067883171444229417">වීඩියෝව ධාවන කරන්න</translation>
 <translation id="8131740175452115882">තහවුරු කරන්න</translation>
 <translation id="8145038249676204903">ඡායාරූපය ගැනීමට මාරු වන්න</translation>

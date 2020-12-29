@@ -1421,7 +1421,7 @@
 <translation id="2562743677925229011">Մուտք գործած չեք <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">AppleScript-ի միջոցով JavaScript-ի օգտագործումն անջատած է: Միացնելու համար ցանկագոտուց անցեք Դիտում &gt; Մշակող &gt; Թույլատրել JavaScript-ը Apple-ի իրադարձություններից: Լրացուցիչ տեղեկությունների համար անցեք https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Ուղղագրության ընդլայնված ստուգում</translation>
-<translation id="2568774940984945469">Տեղեկագոտու զետեղարան</translation>
+<translation id="2568774940984945469">Տեղեկագոտու կոնտեյներ</translation>
 <translation id="2571655996835834626">Փոխել կարգավորումները, որոնք կառավարում քուքիների, JavaScript-ի, փլագինների, տեղադրության տվյալների, խոսափողի, ֆոտոխցիկի և այլ գործառույթների հասանելիությունը կայքերի համար։</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />-ին միայն կարդալու հնարավորություն է շնորհվել:</translation>
 <translation id="2575247648642144396">Այս պատկերակը կցուցադրվի, եթե ընդլայնումը կարող է աշխատել բեռնված էջում: Օգտագործեք այս ընդլայնումը՝ սեղմելով պատկերակի կամ <ph name="EXTENSION_SHORTCUT" />:</translation>
@@ -1443,7 +1443,6 @@
 <translation id="2602501489742255173">Սկսելու համար մատը սահեցրեք վերև</translation>
 <translation id="2603115962224169880">Մաքրեք համակարգիչը</translation>
 <translation id="2603463522847370204">Բացել &amp;ինկոգնիտո պատուհանում</translation>
-<translation id="2603656971249947488">Ներդիրների հատված</translation>
 <translation id="2604255671529671813">Ցանցի միացման սխալ</translation>
 <translation id="2606246518223360146">Կցել տվյալները</translation>
 <translation id="2606454609872547359">Ոչ, շարունակել առանց ChromeVox-ի</translation>

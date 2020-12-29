@@ -1110,7 +1110,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="2224337661447660594">Ez dago Interneteko konexiorik</translation>
 <translation id="2224444042887712269">Ezarpen hau <ph name="OWNER_EMAIL" /> erabiltzailearena da.</translation>
-<translation id="222447520299472966">Arte-galeria moduko album bat gutxienez hautatu behar da</translation>
+<translation id="222447520299472966">Arte-galeria kategoriako album bat gutxienez hautatu behar da</translation>
 <translation id="2224551243087462610">Editatu karpetaren izena</translation>
 <translation id="2225864335125757863">Aldatu honako pasahitz hauek ahal bezain laster kontua babestuta mantentzeko:</translation>
 <translation id="2226204716217107988">Beste profil batera aldatu nahi duzu?</translation>
@@ -1441,7 +1441,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2602501489742255173">Hasteko, pasatu hatza gorantz</translation>
 <translation id="2603115962224169880">Garbitu ordenagailua</translation>
 <translation id="2603463522847370204">Ireki &amp;ezkutuko nabigazio-leihoan</translation>
-<translation id="2603656971249947488">Fitxen zinta</translation>
 <translation id="2604255671529671813">Sareko konexioaren errorea</translation>
 <translation id="2606246518223360146">Lotu datuak</translation>
 <translation id="2606454609872547359">Ez, egin aurrera ChromeVox gabe</translation>

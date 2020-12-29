@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1175958423215084756">Konstatēta saite. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Galerijas attēli</translation>
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1473110567575736769">3 sekunžu taimeris</translation>
@@ -79,6 +80,7 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="7649070708921625228">Palīdzība</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7670511624014457267">60 kadri/s</translation>
+<translation id="7983668134180549431">Konstatēts teksts.</translation>
 <translation id="8067883171444229417">Atskaņot videoklipu</translation>
 <translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8145038249676204903">Pārslēgt, lai uzņemtu fotoattēlu</translation>

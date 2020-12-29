@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
+<translation id="1175958423215084756">Isixhumanisi sitholiwe. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Izithombe zegalari</translation>
 <translation id="1430915738399379752">Phrinta</translation>
 <translation id="1473110567575736769">Isibali sikhathi samasekhondi ama-3</translation>
@@ -79,6 +80,7 @@ Uma impendulo yakho imayelana nesithombe noma ikhwalithi yevidiyo, sicela unamat
 <translation id="7649070708921625228">Usizo</translation>
 <translation id="7658239707568436148">Khansela</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7983668134180549431">Umbhalo utholiwe.</translation>
 <translation id="8067883171444229417">Dlala ividiyo</translation>
 <translation id="8131740175452115882">Qinisekisa</translation>
 <translation id="8145038249676204903">Shintshela ekuthatheni isithombe</translation>

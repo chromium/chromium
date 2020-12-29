@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1175958423215084756">Разпозната е връзка. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Изображения в галерията</translation>
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1473110567575736769">Таймер за 3 секунди</translation>
@@ -79,6 +80,7 @@
 <translation id="7649070708921625228">Помощ</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7670511624014457267">60 кдр/сек</translation>
+<translation id="7983668134180549431">Разпознат е текст.</translation>
 <translation id="8067883171444229417">Възпроизвеждане на видеоклипа</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8145038249676204903">Превключване към режима за правене на снимки</translation>

@@ -1248,6 +1248,7 @@
 <translation id="2366260648632264559">სისტემის ტექსტის ჩვენება ამ ენაზე</translation>
 <translation id="2367972762794486313">პროგრამების ჩვენება</translation>
 <translation id="2371076942591664043">გახსენით როდესაც &amp;შესრულებულია</translation>
+<translation id="23721837607121582">მობილური პროფილის ჩამოტვირთვა, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">გვერდზე მორგება</translation>
 <translation id="2375406435414127095">დაუკავშირდით თქვენს ტელეფონს</translation>
 <translation id="2377588536920405462">მდებარეობის გამორთვა შესაძლებელია თქვენს მოწყობილობაზე მდებარეობის მთავარი პარამეტრის გამორთვით. გარდა ამისა, შეგიძლიათ გამორთოთ Wi-Fi კავშირის, მობილური ქსელებისა და სენსორების გამოყენება მდებარეობის დასადგენად.</translation>
@@ -1440,7 +1441,6 @@
 <translation id="2602501489742255173">დასაწყებად გადაფურცლეთ ზემოთ</translation>
 <translation id="2603115962224169880">კომპიუტერის გასუფთავება</translation>
 <translation id="2603463522847370204">გახსნა &amp;ინკოგნიტო ფანჯარაში</translation>
-<translation id="2603656971249947488">ჩანართების ზოლი</translation>
 <translation id="2604255671529671813">ქსელთან კავშირის შეცდომა</translation>
 <translation id="2606246518223360146">მონაცემების მიბმა</translation>
 <translation id="2606454609872547359">არა, მსურს ChromeVox-ის გარეშე გაგრძელება</translation>
@@ -2677,6 +2677,7 @@
 <translation id="3969092967100188979">ჩართული, როუმინგი</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">ანგარიშობს…</translation>
+<translation id="3971140002794351170">მობილური პროფილის ჩამოტვირთვა, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">თითის ანაბეჭდები უსაფრთხოების ამ გასაღებზე</translation>
 <translation id="3973660817924297510">მიმდინარეობს პაროლების შემოწმება (<ph name="CHECKED_PASSWORDS" /> / <ph name="TOTAL_PASSWORDS" />-დან)…</translation>
 <translation id="3975565978598857337">სერვერთან არის თაობაზე დაკავშირება ვერ მოხერხდა</translation>
@@ -6464,6 +6465,7 @@
 <translation id="8398877366907290961">მაინც გაგრძელება</translation>
 <translation id="8400146488506985033">ადამიანების მართვა</translation>
 <translation id="8401432541486058167">მიუთითეთ PIN-კოდი, რომელიც დაკავშირებულია თქვენს სმარტ-ბარათთან.</translation>
+<translation id="8403562727702715619">ბოლო დროს Google Drive-იდან</translation>
 <translation id="8407199357649073301">ჟურნალირების დონე:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ქსელი, მიმდინარეობს დაკავშირება</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6904,6 +6906,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" />-ს შეუძლია მითითებული ფაილებისა და საქაღალდეების რედაქტირება</translation>
 <translation id="8890170499370378450">შესაძლოა, დაგეკისროთ მობილური ინტერნეტის საფასურის გადახდა</translation>
 <translation id="8890516388109605451">წყაროები</translation>
+<translation id="8890529496706615641">პროფილის გადარქმევა ვერ მოხერხდა. ცადეთ ხელახლა ან დაუკავშირდით თქვენს ოპერატორს ტექნიკური მხარდაჭერისთვის.</translation>
 <translation id="8892168913673237979">ყველაფერი დაყენებულია!</translation>
 <translation id="8893801527741465188">დეინსტალაცია დასრულდა</translation>
 <translation id="8893928184421379330">ვწუხვართ, მოწყობილობა <ph name="DEVICE_LABEL" />-ის ამოცნობა ვერ მოხერხდა.</translation>
