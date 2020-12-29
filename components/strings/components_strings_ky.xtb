@@ -1372,6 +1372,7 @@
 <translation id="6389470377220713856">Картадагы ысым</translation>
 <translation id="6390200185239044127">Жарымынан Z формасында бүктөө</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> cайтынан бул жерге чаптоо аракети администратордун саясатына ылайык бөгөттөлгөн</translation>
 <translation id="6401136357288658127">Бул саясат жоюлган. Анын ордуна <ph name="NEW_POLICY" /> саясатын колдонуңуз.</translation>
 <translation id="6404511346730675251">Кыстарманы түзөтүү</translation>
 <translation id="6406765186087300643">C0 (Конверт)</translation>
@@ -1864,6 +1865,7 @@
 <translation id="8371889962595521444">Ыңгайлаштырылган негизги тастыктамалар</translation>
 <translation id="8380941800586852976">Коркунучтуу</translation>
 <translation id="8381674639488873545">Алар бир жолу төлөнүүчү же кайталануучу төлөмдөр болушу мүмкүн, бирок алар ачык көрүнбөйт. <ph name="BEGIN_LINK" />Баары бир көрсөтүү<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> сайтынан <ph name="VM_NAME" /> тутуму менен бөлүшүү аракети администратордун саясатына ылайык бөгөттөлгөн</translation>
 <translation id="8412145213513410671">Кыйроолор (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Бир купуя сөз айкашын эки жолу киргизишиңиз керек.</translation>
 <translation id="8416694386774425977">Тармак конфигурациясы жараксыз болгондуктан, импорттоо мүмкүн эмес.

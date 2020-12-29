@@ -4355,7 +4355,7 @@
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{您已重新開啟 1 個可能有害的擴充程式}other{您已重新開啟 {NUM_EXTENSIONS} 個可能有害的擴充程式}}</translation>
 <translation id="5979421442488174909">翻譯成<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="5979469435153841984">如要將網頁加入書籤，請按一下網址列中的星號</translation>
-<translation id="5982945980973315070">一個應用程式正在嘗試存取攝錄機。如要允許存取，請將網絡攝影機的私隱開關切換為關閉</translation>
+<translation id="5982945980973315070">一個應用程式正在嘗試存取攝錄機。如要允許存取，請將網絡攝影機的私隱開關切換至關閉</translation>
 <translation id="5984222099446776634">最近瀏覽的網站</translation>
 <translation id="598472838394900788">{0,plural, =1{無痕模式}other{無痕視窗 (#)}}</translation>
 <translation id="5985458664595100876">網址格式無效。支援的格式為 \\server\share 和 smb://server/share。</translation>
@@ -5406,7 +5406,7 @@
 <translation id="7201118060536064622">已刪除「<ph name="DELETED_ITEM_NAME" />」</translation>
 <translation id="7201420661433230412">查看檔案</translation>
 <translation id="7203150201908454328">已展開</translation>
-<translation id="7203408606151127798">各裝置使用更輕鬆、做事更有效率，還有其他功能待您發掘</translation>
+<translation id="7203408606151127798">不同裝置互相配合得更出色、做事更有效率，還有更多優勢待您發掘</translation>
 <translation id="7206693748120342859">正在下載 <ph name="PLUGIN_NAME" />…</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{離開網頁}other{離開網頁}}</translation>
 <translation id="7207457272187520234">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這可協助改善系統及應用程式的穩定性及其他功能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此設定。如果已開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至您的 Google 帳戶。</translation>

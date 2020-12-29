@@ -1358,6 +1358,7 @@
 <translation id="6389470377220713856">କାର୍ଡରେ ଥିବା ନାମ</translation>
 <translation id="6390200185239044127">ଅଧା Z-ଫୋଲ୍ଡ</translation>
 <translation id="6390662030813198813">ଇଞ୍ଜିନିୟରିଂ-E</translation>
+<translation id="6393956493820063117">ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ଦ୍ୱାରା <ph name="ORIGIN_NAME" />ରୁ ଏହି ଲୋକେସନକୁ ପେଷ୍ଟ କରିବା ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="6401136357288658127">ଏହି ନୀତିକୁ ଅଗ୍ରାହ୍ୟ କରାଯାଇଛି। ଏହା ପରିବର୍ତ୍ତେ ଆପଣ <ph name="NEW_POLICY" /> ନୀତି ବ୍ୟବହାର କରିବା ଉଚିତ।</translation>
 <translation id="6404511346730675251">ବୁକ୍‍ମାର୍କ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="6406765186087300643">C0 (ଏନଭଲପ୍)</translation>
@@ -1850,6 +1851,7 @@
 <translation id="8371889962595521444">କଷ୍ଟମ୍ ରୁଟ୍ ସାର୍ଟିଫିକେଟ୍</translation>
 <translation id="8380941800586852976">ବିପଜ୍ଜନକ</translation>
 <translation id="8381674639488873545">ଏହି ଶୁଳ୍କଗୁଡ଼ିକ ଗୋଟିଏ ଥର କିମ୍ବା ବାରମ୍ବାର ଲାଗୁ ହୋ‍ଇପାରେ ଏବଂ ସ୍ପଷ୍ଟ ହୋ‍ଇନପାରେ। <ph name="BEGIN_LINK" />ଯେକୌଣସି ଉପାୟରେ ଦେଖାନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698">ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ଦ୍ୱାରା <ph name="ORIGIN_NAME" />ରୁ <ph name="VM_NAME" />କୁ ସେୟାର୍ କରିବା ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="8412145213513410671">କ୍ରାସ୍ (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">ଆପଣ ସେହି ଏକା ପାସ୍‌ଫ୍ରେଜ୍ ଦୁଇଥର ଦେବା ଆବଶ୍ୟକ।</translation>
 <translation id="8416694386774425977">ନେଟ୍‍ୱର୍କ କନ୍‍ଫିଗରେସନ୍‌ ଅବୈଧ ଅଟେ ଏବଂ ଇମ୍ପୋର୍ଟ କରାଯାଇପାରିଲା ନାହିଁ।

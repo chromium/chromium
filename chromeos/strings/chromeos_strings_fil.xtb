@@ -54,6 +54,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">I-scan</translation>
 <translation id="2570743873672969996">Nagpapatakbo ng test sa <ph name="TEST_NAME" />...</translation>
+<translation id="2585245331261708204">Ano'ng bago sa Chrome OS</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2805756323405976993">Mga App</translation>
@@ -183,6 +184,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6232017090690406397">Baterya</translation>
 <translation id="6325525973963619867">Nabigo</translation>
 <translation id="636850387210749493">Pagpapatala ng negosyo</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Na-save ang na-scan na file}one{Na-save ang mga na-scan na file}other{Na-save ang mga na-scan na file}}</translation>
 <translation id="649050271426829538">Huminto - Nagka-paper jam</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Hindi alam na panseguridad na protocol ng WiFi</translation>

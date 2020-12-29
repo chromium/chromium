@@ -3979,7 +3979,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="6789422336869764846">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano lo stato della modalità sviluppatore del dispositivo all'avvio.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano lo stato della modalità sviluppatore.</translation>
-<translation id="6793420507738858152">Se attivata, la funzionalità <ph name="PRODUCT_NAME" /> invierà intestazioni della richiesta granulari che forniscono informazioni sul browser e sull'ambiente degli utenti.
+<translation id="6793420507738858152">Se il criterio è attivato, la funzionalità <ph name="PRODUCT_NAME" /> invierà intestazioni della richiesta granulari che forniscono informazioni sul browser e sull'ambiente degli utenti.
 
       Si tratta di una funzionalità aggiuntiva, ma le nuove intestazioni potrebbero causare interruzioni su alcuni siti web che limitano il numero di caratteri della richiesta.
 
@@ -5017,9 +5017,6 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
 
           Se l'azione è la sospensione, è possibile configurare separatamente <ph name="PRODUCT_OS_NAME" /> in modo che blocchi o meno lo schermo prima della sospensione.</translation>
 <translation id="8214600119442850823">Consente di configurare Gestione password.</translation>
-<translation id="8219777886736887686">Se il criterio viene configurato, è possibile stabilire il comando da usare per aprire gli URL in un browser alternativo. Per il criterio è possibile impostare i valori <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> oppure un percorso del file. Se per questo criterio viene impostato un percorso del file, tale file viene usato come eseguibile. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> e <ph name="EDGE_VALUE_PLACEHOLDER" /> sono disponibili solo su <ph name="MS_WIN_NAME" />, mentre <ph name="SAFARI_VALUE_PLACEHOLDER" /> è disponibile solo su <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" />.
-
-      Se il criterio non viene configurato, viene usato un valore predefinito specifico della piattaforma: <ph name="IE_PRODUCT_NAME" /> per <ph name="MS_WIN_NAME" /> oppure <ph name="SAFARI_PRODUCT_NAME" /> per <ph name="MAC_OS_NAME" />. Su <ph name="LINUX_OS_NAME" /> non è possibile aprire un browser alternativo.</translation>
 <translation id="8220156281401380422">Configura lista consentita di messaggi nativi</translation>
 <translation id="8244171102276095471">Attiva i pacchetti di crittografia RC4 in TLS</translation>
 <translation id="8244525275280476362">Ritardo di recupero massimo dopo l'invalidazione di una norma</translation>

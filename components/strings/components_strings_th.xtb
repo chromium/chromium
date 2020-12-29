@@ -1361,6 +1361,7 @@
 <translation id="6389470377220713856">ชื่อบนบัตร</translation>
 <translation id="6390200185239044127">พับครึ่งแบบตัว Z</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6393956493820063117">นโยบายของผู้ดูแลระบบบล็อกการวางจาก <ph name="ORIGIN_NAME" /> ลงในตำแหน่งนี้ไว้</translation>
 <translation id="6401136357288658127">นโยบายนี้เลิกใช้งานไปแล้ว คุณควรใช้นโยบาย <ph name="NEW_POLICY" /> แทน</translation>
 <translation id="6404511346730675251">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="6406765186087300643">C0 (ซองจดหมาย)</translation>
@@ -1853,6 +1854,7 @@
 <translation id="8371889962595521444">ใบรับรองรูทที่กำหนดเอง</translation>
 <translation id="8380941800586852976">อันตราย</translation>
 <translation id="8381674639488873545">การเรียกเก็บเงินเหล่านี้อาจเกิดขึ้นครั้งเดียวหรือเกิดขึ้นซ้ำๆ และอาจไม่แสดงอย่างชัดแจ้ง <ph name="BEGIN_LINK" />เปิดเว็บไซต์<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698">นโยบายของผู้ดูแลระบบบล็อกการแชร์จาก <ph name="ORIGIN_NAME" /> ไปยัง <ph name="VM_NAME" /> ไว้</translation>
 <translation id="8412145213513410671">ข้อขัดข้อง (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">คุณต้องป้อนข้อความรหัสผ่านที่เหมือนกันสองครั้ง</translation>
 <translation id="8416694386774425977">การกำหนดค่าเครือข่ายไม่ถูกต้องและนำเข้าไม่ได้

@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">තේමා වර්ණ ප්‍රකාරය අතුරු මුහුණත ළාවට වර්ණ ගැන්වීම සඳහා ඔබේ වෝල්ලපේපරයෙන් නිස්සාරණය කළ වර්ණ භාවිත කරයි.</translation>
 <translation id="112308213915226829">ස්වයං සැඟවුම් රාක්කය</translation>
 <translation id="1153356358378277386">යුගලිත උපාංග</translation>
+<translation id="1165712434476988950">යාවත්කාලීනය යෙදීම සඳහා උපාංග නැවත ආරම්භ කිරීම අවශ්‍ය වේ.</translation>
 <translation id="1175572348579024023">අනුචලන කරන්න</translation>
 <translation id="1178581264944972037">විරාමය</translation>
 <translation id="118532027333893379">පූර්ණ තිරය ග්‍රහණය කිරීමට ඕනෑම තැනක තට්ටු කරන්න</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">පාඨ ආදානය</translation>
 <translation id="1993072747612765854">නවතම <ph name="SYSTEM_APP_NAME" /> යාවත්කාලීන කිරීම ගැන තව දැන ගන්න</translation>
 <translation id="1995660704900986789">බල රහිත කරන්න</translation>
+<translation id="1998100899771863792">වත්මන් වැඩතලය</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">පණිවිඩයක් ටයිප් කරන්න</translation>
 <translation id="2018630726571919839">මට විහිළුවක් කියන්න</translation>
@@ -897,6 +899,7 @@
 <translation id="9089416786594320554">ආදාන ක්‍රම</translation>
 <translation id="9091626656156419976">සංදර්ශකය <ph name="DISPLAY_NAME" /> ඉවත් කරන්න</translation>
 <translation id="9098969848082897657">දුරකථනය නිහඬ කරන්න</translation>
+<translation id="9099154003160514616">Lacros යාවත්කාලීනය ලබා ගත හැකිය</translation>
 <translation id="9151726767154816831">යාවත් කිරීමට යළි අරඹා powerwash කරන්න</translation>
 <translation id="9166331175924255663">ළඟ බෙදා ගැනීමේ ඉහළ දෘශ්‍යතාව ටොගල් කරන්න.</translation>
 <translation id="9168436347345867845">පසුව එය කරන්න</translation>
@@ -907,6 +910,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> විභේදනය <ph name="RESOLUTION" /> ට වෙනස් කළා. වෙනස්කම් තබා ගැනීමට තහවුරු කිරීම ක්ලික් කරන්න. පෙර සැකසුම් <ph name="TIMEOUT_SECONDS" /> තුළ ප්‍රතිසාධන කෙරේ.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
 <translation id="9210037371811586452">එකාබද්ධ ඩෙස්ක්ටොප් ප්‍රකාරයෙන් ඉවත් වෙමින්</translation>
+<translation id="9211490828691860325">සියලු වැඩතල</translation>
 <translation id="9211681782751733685">බැටරිය සම්පූර්ණයෙන් ආරෝපණ වන තෙක් <ph name="TIME_REMAINING" />ක් ඉතුරුයි.</translation>
 <translation id="9215934040295798075">වෝල්පේපර සකසන්න</translation>
 <translation id="921989828232331238">ඔබේ මාපියන් ඔබේ උපාංගයට අද අඟුලු දමා ඇත</translation>

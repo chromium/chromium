@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">У цьому режимі кольори інтерфейсу відповідають гамі фонового малюнка.</translation>
 <translation id="112308213915226829">Автоматично ховати полицю</translation>
 <translation id="1153356358378277386">Підключені пристрої</translation>
+<translation id="1165712434476988950">Щоб застосувати оновлення, потрібно перезапустити пристрій.</translation>
 <translation id="1175572348579024023">Прокрутити</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="118532027333893379">Натисніть будь-де, щоб зробити знімок усього екрана</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">Ввести текст</translation>
 <translation id="1993072747612765854">Докладніше про останнє оновлення додатка <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Вимкнути</translation>
+<translation id="1998100899771863792">Поточний робочий стіл</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Введіть повідомлення</translation>
 <translation id="2018630726571919839">Розкажи жарт</translation>
@@ -897,6 +899,7 @@
 <translation id="9089416786594320554">Методи введення</translation>
 <translation id="9091626656156419976">Дисплей <ph name="DISPLAY_NAME" /> вилучено</translation>
 <translation id="9098969848082897657">Вимкнути звук на телефоні</translation>
+<translation id="9099154003160514616">Доступне оновлення Lacros</translation>
 <translation id="9151726767154816831">Для оновлення перезапустіть пристрій і виконайте Powerwash</translation>
 <translation id="9166331175924255663">Перемикач режиму високої видимості для функції "Передавання поблизу".</translation>
 <translation id="9168436347345867845">Пізніше</translation>
@@ -907,6 +910,7 @@
 <translation id="9198992156681343238">Роздільну здатність екрана <ph name="DISPLAY_NAME" /> змінено на <ph name="RESOLUTION" />. Щоб зберегти зміни, натисніть "Підтвердити". Попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />. Мережею керує адміністратор</translation>
 <translation id="9210037371811586452">Вихід з уніфікованого режиму робочого стола</translation>
+<translation id="9211490828691860325">Усі робочі столи</translation>
 <translation id="9211681782751733685">До повного зарядження акумулятора залишилося <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Вибрати фоновий малюнок</translation>
 <translation id="921989828232331238">Батьки заблокували твій пристрій на весь день</translation>

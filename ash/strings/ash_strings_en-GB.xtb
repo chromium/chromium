@@ -19,6 +19,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1119348796022671382">The themed colour mode uses colours extracted from your wallpaper to lightly colourise the interface.</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
 <translation id="1153356358378277386">Paired devices</translation>
+<translation id="1165712434476988950">Device restart is required to apply the update.</translation>
 <translation id="1175572348579024023">Scroll</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="118532027333893379">Tap anywhere to capture full screen</translation>
@@ -118,6 +119,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1978498689038657292">Text input</translation>
 <translation id="1993072747612765854">Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update</translation>
 <translation id="1995660704900986789">Power off</translation>
+<translation id="1998100899771863792">Current desk</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Type a message</translation>
 <translation id="2018630726571919839">Tell me a joke</translation>
@@ -897,6 +899,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="9089416786594320554">Input methods</translation>
 <translation id="9091626656156419976">Removed display <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silence phone</translation>
+<translation id="9099154003160514616">Lacros update available</translation>
 <translation id="9151726767154816831">Restart and powerwash to update</translation>
 <translation id="9166331175924255663">Toggle Nearby Share high visibility.</translation>
 <translation id="9168436347345867845">Do it later</translation>
@@ -907,6 +910,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> resolution changed to <ph name="RESOLUTION" />. Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, managed by your administrator</translation>
 <translation id="9210037371811586452">Exiting unified desktop mode</translation>
+<translation id="9211490828691860325">All desks</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> remaining until battery is fully charged.</translation>
 <translation id="9215934040295798075">Set wallpaper</translation>
 <translation id="921989828232331238">Your parent locked your device for the day</translation>

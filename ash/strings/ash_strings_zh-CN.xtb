@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">带主题背景的颜色模式会使用从您壁纸中提取的颜色为界面略施粉黛。</translation>
 <translation id="112308213915226829">自动隐藏任务栏</translation>
 <translation id="1153356358378277386">已配对的设备</translation>
+<translation id="1165712434476988950">必须重启设备，才能应用这项更新。</translation>
 <translation id="1175572348579024023">滚动</translation>
 <translation id="1178581264944972037">暂停</translation>
 <translation id="118532027333893379">点按任意位置即可截取整个屏幕</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">文字输入</translation>
 <translation id="1993072747612765854">详细了解最新的 <ph name="SYSTEM_APP_NAME" />更新</translation>
 <translation id="1995660704900986789">关机</translation>
+<translation id="1998100899771863792">当前桌面</translation>
 <translation id="2012624427112548395">Ctrl+搜索键+H</translation>
 <translation id="2016340657076538683">请输入消息</translation>
 <translation id="2018630726571919839">给我讲个笑话</translation>
@@ -727,7 +729,7 @@
 <translation id="7654687942625752712">同时按住两个音量键 5 秒钟，即可停用语音反馈。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7662283695561029522">点按即可配置</translation>
-<translation id="7683326293741220026">您手机上的蓝牙似乎处于关闭状态。请开启蓝牙以便使用 Phone Hub。</translation>
+<translation id="7683326293741220026">您手机上的蓝牙似乎未开启。请开启蓝牙以便使用 Phone Hub。</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 条通知}other{# 条通知}}</translation>
 <translation id="7724603315864178912">剪切</translation>
@@ -745,7 +747,7 @@
 <translation id="7860671499921112077">若要进入“概览”模式，请用三根手指向上滑动</translation>
 <translation id="7868900307798234037">正在使用指纹解锁</translation>
 <translation id="7872786842639831132">关闭</translation>
-<translation id="7875575368831396199">您的 <ph name="DEVICE_TYPE" /> 上的蓝牙似乎处于关闭状态。请开启蓝牙以便使用 Phone Hub。</translation>
+<translation id="7875575368831396199">您的 <ph name="DEVICE_TYPE" /> 上的蓝牙似乎未开启。请开启蓝牙以便使用 Phone Hub。</translation>
 <translation id="7886169021410746335">调整隐私设置</translation>
 <translation id="7886277072580235377">当您退出时，系统即会清除您的网络会话。<ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">发送电子邮件</translation>
@@ -897,6 +899,7 @@
 <translation id="9089416786594320554">输入法</translation>
 <translation id="9091626656156419976">已移除显示器“<ph name="DISPLAY_NAME" />”</translation>
 <translation id="9098969848082897657">将手机设为静音</translation>
+<translation id="9099154003160514616">有可用的 Lacros 更新</translation>
 <translation id="9151726767154816831">重新启动并通过 Powerwash 来进行更新</translation>
 <translation id="9166331175924255663">开启/关闭“附近分享”的高可见度模式。</translation>
 <translation id="9168436347345867845">以后再说</translation>
@@ -907,6 +910,7 @@
 <translation id="9198992156681343238">“<ph name="DISPLAY_NAME" />”的分辨率已改为 <ph name="RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />，由您的管理员管理</translation>
 <translation id="9210037371811586452">正在退出统一桌面模式</translation>
+<translation id="9211490828691860325">所有桌面</translation>
 <translation id="9211681782751733685">电池电量将在 <ph name="TIME_REMAINING" />后充满。</translation>
 <translation id="9215934040295798075">设置壁纸</translation>
 <translation id="921989828232331238">您的家长已全天锁定您的设备</translation>

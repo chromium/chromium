@@ -47,7 +47,7 @@
 <translation id="1302880136325416935">ब्लुटुथसम्बन्धी सेटिङहरू देखाउनुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">सधैँ सेल्फ देखाउनुहोस्</translation>
-<translation id="1316811122439383437">Tote: यहाँ हालसालैका स्क्रिन क्याप्चर, डाउनलोड गरिएका कुराहरू तथा पिन गरिएका फाइल देखा पर्छन्</translation>
+<translation id="1316811122439383437">Tote: हालसालैका स्क्रिन क्याप्चर, डाउनलोड गरिएका कुराहरू तथा पिन गरिएका फाइल यहाँ देखा पर्छन्</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> कनेक्ट गरियो</translation>
 <translation id="1341651618736211726">ओभरफ्लो</translation>
 <translation id="1346748346194534595">दायाँ</translation>
@@ -817,7 +817,7 @@
 <translation id="8444246603146515890">डेस्क <ph name="DESK_TITILE" /> सक्रिय गरियो</translation>
 <translation id="8452135315243592079">SIM कार्ड उपलब्ध छैन</translation>
 <translation id="8454013096329229812">Wi-Fi खुला छ।</translation>
-<translation id="8462305545768648477">'चयन गरेर बोल्ने' सुविधा बन्द गर्नुहोस्</translation>
+<translation id="8462305545768648477">'सेलेक्ट टु स्पिक' बन्द गर्नुहोस्</translation>
 <translation id="847056008324733326">प्रदर्शनको स्केलका सेटिङहरू</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> सँग <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> छ।</translation>
 <translation id="8477270416194247200">रद्द गर्न Alt+Search वा Shift बटनमा थिच्नुहोस्।</translation>

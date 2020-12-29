@@ -1620,6 +1620,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2791529110887957050">Xóa Linux</translation>
 <translation id="2791952154587244007">Đã xảy ra lỗi. Ứng dụng kiosk sẽ không thể tự động chạy trên thiết bị này.</translation>
 <translation id="2792290659606763004">Xóa ứng dụng Android?</translation>
+<translation id="2792465461386711506">Bật tính năng Chrome Sync để xem các thẻ Chrome gần đây trên điện thoại của bạn</translation>
 <translation id="2794233252405721443">Trang web đã bị chặn</translation>
 <translation id="2795716239552913152">Các trang web thường sử dụng thông tin vị trí của bạn cho các tính năng hoặc thông tin liên quan, như tin tức địa phương hoặc cửa hàng lân cận</translation>
 <translation id="2796424461616874739">Đã hết thời gian xác thực khi kết nối với "<ph name="DEVICE_NAME" />".</translation>
@@ -3250,6 +3251,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4671265665487288124">Các trang web có thể yêu cầu tự động tải nhiều tệp xuống (khuyến nghị)</translation>
 <translation id="46733273239502219">Dữ liệu ngoại tuyến trong các ứng dụng đã cài đặt cũng sẽ bị xóa</translation>
 <translation id="4673442866648850031">Mở công cụ bút cảm ứng khi bút cảm ứng được lấy ra</translation>
+<translation id="4676595058027112862">Trung tâm điều khiển điện thoại, Tìm hiểu thêm</translation>
 <translation id="4677772697204437347">Bộ nhớ GPU</translation>
 <translation id="467823995058589466">Máy ảnh đang tắt</translation>
 <translation id="4680105648806843642">Trang này đã bị tắt tiếng</translation>
@@ -6320,6 +6322,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8227119283605456246">Đính kèm tệp</translation>
 <translation id="8230134520748321204">Bạn có muốn lưu mật khẩu cho <ph name="ORIGIN" /> không?</translation>
 <translation id="8234795456569844941">Hãy giúp các kỹ sư của chúng tôi khắc phục sự cố này. Hãy cho chúng tôi biết điều gì đã xảy ra ngay trước khi bạn nhận được thông báo lỗi hồ sơ:</translation>
+<translation id="8235605354099176425">Bật tính năng <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> để xem các thẻ Chrome gần đây. <ph name="LINK2_BEGIN" />Tìm hiểu thêm<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Chia sẻ thẻ này</translation>
 <translation id="8237647586961940482">Đỏ và hồng đậm</translation>
 <translation id="8239032431519548577">Hoàn tất việc đăng ký doanh nghiệp</translation>
@@ -7047,6 +7050,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="9044646465488564462">Không kết nối được với mạng: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Gửi cho Google địa chỉ web của trang mà bạn đang cố gắng truy cập</translation>
 <translation id="9046895021617826162">Kết nối không thành công</translation>
+<translation id="9048745018038487540">Chọn tất cả phông chữ</translation>
 <translation id="9050666287014529139">Cụm mật khẩu</translation>
 <translation id="9052208328806230490">Bạn vừa đăng ký máy in của mình với <ph name="CLOUD_PRINT_NAME" /> bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Tiếp tục chặn</translation>

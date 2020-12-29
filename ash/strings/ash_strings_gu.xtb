@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">થીમ આધારિત કલર મોડ ઇન્ટરફેસને આછો રંગ આપવા માટે તમારા વૉલપેપરમાંથી મેળવવામાં આવેલા રંગોનો ઉપયોગ કરે છે.</translation>
 <translation id="112308213915226829">સ્વતઃછુપાવો શેલ્ફ</translation>
 <translation id="1153356358378277386">જોડી કરેલા ઉપકરણો</translation>
+<translation id="1165712434476988950">અપડેટ લાગુ કરવા માટે ડિવાઇસને ફરી શરૂ કરવાની જરૂર છે.</translation>
 <translation id="1175572348579024023">સ્ક્રોલ કરો</translation>
 <translation id="1178581264944972037">થોભો</translation>
 <translation id="118532027333893379">પૂર્ણ સ્ક્રીન કૅપ્ચર કરવા માટે ગમે ત્યાં ટૅપ કરો</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">ટેક્સ્ટ ઇનપુટ</translation>
 <translation id="1993072747612765854">નવીનતમ <ph name="SYSTEM_APP_NAME" /> અપડેટ વિશે વધુ જાણો</translation>
 <translation id="1995660704900986789">પાવર બંધ કરો</translation>
+<translation id="1998100899771863792">વર્તમાન ડેસ્ક</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">એક સંદેશ લખો</translation>
 <translation id="2018630726571919839">મને કોઈ જોક સંભળાવો</translation>
@@ -897,6 +899,7 @@
 <translation id="9089416786594320554">ઇનપુટ પદ્ધતિઓ</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ડિસ્પ્લે કાઢી નાખ્યું</translation>
 <translation id="9098969848082897657">ફોન સાઇલન્ટ રાખો</translation>
+<translation id="9099154003160514616">Lacros બ્રાઉઝરની અપડેટ ઉપલબ્ધ છે</translation>
 <translation id="9151726767154816831">અપડેટ કરવા માટે પુનઃપ્રારંભ કરો અને પાવરવૉશ કરો</translation>
 <translation id="9166331175924255663">નજીકના શેરિંગની ઉચ્ચ દૃશ્યતા ટૉગલ કરો.</translation>
 <translation id="9168436347345867845">આ પછીથી કરો</translation>
@@ -907,6 +910,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />નું રિઝોલ્યુશન બદલીને <ph name="RESOLUTION" /> કરવામાં આવ્યું. ફેરફારો રાખવા માટે કન્ફર્મ પર ક્લિક કરો. અગાઉના સેટિંગ <ph name="TIMEOUT_SECONDS" />માં રિસ્ટોર કરવામાં આવશે.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="9210037371811586452">એકીકૃત ડેસ્કટૉપ મોડથી બહાર નીકળે છે</translation>
+<translation id="9211490828691860325">તમામ ડેસ્ક</translation>
 <translation id="9211681782751733685">બૅટરી સંપૂર્ણપણે ચાર્જ થવામાં <ph name="TIME_REMAINING" /> બાકી છે.</translation>
 <translation id="9215934040295798075">વૉલપેપર સેટ કરો</translation>
 <translation id="921989828232331238">તમારા માતાપિતાએ તમારા ડિવાઇસને આજના માટે લૉક કર્યું છે</translation>

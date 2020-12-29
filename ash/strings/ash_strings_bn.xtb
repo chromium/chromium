@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">আপনার ইন্টারফেসে হালকা রং প্রয়োগ করতে 'থিমযুক্ত কালার' মোড ওয়ালপেপার থেকে রং নিয়ে ব্যবহার করে।</translation>
 <translation id="112308213915226829">তাককে স্বয়ংক্রিয়ভাবে লুকান</translation>
 <translation id="1153356358378277386">যুক্ত করা ডিভাইসগুলি</translation>
+<translation id="1165712434476988950">আপটেড প্রয়োগ করতে ডিভাইস রিস্টার্ট করুন।</translation>
 <translation id="1175572348579024023">স্ক্রল করুন</translation>
 <translation id="1178581264944972037">বিরতি</translation>
 <translation id="118532027333893379">ফুল স্ক্রিন ক্যাপচার করতে, যেখানে খুশি ট্যাপ করুন</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">টেক্সট লেখার ফিল্ড</translation>
 <translation id="1993072747612765854">সাম্প্রতিক <ph name="SYSTEM_APP_NAME" /> আপডেট সম্পর্কে আরও জানুন</translation>
 <translation id="1995660704900986789">পাওয়ার বন্ধ করুন</translation>
+<translation id="1998100899771863792">বর্তমান ডেক্স</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">একটি মেসেজ লিখুন</translation>
 <translation id="2018630726571919839">একটি জোকস শোনাও</translation>
@@ -898,6 +900,7 @@
 <translation id="9089416786594320554">ইনপুট পদ্ধতিগুলি</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> প্রদর্শন সরানো হয়েছে</translation>
 <translation id="9098969848082897657">সাইলেন্স ফোন</translation>
+<translation id="9099154003160514616">Lacros আপডেট করা যাবে</translation>
 <translation id="9151726767154816831">আপডেট করার জন্য আবার শুরু করুন এবং পাওয়ারওয়াশ করুন</translation>
 <translation id="9166331175924255663">'নিয়ারবাই শেয়ার হাই ভিজিবিলিটি' মোড টগল করুন।</translation>
 <translation id="9168436347345867845">এটি পরে করুন</translation>
@@ -908,6 +911,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />-এর রেজোলিউশন পরিবর্তন করে <ph name="RESOLUTION" /> করা হয়েছে। পরিবর্তিত সেটিংস বজায় রাখতে, 'কনফার্ম করুন' বোতামে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="9210037371811586452">সমন্বিত ডেস্কটপ মোড থেকে প্রস্থান করছে</translation>
+<translation id="9211490828691860325">সব ডেক্স</translation>
 <translation id="9211681782751733685">ব্যাটারি পুরো চার্জ হতে <ph name="TIME_REMAINING" /> বাকি আছে।</translation>
 <translation id="9215934040295798075">ওয়ালপেপার সেট করুন</translation>
 <translation id="921989828232331238">আপনার অভিভাবক এই ডিভাইসটি আজকের জন্য লক করে দিয়েছেন</translation>

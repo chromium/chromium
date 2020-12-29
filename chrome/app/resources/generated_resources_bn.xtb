@@ -1620,6 +1620,7 @@
 <translation id="2791529110887957050">Linux মুছুন</translation>
 <translation id="2791952154587244007">একটি সমস্যা হয়েছে৷ এই ডিভাইসে Kiosk অ্যাপ্লিকেশন স্বয়ংক্রিয়ভাবে লঞ্চ করা যাবে না৷</translation>
 <translation id="2792290659606763004">Android অ্যাপ্লিকেশানগুলি সরাবেন?</translation>
+<translation id="2792465461386711506">আপনার ফোনে সাম্প্রতিক Chrome ট্যাব দেখতে, 'Chrome সিঙ্ক' বিকল্প চালু করুন</translation>
 <translation id="2794233252405721443">সাইট অবরুদ্ধ করা হয়েছে</translation>
 <translation id="2795716239552913152">সাইট প্রাসঙ্গিক ফিচার অথবা তথ্য যেমন স্থানীয় সংবাদ বা আশেপাশের দোকানের জন্য সাধারণত আপনার লোকেশন ব্যবহার করে</translation>
 <translation id="2796424461616874739">"<ph name="DEVICE_NAME" />"-এ কানেক্ট হওয়ার সময় যাচাইকরণের সময় শেষ হয়ে গেছে৷</translation>
@@ -3249,6 +3250,7 @@
 <translation id="4671265665487288124">একাধিক ফাইল অটোমেটিক ডাউনলোড করতে, সাইট অনুমতি চাইতে পারে (সাজেস্ট করা হয়েছে)</translation>
 <translation id="46733273239502219">ইনস্টল করা অ্যাপে অফলাইন ডেটাও মুছে ফেলা হবে</translation>
 <translation id="4673442866648850031">স্টাইলাস সরানো হলে স্টাইলাস টুল খুলুন</translation>
+<translation id="4676595058027112862">ফোন হাব, আরও জানুন</translation>
 <translation id="4677772697204437347">GPU মেমোরি</translation>
 <translation id="467823995058589466">ক্যামেরা বন্ধ রয়েছে</translation>
 <translation id="4680105648806843642">এই পৃষ্ঠায় সাউন্ড মিউট করা আছে</translation>
@@ -6319,6 +6321,7 @@
 <translation id="8227119283605456246">ফাইল সংযুক্ত করুন</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" />-এর জন্য পাসওয়ার্ড সেভ করবেন?</translation>
 <translation id="8234795456569844941">এই সমস্যাটির সমাধান করতে আমাদের ইঞ্জিনিয়ারদের সাহায্য করুন। আমাদের জানান, ঠিক কি হওয়ার পরে এই প্রোফাইল ত্রুটির মেসেজটি দেখেছিলেন:</translation>
+<translation id="8235605354099176425">সাম্প্রতিক Chrome ট্যাব দেখতে, <ph name="LINK1_BEGIN" />Chrome সিঙ্ক<ph name="LINK1_END" /> বিকল্প চালু করুন।<ph name="LINK2_BEGIN" />আরও জানুন<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">পরিবর্তে এই ট্যাব শেয়ার করুন</translation>
 <translation id="8237647586961940482">গাঢ় গোলাপি ও লাল</translation>
 <translation id="8239032431519548577">এন্টারপ্রাইজ এনরোল করার কাজ সম্পূর্ণ হয়েছে</translation>
@@ -7047,6 +7050,7 @@
 <translation id="9044646465488564462">নেটওয়ার্কের সাথে সংযোগ করতে ব্যর্থ: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">আপনি যে পৃষ্ঠা খুলতে চাইছেন তার ওয়েব ঠিকানা Google-কে পাঠায়</translation>
 <translation id="9046895021617826162">সংযোগ ব্যর্থ হয়েছে</translation>
+<translation id="9048745018038487540">সব ফন্ট বেছে নিন</translation>
 <translation id="9050666287014529139">পাসফ্রেজ</translation>
 <translation id="9052208328806230490"><ph name="EMAIL" /> অ্যাকাউন্টটি ব্যবহার করে আপনি আপনার প্রিন্টারগুলি <ph name="CLOUD_PRINT_NAME" />তে নথিভুক্ত করেছেন</translation>
 <translation id="9052404922357793350">ব্লক করা চালিয়ে যান</translation>

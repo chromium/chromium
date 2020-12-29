@@ -701,7 +701,7 @@
 <translation id="1753067873202720523">Pot ser que el Chromebook no es carregui mentre estigui activat.</translation>
 <translation id="1753905327828125965">Els més visitats</translation>
 <translation id="1755601632425835748">Mida del text</translation>
-<translation id="1755872274219796698">Transfereix les contrasenyes</translation>
+<translation id="1755872274219796698">Mou les contrasenyes</translation>
 <translation id="1756681705074952506">Mètode d'introducció de text</translation>
 <translation id="1757301747492736405">Desinstal·lació pendent</translation>
 <translation id="175772926354468439">Activa el tema</translation>
@@ -3314,7 +3314,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4765582662863429759">Permet que Missatges Android retransmeti els missatges de text del telèfon al teu Chromebook</translation>
 <translation id="4768332406694066911">Tens certificats d'aquestes organitzacions que t'identifiquen</translation>
 <translation id="4773112038801431077">Actualitza Linux</translation>
-<translation id="4774357366578243684">Per utilitzar-les en tots els teus dispositius, transfereix-les al teu Compte de Google</translation>
+<translation id="4774357366578243684">Per utilitzar-les en tots els teus dispositius, mou-les al teu Compte de Google</translation>
 <translation id="477647109558161443">Crea una drecera de l'escriptori</translation>
 <translation id="4776917500594043016">Contrasenya per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
@@ -3663,7 +3663,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="51918995459521422"><ph name="ORIGIN" /> vol baixar diversos fitxers</translation>
 <translation id="5192062846343383368">Obre l'aplicació Family Link per veure la configuració de supervisió</translation>
 <translation id="5193988420012215838">S'ha copiat al porta-retalls</translation>
-<translation id="5195083053116174857">Tria quines contrasenyes vols transferir</translation>
+<translation id="5195083053116174857">Tria quines contrasenyes vols moure</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Envia dades d'ús i de diagnòstic. En aquests moments aquest dispositiu envia automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. Si tens activada l'opció Activitat al web i en aplicacions addicional, és possible que aquestes dades es desin al teu Compte de Google.</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Fes clic per veure l'extensió}other{Fes clic per veure les extensions}}</translation>
@@ -4895,7 +4895,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6611972847767394631">Aquí trobaràs les teves pestanyes</translation>
 <translation id="6612358246767739896">Contingut protegit</translation>
 <translation id="6615455863669487791">Mostra-m'ho</translation>
-<translation id="661587753387495724">Les contrasenyes es transferiran del dispositiu al teu Compte de Google</translation>
+<translation id="661587753387495724">Les contrasenyes es mouran del dispositiu al teu Compte de Google</translation>
 <translation id="6618097958368085618">Desa de totes maneres</translation>
 <translation id="6618744767048954150">Comprovació en curs</translation>
 <translation id="6619058681307408113">Protocol Line Printer Daemon (LPD)</translation>
@@ -6885,7 +6885,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="8868333925931032127">S'està iniciant el mode de demostració</translation>
 <translation id="8868626022555786497">En ús</translation>
 <translation id="8868838761037459823">Detalls de la xarxa mòbil</translation>
-<translation id="8868964574897075186">Les contrasenyes s'han transferit al teu Compte de Google</translation>
+<translation id="8868964574897075186">Les contrasenyes s'han mogut al teu Compte de Google</translation>
 <translation id="8870413625673593573">Tancades recentment</translation>
 <translation id="8871551568777368300">Configuració fixada per l'administrador</translation>
 <translation id="8871696467337989339">Utilitzeu una marca de la línia d'ordres que no és compatible: <ph name="BAD_FLAG" />. Se'n ressentiran l'estabilitat i la seguretat.</translation>

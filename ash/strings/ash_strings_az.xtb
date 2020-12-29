@@ -19,6 +19,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1119348796022671382">Temalı rəng rejimi interfeysi azca rəngləndirmək üçün divar kağızından çıxarılmış rəngləri istifadə edir.</translation>
 <translation id="112308213915226829">Rəfi avtomatik gizlədin</translation>
 <translation id="1153356358378277386">Birləşmiş cihazlar</translation>
+<translation id="1165712434476988950">Güncəlləməni tətbiq etmək üçün cihazı yenidən başlatmaq tələb olunur.</translation>
 <translation id="1175572348579024023">Sürüşdürün</translation>
 <translation id="1178581264944972037">Durdurun</translation>
 <translation id="118532027333893379">Tam ekranı çəkmək üçün istənilən yerə toxunun</translation>
@@ -47,6 +48,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1302880136325416935">Bluetooth ayarlarını göstərin. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Siqnal Gücü <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Hər zaman rəfi göstərin</translation>
+<translation id="1316811122439383437">Bölmə: son ekran çəkilişləri, endirmələr və bərkidilmiş fayllar</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> qoşulub</translation>
 <translation id="1341651618736211726">Kənara çıxma</translation>
 <translation id="1346748346194534595">Sağ</translation>
@@ -117,6 +119,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1978498689038657292">Mətn daxiletməsi</translation>
 <translation id="1993072747612765854">Ən son <ph name="SYSTEM_APP_NAME" /> güncəlləməsi ilə bağlı ətraflı məlumat əldə edin</translation>
 <translation id="1995660704900986789">Söndürün</translation>
+<translation id="1998100899771863792">Cari masa</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Mesaj yazın</translation>
 <translation id="2018630726571919839">Gülməli əhvalat danış</translation>
@@ -181,6 +184,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2596078834055697711">Pəncərənin skrinşotunu çəkin</translation>
 <translation id="2617342710774726426">SIM kart kilidlənib</translation>
 <translation id="2621713457727696555">Güvənli</translation>
+<translation id="2633643784040308254">Orta</translation>
 <translation id="2653659639078652383">Təqdim edin</translation>
 <translation id="2658778018866295321">Klikləyin və çəkin</translation>
 <translation id="2678852583403169292">Seç və danış menyusu</translation>
@@ -410,6 +414,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4696813013609194136">Cihazı valideyn kodu ilə kiliddən çıxarın</translation>
 <translation id="4702647871202761252">Məxfilik ekranı deaktivdir</translation>
 <translation id="4705716602320768426">Rəy göndərin</translation>
+<translation id="4730232680256276456">Salam</translation>
 <translation id="4731797938093519117">Valideyn girişi</translation>
 <translation id="4734965478015604180">Üfüqi</translation>
 <translation id="4744944742468440486">Seçiminizlə əlaqəli məlumat</translation>
@@ -426,6 +431,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4868492592575313542">aktiv</translation>
 <translation id="4872237917498892622">Alt+Search və ya Shift</translation>
 <translation id="4890187583552566966">Google Assistent administrator tərəfindən deaktiv edildi.</translation>
+<translation id="4890408602550914571">Telefonunuzun yaxınlıqda olduğuna və Bluetooth'un aktiv olduğuna əmin olun.</translation>
 <translation id="4895488851634969361">Batareya doludur.</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="4905614135390995787">Yüksək Kontrast Rejiminə keçmək üçün qısayol dəyişib. <ph name="OLD_SHORTCUT" /> əvəzinə <ph name="NEW_SHORTCUT" /> istifadə edin.</translation>
@@ -473,6 +479,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5302048478445481009">Dil</translation>
 <translation id="5313326810920013265">Bluetooth ayarları</translation>
 <translation id="5314219114274263156">Ekran çəkilişi tamamlanıb</translation>
+<translation id="5322611492012084517">Telefonunuzu tapmaq olmur</translation>
 <translation id="5329548388331921293">Qoşulur…</translation>
 <translation id="5331975486040154427">USB-C cihazı (arxa sol port)</translation>
 <translation id="5352250171825660495">Tünd tema aktivdir</translation>
@@ -519,6 +526,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="576453121877257266">Gecə İşığı aktivdir.</translation>
 <translation id="5769373120130404283">Məxfilik ekranı</translation>
 <translation id="5777841717266010279">Ekran paylaşımı dayandırılsın?</translation>
+<translation id="5779721926447984944">Bərkidilmiş fayllar</translation>
 <translation id="5790085346892983794">Uğur</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Qoşulmuş cihazların ayarları</translation>
@@ -563,6 +571,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="615957422585914272">Ekrandakı klaviaturanı göstərin</translation>
 <translation id="6164005077879661055">Nəzarət olunan istifadəçi silinən kimi onunla əlaqədar bütün fayl və data həmişəlik silinəcək. Bu nəzarət olunan istifadəçinin daxil olduğu veb sayt və ayarlar <ph name="MANAGEMENT_URL" /> üzrə menecer tərəfindən yenə də görünəcək.</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
+<translation id="6179832488876878285">Vacib fayllarınızı buraya bərkidə bilərsiniz. Başlamaq üçün Fayllar tətbiqini açın.</translation>
 <translation id="622484624075952240">Aşağı</translation>
 <translation id="6236290670123303279">Ayarları idarə edin</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +729,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7654687942625752712">Səsləndirilmiş rəyi deaktiv etmək üçün hər iki səs düyməsinə beş saniyə basıb saxlayın.</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7662283695561029522">Konfiqurasiya etmək üçün klikləyin</translation>
+<translation id="7683326293741220026">Görünür, Bluetooth telefonunuzda deaktiv edilib. Telefon Mərkəzindən istifadə etmək üçün telefonunuzda Bluetooth'u aktiv edin.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 bildiriş}other{# bildiriş}}</translation>
 <translation id="7724603315864178912">Kəsin</translation>
@@ -737,9 +747,11 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7860671499921112077">İcmala daxil olmaq üçün üç barmaq ilə yuxarı çəkin</translation>
 <translation id="7868900307798234037">Barmaq izi ilə kiliddən çıxarma</translation>
 <translation id="7872786842639831132">Deaktiv</translation>
+<translation id="7875575368831396199">Görünür, Bluetooth <ph name="DEVICE_TYPE" /> cihazınızda deaktiv edilib. Telefon Mərkəzindən istifadə etmək üçün Bluetooth'u aktiv edin.</translation>
 <translation id="7886169021410746335">Məxfilik ayarlarını tənzimləyin</translation>
 <translation id="7886277072580235377">Hesabdan çıxdıqda internet sessiyanız silinəcək. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">E-məktub göndərin</translation>
+<translation id="7895348134893321514">Bölmə</translation>
 <translation id="7897375687985782769">Ekran fırlanması üçün klaviatura qısayoluna basdınız. Ekranı fırlatmaq istəyirsiniz?</translation>
 <translation id="7901405293566323524">Telefon Habı</translation>
 <translation id="7902625623987030061">Barmaq izi sensoruna toxunun</translation>
@@ -807,6 +819,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8444246603146515890">Masa <ph name="DESK_TITILE" /> aktiv edildi</translation>
 <translation id="8452135315243592079">SIM kart yoxdur</translation>
 <translation id="8454013096329229812">Wi-Fi aktivdir.</translation>
+<translation id="8462305545768648477">Seç və danış funksiyasını bağlayın</translation>
 <translation id="847056008324733326">Miqyaqs ayarlarını göstərin</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_NAME" /> xüsusiyyətini <ph name="FEATURE_STATE" /> edib.</translation>
 <translation id="8477270416194247200">Ləğv etmək üçün Alt+Search və ya Shift düyməsini basın.</translation>
@@ -886,6 +899,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="9089416786594320554">Daxiletmə metodları</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> silindi</translation>
 <translation id="9098969848082897657">Telefonu səssiz edin</translation>
+<translation id="9099154003160514616">Lacros güncəlləməsi əlçatandır</translation>
 <translation id="9151726767154816831">Güncəlləşdirmək üçün yenidən başladaraq silin</translation>
 <translation id="9166331175924255663">Yaxınlıqda Paylaşım yüksək görünmə dərəcəsini dəyişdirin.</translation>
 <translation id="9168436347345867845">Daha sonra edin</translation>
@@ -896,6 +910,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> əksetmə qabiliyyəti <ph name="RESOLUTION" /> olaraq dəyişildi. Dəyişiklikləri saxlamaq üçün "təsdiq edin" üzərinə klikləyin. Əvvəlki ayarlar <ph name="TIMEOUT_SECONDS" /> ərzində bərpa ediləcək.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Administratorunuz tərəfindən idarə olunur</translation>
 <translation id="9210037371811586452">Vahid masaüstü rejimindən çıxır</translation>
+<translation id="9211490828691860325">Bütün masalar</translation>
 <translation id="9211681782751733685">Batareyanın tam dolmağına <ph name="TIME_REMAINING" /> qalır.</translation>
 <translation id="9215934040295798075">Divar kağızı ayarlayın</translation>
 <translation id="921989828232331238">Valideyniniz cihazı bugün üçün kilidləyib</translation>

@@ -1618,6 +1618,7 @@
 <translation id="2791529110887957050">ລຶບ Linux ອອກ</translation>
 <translation id="2791952154587244007">ເກີດຄວາມຜິດພາດຂຶ້ນ. ແອັບພລິເຄຊັ່ນ Kiosk ຈະບໍ່ສາມາດເປີດໃຊ້ອັດຕະໂນມັດຢູ່ໃນເຄື່ອງນີ້ໄດ້.</translation>
 <translation id="2792290659606763004">ລຶບແອັບ Android ອອກບໍ?</translation>
+<translation id="2792465461386711506">ເປີດ Chrome Sync ເພື່ອເບິ່ງແຖບ Chrome ຫຼ້າາສຸດຈາກໂທລະສັບຂອງທ່ານ</translation>
 <translation id="2794233252405721443">ບລັອກເວັບໄຊໄວ້ແລ້ວ</translation>
 <translation id="2795716239552913152">ໂດຍປົກກະຕິແລ້ວ ເວັບໄຊຈະໃຊ້ສະຖານທີ່ຂອງທ່ານສຳລັບຄຸນສົມບັດ ຫຼື ຂໍ້ມູນ ເຊັ່ນ: ຂ່າວໃນທ້ອງຖິ່ນ ຫຼື ຮ້ານຄ້າທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="2796424461616874739">ການຮັບຮອງໝົດເວລາໃນຂະນະທີ່ກໍາລັງເຊື່ອມຕໍ່ກັບ "<ph name="DEVICE_NAME" />".</translation>
@@ -3248,6 +3249,7 @@
 <translation id="4671265665487288124">ເວັບໄຊສາມາດຂໍດາວໂຫຼດຫຼາຍໄຟລ໌ໂດຍອັດຕະໂນມັດໄດ້ (ແນະນຳ)</translation>
 <translation id="46733273239502219">ລະບົບຈະລຶບລ້າງຂໍ້ມູນອອບລາຍໃນແອັບທີ່ຕິດຕັ້ງ</translation>
 <translation id="4673442866648850031">ເປີດເຄື່ອງມືປາຍປາກກາ ເມື່ອປາຍປາກກາຖືກລຶບອອກ</translation>
+<translation id="4676595058027112862">Phone Hub, ສຶກສາເພີ່ມເຕີມ</translation>
 <translation id="4677772697204437347">ຄວາມ​ຈໍາ GPU</translation>
 <translation id="467823995058589466">ປິດກ້ອງແລ້ວ</translation>
 <translation id="4680105648806843642">ປິດສຽງໄວ້ແລ້ວໃນໜ້ານີ້</translation>
@@ -6315,6 +6317,7 @@
 <translation id="8227119283605456246">ຄັດ​ຕິດ​ໄຟລ໌</translation>
 <translation id="8230134520748321204">ບັນທຶກລະຫັດຜ່ານສຳລັບ <ph name="ORIGIN" /> ບໍ?</translation>
 <translation id="8234795456569844941">ກະລຸນາຊ່ວຍວິສະວະກອນຂອງພວກເຮົາແກ້ໄຂບັນຫານີ້. ບອກພວກເຮົາສິ່ງທີ່ເກີດຂຶ້ນທັນທີກ່ອນທີ່ທ່ານໄດ້ຮັບຂໍ້ຄວາມສະແດງຂໍ້ຜິດພາດກ່ຽວກັບໂປຣໄຟລ໌ດັ່ງກ່າວ:</translation>
+<translation id="8235605354099176425">ເປີດ<ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> ເພື່ອເບິ່ງແຖບ Chrome ຫຼ້າສຸດ.<ph name="LINK2_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">ແບ່ງປັນແຖບນີ້ແທນ</translation>
 <translation id="8237647586961940482">ສີບົວເຂັ້ມ ແລະ ສີແດງ</translation>
 <translation id="8239032431519548577">ການລົງທະບຽນວິສາຫະກິດສຳເລັດແລ້ວ</translation>
@@ -7042,6 +7045,7 @@
 <translation id="9044646465488564462">​ເຊື່ອມ​ຕໍ່​ກັບ​ເຄືອ​ຂ່າຍບໍ່ໄດ້​: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">ສົ່ງທີ່ຢູ່ເວັບຂອງໜ້າທີ່ທ່ານກຳລັງພະຍາຍາມເຂົ້າຫາໃຫ້ Google</translation>
 <translation id="9046895021617826162">ເຊື່ອມຕໍ່ບໍ່ສໍາເລັດ</translation>
+<translation id="9048745018038487540">ເລືອກຟອນທັງໝົດ</translation>
 <translation id="9050666287014529139">ວະລີຜ່ານ</translation>
 <translation id="9052208328806230490">ທ່ານ​ໄດ້ລົງທະບຽນເຄື່ອງພິມຂອງທ່ານກັບ <ph name="CLOUD_PRINT_NAME" /> ​ໂດຍການໃຊ້ບັນຊີ <ph name="EMAIL" /> ແລ້ວ</translation>
 <translation id="9052404922357793350">ສືບຕໍ່ບລັອກໄວ້</translation>

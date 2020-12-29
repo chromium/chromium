@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">Թեմատիկ գույների ռեժիմում միջերեսը թեթև գունավորվում է ձեր պաստառի գույներով։</translation>
 <translation id="112308213915226829">Ինքնաթաքցնել դարակը</translation>
 <translation id="1153356358378277386">Զուգակցված սարքեր</translation>
+<translation id="1165712434476988950">Թարմացումը կիրառելու համար անհրաժեշտ է վերագործարկել սարքը։</translation>
 <translation id="1175572348579024023">Ոլորել</translation>
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="118532027333893379">Լիաէկրան ռեժիմում լուսանկարելու համար հպեք էկրանի ցանկացած կետի</translation>
@@ -47,7 +48,7 @@
 <translation id="1302880136325416935">Ցուցադրել Bluetooth-ի կարգավորումները: <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Ազդանշանի հզորությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Միշտ ցուցադրել դարակը</translation>
-<translation id="1316811122439383437">Tote․ էկրանի վերջին տեսագրումներ, ներբեռնումներ և ամրացված ֆայլեր</translation>
+<translation id="1316811122439383437">Tote․ վերջին սքրինշոթները, ներբեռնումները և ամրացված ֆայլերը</translation>
 <translation id="1333308631814936910">Միացված է <ph name="DISPLAY_NAME" /> սարքը</translation>
 <translation id="1341651618736211726">Բացել լրացուցիչ ընտրացանկը</translation>
 <translation id="1346748346194534595">Աջ</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">Տեքսի մուտքագրում</translation>
 <translation id="1993072747612765854">Իմացեք ավելին <ph name="SYSTEM_APP_NAME" /> հավելվածի վերջին թարմացման մասին</translation>
 <translation id="1995660704900986789">Անջատել</translation>
+<translation id="1998100899771863792">Ընթացիկ աշխատասեղանը</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Մուտքագրեք հաղորդագրություն</translation>
 <translation id="2018630726571919839">Անեկդոտ պատմիր</translation>
@@ -524,7 +526,7 @@
 <translation id="576453121877257266">Գիշերային ռեժիմը միացված է</translation>
 <translation id="5769373120130404283">Գաղտնիության էկրան</translation>
 <translation id="5777841717266010279">Դադարեցնե՞լ էկրանի համօգտագործումը:</translation>
-<translation id="5779721926447984944">Ամրացված տարրեր</translation>
+<translation id="5779721926447984944">Ամրացված ֆայլեր</translation>
 <translation id="5790085346892983794">Հաջողվեց</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Կապված սարքերի կարգավորումներ</translation>
@@ -707,7 +709,7 @@
 <translation id="7526573455193969409">Ցանցը կարող է վերահսկվել</translation>
 <translation id="7536035074519304529">IP հասցե՝ <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Քնելու ժամն է</translation>
-<translation id="7551643184018910560">Ամրացնել դարակին</translation>
+<translation id="7551643184018910560">Ամրացնել դարակում</translation>
 <translation id="7561982940498449837">Փակել ընտրացանկը</translation>
 <translation id="7564874036684306347">Պատուհանների տեղափոխումն այլ աշխատասեղան կարող է անսպասելի արդյունքներ ունենալ: Հետագա ծանուցումները, պատուհանները և երկխոսությունները կարող են տրոհվել աշխատասեղանների միջև:</translation>
 <translation id="7569509451529460200">Բրայլյան գրատիպն ու ChromeVox-ը միացված են</translation>
@@ -897,6 +899,7 @@
 <translation id="9089416786594320554">Ներածման եղանակներ</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> էկրանը հեռացվեց</translation>
 <translation id="9098969848082897657">Անջատել հեռախոսի ձայնը</translation>
+<translation id="9099154003160514616">Հասանելի է Lacros-ի թարմացում</translation>
 <translation id="9151726767154816831">Թարմացնելու համար վերագործարկեք և կատարեք Powerwash:</translation>
 <translation id="9166331175924255663">Միացնել/անջատել «Փոխանակում մոտակա սարքերի հետ» գործառույթի բարձր տեսանելիությունը</translation>
 <translation id="9168436347345867845">Ավելի ուշ</translation>
@@ -907,6 +910,7 @@
 <translation id="9198992156681343238">Լուծաչափը (<ph name="DISPLAY_NAME" />) փոխվել է <ph name="RESOLUTION" />-ի։ Հպեք «Հաստատել»՝ փոփոխությունները պահպանելու համար։ Նախորդ կարգավորումները կվերականգնվեն <ph name="TIMEOUT_SECONDS" /> հետո։</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="9210037371811586452">Ելք միասնական աշխատասեղանի ռեժիմից</translation>
+<translation id="9211490828691860325">Բոլոր աշխատասեղանները</translation>
 <translation id="9211681782751733685">Մարտկոցի լրիվ լիցքավորման համար մնացել է <ph name="TIME_REMAINING" />։</translation>
 <translation id="9215934040295798075">Ընտրել պաստառ</translation>
 <translation id="921989828232331238">Ձեր ծնողը կողպել է սարքը մեկ օրով</translation>

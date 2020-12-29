@@ -739,6 +739,7 @@
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">Se seleccionó <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croata</translation>
+<translation id="8750438273876807512">Mantén presionado un archivo y presiona <ph name="ICON" />. Luego, selecciona "Fijar en la barra" para crear un acceso rápido en la barra.</translation>
 <translation id="8775404590947523323">Los cambios se guardan automáticamente.<ph name="BREAKS" />Para mantener una copia de la imagen original, desactiva la opción Sobrescribir en el original.</translation>
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8810671769985673465">Se produjo un error al comprimir: ya existe el elemento "<ph name="FILE_NAME" />"</translation>

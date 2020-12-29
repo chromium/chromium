@@ -5011,9 +5011,6 @@
 
           В последнем случае отдельный параметр определяет, будет ли экран устройства <ph name="PRODUCT_OS_NAME" /> заблокирован до активации спящего режима.</translation>
 <translation id="8214600119442850823">Позволяет настроить диспетчер паролей.</translation>
-<translation id="8219777886736887686">Это правило определяет, какая команда должна использоваться для открытия страниц в альтернативном браузере. Можно указать одно из следующих значений: <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> или путь к файлу. Если задать в качестве значения путь к файлу, указанный файл будет обрабатываться как исполняемый. Значения <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> и <ph name="EDGE_VALUE_PLACEHOLDER" /> поддерживаются только в <ph name="MS_WIN_NAME" />, а <ph name="SAFARI_VALUE_PLACEHOLDER" /> – только в <ph name="MS_WIN_NAME" /> и <ph name="MAC_OS_NAME" />.
-
-      Если правило не настроено, выбирается используемый по умолчанию вариант в зависимости от платформы: <ph name="IE_PRODUCT_NAME" /> для <ph name="MS_WIN_NAME" /> или <ph name="SAFARI_PRODUCT_NAME" /> для <ph name="MAC_OS_NAME" />. В <ph name="LINUX_OS_NAME" /> запустить альтернативный браузер не удастся.</translation>
 <translation id="8220156281401380422">Создание списка разрешенных хостов обмена сообщениями с оригинальными приложениями</translation>
 <translation id="8244171102276095471">Включить наборы шифров RC4 в TLS</translation>
 <translation id="8244525275280476362">Максимальная задержка извлечения после аннулирования политики</translation>

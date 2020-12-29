@@ -545,7 +545,7 @@
 <translation id="1587907146729660231">Touch the power button with your finger</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="158849752021629804">Need home network</translation>
-<translation id="1588870296199743671">Open Link With...</translation>
+<translation id="1588870296199743671">Open link with...</translation>
 <translation id="1589055389569595240">Show spelling and grammar</translation>
 <translation id="1591679663873027990">Give Parallels Desktop permission to access USB devices. Parallels Desktop won't remember a USB device after it's removed.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> has disabled ADB debugging, which will reset your <ph name="DEVICE_TYPE" />. Back up your files before restarting.</translation>
@@ -1924,7 +1924,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3139925690611372679">Default yellow avatar</translation>
 <translation id="3141318088920353606">Listening...</translation>
 <translation id="3141917231319778873">The given request is not supported to: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="3142562627629111859">New Group</translation>
+<translation id="3142562627629111859">New group</translation>
 <translation id="3143515551205905069">Cancel sync</translation>
 <translation id="3143754809889689516">Play from the beginning</translation>
 <translation id="3144647712221361880">Open link as</translation>
@@ -2479,7 +2479,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3775705724665058594">Send to your devices</translation>
 <translation id="3776796446459804932">This extension violates the Chrome Web Store policy.</translation>
 <translation id="3777483481409781352">Could not activate mobile device</translation>
-<translation id="3777806571986431400">Extension Enabled</translation>
+<translation id="3777806571986431400">Extension enabled</translation>
 <translation id="3778152852029592020">Download was cancelled.</translation>
 <translation id="3778208826288864398">The security key is locked because the wrong PIN was entered too many times. You’ll need to reset the security key.</translation>
 <translation id="3778740492972734840">&amp;Developer tools</translation>
@@ -3460,7 +3460,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4925320384394644410">Your ports will appear here</translation>
 <translation id="4925542575807923399">The administrator for this account requires this account to be the first signed-in account in a multiple sign-in session.</translation>
 <translation id="4927753642311223124">Nothing to see here, move along.</translation>
-<translation id="4929386379796360314">Print Destinations</translation>
+<translation id="4929386379796360314">Print destinations</translation>
 <translation id="4930447554870711875">Developers</translation>
 <translation id="4930714375720679147">Turn On</translation>
 <translation id="4932733599132424254">Date</translation>
@@ -3914,7 +3914,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5485754497697573575">Restore All Tabs</translation>
 <translation id="5486261815000869482">Confirm password</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> is sharing your screen with <ph name="TAB_NAME" />.</translation>
-<translation id="5486561344817861625">Simulate Browser Restart</translation>
+<translation id="5486561344817861625">Simulate browser restart</translation>
 <translation id="5487521232677179737">Clear data</translation>
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' copied</translation>
 <translation id="5488468185303821006">Allow in incognito</translation>
@@ -6622,7 +6622,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="8597845839771543242">Property format:</translation>
 <translation id="8598453409908276158">Unsandboxed plug-in blocked</translation>
 <translation id="8601206103050338563">TLS WWW Client Authentication</translation>
-<translation id="8602851771975208551">Another programme on your computer added an app that may change the way Chrome works.</translation>
+<translation id="8602851771975208551">Another program on your computer added an app that may change the way Chrome works.</translation>
 <translation id="8605428685123651449">SQLite memory</translation>
 <translation id="8608618451198398104">Add a Kerberos ticket</translation>
 <translation id="8609465669617005112">Move up</translation>

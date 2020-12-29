@@ -727,7 +727,7 @@
 <translation id="7654687942625752712">സംഭാഷണ ഫീഡ്‌ബാക്ക് പ്രവർത്തനരഹിതമാക്കാൻ രണ്ട് വോളിയം കീകളും രണ്ട് സെക്കൻഡ് നേരത്തേക്ക് അമർത്തിപ്പിടിക്കുക.</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7662283695561029522">കോൺഫിഗർ ചെയ്യുന്നതിന് ടാപ്പ് ചെയ്യുക</translation>
-<translation id="7683326293741220026">നിങ്ങളുടെ ഫോണിൽ Bluetooth ഓഫാക്കിയതായി തോന്നുന്നു. ഫോൺ ഹബ് ഉപയോഗിക്കാൻ നിങ്ങളുടെ ഫോണിൽ Bluetooth ഓണാക്കുക.</translation>
+<translation id="7683326293741220026">നിങ്ങളുടെ ഫോണിൽ Bluetooth ഓഫാണെന്ന് തോന്നുന്നു. ഫോൺ ഹബ് ഉപയോഗിക്കാൻ നിങ്ങളുടെ ഫോണിൽ Bluetooth ഓണാക്കുക.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{ഒരു അറിയിപ്പ്}other{# അറിയിപ്പുകൾ}}</translation>
 <translation id="7724603315864178912">മുറിക്കുക</translation>
@@ -745,7 +745,7 @@
 <translation id="7860671499921112077">അവലോകനത്തിലേക്ക് കടക്കാൻ മൂന്നു വിരലുകൾ ഉപയോഗിച്ച് മുകളിലേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="7868900307798234037">വിരലടയാളം ഉപയോഗിച്ച് അൺലോക്ക് ചെയ്യുന്നു</translation>
 <translation id="7872786842639831132">ഓഫാണ്</translation>
-<translation id="7875575368831396199">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ Bluetooth ഓഫാക്കിയതായി തോന്നുന്നു. ഫോൺ ഹബ് ഉപയോഗിക്കാൻ, Bluetooth ഓണാക്കുക.</translation>
+<translation id="7875575368831396199">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ Bluetooth ഓഫാണെന്ന് തോന്നുന്നു. ഫോൺ ഹബ് ഉപയോഗിക്കാൻ, Bluetooth ഓണാക്കുക.</translation>
 <translation id="7886169021410746335">സ്വകാര്യതാ ക്രമീകരണം ശരിയാക്കുക</translation>
 <translation id="7886277072580235377">സൈൻ ഔട്ട് ചെയ്യുമ്പോൾ നിങ്ങളുടെ ഇന്റർനെറ്റ് സെഷൻ മായ്ക്കപ്പെടും. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ഒരു ഇമെയിൽ അയയ്ക്കുക</translation>

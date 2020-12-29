@@ -19,6 +19,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1119348796022671382">Modaliteti me ngjyra me temë përdor ngjyrat e nxjerra nga imazhi i sfondit për të ngjyrosur lehtë ndërfaqen.</translation>
 <translation id="112308213915226829">Fshih raftin automatikisht</translation>
 <translation id="1153356358378277386">Pajisjet e çiftuara</translation>
+<translation id="1165712434476988950">Kërkohet rinisja e pajisjes për të zbatuar përditësimin.</translation>
 <translation id="1175572348579024023">Lëviz</translation>
 <translation id="1178581264944972037">Pauzë</translation>
 <translation id="118532027333893379">Trokit diku për të regjistruar ekranin e plotë</translation>
@@ -118,6 +119,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1978498689038657292">Hyrjet e tekstit</translation>
 <translation id="1993072747612765854">Mëso më shumë rreth përditësimit të fundit të <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Fik</translation>
+<translation id="1998100899771863792">Tavolina aktuale e punës</translation>
 <translation id="2012624427112548395">Ctrl+Kërko+H</translation>
 <translation id="2016340657076538683">Shkruaj një mesazh</translation>
 <translation id="2018630726571919839">Më trego një barsoletë</translation>
@@ -749,7 +751,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7886169021410746335">Të rregullojë cilësimet e privatësisë</translation>
 <translation id="7886277072580235377">Seanca jote e internetit do të spastrohet kur të dalësh. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Dërgo një email</translation>
-<translation id="7895348134893321514">Çanta</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Ke shtypur shkurtoren e tastierës për rrotullimin e ekranit. Dëshiron ta rrotullosh ekranin?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Prek sensorin e gjurmës së gishtit</translation>
@@ -897,6 +899,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="9089416786594320554">Metodat e hyrjes</translation>
 <translation id="9091626656156419976">Ekrani <ph name="DISPLAY_NAME" /> u hoq</translation>
 <translation id="9098969848082897657">Vendose telefonin në heshtje</translation>
+<translation id="9099154003160514616">Ofrohet përditësim i Lacros</translation>
 <translation id="9151726767154816831">Rifillo dhe bëj Powerwash për të përditësuar</translation>
 <translation id="9166331175924255663">Aktivizo/çaktivizo dukshmërinë e lartë për "Ndarjen në afërsi".</translation>
 <translation id="9168436347345867845">Bëje më vonë</translation>
@@ -907,6 +910,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="9198992156681343238">Rezolucioni i <ph name="DISPLAY_NAME" /> u ndryshua në <ph name="RESOLUTION" />. Kliko te "Konfirmo" për t'i mbajtur ndryshimet. Cilësimet e mëparshme do të restaurohen për <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, menaxhuar nga administratori yt</translation>
 <translation id="9210037371811586452">Po del nga modaliteti i desktopit të unifikuar</translation>
+<translation id="9211490828691860325">Të gjitha tavolinat e punës</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> të mbetura deri sa bateria të karikohet plotësisht.</translation>
 <translation id="9215934040295798075">Cakto imazhin e sfondit</translation>
 <translation id="921989828232331238">Prindi yt e kyçi pajisjen tënde për këtë ditë</translation>

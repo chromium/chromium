@@ -19,6 +19,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1119348796022671382">O modo de cor con tema usa cores extraídas do fondo de pantalla para colorear lixeiramente a interface.</translation>
 <translation id="112308213915226829">Ocultar estante automaticamente</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
+<translation id="1165712434476988950">É necesario reiniciar o dispositivo para que se aplique a actualización.</translation>
 <translation id="1175572348579024023">Desprazarse</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="118532027333893379">Toca calquera parte para facer unha captura da pantalla completa</translation>
@@ -118,6 +119,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1978498689038657292">Introdución de texto</translation>
 <translation id="1993072747612765854">Máis información sobre a última actualización de <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Apagar</translation>
+<translation id="1998100899771863792">Este ordenador</translation>
 <translation id="2012624427112548395">Ctrl+Buscar+H</translation>
 <translation id="2016340657076538683">Escribe unha mensaxe</translation>
 <translation id="2018630726571919839">Cóntame un chiste</translation>
@@ -728,7 +730,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7654687942625752712">Mantén premidas as dúas teclas de volume durante cinco segundos para desactivar os comentarios de voz.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7662283695561029522">Toca para configurar a conexión compartida</translation>
-<translation id="7683326293741220026">Parece que tes o Bluetooth desactivado no teléfono. Para utilizar O meu teléfono, activa o Bluetooth.</translation>
+<translation id="7683326293741220026">Parece que tes o Bluetooth desactivado no teléfono. Para utilizar a función O meu teléfono, activa o Bluetooth do teléfono.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificacións}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
@@ -746,7 +748,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7860671499921112077">Para acceder ao modo Visión xeral, pasa tres dedos cara arriba</translation>
 <translation id="7868900307798234037">Desbloqueo con impresión dixital</translation>
 <translation id="7872786842639831132">Desactivado</translation>
-<translation id="7875575368831396199">Parece que tes o Bluetooth desactivado no dispositivo (<ph name="DEVICE_TYPE" />). Para utilizar O meu teléfono, activa o Bluetooth.</translation>
+<translation id="7875575368831396199">Parece que tes o Bluetooth desactivado no dispositivo (<ph name="DEVICE_TYPE" />). Para utilizar a función O meu teléfono, activa o Bluetooth.</translation>
 <translation id="7886169021410746335">Axustar a configuración de privacidade</translation>
 <translation id="7886277072580235377">Cando saias da conta, borrarase a túa sesión de Internet. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Enviar un correo</translation>
@@ -898,6 +900,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="9091626656156419976">Quitouse a pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>
+<translation id="9099154003160514616">Hai unha actualización de Lacros dispoñible</translation>
 <translation id="9151726767154816831">Reinicia e fai un powerwash para actualizar</translation>
 <translation id="9166331175924255663">Activar ou desactivar a alta visibilidade da función Compartir por Nearby.</translation>
 <translation id="9168436347345867845">Configurar máis tarde</translation>
@@ -908,6 +911,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="9198992156681343238">A resolución de <ph name="DISPLAY_NAME" /> cambiouse a <ph name="RESOLUTION" />. Para gardar os cambios, fai clic en Confirmar. A configuración anterior restaurarase en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, xestionada polo teu administrador</translation>
 <translation id="9210037371811586452">Saíndo do modo de escritorio unificado</translation>
+<translation id="9211490828691860325">Todos os ordenadores</translation>
 <translation id="9211681782751733685">Tempo restante para que se cargue a batería por completo: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Definir fondo de pantalla</translation>
 <translation id="921989828232331238">O teu pai ou nai bloqueou o dispositivo para todo o día</translation>

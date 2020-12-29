@@ -4358,7 +4358,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Vous avez réactivé 1 extension potentiellement dangereuse}one{Vous avez réactivé {NUM_EXTENSIONS} extension potentiellement dangereuse}other{Vous avez réactivé {NUM_EXTENSIONS} extensions potentiellement dangereuses}}</translation>
 <translation id="5979421442488174909">&amp;Traduire en <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Pour ajouter des pages à vos favoris, cliquez sur l'étoile dans la barre d'adresse</translation>
-<translation id="5982945980973315070">Une application tente d'accéder à la caméra. Pour lui accorder l'accès, désactivez le paramètre de confidentialité de la caméra</translation>
+<translation id="5982945980973315070">Une application tente d'accéder à la caméra. Pour lui accorder l'accès, désactivez le paramètre de confidentialité de la caméra.</translation>
 <translation id="5984222099446776634">Consultations récentes</translation>
 <translation id="598472838394900788">{0,plural, =1{Navigation privée}one{Navigation privée (#)}other{Navigation privée (#)}}</translation>
 <translation id="5985458664595100876">Le format de l'URL n'est pas valide. Les formats acceptés sont \\server\share et smb://server/share.</translation>

@@ -1635,7 +1635,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2804680522274557040">Kamera erabiltzeko baimena desaktibatuta dago</translation>
 <translation id="2805646850212350655">Fitxategiak enkriptatzeko Microsoft sistema (EFS)</translation>
 <translation id="2805756323405976993">Aplikazioak</translation>
-<translation id="2805760958323556153">Ez du balio ExtensionInstallForcelist gidalerroaren balioak. Jarri administratzailearekin harremanetan.</translation>
+<translation id="2805760958323556153">Ez du balio ExtensionInstallForcelist gidalerro-balioak. Jarri administratzailearekin harremanetan.</translation>
 <translation id="2805770823691782631">Xehetasun gehigarriak</translation>
 <translation id="2806372837663997957">Gailuak ez du onartu partekatzen saiatzen ari zaren fitxategia</translation>
 <translation id="2806891468525657116">Jada badago lasterbide hori</translation>
@@ -3251,7 +3251,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4671265665487288124">Webguneek fitxategi bat baino gehiago automatikoki deskargatzea eska dezakete (gomendatua)</translation>
 <translation id="46733273239502219">Garbitu egingo dira instalatutako aplikazioetako konexiorik gabe erabiltzeko datu guztiak</translation>
 <translation id="4673442866648850031">Ireki arkatzaren tresnak arkatza kendu ondoren</translation>
-<translation id="4676595058027112862">Phone Hub, lortu informazio gehiago</translation>
+<translation id="4676595058027112862">Phone Hub, Lortu informazio gehiago</translation>
 <translation id="4677772697204437347">GPU memoria</translation>
 <translation id="467823995058589466">Desaktibatu da kamera</translation>
 <translation id="4680105648806843642">Soinua desaktibatu egin da orri honetan</translation>

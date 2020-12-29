@@ -19,6 +19,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1119348796022671382">I färgläget med tema används färger från bakgrunden till att lätt färgsätta gränssnittet.</translation>
 <translation id="112308213915226829">Dölj hyllan automatiskt</translation>
 <translation id="1153356358378277386">Kopplade enheter</translation>
+<translation id="1165712434476988950">Enheten måste startas om för att uppdateringen ska tillämpas.</translation>
 <translation id="1175572348579024023">Rulla</translation>
 <translation id="1178581264944972037">Paus</translation>
 <translation id="118532027333893379">Tryck var som helst för att ta en bild av hela skärmen</translation>
@@ -47,6 +48,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1302880136325416935">Visa Bluetooth-inställningar. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Signalstyrka <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Visa alltid hyllan</translation>
+<translation id="1316811122439383437">Tote: De senaste skärmdumparna och nedladdningarna samt fästa filer</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> har anslutits</translation>
 <translation id="1341651618736211726">Fler alternativ</translation>
 <translation id="1346748346194534595">Höger</translation>
@@ -117,6 +119,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1978498689038657292">Textinmatning</translation>
 <translation id="1993072747612765854">Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Stäng av</translation>
+<translation id="1998100899771863792">Aktuellt skrivbord</translation>
 <translation id="2012624427112548395">Ctrl+Sök+H</translation>
 <translation id="2016340657076538683">Skriv ett meddelande</translation>
 <translation id="2018630726571919839">Dra ett skämt</translation>
@@ -181,6 +184,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2596078834055697711">Ta en skärmdump av fönstret</translation>
 <translation id="2617342710774726426">SIM-kortet är låst</translation>
 <translation id="2621713457727696555">Skyddat</translation>
+<translation id="2633643784040308254">Medelhög</translation>
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2658778018866295321">Klicka och dra</translation>
 <translation id="2678852583403169292">Textuppläsningsmeny</translation>
@@ -410,6 +414,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
 <translation id="4702647871202761252">Sekretesskärmen är inaktiverad</translation>
 <translation id="4705716602320768426">Skicka feedback</translation>
+<translation id="4730232680256276456">Hög</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="4734965478015604180">Horisontell</translation>
 <translation id="4744944742468440486">Information om det som är markerat</translation>
@@ -426,6 +431,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4868492592575313542">aktiverad</translation>
 <translation id="4872237917498892622">Alt + Sök eller Skift</translation>
 <translation id="4890187583552566966">Administratören har inaktiverat Google Assistent.</translation>
+<translation id="4890408602550914571">Kontrollera att telefonen finns i närheten och att Bluetooth är aktiverat på den.</translation>
 <translation id="4895488851634969361">Batteriet är fullt.</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="4905614135390995787">Kortkommandot för att aktivera och inaktivera högkontrastläget har ändrats. Använd <ph name="NEW_SHORTCUT" /> i stället för <ph name="OLD_SHORTCUT" />.</translation>
@@ -473,6 +479,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5302048478445481009">Språk</translation>
 <translation id="5313326810920013265">Bluetooth-inställningar</translation>
 <translation id="5314219114274263156">En skärminspelning har tagits</translation>
+<translation id="5322611492012084517">Det gick inte att hitta telefonen</translation>
 <translation id="5329548388331921293">Ansluter …</translation>
 <translation id="5331975486040154427">USB-C-enhet (bakre porten på vänster sida)</translation>
 <translation id="5352250171825660495">Mörkt tema är på</translation>
@@ -519,6 +526,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="576453121877257266">Nattljus är aktiverat.</translation>
 <translation id="5769373120130404283">Sekretesskärm</translation>
 <translation id="5777841717266010279">Vill du avbryta skärmdelningen?</translation>
+<translation id="5779721926447984944">Filer som har fästs</translation>
 <translation id="5790085346892983794">Klart</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Inställningar för anslutna enheter</translation>
@@ -563,6 +571,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="615957422585914272">Visa skärmtangentbordet</translation>
 <translation id="6164005077879661055">Alla filer och lokala data som är kopplade till den hanterade användaren tas bort permanent när den hanterade användaren tas bort. Besökta webbplatser och inställningar för den hanterade användaren kan fortfarande vara synliga för den som hanterar användaren på <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Läs mer</translation>
+<translation id="6179832488876878285">Du kan fästa viktiga filer här. Börja med att öppna appen Filer.</translation>
 <translation id="622484624075952240">Ner</translation>
 <translation id="6236290670123303279">Hantera inställningar</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -720,6 +729,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7654687942625752712">Inaktivera talad feedback genom att hålla båda volymknapparna nedtryckta i fem sekunder.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7662283695561029522">Tryck om du vill konfigurera</translation>
+<translation id="7683326293741220026">Det verkar som om Bluetooth har inaktiverats på telefonen. Aktivera Bluetooth på telefonen om du vill använda Phone Hub.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 avisering}other{# aviseringar}}</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
@@ -737,9 +747,11 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7860671499921112077">Öppna översikten genom att svepa uppåt med tre fingrar</translation>
 <translation id="7868900307798234037">Låser upp med fingeravtryck</translation>
 <translation id="7872786842639831132">Av</translation>
+<translation id="7875575368831396199">Det verkar som om Bluetooth har inaktiverats på <ph name="DEVICE_TYPE" />. Aktivera Bluetooth om du vill använda Phone Hub.</translation>
 <translation id="7886169021410746335">Ändra sekretessinställningarna</translation>
 <translation id="7886277072580235377">Internetsessionen rensas när du loggar ut. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Skicka e-post</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Du tryckte på kortkommandot för skärmrotation. Vill du rotera skärmen?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Tryck på fingeravtryckssensorn</translation>
@@ -807,6 +819,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8444246603146515890">Skrivbordet <ph name="DESK_TITILE" /> har aktiverats</translation>
 <translation id="8452135315243592079">SIM-kort saknas</translation>
 <translation id="8454013096329229812">Wi-Fi är aktiverat.</translation>
+<translation id="8462305545768648477">Stäng av textuppläsningen</translation>
 <translation id="847056008324733326">Inställningar för skala på skärmen</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> har <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Avbryt genom att trycka på Alt + söktangenten eller Skift.</translation>
@@ -886,6 +899,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="9089416786594320554">Inmatningsmetoder</translation>
 <translation id="9091626656156419976">Skärmen <ph name="DISPLAY_NAME" /> har tagits bort</translation>
 <translation id="9098969848082897657">Inga telefonljud</translation>
+<translation id="9099154003160514616">Det finns en uppdatering av Lacros</translation>
 <translation id="9151726767154816831">Starta om och utför en Powerwash-återställning för att uppdatera</translation>
 <translation id="9166331175924255663">Aktivera och inaktivera Närdelning med hög synlighet.</translation>
 <translation id="9168436347345867845">Gör det senare</translation>
@@ -896,6 +910,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />-upplösningen ändrades till <ph name="RESOLUTION" />. Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, hanteras av administratören</translation>
 <translation id="9210037371811586452">Enhetligt skrivbordsläge avslutas</translation>
+<translation id="9211490828691860325">Alla skrivbord</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> återstår tills batteriet är fulladdat.</translation>
 <translation id="9215934040295798075">Ange bakgrund</translation>
 <translation id="921989828232331238">Din förälder har låst enheten för dagen</translation>

@@ -19,6 +19,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1119348796022671382">O modo de cores temático usa as cores extraídas do plano de fundo para colorir levemente a interface.</translation>
 <translation id="112308213915226829">Ocultar estante automaticamente</translation>
 <translation id="1153356358378277386">Dispositivos pareados</translation>
+<translation id="1165712434476988950">É necessário reiniciar o dispositivo para aplicar a atualização.</translation>
 <translation id="1175572348579024023">Rolar</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="118532027333893379">Toque em qualquer lugar para capturar a tela cheia</translation>
@@ -118,6 +119,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1978498689038657292">Entrada de texto</translation>
 <translation id="1993072747612765854">Saiba mais sobre a última atualização do <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Desligar</translation>
+<translation id="1998100899771863792">Espaço de trabalho atual</translation>
 <translation id="2012624427112548395">Ctrl+Pesquisa+H</translation>
 <translation id="2016340657076538683">Digite uma mensagem</translation>
 <translation id="2018630726571919839">Conte uma piada</translation>
@@ -898,6 +900,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="9091626656156419976">Tela <ph name="DISPLAY_NAME" /> removida</translation>
 <translation id="9098969848082897657">Silenciar smartphone</translation>
+<translation id="9099154003160514616">Atualização do Lacros disponível</translation>
 <translation id="9151726767154816831">Reinicie e execute um powerwash para atualizar</translation>
 <translation id="9166331175924255663">Alternar a alta visibilidade de Compartilhar por proximidade.</translation>
 <translation id="9168436347345867845">Mais tarde</translation>
@@ -908,6 +911,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="9198992156681343238">A resolução de <ph name="DISPLAY_NAME" /> foi modificada para <ph name="RESOLUTION" />. Clique em "Confirmar" para manter as mudanças. As configurações anteriores serão restauradas em <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gerenciada pelo seu administrador</translation>
 <translation id="9210037371811586452">Saindo do modo de área de trabalho unificada</translation>
+<translation id="9211490828691860325">Todos os espaços de trabalho</translation>
 <translation id="9211681782751733685">Tempo restante até que a bateria esteja totalmente carregada: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Definir plano de fundo</translation>
 <translation id="921989828232331238">Seu pai/mãe bloqueou o dispositivo por hoje</translation>

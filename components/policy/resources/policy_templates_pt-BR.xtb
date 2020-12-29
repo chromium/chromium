@@ -3967,13 +3967,13 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6789422336869764846">Se a política for definida como "Ativada" ou não for definida, o estado da chave do desenvolvedor dos dispositivos registrados durante a inicialização será informado.
 
       Se a política for definida como "Desativada", o estado da chave do desenvolvedor dos dispositivos registrados não será informado.</translation>
-<translation id="6793420507738858152">Quando ativado, o recurso "<ph name="PRODUCT_NAME" />" enviará cabeçalhos de solicitação granulares fornecendo informações sobre o ambiente e o navegador do usuário.
+<translation id="6793420507738858152">Quando a política está ativada, o recurso "<ph name="PRODUCT_NAME" />" enviará cabeçalhos de solicitação granulares fornecendo informações sobre o ambiente e o navegador do usuário.
 
       Esse é um recurso complementar, mas os novos cabeçalhos podem corromper alguns sites que restringem os caracteres contidos em algumas solicitações.
 
       Se esta política for ativada ou não for definida, o recurso "<ph name="PRODUCT_NAME" />" será ativado. Se ela for desativada, o recurso ficará indisponível.
 
-      Esta política visa objetivos de adaptação a curto prazo e estará disponível pelo menos até a versão 91 do Chrome.</translation>
+      Esta política é uma solução alternativa temporária para fins de adaptação a curto prazo e estará disponível pelo menos até a versão 91 do Chrome.</translation>
 <translation id="6795485990775913659">Permitir impressão apenas sem PIN</translation>
 <translation id="6800181452282128474">Não consultar servidores Quirks</translation>
 <translation id="6810445994095397827">Bloquear o JavaScript nestes sites</translation>
@@ -5001,9 +5001,6 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
 
           Se a ação for de suspender, o <ph name="PRODUCT_OS_NAME" /> poderá ser configurado separadamente para bloquear ou não a tela antes da suspensão.</translation>
 <translation id="8214600119442850823">Configura o gerenciador de senhas.</translation>
-<translation id="8219777886736887686">Se a política for definida, ela controlará o comando usado para abrir URLs em um navegador alternativo. Ela pode ser definida como <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> ou um caminho de arquivo. Quando esta política é definida como um caminho de arquivo, o arquivo em questão é usado como um executável. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> e <ph name="EDGE_VALUE_PLACEHOLDER" /> estão disponíveis apenas no <ph name="MS_WIN_NAME" />, e <ph name="SAFARI_VALUE_PLACEHOLDER" /> está disponível apenas no <ph name="MS_WIN_NAME" /> e no <ph name="MAC_OS_NAME" />.
-
-      Se a política não for definida, o padrão usado seguirá a plataforma: <ph name="IE_PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> ou <ph name="SAFARI_PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" />. No <ph name="LINUX_OS_NAME" />, não será possível abrir um navegador alternativo.</translation>
 <translation id="8220156281401380422">Configurar a lista de permissões de mensagens nativas</translation>
 <translation id="8244171102276095471">Ativar pacotes de criptografia RC4 em TLS</translation>
 <translation id="8244525275280476362">Atraso máximo de busca após a invalidação de uma política</translation>

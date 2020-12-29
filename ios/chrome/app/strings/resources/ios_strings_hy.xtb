@@ -39,7 +39,7 @@
 <translation id="1283524564873030414">Վերջին 24 ժամվա</translation>
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
 <translation id="1321993286294231467">Չհաջողվեց պահել պատկերը։</translation>
-<translation id="1322735045095424339">Կազմակերպության կանոնի համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմ</translation>
+<translation id="1322735045095424339">Կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմը</translation>
 <translation id="1323735185997015385">Ջնջել</translation>
 <translation id="132683371494960526">Կրկնակի հպեք՝ վերադաս պանակը փոխելու համար:</translation>
 <translation id="1340643665687018190">Փակել ընտրացանկը</translation>
@@ -124,7 +124,7 @@
 <translation id="2239626343334228536">Այցելությունների պատմությունը ջնջվում է…</translation>
 <translation id="2257567812274161158">Համաժամացումը չի աշխատում։</translation>
 <translation id="225943865679747347">Սխալի կոդ` <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="2262397157440718954">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմը։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Ավելացնել հաշիվ</translation>
 <translation id="2268044343513325586">Թարմացնել</translation>
 <translation id="2273327106802955778">Այլ ընտրանքներ</translation>
@@ -191,7 +191,7 @@
 <translation id="291754862089661335">Դիրքավորեք QR-կոդը կամ գծակոդը այս շրջանակի մեջ</translation>
 <translation id="2921219216347069551">Չհաջողվեց համօգտագործել էջը</translation>
 <translation id="2923448633003185837">Տեղադրել և անցնել</translation>
-<translation id="2923827943290349720">Կողպեք ինկոգնիտո ներդիրները, երբ փակում եք Chrome-ը</translation>
+<translation id="2923827943290349720">Կողպել ինկոգնիտո ներդիրները, երբ փակում եք Chrome-ը</translation>
 <translation id="292639812446257861">Նշել որպես չկարդացված</translation>
 <translation id="2952581218264071393">1. Բացեք Chrome-ի կարգավորումները։</translation>
 <translation id="2958718410589002129">Գաղտնաբառեր</translation>
@@ -212,7 +212,7 @@
 <translation id="3175081911749765310">Համացանցի ծառայություններ</translation>
 <translation id="3178650076442119961">Այսօր ակտիվ է եղել</translation>
 <translation id="3181954750937456830">Անվտանգ դիտարկում (պաշտպանում է ձեզ և ձեր սարքը վտանգավոր կայքերից)</translation>
-<translation id="3184767182050912705">Ապակողպել <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-ով</translation>
+<translation id="3184767182050912705">Ապակողպել՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">Կայքերը կարող են օգտագործել քուքիներ՝ ձեր աշխատանքն ավելի հարմարավետ դարձնելու, օրինակ, ձեր մուտքը հաշիվ հիշելու կամ ձեր ընտրած ապրանքները զամբյուղում պահելու համար։
 
 Ինկոգնիտո ռեժիմում կայքերը չեն կարող օգտագործել քուքիներ՝ դիտարկիչում ձեր գործողությունները տեսնելու համար, օրինակ՝ գովազդի անհատականացման նպատակով։</translation>
@@ -428,7 +428,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5551897871312988470">Առաջարկել թարգմանություն</translation>
 <translation id="5556459405103347317">Վերաբեռնել</translation>
 <translation id="5592679540098330836">Միացնել համաժամացումը <ph name="NAME" /> օգտատիրոջ համար</translation>
-<translation id="5597169624050330492">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմ։ Ներդիրները չեն պահվում ինկոգնիտո ռեժիմում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="5597169624050330492">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմը։ Ինկոգնիտո ռեժիմում բացված ներդիրները չեն պահպանվում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Պահե՞լ գաղտնաբառը</translation>
 <translation id="5626245204502895507">Այս պահին հնարավոր չէ ներբեռնել ֆայլը:</translation>
 <translation id="5631164295104953411">Ավելացրեք վճարման եղանակը</translation>
@@ -592,7 +592,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7133798577887235672">Անուն, ազգանուն</translation>
 <translation id="7136892417564438900">Ֆոտոխցիկն անհասանելի է</translation>
 <translation id="7159472599653637159">Բջջային տարբերակ</translation>
-<translation id="7162168282402939716">Ապակողպեք ինկոգնիտո ներդիրները <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-ի օգնությամբ</translation>
+<translation id="7162168282402939716">Ապակողպեք ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Պաշտպանեք ձեր գաղտնաբառերը անվտանգության հետ կապված խնդիրներից</translation>
 <translation id="7173114856073700355">Բացել կարգավորումները</translation>
 <translation id="7189598951263744875">Կիսվել…</translation>
@@ -630,7 +630,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7537586195939242955">Ներեցեք, այս պահին հնարավոր չէ տեղադրել ձեր Անցագիրը Անցագրերի մատյանում:</translation>
 <translation id="7554791636758816595">Նոր ներդիր</translation>
 <translation id="7561196759112975576">Միշտ</translation>
-<translation id="7583004045319035904">Ապակողպեք ձեր ինկոգնիտո ներդիրները <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-ի օգնությամբ։</translation>
+<translation id="7583004045319035904">Ապակողպեք ձեր ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />։</translation>
 <translation id="7600965453749440009">Երբեք չթարգմանել <ph name="LANGUAGE" /> էջերը</translation>
 <translation id="7603852183842204213">Ելնող պատուհաններն արգելափակվել են (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Ջնջել գաղտնաբառը</translation>

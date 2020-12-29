@@ -1618,6 +1618,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2791529110887957050">Linux tizimini olib tashlash</translation>
 <translation id="2791952154587244007">Xatolik yuz berdi. Kiosk ilovalari ushbu qurilmada avtomatik ishga tushmaydi.</translation>
 <translation id="2792290659606763004">Android ilovalar olib tashlansinmi?</translation>
+<translation id="2792465461386711506">Telefoningizdagi oxirgi Chrome varaqarini ochish uchun Chrome Sync funksiyasini yoqing</translation>
 <translation id="2794233252405721443">Sayt bloklangan</translation>
 <translation id="2795716239552913152">Saytlar odatda mahalliy yangiliklar yoki atrofdagi doʻkonlar kabi tegishli funksiya yoki axborotlar uchun joylashuvingizdan foydalanadi</translation>
 <translation id="2796424461616874739">“<ph name="DEVICE_NAME" />” qurilmasiga ulanish vaqtida haqiqiylik tekshiruvidan javob kelmadi.</translation>
@@ -3248,6 +3249,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4671265665487288124">Saytlar birdaniga bir nechta fayl yuklab olishga ruxsat soʻrashi mumkin (tavsiya etiladi)</translation>
 <translation id="46733273239502219">Oʻrnatilgan ilovalardagi oflayn maʼlumotlar ham tozalab tashlanadi.</translation>
 <translation id="4673442866648850031">Stilus o‘chiqligida stilus vositalari ko‘rsatilsin</translation>
+<translation id="4676595058027112862">Phone Hub, batafsil</translation>
 <translation id="4677772697204437347">GPU xotirasi</translation>
 <translation id="467823995058589466">Kamera yoqilmagan</translation>
 <translation id="4680105648806843642">Bu sahifada ovoz bloklangan</translation>
@@ -6315,6 +6317,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8227119283605456246">Fayl biriktirish</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> uchun parol saqlansinmi?</translation>
 <translation id="8234795456569844941">Profil xatolik xabaridan oldin nima bo‘lganligi haqida ma’lumot bering:</translation>
+<translation id="8235605354099176425">Oxirgi Chrome varaqlarini ochish uchun<ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> funksiyasini yoqing.<ph name="LINK2_BEGIN" />Batafsil<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Oʻrniga bu varaqni ulashish</translation>
 <translation id="8237647586961940482">Toʻq pushti va qizil</translation>
 <translation id="8239032431519548577">Korporativ domenda qayd qilindi</translation>
@@ -7042,6 +7045,7 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="9044646465488564462">Tarmoqqa ulanmadi: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Kiritilgan sayt manzili Google serverlariga yuboriladi</translation>
 <translation id="9046895021617826162">Ulanmadi</translation>
+<translation id="9048745018038487540">Barcha shriftlarni tanlash</translation>
 <translation id="9050666287014529139">Kodli ibora</translation>
 <translation id="9052208328806230490">Printerlaringizni <ph name="EMAIL" /> hisobi yordamida <ph name="CLOUD_PRINT_NAME" />’da qayddan o‘tkazdingiz</translation>
 <translation id="9052404922357793350">Bloklanaversin</translation>

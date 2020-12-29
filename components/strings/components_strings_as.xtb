@@ -1366,6 +1366,7 @@
 <translation id="6389470377220713856">কার্ডত থকা নাম</translation>
 <translation id="6390200185239044127">Z-ফ'ল্ড আধা</translation>
 <translation id="6390662030813198813">অভিযান্ত্রিক-E</translation>
+<translation id="6393956493820063117"><ph name="ORIGIN_NAME" />ৰ পৰা এই অৱস্থানটোত পে’ষ্ট কৰাৰ সুবিধাটো প্রশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
 <translation id="6401136357288658127">এই নীতিটো অপ্ৰচলিত। আপুনি তাৰ পৰিৱৰ্তে <ph name="NEW_POLICY" /> নীতিটো ব্যৱহাৰ কৰা উচিত।</translation>
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা কৰক</translation>
 <translation id="6406765186087300643">C0 (লেফাফা)</translation>
@@ -1855,6 +1856,7 @@
 <translation id="8371889962595521444">কাষ্টম ৰুট প্ৰমাণপত্ৰ</translation>
 <translation id="8380941800586852976">ক্ষতিকাৰক</translation>
 <translation id="8381674639488873545">এই মাচুলবোৰ এবাৰেই বা বাৰে বাৰে দিবলগীয়া হ’ব পাৰে আৰু সেয়া সুনিৰ্দিষ্ট নহ’ব পাৰে। <ph name="BEGIN_LINK" />যিকোনো প্ৰকাৰে দেখুৱাওক<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698"><ph name="ORIGIN_NAME" />ৰ পৰা <ph name="VM_NAME" />লৈ শ্বেয়াৰ কৰাৰ সুবিধাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
 <translation id="8412145213513410671">ক্ৰেশ্ব (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">আপুনি একেটা পাছফ্ৰেজ দুবাৰ দিবই লাগিব।</translation>
 <translation id="8416694386774425977">নেটৱৰ্ক কনফিগাৰেশ্বনটো অমান্য আৰু এইটো আমদানি কৰিব পৰা নাযায়।

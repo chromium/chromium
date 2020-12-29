@@ -106,7 +106,7 @@
 <translation id="1974060860693918893">प्रगत</translation>
 <translation id="1989112275319619282">ब्राउझ करा</translation>
 <translation id="2015722694326466240">पासवर्ड पाहण्यासाठी, तुम्ही प्रथम तुमच्या डीव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
-<translation id="2047933465321076474">तुमच्या संस्थेने खाजगी ब्राउझिंग बंद केलेले आहे. <ph name="BEGIN_LINK" />अधिक जाणून घेणे<ph name="END_LINK" /></translation>
+<translation id="2047933465321076474">तुमच्या संस्थेने खाजगी ब्राउझिंग बंद केलेले आहे. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> दिवसांपूर्वी ॲक्टिव्ह होते</translation>
 <translation id="2074131957428911366">तुम्ही काय सिंक करायचे हे <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये कधीही निवडू शकता.</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
@@ -124,7 +124,7 @@
 <translation id="2239626343334228536">ब्राउझिंग डेटा साफ करत आहे...</translation>
 <translation id="2257567812274161158">सिंक काम करत नाही.</translation>
 <translation id="225943865679747347">एरर कोड: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">तुमच्या संस्थेनुसार तुम्ही खाजगीरीत्या ब्राउझ करणे आवश्यक आहे. <ph name="BEGIN_LINK" />अधिक जाणून घेणे<ph name="END_LINK" /></translation>
+<translation id="2262397157440718954">तुमच्या संस्थेनुसार तुम्ही खाजगीरीत्या ब्राउझ करणे आवश्यक आहे. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">खाते जोडा</translation>
 <translation id="2268044343513325586">सुधारित करा</translation>
 <translation id="2273327106802955778">अधिक मेनू</translation>
@@ -429,7 +429,7 @@
 <translation id="5551897871312988470">भाषांतर उपलब्ध करा</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> साठी सिंक सुरू करा</translation>
-<translation id="5597169624050330492">तुमच्या संस्थेनुसार तुम्ही खाजगीरीत्या ब्राउझ करणे आवश्यक आहे. गुप्त मोडमध्ये टॅब सेव्ह केली जात नाहीत <ph name="BEGIN_LINK" />अधिक जाणून घेणे<ph name="END_LINK" /></translation>
+<translation id="5597169624050330492">तुमच्या संस्थेनुसार तुम्ही खाजगीरीत्या ब्राउझ करणे आवश्यक आहे. गुप्त मोडमध्ये टॅब सेव्ह केली जात नाहीत <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">पासवर्ड सेव्ह करायचा आहे का?</translation>
 <translation id="5626245204502895507">यावेळी फाईल डाऊनलोड केली जाऊ शकली नाही.</translation>
 <translation id="5631164295104953411">पेमेंट पद्धत जोडा</translation>
@@ -577,7 +577,7 @@
 <translation id="6944369514868857500">दुसरे खाते निवडा</translation>
 <translation id="6945221475159498467">निवडा</translation>
 <translation id="6973630695168034713">फोल्डर</translation>
-<translation id="6979158407327259162">Google ड्राइव्ह</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">तुमचे Google खाते व्यवस्थापित करा</translation>
 <translation id="6995899638241819463">डेटा भंगामध्ये पासवर्ड उघड झाल्यास, तुम्हाला चेतावणी द्या</translation>
 <translation id="6998989275928107238">प्रति</translation>

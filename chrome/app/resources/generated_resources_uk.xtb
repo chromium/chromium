@@ -721,7 +721,7 @@
 <translation id="1768278914020124551">На жаль, не вдалося зв’язатися із сервером для входу. Перевірте з’єднання з Інтернетом і доменне ім’я та повторіть спробу.</translation>
 <translation id="1769104665586091481">Відкрити посилання в новому &amp;вікні</translation>
 <translation id="1773212559869067373">Сертифікат автентифікації відхилений локально</translation>
-<translation id="177336675152937177">Дані розміщених програм</translation>
+<translation id="177336675152937177">Дані розміщених додатків</translation>
 <translation id="1776712937009046120">Додати користувача</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">Позначити як непрочитане</translation>
@@ -1355,7 +1355,7 @@
 <translation id="249113932447298600">На жаль, зараз пристрій <ph name="DEVICE_LABEL" /> не підтримується.</translation>
 <translation id="2492461744635776704">Підготовка запиту на підпис сертифіката</translation>
 <translation id="2493126929778606526">Ваші найкращі фото, вибрані автоматично</translation>
-<translation id="2496180316473517155">Історія переглядів</translation>
+<translation id="2496180316473517155">Історія веб-перегляду</translation>
 <translation id="2497229222757901769">Швидкість миші</translation>
 <translation id="2497852260688568942">Ваш адміністратор вимкнув синхронізацію</translation>
 <translation id="2498539833203011245">Згорнути</translation>

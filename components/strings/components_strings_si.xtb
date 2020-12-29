@@ -1368,6 +1368,7 @@
 <translation id="6389470377220713856">කාඩ්පතෙහි ඇති නම</translation>
 <translation id="6390200185239044127">භාගයට Z-නැමීම</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6393956493820063117">පරිපාලක ප්‍රතිපත්තිය මගින් මෙම ස්ථානයට <ph name="ORIGIN_NAME" /> වෙතින් ඇලවීම අවහිර කර ඇත</translation>
 <translation id="6401136357288658127">මෙම ප්‍රතිපත්තිය අත්හරින ලදි. ඒ වෙනුවට ඔබ <ph name="NEW_POLICY" /> ප්‍රතිපත්තිය භාවිත කළ යුතු ය.</translation>
 <translation id="6404511346730675251">පිටු සලකුණ සංස්කරණය කරන්න</translation>
 <translation id="6406765186087300643">C0 (ලියුම් කවරය)</translation>
@@ -1860,6 +1861,7 @@
 <translation id="8371889962595521444">අභිරුචි මූල සහතික</translation>
 <translation id="8380941800586852976">අන්තරායකර</translation>
 <translation id="8381674639488873545">මෙම අය කිරීම් එක්-වර හෝ ප්‍රත්‍යාවර්ත විය හැකි අතර, පැහැදිලි නොවිය හැක. <ph name="BEGIN_LINK" />කෙසේ වෙතත් පෙන්වන්න<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> වෙතින් <ph name="VM_NAME" /> වෙත බෙදා ගැනීම පරිපාලක ප්‍රතිපත්තිය මගින් අබල කර ඇත</translation>
 <translation id="8412145213513410671">පිපුරුම් (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">ඔබ එකම රහස් පදය දෙවරක් ඇතුළු කළ යුතුය.</translation>
 <translation id="8416694386774425977">ජාල වින්‍යාසය වලංගු නොවන අතර, ආයාත කළ නොහැක.

@@ -1617,6 +1617,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2791529110887957050">Hiq Linux</translation>
 <translation id="2791952154587244007">Ndodhi një gabim. Aplikacioni kioskë nuk do të jetë në gjendje të niset automatikisht në këtë pajisje.</translation>
 <translation id="2792290659606763004">Të hiqen aplikacionet e Android?</translation>
+<translation id="2792465461386711506">Aktivizo Sinkronizimin e Chrome për të shikuar skedat e fundit të Chrome nga telefoni yt</translation>
 <translation id="2794233252405721443">Sajti u bllokua</translation>
 <translation id="2795716239552913152">Sajtet përdorin zakonisht vendndodhjen tënde për veçori ose informacione përkatëse, si p.sh. lajmet lokale ose dyqanet në afërsi</translation>
 <translation id="2796424461616874739">Koha e pritjes për verifikim gjatë lidhjes me "<ph name="DEVICE_NAME" />".</translation>
@@ -2568,7 +2569,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3862788408946266506">Aplikacioni me cilësinë e shfaqjes "kiosk_only" duhet të instalohet në modalitetin "kioskë" të sistemit operativ Chrome</translation>
 <translation id="3865414814144988605">Rezolucioni</translation>
 <translation id="3866249974567520381">Përshkrimi</translation>
-<translation id="3867134342671430205">Zvarrit ose përdor tastet e shigjetave për të zhvendos një ekran</translation>
+<translation id="3867134342671430205">Zvarrit ose përdor tastet e shigjetave për të zhvendosur një ekran</translation>
 <translation id="3867944738977021751">Fushat e certifikatës</translation>
 <translation id="3869917919960562512">Indeks i gabuar.</translation>
 <translation id="3870931306085184145">Nuk ka fjalëkalime të ruajtura për <ph name="DOMAIN" /></translation>
@@ -3247,6 +3248,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4671265665487288124">Sajtet mund të kërkojnë të shkarkojnë automatikisht shumë skedarë (rekomandohet)</translation>
 <translation id="46733273239502219">Do të fshihen gjithashtu edhe të dhënat jashtë linje në aplikacionet e instaluara</translation>
 <translation id="4673442866648850031">Hap veglat e stilolapsit kur hiqet stilolapsi</translation>
+<translation id="4676595058027112862">Phone Hub. Mëso më shumë</translation>
 <translation id="4677772697204437347">Memoria GPU</translation>
 <translation id="467823995058589466">Kamera është çaktivizuar</translation>
 <translation id="4680105648806843642">Tingulli u çaktivizua në këtë faqe</translation>
@@ -6314,6 +6316,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8227119283605456246">Bashkëngjit skedarin</translation>
 <translation id="8230134520748321204">Të ruhet fjalëkalimi për <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Ndihmoji inxhinierët tanë ta rregullojnë këtë problem. Na trego se çfarë ndodhi përpara se të merrje mesazhin e gabimit të profilit:</translation>
+<translation id="8235605354099176425">Aktivizo <ph name="LINK1_BEGIN" />Sinkronizimin e Chrome<ph name="LINK1_END" /> për të shikuar skedat e fundit të Chrome. <ph name="LINK2_BEGIN" />Mëso më shumë<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Ndaj këtë skedë më mirë</translation>
 <translation id="8237647586961940482">Rozë e errët dhe e kuqe</translation>
 <translation id="8239032431519548577">Regjistrimi i ndërmarrjes përfundoi</translation>
@@ -6527,7 +6530,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8489156414266187072">Sugjerimet personale tregohen vetëm në llogarinë tënde</translation>
 <translation id="8490896350101740396">Aplikacionet e mëposhtme të kioskës "<ph name="UPDATED_APPS" />" janë përditësuar. Rindize pajisjen për të përfunduar procesin e përditësimit.</translation>
 <translation id="8492822722330266509">Sajtet mund të dërgojnë dritare kërcyese dhe të përdorin ridrejtimet</translation>
-<translation id="8492972329130824181">Rrjeti i shtëpisë nuk ofrohet. Duhet të aktivizohet roaming-u i të dhënave celulare për t'u lidhur.</translation>
+<translation id="8492972329130824181">Rrjeti i shtëpisë nuk ofrohet. Duhet të aktivizohet roaming-u për të dhënat celulare për t'u lidhur.</translation>
 <translation id="8493236660459102203">Mikrofoni:</translation>
 <translation id="8496717697661868878">Ekzekuto këtë përbërës shtesë</translation>
 <translation id="8497219075884839166">Programet ndihmëse të Windows</translation>
@@ -7041,6 +7044,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9044646465488564462">Dështoi lidhja me rrjetin: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Dërgon adresat e uebit në faqen që po përpiqesh të arrish në Google</translation>
 <translation id="9046895021617826162">Lidhja dështoi</translation>
+<translation id="9048745018038487540">Zgjidh të gjitha fontet</translation>
 <translation id="9050666287014529139">Shprehje kalimi</translation>
 <translation id="9052208328806230490">Ke regjistruar printerët e tu me <ph name="CLOUD_PRINT_NAME" /> duke përdorur llogarinë <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Vazhdo bllokimin</translation>

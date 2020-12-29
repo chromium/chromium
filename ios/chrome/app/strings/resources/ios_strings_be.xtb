@@ -124,7 +124,7 @@
 <translation id="2239626343334228536">Ідзе ачыстка даных прагляду...</translation>
 <translation id="2257567812274161158">Сінхранізацыя не працуе.</translation>
 <translation id="225943865679747347">Код памылкі: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Палітыка вашай арганізацыі патрабуе, каб вы праглядалі старонкі ў прыватным рэжыме. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="2262397157440718954">Палітыка вашай арганізацыі патрабуе, каб вы праглядалі старонкі ў рэжыме інкогніта. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Дадаць уліковы запіс</translation>
 <translation id="2268044343513325586">Удакладніць</translation>
 <translation id="2273327106802955778">Меню "Дадаткова"</translation>
@@ -428,7 +428,7 @@
 <translation id="5551897871312988470">Прапаноўваць перакласці з мовы</translation>
 <translation id="5556459405103347317">Перазагрузіць</translation>
 <translation id="5592679540098330836">Уключыць сінхранізацыю для ўліковага запісу <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Палітыка вашай арганізацыі патрабуе, каб вы праглядалі старонкі ў прыватным рэжыме. У гэтым рэжыме ўкладкі не захоўваюцца. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="5597169624050330492">Палітыка вашай арганізацыі патрабуе, каб вы праглядалі старонкі ў рэжыме інкогніта. У гэтым рэжыме ўкладкі не захоўваюцца. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Захаваць пароль?</translation>
 <translation id="5626245204502895507">Файл спампаваць не ўдалося.</translation>
 <translation id="5631164295104953411">Дадаванне спосабу аплаты</translation>

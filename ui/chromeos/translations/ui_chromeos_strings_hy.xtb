@@ -611,7 +611,7 @@
 <translation id="7544853251252956727">Խառնել</translation>
 <translation id="7547780573915868306">լիտվերեն</translation>
 <translation id="7547811415869834682">Հոլանդական</translation>
-<translation id="7551643184018910560">Ամրացնել դարակին</translation>
+<translation id="7551643184018910560">Ամրացնել դարակում</translation>
 <translation id="7553492409867692754">Հասանելի դարձրեք «<ph name="FOLDER_NAME" />» պանակի ֆայլերը Լինուքսին</translation>
 <translation id="7575645593344061397">«<ph name="FILENAME" />» ֆայլը վերականգնվում է…</translation>
 <translation id="7576032389798113292">6 x 4</translation>
@@ -711,7 +711,7 @@
 <translation id="8395901698320285466">Չափեր</translation>
 <translation id="8437209419043462667">ԱՄՆ</translation>
 <translation id="8456681095658380701">Սխալ անուն</translation>
-<translation id="8461467696380332069">Ֆայլերը դարակում արագ բացելու համար մկնիկի աջ կոճակով սեղմեք ֆայլի վրա և ընտրեք «Ամրացնել դարակին»։</translation>
+<translation id="8461467696380332069">Մկնիկի աջ կոճակով սեղմեք ֆայլի վրա և ընտրեք «Ամրացնել դարակում»։</translation>
 <translation id="8463494891489624050">վիետնամերեն (VIQR ստեղնաշար)</translation>
 <translation id="8466234950814670489">Tar արխիվ</translation>
 <translation id="8475647382427415476">Google Drive-ը չկարողացավ համաժամացնել «<ph name="FILENAME" />» ֆայլը: Ավելի ուշ այն նորից կփորձի:</translation>
@@ -738,7 +738,7 @@
 <translation id="8714406895390098252">Հեծանիվ</translation>
 <translation id="8719721339511222681">Ընտրվեց «<ph name="ENTRY_NAME" />» գրառումը:</translation>
 <translation id="872537912056138402">Խորվաթական</translation>
-<translation id="8750438273876807512">Ֆայլը դարակում արագ բացելու համար հպեք ֆայլին և պահեք, ապա հպեք <ph name="ICON" />, և ընտրեք «Ամրացնել դարակին»։</translation>
+<translation id="8750438273876807512">Սեղմեք որևէ ֆայլի վրա և պահեք, ապա սեղմեք <ph name="ICON" /> և ընտրեք «Ամրացնել դարակին»։</translation>
 <translation id="8775404590947523323">Ձեր փոփոխություններն ավտոմատ պահվել են:<ph name="BREAKS" />Սկզբնական պատկերի պատճենը պահպանելու համար ապանշեք «Վրագրել սկզբնականը» նշավանդակը</translation>
 <translation id="8808686172382650546">Կատու</translation>
 <translation id="8810671769985673465">Չհաջողվեց արխիվացնել։ Տարրն արդեն արխիվում է՝ «<ph name="FILE_NAME" />»</translation>

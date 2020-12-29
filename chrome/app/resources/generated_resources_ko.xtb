@@ -1620,6 +1620,7 @@
 <translation id="2791529110887957050">Linux 삭제</translation>
 <translation id="2791952154587244007">오류가 발생했습니다. 이 기기에서 키오스크 애플리케이션을 자동 실행할 수 없습니다.</translation>
 <translation id="2792290659606763004">Android 앱을 삭제하시겠습니까?</translation>
+<translation id="2792465461386711506">휴대전화의 최근 Chrome 탭을 보려면 Chrome 동기화를 사용 설정하세요</translation>
 <translation id="2794233252405721443">차단된 사이트</translation>
 <translation id="2795716239552913152">사이트에서는 일반적으로 현지 뉴스 또는 주변 상점 같은 관련 기능이나 정보에 위치를 사용합니다.</translation>
 <translation id="2796424461616874739">'<ph name="DEVICE_NAME" />'에 연결하는 동안 인증 제한 시간이 초과되었습니다.</translation>
@@ -3248,6 +3249,7 @@
 <translation id="4671265665487288124">사이트에서 여러 파일을 자동으로 다운로드하도록 요청할 수 있음(권장)</translation>
 <translation id="46733273239502219">설치된 앱 내 오프라인 데이터도 삭제됩니다.</translation>
 <translation id="4673442866648850031">스타일러스가 분리되면 스타일러스 도구가 열립니다.</translation>
+<translation id="4676595058027112862">휴대전화 허브, 자세히 알아보기</translation>
 <translation id="4677772697204437347">GPU 메모리</translation>
 <translation id="467823995058589466">카메라 꺼짐</translation>
 <translation id="4680105648806843642">이 페이지가 음소거됨</translation>
@@ -6318,6 +6320,7 @@
 <translation id="8227119283605456246">파일 첨부</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" />의 비밀번호를 저장하시겠습니까?</translation>
 <translation id="8234795456569844941">Google 엔지니어가 이 문제를 해결하도록 도와주세요. 프로필 오류 메시지가 표시되기 직전에 무슨 일이 있었는지 알려 주시기 바랍니다.</translation>
+<translation id="8235605354099176425">최근 Chrome 탭을 보려면 <ph name="LINK1_BEGIN" />Chrome 동기화<ph name="LINK1_END" />를 사용 설정하세요. <ph name="LINK2_BEGIN" />자세히 알아보기<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">이 탭을 대신 공유</translation>
 <translation id="8237647586961940482">진한 분홍색 및 빨간색</translation>
 <translation id="8239032431519548577">기업 등록 완료</translation>
@@ -7045,6 +7048,7 @@
 <translation id="9044646465488564462">네트워크 연결 실패: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">사용자가 접속하려는 페이지의 웹 주소를 Google에 전송</translation>
 <translation id="9046895021617826162">연결 실패</translation>
+<translation id="9048745018038487540">모든 글꼴 선택</translation>
 <translation id="9050666287014529139">암호</translation>
 <translation id="9052208328806230490"><ph name="EMAIL" /> 계정을 사용하여 프린터를 <ph name="CLOUD_PRINT_NAME" />에 등록했습니다.</translation>
 <translation id="9052404922357793350">차단 계속</translation>

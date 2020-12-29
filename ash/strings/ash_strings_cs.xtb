@@ -19,6 +19,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1119348796022671382">Režim barvy podle motivu používá barvy z tapety k lehkému zabarvení rozhraní.</translation>
 <translation id="112308213915226829">Automaticky skrývat poličku</translation>
 <translation id="1153356358378277386">Spárovaná zařízení</translation>
+<translation id="1165712434476988950">K použití aktualizace je potřeba restartovat zařízení.</translation>
 <translation id="1175572348579024023">Posunout</translation>
 <translation id="1178581264944972037">Pozastavit</translation>
 <translation id="118532027333893379">Klepnutím kamkoliv pořídíte snímek celé obrazovky</translation>
@@ -118,6 +119,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1978498689038657292">Zadávání textu</translation>
 <translation id="1993072747612765854">Další informace o nejnovější aktualizaci systému <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Vypnout</translation>
+<translation id="1998100899771863792">Aktuální plocha</translation>
 <translation id="2012624427112548395">Ctrl+Hledat+H</translation>
 <translation id="2016340657076538683">Zadejte zprávu</translation>
 <translation id="2018630726571919839">Řekni mi vtip</translation>
@@ -897,6 +899,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="9089416786594320554">Metody zadávání</translation>
 <translation id="9091626656156419976">Obrazovka <ph name="DISPLAY_NAME" /> byla odebrána</translation>
 <translation id="9098969848082897657">Ztlumit telefon</translation>
+<translation id="9099154003160514616">Je k dispozici aktualizace prohlížeče Lacros</translation>
 <translation id="9151726767154816831">Chcete-li zařízení aktualizovat, restartujte je a resetujte pomocí funkce Powerwash</translation>
 <translation id="9166331175924255663">Přepnout vysokou viditelnost pro sdílení nablízko.</translation>
 <translation id="9168436347345867845">Později</translation>
@@ -907,6 +910,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="9198992156681343238">Rozlišení displeje <ph name="DISPLAY_NAME" /> bylo změněno na <ph name="RESOLUTION" />. Chcete-li změny ponechat, potvrďte je. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, spravováno vaším administrátorem</translation>
 <translation id="9210037371811586452">Ukončování režimu jednotné plochy</translation>
+<translation id="9211490828691860325">Všechny plochy</translation>
 <translation id="9211681782751733685">Doba zbývající do úplného nabití baterie: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Nastavit tapetu</translation>
 <translation id="921989828232331238">Rodič zařízení na celý den uzamkl</translation>

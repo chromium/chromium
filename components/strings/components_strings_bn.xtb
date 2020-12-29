@@ -1373,6 +1373,7 @@
 <translation id="6389470377220713856">কার্ডে থাকা নাম</translation>
 <translation id="6390200185239044127">অর্ধেক জেড-ফোল্ড</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> থেকে কপি করে এই লোকেশনে পেস্ট করা অ্যাডমিনিস্ট্রেটর পলিসির মাধ্যমে ব্লক করা হয়েছে</translation>
 <translation id="6401136357288658127">এই নীতি বন্ধ করে দেওয়া হয়েছে। পরিবর্তে আপনাকে <ph name="NEW_POLICY" /> নীতি ব্যবহার করতে হবে।</translation>
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা করুন</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
@@ -1498,7 +1499,7 @@
 <translation id="6973656660372572881">স্থির প্রক্সি সার্ভার এবং .pac স্ক্রিপ্ট URL-এর উভয়ই নির্দিষ্ট আছে৷</translation>
 <translation id="6973932557599545801">আমি সাহায্য করতে পারছি না, নিজের মতো করে এগিয়ে যান।</translation>
 <translation id="6975012522936652259">আপনি এইমাত্র প্রতারণামূলক একটি সাইটে আপনার পাসওয়ার্ড লিখেছেন। <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> এবং অন্যান্য সাইট যেখানে এই পাসওয়ার্ড ব্যবহার করেছেন সেখানে গিয়ে এখনই পাসওয়ার্ড পরিবর্তন করতে Chromium সাজেস্ট করছে।</translation>
-<translation id="6979158407327259162">Google ড্রাইভ</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">মিউট (ডিফল্ট)</translation>
 <translation id="6979983982287291980">আপনার ডাউনলোড করা ফাইল Google Cloud-এ বা থার্ড-পার্টির কাছে বিশ্লেষণ করার জন্য পাঠানো হয়েছে। যেমন, কোনও সংবেদনশীল ডেটা বা ম্যালওয়্যার আছে কিনা জানার জন্য ফাইলগুলি হয়ত স্ক্যান করা হতে পারে।</translation>
 <translation id="6989763994942163495">উন্নত সেটিংস দেখান ...</translation>
@@ -1865,6 +1866,7 @@
 <translation id="8371889962595521444">কাস্টম রুট সার্টিফিকেট</translation>
 <translation id="8380941800586852976">বিপজ্জনক</translation>
 <translation id="8381674639488873545">এই চার্জ এককালীন হতে পারে বা তার পুনরাবৃত্তি হতে পারে এবং তা স্পষ্ট করে বোঝা নাও যেতে পারে। <ph name="BEGIN_LINK" />তবুও দেখান<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> থেকে <ph name="VM_NAME" />-এ শেয়ার করা অ্যাডমিনিস্ট্রেটর পলিসির মাধ্যমে ব্লক করা হয়েছে</translation>
 <translation id="8412145213513410671">ক্র্যাশ (<ph name="CRASH_COUNT" />টি)</translation>
 <translation id="8412392972487953978">আপনাকে একই পাসফ্রেজ অবশ্যই দু'বার প্রবেশ করাতে হবে৷</translation>
 <translation id="8416694386774425977">নেটওয়ার্ক কনফিগারেশনটি সঠিক নয় এবং ইমপোর্ট করা যায়নি৷

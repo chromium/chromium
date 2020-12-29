@@ -19,6 +19,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1119348796022671382">Le mode couleur thématique applique une légère teinte à l'interface en se basant sur les couleurs de votre fond d'écran.</translation>
 <translation id="112308213915226829">Masquer automatiquement l'étagère</translation>
 <translation id="1153356358378277386">Appareils associés</translation>
+<translation id="1165712434476988950">Vous devez redémarrer l'appareil pour appliquer la mise à jour.</translation>
 <translation id="1175572348579024023">Faire défiler</translation>
 <translation id="1178581264944972037">Suspendre</translation>
 <translation id="118532027333893379">Appuyez n'importe où pour capturer tout l'écran</translation>
@@ -118,6 +119,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1978498689038657292">Saisie de texte</translation>
 <translation id="1993072747612765854">En savoir plus sur la dernière mise à jour <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Éteindre</translation>
+<translation id="1998100899771863792">Bureau actuel</translation>
 <translation id="2012624427112548395">Ctrl+Recherche+H</translation>
 <translation id="2016340657076538683">Saisissez un message</translation>
 <translation id="2018630726571919839">Raconte-moi une blague</translation>
@@ -897,6 +899,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="9089416786594320554">Modes de saisie</translation>
 <translation id="9091626656156419976">Suppression de l'écran <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Couper le son du téléphone</translation>
+<translation id="9099154003160514616">Mise à jour Lacros disponible</translation>
 <translation id="9151726767154816831">Redémarrer, puis lancer la réinitialisation Powerwash pour mettre à jour le système</translation>
 <translation id="9166331175924255663">Activez/Désactivez le mode haute visibilité du Partage à proximité.</translation>
 <translation id="9168436347345867845">Plus tard</translation>
@@ -907,6 +910,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="9198992156681343238">La résolution de <ph name="DISPLAY_NAME" /> est passée à <ph name="RESOLUTION" />. Cliquez sur "Confirmer" pour conserver les modifications. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, géré par votre administrateur</translation>
 <translation id="9210037371811586452">Sortie du mode Bureau unifié</translation>
+<translation id="9211490828691860325">Tous les bureaux</translation>
 <translation id="9211681782751733685">Temps restant avant que la batterie soit entièrement rechargée : <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Définir le fond d'écran</translation>
 <translation id="921989828232331238">Ton parent a verrouillé ton appareil pour la journée</translation>

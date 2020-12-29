@@ -19,6 +19,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1119348796022671382">W trybie kolorów z motywu interfejs jest lekko pokolorowany przy użyciu kolorów wyodrębnionych z tapety.</translation>
 <translation id="112308213915226829">Autoukrywanie półki</translation>
 <translation id="1153356358378277386">Sparowane urządzenia</translation>
+<translation id="1165712434476988950">Aby zastosować aktualizację, musisz ponownie uruchomić urządzenie.</translation>
 <translation id="1175572348579024023">Przewijanie</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="118532027333893379">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
@@ -118,6 +119,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1978498689038657292">Wprowadzanie tekstu</translation>
 <translation id="1993072747612765854">Więcej informacji o najnowszej aktualizacji <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Wyłącz</translation>
+<translation id="1998100899771863792">Bieżące biurko</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Wpisz wiadomość</translation>
 <translation id="2018630726571919839">Opowiedz mi kawał</translation>
@@ -182,7 +184,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2596078834055697711">Zrób zrzut ekranu okna</translation>
 <translation id="2617342710774726426">Karta SIM jest zablokowana</translation>
 <translation id="2621713457727696555">Zabezpieczona</translation>
-<translation id="2633643784040308254">Średnia</translation>
+<translation id="2633643784040308254">Średni</translation>
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2658778018866295321">Kliknij i przeciągnij</translation>
 <translation id="2678852583403169292">Menu Przeczytaj na głos</translation>
@@ -412,7 +414,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4696813013609194136">Odblokuj urządzenie kodem rodzica</translation>
 <translation id="4702647871202761252">Ekran chroniący prywatność jest wyłączony</translation>
 <translation id="4705716602320768426">Zgłoś opinię</translation>
-<translation id="4730232680256276456">Cześć</translation>
+<translation id="4730232680256276456">Dobry</translation>
 <translation id="4731797938093519117">Dostęp rodzica</translation>
 <translation id="4734965478015604180">Poziomo</translation>
 <translation id="4744944742468440486">Informacje związane z zaznaczoną treścią</translation>
@@ -745,7 +747,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7860671499921112077">Przesuń 3 palcami w górę, aby otworzyć Przegląd</translation>
 <translation id="7868900307798234037">Odblokowano odciskiem palca</translation>
 <translation id="7872786842639831132">Wyłączono</translation>
-<translation id="7875575368831396199">Wygląda na to, że Bluetooth jest wyłączony na Twoim urządzeniu <ph name="DEVICE_TYPE" />. Włącz go, by korzystać ze sterowania telefonem.</translation>
+<translation id="7875575368831396199">Wygląda na to, że Twoje urządzenie (<ph name="DEVICE_TYPE" />) ma wyłączony Bluetooth. Włącz go, by korzystać ze sterowania telefonem.</translation>
 <translation id="7886169021410746335">Dostosowywać ustawienia prywatności</translation>
 <translation id="7886277072580235377">Twoja sesja internetowa zostanie wyczyszczona, gdy się wylogujesz. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Wyślij e-maila</translation>
@@ -817,7 +819,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8444246603146515890">Aktywowano biurko <ph name="DESK_TITILE" /></translation>
 <translation id="8452135315243592079">Brak karty SIM</translation>
 <translation id="8454013096329229812">Wi-Fi włączone.</translation>
-<translation id="8462305545768648477">Zamknij Przeczytaj na głos</translation>
+<translation id="8462305545768648477">Zamknij funkcję Przeczytaj na głos</translation>
 <translation id="847056008324733326">Ustawienia skali wyświetlania</translation>
 <translation id="8473301994082929012">Funkcja <ph name="FEATURE_NAME" /> w organizacji <ph name="ORGANIZATION_NAME" /> jest <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Aby anulować, naciśnij Alt + Szukaj lub Shift.</translation>
@@ -897,6 +899,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="9089416786594320554">Wprowadzanie tekstu</translation>
 <translation id="9091626656156419976">Wyświetlacz <ph name="DISPLAY_NAME" /> został usunięty</translation>
 <translation id="9098969848082897657">Wycisz telefon</translation>
+<translation id="9099154003160514616">Dostępna jest aktualizacja Lacros</translation>
 <translation id="9151726767154816831">Uruchom ponownie i wykonaj Powerwash, by zaktualizować</translation>
 <translation id="9166331175924255663">Włącza/wyłącza dużą widoczność Udostępniania w pobliżu.</translation>
 <translation id="9168436347345867845">Później</translation>
@@ -907,6 +910,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="9198992156681343238">Rozdzielczość ekranu <ph name="DISPLAY_NAME" /> została zmieniona na <ph name="RESOLUTION" />. Kliknij „Potwierdź”, by zachować zmiany. Poprzednie ustawienia zostaną przywrócone za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, zarządzana przez administratora</translation>
 <translation id="9210037371811586452">Wyłączam tryb ujednoliconego pulpitu</translation>
+<translation id="9211490828691860325">Wszystkie biurka</translation>
 <translation id="9211681782751733685">Czas pozostały do pełnego naładowania baterii: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Ustaw tapetę</translation>
 <translation id="921989828232331238">Twój rodzic zablokował urządzenie na cały dzień</translation>

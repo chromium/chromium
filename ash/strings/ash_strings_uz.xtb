@@ -19,6 +19,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1119348796022671382">Mavzuli ranglar rejimida interfeys fonga mos ranglarda biroz bezatiladi.</translation>
 <translation id="112308213915226829">Javonni avtomatik yashirish</translation>
 <translation id="1153356358378277386">Ulangan qurilmalar</translation>
+<translation id="1165712434476988950">Yangilanishni tatbiq qilish uchun qurilmani oʻchirib yoqing.</translation>
 <translation id="1175572348579024023">Aylantirish</translation>
 <translation id="1178581264944972037">Pauza</translation>
 <translation id="118532027333893379">Butun ekranni rasmga olish uchun ekranning istalgan joyiga bosing</translation>
@@ -118,6 +119,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1978498689038657292">Matn kiritish</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> oxirgi yangilanishi haqida batafsil axborot</translation>
 <translation id="1995660704900986789">O‘chirish</translation>
+<translation id="1998100899771863792">Joriy ish stoli</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Xabar yozing</translation>
 <translation id="2018630726571919839">Bitta latifa aytib ber</translation>
@@ -897,6 +899,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="9089416786594320554">Matn kiritish</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ekrani olib tashlandi</translation>
 <translation id="9098969848082897657">Soatni sukut qilish</translation>
+<translation id="9099154003160514616">Lacros yangilanishi mavjud</translation>
 <translation id="9151726767154816831">Tizimni yangilash uchun uni qaytadan ishga tushirib, Powerwash amalini bajaring</translation>
 <translation id="9166331175924255663">Yaqin-atrofga yuborish qurilmalariga ruxsatni ochish tugmasi.</translation>
 <translation id="9168436347345867845">Keyinroq</translation>
@@ -907,6 +910,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> displeyining ekrani <ph name="RESOLUTION" /> hajmiga oʻzgartirildi. Tasdiqlash uchun bosing. Eski sozlamalar <ph name="TIMEOUT_SECONDS" /> dan keyin tiklanadi.</translation>
 <translation id="9201374708878217446">Ulanish: <ph name="CONNECTION_STATUS" />, Administrator boshqaruvida</translation>
 <translation id="9210037371811586452">Birlashgan ish stoli rejimidan chiqilmoqda</translation>
+<translation id="9211490828691860325">Barcha ish stollari</translation>
 <translation id="9211681782751733685">Batareya toʻliq quvvatlanishigacha qolgan vaqt: <ph name="TIME_REMAINING" /></translation>
 <translation id="9215934040295798075">Fon rasmini tanlash</translation>
 <translation id="921989828232331238">Ota-onangiz qurilmangizni butun kun uchun qulfladi</translation>

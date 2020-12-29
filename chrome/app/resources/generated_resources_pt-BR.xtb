@@ -4359,7 +4359,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Você reativou 1 extensão possivelmente nociva}one{Você reativou {NUM_EXTENSIONS} extensão possivelmente nociva}other{Você reativou {NUM_EXTENSIONS} extensões possivelmente nocivas}}</translation>
 <translation id="5979421442488174909">&amp;Traduzir para o <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Para adicionar páginas aos favoritos, clique na estrela na barra de endereço</translation>
-<translation id="5982945980973315070">Um app está tentando acessar a câmera. Desative a chave de privacidade da webcam para permitir o acesso</translation>
+<translation id="5982945980973315070">Um app está tentando acessar a câmera. Desative a chave de privacidade da webcam para permitir o acesso.</translation>
 <translation id="5984222099446776634">Visitados recentemente</translation>
 <translation id="598472838394900788">{0,plural, =1{Anônima}one{Anônima (#)}other{Anônimas (#)}}</translation>
 <translation id="5985458664595100876">Formato de URL inválido. Os formatos compatíveis são \\server\share e smb://server/share.</translation>

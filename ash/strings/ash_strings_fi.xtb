@@ -19,6 +19,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1119348796022671382">Teemoihin jaettu väritila käyttää taustakuvasta poimittuja värejä käyttöliittymän kevyeen väritykseen.</translation>
 <translation id="112308213915226829">Piilota hylly automaattisesti</translation>
 <translation id="1153356358378277386">Laiteparit</translation>
+<translation id="1165712434476988950">Laite on käynnistettävä uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
 <translation id="1175572348579024023">Vieritä</translation>
 <translation id="1178581264944972037">Tauko</translation>
 <translation id="118532027333893379">Tallenna koko näytön sisältö napauttamalla mitä tahansa kohtaa</translation>
@@ -118,6 +119,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1978498689038657292">Tekstinsyöttö</translation>
 <translation id="1993072747612765854">Lue lisää uusimmasta <ph name="SYSTEM_APP_NAME" /> ‑päivityksestä.</translation>
 <translation id="1995660704900986789">Virta pois</translation>
+<translation id="1998100899771863792">Nykyinen työpöytä</translation>
 <translation id="2012624427112548395">Ctrl + haku + H</translation>
 <translation id="2016340657076538683">Kirjoita viesti</translation>
 <translation id="2018630726571919839">Kerro vitsi</translation>
@@ -899,6 +901,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="9089416786594320554">Syöttötavat</translation>
 <translation id="9091626656156419976">Näyttö <ph name="DISPLAY_NAME" /> poistettu</translation>
 <translation id="9098969848082897657">Mykistä puhelin</translation>
+<translation id="9099154003160514616">Lacros-päivitys saatavilla</translation>
 <translation id="9151726767154816831">Käynnistä laite uudelleen ja suorita powerwash asentaaksesi päivitykset</translation>
 <translation id="9166331175924255663">Laita lähijakamisen näkyvyys päälle/pois.</translation>
 <translation id="9168436347345867845">Myöhemmin</translation>
@@ -909,6 +912,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="9198992156681343238">Näytön <ph name="DISPLAY_NAME" /> resoluutioksi vaihdettiin <ph name="RESOLUTION" />. Pidä muutokset valitsemalla Vahvista. Aiempi asetus palautetaan <ph name="TIMEOUT_SECONDS" /> päästä.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="9210037371811586452">Poistutaan yhtenäisen työpöydän tilasta</translation>
+<translation id="9211490828691860325">Kaikki työpöydät</translation>
 <translation id="9211681782751733685">Akku on ladattu täyteen <ph name="TIME_REMAINING" /> kuluttua.</translation>
 <translation id="9215934040295798075">Aseta taustakuva</translation>
 <translation id="921989828232331238">Vanhempasi lukitsi laitteen loppupäivän ajaksi</translation>

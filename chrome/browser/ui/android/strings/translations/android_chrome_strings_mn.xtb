@@ -53,7 +53,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />-с илгээсэн</translation>
 <translation id="1307205233980126133">Уучлаарай, бид таны мандат үнэмлэхийг баталж чадсангүй</translation>
 <translation id="1310482092992808703">Бүлэг таб</translation>
-<translation id="1311657260431405215">Хурдан хариу үйлдлийн энэ код бол URL биш: <ph name="QRCODEVALUE" /></translation>
+<translation id="1311657260431405215">Энэ QR код бол URL биш: <ph name="QRCODEVALUE" /></translation>
 <translation id="1327257854815634930">Навигацын түүх нээлттэй байна</translation>
 <translation id="1331212799747679585">Chrome-г шинэчлэх боломжгүй байна. Бусад сонголт</translation>
 <translation id="1332501820983677155">Google Chrome онцлогийн товчлол</translation>

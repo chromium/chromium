@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">테마 색상 모드는 배경화면에서 추출한 색상을 사용하여 인터페이스에 부드럽게 반영합니다.</translation>
 <translation id="112308213915226829">실행기 자동 숨김</translation>
 <translation id="1153356358378277386">페어링된 기기</translation>
+<translation id="1165712434476988950">업데이트를 적용하려면 기기를 다시 시작해야 합니다.</translation>
 <translation id="1175572348579024023">스크롤</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="118532027333893379">전체 화면을 캡처하려면 아무 곳이나 탭하세요.</translation>
@@ -47,7 +48,7 @@
 <translation id="1302880136325416935">블루투스 설정을 표시합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">실행기 항상 표시</translation>
-<translation id="1316811122439383437">손가방: 최근 화면 캡처, 다운로드, 고정된 파일</translation>
+<translation id="1316811122439383437">Tote: 최근 화면 캡처, 다운로드, 고정된 파일</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> 기기가 연결됨</translation>
 <translation id="1341651618736211726">더보기</translation>
 <translation id="1346748346194534595">오른쪽</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">텍스트 입력</translation>
 <translation id="1993072747612765854">최신 <ph name="SYSTEM_APP_NAME" /> 업데이트에 관해 자세히 알아보세요.</translation>
 <translation id="1995660704900986789">끄기</translation>
+<translation id="1998100899771863792">현재 데스크</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">메시지 입력</translation>
 <translation id="2018630726571919839">재미있는 이야기 듣기</translation>
@@ -569,7 +571,7 @@
 <translation id="615957422585914272">터치 키보드 표시</translation>
 <translation id="6164005077879661055">관리 대상 사용자를 제거하면 해당 관리 대상 사용자와 연결되어 있는 모든 파일 및 로컬 데이터가 영구적으로 삭제됩니다. 하지만 관리자는 관리 대상 사용자의 방문한 웹사이트 및 설정을 <ph name="MANAGEMENT_URL" /> 페이지에서 계속 볼 수 있습니다.</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
-<translation id="6179832488876878285">여기에 중요한 파일을 고정할 수 있습니다. 시작하려면 Files 앱을 여세요.</translation>
+<translation id="6179832488876878285">여기에 중요한 파일을 고정할 수 있습니다. 시작하려면 파일 앱을 여세요.</translation>
 <translation id="622484624075952240">아래</translation>
 <translation id="6236290670123303279">설정 관리</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -749,7 +751,7 @@
 <translation id="7886169021410746335">개인정보 보호 설정 조정</translation>
 <translation id="7886277072580235377">로그아웃하면 인터넷 세션이 삭제됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">이메일 보내 줘</translation>
-<translation id="7895348134893321514">손가방</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">화면 회전 단축키를 누르셨습니다. 화면을 회전하시겠습니까?</translation>
 <translation id="7901405293566323524">휴대전화 허브</translation>
 <translation id="7902625623987030061">지문 센서를 터치하세요.</translation>
@@ -897,6 +899,7 @@
 <translation id="9089416786594320554">입력 방법</translation>
 <translation id="9091626656156419976">디스플레이 <ph name="DISPLAY_NAME" /> 제거됨</translation>
 <translation id="9098969848082897657">휴대전화 무음 설정</translation>
+<translation id="9099154003160514616">Lacros 업데이트 사용 가능</translation>
 <translation id="9151726767154816831">업데이트하려면 다시 시작하고 Powerwash하세요.</translation>
 <translation id="9166331175924255663">Nearby Share 모든 기기에 공개 설정 전환</translation>
 <translation id="9168436347345867845">나중에</translation>
@@ -907,6 +910,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />의 해상도가 <ph name="RESOLUTION" />(으)로 변경되었습니다. 변경사항을 유지하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, 관리자가 관리함</translation>
 <translation id="9210037371811586452">통합 바탕화면 모드 종료 중</translation>
+<translation id="9211490828691860325">모든 데스크</translation>
 <translation id="9211681782751733685">배터리 충전이 완료될 때까지 남은 시간은 <ph name="TIME_REMAINING" />입니다.</translation>
 <translation id="9215934040295798075">배경화면 설정</translation>
 <translation id="921989828232331238">부모님이 오늘 하루 동안 기기를 잠갔습니다.</translation>

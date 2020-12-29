@@ -1620,6 +1620,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2791529110887957050">Alih keluar Linux</translation>
 <translation id="2791952154587244007">Ralat telah berlaku. Aplikasi kios tidak akan dapat dilancarkan secara automatik pada peranti ini.</translation>
 <translation id="2792290659606763004">Alih keluar apl Android?</translation>
+<translation id="2792465461386711506">Hidupkan Penyegerakan Chrome untuk melihat tab Chrome baru-baru ini daripada telefon anda</translation>
 <translation id="2794233252405721443">Tapak disekat</translation>
 <translation id="2795716239552913152">Tapak biasanya menggunakan lokasi anda untuk ciri atau maklumat yang berkaitan, seperti berita tempatan atau kedai berdekatan</translation>
 <translation id="2796424461616874739">Pengesahan tamat masa semasa menyambung ke "<ph name="DEVICE_NAME" />".</translation>
@@ -3250,6 +3251,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4671265665487288124">Tapak boleh meminta untuk memuat turun berbilang fail secara automatik (disyorkan)</translation>
 <translation id="46733273239502219">Data luar talian dalam apl yang dipasang juga akan dipadamkan</translation>
 <translation id="4673442866648850031">Buka alatan stilus apabila stilus dialih keluar</translation>
+<translation id="4676595058027112862">Hab Telefon, Ketahui Lebih Lanjut</translation>
 <translation id="4677772697204437347">Memori GPU</translation>
 <translation id="467823995058589466">Kamera dimatikan</translation>
 <translation id="4680105648806843642">Bunyi telah diredamkan pada halaman ini</translation>
@@ -6320,6 +6322,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8227119283605456246">Lampirkan fail</translation>
 <translation id="8230134520748321204">Simpan kata laluan untuk <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Sila bantu jurutera kami menyelesaikan masalah ini. Beritahu kami perkara yang berlaku sejurus sebelum anda mendapat mesej ralat profil:</translation>
+<translation id="8235605354099176425">Hidupkan <ph name="LINK1_BEGIN" />Penyegerakan Chrome<ph name="LINK1_END" /> untuk melihat tab Chrome baru-baru ini. <ph name="LINK2_BEGIN" />Ketahui Lebih Lanjut<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Kongsi tab ini</translation>
 <translation id="8237647586961940482">Merah jambu gelap dan merah</translation>
 <translation id="8239032431519548577">Pendaftaran perusahaan selesai</translation>
@@ -7048,6 +7051,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="9044646465488564462">Gagal bersambung ke rangkaian: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Menghantar alamat web halaman yang cuba anda capai kepada Google</translation>
 <translation id="9046895021617826162">Gagal disambungkan</translation>
+<translation id="9048745018038487540">Pilih semua fon</translation>
 <translation id="9050666287014529139">Frasa laluan</translation>
 <translation id="9052208328806230490">Anda telah mendaftarkan pencetak anda dengan <ph name="CLOUD_PRINT_NAME" /> menggunakan akaun <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Teruskan menyekat</translation>

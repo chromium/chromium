@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Borra los datos existentes.</translation>
 <translation id="1147031633655575115">Accediste como <ph name="USER" /></translation>
 <translation id="1154690515305205900">No se puede crear un vínculo al texto destacado.</translation>
+<translation id="1154984953698510061">Ver otras pestañas</translation>
 <translation id="1157749421655780457">Permitir acceso a la ubicación…</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Campo siguiente</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Nunca traducir este sitio</translation>
 <translation id="1321993286294231467">Se produjo un error al guardar la imagen.</translation>
+<translation id="1322735045095424339">Tu organización requiere que utilices el modo Incógnito</translation>
 <translation id="1323735185997015385">Borrar</translation>
 <translation id="132683371494960526">Presiona dos veces para cambiar la carpeta principal.</translation>
 <translation id="1340643665687018190">Cerrar menú</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Nombre del titular de la tarjeta</translation>
 <translation id="1809939268435598390">Eliminar carpeta</translation>
 <translation id="1813414402673211292">Borrar datos de navegación</translation>
+<translation id="1815941218935345331">Contraseña</translation>
 <translation id="1820259098641718022">Se agregó a la lista de lectura</translation>
 <translation id="1870148520156231997">Mostrar contraseña</translation>
 <translation id="1872096359983322073">Linterna</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1989112275319619282">Navegar</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
+<translation id="2047933465321076474">Tu organización desactivó la navegación privada. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">En la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />, puedes elegir los datos para sincronizar en cualquier momento.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Borrando datos de navegación…</translation>
 <translation id="2257567812274161158">La sincronización no funciona.</translation>
 <translation id="225943865679747347">Código de error: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">Tu organización requiere que navegues de forma privada. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Agregar cuenta</translation>
 <translation id="2268044343513325586">Definir mejor</translation>
 <translation id="2273327106802955778">Menú Más</translation>
@@ -136,6 +141,7 @@
 Tampoco pueden usar cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
 <translation id="2381405137052800939">Configuración básica</translation>
 <translation id="2386793615875593361">1 foto seleccionada</translation>
+<translation id="2419661687355878017">Tu organización desactivó el modo Incógnito</translation>
 <translation id="2421004566762153674">Se están bloqueando las cookies de terceros</translation>
 <translation id="2421044535038393232">Seguir editando</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
@@ -185,11 +191,13 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="291754862089661335">Coloca el código QR o de barras en este recuadro</translation>
 <translation id="2921219216347069551">Error al compartir</translation>
 <translation id="2923448633003185837">Pegar y acceder</translation>
+<translation id="2923827943290349720">Bloquear las pestañas de incógnito cuando cierres Chrome</translation>
 <translation id="292639812446257861">Marcar como no leídas</translation>
 <translation id="2952581218264071393">1. Abre la configuración de Chrome.</translation>
 <translation id="2958718410589002129">Contraseñas</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceros</translation>
 <translation id="2969979262385602596">Error al iniciar la sesión. Inténtalo más tarde.</translation>
+<translation id="2975121486251958312">Solo está disponible el modo Incógnito</translation>
 <translation id="298306318844797842">Agregar forma de pago…</translation>
 <translation id="2989805286512600854">Abrir en una nueva pestaña</translation>
 <translation id="3037605927509011580">¡Oh, no!</translation>
@@ -204,6 +212,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="3175081911749765310">Servicios web</translation>
 <translation id="3178650076442119961">Activo hoy</translation>
 <translation id="3181954750937456830">Navegación segura (te protege a ti y tu dispositivo de sitios peligrosos)</translation>
+<translation id="3184767182050912705">Desbloquear mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">Los sitios pueden usar cookies para mejorar la experiencia de navegación, por ejemplo, para mantener el acceso a ellos o recordar artículos en el carrito de compras.
 
 Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para ver tu actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
@@ -355,6 +364,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} y 1 más}other{{domain} y {count} más}}</translation>
 <translation id="4826218269716039351">Bloquear cookies de terceros</translation>
 <translation id="48274138579728272">Marcar como leído</translation>
+<translation id="4833686396768033263">Las pestañas recientes no están disponibles</translation>
 <translation id="4833786495304741580">Envía automáticamente informes de fallas y estadísticas de uso a Google.</translation>
 <translation id="4840495572919996524">Ya no se sincronizarán los favoritos, el historial, las contraseñas ni otras opciones de configuración con tu Cuenta de Google.</translation>
 <translation id="4854345657858711387">Establecer una contraseña</translation>
@@ -418,6 +428,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5551897871312988470">Ofrecer la traducción</translation>
 <translation id="5556459405103347317">Cargar de nuevo</translation>
 <translation id="5592679540098330836">Activa la sincronización para <ph name="NAME" /></translation>
+<translation id="5597169624050330492">Tu organización requiere que navegues de forma privada. Las pestañas no se guardan en el modo Incógnito. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
 <translation id="5626245204502895507">No se pudo descargar el archivo esta vez.</translation>
 <translation id="5631164295104953411">Agregar forma de pago</translation>
@@ -522,6 +533,7 @@ Sin embargo, no pueden usar cookies para ver la actividad de navegación en dife
 
 Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="651505212789431520">¿Quieres cancelar la sincronización? Puedes activarla en la Configuración en cualquier momento.</translation>
+<translation id="6524918542306337007">El modo Incógnito no está disponible</translation>
 <translation id="6561262006871132942">Acercar</translation>
 <translation id="6585618849026997638">Agrega un favorito para poder regresar a una página que consideres importante</translation>
 <translation id="6610002944194042868">Opciones de traducción</translation>
@@ -580,6 +592,7 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="7133798577887235672">Nombre completo</translation>
 <translation id="7136892417564438900">La cámara no está disponible</translation>
 <translation id="7159472599653637159">Solicitar sitio móvil</translation>
+<translation id="7162168282402939716">Desbloquear pestañas de incógnito mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Mantén protegidas tus contraseñas ante problemas de seguridad</translation>
 <translation id="7173114856073700355">Abrir la configuración</translation>
 <translation id="7189598951263744875">Compartir...</translation>
@@ -617,6 +630,7 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="7537586195939242955">Tu pase no se puede instalar en Passbook en este momento.</translation>
 <translation id="7554791636758816595">Nueva pestaña</translation>
 <translation id="7561196759112975576">Siempre</translation>
+<translation id="7583004045319035904">Desbloquea tus pestañas de incógnito mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7600965453749440009">Nunca traducir <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Vent.emerg.bloq. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Borrar contraseña</translation>
@@ -709,6 +723,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8591976964826315682">Bloquear cookies de terceros en modo Incógnito</translation>
 <translation id="8605219856220328675">Cierra la pestaña.</translation>
 <translation id="8620640915598389714">Editar</translation>
+<translation id="863090005774946393">Tu organización administra el navegador. Es posible que algunas funciones estén inhabilitadas.</translation>
 <translation id="8636825310635137004">Activa la sincronización para obtener las pestañas de tus otros dispositivos.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8668210798914567634">Esta página se guardó en tu lista de lectura.</translation>

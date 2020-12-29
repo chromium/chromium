@@ -19,6 +19,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1119348796022671382">Temaatiline värvirežiim kasutab taustapildist tuletatud värve, et liidest kergelt toonida.</translation>
 <translation id="112308213915226829">Riiuli automaatne peitmine</translation>
 <translation id="1153356358378277386">Seotud seadmed</translation>
+<translation id="1165712434476988950">Värskenduse rakendamiseks tuleb seade taaskäivitada.</translation>
 <translation id="1175572348579024023">Keri</translation>
 <translation id="1178581264944972037">Peata</translation>
 <translation id="118532027333893379">Täisekraani jäädvustamiseks puudutage ekraanikuval kus tahes</translation>
@@ -118,6 +119,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1978498689038657292">Tekstisisestus</translation>
 <translation id="1993072747612765854">Vaadake lisateavet operatsioonisüsteemi <ph name="SYSTEM_APP_NAME" /> uusima värskenduse kohta</translation>
 <translation id="1995660704900986789">Lülita välja</translation>
+<translation id="1998100899771863792">Praegune töölaud</translation>
 <translation id="2012624427112548395">Ctrl + otsinguklahv + H</translation>
 <translation id="2016340657076538683">Sisestage sõnum</translation>
 <translation id="2018630726571919839">Räägi mõni nali</translation>
@@ -898,6 +900,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="9089416786594320554">Sisestusviisid</translation>
 <translation id="9091626656156419976">Ekraan <ph name="DISPLAY_NAME" /> eemaldati</translation>
 <translation id="9098969848082897657">Telefoni vaigistamine</translation>
+<translation id="9099154003160514616">Lacrosi värskendus on saadaval</translation>
 <translation id="9151726767154816831">Värskendamiseks tuleb arvuti taaskäivitada ja teha Powerwash</translation>
 <translation id="9166331175924255663">Läheduses jagamise hea nähtavuse muutmine.</translation>
 <translation id="9168436347345867845">Teen seda hiljem</translation>
@@ -908,6 +911,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="9198992156681343238">Seadme <ph name="DISPLAY_NAME" /> eraldusvõimeks määrati <ph name="RESOLUTION" />. Muudatuste säilitamiseks klõpsake nupul Kinnita. Eelmised seaded taastatakse <ph name="TIMEOUT_SECONDS" /> pärast.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, võrku haldab teie administraator</translation>
 <translation id="9210037371811586452">Ühendatud töölaua režiimist väljumine</translation>
+<translation id="9211490828691860325">Kõik töölauad</translation>
 <translation id="9211681782751733685">Aku täitumiseni on aega <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Taustapildi määramine</translation>
 <translation id="921989828232331238">Vanem lukustas sinu seadme päevaks</translation>

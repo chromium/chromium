@@ -493,7 +493,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1526335046150927198">A érintőpadon való görgetés gyorsításának engedélyezése</translation>
 <translation id="1526560967942511387">Név nélküli dokumentum</translation>
 <translation id="1527336312600375509">Monitor frissítési gyakorisága</translation>
-<translation id="152913213824448541">Közeli megosztás névjegyek</translation>
+<translation id="152913213824448541">Közeli megosztáshoz használható névjegyek</translation>
 <translation id="1529891865407786369">Áramforrás</translation>
 <translation id="1530838837447122178">Az egér és az érintőpad beállításainak megnyitása</translation>
 <translation id="1531004739673299060">Alkalmazásablak</translation>
@@ -6886,7 +6886,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8868333925931032127">Demó mód indítása…</translation>
 <translation id="8868626022555786497">Használatban</translation>
 <translation id="8868838761037459823">Mobilhálózat részletei</translation>
-<translation id="8868964574897075186">Sikerült a jelszavak áthelyezése a Google-fiókba</translation>
+<translation id="8868964574897075186">Jelszavak áthelyezve a Google-fiókba</translation>
 <translation id="8870413625673593573">Mostanában bezárt</translation>
 <translation id="8871551568777368300">A rendszergazda rögzítette</translation>
 <translation id="8871696467337989339">Nem támogatott parancssori jelzőt használ: <ph name="BAD_FLAG" />. Ennek a stabilitás és a biztonság látja kárát.</translation>

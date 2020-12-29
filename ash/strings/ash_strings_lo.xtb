@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">ໂໝດສີທີ່ມີຮູບແບບສີສັນໃຊ້ສີທີ່ດຶງມາຈາກຮູບພື້ນຫຼັງເພື່ອເຕີມສີໃຫ້ໜ້າຈໍສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ເລັກນ້ອຍ.</translation>
 <translation id="112308213915226829">ເຊື່ອງຖ້ານອັດຕະໂນມັດ</translation>
 <translation id="1153356358378277386">ອຸປະກອນທີ່ຈັບຄູ່ກັນແລ້ວ</translation>
+<translation id="1165712434476988950">ຈຳເປັນຕ້ອງຣິສະຕາດອຸປະກອນເພື່ອນຳໃຊ້ການອັບເດດ.</translation>
 <translation id="1175572348579024023">ເລື່ອນ</translation>
 <translation id="1178581264944972037">ຢຸດຊົ່ວຄາວ</translation>
 <translation id="118532027333893379">ແຕະບ່ອນໃດກໍໄດ້ເພື່ອຖ່າຍຮູບເຕັມຈໍ</translation>
@@ -47,7 +48,7 @@
 <translation id="1302880136325416935">ສະແດງການຕັ້ງຄ່າ Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">ສະແດງຖ້ານທຸກເທື່ອ</translation>
-<translation id="1316811122439383437">ຍົກຂຶ້ນ: ການຖ່າຍຮູບໜ້າຈໍຫຼ້າສຸດ, ການດາວໂຫຼດ ແລະ ໄຟລ໌ທີ່ປັກໝຸດໄວ້</translation>
+<translation id="1316811122439383437">Tote: ການຖ່າຍຮູບໜ້າຈໍຫຼ້າສຸດ, ການດາວໂຫຼດ ແລະ ໄຟລ໌ທີ່ປັກໝຸດໄວ້</translation>
 <translation id="1333308631814936910">ເຊື່ອມຕໍ່ <ph name="DISPLAY_NAME" /> ແລ້ວ</translation>
 <translation id="1341651618736211726">ລົ້ນ</translation>
 <translation id="1346748346194534595">ເບື້ອງຂວາ</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">ການປ້ອນຂໍ້ຄວາມເຂົ້າ</translation>
 <translation id="1993072747612765854">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການອັບເດດ <ph name="SYSTEM_APP_NAME" /> ຫຼ້າສຸດ</translation>
 <translation id="1995660704900986789">ປິດເຄື່ອງ</translation>
+<translation id="1998100899771863792">ໂຕະປັດຈຸບັນ</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">ພິມຂໍ້ຄວາມ</translation>
 <translation id="2018630726571919839">ເລົ່າເລື່ອງຕະຫຼົກໃຫ້ຂ້ອຍຟັງ</translation>
@@ -749,7 +751,7 @@
 <translation id="7886169021410746335">ປັບການຕັ້ງຄ່າຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="7886277072580235377">ເຊດຊັນອິນເຕີເນັດຂອງທ່ານຈະຖືກລຶບລ້າງເມື່ອທ່ານອອກຈາກລະບົບ. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ສົ່ງອີເມວ</translation>
-<translation id="7895348134893321514">ຍົກຂຶ້ນ</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">ທ່ານໄດ້ກົດປຸ່ມລັດແປ້ນພິມສຳລັບການໝຸນໜ້າຈໍແລ້ວ. ທ່ານຕ້ອງການໝຸນໜ້າຈໍບໍ?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">ແຕະເຊັນເຊີລາຍນິ້ວມື</translation>
@@ -897,6 +899,7 @@
 <translation id="9089416786594320554">ວິ​ທີ​ການ​ປ້ອນເຂົ້າ</translation>
 <translation id="9091626656156419976">ລຶບຈໍສະແດງຜົນ <ph name="DISPLAY_NAME" /> ອອກແລ້ວ</translation>
 <translation id="9098969848082897657">ປິດສຽງໂທລະສັບ</translation>
+<translation id="9099154003160514616">ມີການອັບເດດ Lacros</translation>
 <translation id="9151726767154816831">ປິດ​ເປີດ​ໃໝ່ ແລະ powerwash ເພື່ອ​ອັບ​ເດດ</translation>
 <translation id="9166331175924255663">ສະຫຼັບການເບິ່ງເຫັນລະດັບສູງຂອງການແບ່ງປັນໃກ້ຄຽງ.</translation>
 <translation id="9168436347345867845">ເຮັດໃນພາຍຫຼັງ</translation>
@@ -907,6 +910,7 @@
 <translation id="9198992156681343238">ປ່ຽນຄວາມລະອຽດ <ph name="DISPLAY_NAME" /> ເປັນ <ph name="RESOLUTION" /> ແລ້ວ. ຄລິກຢືນຢັນເພື່ອຮັກສາການປ່ຽນແປງໄວ້. ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າກ່ອນໜ້າໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="9210037371811586452">ກຳລັງອອກຈາກໂໝດເດັສທັອບທີ່ຖືກໂຮມເຂົ້າກັນ</translation>
+<translation id="9211490828691860325">ໂຕະທັງໝົດ</translation>
 <translation id="9211681782751733685">ຍັງເຫຼືອ <ph name="TIME_REMAINING" /> ຈົນກວ່າແບັດເຕີຣີຈະສາກເຕັມ.</translation>
 <translation id="9215934040295798075">ຕັ້ງພາບພື້ນຫຼັງ</translation>
 <translation id="921989828232331238">ພໍ່ແມ່ຂອງທ່ານໄດ້ລັອກອຸປະກອນຂອງທ່ານໄວ້ແລ້ວສຳລັບມື້ນີ້</translation>

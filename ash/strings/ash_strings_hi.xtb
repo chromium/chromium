@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">थीम कलर मोड, इंटरफ़ेस को हल्के रंग से रंगने के लिए, आपके वॉलपेपर में काम में लिए गए रंगों का इस्तेमाल करता है.</translation>
 <translation id="112308213915226829">अलमारी कोअपने-आपछिपाएं</translation>
 <translation id="1153356358378277386">युग्‍मित डिवाइस</translation>
+<translation id="1165712434476988950">अपडेट लागू करने के लिए डिवाइस को रीस्टार्ट करना होगा.</translation>
 <translation id="1175572348579024023">स्क्रोल करें</translation>
 <translation id="1178581264944972037">रोकें</translation>
 <translation id="118532027333893379">फ़ुल स्क्रीन को कैप्चर करने के लिए कहीं भी टैप करें</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">टेक्स्ट इनपुट</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> के नए अपडेट के बारे में ज़्यादा जानें</translation>
 <translation id="1995660704900986789">पावर बंद करें</translation>
+<translation id="1998100899771863792">मौजूदा डेस्क</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">कोई मैसेज लिखें</translation>
 <translation id="2018630726571919839">मुझे कोई चुटकुला सुनाओ</translation>
@@ -898,6 +900,7 @@
 <translation id="9089416786594320554">इनपुट के तरीके</translation>
 <translation id="9091626656156419976">डिसप्ले <ph name="DISPLAY_NAME" /> हटा दिया गया</translation>
 <translation id="9098969848082897657">फ़ोन को साइलेंट करें</translation>
+<translation id="9099154003160514616">Lacros अपडेट उपलब्ध है</translation>
 <translation id="9151726767154816831">अपडेट करने के लिए रीस्टार्ट और पावरवॉश करें</translation>
 <translation id="9166331175924255663">आस-पास शेयर करने की सुविधा को ज़्यादा लोगों को दिखाने वाला मोड टॉगल करें.</translation>
 <translation id="9168436347345867845">बाद में करें</translation>
@@ -908,6 +911,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> का रिज़ॉल्यूशन बदलकर <ph name="RESOLUTION" /> कर दिया गया है. बदलाव बनाए रखने के लिए, 'जारी रखें' पर क्लिक करें. सेटिंग को <ph name="TIMEOUT_SECONDS" /> में पहले जैसा दिया जाएगा.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, आपका एडमिन प्रबंधित करता है</translation>
 <translation id="9210037371811586452">संयुक्त डेस्कटॉप मोड से बाहर निकाला जा रहा है</translation>
+<translation id="9211490828691860325">सभी डेस्क</translation>
 <translation id="9211681782751733685">बैटरी के पूरी तरह से चार्ज होने में<ph name="TIME_REMAINING" /> का समय बाकी है.</translation>
 <translation id="9215934040295798075">वॉलपेपर सेट करें</translation>
 <translation id="921989828232331238">आपके अभिभावक ने आज के लिए यह डिवाइस लॉक कर दिया है</translation>

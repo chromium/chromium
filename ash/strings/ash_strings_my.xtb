@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">အပြင်အဆင်အရောင်မုဒ်သည် အင်တာဖေ့စ်ကို လင်းသည့်အရောင်ထည့်ရန် သင့်နောက်ခံမှ ထုတ်ယူထားသော အရောင်များကိုသုံးသည်။</translation>
 <translation id="112308213915226829">အလိုအလျောက် ဝှက်သည့် စင်</translation>
 <translation id="1153356358378277386">တွဲချိတ်ထားသည့် စက်ပစ္စည်းများ</translation>
+<translation id="1165712434476988950">အပ်ဒိတ်ထည့်သွင်းရန် ကိရိယာကို ပြန်စရပါမည်။</translation>
 <translation id="1175572348579024023">လှိမ့်ရန်</translation>
 <translation id="1178581264944972037">ဆိုင်းငံ့ထားရန်</translation>
 <translation id="118532027333893379">ဖန်သားပြင်အပြည့် ရိုက်ယူရန် မည်သည့်နေရာကိုမဆို တို့ပါ</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">စာရိုက်ရန်အကွက်</translation>
 <translation id="1993072747612765854">နောက်ဆုံးထွက် <ph name="SYSTEM_APP_NAME" /> အပ်ဒိတ်အကြောင်း ပိုမိုလေ့လာပါ</translation>
 <translation id="1995660704900986789">စက်ပိတ်ရန်</translation>
+<translation id="1998100899771863792">လက်ရှိမျက်နှာပြင်နေရာ</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">မက်ဆေ့ဂျ် ရိုက်ပါ</translation>
 <translation id="2018630726571919839">ဟာသတစ်ခု ပြောပါ</translation>
@@ -897,6 +899,7 @@
 <translation id="9089416786594320554">ထည့်သွင်းနည်းများ</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> မျက်နှာပြင်ပြသမှုကို ဖယ်ရှားလိုက်ပါပြီ</translation>
 <translation id="9098969848082897657">ဖုန်းအသံတိတ်ခြင်း</translation>
+<translation id="9099154003160514616">Lacros အပ်ဒိတ် ရနိုင်သည်</translation>
 <translation id="9151726767154816831">အဆင့်မြှင့်ရန် အစမှပြန်စပြီးနောက် powerwash ပြုလုပ်ပါ</translation>
 <translation id="9166331175924255663">'အနီးတစ်ဝိုက် မျှဝေခြင်း' အထူးမြင်နိုင်မှုကို ပြောင်းပေးသည်။</translation>
 <translation id="9168436347345867845">နောက်မှလုပ်ရန်</translation>
@@ -907,6 +910,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> ပုံရိပ်ပြတ်သားကိန်းကို <ph name="RESOLUTION" /> သို့ ပြောင်းလိုက်သည်။ အပြောင်းအလဲများသိမ်းရန် 'အတည်ပြုရန်' ကို နှိပ်ပါ။ ယခင်ဆက်တင်များကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ထားရှိပါမည်။</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်</translation>
 <translation id="9210037371811586452">ပေါင်းစည်းထားသည့် ကွန်ပျူတာမျက်နှာပြင်မုဒ်မှ ထွက်နေသည်</translation>
+<translation id="9211490828691860325">မျက်နှာပြင်နေရာအားလုံး</translation>
 <translation id="9211681782751733685">ဘက်ထရီ အားအပြည့်သွင်းရန် <ph name="TIME_REMAINING" /> လိုသေးသည်။</translation>
 <translation id="9215934040295798075">နောက်ခံပုံ သတ်မှတ်ပါ</translation>
 <translation id="921989828232331238">သင်၏စက်ကို သင့်မိဘက ဤနေ့အဖို့ လော့ခ်ချထားပါပြီ</translation>

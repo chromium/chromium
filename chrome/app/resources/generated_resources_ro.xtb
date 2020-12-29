@@ -1621,6 +1621,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2791529110887957050">Elimină Linux</translation>
 <translation id="2791952154587244007">A apărut o eroare. Aplicația de tip chioșc nu se va putea lansa automat pe acest dispozitiv.</translation>
 <translation id="2792290659606763004">Elimini aplicațiile Android?</translation>
+<translation id="2792465461386711506">Activează Sincronizarea Chrome pentru a vedea filele Chrome recente pe telefon</translation>
 <translation id="2794233252405721443">Site blocat</translation>
 <translation id="2795716239552913152">Site-urile folosesc de obicei locația pentru funcții sau informații relevante, cum ar fi știri locale sau magazine din apropiere</translation>
 <translation id="2796424461616874739">A expirat timpul limită pentru autentificare în timpul conectării la „<ph name="DEVICE_NAME" />”.</translation>
@@ -3251,6 +3252,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4671265665487288124">Site-urile pot solicita permisiunea de a descărca automat mai multe fișiere (recomandat)</translation>
 <translation id="46733273239502219">Datele offline din aplicațiile instalate vor fi șterse la rândul lor</translation>
 <translation id="4673442866648850031">Deschide instrumentele pentru creion când acesta este înlăturat</translation>
+<translation id="4676595058027112862">Phone Hub, Află mai multe</translation>
 <translation id="4677772697204437347">Memorie GPU</translation>
 <translation id="467823995058589466">Camera este dezactivată</translation>
 <translation id="4680105648806843642">Sunetul a fost dezactivat pe această pagină</translation>
@@ -6321,6 +6323,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8227119283605456246">Atașează un fișier</translation>
 <translation id="8230134520748321204">Salvezi parola pentru <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Ajută-i pe inginerii noștri să remedieze această problemă. Spune-ne ce s-a întâmplat chiar înainte să primești mesajul de eroare privind profilul:</translation>
+<translation id="8235605354099176425">Activează <ph name="LINK1_BEGIN" />Sincronizarea Chrome<ph name="LINK1_END" /> pentru a vedea filele Chrome recente. <ph name="LINK2_BEGIN" />Află mai multe<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Distribuie această filă</translation>
 <translation id="8237647586961940482">Roz închis și roșu</translation>
 <translation id="8239032431519548577">Înregistrarea pentru întreprindere s-a finalizat</translation>
@@ -7049,6 +7052,7 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="9044646465488564462">Conectarea la rețea nu s-a realizat: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Trimite la Google adresa web a paginii pe care încerci să o accesezi</translation>
 <translation id="9046895021617826162">Conectare nereușită</translation>
+<translation id="9048745018038487540">Selectează toate fonturile</translation>
 <translation id="9050666287014529139">Expresie de acces</translation>
 <translation id="9052208328806230490">Ai înregistrat imprimantele la <ph name="CLOUD_PRINT_NAME" /> utilizând contul <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Continuă blocarea</translation>

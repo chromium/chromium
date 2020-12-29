@@ -19,6 +19,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1119348796022671382">Chế độ màu theo giao diện dùng các màu trích xuất từ hình nền để tạo màu nhẹ nhàng cho giao diện.</translation>
 <translation id="112308213915226829">Tự động ẩn kệ</translation>
 <translation id="1153356358378277386">Thiết bị được ghép nối</translation>
+<translation id="1165712434476988950">Bạn cần phải khởi động lại thiết bị để áp dụng bản cập nhật.</translation>
 <translation id="1175572348579024023">Cuộn</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
 <translation id="118532027333893379">Nhấn vào vị trí bất kỳ để chụp toàn màn hình</translation>
@@ -118,6 +119,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1978498689038657292">Nhập văn bản</translation>
 <translation id="1993072747612765854">Tìm hiểu thêm về bản cập nhật <ph name="SYSTEM_APP_NAME" /> mới nhất</translation>
 <translation id="1995660704900986789">Tắt nguồn</translation>
+<translation id="1998100899771863792">Không gian làm việc hiện tại</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Nhập tin nhắn</translation>
 <translation id="2018630726571919839">Kể truyện cười cho tôi</translation>
@@ -897,6 +899,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="9089416786594320554">Phương thức nhập</translation>
 <translation id="9091626656156419976">Đã xóa màn hình <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Tắt tiếng điện thoại</translation>
+<translation id="9099154003160514616">Đã có bản cập nhật dành cho trình duyệt Lacros</translation>
 <translation id="9151726767154816831">Khởi động lại và powerwash để cập nhật</translation>
 <translation id="9166331175924255663">Bật/tắt chế độ hiển thị ở mức cao cho tính năng Chia sẻ lân cận.</translation>
 <translation id="9168436347345867845">Thực hiện sau</translation>
@@ -907,6 +910,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="9198992156681343238">Độ phân giải của <ph name="DISPLAY_NAME" /> đã được thay đổi thành <ph name="RESOLUTION" />. Hãy nhấp vào xác nhận để lưu các thay đổi. Các tùy chọn cài đặt trước sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" /> nữa.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="9210037371811586452">Đang thoát chế độ màn hình hợp nhất</translation>
+<translation id="9211490828691860325">Tất cả các không gian làm việc</translation>
 <translation id="9211681782751733685">Còn <ph name="TIME_REMAINING" /> nữa là sạc đầy pin.</translation>
 <translation id="9215934040295798075">Đặt hình nền</translation>
 <translation id="921989828232331238">Cha mẹ đã khóa thiết bị của bạn cả ngày</translation>

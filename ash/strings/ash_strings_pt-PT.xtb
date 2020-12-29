@@ -19,6 +19,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1119348796022671382">O modo de cores temáticas utiliza cores extraídas da sua imagem de fundo para colorir levemente a interface.</translation>
 <translation id="112308213915226829">Ocultar prateleira automaticamente</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
+<translation id="1165712434476988950">É necessário reiniciar o dispositivo para aplicar a atualização.</translation>
 <translation id="1175572348579024023">Deslocar</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="118532027333893379">Toque em qualquer local para capturar o ecrã inteiro.</translation>
@@ -118,6 +119,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1978498689038657292">Entrada de texto</translation>
 <translation id="1993072747612765854">Saiba mais sobre a mais recente atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="1995660704900986789">Desligar</translation>
+<translation id="1998100899771863792">Espaço de trabalho atual</translation>
 <translation id="2012624427112548395">Ctrl + Pesquisa + H</translation>
 <translation id="2016340657076538683">Escrever uma mensagem</translation>
 <translation id="2018630726571919839">Conta-me uma anedota</translation>
@@ -897,6 +899,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="9089416786594320554">Métodos de introd.</translation>
 <translation id="9091626656156419976">Ecrã <ph name="DISPLAY_NAME" /> removido</translation>
 <translation id="9098969848082897657">Silenciar telemóvel</translation>
+<translation id="9099154003160514616">Atualização do Lacros disponível</translation>
 <translation id="9151726767154816831">Reiniciar e efetuar um Powerwash para atualizar</translation>
 <translation id="9166331175924255663">Ative/desative a alta visibilidade da funcionalidade Partilhar na proximidade.</translation>
 <translation id="9168436347345867845">Fazer isto mais tarde</translation>
@@ -907,6 +910,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="9198992156681343238">Resolução de <ph name="DISPLAY_NAME" /> alterada para <ph name="RESOLUTION" />. Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gerida pelo administrador</translation>
 <translation id="9210037371811586452">A sair do Modo de ambiente de trabalho unificado</translation>
+<translation id="9211490828691860325">Todos os espaços de trabalho</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> restante(s) até a bateria estar totalmente carregada.</translation>
 <translation id="9215934040295798075">Definir imagem de fundo</translation>
 <translation id="921989828232331238">Os teus pais bloquearam o dispositivo para o resto do dia</translation>

@@ -124,7 +124,7 @@
 <translation id="2239626343334228536">正在清除浏览数据…</translation>
 <translation id="2257567812274161158">同步功能无法正常运行。</translation>
 <translation id="225943865679747347">错误代码：<ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">贵单位要求您不露痕迹地浏览。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="2262397157440718954">贵单位要求您进行无痕浏览。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">添加帐号</translation>
 <translation id="2268044343513325586">优化</translation>
 <translation id="2273327106802955778">“更多”菜单</translation>
@@ -212,7 +212,7 @@
 <translation id="3175081911749765310">网络服务</translation>
 <translation id="3178650076442119961">今天曾有活动</translation>
 <translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
-<translation id="3184767182050912705">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解锁</translation>
+<translation id="3184767182050912705">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁</translation>
 <translation id="3196681740617426482">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
 
 不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
@@ -428,7 +428,7 @@
 <translation id="5551897871312988470">询问是否翻译</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5592679540098330836">为<ph name="NAME" />开启同步</translation>
-<translation id="5597169624050330492">贵单位要求您不露痕迹地浏览。在无痕模式下，系统不会保存标签页。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="5597169624050330492">贵单位要求您进行无痕浏览。在无痕模式下，系统不会保存标签页。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
 <translation id="5626245204502895507">该文件目前无法下载。</translation>
 <translation id="5631164295104953411">添加付款方式</translation>
@@ -592,7 +592,7 @@
 <translation id="7133798577887235672">全称</translation>
 <translation id="7136892417564438900">无法使用相机</translation>
 <translation id="7159472599653637159">请求移动版网站</translation>
-<translation id="7162168282402939716">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解锁无痕式标签页</translation>
+<translation id="7162168282402939716">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁无痕式标签页</translation>
 <translation id="7172852049901402487">保护您的密码免受安全威胁</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7189598951263744875">分享...</translation>
@@ -630,7 +630,7 @@
 <translation id="7537586195939242955">抱歉，目前无法将您的票证添加到 Passbook。</translation>
 <translation id="7554791636758816595">新标签页</translation>
 <translation id="7561196759112975576">永远</translation>
-<translation id="7583004045319035904">请使用<ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解锁您的无痕式标签页。</translation>
+<translation id="7583004045319035904">请使用<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁您的无痕式标签页。</translation>
 <translation id="7600965453749440009">一律不翻译<ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">拦截了弹出式窗口（<ph name="NUMBER_OF_BLOCKED_POPUPS" /> 个）</translation>
 <translation id="7607521702806708809">删除密码</translation>

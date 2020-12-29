@@ -124,7 +124,7 @@
 <translation id="2239626343334228536">正在清除瀏覽資料…</translation>
 <translation id="2257567812274161158">同步功能無法正常運作。</translation>
 <translation id="225943865679747347">錯誤代碼：<ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">您的機構要求您私下瀏覽內容。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="2262397157440718954">您的機構要求您私密瀏覽內容。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">新增帳戶</translation>
 <translation id="2268044343513325586">修正搜尋</translation>
 <translation id="2273327106802955778">[更多] 選單</translation>
@@ -428,7 +428,7 @@
 <translation id="5551897871312988470">提供翻譯</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5592679540098330836">開啟「<ph name="NAME" />」的同步功能</translation>
-<translation id="5597169624050330492">您的機構要求您私下瀏覽內容。在無痕模式下無法儲存分頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="5597169624050330492">您的機構要求您私密瀏覽內容。在無痕模式下無法儲存分頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
 <translation id="5626245204502895507">目前無法下載這個檔案。</translation>
 <translation id="5631164295104953411">新增付款方法</translation>

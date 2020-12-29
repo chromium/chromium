@@ -19,6 +19,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1119348796022671382">Le mode couleur de thème utilise des couleurs extraites de votre fond d'écran pour colorer légèrement l'interface.</translation>
 <translation id="112308213915226829">Masquer automatiquement l'étagère</translation>
 <translation id="1153356358378277386">Appareils associés</translation>
+<translation id="1165712434476988950">Vous devez redémarrer l'appareil pour appliquer la mise à jour.</translation>
 <translation id="1175572348579024023">Faire défiler</translation>
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="118532027333893379">Touchez n'importe où pour capturer la totalité de l'écran</translation>
@@ -118,6 +119,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1978498689038657292">Entrée de texte</translation>
 <translation id="1993072747612765854">En savoir plus sur la dernière mise à jour de <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Éteindre</translation>
+<translation id="1998100899771863792">Bureau actuel</translation>
 <translation id="2012624427112548395">Ctrl+Recherche+H</translation>
 <translation id="2016340657076538683">Rédiger un message</translation>
 <translation id="2018630726571919839">Raconte-moi une blague</translation>
@@ -897,6 +899,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="9089416786594320554">Méthodes d'entrée</translation>
 <translation id="9091626656156419976">Affichage <ph name="DISPLAY_NAME" /> supprimé</translation>
 <translation id="9098969848082897657">Téléphone silencieux</translation>
+<translation id="9099154003160514616">Une mise à jour de Lacros est proposée</translation>
 <translation id="9151726767154816831">Redémarrer et utiliser PowerWash afin de mettre à jour</translation>
 <translation id="9166331175924255663">Basculer la haute visibilité du partage à proximité.</translation>
 <translation id="9168436347345867845">Plus tard</translation>
@@ -907,6 +910,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="9198992156681343238">La résolution de l'écran <ph name="DISPLAY_NAME" /> est maintenant de <ph name="RESOLUTION" />. Cliquez sur Confirmer pour garder les changements. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, géré par votre administrateur</translation>
 <translation id="9210037371811586452">Fermeture du mode Bureau unifié</translation>
+<translation id="9211490828691860325">Tous les bureaux</translation>
 <translation id="9211681782751733685">Il reste <ph name="TIME_REMAINING" /> avant que la pile soit complètement rechargée.</translation>
 <translation id="9215934040295798075">Sélectionner un fond d'écran</translation>
 <translation id="921989828232331238">Ton parent a verrouillé ton appareil pour la journée</translation>

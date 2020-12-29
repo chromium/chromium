@@ -124,7 +124,7 @@
 <translation id="2239626343334228536">Серептөө дайындары тазаланууда…</translation>
 <translation id="2257567812274161158">Шайкештирүү иштебей жатат.</translation>
 <translation id="225943865679747347">Ката коду: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Уюмуңуз жекече серептөөнү талап кылат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
+<translation id="2262397157440718954">Уюмуңуз жекече серептөөңүздү талап кылат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Аккаунт кошуу</translation>
 <translation id="2268044343513325586">Мыктылоо</translation>
 <translation id="2273327106802955778">"Дагы" менюсу</translation>
@@ -428,7 +428,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="5551897871312988470">Которуу сунушталсын</translation>
 <translation id="5556459405103347317">Кайра жүктөө</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> үчүн шайкештирүүнү күйгүзүү</translation>
-<translation id="5597169624050330492">Уюмуңуз жекече серептөөнү талап кылат. Жашыруун режимде өтмөктөр сакталбайт. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
+<translation id="5597169624050330492">Уюмуңуз жекече серептөөңүздү талап кылат. Жашыруун режимде өтмөктөр сакталбайт. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Сырсөз сакталсынбы?</translation>
 <translation id="5626245204502895507">Файлды учурда жүктөп алуу мүмкүн эмес.</translation>
 <translation id="5631164295104953411">Төлөм ыкмасын кошуу</translation>

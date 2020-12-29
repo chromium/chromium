@@ -19,6 +19,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1119348796022671382">Barvni način na podlagi teme uporablja barve, pridobljene iz zaslonskega ozadja, za rahlo obarvanje vmesnika.</translation>
 <translation id="112308213915226829">Samodejno skrivanje police</translation>
 <translation id="1153356358378277386">Seznanjene naprave</translation>
+<translation id="1165712434476988950">Če želite uveljaviti posodobitev, morate znova zagnati napravo.</translation>
 <translation id="1175572348579024023">Drseče pomikanje</translation>
 <translation id="1178581264944972037">Prekini</translation>
 <translation id="118532027333893379">Dotaknite se kjer koli za posnetek celotnega zaslona.</translation>
@@ -118,6 +119,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1978498689038657292">Vnos besedila</translation>
 <translation id="1993072747612765854">Več informacij o najnovejši posodobitvi za <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Izklop</translation>
+<translation id="1998100899771863792">Trenutno namizje</translation>
 <translation id="2012624427112548395">Ctrl+ tipka za iskanje + H</translation>
 <translation id="2016340657076538683">Vnesite sporočilo</translation>
 <translation id="2018630726571919839">Povej mi šalo</translation>
@@ -897,6 +899,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="9089416786594320554">Načini vnosa</translation>
 <translation id="9091626656156419976">Odstranjen zaslon <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Utišanje telefona</translation>
+<translation id="9099154003160514616">Na voljo je posodobitev za Lacros</translation>
 <translation id="9151726767154816831">Če želite posodobiti, znova zaženite in uporabite funkcijo Powerwash</translation>
 <translation id="9166331175924255663">Preklop visoke vidnosti deljenja v bližini.</translation>
 <translation id="9168436347345867845">Pozneje</translation>
@@ -907,6 +910,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="9198992156681343238">Ločljivost zaslona <ph name="DISPLAY_NAME" /> je bila spremenjena na: <ph name="RESOLUTION" />. Kliknite »Potrdi«, če želite ohraniti spremembe. Prejšnja nastavitev bo obnovljena čez <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, upravlja ga vaš skrbnik</translation>
 <translation id="9210037371811586452">Izhod iz načina enotnega namizja</translation>
+<translation id="9211490828691860325">Vsa namizja</translation>
 <translation id="9211681782751733685">Še <ph name="TIME_REMAINING" />, da bo akumulator povsem napolnjen.</translation>
 <translation id="9215934040295798075">Nastavi sliko za ozadje</translation>
 <translation id="921989828232331238">Tvoj starš je zaklenil napravo za ves dan</translation>

@@ -1019,7 +1019,7 @@
       Якщо це правило не налаштовано, функцію "Інтерактивний номер" увімкнено за умовчанням.</translation>
 <translation id="2482676533225429905">Обмін повідомленнями з оригінальними додатками</translation>
 <translation id="2483146640187052324">Передбачати дії мережі</translation>
-<translation id="2496180316473517155">Історія переглядів</translation>
+<translation id="2496180316473517155">Історія веб-перегляду</translation>
 <translation id="2498238926436517902">Завжди автоматично ховати полицю</translation>
 <translation id="250022556568924228">Якщо це правило налаштоване, <ph name="PRODUCT_OS_NAME" /> завантажує Умови використання та показує їх користувачам щоразу, коли починається сеанс локального облікового запису на пристрої. Користувачі зможуть увійти в обліковий запис, лише коли приймуть Умови використання.
 
@@ -5034,9 +5034,6 @@
 
           Якщо дією є призупинення роботи, можна окремо налаштувати, чи буде <ph name="PRODUCT_OS_NAME" /> блокувати екран перед цим.</translation>
 <translation id="8214600119442850823">Визначає налаштування диспетчера паролів.</translation>
-<translation id="8219777886736887686">Налаштування цього правила визначають, яка команда відкриває URL-адреси в альтернативному веб-переглядачі. У цьому правилі можна вказати <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> або шлях файлу. Якщо для цього правила вказано шлях файлу, такий файл використовується як виконуваний. Веб-переглядачі <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> і <ph name="EDGE_VALUE_PLACEHOLDER" /> доступні лише в <ph name="MS_WIN_NAME" />, а <ph name="SAFARI_VALUE_PLACEHOLDER" /> доступний лише в <ph name="MS_WIN_NAME" /> і <ph name="MAC_OS_NAME" />.
-
-      Якщо це правило не налаштовано, застосовуються значення за умовчанням для конкретних платформ: <ph name="IE_PRODUCT_NAME" /> для <ph name="MS_WIN_NAME" /> або <ph name="SAFARI_PRODUCT_NAME" /> для <ph name="MAC_OS_NAME" />. У <ph name="LINUX_OS_NAME" /> альтернативний веб-переглядач не запускатиметься.</translation>
 <translation id="8220156281401380422">Налаштування білого списку хостів для обміну повідомленнями з оригінальними додатками</translation>
 <translation id="8244171102276095471">Увімкнути набори шифрів RC4 в TLS</translation>
 <translation id="8244525275280476362">Максимальна затримка отримання після анулювання правила</translation>

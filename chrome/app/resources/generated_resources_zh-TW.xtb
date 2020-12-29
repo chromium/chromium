@@ -255,7 +255,7 @@
 <translation id="1274997165432133392">Cookie 和其他網站資料</translation>
 <translation id="1275718070701477396">已選取</translation>
 <translation id="1276994519141842946">無法解除安裝「<ph name="APP_NAME" />」</translation>
-<translation id="1277020343994096713">請建立與目前 PIN 碼不同的新 PIN 碼</translation>
+<translation id="1277020343994096713">新設定的 PIN 碼不能與目前的 PIN 碼相同</translation>
 <translation id="1278703349931574538">管理聯絡人</translation>
 <translation id="127946606521051357">附近的裝置正在分享資料</translation>
 <translation id="1280820357415527819">正在搜尋行動網路</translation>
@@ -1619,6 +1619,7 @@
 <translation id="2791529110887957050">移除 Linux</translation>
 <translation id="2791952154587244007">發生錯誤，系統無法在這個裝置上自動啟動 Kiosk 應用程式。</translation>
 <translation id="2792290659606763004">要移除 Android 應用程式嗎？</translation>
+<translation id="2792465461386711506">開啟 Chrome 同步功能即可查看最近透過手機開啟的 Chrome 分頁</translation>
 <translation id="2794233252405721443">網站遭到封鎖</translation>
 <translation id="2795716239552913152">網站通常會使用你的位置資訊，以提供地方新聞或附近商家等相關功能或資訊</translation>
 <translation id="2796424461616874739">驗證在連線至「<ph name="DEVICE_NAME" />」時逾時。</translation>
@@ -1787,7 +1788,7 @@
 <translation id="2979520980928493164">更流暢、更容易使用的 Chrome</translation>
 <translation id="2979639724566107830">於新視窗中開啟</translation>
 <translation id="2981113813906970160">顯示大型滑鼠游標</translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{這部裝置上有 {COUNT} 個密碼可供存取}other{這部裝置上有 {COUNT} 個密碼可供存取}}</translation>
+<translation id="2984956121108740037">{COUNT,plural, =1{這部裝置上有 {COUNT} 個可用的密碼}other{這部裝置上有 {COUNT} 個可用的密碼}}</translation>
 <translation id="2985348301114641460">要傳送「<ph name="EXTENSION_NAME" />」的安裝要求給系統管理員嗎？</translation>
 <translation id="2987620471460279764">從其他裝置分享的文字</translation>
 <translation id="2988018669686457659">備用轉譯器</translation>
@@ -3248,6 +3249,7 @@
 <translation id="4671265665487288124">網站可以要求自動下載多個檔案 (建議)</translation>
 <translation id="46733273239502219">已安裝應用程式中的離線資料也將遭到清除</translation>
 <translation id="4673442866648850031">移除觸控筆時取出觸控筆工具</translation>
+<translation id="4676595058027112862">Phone Hub，瞭解詳情</translation>
 <translation id="4677772697204437347">GPU 記憶體</translation>
 <translation id="467823995058589466">攝影機已關閉</translation>
 <translation id="4680105648806843642">已將這個網頁設為靜音</translation>
@@ -5403,7 +5405,7 @@
 <translation id="7201118060536064622">已刪除「<ph name="DELETED_ITEM_NAME" />」</translation>
 <translation id="7201420661433230412">查看檔案</translation>
 <translation id="7203150201908454328">已展開</translation>
-<translation id="7203408606151127798">跨裝置使用更加輕鬆、做事更有效率，還有其他優勢待你發掘</translation>
+<translation id="7203408606151127798">更完善的跨裝置操作功能、更快速的工作方式，還有其他優勢等你發掘</translation>
 <translation id="7206693748120342859">正在下載 <ph name="PLUGIN_NAME" />...</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{離開網頁}other{離開網頁}}</translation>
 <translation id="7207457272187520234">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷資料、裝置和應用程式的使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。這項設定是由裝置擁有者強制執行。如果你將「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在你的 Google 帳戶中。</translation>
@@ -6317,6 +6319,7 @@
 <translation id="8227119283605456246">附加檔案</translation>
 <translation id="8230134520748321204">要儲存 <ph name="ORIGIN" /> 的密碼嗎？</translation>
 <translation id="8234795456569844941">請告訴我們在你收到設定檔錯誤訊息前執行的動作，以協助工程師修正此問題：</translation>
+<translation id="8235605354099176425">開啟 <ph name="LINK1_BEGIN" />Chrome 同步功能<ph name="LINK1_END" />即可查看最近開啟的 Chrome 分頁。<ph name="LINK2_BEGIN" />瞭解詳情<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">改為分享這個分頁</translation>
 <translation id="8237647586961940482">深粉紅色與紅色</translation>
 <translation id="8239032431519548577">企業註冊完成</translation>
@@ -6956,7 +6959,7 @@
 <translation id="895347679606913382">啟動中...</translation>
 <translation id="8957757410289731985">自訂個人資料</translation>
 <translation id="895944840846194039">JavaScript 記憶體使用量</translation>
-<translation id="8962051932294470566">一次只能分享一個檔案，請於目前傳輸作業完成後再試一次。</translation>
+<translation id="8962051932294470566">一次只能分享一個檔案，請等待系統完成目前的傳輸作業，然後再試一次。</translation>
 <translation id="8962083179518285172">隱藏詳細資料</translation>
 <translation id="8962918469425892674">這個網站正在使用動作感應器或光源感應器。</translation>
 <translation id="8965037249707889821">輸入先前的密碼</translation>
@@ -7044,6 +7047,7 @@
 <translation id="9044646465488564462">無法連線至網路：<ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">將你嘗試瀏覽的網頁網址傳送給 Google</translation>
 <translation id="9046895021617826162">連線失敗</translation>
+<translation id="9048745018038487540">選取所有字型</translation>
 <translation id="9050666287014529139">通關密語</translation>
 <translation id="9052208328806230490">你已透過 <ph name="EMAIL" /> 帳戶並使用 <ph name="CLOUD_PRINT_NAME" /> 為你的印表機註冊</translation>
 <translation id="9052404922357793350">繼續封鎖</translation>

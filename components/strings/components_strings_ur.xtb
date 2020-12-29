@@ -1377,6 +1377,7 @@
 <translation id="6389470377220713856">کارڈ پر نام</translation>
 <translation id="6390200185239044127">‏نصف Z-فولڈ</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6393956493820063117">منتظم کی پالیسی کے ذریعے <ph name="ORIGIN_NAME" /> سے اس مقام پر پیسٹ کرنا مسدود کر دیا گیا ہے</translation>
 <translation id="6401136357288658127">یہ پالیسی فرسودہ ہے۔ اس کی بجائے، آپ کو <ph name="NEW_POLICY" /> پالیسی کا استعمال کرنا چاہیے۔</translation>
 <translation id="6404511346730675251">بک مارک میں ترمیم کریں</translation>
 <translation id="6406765186087300643">C0 ‎(Envelope‎)‎</translation>
@@ -1869,6 +1870,7 @@
 <translation id="8371889962595521444">حسب ضرورت روٹ سرٹیفکیٹس</translation>
 <translation id="8380941800586852976">خطرناک</translation>
 <translation id="8381674639488873545">یہ چارجز ایک بار یا بار بار عائد ہو سکتے ہیں اور ہو سکتا ہے کہ واضح نہ ہوں۔ <ph name="BEGIN_LINK" />بہر صورت دکھائیں<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698">منتظم کی پالیسی کے ذریعے <ph name="ORIGIN_NAME" /> سے <ph name="VM_NAME" /> پر اشتراک کرنے کو مسدود کر دیا گیا ہے</translation>
 <translation id="8412145213513410671">کریشز (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">آپ کو وہی پاس فریز دوبار درج کرنا ضروری ہے۔</translation>
 <translation id="8416694386774425977">نیٹ ورک کنفیگریشن غلط ہے اور اسے درآمد نہیں کیا جا سکا۔

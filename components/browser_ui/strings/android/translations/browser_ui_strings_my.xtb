@@ -61,7 +61,7 @@
 <translation id="2501278716633472235">နောက်သို့ ပြန်ရန်</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{ကွတ်ကီး ၁ ခု ကို ပိတ်ထားသည်}other{ကွတ်ကီး # ခု ကို ပိတ်ထားသည်}}</translation>
 <translation id="2570922361219980984">ဤစက်ပစ္စည်းအတွက်လည်း တည်နေရာ အသုံးပြုခွင့်ကို ပိတ်ထားသည်။ <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် ၎င်းကို ဖွင့်ပါ။</translation>
-<translation id="257931822824936280">ချဲ့ထား၏ - ခေါက်သိမ်းရန် ကလစ်နှိပ်ပါ</translation>
+<translation id="257931822824936280">ချဲ့ထား၏ - ခေါက်သိမ်းရန် နှိပ်ပါ</translation>
 <translation id="2586657967955657006">ကလစ်ဘုတ်</translation>
 <translation id="2621115761605608342">တိကျသည့်ဆိုက်အတွက် JavaScript ကိုခွင့်ပြုပါ။</translation>
 <translation id="2653659639078652383">ပေးပို့ရန်</translation>
@@ -138,7 +138,7 @@
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
 <translation id="5048398596102334565">အာရုံခံစနစ်များ အသုံးပြုရန် ဤဝဘ်ဆိုက်များကို ခွင့်ပြုသည် (အကြံပြုထားသည်)</translation>
 <translation id="5063480226653192405">အသုံးပြုပုံ</translation>
-<translation id="5100237604440890931">ချုံ့ထား၏ - ချဲ့ရန် ကလစ်နှိပ်ပါ။</translation>
+<translation id="5100237604440890931">ချုံ့ထား၏ - ချဲ့ရန် နှိပ်ပါ။</translation>
 <translation id="5123685120097942451">ရုပ်ဖျက်တဘ်</translation>
 <translation id="5197729504361054390">သင်ရွေးချယ်သော အဆက်အသွယ်များကို <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> နှင့် မျှဝေပါမည်။</translation>
 <translation id="528192093759286357">မျက်နှာပြင်အပြည့်ဖွင့်ခြင်းမှ ထွက်ရန် ထိပ်ဆုံးမှဆွဲချကာ နောက်ဆုတ်ရန်ခလုတ်ကို နှိပ်ပါ။</translation>

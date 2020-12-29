@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Vorhandene Daten löschen</translation>
 <translation id="1147031633655575115">Angemeldet als <ph name="USER" /></translation>
 <translation id="1154690515305205900">Zum markierten Text kann kein entsprechender Link erstellt werden.</translation>
+<translation id="1154984953698510061">Andere Tabs anzeigen</translation>
 <translation id="1157749421655780457">Zugriff auf Standort zulassen…</translation>
 <translation id="1165039591588034296">Fehler</translation>
 <translation id="1172898394251786223">Nächstes Feld</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">Letzte 24 Stunden</translation>
 <translation id="1285320974508926690">Diese Website nie übersetzen</translation>
 <translation id="1321993286294231467">Beim Speichern des Bilds ist ein Fehler aufgetreten.</translation>
+<translation id="1322735045095424339">Ihre Organisation verlangt, dass Sie den Inkognitomodus verwenden</translation>
 <translation id="1323735185997015385">Löschen</translation>
 <translation id="132683371494960526">Tippen Sie hier doppelt, um den übergeordneten Ordner zu ändern.</translation>
 <translation id="1340643665687018190">Menü schließen</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Name des Karteninhabers</translation>
 <translation id="1809939268435598390">Ordner löschen</translation>
 <translation id="1813414402673211292">Browserdaten löschen</translation>
+<translation id="1815941218935345331">Sicherheitscode</translation>
 <translation id="1820259098641718022">Zur Leseliste hinzugefügt</translation>
 <translation id="1870148520156231997">Passwort einblenden</translation>
 <translation id="1872096359983322073">Taschenlampe</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Erweitert</translation>
 <translation id="1989112275319619282">Durchsuchen</translation>
 <translation id="2015722694326466240">Um die Passwörter zu sehen, müssen Sie zuerst einen Passcode auf Ihrem Gerät einrichten.</translation>
+<translation id="2047933465321076474">Ihre Organisation hat das private Surfen deaktiviert. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Vor <ph name="DAYS" /> Tagen aktiv</translation>
 <translation id="2074131957428911366">Sie können in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> auswählen, was Sie synchronisieren möchten.</translation>
 <translation id="2079545284768500474">Rückgängig machen</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Browserdaten werden gelöscht…</translation>
 <translation id="2257567812274161158">Synchronisierung funktioniert nicht.</translation>
 <translation id="225943865679747347">Fehlercode: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">Ihre Organisation verlangt, dass Sie im privaten Modus surfen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Konto hinzufügen</translation>
 <translation id="2268044343513325586">Verfeinern</translation>
 <translation id="2273327106802955778">Menü "Mehr"</translation>
@@ -136,6 +141,7 @@
 Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
 <translation id="2381405137052800939">Grundeinstellungen</translation>
 <translation id="2386793615875593361">1 ausgewählt</translation>
+<translation id="2419661687355878017">Ihre Organisation hat den Inkognitomodus deaktiviert</translation>
 <translation id="2421004566762153674">Drittanbieter-Cookies werden blockiert</translation>
 <translation id="2421044535038393232">Weiter bearbeiten</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
@@ -185,11 +191,13 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 <translation id="291754862089661335">Positionieren Sie den QR-Code oder Barcode in diesem Bereich</translation>
 <translation id="2921219216347069551">Seite kann nicht geteilt werden</translation>
 <translation id="2923448633003185837">Einfügen und los</translation>
+<translation id="2923827943290349720">Sperren Sie die Inkognitotabs, wenn Sie Chrome schließen</translation>
 <translation id="292639812446257861">Als ungelesen markieren</translation>
 <translation id="2952581218264071393">1. Öffnen Sie die Chrome-Einstellungen</translation>
 <translation id="2958718410589002129">Passwörter</translation>
 <translation id="2964349545761222050">Drittanbieter-Cookies blockieren</translation>
 <translation id="2969979262385602596">Anmeldefehler, bitte später erneut versuchen</translation>
+<translation id="2975121486251958312">Nur der Inkognitomodus ist verfügbar</translation>
 <translation id="298306318844797842">Zahlungsmethode hinzufügen…</translation>
 <translation id="2989805286512600854">In neuem Tab öffnen</translation>
 <translation id="3037605927509011580">Oh nein!</translation>
@@ -204,6 +212,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 <translation id="3175081911749765310">Webdienste</translation>
 <translation id="3178650076442119961">Heute aktiv</translation>
 <translation id="3181954750937456830">Safe Browsing (mich und mein Gerät vor schädlichen Websites schützen)</translation>
+<translation id="3184767182050912705">Mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
 <translation id="3196681740617426482">Websites können Cookies verwenden, um Ihnen das Surfen zu erleichtern; zum Beispiel, damit Sie angemeldet oder Artikel in Ihrem Einkaufswagen gespeichert bleiben.
 
 Wenn der Inkognitomodus aktiviert ist, können Websites Cookies nicht verwenden, um Ihre Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
@@ -355,6 +364,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} und ein weiterer}other{{domain} und {count} weitere}}</translation>
 <translation id="4826218269716039351">Drittanbieter-Cookies blockieren</translation>
 <translation id="48274138579728272">Als gelesen markieren</translation>
+<translation id="4833686396768033263">„Kürzlich angesehene Tabs“ ist nicht verfügbar</translation>
 <translation id="4833786495304741580">Nutzungsstatistiken und Absturzberichte werden automatisch an Google gesendet.</translation>
 <translation id="4840495572919996524">Ihre Lesezeichen, Ihr Verlauf, Ihre Passwörter und andere Einstellungen werden nicht mehr mit Ihrem Google-Konto synchronisiert.</translation>
 <translation id="4854345657858711387">Passcode einrichten</translation>
@@ -418,6 +428,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="5551897871312988470">Übersetzung anbieten</translation>
 <translation id="5556459405103347317">Neu laden</translation>
 <translation id="5592679540098330836">Synchronisierung für <ph name="NAME" /> aktivieren</translation>
+<translation id="5597169624050330492">Ihre Organisation verlangt, dass Sie im privaten Modus surfen. Tabs werden im Inkognitomodus nicht gespeichert. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Passwort speichern?</translation>
 <translation id="5626245204502895507">Die Datei kann momentan nicht heruntergeladen werden.</translation>
 <translation id="5631164295104953411">Zahlungsmethode hinzufügen</translation>
@@ -522,6 +533,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 
 Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</translation>
 <translation id="651505212789431520">Synchronisierung abbrechen? Sie können die Synchronisierung jederzeit in den Einstellungen aktivieren.</translation>
+<translation id="6524918542306337007">Inkognitomodus ist nicht verfügbar</translation>
 <translation id="6561262006871132942">Heranzoomen</translation>
 <translation id="6585618849026997638">Sie können Lesezeichen setzen, damit Sie zu Seiten zurückfinden, die für Sie interessant sind</translation>
 <translation id="6610002944194042868">Übersetzungsoptionen</translation>
@@ -580,6 +592,7 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="7133798577887235672">Voller Name</translation>
 <translation id="7136892417564438900">Kamera ist nicht verfügbar</translation>
 <translation id="7159472599653637159">Mobile Version anfordern</translation>
+<translation id="7162168282402939716">Inkognitotabs mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
 <translation id="7172852049901402487">Schützen Sie Ihre Passwörter vor Sicherheitsproblemen</translation>
 <translation id="7173114856073700355">Einstellungen öffnen</translation>
 <translation id="7189598951263744875">Teilen...</translation>
@@ -617,6 +630,7 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="7537586195939242955">Ihr Pass kann derzeit nicht in Passbook installiert werden.</translation>
 <translation id="7554791636758816595">Neuer Tab</translation>
 <translation id="7561196759112975576">Immer</translation>
+<translation id="7583004045319035904">Nutzen Sie <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />, um Ihre Inkognitotabs zu entsperren.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
 <translation id="7603852183842204213">Pop-ups blockiert (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Passwort löschen</translation>
@@ -709,6 +723,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8591976964826315682">Cookies von Drittanbietern im Inkognitomodus blockieren</translation>
 <translation id="8605219856220328675">Tab schließen.</translation>
 <translation id="8620640915598389714">Bearbeiten</translation>
+<translation id="863090005774946393">Ihr Browser wird von Ihrer Organisation verwaltet. Einige Funktionen sind eventuell deaktiviert.</translation>
 <translation id="8636825310635137004">Aktivieren Sie die Synchronisierung, um Tabs von Ihren anderen Geräten abzurufen.</translation>
 <translation id="8654802032646794042">Abbrechen</translation>
 <translation id="8668210798914567634">Diese Seite wurde in Ihrer Leseliste gespeichert.</translation>

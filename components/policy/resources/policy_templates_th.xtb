@@ -4991,9 +4991,6 @@
 
           หากมีการระงับการทำงาน คุณจะกำหนดค่า <ph name="PRODUCT_OS_NAME" /> แยกต่างหากเพื่อให้ล็อกหรือไม่ล็อกหน้าจอก่อนที่จะมีการระงับได้</translation>
 <translation id="8214600119442850823">กำหนดค่าตัวจัดการรหัสผ่าน</translation>
-<translation id="8219777886736887686">การตั้งค่านโยบายนี้จะควบคุมคำสั่งที่จะใช้เปิด URL ในเบราว์เซอร์สำรอง นโยบายนี้จะตั้งค่าเป็นอย่างใดอย่างหนึ่งได้ระหว่าง <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> หรือเส้นทางของไฟล์ เมื่อตั้งค่านโยบายนี้เป็นเส้นทางของไฟล์ ระบบจะใช้ไฟล์นั้นเป็นไฟล์ที่สั่งการได้ <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> และ <ph name="EDGE_VALUE_PLACEHOLDER" /> จะมีเฉพาะใน <ph name="MS_WIN_NAME" /> และ <ph name="SAFARI_VALUE_PLACEHOLDER" /> จะมีเฉพาะใน <ph name="MS_WIN_NAME" /> และ <ph name="MAC_OS_NAME" />
-
-      การไม่ตั้งค่านโยบายนี้จะทำให้ระบบใช้ค่าเริ่มต้นเฉพาะแพลตฟอร์มนั้นๆ ได้แก่ <ph name="IE_PRODUCT_NAME" /> สำหรับ <ph name="MS_WIN_NAME" /> หรือ <ph name="SAFARI_PRODUCT_NAME" /> สำหรับ <ph name="MAC_OS_NAME" /> ส่วนใน <ph name="LINUX_OS_NAME" /> การเปิดเบราว์เซอร์สำรองจะทำไม่สำเร็จ</translation>
 <translation id="8220156281401380422">กำหนดค่ารายการที่อนุญาตสำหรับการรับส่งข้อความดั้งเดิม</translation>
 <translation id="8244171102276095471">เปิดใช้ชุดการเข้ารหัส RC4 ใน TLS</translation>
 <translation id="8244525275280476362">การหน่วงเวลาสูงสุดในการดึงข้อมูลภายหลังการลบล้างนโยบาย</translation>

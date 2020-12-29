@@ -19,6 +19,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1119348796022671382">Temafargemodusen bruker farger som er hentet fra bakgrunnen din, til å fargelegge grensesnittet lett.</translation>
 <translation id="112308213915226829">Skjul hyllen automatisk</translation>
 <translation id="1153356358378277386">Tilkoblede enheter</translation>
+<translation id="1165712434476988950">Enheten må startes på nytt for at oppdateringen skal tas i bruk.</translation>
 <translation id="1175572348579024023">Rull</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
 <translation id="118532027333893379">Trykk hvor som helst for å ta bilde i fullskjerm</translation>
@@ -118,6 +119,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1978498689038657292">Tekstfelt</translation>
 <translation id="1993072747612765854">Finn ut mer om den nyeste <ph name="SYSTEM_APP_NAME" />-oppdateringen</translation>
 <translation id="1995660704900986789">Slå av</translation>
+<translation id="1998100899771863792">Gjeldende skrivebord</translation>
 <translation id="2012624427112548395">Ctrl + Søk + H</translation>
 <translation id="2016340657076538683">Skriv inn en melding</translation>
 <translation id="2018630726571919839">Fortell meg en vits</translation>
@@ -897,6 +899,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="9089416786594320554">Inndatametoder</translation>
 <translation id="9091626656156419976">Fjernet skjermen <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Demp telefonen</translation>
+<translation id="9099154003160514616">Lacros-oppdatering er tilgjengelig</translation>
 <translation id="9151726767154816831">Start på nytt, og kjør Powerwash for å oppdatere</translation>
 <translation id="9166331175924255663">Slå av/på høy synlighet for nærdeling.</translation>
 <translation id="9168436347345867845">Gjør det senere</translation>
@@ -907,6 +910,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="9198992156681343238">Oppløsningen for <ph name="DISPLAY_NAME" /> ble endret til <ph name="RESOLUTION" />. Klikk på bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" /> – administreres av administratoren din</translation>
 <translation id="9210037371811586452">Avslutter enhetlig skrivebordsmodus</translation>
+<translation id="9211490828691860325">Alle skrivebord</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> gjenstår til batteriet er fulladet.</translation>
 <translation id="9215934040295798075">Velg bakgrunn</translation>
 <translation id="921989828232331238">Forelderen din har låst enheten din for dagen</translation>

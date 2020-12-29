@@ -39,7 +39,7 @@
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1321993286294231467">Erro ao salvar a imagem.</translation>
-<translation id="1322735045095424339">Sua organização requer o modo de navegação anônima</translation>
+<translation id="1322735045095424339">Sua organização requer o uso do modo de navegação anônima</translation>
 <translation id="1323735185997015385">Excluir</translation>
 <translation id="132683371494960526">Toque duas vezes para alterar a pasta pai.</translation>
 <translation id="1340643665687018190">Fechar menu</translation>
@@ -124,7 +124,7 @@
 <translation id="2239626343334228536">Limpando dados de navegação…</translation>
 <translation id="2257567812274161158">A sincronização não está funcionando.</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Sua organização requer que você navegue no modo privado. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="2262397157440718954">Sua organização requer o uso do modo de navegação privada. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Adicionar conta</translation>
 <translation id="2268044343513325586">Refinar</translation>
 <translation id="2273327106802955778">Menu "Mais"</translation>
@@ -428,7 +428,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5551897871312988470">Oferecer para traduzir</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5592679540098330836">Ativar sincronização de <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Sua organização requer que você navegue no modo privado. As guias não são salvas no modo de navegação anônima. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="5597169624050330492">Sua organização requer o uso do modo de navegação privada. As guias não são salvas no modo de navegação anônima. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Salvar senha?</translation>
 <translation id="5626245204502895507">Não foi possível fazer download do arquivo neste momento.</translation>
 <translation id="5631164295104953411">Adicionar forma de pagamento.</translation>

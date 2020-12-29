@@ -47,7 +47,7 @@
 <translation id="1360432990279830238">Sign out and turn off sync?</translation>
 <translation id="1375321115329958930">Saved Passwords</translation>
 <translation id="1377255359165588604">Sync has stopped working.</translation>
-<translation id="1377321085342047638">Card Number</translation>
+<translation id="1377321085342047638">Card number</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1389974829397082527">No bookmarks here</translation>
 <translation id="1400642268715879018">Last 4 Weeks</translation>
@@ -764,7 +764,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9148126808321036104">Sign in again</translation>
 <translation id="9152539721251340337">Create a QR code</translation>
-<translation id="9157836665414082580">Suppress Dialogues</translation>
+<translation id="9157836665414082580">Suppress dialogues</translation>
 <translation id="9188680907066685419">Sign out of managed account</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Crash report sent.</translation>

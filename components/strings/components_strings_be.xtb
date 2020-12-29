@@ -1372,6 +1372,7 @@
 <translation id="6389470377220713856">Імя на картцы</translation>
 <translation id="6390200185239044127">Z-падобны згіб напалову сагнутага аркуша</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6393956493820063117">Палітыка, зададзеная адміністратарам, блакіруе магчымасць устаўляць сюды элементы з сайта <ph name="ORIGIN_NAME" /></translation>
 <translation id="6401136357288658127">Гэта палітыка састарэла – выкарыстоўвайце замест яе "<ph name="NEW_POLICY" />".</translation>
 <translation id="6404511346730675251">Змяніце закладку</translation>
 <translation id="6406765186087300643">C0 (канверт)</translation>
@@ -1865,6 +1866,7 @@
 <translation id="8371889962595521444">Карыстальніцкія каранёвыя сертыфікаты</translation>
 <translation id="8380941800586852976">Небяспечна</translation>
 <translation id="8381674639488873545">Плацяжы могуць быць аднаразовыя або рэгулярныя, і інфармацыю пра іх можа быць цяжка заўважыць. <ph name="BEGIN_LINK" />Усе роўна паказаць<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698">Палітыка, зададзеная адміністратарам, блакіруе абагульванне змесціва з сайта <ph name="ORIGIN_NAME" /> з віртуальнай машынай <ph name="VM_NAME" /></translation>
 <translation id="8412145213513410671">Збоі (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Вам трэба двойчы ўвесці аднолькавую фразу-пароль.</translation>
 <translation id="8416694386774425977">Не ўдалося імпартаваць канфігурацыю сеткі, бо яна няправільная.

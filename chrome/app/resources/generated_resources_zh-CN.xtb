@@ -791,7 +791,7 @@
 <translation id="1852799913675865625">尝试读取文件时发生错误：<ph name="ERROR_TEXT" />。</translation>
 <translation id="1853692000353488670">打开新的无痕式标签页</translation>
 <translation id="1854180393107901205">停止投射</translation>
-<translation id="1855079636134697549">摄像头处于开启状态</translation>
+<translation id="1855079636134697549">摄像头已开启</translation>
 <translation id="1856715684130786728">添加位置…</translation>
 <translation id="1858585891038687145">信任该证书，以便标识软件编写者的身份</translation>
 <translation id="1861262398884155592">此文件夹中没有内容</translation>
@@ -1306,7 +1306,7 @@
 <translation id="2451298179137331965">2 倍</translation>
 <translation id="2453860139492968684">完成</translation>
 <translation id="2454247629720664989">关键字</translation>
-<translation id="2454264884354864965">摄像头处于关闭状态</translation>
+<translation id="2454264884354864965">摄像头未开启</translation>
 <translation id="245650153866130664">若想自动刷新票据，请选中“记住密码”。系统便会将您的密码仅保存在您的设备上。</translation>
 <translation id="2457246892030921239">“<ph name="APP_NAME" />”想从 <ph name="VOLUME_NAME" />复制文件。</translation>
 <translation id="2458379781610688953">更新帐号，<ph name="EMAIL" /></translation>
@@ -1616,6 +1616,7 @@
 <translation id="2791529110887957050">移除 Linux</translation>
 <translation id="2791952154587244007">出现错误。自助服务终端应用在此设备上不能自动启动。</translation>
 <translation id="2792290659606763004">要移除 Android 应用吗？</translation>
+<translation id="2792465461386711506">若要查看您手机上最近打开的 Chrome 标签页，请开启 Chrome 同步</translation>
 <translation id="2794233252405721443">网站已被屏蔽</translation>
 <translation id="2795716239552913152">网站通常会使用您的位置信息以实现相关功能或提供相关信息（例如本地新闻或附近的商店）</translation>
 <translation id="2796424461616874739">连接到“<ph name="DEVICE_NAME" />”时身份验证超时。</translation>
@@ -2567,7 +2568,7 @@
 <translation id="3862788408946266506">具有“kiosk_only”这项清单属性的应用必须在 Chrome 操作系统自助服务终端模式下进行安装</translation>
 <translation id="3865414814144988605">分辨率</translation>
 <translation id="3866249974567520381">说明</translation>
-<translation id="3867134342671430205">如需移动某个显示屏，请拖动它或使用箭头键</translation>
+<translation id="3867134342671430205">拖动或使用箭头键来移动显示屏位置</translation>
 <translation id="3867944738977021751">证书字段</translation>
 <translation id="3869917919960562512">索引错误。</translation>
 <translation id="3870931306085184145">尚未保存任何用于登录 <ph name="DOMAIN" /> 的密码</translation>
@@ -3245,8 +3246,9 @@
 <translation id="4671265665487288124">网站可以请求自动下载多个文件（推荐）</translation>
 <translation id="46733273239502219">已安装应用中的离线数据也会被清除</translation>
 <translation id="4673442866648850031">取出触控笔时打开触控笔工具</translation>
+<translation id="4676595058027112862">Phone Hub，了解详情</translation>
 <translation id="4677772697204437347">GPU内存</translation>
-<translation id="467823995058589466">摄像头处于关闭状态</translation>
+<translation id="467823995058589466">摄像头未开启</translation>
 <translation id="4680105648806843642">此网页已设为静音</translation>
 <translation id="4681453295291708042">停用“附近分享”功能</translation>
 <translation id="4681930562518940301">在新标签页中打开原始图片(&amp;I)</translation>
@@ -4349,7 +4351,7 @@
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{您重新开启了 1 个可能有害的扩展程序}other{您重新开启了 {NUM_EXTENSIONS} 个可能有害的扩展程序}}</translation>
 <translation id="5979421442488174909">翻成<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="5979469435153841984">要为网页添加书签，请点击地址栏中的星形图标</translation>
-<translation id="5982945980973315070">有一个应用正在尝试使用摄像头。若要允许它使用摄像头，请从隐私保护设置中关闭“摄像头”对应的开关</translation>
+<translation id="5982945980973315070">有一个应用正在尝试使用摄像头。若要允许它使用摄像头，请关闭摄像头的隐私保护开关</translation>
 <translation id="5984222099446776634">最近访问过的内容</translation>
 <translation id="598472838394900788">{0,plural, =1{无痕模式}other{无痕模式（已打开 # 个窗口）}}</translation>
 <translation id="5985458664595100876">网址格式无效。支持的格式为 \\server\share 和 smb://server/share。</translation>
@@ -5400,7 +5402,7 @@
 <translation id="7201118060536064622">已删除“<ph name="DELETED_ITEM_NAME" />”</translation>
 <translation id="7201420661433230412">查看文件</translation>
 <translation id="7203150201908454328">已展开</translation>
-<translation id="7203408606151127798">更好地跨设备工作、更快地执行操作，等等</translation>
+<translation id="7203408606151127798">更好的跨设备工作体验、更快的操作速度，另有更多优化待您发掘</translation>
 <translation id="7206693748120342859">正在下载 <ph name="PLUGIN_NAME" />...</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{退出网页}other{退出网页}}</translation>
 <translation id="7207457272187520234">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。</translation>
@@ -6314,6 +6316,7 @@
 <translation id="8227119283605456246">附上文件</translation>
 <translation id="8230134520748321204">要保存 <ph name="ORIGIN" /> 的密码吗？</translation>
 <translation id="8234795456569844941">请告诉我们在您收到个人资料错误消息之前发生的情况，以帮助我们的工程师解决此问题：</translation>
+<translation id="8235605354099176425">若要查看最近打开的 Chrome 标签页，请开启 <ph name="LINK1_BEGIN" />Chrome 同步<ph name="LINK1_END" />。<ph name="LINK2_BEGIN" />了解详情<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">改为分享此标签页</translation>
 <translation id="8237647586961940482">深粉色和红色</translation>
 <translation id="8239032431519548577">企业注册已完成</translation>
@@ -7041,6 +7044,7 @@
 <translation id="9044646465488564462">无法连接到网络：<ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">将您尝试访问的网页的网址发送至 Google</translation>
 <translation id="9046895021617826162">连接失败</translation>
+<translation id="9048745018038487540">选择所有字体</translation>
 <translation id="9050666287014529139">密码</translation>
 <translation id="9052208328806230490">您已使用帐号 <ph name="EMAIL" /> 将您的打印机注册为<ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9052404922357793350">继续拦截</translation>

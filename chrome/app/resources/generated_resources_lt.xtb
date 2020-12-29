@@ -1623,6 +1623,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2791529110887957050">Pašalinti „Linux“</translation>
 <translation id="2791952154587244007">Įvyko klaida. Šiame įrenginyje nebus galima automatiškai paleisti viešojo terminalo programų.</translation>
 <translation id="2792290659606763004">Pašalinti „Android“ programas?</translation>
+<translation id="2792465461386711506">Įjunkite „Chrome“ sinchronizavimo funkciją, kad galėtumėte peržiūrėti pastaruosius „Chrome“ skirtukus telefonu</translation>
 <translation id="2794233252405721443">Svetainė užblokuota</translation>
 <translation id="2795716239552913152">Paprastai svetainėse naudojama jūsų vietovės informacija norint vykdyti atitinkamas funkcijas ar gauti informacijos, pvz., sužinoti vietines naujienas ar netoliese esančias parduotuves</translation>
 <translation id="2796424461616874739">Prisijungiant prie „<ph name="DEVICE_NAME" />“ baigėsi skirtasis autentifikavimo laikas.</translation>
@@ -3253,6 +3254,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4671265665487288124">Svetainėse gali būti prašoma automatiškai atsisiųsti kelis failus (rekomenduojama)</translation>
 <translation id="46733273239502219">Neprisijungus pasiekiami duomenys įdiegtose programose taip pat bus išvalyti</translation>
 <translation id="4673442866648850031">Atidaryti rašiklio įrankius, kai rašiklis pašalintas</translation>
+<translation id="4676595058027112862">„Phone Hub“, Sužinokite daugiau</translation>
 <translation id="4677772697204437347">GPU atmintis</translation>
 <translation id="467823995058589466">Fotoaparatas išjungtas</translation>
 <translation id="4680105648806843642">Garsas šiame puslapyje nutildytas</translation>
@@ -6324,6 +6326,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8227119283605456246">Pridėtas failas</translation>
 <translation id="8230134520748321204">Išsaugoti <ph name="ORIGIN" /> slaptažodį?</translation>
 <translation id="8234795456569844941">Padėkite inžinieriams išspręsti šią problemą. Papasakokite, kas vyko prieš parodant profilio klaidos pranešimą:</translation>
+<translation id="8235605354099176425">Įjunkite <ph name="LINK1_BEGIN" />„Chrome“ sinchronizavimo funkciją<ph name="LINK1_END" />, kad galėtumėte peržiūrėti pastaruosius „Chrome“ skirtukus. <ph name="LINK2_BEGIN" />Sužinokite daugiau<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Geriau bendrinti šį skirtuką</translation>
 <translation id="8237647586961940482">Tamsiai rožinė ir raudona</translation>
 <translation id="8239032431519548577">Įmonės registracija užbaigta</translation>
@@ -7054,6 +7057,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="9044646465488564462">Nepavyko prisijungti prie tinklo: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Siunčia puslapio, kurį bandote pasiekti, žiniatinklio adresą „Google“</translation>
 <translation id="9046895021617826162">Nepavyko prisijungti</translation>
+<translation id="9048745018038487540">Pasirinkti visus šriftus</translation>
 <translation id="9050666287014529139">Slaptafrazė</translation>
 <translation id="9052208328806230490">Užregistravote spausdintuvus „<ph name="CLOUD_PRINT_NAME" />“ naudodami <ph name="EMAIL" /> paskyrą</translation>
 <translation id="9052404922357793350">Toliau blokuoti</translation>

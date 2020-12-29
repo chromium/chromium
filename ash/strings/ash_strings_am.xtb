@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">ገጽታ የተላበሰው የቀለም ሁነታ በይነገጹን በስሱ ቀለም ለመቀባት ከእርስዎ የግድግዳ ወረቀት የወጡ ቀለማትን ይጠቀማል።</translation>
 <translation id="112308213915226829">መደርደሪያን በራስ ሰር ደብቅ</translation>
 <translation id="1153356358378277386">የተጣመሩ መሣሪያዎች</translation>
+<translation id="1165712434476988950">ዝማኔውን ለመተግበር የመሣሪያ ዳግም ማስጀመር ያስፈልጋል።</translation>
 <translation id="1175572348579024023">ሸብልል</translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
 <translation id="118532027333893379">ሙሉ ማያ ገጽን ለመቅረጽ በማንኛውም ቦታ ላይ መታ ያድርጉ</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">ጽሑፍ ግቤት</translation>
 <translation id="1993072747612765854">ስለቅርብ ጊዜው የ<ph name="SYSTEM_APP_NAME" /> ዝማኔ የበለጠ ይረዱ</translation>
 <translation id="1995660704900986789">ኃይል አጥፋ</translation>
+<translation id="1998100899771863792">የአሁኑ ዴስክ</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">መልዕክት ይተይቡ</translation>
 <translation id="2018630726571919839">ቀልድ ንገረኝ</translation>
@@ -897,6 +899,7 @@
 <translation id="9089416786594320554">የግቤት ስልቶች</translation>
 <translation id="9091626656156419976">ማሳያ <ph name="DISPLAY_NAME" /> ተወግዷል</translation>
 <translation id="9098969848082897657">የስልክ ድምጽን አጥፋ</translation>
+<translation id="9099154003160514616">የLacros ዝማኔ አለ</translation>
 <translation id="9151726767154816831">እንደገና ያስጀምሩ እና ለማዘመን powerwash ያድርጉ</translation>
 <translation id="9166331175924255663">አቅራቢያ አጋራ ከፍተኛ ታይነት ደረጃን ቀያይር</translation>
 <translation id="9168436347345867845">በኋላ ያድርጉት</translation>
@@ -907,6 +910,7 @@
 <translation id="9198992156681343238">የ<ph name="DISPLAY_NAME" /> ጥራት ወደ <ph name="RESOLUTION" /> ተቀይሯል። ለውጦችን ለማቆየት አረጋግጥን ጠቅ ያድርጉ። ቀዳሚ ቅንብሮቹ በ<ph name="TIMEOUT_SECONDS" /> ውስጥ ወደነበሩበት ይመለሳሉ።</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />፣ በእርስዎ አስተዳዳሪ የሚቀናበር</translation>
 <translation id="9210037371811586452">ከተዋሃደ የዴስክቶፕ ሁነታ በመውጣት ላይ</translation>
+<translation id="9211490828691860325">ሁሉም ዴስኮች</translation>
 <translation id="9211681782751733685">ባትሪ ሙሉ በሙሉ ኃይል እስኪሞላ ድረስ <ph name="TIME_REMAINING" /> ይቀራል።</translation>
 <translation id="9215934040295798075">ልጣፍ ያዘጋጁ</translation>
 <translation id="921989828232331238">የእርስዎ ወላጅ ለቀኑ መሣሪያውን ቆልፈውታል</translation>

@@ -3377,7 +3377,7 @@
 <translation id="5921713479449475707">允許透過 HTTP 自動更新下載</translation>
 <translation id="5929855945144989709">允許裝置在 Chrome 作業系統上執行虛擬機器</translation>
 <translation id="5932767795525445337">這項政策也可用於固定 Android 應用程式。</translation>
-<translation id="5946082169633555022">測試頻道</translation>
+<translation id="5946082169633555022">Beta 版</translation>
 <translation id="5946329690214660966">自訂檢查更新的時間表</translation>
 <translation id="5950069117106131681">如果將這項政策設為啟用，系統會在列印預覽中顯示頁首和頁尾。如果將這項政策設為停用，則不會顯示這些內容。
 
@@ -4961,9 +4961,6 @@
 
          如果將動作設為暫停，你可以另行設定 <ph name="PRODUCT_OS_NAME" />在暫停前是否要鎖定螢幕。</translation>
 <translation id="8214600119442850823">設定密碼管理員</translation>
-<translation id="8219777886736887686">你可以透過這項政策控管在替代瀏覽器中開啟網址時，系統所使用的指令。你可以將這項政策設為 <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />、<ph name="FIREFOX_VALUE_PLACEHOLDER" />、<ph name="SAFARI_VALUE_PLACEHOLDER" />、<ph name="OPERA_VALUE_PLACEHOLDER" />、<ph name="EDGE_VALUE_PLACEHOLDER" /> 或檔案路徑的其中一項。如果將這項政策設為檔案路徑，系統會將該檔案做為執行檔使用。<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> 和 <ph name="EDGE_VALUE_PLACEHOLDER" /> 只適用於 <ph name="MS_WIN_NAME" />，而 <ph name="SAFARI_VALUE_PLACEHOLDER" /> 只適用於 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" />。
-
-      如果不設定這項政策，系統會使用平台專屬的預設值：<ph name="MS_WIN_NAME" /> 使用 <ph name="IE_PRODUCT_NAME" />、<ph name="MAC_OS_NAME" /> 使用 <ph name="SAFARI_PRODUCT_NAME" />。<ph name="LINUX_OS_NAME" /> 將無法啟動替代瀏覽器。</translation>
 <translation id="8220156281401380422">設定內建訊息傳遞許可清單</translation>
 <translation id="8244171102276095471">在傳輸層安全標準 (TLS) 中啟用 RC4 加密套件</translation>
 <translation id="8244525275280476362">政策失效後的最大擷取延遲</translation>

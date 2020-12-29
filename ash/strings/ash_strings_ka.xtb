@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">ფერთა თემატური რეჟიმი იყენებს ფონიდან ამოღებულ ფერებს, რომ ოდნავ შეაფერადოს ინტერფეისი.</translation>
 <translation id="112308213915226829">shelf თვითდამალვა</translation>
 <translation id="1153356358378277386">დაწყვილებული მოწყობილობები</translation>
+<translation id="1165712434476988950">განახლების გასააქტიურებლად საჭიროა მოწყობილობის გადატვირთვა.</translation>
 <translation id="1175572348579024023">გადაადგილება</translation>
 <translation id="1178581264944972037">პაუზა</translation>
 <translation id="118532027333893379">სრული ეკრანის აღსაბეჭდად შეეხეთ ნებისმიერ ადგილს</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">ტექსტის შეყვანა</translation>
 <translation id="1993072747612765854">შეიტყვეთ მეტი <ph name="SYSTEM_APP_NAME" />-ის ბოლო განახლების შესახებ</translation>
 <translation id="1995660704900986789">გამორთვა</translation>
+<translation id="1998100899771863792">ამჟამინდელი სამუშაო მაგიდა</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">აკრიფეთ შეტყობინება</translation>
 <translation id="2018630726571919839">მომიყევი ანეკდოტი</translation>
@@ -897,6 +899,7 @@
 <translation id="9089416786594320554">შეყვანის მეთოდები</translation>
 <translation id="9091626656156419976">ეკრანი <ph name="DISPLAY_NAME" /> ამოიშალა</translation>
 <translation id="9098969848082897657">ტელეფონის ჩაჩუმება</translation>
+<translation id="9099154003160514616">ხელმისაწვდომია Lacros-ის განახლება</translation>
 <translation id="9151726767154816831">გადატვირთეთ და გაასუფთავეთ მოწყობილობა განახლების დასაყენებლად</translation>
 <translation id="9166331175924255663">მახლობლად გაზიარების მაღალი ხილვადობის გადართვა.</translation>
 <translation id="9168436347345867845">მოგვიანებით გაკეთება</translation>
@@ -907,6 +910,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />-ის გარჩევადობა შეიცვალა <ph name="RESOLUTION" />-ზე. დააწკაპუნეთ ცვლილებების შენარჩუნების დასადასტურებლად. წინა პარამეტრების აღდგენამდე დარჩა <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="9210037371811586452">მიმდინარეობს ერთიანი დესკტოპის რეჟიმიდან გამოსვლა</translation>
+<translation id="9211490828691860325">ყველა სამუშაო მაგიდა</translation>
 <translation id="9211681782751733685">ბატარეის სრულ დატენამდე დარჩენილია <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">ფონის დაყენება</translation>
 <translation id="921989828232331238">თქვენმა მშობელმა ჩაკეტა მოწყობილობა ერთი დღით</translation>

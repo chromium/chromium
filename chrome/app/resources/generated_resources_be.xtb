@@ -496,7 +496,7 @@
 <translation id="1526335046150927198">Уключыць паскарэнне прагорткі сэнсарнай панэллю</translation>
 <translation id="1526560967942511387">Дакумент без назвы</translation>
 <translation id="1527336312600375509">Хуткасць абнаўлення манітора</translation>
-<translation id="152913213824448541">Абагульванне паблізу кантакты</translation>
+<translation id="152913213824448541">Абагульванне паблізу: кантакты</translation>
 <translation id="1529891865407786369">Крыніца сілкавання</translation>
 <translation id="1530838837447122178">Адкрыць налады мышы і сэнсарнай панэлі</translation>
 <translation id="1531004739673299060">Акно праграмы</translation>
@@ -1623,6 +1623,7 @@
 <translation id="2791529110887957050">Выдаліць Linux</translation>
 <translation id="2791952154587244007">Адбылася памылка. Праграму-кіёск не ўдалося аўтаматычна запусціць на гэтай прыладзе.</translation>
 <translation id="2792290659606763004">Выдаліць праграмы Android?</translation>
+<translation id="2792465461386711506">Каб праглядаць нядаўна адкрытыя ўкладкі Chrome з тэлефона, уключыце Сінхранізацыю Chrome</translation>
 <translation id="2794233252405721443">Сайт заблакіраваны</translation>
 <translation id="2795716239552913152">Сайты звычайна выкарыстоўваюць ваша месцазнаходжанне для работы адпаведных функцый або паведамлення інфармацыі (напрыклад, мясцовых навін або звестак пра крамы паблізу)</translation>
 <translation id="2796424461616874739">Скончыўся час чакання аўтэнтыфікацыі падчас падключэння да прылады "<ph name="DEVICE_NAME" />".</translation>
@@ -1783,7 +1784,7 @@
 <translation id="2962131322798295505">Выбар шпалер</translation>
 <translation id="2963151496262057773">Наступная ўбудова не адказвае: <ph name="PLUGIN_NAME" />. Спыніць яе?</translation>
 <translation id="2964193600955408481">Выключыць Wi-Fi</translation>
-<translation id="2964245677645334031">Абагульванне паблізу бачнасць</translation>
+<translation id="2964245677645334031">Абагульванне паблізу: бачнасць</translation>
 <translation id="2966937470348689686">Кіраванне параметрамі Android</translation>
 <translation id="2972581237482394796">&amp;Узнавіць</translation>
 <translation id="2973324205039581528">Выключыць гук на сайце</translation>
@@ -3253,6 +3254,7 @@
 <translation id="4671265665487288124">Сайты могуць запытваць дазвол на аўтаматычнае спампоўванне некалькіх файлаў (рэкамендуецца)</translation>
 <translation id="46733273239502219">Пазасеткавыя даныя ва ўсталяваных праграмах таксама будуць выдалены</translation>
 <translation id="4673442866648850031">Адкрываць інструменты стыла, калі яно вымаецца</translation>
+<translation id="4676595058027112862">Тэлефонны цэнтр, даведацца больш</translation>
 <translation id="4677772697204437347">Памяць GPU</translation>
 <translation id="467823995058589466">Камера выключана</translation>
 <translation id="4680105648806843642">Гук на гэтай старонцы быў выключаны</translation>
@@ -4072,7 +4074,7 @@
 <translation id="5646558797914161501">Бізнесмен</translation>
 <translation id="5648166631817621825">За апошнія 7 дзён</translation>
 <translation id="5649053991847567735">Аўтаматычнае спампоўванне</translation>
-<translation id="5651308944918885595">Абагульванне паблізу бачнасць</translation>
+<translation id="5651308944918885595">Абагульванне паблізу: бачнасць</translation>
 <translation id="5653154844073528838">У вас некалькі (<ph name="PRINTER_COUNT" />) захаваных прынтараў.</translation>
 <translation id="5656845498778518563">Адправіць водгук у Google</translation>
 <translation id="5657156137487675418">Дазволіць усе файлы cookie</translation>
@@ -4357,7 +4359,7 @@
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Вы зноў уключылі адно патэнцыйна шкоднае пашырэнне}one{Вы зноў уключылі {NUM_EXTENSIONS} патэнцыйна шкоднае пашырэнне}few{Вы зноў уключылі {NUM_EXTENSIONS} патэнцыйна шкодныя пашырэнні}many{Вы зноў уключылі {NUM_EXTENSIONS} патэнцыйна шкодных пашырэнняў}other{Вы зноў уключылі {NUM_EXTENSIONS} патэнцыйна шкоднага пашырэння}}</translation>
 <translation id="5979421442488174909">&amp;Перакласці на наступную мову: <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Каб дадаць закладку для старонкі, націсніце на зорачку ў адрасным радку</translation>
-<translation id="5982945980973315070">Праграма спрабуе атрымаць доступ да камеры. Каб даць яго, перавядзіце пераключальнік прыватнасці вэб-камеры ў становішча "выключана".</translation>
+<translation id="5982945980973315070">Праграма спрабуе атрымаць доступ да камеры. Каб дазволіць такі доступ, перавядзіце пераключальнік, які рэгулюе налады прыватнасці вэб-камеры, у становішча "выключана".</translation>
 <translation id="5984222099446776634">Нядаўна наведаныя</translation>
 <translation id="598472838394900788">{0,plural, =1{Інкогніта}one{Інкогніта (#)}few{Інкогніта (#)}many{Інкогніта (#)}other{Інкогніта (#)}}</translation>
 <translation id="5985458664595100876">Няправільны фармат URL-адраса. Падтрымліваюцца фарматы \\server\share і smb://server/share.</translation>
@@ -5466,7 +5468,7 @@
 <translation id="7262004276116528033">Гэты сэрвіс уваходу размешчаны на дамене <ph name="SAML_DOMAIN" /></translation>
 <translation id="7267044199012331848">Не ўдалося ўсталяваць віртуальную машыну. Паўтарыце спробу або звярніцеся да адміністратара. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="7268127947535186412">Гэта налада кіруецца ўладальнікам прылады.</translation>
-<translation id="7269736181983384521">Абагульванне паблізу выкарыстанне трафіка</translation>
+<translation id="7269736181983384521">Абагульванне паблізу: выкарыстанне трафіка</translation>
 <translation id="7270858098575133036">Паведамляць мяне, калі сайту спатрэбіцца выкарыстоўваць адмысловыя сістэмныя паведамленні для доступу да MIDI-прылад</translation>
 <translation id="7272674038937250585">Няма апісання</translation>
 <translation id="7273110280511444812">апошняе падключэнне: <ph name="DATE" /></translation>
@@ -5889,7 +5891,7 @@
 <translation id="7764225426217299476">Дадаць адрас</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> з дамена <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7765158879357617694">Перамясціць</translation>
-<translation id="7765507180157272835">Патрабуецца падключэнне праз Bluetooth або Wi-Fi</translation>
+<translation id="7765507180157272835">Патрабуецца падключэнне да Bluetooth і Wi-Fi</translation>
 <translation id="7766082757934713382">Дапамагае знізіць выкарыстанне трафіка ў сетцы, прыпыняючы аўтаматычныя абнаўленні сістэмы і праграм</translation>
 <translation id="7766838926148951335">Прыняць дазволы</translation>
 <translation id="7768507955883790804">Пры наведванні сайтаў яны будуць аўтаматычна ўлічваць гэту наладу</translation>
@@ -6300,7 +6302,7 @@
 <translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8201717382574620700">Выбраць альбомы "<ph name="TOPIC_SOURCE" />"</translation>
 <translation id="8202160505685531999">Каб абнавіць профіль прылады <ph name="DEVICE_TYPE" />, увядзіце пароль яшчэ раз.</translation>
-<translation id="8203152941016626022">Абагульванне паблізу назва прылады</translation>
+<translation id="8203152941016626022">Абагульванне паблізу: назва прылады</translation>
 <translation id="8203732864715032075">Адпраўляць вам апавяшчэнні і зрабіць гэты камп'ютар стандартным для праграмы "Паведамленні". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="820568752112382238">Сайты, якія часцей за ўсё наведваліся</translation>
 <translation id="8206745257863499010">Блюзавы</translation>
@@ -6322,6 +6324,7 @@
 <translation id="8227119283605456246">Далучыць файл</translation>
 <translation id="8230134520748321204">Захаваць пароль для <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Дапамажыце нашым інжынерам вырашыць праблему. Апішыце, што адбывалася перад тым, як вы ўбачылі паведамленне пра памылку ў профілі:</translation>
+<translation id="8235605354099176425">Каб праглядаць нядаўна адкрытыя ўкладкі Chrome, уключыце <ph name="LINK1_BEGIN" />Сінхранізацыю Chrome<ph name="LINK1_END" />. <ph name="LINK2_BEGIN" />Даведацца больш<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Абагуліць гэту ўкладку</translation>
 <translation id="8237647586961940482">Цёмна-ружовы і чырвоны</translation>
 <translation id="8239032431519548577">Рэгістрацыя для арганізацый завершана</translation>
@@ -7052,6 +7055,7 @@
 <translation id="9044646465488564462">Не ўдалося падключыцца да сеткі: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Адпраўляе ў Google вэб-адрас старонкі, якую вы спрабуеце адкрыць</translation>
 <translation id="9046895021617826162">Збой падключэння</translation>
+<translation id="9048745018038487540">Выбраць усе шрыфты</translation>
 <translation id="9050666287014529139">Фраза-пароль</translation>
 <translation id="9052208328806230490">Вы зарэгістравалі прынтары ў <ph name="CLOUD_PRINT_NAME" />, выкарыстоўваючы ўліковы запіс <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Працягнуць блакіроўку</translation>

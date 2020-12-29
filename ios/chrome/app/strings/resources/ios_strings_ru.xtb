@@ -212,7 +212,7 @@
 <translation id="3175081911749765310">Веб-сервисы</translation>
 <translation id="3178650076442119961">Последние действия: сегодня</translation>
 <translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
-<translation id="3184767182050912705">Разблокировать с помощью <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3184767182050912705">Разблокировать с помощью: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">Сайты могут использовать файлы cookie для вашего удобства, например сохранять информацию о товарах в корзине или о том, что вы вошли в аккаунт.
 
 В режиме инкогнито сайты не могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например, для показа персонализированной рекламы.</translation>
@@ -592,7 +592,7 @@
 <translation id="7133798577887235672">Полное имя</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>
 <translation id="7159472599653637159">Мобильная версия</translation>
-<translation id="7162168282402939716">Разблокировать вкладки инкогнито с помощью <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7162168282402939716">Разблокировать вкладки инкогнито с помощью: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Убедитесь в надежности паролей</translation>
 <translation id="7173114856073700355">Открыть настройки</translation>
 <translation id="7189598951263744875">Поделиться…</translation>

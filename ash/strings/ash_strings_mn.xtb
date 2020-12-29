@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">Загвартай хоршсон өнгөний горим нь харагдах байдлыг бага зэрэг өнгөтэй болгохын тулд дэлгэцийн зургаас гаргаж авсан өнгийг ашигладаг.</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
 <translation id="1153356358378277386">Хослуулсан төхөөрөмж</translation>
+<translation id="1165712434476988950">Шинэчлэлтийг ашиглахын тулд төхөөрөмжөө дахин эхлүүлэх шаардлагатай.</translation>
 <translation id="1175572348579024023">Гүйлгэх</translation>
 <translation id="1178581264944972037">Түр зогсоох</translation>
 <translation id="118532027333893379">Бүтэн дэлгэцийн зургийг авахын тулд дурын газар товшино уу</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">Текстээр оруулах</translation>
 <translation id="1993072747612765854">Хамгийн сүүлийн <ph name="SYSTEM_APP_NAME" /> шинэчлэлтийн талаар дэлгэрэнгүй үзэх</translation>
 <translation id="1995660704900986789">Унтраах</translation>
+<translation id="1998100899771863792">Одоогийн дэлгэц</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Мессеж бичих</translation>
 <translation id="2018630726571919839">Надад онигоо ярьж өгөөч</translation>
@@ -899,6 +901,7 @@
 <translation id="9089416786594320554">Оролтын аргууд</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> дэлгэцийг хассан</translation>
 <translation id="9098969848082897657">Утасны дууг хаах</translation>
+<translation id="9099154003160514616">Lacros-н шинэчлэлт боломжтой байна</translation>
 <translation id="9151726767154816831">Шинэчлэхийн тулд дахин эхлүүлээд, цэвэрлэнэ үү.</translation>
 <translation id="9166331175924255663">Ойролцоо хуваалцах өндөр харагдцыг унтраана/асаана.</translation>
 <translation id="9168436347345867845">Үүнийг дараа хийх</translation>
@@ -909,6 +912,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />-н нягтралыг <ph name="RESOLUTION" /> болгож өөрчилсөн. Өөрчлөлтийг хадгалахын тулд баталгаажуулахыг товшино уу. Өмнөх тохиргоог <ph name="TIMEOUT_SECONDS" />-н дараа сэргээнэ.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, таны администратор удирддаг</translation>
 <translation id="9210037371811586452">Дэлгэцийн нэгдмэл горимоос гарч байна</translation>
+<translation id="9211490828691860325">Бүх дэлгэц</translation>
 <translation id="9211681782751733685">Батарейг бүрэн цэнэглэхэд <ph name="TIME_REMAINING" /> үлдсэн байна.</translation>
 <translation id="9215934040295798075">Дэлгэцийн зураг тохируулах</translation>
 <translation id="921989828232331238">Таны эцэг эх таны төхөөрөмжийг өдрийн турш түгжсэн байна</translation>

@@ -19,6 +19,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1119348796022671382">Hali ya rangi ya mandhari hutumia rangi zinazotolewa kwenye mandhari yako ili iweke rangi kiasi kwenye kiolesura.</translation>
 <translation id="112308213915226829">Ficha rafu kiotomatiki</translation>
 <translation id="1153356358378277386">Vifaa vilivyooanishwa</translation>
+<translation id="1165712434476988950">Unahitaji kuzima kisha uwashe kifaa ili utekeleze sasisho.</translation>
 <translation id="1175572348579024023">Sogeza</translation>
 <translation id="1178581264944972037">Sitisha</translation>
 <translation id="118532027333893379">Gusa popote ili unase skrini nzima</translation>
@@ -118,6 +119,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1978498689038657292">Uingizaji wa maandishi</translation>
 <translation id="1993072747612765854">Pata maelezo zaidi kuhusu sasisho la hivi majuzi la <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Zima</translation>
+<translation id="1998100899771863792">Eneokazi la sasa</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Andika ujumbe</translation>
 <translation id="2018630726571919839">Nipe kichekesho</translation>
@@ -818,7 +820,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8444246603146515890">Kiolesura cha <ph name="DESK_TITILE" /> kimewashwa</translation>
 <translation id="8452135315243592079">Hakuna SIM kadi</translation>
 <translation id="8454013096329229812">Wi-Fi imewashwa.</translation>
-<translation id="8462305545768648477">Funga kipengele cha Kuchagua ili izingumze</translation>
+<translation id="8462305545768648477">Funga kipengele cha Kuchagua ili izungumze</translation>
 <translation id="847056008324733326">Onyesha mipangilio ya vipimo</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ina <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Bonyeza Alt+Search au Shift ili ughairi.</translation>
@@ -898,6 +900,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9089416786594320554">Mbinu za Kuweka</translation>
 <translation id="9091626656156419976">Imeondoa onyesho la <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Kuzima mlio wa simu</translation>
+<translation id="9099154003160514616">Sasisho la Lacros linapatikana</translation>
 <translation id="9151726767154816831">Zima na uwashe na utumie powerwash ili kusasisha</translation>
 <translation id="9166331175924255663">Washa au uzime uonekanaji wa hali ya juu wa kipengele cha Uhamishaji wa Karibu.</translation>
 <translation id="9168436347345867845">Ufanye baadaye</translation>
@@ -908,6 +911,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9198992156681343238">Ubora wa <ph name="DISPLAY_NAME" /> umebadilika kuwa <ph name="RESOLUTION" />. Bofya thibitisha ili uhifadhi mabadiliko. Mipangilio ya awali itarejeshwa baada ya <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Unadhibitiwa na Msimamizi wako</translation>
 <translation id="9210037371811586452">Mfumo unaondoka kwenye hali ya eneo-kazi lililounganishwa</translation>
+<translation id="9211490828691860325">Maeneokazi yote</translation>
 <translation id="9211681782751733685">Zimebaki <ph name="TIME_REMAINING" /> kabla ya chaji ya betri kujaa.</translation>
 <translation id="9215934040295798075">Weka mandhari</translation>
 <translation id="921989828232331238">Kifaa chako kimefungwa na mzazi wako kwa leo</translation>

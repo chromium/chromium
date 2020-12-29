@@ -734,7 +734,7 @@
 <translation id="8714406895390098252">自行车</translation>
 <translation id="8719721339511222681">已选择<ph name="ENTRY_NAME" />。</translation>
 <translation id="872537912056138402">克罗地亚语</translation>
-<translation id="8750438273876807512">轻触并按住某个文件，点按 <ph name="ICON" />，然后选择“固定到任务栏”，以便在任务栏中快速访问您的文件。</translation>
+<translation id="8750438273876807512">轻触并按住某个文件，点按 <ph name="ICON" />，然后选择“固定到任务栏”，即可在任务栏中快速访问您的文件。</translation>
 <translation id="8775404590947523323">系统会自动保存您所做的修改。<ph name="BREAKS" />要保留原始图像的副本，请取消选中“覆盖原始文件”。</translation>
 <translation id="8808686172382650546">猫</translation>
 <translation id="8810671769985673465">压缩失败，已有此项内容：“<ph name="FILE_NAME" />”</translation>

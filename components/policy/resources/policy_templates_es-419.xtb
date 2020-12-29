@@ -2193,6 +2193,13 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si estableces esta política como "AllowMigration", se ofrecerá a los usuarios con directorios principales que tengan la encriptación ecryptfs migrarlos a la encriptación ext4 en caso de ser necesario (actualmente, cuando Android N está disponible en el dispositivo).
 
       Esta política no se aplica a las aplicaciones de kiosco; estas se migran de forma automática. Si no estableces esta política, el dispositivo se comportará como si se hubiese elegido "DisallowArc".</translation>
+<translation id="401650904918322517">Esta política está obsoleta y se quitará en la versión 89 de <ph name="PRODUCT_OS_NAME" />.
+
+      Esta política le otorga permiso a Respuestas rápidas para acceder al contenido seleccionado y enviar información al servidor.
+
+      Si se habilita esta política, Respuestas rápidas podrá acceder al contenido seleccionado.
+      Si se inhabilita, Respuestas rápidas no podrá acceder a ese contenido.
+      Si no se configura esta política, los usuarios podrán decidir si permiten que Respuestas rápidas acceda al contenido seleccionado.</translation>
 <translation id="4020682745012723568">Las apps de Android no pueden acceder a las cookies transferidas al perfil del usuario.</translation>
 <translation id="4025500273782820766">Permitir que los usuarios seleccionen "Permitir siempre" cuando se muestra un diálogo de protocolo externo para omitir futuros mensajes de confirmación</translation>
 <translation id="402759845255257575">No permitir que los sitios ejecuten JavaScript.</translation>
@@ -3983,6 +3990,13 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6789422336869764846">Si habilitas la política o no la estableces, los dispositivos inscritos informarán el estado del interruptor del modo de desarrollador del dispositivo cuando se inicia la máquina.
 
       Si la inhabilitas, los dispositivos inscritos no informarán el estado del interruptor del modo de desarrollador.</translation>
+<translation id="6793420507738858152">Si se habilita la política, la función de <ph name="PRODUCT_NAME" /> enviará encabezados de solicitud detallados con información sobre el entorno y el navegador del usuario.
+
+      Esta es una función adicional, pero los nuevos encabezados pueden ocasionar fallos en algunos sitios web que restrinjan los caracteres que pueden contener las solicitudes.
+
+      Si habilitas esta política o no la estableces, se habilitará la función de <ph name="PRODUCT_NAME" />. Si la inhabilitas, la función no estará disponible.
+
+      Esta política es una solución alternativa orientada a la adaptación de las empresas a corto plazo y estará disponible al menos hasta la versión 91 de Chrome.</translation>
 <translation id="6795485990775913659">Permitir la impresión solo sin PIN</translation>
 <translation id="6800181452282128474">No enviar consultas a Quirks Servers</translation>
 <translation id="6810445994095397827">Bloquear JavaScript en estos sitios</translation>
@@ -4625,6 +4639,9 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si estableces la política, los usuarios no podrán cambiarla en <ph name="PRODUCT_NAME" />. Si no la estableces, se habilitará el proveedor de búsqueda predeterminado, y los usuarios podrán establecer la lista de proveedores de búsqueda.
 
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instancias vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o inscritas en la Administración en la nube para el navegador Chrome. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
+<translation id="7669630878711068277">Si habilitas la política o no la estableces, los usuarios podrán realizar impresiones en <ph name="PRODUCT_NAME" />. Los usuarios no podrán cambiar esta configuración.
+
+      Si inhabilitas la política, los usuarios no podrán realizar impresiones desde <ph name="PRODUCT_NAME" />. Se desactivará la opción de impresión en el menú de tres puntos, las extensiones y las aplicaciones de JavaScript.</translation>
 <translation id="7673194325208122247">Período (milisegundos)</translation>
 <translation id="7677220829878081413">
       Si se establece en ArcSession, esta política forzará el reinicio del dispositivo después de que el usuario salga de su cuenta en el caso de que se inicie Android.
@@ -5006,9 +5023,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
           Si la acción es la suspensión, se podrá configurar <ph name="PRODUCT_OS_NAME" /> por separado para que la pantalla se bloquee o no antes de la suspensión.</translation>
 <translation id="8214600119442850823">Configura el administrador de contraseñas.</translation>
-<translation id="8219777886736887686">Si la estableces, esta política controla el comando que se utilizará para abrir las URL en un navegador alternativo. La política puede establecerse para que las URL se abran en <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> o una ruta de archivos. Si la estableces para que las URL se abran en una ruta de archivos, el archivo se usará como ejecutable. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> y <ph name="EDGE_VALUE_PLACEHOLDER" /> solo están disponibles en <ph name="MS_WIN_NAME" />, y <ph name="SAFARI_VALUE_PLACEHOLDER" /> solo está disponible en <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />.
-
-      Si no estableces la política, se utilizará el valor predeterminado de la plataforma: <ph name="IE_PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> o <ph name="SAFARI_PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" />. En <ph name="LINUX_OS_NAME" />, se producirá un error al intentar ejecutar un navegador alternativo.</translation>
 <translation id="8220156281401380422">Configura la lista de mensajería nativa permitida</translation>
 <translation id="8244171102276095471">Habilitar los paquetes de encriptación RC4 en TLS</translation>
 <translation id="8244525275280476362">Demora de recuperación máxima después de invalidar una política</translation>

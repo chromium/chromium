@@ -1617,6 +1617,7 @@
 <translation id="2791529110887957050">Linux કાઢી નાખો</translation>
 <translation id="2791952154587244007">એક ભૂલ આવી. કિઓસ્ક ઍપ્લિકેશન આ ઉપકરણ પર સ્વતઃ-લોંચ કરવામાં સમર્થ હશે નહીં.</translation>
 <translation id="2792290659606763004">શું Android ઍપ્લિકેશનોને દૂર કરીએ?</translation>
+<translation id="2792465461386711506">તમારા ફોનમાંની તાજેતરની Chrome ટૅબ જોવા માટે, Chrome સિંકની સુવિધા ચાલુ કરો</translation>
 <translation id="2794233252405721443">સાઇટ અવરોધિત કરી</translation>
 <translation id="2795716239552913152">સંબંધિત સુવિધાઓ માટે અથવા સ્થાનિક સમાચાર કે નજીકમાંની દુકાનો જેવી માહિતી માટે, સાઇટ સામાન્ય રીતે તમારા સ્થાનનો ઉપયોગ કરે છે</translation>
 <translation id="2796424461616874739">"<ph name="DEVICE_NAME" />" થી કનેક્ટ કરતી વખતે પ્રમાણીકરણ સમય સમાપ્ત થયો.</translation>
@@ -3247,6 +3248,7 @@
 <translation id="4671265665487288124">સાઇટ એકથી વધારે ફાઇલોને ઑટોમૅટિક રીતે ડાઉનલોડ કરવાનું પૂછી શકે છે (ભલામણ કરવામાં આવે છે)</translation>
 <translation id="46733273239502219">ઇન્સ્ટૉલ કરેલી ઍપમાંનો ઑફલાઇન ડેટા પણ સાફ થઈ જશે</translation>
 <translation id="4673442866648850031">જ્યારે સ્ટાઇલસ દૂર કરવામાં આવ્યું હોય ત્યારે સ્ટાઇલસનાં સાધનો ખોલો</translation>
+<translation id="4676595058027112862">ફોન હબ, વધુ જાણો</translation>
 <translation id="4677772697204437347">GPU મેમરી</translation>
 <translation id="467823995058589466">કૅમેરા બંધ છે</translation>
 <translation id="4680105648806843642">આ પેજ પર સાઉન્ડ મ્યૂટ કરવામાં આવ્યો હતો</translation>
@@ -6313,6 +6315,7 @@ USB ડિવાઇસ</translation>
 <translation id="8227119283605456246">ફાઇલ જોડો</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> માટેનો પાસવર્ડ સાચવીએ?</translation>
 <translation id="8234795456569844941">કૃપા કરી અમારા એન્જિનિયરોને આ સમસ્યા ઠીક કરવામાં સહાય કરો. તમને પ્રોફાઇલમાં ભૂલ આવ્યાનો સંદેશ મળ્યો બિલકુલ તે પહેલા શું થયું હતું તે અમને જણાવો:</translation>
+<translation id="8235605354099176425">તાજેતરની Chrome ટૅબ જોવા માટે, <ph name="LINK1_BEGIN" />Chrome સિંક<ph name="LINK1_END" /> ચાલુ કરો.<ph name="LINK2_BEGIN" />વધુ જાણો<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">તેના બદલે આ ટૅબ શેર કરો</translation>
 <translation id="8237647586961940482">ઘેરો ગુલાબી અને લાલ</translation>
 <translation id="8239032431519548577">એન્ટરપ્રાઇઝ નોંધણી પૂર્ણ થઈ</translation>
@@ -7041,6 +7044,7 @@ USB ડિવાઇસ</translation>
 <translation id="9044646465488564462">નેટવર્કથી કનેક્ટ કરવામાં નિષ્ફળ: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">તમે જે Google સુધી પહોંચવાનો પ્રયાસ કરી રહ્યાં છો તે પેજનું વેબ ઍડ્રેસ મોકલે છે</translation>
 <translation id="9046895021617826162">કનેક્ટ કરવું નિષ્ફળ</translation>
+<translation id="9048745018038487540">બધા ફૉન્ટ પસંદ કરો</translation>
 <translation id="9050666287014529139">પાસફ્રેઝ</translation>
 <translation id="9052208328806230490">તમે એકાઉન્ટ <ph name="EMAIL" /> નો ઉપયોગ કરીને, તમારા પ્રિન્ટરને <ph name="CLOUD_PRINT_NAME" /> સાથે નોંધાવ્યા છે</translation>
 <translation id="9052404922357793350">બ્લૉક કરવાનું ચાલુ રાખો</translation>

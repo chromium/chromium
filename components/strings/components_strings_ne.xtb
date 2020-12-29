@@ -1369,6 +1369,7 @@
 <translation id="6389470377220713856">कार्डमा रहेको नाम</translation>
 <translation id="6390200185239044127">आधा जेड फोल्ड</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6393956493820063117">एड्मिनले <ph name="ORIGIN_NAME" /> बाट कपी गरी यो स्थानमा पेस्ट गर्न रोक लगाउनुभएको छ</translation>
 <translation id="6401136357288658127">यो नीति चल्तीबाट हटाइएको छ। तपाईंले यसको साटो <ph name="NEW_POLICY" /> नीति प्रयोग गर्नु पर्छ।</translation>
 <translation id="6404511346730675251">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
@@ -1861,6 +1862,7 @@
 <translation id="8371889962595521444">आफू अनुकूल मूल प्रमाणपत्रहरू</translation>
 <translation id="8380941800586852976">खतरनाक</translation>
 <translation id="8381674639488873545">यी शुल्कहरू एक पटक तिरे पुग्ने वा बारम्बार तिर्नु पर्ने हुन सक्छन् र यससम्बन्धी विवरणहरू स्पष्ट रूपमा उल्लेख नगरिएको हुन सक्छ। <ph name="BEGIN_LINK" />जे भए पनि देखाउनुहोस्<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698">एड्मिनले <ph name="ORIGIN_NAME" /> बाट <ph name="VM_NAME" /> मा सेयर गर्न रोक लगाउनुभएको छ</translation>
 <translation id="8412145213513410671">क्रयासहरू (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">तपाइँले एउटै पासफ्रेज दुईटपक प्रविष्ट गर्नुपर्छ।</translation>
 <translation id="8416694386774425977">नेटवर्कको कन्फिगुरेसन अमान्य छ र आयात गर्न सकिएन।

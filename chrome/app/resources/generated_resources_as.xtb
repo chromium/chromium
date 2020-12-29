@@ -491,7 +491,7 @@
 <translation id="1526335046150927198">টাচ্‌পেড স্ক্ৰ’ল এক্সিলাৰেশ্বন সক্ষম কৰক</translation>
 <translation id="1526560967942511387">শিৰোনামবিহীন নথি</translation>
 <translation id="1527336312600375509">মনিটৰৰ ৰিফ্ৰেশ্বৰ হাৰ</translation>
-<translation id="152913213824448541">নীয়েৰবাই শ্বেয়াৰৰ সম্পৰ্কসূচী</translation>
+<translation id="152913213824448541">Nearby Shareৰ সম্পৰ্কসূচী</translation>
 <translation id="1529891865407786369">পাৱাৰৰ উৎস</translation>
 <translation id="1530838837447122178">মাউছ আৰু টাচ্চ্‌পেড ডিভাইচৰ ছেটিংসমূহ খোলক</translation>
 <translation id="1531004739673299060">এপ্লিকেশ্বন ৱিণ্ড’</translation>
@@ -601,7 +601,7 @@
 <translation id="1641113438599504367">সুৰক্ষিত ব্ৰাউজিং</translation>
 <translation id="1642494467033190216">অন্য ডিবাগিঙৰ সুবিধা সক্ষম কৰাৰ আগতে এটা rootfs সুৰক্ষা আঁতৰাই ডিভাইচটো ৰিষ্টাৰ্ট কৰিব লাগিব।</translation>
 <translation id="1643072738649235303">SHA-1ৰ সৈতে X9.62 ECDSA স্বাক্ষৰ</translation>
-<translation id="1643921258693943800">নীয়েৰবাই শ্বেয়াৰ ব্যৱহাৰ কৰিবলৈ ব্লুটুথ আৰু ৱাই-ফাই অন কৰক</translation>
+<translation id="1643921258693943800">Nearby Share ব্যৱহাৰ কৰিবলৈ ব্লুটুথ আৰু ৱাই-ফাই অন কৰক</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1645516838734033527">আপোনাৰ <ph name="DEVICE_TYPE" /> সুৰক্ষিত কৰিবলৈ স্মার্ট লকৰ বাবে আপোনাৰ ফ’নত স্ক্ৰীণ লকৰ আৱশ্যক।</translation>
 <translation id="1646982517418478057">এই প্ৰমাণপত্ৰ এনক্ৰিপ্ট কৰিবলৈ কোনো পাছৱর্ড দিয়ক</translation>
@@ -1618,6 +1618,7 @@
 <translation id="2791529110887957050">Linux আঁতৰাওক</translation>
 <translation id="2791952154587244007">কোনো আসোঁৱাহ হৈছে। এই ডিভাইচটোত কিয়’স্ক এপ্লিকেশ্বনসমূহ স্বয়ংক্ৰিয়ভাৱে লঞ্চ কৰিবলৈ সক্ষম নহ’ব।</translation>
 <translation id="2792290659606763004">Android এপ্‌ আঁতৰাবনে?</translation>
+<translation id="2792465461386711506">আপোনাৰ ফ’নত থকা Chromeৰ শেহতীয়া টেবসমূহ চাবলৈ Chrome ছিংক অন কৰক</translation>
 <translation id="2794233252405721443">ছাইট অৱৰোধ কৰা আছে</translation>
 <translation id="2795716239552913152">ছাইটসমূহে সচৰাচৰ স্থানীয় বাতৰি অথবা নিকটৱৰ্তী দোকানৰ দৰে প্ৰাসংগিক সুবিধাসমূহ অথবা তথ্যৰ বাবে আপোনাৰ অৱস্থান ব্যৱহাৰ কৰে</translation>
 <translation id="2796424461616874739">"<ph name="DEVICE_NAME" />"ৰ সৈতে সংযোগ কৰি থাকোঁতে বিশ্বাসযোগ্যতাৰ প্ৰমাণ কৰাৰ সময় উকলিল।</translation>
@@ -1778,7 +1779,7 @@
 <translation id="2962131322798295505">ৱালপেপাৰ বাছনিকৰ্তা</translation>
 <translation id="2963151496262057773">এই প্লাগইনে সঁহাৰি জনোৱা নাই: <ph name="PLUGIN_NAME" /> আপুনি এইটো বন্ধ কৰিব খোজেনে?</translation>
 <translation id="2964193600955408481">ৱাই-ফাই অক্ষম কৰক</translation>
-<translation id="2964245677645334031">নীয়েৰবাই শ্বেয়াৰৰ দৃশ্যমানতাৰ ছেটিং</translation>
+<translation id="2964245677645334031">Nearby Shareৰ দৃশ্যমানতাৰ ছেটিং</translation>
 <translation id="2966937470348689686">Android বিষয়ক অগ্ৰাধিকাৰ পৰিচালনা কৰক</translation>
 <translation id="2972581237482394796">&amp;ৰিডু কৰক</translation>
 <translation id="2973324205039581528">ছাইট মিউট কৰক</translation>
@@ -3244,6 +3245,7 @@
 <translation id="4671265665487288124">ছাইটসমূহে স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল'ড কৰিবলৈ বিচাৰিব পাৰে (চুপাৰিছ কৰা)</translation>
 <translation id="46733273239502219">ইনষ্টল হৈ থকা এপ্‌সমূহত অফলাইন ডেটাও মচা হ’ব</translation>
 <translation id="4673442866648850031">ষ্টাইলাছ আঁতৰালে ষ্টাইলাছ সঁজুলিসমূহ খোলক</translation>
+<translation id="4676595058027112862">ফ’ন হাব, অধিক জানক</translation>
 <translation id="4677772697204437347">GPU মেম’ৰী</translation>
 <translation id="467823995058589466">কেমেৰা অফ কৰা হ'ল</translation>
 <translation id="4680105648806843642">এই পৃষ্ঠাটোত শব্দ মিউট কৰা হৈছে</translation>
@@ -4062,7 +4064,7 @@
 <translation id="5646558797914161501">ব্যৱসায়ী</translation>
 <translation id="5648166631817621825">যোৱা ৭ দিনত</translation>
 <translation id="5649053991847567735">স্বয়ংক্ৰিয়ভাৱে হোৱা ডাউনল’ড</translation>
-<translation id="5651308944918885595">নীয়েৰবাই শ্বেয়াৰৰ দৃশ্যমানতাৰ ছেটিং</translation>
+<translation id="5651308944918885595">Nearby Shareৰ দৃশ্যমানতাৰ ছেটিং</translation>
 <translation id="5653154844073528838">আপোনাৰ <ph name="PRINTER_COUNT" /> টা ছেভ কৰি থোৱা প্ৰিণ্টাৰ আছে।</translation>
 <translation id="5656845498778518563">Googleলৈ মতামত পঠিয়াওক</translation>
 <translation id="5657156137487675418">সকলো কুকিক অনুমতি দিয়ক</translation>
@@ -5451,7 +5453,7 @@
 <translation id="7262004276116528033">এই ছাইন ইন কৰা সেৱাটো <ph name="SAML_DOMAIN" />এ হ’ষ্ট কৰিছে</translation>
 <translation id="7267044199012331848">ভাৰ্ছুৱেল মেচিনটো ইনষ্টল কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক অথবা আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
 <translation id="7268127947535186412">ডিভাইচৰ গৰাকীয়ে এই ছেটিংটো পৰিচালনা কৰে।</translation>
-<translation id="7269736181983384521">নীয়েৰবাই শ্বেয়াৰৰ ডেটাৰ ব্যৱহাৰ</translation>
+<translation id="7269736181983384521">Nearby Shareৰ ডেটাৰ ব্যৱহাৰ</translation>
 <translation id="7270858098575133036">কোনো ছাইটে MIDI ডিভাইচত এক্সেছ কৰিবলৈ ছিষ্টেমৰ বহিৰ্ভূত বার্তা ব্যৱহাৰ কৰিবলৈ খুজিলে প্ৰশ্ন কৰক</translation>
 <translation id="7272674038937250585">কোনো বিৱৰণ নাই</translation>
 <translation id="7273110280511444812"><ph name="DATE" />ত শেষবাৰ সংলগ্ন কৰা হৈছিল</translation>
@@ -6283,7 +6285,7 @@
 <translation id="8200772114523450471">পুনৰ আৰম্ভ কৰক</translation>
 <translation id="8201717382574620700"><ph name="TOPIC_SOURCE" />ৰ এলবামসমূহ বাছনি কৰক</translation>
 <translation id="8202160505685531999">আপোনাৰ <ph name="DEVICE_TYPE" />ৰ প্ৰ'ফাইল আপডে'ট কৰিবলৈ অনুগ্ৰহ কৰি আপোনাৰ পাছৱৰ্ডটো পুনৰ দিয়ক।</translation>
-<translation id="8203152941016626022">নীয়েৰবাই শ্বেয়াৰ ব্যৱহাৰ কৰা ডিভাইচৰ নাম</translation>
+<translation id="8203152941016626022">Nearby Share ব্যৱহাৰ কৰা ডিভাইচৰ নাম</translation>
 <translation id="8203732864715032075">আপোনালৈ জাননী পঠিয়াই আৰু বার্তাৰ বাবে এই কম্পিউটাৰক ডিফ’ল্ট হিচাপে মনত ৰাখে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="820568752112382238">সকলোতকৈ বেছিকৈ চোৱা ছাইটসমূহ</translation>
 <translation id="8206745257863499010">Bluesy</translation>
@@ -6305,6 +6307,7 @@
 <translation id="8227119283605456246">ফাইল সংলগ্ন কৰক</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" />ৰ বাবে পাছৱর্ড ছেভ কৰিবনে?</translation>
 <translation id="8234795456569844941">আমাৰ অভিযন্তাই এই সমস্যাটো সমাধান কৰাত সহায় কৰক। আপুনি প্ৰ’ফাইল সম্পর্কীয় আসোঁৱাহৰ বার্তাটো লাভ কৰাৰ ঠিক আগে আগে কি হৈছিল সেয়া আমাক জনাওক:</translation>
+<translation id="8235605354099176425">Chromeৰ শেহতীয়া টেবসমূহ চাবলৈ <ph name="LINK1_BEGIN" />Chrome ছিংক<ph name="LINK1_END" /> অন কৰক।<ph name="LINK2_BEGIN" />অধিক জানক<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">তাৰ পৰিৱৰ্তে এই টেবটো শ্বেয়াৰ কৰক</translation>
 <translation id="8237647586961940482">গাঢ় গুলপীয়া আৰু ৰঙা</translation>
 <translation id="8239032431519548577">এণ্টাৰপ্ৰাইজৰ পঞ্জীয়ন সম্পূর্ণ হৈছে</translation>
@@ -7032,6 +7035,7 @@
 <translation id="9044646465488564462">নেটৱৰ্কৰ সৈতে সংযোগ কৰিব পৰা নগ’ল: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">আপুনি খুলিবলৈ চেষ্টা কৰি থকা পৃষ্ঠাটোৰ ৱেব ঠিকনাটো Googleলৈ পঠিয়ায়</translation>
 <translation id="9046895021617826162">সংযোগ কৰিব পৰা নগ'ল</translation>
+<translation id="9048745018038487540">আটাইবোৰ ফ’ণ্ট বাছনি কৰক</translation>
 <translation id="9050666287014529139">পাছফ্ৰেজ</translation>
 <translation id="9052208328806230490">আপুনি নিজৰ প্ৰিণ্টাৰসমূহ <ph name="EMAIL" /> একাউণ্টটো ব্যৱহাৰ কৰি <ph name="CLOUD_PRINT_NAME" />ত পঞ্জীয়ন কৰিছে</translation>
 <translation id="9052404922357793350">অৱৰোধ কৰাটো অব্যাহত ৰাখক</translation>

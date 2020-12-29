@@ -495,7 +495,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1526335046150927198">Włącz szybkie przewijanie na touchpadzie</translation>
 <translation id="1526560967942511387">Dokument bez tytułu</translation>
 <translation id="1527336312600375509">Częstotliwość odświeżania monitora</translation>
-<translation id="152913213824448541">Udostępnianie w pobliżu – kontakty</translation>
+<translation id="152913213824448541">Udostępnianie w pobliżu kontakty</translation>
 <translation id="1529891865407786369">Źródło zasilania</translation>
 <translation id="1530838837447122178">Otwórz ustawienia myszy i touchpada</translation>
 <translation id="1531004739673299060">Okno aplikacji</translation>
@@ -1779,7 +1779,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2962131322798295505">Selektor tapety</translation>
 <translation id="2963151496262057773">Ta wtyczka nie odpowiada: <ph name="PLUGIN_NAME" />Chcesz ją zatrzymać?</translation>
 <translation id="2964193600955408481">Wyłącz Wi-Fi</translation>
-<translation id="2964245677645334031">Udostępnianie w pobliżu – widoczność</translation>
+<translation id="2964245677645334031">Udostępnianie w pobliżu widoczność</translation>
 <translation id="2966937470348689686">Zarządzaj ustawieniami Androida</translation>
 <translation id="2972581237482394796">&amp;Ponów</translation>
 <translation id="2973324205039581528">Wycisz stronę</translation>
@@ -1787,7 +1787,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2979520980928493164">Chrome w świetnym stanie</translation>
 <translation id="2979639724566107830">Otwórz w nowym oknie</translation>
 <translation id="2981113813906970160">Pokaż duży kursor myszy</translation>
-<translation id="2984956121108740037">{COUNT,plural, =1{{COUNT} hasło jest dostępne na tym urządzeniu}few{{COUNT} hasła są dostępne na tym urządzeniu}many{{COUNT} haseł jest dostępnych na tym urządzeniu}other{{COUNT} hasła jest dostępne na tym urządzeniu}}</translation>
+<translation id="2984956121108740037">{COUNT,plural, =1{Na tym urządzeniu dostępne jest {COUNT} hasło}few{Na tym urządzeniu są dostępne {COUNT} hasła}many{Na tym urządzeniu jest dostępnych {COUNT} haseł}other{Na tym urządzeniu jest dostępne {COUNT} hasła}}</translation>
 <translation id="2985348301114641460">Wysłać do administratora prośbę o zainstalowanie: „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2987620471460279764">Tekst udostępniany przez inne urządzenia</translation>
 <translation id="2988018669686457659">Zapasowy mechanizm renderowania</translation>
@@ -3669,7 +3669,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Kliknij, by wyświetlić rozszerzenie}few{Kliknij, by wyświetlić te rozszerzenia}many{Kliknij, by wyświetlić te rozszerzenia}other{Kliknij, by wyświetlić te rozszerzenia}}</translation>
 <translation id="5204673965307125349">Wykonaj Powerwash urządzenia i spróbuj jeszcze raz.</translation>
 <translation id="5204967432542742771">Wpisz hasło</translation>
-<translation id="5205484256512407285">Nigdy nie używaj mobilnej transmisji danych do przesyłania</translation>
+<translation id="5205484256512407285">Nigdy nie używaj mobilnej transmisji danych</translation>
 <translation id="5206215183583316675">Usunąć „<ph name="CERTIFICATE_NAME" />”?</translation>
 <translation id="520621735928254154">Błąd importowania certyfikatu</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Zmieniono przejęte hasło. Masz jeszcze # przejęte hasło. Chrome zaleca, by jak najszybciej je sprawdzić.}few{Zmieniono przejęte hasło. Masz jeszcze # przejęte hasła. Chrome zaleca, by jak najszybciej je sprawdzić.}many{Zmieniono przejęte hasło. Masz jeszcze # przejętych haseł. Chrome zaleca, by jak najszybciej je sprawdzić.}other{Zmieniono przejęte hasło. Masz jeszcze # przejętego hasła. Chrome zaleca, by jak najszybciej je sprawdzić.}}</translation>
@@ -4069,7 +4069,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5646558797914161501">Biznesmen</translation>
 <translation id="5648166631817621825">Ostatnie 7 dni</translation>
 <translation id="5649053991847567735">Pobieranie automatyczne</translation>
-<translation id="5651308944918885595">Udostępnianie w pobliżu – wykrywalność</translation>
+<translation id="5651308944918885595">Udostępnianie w pobliżu wykrywalność</translation>
 <translation id="5653154844073528838">Zapisane drukarki: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="5656845498778518563">Prześlij opinię do Google</translation>
 <translation id="5657156137487675418">Zezwól na wszystkie pliki cookie</translation>
@@ -5463,7 +5463,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7262004276116528033">Ta usługa logowania pochodzi z domeny <ph name="SAML_DOMAIN" /></translation>
 <translation id="7267044199012331848">Nie udało się zainstalować maszyny wirtualnej. Spróbuj jeszcze raz lub skontaktuj się z administratorem. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="7268127947535186412">Tym ustawieniem zarządza właściciel urządzenia.</translation>
-<translation id="7269736181983384521">Udostępnianie w pobliżu – użycie danych</translation>
+<translation id="7269736181983384521">Udostępnianie w pobliżu użycie danych</translation>
 <translation id="7270858098575133036">Pytaj, gdy strona chce użyć komunikatów systemowych, by uzyskać dostęp do urządzeń MIDI</translation>
 <translation id="7272674038937250585">Brak opisu</translation>
 <translation id="7273110280511444812">ostatnio podłączone w dniu <ph name="DATE" /></translation>
@@ -6298,7 +6298,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8201717382574620700">Wybierz albumy z: <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">Wpisz hasło ponownie, by zaktualizować swój profil na urządzeniu <ph name="DEVICE_TYPE" />.</translation>
-<translation id="8203152941016626022">Udostępnianie w pobliżu – nazwa urządzenia</translation>
+<translation id="8203152941016626022">Udostępnianie w pobliżu nazwa urządzenia</translation>
 <translation id="8203732864715032075">Wysyła powiadomienia i sprawia, że ten komputer jest domyślnie używany do obsługi Wiadomości. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="820568752112382238">Najczęściej odwiedzane strony</translation>
 <translation id="8206745257863499010">Bluesowy</translation>
@@ -6906,7 +6906,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8888253246822647887">Aplikacja otworzy się po zakończeniu uaktualnienia. Może to potrwać kilka minut.</translation>
 <translation id="8888432776533519951">Kolor:</translation>
 <translation id="8889651696183044030">Strona <ph name="ORIGIN" /> może edytować te pliki i foldery</translation>
-<translation id="8890170499370378450">Mogą się z tym wiązać opłaty za mobilną transmisję danych</translation>
+<translation id="8890170499370378450">Mogą się z tym wiązać opłaty</translation>
 <translation id="8890516388109605451">Źródła</translation>
 <translation id="8892168913673237979">Wszystko gotowe.</translation>
 <translation id="8893801527741465188">Odinstalowano</translation>

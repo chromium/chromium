@@ -2164,6 +2164,13 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
       Wenn diese Richtlinie auf „AllowMigration“ gesetzt ist, wird Nutzern mit eCryptfs-verschlüsselten Basisverzeichnissen angeboten, diese je nach Bedarf in die ext4-Verschlüsselung zu migrieren (aktuell, wenn Android N für das Gerät zur Verfügung steht).
 
       Diese Richtlinie gilt nicht für Kiosk-Apps – diese werden automatisch migriert. Sollte die Richtlinie nicht konfiguriert sein, kommt die Vorgehensweise für „DisallowArc“ zum Einsatz.</translation>
+<translation id="401650904918322517">Diese Richtlinie ist veraltet und wird aus der Version 89 von <ph name="PRODUCT_OS_NAME" /> entfernt.
+
+      Mit dieser Richtlinie erhält die Funktion „Schnelle Antworten“ die Berechtigung, auf ausgewählte Inhalte zuzugreifen und die Informationen an den Server zu senden.
+
+      Wenn die Richtlinie aktiviert ist, kann die Funktion „Schnelle Antworten“ auf ausgewählte Inhalte zugreifen.
+      Wenn die Richtlinie deaktiviert ist, kann sie dies nicht.
+      Wenn die Richtlinie nicht konfiguriert ist, können Nutzer entscheiden, ob die Funktion „Schnelle Antworten“ auf ausgewählte Inhalte zugreifen darf oder nicht.</translation>
 <translation id="4020682745012723568">In das Nutzerprofil übertragene Cookies sind für Android-Apps nicht zugänglich.</translation>
 <translation id="4025500273782820766">Zulassen, dass Nutzer „Immer öffnen“ auswählen, wenn ein Dialog für ein externes Protokoll angezeigt wird, sodass das Protokoll in Zukunft ohne die Bestätigung geöffnet wird</translation>
 <translation id="402759845255257575">Ausführung von JavaScript für keine Website zulassen</translation>
@@ -3956,6 +3963,13 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 <translation id="6789422336869764846">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte der Status des Entwicklermodus gemeldet, wenn das Gerät startet.
 
       Ist sie deaktiviert, melden registrierte Geräte den Status des Entwicklermodus nicht.</translation>
+<translation id="6793420507738858152">Wenn sie aktiviert ist, sendet die Funktion „<ph name="PRODUCT_NAME" />“ detaillierte Anfrageheader mit Informationen über den Browser und die Umgebung des Nutzers.
+
+      Dies ist eine Zusatzfunktion, doch die neuen Header funktionieren auf manchen Websites, die die Anzahl der Zeichen auf eine Anfrage einschränken, nicht.
+
+      Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Funktion „<ph name="PRODUCT_NAME" />“ aktiviert. Wenn sie deaktiviert ist, ist die Funktion nicht verfügbar.
+
+      Diese Unternehmensrichtlinie kann nur übergangsweise verwendet werden und ist mindestens bis Chrome 91 verfügbar.</translation>
 <translation id="6795485990775913659">Drucken nur ohne PIN zulassen</translation>
 <translation id="6800181452282128474">Keine Anfragen an Quirks Server stellen</translation>
 <translation id="6810445994095397827">JavaScript auf diesen Websites blockieren</translation>
@@ -4599,6 +4613,9 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Ist die Richtlinie nicht konfiguriert, wird der Standardsuchanbieter aktiviert und Nutzer können die Suchanbieterliste selbst zusammenstellen.
 
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf der Windows 10 Pro läuft, oder die von der Chrome-Verwaltung über die Cloud verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
+<translation id="7669630878711068277">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer in „<ph name="PRODUCT_NAME" />“ drucken. Nutzer können diese Einstellung nicht ändern.
+
+      Ist die Richtlinie deaktiviert, können die Nutzer in „<ph name="PRODUCT_NAME" />“ nicht drucken. Im Dreipunkt-Menü, in den Erweiterungen und in JavaScript-Anwendungen ist die Option zum Drucken deaktiviert.</translation>
 <translation id="7673194325208122247">Zeitraum (Millisekunden)</translation>
 <translation id="7677220829878081413">
       Ist diese Richtlinie auf "ArcSession" gesetzt und wurde Android gestartet, wird nach einer Nutzerabmeldung ein Neustart des Geräts erzwungen.
@@ -4980,9 +4997,6 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird das Standardverhalten angewen
 
           Wenn der Ruhemodus aktiviert wird, kann separat konfiguriert werden, ob <ph name="PRODUCT_OS_NAME" /> den Bildschirm vorher sperren soll oder nicht.</translation>
 <translation id="8214600119442850823">Konfiguriert den Passwortmanager.</translation>
-<translation id="8219777886736887686">Mit dieser Richtlinie wird festgelegt, welcher Befehl zum Öffnen von URLs in einem alternativen Browser verwendet werden soll. Die Richtlinie kann mit <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> oder einem Dateipfad konfiguriert werden. Wenn für die Richtlinie ein Dateipfad festgelegt ist, wird diese Datei als ausführbare Datei verwendet. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> und <ph name="EDGE_VALUE_PLACEHOLDER" /> sind nur unter <ph name="MS_WIN_NAME" /> verfügbar, <ph name="SAFARI_VALUE_PLACEHOLDER" /> nur unter <ph name="MS_WIN_NAME" /> und <ph name="MAC_OS_NAME" />.
-
-      Ist die Richtlinie nicht konfiguriert, wird eine plattformspezifische Standardeinstellung verwendet: <ph name="IE_PRODUCT_NAME" /> für <ph name="MS_WIN_NAME" /> oder <ph name="SAFARI_PRODUCT_NAME" /> für <ph name="MAC_OS_NAME" />. Unter <ph name="LINUX_OS_NAME" /> wird kein alternativer Browser geöffnet.</translation>
 <translation id="8220156281401380422">Zulassungsliste für natives Messaging konfigurieren</translation>
 <translation id="8244171102276095471">RC4-Verschlüsselungssammlungen in TLS aktivieren</translation>
 <translation id="8244525275280476362">Maximale Abrufverzögerung nach der Außerkraftsetzung einer Richtlinie</translation>

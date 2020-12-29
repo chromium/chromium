@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">主題顏色模式會使用從您桌布擷取的顏色，為介面添上淡雅色彩。</translation>
 <translation id="112308213915226829">自動隱藏檔案櫃</translation>
 <translation id="1153356358378277386">已配對的裝置</translation>
+<translation id="1165712434476988950">裝置必須重新啟動，才能套用更新。</translation>
 <translation id="1175572348579024023">捲動</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="118532027333893379">輕按任何一處即可擷取全螢幕畫面</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">文字輸入</translation>
 <translation id="1993072747612765854">進一步瞭解有關 <ph name="SYSTEM_APP_NAME" /> 的更新</translation>
 <translation id="1995660704900986789">關閉電源</translation>
+<translation id="1998100899771863792">目前的桌面</translation>
 <translation id="2012624427112548395">Ctrl+Search+H 鍵</translation>
 <translation id="2016340657076538683">輸入訊息</translation>
 <translation id="2018630726571919839">講笑話</translation>
@@ -745,7 +747,7 @@
 <translation id="7860671499921112077">用三隻手指向上滑動即可進入「概覽」</translation>
 <translation id="7868900307798234037">用緊指紋解鎖</translation>
 <translation id="7872786842639831132">關閉</translation>
-<translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 的藍牙似乎已關閉。請開啟藍牙，才能使用 Phone Hub。</translation>
+<translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 上的藍牙似乎已關閉。請開啟藍牙，才能使用 Phone Hub。</translation>
 <translation id="7886169021410746335">調整私隱權設定</translation>
 <translation id="7886277072580235377">登出帳戶後，系統將清除您的互聯網工作階段。<ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">傳送電郵</translation>
@@ -897,6 +899,7 @@
 <translation id="9089416786594320554">輸入法</translation>
 <translation id="9091626656156419976">已移除「<ph name="DISPLAY_NAME" />」畫面</translation>
 <translation id="9098969848082897657">將手機設為靜音</translation>
+<translation id="9099154003160514616">有可用的 Lacros 更新</translation>
 <translation id="9151726767154816831">重新啟動並執行 Powerwash 以進行更新</translation>
 <translation id="9166331175924255663">將「咫尺共享」功能切換為向附近的所有裝置顯示。</translation>
 <translation id="9168436347345867845">稍後再說</translation>
@@ -907,6 +910,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> 的解像度已變更為 <ph name="RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />，由管理員管理</translation>
 <translation id="9210037371811586452">正在退出統一桌面模式</translation>
+<translation id="9211490828691860325">所有桌面</translation>
 <translation id="9211681782751733685">電池仲有 <ph name="TIME_REMAINING" />就差滿電。</translation>
 <translation id="9215934040295798075">設定桌布</translation>
 <translation id="921989828232331238">您的家長今天已鎖定此裝置</translation>

@@ -1367,6 +1367,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6389470377220713856">Emri në kartë</translation>
 <translation id="6390200185239044127">Palosje Z në gjysmë</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6393956493820063117">Ngjitja nga <ph name="ORIGIN_NAME" /> te kjo vendndodhje është bllokuar nga politika e administratorit</translation>
 <translation id="6401136357288658127">Kjo politikë është e vjetruar. Duhet të përdorësh politikën <ph name="NEW_POLICY" /> më mirë.</translation>
 <translation id="6404511346730675251">Redakto faqeshënuesin</translation>
 <translation id="6406765186087300643">C0 (Zarf)</translation>
@@ -1859,6 +1860,7 @@ Detaje shtesë:
 <translation id="8371889962595521444">Certifikatat rrënjë të personalizuara</translation>
 <translation id="8380941800586852976">I rrezikshëm</translation>
 <translation id="8381674639488873545">Këto tarifa mund të jenë vetëm për një rast ose dhe të përsëritura, gjë që mund të mos jetë menjëherë e qartë. <ph name="BEGIN_LINK" />Shfaqi gjithsesi<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698">Ndarja nga <ph name="ORIGIN_NAME" /> te <ph name="VM_NAME" /> është bllokuar nga politika e administratorit</translation>
 <translation id="8412145213513410671">Ndërprerjet aksidentale (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Duhet ta fusësh dy herë të njëjtën frazë kalimi.</translation>
 <translation id="8416694386774425977">Konfigurimi i rrjetit është i pavlefshëm dhe nuk mund të importohej.

@@ -19,6 +19,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1119348796022671382">Motīva krāsu režīmā vieglai saskarnes iekrāsošanai tiek izmantotas fona tapetes krāsas.</translation>
 <translation id="112308213915226829">Automātiski slēpt plauktu</translation>
 <translation id="1153356358378277386">Pārī savienotās ierīces</translation>
+<translation id="1165712434476988950">Lai lietotu atjauninājumu, ir jārestartē ierīce.</translation>
 <translation id="1175572348579024023">Ritināt</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
 <translation id="118532027333893379">Pieskarieties jebkurā vietā, lai tvertu visu ekrānu</translation>
@@ -118,6 +119,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1978498689038657292">Teksta ievade</translation>
 <translation id="1993072747612765854">Uzzināt vairāk par pēdējo <ph name="SYSTEM_APP_NAME" /> atjauninājumu</translation>
 <translation id="1995660704900986789">Izslēgt</translation>
+<translation id="1998100899771863792">Pašreizējā darbvieta</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Ierakstiet ziņojumu</translation>
 <translation id="2018630726571919839">Pastāstīt joku</translation>
@@ -897,6 +899,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="9089416786594320554">Ievades metodes</translation>
 <translation id="9091626656156419976">Displejs <ph name="DISPLAY_NAME" /> tika noņemts.</translation>
 <translation id="9098969848082897657">Izslēgt tālruņa skaņu</translation>
+<translation id="9099154003160514616">Pieejams Lacros atjauninājums</translation>
 <translation id="9151726767154816831">Lai atjauninātu, restartējiet ierīci un izmantojiet funkciju Powerwash.</translation>
 <translation id="9166331175924255663">Ieslēgt/izslēgt augstas redzamības režīmu kopīgošanai tuvumā.</translation>
 <translation id="9168436347345867845">Vēlāk</translation>
@@ -907,6 +910,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="9198992156681343238">Displeja <ph name="DISPLAY_NAME" /> izšķirtspēja ir nomainīta uz: <ph name="RESOLUTION" />. Lai saglabātu izmaiņas, noklikšķiniet uz Apstiprināt. Iepriekšējie iestatījumi tiks atjaunoti pēc: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, pārvalda jūsu administrators</translation>
 <translation id="9210037371811586452">Notiek iziešana no vienotās darbvirsmas režīma</translation>
+<translation id="9211490828691860325">Visas darbvietas</translation>
 <translation id="9211681782751733685">Līdz pilnīgai akumulatora uzlādei atlikušais laiks: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Iestatīt fona tapeti</translation>
 <translation id="921989828232331238">Jūsu vecāki bloķēja jūsu ierīci šai dienai</translation>

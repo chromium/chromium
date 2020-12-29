@@ -1373,6 +1373,7 @@
 <translation id="6389470377220713856">Картан дээрх нэр</translation>
 <translation id="6390200185239044127">Хагас Z-нугалаа</translation>
 <translation id="6390662030813198813">Инженерчлэл-E</translation>
+<translation id="6393956493820063117">Администраторын бодлогын дагуу <ph name="ORIGIN_NAME" />-с энэ байршил руу буулгахыг блоклосон</translation>
 <translation id="6401136357288658127">Энэ удирдамжийг зогсоосон байна. Та оронд нь <ph name="NEW_POLICY" /> удирдамжийг ашиглавал зохино.</translation>
 <translation id="6404511346730675251">Хадгалагдсан хуудсыг засах</translation>
 <translation id="6406765186087300643">C0 (Дугтуй)</translation>
@@ -1865,6 +1866,7 @@
 <translation id="8371889962595521444">Захиалгат үндсэн гэрчилгээ</translation>
 <translation id="8380941800586852976">Аюултай</translation>
 <translation id="8381674639488873545">Эдгээр тодорхойгүй төлбөр нь нэг удаагийнх эсвэл хэд хэдэн удаагийнх байж болзошгүй. <ph name="BEGIN_LINK" />Ямар ч байсан харуулах<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698">Администраторын бодлогын дагуу <ph name="ORIGIN_NAME" />-с <ph name="VM_NAME" /> руу хуваалцахыг блоклосон</translation>
 <translation id="8412145213513410671">Эвдрэл (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Та нууц үгүү хоёр удаа зөв оруулна уу.</translation>
 <translation id="8416694386774425977">Сүлжээний тохируулга буруу тул импортлох боломжгүй байна.

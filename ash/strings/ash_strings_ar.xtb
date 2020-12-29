@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">يستخدم وضع "الألوان" التلقائي ألوانًا مُستخرَجة من الخلفية لتلوين الواجهة قليلاً.</translation>
 <translation id="112308213915226829">الإخفاء التلقائي للرف</translation>
 <translation id="1153356358378277386">الأجهزة المقترنة</translation>
+<translation id="1165712434476988950">عليك إعادة تشغيل الجهاز لتطبيق التحديث.</translation>
 <translation id="1175572348579024023">التمرير</translation>
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="118532027333893379">انقر في أي مكان لالتقاط صورة في وضع ملء الشاشة.</translation>
@@ -47,7 +48,7 @@
 <translation id="1302880136325416935">عرض إعدادات البلوتوث. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">قوة الإشارة <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">عرض الرف دائمًا</translation>
-<translation id="1316811122439383437">الحِمل: صور الشاشة الأخيرة والمحتويات التي تم تنزيلها والملفات التي تم تثبيتها</translation>
+<translation id="1316811122439383437">‏Tote: صور الشاشة الأخيرة وعمليات التنزيل والملفات التي تم تثبيتها</translation>
 <translation id="1333308631814936910">تم توصيل <ph name="DISPLAY_NAME" />.</translation>
 <translation id="1341651618736211726">القائمة الكاملة</translation>
 <translation id="1346748346194534595">يمين</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">إدخال نصي</translation>
 <translation id="1993072747612765854">مزيد من المعلومات حول آخر تحديث لتطبيق <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">إيقاف التشغيل</translation>
+<translation id="1998100899771863792">سطح المكتب الحالي</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">كتابة رسالة</translation>
 <translation id="2018630726571919839">أريد سماع نكتة</translation>
@@ -728,7 +730,7 @@
 <translation id="7654687942625752712">اضغط مع الاستمرار على مفتاحي مستوى الصوت لمدة خمس ثوانٍ لإيقاف التعليقات والملاحظات المنطوقة.</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7662283695561029522">النقر للإعداد</translation>
-<translation id="7683326293741220026">يبدو أنّه تم إيقاف اتصال البلوتوث على هاتفك. يُرجي تفعيل البلوتوث لاستخدام ميزة "مركز التحكم بالهاتف".</translation>
+<translation id="7683326293741220026">يبدو أنّه تم إيقاف اتصال البلوتوث على هاتفك. يُرجى تفعيل البلوتوث لاستخدام ميزة "مركز التحكم بالهاتف".</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{إشعار واحد}zero{# إشعار}two{إشعاران (#)}few{# إشعارات}many{# إشعارًا}other{# إشعار}}</translation>
 <translation id="7724603315864178912">قص</translation>
@@ -750,7 +752,7 @@
 <translation id="7886169021410746335">ضبط إعدادات الخصوصية</translation>
 <translation id="7886277072580235377">سيتم محو جلسة الإنترنت عند تسجيل الخروج. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">إرسال رسالة إلكترونية</translation>
-<translation id="7895348134893321514">الحِمل</translation>
+<translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">لقد ضغطت على اختصار لوحة المفاتيح لتدوير الشاشة. هل ترغب في تدوير الشاشة؟</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">المس مستشعر بصمات الإصبع.</translation>
@@ -898,6 +900,7 @@
 <translation id="9089416786594320554">أساليب الإدخال</translation>
 <translation id="9091626656156419976">تمت إزالة عرض <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">كتم صوت الهاتف</translation>
+<translation id="9099154003160514616">‏يتوفّر تحديث للإصدار الحالي من متصفِّح Lacros</translation>
 <translation id="9151726767154816831">‏إعادة التشغيل وإجراء Powerwash للتحديث</translation>
 <translation id="9166331175924255663">إيقاف/تفعيل وضع الظهور لجميع الأجهزة القريبة لميزة "المشاركة عن قرب"</translation>
 <translation id="9168436347345867845">تنفيذ ذلك لاحقًا</translation>
@@ -908,6 +911,7 @@
 <translation id="9198992156681343238">تم تغيير درجة دقة <ph name="DISPLAY_NAME" /> إلى <ph name="RESOLUTION" />. انقر على "تأكيد" لحفظ التغييرات. ستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446">حالة الاتصال <ph name="CONNECTION_STATUS" />، يديرها المشرف</translation>
 <translation id="9210037371811586452">جارٍ الخروج من وضع سطح المكتب الموحد</translation>
+<translation id="9211490828691860325">جميع أجهزة سطح المكتب</translation>
 <translation id="9211681782751733685">الوقت المتبقي حتى يتم شحن البطارية بالكامل<ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">ضبط الخلفية</translation>
 <translation id="921989828232331238">قفّل أحد الوالدين جهازك لليوم</translation>

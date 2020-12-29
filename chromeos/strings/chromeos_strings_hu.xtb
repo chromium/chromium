@@ -184,7 +184,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6232017090690406397">Akkumulátor</translation>
 <translation id="6325525973963619867">Nem sikerült</translation>
 <translation id="636850387210749493">Vállalat rögzítése</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Sikerült a beolvasott fájl mentése}other{Sikerült a beolvasott fájlok mentése}}</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Beolvasott fájl mentve}other{Beolvasott fájlok mentve}}</translation>
 <translation id="649050271426829538">Leállt – Papírelakadás</translation>
 <translation id="6517239166834772319">Felfedezés</translation>
 <translation id="6527081081771465939">Ismeretlen Wi-Fi biztonsági protokoll</translation>

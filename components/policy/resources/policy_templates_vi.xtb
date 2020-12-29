@@ -5046,9 +5046,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 
           Nếu hành động là tạm ngưng, thì bạn có thể định cấu hình <ph name="PRODUCT_OS_NAME" /> một cách riêng biệt thành khóa hoặc không khóa màn hình trước khi tạm ngưng.</translation>
 <translation id="8214600119442850823">Định cấu hình trình quản lý mật khẩu.</translation>
-<translation id="8219777886736887686">Nếu bạn đặt chính sách này, hệ thống sẽ kiểm soát lệnh nào dùng để mở URL trong trình duyệt thay thế. Bạn có thể đặt chính sách này thành một trong các giá trị <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> hoặc một đường dẫn tệp. Khi bạn đặt chính sách này thành một đường dẫn tệp, tệp đó sẽ được dùng làm tệp thực thi. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> và <ph name="EDGE_VALUE_PLACEHOLDER" /> chỉ dùng được trên <ph name="MS_WIN_NAME" />, còn <ph name="SAFARI_VALUE_PLACEHOLDER" /> chỉ dùng được trên <ph name="MS_WIN_NAME" /> và <ph name="MAC_OS_NAME" />.
-
-      Nếu bạn không đặt chính sách này, một giá trị mặc định dành riêng cho nền tảng sẽ được đưa vào sử dụng là: <ph name="IE_PRODUCT_NAME" /> đối với <ph name="MS_WIN_NAME" /> hoặc <ph name="SAFARI_PRODUCT_NAME" /> đối với <ph name="MAC_OS_NAME" />. Trên <ph name="LINUX_OS_NAME" />, trình duyệt thay thế sẽ không chạy được.</translation>
 <translation id="8220156281401380422">Định cấu hình danh sách cho phép máy chủ nhắn tin gốc</translation>
 <translation id="8244171102276095471">Bật bộ mật mã RC4 trong TLS</translation>
 <translation id="8244525275280476362">Độ trễ tìm nạp tối đa sau khi hủy hiệu lực chính sách</translation>

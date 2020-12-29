@@ -1362,6 +1362,7 @@
 <translation id="6389470377220713856">카드 명의</translation>
 <translation id="6390200185239044127">Z 폴드 하프</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6393956493820063117">관리자 정책에 의해 <ph name="ORIGIN_NAME" />에서 이 위치로 붙여넣는 작업이 차단되었습니다.</translation>
 <translation id="6401136357288658127">지원 중단된 정책입니다. <ph name="NEW_POLICY" /> 정책을 대신 사용해야 합니다.</translation>
 <translation id="6404511346730675251">북마크 수정</translation>
 <translation id="6406765186087300643">C0(봉투)</translation>
@@ -1853,6 +1854,7 @@
 <translation id="8371889962595521444">맞춤 루트 인증서</translation>
 <translation id="8380941800586852976">위험</translation>
 <translation id="8381674639488873545">이러한 금액 청구는 일회성이거나 반복적일 수 있으며 불분명한 방식으로 이루어질 수도 있습니다. <ph name="BEGIN_LINK" />사이트 표시하기<ph name="END_LINK" /></translation>
+<translation id="8390725133630534698">관리자 정책에 의해 <ph name="ORIGIN_NAME" />에서 <ph name="VM_NAME" /> VM으로 공유하는 작업이 차단되었습니다.</translation>
 <translation id="8412145213513410671">비정상 종료(<ph name="CRASH_COUNT" />회)</translation>
 <translation id="8412392972487953978">동일한 암호를 두 번 입력해야 합니다.</translation>
 <translation id="8416694386774425977">네트워크 설정이 잘못되어 가져올 수 없습니다.

@@ -19,6 +19,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1119348796022671382">Litastilling með þema notar liti sem dregnir eru úr veggfóðrinu til að gefa viðmótinu léttan litablæ.</translation>
 <translation id="112308213915226829">Fela hillu sjálfkrafa</translation>
 <translation id="1153356358378277386">Pöruð tæki</translation>
+<translation id="1165712434476988950">Endurræsa þarf tækið til að nota uppfærsluna.</translation>
 <translation id="1175572348579024023">Fletta</translation>
 <translation id="1178581264944972037">Gera hlé</translation>
 <translation id="118532027333893379">Ýttu hvar sem er til að mynda allan skjáinn</translation>
@@ -118,6 +119,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1978498689038657292">Textainnsláttur</translation>
 <translation id="1993072747612765854">Frekari upplýsingar um nýjustu uppfærslu <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Slökkva</translation>
+<translation id="1998100899771863792">Núverandi skrifborð</translation>
 <translation id="2012624427112548395">Ctrl+leitarhnappur+H</translation>
 <translation id="2016340657076538683">Sláðu inn skilaboð</translation>
 <translation id="2018630726571919839">Segðu mér brandara</translation>
@@ -897,6 +899,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="9089416786594320554">Innsláttaraðferðir</translation>
 <translation id="9091626656156419976">Skjárinn <ph name="DISPLAY_NAME" /> var fjarlægður</translation>
 <translation id="9098969848082897657">Slökkva á hljóði síma</translation>
+<translation id="9099154003160514616">Uppfærsla fyrir Lacros er í boði</translation>
 <translation id="9151726767154816831">Endurræstu og djúphreinsaðu tækið til að uppfæra</translation>
 <translation id="9166331175924255663">Veldu/afveldu mikinn sýnileika nærdeilingar.</translation>
 <translation id="9168436347345867845">Gera þetta seinna</translation>
@@ -907,6 +910,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="9198992156681343238">Upplausn <ph name="DISPLAY_NAME" /> breytt í <ph name="RESOLUTION" />. Veldu „Staðfesta“ til að halda breytingum. Fyrri stillingar verða valdar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, stjórnað af kerfisstjóra</translation>
 <translation id="9210037371811586452">Hættir í sameinaðri skjáborðsstillingu</translation>
+<translation id="9211490828691860325">Öll skrifborð</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> eftir þar til rafhlaðan er fullhlaðin.</translation>
 <translation id="9215934040295798075">Velja veggfóður</translation>
 <translation id="921989828232331238">Foreldri þitt læsti tækinu þínu fyrir daginn</translation>

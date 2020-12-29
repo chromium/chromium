@@ -1619,6 +1619,7 @@
 <translation id="2791529110887957050">Linux काढून टाका</translation>
 <translation id="2791952154587244007">एक एरर आली. कियोस्क ॲप्लिकेशन या डिव्हाइसवर ऑटो लाँच करणे शक्य होणार नाही.</translation>
 <translation id="2792290659606763004">Android ॲप्स काढून टाकायचे?</translation>
+<translation id="2792465461386711506">तुमच्या फोनवरून अलीकडील Chrome टॅब पाहण्यासाठी, Chrome सिंक सुरू करा</translation>
 <translation id="2794233252405721443">साइट अवरोधित केली</translation>
 <translation id="2795716239552913152">संबंधित वैशिष्ट्ये किंवा स्थानिक बातम्या अथवा जवळपासची दुकाने यांसारख्या माहितीसाठी साइट सामान्यपणे तुमचे स्थान वापरतात</translation>
 <translation id="2796424461616874739">Authentication timeout while connecting to "<ph name="DEVICE_NAME" />".</translation>
@@ -2570,7 +2571,7 @@
 <translation id="3862788408946266506">'kiosk_only' मॅनिफेस्ट विशेषता असलेले अ‍ॅप Chrome OS कियोस्क मोडमध्ये इंस्टॉल केले जाणे आवश्यक आहे</translation>
 <translation id="3865414814144988605">रिझोल्युशन</translation>
 <translation id="3866249974567520381">वर्णन</translation>
-<translation id="3867134342671430205">डिस्प्ले हलवण्यासाठी एरो की ड्रॅग करा किंवा वापरा</translation>
+<translation id="3867134342671430205">डिस्प्ले हलवण्यासाठी अ‍ॅरो की ड्रॅग करा किंवा वापरा</translation>
 <translation id="3867944738977021751">सर्टिफिकेट फील्ड</translation>
 <translation id="3869917919960562512">चुकीची अनुक्रमणिका</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" /> साठी सेव्ह केलेले पासवर्ड नाहीत</translation>
@@ -3247,6 +3248,7 @@
 <translation id="4671265665487288124">साइट एकाहून अधिक फाइल आपोआप डाउनलोड करण्यासाठी विचारू शकतात (शिफारस केलेले)</translation>
 <translation id="46733273239502219">इंस्टॉल केलेल्या ॲप्समधील ऑफलाइन डेटादेखील साफ केला जाईल</translation>
 <translation id="4673442866648850031">स्टायलस काढल्यानंतर स्टायलस टूल उघडा</translation>
+<translation id="4676595058027112862">फोन हब, अधिक जाणून घ्या</translation>
 <translation id="4677772697204437347">GPU मेमरी</translation>
 <translation id="467823995058589466">कॅमेरा बंद आहे</translation>
 <translation id="4680105648806843642">या पेजवर आवाज म्यूट केला होता</translation>
@@ -6316,6 +6318,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8227119283605456246">फाईल संलग्न करा</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> साठी पासवर्ड सेव्ह करायचा आहे का?</translation>
 <translation id="8234795456569844941">कृपया आमच्या इंजिनियरना ही समस्या सोडवण्यात मदत करा. तुम्हाला प्रोफाइल एरर मिळण्याआधी नेमके काय झाले ते आम्हाला सांगा:</translation>
+<translation id="8235605354099176425">Chrome टॅब पाहण्यासाठी <ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> सुरू करा.<ph name="LINK2_BEGIN" />अधिक जाणून घ्या<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">त्याऐवजी हा टॅब शेअर करा</translation>
 <translation id="8237647586961940482">गडद गुलाबी आणि लाल</translation>
 <translation id="8239032431519548577">एंटरप्राइझ नोंदणी पूर्ण झाली</translation>
@@ -7044,6 +7047,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9044646465488564462">नेटवर्कशी कनेक्ट करण्यात अयशस्वी: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Google वरून ज्या पेजवर तुम्ही पोहोचण्याचा प्रयत्न करत आहात त्याचा वेब पत्ता पाठवते</translation>
 <translation id="9046895021617826162">कनेक्ट करण्यात अयशस्वी</translation>
+<translation id="9048745018038487540">सर्व फॉंट निवडा</translation>
 <translation id="9050666287014529139">सांकेतिक पासफ्रेझ</translation>
 <translation id="9052208328806230490">तुम्ही तुमचे मुद्रक <ph name="EMAIL" /> खाते वापरून <ph name="CLOUD_PRINT_NAME" /> सह नोंदणीकृत केले आहेत</translation>
 <translation id="9052404922357793350">ब्लॉक करणे सुरू ठेवा</translation>
