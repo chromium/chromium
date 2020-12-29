@@ -83,7 +83,6 @@ function ImageLoader() {
   });
 }
 
-
 /**
  * List of extensions allowed to perform image requests.
  *
@@ -94,6 +93,7 @@ ImageLoader.ALLOWED_CLIENT_ORIGINS = [
   'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj',  // File Manager
   'chrome-extension://nlkncpkkdoccmpiclbokaimcnedabhhm',  // Gallery
   'chrome-extension://jcgeabjmjgoblfofpppfkcoakmfobdko',  // Video Player
+  'chrome://file-manager',  // File Manager SWA
 ];
 
 /**

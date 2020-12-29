@@ -20,6 +20,16 @@
     "page": "background.html",
     "persistent": false
   },
+  "externally_connectable": {
+    "ids": [
+      "hhaomjibdihmijegdhdafkllkbggdgoj",  // File Manager
+      "nlkncpkkdoccmpiclbokaimcnedabhhm",  // Gallery
+      "jcgeabjmjgoblfofpppfkcoakmfobdko"   // Video Player
+    ],
+    "matches": [
+      "chrome://file-manager/*"  // File Manager SWA
+    ]
+  },
   "natively_connectable": ["com.google.holding_space_thumbnail_loader"],
   "web_accessible_resources": ["image_loader_client.js"]
 }
