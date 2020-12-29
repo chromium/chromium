@@ -47,6 +47,7 @@ dependencies {
     compile "androidx.lifecycle:lifecycle-runtime:${androidXArchComponentsVersion}"
     compile "androidx.lifecycle:lifecycle-common:${androidXArchComponentsVersion}"
     compile "androidx.lifecycle:lifecycle-common-java8:${androidXArchComponentsVersion}"
+    compile "androidx.lifecycle:lifecycle-livedata:${androidXArchComponentsVersion}"
     compile "androidx.lifecycle:lifecycle-livedata-core:${androidXArchComponentsVersion}"
     compile "androidx.lifecycle:lifecycle-viewmodel:${androidXArchComponentsVersion}"
 
@@ -88,7 +89,7 @@ dependencies {
     // Those are for use by doubledown libraries.
     compile "androidx.arch.core:core-common:2.2.0-SNAPSHOT"
     compile "androidx.annotation:annotation-experimental:1.1.0-SNAPSHOT"
-    compile "androidx.legacy:legacy-support-core-utils:1.0.0"
+    compile "androidx.legacy:legacy-support-core-utils:1.1.0-SNAPSHOT"
     compile "androidx.lifecycle:lifecycle-runtime:${androidXSupportLibVersion}"
     compile "androidx.transition:transition:1.4.0-SNAPSHOT"
     compile "androidx.viewpager2:viewpager2:1.1.0-SNAPSHOT"

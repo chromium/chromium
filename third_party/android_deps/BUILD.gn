@@ -438,7 +438,7 @@ android_aar_prebuilt("androidx_leanback_leanback_preference_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_legacy_legacy_support_core_utils_java") {
-  aar_path = "libs/androidx_legacy_legacy_support_core_utils/legacy-support-core-utils-1.0.0.aar"
+  aar_path = "libs/androidx_legacy_legacy_support_core_utils/legacy-support-core-utils-1.1.0-SNAPSHOT.aar"
   info_path = "libs/androidx_legacy_legacy_support_core_utils/androidx_legacy_legacy_support_core_utils.info"
   deps = [
     ":androidx_annotation_annotation_java",
@@ -484,6 +484,19 @@ java_prebuilt("androidx_lifecycle_lifecycle_common_java8_java") {
     ":androidx_annotation_annotation_java",
     ":androidx_lifecycle_lifecycle_common_java",
   ]
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("androidx_lifecycle_lifecycle_livedata_java") {
+  aar_path =
+      "libs/androidx_lifecycle_lifecycle_livedata/lifecycle-livedata-2.0.0.aar"
+  info_path = "libs/androidx_lifecycle_lifecycle_livedata/androidx_lifecycle_lifecycle_livedata.info"
+  deps = [
+    ":androidx_arch_core_core_common_java",
+    ":androidx_arch_core_core_runtime_java",
+    ":androidx_lifecycle_lifecycle_livedata_core_java",
+  ]
+  resource_overlay = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1909,7 +1922,8 @@ android_aar_prebuilt("androidx_cursoradapter_cursoradapter_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_documentfile_documentfile_java") {
-  aar_path = "libs/androidx_documentfile_documentfile/documentfile-1.0.0.aar"
+  aar_path =
+      "libs/androidx_documentfile_documentfile/documentfile-1.1.0-SNAPSHOT.aar"
   info_path = "libs/androidx_documentfile_documentfile/androidx_documentfile_documentfile.info"
 
   # To remove visibility constraint, add this dependency to
@@ -1957,23 +1971,6 @@ android_aar_prebuilt("androidx_legacy_legacy_support_core_ui_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_lifecycle_lifecycle_livedata_java") {
-  aar_path =
-      "libs/androidx_lifecycle_lifecycle_livedata/lifecycle-livedata-2.0.0.aar"
-  info_path = "libs/androidx_lifecycle_lifecycle_livedata/androidx_lifecycle_lifecycle_livedata.info"
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-  deps = [
-    ":androidx_arch_core_core_common_java",
-    ":androidx_arch_core_core_runtime_java",
-    ":androidx_lifecycle_lifecycle_livedata_core_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_lifecycle_lifecycle_viewmodel_savedstate_java") {
   aar_path = "libs/androidx_lifecycle_lifecycle_viewmodel_savedstate/lifecycle-viewmodel-savedstate-2.2.0.aar"
   info_path = "libs/androidx_lifecycle_lifecycle_viewmodel_savedstate/androidx_lifecycle_lifecycle_viewmodel_savedstate.info"
@@ -1992,7 +1989,7 @@ android_aar_prebuilt("androidx_lifecycle_lifecycle_viewmodel_savedstate_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_loader_loader_java") {
-  aar_path = "libs/androidx_loader_loader/loader-1.0.0.aar"
+  aar_path = "libs/androidx_loader_loader/loader-1.2.0-SNAPSHOT.aar"
   info_path = "libs/androidx_loader_loader/androidx_loader_loader.info"
 
   # To remove visibility constraint, add this dependency to
@@ -2000,8 +1997,9 @@ android_aar_prebuilt("androidx_loader_loader_java") {
   visibility = [ ":*" ]
   deps = [
     ":androidx_annotation_annotation_java",
+    ":androidx_collection_collection_java",
     ":androidx_core_core_java",
-    ":androidx_lifecycle_lifecycle_livedata_java",
+    ":androidx_lifecycle_lifecycle_livedata_core_java",
     ":androidx_lifecycle_lifecycle_viewmodel_java",
   ]
   resource_overlay = true
@@ -2024,7 +2022,7 @@ android_aar_prebuilt("androidx_palette_palette_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_print_print_java") {
-  aar_path = "libs/androidx_print_print/print-1.0.0.aar"
+  aar_path = "libs/androidx_print_print/print-1.1.0-SNAPSHOT.aar"
   info_path = "libs/androidx_print_print/androidx_print_print.info"
 
   # To remove visibility constraint, add this dependency to
