@@ -74,9 +74,10 @@ NewTabUI::NewTabUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
                                            profile->GetOriginalProfile()));
 
   pref_change_registrar_.Init(profile->GetPrefs());
-  pref_change_registrar_.Add(bookmarks::prefs::kShowBookmarkBar,
-                             base::Bind(&NewTabUI::OnShowBookmarkBarChanged,
-                                        base::Unretained(this)));
+  pref_change_registrar_.Add(
+      bookmarks::prefs::kShowBookmarkBar,
+      base::BindRepeating(&NewTabUI::OnShowBookmarkBarChanged,
+                          base::Unretained(this)));
 }
 
 NewTabUI::~NewTabUI() {}

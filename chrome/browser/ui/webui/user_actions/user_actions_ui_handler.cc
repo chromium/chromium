@@ -10,8 +10,8 @@
 #include "content/public/browser/web_ui.h"
 
 UserActionsUIHandler::UserActionsUIHandler()
-    : action_callback_(base::Bind(&UserActionsUIHandler::OnUserAction,
-                                  base::Unretained(this))) {}
+    : action_callback_(base::BindRepeating(&UserActionsUIHandler::OnUserAction,
+                                           base::Unretained(this))) {}
 
 UserActionsUIHandler::~UserActionsUIHandler() {
   base::RemoveActionCallback(action_callback_);

@@ -200,10 +200,10 @@ void DownloadsListTracker::OnDownloadRemoved(DownloadManager* manager,
 DownloadsListTracker::DownloadsListTracker(
     DownloadManager* download_manager,
     mojo::PendingRemote<downloads::mojom::Page> page,
-    base::Callback<bool(const DownloadItem&)> should_show)
+    base::RepeatingCallback<bool(const DownloadItem&)> should_show)
     : main_notifier_(download_manager, this),
       page_(std::move(page)),
-      should_show_(should_show) {
+      should_show_(std::move(should_show)) {
   DCHECK(page_);
   Init();
 }

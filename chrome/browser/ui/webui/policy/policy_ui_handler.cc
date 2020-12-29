@@ -261,7 +261,7 @@ class PolicyStatusProvider {
   virtual ~PolicyStatusProvider();
 
   // Sets a callback to invoke upon status changes.
-  void SetStatusChangeCallback(const base::Closure& callback);
+  void SetStatusChangeCallback(const base::RepeatingClosure& callback);
 
   virtual void GetStatus(base::DictionaryValue* dict);
 
@@ -269,7 +269,7 @@ class PolicyStatusProvider {
   void NotifyStatusChange();
 
  private:
-  base::Closure callback_;
+  base::RepeatingClosure callback_;
 
   DISALLOW_COPY_AND_ASSIGN(PolicyStatusProvider);
 };
@@ -468,7 +468,7 @@ PolicyStatusProvider::PolicyStatusProvider() {}
 PolicyStatusProvider::~PolicyStatusProvider() {}
 
 void PolicyStatusProvider::SetStatusChangeCallback(
-    const base::Closure& callback) {
+    const base::RepeatingClosure& callback) {
   callback_ = callback;
 }
 

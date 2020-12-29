@@ -697,9 +697,9 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
   // First time we get here we set up the observer so that we can tell update
   // the apps as they change.
   if (!has_loaded_apps_) {
-    base::Closure callback = base::Bind(
-        &AppLauncherHandler::OnExtensionPreferenceChanged,
-        base::Unretained(this));
+    base::RepeatingClosure callback =
+        base::BindRepeating(&AppLauncherHandler::OnExtensionPreferenceChanged,
+                            base::Unretained(this));
     extension_pref_change_registrar_.Init(
         ExtensionPrefs::Get(profile)->pref_service());
     extension_pref_change_registrar_.Add(
@@ -1031,7 +1031,7 @@ void AppLauncherHandler::HandleShowAppInfo(const base::ListValue* args) {
 
   ShowAppInfoInNativeDialog(web_ui()->GetWebContents(),
                             Profile::FromWebUI(web_ui()), extension,
-                            base::Closure());
+                            base::RepeatingClosure());
 }
 
 void AppLauncherHandler::HandleReorderApps(const base::ListValue* args) {

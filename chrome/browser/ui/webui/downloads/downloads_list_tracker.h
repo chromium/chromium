@@ -63,9 +63,10 @@ class DownloadsListTracker
 
  protected:
   // Testing constructor.
-  DownloadsListTracker(content::DownloadManager* download_manager,
-                       mojo::PendingRemote<downloads::mojom::Page> page,
-                       base::Callback<bool(const download::DownloadItem&)>);
+  DownloadsListTracker(
+      content::DownloadManager* download_manager,
+      mojo::PendingRemote<downloads::mojom::Page> page,
+      base::RepeatingCallback<bool(const download::DownloadItem&)>);
 
   // Creates a dictionary value that's sent to the page as JSON.
   virtual downloads::mojom::DataPtr CreateDownloadData(
@@ -114,7 +115,7 @@ class DownloadsListTracker
 
   // Callback used to determine if an item should show on the page. Set to
   // |ShouldShow()| in default constructor, passed in while testing.
-  base::Callback<bool(const download::DownloadItem&)> should_show_;
+  base::RepeatingCallback<bool(const download::DownloadItem&)> should_show_;
 
   // When this is true, all changes to downloads that affect the page are sent
   // via JavaScript.

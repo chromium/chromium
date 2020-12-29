@@ -71,7 +71,7 @@ class WebUITestHandler {
   bool run_test_succeeded_;
 
   // Quits the currently running RunLoop.
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(WebUITestHandler);
 };

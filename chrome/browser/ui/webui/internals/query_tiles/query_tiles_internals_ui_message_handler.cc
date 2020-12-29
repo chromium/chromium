@@ -38,18 +38,21 @@ void QueryTilesInternalsUIMessageHandler::RegisterMessages() {
 
   web_ui()->RegisterMessageCallback(
       "getServiceStatus",
-      base::Bind(&QueryTilesInternalsUIMessageHandler::HandleGetServiceStatus,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &QueryTilesInternalsUIMessageHandler::HandleGetServiceStatus,
+          weak_ptr_factory_.GetWeakPtr()));
 
   web_ui()->RegisterMessageCallback(
       "getTileData",
-      base::Bind(&QueryTilesInternalsUIMessageHandler::HandleGetTileData,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &QueryTilesInternalsUIMessageHandler::HandleGetTileData,
+          weak_ptr_factory_.GetWeakPtr()));
 
   web_ui()->RegisterMessageCallback(
       "setServerUrl",
-      base::Bind(&QueryTilesInternalsUIMessageHandler::HandleSetServerUrl,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &QueryTilesInternalsUIMessageHandler::HandleSetServerUrl,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void QueryTilesInternalsUIMessageHandler::HandleGetTileData(

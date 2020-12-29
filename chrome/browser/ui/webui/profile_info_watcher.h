@@ -22,7 +22,7 @@ class IdentityManager;
 // username changes).
 class ProfileInfoWatcher : public ProfileAttributesStorage::Observer {
  public:
-  ProfileInfoWatcher(Profile* profile, const base::Closure& callback);
+  ProfileInfoWatcher(Profile* profile, base::RepeatingClosure callback);
   ~ProfileInfoWatcher() override;
 
   // Gets the authenticated username (e.g. username@gmail.com) for |profile_|.
@@ -43,7 +43,7 @@ class ProfileInfoWatcher : public ProfileAttributesStorage::Observer {
   Profile* const profile_;
 
   // Called when the authenticated username changes.
-  base::Closure callback_;
+  base::RepeatingClosure callback_;
 
   BooleanPrefMember signin_allowed_pref_;
 

@@ -84,8 +84,8 @@ AppLauncherLoginHandler::~AppLauncherLoginHandler() {}
 void AppLauncherLoginHandler::RegisterMessages() {
   profile_info_watcher_ = std::make_unique<ProfileInfoWatcher>(
       Profile::FromWebUI(web_ui()),
-      base::Bind(&AppLauncherLoginHandler::UpdateLogin,
-                 base::Unretained(this)));
+      base::BindRepeating(&AppLauncherLoginHandler::UpdateLogin,
+                          base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
       "initializeSyncLogin",

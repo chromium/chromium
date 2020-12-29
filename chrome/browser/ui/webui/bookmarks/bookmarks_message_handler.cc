@@ -33,12 +33,12 @@ void BookmarksMessageHandler::OnJavascriptAllowed() {
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
       prefs::kIncognitoModeAvailability,
-      base::Bind(&BookmarksMessageHandler::UpdateIncognitoAvailability,
-                 base::Unretained(this)));
+      base::BindRepeating(&BookmarksMessageHandler::UpdateIncognitoAvailability,
+                          base::Unretained(this)));
   pref_change_registrar_.Add(
       bookmarks::prefs::kEditBookmarksEnabled,
-      base::Bind(&BookmarksMessageHandler::UpdateCanEditBookmarks,
-                 base::Unretained(this)));
+      base::BindRepeating(&BookmarksMessageHandler::UpdateCanEditBookmarks,
+                          base::Unretained(this)));
 }
 
 void BookmarksMessageHandler::OnJavascriptDisallowed() {

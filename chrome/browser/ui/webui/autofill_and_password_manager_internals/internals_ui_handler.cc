@@ -128,7 +128,7 @@ void InternalsUIHandler::OnResetCache(const base::ListValue* args) {
     content::BrowserContext* browser_context = Profile::FromWebUI(web_ui());
     autofill_cache_resetter_.emplace(browser_context);
   }
-  autofill_cache_resetter_->ResetCache(base::Bind(
+  autofill_cache_resetter_->ResetCache(base::BindOnce(
       &InternalsUIHandler::OnResetCacheDone, base::Unretained(this)));
 }
 

@@ -255,7 +255,7 @@ void SupervisedUserInternalsMessageHandler::SendBasicInfo() {
   SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
   user_settings_subscription_ =
-      settings_service->SubscribeForSettingsChange(base::Bind(
+      settings_service->SubscribeForSettingsChange(base::BindRepeating(
           &SupervisedUserInternalsMessageHandler::SendSupervisedUserSettings,
           weak_factory_.GetWeakPtr()));
 }

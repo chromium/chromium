@@ -15,9 +15,9 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-ProfileInfoWatcher::ProfileInfoWatcher(
-    Profile* profile, const base::Closure& callback)
-    : profile_(profile), callback_(callback) {
+ProfileInfoWatcher::ProfileInfoWatcher(Profile* profile,
+                                       base::RepeatingClosure callback)
+    : profile_(profile), callback_(std::move(callback)) {
   DCHECK(profile_);
   DCHECK(!callback_.is_null());
 

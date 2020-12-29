@@ -167,8 +167,8 @@ NTPResourceCache::NTPResourceCache(Profile* profile)
                  content::Source<ThemeService>(
                      ThemeServiceFactory::GetForProfile(profile)));
 
-  base::Closure callback = base::Bind(&NTPResourceCache::OnPreferenceChanged,
-                                      base::Unretained(this));
+  base::RepeatingClosure callback = base::BindRepeating(
+      &NTPResourceCache::OnPreferenceChanged, base::Unretained(this));
 
   // Watch for pref changes that cause us to need to invalidate the HTML cache.
   profile_pref_change_registrar_.Init(profile_->GetPrefs());
