@@ -2841,11 +2841,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "fullscreen-controller-browser-scoped",
-    "owners": [ "thegreenfrog", "bling-flags@google.com" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "fullscreen-viewport-adjustment-experiment",
     "owners": [ "thegreenfrog", "bling-flags@google.com" ],
     // Needed for manual testing of fallback flow on iOS.

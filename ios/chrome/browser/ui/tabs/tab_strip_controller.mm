@@ -30,7 +30,7 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
 #include "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
+#include "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #include "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
@@ -122,9 +122,7 @@ UIColor* BackgroundColor() {
     // However, when using the fullscreen provider, the WKWebView extends behind
     // the tab strip. In this case, a clear background would lead to seeing the
     // WKWebView instead of the thumb strip.
-    return ios::GetChromeBrowserProvider()
-                   ->GetFullscreenProvider()
-                   ->IsInitialized()
+    return fullscreen::features::ShouldUseSmoothScrolling()
                ? UIColor.blackColor
                : UIColor.clearColor;
   }
@@ -833,13 +831,8 @@ UIColor* BackgroundColor() {
     [self removeAutoscrollTimer];
 
   // Disable fullscreen during drags.
-  if (fullscreen::features::ShouldScopeFullscreenControllerToBrowser()) {
-    _fullscreenDisabler = std::make_unique<ScopedFullscreenDisabler>(
-        FullscreenController::FromBrowser(_browser));
-  } else {
-    _fullscreenDisabler = std::make_unique<ScopedFullscreenDisabler>(
-        FullscreenController::FromBrowserState(_browser->GetBrowserState()));
-  }
+  _fullscreenDisabler = std::make_unique<ScopedFullscreenDisabler>(
+      FullscreenController::FromBrowser(_browser));
 }
 
 - (void)continueDrag:(UILongPressGestureRecognizer*)gesture {
@@ -1785,7 +1778,7 @@ UIColor* BackgroundColor() {
 
 #pragma mark - ViewRevealingAnimatee
 - (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
-  // Specifically when using the FullscreenProvider, the background of the view
+  // Specifically when Smooth Scrolling is on, the background of the view
   // is non-clear to cover the WKWebView. In this case, make the tab strip
   // background clear as soon as view revealing begins so any animations that
   // should be visible behind the tab strip are visible. See the comment on

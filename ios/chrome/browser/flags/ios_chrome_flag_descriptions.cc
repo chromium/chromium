@@ -223,12 +223,6 @@ const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "
     "disabled, the the web view's frame are updated.";
 
-const char kFullscreenControllerBrowserScopedName[] =
-    "Scope FullscreenController to Browser";
-const char kFullscreenControllerBrowserScopedDescription[] =
-    "When enabled, FullscreenController will be stored and retrieved using the "
-    "Browser.";
-
 const char kIncognitoAuthenticationName[] =
     "Device Authentication for Incognito";
 extern const char kIncognitoAuthenticationDescription[] =

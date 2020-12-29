@@ -306,7 +306,7 @@ void FullscreenModel::UpdateDisabledCounterForContentHeight() {
   // The model should be disabled when the content fits.
   CGFloat disabling_threshold = scroll_view_height_;
   if (resizes_scroll_view_) {
-    // When the FullscreenProvider is disabled, the scroll view can sometimes be
+    // When Smooth Scrolling is disabled, the scroll view can sometimes be
     // resized to account for the viewport insets after the page has been
     // rendered, so account for the maximum toolbar insets in the threshold.
     disabling_threshold += expanded_toolbar_height_ + bottom_toolbar_height_;

@@ -78,13 +78,8 @@
   DCHECK(self.positioner);
 
   // Creates the LegacyInfobarContainerVC.
-  FullscreenController* controller;
-  if (fullscreen::features::ShouldScopeFullscreenControllerToBrowser()) {
-    controller = FullscreenController::FromBrowser(self.browser);
-  } else {
-    controller =
-        FullscreenController::FromBrowserState(self.browser->GetBrowserState());
-  }
+  FullscreenController* controller =
+      FullscreenController::FromBrowser(self.browser);
   LegacyInfobarContainerViewController* legacyContainer =
       [[LegacyInfobarContainerViewController alloc]
           initWithFullscreenController:controller];

@@ -428,12 +428,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSaveCardInfobarEditSupport)},
-    {"fullscreen-controller-browser-scoped",
-     flag_descriptions::kFullscreenControllerBrowserScopedName,
-     flag_descriptions::kFullscreenControllerBrowserScopedDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         fullscreen::features::kFullscreenControllerBrowserScoped)},
     {"managed-bookmarks-ios", flag_descriptions::kManagedBookmarksIOSName,
      flag_descriptions::kManagedBookmarksIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kManagedBookmarksIOS)},

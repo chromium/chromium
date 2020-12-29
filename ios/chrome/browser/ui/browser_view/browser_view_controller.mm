@@ -746,12 +746,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _webStateDelegate.reset(new web::WebStateDelegateBridge(self));
     _inNewTabAnimation = NO;
 
-    if (fullscreen::features::ShouldScopeFullscreenControllerToBrowser()) {
       _fullscreenController = FullscreenController::FromBrowser(browser);
-    } else {
-      _fullscreenController =
-          FullscreenController::FromBrowserState(browser->GetBrowserState());
-    }
 
     _footerFullscreenProgress = 1.0;
 
@@ -918,11 +913,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
            webStateList:self.browser->GetWebStateList()];
     StartBroadcastingMainContentUI(self, broadcaster);
 
-    if (!fullscreen::features::ShouldScopeFullscreenControllerToBrowser()) {
-      self.fullscreenController->SetWebStateList(
-          self.browser->GetWebStateList());
-    }
-
     _fullscreenUIUpdater =
         std::make_unique<FullscreenUIUpdater>(self.fullscreenController, self);
     [self updateForFullscreenProgress:self.fullscreenController->GetProgress()];
@@ -936,10 +926,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _webMainContentUIForwarder = nil;
 
     _fullscreenUIUpdater = nullptr;
-
-    if (!fullscreen::features::ShouldScopeFullscreenControllerToBrowser()) {
-      self.fullscreenController->SetWebStateList(nullptr);
-    }
   }
 }
 
@@ -1910,9 +1896,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)installFakeStatusBar {
-  if (IsThumbStripEnabled() && !ios::GetChromeBrowserProvider()
-                                    ->GetFullscreenProvider()
-                                    ->IsInitialized()) {
+  if (IsThumbStripEnabled() &&
+      !fullscreen::features::ShouldUseSmoothScrolling()) {
     // A fake status bar on the browser view is not necessary when the thumb
     // strip feature is enabled because the view behind the browser view already
     // has a dark background. Adding a fake status bar would block the
@@ -2423,10 +2408,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // Make new content visible, resizing it first as the orientation may
     // have changed from the last time it was displayed.
     CGRect webStateViewFrame = self.contentArea.bounds;
-    if (!ios::GetChromeBrowserProvider()
-             ->GetFullscreenProvider()
-             ->IsInitialized()) {
-      // If the FullscreenProvider is initialized, the WebState view is not
+    if (!fullscreen::features::ShouldUseSmoothScrolling()) {
+      // If the Smooth Scrolling is on, the WebState view is not
       // resized, and should always match the bounds of the content area.  When
       // the provider is not initialized, viewport insets resize the webview, so
       // they should be accounted for here to prevent animation jitter.
@@ -2913,7 +2896,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [_fakeStatusBarView removeFromSuperview];
 
   if (currentViewRevealState == ViewRevealState::Hidden) {
-    // When the Fullscreen Provider is used, the web content extends up to the
+    // When Smooth Scrolling is enabled, the web content extends up to the
     // top of the BVC view. It has a visible background and blocks the thumb
     // strip. Thus, when the view revealing process starts, the web content
     // frame must be moved down and the content inset is decreased. To prevent
@@ -2987,9 +2970,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // See the comments in |-willAnimateViewReveal:| for the explantation of why
     // this is necessary.
     if (self.currentWebState && ![self isNTPActiveForCurrentWebState] &&
-        ios::GetChromeBrowserProvider()
-            ->GetFullscreenProvider()
-            ->IsInitialized()) {
+        fullscreen::features::ShouldUseSmoothScrolling()) {
       CGFloat toolbarHeight = [self expandedTopToolbarHeight];
       CGRect webStateViewFrame = UIEdgeInsetsInsetRect(
           [self viewForWebState:self.currentWebState].frame,

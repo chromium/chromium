@@ -193,11 +193,6 @@ extern const char kForceUnstackedTabstripDescription[];
 extern const char kFullscreenSmoothScrollingName[];
 extern const char kFullscreenSmoothScrollingDescription[];
 
-// Title and description for the flag to scope FullscreenController to a
-// Browser.
-extern const char kFullscreenControllerBrowserScopedName[];
-extern const char kFullscreenControllerBrowserScopedDescription[];
-
 // Title and dscription for the flag to allow biometric authentication for
 // accessing incognito.
 extern const char kIncognitoAuthenticationName[];

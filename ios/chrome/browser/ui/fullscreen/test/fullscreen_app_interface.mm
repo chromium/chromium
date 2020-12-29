@@ -32,18 +32,14 @@
     return UIEdgeInsetsZero;
   ChromeBrowserState* browserState =
       ChromeBrowserState::FromBrowserState(webState->GetBrowserState());
-  FullscreenController* fullscreenController;
-  if (fullscreen::features::ShouldScopeFullscreenControllerToBrowser()) {
-    // TODO: (crbug.com/1063516): Retrieve Browser-scoped FullscreenController
-    // in a better way.
-    std::set<Browser*> browsers =
-        BrowserListFactory::GetForBrowserState(browserState)
-            ->AllRegularBrowsers();
-    DCHECK(browsers.size() == 1);
-    fullscreenController = FullscreenController::FromBrowser(*browsers.begin());
-  } else {
-    fullscreenController = FullscreenController::FromBrowserState(browserState);
-  }
+  // TODO: (crbug.com/1063516): Retrieve Browser-scoped FullscreenController
+  // in a better way.
+  std::set<Browser*> browsers =
+      BrowserListFactory::GetForBrowserState(browserState)
+          ->AllRegularBrowsers();
+  DCHECK(browsers.size() == 1);
+  FullscreenController* fullscreenController =
+      FullscreenController::FromBrowser(*browsers.begin());
   if (!fullscreenController)
     return UIEdgeInsetsZero;
   return fullscreenController->GetCurrentViewportInsets();

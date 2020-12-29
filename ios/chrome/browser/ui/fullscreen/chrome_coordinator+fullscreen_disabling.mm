@@ -63,12 +63,8 @@ const void* const kFullscreenDisablerKey = &kFullscreenDisablerKey;
   ScopedFullscreenDisablerWrapper* wrapper =
       objc_getAssociatedObject(coordinator, kFullscreenDisablerKey);
   if (!wrapper) {
-    FullscreenController* controller;
-    if (fullscreen::features::ShouldScopeFullscreenControllerToBrowser()) {
-      controller = FullscreenController::FromBrowser(coordinator.browser);
-    } else {
-      controller = FullscreenController::FromBrowserState(browserState);
-    }
+    FullscreenController* controller =
+        FullscreenController::FromBrowser(coordinator.browser);
     wrapper = [[ScopedFullscreenDisablerWrapper alloc]
         initWithFullscreenController:controller];
     objc_setAssociatedObject(coordinator, kFullscreenDisablerKey, wrapper,

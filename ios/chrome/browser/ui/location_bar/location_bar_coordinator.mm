@@ -192,13 +192,8 @@
       static_cast<id<InfobarCommands, BrowserCoordinatorCommands>>(
           self.browser->GetCommandDispatcher());
   buttonFactory.delegate = self.badgeMediator;
-  FullscreenController* fullscreenController;
-  if (fullscreen::features::ShouldScopeFullscreenControllerToBrowser()) {
-    fullscreenController = FullscreenController::FromBrowser(self.browser);
-  } else {
-    fullscreenController =
-        FullscreenController::FromBrowserState(self.browserState);
-  }
+  FullscreenController* fullscreenController =
+      FullscreenController::FromBrowser(self.browser);
   _badgeFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       fullscreenController, self.badgeViewController);
 

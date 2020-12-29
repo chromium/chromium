@@ -15,16 +15,9 @@ namespace features {
 // viewport adjustment experiment is selected via command line switches.
 extern const base::Feature kSmoothScrollingDefault;
 
-// Feature used to enable scoping FullscreenController to a Browser.
-extern const base::Feature kFullscreenControllerBrowserScoped;
-
 // Convenience method for determining when to adjust the viewport by resizing
 // WKWebView or using smooth scrolling.
 bool ShouldUseSmoothScrolling();
-
-// Convenience method for determining when FullscreenController is stored and
-// retrieved using the Browser instead of the BrowserState.
-bool ShouldScopeFullscreenControllerToBrowser();
 
 }  // namespace features
 }  // namespace fullscreen

@@ -12,7 +12,6 @@
 #include "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -69,12 +68,7 @@ class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
   }
 
   bool fullscreen_enabled() {
-    if (fullscreen::features::ShouldScopeFullscreenControllerToBrowser()) {
       return FullscreenController::FromBrowser(&browser_)->IsEnabled();
-    } else {
-      return FullscreenController::FromBrowserState(browser_.GetBrowserState())
-          ->IsEnabled();
-    }
   }
   OverlayPresenter* overlay_presenter() {
     return OverlayPresenter::FromBrowser(&browser_, kModality);

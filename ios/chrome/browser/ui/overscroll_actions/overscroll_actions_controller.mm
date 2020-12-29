@@ -578,9 +578,7 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
 - (BOOL)viewportAdjustsContentInset {
   if (_webViewProxy.shouldUseViewContentInset)
     return YES;
-  return ios::GetChromeBrowserProvider()
-      ->GetFullscreenProvider()
-      ->IsInitialized();
+  return fullscreen::features::ShouldUseSmoothScrolling();
 }
 
 - (void)recordMetricForTriggeredAction:(OverscrollAction)action {

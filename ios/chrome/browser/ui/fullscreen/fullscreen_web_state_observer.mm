@@ -85,9 +85,8 @@ void FullscreenWebStateObserver::DidFinishNavigation(
   id<CRWWebViewProxy> web_view_proxy = web_state->GetWebViewProxy();
   web_view_proxy.shouldUseViewContentInset = is_pdf;
 
-  model_->SetResizesScrollView(!is_pdf && !ios::GetChromeBrowserProvider()
-                                               ->GetFullscreenProvider()
-                                               ->IsInitialized());
+  model_->SetResizesScrollView(
+      !is_pdf && !fullscreen::features::ShouldUseSmoothScrolling());
 
   // Only reset the model for document-changing navigations or same-document
   // navigations that update the visible URL.

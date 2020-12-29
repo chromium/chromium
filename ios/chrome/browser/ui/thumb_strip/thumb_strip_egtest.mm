@@ -68,8 +68,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
 }
 
 // Tests that the entire thumb strip is visible in peeked state. Specifically,
-// this tests that the thumb strip is not partially covered when using the
-// FullscreenProvider.
+// this tests that the thumb strip is not partially covered when Smooth
+// Scrolling is on.
 - (void)testThumbStripVisibleInPeekedState {
   // The feature only works on iPad.
   if (![ChromeEarlGrey isIPadIdiom]) {
