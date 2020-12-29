@@ -544,7 +544,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.PlatformVerification.Available"
-    enum="BooleanAvailable" expires_after="2020-10-04">
+    enum="BooleanAvailable" expires_after="2021-12-21">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -554,7 +554,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.PlatformVerification.Result"
-    enum="ChromeOSPlatformVerificationResult" expires_after="2020-08-31">
+    enum="ChromeOSPlatformVerificationResult" expires_after="2021-12-21">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
