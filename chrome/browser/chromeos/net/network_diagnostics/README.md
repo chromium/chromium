@@ -127,8 +127,15 @@ Tests whether the internet connection is behind a captive portal.
 Problems:
 * `kNoActiveNetworks`: No active networks found.
 * `kRestrictedConnectivity`: The active network is behind a captive portal and
-   has restricted connectivity.
-* `kCaptivePortalState`: The active network is behind a captive portal.
+    has restricted connectivity.
+* `kUnknownPortalState`: The active network is not connected or the portal
+    state is not available.
+* `kPortalSuspected`: A portal is suspected but no redirect was provided.
+* `kPortal`: The network is in a portal state with a redirect URL.
+* `kProxyAuthRequired`: A proxy requiring authentication is detected.
+* `kNoInternet`: The active network is connected but no internet is available
+    and no proxy was detected.
+
 
 ### Firewall Routines
 
@@ -169,7 +176,7 @@ Problems:
 
 #### VideoConferencing
 
-Tests the device's video conferencing capabalities by testing whether the device
+Tests the device's video conferencing capabilities by testing whether the device
 can:
 1. Contact either a default or specified STUN server via UDP.
 2. Contact either a default or specified STUN server via TCP.
