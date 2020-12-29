@@ -59,10 +59,13 @@
       }
     </style>
     <div id="pageContainer" role="dialog" aria-modal="true"
-        aria-labelledby="pageTitle pageSubTitle">
+        aria-labelledby="[[getDialogAriaLabelledBy_(subTitleAriaHidden)]]">
       <div id="header">
         <h1 id="pageTitle">[[title]]</h1>
-        <h2 id="pageSubTitle">[[subTitle]]</h2>
+        <h2 id="pageSubTitle"
+            aria-hidden$="[[getSubTitleAriaHidden_(subTitleAriaHidden)]]">
+          [[subTitle]]
+        </h2>
       </div>
 
       <div id="contentContainer">

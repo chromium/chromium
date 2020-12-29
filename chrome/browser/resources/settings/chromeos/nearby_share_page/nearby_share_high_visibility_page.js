@@ -51,6 +51,7 @@ Polymer({
     remainingTimeInSeconds_: {
       type: Number,
       value: -1,
+      observer: 'announceRemainingTime_',
     },
 
     /** @private {?nearbyShare.mojom.RegisterReceiveSurfaceResult} */
@@ -82,6 +83,9 @@ Polymer({
     this.remainingTimeIntervalId_ = setInterval(() => {
       this.calculateRemainingTime_();
     }, 1000);
+
+    Polymer.IronA11yAnnouncer.requestAvailability();
+    this.announceRemainingTime_(this.remainingTimeInSeconds_);
   },
 
   /** @override */
@@ -101,7 +105,7 @@ Polymer({
     const now = performance.now();
     const remainingTimeInMs =
         this.shutoffTimestamp > now ? this.shutoffTimestamp - now : 0;
-    this.remainingTimeInSeconds_ = Math.trunc(remainingTimeInMs / 1000);
+    this.remainingTimeInSeconds_ = Math.ceil(remainingTimeInMs / 1000);
   },
 
   /**
@@ -191,5 +195,28 @@ Polymer({
 
     return this.i18n(
         'nearbyShareHighVisibilitySubTitle', this.deviceName, timeValue);
+  },
+
+  /**
+   * Announce the remaining time for screen readers. Only announce once per
+   * minute to avoid overwhelming user.
+   * @param {number} remainingSeconds
+   * @private
+   */
+  announceRemainingTime_(remainingSeconds) {
+    // Skip announcement for 0 seconds left to avoid alerting on time out.
+    // There is a separate time out alert shown in the error section.
+    if (remainingSeconds <= 0 || remainingSeconds % 60 !== 0) {
+      return;
+    }
+
+    const timeValue = this.i18n(
+        'nearbyShareHighVisibilitySubTitleMinutes',
+        Math.ceil(this.remainingTimeInSeconds_ / 60));
+
+    const announcement = this.i18n(
+        'nearbyShareHighVisibilitySubTitle', this.deviceName, timeValue);
+
+    this.fire('iron-announce', {text: announcement});
   },
 });

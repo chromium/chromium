@@ -74,6 +74,7 @@ js_library("nearby_share_high_visibility_page") {
   deps = [
     "../localized_link:localized_link",
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
+    "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
     "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
     "//ui/webui/resources/js:i18n_behavior",
   ]
@@ -219,6 +220,7 @@ js_library("nearby_share_high_visibility_page.m") {
   deps = [
     "../localized_link:localized_link.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template.m",
+    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]

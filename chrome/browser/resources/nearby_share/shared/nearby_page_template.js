@@ -22,6 +22,15 @@ Polymer({
     },
 
     /**
+     * aria-hidden attribute for #subTitle div.
+     * @type {boolean}
+     * */
+    subTitleAriaHidden: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
      * Text to show on the action button. If either this is falsey, or if
      * |closeOnly| is true, then the action button is hidden.
      * @type {?string}
@@ -96,5 +105,25 @@ Polymer({
   /** @private */
   onCloseClick_() {
     this.fire('close');
+  },
+
+  /**
+   * @return {string} aria-labelledby ids for the dialog
+   * @private
+   */
+  getDialogAriaLabelledBy_() {
+    let labelIds = 'pageTitle';
+    if (!this.subTitleAriaHidden) {
+      labelIds += ' pageSubTitle';
+    }
+    return labelIds;
+  },
+
+  /**
+   * @return {string} aria-hidden value for the #subTitle div
+   * @private
+   */
+  getSubTitleAriaHidden_() {
+    return this.subTitleAriaHidden.toString();
   },
 });

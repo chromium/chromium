@@ -2,6 +2,7 @@
 
 <link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="../localized_link/localized_link.html">
 <link rel="import" href="../../shared/nearby_page_template.html">
@@ -75,10 +76,12 @@
       }
     </style>
     <nearby-page-template title="$i18n{nearbyShareFeatureName}"
-        sub-title="[[getSubTitle_(deviceName, remainingTimeInSeconds_)]]" 
-        cancel-button-label="$i18n{cancel}">
+        sub-title="[[getSubTitle_(deviceName, remainingTimeInSeconds_)]]"
+        sub-title-aria-hidden
+        cancel-button-label="$i18n{cancel}"
+        close-only="[[getErrorTitle_(errorState_)]]">
       <div id="content" slot="content">
-        <cr-lottie animation-url="nearby_share_pulse_animation.json" 
+        <cr-lottie animation-url="nearby_share_pulse_animation.json"
             autoplay="true">
         </cr-lottie>
         <div id="help">
@@ -90,12 +93,14 @@
                   link-url="$i18n{nearbyShareLearnMoreLink}">
               </settings-localized-link>
             </div>
+            <!-- Announcer has to be inside modal dialog to work -->
+            <iron-a11y-announcer></iron-a11y-announcer>
           </template>
           <template is="dom-if" if="[[getErrorTitle_(errorState_)]]">
-            <iron-icon id="infoIcon" icon="nearby20:info" 
+            <iron-icon id="infoIcon" icon="nearby20:info"
                 class="icon-error-state">
             </iron-icon>
-            <div id="error" role="alert" aria-labelledby="errorTitle" 
+            <div id="error" role="alert" aria-labelledby="errorTitle"
                 aria-describedby="errorDescription">
               <div id="errorTitle" aria-hidden="true">
                 [[getErrorTitle_(errorState_)]]
