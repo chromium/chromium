@@ -60,14 +60,14 @@ TEST_F(CastFeaturesTest, EnableDisableMultipleBooleanFeatures) {
       {&bool_feature, &bool_feature_2, &bool_feature_3, &bool_feature_4});
 
   // Override those features with DCS configs.
-  auto experiments = std::make_unique<base::ListValue>();
-  auto features = std::make_unique<base::DictionaryValue>();
-  features->SetBoolean(kTestBooleanFeatureName, false);
-  features->SetBoolean(kTestBooleanFeatureName2, false);
-  features->SetBoolean(kTestBooleanFeatureName3, true);
-  features->SetBoolean(kTestBooleanFeatureName4, true);
+  base::Value experiments(base::Value::Type::LIST);
+  base::Value features(base::Value::Type::DICTIONARY);
+  features.SetBoolKey(kTestBooleanFeatureName, false);
+  features.SetBoolKey(kTestBooleanFeatureName2, false);
+  features.SetBoolKey(kTestBooleanFeatureName3, true);
+  features.SetBoolKey(kTestBooleanFeatureName4, true);
 
-  InitializeFeatureList(*features, *experiments, "", "", "", "");
+  InitializeFeatureList(features, experiments, "", "", "", "");
 
   // Test that features are properly enabled (they should match the
   // DCS config).
@@ -84,18 +84,18 @@ TEST_F(CastFeaturesTest, EnableSingleFeatureWithParams) {
   chromecast::SetFeaturesForTest({&test_feature});
 
   // Pass params via DCS.
-  auto experiments = std::make_unique<base::ListValue>();
-  auto features = std::make_unique<base::DictionaryValue>();
-  auto params = std::make_unique<base::DictionaryValue>();
-  params->SetString("foo_key", "foo");
-  params->SetString("bar_key", "bar");
-  params->SetString("doub_key", "3.14159");
-  params->SetString("long_doub_key", "1.23459999999999999");
-  params->SetString("int_key", "4242");
-  params->SetString("bool_key", "true");
-  features->Set(kTestParamsFeatureName, std::move(params));
+  base::Value experiments(base::Value::Type::LIST);
+  base::Value features(base::Value::Type::DICTIONARY);
+  base::Value params(base::Value::Type::DICTIONARY);
+  params.SetStringKey("foo_key", "foo");
+  params.SetStringKey("bar_key", "bar");
+  params.SetStringKey("doub_key", "3.14159");
+  params.SetStringKey("long_doub_key", "1.23459999999999999");
+  params.SetStringKey("int_key", "4242");
+  params.SetStringKey("bool_key", "true");
+  features.SetPath(kTestParamsFeatureName, std::move(params));
 
-  InitializeFeatureList(*features, *experiments, "", "", "", "");
+  InitializeFeatureList(features, experiments, "", "", "", "");
 
   // Test that this feature is enabled, and params are correct.
   ASSERT_TRUE(chromecast::IsFeatureEnabled(test_feature));
@@ -125,12 +125,12 @@ TEST_F(CastFeaturesTest, CommandLineOverridesDcsAndDefault) {
                                base::FEATURE_ENABLED_BY_DEFAULT};
 
   // Override those features with DCS configs.
-  auto experiments = std::make_unique<base::ListValue>();
-  auto features = std::make_unique<base::DictionaryValue>();
-  features->SetBoolean(kTestBooleanFeatureName, false);
-  features->SetBoolean(kTestBooleanFeatureName2, false);
-  features->SetBoolean(kTestBooleanFeatureName3, true);
-  features->SetBoolean(kTestBooleanFeatureName4, true);
+  base::Value experiments(base::Value::Type::LIST);
+  base::Value features(base::Value::Type::DICTIONARY);
+  features.SetBoolKey(kTestBooleanFeatureName, false);
+  features.SetBoolKey(kTestBooleanFeatureName2, false);
+  features.SetBoolKey(kTestBooleanFeatureName3, true);
+  features.SetBoolKey(kTestBooleanFeatureName4, true);
 
   // Also override a param feature with DCS config.
   base::Feature params_feature{kTestParamsFeatureName,
@@ -139,9 +139,9 @@ TEST_F(CastFeaturesTest, CommandLineOverridesDcsAndDefault) {
                                   &bool_feature_3, &bool_feature_4,
                                   &params_feature});
 
-  auto params = std::make_unique<base::DictionaryValue>();
-  params->SetString("foo_key", "foo");
-  features->Set(kTestParamsFeatureName, std::move(params));
+  base::Value params(base::Value::Type::DICTIONARY);
+  params.SetStringKey("foo_key", "foo");
+  features.SetPath(kTestParamsFeatureName, std::move(params));
 
   // Now override with command line flags. Command line flags should have the
   // final say.
@@ -153,7 +153,7 @@ TEST_F(CastFeaturesTest, CommandLineOverridesDcsAndDefault) {
                                       .append(",")
                                       .append(kTestParamsFeatureName);
 
-  InitializeFeatureList(*features, *experiments, enabled_features,
+  InitializeFeatureList(features, experiments, enabled_features,
                         disabled_features, "", "");
 
   // Test that features are properly enabled (they should match the
@@ -171,127 +171,135 @@ TEST_F(CastFeaturesTest, CommandLineOverridesDcsAndDefault) {
 
 TEST_F(CastFeaturesTest, SetEmptyExperiments) {
   // Override those features with DCS configs.
-  auto experiments = std::make_unique<base::ListValue>();
-  auto features = std::make_unique<base::DictionaryValue>();
+  base::Value experiments(base::Value::Type::LIST);
+  base::Value features(base::Value::Type::DICTIONARY);
 
-  InitializeFeatureList(*features, *experiments, "", "", "", "");
+  InitializeFeatureList(features, experiments, "", "", "", "");
   ASSERT_EQ(0u, GetDCSExperimentIds().size());
 }
 
 TEST_F(CastFeaturesTest, SetGoodExperiments) {
   // Override those features with DCS configs.
-  auto experiments = std::make_unique<base::ListValue>();
-  auto features = std::make_unique<base::DictionaryValue>();
+  base::Value experiments(base::Value::Type::LIST);
+  base::Value features(base::Value::Type::DICTIONARY);
 
   int32_t ids[] = {12345678, 123, 0, -1};
   std::unordered_set<int32_t> expected;
   for (int32_t id : ids) {
-    experiments->AppendInteger(id);
+    experiments.Append(id);
     expected.insert(id);
   }
 
-  InitializeFeatureList(*features, *experiments, "", "", "", "");
+  InitializeFeatureList(features, experiments, "", "", "", "");
   ASSERT_EQ(expected, GetDCSExperimentIds());
 }
 
 TEST_F(CastFeaturesTest, SetSomeGoodExperiments) {
   // Override those features with DCS configs.
-  auto experiments = std::make_unique<base::ListValue>();
-  auto features = std::make_unique<base::DictionaryValue>();
-  experiments->AppendInteger(1234);
-  experiments->AppendString("foobar");
-  experiments->AppendBoolean(true);
-  experiments->AppendInteger(1);
-  experiments->AppendDouble(1.23456);
+  base::Value experiments(base::Value::Type::LIST);
+  base::Value features(base::Value::Type::DICTIONARY);
+  experiments.Append(1234);
+  experiments.Append("foobar");
+  experiments.Append(true);
+  experiments.Append(1);
+  experiments.Append(1.23456);
 
   std::unordered_set<int32_t> expected;
   expected.insert(1234);
   expected.insert(1);
 
-  InitializeFeatureList(*features, *experiments, "", "", "", "");
+  InitializeFeatureList(features, experiments, "", "", "", "");
   ASSERT_EQ(expected, GetDCSExperimentIds());
 }
 
 TEST_F(CastFeaturesTest, SetAllBadExperiments) {
   // Override those features with DCS configs.
-  auto experiments = std::make_unique<base::ListValue>();
-  auto features = std::make_unique<base::DictionaryValue>();
-  experiments->AppendString("foobar");
-  experiments->AppendBoolean(true);
-  experiments->AppendDouble(1.23456);
+  base::Value experiments(base::Value::Type::LIST);
+  base::Value features(base::Value::Type::DICTIONARY);
+  experiments.Append("foobar");
+  experiments.Append(true);
+  experiments.Append(1.23456);
 
   std::unordered_set<int32_t> expected;
 
-  InitializeFeatureList(*features, *experiments, "", "", "", "");
+  InitializeFeatureList(features, experiments, "", "", "", "");
   ASSERT_EQ(expected, GetDCSExperimentIds());
 }
 
 TEST_F(CastFeaturesTest, GetOverriddenFeaturesForStorage) {
-  auto features = std::make_unique<base::DictionaryValue>();
-  features->SetBoolean("bool_key", false);
-  features->SetBoolean("bool_key_2", true);
+  base::Value features(base::Value::Type::DICTIONARY);
+  features.SetBoolKey("bool_key", false);
+  features.SetBoolKey("bool_key_2", true);
 
-  auto params = std::make_unique<base::DictionaryValue>();
-  params->SetString("foo_key", "foo");
-  params->SetString("bar_key", "bar");
-  params->SetDouble("doub_key", 3.14159);
-  params->SetDouble("long_doub_key", 1.234599999999999);
-  params->SetInteger("int_key", 4242);
-  params->SetInteger("negint_key", -273);
-  params->SetBoolean("bool_key", true);
-  features->Set("params_key", std::move(params));
+  base::Value params(base::Value::Type::DICTIONARY);
+  params.SetStringKey("foo_key", "foo");
+  params.SetStringKey("bar_key", "bar");
+  params.SetDoubleKey("doub_key", 3.14159);
+  params.SetDoubleKey("long_doub_key", 1.234599999999999);
+  params.SetIntKey("int_key", 4242);
+  params.SetIntKey("negint_key", -273);
+  params.SetBoolKey("bool_key", true);
+  features.SetPath("params_key", std::move(params));
 
-  auto dict = GetOverriddenFeaturesForStorage(*features);
-  bool bval;
-  ASSERT_EQ(3u, dict.size());
-  ASSERT_TRUE(dict.GetBoolean("bool_key", &bval));
-  ASSERT_EQ(false, bval);
-  ASSERT_TRUE(dict.GetBoolean("bool_key_2", &bval));
-  ASSERT_EQ(true, bval);
+  auto dict = GetOverriddenFeaturesForStorage(features);
+  ASSERT_EQ(3u, dict.DictSize());
+  auto bval = dict.FindBoolKey("bool_key");
+  ASSERT_TRUE(bval.has_value());
+  ASSERT_EQ(false, *bval);
+  bval = dict.FindBoolKey("bool_key_2");
+  ASSERT_TRUE(bval.has_value());
+  ASSERT_EQ(true, *bval);
 
-  const base::DictionaryValue* dval;
-  std::string sval;
-  ASSERT_TRUE(dict.GetDictionary("params_key", &dval));
-  ASSERT_EQ(7u, dval->size());
-  ASSERT_TRUE(dval->GetString("foo_key", &sval));
-  ASSERT_EQ("foo", sval);
-  ASSERT_TRUE(dval->GetString("bar_key", &sval));
-  ASSERT_EQ("bar", sval);
-  ASSERT_TRUE(dval->GetString("doub_key", &sval));
-  ASSERT_EQ("3.14159", sval);
-  ASSERT_TRUE(dval->GetString("long_doub_key", &sval));
-  ASSERT_EQ("1.234599999999999", sval);
-  ASSERT_TRUE(dval->GetString("int_key", &sval));
-  ASSERT_EQ("4242", sval);
-  ASSERT_TRUE(dval->GetString("negint_key", &sval));
-  ASSERT_EQ("-273", sval);
-  ASSERT_TRUE(dval->GetString("bool_key", &sval));
-  ASSERT_EQ("true", sval);
+  const auto* dval = dict.FindDictKey("params_key");
+  const std::string* sval = nullptr;
+  ASSERT_TRUE(dval);
+  ASSERT_EQ(7u, dval->DictSize());
+  sval = dval->FindStringKey("foo_key");
+  ASSERT_TRUE(sval);
+  ASSERT_EQ("foo", *sval);
+  sval = dval->FindStringKey("bar_key");
+  ASSERT_TRUE(sval);
+  ASSERT_EQ("bar", *sval);
+  sval = dval->FindStringKey("doub_key");
+  ASSERT_TRUE(sval);
+  ASSERT_EQ("3.14159", *sval);
+  sval = dval->FindStringKey("long_doub_key");
+  ASSERT_TRUE(sval);
+  ASSERT_EQ("1.234599999999999", *sval);
+  sval = dval->FindStringKey("int_key");
+  ASSERT_TRUE(sval);
+  ASSERT_EQ("4242", *sval);
+  sval = dval->FindStringKey("negint_key");
+  ASSERT_TRUE(sval);
+  ASSERT_EQ("-273", *sval);
+  sval = dval->FindStringKey("bool_key");
+  ASSERT_TRUE(sval);
+  ASSERT_EQ("true", *sval);
 }
 
 TEST_F(CastFeaturesTest, GetOverriddenFeaturesForStorage_BadParams) {
-  auto features = std::make_unique<base::DictionaryValue>();
-  features->SetBoolean("bool_key", false);
-  features->SetString("str_key", "foobar");
-  features->SetInteger("int_key", 12345);
-  features->SetDouble("doub_key", 4.5678);
+  base::Value features(base::Value::Type::DICTIONARY);
+  features.SetBoolKey("bool_key", false);
+  features.SetStringKey("str_key", "foobar");
+  features.SetIntKey("int_key", 12345);
+  features.SetDoubleKey("doub_key", 4.5678);
 
-  auto params = std::make_unique<base::DictionaryValue>();
-  params->SetString("foo_key", "foo");
-  features->Set("params_key", std::move(params));
+  base::Value params(base::Value::Type::DICTIONARY);
+  params.SetStringKey("foo_key", "foo");
+  features.SetPath("params_key", std::move(params));
 
-  auto dict = GetOverriddenFeaturesForStorage(*features);
-  bool bval;
-  ASSERT_EQ(2u, dict.size());
-  ASSERT_TRUE(dict.GetBoolean("bool_key", &bval));
-  ASSERT_EQ(false, bval);
+  auto dict = GetOverriddenFeaturesForStorage(features);
+  ASSERT_EQ(2u, dict.DictSize());
+  auto bval = dict.FindBoolKey("bool_key");
+  ASSERT_TRUE(bval.has_value());
+  ASSERT_EQ(false, *bval);
 
-  const base::DictionaryValue* dval;
-  std::string sval;
-  ASSERT_TRUE(dict.GetDictionary("params_key", &dval));
-  ASSERT_EQ(1u, dval->size());
-  ASSERT_TRUE(dval->GetString("foo_key", &sval));
-  ASSERT_EQ("foo", sval);
+  const auto* dval = dict.FindDictKey("params_key");
+  ASSERT_TRUE(dval);
+  ASSERT_EQ(1u, dval->DictSize());
+  const auto* sval = dval->FindStringKey("foo_key");
+  ASSERT_TRUE(sval);
+  ASSERT_EQ("foo", *sval);
 }
 
 }  // namespace chromecast

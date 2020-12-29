@@ -40,13 +40,13 @@ std::vector<const base::Feature*>& GetTestFeatures() {
   return *features_for_test;
 }
 
-void SetExperimentIds(const base::ListValue& list) {
+void SetExperimentIds(const base::Value& list) {
   DCHECK(!g_experiment_ids_initialized);
+  DCHECK(list.is_list());
   std::unordered_set<int32_t> ids;
-  for (size_t i = 0; i < list.GetSize(); ++i) {
-    int32_t id;
-    if (list.GetInteger(i, &id)) {
-      ids.insert(id);
+  for (const auto& it : list.GetList()) {
+    if (it.is_int()) {
+      ids.insert(it.GetInt());
     } else {
       LOG(ERROR) << "Non-integer value found in experiment id list!";
     }
@@ -172,9 +172,6 @@ const base::Feature* kFeatures[] = {
     &kEnableChromeAudioManagerAndroid,
 };
 
-// An iterator for a base::DictionaryValue. Use an alias for brevity in loops.
-using Iterator = base::DictionaryValue::Iterator;
-
 std::vector<const base::Feature*> GetInternalFeatures();
 
 const std::vector<const base::Feature*>& GetFeatures() {
@@ -192,13 +189,15 @@ const std::vector<const base::Feature*>& GetFeatures() {
   return *features;
 }
 
-void InitializeFeatureList(const base::DictionaryValue& dcs_features,
-                           const base::ListValue& dcs_experiment_ids,
+void InitializeFeatureList(const base::Value& dcs_features,
+                           const base::Value& dcs_experiment_ids,
                            const std::string& cmd_line_enable_features,
                            const std::string& cmd_line_disable_features,
                            const std::string& extra_enable_features,
                            const std::string& extra_disable_features) {
   DCHECK(!base::FeatureList::GetInstance());
+  DCHECK(dcs_features.is_dict());
+  DCHECK(dcs_experiment_ids.is_list());
 
   // Set the experiments.
   SetExperimentIds(dcs_experiment_ids);
@@ -214,7 +213,7 @@ void InitializeFeatureList(const base::DictionaryValue& dcs_features,
                                           all_disable_features);
 
   // Override defaults from the DCS config.
-  for (Iterator it(dcs_features); !it.IsAtEnd(); it.Advance()) {
+  for (const auto& kv : dcs_features.DictItems()) {
     // Each feature must have its own FieldTrial object. Since experiments are
     // controlled server-side for Chromecast, and this class is designed with a
     // client-side experimentation framework in mind, these parameters are
@@ -232,24 +231,22 @@ void InitializeFeatureList(const base::DictionaryValue& dcs_features,
     //     entropy_provider. However, this value doesn't matter.
     //   - We don't care about the group_id.
     //
-    const std::string& feature_name = it.key();
+    const std::string& feature_name = kv.first;
     auto* field_trial = base::FieldTrialList::FactoryGetFieldTrial(
         feature_name, k100PercentProbability, kDefaultDCSFeaturesGroup,
         base::FieldTrial::SESSION_RANDOMIZED, nullptr);
 
-    bool enabled;
-    if (it.value().GetAsBoolean(&enabled)) {
+    if (kv.second.is_bool()) {
       // A boolean entry simply either enables or disables a feature.
       feature_list->RegisterFieldTrialOverride(
           feature_name,
-          enabled ? base::FeatureList::OVERRIDE_ENABLE_FEATURE
-                  : base::FeatureList::OVERRIDE_DISABLE_FEATURE,
+          kv.second.GetBool() ? base::FeatureList::OVERRIDE_ENABLE_FEATURE
+                              : base::FeatureList::OVERRIDE_DISABLE_FEATURE,
           field_trial);
       continue;
     }
 
-    const base::DictionaryValue* params_dict;
-    if (it.value().GetAsDictionary(&params_dict)) {
+    if (kv.second.is_dict()) {
       // A dictionary entry implies that the feature is enabled.
       feature_list->RegisterFieldTrialOverride(
           feature_name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
@@ -262,10 +259,9 @@ void InitializeFeatureList(const base::DictionaryValue& dcs_features,
         // Build a map of the FieldTrial parameters and associate it to the
         // FieldTrial.
         base::FieldTrialParams params;
-        for (Iterator p(*params_dict); !p.IsAtEnd(); p.Advance()) {
-          std::string val;
-          if (p.value().GetAsString(&val)) {
-            params[p.key()] = val;
+        for (const auto& params_kv : kv.second.DictItems()) {
+          if (params_kv.second.is_string()) {
+            params[params_kv.first] = params_kv.second.GetString();
           } else {
             LOG(ERROR) << "Entry in params dict for \"" << feature_name << "\""
                        << " feature is not a string. Skipping.";
@@ -282,7 +278,7 @@ void InitializeFeatureList(const base::DictionaryValue& dcs_features,
 
     // Other base::Value types are not supported.
     LOG(ERROR) << "A DCS feature mapped to an unsupported value. key: "
-               << feature_name << " type: " << it.value().type();
+               << feature_name << " type: " << kv.second.type();
   }
 
   base::FeatureList::SetInstance(std::move(feature_list));
@@ -293,43 +289,41 @@ bool IsFeatureEnabled(const base::Feature& feature) {
   return base::FeatureList::IsEnabled(feature);
 }
 
-base::DictionaryValue GetOverriddenFeaturesForStorage(
-    const base::Value& features) {
-  base::DictionaryValue persistent_dict;
+base::Value GetOverriddenFeaturesForStorage(const base::Value& features) {
+  base::Value persistent_dict(base::Value::Type::DICTIONARY);
 
   // |features| maps feature names to either a boolean or a dict of params.
   for (const auto& feature : features.DictItems()) {
     if (feature.second.is_bool()) {
-      persistent_dict.SetBoolean(feature.first, feature.second.GetBool());
+      persistent_dict.SetBoolKey(feature.first, feature.second.GetBool());
       continue;
     }
 
-    const base::DictionaryValue* params_dict;
-    if (feature.second.GetAsDictionary(&params_dict)) {
-      auto params = std::make_unique<base::DictionaryValue>();
+    if (feature.second.is_dict()) {
+      const base::Value* params_dict = &feature.second;
+      base::Value params(base::Value::Type::DICTIONARY);
 
-      bool bval;
-      int ival;
-      double dval;
-      std::string sval;
-      for (Iterator p(*params_dict); !p.IsAtEnd(); p.Advance()) {
-        const auto& param_key = p.key();
-        const auto& param_val = p.value();
-        if (param_val.GetAsBoolean(&bval)) {
-          params->SetString(param_key, bval ? "true" : "false");
-        } else if (param_val.GetAsInteger(&ival)) {
-          params->SetString(param_key, base::NumberToString(ival));
-        } else if (param_val.GetAsDouble(&dval)) {
-          params->SetString(param_key, base::NumberToString(dval));
-        } else if (param_val.GetAsString(&sval)) {
-          params->SetString(param_key, sval);
+      for (const auto params_kv : params_dict->DictItems()) {
+        const auto& param_key = params_kv.first;
+        const auto& param_val = params_kv.second;
+        if (param_val.is_bool()) {
+          params.SetStringKey(param_key,
+                              param_val.GetBool() ? "true" : "false");
+        } else if (param_val.is_int()) {
+          params.SetStringKey(param_key,
+                              base::NumberToString(param_val.GetInt()));
+        } else if (param_val.is_double()) {
+          params.SetStringKey(param_key,
+                              base::NumberToString(param_val.GetDouble()));
+        } else if (param_val.is_string()) {
+          params.SetStringKey(param_key, param_val.GetString());
         } else {
           LOG(ERROR) << "Entry in params dict for \"" << feature.first << "\""
                      << " is not of a supported type (key: " << param_key
                      << ", type: " << param_val.type();
         }
       }
-      persistent_dict.Set(feature.first, std::move(params));
+      persistent_dict.SetPath(feature.first, std::move(params));
       continue;
     }
 
