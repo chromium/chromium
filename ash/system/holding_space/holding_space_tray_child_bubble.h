@@ -8,6 +8,11 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/public/cpp/holding_space/holding_space_model_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -16,7 +21,9 @@ class HoldingSpaceItemViewDelegate;
 class HoldingSpaceItemViewsSection;
 
 // Child bubble of the `HoldingSpaceTrayBubble`.
-class HoldingSpaceTrayChildBubble : public views::View {
+class HoldingSpaceTrayChildBubble : public views::View,
+                                    public HoldingSpaceControllerObserver,
+                                    public HoldingSpaceModelObserver {
  public:
   explicit HoldingSpaceTrayChildBubble(HoldingSpaceItemViewDelegate* delegate);
   HoldingSpaceTrayChildBubble(const HoldingSpaceTrayChildBubble& other) =
@@ -32,6 +39,17 @@ class HoldingSpaceTrayChildBubble : public views::View {
   // observing the holding space controller/model to ensure that no new items
   // are created while the bubble widget is begin asynchronously closed.
   void Reset();
+
+  // HoldingSpaceControllerObserver:
+  void OnHoldingSpaceModelAttached(HoldingSpaceModel* model) override;
+  void OnHoldingSpaceModelDetached(HoldingSpaceModel* model) override;
+
+  // HoldingSpaceModelObserver:
+  void OnHoldingSpaceItemsAdded(
+      const std::vector<const HoldingSpaceItem*>& items) override;
+  void OnHoldingSpaceItemsRemoved(
+      const std::vector<const HoldingSpaceItem*>& items) override;
+  void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
 
  protected:
   // Invoked to create the `sections_` for this child bubble.
@@ -50,6 +68,13 @@ class HoldingSpaceTrayChildBubble : public views::View {
 
   // Views owned by view hierarchy.
   std::vector<HoldingSpaceItemViewsSection*> sections_;
+
+  base::ScopedObservation<HoldingSpaceController,
+                          HoldingSpaceControllerObserver>
+      controller_observer_{this};
+
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      model_observer_{this};
 };
 
 }  // namespace ash

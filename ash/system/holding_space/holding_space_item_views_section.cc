@@ -5,6 +5,8 @@
 #include "ash/system/holding_space/holding_space_item_views_section.h"
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_item_view_delegate.h"
 #include "base/auto_reset.h"
@@ -175,9 +177,7 @@ HoldingSpaceItemViewsSection::HoldingSpaceItemViewsSection(
     const base::Optional<size_t>& max_count)
     : delegate_(delegate),
       supported_types_(std::move(supported_types)),
-      max_count_(max_count) {
-  controller_observer_.Observe(HoldingSpaceController::Get());
-}
+      max_count_(max_count) {}
 
 HoldingSpaceItemViewsSection::~HoldingSpaceItemViewsSection() = default;
 
@@ -244,9 +244,6 @@ void HoldingSpaceItemViewsSection::Init() {
 }
 
 void HoldingSpaceItemViewsSection::Reset() {
-  model_observer_.Reset();
-  controller_observer_.Reset();
-
   // The holding space item views `delegate_` will be destroyed before this view
   // when asynchronously closing the holding space bubble. To prevent accessing
   // `delegate_` after deletion, prevent animation callbacks from being run.
@@ -309,8 +306,6 @@ void HoldingSpaceItemViewsSection::ViewHierarchyChanged(
 
 void HoldingSpaceItemViewsSection::OnHoldingSpaceModelAttached(
     HoldingSpaceModel* model) {
-  model_observer_.Observe(model);
-
   std::vector<const HoldingSpaceItem*> item_ptrs;
   for (const auto& item : model->items())
     item_ptrs.push_back(item.get());
@@ -321,7 +316,6 @@ void HoldingSpaceItemViewsSection::OnHoldingSpaceModelAttached(
 
 void HoldingSpaceItemViewsSection::OnHoldingSpaceModelDetached(
     HoldingSpaceModel* model) {
-  model_observer_.Reset();
   if (!container_->children().empty())
     MaybeAnimateOut();
 }

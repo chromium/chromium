@@ -68,7 +68,11 @@ class TopAlignedBoxLayout : public views::BoxLayout {
 
 HoldingSpaceTrayChildBubble::HoldingSpaceTrayChildBubble(
     HoldingSpaceItemViewDelegate* delegate)
-    : delegate_(delegate) {}
+    : delegate_(delegate) {
+  controller_observer_.Observe(HoldingSpaceController::Get());
+  if (HoldingSpaceController::Get()->model())
+    model_observer_.Observe(HoldingSpaceController::Get()->model());
+}
 
 HoldingSpaceTrayChildBubble::~HoldingSpaceTrayChildBubble() = default;
 
@@ -95,8 +99,42 @@ void HoldingSpaceTrayChildBubble::Init() {
 }
 
 void HoldingSpaceTrayChildBubble::Reset() {
+  model_observer_.Reset();
+  controller_observer_.Reset();
   for (HoldingSpaceItemViewsSection* section : sections_)
     section->Reset();
+}
+
+void HoldingSpaceTrayChildBubble::OnHoldingSpaceModelAttached(
+    HoldingSpaceModel* model) {
+  model_observer_.Observe(model);
+  for (HoldingSpaceItemViewsSection* section : sections_)
+    section->OnHoldingSpaceModelAttached(model);
+}
+
+void HoldingSpaceTrayChildBubble::OnHoldingSpaceModelDetached(
+    HoldingSpaceModel* model) {
+  model_observer_.Reset();
+  for (HoldingSpaceItemViewsSection* section : sections_)
+    section->OnHoldingSpaceModelDetached(model);
+}
+
+void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemsAdded(
+    const std::vector<const HoldingSpaceItem*>& items) {
+  for (HoldingSpaceItemViewsSection* section : sections_)
+    section->OnHoldingSpaceItemsAdded(items);
+}
+
+void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemsRemoved(
+    const std::vector<const HoldingSpaceItem*>& items) {
+  for (HoldingSpaceItemViewsSection* section : sections_)
+    section->OnHoldingSpaceItemsRemoved(items);
+}
+
+void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemFinalized(
+    const HoldingSpaceItem* item) {
+  for (HoldingSpaceItemViewsSection* section : sections_)
+    section->OnHoldingSpaceItemFinalized(item);
 }
 
 const char* HoldingSpaceTrayChildBubble::GetClassName() const {

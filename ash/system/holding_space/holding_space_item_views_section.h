@@ -10,13 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/holding_space/holding_space_controller.h"
-#include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
-#include "ash/public/cpp/holding_space/holding_space_model.h"
-#include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/optional.h"
-#include "base/scoped_observation.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -32,11 +27,10 @@ namespace ash {
 
 class HoldingSpaceItemView;
 class HoldingSpaceItemViewDelegate;
+class HoldingSpaceModel;
 
 // A section of holding space item views in a `HoldingSpaceTrayChildBubble`.
-class HoldingSpaceItemViewsSection : public views::View,
-                                     public HoldingSpaceControllerObserver,
-                                     public HoldingSpaceModelObserver {
+class HoldingSpaceItemViewsSection : public views::View {
  public:
   HoldingSpaceItemViewsSection(
       HoldingSpaceItemViewDelegate* delegate,
@@ -51,9 +45,9 @@ class HoldingSpaceItemViewsSection : public views::View,
   // Initializes the section.
   void Init();
 
-  // Resets the section. Called when the tray bubble starts closing to stop
-  // observing the holding space controller/model to ensure that no new items
-  // are created while the bubble widget is being asynchronously closed.
+  // Resets the section. Called when the tray bubble starts closing to ensure
+  // that no new items are created while the bubble widget is being
+  // asynchronously closed.
   void Reset();
 
   // views::View:
@@ -62,16 +56,14 @@ class HoldingSpaceItemViewsSection : public views::View,
   void PreferredSizeChanged() override;
   void ViewHierarchyChanged(const views::ViewHierarchyChangedDetails&) override;
 
-  // HoldingSpaceControllerObserver:
-  void OnHoldingSpaceModelAttached(HoldingSpaceModel* model) override;
-  void OnHoldingSpaceModelDetached(HoldingSpaceModel* model) override;
-
-  // HoldingSpaceModelObserver:
-  void OnHoldingSpaceItemsAdded(
-      const std::vector<const HoldingSpaceItem*>& items) override;
-  void OnHoldingSpaceItemsRemoved(
-      const std::vector<const HoldingSpaceItem*>& items) override;
-  void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
+  // `HoldingSpaceControllerObserver` and `HoldingSpaceModelObserver` events
+  // forwarded from the parent `HoldingSpaceTrayChildBubble`. Events may be
+  // withheld from this view if, for example, its parent is animating out.
+  void OnHoldingSpaceModelAttached(HoldingSpaceModel* model);
+  void OnHoldingSpaceModelDetached(HoldingSpaceModel* model);
+  void OnHoldingSpaceItemsAdded(const std::vector<const HoldingSpaceItem*>&);
+  void OnHoldingSpaceItemsRemoved(const std::vector<const HoldingSpaceItem*>&);
+  void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item);
 
  protected:
   // Invoked to create the `header_` for this section.
@@ -148,13 +140,6 @@ class HoldingSpaceItemViewsSection : public views::View,
   // view hierarchy. This is disabled during batch child additions, removals,
   // and visibility change operations to reduce the number of layout events.
   bool disable_preferred_size_changed_ = false;
-
-  base::ScopedObservation<HoldingSpaceController,
-                          HoldingSpaceControllerObserver>
-      controller_observer_{this};
-
-  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
-      model_observer_{this};
 
   base::WeakPtrFactory<HoldingSpaceItemViewsSection> weak_factory_{this};
 };
