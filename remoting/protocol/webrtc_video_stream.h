@@ -118,6 +118,9 @@ class WebrtcVideoStream : public VideoStream,
   // via video-control message.
   bool lossless_encode_ = false;
 
+  // Flag set when SDP is renegotiated and a new codec needs to be used.
+  bool recreate_encoder_ = false;
+
   base::WeakPtrFactory<WebrtcVideoStream> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebrtcVideoStream);

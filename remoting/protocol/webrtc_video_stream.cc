@@ -227,6 +227,11 @@ void WebrtcVideoStream::OnCaptureResult(
 
   current_frame_stats_->capturer_id = frame->capturer_id();
 
+  if (recreate_encoder_) {
+    recreate_encoder_ = false;
+    encoder_.reset();
+  }
+
   if (!encoder_) {
     encoder_selector_.SetDesktopFrame(*frame);
     encoder_ = encoder_selector_.CreateEncoder();
@@ -302,6 +307,12 @@ void WebrtcVideoStream::OnFrameEncoded(
     return;
   }
 
+  if (recreate_encoder_) {
+    // Don't send the encoded frame if the new SDP-negotiated encoder might be
+    // different from the current one. This would trigger a crash in WebRTC.
+    return;
+  }
+
   webrtc::EncodedImageCallback::Result result =
       webrtc_transport_->video_encoder_factory()->SendEncodedFrame(
           *frame, current_frame_stats_->capture_started_time,
@@ -352,14 +363,19 @@ void WebrtcVideoStream::OnEncoderCreated(
     const webrtc::SdpVideoFormat::Parameters& parameters) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  // Reset the encoder in case a previous one was being used and SDP
-  // re-negotiation selected a different one. The proper codec will be
+  // This method is called when SDP has been negotiated and WebRTC has
+  // created a preferred encoder via the WebrtcDummyVideoEncoderFactory
+  // implementation.
+  // Trigger recreating the encoder in case a previous one was being used and
+  // SDP renegotiation selected a different one. The proper encoder will be
   // created after the next frame is captured.
-  // An optimization would be to reset only if the new encoder is different
+  // Note that this flag controls the encoder created by this class, and not
+  // the encoder that was just "created" by WebRTC.
+  // An optimization would be to do this only if the new encoder is different
   // from the current one. However, SDP renegotiation is expected to occur
   // infrequently (only when the user changes a setting), and should typically
   // not cause the same codec to be repeatedly selected.
-  encoder_.reset();
+  recreate_encoder_ = true;
 
   // The preferred codec id depends on the order of
   // |encoder_selector_|.RegisterEncoder().
