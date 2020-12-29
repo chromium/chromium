@@ -41,18 +41,6 @@ bool IsValidPaintShaderType(PaintShader::Type type) {
          static_cast<uint8_t>(PaintShader::Type::kShaderCount);
 }
 
-// SkTileMode has no defined backing type, so read/write int32_t's.
-// If read_mode is a valid tile mode, this returns true and updates mode to the
-// equivalent enum value. Otherwise false is returned and mode is not modified.
-bool ValidateAndGetSkShaderTileMode(int32_t read_mode, SkTileMode* mode) {
-  if (read_mode < 0 || read_mode >= kSkTileModeCount) {
-    return false;
-  }
-
-  *mode = static_cast<SkTileMode>(read_mode);
-  return true;
-}
-
 bool IsValidPaintShaderScalingBehavior(PaintShader::ScalingBehavior behavior) {
   return behavior == PaintShader::ScalingBehavior::kRasterAtScale ||
          behavior == PaintShader::ScalingBehavior::kFixedScale;
@@ -523,16 +511,8 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   ReadSimple(&ref.flags_);
   ReadSimple(&ref.end_radius_);
   ReadSimple(&ref.start_radius_);
-
-  // See ValidateAndGetSkShaderTileMode
-  int32_t tx = 0;
-  int32_t ty = 0;
-  Read(&tx);
-  Read(&ty);
-  if (!ValidateAndGetSkShaderTileMode(tx, &ref.tx_) ||
-      !ValidateAndGetSkShaderTileMode(ty, &ref.ty_)) {
-    SetInvalid();
-  }
+  Read(&ref.tx_);
+  Read(&ref.ty_);
   ReadSimple(&ref.fallback_color_);
   ReadSimple(&ref.scaling_behavior_);
   if (!IsValidPaintShaderScalingBehavior(ref.scaling_behavior_))

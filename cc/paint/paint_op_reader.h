@@ -117,6 +117,15 @@ class CC_PAINT_EXPORT PaintOpReader {
     }
     *blend_mode = static_cast<SkBlendMode>(value);
   }
+  void Read(SkTileMode* tile_mode) {
+    uint8_t value = 0u;
+    Read(&value);
+    if (value >= kSkTileModeCount) {
+      SetInvalid();
+      return;
+    }
+    *tile_mode = static_cast<SkTileMode>(value);
+  }
   void Read(bool* data) {
     uint8_t value = 0u;
     Read(&value);
