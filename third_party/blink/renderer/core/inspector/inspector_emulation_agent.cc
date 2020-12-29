@@ -48,8 +48,9 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       navigator_platform_override_(&agent_state_,
                                    /*default_value=*/WTF::String()),
       user_agent_override_(&agent_state_, /*default_value=*/WTF::String()),
-      serialized_ua_metadata_override_(&agent_state_,
-                                       /*default_value=*/WTF::String()),
+      serialized_ua_metadata_override_(
+          &agent_state_,
+          /*default_value=*/std::vector<uint8_t>()),
       accept_language_override_(&agent_state_,
                                 /*default_value=*/WTF::String()),
       locale_override_(&agent_state_, /*default_value=*/WTF::String()),
@@ -74,14 +75,15 @@ void InspectorEmulationAgent::Restore() {
   // Since serialized_ua_metadata_override_ can't directly be converted back
   // to appropriate protocol message, we initially pass null and decode it
   // directly.
-  WTF::String save_serialized_ua_metadata_override =
+  std::vector<uint8_t> save_serialized_ua_metadata_override =
       serialized_ua_metadata_override_.Get();
   setUserAgentOverride(
       user_agent_override_.Get(), accept_language_override_.Get(),
       navigator_platform_override_.Get(),
       protocol::Maybe<protocol::Emulation::UserAgentMetadata>());
-  ua_metadata_override_ = blink::UserAgentMetadata::Demarshal(
-      save_serialized_ua_metadata_override.Latin1());
+  ua_metadata_override_ = blink::UserAgentMetadata::Demarshal(std::string(
+      reinterpret_cast<char*>(save_serialized_ua_metadata_override.data()),
+      save_serialized_ua_metadata_override.size()));
   serialized_ua_metadata_override_.Set(save_serialized_ua_metadata_override);
 
   if (!locale_override_.Get().IsEmpty())
@@ -589,7 +591,7 @@ Response InspectorEmulationAgent::setUserAgentOverride(
   if (ua_metadata_override.isJust()) {
     if (user_agent.IsEmpty()) {
       ua_metadata_override_ = base::nullopt;
-      serialized_ua_metadata_override_.Set(WTF::String());
+      serialized_ua_metadata_override_.Set(std::vector<uint8_t>());
       return Response::InvalidParams(
           "Can't specify UserAgentMetadata but no UA string");
     }
@@ -619,8 +621,10 @@ Response InspectorEmulationAgent::setUserAgentOverride(
   std::string marshalled =
       blink::UserAgentMetadata::Marshal(ua_metadata_override_)
           .value_or(std::string());
-  serialized_ua_metadata_override_.Set(
-      WTF::String(marshalled.data(), marshalled.size()));
+  std::vector<uint8_t> marshalled_as_bytes;
+  marshalled_as_bytes.insert(marshalled_as_bytes.end(), marshalled.begin(),
+                             marshalled.end());
+  serialized_ua_metadata_override_.Set(std::move(marshalled_as_bytes));
 
   return Response::Success();
 }

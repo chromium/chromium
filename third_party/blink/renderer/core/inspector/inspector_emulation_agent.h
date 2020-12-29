@@ -145,7 +145,7 @@ class CORE_EXPORT InspectorEmulationAgent final
   InspectorAgentState::String emulated_vision_deficiency_;
   InspectorAgentState::String navigator_platform_override_;
   InspectorAgentState::String user_agent_override_;
-  InspectorAgentState::String serialized_ua_metadata_override_;
+  InspectorAgentState::Bytes serialized_ua_metadata_override_;
   base::Optional<blink::UserAgentMetadata> ua_metadata_override_;
   InspectorAgentState::String accept_language_override_;
   InspectorAgentState::String locale_override_;
