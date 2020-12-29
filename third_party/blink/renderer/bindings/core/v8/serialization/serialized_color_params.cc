@@ -82,6 +82,33 @@ ImageDataStorageFormat SerializedImageDataSettings::GetStorageFormat() const {
   return kUint8ClampedArrayStorageFormat;
 }
 
+ImageDataSettings* SerializedImageDataSettings::GetImageDataSettings() const {
+  ImageDataSettings* settings = ImageDataSettings::Create();
+  switch (DeserializeColorSpace(color_space_)) {
+    case CanvasColorSpace::kSRGB:
+      settings->setColorSpace(kSRGBCanvasColorSpaceName);
+      break;
+    case CanvasColorSpace::kRec2020:
+      settings->setColorSpace(kRec2020CanvasColorSpaceName);
+      break;
+    case CanvasColorSpace::kP3:
+      settings->setColorSpace(kP3CanvasColorSpaceName);
+      break;
+  }
+  switch (storage_format_) {
+    case SerializedImageDataStorageFormat::kUint8Clamped:
+      settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
+      break;
+    case SerializedImageDataStorageFormat::kUint16:
+      settings->setStorageFormat(kUint16ArrayStorageFormatName);
+      break;
+    case SerializedImageDataStorageFormat::kFloat32:
+      settings->setStorageFormat(kFloat32ArrayStorageFormatName);
+      break;
+  }
+  return settings;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // SerializedImageBitmapSettings
 

@@ -430,16 +430,16 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
 
       SerializedImageDataSettings settings(canvas_color_space,
                                            image_data_storage_format);
-      ImageDataStorageFormat storage_format = settings.GetStorageFormat();
       base::CheckedNumeric<size_t> computed_byte_length = width;
       computed_byte_length *= height;
       computed_byte_length *=
-          ImageData::StorageFormatBytesPerPixel(storage_format);
+          ImageData::StorageFormatBytesPerPixel(settings.GetStorageFormat());
       if (!computed_byte_length.IsValid() ||
           computed_byte_length.ValueOrDie() != byte_length)
         return nullptr;
-      ImageData* image_data = ImageData::Create(
-          IntSize(width, height), settings.GetColorSpace(), storage_format);
+      ImageData* image_data = ImageData::ValidateAndCreate(
+          width, height, base::nullopt, settings.GetImageDataSettings(),
+          exception_state);
       if (!image_data)
         return nullptr;
       SkPixmap image_data_pixmap = image_data->GetSkPixmap();

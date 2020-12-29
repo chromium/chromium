@@ -759,7 +759,8 @@ TEST(V8ScriptValueSerializerTest, DecodeDOMMatrixReadOnly) {
 TEST(V8ScriptValueSerializerTest, RoundTripImageData) {
   // ImageData objects should serialize and deserialize correctly.
   V8TestingScope scope;
-  ImageData* image_data = ImageData::Create(2, 1, ASSERT_NO_EXCEPTION);
+  ImageData* image_data = ImageData::ValidateAndCreate(
+      2, 1, base::nullopt, nullptr, ASSERT_NO_EXCEPTION);
   SkPixmap pm = image_data->GetSkPixmap();
   pm.writable_addr32(0, 0)[0] = 200u;
   pm.writable_addr32(1, 0)[0] = 100u;
@@ -782,8 +783,8 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
   ImageDataSettings* image_data_settings = ImageDataSettings::Create();
   image_data_settings->setColorSpace("display-p3");
   image_data_settings->setStorageFormat("float32");
-  ImageData* image_data = ImageData::CreateImageData(2, 1, image_data_settings,
-                                                     ASSERT_NO_EXCEPTION);
+  ImageData* image_data = ImageData::ValidateAndCreate(
+      2, 1, base::nullopt, image_data_settings, ASSERT_NO_EXCEPTION);
   SkPixmap pm = image_data->GetSkPixmap();
   EXPECT_EQ(kRGBA_F32_SkColorType, pm.info().colorType());
   static_cast<float*>(pm.writable_addr(0, 0))[0] = 200.f;

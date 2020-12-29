@@ -80,6 +80,7 @@ class SerializedImageDataSettings {
 
   CanvasColorSpace GetColorSpace() const;
   ImageDataStorageFormat GetStorageFormat() const;
+  ImageDataSettings* GetImageDataSettings() const;
 
   SerializedColorSpace GetSerializedColorSpace() const { return color_space_; }
   SerializedImageDataStorageFormat GetSerializedImageDataStorageFormat() const {

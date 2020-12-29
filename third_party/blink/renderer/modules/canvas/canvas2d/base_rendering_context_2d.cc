@@ -1568,44 +1568,32 @@ bool BaseRenderingContext2D::ComputeDirtyRect(
 ImageData* BaseRenderingContext2D::createImageData(
     ImageData* image_data,
     ExceptionState& exception_state) const {
-  ImageData* result = nullptr;
-  ImageDataSettings* image_data_settings = image_data->getSettings();
-  result = ImageData::Create(image_data->Size(), image_data_settings);
-  if (!result)
-    exception_state.ThrowRangeError("Out of memory at ImageData creation");
-  return result;
+  return ImageData::ValidateAndCreate(
+      image_data->Size().Width(), image_data->Size().Height(), base::nullopt,
+      image_data->getSettings(), exception_state,
+      ImageData::Context2DErrorMode);
 }
 
 ImageData* BaseRenderingContext2D::createImageData(
     int sw,
     int sh,
     ExceptionState& exception_state) const {
-  if (!sw || !sh) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kIndexSizeError,
-        String::Format("The source %s is 0.", sw ? "height" : "width"));
-    return nullptr;
-  }
-
-  IntSize size(abs(sw), abs(sh));
-  ImageData* result = nullptr;
   ImageDataSettings* image_data_settings = ImageDataSettings::Create();
   image_data_settings->setColorSpace(kSRGBCanvasColorSpaceName);
   image_data_settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
-  result = ImageData::Create(size, image_data_settings);
-
-  if (!result)
-    exception_state.ThrowRangeError("Out of memory at ImageData creation");
-  return result;
+  return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), base::nullopt,
+                                      image_data_settings, exception_state,
+                                      ImageData::Context2DErrorMode);
 }
 
 ImageData* BaseRenderingContext2D::createImageData(
-    unsigned width,
-    unsigned height,
+    unsigned sw,
+    unsigned sh,
     ImageDataSettings* image_data_settings,
     ExceptionState& exception_state) const {
-  return ImageData::CreateImageData(width, height, image_data_settings,
-                                    exception_state);
+  return ImageData::ValidateAndCreate(sw, sh, base::nullopt,
+                                      image_data_settings, exception_state,
+                                      ImageData::Context2DErrorMode);
 }
 
 ImageData* BaseRenderingContext2D::getImageData(
@@ -1689,11 +1677,9 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
       ImageData::GetImageDataStorageFormat(
           image_data_settings->storageFormat());
   if (!CanCreateCanvas2dResourceProvider() || isContextLost()) {
-    ImageData* result =
-        ImageData::Create(image_data_rect.Size(), image_data_settings);
-    if (!result)
-      exception_state.ThrowRangeError("Out of memory at ImageData creation");
-    return result;
+    return ImageData::ValidateAndCreate(sw, sh, base::nullopt,
+                                        image_data_settings, exception_state,
+                                        ImageData::Context2DErrorMode);
   }
 
   // Deferred offscreen canvases might have recorded commands, make sure
@@ -1813,8 +1799,9 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
     default:
       NOTREACHED();
   }
-  ImageData* image_data = ImageData::Create(
-      image_data_rect.Size(), std::move(data_array), image_data_settings);
+  ImageData* image_data = ImageData::ValidateAndCreate(
+      sw, sh, data_array, image_data_settings, exception_state,
+      ImageData::Context2DErrorMode);
 
   if (!IsPaint2D()) {
     int scaled_time = getScaledElapsedTime(

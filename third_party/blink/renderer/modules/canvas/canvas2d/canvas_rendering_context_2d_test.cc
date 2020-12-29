@@ -231,8 +231,8 @@ void CanvasRenderingContext2DTest::SetUp() {
 
   canvas_element_ = To<HTMLCanvasElement>(GetDocument().getElementById("c"));
 
-  full_image_data_ = ImageData::Create(IntSize(10, 10));
-  partial_image_data_ = ImageData::Create(IntSize(2, 2));
+  full_image_data_ = ImageData::Create(10, 10, ASSERT_NO_EXCEPTION);
+  partial_image_data_ = ImageData::Create(2, 2, ASSERT_NO_EXCEPTION);
 
   NonThrowableExceptionState exception_state;
   auto* opaque_gradient =

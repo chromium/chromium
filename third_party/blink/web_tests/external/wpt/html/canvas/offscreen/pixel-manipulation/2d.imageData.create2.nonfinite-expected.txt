@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL createImageData() throws TypeError if arguments are not finite assert_throws_js: function "function() { ctx.createImageData(Infinity, 10); }" threw object "IndexSizeError: Failed to execute 'createImageData' on 'OffscreenCanvasRenderingContext2D': The source width is 0." ("IndexSizeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+FAIL createImageData() throws TypeError if arguments are not finite assert_throws_js: function "function() { ctx.createImageData(Infinity, 10); }" threw object "IndexSizeError: Failed to execute 'createImageData' on 'OffscreenCanvasRenderingContext2D': The source width is zero or not a number." ("IndexSizeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
 Harness: the test ran to completion.
 

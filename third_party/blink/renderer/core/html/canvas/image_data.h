@@ -53,13 +53,6 @@ class ImageBitmapOptions;
 
 typedef Uint8ClampedArrayOrUint16ArrayOrFloat32Array ImageDataArray;
 
-enum ConstructorParams {
-  kParamSize = 1,
-  kParamWidth = 1 << 1,
-  kParamHeight = 1 << 2,
-  kParamData = 1 << 3,
-};
-
 constexpr const char* kUint8ClampedArrayStorageFormatName = "uint8";
 constexpr const char* kUint16ArrayStorageFormatName = "uint16";
 constexpr const char* kFloat32ArrayStorageFormatName = "float32";
@@ -69,14 +62,6 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ImageData* Create(const IntSize&, const ImageDataSettings* = nullptr);
-  static ImageData* Create(const IntSize&,
-                           CanvasColorSpace,
-                           ImageDataStorageFormat);
-  static ImageData* Create(const IntSize&,
-                           NotShared<DOMArrayBufferView>,
-                           const ImageDataSettings* = nullptr);
-
   static ImageData* Create(unsigned width, unsigned height, ExceptionState&);
   static ImageData* Create(NotShared<DOMUint8ClampedArray>,
                            unsigned width,
@@ -86,15 +71,26 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
                            unsigned height,
                            ExceptionState&);
 
-  static ImageData* CreateImageData(unsigned width,
-                                    unsigned height,
-                                    const ImageDataSettings*,
-                                    ExceptionState&);
-  static ImageData* CreateImageData(ImageDataArray&,
-                                    unsigned width,
-                                    unsigned height,
-                                    ImageDataSettings*,
-                                    ExceptionState&);
+  static ImageData* Create(unsigned width,
+                           unsigned height,
+                           const ImageDataSettings*,
+                           ExceptionState&);
+
+  enum ValidateAndCreateFlags {
+    None = 0x0,
+    // When a too-large ImageData is created using a constructor, it has
+    // historically thrown an IndexSizeError. When created through a 2D
+    // canvas, it has historically thrown a RangeError. This flag will
+    // trigger the RangeError path.
+    Context2DErrorMode = 0x1,
+  };
+  static ImageData* ValidateAndCreate(
+      unsigned width,
+      base::Optional<unsigned> height,
+      base::Optional<NotShared<DOMArrayBufferView>> data,
+      const ImageDataSettings* settings,
+      ExceptionState& exception_state,
+      uint32_t flags = 0);
 
   ImageDataSettings* getSettings() { return settings_; }
 
@@ -148,13 +144,6 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   NotShared<DOMUint8ClampedArray> data_u8_;
   NotShared<DOMUint16Array> data_u16_;
   NotShared<DOMFloat32Array> data_f32_;
-
-  static ImageData* ValidateAndCreate(const IntSize* size,
-                                      const unsigned* width,
-                                      const unsigned* height,
-                                      NotShared<DOMArrayBufferView>* data,
-                                      const ImageDataSettings* settings,
-                                      ExceptionState*);
 
   static NotShared<DOMArrayBufferView> AllocateAndValidateDataArray(
       const unsigned&,
