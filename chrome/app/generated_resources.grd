@@ -5898,9 +5898,6 @@ the Bookmarks menu.">
       <message name="IDS_ACCNAME_TAB_SEARCH" desc="The accessible name for the Tab Search bubble.">
         Search tabs
       </message>
-      <message name="IDS_ACCNAME_TAB_STRIP" desc="The accessible name for the tab strip.">
-        Tab strip
-      </message>
       <message name="IDS_ACCNAME_TOOLBAR" desc="The accessible name for the toolbar.">
         Toolbar
       </message>

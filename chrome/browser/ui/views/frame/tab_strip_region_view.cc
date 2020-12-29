@@ -237,7 +237,6 @@ views::View* TabStripRegionView::GetDefaultFocusableChild() {
 
 void TabStripRegionView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTabList;
-  node_data->SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_STRIP));
 }
 
 void TabStripRegionView::OnViewPreferredSizeChanged(View* view) {
