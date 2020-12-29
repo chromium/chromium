@@ -28,6 +28,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/accessibility/ax_action_target_factory.h"
 #include "content/renderer/accessibility/ax_image_annotator.h"
+#include "content/renderer/accessibility/ax_tree_snapshotter_impl.h"
 #include "content/renderer/accessibility/blink_ax_action_target.h"
 #include "content/renderer/accessibility/render_accessibility_manager.h"
 #include "content/renderer/render_frame_impl.h"
@@ -96,57 +97,6 @@ namespace content {
 // tree snapshot to avoid outrageous memory or bandwidth
 // usage.
 const size_t kMaxSnapshotNodeCount = 5000;
-
-AXTreeSnapshotterImpl::AXTreeSnapshotterImpl(RenderFrameImpl* render_frame)
-    : render_frame_(render_frame) {
-  DCHECK(render_frame->GetWebFrame());
-  blink::WebDocument document_ = render_frame->GetWebFrame()->GetDocument();
-  context_ = std::make_unique<WebAXContext>(document_);
-}
-
-AXTreeSnapshotterImpl::~AXTreeSnapshotterImpl() = default;
-
-void AXTreeSnapshotterImpl::Snapshot(ui::AXMode ax_mode,
-                                     size_t max_node_count,
-                                     ui::AXTreeUpdate* response) {
-  if (!render_frame_->GetWebFrame())
-    return;
-  if (!WebAXObject::MaybeUpdateLayoutAndCheckValidity(
-          render_frame_->GetWebFrame()->GetDocument()))
-    return;
-  WebAXObject root = context_->Root();
-
-  BlinkAXTreeSource tree_source(render_frame_, ax_mode);
-  tree_source.SetRoot(root);
-  ScopedFreezeBlinkAXTreeSource freeze(&tree_source);
-
-  // The serializer returns an ui::AXTreeUpdate, which can store a complete
-  // or a partial accessibility tree. AXTreeSerializer is stateful, but the
-  // first time you serialize from a brand-new tree you're guaranteed to get a
-  // complete tree.
-  BlinkAXTreeSerializer serializer(&tree_source);
-  if (max_node_count)
-    serializer.set_max_node_count(max_node_count);
-  if (serializer.SerializeChanges(root, response))
-    return;
-
-  // It's possible for the page to fail to serialize the first time due to
-  // aria-owns rearranging the page while it's being scanned. Try a second
-  // time.
-  *response = ui::AXTreeUpdate();
-  if (serializer.SerializeChanges(root, response))
-    return;
-
-  // It failed again. Clear the response object because it might have errors.
-  *response = ui::AXTreeUpdate();
-  LOG(WARNING) << "Unable to serialize accessibility tree.";
-
-  // As a sanity check, node_id_to_clear and event_from should be uninitialized
-  // if this is a full tree snapshot. They'd only be set to something if
-  // this was indeed a partial update to the tree (which we don't want).
-  DCHECK_EQ(0, response->node_id_to_clear);
-  DCHECK_EQ(ax::mojom::EventFrom::kNone, response->event_from);
-}
 
 // static
 void RenderAccessibilityImpl::SnapshotAccessibilityTree(

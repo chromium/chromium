@@ -56,24 +56,6 @@ class RenderAccessibilityManager;
 using BlinkAXTreeSerializer =
     ui::AXTreeSerializer<blink::WebAXObject, ui::AXNodeData, ui::AXTreeData>;
 
-class AXTreeSnapshotterImpl : public AXTreeSnapshotter {
- public:
-  explicit AXTreeSnapshotterImpl(RenderFrameImpl* render_frame);
-  ~AXTreeSnapshotterImpl() override;
-
-  // AXTreeSnapshotter implementation.
-  void Snapshot(ui::AXMode ax_mode,
-                size_t max_node_count,
-                ui::AXTreeUpdate* accessibility_tree) override;
-
- private:
-  RenderFrameImpl* render_frame_;
-  std::unique_ptr<blink::WebAXContext> context_;
-
-  AXTreeSnapshotterImpl(const AXTreeSnapshotterImpl&) = delete;
-  AXTreeSnapshotterImpl& operator=(const AXTreeSnapshotterImpl&) = delete;
-};
-
 // The browser process implements native accessibility APIs, allowing assistive
 // technology (e.g., screen readers, magnifiers) to access and control the web
 // contents with high-level APIs. These APIs are also used by automation tools,

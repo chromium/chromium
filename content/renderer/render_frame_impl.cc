@@ -86,6 +86,7 @@
 #include "content/public/renderer/render_view_observer.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/accessibility/aom_content_ax_tree.h"
+#include "content/renderer/accessibility/ax_tree_snapshotter_impl.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "content/renderer/accessibility/render_accessibility_manager.h"
 #include "content/renderer/agent_scheduling_group.h"

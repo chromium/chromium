@@ -38,6 +38,8 @@ target(link_target_type, "renderer") {
     "accessibility/ax_image_annotator.h",
     "accessibility/ax_image_stopwords.cc",
     "accessibility/ax_image_stopwords.h",
+    "accessibility/ax_tree_snapshotter_impl.cc",
+    "accessibility/ax_tree_snapshotter_impl.h",
     "accessibility/blink_ax_action_target.cc",
     "accessibility/blink_ax_action_target.h",
     "accessibility/blink_ax_tree_source.cc",
