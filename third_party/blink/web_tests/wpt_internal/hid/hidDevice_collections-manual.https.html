@@ -62,15 +62,21 @@
                       'Incorrect bit width for usage 0x' + hex32(usage) + '.');
       };
 
+      // Returns the first top-level collection in |device.collections| with a
+      // usage matching |usagePage| and |usage|, or undefined if no matching
+      // collection was found.
+      const getCollectionByUsage = (device, usagePage, usage) => {
+        return device.collections.find(c => {
+            return c.usagePage == usagePage && c.usage == usage;});
+      }
+
       // Returns the first device in |devices| with a top-level collection
       // matching |usagePage| and |usage|, or undefined if no matching device
       // was found.
       const getDeviceByCollectionUsage = (devices, usagePage, usage) => {
         return devices.find(d => {
-          return d.collections.find(c => {
-            return c.usagePage == usagePage && c.usage == usage;
-          }) !== undefined;
-        });
+          return getCollectionByUsage(d, usagePage, usage);
+        }) !== undefined;
       }
 
       // Returns the first report in |devices| with matching |reportType| and
@@ -103,6 +109,12 @@
       };
 
       const checkReportMapDualshock4 = devices => {
+        // Expect one device with one top-level collection.
+        assert_equals(devices.length, 1, 'device count');
+        assert_equals(devices[0].collections.length, 1, 'collection count');
+        const collection = getCollectionByUsage(devices[0], 0x0001, 0x0005);
+        assert_not_equals(collection, undefined, 'game pad collection');
+
         // Input report
         const input01 = getReport(devices, 'input', 0x01);
         assert_not_equals(input01, undefined, 'input report 0x01');
@@ -282,6 +294,12 @@
       };
 
       checkReportMapDualSense = devices => {
+        // Expect one device with one top-level collection.
+        assert_equals(devices.length, 1, 'device count');
+        assert_equals(devices[0].collections.length, 1, 'collection count');
+        const collection = getCollectionByUsage(devices[0], 0x0001, 0x0005);
+        assert_not_equals(collection, undefined, 'game pad collection');
+
         // Input report
         const input01 = getReport(devices, 'input', 0x01);
         assert_not_equals(input01, undefined, 'input report 0x01');
@@ -380,6 +398,12 @@
       };
 
       checkReportMapSwitchPro = devices => {
+        // Expect one device with one top-level collection.
+        assert_equals(devices.length, 1, 'device count');
+        assert_equals(devices[0].collections.length, 1, 'collection count');
+        const collection = getCollectionByUsage(devices[0], 0x0001, 0x0004);
+        assert_not_equals(collection, undefined, 'joystick collection');
+
         // Input reports
         const input30 = getReport(devices, 'input', 0x30);
         assert_not_equals(input30, undefined, 'input report 0x30');
@@ -437,12 +461,19 @@
         // Speech Mike exposes five HID interfaces, two of which are blocked by
         // WebHID. None of the interfaces use report IDs. Distinguish the
         // interfaces by their top-level collection usage information.
+        assert_equals(devices.length, 3, 'device count');
         const device0 = getDeviceByCollectionUsage(devices, 0xffa0, 0x0001);
         assert_not_equals(device0, undefined, 'vendor device');
+        assert_equals(device0.collections.length, 1,
+                      'vendor device collection count');
         const device1 = getDeviceByCollectionUsage(devices, 0x000c, 0x0001);
         assert_not_equals(device1, undefined, 'consumer device');
+        assert_equals(device1.collections.length, 1,
+                      'consumer device collection count');
         const device2 = getDeviceByCollectionUsage(devices, 0x0001, 0x0004);
         assert_not_equals(device2, undefined, 'joystick device');
+        assert_equals(device2.collections.length, 1,
+                      'joystick device collection count');
 
         // These devices should be blocked by WebHID.
         const device3 = getDeviceByCollectionUsage(devices, 0x0001, 0x0002);
@@ -492,6 +523,16 @@
       };
 
       checkReportMapEvolveLink = devices => {
+        // Expect one device with three top-level collections.
+        assert_equals(devices.length, 1, 'device count');
+        assert_equals(devices[0].collections.length, 3, 'collection count');
+        const collection0 = getCollectionByUsage(devices[0], 0x000b, 0x0005);
+        assert_not_equals(collection0, undefined, 'headset collection');
+        const collection1 = getCollectionByUsage(devices[0], 0xff00, 0x0005);
+        assert_not_equals(collection1, undefined, 'vendor collection');
+        const collection2 = getCollectionByUsage(devices[0], 0x000c, 0x0001);
+        assert_not_equals(collection2, undefined, 'consumer collection');
+
         // Input reports
         const input01 = getReport(devices, 'input', 0x01);
         assert_not_equals(input01, undefined, 'input report 0x01');
@@ -609,6 +650,12 @@
       };
 
       checkReportMapStadiaController = devices => {
+        // Expect one device with one top-level collection.
+        assert_equals(devices.length, 1, 'device count');
+        assert_equals(devices[0].collections.length, 1, 'collection count');
+        const collection = getCollectionByUsage(devices[0], 0x0001, 0x0005);
+        assert_not_equals(collection, undefined, 'game pad collection');
+
         // Input report 0x03
         const input03 = getReport(devices, 'input', 0x03);
         assert_not_equals(input03, undefined, 'input report 0x03');

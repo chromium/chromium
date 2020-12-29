@@ -105,7 +105,7 @@ HidServiceMac::HidServiceMac() : weak_factory_(this) {
       IOServiceMatching(kIOHIDDeviceKey), FirstMatchCallback, this,
       devices_added_iterator_.InitializeInto());
   if (result != kIOReturnSuccess) {
-    HID_LOG(ERROR) << "Failed to listen for device arrival: "
+    HID_LOG(DEBUG) << "Failed to listen for device arrival: "
                    << HexErrorCode(result);
     return;
   }
@@ -118,7 +118,7 @@ HidServiceMac::HidServiceMac() : weak_factory_(this) {
       IOServiceMatching(kIOHIDDeviceKey), TerminatedCallback, this,
       devices_removed_iterator_.InitializeInto());
   if (result != kIOReturnSuccess) {
-    HID_LOG(ERROR) << "Failed to listen for device removal: "
+    HID_LOG(DEBUG) << "Failed to listen for device removal: "
                    << HexErrorCode(result);
     return;
   }
@@ -157,11 +157,14 @@ base::WeakPtr<HidService> HidServiceMac::GetWeakPtr() {
 // static
 base::ScopedCFTypeRef<IOHIDDeviceRef> HidServiceMac::OpenOnBlockingThread(
     scoped_refptr<HidDeviceInfo> device_info) {
+  DCHECK_EQ(device_info->platform_device_id_map().size(), 1u);
+  const auto& platform_device_id =
+      device_info->platform_device_id_map().front().platform_device_id;
   base::ScopedCFTypeRef<CFDictionaryRef> matching_dict(
-      IORegistryEntryIDMatching(device_info->platform_device_id()));
+      IORegistryEntryIDMatching(platform_device_id));
   if (!matching_dict.get()) {
-    HID_LOG(EVENT) << "Failed to create matching dictionary for ID: "
-                   << device_info->platform_device_id();
+    HID_LOG(DEBUG) << "Failed to create matching dictionary for ID: "
+                   << platform_device_id;
     return base::ScopedCFTypeRef<IOHIDDeviceRef>();
   }
 
@@ -170,21 +173,20 @@ base::ScopedCFTypeRef<IOHIDDeviceRef> HidServiceMac::OpenOnBlockingThread(
   base::mac::ScopedIOObject<io_service_t> service(IOServiceGetMatchingService(
       kIOMasterPortDefault, matching_dict.release()));
   if (!service.get()) {
-    HID_LOG(EVENT) << "IOService not found for ID: "
-                   << device_info->platform_device_id();
+    HID_LOG(DEBUG) << "IOService not found for ID: " << platform_device_id;
     return base::ScopedCFTypeRef<IOHIDDeviceRef>();
   }
 
   base::ScopedCFTypeRef<IOHIDDeviceRef> hid_device(
       IOHIDDeviceCreate(kCFAllocatorDefault, service));
   if (!hid_device) {
-    HID_LOG(EVENT) << "Unable to create IOHIDDevice object.";
+    HID_LOG(DEBUG) << "Unable to create IOHIDDevice object.";
     return base::ScopedCFTypeRef<IOHIDDeviceRef>();
   }
 
   IOReturn result = IOHIDDeviceOpen(hid_device, kIOHIDOptionsTypeNone);
   if (result != kIOReturnSuccess) {
-    HID_LOG(EVENT) << "Failed to open device: " << HexErrorCode(result);
+    HID_LOG(DEBUG) << "Failed to open device: " << HexErrorCode(result);
     return base::ScopedCFTypeRef<IOHIDDeviceRef>();
   }
 

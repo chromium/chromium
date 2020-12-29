@@ -97,11 +97,17 @@ class NintendoDataFetcherTest : public DeviceServiceTestBase {
 
 TEST_F(NintendoDataFetcherTest, UnsupportedDeviceIsIgnored) {
   // Simulate an unsupported, non-Nintendo HID device.
+  HidDeviceInfo::PlatformDeviceIdMap platform_device_id_map;
+  platform_device_id_map.emplace_back(base::flat_set<uint8_t>{0},
+                                      kTestDeviceId);
+  std::vector<mojom::HidCollectionInfoPtr> collections;
   auto collection = mojom::HidCollectionInfo::New();
   collection->usage = mojom::HidUsageAndPage::New(0, 0);
+  collections.push_back(std::move(collection));
   scoped_refptr<HidDeviceInfo> device_info(new HidDeviceInfo(
-      kTestDeviceId, kPhysicalDeviceId, 0x1234, 0xabcd, "Invalipad", "",
-      mojom::HidBusType::kHIDBusTypeUSB, std::move(collection), 0, 0, 0));
+      std::move(platform_device_id_map), kPhysicalDeviceId, 0x1234, 0xabcd,
+      "Invalipad", "", mojom::HidBusType::kHIDBusTypeUSB,
+      std::move(collections), 0, 0, 0));
 
   // Add the device to the mock HID service. The HID service should notify the
   // data fetcher.
@@ -118,11 +124,17 @@ TEST_F(NintendoDataFetcherTest, UnsupportedDeviceIsIgnored) {
 
 TEST_F(NintendoDataFetcherTest, AddAndRemoveSwitchPro) {
   // Simulate a Switch Pro over USB.
+  HidDeviceInfo::PlatformDeviceIdMap platform_device_id_map;
+  platform_device_id_map.emplace_back(base::flat_set<uint8_t>{0},
+                                      kTestDeviceId);
+  std::vector<mojom::HidCollectionInfoPtr> collections;
   auto collection = mojom::HidCollectionInfo::New();
   collection->usage = mojom::HidUsageAndPage::New(0, 0);
+  collections.push_back(std::move(collection));
   scoped_refptr<HidDeviceInfo> device_info(new HidDeviceInfo(
-      kTestDeviceId, kPhysicalDeviceId, 0x057e, 0x2009, "Switch Pro Controller",
-      "", mojom::HidBusType::kHIDBusTypeUSB, std::move(collection), 0, 63, 0));
+      std::move(platform_device_id_map), kPhysicalDeviceId, 0x057e, 0x2009,
+      "Switch Pro Controller", "", mojom::HidBusType::kHIDBusTypeUSB,
+      std::move(collections), 0, 63, 0));
 
   // Add the device to the mock HID service. The HID service should notify the
   // data fetcher.

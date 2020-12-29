@@ -446,7 +446,7 @@ void HidServiceLinux::FinishOpen(std::unique_ptr<ConnectParams> params) {
   DCHECK(params->fd.is_valid());
 
   if (!base::SetNonBlocking(params->fd.get())) {
-    HID_PLOG(ERROR) << "Failed to set the non-blocking flag on the device fd";
+    HID_PLOG(DEBUG) << "Failed to set the non-blocking flag on the device fd";
     std::move(params->callback).Run(nullptr);
     return;
   }

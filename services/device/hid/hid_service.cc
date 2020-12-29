@@ -4,6 +4,8 @@
 
 #include "services/device/hid/hid_service.h"
 
+#include <sstream>
+
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -23,6 +25,26 @@
 #endif
 
 namespace device {
+
+namespace {
+
+// Formats the platform device IDs in |platform_device_id_map| into a
+// comma-separated list for logging. The report IDs are not logged.
+std::string PlatformDeviceIdsToString(
+    const HidDeviceInfo::PlatformDeviceIdMap& platform_device_id_map) {
+  std::ostringstream buf("'");
+  bool first = true;
+  for (const auto& entry : platform_device_id_map) {
+    if (!first)
+      buf << "', '";
+    first = false;
+    buf << entry.platform_device_id;
+  }
+  buf << "'";
+  return buf.str();
+}
+
+}  // namespace
 
 void HidService::Observer::OnDeviceAdded(mojom::HidDeviceInfoPtr device_info) {}
 
@@ -74,9 +96,12 @@ HidService::~HidService() {
 void HidService::AddDevice(scoped_refptr<HidDeviceInfo> device_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::string device_guid =
-      FindDeviceIdByPlatformDeviceId(device_info->platform_device_id());
-  if (device_guid.empty()) {
+  base::Optional<std::string> found_guid = base::nullopt;
+  for (const auto& entry : device_info->platform_device_id_map()) {
+    if ((found_guid = FindDeviceGuidInDeviceMap(entry.platform_device_id)))
+      break;
+  }
+  if (!found_guid) {
     devices_[device_info->device_guid()] = device_info;
 
     HID_LOG(USER) << "HID device "
@@ -84,8 +109,10 @@ void HidService::AddDevice(scoped_refptr<HidDeviceInfo> device_info) {
                   << ": vendorId=" << device_info->vendor_id()
                   << ", productId=" << device_info->product_id() << ", name='"
                   << device_info->product_name() << "', serial='"
-                  << device_info->serial_number() << "', deviceId='"
-                  << device_info->platform_device_id() << "'";
+                  << device_info->serial_number() << "', deviceIds=["
+                  << PlatformDeviceIdsToString(
+                         device_info->platform_device_id_map())
+                  << "]";
 
     if (enumeration_ready_) {
       for (auto& observer : observer_list_)
@@ -97,18 +124,18 @@ void HidService::AddDevice(scoped_refptr<HidDeviceInfo> device_info) {
 void HidService::RemoveDevice(const HidPlatformDeviceId& platform_device_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::string device_guid = FindDeviceIdByPlatformDeviceId(platform_device_id);
-  if (!device_guid.empty()) {
+  auto found_guid = FindDeviceGuidInDeviceMap(platform_device_id);
+  if (found_guid) {
     HID_LOG(USER) << "HID device removed: deviceId='" << platform_device_id
                   << "'";
-    DCHECK(base::Contains(devices_, device_guid));
+    DCHECK(base::Contains(devices_, *found_guid));
 
-    scoped_refptr<HidDeviceInfo> device_info = devices_[device_guid];
+    scoped_refptr<HidDeviceInfo> device_info = devices_[*found_guid];
     if (enumeration_ready_) {
       for (auto& observer : observer_list_)
         observer.OnDeviceRemoved(device_info->device()->Clone());
     }
-    devices_.erase(device_guid);
+    devices_.erase(*found_guid);
   }
 }
 
@@ -135,14 +162,17 @@ void HidService::FirstEnumerationComplete() {
   }
 }
 
-std::string HidService::FindDeviceIdByPlatformDeviceId(
+base::Optional<std::string> HidService::FindDeviceGuidInDeviceMap(
     const HidPlatformDeviceId& platform_device_id) {
-  for (const auto& map_entry : devices_) {
-    if (map_entry.second->platform_device_id() == platform_device_id) {
-      return map_entry.first;
+  for (const auto& device_entry : devices_) {
+    const auto& platform_device_map =
+        device_entry.second->platform_device_id_map();
+    for (const auto& platform_device_entry : platform_device_map) {
+      if (platform_device_entry.platform_device_id == platform_device_id)
+        return device_entry.first;
     }
   }
-  return std::string();
+  return base::nullopt;
 }
 
 }  // namespace device

@@ -89,7 +89,7 @@ class HidService {
 
  private:
   void RunPendingEnumerations();
-  std::string FindDeviceIdByPlatformDeviceId(
+  base::Optional<std::string> FindDeviceGuidInDeviceMap(
       const HidPlatformDeviceId& platform_device_id);
 
   DeviceMap devices_;

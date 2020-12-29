@@ -11,7 +11,22 @@
 
 namespace device {
 
-HidDeviceInfo::HidDeviceInfo(const HidPlatformDeviceId& platform_device_id,
+HidDeviceInfo::PlatformDeviceIdEntry::PlatformDeviceIdEntry(
+    base::flat_set<uint8_t> report_ids,
+    HidPlatformDeviceId platform_device_id)
+    : report_ids(std::move(report_ids)),
+      platform_device_id(platform_device_id) {}
+
+HidDeviceInfo::PlatformDeviceIdEntry::PlatformDeviceIdEntry(
+    const PlatformDeviceIdEntry& entry) = default;
+
+HidDeviceInfo::PlatformDeviceIdEntry&
+HidDeviceInfo::PlatformDeviceIdEntry::operator=(
+    const PlatformDeviceIdEntry& entry) = default;
+
+HidDeviceInfo::PlatformDeviceIdEntry::~PlatformDeviceIdEntry() = default;
+
+HidDeviceInfo::HidDeviceInfo(HidPlatformDeviceId platform_device_id,
                              const std::string& physical_device_id,
                              uint16_t vendor_id,
                              uint16_t product_id,
@@ -19,8 +34,7 @@ HidDeviceInfo::HidDeviceInfo(const HidPlatformDeviceId& platform_device_id,
                              const std::string& serial_number,
                              mojom::HidBusType bus_type,
                              const std::vector<uint8_t> report_descriptor,
-                             std::string device_node)
-    : platform_device_id_(platform_device_id) {
+                             std::string device_node) {
   std::vector<mojom::HidCollectionInfoPtr> collections;
   bool has_report_id;
   size_t max_input_report_size;
@@ -39,6 +53,17 @@ HidDeviceInfo::HidDeviceInfo(const HidPlatformDeviceId& platform_device_id,
   auto protected_feature_report_ids = HidBlocklist::Get().GetProtectedReportIds(
       HidBlocklist::kReportTypeFeature, vendor_id, product_id, collections);
 
+  std::vector<uint8_t> report_ids;
+  if (has_report_id) {
+    for (const auto& collection : collections) {
+      report_ids.insert(report_ids.end(), collection->report_ids.begin(),
+                        collection->report_ids.end());
+    }
+  } else {
+    report_ids.push_back(0);
+  }
+  platform_device_id_map_.emplace_back(report_ids, platform_device_id);
+
   device_ = mojom::HidDeviceInfo::New(
       base::GenerateGUID(), physical_device_id, vendor_id, product_id,
       product_name, serial_number, bus_type, report_descriptor,
@@ -48,21 +73,26 @@ HidDeviceInfo::HidDeviceInfo(const HidPlatformDeviceId& platform_device_id,
       protected_feature_report_ids);
 }
 
-HidDeviceInfo::HidDeviceInfo(const HidPlatformDeviceId& platform_device_id,
-                             const std::string& physical_device_id,
-                             uint16_t vendor_id,
-                             uint16_t product_id,
-                             const std::string& product_name,
-                             const std::string& serial_number,
-                             mojom::HidBusType bus_type,
-                             mojom::HidCollectionInfoPtr collection,
-                             size_t max_input_report_size,
-                             size_t max_output_report_size,
-                             size_t max_feature_report_size)
-    : platform_device_id_(platform_device_id) {
-  std::vector<mojom::HidCollectionInfoPtr> collections;
-  bool has_report_id = !collection->report_ids.empty();
-  collections.push_back(std::move(collection));
+HidDeviceInfo::HidDeviceInfo(
+    PlatformDeviceIdMap platform_device_id_map,
+    const std::string& physical_device_id,
+    uint16_t vendor_id,
+    uint16_t product_id,
+    const std::string& product_name,
+    const std::string& serial_number,
+    mojom::HidBusType bus_type,
+    std::vector<mojom::HidCollectionInfoPtr> collections,
+    size_t max_input_report_size,
+    size_t max_output_report_size,
+    size_t max_feature_report_size)
+    : platform_device_id_map_(std::move(platform_device_id_map)) {
+  bool has_report_id = false;
+  for (const auto& collection : collections) {
+    if (!collection->report_ids.empty()) {
+      has_report_id = true;
+      break;
+    }
+  }
 
   auto protected_input_report_ids = HidBlocklist::Get().GetProtectedReportIds(
       HidBlocklist::kReportTypeInput, vendor_id, product_id, collections);

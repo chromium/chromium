@@ -175,13 +175,18 @@ class HidConnectionImplTest : public DeviceServiceTestBase {
   }
 
   scoped_refptr<HidDeviceInfo> CreateTestDevice() {
+    HidDeviceInfo::PlatformDeviceIdMap platform_device_id_map;
+    platform_device_id_map.emplace_back(base::flat_set<uint8_t>{0},
+                                        kTestDeviceId);
+    std::vector<mojom::HidCollectionInfoPtr> collections;
     auto hid_collection_info = mojom::HidCollectionInfo::New();
     hid_collection_info->usage = mojom::HidUsageAndPage::New(0, 0);
     hid_collection_info->report_ids.push_back(kTestReportId);
+    collections.push_back(std::move(hid_collection_info));
     return base::MakeRefCounted<HidDeviceInfo>(
-        kTestDeviceId, "1", 0x1234, 0xabcd, "product name", "serial number",
-        mojom::HidBusType::kHIDBusTypeUSB, std::move(hid_collection_info),
-        kMaxReportSizeBytes, kMaxReportSizeBytes, 0);
+        std::move(platform_device_id_map), "1", 0x1234, 0xabcd, "product name",
+        "serial number", mojom::HidBusType::kHIDBusTypeUSB,
+        std::move(collections), kMaxReportSizeBytes, kMaxReportSizeBytes, 0);
   }
 
   std::vector<uint8_t> CreateTestReportBuffer(uint8_t report_id, size_t size) {

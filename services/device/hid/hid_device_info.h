@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
@@ -29,7 +30,21 @@ typedef std::string HidPlatformDeviceId;
 
 class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
  public:
-  HidDeviceInfo(const HidPlatformDeviceId& platform_device_id,
+  // PlatformDeviceIdMap defines a mapping from report IDs to the
+  // HidPlatformDeviceId responsible for handling those reports.
+  struct PlatformDeviceIdEntry {
+    PlatformDeviceIdEntry(base::flat_set<uint8_t> report_ids,
+                          HidPlatformDeviceId platform_device_id);
+    PlatformDeviceIdEntry(const PlatformDeviceIdEntry& entry);
+    PlatformDeviceIdEntry& operator=(const PlatformDeviceIdEntry& entry);
+    ~PlatformDeviceIdEntry();
+
+    base::flat_set<uint8_t> report_ids;
+    HidPlatformDeviceId platform_device_id;
+  };
+  using PlatformDeviceIdMap = std::vector<PlatformDeviceIdEntry>;
+
+  HidDeviceInfo(HidPlatformDeviceId platform_device_id,
                 const std::string& physical_device_id,
                 uint16_t vendor_id,
                 uint16_t product_id,
@@ -39,14 +54,14 @@ class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
                 const std::vector<uint8_t> report_descriptor,
                 std::string device_node = "");
 
-  HidDeviceInfo(const HidPlatformDeviceId& platform_device_id,
+  HidDeviceInfo(PlatformDeviceIdMap platform_device_id_map,
                 const std::string& physical_device_id,
                 uint16_t vendor_id,
                 uint16_t product_id,
                 const std::string& product_name,
                 const std::string& serial_number,
                 mojom::HidBusType bus_type,
-                mojom::HidCollectionInfoPtr collection,
+                std::vector<mojom::HidCollectionInfoPtr> collections,
                 size_t max_input_report_size,
                 size_t max_output_report_size,
                 size_t max_feature_report_size);
@@ -55,8 +70,8 @@ class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
 
   // Device identification.
   const std::string& device_guid() const { return device_->guid; }
-  const HidPlatformDeviceId& platform_device_id() const {
-    return platform_device_id_;
+  const PlatformDeviceIdMap& platform_device_id_map() const {
+    return platform_device_id_map_;
   }
   const std::string& physical_device_id() const {
     return device_->physical_device_id;
@@ -94,7 +109,7 @@ class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
  private:
   friend class base::RefCountedThreadSafe<HidDeviceInfo>;
 
-  HidPlatformDeviceId platform_device_id_;
+  PlatformDeviceIdMap platform_device_id_map_;
   mojom::HidDeviceInfoPtr device_;
 
   DISALLOW_COPY_AND_ASSIGN(HidDeviceInfo);
