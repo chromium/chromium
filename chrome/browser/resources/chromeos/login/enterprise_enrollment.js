@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+(function() {
+
 /**
  * @fileoverview Polymer element for Enterprise Enrollment screen.
  */
@@ -33,6 +35,14 @@ var ENROLLMENT_STEP = {
    */
   ATTRIBUTE_PROMPT_ERROR: 'attribute-prompt-error',
   ACTIVE_DIRECTORY_JOIN_ERROR: 'active-directory-join-error',
+};
+
+/**
+ * The same steps as in offline-ad-login-element.
+ */
+const adLoginStep = {
+  UNLOCK: 'unlock',
+  CREDS: 'creds',
 };
 
 Polymer({
@@ -392,6 +402,7 @@ Polymer({
     if (step === ENROLLMENT_STEP.AD_JOIN) {
       this.$.adJoinUI.disabled = false;
       this.$.adJoinUI.loading = false;
+      this.$.adJoinUI.focus();
     }
     this.isCancelDisabled =
         (step === ENROLLMENT_STEP.SIGNIN && !this.isManualEnrollment_) ||
@@ -418,7 +429,11 @@ Polymer({
     this.$.adJoinUI.machineName = machineName;
     this.$.adJoinUI.userName = userName;
     this.$.adJoinUI.errorState = errorState;
-    this.$.adJoinUI.unlockPasswordStep = showUnlockConfig;
+    if (showUnlockConfig) {
+      this.$.adJoinUI.setUIStep(adLoginStep.UNLOCK);
+    } else {
+      this.$.adJoinUI.setUIStep(adLoginStep.CREDS);
+    }
   },
 
   /**
@@ -428,7 +443,8 @@ Polymer({
   setAdJoinConfiguration(options) {
     this.$.adJoinUI.disabled = false;
     this.$.adJoinUI.setJoinConfigurationOptions(options);
-    this.$.adJoinUI.unlockPasswordStep = false;
+    this.$.adJoinUI.setUIStep(adLoginStep.CREDS);
+    this.$.adJoinUI.focus();
   },
 
   /**
@@ -593,3 +609,4 @@ Polymer({
     return authenticatorDialogDisplayed || isSamlSsoVisible;
   },
 });
+})();

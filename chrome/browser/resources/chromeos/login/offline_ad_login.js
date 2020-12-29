@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+(function() {
+
 /**
  * @fileoverview Polymer element for displaying AD domain joining and AD
  * Authenticate user screens.
@@ -15,6 +17,11 @@
   BAD_USERNAME: 3,
   BAD_AUTH_PASSWORD: 4,
   BAD_UNLOCK_PASSWORD: 5,
+};
+
+const adLoginStep = {
+  UNLOCK: 'unlock',
+  CREDS: 'creds',
 };
 
 var DEFAULT_ENCRYPTION_TYPES = 'strong';
@@ -32,7 +39,7 @@ var JoinConfigType;
 Polymer({
   is: 'offline-ad-login-element',
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+  behaviors: [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
 
   EXTERNAL_API: [
     'reset',
@@ -52,10 +59,6 @@ Polymer({
      * Whether the screen is for domain join.
      */
     isDomainJoin: {type: Boolean, value: false},
-    /**
-     * Whether the unlock option should be shown.
-     */
-    unlockPasswordStep: {type: Boolean, value: false, observer: 'focus'},
     /**
      * The kerberos realm (AD Domain), the machine is part of.
      */
@@ -137,6 +140,12 @@ Polymer({
   observers: [
     'calculateUserInputValue_(selectedConfigOption_)',
   ],
+
+  UI_STEPS: adLoginStep,
+
+  defaultUIStep() {
+    return adLoginStep.CREDS;
+  },
 
   /** @private Used for 'More options' dialog. */
   storedOrgUnit_: String,
@@ -231,7 +240,7 @@ Polymer({
   },
 
   focus() {
-    if (this.unlockPasswordStep) {
+    if (this.uiStep === adLoginStep.UNLOCK) {
       this.$.unlockPasswordInput.focus();
     } else if (this.isDomainJoin && !this.$.machineNameInput.value) {
       this.$.machineNameInput.focus();
@@ -383,14 +392,16 @@ Polymer({
   /** @private */
   onSkipClicked_() {
     this.$.backToUnlockButton.hidden = false;
-    this.unlockPasswordStep = false;
+    this.setUIStep(adLoginStep.CREDS);
+    this.focus();
   },
 
   /** @private */
   onBackToUnlock_() {
     if (this.disabled)
       return;
-    this.unlockPasswordStep = true;
+    this.setUIStep(adLoginStep.UNLOCK);
+    this.focus();
   },
 
   /**
@@ -581,3 +592,4 @@ Polymer({
       this.$.credsStep.classList.remove('full-disabled');
   },
 });
+})();
