@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.base;
 
 import static org.chromium.chrome.browser.base.SplitCompatUtils.CHROME_SPLIT_NAME;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -42,8 +43,11 @@ import java.lang.reflect.Field;
  */
 public class SplitChromeApplication extends SplitCompatApplication {
     private static final String TAG = "SplitChromeApp";
+
+    @SuppressLint("StaticFieldLeak")
+    private static SplitPreloader sSplitPreloader;
+
     private String mChromeApplicationClassName;
-    private SplitPreloader mSplitPreloader;
 
     public SplitChromeApplication() {
         this(SplitCompatUtils.getIdentifierName(
@@ -56,9 +60,7 @@ public class SplitChromeApplication extends SplitCompatApplication {
 
     @Override
     public void onCreate() {
-        if (mSplitPreloader != null) {
-            mSplitPreloader.wait(CHROME_SPLIT_NAME);
-        }
+        finishPreload(CHROME_SPLIT_NAME);
         super.onCreate();
     }
 
@@ -81,11 +83,9 @@ public class SplitChromeApplication extends SplitCompatApplication {
     @Override
     public Context createContextForSplit(String name) throws PackageManager.NameNotFoundException {
         try (TraceEvent te = TraceEvent.scoped("SplitChromeApplication.createContextForSplit")) {
-            if (mSplitPreloader != null) {
-                // Wait for any splits that are preloading so we don't have a race to update the
-                // class loader cache (b/172602571).
-                mSplitPreloader.wait(name);
-            }
+            // Wait for any splits that are preloading so we don't have a race to update the
+            // class loader cache (b/172602571).
+            finishPreload(name);
             long startTime = SystemClock.uptimeMillis();
             Context context = super.createContextForSplit(name);
             RecordHistogram.recordTimesHistogram("Android.IsolatedSplits.ContextCreateTime." + name,
@@ -99,13 +99,13 @@ public class SplitChromeApplication extends SplitCompatApplication {
         // The chrome split has a large amount of code, which can slow down startup. Loading
         // this in the background allows us to do this in parallel with startup tasks which do
         // not depend on code in the chrome split.
-        mSplitPreloader = new SplitPreloader(context);
+        sSplitPreloader = new SplitPreloader(context);
         // If the chrome module is not enabled or isolated splits are not supported (e.g. in Android
         // N), the onComplete function will run immediately so it must handle the case where the
         // base context of the application has not been set yet.
-        mSplitPreloader.preload(CHROME_SPLIT_NAME, (chromeContext) -> {
+        sSplitPreloader.preload(CHROME_SPLIT_NAME, (chromeContext) -> {
             // When installed, the vr module is always loaded on startup, so preload here.
-            mSplitPreloader.preload("vr", null);
+            sSplitPreloader.preload("vr", null);
             // If the chrome module is not enabled or isolated splits are not supported,
             // chromeContext will have the same ClassLoader as the base context, so no need to
             // replace the ClassLoaders here.
@@ -118,6 +118,12 @@ public class SplitChromeApplication extends SplitCompatApplication {
 
     protected Impl createNonBrowserApplication() {
         return new Impl();
+    }
+
+    /* package */ static void finishPreload(String name) {
+        if (sSplitPreloader != null) {
+            sSplitPreloader.wait(name);
+        }
     }
 
     /**
