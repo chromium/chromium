@@ -22,17 +22,6 @@ export function setUp() {
   document.body.innerHTML +=
       '<xf-display-panel id="test-xf-display-panel"></xf-display-panel>';
   displayPanel = assert(document.querySelector('#test-xf-display-panel'));
-
-  const enableFilesTransferDetails = true;
-
-  // Mock LoadTimeData strings for transfer details feature.
-  loadTimeData.data = {
-    FILES_TRANSFER_DETAILS_ENABLED: enableFilesTransferDetails
-  };
-
-  loadTimeData.getString = id => {
-    return loadTimeData.data_[id] || id;
-  };
 }
 
 export function tearDown() {
