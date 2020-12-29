@@ -9,11 +9,25 @@
 
 <dom-module id="supervision-transition-element">
   <template>
-    <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="oobe_supervision_transition.css">
+    <style include="oobe-dialog-host">
+      paper-progress {
+        --paper-progress-active-color: rgb(66, 133, 244); /*#4285F4*/
+        --paper-progress-container-color: rgb(206, 224, 252); /*#CEE0FC*/
+        --paper-progress-secondary-color: rgb(66, 133, 244); /*#4285F4*/
+        display: block;
+        height: 3px;
+        padding: 40px 0 0 0;
+        width: 100%;
+      }
+
+      .supervision-icon {
+        --iron-icon-height: 32px;
+        --iron-icon-width: 32px;
+      }
+    </style>
     <oobe-dialog id="supervisionTransitionDialog" role="alert"
         aria-label$="[[getDialogA11yTitle_(locale, isRemovingSupervision_)]]"
-        subtitle-key="supervisionTransitionIntroMessage">
+        subtitle-key="supervisionTransitionIntroMessage" for-step="progress">
       <iron-icon src="chrome://oobe/supervision_icon.png" slot="oobe-icon"
           class="supervision-icon" aria-hidden="true">
       </iron-icon>
@@ -34,13 +48,15 @@
         title-key="supervisionTransitionErrorTitle"
         subtitle-key="supervisionTransitionErrorMessage"
         aria-label$="[[i18nDynamic(locale,'supervisionTransitionErrorTitle')]]"
-        has-buttons hidden>
+        has-buttons for-step="error">
       <iron-icon src="chrome://oobe/supervision_icon.png" slot="oobe-icon"
           aria-hidden="true">
       </iron-icon>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button id="accept-button" on-click="onAcceptAndContinue_"
-            text-key="supervisionTransitionButton" inverse></oobe-text-button>
+            text-key="supervisionTransitionButton" class="focus-on-show"
+            inverse>
+        </oobe-text-button>
       </div>
     </oobe-dialog>
   </template>
