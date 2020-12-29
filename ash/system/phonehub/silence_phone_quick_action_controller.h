@@ -6,8 +6,6 @@
 #define ASH_SYSTEM_PHONEHUB_SILENCE_PHONE_QUICK_ACTION_CONTROLLER_H_
 
 #include "ash/system/phonehub/quick_action_controller_base.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "chromeos/components/phonehub/do_not_disturb_controller.h"
 
 namespace base {
@@ -21,14 +19,6 @@ class ASH_EXPORT SilencePhoneQuickActionController
     : public QuickActionControllerBase,
       public chromeos::phonehub::DoNotDisturbController::Observer {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    ~Observer() override = default;
-
-    // Called when the state of the item has changed.
-    virtual void OnSilencePhoneItemStateChanged() = 0;
-  };
-
   explicit SilencePhoneQuickActionController(
       chromeos::phonehub::DoNotDisturbController* dnd_controller);
   ~SilencePhoneQuickActionController() override;
@@ -36,9 +26,6 @@ class ASH_EXPORT SilencePhoneQuickActionController
       delete;
   SilencePhoneQuickActionController operator=(
       SilencePhoneQuickActionController&) = delete;
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
 
   // Return true if the item is enabled/toggled.
   bool IsItemEnabled();
@@ -80,9 +67,6 @@ class ASH_EXPORT SilencePhoneQuickActionController
   // if the requested state is similar to the current state after the button is
   // pressed for a certain time.
   std::unique_ptr<base::OneShotTimer> check_requested_state_timer_;
-
-  // Registered observers.
-  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace ash
