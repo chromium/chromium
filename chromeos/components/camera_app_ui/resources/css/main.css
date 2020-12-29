@@ -209,10 +209,6 @@ body.review-result #shutters-group {
   display: none;
 }
 
-body.should-handle-intent-result #shutters-group {
-  bottom: calc((var(--bottom-line) * 2) + 8px + (var(--shutter-size) / 2));
-}
-
 body.tablet-landscape .actions-group {
   flex-direction: column-reverse;
 }
@@ -804,7 +800,7 @@ html[dir=rtl] body.view-expert-settings .right-stripe {
   --left-line: 44px;
   --right-line: 50px;
   --small-icon: 40px;
-  --shutter-vertical-center: calc((var(--bottom-line) * 2) + 204px);
+  --shutter-vertical-center: 180px;
 
   align-items: center;
   display: flex;
