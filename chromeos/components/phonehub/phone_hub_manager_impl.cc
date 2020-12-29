@@ -64,7 +64,6 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           connection_manager_.get(),
           feature_status_provider_.get())),
       find_my_device_controller_(std::make_unique<FindMyDeviceControllerImpl>(
-          do_not_disturb_controller_.get(),
           message_sender_.get(),
           user_action_recorder_.get())),
       notification_access_manager_(

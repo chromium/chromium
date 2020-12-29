@@ -18,7 +18,7 @@ class FakeFindMyDeviceController : public FindMyDeviceController {
   void SetPhoneRingingState(Status status);
 
   // FindMyDeviceController:
-  void SetIsPhoneRingingInternal(bool is_phone_ringing) override;
+  void SetPhoneRingingStatusInternal(Status status) override;
   void RequestNewPhoneRingingState(bool ringing) override;
   Status GetPhoneRingingStatus() override;
 

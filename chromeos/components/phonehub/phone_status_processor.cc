@@ -124,6 +124,20 @@ NotificationAccessManager::AccessStatus ComputeNotificationAccessState(
   return NotificationAccessManager::AccessStatus::kAvailableButNotGranted;
 }
 
+FindMyDeviceController::Status ComputeFindMyDeviceStatus(
+    const proto::PhoneProperties& phone_properties) {
+  if (phone_properties.find_my_device_capability() ==
+      proto::FindMyDeviceCapability::NOT_ALLOWED) {
+    return FindMyDeviceController::Status::kRingingNotAvailable;
+  }
+
+  bool is_ringing =
+      phone_properties.ring_status() == proto::FindMyDeviceRingStatus::RINGING;
+
+  return is_ringing ? FindMyDeviceController::Status::kRingingOn
+                    : FindMyDeviceController::Status::kRingingOff;
+}
+
 base::Optional<Notification> ProcessNotificationProto(
     const proto::Notification& proto) {
   // Only process notifications that are messaging apps with inline-replies.
@@ -247,8 +261,8 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
   notification_access_manager_->SetAccessStatusInternal(
       ComputeNotificationAccessState(phone_properties));
 
-  find_my_device_controller_->SetIsPhoneRingingInternal(
-      phone_properties.ring_status() == proto::FindMyDeviceRingStatus::RINGING);
+  find_my_device_controller_->SetPhoneRingingStatusInternal(
+      ComputeFindMyDeviceStatus(phone_properties));
 }
 
 void PhoneStatusProcessor::MaybeSetPhoneModelName(

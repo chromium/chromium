@@ -90,6 +90,11 @@ enum ProfileType {
   WORK_PROFILE = 1;
 }
 
+enum FindMyDeviceCapability {
+  NORMAL = 0;
+  NOT_ALLOWED = 1;
+}
+
 message PhoneProperties {
   int32 battery_percentage = 1;
   ChargingState charging_state = 2;
@@ -107,6 +112,8 @@ message PhoneProperties {
   FindMyDeviceRingStatus ring_status = 9;
 
   ProfileType profile_type = 10;
+
+  FindMyDeviceCapability find_my_device_capability = 11;
 }
 
 message App {

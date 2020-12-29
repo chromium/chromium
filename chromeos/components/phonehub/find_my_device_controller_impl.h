@@ -16,32 +16,22 @@ class UserActionRecorder;
 
 // Responsible for sending and receiving updates in regards to the Find My
 // Device feature which involves ringing the user's remote phone.
-class FindMyDeviceControllerImpl : public FindMyDeviceController,
-                                   public DoNotDisturbController::Observer {
+class FindMyDeviceControllerImpl : public FindMyDeviceController {
  public:
-  FindMyDeviceControllerImpl(DoNotDisturbController* do_not_disturb_controller,
-                             MessageSender* message_sender,
+  FindMyDeviceControllerImpl(MessageSender* message_sender,
                              UserActionRecorder* user_action_recorder);
   ~FindMyDeviceControllerImpl() override;
 
  private:
   friend class FindMyDeviceControllerImplTest;
 
-  Status ComputeStatus() const;
-  void UpdateStatus();
-
   // FindMyDeviceController:
-  void SetIsPhoneRingingInternal(bool is_phone_ringing) override;
+  void SetPhoneRingingStatusInternal(Status status) override;
   void RequestNewPhoneRingingState(bool ringing) override;
   Status GetPhoneRingingStatus() override;
 
-  // DoNotDisturbController::Observer:
-  void OnDndStateChanged() override;
-
-  bool is_phone_ringing_ = false;
   Status phone_ringing_status_ = Status::kRingingOff;
 
-  DoNotDisturbController* do_not_disturb_controller_;
   MessageSender* message_sender_;
   UserActionRecorder* user_action_recorder_;
 };

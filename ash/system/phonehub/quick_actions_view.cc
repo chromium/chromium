@@ -49,8 +49,7 @@ void QuickActionsView::InitQuickActionItems() {
 
   auto locate_phone_controller =
       std::make_unique<LocatePhoneQuickActionController>(
-          phone_hub_manager_->GetFindMyDeviceController(),
-          silence_phone_controller.get());
+          phone_hub_manager_->GetFindMyDeviceController());
   locate_phone_ = AddChildView(locate_phone_controller->CreateItem());
 
   quick_action_controllers_.push_back(std::move(silence_phone_controller));

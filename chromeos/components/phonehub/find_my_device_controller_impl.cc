@@ -12,26 +12,24 @@ namespace chromeos {
 namespace phonehub {
 
 FindMyDeviceControllerImpl::FindMyDeviceControllerImpl(
-    DoNotDisturbController* do_not_disturb_controller,
     MessageSender* message_sender,
     UserActionRecorder* user_action_recorder)
-    : do_not_disturb_controller_(do_not_disturb_controller),
-      message_sender_(message_sender),
+    : message_sender_(message_sender),
       user_action_recorder_(user_action_recorder) {
-  DCHECK(do_not_disturb_controller_);
   DCHECK(message_sender_);
-
-  do_not_disturb_controller_->AddObserver(this);
 }
 
-FindMyDeviceControllerImpl::~FindMyDeviceControllerImpl() {
-  do_not_disturb_controller_->RemoveObserver(this);
-}
+FindMyDeviceControllerImpl::~FindMyDeviceControllerImpl() = default;
 
-void FindMyDeviceControllerImpl::SetIsPhoneRingingInternal(
-    bool is_phone_ringing) {
-  is_phone_ringing_ = is_phone_ringing;
-  UpdateStatus();
+void FindMyDeviceControllerImpl::SetPhoneRingingStatusInternal(Status status) {
+  if (phone_ringing_status_ == status)
+    return;
+
+  PA_LOG(INFO) << "Find My Device ringing status update: "
+               << phone_ringing_status_ << " => " << status;
+  phone_ringing_status_ = status;
+
+  NotifyPhoneRingingStateChanged();
 }
 
 FindMyDeviceController::Status
@@ -50,32 +48,6 @@ void FindMyDeviceControllerImpl::RequestNewPhoneRingingState(bool ringing) {
                << "value: " << ringing;
   user_action_recorder_->RecordFindMyDeviceAttempt();
   message_sender_->SendRingDeviceRequest(ringing);
-}
-
-void FindMyDeviceControllerImpl::OnDndStateChanged() {
-  UpdateStatus();
-}
-
-FindMyDeviceController::Status FindMyDeviceControllerImpl::ComputeStatus()
-    const {
-  if (do_not_disturb_controller_->IsDndEnabled()) {
-    PA_LOG(WARNING) << "Cannot set ringing status because DoNotDisturb mode is "
-                    << "enabled.";
-    return Status::kRingingNotAvailable;
-  }
-  return is_phone_ringing_ ? Status::kRingingOn : Status::kRingingOff;
-}
-
-void FindMyDeviceControllerImpl::UpdateStatus() {
-  Status status = ComputeStatus();
-  if (phone_ringing_status_ == status)
-    return;
-
-  PA_LOG(INFO) << "Find My Device ringing status update: "
-               << phone_ringing_status_ << " => " << status;
-  phone_ringing_status_ = status;
-
-  NotifyPhoneRingingStateChanged();
 }
 
 }  // namespace phonehub

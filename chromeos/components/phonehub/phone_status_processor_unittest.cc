@@ -182,10 +182,12 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   expected_phone_properties->set_notification_mode(
       proto::NotificationMode::DO_NOT_DISTURB_ON);
   expected_phone_properties->set_profile_type(proto::ProfileType::WORK_PROFILE);
+  expected_phone_properties->set_find_my_device_capability(
+      proto::FindMyDeviceCapability::NOT_ALLOWED);
   expected_phone_properties->set_notification_access_state(
       proto::NotificationAccessState::ACCESS_GRANTED);
   expected_phone_properties->set_ring_status(
-      proto::FindMyDeviceRingStatus::RINGING);
+      proto::FindMyDeviceRingStatus::NOT_RINGING);
   expected_phone_properties->set_battery_percentage(24u);
   expected_phone_properties->set_charging_state(
       proto::ChargingState::CHARGING_AC);
@@ -214,7 +216,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
             *mutable_phone_model_->phone_name());
   EXPECT_TRUE(fake_do_not_disturb_controller_->IsDndEnabled());
   EXPECT_FALSE(fake_do_not_disturb_controller_->CanRequestNewDndState());
-  EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
+  EXPECT_EQ(FindMyDeviceController::Status::kRingingNotAvailable,
             fake_find_my_device_controller_->GetPhoneRingingStatus());
   EXPECT_EQ(NotificationAccessManager::AccessStatus::kProhibited,
             fake_notification_access_manager_->GetAccessStatus());
@@ -235,6 +237,10 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   expected_update.add_removed_notification_ids(0u);
   expected_update.mutable_properties()->set_profile_type(
       proto::ProfileType::DEFAULT_PROFILE);
+  expected_update.mutable_properties()->set_find_my_device_capability(
+      proto::FindMyDeviceCapability::NORMAL);
+  expected_update.mutable_properties()->set_ring_status(
+      proto::FindMyDeviceRingStatus::RINGING);
   fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
 
   EXPECT_EQ(0u, fake_notification_manager_->num_notifications());

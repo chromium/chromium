@@ -19,20 +19,15 @@ void FakeFindMyDeviceController::SetPhoneRingingState(
   NotifyPhoneRingingStateChanged();
 }
 
-void FakeFindMyDeviceController::SetIsPhoneRingingInternal(
-    bool is_phone_ringing) {
-  Status phone_ringing_status =
-      is_phone_ringing ? Status::kRingingOn : Status::kRingingOff;
-
-  if (phone_ringing_status_ == Status::kRingingNotAvailable)
-    return;
-
-  SetPhoneRingingState(phone_ringing_status);
+void FakeFindMyDeviceController::SetPhoneRingingStatusInternal(Status status) {
+  SetPhoneRingingState(status);
 }
 
 void FakeFindMyDeviceController::RequestNewPhoneRingingState(bool ringing) {
-  if (!should_request_fail_)
-    SetIsPhoneRingingInternal(ringing);
+  if (!should_request_fail_) {
+    SetPhoneRingingStatusInternal(ringing ? Status::kRingingOn
+                                          : Status::kRingingOff);
+  }
 }
 
 FindMyDeviceController::Status

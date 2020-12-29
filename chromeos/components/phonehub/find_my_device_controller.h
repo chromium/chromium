@@ -55,9 +55,9 @@ class FindMyDeviceController {
 
   FindMyDeviceController();
 
-  // This only sets the internal state of the whether the phone is ringin
+  // This only sets the internal state of the whether the phone is ringing
   // and does not send a request to start ringing the the remote phone device.
-  virtual void SetIsPhoneRingingInternal(bool is_phone_ringing) = 0;
+  virtual void SetPhoneRingingStatusInternal(Status status) = 0;
   void NotifyPhoneRingingStateChanged();
 
  private:
