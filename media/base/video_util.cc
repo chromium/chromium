@@ -503,10 +503,7 @@ bool I420CopyWithPadding(const VideoFrame& src_frame, VideoFrame* dst_frame) {
 Status ConvertAndScaleFrame(const VideoFrame& src_frame,
                             VideoFrame& dst_frame,
                             std::vector<uint8_t>& tmp_buf) {
-  // Can't use kFilterBox, because it can cause source buffer overreads while
-  // scaling.
-  // TODO(https://bugs.chromium.org/p/libyuv/issues/detail?id=875)
-  constexpr auto kDefaultFiltering = libyuv::kFilterBilinear;
+  constexpr auto kDefaultFiltering = libyuv::kFilterBox;
   if (!src_frame.IsMappable() || !dst_frame.IsMappable())
     return Status(StatusCode::kUnsupportedFrameFormatError);
 
