@@ -799,9 +799,9 @@ html[dir=rtl] body.view-expert-settings .right-stripe {
 
 #view-camera {
   --big-icon: 48px;
-  --bottom-line: 40px;
-  --left-line: 40px;
-  --right-line: 56px;
+  --bottom-line: 44px;
+  --left-line: 44px;
+  --right-line: 50px;
   --small-icon: 40px;
   --shutter-vertical-center: calc((var(--bottom-line) * 2) + 204px);
 
@@ -809,10 +809,6 @@ html[dir=rtl] body.view-expert-settings .right-stripe {
   display: flex;
   justify-content: center;
   overflow: hidden;
-}
-
-body.max-wnd #view-camera {
-  --bottom-line: 56px;
 }
 
 #preview-box {

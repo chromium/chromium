@@ -10,11 +10,13 @@ import {
 } from './type.js';
 import {WaitableEvent} from './waitable_event.js';
 
-// Default window size when using 4x3 camera preview.
-export const DEFAULT_PREVIEW_4X3_WINDOW_SIZE = [788, 570];
+const TOP_BAR_HEIGHT = 32;
 
-// Default window size when using 16x9 camera preview.
-export const DEFAULT_PREVIEW_16X9_WINDOW_SIZE = [788, 460];
+// Default window outer size when using 4x3 camera preview.
+export const DEFAULT_PREVIEW_4X3_WINDOW_SIZE = [788, 538 + TOP_BAR_HEIGHT];
+
+// Default window outer size when using 16x9 camera preview.
+export const DEFAULT_PREVIEW_16X9_WINDOW_SIZE = [788, 428 + TOP_BAR_HEIGHT];
 
 /**
  * Class which is used to coordinate the setup of window between Tast side and
