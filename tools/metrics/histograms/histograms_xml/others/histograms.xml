@@ -14398,7 +14398,10 @@ should be kept until we remove incident reporting. -->
 
 <histogram
     name="SiteIsolation.FileSystemApi.CanAccessDataForOriginFailure.IsHttpBasedScheme"
-    enum="BooleanHttpBasedOrOtherScheme" expires_after="2021-01-31">
+    enum="BooleanHttpBasedOrOtherScheme" expires_after="2020-12-21">
+  <obsolete>
+    Removed in Dec 2020 / M89.
+  </obsolete>
   <owner>lukasza@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>

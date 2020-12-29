@@ -657,13 +657,6 @@ const base::Feature kWebOTP{"WebOTP", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kWebOTPAssertionFeaturePolicy{
     "WebOTPAssertionFeaturePolicy", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether Site Isolation protects against spoofing of origin in
-// mojom::FileSystemManager::Open IPC from compromised renderer processes.  See
-// also https://crbug.com/917457.
-const base::Feature kSiteIsolationEnforcementForFileSystemApi{
-    "SiteIsolationEnforcementForFileSystemApi",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether SpareRenderProcessHostManager tries to always have a warm
 // spare renderer process around for the most recently requested BrowserContext.
 // This feature is only consulted in site-per-process mode.
