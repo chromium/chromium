@@ -92,7 +92,13 @@ class SharedImageGLBackingProduceDawnTest : public WebGPUTest {
 // For simplicity of the test the image is shared between a Dawn device and
 // itself: we render to it using the Dawn device, then re-associate it to a
 // Dawn texture and read back the values that were written.
-TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
+// TODO(crbug.com/1162117): gl_tests failing on Linux
+#if defined(OS_LINUX)
+#define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
+TEST_F(SharedImageGLBackingProduceDawnTest, MAYBE_Basic) {
   if (ShouldSkipTest())
     return;
   if (!WebGPUSupported()) {

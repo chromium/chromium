@@ -72,7 +72,13 @@ class WebGPUDecoderTest : public ::testing::Test {
   static const DawnDeviceClientID kDeviceClientID = 0u;
 };
 
-TEST_F(WebGPUDecoderTest, DawnCommands) {
+// TODO(crbug.com/1162117): gl_tests failing on Linux
+#if defined(OS_LINUX)
+#define MAYBE_DawnCommands DISABLED_DawnCommands
+#else
+#define MAYBE_DawnCommands DawnCommands
+#endif
+TEST_F(WebGPUDecoderTest, MAYBE_DawnCommands) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
