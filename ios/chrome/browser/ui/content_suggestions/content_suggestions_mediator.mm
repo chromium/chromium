@@ -161,6 +161,8 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   if (self) {
     _contentSuggestionsEnabled =
         prefService->FindPreference(prefs::kArticlesForYouEnabled);
+    // TODO(crbug.com/1085419): Stop observing this Service once DiscoverFeed is
+    // launched.
     _suggestionBridge =
         std::make_unique<ContentSuggestionsServiceBridge>(self, contentService);
     _contentService = contentService;
@@ -438,6 +440,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 - (void)contentSuggestionsService:
             (ntp_snippets::ContentSuggestionsService*)suggestionsService
          newSuggestionsInCategory:(ntp_snippets::Category)category {
+  // Ignore newSuggestionsInCategory if the DiscoverFeed is enabled, if not
+  // these might cause some unecessary section updates and crashes.
+  if (IsDiscoverFeedEnabled())
+    return;
+
   ContentSuggestionsCategoryWrapper* wrapper =
       [ContentSuggestionsCategoryWrapper wrapperWithCategory:category];
   if (!self.sectionInformationByCategory[wrapper]) {
@@ -462,8 +469,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
                   statusChangedTo:(ntp_snippets::CategoryStatus)status {
   // Ignore all ContentSuggestionsService if the DiscoverFeed is enabled, if not
   // these might cause some unecessary section updates and crashes.
-  // TODO(crbug.com/1105624): Stop observing this Service once DiscoverFeed is
-  // launched.
   if (IsDiscoverFeedEnabled())
     return;
 
