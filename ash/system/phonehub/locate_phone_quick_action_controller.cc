@@ -94,32 +94,42 @@ void LocatePhoneQuickActionController::UpdateState() {
 
 void LocatePhoneQuickActionController::SetItemState(ActionState state) {
   bool icon_enabled;
+  bool button_enabled;
   int state_text_id;
   int sub_label_text;
   switch (state) {
     case ActionState::kNotAvailable:
-      item_->SetEnabled(false);
-      return;
+      icon_enabled = false;
+      button_enabled = false;
+      state_text_id = IDS_ASH_PHONE_HUB_LOCATE_BUTTON_NOT_AVAILABLE_TOOLTIP;
+      sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE;
+      break;
     case ActionState::kOff:
       icon_enabled = false;
+      button_enabled = true;
       state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_DISABLED_STATE_TOOLTIP;
       sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_OFF_STATE;
       break;
     case ActionState::kOn:
       icon_enabled = true;
+      button_enabled = true;
       state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_ENABLED_STATE_TOOLTIP;
       sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_ON_STATE;
       break;
   }
 
-  item_->SetEnabled(true);
+  item_->SetEnabled(button_enabled);
   item_->SetToggled(icon_enabled);
   item_->SetSubLabel(l10n_util::GetStringUTF16(sub_label_text));
-  base::string16 tooltip_state =
-      l10n_util::GetStringFUTF16(state_text_id, item_->GetItemLabel());
-  item_->SetIconTooltip(
-      l10n_util::GetStringFUTF16(IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP,
-                                 item_->GetItemLabel(), tooltip_state));
+  if (state == ActionState::kNotAvailable) {
+    item_->SetIconTooltip(l10n_util::GetStringUTF16(state_text_id));
+  } else {
+    base::string16 tooltip_state =
+        l10n_util::GetStringFUTF16(state_text_id, item_->GetItemLabel());
+    item_->SetIconTooltip(l10n_util::GetStringFUTF16(
+        IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP, item_->GetItemLabel(),
+        tooltip_state));
+  }
 }
 
 void LocatePhoneQuickActionController::CheckRequestedState() {

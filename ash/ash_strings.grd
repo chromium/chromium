@@ -1217,7 +1217,10 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_SILENCE_BUTTON_NOT_AVAILABLE_TOOLTIP" desc="Tooltip message that indicates to the user that the Silence Phone feature is disabled because their phone is on a work profile.">
         Silence phone is not available on work profile
       </message>
-      
+      <message name="IDS_ASH_PHONE_HUB_LOCATE_BUTTON_NOT_AVAILABLE_TOOLTIP" desc="Tooltip message that indicates to the user that Phone Hub's 'Locate phone' feature is not available because the user disabled alarms that make sounds on their phone.">
+        Locate phone is not available when alarm sounds are disabled
+      </message>
+
       <message name="IDS_ASH_STYLUS_BATTERY_LOW_LABEL">
         Low
       </message>
