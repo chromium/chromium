@@ -417,7 +417,7 @@ TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {
   // article in a browser tab.
   EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
-        EXPECT_EQ(GURL("https://support.google.com/chromebook/?p=multi_device"),
+        EXPECT_EQ(GURL("https://support.google.com/chromebook?p=phone_hub"),
                   url);
         EXPECT_TRUE(from_user_interaction);
       });
@@ -438,7 +438,7 @@ TEST_F(PhoneHubTrayTest, ClickButtonOnBluetoothDisabledView) {
   // article in a browser tab.
   EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
       .WillOnce([](const GURL& url, bool from_user_interaction) {
-        EXPECT_EQ(GURL("https://support.google.com/chromebook/?p=multi_device"),
+        EXPECT_EQ(GURL("https://support.google.com/chromebook?p=phone_hub"),
                   url);
         EXPECT_TRUE(from_user_interaction);
       });

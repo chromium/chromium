@@ -16,6 +16,7 @@
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "chromeos/components/phonehub/connection_scheduler.h"
+#include "chromeos/components/phonehub/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/layout/fill_layout.h"
@@ -53,7 +54,8 @@ PhoneDisconnectedView::PhoneDisconnectedView(
           base::BindRepeating(
               &NewWindowDelegate::NewTabWithUrl,
               base::Unretained(NewWindowDelegate::GetInstance()),
-              GURL(kLearnMoreUrl), /*from_user_interaction=*/true)),
+              GURL(chromeos::phonehub::kPhoneHubLearnMoreLink),
+              /*from_user_interaction=*/true)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_LEARN_MORE_BUTTON),
       /*paint_background=*/false);

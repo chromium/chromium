@@ -17,6 +17,7 @@
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/status_area_widget.h"
+#include "chromeos/components/phonehub/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -71,7 +72,8 @@ phone_hub_metrics::Screen BluetoothDisabledView::GetScreenForMetrics() const {
 void BluetoothDisabledView::LearnMoreButtonPressed() {
   LogInterstitialScreenEvent(InterstitialScreenEvent::kLearnMore);
   NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      GURL(kLearnMoreUrl), /*from_user_interaction=*/true);
+      GURL(chromeos::phonehub::kPhoneHubLearnMoreLink),
+      /*from_user_interaction=*/true);
 }
 
 BEGIN_METADATA(BluetoothDisabledView, views::View)

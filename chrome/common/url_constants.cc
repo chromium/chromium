@@ -398,9 +398,6 @@ const char kOemEulaURLPath[] = "oem";
 const char kOnlineEulaURLPath[] =
     "https://policies.google.com/terms/embedded?hl=%s";
 
-const char kPhoneHubLearnMoreLink[] =
-    "https://support.google.com/chromebook?p=phone_hub";
-
 const char kAdditionalToSOnlineURLPath[] =
     "https://www.google.com/intl/%s/chrome/terms/";
 

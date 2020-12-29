@@ -20,6 +20,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
+#include "chromeos/components/phonehub/url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/services/multidevice_setup/public/cpp/url_provider.h"
@@ -420,15 +421,11 @@ void MultiDeviceSection::AddLoadTimeData(
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY,
           ui::GetChromeOSDeviceName()));
-  // TODO(https://crbug.com/1144053): Replace with updated URL.
   html_source->AddString(
       "multideviceNotificationAccessSetupAccessProhibitedSummary",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACCESS_PROHIBITED_SUMMARY,
-          base::UTF8ToUTF16(
-              multidevice_setup::
-                  GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
-                      .spec())));
+          GetHelpUrlWithBoard(phonehub::kPhoneHubLearnMoreLink)));
   html_source->AddString(
       "multideviceWifiSyncItemSummary",
       l10n_util::GetStringFUTF16(
@@ -443,7 +440,7 @@ void MultiDeviceSection::AddLoadTimeData(
       "multidevicePhoneHubTaskContinuationDisabledSummary",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_DISABLED_SUMMARY,
-          GetHelpUrlWithBoard(chrome::kPhoneHubLearnMoreLink)));
+          GetHelpUrlWithBoard(phonehub::kPhoneHubLearnMoreLink)));
 
   AddEasyUnlockStrings(html_source);
   ::settings::AddNearbyShareData(html_source);

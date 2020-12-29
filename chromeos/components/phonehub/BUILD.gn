@@ -82,6 +82,8 @@ static_library("phonehub") {
     "tether_controller.h",
     "tether_controller_impl.cc",
     "tether_controller_impl.h",
+    "url_constants.cc",
+    "url_constants.h",
     "user_action_recorder.h",
     "user_action_recorder_impl.cc",
     "user_action_recorder_impl.h",
