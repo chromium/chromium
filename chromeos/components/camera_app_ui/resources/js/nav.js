@@ -181,6 +181,11 @@ export function onKeyPressed(event) {
     case 'BrowserBack':
       windowController.minimize();
       break;
+    case 'Ctrl-=':
+    case 'Ctrl--':
+      // Blocks the in-app zoom in/out to avoid unexpected layout.
+      event.preventDefault();
+      break;
     case 'Ctrl-V':
       toast.showDebugMessage(browserProxy.getAppVersion());
       break;
