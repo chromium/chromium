@@ -6,7 +6,9 @@
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
+#include "content/browser/prerender/prerender_host.h"
 #include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -269,6 +271,56 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
     // Activating the prerendered page should not issue a request.
     EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
     EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, InformedRenderFrameHost) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // The initial page should not be for prerendering.
+  RenderFrameHostImpl* initiator_render_frame_host =
+      static_cast<RenderFrameHostImpl*>(
+          shell()->web_contents()->GetMainFrame());
+  EXPECT_FALSE(initiator_render_frame_host->IsPrerendering());
+
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  AddPrerender(kPrerenderingUrl);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+
+  // A prerender host for the URL should be registered.
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  EXPECT_NE(prerender_host, nullptr);
+
+  // Verify the corresponding RenderFrameHostImpl knows the prerendering state.
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+  EXPECT_TRUE(prerendered_render_frame_host->IsPrerendering());
+
+  // Activate the prerendered page.
+  NavigateWithLocation(kPrerenderingUrl);
+  if (IsActivationDisabled()) {
+    // Activation is disabled, so the page should newly be rendered instead
+    // of the prerendered page.
+    RenderFrameHostImpl* new_render_frame_host =
+        static_cast<RenderFrameHostImpl*>(
+            shell()->web_contents()->GetMainFrame());
+    EXPECT_NE(prerendered_render_frame_host, new_render_frame_host);
+    // The new page shouldn't be in the prerendering state.
+    EXPECT_FALSE(new_render_frame_host->IsPrerendering());
+  } else {
+    // The prerendered page is activated. The page should no longer be in
+    // the prerendering state.
+    ASSERT_EQ(prerendered_render_frame_host,
+              shell()->web_contents()->GetMainFrame());
+    EXPECT_FALSE(prerendered_render_frame_host->IsPrerendering());
   }
 }
 

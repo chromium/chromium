@@ -1475,6 +1475,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::PrerenderProcessor> pending_receiver);
 
+  // Prerender2:
+  // Returns true if this frame is for a prerendering page.
+  // This should be called after CommitNavigation().
+  bool IsPrerendering() const;
+
+  // Prerender2:
+  // Called by PrerenderHost when a prerendered WebContents is activated.
+  void OnPrerenderedPageActivated();
+
   // https://mikewest.github.io/corpp/#initialize-embedder-policy-for-global
   const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
       const {
@@ -3275,8 +3284,21 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Receivers for PrerenderProcessor that handle prerendering requests from a
   // renderer process. These receivers are disconnected when the document
   // explicitly cancels prerendering or the document gets destroyed.
+  // There are two types of RenderFrameHosts during prerendering.
+  // - Initiator RenderFrameHost: (if any) it triggers a prerendering
+  // navigation, e.g., by <link rel="prerender">.
+  // - Prerendered RenderFrameHost: it is for a prerendering page.
+  // Note that it is the initiator RenderFrameHost that stores these receivers.
   mojo::UniqueReceiverSet<blink::mojom::PrerenderProcessor>
       prerender_processor_receivers_;
+
+  // Prerender2:
+  // Indicates whether this frame is being prerendered. Updated at commit
+  // navigation time (CommitNavigation()), and when the prerendered page is
+  // activated (OnPrerenderedPageActivated()).
+  // TODO(https://crbug.com/1160611): Update the flag when a prerendering
+  // navigation failed.
+  bool is_prerendering_ = false;
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<RenderFrameHostImpl> weak_ptr_factory_{this};

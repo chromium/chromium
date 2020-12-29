@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "third_party/blink/public/common/features.h"
@@ -56,23 +57,28 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
 TEST_F(PrerenderHostTest, StartPrerendering) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
-  RenderFrameHostImpl* render_frame_host = web_contents->GetMainFrame();
-  ASSERT_TRUE(render_frame_host);
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  ASSERT_TRUE(initiator_rfh);
 
   const GURL kPrerenderingUrl("https://example.com/next");
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = kPrerenderingUrl;
   auto prerender_host = std::make_unique<PrerenderHost>(
-      std::move(attributes), render_frame_host->GetGlobalFrameRoutingId(),
-      render_frame_host->GetLastCommittedOrigin());
+      std::move(attributes), initiator_rfh->GetGlobalFrameRoutingId(),
+      initiator_rfh->GetLastCommittedOrigin());
 
   prerender_host->StartPrerendering();
+  // Prepare a fake response so as to commit the navigation.
+  TestRenderFrameHost* prerendering_rfh = static_cast<TestRenderFrameHost*>(
+      prerender_host->GetPrerenderedMainFrameHostForTesting());
+  ASSERT_TRUE(prerendering_rfh);
+  prerendering_rfh->PrepareForCommit();
 
   // Artificially finish navigation to make the prerender host ready to provide
   // the prerendered contents.
   prerender_host->DidFinishNavigation(nullptr);
 
-  EXPECT_TRUE(prerender_host->ActivatePrerenderedContents(*render_frame_host));
+  EXPECT_TRUE(prerender_host->ActivatePrerenderedContents(*initiator_rfh));
 }
 
 }  // namespace

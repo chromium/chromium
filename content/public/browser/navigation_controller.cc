@@ -61,6 +61,7 @@ NavigationController::LoadURLParams::LoadURLParams(const OpenURLParams& input)
   //     override_user_agent
   //     should_clear_history_list
   //     was_activated
+  //     is_prerendering
   //
   //   The following OpenURLParams don't have an equivalent in LoadURLParams:
   //     disposition

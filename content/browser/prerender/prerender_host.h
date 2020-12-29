@@ -51,6 +51,11 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
   bool ActivatePrerenderedContents(
       RenderFrameHostImpl& current_render_frame_host);
 
+  // Exposes the main RenderFrameHost of the prerendered page for testing.
+  // This must be called after StartPrerendering() and before
+  // ActivatePrerenderedContents().
+  RenderFrameHostImpl* GetPrerenderedMainFrameHostForTesting();
+
   bool is_ready_for_activation() const { return is_ready_for_activation_; }
 
  private:

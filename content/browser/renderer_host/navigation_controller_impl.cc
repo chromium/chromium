@@ -3492,7 +3492,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   auto navigation_request = NavigationRequest::CreateBrowserInitiated(
       node, std::move(common_params), std::move(commit_params),
-      !params.is_renderer_initiated,
+      !params.is_renderer_initiated, params.is_prerendering,
       params.initiator_frame_token.has_value()
           ? &(params.initiator_frame_token.value())
           : nullptr,
@@ -3613,7 +3613,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
 
   return NavigationRequest::CreateBrowserInitiated(
       frame_tree_node, std::move(common_params), std::move(commit_params),
-      !entry->is_renderer_initiated(), nullptr /* initiator_frame_token */,
+      !entry->is_renderer_initiated(), false /* is_prerendering */,
+      nullptr /* initiator_frame_token */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       entry->extra_headers(), frame_entry, entry, request_body,
       nullptr /* navigation_ui_data */, base::nullopt /* impression */);
@@ -3714,7 +3715,8 @@ void NavigationControllerImpl::LoadPostCommitErrorPage(
   std::unique_ptr<NavigationRequest> navigation_request =
       NavigationRequest::CreateBrowserInitiated(
           node, std::move(common_params), std::move(commit_params),
-          true /* browser_initiated */, nullptr /* initiator_frame_token */,
+          true /* browser_initiated */, false /* is_prerendering */,
+          nullptr /* initiator_frame_token */,
           ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
           "" /* extra_headers */, nullptr /* frame_entry */,
           nullptr /* entry */, nullptr /* post_body */,

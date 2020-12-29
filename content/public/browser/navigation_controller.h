@@ -183,6 +183,10 @@ class NavigationController {
     // important for tracking whether to display pending URLs.
     bool is_renderer_initiated;
 
+    // Prerender2:
+    // True for prerendering navigations.
+    bool is_prerendering = false;
+
     // User agent override for this load. See comments in
     // UserAgentOverrideOption definition.
     UserAgentOverrideOption override_user_agent = UA_OVERRIDE_INHERIT;

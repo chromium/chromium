@@ -6153,6 +6153,12 @@ void RenderFrameHostImpl::CommitNavigation(
   DCHECK(!IsRendererDebugURL(common_params->url));
   DCHECK(navigation_request);
 
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
+    is_prerendering_ = navigation_request->IsPrerendering();
+    // TODO(https://crbug.com/1132752): If the frame is for prerendering, enable
+    // Mojo capability control.
+  }
+
   bool is_same_document =
       NavigationTypeUtils::IsSameDocument(common_params->navigation_type);
   bool is_mhtml_subframe = navigation_request->IsForMhtmlSubframe();
@@ -7648,6 +7654,20 @@ void RenderFrameHostImpl::BindPrerenderProcessor(
   DCHECK_EQ(render_frame_host, this);
   prerender_processor_receivers_.Add(
       std::make_unique<PrerenderProcessor>(*this), std::move(pending_receiver));
+}
+
+bool RenderFrameHostImpl::IsPrerendering() const {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
+  return is_prerendering_;
+}
+
+void RenderFrameHostImpl::OnPrerenderedPageActivated() {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
+  DCHECK(is_prerendering_);
+  is_prerendering_ = false;
+
+  // TODO(https://crbug.com/1132752): Inform `broker_` that the prerendered
+  // frame is activated.
 }
 
 void RenderFrameHostImpl::BindMediaInterfaceFactoryReceiver(
