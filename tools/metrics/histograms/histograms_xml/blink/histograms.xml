@@ -2334,7 +2334,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.VisibleLoadTime.LazyLoadEligibleFrames.AboveTheFold"
-    units="ms" expires_after="2021-04-25">
+    units="ms" expires_after="2021-06-27">
   <owner>sclittle@chromium.org</owner>
   <summary>
     Milliseconds spent waiting for an above the fold iframe to load. Only fires
@@ -2354,7 +2354,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold"
-    units="ms" expires_after="2021-04-25">
+    units="ms" expires_after="2021-06-27">
   <owner>rajendrant@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
   <summary>
@@ -2366,7 +2366,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold"
-    units="ms" expires_after="2021-04-25">
+    units="ms" expires_after="2021-06-27">
   <owner>rajendrant@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
   <summary>

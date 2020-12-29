@@ -465,7 +465,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crostini.UncleanSession.RestarterResult" enum="CrostiniResult"
-    expires_after="2021-04-04">
+    expires_after="2021-06-27">
   <owner>clumptini@google.com</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
