@@ -127,6 +127,7 @@ class Namespace(object):
                        'on the API summary page.' % self.name)
       json['description'] = ''
     self.description = json['description']
+    self.nodoc = json.get('nodoc', False)
     self.deprecated = json.get('deprecated', None)
     self.unix_name = UnixName(self.name)
     self.source_file = source_file
@@ -217,6 +218,7 @@ class Type(object):
     self.unix_name = UnixName(self.name)
     self.description = json.get('description', None)
     self.jsexterns = json.get('jsexterns', None)
+    self.nodoc = json.get('nodoc', False)
 
     # Copy the Origin and override the |from_manifest_keys| value as necessary.
     # We need to do this to ensure types reference by manifest types have the
@@ -364,6 +366,7 @@ class Function(object):
     self.supports_listeners = options.get('supportsListeners', True)
     self.supports_rules = options.get('supportsRules', False)
     self.supports_dom = options.get('supportsDom', False)
+    self.nodoc = json.get('nodoc', False)
 
     def GeneratePropertyFromParam(p):
       return Property(self, p['name'], p, namespace, origin)
@@ -479,6 +482,7 @@ class Property(object):
     self.optional = json.get('optional', None)
     self.instance_of = json.get('isInstanceOf', None)
     self.deprecated = json.get('deprecated')
+    self.nodoc = json.get('nodoc', False)
 
     # HACK: only support very specific value types.
     is_allowed_value = (

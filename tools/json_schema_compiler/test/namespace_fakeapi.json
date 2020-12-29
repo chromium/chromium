@@ -1,0 +1,70 @@
+[
+  {
+    "namespace": "fakeapi",
+    "description": "The fakeapi API.",
+    "functions": [
+      {
+        "name": "get",
+        "type": "function",
+        "description": "Retrieves details about the specified FakeType.",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "fakeId",
+            "minimum": 0
+          },
+          {
+            "type": "function",
+            "name": "callback",
+            "parameters": [
+              {"name": "fakeType", "$ref": "FakeType"}
+            ]
+          }
+        ]
+      },
+      {
+        "name": "nodocMethod",
+        "type": "function",
+        "nodoc": true
+      }
+    ],
+    "events": [
+      {
+        "name": "onFoo",
+        "type": "function"
+      },
+      {
+        "name": "onFooNoDoc",
+        "nodoc": true,
+        "type": "function"
+      }
+    ],
+    "types": [
+      {
+        "id": "FakeType",
+        "type": "object",
+        "properties": {
+          "nodocProperty": {
+            "type": "string",
+            "nodoc": true
+          },
+          "any": {
+            "type": "any",
+            "description": "This is a fake type within the fakeapi API."
+          }
+        }
+      },
+      {
+        "id": "NoDocType",
+        "type": "object",
+        "description": "This type is marked as nodoc.",
+        "nodoc": true,
+        "properties": {
+          "property": {
+            "type": "boolean"
+          }
+        }
+      }
+    ]
+  }
+]
