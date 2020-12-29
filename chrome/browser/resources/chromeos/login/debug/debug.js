@@ -885,7 +885,7 @@ cr.define('cr.ui.login.debug', function() {
       }],
     },
     {
-      id: 'multidevice-setup',
+      id: 'multidevice-setup-screen',
       kind: ScreenKind.NORMAL,
     },
     {

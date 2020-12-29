@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
-
 /**
  * @fileoverview Polymer element for Enterprise Enrollment screen.
  */
+
+(function() {
 
 /* Code which is embedded inside of the webview. See below for details.
 /** @const */

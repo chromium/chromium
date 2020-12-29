@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
-
 /**
  * @fileoverview Polymer element for displaying AD domain joining and AD
  * Authenticate user screens.
  */
+
+(function() {
+
 // Possible error states of the screen. Must be in the same order as
 // ActiveDirectoryErrorState enum values.
 /** @enum {number} */ var ACTIVE_DIRECTORY_ERROR_STATE = {
