@@ -73,9 +73,18 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
   delegate_->PopulateLoadTimeData(source);
   source->UseStringsJs();
 
-  // Shared worker security policy.
+  // Script security policy.
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src 'self' ;");
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
+      "chrome://resources "
+      "'self' ;");
+
+  // Metadata Shared Worker security policy.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      "worker-src chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
+      "'self' ;");
 
   // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
   source->DisableTrustedTypesCSP();
