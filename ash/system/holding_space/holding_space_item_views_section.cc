@@ -246,6 +246,11 @@ void HoldingSpaceItemViewsSection::Init() {
 void HoldingSpaceItemViewsSection::Reset() {
   model_observer_.Reset();
   controller_observer_.Reset();
+
+  // The holding space item views `delegate_` will be destroyed before this view
+  // when asynchronously closing the holding space bubble. To prevent accessing
+  // `delegate_` after deletion, prevent animation callbacks from being run.
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 void HoldingSpaceItemViewsSection::ChildPreferredSizeChanged(
