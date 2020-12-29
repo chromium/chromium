@@ -2146,6 +2146,7 @@ android_library("base_module_java") {
     "java/src/com/google/ipc/invalidation/ticl/android2/channel/GcmRegistrationTaskService.java",
     "java/src/org/chromium/chrome/browser/ChromeBackgroundService.java",
     "java/src/org/chromium/chrome/browser/ChromeBackupAgent.java",
+    "java/src/org/chromium/chrome/browser/DeferredStartupHandler.java",
     "java/src/org/chromium/chrome/browser/base/SplitChromeApplication.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatAppComponentFactory.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatApplication.java",

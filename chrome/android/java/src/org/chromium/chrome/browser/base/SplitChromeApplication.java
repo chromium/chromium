@@ -25,10 +25,10 @@ import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
-import org.chromium.content_public.browser.BrowserStartupController;
 
 import java.lang.reflect.Field;
 
@@ -164,53 +164,41 @@ public class SplitChromeApplication extends SplitCompatApplication {
                 || ChromeVersionInfo.isLocalBuild()) {
             return;
         }
-
         // Wait until startup completes so this doesn't slow down early startup or mess with
         // compiled dex files before they get loaded initially.
-        // TODO(crbug.com/1159608): Determine if this works good enough, or if more needs to be done
-        // to avoid slowing startup.
-        BrowserStartupController.getInstance().addStartupCompletedObserver(
-                new BrowserStartupController.StartupCallback() {
-                    @Override
-                    public void onSuccess() {
-                        // BEST_EFFORT will only affect when the task runs, the dexopt will run with
-                        // normal priority (but in a separate process, due to using Runtime.exec()).
-                        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-                            try {
-                                // If the app has just been updated, it will be compiled with
-                                // quicken. The next time bg-dexopt-job runs it will break the
-                                // optimized dex for splits. If we force compile now, then
-                                // bg-dexopt-job won't mess up the splits, and we save the user a
-                                // slow startup.
-                                if (needsDexCompileAfterUpdate()) {
-                                    performDexCompile();
-                                    return;
-                                }
-
-                                // Make sure all splits are compiled correclty, and if not force a
-                                // compile.
-                                String[] splitNames =
-                                        ApiHelperForO.getSplitNames(getApplicationInfo());
-                                for (int i = 0; i < splitNames.length; i++) {
-                                    // Ignore config splits like "config.en".
-                                    if (splitNames[i].contains(".")) {
-                                        continue;
-                                    }
-                                    if (DexFile.isDexOptNeeded(
-                                                getApplicationInfo().splitSourceDirs[i])) {
-                                        performDexCompile();
-                                        return;
-                                    }
-                                }
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error compiling dex.", e);
-                            }
-                        });
+        DeferredStartupHandler.getInstance().addDeferredTask(() -> {
+            // BEST_EFFORT will only affect when the task runs, the dexopt will run with
+            // normal priority (but in a separate process, due to using Runtime.exec()).
+            PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
+                try {
+                    // If the app has just been updated, it will be compiled with
+                    // quicken. The next time bg-dexopt-job runs it will break the
+                    // optimized dex for splits. If we force compile now, then
+                    // bg-dexopt-job won't mess up the splits, and we save the user a
+                    // slow startup.
+                    if (needsDexCompileAfterUpdate()) {
+                        performDexCompile();
+                        return;
                     }
 
-                    @Override
-                    public void onFailure() {}
-                });
+                    // Make sure all splits are compiled correclty, and if not force a
+                    // compile.
+                    String[] splitNames = ApiHelperForO.getSplitNames(getApplicationInfo());
+                    for (int i = 0; i < splitNames.length; i++) {
+                        // Ignore config splits like "config.en".
+                        if (splitNames[i].contains(".")) {
+                            continue;
+                        }
+                        if (DexFile.isDexOptNeeded(getApplicationInfo().splitSourceDirs[i])) {
+                            performDexCompile();
+                            return;
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error compiling dex.", e);
+                }
+            });
+        });
     }
 
     /** Returns whether the dex has been compiled since the last app update. */
@@ -222,14 +210,8 @@ public class SplitChromeApplication extends SplitCompatApplication {
 
     /** Compiles dex for the app, and sets the pref key tracking the latest compiled version. */
     private void performDexCompile() throws Exception {
-        Class<?> c = Class.forName("android.os.SystemProperties");
-        java.lang.reflect.Method get = c.getMethod("get", String.class, String.class);
-        // Use the shared compile mode, and if we can't find that, default to speed. The shared
-        // compile mode will be quicken on Android Go.
-        String compileMode = (String) get.invoke(null, "pm.dexopt.shared", "speed");
-
-        Runtime.getRuntime().exec(new String[] {
-                "cmd", "package", "compile", "-m", compileMode, "-f", getPackageName()});
+        Runtime.getRuntime().exec(
+                new String[] {"cmd", "package", "compile", "-r", "shared", getPackageName()});
         SharedPreferencesManager.getInstance().writeInt(
                 ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION,
                 PackageUtils.getPackageVersion(this, getPackageName()));

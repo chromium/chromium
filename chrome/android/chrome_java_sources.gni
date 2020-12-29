@@ -29,7 +29,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ChromeWindow.java",
   "java/src/org/chromium/chrome/browser/DefaultBrowserInfo.java",
   "java/src/org/chromium/chrome/browser/DefaultBrowserInfo2.java",
-  "java/src/org/chromium/chrome/browser/DeferredStartupHandler.java",
   "java/src/org/chromium/chrome/browser/DelayedScreenLockIntentHandler.java",
   "java/src/org/chromium/chrome/browser/DevToolsServer.java",
   "java/src/org/chromium/chrome/browser/FileProviderHelper.java",

@@ -264,6 +264,7 @@ android_library("chrome_java_test_support") {
     "$google_play_services_package:google_play_services_basement_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/android:base_module_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
