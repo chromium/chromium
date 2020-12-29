@@ -570,7 +570,8 @@ base::Value ProfilePickerHandler::GetProfilesList() {
   std::vector<ProfileAttributesEntry*> entries =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetAllProfilesAttributesSortedByName();
+          .GetAllProfilesAttributesSortedByLocalProfilName();
+
   const int avatar_icon_size =
       kProfileCardAvatarSize * web_ui()->GetDeviceScaleFactor();
   for (const ProfileAttributesEntry* entry : entries) {

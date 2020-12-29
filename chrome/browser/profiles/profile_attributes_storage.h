@@ -70,7 +70,10 @@ class ProfileAttributesStorage
   // Returns a vector containing one attributes entry per known profile. They
   // are not sorted in any particular order.
   std::vector<ProfileAttributesEntry*> GetAllProfilesAttributes();
+
   std::vector<ProfileAttributesEntry*> GetAllProfilesAttributesSortedByName();
+  std::vector<ProfileAttributesEntry*>
+  GetAllProfilesAttributesSortedByLocalProfilName();
 
   // Populates |entry| with the data for the profile at |path| and returns true
   // if the operation is successful and |entry| can be used. Returns false
@@ -197,6 +200,9 @@ class ProfileAttributesStorage
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
  private:
+  std::vector<ProfileAttributesEntry*> GetAllProfilesAttributesSorted(
+      bool use_local_profile_name);
+
   // Called when the picture given by |key| has been loaded from disk and
   // decoded into |image|.
   void OnAvatarPictureLoaded(const base::FilePath& profile_path,

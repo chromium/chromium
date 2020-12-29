@@ -130,27 +130,31 @@ void RunCallbackIfFileMissing(const base::FilePath& file_path,
 // their names. For ties, the profile path is compared next.
 class ProfileAttributesSortComparator {
  public:
-  explicit ProfileAttributesSortComparator(icu::Collator* collator);
+  ProfileAttributesSortComparator(icu::Collator* collator, bool use_local_name)
+      : collator_(collator), use_local_name_(use_local_name) {}
+
   bool operator()(const ProfileAttributesEntry* const a,
-                  const ProfileAttributesEntry* const b) const;
+                  const ProfileAttributesEntry* const b) const {
+    UCollationResult result = base::i18n::CompareString16WithCollator(
+        *collator_, GetValue(a), GetValue(b));
+    if (result != UCOL_EQUAL)
+      return result == UCOL_LESS;
+
+    // If the names are the same, then compare the paths, which must be unique.
+    return a->GetPath().value() < b->GetPath().value();
+  }
+
  private:
+  base::string16 GetValue(const ProfileAttributesEntry* const entry) const {
+    if (use_local_name_)
+      return entry->GetLocalProfileName();
+
+    return entry->GetName();
+  }
+
   icu::Collator* collator_;
+  bool use_local_name_;
 };
-
-ProfileAttributesSortComparator::ProfileAttributesSortComparator(
-    icu::Collator* collator) : collator_(collator) {}
-
-bool ProfileAttributesSortComparator::operator()(
-    const ProfileAttributesEntry* const a,
-    const ProfileAttributesEntry* const b) const {
-  UCollationResult result = base::i18n::CompareString16WithCollator(
-      *collator_, a->GetName(), b->GetName());
-  if (result != UCOL_EQUAL)
-    return result == UCOL_LESS;
-
-  // If the names are the same, then compare the paths, which must be unique.
-  return a->GetPath().value() < b->GetPath().value();
-}
 
 MultiProfileUserType GetMultiProfileUserType(
     const std::vector<ProfileAttributesEntry*>& entries) {
@@ -255,7 +259,8 @@ ProfileAttributesStorage::GetAllProfilesAttributes() {
 }
 
 std::vector<ProfileAttributesEntry*>
-ProfileAttributesStorage::GetAllProfilesAttributesSortedByName() {
+ProfileAttributesStorage::GetAllProfilesAttributesSorted(
+    bool use_local_profile_name) {
   std::vector<ProfileAttributesEntry*> ret = GetAllProfilesAttributes();
   // Do not allocate the collator and sort if it is not necessary.
   if (ret.size() < 2)
@@ -268,9 +273,20 @@ ProfileAttributesStorage::GetAllProfilesAttributesSortedByName() {
       icu::Collator::createInstance(error_code));
   DCHECK(U_SUCCESS(error_code));
 
-  std::sort(ret.begin(), ret.end(),
-            ProfileAttributesSortComparator(collator.get()));
+  std::sort(
+      ret.begin(), ret.end(),
+      ProfileAttributesSortComparator(collator.get(), use_local_profile_name));
   return ret;
+}
+
+std::vector<ProfileAttributesEntry*>
+ProfileAttributesStorage::GetAllProfilesAttributesSortedByName() {
+  return GetAllProfilesAttributesSorted(false);
+}
+
+std::vector<ProfileAttributesEntry*>
+ProfileAttributesStorage::GetAllProfilesAttributesSortedByLocalProfilName() {
+  return GetAllProfilesAttributesSorted(true);
 }
 
 base::string16 ProfileAttributesStorage::ChooseNameForNewProfile(
