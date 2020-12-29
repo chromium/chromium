@@ -287,7 +287,7 @@ const base::Feature kEnableLocalSearchService{"EnableLocalSearchService",
 
 // Enables the OOBE ChromeVox hint dialog and announcement feature.
 const base::Feature kEnableOobeChromeVoxHint{"EnableOobeChromeVoxHint",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables Device End Of Lifetime warning notifications.
 const base::Feature kEolWarningNotifications{"EolWarningNotifications",
