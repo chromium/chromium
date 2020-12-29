@@ -5,6 +5,10 @@
 package org.chromium.components.messages;
 
 import android.content.res.Resources;
+import android.view.View;
+
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -15,6 +19,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 class MessageBannerCoordinator {
     private final MessageBannerMediator mMediator;
+    private final View mView;
+    private final PropertyModel mModel;
 
     /**
      * Constructs the message banner.
@@ -30,10 +36,17 @@ class MessageBannerCoordinator {
     MessageBannerCoordinator(MessageBannerView view, PropertyModel model,
             Supplier<Integer> maxTranslationSupplier, Resources resources,
             Runnable messageDismissed) {
+        mView = view;
+        mModel = model;
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         mMediator = new MessageBannerMediator(
                 model, maxTranslationSupplier, resources, messageDismissed);
         view.setSwipeHandler(mMediator);
+        ViewCompat.replaceAccessibilityAction(
+                view, AccessibilityActionCompat.ACTION_DISMISS, null, (v, c) -> {
+                    messageDismissed.run();
+                    return false;
+                });
     }
 
     /**
@@ -54,5 +67,10 @@ class MessageBannerCoordinator {
 
     void setOnTouchRunnable(Runnable runnable) {
         mMediator.setOnTouchRunnable(runnable);
+    }
+
+    void announceForAccessibility() {
+        mView.announceForAccessibility(mModel.get(MessageBannerProperties.TITLE) + " "
+                + mView.getResources().getString(R.string.message_screen_position));
     }
 }

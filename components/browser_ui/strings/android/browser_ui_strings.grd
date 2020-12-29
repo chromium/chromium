@@ -758,6 +758,11 @@
       <message name="IDS_IMMERSIVE_FULLSCREEN_API_NOTIFICATION" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit.">
         Drag from top and touch the back button to exit full screen.
       </message>
+
+      <!-- Messages -->
+      <message name="IDS_MESSAGE_SCREEN_POSITION" desc="Accessibility label to inform users about the Message location">
+        Option available near top of the screen
+      </message>
     </messages>
   </release>
 </grit>

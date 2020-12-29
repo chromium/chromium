@@ -19,6 +19,9 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Coordinator to show / hide a banner message on given container and delegate events.
  */
 public class SingleActionMessage implements MessageStateHandler {
+    private static final long DURATION = 10 * DateUtils.SECOND_IN_MILLIS;
+    private static final long DURATION_ON_A11Y = 20 * DateUtils.SECOND_IN_MILLIS;
+
     private MessageBannerCoordinator mMessageBanner;
     private MessageBannerView mView;
     private final MessageContainer mContainer;
@@ -41,7 +44,7 @@ public class SingleActionMessage implements MessageStateHandler {
         mModel = model;
         mContainer = container;
         mDismissHandler = dismissHandler;
-        mAutoDismissTimer = new MessageAutoDismissTimer(10 * DateUtils.SECOND_IN_MILLIS);
+        mAutoDismissTimer = new MessageAutoDismissTimer(getAutoDismissDuration());
         mMaxTranslationSupplier = maxTranslationSupplier;
 
         mModel.set(
@@ -64,6 +67,7 @@ public class SingleActionMessage implements MessageStateHandler {
 
         final Runnable showRunnable = () -> mMessageBanner.show(() -> {
             mMessageBanner.setOnTouchRunnable(mAutoDismissTimer::resetTimer);
+            mMessageBanner.announceForAccessibility();
             mAutoDismissTimer.startTimer(() -> { mDismissHandler.onResult(mModel); });
         });
 
@@ -104,6 +108,10 @@ public class SingleActionMessage implements MessageStateHandler {
     private void handlePrimaryAction(View v) {
         mModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
         mDismissHandler.onResult(mModel);
+    }
+
+    private long getAutoDismissDuration() {
+        return MessageUtils.isA11yEnabled() ? DURATION_ON_A11Y : DURATION;
     }
 
     @VisibleForTesting

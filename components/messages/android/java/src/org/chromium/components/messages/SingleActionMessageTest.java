@@ -6,6 +6,7 @@ package org.chromium.components.messages;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
@@ -26,6 +27,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.util.AccessibilityUtil;
 
 /**
  * Tests for {@link SingleActionMessage}.
@@ -42,6 +44,9 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
         mDismissCallback = new CallbackHelper();
+        AccessibilityUtil util = Mockito.mock(AccessibilityUtil.class);
+        when(util.isAccessibilityEnabled()).thenReturn(false);
+        MessageUtils.setAccessibilityUtil(util);
     }
 
     @Test

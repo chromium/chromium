@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/messages/android/messages_feature.h"
-#include "components/messages/android/message_utils_bridge.h"
 
 namespace messages {
 
@@ -15,8 +14,7 @@ const base::Feature kMessagesForAndroidPasswords{
 
 bool IsPasswordMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidPasswords) &&
-         !messages::MessageUtilsBridge::IsA11yEnabled();
+         base::FeatureList::IsEnabled(kMessagesForAndroidPasswords);
 }
 
 }  // namespace messages
