@@ -39,6 +39,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleAskOnStartupChanged(const base::ListValue* args);
   void HandleRemoveProfile(const base::ListValue* args);
   void HandleGetProfileStatistics(const base::ListValue* args);
+  void HandleSetProfileName(const base::ListValue* args);
 
   // TODO(crbug.com/1115056): Move to new handler for profile creation.
   void HandleLoadSignInProfileCreationFlow(const base::ListValue* args);

@@ -122,6 +122,13 @@ export class ManageProfilesBrowserProxy {
    */
   createProfile(
       profileName, profileColor, avatarUrl, isGeneric, createShortcut) {}
+
+  /**
+   * Sets the local profile name.
+   * @param {string} profilePath
+   * @param {string} profileName
+   */
+  setProfileName(profilePath, profileName) {}
 }
 
 /** @implements {ManageProfilesBrowserProxy} */
@@ -182,6 +189,11 @@ export class ManageProfilesBrowserProxyImpl {
     chrome.send(
         'createProfile',
         [profileName, profileColor, avatarUrl, isGeneric, createShortcut]);
+  }
+
+  /** @override */
+  setProfileName(profilePath, profileName) {
+    chrome.send('setProfileName', [profilePath, profileName]);
   }
 }
 

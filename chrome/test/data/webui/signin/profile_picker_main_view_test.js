@@ -103,18 +103,17 @@ suite('ProfilePickerMainViewTest', function() {
       assertTrue(!!profiles[i].$$('profile-card-menu'));
       profiles[i].$$('cr-button').click();
       await browserProxy.whenCalled('launchSelectedProfile');
-      const profileCardInfo =
-          profiles[i].shadowRoot.querySelectorAll('.profile-card-info');
-      assertEquals(profileCardInfo.length, 2);
-      assertEquals(
-          profileCardInfo[0].innerText, expectedProfiles[i].localProfileName);
       assertEquals(
           profiles[i].$$('#forceSigninContainer').hidden,
           !expectedProfiles[i].needsSignin);
-      if (!expectedProfiles[i].needsSignin) {
-        assertEquals(
-            profileCardInfo[1].innerText, expectedProfiles[i].gaiaName);
-      }
+
+      const gaiaName = profiles[i].$$('#gaiaName');
+      assertEquals(gaiaName.hidden, expectedProfiles[i].needsSignin);
+      assertEquals(gaiaName.innerText.trim(), expectedProfiles[i].gaiaName);
+
+      assertEquals(
+          profiles[i].$$('#nameInput').value,
+          expectedProfiles[i].localProfileName);
       assertEquals(
           profiles[i].$$('#iconContainer').hidden,
           !expectedProfiles[i].isManaged);
@@ -161,6 +160,29 @@ suite('ProfilePickerMainViewTest', function() {
     flushTasks();
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
+  });
+
+  test('EditLocalProfileName', async function() {
+    await browserProxy.whenCalled('initializeMainView');
+    const profiles = generateProfilesList(1);
+    webUIListenerCallback('profiles-list-changed', [...profiles]);
+    flushTasks();
+    const localProfileName =
+        mainViewElement.shadowRoot.querySelector('profile-card')
+            .$$('#nameInput');
+    assertEquals(localProfileName.value, profiles[0].localProfileName);
+
+    // Set to valid profile name.
+    localProfileName.value = 'Alice';
+    localProfileName.fire('change');
+    const args = await browserProxy.whenCalled('setProfileName');
+    assertEquals(args[0], profiles[0].profilePath);
+    assertEquals(args[1], 'Alice');
+    assertEquals(localProfileName.value, 'Alice');
+
+    // Set to invalid profile name
+    localProfileName.value = '';
+    assertTrue(localProfileName.invalid);
   });
 
   test('GuestModeDisabled', async function() {

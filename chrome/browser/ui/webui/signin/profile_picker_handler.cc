@@ -209,6 +209,10 @@ void ProfilePickerHandler::RegisterMessages() {
       "createProfile",
       base::BindRepeating(&ProfilePickerHandler::HandleCreateProfile,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setProfileName",
+      base::BindRepeating(&ProfilePickerHandler::HandleSetProfileName,
+                          base::Unretained(this)));
 }
 
 void ProfilePickerHandler::OnJavascriptAllowed() {
@@ -445,6 +449,27 @@ void ProfilePickerHandler::OnProfileCreationSuccess(
               // browser window if the Profile is not locked. Hence there is no
               // extension blocked.
       profile, Profile::CREATE_STATUS_INITIALIZED);
+}
+
+void ProfilePickerHandler::HandleSetProfileName(const base::ListValue* args) {
+  CHECK_EQ(2U, args->GetSize());
+  const base::Value& profile_path_value = args->GetList()[0];
+  base::Optional<base::FilePath> profile_path =
+      util::ValueToFilePath(profile_path_value);
+
+  if (!profile_path) {
+    NOTREACHED();
+    return;
+  }
+  base::string16 profile_name =
+      base::UTF8ToUTF16(args->GetList()[1].GetString());
+  base::TrimWhitespace(profile_name, base::TRIM_ALL, &profile_name);
+  CHECK(!profile_name.empty());
+  ProfileAttributesEntry* entry;
+  CHECK(g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile_path.value(), &entry));
+  entry->SetLocalProfileName(profile_name);
 }
 
 void ProfilePickerHandler::HandleRemoveProfile(const base::ListValue* args) {

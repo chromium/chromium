@@ -85,6 +85,12 @@
   #addProfile {
     border: 1px dashed;
     border-color: var(--google-grey-400);
+    position: relative;
+  }
+
+  #addProfileButtonLabel {
+    font-weight: 500;
+    top: 0;
   }
 
   cr-icon-button[iron-icon='profiles:add'] {
@@ -125,6 +131,7 @@
 
     #addProfile {
       border-color: var(--google-grey-refresh-700);
+      position: relative;
     }
 
     cr-icon-button[iron-icon='profiles:add'] {
@@ -158,8 +165,6 @@
       <cr-icon-button iron-icon="profiles:add"
           on-click="onAddProfileClick_" aria-labelledby="addProfileButtonLabel">
       </cr-icon-button>
-      <!-- Empty div to maintain alignment with other profile cards. -->
-      <div class="profile-card-info"></div>
     </div>
   </div>
 </div>
