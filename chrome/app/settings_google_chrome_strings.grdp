@@ -162,7 +162,7 @@
   </message>
 <if expr="chromeos">
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2" desc="Description of the Account Manager Settings page. Shown just below the title of the page.">
-    If you have multiple Google Accounts, you can add them to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Your accounts will be available in Chrome browser and Play Store, as well as services like Gmail, Drive, and YouTube.<ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    If you have multiple Google Accounts, you can add them to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Your accounts will be available in Chrome browser and Play Store, as well as services like Gmail, Drive, and YouTube. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
 </if>
 

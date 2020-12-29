@@ -10,7 +10,11 @@
 
 <dom-module id="settings-multidevice-wifi-sync-disabled-link">
   <template>
-    <style include="settings-shared"></style>
+    <style include="settings-shared">
+      :host {
+        --cr-subsequent-anchors-of-span-margin: 0;
+      }
+    </style>
     <div id="container"
         inner-h-t-m-l="[[getAriaLabelledContent_()]]">
     </div>
