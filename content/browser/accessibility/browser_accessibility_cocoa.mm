@@ -222,6 +222,7 @@ NSString* const
         @"AXTextMarkerNodeDebugDescription";
 
 // Other private attributes.
+NSString* const NSAccessibilityIdentifierChromeAttribute = @"ChromeAXNodeId";
 NSString* const NSAccessibilitySelectTextWithCriteriaParameterizedAttribute =
     @"AXSelectTextWithCriteria";
 NSString* const NSAccessibilityIndexForChildUIElementParameterizedAttribute =
@@ -803,6 +804,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityAutocompleteValueAttribute, @"autocompleteValue"},
       {NSAccessibilityBlockQuoteLevelAttribute, @"blockQuoteLevel"},
       {NSAccessibilityChildrenAttribute, @"children"},
+      {NSAccessibilityIdentifierChromeAttribute, @"internalId"},
       {NSAccessibilityColumnsAttribute, @"columns"},
       {NSAccessibilityColumnHeaderUIElementsAttribute, @"columnHeaders"},
       {NSAccessibilityColumnIndexRangeAttribute, @"columnIndexRange"},
@@ -3394,6 +3396,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   NSMutableArray* ret = [NSMutableArray
       arrayWithObjects:NSAccessibilityBlockQuoteLevelAttribute,
                        NSAccessibilityChildrenAttribute,
+                       NSAccessibilityIdentifierChromeAttribute,
                        NSAccessibilityDescriptionAttribute,
                        NSAccessibilityDOMClassList,
                        NSAccessibilityDOMIdentifierAttribute,
@@ -3857,6 +3860,10 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (![self instanceActive])
     return [super hash];
   return _owner->GetId();
+}
+
+- (NSString*)internalId {
+  return [@(_owner->GetId()) stringValue];
 }
 
 - (BOOL)accessibilityNotifiesWhenDestroyed {

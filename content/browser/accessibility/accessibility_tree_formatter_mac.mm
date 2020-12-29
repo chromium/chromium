@@ -71,7 +71,7 @@ void AccessibilityTreeFormatterMac::AddDefaultFilters(
   }
 
   if (show_ids()) {
-    AddPropertyFilter(property_filters, "id");
+    AddPropertyFilter(property_filters, "ChromeAXNodeId");
   }
 }
 
@@ -160,15 +160,9 @@ void AccessibilityTreeFormatterMac::AddProperties(
     base::Value* dict) const {
   // Chromium tree special processing
   if (IsBrowserAccessibilityCocoa(node)) {
+    // Position (no size since it's exposed as standard AXSize attribute)
     BrowserAccessibilityCocoa* cocoa_node =
         static_cast<BrowserAccessibilityCocoa*>(node);
-
-    // DOM element id
-    BrowserAccessibility* owner_node = [cocoa_node owner];
-    dict->SetKey("id",
-                 base::Value(base::NumberToString16(owner_node->GetId())));
-
-    // Position (no size since it's exposed as standard AXSize attribute)
     dict->SetPath(kPositionDictAttr, PopulatePosition(cocoa_node));
   }
 
