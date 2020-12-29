@@ -8,7 +8,6 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -34,7 +33,6 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
 
     private Context mContext;
     private ImageFetchClient mImageFetchClient;
-    private LibraryResolver mLibraryResolver;
 
     @VisibleForTesting
     static PrivacyPreferencesManager sPrivacyPreferencesManagerForTest;
@@ -42,11 +40,6 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     FeedProcessScopeDependencyProvider() {
         mContext = createFeedContext(ContextUtils.getApplicationContext());
         mImageFetchClient = new FeedImageFetchClient();
-        if (BundleUtils.isIsolatedSplitInstalled(mContext, FEED_SPLIT_NAME)) {
-            mLibraryResolver = (libName) -> {
-                return BundleUtils.getNativeLibraryPath(libName, FEED_SPLIT_NAME);
-            };
-        }
     }
 
     @Override
@@ -109,11 +102,6 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
                 return;
         }
         PostTask.postDelayedTask(traits, task, delayMs);
-    }
-
-    @Override
-    public LibraryResolver getLibraryResolver() {
-        return mLibraryResolver;
     }
 
     @Override
