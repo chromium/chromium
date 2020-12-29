@@ -86,6 +86,9 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
   void OnHoldingSpaceItemViewMouseReleased(HoldingSpaceItemView* view,
                                            const ui::MouseEvent& event);
 
+  // Invoked when the tray receives the specified key pressed `event`.
+  bool OnHoldingSpaceTrayKeyPressed(const ui::KeyEvent& event);
+
  private:
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(views::View* source,

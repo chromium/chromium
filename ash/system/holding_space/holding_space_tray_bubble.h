@@ -66,6 +66,7 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   // Views owned by view hierarchy.
   ChildBubbleContainer* child_bubble_container_;
   std::vector<HoldingSpaceTrayChildBubble*> child_bubbles_;
+  std::unique_ptr<ui::EventHandler> event_filter_;
 
   std::unique_ptr<TrayBubbleWrapper> bubble_wrapper_;
 

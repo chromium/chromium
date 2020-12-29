@@ -35,11 +35,18 @@ constexpr char kTestUser[] = "user@test";
 
 // Helpers ---------------------------------------------------------------------
 
-void Click(views::View* view) {
+void Click(views::View* view, int flags) {
   auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::test::EventGenerator event_generator(root_window);
   event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+  event_generator.set_flags(flags);
   event_generator.ClickLeftButton();
+}
+
+void PressKey(views::View* view, ui::KeyboardCode key_code, int flags) {
+  auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.PressKey(key_code, flags);
 }
 
 std::unique_ptr<HoldingSpaceImage> CreateStubHoldingSpaceImage() {
@@ -1430,7 +1437,54 @@ TEST_P(HoldingSpaceTrayTest, PlaceholderContainsFilesAppChip) {
 
   // Click the chip and expect a call to open the Files app.
   EXPECT_CALL(*client(), OpenMyFiles);
-  Click(files_app_chip);
+  Click(files_app_chip, 0);
+}
+
+// User should be able to launch selected holding space items by pressing the
+// enter key.
+TEST_P(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
+  StartSession();
+
+  // Add two download items.
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake1"));
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake2"));
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // Show the bubble.
+  test_api()->Show();
+  std::vector<views::View*> download_chips = test_api()->GetDownloadChips();
+  HoldingSpaceItemView* holding_space_item =
+      HoldingSpaceItemView::Cast(download_chips[0]);
+
+  // Click a download item chip. The view should be selected
+  Click(download_chips[0], 0);
+  ASSERT_TRUE(holding_space_item->selected());
+
+  // Press the enter key. We expect the client to open the selected item.
+  EXPECT_CALL(
+      *client(),
+      OpenItems(testing::ElementsAre(holding_space_item->item()), testing::_));
+  PressKey(download_chips[0], ui::KeyboardCode::VKEY_RETURN, 0);
+
+  test_api()->Show();
+
+  download_chips = test_api()->GetDownloadChips();
+  holding_space_item = HoldingSpaceItemView::Cast(download_chips[0]);
+  HoldingSpaceItemView* holding_space_item_2 =
+      HoldingSpaceItemView::Cast(download_chips[1]);
+
+  // Click on both items to select them both.
+  Click(download_chips[0], ui::EF_SHIFT_DOWN);
+  Click(download_chips[1], ui::EF_SHIFT_DOWN);
+  ASSERT_TRUE(holding_space_item->selected());
+  ASSERT_TRUE(holding_space_item_2->selected());
+
+  // Press the enter key. We expect the client to open the selected items.
+  EXPECT_CALL(*client(),
+              OpenItems(testing::ElementsAre(holding_space_item_2->item(),
+                                             holding_space_item->item()),
+                        testing::_));
+  PressKey(download_chips[0], ui::KeyboardCode::VKEY_RETURN, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayTest, testing::Bool());

@@ -226,6 +226,18 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMouseReleased(
     OpenItems(GetSelection());
 }
 
+bool HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayKeyPressed(
+    const ui::KeyEvent& event) {
+  // The ENTER key should open all selected holding space items.
+  if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
+    if (!GetSelection().empty()) {
+      OpenItems(GetSelection());
+      return true;
+    }
+  }
+  return false;
+}
+
 void HoldingSpaceItemViewDelegate::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
