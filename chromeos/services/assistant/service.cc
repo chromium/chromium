@@ -216,10 +216,10 @@ class Service::Context : public ServiceContext {
 Service::Service(std::unique_ptr<network::PendingSharedURLLoaderFactory>
                      pending_url_loader_factory,
                  signin::IdentityManager* identity_manager)
-    : identity_manager_(identity_manager),
+    : context_(std::make_unique<Context>(this)),
+      identity_manager_(identity_manager),
       token_refresh_timer_(std::make_unique<base::OneShotTimer>()),
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      context_(std::make_unique<Context>(this)),
       pending_url_loader_factory_(std::move(pending_url_loader_factory)) {
   DCHECK(identity_manager_);
   chromeos::PowerManagerClient* power_manager_client =

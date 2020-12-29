@@ -154,6 +154,12 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   // for the device.
   bool ShouldEnableHotword();
 
+  // |ServiceContext| object passed to child classes so they can access some of
+  // our functionality without depending on us.
+  // Note: this is used by the other members here, so it must be defined first
+  // so it is destroyed last.
+  std::unique_ptr<ServiceContext> context_;
+
   signin::IdentityManager* const identity_manager_;
   std::unique_ptr<ScopedAshSessionObserver> scoped_ash_session_observer_;
   ScopedObserver<ash::AmbientUiModel, ash::AmbientUiModelObserver>
@@ -182,10 +188,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
       assistant_manager_service_for_testing_ = nullptr;
 
   base::Optional<std::string> access_token_;
-
-  // |ServiceContext| object passed to child classes so they can access some of
-  // our functionality without depending on us.
-  std::unique_ptr<ServiceContext> context_;
 
   // non-null until |assistant_manager_service_| is created.
   std::unique_ptr<network::PendingSharedURLLoaderFactory>
