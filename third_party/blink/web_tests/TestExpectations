@@ -4355,6 +4355,9 @@ crbug.com/1074441 external/wpt/cookies/samesite/iframe-reload.https.html [ Skip 
 crbug.com/1074441 external/wpt/cookies/samesite/iframe.https.html [ Skip ]
 crbug.com/1074441 virtual/legacy-samesite/external/wpt/cookies/samesite/iframe-reload.https.html?legacy-samesite [ Skip ]
 crbug.com/1074441 virtual/legacy-samesite/external/wpt/cookies/samesite/iframe.https.html?legacy-samesite [ Skip ]
+# Flaky Windows-only content_shell crash
+crbug.com/1162205 [ Win ] virtual/schemeful-same-site/external/wpt/cookies/attributes/path-redirect.html [ Crash Pass ]
+crbug.com/1162205 [ Win ] external/wpt/cookies/attributes/path-redirect.html [ Crash Pass ]
 
 # The virtual tests run with Schemeful Same-Site disabled. These should fail to ensure the disabled feature code paths work.
 crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-websockets.sub.tentative.html [ Failure ]
