@@ -40,6 +40,9 @@
 // TODO(crbug.com/663554): Needed for WIDEVINE_CDM_MIN_GLIBC_VERSION.
 // component updated CDM on all desktop platforms and remove this.
 #include "widevine_cdm_version.h"  // In SHARED_INTERMEDIATE_DIR. // nogncheck
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_CHROMEOS_ASH)
 // The following must be after widevine_cdm_version.h.
 #if defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
 #include <gnu/libc-version.h>
@@ -179,7 +182,8 @@ static SupportedCodecs GetSupportedCodecs(
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
       case media::VideoCodec::kCodecHEVC:
-        if (is_secure) {
+        if (is_secure && base::FeatureList::IsEnabled(
+                             chromeos::features::kCdmFactoryDaemon)) {
           supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN;
           supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN10;
         }

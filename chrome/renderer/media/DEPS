@@ -7,3 +7,9 @@ include_rules = [
   "+media/capture",  # For capture library.
   "+media/mojo/mojom",  # For mojo interfaces.
 ]
+
+specific_include_rules = {
+  "chrome_key_systems.cc" : [
+    "+chromeos/constants/chromeos_features.h",
+  ],
+}

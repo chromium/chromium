@@ -263,6 +263,10 @@ static_library("renderer") {
     }
   }
 
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/constants:constants" ]
+  }
+
   if (enable_widevine_cdm_component) {
     deps += [ "//third_party/widevine/cdm:headers" ]
   }
