@@ -20,6 +20,11 @@ XboxHidController::~XboxHidController() = default;
 
 // static
 bool XboxHidController::IsXboxHid(GamepadId gamepad_id) {
+  // TODO(crbug/1030841): Detect haptics functionality through HID usages
+  // instead of relying on a hard-coded list of supported device IDs.
+  // Bluetooth-connected Xbox One gamepads expose usages from the Physical
+  // Interface Device usage page.
+  // https://www.usb.org/document-library/device-class-definition-pid-10
   return gamepad_id == GamepadId::kMicrosoftProduct02e0 ||
          gamepad_id == GamepadId::kMicrosoftProduct02fd ||
          gamepad_id == GamepadId::kMicrosoftProduct0b05;
