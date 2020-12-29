@@ -92,6 +92,10 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   void OnViewBoundsChanged(views::View* observed_view) override;
   void OnViewIsDeleting(views::View* observed_view) override;
 
+  // Subscription callback for `item_` image changes. Called when the icon
+  // representation gets updated.
+  void OnHoldingSpaceItemImageChanged();
+
   // Creates the `layer_` for this preview. Note that `layer_` may be created
   // multiple times throughout this preview's lifetime as `layer_` will only
   // exist while in the viewport for the holding space tray `container_`.
@@ -128,7 +132,7 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // A cached representation of the associated holding space `item_`'s image
   // which has been cropped, resized, and clipped to a circle to be painted at
   // `layer_`'s contents bounds.
-  std::unique_ptr<gfx::ImageSkia> contents_image_;
+  gfx::ImageSkia contents_image_;
 
   // This is a proxy for `layer_`'s transform and represents the target
   // position of this preview. Because `layer_` only exists while in
@@ -153,6 +157,10 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // If set, the index within the holding space tray icon to which the preview
   // is about to move. Set while the holding space tray icon is updating.
   base::Optional<size_t> pending_index_;
+
+  // Subscription for changes to the holding space image backing
+  // `contents_image_`.
+  base::CallbackListSubscription image_subscription_;
 
   // The `layer_` for this preview is parented by `container_`'s layer. It is
   // necessary to observe and react to bounds changes in `container_` to keep

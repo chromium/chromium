@@ -42,10 +42,27 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   // dynamically updated, so UI classes should observe and react to updates.
   const gfx::ImageSkia& image_skia() const { return image_skia_; }
 
+  // Creates new image skia for the item, and thus invalidates currently loaded
+  // representation. When the image is requested next time, the image
+  // representations will be reloaded.
+  void Invalidate();
+
  private:
   class ImageSkiaSource;
 
-  void NotifyUpdated(float scale);
+  // Requests a load for the image representation for the provided scale.
+  void LoadBitmap(float scale);
+
+  // Response to an image representation load request.
+  void OnBitmapLoaded(float scale, const SkBitmap* bitmap);
+
+  // Creates `image_skia_` to be used for the holding space image.
+  // If `image_skia_` already exists, it will be recreated with a fresh image
+  // source.
+  void CreateImageSkia();
+
+  gfx::ImageSkia placeholder_;
+  AsyncBitmapResolver async_bitmap_resolver_;
 
   gfx::ImageSkia image_skia_;
 

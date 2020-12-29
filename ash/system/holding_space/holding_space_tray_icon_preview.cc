@@ -113,40 +113,6 @@ class ContentsImageSource : public gfx::ImageSkiaSource {
   const gfx::ImageSkia item_image_;
 };
 
-// ContentsImage ---------------------------------------------------------------
-
-class ContentsImage : public gfx::ImageSkia {
- public:
-  ContentsImage(const HoldingSpaceItem* item,
-                base::RepeatingClosure image_invalidated_closure)
-      : gfx::ImageSkia(
-            std::make_unique<ContentsImageSource>(item->image().image_skia()),
-            GetPreviewSize()),
-        image_invalidated_closure_(image_invalidated_closure) {
-    image_subscription_ = item->image().AddImageSkiaChangedCallback(
-        base::BindRepeating(&ContentsImage::OnHoldingSpaceItemImageChanged,
-                            base::Unretained(this)));
-  }
-
-  ContentsImage(const ContentsImage&) = delete;
-  ContentsImage& operator=(const ContentsImage&) = delete;
-  ~ContentsImage() = default;
-
- private:
-  void OnHoldingSpaceItemImageChanged() {
-    // Invalidate cached image reps.
-    for (const gfx::ImageSkiaRep& image_rep : image_reps()) {
-      RemoveRepresentation(image_rep.scale());
-      RemoveUnsupportedRepresentationsForScale(image_rep.scale());
-    }
-    // Notify closure of invalidation.
-    image_invalidated_closure_.Run();
-  }
-
-  base::RepeatingClosure image_invalidated_closure_;
-  base::CallbackListSubscription image_subscription_;
-};
-
 }  // namespace
 
 // HoldingSpaceTrayIconPreview -------------------------------------------------
@@ -156,9 +122,13 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
     views::View* container,
     const HoldingSpaceItem* item)
     : shelf_(shelf), container_(container), item_(item) {
-  contents_image_ = std::make_unique<ContentsImage>(
-      item_, base::BindRepeating(&HoldingSpaceTrayIconPreview::InvalidateLayer,
-                                 base::Unretained(this)));
+  contents_image_ = gfx::ImageSkia(
+      std::make_unique<ContentsImageSource>(item->image().image_skia()),
+      GetPreviewSize());
+  image_subscription_ =
+      item->image().AddImageSkiaChangedCallback(base::BindRepeating(
+          &HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged,
+          base::Unretained(this)));
   container_observer_.Observe(container_);
 }
 
@@ -351,9 +321,8 @@ void HoldingSpaceTrayIconPreview::OnPaintLayer(
       std::min(contents_bounds.width(), contents_bounds.height()) / 2, flags);
 
   // Contents.
-  DCHECK(contents_image_);
-  if (!contents_image_->isNull()) {
-    canvas->DrawImageInt(*contents_image_, contents_bounds.x(),
+  if (!contents_image_.isNull()) {
+    canvas->DrawImageInt(contents_image_, contents_bounds.x(),
                          contents_bounds.y());
   }
 }
@@ -384,6 +353,13 @@ void HoldingSpaceTrayIconPreview::OnViewBoundsChanged(views::View* view) {
 void HoldingSpaceTrayIconPreview::OnViewIsDeleting(views::View* view) {
   DCHECK_EQ(container_, view);
   container_observer_.Reset();
+}
+
+void HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged() {
+  contents_image_ = gfx::ImageSkia(
+      std::make_unique<ContentsImageSource>(item_->image().image_skia()),
+      GetPreviewSize());
+  InvalidateLayer();
 }
 
 void HoldingSpaceTrayIconPreview::CreateLayer(

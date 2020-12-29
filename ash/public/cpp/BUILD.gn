@@ -362,6 +362,7 @@ source_set("unit_tests") {
     "app_list/app_list_config_provider_unittest.cc",
     "default_scale_factor_retriever_unittest.cc",
     "file_icon_util_unittest.cc",
+    "holding_space/holding_space_image_unittest.cc",
     "holding_space/holding_space_item_unittest.cc",
     "metrics_util_unittest.cc",
     "pagination/pagination_model_unittest.cc",

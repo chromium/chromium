@@ -130,6 +130,11 @@ void HoldingSpaceItem::UpdateBackingFile(const base::FilePath& file_path,
   text_ = file_path.BaseName().LossyDisplayName();
 }
 
+void HoldingSpaceItem::InvalidateImage() {
+  if (image_)
+    image_->Invalidate();
+}
+
 HoldingSpaceItem::HoldingSpaceItem(Type type,
                                    const std::string& id,
                                    const base::FilePath& file_path,
