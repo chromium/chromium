@@ -653,7 +653,7 @@ bool DirectCompositionSurfaceWin::IsSwapChainTearingSupported() {
 // static
 bool DirectCompositionSurfaceWin::AllowTearing() {
   // Swap chain tearing is used only if vsync is disabled explicitly.
-  return features::UseGpuVsync() &&
+  return !features::UseGpuVsync() &&
          DirectCompositionSurfaceWin::IsSwapChainTearingSupported();
 }
 
