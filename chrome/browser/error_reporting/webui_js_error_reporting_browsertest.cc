@@ -5,13 +5,23 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -25,18 +35,31 @@
 
 using ::testing::HasSubstr;
 
+namespace {
+// Must match message in
+// chrome/browser/resources/webui_js_error/webui_js_error.js, but with URL
+// escapes.
+constexpr char kPageLoadMessage[] =
+    "WebUI%20JS%20Error%3A%20printing%20error%20on%20page%20load";
+}  // namespace
+
 class WebUIJSErrorReportingTest : public InProcessBrowserTest {
  public:
+  WebUIJSErrorReportingTest() : error_url_(chrome::kChromeUIWebUIJsErrorURL) {
+    CHECK(error_url_.is_valid());
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kSendWebUIJavaScriptErrorReports,
         {{features::kSendWebUIJavaScriptErrorReportsSendToProductionVariation,
-          "true"}});
+          "false"}});
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  const GURL error_url_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
@@ -47,19 +70,12 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
   MockCrashEndpoint endpoint(embedded_test_server());
   ScopedMockChromeJsErrorReportProcessor mock_processor(endpoint);
 
-  GURL url(chrome::kChromeUIWebUIJsErrorURL);
-  ASSERT_TRUE(url.is_valid());
-  NavigateParams navigate(browser(), url, ui::PAGE_TRANSITION_TYPED);
+  NavigateParams navigate(browser(), error_url_, ui::PAGE_TRANSITION_TYPED);
   ui_test_utils::NavigateToURL(&navigate);
 
   // Look for page load error report.
   MockCrashEndpoint::Report report = endpoint.WaitForReport();
   EXPECT_EQ(endpoint.report_count(), 1);
-  // Must match message in
-  // chrome/browser/resources/webui_js_error/webui_js_error.js, but with URL
-  // escapes.
-  constexpr char kPageLoadMessage[] =
-      "WebUI%20JS%20Error%3A%20printing%20error%20on%20page%20load";
   EXPECT_THAT(report.query, HasSubstr(kPageLoadMessage));
   // Expect that we get a good stack trace as well
   EXPECT_THAT(report.content, AllOf(HasSubstr("logsErrorDuringPageLoadOuter"),
@@ -106,4 +122,52 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
       "WebUI%20JS%20Error%3A%20The%20rejector%20always%20rejects!";
   EXPECT_THAT(report.query, HasSubstr(kUnhandledPromiseRejectionMessage));
   // V8 doesn't produce stacks for unhandle promise rejections.
+}
+
+// Set up a profile with "Continue where you left off". Navigate to the JS error
+// page. Ensure that when the browser is closed and reopened, on-page-load
+// errors are still reported.
+IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest,
+                       ReportsErrorsDuringContinueWhereYouLeftOff) {
+  MockCrashEndpoint endpoint(embedded_test_server());
+  auto mock_processor =
+      std::make_unique<ScopedMockChromeJsErrorReportProcessor>(endpoint);
+
+  Profile* profile = browser()->profile();
+  SessionStartupPref pref(SessionStartupPref::LAST);
+  SessionStartupPref::SetStartupPref(profile, pref);
+  profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
+
+  chrome::NewTab(browser());
+  ui_test_utils::NavigateToURL(browser(), error_url_);
+  endpoint.WaitForReport();
+  endpoint.clear_last_report();
+
+  // Restart browser. Note: We can't do the normal PRE_Name / Name browsertest
+  // pattern here because the Continue Where You Left Off pages are loaded
+  // before the test starts, so we don't have a chance to set up the mock
+  // error processor.
+  {
+    ScopedKeepAlive keep_alive(KeepAliveOrigin::SESSION_RESTORE,
+                               KeepAliveRestartOption::DISABLED);
+    CloseBrowserSynchronously(browser());
+
+    // Create a new error processor to reset the list of already seen reports,
+    // otherwise the report gets thrown away as a duplicate.
+    mock_processor.reset();
+    mock_processor =
+        std::make_unique<ScopedMockChromeJsErrorReportProcessor>(endpoint);
+    SessionServiceTestHelper helper(
+        SessionServiceFactory::GetForProfileForSessionRestore(profile));
+    helper.SetForceBrowserNotAliveWithNoWindows(true);
+    helper.ReleaseService();
+    chrome::NewEmptyWindow(profile);
+
+    // ScopedKeepAlive goes out of scope, so the new browser will return to
+    // normal behavior.
+  }
+
+  MockCrashEndpoint::Report report = endpoint.WaitForReport();
+  EXPECT_EQ(endpoint.report_count(), 2);
+  EXPECT_THAT(report.query, HasSubstr(kPageLoadMessage));
 }

@@ -5,18 +5,21 @@
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 
 MockChromeJsErrorReportProcessor::MockChromeJsErrorReportProcessor() = default;
 MockChromeJsErrorReportProcessor::~MockChromeJsErrorReportProcessor() = default;
 
 void MockChromeJsErrorReportProcessor::SetAsDefault() {
+  LOG(INFO) << "MockChromeJsErrorReportProcessor installed as error processor";
   JsErrorReportProcessor::SetDefault(this);
 }
 
 // static
 void MockChromeJsErrorReportProcessor::SetDefaultTo(
     scoped_refptr<JsErrorReportProcessor> new_default) {
+  LOG(INFO) << "MockChromeJsErrorReportProcessor uninstalled";
   JsErrorReportProcessor::SetDefault(new_default);
 }
 
