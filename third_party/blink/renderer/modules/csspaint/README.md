@@ -50,16 +50,84 @@ During the main thread paint, the `PaintWorklet::Paint` is called, which
 executes the V8 paint callback synchronously. A PaintRecord is produced and
 passed to the compositor thread to raster.
 
+When animation is involved, the main thread animation system updates the value
+of the animated properties, which are used by the `PaintWorklet::Paint`.
+
 ### Off main thread workflow
 
-During the main thread paint, a
-[PaintWorkletInput](../../core/css/cssom/paint_worklet_input.h) is created and
-passed to the compositor. The PaintWorkletInput contains all necessary
-information for the compositor to run the V8 paint callback. The compositor
-thread asynchronously dispatches the V8 paint callback to a Worklet thread.
-The V8 paint callback is then executed on the Worklet thread and a PaintRecord is
-given back to the compositor thread. The compositor thread then rasters the
-PaintRecord.
+Let's see how it works without animations.
+
+1. During the main thread paint, a
+   [PaintWorkletDeferredImage](../../core/css/cssom/paint_worklet_deferred_image.h)
+   is created. This is an image without any color information, it is a
+   placeholder to the Blink paint system. The creation of its actual content
+   is deferred to CC raster time. It holds input arguments which is
+   encapsulated in [CSSPaintWorkletInput](../../core/css/cssom/css_paint_worklet_input.h).
+   The input arguments contain necessary information for the CC raster phase.
+
+1. During commit, the `PaintWorkletInput` is passed to CC. Specifically, the
+   `PictureLayerImpl` owns `PaintWorkletRecordMap`, which is a map from
+   `PaintWorkletInput` to `std::pair<PaintImage::Id, PaintRecord>`. The
+   `PaintImage::Id` is used for efficient invalidation. The `PaintRecord` is
+   the actual content of the `PaintWorkletDeferredImage`, which will be
+   generated at CC raster time. Initially the `PaintRecord` is `nullptr` which
+   indicates that it needs to be produced.
+
+1. After commit, we need to update the pending tree. This happens in
+   `LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation`.
+   There are two steps involved.
+
+   1. The first step is to gather all dirty paint worklets that need to be
+     updated, which happens in `LayerTreeHostImpl::GatherDirtyPaintWorklets`. It
+     basically goes through each `PictureLayerImpl` whose
+     `PaintWorkletRecrodMap` isn't empty, and if there is a `PaintWorkletInput`
+     with its associated `PaintRecord` being nullptr, then this worklet needs to
+     be updated.
+
+   1. Once we have gathered all the dirty paint worklets, the next step is to
+     produce the `PaintRecord` which is the actual contents. The compositor
+     thread asynchronously dispatches the paint jobs that produce the
+     `PaintRecord` to a worklet thread. Each paint job is basically a V8 paint
+     callback, the paint callback is executed on the worklet thread and the
+     `PaintRecord` is given back to the compositor thread such that it can be
+     rastered. Given that the V8 paint callback contains user defined javascript
+     code and can take arbitrary amount of time, the paint job doesn't block the
+     tree activation. In other word, the pending tree can be activated even if
+     the paint jobs are not finished, it will just use the `PaintRecord` that
+     was produced in the previous frame.
+
+Now let's see how it works with animation. Here is an
+[example](https://jsbin.com/muwiyux/9/edit?html,css,output) that animates a
+custom property '--foo' with paint worklet. Traditionally
+[custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)
+cannot be animated on the compositor thread. With off main thread paint worklet
+design, we can animate the custom properties off the main thread and use them in
+paint worklet. Note that currently our implementation supports custom property
+animations only, not native properties. We do intend to extend to support
+native properties in the future.
+
+1. When resolving style, `CompositorKeyframeValue` will be created through
+   `CompositorKeyframeValueFactory::Create` function. This basically tells the
+   main thread animation system to not animate the custom properties, and
+   instead creating a compositor animation for each custom property.
+
+1. After Blink paint, a compositor animation will be created through the
+   `CreateCompositorAnimation` function. The compositor animation is passed to
+   CC via commit process.
+
+1. CC ticks the compositor animation, which updates the value for the custom
+   property. Currently we only support custom properties that represents number
+   or color. This is handled by
+   `AnimatedPaintWorkletTracker::OnCustomPropertyMutated`. The
+   `AnimatedPaintWorkletTracker` class handles custom properties animated by
+   paint worklet.
+
+1. By combining custom property name with `ElementId`, we create
+   `PaintWorkletInput::PropertyKey` which can be used to identify a
+   `PaintWorkletInput`. Then we can use the `PaintWorkletInput` to find its
+   associated `PaintRecord` in the `PictureLayerImpl`'s `PaintWorkletRecordMap`,
+   invalidate it and update its content when we update the pending tree via
+   `LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation`.
 
 ## Implementation
 
@@ -116,4 +184,3 @@ paint.
 
 Tests live [here](../../../web_tests/http/tests/csspaint/) and
 [here](../../../web_tests/external/wpt/css/css-paint-api/).
-
