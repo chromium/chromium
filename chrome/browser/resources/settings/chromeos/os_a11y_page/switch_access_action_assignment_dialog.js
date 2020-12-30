@@ -338,7 +338,8 @@ Polymer({
       case AssignmentState.WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH:
         if (!assignments.length) {
           return this.i18n(
-              'switchAccessActionAssignmentDialogWaitForKeyPromptNoSwitches');
+              'switchAccessActionAssignmentDialogWaitForKeyPromptNoSwitches',
+              this.getLabelForAction_(this.action));
         }
         return this.i18n(
             'switchAccessActionAssignmentDialogWaitForKeyPromptAtLeastOneSwitch');
@@ -366,8 +367,7 @@ Polymer({
       case AssignmentState.WARN_NOT_CONFIRMED:
       case AssignmentState.WARN_NOT_CONFIRMED_REMOVAL:
         return this.i18n(
-            'switchAccessActionAssignmentDialogWarnNotConfirmedPrompt',
-            this.unexpectedKey_, this.currentKey_);
+            'switchAccessActionAssignmentDialogWarnNotConfirmedPrompt');
       case AssignmentState.WARN_ALREADY_ASSIGNED_ACTION:
         return this.i18n(
             'switchAccessActionAssignmentDialogWarnAlreadyAssignedActionPrompt',

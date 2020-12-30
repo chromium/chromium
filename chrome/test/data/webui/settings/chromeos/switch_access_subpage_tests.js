@@ -200,10 +200,7 @@ suite('ManageAccessibilityPageTests', function() {
     const errorText = page.$$('#switchAccessActionAssignmentDialog')
                           .$$('#error')
                           .textContent.trim();
-    assertEquals(
-        'Keys do not match. “b” was pressed. “a” was pressed before. ' +
-            'Press any key to exit.',
-        errorText);
+    assertEquals('Keys do not match. Press any key to exit.', errorText);
   });
 
   test('Deep link to auto-scan keyboards', async () => {
