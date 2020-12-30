@@ -2584,27 +2584,33 @@ bool OmniboxViewViews::IsURLEligibleForSimplifiedDomainEliding() {
   if (!model()->CurrentTextIsURL())
     return false;
   base::string16 text = GetText();
-  url::Component scheme, host;
-  AutocompleteInput::ParseForEmphasizeComponents(
-      text, model()->client()->GetSchemeClassifier(), &scheme, &host);
+  url::Parsed parts;
+  base::string16 scheme_str;
+  // Call Parse() here instead of ParseForEmphasizeComponents() because the
+  // latter parses the inner URL for blob:, filesystem:, and view-source: URLs.
+  // For those schemes, we want the outer scheme so that we can disable elision
+  // for those schemes.
+  AutocompleteInput::Parse(text, std::string(),
+                           model()->client()->GetSchemeClassifier(), &parts,
+                           &scheme_str, nullptr);
 
   // TODO(crbug.com/1117631): Simplified domain elision can have bugs for some
   // URLs with bidirectional hosts, disable elision for those URLs while the
   // bugs are fixed.
-  const base::string16 url_host = text.substr(host.begin, host.len);
+  const base::string16 url_host = text.substr(parts.host.begin, parts.host.len);
   if (base::i18n::GetStringDirection(url_host) ==
       base::i18n::TextDirection::UNKNOWN_DIRECTION) {
     return false;
   }
-  const base::string16 url_scheme = text.substr(scheme.begin, scheme.len);
+
   // Simplified domain display only makes sense for http/https schemes; for now
   // we don't want to mess with the display of other URLs like data:, blob:,
   // chrome:, etc.
-  return (url_scheme == base::UTF8ToUTF16(url::kHttpScheme) ||
-          url_scheme == base::UTF8ToUTF16(url::kHttpsScheme)) &&
-         host.is_nonempty() &&
+  return (scheme_str == base::UTF8ToUTF16(url::kHttpScheme) ||
+          scheme_str == base::UTF8ToUTF16(url::kHttpsScheme)) &&
+         !url_host.empty() &&
          !net::HostStringIsLocalhost(
-             base::UTF16ToUTF8(text.substr(host.begin, host.len)));
+             base::UTF16ToUTF8(text.substr(parts.host.begin, parts.host.len)));
 }
 
 void OmniboxViewViews::ResetToHideOnInteraction() {

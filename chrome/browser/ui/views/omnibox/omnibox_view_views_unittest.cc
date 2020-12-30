@@ -2842,6 +2842,9 @@ TEST_P(OmniboxViewViewsRevealOnHoverTest, UrlsNotEligibleForEliding) {
       base::ASCIIToUTF16("javascript:alert(1)"),
       base::ASCIIToUTF16("data:text/html,hello"),
       base::ASCIIToUTF16("http://localhost:4000/foo"),
+      base::ASCIIToUTF16("blob:https://example.test/"),
+      base::ASCIIToUTF16("view-source:https://example.test/"),
+      base::ASCIIToUTF16("filesystem:https://example.test/a"),
       // A smoke test to check that the test code results in
       // the URL being elided properly when eligible.
       kSimplifiedDomainDisplayUrl,
