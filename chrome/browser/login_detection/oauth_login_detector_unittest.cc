@@ -29,6 +29,7 @@ TEST_F(OAuthLoginDetectorTest, SimpleOAuthLogin) {
                 GURL("https://foo.com/login.html"),
                 {GURL("https://oauth.com/authenticate?client_id=123"),
                  GURL("https://foo.com/redirect?code=secret")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
 }
 
 TEST_F(OAuthLoginDetectorTest, OAuthLoginWithMultipleQueryParams) {
@@ -38,6 +39,7 @@ TEST_F(OAuthLoginDetectorTest, OAuthLoginWithMultipleQueryParams) {
                 {GURL("https://oauth.com/"
                       "authenticate?client_id=123&redirect_uri=foo.com"),
                  GURL("https://foo.com/redirect?scope=userinfo&code=secret")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
 }
 
 TEST(OAuthLoginDetectorTestWithParams, OAuthLoginRequiringMultipleQueryParams) {
@@ -55,6 +57,7 @@ TEST(OAuthLoginDetectorTestWithParams, OAuthLoginRequiringMultipleQueryParams) {
                       "authenticate?client_id=123&redirect_uri=foo.com"),
 
                  GURL("https://foo.com/redirect?scope=userinfo&code=secret")}));
+  EXPECT_FALSE(detector.GetPopUpLoginFlowSite());
 }
 
 TEST(OAuthLoginDetectorTestWithParams, OAuthLoginMissingMultipleQueryParams) {
@@ -69,6 +72,7 @@ TEST(OAuthLoginDetectorTestWithParams, OAuthLoginMissingMultipleQueryParams) {
       GURL("https://foo.com/login.html"),
       {GURL("https://oauth.com/authenticate?client_id=123"),
        GURL("https://foo.com/redirect?code=secret")}));
+  EXPECT_FALSE(detector.GetPopUpLoginFlowSite());
 }
 
 TEST_F(OAuthLoginDetectorTest, LoginNotDetectedForHTTP) {
@@ -76,6 +80,7 @@ TEST_F(OAuthLoginDetectorTest, LoginNotDetectedForHTTP) {
       GURL("https://foo.com/login.html"),
       {GURL("http://oauth.com/authenticate?client_id=123"),
        GURL("http://foo.com/redirect?code=secret")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
 }
 
 // Test that small number of intermediate navigations within OAuth start and
@@ -87,6 +92,7 @@ TEST_F(OAuthLoginDetectorTest, IntermediateNavigationsAfterOAuthStart) {
                 {GURL("https://oauth.com/authenticate?client_id=123"),
                  GURL("https://oauth.com/login"),
                  GURL("https://foo.com/redirect?code=secret")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
 }
 
 // Test that OAuth login is not allowed when too many intermediate navigations
@@ -98,6 +104,7 @@ TEST_F(OAuthLoginDetectorTest, TooManyIntermediateNavigationsAfterOAuthStart) {
        GURL("https://oauth.com/login"), GURL("https://oauth.com/login"),
        GURL("https://oauth.com/login"), GURL("https://oauth.com/login"),
        GURL("https://foo.com/redirect?code=secret")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
 }
 
 // Test that OAuth login is detected when there are intermediate navigations to
@@ -109,6 +116,7 @@ TEST_F(OAuthLoginDetectorTest, IntermediateNavigationsToOtherSites) {
                 {GURL("https://oauth.com/authenticate?client_id=123"),
                  GURL("https://bar.com/page.html"),
                  GURL("https://foo.com/redirect?code=secret")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
 }
 
 // Test that OAuth requestor site is correctly detected when the site that
@@ -119,6 +127,7 @@ TEST_F(OAuthLoginDetectorTest, DifferentOAuthCompletionSite) {
                 GURL("https://foo.com/login.html"),
                 {GURL("https://oauth.com/authenticate?client_id=123"),
                  GURL("https://fooauth.com/redirect?code=secret")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
 }
 
 // Test that OAuth completion navigation does not happen for the OAuth provider
@@ -128,6 +137,35 @@ TEST_F(OAuthLoginDetectorTest, OAuthCompletionOnOAuthProviderSite) {
       GURL("https://foo.com/login.html"),
       {GURL("https://oauth.com/authenticate?client_id=123"),
        GURL("https://oauth.com/redirect?code=secret")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
+}
+
+TEST_F(OAuthLoginDetectorTest, PopUpLoginFlow) {
+  oauth_login_detector_->DidOpenAsPopUp(GURL("https://www.foo.com"));
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL(), {GURL("https://oauth.com/authenticate?client_id=123")}));
+  EXPECT_EQ(GURL("https://www.foo.com/"),
+            *oauth_login_detector_->GetPopUpLoginFlowSite());
+}
+
+// Tests the popup flow where navigation to non-provider site happens, and login
+// is not detected in that case.
+TEST_F(OAuthLoginDetectorTest, PopUpLoginFlowNonOAuthProviderNavigations) {
+  oauth_login_detector_->DidOpenAsPopUp(GURL("https://www.foo.com"));
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL(), {GURL("https://oauth.com/authenticate?client_id=123"),
+               GURL("https://bar.com/non-oauth-provider.html")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
+}
+
+// Tests the login flow where a new window is opened to perform login.
+TEST_F(OAuthLoginDetectorTest, NewWindowLoginFlow) {
+  EXPECT_EQ(GURL("https://www.foo.com/"),
+            *oauth_login_detector_->GetSuccessfulLoginFlowSite(
+                GURL() /* Empty URL due to the initial navigation*/,
+                {GURL("https://www.foo.com/login.html"),
+                 GURL("https://oauth.com/authenticate?client_id=123"),
+                 GURL("https://foo.com/redirect?code=secret")}));
 }
 
 }  // namespace login_detection

@@ -16,6 +16,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,7 +24,8 @@ namespace login_detection {
 
 class LoginDetectionBrowserTest : public InProcessBrowserTest {
  public:
-  LoginDetectionBrowserTest() {
+  LoginDetectionBrowserTest()
+      : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{kLoginDetection, {}},
          {site_isolation::features::kSiteIsolationForPasswordSites, {}}},
@@ -31,8 +33,8 @@ class LoginDetectionBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
-    ASSERT_TRUE(embedded_test_server()->Start());
+    https_test_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(https_test_server_.Start());
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
@@ -47,6 +49,7 @@ class LoginDetectionBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  net::EmbeddedTestServer https_test_server_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -54,8 +57,7 @@ class LoginDetectionBrowserTest : public InProcessBrowserTest {
 // Verifies that sites saved manual passworded list are detected correctly.
 IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
                        NavigateToManualPasswordedSite) {
-  GURL test_url(
-      embedded_test_server()->GetURL("www.saved.com", "/title1.html"));
+  GURL test_url(https_test_server_.GetURL("www.saved.com", "/title1.html"));
 
   // Initial navigation will not be treated as no login.
   ui_test_utils::NavigateToURL(browser(), test_url);
@@ -72,14 +74,49 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
   // Navigations to other subdomains of saved.com are treated as login too.
   ResetHistogramTester();
   ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("mobile.saved.com", "/title1.html"));
+      browser(), https_test_server_.GetURL("mobile.saved.com", "/title1.html"));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kPasswordEnteredLogin);
 
   ResetHistogramTester();
   ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("saved.com", "/title1.html"));
+      browser(), https_test_server_.GetURL("saved.com", "/title1.html"));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kPasswordEnteredLogin);
+}
+
+IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, PopUpBasedOAuthLoginFlow) {
+  // Navigate to the OAuth requestor.
+  ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL("www.foo.com", "/title1.html"));
+  ExpectLoginDetectionTypeMetric(LoginDetectionType::kNoLogin);
+  ResetHistogramTester();
+
+  // Create a popup for the navigation flow.
+  content::WebContentsAddedObserver web_contents_added_observer;
+  ASSERT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      content::JsReplace(
+          "window.open($1, 'oauth_window', 'width=10,height=10');",
+          https_test_server_.GetURL("www.oauthprovider.com",
+                                    "/title2.html?client_id=123"))));
+  auto* popup_contents = web_contents_added_observer.GetWebContents();
+  content::TestNavigationObserver observer(popup_contents);
+  observer.WaitForNavigationFinished();
+  // This popup navigation is treated as not logged-in too.
+  ExpectLoginDetectionTypeMetric(LoginDetectionType::kNoLogin);
+  ResetHistogramTester();
+
+  // When the popup is closed, it will be detected as OAuth login.
+  content::WebContentsDestroyedWatcher destroyed_watcher(popup_contents);
+  EXPECT_TRUE(ExecJs(popup_contents, "window.close()"));
+  destroyed_watcher.Wait();
+  ExpectLoginDetectionTypeMetric(
+      LoginDetectionType::kOauthPopUpFirstTimeLoginFlow);
+  ResetHistogramTester();
+
+  // Subsequent navigations to the OAuth requestor site will be treated as OAuth
+  ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL("www.foo.com", "/title3.html"));
+  ExpectLoginDetectionTypeMetric(LoginDetectionType::kOauthLogin);
 }
 
 }  // namespace login_detection

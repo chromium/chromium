@@ -36,7 +36,10 @@ enum class LoginDetectionType {
   // The site has credentials saved in the password manager.
   kPasswordManagerSavedSite,
 
-  kMaxValue = kPasswordManagerSavedSite
+  // Successful popup based OAuth login flow was detected.
+  kOauthPopUpFirstTimeLoginFlow,
+
+  kMaxValue = kOauthPopUpFirstTimeLoginFlow
 };
 }  // namespace login_detection
 
