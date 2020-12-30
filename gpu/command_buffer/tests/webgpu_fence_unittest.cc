@@ -2,18 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "gpu/command_buffer/client/webgpu_implementation.h"
 #include "gpu/command_buffer/tests/webgpu_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-// TODO(crbug.com/1162117): gl_tests failing on Linux
-#if defined(OS_LINUX)
-#define MAYBE(test_name) DISABLED_##test_name
-#else
-#define MAYBE(test_name) test_name
-#endif
 
 namespace {
 
@@ -56,7 +48,7 @@ class WebGPUFenceTest : public WebGPUTest {
 };
 
 // Test that getting the value of the fence is the initial value.
-TEST_F(WebGPUFenceTest, MAYBE(InitialValue)) {
+TEST_F(WebGPUFenceTest, InitialValue) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped";
     return;
@@ -79,7 +71,7 @@ TEST_F(WebGPUFenceTest, MAYBE(InitialValue)) {
 }
 
 // Test that after signaling a fence, its completed value gets updated.
-TEST_F(WebGPUFenceTest, MAYBE(GetCompletedValue)) {
+TEST_F(WebGPUFenceTest, GetCompletedValue) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped";
     return;
@@ -98,7 +90,7 @@ TEST_F(WebGPUFenceTest, MAYBE(GetCompletedValue)) {
 
 // Test that a fence's OnCompletion handler is called after the signal value
 // is completed.
-TEST_F(WebGPUFenceTest, MAYBE(OnCompletion)) {
+TEST_F(WebGPUFenceTest, OnCompletion) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped";
     return;
@@ -120,7 +112,7 @@ TEST_F(WebGPUFenceTest, MAYBE(OnCompletion)) {
 }
 
 // Test signaling a fence a million times.
-TEST_F(WebGPUFenceTest, MAYBE(SignalManyTimes)) {
+TEST_F(WebGPUFenceTest, SignalManyTimes) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped";
     return;
