@@ -28,6 +28,11 @@ class TestRenderWidgetHost : public RenderWidgetHostImpl {
 
   MockWidgetInputHandler* GetMockWidgetInputHandler();
 
+  static mojo::PendingAssociatedRemote<blink::mojom::Widget>
+  CreateStubWidgetRemote();
+  static mojo::PendingAssociatedRemote<blink::mojom::FrameWidget>
+  CreateStubFrameWidgetRemote();
+
  private:
   TestRenderWidgetHost(RenderWidgetHostDelegate* delegate,
                        AgentSchedulingGroupHost& agent_scheduling_group,

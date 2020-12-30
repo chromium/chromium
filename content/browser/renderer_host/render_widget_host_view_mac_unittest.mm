@@ -44,6 +44,7 @@
 #include "content/test/mock_widget_input_handler.h"
 #include "content/test/stub_render_widget_host_owner_delegate.h"
 #include "content/test/test_render_view_host.h"
+#include "content/test/test_render_widget_host.h"
 #include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -362,14 +363,9 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
                              routing_id,
                              /*hidden=*/false,
                              std::make_unique<FrameTokenMessageQueue>()) {
-    mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
-    auto frame_widget_host_receiver =
-        frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
-    mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
-    auto frame_widget_receiver =
-        frame_widget.BindNewEndpointAndPassDedicatedReceiver();
-    BindFrameWidgetInterfaces(std::move(frame_widget_host_receiver),
-                              frame_widget.Unbind());
+    mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host;
+    BindWidgetInterfaces(widget_host.BindNewEndpointAndPassDedicatedReceiver(),
+                         TestRenderWidgetHost::CreateStubWidgetRemote());
 
     set_renderer_initialized(true);
     lastWheelEventLatencyInfo = ui::LatencyInfo();
@@ -496,14 +492,11 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
     host_ = MockRenderWidgetHostImpl::Create(&delegate_,
                                              *agent_scheduling_group_host_,
                                              process_host_->GetNextRoutingID());
+    // MockRenderWidgetHostImpl already bound the Widget mojom interfaces.
     mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
-    auto frame_widget_host_receiver =
-        frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
-    mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
-    auto frame_widget_receiver =
-        frame_widget.BindNewEndpointAndPassDedicatedReceiver();
-    host_->BindFrameWidgetInterfaces(std::move(frame_widget_host_receiver),
-                                     frame_widget.Unbind());
+    host_->BindFrameWidgetInterfaces(
+        frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
+        TestRenderWidgetHost::CreateStubFrameWidgetRemote());
     host_->set_owner_delegate(&mock_owner_delegate_);
     rwhv_mac_ = new RenderWidgetHostViewMac(host_.get());
     rwhv_cocoa_.reset([rwhv_mac_->GetInProcessNSView() retain]);
