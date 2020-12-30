@@ -77,7 +77,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4421943235406860811">Zeskanowane pliki zostały zapisane.</translation>
 <translation id="4425149324548788773">Mój dysk</translation>
-<translation id="4429881212383817840">Bilet Kerberos wkrótce straci ważność</translation>
+<translation id="4429881212383817840">Zgłoszenie Kerberos wkrótce straci ważność</translation>
 <translation id="445059817448385655">Stare hasło</translation>
 <translation id="4454245904991689773">Skanuj do</translation>
 <translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
@@ -176,7 +176,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8919837981463578619">Niepowodzenie – nie znaleziono tacy</translation>
 <translation id="8928727111548978589">Niepowodzenie – brak papieru</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Pozostałe próby: <ph name="ATTEMPTS_LEFT" /></translation>
-<translation id="910415269708673980">Odśwież bilet przypisany do konta <ph name="PRINCIPAL_NAME" />.</translation>
+<translation id="910415269708673980">Odśwież zgłoszenie przypisane do konta <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Skanowanie strony <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Odblokuj</translation>
 </translationbundle>

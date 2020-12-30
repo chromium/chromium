@@ -400,7 +400,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2495093607237746763">If ticked, Chromium will store a copy of your card on this device for faster form filling.</translation>
 <translation id="2498091847651709837">Scan new card</translation>
 <translation id="2501278716633472235">Go back</translation>
-<translation id="2505268675989099013">Protect Account</translation>
+<translation id="2505268675989099013">Protect account</translation>
 <translation id="2515629240566999685">Checking the signal in your area</translation>
 <translation id="2521385132275182522">Staple bottom right</translation>
 <translation id="2523886232349826891">Saved on this device only</translation>
@@ -494,7 +494,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2916038427272391327">Close other programmes</translation>
 <translation id="2922350208395188000">Server's certificate cannot be checked.</translation>
 <translation id="2925673989565098301">Delivery Method</translation>
-<translation id="2928905813689894207">Billing Address</translation>
+<translation id="2928905813689894207">Billing address</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}}</translation>
 <translation id="2930577230479659665">Trim after each copy</translation>
 <translation id="2932085390869194046">Suggest password...</translation>
