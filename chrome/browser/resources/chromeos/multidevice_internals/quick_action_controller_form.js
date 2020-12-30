@@ -49,6 +49,7 @@ Polymer({
           TetherStatus.CONNECTION_AVAILABLE,
           TetherStatus.CONNECTING,
           TetherStatus.CONNECTED,
+          TetherStatus.NO_RECEPTION,
         ];
       },
       readonly: true,

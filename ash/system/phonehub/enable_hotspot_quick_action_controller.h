@@ -33,7 +33,7 @@ class EnableHotspotQuickActionController
  private:
   // All the possible states that the enable hotspot button can be viewed. Each
   // state has a corresponding icon, labels and tooltip view.
-  enum class ActionState { kOff, kConnecting, kConnected };
+  enum class ActionState { kOff, kConnecting, kConnected, kNoReception };
 
   // Set the item (including icon, label and tooltips) to a certain state.
   void SetState(ActionState state);

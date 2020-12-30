@@ -26,9 +26,10 @@ class TetherController {
 
     // Instant Tethering is available for use, but currently a connection is
     // unavailable. There are a variety of reasons why this may be the case:
-    // the feature could have been disabled in settings, the phone may not have
-    // cellular reception, or the phone may not have Google Play Services
-    // notifications enabled, which are required for the feature.
+    // the feature could have been disabled in settings, or the phone may not
+    // have Google Play Services notifications enabled, which are required
+    // for the feature. Note that the phone having no reception or no SIM card
+    // does not count in this case; instead, kNoReception is used.
     kConnectionUnavailable = 1,
 
     // It is possible to connect, but no connection is active or in progress.
@@ -40,7 +41,10 @@ class TetherController {
     kConnecting = 3,
 
     // Connected via Instant Tethering.
-    kConnected = 4
+    kConnected = 4,
+
+    // The phone has no reception (including no SIM).
+    kNoReception = 5,
   };
 
   class Observer : public base::CheckedObserver {

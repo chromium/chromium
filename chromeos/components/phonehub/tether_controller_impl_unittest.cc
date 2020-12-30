@@ -365,19 +365,55 @@ TEST_F(TetherControllerImplTest, ExternalTetherChangesReflectToStatus) {
   // Phone status changed to no reception.
   phone_model()->SetPhoneStatusModel(CreateFakePhoneStatusModel(
       PhoneStatusModel::MobileStatus::kSimButNoReception));
-  EXPECT_EQ(GetStatus(), TetherController::Status::kIneligibleForFeature);
+  EXPECT_EQ(GetStatus(), TetherController::Status::kNoReception);
   EXPECT_EQ(GetNumObserverStatusChanged(), 7U);
+
+  // Phone status changed to no SIM.
+  phone_model()->SetPhoneStatusModel(
+      CreateFakePhoneStatusModel(PhoneStatusModel::MobileStatus::kNoSim));
+  EXPECT_EQ(GetStatus(), TetherController::Status::kNoReception);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 7U);
+
+  // Tether feature becomes unsupported,
+  SetMultideviceSetupFeatureState(FeatureState::kNotSupportedByPhone);
+  EXPECT_EQ(GetStatus(), TetherController::Status::kIneligibleForFeature);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 8U);
+
+  // Tether feature becomes supported, the status becomes kNoReception again.
+  SetMultideviceSetupFeatureState(FeatureState::kEnabledByUser);
+  EXPECT_EQ(GetStatus(), TetherController::Status::kNoReception);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 9U);
 
   // Phone status changed to having reception. Connection is still unavailable.
   phone_model()->SetPhoneStatusModel(CreateFakePhoneStatusModel(
       PhoneStatusModel::MobileStatus::kSimWithReception));
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionUnavailable);
-  EXPECT_EQ(GetNumObserverStatusChanged(), 8U);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 10U);
 
-  // Phone Model is lost.
+  // Phone Model is lost, connection is still unavailable.
   phone_model()->SetPhoneStatusModel(base::nullopt);
-  EXPECT_EQ(GetStatus(), TetherController::Status::kIneligibleForFeature);
-  EXPECT_EQ(GetNumObserverStatusChanged(), 9U);
+  EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionUnavailable);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 10U);
+
+  // Even though there is no Phone Model, adding a visible tether network
+  // will cause the controller to indicate a connection is available.
+  AddVisibleTetherNetwork();
+  EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionAvailable);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 11U);
+
+  // Even though there is no Phone Model, connecting to a visible tether network
+  // externally (e.g via OS Settings) will cause the controller to indicate a
+  // connecting tether state.
+  SetTetherNetworkStateConnecting();
+  EXPECT_EQ(GetStatus(), TetherController::Status::kConnecting);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 12U);
+
+  // Even though there is no Phone Model, a connection to a visible tether
+  // network externally (e.g via OS Settings) will cause the controller to
+  // indicate a connected tether state.
+  SetTetherNetworkStateConnected();
+  EXPECT_EQ(GetStatus(), TetherController::Status::kConnected);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 13U);
 }
 
 TEST_F(TetherControllerImplTest, AttemptConnectDisconnect) {

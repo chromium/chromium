@@ -1220,6 +1220,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_LOCATE_BUTTON_NOT_AVAILABLE_TOOLTIP" desc="Tooltip message that indicates to the user that Phone Hub's 'Locate phone' feature is not available because the user disabled alarms that make sounds on their phone.">
         Locate phone is not available when alarm sounds are disabled
       </message>
+      <message name="IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_NO_RECEPTION_STATE_TOOLTIP" desc="Tooltip message that indicates to the user that the Enable Hotspot feature is disabled because their phone does not have mobile data.">
+        Your phone must have mobile data to provide a hotspot
+      </message>
 
       <message name="IDS_ASH_STYLUS_BATTERY_LOW_LABEL">
         Low

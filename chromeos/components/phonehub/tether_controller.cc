@@ -47,6 +47,9 @@ std::ostream& operator<<(std::ostream& stream,
     case TetherController::Status::kConnected:
       stream << "[Connected]";
       break;
+    case TetherController::Status::kNoReception:
+      stream << "[No Reception]";
+      break;
   }
   return stream;
 }

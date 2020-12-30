@@ -212,6 +212,7 @@ export const TetherStatus = {
   CONNECTION_AVAILABLE: 2,
   CONNECTING: 3,
   CONNECTED: 4,
+  NO_RECEPTION: 5,
 };
 
 /**
@@ -224,6 +225,7 @@ export const tetherStatusToString = new Map([
   [TetherStatus.CONNECTION_AVAILABLE, 'Connection available'],
   [TetherStatus.CONNECTING, 'Connecting'],
   [TetherStatus.CONNECTED, 'Connected'],
+  [TetherStatus.NO_RECEPTION, 'No reception'],
 ]);
 
 /**
