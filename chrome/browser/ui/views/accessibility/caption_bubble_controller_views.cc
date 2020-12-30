@@ -140,7 +140,10 @@ bool CaptionBubbleControllerViews::IsWidgetVisibleForTesting() {
 }
 
 std::string CaptionBubbleControllerViews::GetBubbleLabelTextForTesting() {
-  return caption_bubble_ ? caption_bubble_->GetLabelTextForTesting() : "";
+  return caption_bubble_
+             ? base::UTF16ToUTF8(
+                   caption_bubble_->GetLabelForTesting()->GetText())  // IN-TEST
+             : "";
 }
 
 }  // namespace captions

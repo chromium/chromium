@@ -38,6 +38,7 @@ class BrowserView;
 
 namespace captions {
 class CaptionBubbleFrameView;
+class CaptionBubbleLabel;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble
@@ -76,7 +77,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   // Returns the number of lines in the caption bubble label that are rendered.
   size_t GetNumLinesInLabel() const;
 
-  std::string GetLabelTextForTesting();
+  views::Label* GetLabelForTesting();
   base::RetainingOneShotTimer* GetInactivityTimerForTesting();
   void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
     tick_clock_ = tick_clock;
@@ -133,10 +134,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
       views::Button::PressedCallback callback,
       const gfx::VectorIcon& icon,
       const int tooltip_text_id);
-  void AddVirtualChildView(const std::string& name,
-                           const size_t i,
-                           const gfx::Range& range);
-  std::vector<std::string> GetVirtualChildrenTextForTesting();
+  std::vector<std::string> GetAXLineTextForTesting();
 
   // After 5 seconds of inactivity, hide the caption bubble. Activity is defined
   // as transcription received from the speech service or user interacting with
@@ -144,7 +142,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void OnInactivityTimeout();
 
   // Unowned. Owned by views hierarchy.
-  views::Label* label_;
+  CaptionBubbleLabel* label_;
   views::Label* title_;
   views::Label* error_text_;
   views::ImageView* error_icon_;

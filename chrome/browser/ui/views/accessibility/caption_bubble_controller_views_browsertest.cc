@@ -60,7 +60,8 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   views::Label* GetLabel() {
-    return controller_ ? controller_->caption_bubble_->label_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->GetLabelForTesting()
+                       : nullptr;
   }
 
   views::Label* GetTitle() {
@@ -162,8 +163,8 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetWebContentsAt(tab_index));
   }
 
-  std::vector<std::string> GetVirtualChildrenText() {
-    return GetBubble()->GetVirtualChildrenTextForTesting();
+  std::vector<std::string> GetAXLineText() {
+    return GetBubble()->GetAXLineTextForTesting();
   }
 
   void SetTickClockForTesting(const base::TickClock* tick_clock) {
@@ -903,20 +904,20 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   // If accessibility is disabled, virtual children aren't computed.
   content::BrowserAccessibilityState::GetInstance()->DisableAccessibility();
   OnFinalTranscription("A dog's nose print");
-  EXPECT_EQ(0u, GetVirtualChildrenText().size());
+  EXPECT_EQ(0u, GetAXLineText().size());
 
   // When accessibility is enabled, virtual children are computed.
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   OnFinalTranscription("is unique");
-  EXPECT_EQ(1u, GetVirtualChildrenText().size());
-  EXPECT_EQ("A dog's nose print is unique", GetVirtualChildrenText()[0]);
+  EXPECT_EQ(1u, GetAXLineText().size());
+  EXPECT_EQ("A dog's nose print is unique", GetAXLineText()[0]);
 
   // When accessibility is disabled, virtual children are no longer being
   // updated.
   content::BrowserAccessibilityState::GetInstance()->DisableAccessibility();
   OnFinalTranscription("like a fingerprint");
-  EXPECT_EQ(1u, GetVirtualChildrenText().size());
-  EXPECT_EQ("A dog's nose print is unique", GetVirtualChildrenText()[0]);
+  EXPECT_EQ(1u, GetAXLineText().size());
+  EXPECT_EQ("A dog's nose print is unique", GetAXLineText()[0]);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
@@ -927,79 +928,55 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   OnPartialTranscription(line);
-  EXPECT_EQ(1u, GetVirtualChildrenText().size());
-  EXPECT_EQ(line, GetVirtualChildrenText()[0]);
+  EXPECT_EQ(1u, GetAXLineText().size());
+  EXPECT_EQ(line, GetAXLineText()[0]);
   OnPartialTranscription(line + line);
-  EXPECT_EQ(2u, GetVirtualChildrenText().size());
-  EXPECT_EQ(line, GetVirtualChildrenText()[0]);
-  EXPECT_EQ(line, GetVirtualChildrenText()[1]);
+  EXPECT_EQ(2u, GetAXLineText().size());
+  EXPECT_EQ(line, GetAXLineText()[0]);
+  EXPECT_EQ(line, GetAXLineText()[1]);
   OnPartialTranscription(line);
-  EXPECT_EQ(1u, GetVirtualChildrenText().size());
-  EXPECT_EQ(line, GetVirtualChildrenText()[0]);
+  EXPECT_EQ(1u, GetAXLineText().size());
+  EXPECT_EQ(line, GetAXLineText()[0]);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        AccessibleTextClearsWhenBubbleCloses) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   OnFinalTranscription("Dogs' noses are wet to help them smell.");
-  EXPECT_EQ(1u, GetVirtualChildrenText().size());
-  EXPECT_EQ("Dogs' noses are wet to help them smell.",
-            GetVirtualChildrenText()[0]);
+  EXPECT_EQ(1u, GetAXLineText().size());
+  EXPECT_EQ("Dogs' noses are wet to help them smell.", GetAXLineText()[0]);
   ClickButton(GetCloseButton());
-  EXPECT_EQ(0u, GetVirtualChildrenText().size());
+  EXPECT_EQ(0u, GetAXLineText().size());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        AccessibleTextClearsWhenTabRefreshes) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   OnFinalTranscription("Newfoundlands are amazing lifeguards.");
-  EXPECT_EQ(1u, GetVirtualChildrenText().size());
-  EXPECT_EQ("Newfoundlands are amazing lifeguards.",
-            GetVirtualChildrenText()[0]);
+  EXPECT_EQ(1u, GetAXLineText().size());
+  EXPECT_EQ("Newfoundlands are amazing lifeguards.", GetAXLineText()[0]);
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_EQ(0u, GetVirtualChildrenText().size());
+  EXPECT_EQ(0u, GetAXLineText().size());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        AccessibleTextChangesWhenTabChanges) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   OnFinalTranscription("3 dogs survived the Titanic sinking.");
-  EXPECT_EQ(1u, GetVirtualChildrenText().size());
-  EXPECT_EQ("3 dogs survived the Titanic sinking.",
-            GetVirtualChildrenText()[0]);
+  EXPECT_EQ(1u, GetAXLineText().size());
+  EXPECT_EQ("3 dogs survived the Titanic sinking.", GetAXLineText()[0]);
 
   InsertNewTab();
   ActivateTabAt(1);
   OnFinalTranscription("30% of Dalmations are deaf in one ear.", 1);
-  EXPECT_EQ(1u, GetVirtualChildrenText().size());
-  EXPECT_EQ("30% of Dalmations are deaf in one ear.",
-            GetVirtualChildrenText()[0]);
+  EXPECT_EQ(1u, GetAXLineText().size());
+  EXPECT_EQ("30% of Dalmations are deaf in one ear.", GetAXLineText()[0]);
 
   ActivateTabAt(0);
-  EXPECT_EQ(1u, GetVirtualChildrenText().size());
-  EXPECT_EQ("3 dogs survived the Titanic sinking. ",
-            GetVirtualChildrenText()[0]);
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       AccessibleTextClearsOnError) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-  OnFinalTranscription("The Saluki is the oldest dog breed.");
-  EXPECT_EQ(1u, GetVirtualChildrenText().size());
-  EXPECT_EQ("The Saluki is the oldest dog breed.", GetVirtualChildrenText()[0]);
-  OnError();
-  EXPECT_EQ(0u, GetVirtualChildrenText().size());
-
-  // Clear the error by refreshing.
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
-  content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
-  OnFinalTranscription("Chow Chows have black tongues.");
-  EXPECT_EQ(1u, GetVirtualChildrenText().size());
-  EXPECT_EQ("Chow Chows have black tongues.", GetVirtualChildrenText()[0]);
+  EXPECT_EQ(1u, GetAXLineText().size());
+  EXPECT_EQ("3 dogs survived the Titanic sinking. ", GetAXLineText()[0]);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
@@ -1012,28 +989,24 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   }
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   OnFinalTranscription(text);
-  EXPECT_EQ(9u, GetVirtualChildrenText().size());
+  EXPECT_EQ(9u, GetAXLineText().size());
   for (int i = 0; i < 9; i++) {
-    EXPECT_EQ(base::NumberToString(i + 31) + line + " ",
-              GetVirtualChildrenText()[i]);
+    EXPECT_EQ(base::NumberToString(i + 31) + line + " ", GetAXLineText()[i]);
   }
   OnPartialTranscription(text);
-  EXPECT_EQ(39u, GetVirtualChildrenText().size());
+  EXPECT_EQ(39u, GetAXLineText().size());
   for (int i = 0; i < 9; i++) {
-    EXPECT_EQ(base::NumberToString(i + 31) + line + " ",
-              GetVirtualChildrenText()[i]);
+    EXPECT_EQ(base::NumberToString(i + 31) + line + " ", GetAXLineText()[i]);
   }
   for (int i = 10; i < 40; i++) {
-    EXPECT_EQ(base::NumberToString(i) + line + " ",
-              GetVirtualChildrenText()[i - 1]);
+    EXPECT_EQ(base::NumberToString(i) + line + " ", GetAXLineText()[i - 1]);
   }
   OnFinalTranscription("a ");
-  EXPECT_EQ(9u, GetVirtualChildrenText().size());
+  EXPECT_EQ(9u, GetAXLineText().size());
   for (int i = 0; i < 8; i++) {
-    EXPECT_EQ(base::NumberToString(i + 32) + line + " ",
-              GetVirtualChildrenText()[i]);
+    EXPECT_EQ(base::NumberToString(i + 32) + line + " ", GetAXLineText()[i]);
   }
-  EXPECT_EQ("a ", GetVirtualChildrenText()[8]);
+  EXPECT_EQ("a ", GetAXLineText()[8]);
 }
 
 #if !defined(OS_MAC)
