@@ -18,7 +18,7 @@ class LaunchParams final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  LaunchParams(HeapVector<Member<NativeFileSystemHandle>> files);
+  explicit LaunchParams(HeapVector<Member<NativeFileSystemHandle>> files);
   ~LaunchParams() override;
 
   // LaunchParams IDL interface.
