@@ -896,7 +896,7 @@ OTHER_BENCHMARKS = {
 OTHER_BENCHMARKS.update({
     'resource_sizes_lacros_chrome':
     BenchmarkMetadata(
-        emails='erikchen@chromium.org, huangs@chormium.org',
+        emails='erikchen@chromium.org, huangs@chromium.org',
         component='OS>LaCrOS',
         documentation_url=(
             'https://chromium.googlesource.com/chromium/'

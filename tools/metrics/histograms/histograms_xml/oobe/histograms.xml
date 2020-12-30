@@ -119,7 +119,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
      name="GestureNavigationOOBEPage" -->
 
   <owner>mmourgos@chromium.org</owner>
-  <owner>tbarzic@chormium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
   <summary>
     Records the amount of time that each page within the gesture navigation OOBE
     screen is shown. Recorded when the gesture navigation oobe screen is
