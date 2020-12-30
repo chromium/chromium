@@ -55,6 +55,7 @@
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
+#include "net/disk_cache/cache_util.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -91,6 +92,19 @@ class ProfileNetworkContextServiceBrowsertest : public InProcessBrowserTest {
   network::mojom::URLLoaderFactory* loader_factory() const {
     return loader_factory_;
   }
+
+  void CheckDiskCacheSizeHistogramRecorded() {
+    std::string all_metrics;
+    do {
+      content::FetchHistogramsFromChildProcesses();
+      metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(5));
+      all_metrics = histograms_.GetAllHistogramsRecorded();
+    } while (std::string::npos ==
+             all_metrics.find("HttpCache.MaxFileSizeOnInit"));
+  }
+
+  base::HistogramTester histograms_;
 
  protected:
   // The HttpCache is only created when a request is issued, thus we perform a
@@ -143,6 +157,42 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceBrowsertest,
       /*in_memory=*/false, empty_relative_partition_path,
       &network_context_params, &cert_verifier_creation_params);
   EXPECT_EQ(0, network_context_params.http_cache_max_size);
+
+  CheckDiskCacheSizeHistogramRecorded();
+}
+
+class DiskCachesizeExperiment : public ProfileNetworkContextServiceBrowsertest {
+ public:
+  DiskCachesizeExperiment() = default;
+  ~DiskCachesizeExperiment() override = default;
+
+  void SetUp() override {
+    std::map<std::string, std::string> field_trial_params;
+    field_trial_params["percent_relative_size"] = "200";
+    feature_list_.InitAndEnableFeatureWithParameters(
+        disk_cache::kChangeDiskCacheSizeExperiment, field_trial_params);
+    ProfileNetworkContextServiceBrowsertest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DiskCachesizeExperiment, ScaledCacheSize) {
+  // We don't have a great way of directly checking that the disk cache has the
+  // correct max size, but we can make sure that we set up our network context
+  // params correctly and that the histogram is recorded.
+  ProfileNetworkContextService* profile_network_context_service =
+      ProfileNetworkContextServiceFactory::GetForContext(browser()->profile());
+  base::FilePath empty_relative_partition_path;
+  network::mojom::NetworkContextParams network_context_params;
+  network::mojom::CertVerifierCreationParams cert_verifier_creation_params;
+  profile_network_context_service->ConfigureNetworkContextParams(
+      /*in_memory=*/false, empty_relative_partition_path,
+      &network_context_params, &cert_verifier_creation_params);
+  EXPECT_EQ(0, network_context_params.http_cache_max_size);
+
+  CheckDiskCacheSizeHistogramRecorded();
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceBrowsertest, BrotliEnabled) {

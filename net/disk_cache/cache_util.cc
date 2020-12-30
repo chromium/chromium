@@ -10,6 +10,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -85,6 +86,9 @@ namespace disk_cache {
 
 const int kDefaultCacheSize = 80 * 1024 * 1024;
 
+const base::Feature kChangeDiskCacheSizeExperiment{
+    "ChangeDiskCacheSize", base::FEATURE_DISABLED_BY_DEFAULT};
+
 void DeleteCache(const base::FilePath& path, bool remove_folder) {
   if (remove_folder) {
     if (!base::DeletePathRecursively(path))
@@ -152,10 +156,41 @@ bool DelayedCacheCleanup(const base::FilePath& full_path) {
 // Returns the preferred maximum number of bytes for the cache given the
 // number of available bytes.
 int PreferredCacheSize(int64_t available, net::CacheType type) {
+  // Percent of cache size to use, relative to the default size. "100" means to
+  // use 100% of the default size.
+  int percent_relative_size = 100;
+
+  if (base::FeatureList::IsEnabled(
+          disk_cache::kChangeDiskCacheSizeExperiment) &&
+      type == net::DISK_CACHE) {
+    percent_relative_size = base::GetFieldTrialParamByFeatureAsInt(
+        disk_cache::kChangeDiskCacheSizeExperiment, "percent_relative_size",
+        100 /* default value */);
+  }
+
+  // Cap scaling, as a safety check, to avoid overflow.
+  if (percent_relative_size > 400)
+    percent_relative_size = 400;
+  else if (percent_relative_size < 100)
+    percent_relative_size = 100;
+
+  int64_t scaled_default_disk_cache_size =
+      (static_cast<int64_t>(disk_cache::kDefaultCacheSize) *
+       percent_relative_size) /
+      100;
+
   if (available < 0)
-    return kDefaultCacheSize;
+    return static_cast<int32_t>(scaled_default_disk_cache_size);
 
   int64_t preferred_cache_size = PreferredCacheSizeInternal(available);
+
+  // If the preferred cache size is less than 20% of the available space, scale
+  // for the field trial, capping the scaled value at 20% of the available
+  // space.
+  if (preferred_cache_size < available / 5) {
+    preferred_cache_size = std::min(
+        (preferred_cache_size * percent_relative_size) / 100, available / 5);
+  }
 
   // Limit cache size to somewhat less than kint32max to avoid potential
   // integer overflows in cache backend implementations.
@@ -164,7 +199,7 @@ int PreferredCacheSize(int64_t available, net::CacheType type) {
   // from the blockfile backend with the following explanation:
   // "Let's not use more than the default size while we tune-up the performance
   // of bigger caches. "
-  int64_t size_limit = static_cast<int64_t>(kDefaultCacheSize) * 4;
+  int64_t size_limit = scaled_default_disk_cache_size * 4;
   // Native code entries can be large, so we would like a larger cache.
   // Make the size limit 50% larger in that case.
   if (type == net::GENERATED_NATIVE_CODE_CACHE) {
