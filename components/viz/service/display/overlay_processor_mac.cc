@@ -58,7 +58,6 @@ void OverlayProcessorMac::ProcessForOverlays(
 
   // Clear to get ready to handle output surface as overlay.
   output_surface_already_handled_ = false;
-  previous_frame_full_bounding_rect_ = render_pass->output_rect;
 
   // Skip overlay processing if we have copy request.
   if (!render_pass->copy_requests.empty())
@@ -69,19 +68,30 @@ void OverlayProcessorMac::ProcessForOverlays(
   if (!enable_ca_overlay_)
     return;
 
-  // If ca overlay system didn't succeed, we fall back to surfaceless.
-  if (!ca_layer_overlay_processor_->ProcessForCALayerOverlays(
+  // First, try to use ProcessForCALayerOverlays to replace all DrawQuads in
+  // |render_pass->quad_list| with CALayerOverlays in |candidates|.
+  if (ca_layer_overlay_processor_->ProcessForCALayerOverlays(
           resource_provider, gfx::RectF(render_pass->output_rect),
           render_pass->quad_list, render_pass_filters,
-          render_pass_backdrop_filters, candidates))
-    return;
+          render_pass_backdrop_filters, candidates)) {
+    // Mark the output surface as already handled (there is no output surface
+    // anymore).
+    output_surface_already_handled_ = true;
 
-  // CALayer overlays are all-or-nothing. If all quads were replaced with
-  // layers then mark the output surface as already handled.
-  output_surface_already_handled_ = true;
-  ca_overlay_damage_rect_ = render_pass->output_rect;
-  previous_frame_full_bounding_rect_ = ca_overlay_damage_rect_;
-  *damage_rect = gfx::Rect();
+    // Set |last_overlay_damage_| to be everything, so that the next
+    // frame that we draw to the output surface will do a full re-draw.
+    ca_overlay_damage_rect_ = render_pass->output_rect;
+
+    // Everything in |render_pass->quad_list| has been moved over to
+    // |candidates|. Ideally we would clear |render_pass->quad_list|, but some
+    // RenderPass overlays still point into that list. So instead, to avoid
+    // drawing the root RenderPass, we set |damage_rect| to be empty.
+    *damage_rect = gfx::Rect();
+  }
+
+  // TODO(https://crbug.com/1152849): If there is any HDR or protected content,
+  // use an underlay strategy to move those to |candidates| and replace them
+  // with transparent quads in |render_pass->quad_list|.
 }
 
 void OverlayProcessorMac::AdjustOutputSurfaceOverlay(
