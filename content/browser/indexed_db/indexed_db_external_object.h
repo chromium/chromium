@@ -64,10 +64,11 @@ class CONTENT_EXPORT IndexedDBExternalObject {
                           const base::Time& last_modified,
                           const int64_t size);
   // These are for Native File System handles.
-  IndexedDBExternalObject(
+  explicit IndexedDBExternalObject(
       mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken>
           token_remote);
-  IndexedDBExternalObject(std::vector<uint8_t> native_file_system_token);
+  explicit IndexedDBExternalObject(
+      std::vector<uint8_t> native_file_system_token);
 
   IndexedDBExternalObject(const IndexedDBExternalObject& other);
   ~IndexedDBExternalObject();
