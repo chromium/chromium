@@ -1048,6 +1048,18 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_EXIT" desc="The label of the button to exit the switch access action assignment dialog without making any changes. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Exit
   </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_ASSIGNED_ICON_LABEL" desc="A label for an icon indicating a switch is assigned to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Assigned
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_ADD_ASSIGNMENT_ICON_LABEL" desc="A label for an icon indicating a switch is ready to add as an assignment to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Add assignment
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_REMOVE_ASSIGNMENT_ICON_LABEL" desc="A label for an icon indicating a switch is ready to remove as an assignment from an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Remove assignment
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_ERROR_ICON_LABEL" desc="The label for an icon indicating that there was an error adding or removing a switch assignment. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Error
+  </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_HEADING" desc="In the settings tab, the heading for accessibility features that enable the computer to speak text from the computer screen.">
     Text-to-Speech
   </message>

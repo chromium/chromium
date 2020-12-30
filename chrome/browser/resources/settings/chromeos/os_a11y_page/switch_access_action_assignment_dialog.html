@@ -45,8 +45,20 @@
         margin-inline-end: 10px;
       }
 
+      .add-assignment-icon {
+        --iron-icon-fill-color: var(--cros-icon-color-secondary);
+      }
+
+      .assigned-icon {
+        --iron-icon-fill-color: var(--cros-icon-color-prominent);
+      }
+
+      .remove-assignment-icon {
+        --iron-icon-fill-color: var(--cros-icon-color-alert);
+      }
+
       #errorIcon {
-        --iron-icon-fill-color: #d93025;
+        --iron-icon-fill-color: var(--cros-icon-color-alert);
       }
 
       #button-container {
@@ -60,7 +72,7 @@
       }
 
       #error {
-        color: var(--google-red-600);
+        color: var(--cros-icon-color-alert);
         display: flex;
       }
     </style>
@@ -75,7 +87,9 @@
           <template is="dom-if" if="[[assignments_.length]]">
             <template is="dom-repeat" items="[[assignments_]]" as="assignment">
               <div class="switch-assignment">
-                <iron-icon icon="os-settings:hollow-check-circle" class="icon">
+                <iron-icon icon="os-settings:[[computeIcon_(assignment, assignmentState_)]]"
+                    class$="icon [[computeIcon_(assignment, assignmentState_)]]-icon"
+                    aria-label="[[computeIconLabel_(assignment, assignmentState_)]]">
                 </iron-icon>
                 [[assignment]]
               </div>
@@ -85,7 +99,8 @@
         <div id="errorContainer">
           <template is="dom-if" if="[[errorText_]]">
             <div id="error" aria-live="polite">
-              <iron-icon id="errorIcon" icon="os-settings:warning" class="icon">
+              <iron-icon id="errorIcon" icon="os-settings:error" class="icon"
+                  aria-label="$i18n{switchAccessActionAssignmentDialogErrorIconLabel}">
               </iron-icon>
               [[errorText_]]
             </div>

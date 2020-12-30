@@ -36,6 +36,16 @@
   previous: 'settings.a11y.switch_access.previous.key_codes'
 };
 
+/**
+ * Various icons representing the state of a given key assignment.
+ * @enum {string}
+ */
+/* #export */ const AssignmentIcon = {
+  ASSIGNED: 'assigned',
+  ADD_ASSIGNMENT: 'add-assignment',
+  REMOVE_ASSIGNMENT: 'remove-assignment',
+};
+
 Polymer({
   is: 'settings-switch-access-action-assignment-dialog',
 
@@ -228,6 +238,7 @@ Polymer({
       return;
     }
     this.assignmentState_ = AssignmentState.WAIT_FOR_CONFIRMATION;
+    this.push('assignments_', this.currentKey_);
   },
 
   /**
@@ -322,6 +333,55 @@ Polymer({
     return this.i18n(
         'switchAccessActionAssignmentDialogTitle',
         this.getLabelForAction_(action));
+  },
+
+  /**
+   * Returns the image to use for the assignment's icon. The value must match
+   * one of iron-icon's os-settings:(*) icon names.
+   * @param {string} assignment
+   * @return {AssignmentIcon}
+   * @private
+   */
+  computeIcon_(assignment) {
+    if (assignment !== this.currentKey_) {
+      return AssignmentIcon.ASSIGNED;
+    }
+
+    switch (this.assignmentState_) {
+      case AssignmentState.WAIT_FOR_KEY:
+      case AssignmentState.WARN_ALREADY_ASSIGNED_ACTION:
+      case AssignmentState.WARN_UNRECOGNIZED_KEY:
+      case AssignmentState.WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH:
+        return AssignmentIcon.ASSIGNED;
+      case AssignmentState.WAIT_FOR_CONFIRMATION:
+      case AssignmentState.WARN_NOT_CONFIRMED:
+        return AssignmentIcon.ADD_ASSIGNMENT;
+      case AssignmentState.WAIT_FOR_CONFIRMATION_REMOVAL:
+      case AssignmentState.WARN_NOT_CONFIRMED_REMOVAL:
+        return AssignmentIcon.REMOVE_ASSIGNMENT;
+    }
+    throw new Error('Invalid assignment state.');
+  },
+
+  /**
+   * Returns the icon label describing the icon for the specified assignment.
+   * @param {string} assignment
+   * @return {string}
+   * @private
+   */
+  computeIconLabel_(assignment) {
+    const icon = this.computeIcon_(assignment);
+    switch (icon) {
+      case AssignmentIcon.ASSIGNED:
+        return this.i18n('switchAccessActionAssignmentDialogAssignedIconLabel');
+      case AssignmentIcon.ADD_ASSIGNMENT:
+        return this.i18n(
+            'switchAccessActionAssignmentDialogAddAssignmentIconLabel');
+      case AssignmentIcon.REMOVE_ASSIGNMENT:
+        return this.i18n(
+            'switchAccessActionAssignmentDialogRemoveAssignmentIconLabel');
+    }
+    throw new Error('Invalid assignment icon.');
   },
 
   /**
