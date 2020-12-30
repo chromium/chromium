@@ -33,6 +33,9 @@ Polymer({
   listeners: {'next': 'onNext_', 'manage-contacts': 'onManageContacts_'},
 
   onNext_() {
+    const contactVisibility = /** @type {NearbyContactVisibilityElement} */
+        (this.$.contactVisibility);
+    contactVisibility.saveVisibilityAndAllowedContacts();
     this.set('settings.enabled', true);
     this.fire('onboarding-complete');
   },

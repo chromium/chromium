@@ -15,8 +15,8 @@ cr.define('nearby_share', function() {
     constructor() {
       /** @type {?Array<!nearbyShare.mojom.ContactRecord>} */
       this.contactRecords = null;
-      /** @private {!Array<!string>} */
-      this.allowedContacts_ = [];
+      /** @type {!Array<!string>} */
+      this.allowedContacts = [];
       /** @private {number} */
       this.numUnreachable_ = 3;
       /** @private {?nearbyShare.mojom.DownloadContactsObserverInterface} */
@@ -44,7 +44,7 @@ cr.define('nearby_share', function() {
      * @param {!Array<!string>} allowedContacts
      */
     setAllowedContacts(allowedContacts) {
-      this.allowedContacts_ = allowedContacts;
+      this.allowedContacts = allowedContacts;
     }
 
     /**
@@ -73,7 +73,7 @@ cr.define('nearby_share', function() {
           ]
         }
       ];
-      this.allowedContacts_ = ['1'];
+      this.allowedContacts = ['1'];
     }
 
     failDownload() {
@@ -82,7 +82,7 @@ cr.define('nearby_share', function() {
 
     completeDownload() {
       this.observer_.onContactsDownloaded(
-          this.allowedContacts_, this.contactRecords || [],
+          this.allowedContacts, this.contactRecords || [],
           /*num_unreachable_contacts_filtered_out=*/ this.numUnreachable_);
     }
   }

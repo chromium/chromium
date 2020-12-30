@@ -140,7 +140,6 @@ Polymer({
 
   observers: [
     'settingsChanged_(settings.visibility)',
-    'selectedVisibilityChanged_(selectedVisibility)',
   ],
 
   /** @override */
@@ -268,23 +267,6 @@ Polymer({
   },
 
   /**
-   * Sync the latest contact toggle states and update allowedContacts through
-   * the contact manager.
-   * @private
-   */
-  syncContactToggleState_() {
-    const allowedContacts = [];
-    if (this.contacts) {
-      for (const contact of this.contacts) {
-        if (contact.checked) {
-          allowedContacts.push(contact.id);
-        }
-      }
-    }
-    this.contactManager_.setAllowedContacts(allowedContacts);
-  },
-
-  /**
    * TODO(crbug.com/1128256): Remove after specs/a11y.
    * Call from the JS debug console to test scrolling.
    * @param {number} numContacts
@@ -338,17 +320,6 @@ Polymer({
           visibilityValueToString(this.settings.visibility);
     } else {
       this.selectedVisibility = null;
-    }
-  },
-
-  /**
-   * @param {string} selectedVisibility
-   * @private
-   */
-  selectedVisibilityChanged_(selectedVisibility) {
-    const visibility = visibilityStringToValue(this.selectedVisibility);
-    if (visibility) {
-      this.set('settings.visibility', visibility);
     }
   },
 
@@ -531,6 +502,27 @@ Polymer({
       default:
         return '';
     }
+  },
+
+  /**
+   * Save visibility setting and sync allowed contacts with contact manager.
+   * @public
+   */
+  saveVisibilityAndAllowedContacts() {
+    const visibility = visibilityStringToValue(this.selectedVisibility);
+    if (visibility) {
+      this.set('settings.visibility', visibility);
+    }
+
+    const allowedContacts = [];
+    if (this.contacts) {
+      for (const contact of this.contacts) {
+        if (contact.checked) {
+          allowedContacts.push(contact.id);
+        }
+      }
+    }
+    this.contactManager_.setAllowedContacts(allowedContacts);
   },
 });
 })();
