@@ -86,12 +86,29 @@ TEST_F(OAuthLoginDetectorTest, LoginNotDetectedForHTTP) {
 // Test that small number of intermediate navigations within OAuth start and
 // completion are allowed.
 TEST_F(OAuthLoginDetectorTest, IntermediateNavigationsAfterOAuthStart) {
-  EXPECT_EQ(GURL("https://foo.com/"),
-            *oauth_login_detector_->GetSuccessfulLoginFlowSite(
-                GURL("https://foo.com/login.html"),
-                {GURL("https://oauth.com/authenticate?client_id=123"),
-                 GURL("https://oauth.com/login"),
-                 GURL("https://foo.com/redirect?code=secret")}));
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL("https://foo.com/login.html"),
+      {
+          GURL("https://oauth.com/authenticate?client_id=123"),
+          GURL("https://oauth.com/login"),
+      }));
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL("https://oauth.com/login"),
+      {
+          GURL("https://oauth.com/login?username=123&password=123"),
+          GURL("https://oauth.com/relogin"),
+      }));
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL("https://oauth.com/relogin"),
+      {
+          GURL("https://oauth.com/login?username=123&password=123"),
+          GURL("https://oauth.com/relogin"),
+      }));
+  EXPECT_TRUE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL("https://oauth.com/relogin"),
+      {GURL("https://oauth.com/login?username=123&password=123"),
+       GURL("https://oauth.com/loginsuccess"),
+       GURL("https://foo.com/redirect?code=secret")}));
   EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
 }
 
@@ -100,10 +117,47 @@ TEST_F(OAuthLoginDetectorTest, IntermediateNavigationsAfterOAuthStart) {
 TEST_F(OAuthLoginDetectorTest, TooManyIntermediateNavigationsAfterOAuthStart) {
   EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
       GURL("https://foo.com/login.html"),
-      {GURL("https://oauth.com/authenticate?client_id=123"),
-       GURL("https://oauth.com/login"), GURL("https://oauth.com/login"),
-       GURL("https://oauth.com/login"), GURL("https://oauth.com/login"),
+      {
+          GURL("https://oauth.com/authenticate?client_id=123"),
+          GURL("https://oauth.com/login"),
+      }));
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL("https://oauth.com/login"),
+      {
+          GURL("https://oauth.com/login?username=123&password=123"),
+          GURL("https://oauth.com/relogin"),
+      }));
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL("https://oauth.com/relogin"),
+      {
+          GURL("https://oauth.com/login?username=123&password=123"),
+          GURL("https://oauth.com/relogin"),
+      }));
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL("https://oauth.com/relogin"),
+      {
+          GURL("https://oauth.com/login?username=123&password=123"),
+          GURL("https://oauth.com/relogin"),
+      }));
+  EXPECT_FALSE(oauth_login_detector_->GetSuccessfulLoginFlowSite(
+      GURL("https://oauth.com/relogin"),
+      {GURL("https://oauth.com/login?username=123&password=123"),
+       GURL("https://oauth.com/loginsuccess"),
        GURL("https://foo.com/redirect?code=secret")}));
+  EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
+}
+
+// Test that too many redirects are allowed within the same navigation.
+TEST_F(OAuthLoginDetectorTest, RedirectNavigationsAfterOAuthStart) {
+  EXPECT_EQ(GURL("https://foo.com/"),
+            *oauth_login_detector_->GetSuccessfulLoginFlowSite(
+                GURL("https://foo.com/login.html"),
+                {GURL("https://oauth.com/authenticate?client_id=123"),
+                 GURL("https://oauth.com/login"),
+                 GURL("https://oauth.com/loginfailed"),
+                 GURL("https://oauth.com/relogin"),
+                 GURL("https://oauth.com/loginsuccess"),
+                 GURL("https://foo.com/redirect?code=secret")}));
   EXPECT_FALSE(oauth_login_detector_->GetPopUpLoginFlowSite());
 }
 

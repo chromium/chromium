@@ -84,6 +84,8 @@ base::Optional<GURL> OAuthLoginDetector::GetSuccessfulLoginFlowSite(
       }
     }
   }
+  if (login_flow_info_)
+    login_flow_info_->count_navigations_since_login_flow_start++;
   return base::nullopt;
 }
 
@@ -125,7 +127,6 @@ bool OAuthLoginDetector::CheckSuccessfulLoginCompletion(
   // site.
   if (GetSiteNameForURL(navigation_url) ==
       GetSiteNameForURL(login_flow_info_->oauth_provider_site)) {
-    login_flow_info_->count_navigations_since_login_flow_start++;
     return false;
   }
 
@@ -139,12 +140,9 @@ bool OAuthLoginDetector::CheckSuccessfulLoginCompletion(
 
   // PopUp based login completion flow should only navigate within the OAuth
   // provider site.
-  if (popup_opener_navigation_site_) {
+  if (popup_opener_navigation_site_)
     login_flow_info_.reset();
-    return false;
-  }
 
-  login_flow_info_->count_navigations_since_login_flow_start++;
   return false;
 }
 
