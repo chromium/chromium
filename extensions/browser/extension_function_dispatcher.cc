@@ -338,6 +338,10 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
     if (function->source_context_type() == Feature::WEBUI_CONTEXT) {
       base::UmaHistogramSparse("Extensions.Functions.WebUICalls",
                                function->histogram_value());
+    } else if (function->source_context_type() ==
+               Feature::WEBUI_UNTRUSTED_CONTEXT) {
+      base::UmaHistogramSparse("Extensions.Functions.WebUIUntrustedCalls",
+                               function->histogram_value());
     }
 
     // Skip the quota, event page, activity logging stuff if there

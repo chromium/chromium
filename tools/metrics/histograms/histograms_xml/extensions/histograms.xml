@@ -1751,7 +1751,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Recorded when a component extension calls an extension API. Recorded once
-    per function call. See also Extensions.Functions.WebUICalls and
+    per function call. See also Extensions.Functions.WebUICalls,
+    Extensions.Functions.WebUIUntrustedCalls, and
     Extensions.Functions.ExtensionCalls.
   </summary>
 </histogram>
@@ -1764,7 +1765,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Recorded when a non-component extension calls an extension API. Recorded
-    once per function call. See also Extensions.Functions.WebUICalls and
+    once per function call. See also Extensions.Functions.WebUICalls,
+    Extensions.Functions.WebUIUntrustedCalls, and
     Extensions.Functions.ComponentExtensionCalls.
   </summary>
 </histogram>
@@ -1878,7 +1880,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Recorded when a WebUI context calls an extension API. Recorded once per
-    function call. See also Extensions.Functions.ComponentExtensionCalls and
+    function call. See also Extensions.Functions.WebUIUntrustedCalls,
+    Extensions.Functions.ComponentExtensionCalls and
+    Extensions.Functions.ExtensionCalls.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.Functions.WebUIUntrustedCalls"
+    enum="ExtensionFunctions" expires_after="never">
+<!-- expires-never: Used for monitoring extension API usage. -->
+
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Recorded when a WebUI context calls an extension API. Recorded once per
+    function call. See also Extensions.Functions.WebUICalls,
+    Extensions.Functions.ComponentExtensionCalls and
     Extensions.Functions.ExtensionCalls.
   </summary>
 </histogram>
