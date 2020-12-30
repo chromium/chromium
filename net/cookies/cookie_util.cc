@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
@@ -311,6 +312,16 @@ base::Time ParseCookieExpirationTime(const std::string& time_string) {
     // following check would be reasonable:
     // NOTREACHED() << "Cookie parse expiration failed: " << time_string;
     return base::Time();
+  }
+
+  // Log metrics for use of abbreviated, 2-digit, year numbers to determine
+  // compat impact of fixing behavior for year 69.
+  // (crbug.com/907610) We currently treat 69 as 1969, whereas the spec says to
+  // treat it as 2069:
+  // https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-07#page-17
+  if (exploded.year >= 0 && exploded.year <= 99) {
+    base::UmaHistogramExactLinear("Cookie.AbbreviatedExpirationYear",
+                                  exploded.year, 100);
   }
 
   // Normalize the year to expand abbreviated years to the full year.

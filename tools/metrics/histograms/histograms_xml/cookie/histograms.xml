@@ -21,6 +21,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Cookie.AbbreviatedExpirationYear" units="year"
+    expires_after="2021-06-30">
+  <owner>chlily@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Records the abbreviated 2-digit year number used in a cookie's expiration
+    date. Emitted when parsing a cookie with an Expires attribute that specifies
+    an expiration year as a number between 0 and 99 inclusive.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.BackingStoreUpdateResults" enum="BackingStoreResults"
     expires_after="M82">
   <owner>morlovich@chromium.org</owner>
