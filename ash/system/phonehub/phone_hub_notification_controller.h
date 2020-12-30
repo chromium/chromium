@@ -79,16 +79,21 @@ class ASH_EXPORT PhoneHubNotificationController
   // Logs the number of PhoneHub notifications.
   void LogNotificationCount();
 
-  // Creates or updates a ChromeOS notification for the given PhoneHub
-  // notification data.
-  void CreateOrUpdateNotification(
-      const chromeos::phonehub::Notification* notification);
+  // Shows a Chrome OS notification for the provided phonehub::Notification.
+  // If |is_update| is true, this function updates an existing notification;
+  // otherwise, a new notification is created.
+  void SetNotification(const chromeos::phonehub::Notification* notification,
+                       bool is_update);
 
   // Creates a message_center::Notification from the PhoneHub notification data.
   std::unique_ptr<message_center::Notification> CreateNotification(
       const chromeos::phonehub::Notification* notification,
       const std::string& cros_id,
-      NotificationDelegate* delegate);
+      NotificationDelegate* delegate,
+      bool is_update);
+  int GetSystemPriorityForNotification(
+      const chromeos::phonehub::Notification* notification,
+      bool is_update);
 
   static std::unique_ptr<message_center::MessageView>
   CreateCustomNotificationView(

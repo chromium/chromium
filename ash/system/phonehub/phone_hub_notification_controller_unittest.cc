@@ -327,7 +327,7 @@ TEST_F(PhoneHubNotificationControllerTest, DoNotReshowPopupNotification) {
   ASSERT_TRUE(cros_notification);
   EXPECT_EQ(message_center::LOW_PRIORITY, cros_notification->priority());
 
-  // Disable the feature..
+  // Disable the feature.
   feature_status_provider_->SetStatus(
       chromeos::phonehub::FeatureStatus::kDisabled);
   notification_manager_->RemoveNotification(kPhoneHubNotificationId0);
@@ -340,6 +340,25 @@ TEST_F(PhoneHubNotificationControllerTest, DoNotReshowPopupNotification) {
   cros_notification = FindNotification(kCrOSNotificationId0);
   ASSERT_TRUE(cros_notification);
   EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
+
+  // Update the notification with some new text, but keep the notification ID
+  // the same.
+  chromeos::phonehub::Notification modified_fake_notification(
+      kPhoneHubNotificationId0,
+      chromeos::phonehub::Notification::AppMetadata(base::UTF8ToUTF16(kAppName),
+                                                    kPackageName,
+                                                    /*icon=*/gfx::Image()),
+      base::Time::Now(), chromeos::phonehub::Notification::Importance::kHigh,
+      /*inline_reply_id=*/0, base::UTF8ToUTF16(kTitle),
+      base::UTF8ToUTF16("New text"));
+
+  // Update the existingt notification; the priority should be MAX_PRIORITY, and
+  // renotify should be true.
+  notification_manager_->SetNotification(modified_fake_notification);
+  cros_notification = FindNotification(kCrOSNotificationId0);
+  ASSERT_TRUE(cros_notification);
+  EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
+  EXPECT_TRUE(cros_notification->renotify());
 }
 
 }  // namespace ash
