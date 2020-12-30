@@ -395,21 +395,24 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesError) {
   EXPECT_TRUE(GetLabel()->GetVisible());
   EXPECT_FALSE(GetErrorMessage()->GetVisible());
 
-  OnError(0);
+  OnError();
   EXPECT_FALSE(GetTitle()->GetVisible());
   EXPECT_FALSE(GetLabel()->GetVisible());
   EXPECT_TRUE(GetErrorMessage()->GetVisible());
 
-  // Setting text during an error shouldn't cause the error to disappear.
+  // Setting text during an error should cause the error to disappear.
   OnPartialTranscription("Elephant tails average 4-5 feet long.");
-  EXPECT_FALSE(GetTitle()->GetVisible());
-  EXPECT_FALSE(GetLabel()->GetVisible());
-  EXPECT_TRUE(GetErrorMessage()->GetVisible());
+  EXPECT_TRUE(GetTitle()->GetVisible());
+  EXPECT_TRUE(GetLabel()->GetVisible());
+  EXPECT_FALSE(GetErrorMessage()->GetVisible());
+
+  // Set the error again.
+  OnError();
 
   // The error should not be visible on a new tab.
   InsertNewTab();
   ActivateTabAt(1);
-  OnPartialTranscription("Elephants are vegetarians.");
+  OnPartialTranscription("Elephants are vegetarians.", 1);
   EXPECT_TRUE(GetTitle()->GetVisible());
   EXPECT_TRUE(GetLabel()->GetVisible());
   EXPECT_FALSE(GetErrorMessage()->GetVisible());
@@ -880,12 +883,23 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
   ActivateTabAt(1);
   EXPECT_FALSE(IsWidgetVisible());
 
-  OnPartialTranscription("Nearly all ants are female.");
+  OnPartialTranscription("Nearly all ants are female.", 1);
   EXPECT_TRUE(GetCollapseButton()->GetVisible());
   EXPECT_FALSE(GetExpandButton()->GetVisible());
   EXPECT_EQ(7 * line_height, GetLabel()->GetBoundsInScreen().height());
 
   ClickButton(GetCollapseButton());
+  EXPECT_TRUE(GetExpandButton()->GetVisible());
+  EXPECT_FALSE(GetCollapseButton()->GetVisible());
+  EXPECT_EQ(line_height, GetLabel()->GetBoundsInScreen().height());
+
+  // The expand and collapse buttons are not visible when there is an error.
+  OnError(1);
+  EXPECT_FALSE(GetCollapseButton()->GetVisible());
+  EXPECT_FALSE(GetExpandButton()->GetVisible());
+
+  // Clear the error message. The expand button should appear.
+  OnPartialTranscription("An ant can lift 20 times its own body weight.", 1);
   EXPECT_TRUE(GetExpandButton()->GetVisible());
   EXPECT_FALSE(GetCollapseButton()->GetVisible());
   EXPECT_EQ(line_height, GetLabel()->GetBoundsInScreen().height());

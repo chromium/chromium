@@ -46,6 +46,11 @@ void CaptionBubbleModel::OnTextChanged() {
 void CaptionBubbleModel::SetPartialText(const std::string& partial_text) {
   partial_text_ = partial_text;
   OnTextChanged();
+  if (has_error_) {
+    has_error_ = false;
+    if (observer_)
+      observer_->OnErrorChanged();
+  }
 }
 
 void CaptionBubbleModel::Close() {

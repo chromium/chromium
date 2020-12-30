@@ -648,6 +648,8 @@ void CaptionBubble::OnErrorChanged() {
   bool has_error = model_->HasError();
   label_->SetVisible(!has_error);
   error_message_->SetVisible(has_error);
+  expand_button_->SetVisible(!has_error && !is_expanded_);
+  collapse_button_->SetVisible(!has_error && is_expanded_);
 
   // The error is only 1 line, so redraw the bubble.
   Redraw();
