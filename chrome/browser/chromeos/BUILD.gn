@@ -880,7 +880,6 @@ source_set("chromeos") {
     "borealis/borealis_app_launcher.h",
     "borealis/borealis_context.cc",
     "borealis/borealis_context.h",
-    "borealis/borealis_context_manager.cc",
     "borealis/borealis_context_manager.h",
     "borealis/borealis_context_manager_impl.cc",
     "borealis/borealis_context_manager_impl.h",

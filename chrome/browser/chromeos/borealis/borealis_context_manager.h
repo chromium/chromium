@@ -9,6 +9,8 @@
 
 #include "base/callback.h"
 #include "chrome/browser/chromeos/borealis/borealis_metrics.h"
+#include "chrome/browser/chromeos/borealis/infra/described.h"
+#include "chrome/browser/chromeos/borealis/infra/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace borealis {
@@ -19,38 +21,12 @@ class BorealisContextManager : public KeyedService {
  public:
   // An attempt to launch borealis. If the launch succeeds, holds a reference to
   // the context created for that launch, otherwise holds an error.
-  class Result {
-   public:
-    // Used to indicate that the result was a success.
-    explicit Result(const BorealisContext* ctx);
-
-    // Used to indicate the the result was a failure.
-    Result(BorealisStartupResult result, std::string failure_reason);
-
-    ~Result();
-
-    // Returns true if the result was successful.
-    bool Ok() const;
-
-    // In the event of a failed launch, returns the result code for that error.
-    BorealisStartupResult Failure() const;
-
-    // In the event of a failed launch, returns the message provided.
-    const std::string& FailureReason() const;
-
-    // In the event of a successful launch, returns a handle to the context
-    // created for that launch.
-    const BorealisContext& Success() const;
-
-   private:
-    BorealisStartupResult result_;
-    std::string failure_reason_;
-    const BorealisContext* ctx_;
-  };
+  using ContextOrFailure =
+      Expected<BorealisContext*, Described<BorealisStartupResult>>;
 
   // Convenience definition for the callback provided by clients wanting to
   // launch borealis.
-  using ResultCallback = base::OnceCallback<void(Result)>;
+  using ResultCallback = base::OnceCallback<void(ContextOrFailure)>;
 
   BorealisContextManager() = default;
   BorealisContextManager(const BorealisContextManager&) = delete;

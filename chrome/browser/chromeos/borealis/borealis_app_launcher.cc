@@ -89,14 +89,15 @@ void BorealisAppLauncher::Launch(std::string app_id,
       base::BindOnce(
           [](std::string app_id,
              BorealisAppLauncher::OnLaunchedCallback callback,
-             BorealisContextManager::Result result) {
-            if (!result.Ok()) {
-              LOG(ERROR) << "Failed to launch " << app_id << ": "
-                         << result.FailureReason();
+             BorealisContextManager::ContextOrFailure result) {
+            if (!result) {
+              LOG(ERROR) << "Failed to launch " << app_id << "(code "
+                         << result.Error().error()
+                         << "): " << result.Error().description();
               std::move(callback).Run(LaunchResult::kError);
               return;
             }
-            BorealisAppLauncher::Launch(result.Success(), std::move(app_id),
+            BorealisAppLauncher::Launch(*result.Value(), std::move(app_id),
                                         std::move(callback));
           },
           std::move(app_id), std::move(callback)));

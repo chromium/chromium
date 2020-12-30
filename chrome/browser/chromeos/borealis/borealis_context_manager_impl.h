@@ -79,7 +79,7 @@ class BorealisContextManagerImpl : public BorealisContextManager {
 
   // Returns the result of the startup (i.e. the context if it succeeds, or an
   // error if it doesn't).
-  BorealisContextManager::Result GetResult(
+  BorealisContextManager::ContextOrFailure GetResult(
       const Startup::Result& completion_result);
 
   Profile* const profile_;

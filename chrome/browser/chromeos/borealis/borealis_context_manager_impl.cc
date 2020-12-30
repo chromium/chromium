@@ -87,7 +87,8 @@ BorealisContextManagerImpl::~BorealisContextManagerImpl() = default;
 
 void BorealisContextManagerImpl::StartBorealis(ResultCallback callback) {
   if (context_) {
-    std::move(callback).Run(BorealisContextManager::Result(context_.get()));
+    std::move(callback).Run(
+        BorealisContextManager::ContextOrFailure(context_.get()));
     return;
   }
   AddCallback(std::move(callback));
@@ -156,20 +157,22 @@ void BorealisContextManagerImpl::Complete(Startup::Result completion_result) {
   DCHECK(in_progress_startup_);
   in_progress_startup_.reset();
 
-  BorealisContextManager::Result completion_result_for_clients =
+  BorealisContextManager::ContextOrFailure completion_result_for_clients =
       completion_result.Handle(
           base::BindOnce(
               [](std::unique_ptr<BorealisContext>* out_context,
                  std::unique_ptr<BorealisContext>& success) {
                 std::swap(*out_context, success);
-                return BorealisContextManager::Result(out_context->get());
+                return BorealisContextManager::ContextOrFailure(
+                    out_context->get());
               },
               &context_),
           base::BindOnce([](Described<BorealisStartupResult>& failure) {
             LOG(ERROR) << "Startup failed: failure=" << failure.error()
                        << " message=" << failure.description();
-            return BorealisContextManager::Result(failure.error(),
-                                                  failure.description());
+            return BorealisContextManager::ContextOrFailure::Unexpected(
+                Described<BorealisStartupResult>{failure.error(),
+                                                 failure.description()});
           }));
 
   while (!callback_queue_.empty()) {

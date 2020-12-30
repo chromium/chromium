@@ -26,13 +26,14 @@ namespace borealis {
 namespace {
 
 MATCHER(IsSuccessResult, "") {
-  return arg.Ok() && arg.Success().vm_name() == "test_vm_name";
+  return arg && arg.Value()->vm_name() == "test_vm_name";
 }
 
 MATCHER(IsFailureResult, "") {
-  return !arg.Ok() &&
-         arg.Failure() == borealis::BorealisStartupResult::kStartVmFailed &&
-         arg.FailureReason() == "Something went wrong!";
+  return !arg &&
+         arg.Error().error() ==
+             borealis::BorealisStartupResult::kStartVmFailed &&
+         arg.Error().description() == "Something went wrong!";
 }
 
 class MockTask : public BorealisTask {
@@ -83,7 +84,7 @@ class ResultCallbackHandler {
     return base::BindOnce(&ResultCallbackHandler::Callback,
                           base::Unretained(this));
   }
-  MOCK_METHOD(void, Callback, (BorealisContextManager::Result), ());
+  MOCK_METHOD(void, Callback, (BorealisContextManager::ContextOrFailure), ());
 };
 
 class BorealisContextManagerTest : public testing::Test {
@@ -131,11 +132,12 @@ TEST_F(BorealisContextManagerTest, NoTasksImpliesSuccess) {
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/0, /*success=*/true);
   EXPECT_CALL(callback_expectation, Callback(testing::_))
-      .WillOnce(testing::Invoke([](BorealisContextManager::Result result) {
-        EXPECT_TRUE(result.Ok());
-        // Even with no tasks, the context will give the VM a name.
-        EXPECT_EQ(result.Success().vm_name(), "borealis");
-      }));
+      .WillOnce(
+          testing::Invoke([](BorealisContextManager::ContextOrFailure result) {
+            EXPECT_TRUE(result);
+            // Even with no tasks, the context will give the VM a name.
+            EXPECT_EQ(result.Value()->vm_name(), "borealis");
+          }));
   context_manager.StartBorealis(callback_expectation.GetCallback());
   task_environment_.RunUntilIdle();
 }
@@ -252,10 +254,12 @@ class NeverCompletingContextManager : public BorealisContextManagerImpl {
 TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
   testing::StrictMock<ResultCallbackHandler> callback_expectation;
   EXPECT_CALL(callback_expectation, Callback(testing::_))
-      .WillOnce(testing::Invoke([](BorealisContextManager::Result result) {
-        EXPECT_FALSE(result.Ok());
-        EXPECT_EQ(result.Failure(), BorealisStartupResult::kCancelled);
-      }));
+      .WillOnce(
+          testing::Invoke([](BorealisContextManager::ContextOrFailure result) {
+            EXPECT_FALSE(result);
+            EXPECT_EQ(result.Error().error(),
+                      BorealisStartupResult::kCancelled);
+          }));
 
   NeverCompletingContextManager context_manager(profile_.get());
   context_manager.StartBorealis(callback_expectation.GetCallback());
