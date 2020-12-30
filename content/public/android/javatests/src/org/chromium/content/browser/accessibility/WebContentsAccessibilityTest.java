@@ -37,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -542,6 +543,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @MediumTest
+    @DisabledTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     @TargetApi(Build.VERSION_CODES.M)
     public void testMaxContentChangedEventsFired_default() throws Throwable {
@@ -574,6 +576,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @MediumTest
+    @DisabledTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     @TargetApi(Build.VERSION_CODES.M)
     public void testMaxContentChangedEventsFired_largeLimit() throws Throwable {
