@@ -230,8 +230,6 @@ window.VolumeManager = class {
     this.volumeInfoList = new VolumeInfoListFake();
   }
 
-  addEventListener() {}
-
   /**
    * Disposes the instance. After the invocation of this method, any other
    * method should not be called.
