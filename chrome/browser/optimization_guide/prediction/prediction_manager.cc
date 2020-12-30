@@ -274,7 +274,7 @@ void PredictionManager::UpdateFCPSessionStatistics(base::TimeDelta fcp) {
 
 void PredictionManager::RegisterOptimizationTargets(
     const std::vector<proto::OptimizationTarget>& optimization_targets) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (optimization_targets.empty())
     return;
@@ -348,7 +348,7 @@ base::Optional<float> PredictionManager::GetValueForClientFeature(
     content::NavigationHandle* navigation_handle,
     const base::flat_map<proto::ClientModelFeature, float>&
         override_client_model_feature_values) const {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   proto::ClientModelFeature client_model_feature;
   if (!proto::ClientModelFeature_Parse(model_feature, &client_model_feature))
@@ -437,7 +437,7 @@ base::flat_map<std::string, float> PredictionManager::BuildFeatureMap(
     const base::flat_set<std::string>& model_features,
     const base::flat_map<proto::ClientModelFeature, float>&
         override_client_model_feature_values) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::flat_map<std::string, float> feature_map;
   if (model_features.size() == 0)
     return feature_map;
@@ -479,7 +479,7 @@ OptimizationTargetDecision PredictionManager::ShouldTargetNavigation(
     proto::OptimizationTarget optimization_target,
     const base::flat_map<proto::ClientModelFeature, float>&
         override_client_model_feature_values) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(navigation_handle->GetURL().SchemeIsHTTPOrHTTPS());
 
   OptimizationGuideNavigationData* navigation_data =
@@ -558,7 +558,7 @@ OptimizationTargetDecision PredictionManager::ShouldTargetNavigation(
 
 void PredictionManager::OnEffectiveConnectionTypeChanged(
     net::EffectiveConnectionType effective_connection_type) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_effective_connection_type_ = effective_connection_type;
 }
 
@@ -588,7 +588,7 @@ void PredictionManager::SetPredictionModelDownloadManagerForTesting(
 }
 
 void PredictionManager::FetchModelsAndHostModelFeatures() {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!ShouldFetchModelsAndHostModelFeatures(profile_))
     return;
@@ -689,7 +689,7 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
 void PredictionManager::OnModelsAndHostFeaturesFetched(
     base::Optional<std::unique_ptr<proto::GetModelsResponse>>
         get_models_response_data) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!get_models_response_data)
     return;
 
@@ -713,7 +713,7 @@ void PredictionManager::OnModelsAndHostFeaturesFetched(
 void PredictionManager::UpdateHostModelFeatures(
     const google::protobuf::RepeatedPtrField<proto::HostModelFeatures>&
         host_model_features) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unique_ptr<StoreUpdateData> host_model_features_update_data =
       StoreUpdateData::CreateHostModelFeaturesStoreUpdateData(
           /*update_time=*/clock_->Now() + kUpdateModelsAndFeaturesDelay,
@@ -734,7 +734,7 @@ void PredictionManager::UpdateHostModelFeatures(
 
 std::unique_ptr<PredictionModel> PredictionManager::CreatePredictionModel(
     const proto::PredictionModel& model) const {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return PredictionModel::Create(
       std::make_unique<proto::PredictionModel>(model));
 }
@@ -742,7 +742,7 @@ std::unique_ptr<PredictionModel> PredictionManager::CreatePredictionModel(
 void PredictionManager::UpdatePredictionModels(
     const google::protobuf::RepeatedPtrField<proto::PredictionModel>&
         prediction_models) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unique_ptr<StoreUpdateData> prediction_model_update_data =
       StoreUpdateData::CreatePredictionModelStoreUpdateData();
   bool has_models_to_update = false;
@@ -813,13 +813,13 @@ void PredictionManager::NotifyObserversOfNewModelPath(
 }
 
 void PredictionManager::OnPredictionModelsStored() {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOCAL_HISTOGRAM_BOOLEAN(
       "OptimizationGuide.PredictionManager.PredictionModelsStored", true);
 }
 
 void PredictionManager::OnHostModelFeaturesStored() {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOCAL_HISTOGRAM_BOOLEAN(
       "OptimizationGuide.PredictionManager.HostModelFeaturesStored", true);
 
@@ -838,7 +838,7 @@ void PredictionManager::OnHostModelFeaturesStored() {
 }
 
 void PredictionManager::OnStoreInitialized() {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   store_is_ready_ = true;
 
   // Only load host model features if there are optimization targets registered.
@@ -855,7 +855,7 @@ void PredictionManager::OnStoreInitialized() {
 }
 
 void PredictionManager::LoadHostModelFeatures() {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Load the host model features first, each prediction model requires the set
   // of host model features to be known before creation.
   model_and_features_store_->LoadAllHostModelFeatures(
@@ -866,7 +866,7 @@ void PredictionManager::LoadHostModelFeatures() {
 void PredictionManager::OnLoadHostModelFeatures(
     std::unique_ptr<std::vector<proto::HostModelFeatures>>
         all_host_model_features) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If the store returns an empty vector of host model features, the store
   // contains no host model features. However, the load is otherwise complete
   // and prediction models can be loaded but they will require no host model
@@ -887,7 +887,7 @@ void PredictionManager::OnLoadHostModelFeatures(
 
 void PredictionManager::LoadPredictionModels(
     const base::flat_set<proto::OptimizationTarget>& optimization_targets) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(host_model_features_loaded_);
 
   OptimizationGuideStore::EntryKey model_entry_key;
@@ -911,7 +911,7 @@ void PredictionManager::LoadPredictionModels(
 
 void PredictionManager::OnLoadPredictionModel(
     std::unique_ptr<proto::PredictionModel> model) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!model)
     return;
 
@@ -922,7 +922,7 @@ void PredictionManager::OnLoadPredictionModel(
 void PredictionManager::OnProcessLoadedModel(
     std::unique_ptr<proto::PredictionModel> model,
     bool success) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (success) {
     base::UmaHistogramSparse(
         "OptimizationGuide.PredictionModelLoadedVersion." +
@@ -943,7 +943,7 @@ void PredictionManager::OnProcessLoadedModel(
 
 bool PredictionManager::ProcessAndStoreLoadedModel(
     const proto::PredictionModel& model) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!model.model_info().has_optimization_target())
     return false;
   if (!model.model_info().has_version())
@@ -993,7 +993,7 @@ bool PredictionManager::ProcessAndStoreLoadedModel(
 bool PredictionManager::ShouldUpdateStoredModelForTarget(
     proto::OptimizationTarget optimization_target,
     int64_t new_version) const {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto model_file_it =
       optimization_target_prediction_model_file_map_.find(optimization_target);
@@ -1011,7 +1011,7 @@ bool PredictionManager::ShouldUpdateStoredModelForTarget(
 void PredictionManager::StoreLoadedPredictionModelFile(
     proto::OptimizationTarget optimization_target,
     std::unique_ptr<PredictionModelFile> prediction_model_file) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool has_model_for_target =
       optimization_target_prediction_model_map_.contains(optimization_target);
@@ -1036,7 +1036,7 @@ void PredictionManager::StoreLoadedPredictionModelFile(
 void PredictionManager::StoreLoadedPredictionModel(
     proto::OptimizationTarget optimization_target,
     std::unique_ptr<PredictionModel> prediction_model) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool has_model_file_for_target =
       optimization_target_prediction_model_file_map_.contains(
@@ -1053,7 +1053,7 @@ void PredictionManager::StoreLoadedPredictionModel(
 
 bool PredictionManager::ProcessAndStoreHostModelFeatures(
     const proto::HostModelFeatures& host_model_features) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!host_model_features.has_host())
     return false;
   if (host_model_features.model_features_size() == 0)
@@ -1104,7 +1104,7 @@ void PredictionManager::MaybeScheduleModelAndHostModelFeaturesFetch() {
 }
 
 base::Time PredictionManager::GetLastFetchAttemptTime() const {
-  SEQUENCE_CHECKER(squence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::Time::FromDeltaSinceWindowsEpoch(
       base::TimeDelta::FromMicroseconds(
           pref_service_->GetInt64(prefs::kModelAndFeaturesLastFetchAttempt)));
@@ -1133,7 +1133,7 @@ void PredictionManager::ScheduleModelsAndHostModelFeaturesFetch() {
 
 void PredictionManager::SetLastModelAndFeaturesFetchAttemptTime(
     base::Time last_attempt_time) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetInt64(
       prefs::kModelAndFeaturesLastFetchAttempt,
       last_attempt_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
