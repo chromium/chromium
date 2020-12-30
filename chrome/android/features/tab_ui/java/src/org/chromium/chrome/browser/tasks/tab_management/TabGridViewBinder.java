@@ -223,7 +223,8 @@ class TabGridViewBinder {
             if (model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER) != null) {
                 model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
                         .fetch((shoppingPersistedTabData) -> {
-                            if (shoppingPersistedTabData.getPriceDrop() == null) {
+                            if (shoppingPersistedTabData == null
+                                    || shoppingPersistedTabData.getPriceDrop() == null) {
                                 priceCardView.setVisibility(View.GONE);
                                 model.set(TabProperties.PRICE_DROP, null);
                             } else {
