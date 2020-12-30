@@ -179,7 +179,7 @@ std::unique_ptr<HoldingSpaceImage> ResolveImage(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
   return std::make_unique<HoldingSpaceImage>(
-      GetPlaceholderImage(type, file_path),
+      file_path, GetPlaceholderImage(type, file_path),
       base::BindRepeating(
           [](const base::WeakPtr<HoldingSpaceThumbnailLoader>& thumbnail_loader,
              const base::FilePath& file_path, const gfx::Size& size,
@@ -188,7 +188,7 @@ std::unique_ptr<HoldingSpaceImage> ResolveImage(
               thumbnail_loader->Load({file_path, size, scale_factor},
                                      std::move(callback));
           },
-          thumbnail_loader->GetWeakPtr(), file_path));
+          thumbnail_loader->GetWeakPtr()));
 }
 
 gfx::ImageSkia CreatePlaceholderImage(const gfx::ImageSkia& file_type_image,

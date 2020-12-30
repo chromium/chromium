@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/scoped_observer.h"
+#include "base/test/bind.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -195,10 +196,13 @@ HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddItem(
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       type, file_path,
       holding_space_util::ResolveFileSystemUrl(profile, file_path),
-      /*image=*/
-      std::make_unique<HoldingSpaceImage>(
-          /*placeholder=*/gfx::ImageSkia(),
-          /*async_bitmap_resolver=*/base::DoNothing()));
+      base::BindLambdaForTesting(
+          [&](HoldingSpaceItem::Type type, const base::FilePath& path) {
+            return std::make_unique<HoldingSpaceImage>(
+                path,
+                /*placeholder=*/gfx::ImageSkia(),
+                /*async_bitmap_resolver=*/base::DoNothing());
+          }));
 
   auto* item_ptr = item.get();
 

@@ -45,17 +45,17 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   bool operator==(const HoldingSpaceItem& rhs) const;
 
+  // Returns an image for a given type and file path.
+  using ImageResolver = base::OnceCallback<
+      std::unique_ptr<HoldingSpaceImage>(Type, const base::FilePath&)>;
+
   // Creates a HoldingSpaceItem that's backed by a file system URL.
   // NOTE: `file_system_url` is expected to be non-empty.
   static std::unique_ptr<HoldingSpaceItem> CreateFileBackedItem(
       Type type,
       const base::FilePath& file_path,
       const GURL& file_system_url,
-      std::unique_ptr<HoldingSpaceImage> image);
-
-  // Returns an image for a given type and file path.
-  using ImageResolver = base::OnceCallback<
-      std::unique_ptr<HoldingSpaceImage>(Type, const base::FilePath&)>;
+      ImageResolver image_resolver);
 
   // Deserializes from `base::DictionaryValue` to `HoldingSpaceItem`.
   // This creates a partially initialized item with an empty file system URL.

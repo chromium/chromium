@@ -39,6 +39,16 @@ constexpr char kTextFilePath[] = "text.txt";
 
 // Helpers ---------------------------------------------------------------------
 
+// Creates an empty holding space image.
+std::unique_ptr<HoldingSpaceImage> CreateTestHoldingSpaceImage(
+    HoldingSpaceItem::Type type,
+    const base::FilePath& file_path) {
+  return std::make_unique<HoldingSpaceImage>(
+      file_path,
+      /*placeholder=*/gfx::ImageSkia(),
+      /*async_bitmap_resolver=*/base::DoNothing());
+}
+
 // Copies the file for the `relative_path` in the test data directory to
 // downloads directory, and returns the path to the copy.
 base::FilePath TestFile(Profile* profile, const std::string& relative_path) {
@@ -165,10 +175,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
     // Create a holding space item backed by a non-existing file.
     auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
         HoldingSpaceItem::Type::kDownload, base::FilePath("foo"),
-        GURL("filesystem:fake"),
-        std::make_unique<HoldingSpaceImage>(
-            /*placeholder=*/gfx::ImageSkia(),
-            /*async_bitmap_resolver=*/base::DoNothing()));
+        GURL("filesystem:fake"), base::BindOnce(&CreateTestHoldingSpaceImage));
 
     // We expect `HoldingSpaceClient::OpenItems()` to fail when the backing file
     // for `holding_space_item` does not exist.
@@ -218,10 +225,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, MAYBE_ShowItemInFolder) {
     // Create a holding space item backed by a non-existing file.
     auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
         HoldingSpaceItem::Type::kDownload, base::FilePath("foo"),
-        GURL("filesystem:fake"),
-        std::make_unique<HoldingSpaceImage>(
-            /*placeholder=*/gfx::ImageSkia(),
-            /*async_bitmap_resolver=*/base::DoNothing()));
+        GURL("filesystem:fake"), base::BindOnce(&CreateTestHoldingSpaceImage));
 
     // We expect `HoldingSpaceClient::ShowItemInFolder()` to fail when the
     // backing file for `holding_space_item` does not exist.

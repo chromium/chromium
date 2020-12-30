@@ -64,6 +64,16 @@ using holding_space::ScopedTestMountPoint;
 
 namespace {
 
+// Creates an empty holding space image.
+std::unique_ptr<HoldingSpaceImage> CreateTestHoldingSpaceImage(
+    HoldingSpaceItem::Type type,
+    const base::FilePath& file_path) {
+  return std::make_unique<HoldingSpaceImage>(
+      file_path,
+      /*placeholder=*/gfx::ImageSkia(),
+      /*async_bitmap_resolver=*/base::DoNothing());
+}
+
 std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
   std::vector<HoldingSpaceItem::Type> types;
   for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue); ++i)
@@ -547,9 +557,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
 
     auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
         type, file_path, file_system_url,
-        holding_space_util::ResolveImage(
-            primary_holding_space_service->thumbnail_loader_for_testing(), type,
-            file_path));
+        base::BindOnce(
+            &holding_space_util::ResolveImage,
+            primary_holding_space_service->thumbnail_loader_for_testing()));
 
     persisted_holding_space_items.Append(holding_space_item->Serialize());
     primary_holding_space_model->AddItem(std::move(holding_space_item));
@@ -610,9 +620,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {
     // Create the holding space item.
     auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
         type, file_path, file_system_url,
-        holding_space_util::ResolveImage(
-            primary_holding_space_service->thumbnail_loader_for_testing(), type,
-            file_path));
+        base::BindOnce(
+            &holding_space_util::ResolveImage,
+            primary_holding_space_service->thumbnail_loader_for_testing()));
 
     // Add the holding space item to the model and verify persistence.
     persisted_holding_space_items.Append(holding_space_item->Serialize());
@@ -721,10 +731,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
           auto fresh_holding_space_item =
               HoldingSpaceItem::CreateFileBackedItem(
                   type, file, file_system_url,
-                  holding_space_util::ResolveImage(
-                      primary_holding_space_service
-                          ->thumbnail_loader_for_testing(),
-                      type, file));
+                  base::BindOnce(&holding_space_util::ResolveImage,
+                                 primary_holding_space_service
+                                     ->thumbnail_loader_for_testing()));
 
           persisted_holding_space_items_before_restoration->Append(
               fresh_holding_space_item->Serialize());
@@ -739,15 +748,12 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
           restored_holding_space_items.push_back(
               std::move(fresh_holding_space_item));
 
+          base::FilePath file_path = downloads_mount->GetRootPath().AppendASCII(
+              base::UnguessableToken::Create().ToString());
           auto stale_holding_space_item =
               HoldingSpaceItem::CreateFileBackedItem(
-                  type,
-                  downloads_mount->GetRootPath().AppendASCII(
-                      base::UnguessableToken::Create().ToString()),
-                  GURL("filesystem:fake_file_system_url"),
-                  std::make_unique<HoldingSpaceImage>(
-                      /*placeholder=*/gfx::ImageSkia(),
-                      /*async_bitmap_resolver=*/base::DoNothing()));
+                  type, file_path, GURL("filesystem:fake_file_system_url"),
+                  base::BindOnce(&CreateTestHoldingSpaceImage));
 
           // NOTE: While the `stale_holding_space_item` is persisted here, we do
           // *not* expect it to be restored or to be persisted after model
@@ -828,9 +834,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
           auto delayed_holding_space_item =
               HoldingSpaceItem::CreateFileBackedItem(
                   type, delayed_mount_file, GURL("filesystem:fake"),
-                  std::make_unique<HoldingSpaceImage>(
-                      /*placeholder=*/gfx::ImageSkia(),
-                      /*async_bitmap_resolver=*/base::DoNothing()));
+                  base::BindOnce(&CreateTestHoldingSpaceImage));
           // The item should be restored after delayed volume mount, and remain
           // in persistent storage.
           persisted_holding_space_items_before_restoration->Append(
@@ -842,13 +846,12 @@ TEST_F(HoldingSpaceKeyedServiceTest,
           restored_holding_space_items.push_back(
               std::move(delayed_holding_space_item));
 
+          const base::FilePath non_existent_path =
+              delayed_mount->GetRootPath().Append("non-existent");
           auto non_existant_delayed_holding_space_item =
               HoldingSpaceItem::CreateFileBackedItem(
-                  type, delayed_mount->GetRootPath().Append("non-existent"),
-                  GURL("filesystem:fake"),
-                  std::make_unique<HoldingSpaceImage>(
-                      /*placeholder=*/gfx::ImageSkia(),
-                      /*async_bitmap_resolver=*/base::DoNothing()));
+                  type, non_existent_path, GURL("filesystem:fake"),
+                  base::BindOnce(&CreateTestHoldingSpaceImage));
           // The item should be removed from the model and persistent storage
           // after delayed volume mount (when it can be confirmed the backing
           // file does not exist) - the item should remain in persistent storage
@@ -863,10 +866,9 @@ TEST_F(HoldingSpaceKeyedServiceTest,
           auto fresh_holding_space_item =
               HoldingSpaceItem::CreateFileBackedItem(
                   type, file, file_system_url,
-                  holding_space_util::ResolveImage(
-                      primary_holding_space_service
-                          ->thumbnail_loader_for_testing(),
-                      type, file));
+                  base::BindOnce(&holding_space_util::ResolveImage,
+                                 primary_holding_space_service
+                                     ->thumbnail_loader_for_testing()));
 
           // The item should be immediately added to the model, and remain in
           // the persistent storage.
@@ -987,9 +989,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
           auto delayed_holding_space_item =
               HoldingSpaceItem::CreateFileBackedItem(
                   type, delayed_mount_file, GURL("filesystem:fake"),
-                  std::make_unique<HoldingSpaceImage>(
-                      /*placeholder=*/gfx::ImageSkia(),
-                      /*async_bitmap_resolver=*/base::DoNothing()));
+                  base::BindOnce(&CreateTestHoldingSpaceImage));
           // The item should be restored after delayed volume mount, and remain
           // in persistent storage.
           persisted_holding_space_items_before_restoration->Append(
@@ -999,13 +999,12 @@ TEST_F(HoldingSpaceKeyedServiceTest,
           restored_holding_space_items.push_back(
               std::move(delayed_holding_space_item));
 
+          base::FilePath non_existent_path =
+              delayed_mount->GetRootPath().Append("non-existent");
           auto non_existant_delayed_holding_space_item =
               HoldingSpaceItem::CreateFileBackedItem(
-                  type, delayed_mount->GetRootPath().Append("non-existent"),
-                  GURL("filesystem:fake"),
-                  std::make_unique<HoldingSpaceImage>(
-                      /*placeholder=*/gfx::ImageSkia(),
-                      /*async_bitmap_resolver=*/base::DoNothing()));
+                  type, non_existent_path, GURL("filesystem:fake"),
+                  base::BindOnce(&CreateTestHoldingSpaceImage));
           // The item should be removed from the model and persistent storage
           // after delayed volume mount (when it can be confirmed the backing
           // file does not exist) - the item should remain in persistent storage
@@ -1018,10 +1017,9 @@ TEST_F(HoldingSpaceKeyedServiceTest,
           auto fresh_holding_space_item =
               HoldingSpaceItem::CreateFileBackedItem(
                   type, file, file_system_url,
-                  holding_space_util::ResolveImage(
-                      primary_holding_space_service
-                          ->thumbnail_loader_for_testing(),
-                      type, file));
+                  base::BindOnce(&holding_space_util::ResolveImage,
+                                 primary_holding_space_service
+                                     ->thumbnail_loader_for_testing()));
 
           // The item should be immediately added to the model, and remain in
           // the persistent storage.
@@ -1121,10 +1119,9 @@ TEST_F(HoldingSpaceKeyedServiceTest,
           auto fresh_holding_space_item =
               HoldingSpaceItem::CreateFileBackedItem(
                   type, file, file_system_url,
-                  holding_space_util::ResolveImage(
-                      primary_holding_space_service
-                          ->thumbnail_loader_for_testing(),
-                      type, file));
+                  base::BindOnce(&holding_space_util::ResolveImage,
+                                 primary_holding_space_service
+                                     ->thumbnail_loader_for_testing()));
 
           // The item should be immediately added to the model, and remain in
           // the persistent storage.
@@ -1277,10 +1274,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistance) {
           auto fresh_holding_space_item =
               HoldingSpaceItem::CreateFileBackedItem(
                   type, file, file_system_url,
-                  holding_space_util::ResolveImage(
-                      primary_holding_space_service
-                          ->thumbnail_loader_for_testing(),
-                      type, file));
+                  base::BindOnce(&holding_space_util::ResolveImage,
+                                 primary_holding_space_service
+                                     ->thumbnail_loader_for_testing()));
 
           persisted_holding_space_items_before_restoration->Append(
               fresh_holding_space_item->Serialize());
@@ -1302,9 +1298,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistance) {
               HoldingSpaceItem::CreateFileBackedItem(
                   type, stale_item_file,
                   GetFileSystemUrl(GetProfile(), stale_item_file),
-                  std::make_unique<HoldingSpaceImage>(
-                      /*placeholder=*/gfx::ImageSkia(),
-                      /*async_bitmap_resolver=*/base::DoNothing()));
+                  base::BindOnce(&CreateTestHoldingSpaceImage));
 
           // NOTE: While the `stale_holding_space_item` is persisted here, we do
           // *not* expect it to be restored or to be persisted after model

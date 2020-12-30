@@ -43,14 +43,14 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
     Type type,
     const base::FilePath& file_path,
     const GURL& file_system_url,
-    std::unique_ptr<HoldingSpaceImage> image) {
+    ImageResolver image_resolver) {
   DCHECK(!file_system_url.is_empty());
 
   // Note: std::make_unique does not work with private constructors.
   return base::WrapUnique(new HoldingSpaceItem(
       type, /*id=*/base::UnguessableToken::Create().ToString(), file_path,
       file_system_url, file_path.BaseName().LossyDisplayName(),
-      std::move(image)));
+      std::move(image_resolver).Run(type, file_path)));
 }
 
 // static
@@ -128,6 +128,7 @@ void HoldingSpaceItem::UpdateBackingFile(const base::FilePath& file_path,
   file_path_ = file_path;
   file_system_url_ = file_system_url;
   text_ = file_path.BaseName().LossyDisplayName();
+  image_->UpdateBackingFilePath(file_path);
 }
 
 void HoldingSpaceItem::InvalidateImage() {

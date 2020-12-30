@@ -240,9 +240,13 @@ const HoldingSpaceItem* AddHoldingSpaceItem(Profile* profile,
       HoldingSpaceItem::CreateFileBackedItem(
           HoldingSpaceItem::Type::kDownload, item_path,
           holding_space_util::ResolveFileSystemUrl(profile, item_path),
-          std::make_unique<HoldingSpaceImage>(
-              /*placeholder=*/gfx::ImageSkia(),
-              /*async_bitmap_resolver=*/base::DoNothing()));
+          base::BindLambdaForTesting([&](HoldingSpaceItem::Type type,
+                                         const base::FilePath& file_path) {
+            return std::make_unique<HoldingSpaceImage>(
+                file_path,
+                /*placeholder=*/gfx::ImageSkia(),
+                /*async_bitmap_resolver=*/base::DoNothing());
+          }));
 
   const HoldingSpaceItem* item_ptr = item.get();
   holding_space_model->AddItem(std::move(item));

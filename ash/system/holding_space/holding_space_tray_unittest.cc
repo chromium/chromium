@@ -49,9 +49,12 @@ void PressKey(views::View* view, ui::KeyboardCode key_code, int flags) {
   event_generator.PressKey(key_code, flags);
 }
 
-std::unique_ptr<HoldingSpaceImage> CreateStubHoldingSpaceImage() {
+std::unique_ptr<HoldingSpaceImage> CreateStubHoldingSpaceImage(
+    HoldingSpaceItem::Type type,
+    const base::FilePath& file_path) {
   return std::make_unique<HoldingSpaceImage>(
-      gfx::ImageSkia(), /*async_bitmap_resolver=*/base::DoNothing());
+      file_path, /*placeholder=*/gfx::ImageSkia(),
+      /*async_bitmap_resolver=*/base::DoNothing());
 }
 
 // Mocks -----------------------------------------------------------------------
@@ -137,8 +140,9 @@ class HoldingSpaceTrayTest : public AshTestBase,
     GURL file_system_url(
         base::StrCat({"filesystem:", path.BaseName().value()}));
     std::unique_ptr<HoldingSpaceItem> item =
-        HoldingSpaceItem::CreateFileBackedItem(type, path, file_system_url,
-                                               CreateStubHoldingSpaceImage());
+        HoldingSpaceItem::CreateFileBackedItem(
+            type, path, file_system_url,
+            base::BindOnce(&CreateStubHoldingSpaceImage));
     HoldingSpaceItem* item_ptr = item.get();
     model()->AddItem(std::move(item));
     return item_ptr;
@@ -149,19 +153,16 @@ class HoldingSpaceTrayTest : public AshTestBase,
     // Create a holding space item, and use it to create a serialized item
     // dictionary.
     std::unique_ptr<HoldingSpaceItem> item =
-        HoldingSpaceItem::CreateFileBackedItem(type, path,
-                                               GURL("filesystem:ignored"),
-                                               CreateStubHoldingSpaceImage());
+        HoldingSpaceItem::CreateFileBackedItem(
+            type, path, GURL("filesystem:ignored"),
+            base::BindOnce(&CreateStubHoldingSpaceImage));
     const base::DictionaryValue serialized_holding_space_item =
         item->Serialize();
     std::unique_ptr<HoldingSpaceItem> deserialized_item =
         HoldingSpaceItem::Deserialize(
             serialized_holding_space_item,
             /*image_resolver=*/
-            base::BindLambdaForTesting([&](HoldingSpaceItem::Type type,
-                                           const base::FilePath& file_path) {
-              return CreateStubHoldingSpaceImage();
-            }));
+            base::BindOnce(&CreateStubHoldingSpaceImage));
 
     HoldingSpaceItem* deserialized_item_ptr = deserialized_item.get();
     model()->AddItem(std::move(deserialized_item));

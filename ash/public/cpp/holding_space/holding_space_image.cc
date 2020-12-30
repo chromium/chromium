@@ -42,9 +42,12 @@ class HoldingSpaceImage::ImageSkiaSource : public gfx::ImageSkiaSource {
 
 // HoldingSpaceImage -----------------------------------------------------------
 
-HoldingSpaceImage::HoldingSpaceImage(const gfx::ImageSkia& placeholder,
+HoldingSpaceImage::HoldingSpaceImage(const base::FilePath& backing_file_path,
+                                     const gfx::ImageSkia& placeholder,
                                      AsyncBitmapResolver async_bitmap_resolver)
-    : placeholder_(placeholder), async_bitmap_resolver_(async_bitmap_resolver) {
+    : backing_file_path_(backing_file_path),
+      placeholder_(placeholder),
+      async_bitmap_resolver_(async_bitmap_resolver) {
   CreateImageSkia();
 }
 
@@ -60,15 +63,23 @@ base::CallbackListSubscription HoldingSpaceImage::AddImageSkiaChangedCallback(
 }
 
 void HoldingSpaceImage::LoadBitmap(float scale) {
-  async_bitmap_resolver_.Run(gfx::ScaleToCeiledSize(image_skia_.size(), scale),
-                             scale,
-                             base::BindOnce(&HoldingSpaceImage::OnBitmapLoaded,
-                                            weak_factory_.GetWeakPtr(), scale));
+  async_bitmap_resolver_.Run(
+      backing_file_path_, gfx::ScaleToCeiledSize(image_skia_.size(), scale),
+      scale,
+      base::BindOnce(&HoldingSpaceImage::OnBitmapLoaded,
+                     weak_factory_.GetWeakPtr(), backing_file_path_, scale));
 }
 
-void HoldingSpaceImage::OnBitmapLoaded(float scale, const SkBitmap* bitmap) {
-  if (!bitmap)
+void HoldingSpaceImage::OnBitmapLoaded(const base::FilePath& file_path,
+                                       float scale,
+                                       const SkBitmap* bitmap) {
+  if (!bitmap) {
+    // Retry load if the backing file path has changed while the image load was
+    // in progress.
+    if (backing_file_path_ != file_path)
+      LoadBitmap(scale);
     return;
+  }
 
   // Force invalidate `image_skia_` for `scale` so that it will request the
   // updated `gfx::ImageSkiaRep` at next access.
@@ -97,6 +108,10 @@ void HoldingSpaceImage::Invalidate() {
   invalidate_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(250),
                           base::BindOnce(&HoldingSpaceImage::OnInvalidateTimer,
                                          base::Unretained(this)));
+}
+
+void HoldingSpaceImage::UpdateBackingFilePath(const base::FilePath& file_path) {
+  backing_file_path_ = file_path;
 }
 
 bool HoldingSpaceImage::FireInvalidateTimerForTesting() {

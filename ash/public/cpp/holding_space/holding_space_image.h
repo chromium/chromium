@@ -24,10 +24,14 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   using BitmapCallback = base::OnceCallback<void(const SkBitmap*)>;
 
   // Returns a bitmap asynchronously for a given size.
-  using AsyncBitmapResolver = base::RepeatingCallback<
-      void(const gfx::Size&, float scale_factor, BitmapCallback)>;
+  using AsyncBitmapResolver =
+      base::RepeatingCallback<void(const base::FilePath& file_path,
+                                   const gfx::Size&,
+                                   float scale_factor,
+                                   BitmapCallback)>;
 
-  HoldingSpaceImage(const gfx::ImageSkia& placeholder,
+  HoldingSpaceImage(const base::FilePath& backing_file_path,
+                    const gfx::ImageSkia& placeholder,
                     AsyncBitmapResolver async_bitmap_resolver);
   HoldingSpaceImage(const HoldingSpaceImage&) = delete;
   HoldingSpaceImage& operator=(const HoldingSpaceImage&) = delete;
@@ -48,6 +52,12 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   // representations will be reloaded.
   void Invalidate();
 
+  // Updates the backing file path that should be used to generate image
+  // representations for the item. The method will *not* invalidate previously
+  // loaded image representations - it assumes that the file contents remained
+  // the same, and old representations are thus still valid.
+  void UpdateBackingFilePath(const base::FilePath& file_path);
+
   bool FireInvalidateTimerForTesting();
 
  private:
@@ -57,7 +67,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   void LoadBitmap(float scale);
 
   // Response to an image representation load request.
-  void OnBitmapLoaded(float scale, const SkBitmap* bitmap);
+  void OnBitmapLoaded(const base::FilePath& file_path,
+                      float scale,
+                      const SkBitmap* bitmap);
 
   // Creates `image_skia_` to be used for the holding space image.
   // If `image_skia_` already exists, it will be recreated with a fresh image
@@ -68,6 +80,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   // loads if the backing file gets updated multiple times in quick succession.
   void OnInvalidateTimer();
 
+  base::FilePath backing_file_path_;
   gfx::ImageSkia placeholder_;
   AsyncBitmapResolver async_bitmap_resolver_;
 

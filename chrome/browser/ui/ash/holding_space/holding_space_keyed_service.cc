@@ -137,9 +137,7 @@ void HoldingSpaceKeyedService::AddPinnedFiles(
     items.push_back(HoldingSpaceItem::CreateFileBackedItem(
         HoldingSpaceItem::Type::kPinnedFile, file_system_url.path(),
         file_system_url.ToGURL(),
-        holding_space_util::ResolveImage(&thumbnail_loader_,
-                                         HoldingSpaceItem::Type::kPinnedFile,
-                                         file_system_url.path())));
+        base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
 
     // When pinning an item which already exists in holding space, the pin
     // action should be recorded on the alternative item backed by the same file
@@ -224,9 +222,7 @@ void HoldingSpaceKeyedService::AddScreenshot(
 
   AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kScreenshot, screenshot_file, file_system_url,
-      holding_space_util::ResolveImage(&thumbnail_loader_,
-                                       HoldingSpaceItem::Type::kScreenshot,
-                                       screenshot_file)));
+      base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
 }
 
 void HoldingSpaceKeyedService::AddDownload(
@@ -243,9 +239,7 @@ void HoldingSpaceKeyedService::AddDownload(
 
   AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kDownload, download_file, file_system_url,
-      holding_space_util::ResolveImage(&thumbnail_loader_,
-                                       HoldingSpaceItem::Type::kDownload,
-                                       download_file)));
+      base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
 }
 
 void HoldingSpaceKeyedService::AddNearbyShare(
@@ -262,9 +256,7 @@ void HoldingSpaceKeyedService::AddNearbyShare(
 
   AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kNearbyShare, nearby_share_path, file_system_url,
-      holding_space_util::ResolveImage(&thumbnail_loader_,
-                                       HoldingSpaceItem::Type::kNearbyShare,
-                                       nearby_share_path)));
+      base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
 }
 
 void HoldingSpaceKeyedService::AddScreenRecording(
@@ -277,9 +269,7 @@ void HoldingSpaceKeyedService::AddScreenRecording(
   AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kScreenRecording, screen_recording_file,
       file_system_url,
-      holding_space_util::ResolveImage(&thumbnail_loader_,
-                                       HoldingSpaceItem::Type::kScreenRecording,
-                                       screen_recording_file)));
+      base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
 }
 
 void HoldingSpaceKeyedService::AddItem(std::unique_ptr<HoldingSpaceItem> item) {
