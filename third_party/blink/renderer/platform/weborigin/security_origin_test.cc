@@ -912,12 +912,19 @@ TEST_F(SecurityOriginTest, NonStandardScheme) {
 TEST_F(SecurityOriginTest, NonStandardSchemeWithAndroidWebViewHack) {
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::EnableNonStandardSchemesForAndroidWebView();
+
+  // Regression test for https://crbug.com/896059.
   scoped_refptr<const SecurityOrigin> origin =
       SecurityOrigin::CreateFromString("cow://");
   EXPECT_FALSE(origin->IsOpaque());
   EXPECT_EQ("cow", origin->Protocol());
   EXPECT_EQ("", origin->Host());
   EXPECT_EQ(0, origin->Port());
+
+  // about:blank translates into an opaque origin, even in presence of
+  // EnableNonStandardSchemesForAndroidWebView.
+  origin = SecurityOrigin::CreateFromString("about:blank");
+  EXPECT_TRUE(origin->IsOpaque());
 }
 
 TEST_F(SecurityOriginTest, OpaqueIsolatedCopy) {

@@ -673,11 +673,18 @@ TEST_F(OriginTest, NonStandardScheme) {
 
 TEST_F(OriginTest, NonStandardSchemeWithAndroidWebViewHack) {
   EnableNonStandardSchemesForAndroidWebView();
+
+  // Regression test for https://crbug.com/896059.
   Origin origin = Origin::Create(GURL("cow://"));
   EXPECT_FALSE(origin.opaque());
   EXPECT_EQ("cow", origin.scheme());
   EXPECT_EQ("", origin.host());
   EXPECT_EQ(0, origin.port());
+
+  // about:blank translates into an opaque origin, even in presence of
+  // EnableNonStandardSchemesForAndroidWebView.
+  origin = Origin::Create(GURL("about:blank"));
+  EXPECT_TRUE(origin.opaque());
 }
 
 TEST_F(OriginTest, CanBeDerivedFrom) {

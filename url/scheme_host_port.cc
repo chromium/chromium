@@ -72,6 +72,10 @@ bool IsValidInput(const base::StringPiece& scheme,
     if (base::Contains(GetLocalSchemes(), scheme) && host.empty() && port == 0)
       return true;
 
+    // about:blank and other no-access schemes translate into an opaque origin.
+    if (base::Contains(GetNoAccessSchemes(), scheme))
+      return false;
+
     // Otherwise, allow non-standard schemes only if the Android WebView
     // workaround is enabled.
     return AllowNonStandardSchemesForAndroidWebView();

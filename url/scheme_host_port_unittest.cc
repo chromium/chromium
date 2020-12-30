@@ -55,8 +55,15 @@ TEST_F(SchemeHostPortTest, Invalid) {
   EXPECT_EQ(invalid, invalid);
 
   const char* urls[] = {
-      "data:text/html,Hello!", "javascript:alert(1)",
-      "file://example.com:443/etc/passwd",
+      // about:, data:, javascript: and other no-access schemes translate into
+      // an invalid SchemeHostPort
+      "about:blank", "about:blank#ref", "about:blank?query=123", "about:srcdoc",
+      "about:srcdoc#ref", "about:srcdoc?query=123", "data:text/html,Hello!",
+      "javascript:alert(1)",
+
+      // GURLs where GURL::is_valid returns false translate into an invalid
+      // SchemeHostPort.
+      "file://example.com:443/etc/passwd", "#!^%!$!&*",
 
       // These schemes do not follow the generic URL syntax, so make sure we
       // treat them as invalid (scheme, host, port) tuples (even though such
