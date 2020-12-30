@@ -49,17 +49,6 @@ class ObservableFileSystemOperationImpl
                      const storage::FileSystemURL& dst,
                      CopyOrMoveOption option,
                      StatusCallback callback) override;
-  void WriteBlob(const storage::FileSystemURL& url,
-                 std::unique_ptr<storage::FileWriterDelegate> writer_delegate,
-                 std::unique_ptr<storage::BlobReader> blob_reader,
-                 const WriteCallback& callback) override;
-  void Write(const storage::FileSystemURL& url,
-             std::unique_ptr<storage::FileWriterDelegate> writer_delegate,
-             mojo::ScopedDataPipeConsumerHandle data_pipe,
-             const WriteCallback& callback) override;
-  void Truncate(const storage::FileSystemURL& url,
-                int64_t length,
-                StatusCallback callback) override;
 
   const AccountId account_id_;
   base::WeakPtrFactory<ObservableFileSystemOperationImpl> weak_factory_{this};

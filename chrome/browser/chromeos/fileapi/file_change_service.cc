@@ -18,11 +18,6 @@ void FileChangeService::RemoveObserver(FileChangeServiceObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void FileChangeService::NotifyFileModified(const storage::FileSystemURL& url) {
-  for (FileChangeServiceObserver& observer : observer_list_)
-    observer.OnFileModified(url);
-}
-
 void FileChangeService::NotifyFileCopied(const storage::FileSystemURL& src,
                                          const storage::FileSystemURL& dst) {
   for (FileChangeServiceObserver& observer : observer_list_)
