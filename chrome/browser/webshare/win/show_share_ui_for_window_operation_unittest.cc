@@ -48,6 +48,7 @@ class ShowShareUIForWindowOperationTest : public ::testing::Test {
     if (!IsSupportedEnvironment())
       return;
     ASSERT_NO_FATAL_FAILURE(scoped_interop_.SetUp());
+    operation_ = std::make_unique<ShowShareUIForWindowOperation>(hwnd_);
     auto weak_ptr = weak_factory_.GetWeakPtr();
     test_callback_ = base::BindOnce(
         [](base::WeakPtr<ShowShareUIForWindowOperationTest> weak_ptr,
@@ -58,6 +59,9 @@ class ShowShareUIForWindowOperationTest : public ::testing::Test {
             weak_ptr->test_callback_state_ =
                 event_args ? TestCallbackState::RunWithValue
                            : TestCallbackState::RunWithoutValue;
+            // Explicitly free the operation to validate it handles being
+            // destroyed as soon as it has invoked the callback
+            weak_ptr->operation_.reset();
           }
         },
         weak_ptr);
@@ -75,6 +79,7 @@ class ShowShareUIForWindowOperationTest : public ::testing::Test {
   }
 
   const HWND hwnd_ = reinterpret_cast<HWND>(1);
+  std::unique_ptr<ShowShareUIForWindowOperation> operation_;
   ScopedFakeDataTransferManagerInterop scoped_interop_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -90,8 +95,7 @@ TEST_F(ShowShareUIForWindowOperationTest, AsyncSuccess) {
   fake_interop().SetShowShareUIForWindowBehavior(
       ShowShareUIForWindowBehavior::SucceedWithoutAction);
 
-  ShowShareUIForWindowOperation operation{hwnd_};
-  operation.Run(std::move(test_callback_));
+  operation_->Run(std::move(test_callback_));
   ASSERT_EQ(test_callback_state_, TestCallbackState::NotRun);
   auto data_requested_invoker = fake_interop().GetDataRequestedInvoker(hwnd_);
 
@@ -106,8 +110,7 @@ TEST_F(ShowShareUIForWindowOperationTest, AsyncFailure) {
   fake_interop().SetShowShareUIForWindowBehavior(
       ShowShareUIForWindowBehavior::SucceedWithoutAction);
 
-  ShowShareUIForWindowOperation operation{hwnd_};
-  operation.Run(std::move(test_callback_));
+  operation_->Run(std::move(test_callback_));
   ASSERT_EQ(test_callback_state_, TestCallbackState::NotRun);
 
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -125,12 +128,11 @@ TEST_F(ShowShareUIForWindowOperationTest, AsyncEarlyDestruction) {
   fake_interop().SetShowShareUIForWindowBehavior(
       ShowShareUIForWindowBehavior::SucceedWithoutAction);
 
-  auto operation = std::make_unique<ShowShareUIForWindowOperation>(hwnd_);
-  operation->Run(std::move(test_callback_));
+  operation_->Run(std::move(test_callback_));
   ASSERT_EQ(test_callback_state_, TestCallbackState::NotRun);
 
   auto data_requested_invoker = fake_interop().GetDataRequestedInvoker(hwnd_);
-  ASSERT_NO_FATAL_FAILURE(operation.reset());
+  ASSERT_NO_FATAL_FAILURE(operation_.reset());
   ASSERT_EQ(test_callback_state_, TestCallbackState::RunWithoutValue);
   ASSERT_NO_FATAL_FAILURE(std::move(data_requested_invoker).Run());
 }
@@ -142,8 +144,7 @@ TEST_F(ShowShareUIForWindowOperationTest, SyncSuccess) {
   fake_interop().SetShowShareUIForWindowBehavior(
       ShowShareUIForWindowBehavior::InvokeEventSynchronously);
 
-  ShowShareUIForWindowOperation operation{hwnd_};
-  operation.Run(std::move(test_callback_));
+  operation_->Run(std::move(test_callback_));
   ASSERT_EQ(test_callback_state_, TestCallbackState::RunWithValue);
 }
 
@@ -154,8 +155,7 @@ TEST_F(ShowShareUIForWindowOperationTest, SyncEarlyFailure) {
   fake_interop().SetShowShareUIForWindowBehavior(
       ShowShareUIForWindowBehavior::FailImmediately);
 
-  ShowShareUIForWindowOperation operation{hwnd_};
-  operation.Run(std::move(test_callback_));
+  operation_->Run(std::move(test_callback_));
   ASSERT_EQ(test_callback_state_, TestCallbackState::NotRun);
 }
 
@@ -166,8 +166,7 @@ TEST_F(ShowShareUIForWindowOperationTest, SyncLateFailure) {
   fake_interop().SetShowShareUIForWindowBehavior(
       ShowShareUIForWindowBehavior::InvokeEventSynchronouslyAndReturnFailure);
 
-  ShowShareUIForWindowOperation operation{hwnd_};
-  operation.Run(std::move(test_callback_));
+  operation_->Run(std::move(test_callback_));
   ASSERT_EQ(test_callback_state_, TestCallbackState::RunWithValue);
 }
 
@@ -175,8 +174,7 @@ TEST_F(ShowShareUIForWindowOperationTest, DestructionWithoutRun) {
   if (!IsSupportedEnvironment())
     return;
 
-  auto operation = std::make_unique<ShowShareUIForWindowOperation>(hwnd_);
-  ASSERT_NO_FATAL_FAILURE(operation.reset());
+  ASSERT_NO_FATAL_FAILURE(operation_.reset());
 }
 
 }  // namespace webshare

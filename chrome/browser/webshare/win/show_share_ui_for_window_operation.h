@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEBSHARE_WIN_SHOW_SHARE_UI_FOR_WINDOW_OPERATION_H_
 #define CHROME_BROWSER_WEBSHARE_WIN_SHOW_SHARE_UI_FOR_WINDOW_OPERATION_H_
 
-#include <EventToken.h>
 #include <wrl/client.h>
 
 #include "base/callback.h"
@@ -71,15 +70,10 @@ class ShowShareUIForWindowOperation {
           data_transfer_manager,
       ABI::Windows::ApplicationModel::DataTransfer::IDataRequestedEventArgs*
           event_args);
-  void RemoveDataRequestedListener();
 
   DataRequestedCallback data_requested_callback_;
-  EventRegistrationToken data_requested_token_;
-  Microsoft::WRL::ComPtr<
-      ABI::Windows::ApplicationModel::DataTransfer::IDataTransferManager>
-      data_transfer_manager_;
   const HWND hwnd_;
-  bool show_share_ui_for_window_call_in_progress_;
+  base::OnceClosure remove_data_requested_listener_;
   base::WeakPtrFactory<ShowShareUIForWindowOperation> weak_factory_{this};
 };
 
