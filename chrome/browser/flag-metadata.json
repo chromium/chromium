@@ -3101,6 +3101,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "ios-persist-crash-restore-infobar",
+    "owners": [ "thegreenfrog", "bling-flags@google.com" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "ios-shared-highlighting-color-change",
     "owners": [ "cheickcisse" ],
     "expiry_milestone": 92

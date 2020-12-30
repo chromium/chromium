@@ -265,6 +265,11 @@ const char kIOSLegacyTLSInterstitialsDescription[] =
     "that use legacy TLS connections, and subresources using legacy TLS "
     "connections will be blocked.";
 
+const char kIOSPersistCrashRestoreName[] = "Persist Crash Restore Infobar";
+const char kIOSPersistCrashRestoreDescription[] =
+    "When enabled, the Crash Restore Infobar will persist through navigations "
+    "instead of dismissing.";
+
 const char kIOSSharedHighlightingColorChangeName[] =
     "IOS Shared Highlighting color change";
 const char kIOSSharedHighlightingColorChangeDescription[] =

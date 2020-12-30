@@ -583,6 +583,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSSharedHighlightingColorChangeName,
      flag_descriptions::kIOSSharedHighlightingColorChangeDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSSharedHighlightingColorChange)},
+    {"ios-persist-crash-restore-infobar",
+     flag_descriptions::kIOSPersistCrashRestoreName,
+     flag_descriptions::kIOSPersistCrashRestoreDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSPersistCrashRestore)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

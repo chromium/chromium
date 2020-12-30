@@ -74,4 +74,8 @@ extern const base::Feature kDefaultBrowserFullscreenPromoExperiment;
 // Feature flag that enable Shared Highlighting color change in iOS.
 extern const base::Feature kIOSSharedHighlightingColorChange;
 
+// Feature flag that enables persisting the Crash Restore Infobar across
+// navigations.
+extern const base::Feature kIOSPersistCrashRestore;
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

@@ -227,6 +227,11 @@ extern const char kInProductHelpDemoModeDescription[];
 extern const char kIOSLegacyTLSInterstitialsName[];
 extern const char kIOSLegacyTLSInterstitialsDescription[];
 
+// Title and description for the flag to persist the Crash Restore Infobar
+// across navigations.
+extern const char kIOSPersistCrashRestoreName[];
+extern const char kIOSPersistCrashRestoreDescription[];
+
 // Title and description for the flag to enable Shared Highlighting color
 // change in iOS.
 extern const char kIOSSharedHighlightingColorChangeName[];

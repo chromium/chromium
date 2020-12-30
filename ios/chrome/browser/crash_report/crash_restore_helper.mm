@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -35,6 +36,7 @@
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/multi_window_support.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
@@ -141,6 +143,7 @@ class SessionCrashedInfoBarDelegate : public ConfirmInfoBarDelegate {
   base::string16 GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   void InfoBarDismissed() override;
+  bool ShouldExpire(const NavigationDetails& details) const override;
   int GetIconId() const override;
 
   // TimeInterval when the delegate was created.
@@ -213,6 +216,15 @@ void SessionCrashedInfoBarDelegate::InfoBarDismissed() {
   [ConfirmInfobarMetricsRecorder
       recordConfirmInfobarEvent:MobileMessagesConfirmInfobarEvents::Dismissed
           forInfobarConfirmType:InfobarConfirmType::kInfobarConfirmTypeRestore];
+}
+
+bool SessionCrashedInfoBarDelegate::ShouldExpire(
+    const NavigationDetails& details) const {
+  if (base::FeatureList::IsEnabled(kIOSPersistCrashRestore)) {
+    return false;
+  } else {
+    return InfoBarDelegate::ShouldExpire(details);
+  }
 }
 
 int SessionCrashedInfoBarDelegate::GetIconId() const {
