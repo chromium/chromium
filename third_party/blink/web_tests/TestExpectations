@@ -4575,6 +4575,9 @@ crbug.com/868706 external/wpt/css/css-layout-api/auto-block-size-inflow.https.ht
 # Sheriff 2018-08-01
 crbug.com/869773 http/tests/misc/window-dot-stop.html [ Pass Failure ]
 
+crbug.com/1162393 [ Fuchsia ] paint/invalidation/selection/selected-replaced.html [ Failure Pass ]
+crbug.com/1162393 [ Fuchsia ] tables/mozilla/bugs/bug1188.html [ Failure Pass ]
+
 crbug.com/873873 external/wpt/service-workers/service-worker/fetch-canvas-tainting-video.https.html [ Timeout Pass ]
 crbug.com/873873 external/wpt/service-workers/service-worker/fetch-canvas-tainting-video-cache.https.html [ Timeout Pass ]
 
