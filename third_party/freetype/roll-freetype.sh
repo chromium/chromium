@@ -8,15 +8,16 @@ rolldeps() {
 
 addtrybots() {
   STEP="add trybots" &&
-  OLD_MSG=$(git show -s --format=%B HEAD) &&
-  git commit --amend -m"$OLD_MSG" -m"Cq-Include-Trybots: luci.chromium.try:linux_chromium_msan_rel_ng"
+  (git show -s --format=%B HEAD \
+    | git interpret-trailers --trailer "Cq-Include-Trybots:luci.chromium.try:linux_chromium_msan_rel_ng" \
+    | git commit --amend -F -)
 }
 
 addotherprojectbugs() {
   STEP="add pdfium bug" &&
-  OLD_MSG=$(git show -s --format=%B HEAD) &&
-  git commit --amend -m"$OLD_MSG" -m"
-PDFium-Issue: pdfium:"
+  (git show -s --format=%B HEAD \
+    | git interpret-trailers --trailer "PDFium-Issue:pdfium:" \
+    | git commit --amend -F -)
 }
 
 updatereadme() {
