@@ -25,6 +25,9 @@ class FileChangeService : public KeyedService {
   void AddObserver(FileChangeServiceObserver* observer);
   void RemoveObserver(FileChangeServiceObserver* observer);
 
+  // Notifies the service that a file identified by `url` has been modified.
+  void NotifyFileModified(const storage::FileSystemURL& url);
+
   // Notifies the service that a file has been copied from `src` to `dst`.
   void NotifyFileCopied(const storage::FileSystemURL& src,
                         const storage::FileSystemURL& dst);

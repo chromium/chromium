@@ -16,6 +16,10 @@ namespace chromeos {
 // An interface for an observer which receives `FileChangeService` events.
 class FileChangeServiceObserver : public base::CheckedObserver {
  public:
+  // Invoked when a file identified by `url` has been modified. Note that this
+  // will not get called on file creation or deletion.
+  virtual void OnFileModified(const storage::FileSystemURL& url) {}
+
   // Invoked when a file has been copied from `src` to `dst`.
   virtual void OnFileCopied(const storage::FileSystemURL& src,
                             const storage::FileSystemURL& dst) {}
