@@ -228,7 +228,7 @@ IDNSpoofChecker::IDNSpoofChecker() {
        {"am"}},
       {// Cyrillic
        "[[:Cyrl:]]",
-       "[аысԁеԍһіюјӏорԗԛѕԝхуъЬҽпгѵѡ]",
+       "[аысԁеԍһіюјӏорԗԛѕԝхуъьҽпгѵѡ]",
        // TLDs containing most of the Cyrillic domains.
        {"bg", "by", "kz", "pyc", "ru", "su", "ua", "uz"}},
       {// Ethiopic (Ge'ez). Variants of these characters such as ሁ and ሡ could
@@ -302,8 +302,19 @@ IDNSpoofChecker::IDNSpoofChecker() {
     auto all_letters = std::make_unique<icu::UnicodeSet>(
         icu::UnicodeString::fromUTF8(data.script_regex), status);
     DCHECK(U_SUCCESS(status));
+
+    // Lookalike letter list must be all lower case letters. Domain name labels
+    // are canonicalized to lower case, so having upper case letters in this
+    // list will result in a non-match.
+    const icu::UnicodeString latin_lookalike_letters =
+        icu::UnicodeString::fromUTF8(data.latin_lookalike_letters);
+    icu::UnicodeString latin_lookalike_letters_lowercase =
+        latin_lookalike_letters;
+    latin_lookalike_letters_lowercase.toLower();
+    DCHECK(latin_lookalike_letters == latin_lookalike_letters_lowercase);
     auto latin_lookalikes = std::make_unique<icu::UnicodeSet>(
-        icu::UnicodeString::fromUTF8(data.latin_lookalike_letters), status);
+        latin_lookalike_letters_lowercase, status);
+
     DCHECK(U_SUCCESS(status));
     auto script = std::make_unique<WholeScriptConfusable>(
         std::move(all_letters), std::move(latin_lookalikes), data.allowed_tlds);
@@ -730,12 +741,14 @@ bool IDNSpoofChecker::IsLabelWholeScriptConfusableForScript(
   // An alternative approach is to include [0-9] and [_-] in script.all_letters
   // and checking if it contains all letters of |label|. However, this would not
   // work if a label has non-letters outside ASCII.
+
   icu::UnicodeSet label_characters_belonging_to_script;
   icu::StringCharacterIterator it(label);
   for (it.setToStart(); it.hasNext();) {
     const UChar32 c = it.next32PostInc();
-    if (script.all_letters->contains(c))
+    if (script.all_letters->contains(c)) {
       label_characters_belonging_to_script.add(c);
+    }
   }
   return !label_characters_belonging_to_script.isEmpty() &&
          script.latin_lookalike_letters->containsAll(

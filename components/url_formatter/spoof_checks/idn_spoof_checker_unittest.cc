@@ -443,6 +443,10 @@ const IDNTestCase kIdnCases[] = {
     // сю.com is Cyrillic with Latin lookalikes.
     {"xn--q1a0a.com", L"\x0441\x044e.com", kUnsafe},
 
+    // Regression test for lowercase letters in whole script confusable
+    // lookalike character lists.
+    {"xn--80a8a6a.com", L"аьс.com", kUnsafe},
+
     // googlе.한국 where е is Cyrillic. This tests the generic case when one
     // label is not allowed but  other labels in the domain name are still
     // decoded. Here, googlе is left in punycode but the TLD is decoded.
