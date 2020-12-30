@@ -11,4 +11,9 @@ namespace switches {
 const char kLoadingPredictorAllowLocalRequestForTesting[] =
     "loading-predictor-allow-local-request-for-testing";
 
+// Allows the loading predictor to consult the optimization guide on non-GWS
+// page loads.
+const char kLoadingPredictorOptimizationGuideAllowNonGwsForTesting[] =
+    "loading-predictor-optimization-guide-allow-non-gws";
+
 }  // namespace switches

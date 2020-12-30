@@ -59,7 +59,6 @@ MockLoadingDataCollector::MockLoadingDataCollector(
     const LoadingPredictorConfig& config)
     : LoadingDataCollector(nullptr, nullptr, config) {}
 
-// TODO(crbug/1035698): Migrate to TestOptimizationGuideDecider when provided.
 class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
  public:
   explicit MockOptimizationGuideKeyedService(
@@ -339,14 +338,54 @@ class LoadingPredictorTabHelperOptimizationGuideDeciderTest
         {});
   }
 
+  void NavigateToGwsInMainFrame() {
+    NavigateAndCommitInMainFrameAndVerifyMetrics(
+        "https://www.google.com/search?q=test");
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that document on load completed is recorded with correct navigation
+// id and that optimization guide is not consulted when not from GWS.
+TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
+       DocumentOnLoadCompletedOptimizationGuideNotFromGWS) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(
+      *mock_optimization_guide_keyed_service_,
+      CanApplyOptimizationAsync(_, optimization_guide::proto::LOADING_PREDICTOR,
+                                base::test::IsNotNullCallback()))
+      .Times(0);
+  NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
+  auto navigation_id =
+      CreateNavigationID(GetTabID(), "http://test.org",
+                         web_contents()->GetMainFrame()->GetPageUkmSourceId());
+
+  // Adding subframe navigation to ensure that the committed main frame url will
+  // be used.
+  auto* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  NavigateAndCommitInFrame("http://sub.test.org", subframe);
+
+  const base::Optional<OptimizationGuidePrediction>
+      null_optimization_guide_prediction;
+  EXPECT_CALL(*mock_collector_,
+              RecordMainFrameLoadComplete(navigation_id,
+                                          null_optimization_guide_prediction));
+  tab_helper_->DocumentOnLoadCompletedInMainFrame();
+
+  histogram_tester.ExpectTotalCount(
+      "LoadingPredictor.OptimizationHintsReceiveStatus", 0);
+}
+
+// Tests that document on load completed is recorded with correct navigation
 // id and optimization guide prediction.
 TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        DocumentOnLoadCompletedOptimizationGuide) {
+  NavigateToGwsInMainFrame();
+
   base::HistogramTester histogram_tester;
 
   optimization_guide::OptimizationMetadata optimization_metadata;
@@ -398,6 +437,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 // id and optimization guide prediction.
 TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        DocumentOnLoadCompletedOptimizationGuidePredictionComesAfterCommit) {
+  NavigateToGwsInMainFrame();
+
   base::HistogramTester histogram_tester;
 
   optimization_guide::OptimizationMetadata optimization_metadata;
@@ -457,6 +498,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 // has redirects.
 TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        DocumentOnLoadCompletedOptimizationGuidePredictionArrivedAfterRedirect) {
+  NavigateToGwsInMainFrame();
+
   base::HistogramTester histogram_tester;
 
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
@@ -521,6 +564,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 // id and optimization guide prediction when the prediction has not arrived.
 TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        DocumentOnLoadCompletedOptimizationGuidePredictionHasNotArrived) {
+  NavigateToGwsInMainFrame();
+
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(
@@ -557,6 +602,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 TEST_F(
     LoadingPredictorTabHelperOptimizationGuideDeciderTest,
     DocumentOnLoadCompletedOptimizationGuidePredictionComesAfterDocumentOnLoad) {
+  NavigateToGwsInMainFrame();
+
   base::HistogramTester histogram_tester;
 
   optimization_guide::OptimizationMetadata optimization_metadata;
@@ -608,6 +655,8 @@ TEST_F(
 // id and optimization guide prediction with no prediction..
 TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        DocumentOnLoadCompletedOptimizationGuidePredictionArrivedNoPrediction) {
+  NavigateToGwsInMainFrame();
+
   base::HistogramTester histogram_tester;
 
   // The problem here is that mock_collector_ is a strict mock, which expects
@@ -652,6 +701,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 TEST_F(
     LoadingPredictorTabHelperOptimizationGuideDeciderTest,
     DocumentOnLoadCompletedOptimizationGuidePredictionArrivedNoLoadingPredictorMetadata) {
+  NavigateToGwsInMainFrame();
+
   base::HistogramTester histogram_tester;
 
   // The problem here is that mock_collector_ is a strict mock, which expects
@@ -714,6 +765,8 @@ class LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest
 // id and optimization guide prediction.
 TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
        DocumentOnLoadCompletedOptimizationGuide) {
+  NavigateToGwsInMainFrame();
+
   base::HistogramTester histogram_tester;
 
   optimization_guide::OptimizationMetadata optimization_metadata;

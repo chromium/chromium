@@ -1661,6 +1661,12 @@ class LoadingPredictorBrowserTestWithOptimizationGuide
     }
   }
 
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    LoadingPredictorBrowserTest::SetUpCommandLine(cmd);
+    cmd->AppendSwitch(
+        switches::kLoadingPredictorOptimizationGuideAllowNonGwsForTesting);
+  }
+
   bool IsLocalPredictionEnabled() const { return std::get<0>(GetParam()); }
 
   bool ShouldUseOptimizationGuidePredictions() const {
@@ -2023,6 +2029,8 @@ class LoadingPredictorPrefetchBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    LoadingPredictorBrowserTestWithOptimizationGuide::SetUpCommandLine(
+        command_line);
     command_line->AppendSwitch(
         switches::kLoadingPredictorAllowLocalRequestForTesting);
   }
