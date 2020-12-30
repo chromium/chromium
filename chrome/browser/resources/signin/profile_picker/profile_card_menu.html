@@ -13,6 +13,16 @@
     font-weight: normal;
   }
 
+  #actionMenu iron-icon {
+    padding-inline-end: 14px;
+  }
+
+  #actionMenu button {
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    padding-inline-start: 14px;
+  }
+
   #removeActionMenu {
     pointer-events: none;
   }
@@ -98,9 +108,11 @@
 
 <cr-action-menu id="actionMenu" role-description="$i18n{menu}">
   <button class="dropdown-item" on-click="onRemoveButtonClicked_">
+    <iron-icon icon="cr:delete" aria-hidden="true"></iron-icon>
     $i18n{profileMenuRemoveText}
   </button>
   <button class="dropdown-item" on-click="onCustomizeButtonClicked_">
+    <iron-icon icon="profiles:create" aria-hidden="true"></iron-icon>
     $i18n{profileMenuCustomizeText}
   </button>
 </cr-action-menu>
