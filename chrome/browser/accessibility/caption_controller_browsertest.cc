@@ -107,7 +107,7 @@ class CaptionControllerTest : public InProcessBrowserTest {
                                                 Profile* profile) {
     return GetControllerForProfile(profile)->DispatchTranscription(
         browser->tab_strip_model()->GetActiveWebContents(),
-        chrome::mojom::TranscriptionResult::New(text, true /* is_final */));
+        chrome::mojom::TranscriptionResult::New(text, false /* is_final */));
   }
 
   void OnError() { OnErrorOnBrowser(browser()); }

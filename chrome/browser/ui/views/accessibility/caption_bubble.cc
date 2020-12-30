@@ -678,26 +678,37 @@ void CaptionBubble::UpdateBubbleAndTitleVisibility() {
 
 void CaptionBubble::UpdateBubbleVisibility() {
   DCHECK(GetWidget());
+  // If there is no model set, do not show the bubble.
   if (!model_) {
-    // If there is no model set, do not show the bubble.
     if (GetWidget()->IsVisible())
       GetWidget()->Hide();
-  } else if (!can_layout_ || model_->IsClosed()) {
-    // Hide the widget if there is no room for it or the model is closed.
+    return;
+  }
+
+  // Hide the widget if there is no room for it, the model is closed. or the
+  // bubble has no activity. Activity is defined as transcription received from
+  // the speech service or user interacting with the bubble through focus,
+  // pressing buttons, or dragging.
+  if (!can_layout_ || model_->IsClosed() || !HasActivity()) {
     if (GetWidget()->IsVisible())
       GetWidget()->Hide();
-  } else if (!model_->GetFullText().empty() || model_->HasError()) {
-    // Show the widget if it has text or an error to display.
+    return;
+  }
+
+  // Show the widget if it has text or an error to display.
+  if (!model_->GetFullText().empty() || model_->HasError()) {
     if (!GetWidget()->IsVisible()) {
       GetWidget()->ShowInactive();
       GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
           IDS_LIVE_CAPTION_BUBBLE_APPEAR_SCREENREADER_ANNOUNCEMENT));
       LogSessionEvent(SessionEvent::kStreamStarted);
     }
-  } else if (GetWidget()->IsVisible()) {
-    // No text and no error. Hide it.
-    GetWidget()->Hide();
+    return;
   }
+
+  // No text and no error. Hide it.
+  if (GetWidget()->IsVisible())
+    GetWidget()->Hide();
 }
 
 void CaptionBubble::OnWidgetVisibilityChanged(views::Widget* widget,
@@ -791,6 +802,20 @@ void CaptionBubble::OnInactivityTimeout() {
   LogSessionEvent(SessionEvent::kStreamEnded);
   if (GetWidget()->IsVisible())
     GetWidget()->Hide();
+
+  // Clear the partial and final text in the caption bubble model and the label.
+  // Does not affect the speech service. The speech service will emit a final
+  // result after ~10-15 seconds of no audio which the caption bubble will
+  // receive but will not display. If the speech service is in the middle of a
+  // recognition phrase, and the caption bubble regains activity (such as if the
+  // audio stream restarts), the speech service will emit partial results that
+  // contain text cleared by the UI.
+  model_->ClearText();
+}
+
+bool CaptionBubble::HasActivity() {
+  return model_ && (inactivity_timer_->IsRunning() || HasFocus() ||
+                    !model_->GetFullText().empty() || model_->HasError());
 }
 
 views::Label* CaptionBubble::GetLabelForTesting() {

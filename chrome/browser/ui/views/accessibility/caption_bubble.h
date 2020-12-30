@@ -67,15 +67,9 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   // the caption text size.
   void UpdateCaptionStyle(base::Optional<ui::CaptionStyle> caption_style);
 
-  // For the provided line index, gets the corresponding rendered line in the
-  // label and returns the text position of the first character of that line.
-  // Returns the same value regardless of whether the label is visible or not.
-  // TODO(crbug.com/1055150): This feature is launching for English first.
-  // Make sure this is correct for all languages.
-  size_t GetTextIndexOfLineInLabel(size_t line) const;
-
-  // Returns the number of lines in the caption bubble label that are rendered.
-  size_t GetNumLinesInLabel() const;
+  // Returns whether the bubble has activity, with the above definition of
+  // activity.
+  bool HasActivity();
 
   views::Label* GetLabelForTesting();
   base::RetainingOneShotTimer* GetInactivityTimerForTesting();
@@ -125,6 +119,16 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   // space for it to be shown, and if it has an error or text to display.
   void UpdateBubbleVisibility();
   void UpdateBubbleAndTitleVisibility();
+
+  // For the provided line index, gets the corresponding rendered line in the
+  // label and returns the text position of the first character of that line.
+  // Returns the same value regardless of whether the label is visible or not.
+  // TODO(crbug.com/1055150): This feature is launching for English first.
+  // Make sure this is correct for all languages.
+  size_t GetTextIndexOfLineInLabel(size_t line) const;
+
+  // Returns the number of lines in the caption bubble label that are rendered.
+  size_t GetNumLinesInLabel() const;
 
   double GetTextScaleFactor();
   int GetNumLinesVisible();

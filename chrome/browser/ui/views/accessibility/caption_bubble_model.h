@@ -57,6 +57,9 @@ class CaptionBubbleModel : public content::WebContentsObserver {
   // observer.
   void Close();
 
+  // Clears the partial and final text and alerts the observer.
+  void ClearText();
+
   bool IsClosed() const { return is_closed_; }
   bool HasError() const { return has_error_; }
   std::string GetFullText() const { return final_text_ + partial_text_; }

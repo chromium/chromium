@@ -54,10 +54,8 @@ void CaptionBubbleModel::SetPartialText(const std::string& partial_text) {
 }
 
 void CaptionBubbleModel::Close() {
-  final_text_.clear();
-  partial_text_.clear();
   is_closed_ = true;
-  OnTextChanged();
+  ClearText();
 }
 
 void CaptionBubbleModel::OnError() {
@@ -66,20 +64,23 @@ void CaptionBubbleModel::OnError() {
     observer_->OnErrorChanged();
 }
 
+void CaptionBubbleModel::ClearText() {
+  partial_text_.clear();
+  final_text_.clear();
+  OnTextChanged();
+}
+
 void CaptionBubbleModel::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInMainFrame())
     return;
 
   // Reset caption bubble to it's starting state.
-  final_text_.clear();
-  partial_text_.clear();
   is_closed_ = false;
   has_error_ = false;
-  if (observer_) {
-    observer_->OnTextChanged();
+  ClearText();
+  if (observer_)
     observer_->OnErrorChanged();
-  }
 }
 
 void CaptionBubbleModel::CommitPartialText() {
