@@ -223,8 +223,8 @@ LogSourceAccessManager::ResourceId LogSourceAccessManager::CreateResource(
   // passed in as part of a callback.
   resource_manager->Get(extension_id, resource_id)
       ->set_unregister_callback(
-          base::Bind(&LogSourceAccessManager::RemoveHandle,
-                     weak_factory_.GetWeakPtr(), resource_id));
+          base::BindOnce(&LogSourceAccessManager::RemoveHandle,
+                         weak_factory_.GetWeakPtr(), resource_id));
 
   open_handles_.emplace(
       resource_id, std::make_unique<SourceAndExtension>(source, extension_id));

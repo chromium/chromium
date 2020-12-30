@@ -31,8 +31,8 @@ class LogSourceResource : public ApiResource {
 
   system_logs::SystemLogsSource* GetLogSource() const { return source_.get(); }
 
-  void set_unregister_callback(const base::Closure& unregister_callback) {
-    unregister_callback_ = unregister_callback;
+  void set_unregister_callback(base::OnceClosure unregister_callback) {
+    unregister_callback_ = std::move(unregister_callback);
   }
 
  private:
@@ -43,7 +43,7 @@ class LogSourceResource : public ApiResource {
 
   // This unregisters the LogSourceResource from a LogSourceAccessManager when
   // this resource is cleaned up.
-  base::Closure unregister_callback_;
+  base::OnceClosure unregister_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(LogSourceResource);
 };

@@ -27,7 +27,7 @@ LogSourceResource::LogSourceResource(
 
 LogSourceResource::~LogSourceResource() {
   if (!unregister_callback_.is_null())
-    unregister_callback_.Run();
+    std::move(unregister_callback_).Run();
 }
 
 }  // namespace extensions
