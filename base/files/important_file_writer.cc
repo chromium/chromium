@@ -42,6 +42,15 @@ namespace base {
 namespace {
 
 constexpr auto kDefaultCommitInterval = TimeDelta::FromSeconds(10);
+#if defined(OS_WIN)
+// This is how many times we will retry ReplaceFile on Windows.
+constexpr int kReplaceRetries = 5;
+// This is the result code recorded if ReplaceFile still fails.
+// It should stay constant even if we change kReplaceRetries.
+constexpr int kReplaceRetryFailure = 10;
+static_assert(kReplaceRetryFailure > kReplaceRetries, "No overlap allowed");
+constexpr auto kReplacePauseInterval = TimeDelta::FromMilliseconds(100);
+#endif
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -285,21 +294,41 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
     PlatformThread::SetCurrentThreadPriority(ThreadPriority::DISPLAY);
 #endif  // defined(OS_WIN)
   tmp_file.Close();
-  const bool result = ReplaceFile(tmp_file_path, path, &replace_file_error);
+  bool result = ReplaceFile(tmp_file_path, path, &replace_file_error);
 #if defined(OS_WIN)
   // Save and restore the last error code so that it's not polluted by the
   // thread priority change.
-  const auto last_error = ::GetLastError();
+  auto last_error = ::GetLastError();
+  int retry_count = 0;
+  for (/**/; !result && retry_count < kReplaceRetries; ++retry_count) {
+    // The race condition between closing the temporary file and moving it gets
+    // hit on a regular basis on some systems (https://crbug.com/1099284), so
+    // we retry a few times before giving up.
+    PlatformThread::Sleep(kReplacePauseInterval);
+    result = ReplaceFile(tmp_file_path, path, &replace_file_error);
+    last_error = ::GetLastError();
+  }
   if (reset_priority)
     PlatformThread::SetCurrentThreadPriority(previous_priority);
+
+  // Log how many times we had to retry the ReplaceFile operation before it
+  // succeeded. If we never succeeded then return a special value.
   if (!result)
-    ::SetLastError(last_error);
+    retry_count = kReplaceRetryFailure;
+  UmaHistogramExactLinear("ImportantFile.FileReplaceRetryCount", retry_count,
+                          kReplaceRetryFailure);
 #endif  // defined(OS_WIN)
 
   if (!result) {
     UmaHistogramExactLinearWithSuffix("ImportantFile.FileRenameError",
                                       histogram_suffix, -replace_file_error,
                                       -File::FILE_ERROR_MAX);
+#if defined(OS_WIN)
+    // Restore the error code from ReplaceFile so that it will be available for
+    // LogFailure, otherwise failures in SetCurrrentThreadPriority may be
+    // reported instead.
+    ::SetLastError(last_error);
+#endif
     LogFailure(path, histogram_suffix, FAILED_RENAMING,
                "could not rename temporary file");
     DeleteTmpFileWithRetry(File(), tmp_file_path, histogram_suffix);
