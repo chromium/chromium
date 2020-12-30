@@ -1211,7 +1211,7 @@ class btree {
     return const_reverse_iterator(begin());
   }
 
-  // Finds the first element whose key is not less than key.
+  // Finds the first element whose key is not less than `key`.
   template <typename K>
   iterator lower_bound(const K &key) {
     return internal_end(internal_lower_bound(key).value);
@@ -1221,7 +1221,12 @@ class btree {
     return internal_end(internal_lower_bound(key).value);
   }
 
-  // Finds the first element whose key is greater than key.
+  // Finds the first element whose key is not less than `key` and also returns
+  // whether that element is equal to `key`.
+  template <typename K>
+  std::pair<iterator, bool> lower_bound_equal(const K &key) const;
+
+  // Finds the first element whose key is greater than `key`.
   template <typename K>
   iterator upper_bound(const K &key) {
     return internal_end(internal_upper_bound(key));
@@ -1303,8 +1308,8 @@ class btree {
   // to the element after the last erased element.
   std::pair<size_type, iterator> erase_range(iterator begin, iterator end);
 
-  // Finds the iterator corresponding to a key or returns end() if the key is
-  // not present.
+  // Finds an element with key equivalent to `key` or returns `end()` if `key`
+  // is not present.
   template <typename K>
   iterator find(const K &key) {
     return internal_end(internal_find(key));
@@ -1905,12 +1910,23 @@ constexpr bool btree<P>::static_assert_validation() {
 
 template <typename P>
 template <typename K>
-auto btree<P>::equal_range(const K &key) -> std::pair<iterator, iterator> {
+auto btree<P>::lower_bound_equal(const K &key) const
+    -> std::pair<iterator, bool> {
   const SearchResult<iterator, is_key_compare_to::value> res =
       internal_lower_bound(key);
-  const iterator lower = internal_end(res.value);
-  if (res.HasMatch() ? !res.IsEq()
-                     : lower == end() || compare_keys(key, lower.key())) {
+  const iterator lower = iterator(internal_end(res.value));
+  const bool equal = res.HasMatch()
+                         ? res.IsEq()
+                         : lower != end() && !compare_keys(key, lower.key());
+  return {lower, equal};
+}
+
+template <typename P>
+template <typename K>
+auto btree<P>::equal_range(const K &key) -> std::pair<iterator, iterator> {
+  const std::pair<iterator, bool> lower_and_equal = lower_bound_equal(key);
+  const iterator lower = lower_and_equal.first;
+  if (!lower_and_equal.second) {
     return {lower, lower};
   }
 
@@ -2510,14 +2526,17 @@ template <typename P>
 template <typename K>
 auto btree<P>::internal_lower_bound(const K &key) const
     -> SearchResult<iterator, is_key_compare_to::value> {
+  if (!params_type::template can_have_multiple_equivalent_keys<K>()) {
+    SearchResult<iterator, is_key_compare_to::value> ret = internal_locate(key);
+    ret.value = internal_last(ret.value);
+    return ret;
+  }
   iterator iter(const_cast<node_type *>(root()));
   SearchResult<int, is_key_compare_to::value> res;
   bool seen_eq = false;
   for (;;) {
     res = iter.node->lower_bound(key, key_comp());
     iter.position = res.value;
-    // TODO(ezb): we should be able to terminate early on IsEq() if there can't
-    // be multiple equivalent keys in container for this lookup type.
     if (iter.node->leaf()) {
       break;
     }

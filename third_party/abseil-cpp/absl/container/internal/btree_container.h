@@ -338,13 +338,12 @@ class btree_set_container : public btree_container<Tree> {
   }
 
   // Node extraction routines.
-  // TODO(ezb): when the comparator is heterogeneous and has different
-  // equivalence classes for different lookup types, we should extract the first
-  // equivalent value if there are multiple.
   template <typename K = key_type>
   node_type extract(const key_arg<K> &key) {
-    auto it = this->find(key);
-    return it == this->end() ? node_type() : extract(it);
+    const std::pair<iterator, bool> lower_and_equal =
+        this->tree_.lower_bound_equal(key);
+    return lower_and_equal.second ? extract(lower_and_equal.first)
+                                  : node_type();
   }
   using super_type::extract;
 
@@ -621,12 +620,12 @@ class btree_multiset_container : public btree_container<Tree> {
   }
 
   // Node extraction routines.
-  // TODO(ezb): we are supposed to extract the first equivalent key if there are
-  // multiple, but this isn't guaranteed to extract the first one.
   template <typename K = key_type>
   node_type extract(const key_arg<K> &key) {
-    auto it = this->find(key);
-    return it == this->end() ? node_type() : extract(it);
+    const std::pair<iterator, bool> lower_and_equal =
+        this->tree_.lower_bound_equal(key);
+    return lower_and_equal.second ? extract(lower_and_equal.first)
+                                  : node_type();
   }
   using super_type::extract;
 

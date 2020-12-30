@@ -1557,12 +1557,14 @@ EXPORTS
     ?DoLoad@?$AtomicHook@P6A_NPEBXPEADH@Z@base_internal@absl@@AEBAP6A_NPEBXPEADH@ZXZ
     ?DoLoad@?$AtomicHook@P6A_NW4LogSeverity@absl@@PEBDHPEAPEADPEAH@Z@base_internal@absl@@AEBAP6A_NW4LogSeverity@3@PEBDHPEAPEADPEAH@ZXZ
     ?DoStore@?$AtomicHook@P6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@absl@@Vstring_view@2@AEBVCord@2@@Z@base_internal@absl@@AEAA_NP6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@3@Vstring_view@3@AEBVCord@3@@Z@Z
+    ?DoStore@?$AtomicHook@P6AXPEBDH000@Z@base_internal@absl@@AEAA_NP6AXPEBDH000@Z@Z
     ?DoStore@?$AtomicHook@P6AXPEBDPEBX@Z@base_internal@absl@@AEAA_NP6AXPEBDPEBX@Z@Z
     ?DoStore@?$AtomicHook@P6AXPEBDPEBX_J@Z@base_internal@absl@@AEAA_NP6AXPEBDPEBX_J@Z@Z
     ?DoStore@?$AtomicHook@P6AXPEBX_J@Z@base_internal@absl@@AEAA_NP6AXPEBX_J@Z@Z
     ?DoStore@?$AtomicHook@P6AXW4LogSeverity@absl@@PEBDHAEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z@base_internal@absl@@AEAA_NP6AXW4LogSeverity@3@PEBDHAEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z@Z
     ?DoStore@?$AtomicHook@P6AX_J@Z@base_internal@absl@@AEAA_NP6AX_J@Z@Z
     ?DoStore@?$AtomicHook@P6A_NPEBXPEADH@Z@base_internal@absl@@AEAA_NP6A_NPEBXPEADH@Z@Z
+    ?DoStore@?$AtomicHook@P6A_NW4LogSeverity@absl@@PEBDHPEAPEADPEAH@Z@base_internal@absl@@AEAA_NP6A_NW4LogSeverity@3@PEBDHPEAPEADPEAH@Z@Z
     ?DummyFunction@?$AtomicHook@P6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@absl@@Vstring_view@2@AEBVCord@2@@Z@base_internal@absl@@CA?AV?$optional@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@3@Vstring_view@3@AEBVCord@3@@Z
     ?DummyFunction@?$AtomicHook@P6AXPEBDH000@Z@base_internal@absl@@CAXPEBDH000@Z
     ?DummyFunction@?$AtomicHook@P6AXPEBDPEBX@Z@base_internal@absl@@CAXPEBDPEBX@Z
@@ -2002,8 +2004,10 @@ EXPORTS
     ?Ref@CordRep@cord_internal@absl@@SAPEAU123@PEAU123@@Z
     ?Register@CycleClockSource@base_internal@absl@@CAXP6A_JXZ@Z
     ?Register@HashtablezSampler@container_internal@absl@@QEAAPEAUHashtablezInfo@23@XZ
+    ?RegisterAbortHook@raw_logging_internal@absl@@YAXP6AXPEBDH000@Z@Z
     ?RegisterCondVarTracer@absl@@YAXP6AXPEBDPEBX@Z@Z
     ?RegisterInternalLogFunction@raw_logging_internal@absl@@YAXP6AXW4LogSeverity@2@PEBDHAEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z@Z
+    ?RegisterLogPrefixHook@raw_logging_internal@absl@@YAXP6A_NW4LogSeverity@2@PEBDHPEAPEADPEAH@Z@Z
     ?RegisterMutexProfiler@absl@@YAXP6AX_J@Z@Z
     ?RegisterMutexTracer@absl@@YAXP6AXPEBDPEBX_J@Z@Z
     ?RegisterSpinLockProfiler@base_internal@absl@@YAXP6AXPEBX_J@Z@Z
@@ -2090,12 +2094,14 @@ EXPORTS
     ?StatusCodeToString@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@W4StatusCode@1@@Z
     ?Store64@little_endian@absl@@YAXPEAX_K@Z
     ?Store@?$AtomicHook@P6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@absl@@Vstring_view@2@AEBVCord@2@@Z@base_internal@absl@@QEAAXP6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@3@Vstring_view@3@AEBVCord@3@@Z@Z
+    ?Store@?$AtomicHook@P6AXPEBDH000@Z@base_internal@absl@@QEAAXP6AXPEBDH000@Z@Z
     ?Store@?$AtomicHook@P6AXPEBDPEBX@Z@base_internal@absl@@QEAAXP6AXPEBDPEBX@Z@Z
     ?Store@?$AtomicHook@P6AXPEBDPEBX_J@Z@base_internal@absl@@QEAAXP6AXPEBDPEBX_J@Z@Z
     ?Store@?$AtomicHook@P6AXPEBX_J@Z@base_internal@absl@@QEAAXP6AXPEBX_J@Z@Z
     ?Store@?$AtomicHook@P6AXW4LogSeverity@absl@@PEBDHAEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z@base_internal@absl@@QEAAXP6AXW4LogSeverity@3@PEBDHAEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z@Z
     ?Store@?$AtomicHook@P6AX_J@Z@base_internal@absl@@QEAAXP6AX_J@Z@Z
     ?Store@?$AtomicHook@P6A_NPEBXPEADH@Z@base_internal@absl@@QEAAXP6A_NPEBXPEADH@Z@Z
+    ?Store@?$AtomicHook@P6A_NW4LogSeverity@absl@@PEBDHPEAPEADPEAH@Z@base_internal@absl@@QEAAXP6A_NW4LogSeverity@3@PEBDHPEAPEADPEAH@Z@Z
     ?StrAppend@absl@@YAXPEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@AEBVAlphaNum@1@111@Z
     ?StrAppend@absl@@YAXPEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@AEBVAlphaNum@1@11@Z
     ?StrAppend@absl@@YAXPEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@AEBVAlphaNum@1@1@Z

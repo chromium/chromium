@@ -915,9 +915,9 @@ TEST(StringViewTest, At) {
   EXPECT_EQ(abc.at(1), 'b');
   EXPECT_EQ(abc.at(2), 'c');
 #ifdef ABSL_HAVE_EXCEPTIONS
-  EXPECT_THROW(abc.at(3), std::out_of_range);
+  EXPECT_THROW((void)abc.at(3), std::out_of_range);
 #else
-  ABSL_EXPECT_DEATH_IF_SUPPORTED(abc.at(3), "absl::string_view::at");
+  ABSL_EXPECT_DEATH_IF_SUPPORTED((void)abc.at(3), "absl::string_view::at");
 #endif
 }
 

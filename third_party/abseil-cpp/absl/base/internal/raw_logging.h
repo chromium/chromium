@@ -178,6 +178,14 @@ ABSL_INTERNAL_ATOMIC_HOOK_ATTRIBUTES ABSL_DLL extern base_internal::AtomicHook<
     InternalLogFunction>
     internal_log_function;
 
+// Registers hooks of the above types.  Only a single hook of each type may be
+// registered.  It is an error to call these functions multiple times with
+// different input arguments.
+//
+// These functions are safe to call at any point during initialization; they do
+// not block or malloc, and are async-signal safe.
+void RegisterLogPrefixHook(LogPrefixHook func);
+void RegisterAbortHook(AbortHook func);
 void RegisterInternalLogFunction(InternalLogFunction func);
 
 }  // namespace raw_logging_internal

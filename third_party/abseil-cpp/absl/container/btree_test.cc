@@ -2038,6 +2038,30 @@ TEST(Btree, ExtractAndInsertNodeHandleMultiMap) {
   EXPECT_EQ(res, ++other.begin());
 }
 
+TEST(Btree, ExtractMultiMapEquivalentKeys) {
+  // Note: using string keys means a three-way comparator.
+  absl::btree_multimap<std::string, int> map;
+  for (int i = 0; i < 100; ++i) {
+    for (int j = 0; j < 100; ++j) {
+      map.insert({absl::StrCat(i), j});
+    }
+  }
+
+  for (int i = 0; i < 100; ++i) {
+    const std::string key = absl::StrCat(i);
+    auto node_handle = map.extract(key);
+    EXPECT_EQ(node_handle.key(), key);
+    EXPECT_EQ(node_handle.mapped(), 0) << i;
+  }
+
+  for (int i = 0; i < 100; ++i) {
+    const std::string key = absl::StrCat(i);
+    auto node_handle = map.extract(key);
+    EXPECT_EQ(node_handle.key(), key);
+    EXPECT_EQ(node_handle.mapped(), 1) << i;
+  }
+}
+
 // For multisets, insert with hint also affects correctness because we need to
 // insert immediately before the hint if possible.
 struct InsertMultiHintData {
@@ -2726,7 +2750,6 @@ TYPED_TEST_SUITE(BtreeMultiKeyTest, MultiKeyComps);
 
 TYPED_TEST(BtreeMultiKeyTest, EqualRange) {
   absl::btree_set<MultiKey, TypeParam> set;
-
   for (int i = 0; i < 100; ++i) {
     for (int j = 0; j < 100; ++j) {
       set.insert({i, j});
@@ -2736,8 +2759,29 @@ TYPED_TEST(BtreeMultiKeyTest, EqualRange) {
   for (int i = 0; i < 100; ++i) {
     auto equal_range = set.equal_range(i);
     EXPECT_EQ(equal_range.first->i1, i);
-    EXPECT_EQ(equal_range.first->i2, 0);
+    EXPECT_EQ(equal_range.first->i2, 0) << i;
     EXPECT_EQ(std::distance(equal_range.first, equal_range.second), 100) << i;
+  }
+}
+
+TYPED_TEST(BtreeMultiKeyTest, Extract) {
+  absl::btree_set<MultiKey, TypeParam> set;
+  for (int i = 0; i < 100; ++i) {
+    for (int j = 0; j < 100; ++j) {
+      set.insert({i, j});
+    }
+  }
+
+  for (int i = 0; i < 100; ++i) {
+    auto node_handle = set.extract(i);
+    EXPECT_EQ(node_handle.value().i1, i);
+    EXPECT_EQ(node_handle.value().i2, 0) << i;
+  }
+
+  for (int i = 0; i < 100; ++i) {
+    auto node_handle = set.extract(i);
+    EXPECT_EQ(node_handle.value().i1, i);
+    EXPECT_EQ(node_handle.value().i2, 1) << i;
   }
 }
 
