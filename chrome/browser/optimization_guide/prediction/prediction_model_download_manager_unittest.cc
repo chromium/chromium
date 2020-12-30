@@ -9,6 +9,7 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
@@ -135,7 +136,15 @@ class PredictionModelDownloadManagerTest
     download_manager()->OnDownloadFailed(guid);
   }
 
-  void RunUntilIdle() { task_environment()->RunUntilIdle(); }
+  void RunUntilIdle() {
+    task_environment()->RunUntilIdle();
+
+    // Wait for all delayed tasks to finish.
+    base::RunLoop run_loop;
+    base::ThreadPoolInstance::Get()->FlushAsyncForTesting(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
   base::FilePath GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus file_status) {
