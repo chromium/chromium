@@ -110,9 +110,11 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
                                     int delegate_id,
                                     const std::string& raw_device_id);
 
-  // Return an already bound mojo Remote for the MediaPlayer mojo interface. It
-  // is an error to call this method if no MediaPlayer with |player_id| exists.
-  mojo::Remote<media::mojom::MediaPlayer>& GetMediaPlayerRemote(
+  // Return an already bound mojo Remote for the MediaPlayer mojo interface.
+  // Return null if no player with |player_id| exists.
+  // TODO(https://crbug.com/1161551): Revert to returning a reference and make
+  // it an error to call this method if no MediaPlayer with |player_id| exists.
+  media::mojom::MediaPlayer* GetMediaPlayerRemote(
       const MediaPlayerId& player_id);
 
   // Creates a new MediaPlayerObserverHostImpl associated to |player_id| if
