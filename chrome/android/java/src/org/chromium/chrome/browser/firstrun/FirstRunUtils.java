@@ -26,6 +26,8 @@ public class FirstRunUtils {
     private static final int DEFAULT_SKIP_TOS_EXIT_DELAY_MS = 1000;
     private static final int A11Y_DELAY_FACTOR = 2;
 
+    private static boolean sDisableDelayOnExitFreForTest;
+
     /**
      * Synchronizes first run native and Java preferences.
      * Must be called after native initialization.
@@ -132,11 +134,18 @@ public class FirstRunUtils {
      * @return The number of ms delay before exiting FRE with policy.
      */
     public static int getSkipTosExitDelayMs() {
+        if (sDisableDelayOnExitFreForTest) return 0;
+
         int durationMs = DEFAULT_SKIP_TOS_EXIT_DELAY_MS;
         if (ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) {
             durationMs *= A11Y_DELAY_FACTOR;
         }
         return durationMs;
+    }
+
+    @VisibleForTesting
+    public static void setDisableDelayOnExitFreForTest(boolean isDisable) {
+        sDisableDelayOnExitFreForTest = isDisable;
     }
 
     @NativeMethods

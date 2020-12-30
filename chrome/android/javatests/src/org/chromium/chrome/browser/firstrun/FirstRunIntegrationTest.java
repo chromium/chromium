@@ -94,6 +94,7 @@ public class FirstRunIntegrationTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         FirstRunStatus.setFirstRunSkippedByPolicy(false);
+        FirstRunUtils.setDisableDelayOnExitFreForTest(true);
         FirstRunActivity.setObserverForTest(mTestObserver);
         ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(true);
 
@@ -109,6 +110,7 @@ public class FirstRunIntegrationTest {
     @After
     public void tearDown() {
         FirstRunStatus.setFirstRunSkippedByPolicy(false);
+        FirstRunUtils.setDisableDelayOnExitFreForTest(false);
         FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
         ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(false);
         EnterpriseInfo.setInstanceForTest(null);

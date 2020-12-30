@@ -126,6 +126,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         FirstRunAppRestrictionInfo.setInitializedInstanceForTest(mMockAppRestrictionInfo);
         ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(true);
         PolicyServiceFactory.setPolicyServiceForTest(mPolicyService);
+        FirstRunUtils.setDisableDelayOnExitFreForTest(true);
         FirstRunUtilsJni.TEST_HOOKS.setInstanceForTesting(mFirstRunUtils);
         EnterpriseInfo.setInstanceForTest(mMockEnterpriseInfo);
 
@@ -167,6 +168,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(false);
         TosAndUmaFirstRunFragmentWithEnterpriseSupport.setOverrideOnExitFreRunnableForTest(null);
         PolicyServiceFactory.setPolicyServiceForTest(null);
+        FirstRunUtils.setDisableDelayOnExitFreForTest(false);
         FirstRunUtilsJni.TEST_HOOKS.setInstanceForTesting(mFirstRunUtils);
         EnterpriseInfo.setInstanceForTest(null);
         SharedPreferencesManager.getInstance().writeBoolean(

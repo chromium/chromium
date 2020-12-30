@@ -77,7 +77,6 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
             new OneshotSupplierImpl<>();
 
     private Handler mHandler;
-    private Runnable mExitFreRunnable;
 
     /** The {@link SystemClock} timestamp when onViewCreated is called. */
     private long mViewCreatedTimeMs;
@@ -92,8 +91,9 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
             mSkipTosDialogPolicyListener.destroy();
             mSkipTosDialogPolicyListener = null;
         }
-        if (mHandler != null && mExitFreRunnable != null) {
-            mHandler.removeCallbacks(mExitFreRunnable);
+        if (mHandler != null) {
+            // Remove all callback associated.
+            mHandler.removeCallbacksAndMessages(null);
             mHandler = null;
         }
         super.onDestroy();
@@ -192,17 +192,13 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
             mPrivacyDisclaimer.announceForAccessibility(mPrivacyDisclaimer.getText());
         }
 
-        if (sOverridenOnExitFreRunnableForTest != null) {
-            mExitFreRunnable = sOverridenOnExitFreRunnableForTest;
-        } else {
-            mExitFreRunnable = () -> {
-                getPageDelegate().exitFirstRun();
-                mExitFreRunnable = null;
-            };
-        }
-
+        // Make sure this function is called at most once by asserting no handler is created yet.
+        assert mHandler == null;
+        Runnable exitFreRunnable = sOverridenOnExitFreRunnableForTest != null
+                ? sOverridenOnExitFreRunnableForTest
+                : () -> getPageDelegate().exitFirstRun();
         mHandler = new Handler(ThreadUtils.getUiThreadLooper());
-        mHandler.postDelayed(mExitFreRunnable, FirstRunUtils.getSkipTosExitDelayMs());
+        mHandler.postDelayed(exitFreRunnable, FirstRunUtils.getSkipTosExitDelayMs());
     }
 
     @VisibleForTesting
