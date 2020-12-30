@@ -363,8 +363,8 @@ void MessageService::OpenChannelToExtension(
     // This check may show a dialog.
     messaging_delegate_->QueryIncognitoConnectability(
         context, target_extension, source_contents, source_url,
-        base::Bind(&MessageService::OnOpenChannelAllowed,
-                   weak_factory_.GetWeakPtr(), base::Passed(&params)));
+        base::BindOnce(&MessageService::OnOpenChannelAllowed,
+                       weak_factory_.GetWeakPtr(), base::Passed(&params)));
     return;
   }
 

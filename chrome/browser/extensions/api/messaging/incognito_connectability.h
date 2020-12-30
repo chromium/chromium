@@ -66,20 +66,24 @@ class IncognitoConnectability : public BrowserContextKeyedAPI {
   void Query(const Extension* extension,
              content::WebContents* web_contents,
              const GURL& url,
-             const base::Callback<void(bool)>& callback);
+             base::OnceCallback<void(bool)> callback);
 
  private:
   struct TabContext {
     TabContext();
-    TabContext(const TabContext& other);
     ~TabContext();
+
+    // TabContext can't be copied since the callbacks are OnceCallback (and
+    // hence, move-only).
+    TabContext(const TabContext& other) = delete;
+    TabContext& operator=(const TabContext&) = delete;
 
     // The infobar being shown in a given tab. The InfoBarService maintains
     // ownership of this object. This struct must always be destroyed before the
     // infobar it tracks.
     infobars::InfoBar* infobar;
     // Connectability queries outstanding on this infobar.
-    std::vector<base::Callback<void(bool)>> callbacks;
+    std::vector<base::OnceCallback<void(bool)>> callbacks;
   };
 
   friend class BrowserContextKeyedAPIFactory<IncognitoConnectability>;
@@ -87,10 +91,10 @@ class IncognitoConnectability : public BrowserContextKeyedAPI {
   explicit IncognitoConnectability(content::BrowserContext* context);
   ~IncognitoConnectability() override;
 
-  typedef std::map<std::string, std::set<GURL> > ExtensionToOriginsMap;
-  typedef std::pair<std::string, GURL> ExtensionOriginPair;
-  typedef std::map<InfoBarService*, TabContext> PendingOrigin;
-  typedef std::map<ExtensionOriginPair, PendingOrigin> PendingOriginMap;
+  using ExtensionToOriginsMap = std::map<std::string, std::set<GURL>>;
+  using ExtensionOriginPair = std::pair<std::string, GURL>;
+  using PendingOrigin = std::map<InfoBarService*, TabContext>;
+  using PendingOriginMap = std::map<ExtensionOriginPair, PendingOrigin>;
 
   // Called with the user's selection from the infobar.
   // |response == INTERACTIVE| indicates that the user closed the infobar
