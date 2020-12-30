@@ -1315,6 +1315,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeStyleAttributes(ui::AXNodeData* node_data);
   void SerializeSparseAttributes(ui::AXNodeData* node_data);
   void SerializeTableAttributes(ui::AXNodeData* node_data);
+  void SerializeListAttributes(ui::AXNodeData* node_data);
 
  private:
   void UpdateDistributionForFlatTreeTraversal() const;

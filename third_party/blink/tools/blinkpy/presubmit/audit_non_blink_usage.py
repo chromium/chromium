@@ -492,6 +492,7 @@ _CONFIG = [
             # Accessibility helper functions - mostly used in Blink for
             # serialization.
             'ui::IsDialog',
+            'ui::IsHeading',
             'ui::IsContainerWithSelectableChildren',
             'ui::IsTableLike',
             'ui::IsTableRow',

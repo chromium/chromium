@@ -392,20 +392,6 @@ bool WebAXObject::IsEditable() const {
   return private_->IsEditable();
 }
 
-int WebAXObject::PosInSet() const {
-  if (IsDetached())
-    return 0;
-
-  return private_->PosInSet();
-}
-
-int WebAXObject::SetSize() const {
-  if (IsDetached())
-    return 0;
-
-  return private_->SetSize();
-}
-
 bool WebAXObject::IsInLiveRegion() const {
   if (IsDetached())
     return false;

@@ -502,26 +502,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
 
   SerializeNameAndDescriptionAttributes(src, dst);
 
-  if (accessibility_mode_.has_mode(ui::AXMode::kScreenReader) ||
-      accessibility_mode_.has_mode(ui::AXMode::kPDF)) {
-    // Heading level.
-    if (ui::IsHeading(dst->role) && src.HeadingLevel()) {
-      dst->AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
-                           src.HeadingLevel());
-    }
-
-    WebAXObject parent = ParentObjectUnignored(src);
-    if (src.Language().length()) {
-      // TODO(chrishall): should we still trim redundant languages off here?
-      if (parent.IsNull() || parent.Language() != src.Language()) {
-        TruncateAndAddStringAttribute(
-            dst, ax::mojom::StringAttribute::kLanguage, src.Language().Utf8());
-      }
-    }
-
-    SerializeListAttributes(src, dst);
-  }
-
   if (accessibility_mode_.has_mode(ui::AXMode::kPDF)) {
     // Return early. None of the following attributes are needed for PDFs.
     return;
@@ -723,15 +703,6 @@ void BlinkAXTreeSource::SerializeLiveRegionAttributes(
   TruncateAndAddStringAttribute(
       dst, ax::mojom::StringAttribute::kContainerLiveRelevant,
       src.ContainerLiveRegionRelevant().Utf8());
-}
-
-void BlinkAXTreeSource::SerializeListAttributes(WebAXObject src,
-                                                ui::AXNodeData* dst) const {
-  if (src.SetSize())
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kSetSize, src.SetSize());
-
-  if (src.PosInSet())
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, src.PosInSet());
 }
 
 void BlinkAXTreeSource::SerializeScrollAttributes(WebAXObject src,

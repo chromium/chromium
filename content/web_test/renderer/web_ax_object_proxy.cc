@@ -1095,12 +1095,12 @@ int WebAXObjectProxy::HierarchicalLevel() {
 
 int WebAXObjectProxy::PosInSet() {
   UpdateLayout();
-  return accessibility_object_.PosInSet();
+  return GetAXNodeData().GetIntAttribute(ax::mojom::IntAttribute::kPosInSet);
 }
 
 int WebAXObjectProxy::SetSize() {
   UpdateLayout();
-  return accessibility_object_.SetSize();
+  return GetAXNodeData().GetIntAttribute(ax::mojom::IntAttribute::kSetSize);
 }
 
 int WebAXObjectProxy::ClickPointX() {

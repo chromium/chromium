@@ -232,10 +232,6 @@ class WebAXObject {
                               int& focus_offset,
                               ax::mojom::TextAffinity& focus_affinity) const;
 
-  // 1-based position in set & Size of set.
-  BLINK_EXPORT int PosInSet() const;
-  BLINK_EXPORT int SetSize() const;
-
   // Live regions.
   BLINK_EXPORT bool IsInLiveRegion() const;
   BLINK_EXPORT bool LiveRegionAtomic() const;

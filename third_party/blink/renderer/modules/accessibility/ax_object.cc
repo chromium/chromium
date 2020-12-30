@@ -853,6 +853,23 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
                                  dom_node_id);
     }
 
+    // Heading level.
+    if (ui::IsHeading(RoleValue()) && HeadingLevel()) {
+      node_data->AddIntAttribute(
+          ax::mojom::blink::IntAttribute::kHierarchicalLevel, HeadingLevel());
+    }
+
+    AXObject* parent = ParentObject();
+    if (Language().length()) {
+      // TODO(chrishall): should we still trim redundant languages off here?
+      if (!parent || parent->Language() != Language()) {
+        TruncateAndAddStringAttribute(
+            node_data, ax::mojom::blink::StringAttribute::kLanguage,
+            Language().Utf8());
+      }
+    }
+
+    SerializeListAttributes(node_data);
     SerializeTableAttributes(node_data);
   }
 
@@ -1116,6 +1133,18 @@ void AXObject::SerializeSparseAttributes(ui::AXNodeData* node_data) {
 
     if (callback)
       callback.Run(this, node_data, internals_attributes.at(attr));
+  }
+}
+
+void AXObject::SerializeListAttributes(ui::AXNodeData* node_data) {
+  if (SetSize()) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kSetSize,
+                               SetSize());
+  }
+
+  if (PosInSet()) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kPosInSet,
+                               PosInSet());
   }
 }
 
