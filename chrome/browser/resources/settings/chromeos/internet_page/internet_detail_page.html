@@ -261,10 +261,13 @@
         </settings-toggle-button>
       </template>
       <!-- SIM Info (Cellular only). -->
+      <!-- TODO(crbug/1093185): Remove when updatedCellularActivationUi
+           flag launches -->
       <template is="dom-if" if="[[showCellularSim_(managedProperties_)]]"
           restamp>
         <div class="settings-box single-column stretch">
-          <network-siminfo device-state="[[deviceState_]]">
+          <network-siminfo id="cellularSimInfo"
+              device-state="[[deviceState_]]">
           </network-siminfo>
         </div>
       </template>
@@ -299,6 +302,14 @@
         <!-- Advanced section -->
         <iron-collapse opened="[[advancedExpanded_]]">
           <div class="settings-box single-column stretch indented first">
+             <!-- SIM Info (Cellular only). -->
+            <template is="dom-if"
+                if="[[showCellularSimUpdatedUi_(managedProperties_)]]" restamp>
+              <div class="single-column stretch">
+                <network-siminfo device-state="[[deviceState_]]">
+                </network-siminfo>
+              </div>
+            </template>
             <!-- Metered (WiFi and Cellular only). -->
             <template is="dom-if"
                 if="[[showMetered_(managedProperties_, showMeteredToggle_)]]">

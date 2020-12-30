@@ -191,6 +191,14 @@ Polymer({
     },
 
     /** @private */
+    isUpdatedCellularUiEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('updatedCellularActivationUi');
+      }
+    },
+
+    /** @private */
     advancedExpanded_: Boolean,
 
     /** @private */
@@ -2114,11 +2122,24 @@ Polymer({
    * @private
    */
   showCellularSim_(managedProperties) {
-    return !!managedProperties &&
+    return !!managedProperties && !this.isUpdatedCellularUiEnabled_ &&
         managedProperties.type ===
         chromeos.networkConfig.mojom.NetworkType.kCellular &&
         managedProperties.typeProperties.cellular.family !== 'CDMA';
   },
+
+  /**
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
+   * @return {boolean}
+   * @private
+   */
+  showCellularSimUpdatedUi_(managedProperties) {
+    return !!managedProperties && this.isUpdatedCellularUiEnabled_ &&
+        managedProperties.type ===
+        chromeos.networkConfig.mojom.NetworkType.kCellular &&
+        managedProperties.typeProperties.cellular.family !== 'CDMA';
+  },
+
 
   /**
    * @param {!chromeos.networkConfig.mojom.ManagedProperties|undefined}

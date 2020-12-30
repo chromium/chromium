@@ -50,6 +50,7 @@ suite('InternetDetailPage', function() {
       internetAddWiFi: 'internetAddWiFi',
       internetDetailPageTitle: 'internetDetailPageTitle',
       internetKnownNetworksPageTitle: 'internetKnownNetworksPageTitle',
+      updatedCellularActivationUi: false,
     });
 
     mojoApi_ = new FakeNetworkConfig();
@@ -414,7 +415,7 @@ suite('InternetDetailPage', function() {
       Polymer.dom.flush();
 
       const deepLinkElement =
-          internetDetailPage.$$('network-siminfo').$$('#simLockButton');
+          internetDetailPage.$$('#cellularSimInfo').$$('#simLockButton');
 
       // In this rare case, wait after next render twice due to focus behavior
       // of the siminfo component.
