@@ -68,6 +68,7 @@ public class WebXrArAnchorsTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1153305")
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     @ArPlaybackFile("chrome/test/data/xr/ar_playback_datasets/floor_session_12s_30fps.mp4")
     public void testHitTestAnchorSucceedsWithPlane() {
