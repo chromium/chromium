@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.signin.services;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -55,17 +56,17 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
         @Override
         public List<String> getAccountChangeEvents(Context context, int index, String accountName) {
             try {
-                List<AccountChangeEvent> list =
+                List<AccountChangeEvent> accountChangeEvents =
                         GoogleAuthUtil.getAccountChangeEvents(context, index, accountName);
-                List<String> result = new ArrayList<>(list.size());
-                for (AccountChangeEvent e : list) {
-                    if (e.getChangeType() == GoogleAuthUtil.CHANGE_TYPE_ACCOUNT_RENAMED_TO) {
-                        result.add(e.getChangeData());
+                List<String> changedNames = new ArrayList<>(accountChangeEvents.size());
+                for (AccountChangeEvent event : accountChangeEvents) {
+                    if (event.getChangeType() == GoogleAuthUtil.CHANGE_TYPE_ACCOUNT_RENAMED_TO) {
+                        changedNames.add(event.getChangeData());
                     } else {
-                        result.add(null);
+                        changedNames.add(null);
                     }
                 }
-                return result;
+                return changedNames;
             } catch (IOException | GoogleAuthException e) {
                 Log.w(TAG, "Failed to get change events", e);
             }
@@ -119,7 +120,10 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
 
         String renamedAccount = mPrefsManager.getNewSignedInAccountName();
         if (accountsChanged && renamedAccount != null) {
-            handleAccountRename(syncAccount.getEmail(), renamedAccount);
+            Log.i(TAG,
+                    "handleAccountRename from: " + syncAccount.getEmail() + " to "
+                            + renamedAccount);
+            handleAccountRename(renamedAccount);
             return;
         }
 
@@ -165,9 +169,7 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
      * In the (near) future, we should just be clearing all the cached email address here
      * and have the UI re-fetch the emailing address based on the ID.
      */
-    private void handleAccountRename(final String oldName, final String newName) {
-        Log.i(TAG, "handleAccountRename from: " + oldName + " to " + newName);
-
+    private void handleAccountRename(final String newName) {
         // TODO(acleung): I think most of the operations need to run on the main
         // thread. May be we should have a progress Dialog?
 
@@ -201,52 +203,46 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
 
     @VisibleForTesting
     public static void updateAccountRenameData(
-            AccountChangeEventChecker checker, String currentName) {
-        // Skip the search if there is no signed in account.
-        if (currentName == null) return;
+            AccountChangeEventChecker checker, String currentAccountName) {
+        final SigninPreferencesManager prefsManager = SigninPreferencesManager.getInstance();
+        final int currentEventIndex = prefsManager.getLastAccountChangedEventIndex();
+        final Pair<Integer, String> newEventIndexAndAccountName =
+                findAccountRenameEvent(checker, currentEventIndex, currentAccountName);
+        if (currentEventIndex != newEventIndexAndAccountName.first) {
+            prefsManager.setLastAccountChangedEventIndex(newEventIndexAndAccountName.first);
+        }
+        if (!currentAccountName.equals(newEventIndexAndAccountName.second)) {
+            prefsManager.setNewSignedInAccountName(newEventIndexAndAccountName.second);
+        }
+    }
 
-        String newName = currentName;
-
-        SigninPreferencesManager prefsManager = SigninPreferencesManager.getInstance();
-        int eventIndex = prefsManager.getLastAccountChangedEventIndex();
-        int newIndex = eventIndex;
-
-        try {
-        outerLoop:
-            while (true) {
-                final List<Account> accounts =
-                        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
-                List<String> nameChanges = checker.getAccountChangeEvents(
-                        ContextUtils.getApplicationContext(), newIndex, newName);
-                for (String name : nameChanges) {
-                    if (name != null) {
-                        // We have found a rename event of the current account.
-                        // We need to check if that account is further renamed.
-                        newName = name;
-                        if (AccountUtils.findAccountByName(accounts, newName) == null) {
-                            newIndex = 0; // Start from the beginning of the new account.
-                            continue outerLoop;
-                        }
-                        break;
-                    }
+    /**
+     * Finds the account rename event.
+     * @return A pair including the account change event index and the changed account name.
+     *         When there's no pending rename event, the event index is still updated to the
+     *         last read index to avoid reading the same data again in the future.
+     */
+    private static Pair<Integer, String> findAccountRenameEvent(
+            AccountChangeEventChecker checker, int eventIndex, String accountName) {
+        final List<Account> accounts =
+                AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
+        final List<String> changedNames = checker.getAccountChangeEvents(
+                ContextUtils.getApplicationContext(), eventIndex, accountName);
+        final int newEventIndex = changedNames.size();
+        for (String changedName : changedNames) {
+            if (changedName != null) {
+                // We have found a rename event of the current account.
+                // We need to check if that account is further renamed.
+                if (AccountUtils.findAccountByName(accounts, changedName) == null) {
+                    // Start from the beginning of the new account if account does not exist on
+                    // device
+                    return findAccountRenameEvent(checker, 0, changedName);
+                } else {
+                    return new Pair<>(newEventIndex, changedName);
                 }
-
-                // If there is no rename event pending. Update the last read index to avoid
-                // re-reading them in the future.
-                newIndex = nameChanges.size();
-                break;
             }
-        } catch (Exception e) {
-            Log.w(TAG, "Error while looking for rename events.", e);
         }
-
-        if (!currentName.equals(newName)) {
-            prefsManager.setNewSignedInAccountName(newName);
-        }
-
-        if (newIndex != eventIndex) {
-            prefsManager.setLastAccountChangedEventIndex(newIndex);
-        }
+        return new Pair<>(newEventIndex, accountName);
     }
 
     /**
