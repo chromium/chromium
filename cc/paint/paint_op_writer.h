@@ -69,26 +69,19 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const PaintShader* shader, SkFilterQuality quality);
   void Write(const PaintFilter* filter);
   void Write(const sk_sp<SkTextBlob>& blob);
-  void Write(SkColorType color_type);
   void Write(SkYUVColorSpace yuv_color_space);
   void Write(SkYUVAInfo::PlaneConfig plane_config);
   void Write(SkYUVAInfo::Subsampling subsampling);
   void Write(const gpu::Mailbox& mailbox);
 
-  void Write(SkClipOp op) { Write(static_cast<uint8_t>(op)); }
-  void Write(PaintCanvas::AnnotationType type) {
-    Write(static_cast<uint8_t>(type));
-  }
-  void Write(SkCanvas::SrcRectConstraint constraint) {
-    Write(static_cast<uint8_t>(constraint));
-  }
-  void Write(SkFilterQuality filter_quality) {
-    Write(static_cast<uint8_t>(filter_quality));
-  }
-  void Write(SkBlendMode blend_mode) {
-    Write(static_cast<uint8_t>(blend_mode));
-  }
-  void Write(SkTileMode tile_mode) { Write(static_cast<uint8_t>(tile_mode)); }
+  void Write(SkClipOp op) { WriteEnum(op); }
+  void Write(PaintCanvas::AnnotationType type) { WriteEnum(type); }
+  void Write(SkCanvas::SrcRectConstraint constraint) { WriteEnum(constraint); }
+  void Write(SkColorType color_type) { WriteEnum(color_type); }
+  void Write(SkFilterQuality filter_quality) { WriteEnum(filter_quality); }
+  void Write(SkBlendMode blend_mode) { WriteEnum(blend_mode); }
+  void Write(SkTileMode tile_mode) { WriteEnum(tile_mode); }
+
   void Write(bool data) { Write(static_cast<uint8_t>(data)); }
 
   // Aligns the memory to the given alignment.
@@ -127,6 +120,11 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void WriteSimple(const T& val);
 
   void WriteFlattenable(const SkFlattenable* val);
+
+  template <typename Enum>
+  void WriteEnum(Enum value) {
+    Write(base::checked_cast<uint8_t>(value));
+  }
 
   // The main entry point is Write(const PaintFilter* filter) which casts the
   // filter and calls one of the following functions.

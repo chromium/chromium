@@ -2536,7 +2536,10 @@ TEST(PaintOpBufferTest, ValidateSkClip) {
   buffer.push<ClipRectOp>(test_rects[0], bad_clip, true);
   buffer.push<ClipRRectOp>(test_rrects[0], bad_clip, false);
 
-  SkClipOp bad_clip_max = static_cast<SkClipOp>(~static_cast<uint32_t>(0));
+  // SkClipOp is serialized to uint8_t (see WriteEnum). Values outside uint8_t
+  // would crash the serialization, so this is the max value that passes checked
+  // cast but will still fail validation during deserialization.
+  SkClipOp bad_clip_max = static_cast<SkClipOp>(static_cast<uint8_t>(~0));
   buffer.push<ClipRectOp>(test_rects[1], bad_clip_max, false);
 
   TestOptionsProvider options_provider;
@@ -2598,15 +2601,15 @@ TEST(PaintOpBufferTest, ValidateSkBlendMode) {
       SkBlendMode::kSaturation,
       SkBlendMode::kColor,
       SkBlendMode::kLuminosity,
-      static_cast<SkBlendMode>(static_cast<uint32_t>(SkBlendMode::kLastMode) +
+      static_cast<SkBlendMode>(static_cast<uint8_t>(SkBlendMode::kLastMode) +
                                1),
-      static_cast<SkBlendMode>(static_cast<uint32_t>(~0)),
+      static_cast<SkBlendMode>(static_cast<uint8_t>(~0)),
   };
 
   SkBlendMode bad_modes_for_flags[] = {
-      static_cast<SkBlendMode>(static_cast<uint32_t>(SkBlendMode::kLastMode) +
+      static_cast<SkBlendMode>(static_cast<uint8_t>(SkBlendMode::kLastMode) +
                                1),
-      static_cast<SkBlendMode>(static_cast<uint32_t>(~0)),
+      static_cast<SkBlendMode>(static_cast<uint8_t>(~0)),
   };
 
   for (size_t i = 0; i < base::size(bad_modes_for_draw_color); ++i) {

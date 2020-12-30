@@ -153,7 +153,7 @@ INSTANTIATE_TEST_SUITE_P(
     P,
     PaintFilterTest,
     ::testing::Range(static_cast<uint8_t>(PaintFilter::Type::kColorFilter),
-                     static_cast<uint8_t>(PaintFilter::Type::kMaxFilterType)));
+                     static_cast<uint8_t>(PaintFilter::Type::kMaxValue)));
 
 TEST_P(PaintFilterTest, HasDiscardableImagesYes) {
   // TurbulencePaintFilter can not embed images.

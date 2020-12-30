@@ -72,7 +72,6 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(sk_sp<PaintShader>* shader);
   void Read(SkMatrix* matrix);
   void Read(SkM44* matrix);
-  void Read(SkColorType* color_type);
   void Read(SkImageInfo* info);
   void Read(sk_sp<SkColorSpace>* color_space);
   void Read(SkYUVColorSpace* yuv_color_space);
@@ -84,48 +83,28 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(scoped_refptr<SkottieWrapper>* skottie);
 #endif
 
-  void Read(SkClipOp* op) {
-    uint8_t value = 0u;
-    Read(&value);
-    *op = static_cast<SkClipOp>(value);
-  }
+  void Read(SkClipOp* op) { ReadEnum<SkClipOp, SkClipOp::kMax_EnumValue>(op); }
   void Read(PaintCanvas::AnnotationType* type) {
-    uint8_t value = 0u;
-    Read(&value);
-    *type = static_cast<PaintCanvas::AnnotationType>(value);
+    ReadEnum<PaintCanvas::AnnotationType,
+             PaintCanvas::AnnotationType::LINK_TO_DESTINATION>(type);
   }
   void Read(SkCanvas::SrcRectConstraint* constraint) {
-    uint8_t value = 0u;
-    Read(&value);
-    *constraint = static_cast<SkCanvas::SrcRectConstraint>(value);
+    ReadEnum<SkCanvas::SrcRectConstraint, SkCanvas::kFast_SrcRectConstraint>(
+        constraint);
+  }
+  void Read(SkColorType* color_type) {
+    ReadEnum<SkColorType, kLastEnum_SkColorType>(color_type);
   }
   void Read(SkFilterQuality* quality) {
-    uint8_t value = 0u;
-    Read(&value);
-    if (value > static_cast<uint8_t>(kLast_SkFilterQuality)) {
-      SetInvalid();
-      return;
-    }
-    *quality = static_cast<SkFilterQuality>(value);
+    ReadEnum<SkFilterQuality, kLast_SkFilterQuality>(quality);
   }
   void Read(SkBlendMode* blend_mode) {
-    uint8_t value = 0u;
-    Read(&value);
-    if (value > static_cast<uint8_t>(SkBlendMode::kLastMode)) {
-      SetInvalid();
-      return;
-    }
-    *blend_mode = static_cast<SkBlendMode>(value);
+    ReadEnum<SkBlendMode, SkBlendMode::kLastMode>(blend_mode);
   }
   void Read(SkTileMode* tile_mode) {
-    uint8_t value = 0u;
-    Read(&value);
-    if (value >= kSkTileModeCount) {
-      SetInvalid();
-      return;
-    }
-    *tile_mode = static_cast<SkTileMode>(value);
+    ReadEnum<SkTileMode, SkTileMode::kLastTileMode>(tile_mode);
   }
+
   void Read(bool* data) {
     uint8_t value = 0u;
     Read(&value);
@@ -146,6 +125,19 @@ class CC_PAINT_EXPORT PaintOpReader {
 
   template <typename T>
   void ReadFlattenable(sk_sp<T>* val);
+
+  template <typename Enum, Enum kMaxValue = Enum::kMaxValue>
+  void ReadEnum(Enum* enum_value) {
+    static_assert(static_cast<unsigned>(kMaxValue) <= 255,
+                  "Max value must fit in uint8_t");
+    uint8_t value = 0u;
+    Read(&value);
+    if (value > static_cast<uint8_t>(kMaxValue)) {
+      SetInvalid();
+      return;
+    }
+    *enum_value = static_cast<Enum>(value);
+  }
 
   void SetInvalid(bool skip_crash_dump = false);
 

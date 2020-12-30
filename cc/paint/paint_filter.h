@@ -33,7 +33,7 @@ class ImageProvider;
 
 class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
  public:
-  enum class Type : uint32_t {
+  enum class Type {
     // For serialization purposes, we reserve one enum to indicate that there
     // was no PaintFilter, ie the filter is "null".
     kNullFilter,
@@ -60,13 +60,13 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
     kLightingPoint,
     kLightingSpot,
     // Update the following if kLightingSpot is not the max anymore.
-    kMaxFilterType = kLightingSpot
+    kMaxValue = kLightingSpot
   };
-  enum class LightingType : uint32_t {
+  enum class LightingType {
     kDiffuse,
     kSpecular,
     // Update the following if kSpecular is not the max anymore.
-    kMaxLightingType = kSpecular
+    kMaxValue = kSpecular
   };
 
   using MapDirection = SkImageFilter::MapDirection;
@@ -554,7 +554,7 @@ class CC_PAINT_EXPORT MergePaintFilter final : public PaintFilter {
 
 class CC_PAINT_EXPORT MorphologyPaintFilter final : public PaintFilter {
  public:
-  enum class MorphType : uint32_t { kDilate, kErode, kMaxMorphType = kErode };
+  enum class MorphType { kDilate, kErode, kMaxValue = kErode };
   static constexpr Type kType = Type::kMorphology;
   MorphologyPaintFilter(MorphType morph_type,
                         float radius_x,
@@ -636,10 +636,10 @@ class CC_PAINT_EXPORT TilePaintFilter final : public PaintFilter {
 class CC_PAINT_EXPORT TurbulencePaintFilter final : public PaintFilter {
  public:
   static constexpr Type kType = Type::kTurbulence;
-  enum class TurbulenceType : uint32_t {
+  enum class TurbulenceType {
     kTurbulence,
     kFractalNoise,
-    kMaxTurbulenceType = kFractalNoise
+    kMaxValue = kFractalNoise
   };
   TurbulencePaintFilter(TurbulenceType turbulence_type,
                         SkScalar base_frequency_x,
