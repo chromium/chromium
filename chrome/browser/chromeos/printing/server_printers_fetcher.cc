@@ -16,8 +16,8 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/device_event_log/device_event_log.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -46,6 +46,7 @@ class ServerPrintersFetcher::PrivateImplementation
     : public network::SimpleURLLoaderStreamConsumer {
  public:
   PrivateImplementation(const ServerPrintersFetcher* owner,
+                        Profile* profile,
                         const GURL& server_url,
                         const std::string& server_name,
                         ServerPrintersFetcher::OnPrintersFetchedCallback cb)
@@ -60,10 +61,9 @@ class ServerPrintersFetcher::PrivateImplementation
     task_runner_for_callback_ = base::SequencedTaskRunnerHandle::Get();
     // Post task to execute.
     task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &PrivateImplementation::SendQuery, base::Unretained(this),
-            g_browser_process->shared_url_loader_factory()->Clone()));
+        FROM_HERE, base::BindOnce(&PrivateImplementation::SendQuery,
+                                  base::Unretained(this),
+                                  profile->GetURLLoaderFactory()->Clone()));
   }
 
   ~PrivateImplementation() override = default;
@@ -230,10 +230,12 @@ class ServerPrintersFetcher::PrivateImplementation
   DISALLOW_COPY_AND_ASSIGN(PrivateImplementation);
 };
 
-ServerPrintersFetcher::ServerPrintersFetcher(const GURL& server_url,
+ServerPrintersFetcher::ServerPrintersFetcher(Profile* profile,
+                                             const GURL& server_url,
                                              const std::string& server_name,
                                              OnPrintersFetchedCallback cb)
     : pim_(new PrivateImplementation(this,
+                                     profile,
                                      server_url,
                                      server_name,
                                      std::move(cb)),

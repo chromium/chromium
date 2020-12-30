@@ -42,7 +42,7 @@ class ServerPrintersProviderImpl
     : public ServerPrintersProvider,
       public base::SupportsWeakPtr<ServerPrintersProviderImpl> {
  public:
-  ServerPrintersProviderImpl() {
+  explicit ServerPrintersProviderImpl(Profile* profile) : profile_(profile) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
@@ -96,7 +96,7 @@ class ServerPrintersProviderImpl
         // This is a new print server: query for printers.
         fetchers_.emplace(
             url, std::make_unique<ServerPrintersFetcher>(
-                     url, name,
+                     profile_, url, name,
                      base::BindRepeating(
                          &ServerPrintersProviderImpl::OnPrintersFetched,
                          weak_ptr_factory_.GetWeakPtr())));
@@ -158,6 +158,8 @@ class ServerPrintersProviderImpl
     return (servers_are_complete_ && fetchers_.empty());
   }
 
+  Profile* profile_;
+
   // A callback to propagate update of the resultant list of server printers.
   OnPrintersUpdateCallback callback_;
 
@@ -178,8 +180,9 @@ class ServerPrintersProviderImpl
 }  // namespace
 
 // static
-std::unique_ptr<ServerPrintersProvider> ServerPrintersProvider::Create() {
-  return std::make_unique<ServerPrintersProviderImpl>();
+std::unique_ptr<ServerPrintersProvider> ServerPrintersProvider::Create(
+    Profile* profile) {
+  return std::make_unique<ServerPrintersProviderImpl>(profile);
 }
 
 }  // namespace chromeos

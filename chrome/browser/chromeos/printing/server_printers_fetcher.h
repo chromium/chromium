@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/printing/printer_detector.h"
 
 class GURL;
+class Profile;
 
 namespace chromeos {
 
@@ -40,7 +41,8 @@ class ServerPrintersFetcher {
       const GURL& server_url,
       std::vector<PrinterDetector::DetectedPrinter>&& printers)>;
 
-  ServerPrintersFetcher(const GURL& server_url,
+  ServerPrintersFetcher(Profile* profile,
+                        const GURL& server_url,
                         const std::string& server_name,
                         OnPrintersFetchedCallback cb);
   virtual ~ServerPrintersFetcher();

@@ -14,6 +14,8 @@
 #include "chrome/browser/chromeos/printing/printer_detector.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class Profile;
+
 namespace chromeos {
 
 // Given a list of external print servers, uses ServerPrintersFetcher to track
@@ -24,7 +26,7 @@ namespace chromeos {
 // sequence, the callback is also called from this sequence.
 class ServerPrintersProvider {
  public:
-  static std::unique_ptr<ServerPrintersProvider> Create();
+  static std::unique_ptr<ServerPrintersProvider> Create(Profile* profile);
   virtual ~ServerPrintersProvider() = default;
 
   using OnPrintersUpdateCallback = base::RepeatingCallback<void(bool complete)>;

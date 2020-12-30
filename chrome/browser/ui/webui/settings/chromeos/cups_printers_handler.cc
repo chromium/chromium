@@ -1257,7 +1257,7 @@ void CupsPrintersHandler::QueryPrintServer(const std::string& callback_id,
                                            const GURL& server_url,
                                            bool should_fallback) {
   server_printers_fetcher_ = std::make_unique<ServerPrintersFetcher>(
-      server_url, "(from user)",
+      profile_, server_url, "(from user)",
       base::BindRepeating(&CupsPrintersHandler::OnQueryPrintServerCompleted,
                           weak_factory_.GetWeakPtr(), callback_id,
                           should_fallback));

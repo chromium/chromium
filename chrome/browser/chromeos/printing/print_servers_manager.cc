@@ -177,7 +177,7 @@ std::unique_ptr<PrintServersManager> PrintServersManager::Create(
     Profile* profile) {
   return std::make_unique<PrintServersManagerImpl>(
       PrintServersPolicyProvider::Create(profile),
-      ServerPrintersProvider::Create());
+      ServerPrintersProvider::Create(profile));
 }
 
 // static
