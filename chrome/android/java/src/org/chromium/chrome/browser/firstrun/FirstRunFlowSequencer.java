@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.services.AndroidChildAccountHelper;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -140,12 +139,6 @@ public abstract class FirstRunFlowSequencer  {
     }
 
     @VisibleForTesting
-    protected void setDefaultMetricsAndCrashReporting() {
-        PrivacyPreferencesManagerImpl.getInstance().setUsageAndCrashReporting(
-                FirstRunActivity.DEFAULT_METRICS_AND_CRASH_REPORTING);
-    }
-
-    @VisibleForTesting
     protected void setFirstRunFlowSignInComplete() {
         FirstRunSignInProcessor.setFirstRunFlowSignInComplete(true);
     }
@@ -168,10 +161,6 @@ public abstract class FirstRunFlowSequencer  {
 
         Bundle freProperties = new Bundle();
         freProperties.putInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS, mChildAccountStatus);
-
-        // Initialize usage and crash reporting according to the default value.
-        // The user can explicitly enable or disable the reporting on the Welcome page.
-        setDefaultMetricsAndCrashReporting();
 
         onFlowIsKnown(freProperties);
         if (ChildAccountStatus.isChild(mChildAccountStatus)) {

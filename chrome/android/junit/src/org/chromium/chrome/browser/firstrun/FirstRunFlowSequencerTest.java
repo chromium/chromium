@@ -52,7 +52,6 @@ public class FirstRunFlowSequencerTest {
     public static class TestFirstRunFlowSequencer extends FirstRunFlowSequencer {
         public Bundle returnedBundle;
         public boolean calledOnFlowIsKnown;
-        public boolean calledSetDefaultMetricsAndCrashReporting;
         public boolean calledSetFirstRunFlowSignInComplete;
 
         public boolean isFirstRunFlowComplete;
@@ -116,11 +115,6 @@ public class FirstRunFlowSequencerTest {
         }
 
         @Override
-        public void setDefaultMetricsAndCrashReporting() {
-            calledSetDefaultMetricsAndCrashReporting = true;
-        }
-
-        @Override
         protected void setFirstRunFlowSignInComplete() {
             calledSetFirstRunFlowSignInComplete = true;
         }
@@ -155,7 +149,6 @@ public class FirstRunFlowSequencerTest {
         mSequencer.processFreEnvironmentPreNative();
         assertTrue(mSequencer.calledOnFlowIsKnown);
         assertNull(mSequencer.returnedBundle);
-        assertFalse(mSequencer.calledSetDefaultMetricsAndCrashReporting);
     }
 
     @Test
@@ -171,7 +164,6 @@ public class FirstRunFlowSequencerTest {
 
         mSequencer.processFreEnvironmentPreNative();
         assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertTrue(mSequencer.calledSetDefaultMetricsAndCrashReporting);
         assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
 
         Bundle bundle = mSequencer.returnedBundle;
@@ -197,7 +189,6 @@ public class FirstRunFlowSequencerTest {
 
         mSequencer.processFreEnvironmentPreNative();
         assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertTrue(mSequencer.calledSetDefaultMetricsAndCrashReporting);
         assertTrue(mSequencer.calledSetFirstRunFlowSignInComplete);
 
         Bundle bundle = mSequencer.returnedBundle;
@@ -225,7 +216,6 @@ public class FirstRunFlowSequencerTest {
 
         mSequencer.processFreEnvironmentPreNative();
         assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertTrue(mSequencer.calledSetDefaultMetricsAndCrashReporting);
         assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
 
         Bundle bundle = mSequencer.returnedBundle;
@@ -251,7 +241,6 @@ public class FirstRunFlowSequencerTest {
 
         mSequencer.processFreEnvironmentPreNative();
         assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertTrue(mSequencer.calledSetDefaultMetricsAndCrashReporting);
         assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
 
         Bundle bundle = mSequencer.returnedBundle;
