@@ -434,18 +434,35 @@ void IndexedDBContextImpl::GetAllOriginsDetails(
 }
 
 void IndexedDBContextImpl::SetForceKeepSessionState() {
-  force_keep_session_state_ = true;
+  idb_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](IndexedDBContextImpl* context) {
+            context->force_keep_session_state_ = true;
+          },
+          // As |this| is destroyed on the IDBTaskRunner it is safe to post raw.
+          base::Unretained(this)));
 }
 
 void IndexedDBContextImpl::ApplyPolicyUpdates(
     std::vector<storage::mojom::IndexedDBStoragePolicyUpdatePtr>
         policy_updates) {
-  for (const auto& update : policy_updates) {
-    if (!update->purge_on_shutdown)
-      origins_to_purge_on_shutdown_.erase(update->origin);
-    else
-      origins_to_purge_on_shutdown_.insert(std::move(update->origin));
-  }
+  idb_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](IndexedDBContextImpl* context,
+             std::vector<storage::mojom::IndexedDBStoragePolicyUpdatePtr>
+                 policy_updates) {
+            for (const auto& update : policy_updates) {
+              if (!update->purge_on_shutdown)
+                context->origins_to_purge_on_shutdown_.erase(update->origin);
+              else
+                context->origins_to_purge_on_shutdown_.insert(
+                    std::move(update->origin));
+            }
+          },
+          // As |this| is destroyed on the IDBTaskRunner it is safe to post raw.
+          base::Unretained(this), std::move(policy_updates)));
 }
 
 void IndexedDBContextImpl::BindTestInterface(
@@ -802,13 +819,9 @@ IndexedDBContextImpl::~IndexedDBContextImpl() {
     indexeddb_factory_->ContextDestroyed();
 }
 
-void IndexedDBContextImpl::Shutdown() {
-  // Important: This function is NOT called on the IDB Task Runner. All variable
-  // access must be thread-safe.
-  if (is_incognito())
-    return;
+void IndexedDBContextImpl::ShutdownOnIDBSequence() {
+  DCHECK(idb_task_runner_->RunsTasksInCurrentSequence());
 
-  // TODO(dmurph): Make this variable atomic.
   if (force_keep_session_state_)
     return;
 
@@ -816,29 +829,32 @@ void IndexedDBContextImpl::Shutdown() {
   if (origins_to_purge_on_shutdown_.empty())
     return;
 
-  IDBTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](scoped_refptr<IndexedDBContextImpl> context) {
-            std::vector<Origin> origins;
-            std::vector<base::FilePath> file_paths;
-            // This function only needs the factory, and not the context, but
-            // the context is used because passing that is thread-safe.
-            IndexedDBFactoryImpl* factory = context->GetIDBFactory();
-            GetAllOriginsAndPaths(context->data_path_, &origins, &file_paths);
-            DCHECK_EQ(origins.size(), file_paths.size());
+  std::vector<Origin> origins;
+  std::vector<base::FilePath> file_paths;
+  IndexedDBFactoryImpl* factory = GetIDBFactory();
+  GetAllOriginsAndPaths(data_path_, &origins, &file_paths);
+  DCHECK_EQ(origins.size(), file_paths.size());
 
-            auto file_path = file_paths.cbegin();
-            auto origin = origins.cbegin();
-            for (; origin != origins.cend(); ++origin, ++file_path) {
-              if (context->origins_to_purge_on_shutdown_.find(*origin) ==
-                  context->origins_to_purge_on_shutdown_.end())
-                continue;
-              factory->ForceClose(*origin, false);
-              context->filesystem_proxy_->DeletePathRecursively(*file_path);
-            }
-          },
-          base::WrapRefCounted(this)));
+  auto file_path = file_paths.cbegin();
+  auto origin = origins.cbegin();
+  for (; origin != origins.cend(); ++origin, ++file_path) {
+    if (origins_to_purge_on_shutdown_.find(*origin) ==
+        origins_to_purge_on_shutdown_.end())
+      continue;
+    factory->ForceClose(*origin, false);
+    filesystem_proxy_->DeletePathRecursively(*file_path);
+  }
+}
+
+void IndexedDBContextImpl::Shutdown() {
+  // Important: This function is NOT called on the IDB Task Runner. All variable
+  // access must be thread-safe.
+  if (is_incognito())
+    return;
+
+  idb_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&IndexedDBContextImpl::ShutdownOnIDBSequence,
+                                base::WrapRefCounted(this)));
 }
 
 base::FilePath IndexedDBContextImpl::GetBlobStorePath(

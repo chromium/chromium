@@ -215,6 +215,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   ~IndexedDBContextImpl() override;
 
+  void ShutdownOnIDBSequence();
+
   base::FilePath GetBlobStorePath(const url::Origin& origin) const;
   base::FilePath GetLevelDBPath(const url::Origin& origin) const;
 
