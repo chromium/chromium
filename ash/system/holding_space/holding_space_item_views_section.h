@@ -27,15 +27,13 @@ namespace ash {
 
 class HoldingSpaceItemView;
 class HoldingSpaceItemViewDelegate;
-class HoldingSpaceModel;
 
 // A section of holding space item views in a `HoldingSpaceTrayChildBubble`.
 class HoldingSpaceItemViewsSection : public views::View {
  public:
-  HoldingSpaceItemViewsSection(
-      HoldingSpaceItemViewDelegate* delegate,
-      std::vector<HoldingSpaceItem::Type> supported_types,
-      const base::Optional<size_t>& max_count);
+  HoldingSpaceItemViewsSection(HoldingSpaceItemViewDelegate* delegate,
+                               std::set<HoldingSpaceItem::Type> supported_types,
+                               const base::Optional<size_t>& max_count);
   HoldingSpaceItemViewsSection(const HoldingSpaceItemViewsSection& other) =
       delete;
   HoldingSpaceItemViewsSection& operator=(
@@ -56,14 +54,28 @@ class HoldingSpaceItemViewsSection : public views::View {
   void PreferredSizeChanged() override;
   void ViewHierarchyChanged(const views::ViewHierarchyChangedDetails&) override;
 
-  // `HoldingSpaceControllerObserver` and `HoldingSpaceModelObserver` events
-  // forwarded from the parent `HoldingSpaceTrayChildBubble`. Events may be
-  // withheld from this view if, for example, its parent is animating out.
-  void OnHoldingSpaceModelAttached(HoldingSpaceModel* model);
-  void OnHoldingSpaceModelDetached(HoldingSpaceModel* model);
+  // `HoldingSpaceModelObserver` events forwarded from the parent
+  // `HoldingSpaceTrayChildBubble`. Note that events may be withheld from this
+  // view if, for example, its parent is animating out.
   void OnHoldingSpaceItemsAdded(const std::vector<const HoldingSpaceItem*>&);
   void OnHoldingSpaceItemsRemoved(const std::vector<const HoldingSpaceItem*>&);
   void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item);
+
+  // Removes all holding space item views from this section. This method is
+  // expected to only be called:
+  // * from the parent `HoldingSpaceTrayChildBubble` when this view is hidden.
+  // * internally after having animated out the `container_` just prior to
+  //   swapping in new contents.
+  void RemoveAllHoldingSpaceItemViews();
+
+  // Returns whether this section has a placeholder to show in lieu of item
+  // views when the model contains no finalized items of supported types.
+  bool has_placeholder() const { return !!placeholder_; }
+
+  // Returns the types of holding space items supported by this section.
+  const std::set<HoldingSpaceItem::Type>& supported_types() const {
+    return supported_types_;
+  }
 
  protected:
   // Invoked to create the `header_` for this section.
@@ -117,7 +129,7 @@ class HoldingSpaceItemViewsSection : public views::View {
   void OnAnimateOutCompleted(const ui::CallbackLayerAnimationObserver&);
 
   HoldingSpaceItemViewDelegate* const delegate_;
-  const std::vector<HoldingSpaceItem::Type> supported_types_;
+  const std::set<HoldingSpaceItem::Type> supported_types_;
   const base::Optional<size_t> max_count_;
 
   // Owned by view hierarchy.

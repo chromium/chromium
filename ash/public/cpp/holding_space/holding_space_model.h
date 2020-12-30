@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_MODEL_H_
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_MODEL_H_
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -85,6 +86,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   bool ContainsItem(HoldingSpaceItem::Type type,
                     const base::FilePath& file_path) const;
 
+  // Returns true if the model contains any finalized items of the specified
+  // `type`, false otherwise.
+  bool ContainsFinalizedItemOfType(HoldingSpaceItem::Type type) const;
+
   const ItemList& items() const { return items_; }
 
   void AddObserver(HoldingSpaceModelObserver* observer);
@@ -94,6 +99,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   // The list of items added to the model in the order they have been added to
   // the model.
   ItemList items_;
+
+  // Caches the count of finalized items in the model for each holding space
+  // item type. Used to quickly look up whether the model contains any finalized
+  // items of a given type.
+  std::map<HoldingSpaceItem::Type, size_t> finalized_item_counts_by_type_;
 
   base::ObserverList<HoldingSpaceModelObserver> observers_;
 };

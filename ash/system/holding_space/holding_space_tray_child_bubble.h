@@ -15,6 +15,10 @@
 #include "base/scoped_observation.h"
 #include "ui/views/view.h"
 
+namespace ui {
+class LayerAnimationObserver;
+}  // namespace ui
+
 namespace ash {
 
 class HoldingSpaceItemViewDelegate;
@@ -64,10 +68,28 @@ class HoldingSpaceTrayChildBubble : public views::View,
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
 
+  // Invoked to animate in/out this view if necessary.
+  void MaybeAnimateIn();
+  void MaybeAnimateOut();
+
+  // Invoked to animate in/out this view. These methods should only be called
+  // from `MaybeAnimateIn()`/`MaybeAnimateOut()` respectively as those methods
+  // contain gating criteria for when these methods may be invoked.
+  void AnimateIn(ui::LayerAnimationObserver* observer);
+  void AnimateOut(ui::LayerAnimationObserver* observer);
+
+  // Invoked when an in/out animation has completed. If `aborted` is true,
+  // the animation was cancelled and did not animation to target end values.
+  void OnAnimateInCompleted(bool aborted);
+  void OnAnimateOutCompleted(bool aborted);
+
   HoldingSpaceItemViewDelegate* const delegate_;
 
   // Views owned by view hierarchy.
   std::vector<HoldingSpaceItemViewsSection*> sections_;
+
+  // Whether or not this view is currently being animated out.
+  bool is_animating_out_ = false;
 
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>
@@ -75,6 +97,8 @@ class HoldingSpaceTrayChildBubble : public views::View,
 
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       model_observer_{this};
+
+  base::WeakPtrFactory<HoldingSpaceTrayChildBubble> weak_factory_{this};
 };
 
 }  // namespace ash

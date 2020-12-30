@@ -27,6 +27,10 @@ void HoldingSpaceModel::AddItems(
   std::vector<const HoldingSpaceItem*> item_ptrs;
   for (std::unique_ptr<HoldingSpaceItem>& item : items) {
     DCHECK(!GetItem(item->id()));
+
+    if (item->IsFinalized())
+      ++finalized_item_counts_by_type_[item->type()];
+
     item_ptrs.push_back(item.get());
     items_.push_back(std::move(item));
   }
@@ -64,6 +68,8 @@ void HoldingSpaceModel::FinalizeOrRemoveItem(const std::string& id,
   DCHECK(!item->IsFinalized());
 
   item->Finalize(file_system_url);
+  ++finalized_item_counts_by_type_[item->type()];
+
   for (auto& observer : observers_)
     observer.OnHoldingSpaceItemFinalized(item);
 }
@@ -99,6 +105,9 @@ void HoldingSpaceModel::RemoveIf(Predicate predicate) {
       item_ptrs.push_back(item.get());
       items.push_back(std::move(item));
       items_.erase(items_.begin() + i);
+
+      if (item_ptrs.back()->IsFinalized())
+        --finalized_item_counts_by_type_[item_ptrs.back()->type()];
     }
   }
 
@@ -115,6 +124,8 @@ void HoldingSpaceModel::RemoveAll() {
   // been notified of the item removal.
   ItemList items;
   items.swap(items_);
+
+  finalized_item_counts_by_type_.clear();
 
   std::vector<const HoldingSpaceItem*> item_ptrs;
   for (auto& item : items)
@@ -154,6 +165,12 @@ const HoldingSpaceItem* HoldingSpaceModel::GetItem(
 bool HoldingSpaceModel::ContainsItem(HoldingSpaceItem::Type type,
                                      const base::FilePath& file_path) const {
   return GetItem(type, file_path) != nullptr;
+}
+
+bool HoldingSpaceModel::ContainsFinalizedItemOfType(
+    HoldingSpaceItem::Type type) const {
+  auto it = finalized_item_counts_by_type_.find(type);
+  return it != finalized_item_counts_by_type_.end() && it->second > 0u;
 }
 
 void HoldingSpaceModel::AddObserver(HoldingSpaceModelObserver* observer) {
