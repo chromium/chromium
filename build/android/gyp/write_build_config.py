@@ -298,10 +298,6 @@ dependencies of this target. Excludes resources owned by non-chromium code.
 List of all resource zip files belonging to all transitive resource dependencies
 of this target. Excludes resources owned by non-chromium code.
 
-* `deps_info['owned_resource_srcjars']`:
-List of all .srcjar files belonging to all *direct* resource dependencies (i.e.
-without another java_library in the dependency path) for this target.
-
 * `deps_info['javac']`:
 A dictionary containing information about the way the sources in this library
 are compiled. Appears also on other Java-related targets. See the [dedicated
@@ -1428,33 +1424,16 @@ def main(argv):
     if options.res_sources_path:
       deps_info['res_sources_path'] = options.res_sources_path
 
-  if options.requires_android and is_java_target:
-    owned_resource_srcjars = set()
-    for c in all_resources_deps:
-      srcjar = c.get('srcjar')
-      if srcjar:
-        owned_resource_srcjars.add(srcjar)
-    for c in all_library_deps:
-      if c['requires_android'] and not c['is_prebuilt']:
-        # Many .aar files include R.class files in them, as it makes it easier
-        # for IDEs to resolve symbols. However, including them is not required
-        # and not all prebuilts do. Rather than try to detect their presense,
-        # just assume they are not there. The only consequence is redundant
-        # compilation of the R.class.
-        owned_resource_srcjars.difference_update(c['owned_resource_srcjars'])
-    deps_info['owned_resource_srcjars'] = sorted(owned_resource_srcjars)
-
-    if options.type == 'java_library':
-      # Used to strip out R.class for android_prebuilt()s.
-      config['javac']['resource_packages'] = [
-          c['package_name'] for c in all_resources_deps if 'package_name' in c
-      ]
-      if options.package_name:
-        deps_info['package_name'] = options.package_name
+  if options.requires_android and options.type == 'java_library':
+    # Used to strip out R.class for android_prebuilt()s.
+    config['javac']['resource_packages'] = [
+        c['package_name'] for c in all_resources_deps if 'package_name' in c
+    ]
+    if options.package_name:
+      deps_info['package_name'] = options.package_name
 
   if options.type in ('android_resources', 'android_apk', 'junit_binary',
                       'dist_aar', 'android_app_bundle_module', 'java_library'):
-
     dependency_zips = []
     dependency_zip_overlays = []
     for c in all_resources_deps:

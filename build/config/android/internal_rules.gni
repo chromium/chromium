@@ -3088,7 +3088,6 @@ if (enable_java_templates) {
   #  java_files: Optional list of Java source file paths.
   #  srcjar_deps: Optional list of .srcjar dependencies (not file paths).
   #    The corresponding source files they contain will be compiled too.
-  #  srcjar_filearg: Optional @FileArg for additional srcjars.
   #  java_sources_file: Optional path to file containing list of Java source
   #    file paths. This must always be provided if java_files is not empty
   #    and must match it exactly.
@@ -3253,9 +3252,6 @@ if (enable_java_templates) {
       # checkout_android_prebuilts_build_tools=True in .gclient.
       if (enable_kythe_annotations && !invoker.enable_errorprone) {
         args += [ "--enable-kythe-annotations" ]
-      }
-      if (defined(invoker.srcjar_filearg)) {
-        args += [ "--java-srcjars=${invoker.srcjar_filearg}" ]
       }
       if (invoker.requires_android) {
         args += [ "--bootclasspath=@FileArg($_rebased_build_config:android:sdk_interface_jars)" ]
@@ -3839,10 +3835,6 @@ if (enable_java_templates) {
 
       _uses_fake_rjava = _type == "java_library" && _requires_android
 
-      # android_apk and junit_binary pass real R.java srcjars via
-      # srcjar_deps. Other targets, that do not define resources_package,
-      # will use the owned_resource_srcjars of their android_resources
-      # dependencies instead.
       if (_uses_fake_rjava && defined(_resources_package)) {
         # has _resources at the end so it looks like a resources pattern, since
         # it does act like one (and other resources patterns need to depend on
@@ -3889,15 +3881,6 @@ if (enable_java_templates) {
             deps = []
           }
           deps += _classpath_deps
-
-          # android_apk and junit_binary pass real R.java srcjars via
-          # srcjar_deps. Other targets that do not define resources_package
-          # will use the owned_resource_srcjars of their android_resources
-          # dependencies instead.
-          if (_uses_fake_rjava && !defined(_resources_package)) {
-            _rebased_build_config = rebase_path(_build_config, root_build_dir)
-            srcjar_filearg = "@FileArg($_rebased_build_config:deps_info:owned_resource_srcjars)"
-          }
         }
       }
       _compile_java_forward_variables = [
