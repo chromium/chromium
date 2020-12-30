@@ -360,10 +360,12 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       cmd.HasSwitch(cc::switches::kHighlightNonLCDTextLayers);
   settings.initial_debug_state.show_web_vital_metrics =
       base::FeatureList::IsEnabled(
-          ::features::kHudDisplayForPerformanceMetrics);
+          ::features::kHudDisplayForPerformanceMetrics) &&
+      !for_child_local_root_frame;
   settings.initial_debug_state.show_smoothness_metrics =
       base::FeatureList::IsEnabled(
-          ::features::kHudDisplayForPerformanceMetrics);
+          ::features::kHudDisplayForPerformanceMetrics) &&
+      !for_child_local_root_frame;
 
   settings.initial_debug_state.SetRecordRenderingStats(
       cmd.HasSwitch(cc::switches::kEnableGpuBenchmarking));

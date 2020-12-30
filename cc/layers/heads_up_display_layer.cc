@@ -91,7 +91,7 @@ void HeadsUpDisplayLayer::PushPropertiesTo(LayerImpl* layer) {
   layer_impl->SetHUDTypeface(typeface_);
   layer_impl->SetLayoutShiftRects(layout_shift_rects_);
   layout_shift_rects_.clear();
-  if (web_vital_metrics_)
+  if (web_vital_metrics_ && web_vital_metrics_->HasValue())
     layer_impl->SetWebVitalMetrics(std::move(web_vital_metrics_));
 }
 

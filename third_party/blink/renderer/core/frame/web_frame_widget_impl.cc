@@ -2131,6 +2131,10 @@ std::unique_ptr<cc::WebVitalMetrics> WebFrameWidgetImpl::GetWebVitalMetrics() {
                             .WeightedScore();
   if (layout_shift > 0.f)
     metrics->layout_shift = layout_shift;
+
+  if (!metrics->HasValue())
+    return nullptr;
+
   return metrics;
 }
 
