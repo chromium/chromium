@@ -340,6 +340,19 @@ class _Session(object):
       tool_prefix = path_util.ToolPrefixFinder(
           output_directory=output_directory_finder.Finalized(),
           linker_name='ld').Finalized()
+    else:
+      # Output directory is not set, so we cannot load tool_prefix from
+      # build_vars.json, nor resolve the output directory-relative path stored
+      # size_info.metadata.
+      is_android = next(
+          filter(None, (m.get(models.METADATA_APK_FILENAME)
+                        for m in size_info.metadata)), None)
+      arch = next(
+          filter(None, (m.get(models.METADATA_ELF_ARCHITECTURE)
+                        for m in size_info.metadata)), None)
+      # Hardcode path for arm32.
+      if is_android and arch == 'arm':
+        tool_prefix = path_util.ANDROID_ARM_NDK_TOOL_PREFIX
 
     args = [
         path_util.GetObjDumpPath(tool_prefix),

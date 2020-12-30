@@ -23,6 +23,11 @@ TOOLS_SRC_ROOT = os.environ.get(
 
 _SAMPLE_TOOL_SUFFIX = 'readelf'
 
+ANDROID_ARM_NDK_TOOL_PREFIX = os.path.join(TOOLS_SRC_ROOT, 'third_party',
+                                           'android_ndk', 'toolchains', 'llvm',
+                                           'prebuilt', 'linux-x86_64', 'bin',
+                                           'arm-linux-androideabi-')
+
 
 class _PathFinder(object):
   def __init__(self, name, value):
