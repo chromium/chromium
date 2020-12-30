@@ -2700,7 +2700,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Notification.Cast.ArtworkPresent" enum="Boolean"
-    expires_after="2021-06-20">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <owner>media-dev@chromium.org</owner>
@@ -2712,7 +2712,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Notification.Cast.Count" units="count"
-    expires_after="2021-06-06">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <owner>media-dev@chromium.org</owner>
@@ -2723,7 +2723,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Notification.Cast.MetadataPresent"
-    enum="MediaNotificationMetadata" expires_after="2021-06-20">
+    enum="MediaNotificationMetadata" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <owner>media-dev@chromium.org</owner>
@@ -2736,7 +2736,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Notification.Cast.UserAction" enum="MediaSessionAction"
-    expires_after="2021-06-27">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <owner>media-dev@chromium.org</owner>
@@ -4429,7 +4429,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="MediaRouter.Cast.App.Availability" units="ms"
-    expires_after="2021-05-23">
+    expires_after="2022-02-01">
 <!-- Name completed by histogram_suffixes name="MediaRouterSuccess" -->
 
   <owner>takumif@chromium.org</owner>
@@ -4540,7 +4540,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Audio.PlaybackOnReceiver"
-    enum="Boolean" expires_after="2021-07-01">
+    enum="Boolean" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -4552,14 +4552,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Session.Launch" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Total time to launch a Cast Streaming mirror session.</summary>
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Session.Length" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4613,7 +4613,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Start.Failure.Native"
-    enum="MirroringServiceErrorType" expires_after="2021-05-09">
+    enum="MirroringServiceErrorType" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4624,7 +4624,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Start.Success" enum="MirrorType"
-    expires_after="2021-06-06">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4664,7 +4664,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Dial.AvailableDevicesCount" units="devices"
-    expires_after="2021-05-09">
+    expires_after="2022-02-01">
   <owner>mfoltz@chromium.org</owner>
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -4675,7 +4675,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Dial.CreateRoute"
-    enum="MediaRouterDialCreateRouteResult" expires_after="2021-04-04">
+    enum="MediaRouterDialCreateRouteResult" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -4686,7 +4686,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Dial.FetchAppInfo"
-    enum="MediaRouterDialFetchAppInfoResult" expires_after="2021-02-01">
+    enum="MediaRouterDialFetchAppInfoResult" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -4697,7 +4697,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Dial.KnownDevicesCount" units="devices"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -4708,7 +4708,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Dial.ParseMessage"
-    enum="MediaRouterDialParseMessageResult" expires_after="2021-02-01">
+    enum="MediaRouterDialParseMessageResult" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -4720,7 +4720,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Dial.ParsingError"
-    enum="MediaRouterDialParsingError" expires_after="2021-06-06">
+    enum="MediaRouterDialParsingError" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -4732,7 +4732,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Dial.TerminateRoute"
-    enum="MediaRouterDialTerminateRouteResult" expires_after="2021-06-20">
+    enum="MediaRouterDialTerminateRouteResult" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -4743,14 +4743,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Icon.Click.Location"
-    enum="MediaRouterDialogOpenOrigin" expires_after="2021-02-01">
+    enum="MediaRouterDialogOpenOrigin" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Location the user clicked to open the Media Router dialog.</summary>
 </histogram>
 
 <histogram name="MediaRouter.MirroringService.SessionError"
-    enum="MirroringServiceErrorType" expires_after="2021-06-06">
+    enum="MirroringServiceErrorType" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4781,7 +4781,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.PresentationRequest.AvailabilityUrlType"
-    enum="PresentationUrlType" expires_after="2021-05-02">
+    enum="PresentationUrlType" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -4801,7 +4801,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Provider.CreateRoute.Result"
-    enum="MediaRouteProviderResult" expires_after="2021-06-06">
+    enum="MediaRouteProviderResult" expires_after="2022-02-01">
 <!-- Name completed by histogram_suffixes name="MediaRouteProvider" -->
 
   <owner>takumif@chromium.org</owner>
@@ -4815,7 +4815,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Provider.JoinRoute.Result"
-    enum="MediaRouteProviderResult" expires_after="2021-06-06">
+    enum="MediaRouteProviderResult" expires_after="2022-02-01">
 <!-- Name completed by histogram_suffixes name="MediaRouteProvider" -->
 
   <owner>takumif@chromium.org</owner>
@@ -4829,7 +4829,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Provider.TerminateRoute.Result"
-    enum="MediaRouteProviderResult" expires_after="2021-06-06">
+    enum="MediaRouteProviderResult" expires_after="2022-02-01">
 <!-- Name completed by histogram_suffixes name="MediaRouteProvider" -->
 
   <owner>takumif@chromium.org</owner>
@@ -4871,7 +4871,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Route.CreationOutcome"
-    enum="MediaRouterCreateRouteOutcome" expires_after="2021-02-01">
+    enum="MediaRouterCreateRouteOutcome" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4881,7 +4881,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Sink.SelectedType" enum="MediaSinkType"
-    expires_after="2021-06-06">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4891,7 +4891,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Source.CastingSource"
-    enum="MediaRouterSourceTypes" expires_after="2021-06-06">
+    enum="MediaRouterSourceTypes" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4901,7 +4901,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Source.LocalFileFormat" enum="MediaContainers"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4912,7 +4912,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Source.LocalFileSize" units="MB"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4924,7 +4924,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Action.CloseLatency" units="ms"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4935,7 +4935,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Action.StartLocal.Latency" units="ms"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4946,14 +4946,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Action.StartLocalPosition"
-    enum="MediaRouterSinkPositionLabel" expires_after="2021-02-01">
+    enum="MediaRouterSinkPositionLabel" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>The index of the sink that was selected in the sink list.</summary>
 </histogram>
 
 <histogram name="MediaRouter.Ui.Action.StartLocalSessionSuccessful"
-    enum="BooleanSuccess" expires_after="2021-02-01">
+    enum="BooleanSuccess" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4962,14 +4962,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Action.StopRoute" enum="MediaRouteType"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>The number of times a user stops different types of routes.</summary>
 </histogram>
 
 <histogram name="MediaRouter.Ui.Device.Count" units="units"
-    expires_after="2021-06-06">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4980,7 +4980,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MediaRouter.Ui.Dialog.ActivationLocationAndCastMode"
     enum="MediaRouterDialogActivationLocationAndCastMode"
-    expires_after="2021-04-04">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4990,7 +4990,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Dialog.IconStateAtOpen"
-    enum="MediaRouterIconState" expires_after="2021-02-01">
+    enum="MediaRouterIconState" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5000,7 +5000,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Dialog.LoadedWithData" units="ms"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5010,7 +5010,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Dialog.Paint" units="ms"
-    expires_after="2021-05-02">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5020,7 +5020,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Ui.FirstAction" enum="MediaRouterUserAction"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5029,7 +5029,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Ui.IconStateAtInit" enum="MediaRouterIconState"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5041,7 +5041,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Navigate.SourceSelection"
-    enum="MediaRouterSourceTypes" expires_after="2021-02-01">
+    enum="MediaRouterSourceTypes" expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5050,7 +5050,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.WiredDisplay.AvailableDevicesCount" units="units"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>

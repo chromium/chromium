@@ -1869,7 +1869,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cast.Sender.CastMediaType" enum="MediaContainers"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
