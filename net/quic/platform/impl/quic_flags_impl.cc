@@ -21,10 +21,6 @@
 #include "build/build_config.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_logging.h"
 
-#define QUIC_FLAG(flag, value) bool flag = value;
-#include "net/third_party/quiche/src/quic/core/quic_flags_list.h"
-#undef QUIC_FLAG
-
 #define DEFINE_QUIC_PROTOCOL_FLAG_SINGLE_VALUE(type, flag, value, doc) \
   type FLAGS_##flag = value;
 

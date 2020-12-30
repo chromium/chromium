@@ -433,6 +433,7 @@ const struct QuicErrorMapping {
     {quic::QUIC_MAX_AGE_TIMEOUT, "quic.quic_max_age_timeout"},
     {quic::QUIC_INVALID_0RTT_PACKET_NUMBER_OUT_OF_ORDER,
      "quic.quic_invalid_0rtt_packet_number_out_of_order"},
+    {quic::QUIC_INVALID_PRIORITY_UPDATE, "quic::quic_invalid_priority_update"},
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};
 

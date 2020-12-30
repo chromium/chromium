@@ -192,6 +192,8 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
                   spdy::SpdyStreamId parent_stream_id,
                   int weight,
                   bool exclusive) override {}
+  void OnPriorityUpdate(spdy::SpdyStreamId prioritized_stream_id,
+                        absl::string_view priority_field_value) override {}
   bool OnUnknownFrame(spdy::SpdyStreamId stream_id,
                       uint8_t frame_type) override;
 

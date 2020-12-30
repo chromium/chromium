@@ -25,6 +25,8 @@ source_set("quiche") {
   if (!is_nacl) {
     sources += [
       "src/common/platform/api/quiche_export.h",
+      "src/common/platform/api/quiche_flag_utils.h",
+      "src/common/platform/api/quiche_flags.h",
       "src/common/platform/api/quiche_logging.h",
       "src/common/platform/api/quiche_str_cat.h",
       "src/common/platform/api/quiche_string_piece.h",
