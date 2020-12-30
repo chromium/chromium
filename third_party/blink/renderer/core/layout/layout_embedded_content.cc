@@ -142,11 +142,15 @@ PaintLayerType LayoutEmbeddedContent::LayerTypeRequired() const {
   return kForcedPaintLayer;
 }
 
-bool LayoutEmbeddedContent::ContentDocumentIsCompositing() const {
+bool LayoutEmbeddedContent::ContentDocumentContainsGraphicsLayer() const {
   NOT_DESTROYED();
+  // This method must use the same logic as GraphicsLayerTreeBuilder: if
+  // an iframe is throttled, we look for the existence of a root graphics layer,
+  // even if the compositing state information is stale.
   if (PaintLayerCompositor* inner_compositor =
           PaintLayerCompositor::FrameContentsCompositor(*this)) {
-    return inner_compositor->StaleInCompositingMode();
+    DisableCompositingQueryAsserts compositing_disabler;
+    return inner_compositor->RootGraphicsLayer();
   }
   return false;
 }

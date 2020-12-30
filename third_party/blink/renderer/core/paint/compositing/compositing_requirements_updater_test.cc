@@ -5,9 +5,12 @@
 #include "third_party/blink/renderer/core/paint/compositing/compositing_requirements_updater.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
@@ -220,6 +223,90 @@ TEST_F(CompositingRequirementsUpdaterTest,
                 ->GetCompositingReasons());
   EXPECT_EQ(CompositingReason::k3DTransform,
             GetPaintLayerByElementId("3d-descendant")->GetCompositingReasons());
+}
+
+class CompositingRequirementsUpdaterSimTest : public SimTest {
+ protected:
+  void SetUp() override {
+    SimTest::SetUp();
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  }
+};
+
+TEST_F(CompositingRequirementsUpdaterSimTest,
+       StaleCompositingStateInThrottledFrame) {
+  SimRequest top_resource("https://example.com/top.html", "text/html");
+  SimRequest middle_resource("https://cross-origin.com/middle.html",
+                             "text/html");
+  SimRequest bottom_resource("https://cross-origin.com/bottom.html",
+                             "text/html");
+
+  LoadURL("https://example.com/top.html");
+  top_resource.Complete(R"HTML(
+    <div id='spacer'></div>
+    <iframe id='middle' src='https://cross-origin.com/middle.html'></iframe>
+  )HTML");
+  middle_resource.Complete(R"HTML(
+    <iframe id='bottom' src='bottom.html'></iframe>
+  )HTML");
+  bottom_resource.Complete(R"HTML(
+    <div id='composited' style='will-change:transform'>Hello, world!</div>
+  )HTML");
+
+  LocalFrame& middle_frame =
+      *To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  LocalFrame& bottom_frame = *To<LocalFrame>(middle_frame.Tree().FirstChild());
+  middle_frame.View()->BeginLifecycleUpdates();
+  bottom_frame.View()->BeginLifecycleUpdates();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(bottom_frame.View()->ShouldThrottleRenderingForTest());
+  LayoutEmbeddedContent* bottom_owner = bottom_frame.OwnerLayoutObject();
+  EXPECT_TRUE(bottom_owner->ContentDocumentContainsGraphicsLayer());
+  EXPECT_TRUE(bottom_owner->Layer()->HasCompositingDescendant());
+
+  // Move iframe offscreen to throttle it. Compositing status shouldn't change.
+  Element* spacer = GetDocument().getElementById("spacer");
+  spacer->setAttribute(html_names::kStyleAttr, "height:2000px");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(middle_frame.View()->ShouldThrottleRenderingForTest());
+  ASSERT_TRUE(bottom_frame.View()->ShouldThrottleRenderingForTest());
+  EXPECT_TRUE(bottom_owner->ContentDocumentContainsGraphicsLayer());
+  EXPECT_TRUE(bottom_owner->Layer()->HasCompositingDescendant());
+
+  // Remove direct compositing reason from iframe content, but add
+  // position:relative so it still has a PaintLayer and won't force a
+  // compositing update.
+  Element* composited =
+      bottom_frame.GetDocument()->getElementById("composited");
+  composited->setAttribute(html_names::kStyleAttr, "position:relative");
+
+  // Force a lifecycle update up to pre-paint clean; compositing inputs will be
+  // updated, but not compositing assignments. This imitates what would happen
+  // if a new IntersectionObservation is created inside a throttled frame. This
+  // should not affect final compositing state.
+  GetDocument().View()->ForceUpdateViewportIntersections();
+  EXPECT_TRUE(bottom_owner->ContentDocumentContainsGraphicsLayer());
+  EXPECT_TRUE(bottom_owner->Layer()->HasCompositingDescendant());
+
+  // Force a full, throttled lifecycle update. Compositing state in the bottom
+  // frame will remain stale; compositing state in the middle frame will be
+  // based on the stale state of the iframe.
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(
+      middle_frame.ContentLayoutObject()->Layer()->GetCompositingReasons() |
+      CompositingReason::kRoot);
+  EXPECT_TRUE(bottom_owner->ContentDocumentContainsGraphicsLayer());
+  EXPECT_TRUE(bottom_owner->Layer()->HasCompositingDescendant());
+
+  // Move the iframe back on screen and run two lifecycle updates to unthrottle
+  // it and update compositing.
+  spacer->setAttribute(html_names::kStyleAttr, "");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(middle_frame.View()->ShouldThrottleRenderingForTest());
+  ASSERT_FALSE(bottom_frame.View()->ShouldThrottleRenderingForTest());
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(bottom_owner->ContentDocumentContainsGraphicsLayer());
+  EXPECT_FALSE(bottom_owner->Layer()->HasCompositingDescendant());
 }
 
 }  // namespace blink

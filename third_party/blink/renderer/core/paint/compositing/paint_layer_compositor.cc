@@ -221,6 +221,12 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursiveInternal(
           target_state, compositing_reasons_stats);
       if (child_compositor->root_layer_attachment_dirty_)
         SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
+#if DCHECK_IS_ON()
+      // Even if the child frame is throttled, this should be consistent.
+      DisableCompositingQueryAsserts query_assert_disabler;
+      DCHECK_EQ(child_compositor->InCompositingMode(),
+                (bool)child_compositor->RootGraphicsLayer());
+#endif
     }
   }
 

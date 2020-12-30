@@ -44,7 +44,7 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   explicit LayoutEmbeddedContent(HTMLFrameOwnerElement*);
   ~LayoutEmbeddedContent() override;
 
-  bool ContentDocumentIsCompositing() const;
+  bool ContentDocumentContainsGraphicsLayer() const;
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
