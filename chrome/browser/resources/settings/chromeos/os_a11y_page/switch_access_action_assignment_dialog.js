@@ -15,13 +15,14 @@
  * @enum {number}
  */
 /* #export */ const AssignmentState = {
-  WAIT_FOR_KEY: 0,
+  WAIT_FOR_CONFIRMATION_REMOVAL: 0,
   WAIT_FOR_CONFIRMATION: 1,
-  WAIT_FOR_CONFIRMATION_REMOVAL: 2,
-  WARN_NOT_CONFIRMED: 3,
-  WARN_ALREADY_ASSIGNED_ACTION: 4,
-  WARN_UNRECOGNIZED_KEY: 5,
-  WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH: 6,
+  WAIT_FOR_KEY: 2,
+  WARN_ALREADY_ASSIGNED_ACTION: 3,
+  WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH: 4,
+  WARN_NOT_CONFIRMED_REMOVAL: 5,
+  WARN_NOT_CONFIRMED: 6,
+  WARN_UNRECOGNIZED_KEY: 7,
 };
 
 /**
@@ -101,6 +102,15 @@ Polymer({
       computed: 'computePromptText_(assignmentState_, assignments_)',
     },
 
+    /**
+     * Error text shown on the dialog with error symbol. Hidden if blank.
+     * @private {string}
+     */
+    errorText_: {
+      type: String,
+      computed: 'computeErrorText_(assignmentState_)',
+    },
+
     /** @private {!SwitchAccessCommand} */
     alreadyAssignedAction_: String,
 
@@ -173,6 +183,7 @@ Polymer({
         this.handleKeyEventInWaitForConfirmationRemoval_(event);
         break;
       case AssignmentState.WARN_NOT_CONFIRMED:
+      case AssignmentState.WARN_NOT_CONFIRMED_REMOVAL:
       case AssignmentState.WARN_ALREADY_ASSIGNED_ACTION:
       case AssignmentState.WARN_UNRECOGNIZED_KEY:
       case AssignmentState.WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH:
@@ -249,7 +260,7 @@ Polymer({
   handleKeyEventInWaitForConfirmationRemoval_(event) {
     if (this.currentKeyCode_ !== event.keyCode) {
       this.unexpectedKey_ = event.key;
-      this.assignmentState_ = AssignmentState.WARN_NOT_CONFIRMED;
+      this.assignmentState_ = AssignmentState.WARN_NOT_CONFIRMED_REMOVAL;
       return;
     }
 
@@ -314,13 +325,17 @@ Polymer({
   },
 
   /**
-   * @param {AssignmentState} assignmentState
+   * @param {!AssignmentState} assignmentState
+   * @param {!Array<string>} assignments
    * @return {string}
    * @private
    */
   computePromptText_(assignmentState, assignments) {
     switch (assignmentState) {
       case AssignmentState.WAIT_FOR_KEY:
+      case AssignmentState.WARN_ALREADY_ASSIGNED_ACTION:
+      case AssignmentState.WARN_UNRECOGNIZED_KEY:
+      case AssignmentState.WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH:
         if (!assignments.length) {
           return this.i18n(
               'switchAccessActionAssignmentDialogWaitForKeyPromptNoSwitches');
@@ -328,14 +343,28 @@ Polymer({
         return this.i18n(
             'switchAccessActionAssignmentDialogWaitForKeyPromptAtLeastOneSwitch');
       case AssignmentState.WAIT_FOR_CONFIRMATION:
+      case AssignmentState.WARN_NOT_CONFIRMED:
         return this.i18n(
             'switchAccessActionAssignmentDialogWaitForConfirmationPrompt',
             this.currentKey_);
       case AssignmentState.WAIT_FOR_CONFIRMATION_REMOVAL:
+      case AssignmentState.WARN_NOT_CONFIRMED_REMOVAL:
         return this.i18n(
             'switchAccessActionAssignmentDialogWaitForConfirmationRemovalPrompt',
             this.currentKey_);
+    }
+    throw new Error('Invalid assignment state.');
+  },
+
+  /**
+   * @param {!AssignmentState} assignmentState
+   * @return {string}
+   * @private
+   */
+  computeErrorText_(assignmentState) {
+    switch (assignmentState) {
       case AssignmentState.WARN_NOT_CONFIRMED:
+      case AssignmentState.WARN_NOT_CONFIRMED_REMOVAL:
         return this.i18n(
             'switchAccessActionAssignmentDialogWarnNotConfirmedPrompt',
             this.unexpectedKey_, this.currentKey_);
@@ -350,8 +379,11 @@ Polymer({
       case AssignmentState.WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH:
         return this.i18n(
             'switchAccessActionAssignmentDialogWarnCannotRemoveLastSelectSwitch');
-      default:
+      case AssignmentState.WAIT_FOR_KEY:
+      case AssignmentState.WAIT_FOR_CONFIRMATION:
+      case AssignmentState.WAIT_FOR_CONFIRMATION_REMOVAL:
         return '';
     }
+    throw new Error('Invalid assignment state.');
   },
 });

@@ -19,7 +19,9 @@
       }
 
       #prompt {
+        color: var(--cr-primary-text-color);
         height: 40px;
+        margin-top: 8px;
         white-space: pre-line;
       }
 
@@ -29,7 +31,7 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
-        height: 88px;
+        height: 60px;
         margin-top: 20px;
         overflow: auto;
         padding: 16px;
@@ -39,8 +41,27 @@
         display: flex;
       }
 
-      .switch-assignment-icon {
+      .icon {
         margin-inline-end: 10px;
+      }
+
+      #errorIcon {
+        --iron-icon-fill-color: #d93025;
+      }
+
+      #button-container {
+        margin-inline-end: 10px;
+        padding-top: 8px;
+      }
+
+      #errorContainer {
+        height: 40px;
+        margin-top: 16px;
+      }
+
+      #error {
+        color: var(--google-red-600);
+        display: flex;
       }
     </style>
     <cr-dialog id="switchAccessActionAssignmentDialog" show-on-attach>
@@ -54,16 +75,24 @@
           <template is="dom-if" if="[[assignments_.length]]">
             <template is="dom-repeat" items="[[assignments_]]" as="assignment">
               <div class="switch-assignment">
-                <iron-icon icon="os-settings:hollow-check-circle"
-                    class="switch-assignment-icon">
+                <iron-icon icon="os-settings:hollow-check-circle" class="icon">
                 </iron-icon>
                 [[assignment]]
               </div>
             </template>
           </template>
         </div>
+        <div id="errorContainer">
+          <template is="dom-if" if="[[errorText_]]">
+            <div id="error" aria-live="polite">
+              <iron-icon id="errorIcon" icon="os-settings:warning" class="icon">
+              </iron-icon>
+              [[errorText_]]
+            </div>
+          </template>
+        </div>
       </div>
-      <div slot="button-container">
+      <div id="button-container" slot="button-container">
         <cr-button class="exit-button" on-click="onExitClick_"
             id="exit">
           $i18n{switchAccessActionAssignmentDialogExit}

@@ -178,6 +178,34 @@ suite('ManageAccessibilityPageTests', function() {
         'notifySwitchAccessActionAssignmentDialogDetached');
   });
 
+  test('Switch access action assignment dialog error state', async function() {
+    initPage();
+
+    // Simulate a click on the select link row.
+    page.$.selectLinkRow.click();
+
+    await browserProxy.methodCalled(
+        'notifySwitchAccessActionAssignmentDialogAttached');
+
+    // Simulate pressing 'a', and then 'b'.
+    cr.webUIListenerCallback(
+        'switch-access-got-key-press-for-assignment', {key: 'a', keyCode: 65});
+    cr.webUIListenerCallback(
+        'switch-access-got-key-press-for-assignment', {key: 'b', keyCode: 66});
+
+    const element = page.$$('#switchAccessActionAssignmentDialog');
+    await test_util.waitAfterNextRender(element);
+
+    // This should update the error field at the bottom of the dialog.
+    const errorText = page.$$('#switchAccessActionAssignmentDialog')
+                          .$$('#error')
+                          .textContent.trim();
+    assertEquals(
+        'Keys do not match. “b” was pressed. “a” was pressed before. ' +
+            'Press any key to exit.',
+        errorText);
+  });
+
   test('Deep link to auto-scan keyboards', async () => {
     loadTimeData.overrideValues({
       isDeepLinkingEnabled: true,
