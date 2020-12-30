@@ -45,6 +45,11 @@ void SODAInstallerImplChromeOS::InstallLanguage(PrefService* prefs) {
   // TODO(crbug.com/1111002): Install SODA language.
 }
 
+bool SODAInstallerImplChromeOS::IsSODARegistered() {
+  // TODO(crbug.com/1111002): Return whether SODA is registered.
+  return !base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption);
+}
+
 void SODAInstallerImplChromeOS::OnSODAInstalled(
     const chromeos::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error == dlcservice::kErrorNone) {

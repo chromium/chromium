@@ -51,12 +51,18 @@ class SODAInstaller {
   // should be.
   virtual void InstallLanguage(PrefService* prefs) = 0;
 
+  // Returns whether or not SODA is already registered on this device.
+  virtual bool IsSODARegistered() = 0;
+
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);
 
   // Removes an observer from the observer list.
   void RemoveObserver(Observer* observer);
 
+  void NotifySODAInstalledForTesting();
+
+ protected:
   // Notifies the observers that the SODA installation has completed.
   void NotifyOnSODAInstalled();
 
@@ -67,7 +73,6 @@ class SODAInstaller {
   // Progress is the download percentage out of 100.
   void NotifyOnSODAProgress(int progress);
 
- protected:
   base::ObserverList<Observer> observers_;
 };
 

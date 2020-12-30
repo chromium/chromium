@@ -8,6 +8,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/common/caption.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -38,7 +39,9 @@ class CaptionBubbleController;
 //  per profile and it lasts for the duration of the session. The caption
 //  controller owns the live caption UI, which are caption bubble controllers.
 //
-class CaptionController : public BrowserListObserver, public KeyedService {
+class CaptionController : public BrowserListObserver,
+                          public KeyedService,
+                          public speech::SODAInstaller::Observer {
  public:
   explicit CaptionController(Profile* profile);
   ~CaptionController() override;
@@ -71,6 +74,11 @@ class CaptionController : public BrowserListObserver, public KeyedService {
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
+  // SODAInstaller::Observer:
+  void OnSODAInstalled() override;
+  void OnSODAProgress(int progress) override {}
+  void OnSODAError() override {}
+
   void OnLiveCaptionEnabledChanged();
   void OnLiveCaptionLanguageChanged();
   bool IsLiveCaptionEnabled();
@@ -91,7 +99,13 @@ class CaptionController : public BrowserListObserver, public KeyedService {
 
   base::Optional<ui::CaptionStyle> caption_style_;
 
+  // Whether Live Caption is enabled.
   bool enabled_ = false;
+
+  // Whether the UI has been created. The UI is created asynchronously from the
+  // feature being enabled--we wait for SODA to download first. This flag
+  // ensures that the UI is not constructed or deconstructed twice.
+  bool is_ui_constructed_ = false;
 };
 
 }  // namespace captions

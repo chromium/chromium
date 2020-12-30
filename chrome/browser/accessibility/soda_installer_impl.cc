@@ -6,9 +6,11 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
 #include "chrome/browser/browser_process.h"
@@ -18,6 +20,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/crx_update_item.h"
+#include "media/base/media_switches.h"
 
 namespace {
 
@@ -81,6 +84,26 @@ void SODAInstallerImpl::InstallLanguage(PrefService* prefs) {
           g_browser_process->component_updater())) {
     component_updater_observer_.Add(g_browser_process->component_updater());
   }
+}
+
+bool SODAInstallerImpl::IsSODARegistered() {
+  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
+    return true;
+  std::vector<std::string> component_ids =
+      g_browser_process->component_updater()->GetComponentIDs();
+  bool has_soda = false;
+  bool has_language_pack = false;
+  for (std::string id : component_ids) {
+    if (id == component_updater::SODAComponentInstallerPolicy::GetExtensionId())
+      has_soda = true;
+    if (id == component_updater::SodaEnUsComponentInstallerPolicy::
+                  GetExtensionId() ||
+        id == component_updater::SodaJaJpComponentInstallerPolicy::
+                  GetExtensionId()) {
+      has_language_pack = true;
+    }
+  }
+  return has_soda && has_language_pack;
 }
 
 void SODAInstallerImpl::OnEvent(Events event, const std::string& id) {

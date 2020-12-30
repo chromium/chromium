@@ -33,4 +33,9 @@ void SODAInstaller::NotifyOnSODAProgress(int percent) {
     observer.OnSODAProgress(percent);
 }
 
+void SODAInstaller::NotifySODAInstalledForTesting() {
+  if (!IsSODARegistered())
+    NotifyOnSODAInstalled();
+}
+
 }  // namespace speech

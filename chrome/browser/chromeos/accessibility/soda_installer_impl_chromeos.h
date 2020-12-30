@@ -25,6 +25,7 @@ class SODAInstallerImplChromeOS : public SODAInstaller {
   // SODAInstaller:
   void InstallSODA(PrefService* prefs) override;
   void InstallLanguage(PrefService* prefs) override;
+  bool IsSODARegistered() override;
 
  private:
   // This function is the InstallCallback for DlcserviceClient::Install().

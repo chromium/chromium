@@ -33,6 +33,7 @@ class SODAInstallerImpl : public SODAInstaller,
   // SODAInstaller:
   void InstallSODA(PrefService* prefs) override;
   void InstallLanguage(PrefService* prefs) override;
+  bool IsSODARegistered() override;
 
  private:
   // component_updater::ServiceObserver:
