@@ -106,7 +106,7 @@ declare_args() {
   # additional validation of return address will be performed as mitigation
   # against Return-oriented programming (ROP).
   # https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#cet-shadow-stack
-  enable_cet_shadow_stack = false
+  enable_cet_shadow_stack = target_cpu == "x64"
 }
 
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
