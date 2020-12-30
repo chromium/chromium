@@ -282,6 +282,12 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the "Add Credit Cards..." action works on OTR.
 - (void)testOTRAddCreditCardsActionOpensAddCreditCardSettings {
+  // TODO(crbug.com/1162354): Re-enable this test for iPad after fixing this
+  // issue.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
+  }
+
   [AutofillAppInterface saveLocalCreditCard];
 
   // Open a tab in incognito.
