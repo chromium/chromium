@@ -269,6 +269,9 @@ if (is_chromeos_device) {
   tast_test("chrome_all_tast_tests") {
     # To disable a specific test, add it the following list and cite a bug.
     tast_disabled_tests = [
+      # crbug.com/1162346
+      "ui.WindowControl",
+
       # crbug.com/1115622
       "ui.ChromeLoginGAIA",
 
