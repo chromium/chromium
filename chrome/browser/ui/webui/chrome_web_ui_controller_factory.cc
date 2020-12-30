@@ -226,6 +226,7 @@
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #endif
 
@@ -438,6 +439,14 @@ WebUIController* NewWebUI<chromeos::ConnectivityDiagnosticsUI>(
                  receiver) {
             chromeos::network_health::NetworkHealthService::GetInstance()
                 ->BindDiagnosticsReceiver(std::move(receiver));
+          }),
+      /* BindNetworkHealthServiceCallback */
+      base::BindRepeating(
+          [](mojo::PendingReceiver<
+              chromeos::network_health::mojom::NetworkHealthService>
+                 receiver) {
+            chromeos::network_health::NetworkHealthService::GetInstance()
+                ->BindHealthReceiver(std::move(receiver));
           }),
       /* SendFeedbackReportCallback */
       base::BindRepeating(

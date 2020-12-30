@@ -15,6 +15,7 @@ js_type_check("closure_compile") {
     ":network_diagnostics",
     ":network_diagnostics_mojo",
     ":network_diagnostics_types",
+    ":network_health_mojo",
     ":network_health_summary",
     ":routine_group",
   ]
@@ -26,6 +27,7 @@ js_type_check("closure_compile_module") {
     ":network_diagnostics.m",
     ":network_diagnostics_mojo.m",
     ":network_diagnostics_types.m",
+    ":network_health_mojo.m",
     ":network_health_summary.m",
     ":routine_group.m",
   ]
@@ -35,9 +37,17 @@ js_type_check("closure_compile_module") {
 
 js_library("network_health_summary") {
   deps = [
-    "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile",
+    ":network_health_mojo",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/js:i18n_behavior",
+  ]
+}
+
+js_library("network_health_mojo") {
+  deps = [
+    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/js:cr",
   ]
 }
 
@@ -72,12 +82,18 @@ js_library("routine_group") {
 js_library("network_health_summary.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_health_summary.m.js" ]
   deps = [
-    "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile",
+    ":network_health_mojo.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":network_health_summary_module" ]
+}
+
+js_library("network_health_mojo.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_health_mojo.m.js" ]
+  deps = [ "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("network_diagnostics.m") {
@@ -123,6 +139,9 @@ polymer_modulizer("network_health_summary") {
   js_file = "network_health_summary.js"
   html_file = "network_health_summary.html"
   html_type = "dom-module"
+  auto_imports = [
+    "ui/webui/resources/cr_components/chromeos/network/onc_mojo.html|OncMojo",
+  ]
 }
 
 polymer_modulizer("network_diagnostics") {
@@ -141,6 +160,7 @@ polymer_modulizer("routine_group") {
 
 js_modulizer("modulize") {
   input_files = [
+    "network_health_mojo.js",
     "network_diagnostics_mojo.js",
     "network_diagnostics_types.js",
   ]

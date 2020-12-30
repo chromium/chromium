@@ -757,7 +757,7 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::network_health::mojom::NetworkHealthService,
-      chromeos::NetworkUI>(map);
+      chromeos::NetworkUI, chromeos::ConnectivityDiagnosticsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines,

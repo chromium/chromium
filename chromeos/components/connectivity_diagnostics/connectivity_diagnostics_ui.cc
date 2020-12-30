@@ -8,9 +8,11 @@
 
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/components/network_ui/network_diagnostics_resource_provider.h"
+#include "chromeos/components/network_ui/network_health_localized_strings.h"
 #include "chromeos/grit/connectivity_diagnostics_resources.h"
 #include "chromeos/grit/connectivity_diagnostics_resources_map.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -47,11 +49,17 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
     content::WebUI* web_ui,
     BindNetworkDiagnosticsServiceCallback bind_network_diagnostics_callback,
+    BindNetworkHealthServiceCallback bind_network_health_callback,
     SendFeedbackReportCallback send_feedback_report_callback)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
       bind_network_diagnostics_service_callback_(
           std::move(bind_network_diagnostics_callback)),
+      bind_network_health_service_callback_(
+          std::move(bind_network_health_callback)),
       send_feedback_report_callback_(std::move(send_feedback_report_callback)) {
+  DCHECK(bind_network_diagnostics_service_callback_);
+  DCHECK(bind_network_health_service_callback_);
+  DCHECK(send_feedback_report_callback_);
   web_ui->RegisterMessageCallback(
       "sendFeedbackReport",
       base::BindRepeating(&ConnectivityDiagnosticsUI::SendFeedbackReportRequest,
@@ -77,6 +85,7 @@ ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
   source->AddLocalizedString("sendFeedbackBtn",
                              IDS_CONNECTIVITY_DIAGNOSTICS_SEND_FEEDBACK);
   network_diagnostics::AddResources(source);
+  network_health::AddLocalizedStrings(source);
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
@@ -87,15 +96,17 @@ ConnectivityDiagnosticsUI::~ConnectivityDiagnosticsUI() = default;
 void ConnectivityDiagnosticsUI::BindInterface(
     mojo::PendingReceiver<
         network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver) {
-  if (bind_network_diagnostics_service_callback_)
-    bind_network_diagnostics_service_callback_.Run(std::move(receiver));
+  bind_network_diagnostics_service_callback_.Run(std::move(receiver));
+}
+
+void ConnectivityDiagnosticsUI::BindInterface(
+    mojo::PendingReceiver<network_health::mojom::NetworkHealthService>
+        receiver) {
+  bind_network_health_service_callback_.Run(std::move(receiver));
 }
 
 void ConnectivityDiagnosticsUI::SendFeedbackReportRequest(
     const base::ListValue* value) {
-  if (!send_feedback_report_callback_)
-    return;
-
   std::string extra_diagnostics = "";
   auto values = value->GetList();
   if (values.size() && values[0].is_string())

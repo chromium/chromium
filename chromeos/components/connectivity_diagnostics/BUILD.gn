@@ -14,6 +14,7 @@ static_library("connectivity_diagnostics") {
 
   deps = [
     "../network_ui:network_diagnostics_resource_provider",
+    "../network_ui:network_health_localized_strings",
     "//chromeos/components/web_applications",
     "//chromeos/constants",
     "//chromeos/resources:connectivity_diagnostics_resources",
