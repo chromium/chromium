@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/rand_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -160,22 +161,26 @@ void CheckForUpdatesTask::MaybeCheckForUpdates() {
     return;
   }
 
-  update_service->UpdateAll(
-      base::DoNothing(),
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
       base::BindOnce(
-          [](base::OnceClosure closure,
-             scoped_refptr<updater::Configurator> config,
-             UpdateService::Result result) {
-            const int exit_code = static_cast<int>(result);
-            VLOG(0) << "UpdateAll complete: exit_code = " << exit_code;
-            if (result == UpdateService::Result::kSuccess) {
-              config->GetPrefService()->SetTime(
-                  kPrefUpdateTime, base::Time::NowFromSystemTime());
-            }
-            std::move(closure).Run();
-          },
-          base::BindOnce(&CheckForUpdatesTask::MaybeCheckForUpdatesDone, this),
-          config_));
+          &updater::UpdateService::UpdateAll, update_service, base::DoNothing(),
+          base::BindOnce(
+              [](base::OnceClosure closure,
+                 scoped_refptr<updater::Configurator> config,
+                 UpdateService::Result result) {
+                const int exit_code = static_cast<int>(result);
+                VLOG(0) << "UpdateAll complete: exit_code = " << exit_code;
+                if (result == UpdateService::Result::kSuccess) {
+                  config->GetPrefService()->SetTime(
+                      kPrefUpdateTime, base::Time::NowFromSystemTime());
+                }
+                std::move(closure).Run();
+              },
+              base::BindOnce(&CheckForUpdatesTask::MaybeCheckForUpdatesDone,
+                             this),
+              config_)),
+      UpdateCheckJitter());
 }
 
 void CheckForUpdatesTask::MaybeCheckForUpdatesDone() {
@@ -265,6 +270,11 @@ void CheckForUpdatesTask::UninstallPingSent(update_client::Error error) {
 }
 
 }  // namespace
+
+base::TimeDelta UpdateCheckJitter() {
+  return base::TimeDelta::FromSecondsD(base::RandDouble() *
+                                       kUpdateCheckJitterMultiplier);
+}
 
 UpdateServiceInternalImpl::UpdateServiceInternalImpl(
     scoped_refptr<updater::Configurator> config)

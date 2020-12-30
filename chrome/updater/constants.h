@@ -212,6 +212,12 @@ constexpr int kUninstallPingReasonUserNotAnOwner = 1;
 // The file downloaded to a temporary location could not be moved.
 constexpr int kErrorFailedToMoveDownloadedFile = 5;
 
+// TODO(crbug.com/1144151): This constant should be `60` for production code and
+// `0.1` for test code. Due to test timeout limitation, the full jitter interval
+// (0 to 60 seconds) cannot be tested. A jitter in the interval of 0 to 0.1
+// seconds should be used for testing.
+constexpr double kUpdateCheckJitterMultiplier = 0.1;
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_CONSTANTS_H_

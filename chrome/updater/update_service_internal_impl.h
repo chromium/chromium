@@ -19,6 +19,13 @@
 
 namespace updater {
 
+// Returns a random `TimeDelta` value used to delay the start of the automated
+// background tasks such as update checks. This distributes the update server
+// load more uniformly and avoids the problem of a large number of clients
+// creating load spikes on servers when checking for updates and their system
+// time is synchronized by a time server.
+base::TimeDelta UpdateCheckJitter();
+
 class Configurator;
 
 // All functions and callbacks must be called on the same sequence.
