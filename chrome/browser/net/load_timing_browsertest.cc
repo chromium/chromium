@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, HTTP) {
 }
 
 // TODO(crbug.com/1128033): Flaky on ChromeOS and Mac.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
+#if defined(OS_CHROMEOS) || defined(OS_MAC)
 #define MAYBE_HTTPS DISABLED_HTTPS
 #else
 #define MAYBE_HTTPS HTTPS
