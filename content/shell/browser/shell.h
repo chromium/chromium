@@ -209,7 +209,7 @@ class Shell : public WebContentsDelegate,
   void LoadProgressChanged(double progress) override;
 #endif
   void TitleWasSet(NavigationEntry* entry) override;
-  void RenderViewReady() override;
+  void RenderFrameCreated(RenderFrameHost* frame_host) override;
 
   void OnDevToolsWebContentsDestroyed();
 

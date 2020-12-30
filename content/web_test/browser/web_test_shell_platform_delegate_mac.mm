@@ -96,9 +96,9 @@ void WebTestShellPlatformDelegate::SetTitle(Shell* shell,
   }
 }
 
-void WebTestShellPlatformDelegate::RenderViewReady(Shell* shell) {
+void WebTestShellPlatformDelegate::MainFrameCreated(Shell* shell) {
   if (!IsHeadless()) {
-    ShellPlatformDelegate::RenderViewReady(shell);
+    ShellPlatformDelegate::MainFrameCreated(shell);
     return;
   }
 

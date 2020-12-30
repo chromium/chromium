@@ -144,6 +144,12 @@ Shell* Shell::CreateShell(std::unique_ptr<WebContents> web_contents,
 
   g_platform->SetContents(shell);
   g_platform->DidCreateOrAttachWebContents(shell, raw_web_contents);
+  // If the RenderFrame was created during WebContents construction (as happens
+  // for windows opened from the renderer) then the Shell won't hear about the
+  // main frame being created as a WebContentsObservers. This gives the delegate
+  // a chance to act on the main frame accordingly.
+  if (raw_web_contents->GetMainFrame()->IsRenderFrameCreated())
+    g_platform->MainFrameCreated(shell);
 
   return shell;
 }
@@ -222,8 +228,9 @@ Shell* Shell::CreateNewWindow(BrowserContext* browser_context,
   return shell;
 }
 
-void Shell::RenderViewReady() {
-  g_platform->RenderViewReady(this);
+void Shell::RenderFrameCreated(RenderFrameHost* frame_host) {
+  if (frame_host == web_contents_->GetMainFrame())
+    g_platform->MainFrameCreated(this);
 }
 
 void Shell::LoadURL(const GURL& url) {

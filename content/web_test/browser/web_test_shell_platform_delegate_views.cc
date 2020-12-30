@@ -116,9 +116,9 @@ void WebTestShellPlatformDelegate::SetTitle(Shell* shell,
   // Nothing in headless mode.
 }
 
-void WebTestShellPlatformDelegate::RenderViewReady(Shell* shell) {
+void WebTestShellPlatformDelegate::MainFrameCreated(Shell* shell) {
   // No difference in headless mode.
-  ShellPlatformDelegate::RenderViewReady(shell);
+  ShellPlatformDelegate::MainFrameCreated(shell);
 }
 
 bool WebTestShellPlatformDelegate::DestroyShell(Shell* shell) {

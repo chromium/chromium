@@ -57,8 +57,8 @@ void WebTestShellPlatformDelegate::SetTitle(Shell* shell,
   ShellPlatformDelegate::SetTitle(shell, title);
 }
 
-void WebTestShellPlatformDelegate::RenderViewReady(Shell* shell) {
-  ShellPlatformDelegate::RenderViewReady(shell);
+void WebTestShellPlatformDelegate::MainFrameCreated(Shell* shell) {
+  ShellPlatformDelegate::MainFrameCreated(shell);
 }
 
 bool WebTestShellPlatformDelegate::DestroyShell(Shell* shell) {
