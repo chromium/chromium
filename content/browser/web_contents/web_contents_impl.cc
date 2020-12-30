@@ -2173,7 +2173,6 @@ void WebContentsImpl::AttachInnerWebContents(
   // before attaching. If the browser side is already initialized, the calls
   // below will just early return.
   inner_render_manager->InitRenderView(inner_render_view_host, nullptr);
-  inner_main_frame->Init();
   if (!inner_render_manager->GetRenderWidgetHostView()) {
     inner_web_contents_impl->CreateRenderWidgetHostViewForRenderManager(
         inner_render_view_host);
@@ -2770,15 +2769,6 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
   for (auto& i : g_created_callbacks.Get())
     i.Run(this);
 
-  // If the WebContents creation was renderer-initiated, it means that the
-  // corresponding RenderView and main RenderFrame have already been created.
-  // Ensure observers are notified about this.
-  if (params.renderer_initiated_creation) {
-    GetRenderViewHost()->GetWidget()->set_renderer_initialized(true);
-    GetRenderViewHost()->DispatchRenderViewCreated();
-    GetRenderManager()->current_frame_host()->RenderFrameCreated();
-  }
-
   // Create the renderer process in advance if requested.
   if (params.desired_renderer_state ==
       CreateParams::kInitializeAndWarmupRendererProcess) {
@@ -2793,14 +2783,6 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
   // happens after RenderFrameHostManager::Init.
   NotifySwappedFromRenderManager(
       nullptr, GetRenderManager()->current_frame_host(), true);
-
-  // For WebContents that are never shown, do critical initialization here which
-  // would normally only happen when the WebContents is shown.
-  if (params.is_never_visible) {
-    // This has just been created so there can only be one frame. Thus it is
-    // safe to initialize the root.
-    GetMainFrame()->Init();
-  }
 }
 
 void WebContentsImpl::OnWebContentsDestroyed(WebContentsImpl* web_contents) {
@@ -3832,6 +3814,8 @@ void WebContentsImpl::ShowCreatedWidget(int process_id,
   widget_host_view->InitAsPopup(view, transformed_rect);
 
   RenderWidgetHostImpl* render_widget_host_impl = widget_host_view->host();
+  // Renderer-owned popup widgets wait for the renderer to request for them
+  // to be shown. We signal that this condition is satisfied by calling Init().
   render_widget_host_impl->Init();
 }
 
@@ -5061,11 +5045,11 @@ void WebContentsImpl::ResumeLoadingCreatedWebContents() {
     return;
   }
 
-  // Resume blocked requests for both the RenderViewHost and RenderFrameHost.
-  // TODO(brettw): It seems bogus to reach into here and initialize the host.
+  // Renderer-created main frames wait for the renderer to request for them to
+  // perform navigations and to be shown. We signal that this condition is
+  // satisfied by calling Init().
   if (is_resume_pending_) {
     is_resume_pending_ = false;
-    GetRenderViewHost()->GetWidget()->Init();
     GetMainFrame()->Init();
   }
 }

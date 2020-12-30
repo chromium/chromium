@@ -325,7 +325,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   ~RenderViewHostImpl() override;
 
   // RenderWidgetHostOwnerDelegate overrides.
-  void RenderWidgetDidInit() override;
   void RenderWidgetDidFirstVisuallyNonEmptyPaint() override;
   void RenderWidgetGotFocus() override;
   void RenderWidgetLostFocus() override;

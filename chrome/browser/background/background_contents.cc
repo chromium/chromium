@@ -48,10 +48,6 @@ BackgroundContents::BackgroundContents(
       opener ? opener->GetRoutingID() : MSG_ROUTING_NONE;
   create_params.is_never_visible = true;
 
-  // This isn't semantically sensible, but it is what the old code implicitly
-  // did.
-  create_params.renderer_initiated_creation = !is_new_browsing_instance;
-
   if (session_storage_namespace) {
     content::SessionStorageNamespaceMap session_storage_namespace_map;
     session_storage_namespace_map.insert(

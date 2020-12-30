@@ -152,7 +152,8 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
     std::unique_ptr<RenderWidgetHostImpl> render_widget =
         RenderWidgetHostImpl::Create(
             &delegate, *agent_scheduling_group_host, routing_id,
-            /*hidden=*/false, std::make_unique<FrameTokenMessageQueue>());
+            /*hidden=*/false, /*renderer_initiated_creation=*/false,
+            std::make_unique<FrameTokenMessageQueue>());
 
     ui::WindowResizeHelperMac::Get()->Init(base::ThreadTaskRunnerHandle::Get());
 

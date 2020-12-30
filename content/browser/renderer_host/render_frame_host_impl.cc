@@ -1115,7 +1115,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       DCHECK_EQ(nullptr, GetLocalRenderWidgetHost());
       owned_render_widget_host_ = RenderWidgetHostFactory::Create(
           frame_tree_->render_widget_delegate(), agent_scheduling_group_,
-          widget_routing_id, /*hidden=*/true);
+          widget_routing_id, /*hidden=*/true,
+          /*renderer_initiated_creation=*/false);
 #if defined(OS_ANDROID)
       owned_render_widget_host_->SetForceEnableZoom(
           delegate_->GetOrCreateWebPreferences().force_enable_zoom);
@@ -2431,6 +2432,7 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   CHECK(!delegate_->IsBeingDestroyed());
 
   bool was_created = render_frame_created_;
+  DCHECK(!was_created);
   render_frame_created_ = true;
 
   // Clear all the user data associated with this RenderFrameHost when its
@@ -2443,25 +2445,24 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   // Clearing of user data should be called before RenderFrameCreated to ensure:
   // - a) new new state set in RenderFrameCreated doesn't get deleted.
   // - b) the old state is not leaked to a new RenderFrameHost.
-  if (!was_created && was_render_frame_ever_created_)
+  if (was_render_frame_ever_created_)
     document_associated_data_.ClearAllUserData();
-
   was_render_frame_ever_created_ = true;
 
-  // If the current status is different than the new status, the delegate
-  // needs to be notified.
-  if (!was_created) {
-    SetUpMojoIfNeeded();
-    delegate_->RenderFrameCreated(this);
-  }
-  // TODO(http://crbug.com/1014212): Change to DCHECK.
-  CHECK(frame_);
-
+  // Initialize the RenderWidgetHost which marks it and the RenderViewHost as
+  // live before calling to the `delegate_`.
   if (GetLocalRenderWidgetHost()) {
     GetLocalRenderWidgetHost()->input_router()->SetFrameTreeNodeId(
         frame_tree_node_->frame_tree_node_id());
-    GetLocalRenderWidgetHost()->InitForFrame();
+    GetLocalRenderWidgetHost()->RendererWidgetCreated(
+        /*for_frame_widget=*/true);
   }
+
+  // Set up mojo connections to the renderer from the `frame_` connection before
+  // notifying the delegate.
+  SetUpMojoIfNeeded();
+
+  delegate_->RenderFrameCreated(this);
 
   if (enabled_bindings_)
     GetFrameBindingsControl()->AllowBindings(enabled_bindings_);
@@ -2489,11 +2490,18 @@ void RenderFrameHostImpl::SwapIn() {
 }
 
 void RenderFrameHostImpl::Init() {
-  ResumeBlockedRequestsForFrame();
-  if (!waiting_for_init_)
-    return;
+  // This is only called on the main frame, for renderer-created windows. These
+  // windows wait for the renderer to signal that we can show them and begin
+  // navigations.
+  DCHECK(is_main_frame());
+  DCHECK(waiting_for_init_);
 
   waiting_for_init_ = false;
+
+  GetLocalRenderWidgetHost()->Init();
+
+  ResumeBlockedRequestsForFrame();
+
   if (pending_navigate_) {
     frame_tree_node()->navigator().OnBeginNavigation(
         frame_tree_node(), std::move(pending_navigate_->common_params),
@@ -5342,6 +5350,11 @@ void RenderFrameHostImpl::CreateNewWindow(
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,
                           std::move(reply));
+
+  // The mojom reply callback with kSuccess causes the renderer to create the
+  // renderer-side objects.
+  main_frame->render_view_host()->DispatchRenderViewCreated();
+  main_frame->RenderFrameCreated();
 }
 
 void RenderFrameHostImpl::CreatePortal(
@@ -5430,6 +5443,9 @@ void RenderFrameHostImpl::CreateNewPopupWidget(
       agent_scheduling_group_, widget_route_id,
       std::move(blink_popup_widget_host), std::move(blink_widget_host),
       std::move(blink_widget));
+  // The renderer-owned widget was created before sending the IPC received here.
+  widget->RendererWidgetCreated(/*for_frame_widget=*/false);
+
   if (create_new_popup_widget_callback_)
     create_new_popup_widget_callback_.Run(widget);
 }

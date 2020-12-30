@@ -164,7 +164,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   TouchSelectionControllerClientManager*
   GetTouchSelectionControllerClientManager() override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
-  void OnRenderWidgetInit() override;
+  void OnRendererWidgetCreated() override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
   void OnSynchronizedDisplayPropertiesChanged() override;
   base::Optional<SkColor> GetBackgroundColor() override;
@@ -551,7 +551,15 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // If true, then the next allocated surface should be embedded.
   bool navigation_while_hidden_ = false;
 
-  bool render_widget_initialized_ = false;
+  // False at creation time until the connection to the renderer process is
+  // established. If the connection is lost (ie. renderer process crash) then
+  // this object will be destroyed and recreated for the new process.
+  // NOTE: Due to unfortunate circumstances, the RenderWidgetHost and the
+  // RenderWidgetHostView will outlive the renderer-side object if a
+  // cross-process navigation occurs and the main frame moves out of the
+  // process. At that time this value would remain true though there is no
+  // Widget anymore associated with it. See https://crbug.com/419087.
+  bool renderer_widget_created_ = false;
 
   // Tracks whether we are in SynchronousCopyContents to avoid repeated calls
   // into DevTools capture logic.

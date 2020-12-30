@@ -28,7 +28,8 @@ class RenderViewHostFactory {
                                 RenderViewHostDelegate* delegate,
                                 RenderWidgetHostDelegate* widget_delegate,
                                 int32_t main_frame_routing_id,
-                                bool swapped_out);
+                                bool swapped_out,
+                                bool renderer_initiated_creation);
 
   // Returns true if there is currently a globally-registered factory.
   static bool has_factory() {

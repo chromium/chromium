@@ -29,7 +29,8 @@ class RenderWidgetHostFactory {
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t routing_id,
-      bool hidden);
+      bool hidden,
+      bool renderer_initiated_creation);
 
   // Returns true if there is currently a globally-registered factory.
   static bool has_factory() { return !!factory_; }

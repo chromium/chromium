@@ -266,12 +266,13 @@ bool TestRenderViewHost::CreateRenderView(
     int proxy_route_id,
     bool window_was_created_with_opener) {
   DCHECK(!IsRenderViewLive());
-  GetWidget()->set_renderer_initialized(true);
-  DCHECK(IsRenderViewLive());
-  opener_frame_token_ = opener_frame_token;
+
   RenderFrameHostImpl* main_frame =
       static_cast<RenderFrameHostImpl*>(GetMainFrame());
   if (main_frame && is_active()) {
+    // Pretend that we started a renderer process and created the renderer Frame
+    // with its Widget. We bind all the mojom interfaces, but they all just talk
+    // into the void.
     mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
     mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
     auto blink_widget_receiver =
@@ -288,9 +289,14 @@ bool TestRenderViewHost::CreateRenderView(
         frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
         frame_widget.Unbind());
 
+    // This also initializes the RenderWidgetHost attached to the frame.
     main_frame->RenderFrameCreated();
+  } else {
+    GetWidget()->SetRendererWidgetCreatedForInactiveRenderView();
   }
 
+  DCHECK(IsRenderViewLive());
+  opener_frame_token_ = opener_frame_token;
   return true;
 }
 

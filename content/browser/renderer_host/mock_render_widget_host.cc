@@ -80,6 +80,7 @@ MockRenderWidgetHost::MockRenderWidgetHost(
                            agent_scheduling_group,
                            routing_id,
                            /*hidden=*/false,
+                           /*renderer_initiated_creation=*/false,
                            std::make_unique<FrameTokenMessageQueue>()),
       new_content_rendering_timeout_fired_(false),
       fling_scheduler_(std::make_unique<FlingScheduler>(this)) {

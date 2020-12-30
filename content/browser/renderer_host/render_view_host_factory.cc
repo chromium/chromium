@@ -27,7 +27,8 @@ RenderViewHost* RenderViewHostFactory::Create(
     RenderViewHostDelegate* delegate,
     RenderWidgetHostDelegate* widget_delegate,
     int32_t main_frame_routing_id,
-    bool swapped_out) {
+    bool swapped_out,
+    bool renderer_initiated_creation) {
   int32_t routing_id = instance->GetProcess()->GetNextRoutingID();
   int32_t widget_routing_id = instance->GetProcess()->GetNextRoutingID();
   if (factory_) {
@@ -42,7 +43,7 @@ RenderViewHost* RenderViewHostFactory::Create(
           widget_delegate,
           static_cast<SiteInstanceImpl*>(instance)->GetAgentSchedulingGroup(),
           widget_routing_id,
-          /*hidden=*/true),
+          /*hidden=*/true, renderer_initiated_creation),
       delegate, routing_id, main_frame_routing_id, swapped_out,
       true /* has_initialized_audio_host */);
   return view_host;

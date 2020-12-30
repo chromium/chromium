@@ -28,9 +28,6 @@ struct NativeWebKeyboardEvent;
 //  and http://crbug.com/478281.
 class CONTENT_EXPORT RenderWidgetHostOwnerDelegate {
  public:
-  // The RenderWidgetHost has been initialized.
-  virtual void RenderWidgetDidInit() = 0;
-
   // The RenderWidget finished the first visually non-empty paint.
   virtual void RenderWidgetDidFirstVisuallyNonEmptyPaint() = 0;
 

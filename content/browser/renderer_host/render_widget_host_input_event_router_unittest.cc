@@ -235,7 +235,8 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     widget_host_root_ = RenderWidgetHostImpl::Create(
         &delegate_, *agent_scheduling_group_host_root_,
         process_host_root_->GetNextRoutingID(),
-        /*hidden=*/false, std::make_unique<FrameTokenMessageQueue>());
+        /*hidden=*/false, /*renderer_initiated_creation=*/false,
+        std::make_unique<FrameTokenMessageQueue>());
 
     mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
     mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
@@ -292,7 +293,8 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     child.widget_host = RenderWidgetHostImpl::Create(
         &delegate_, *child.agent_scheduling_group_host,
         child.process_host->GetNextRoutingID(),
-        /*hidden=*/false, std::make_unique<FrameTokenMessageQueue>());
+        /*hidden=*/false, /*renderer_initiated_creation=*/false,
+        std::make_unique<FrameTokenMessageQueue>());
     child.view = std::make_unique<TestRenderWidgetHostViewChildFrame>(
         child.widget_host.get());
     child.frame_connector = std::make_unique<MockFrameConnector>(

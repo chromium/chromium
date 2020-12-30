@@ -126,7 +126,8 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
 
     widget_host_ = RenderWidgetHostImpl::Create(
         &delegate_, *agent_scheduling_group_host_, routing_id,
-        /*hidden=*/false, std::make_unique<FrameTokenMessageQueue>());
+        /*hidden=*/false, /*renderer_initiated_creation=*/false,
+        std::make_unique<FrameTokenMessageQueue>());
 
     mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
     widget_host_->BindWidgetInterfaces(
@@ -245,7 +246,7 @@ TEST_F(RenderWidgetHostViewChildFrameTest, ViewportIntersectionUpdated) {
       std::move(blink_frame_widget_host_receiver), blink_frame_widget.Unbind());
   FakeFrameWidget fake_frame_widget(std::move(blink_frame_widget_receiver));
 
-  widget_host_->Init();
+  widget_host_->RendererWidgetCreated(/*for_frame_widget=*/true);
 
   base::RunLoop().RunUntilIdle();
 
@@ -301,7 +302,7 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
       static_cast<MockRenderProcessHost*>(widget_host_->GetProcess());
   process->Init();
 
-  widget_host_->Init();
+  widget_host_->RendererWidgetCreated(/*for_frame_widget=*/true);
 
   constexpr gfx::Rect compositor_viewport_pixel_rect(100, 100);
   constexpr gfx::Rect screen_space_rect(compositor_viewport_pixel_rect);

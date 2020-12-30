@@ -424,8 +424,6 @@ bool RenderViewHostImpl::CreateRenderView(
   const FrameTreeNode* const frame_tree_node =
       main_rfh ? main_rfh->frame_tree_node() : main_rfph->frame_tree_node();
 
-  GetWidget()->set_renderer_initialized(true);
-
   mojom::CreateViewParamsPtr params = mojom::CreateViewParams::New();
   params->renderer_preferences = delegate_->GetRendererPrefs();
   RenderViewHostImpl::GetPlatformSpecificPrefs(&params->renderer_preferences);
@@ -505,11 +503,19 @@ bool RenderViewHostImpl::CreateRenderView(
   // Let our delegate know that we created a RenderView.
   DispatchRenderViewCreated();
 
-  // Since this method can create the main RenderFrame in the renderer process,
-  // set the proper state on its corresponding RenderFrameHost.
+  // If there is a main frame in this RenderViewHost, then the renderer-side
+  // main frame will be created along with the RenderView. The RenderFrameHost
+  // initializes its RenderWidgetHost as well, if it exists. Otherwise we must
+  // mark the non-frame-attached RenderWidgetHost as live in order for the
+  // RenderViewHost to be considered live.
   if (main_rfh)
     main_rfh->RenderFrameCreated();
+  else
+    GetWidget()->SetRendererWidgetCreatedForInactiveRenderView();
+
   GetWidget()->delegate()->SendScreenRects();
+  // This must be posted after the RenderViewHost is marked live, which is done
+  // above by RenderFrameCreated() or set_renderer_initialized().
   PostRenderViewReady();
 
   return true;
@@ -518,6 +524,10 @@ bool RenderViewHostImpl::CreateRenderView(
 void RenderViewHostImpl::SetMainFrameRoutingId(int routing_id) {
   main_frame_routing_id_ = routing_id;
   GetWidget()->UpdatePriority();
+  // TODO(crbug.com/419087): If a local main frame is no longer attached to this
+  // RenderView then the RenderWidgetHostImpl owned by this class should be
+  // informed that its renderer widget is no longer created. The RenderViewHost
+  // will need to track its own live-ness then.
 }
 
 void RenderViewHostImpl::EnterBackForwardCache() {
@@ -755,10 +765,6 @@ bool RenderViewHostImpl::OnMessageReceived(const IPC::Message& msg) {
   ScopedActiveURL scoped_active_url(this);
 
   return delegate_->OnMessageReceived(this, msg);
-}
-
-void RenderViewHostImpl::RenderWidgetDidInit() {
-  PostRenderViewReady();
 }
 
 void RenderViewHostImpl::OnDidContentsPreferredSizeChange(

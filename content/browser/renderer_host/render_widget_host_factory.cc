@@ -17,14 +17,15 @@ std::unique_ptr<RenderWidgetHostImpl> RenderWidgetHostFactory::Create(
     RenderWidgetHostDelegate* delegate,
     AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t routing_id,
-    bool hidden) {
+    bool hidden,
+    bool renderer_initiated_creation) {
   if (factory_) {
     return factory_->CreateRenderWidgetHost(delegate, agent_scheduling_group,
                                             routing_id, hidden);
   }
   return RenderWidgetHostImpl::Create(
       delegate, agent_scheduling_group, routing_id, hidden,
-      std::make_unique<FrameTokenMessageQueue>());
+      renderer_initiated_creation, std::make_unique<FrameTokenMessageQueue>());
 }
 
 // static

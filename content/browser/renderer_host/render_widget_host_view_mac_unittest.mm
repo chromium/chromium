@@ -362,12 +362,13 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
                              agent_scheduling_group_host,
                              routing_id,
                              /*hidden=*/false,
+                             /*renderer_initiated_creation=*/false,
                              std::make_unique<FrameTokenMessageQueue>()) {
     mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host;
     BindWidgetInterfaces(widget_host.BindNewEndpointAndPassDedicatedReceiver(),
                          TestRenderWidgetHost::CreateStubWidgetRemote());
 
-    set_renderer_initialized(true);
+    SetRendererWidgetCreatedForInactiveRenderView();
     lastWheelEventLatencyInfo = ui::LatencyInfo();
 
     ON_CALL(*this, Focus())

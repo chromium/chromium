@@ -2339,6 +2339,9 @@ RenderFrameHostManager::CreateRenderFrameHost(
       DCHECK_EQ(frame_tree_node_->parent()->GetSiteInstance(), site_instance);
       // The RenderViewHost must already exist for the parent's SiteInstance.
       DCHECK(render_view_host);
+      // Only main frames can be marked as renderer-initiated, as it refers to
+      // a renderer-created window.
+      DCHECK(!renderer_initiated_creation);
       break;
     case CreateFrameCase::kInitRoot:
       DCHECK(frame_tree_node_->IsMainFrame());
@@ -2353,12 +2356,16 @@ RenderFrameHostManager::CreateRenderFrameHost(
       //
       // A speculative frame should be replacing an existing frame.
       DCHECK(render_frame_host_);
+      // Only the initial main frame can be marked as renderer-initiated, as it
+      // refers to a renderer-created window. A speculative frame is always
+      // created later by the browser.
+      DCHECK(!renderer_initiated_creation);
       break;
   }
   if (!render_view_host) {
-    render_view_host =
-        frame_tree->CreateRenderViewHost(site_instance, frame_routing_id,
-                                         /*swapped_out=*/false);
+    render_view_host = frame_tree->CreateRenderViewHost(
+        site_instance, frame_routing_id,
+        /*swapped_out=*/false, renderer_initiated_creation);
   }
   CHECK(render_view_host);
   // Lifecycle state of newly created RenderFrameHostImpl.
@@ -2469,6 +2476,10 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
     // If we are reusing the RenderViewHost and it doesn't already have a
     // RenderWidgetHostView, we need to create one if this is the main frame.
     if (!render_view_host->GetWidget()->GetView()) {
+      // TODO(crbug.com/1161585): The RenderWidgetHostView should be created
+      // *before* we create the renderer-side objects through InitRenderView().
+      // Then we should remove the null-check for the RenderWidgetHostView in
+      // RenderWidgetHostImpl::RendererWidgetCreated().
       delegate_->CreateRenderWidgetHostViewForRenderManager(render_view_host);
       // If we are recovering a crashed frame in the same SiteInstance and we
       // are not skipping early commit then we will create a proxy and that will
@@ -2530,7 +2541,7 @@ void RenderFrameHostManager::CreateRenderFrameProxy(SiteInstance* instance) {
       // exists for |instance|, as it creates the page level structure in Blink.
       render_view_host = frame_tree_node_->frame_tree()->CreateRenderViewHost(
           instance, /*frame_routing_id=*/MSG_ROUTING_NONE,
-          /*swapped_out=*/true);
+          /*swapped_out=*/true, /*renderer_initiated_creation=*/false);
     }
     proxy = CreateRenderFrameProxyHost(instance, std::move(render_view_host));
   }

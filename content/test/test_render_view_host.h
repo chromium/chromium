@@ -186,12 +186,22 @@ class TestRenderViewHost
                      int32_t routing_id,
                      int32_t main_frame_routing_id,
                      bool swapped_out);
-  // RenderViewHostTester implementation.  Note that CreateRenderView
-  // is not specified since it is synonymous with the one from
-  // RenderViewHostImpl, see below.
+  // RenderViewHostImpl overrides.
+  MockRenderProcessHost* GetProcess() override;
+  bool CreateRenderView(
+      const base::Optional<base::UnguessableToken>& opener_frame_token,
+      int proxy_route_id,
+      bool window_was_created_with_opener) override;
+  bool IsTestRenderViewHost() const override;
+
+  // RenderViewHostTester implementation.
   void SimulateWasHidden() override;
   void SimulateWasShown() override;
   blink::web_pref::WebPreferences TestComputeWebPreferences() override;
+  bool CreateTestRenderView(
+      const base::Optional<base::UnguessableToken>& opener_frame_token,
+      int proxy_route_id,
+      bool window_was_created_with_opener) override;
 
   void TestOnUpdateStateWithFile(const base::FilePath& file_path);
 
@@ -206,23 +216,6 @@ class TestRenderViewHost
   const base::Optional<base::UnguessableToken>& opener_frame_token() const {
     return opener_frame_token_;
   }
-
-  // RenderWidgetHost overrides (same value, but in the Mock* type)
-  MockRenderProcessHost* GetProcess() override;
-
-  bool CreateTestRenderView(
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
-      int proxy_route_id,
-      bool window_was_created_with_opener) override;
-
-  // RenderViewHost:
-  bool CreateRenderView(
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
-      int proxy_route_id,
-      bool window_was_created_with_opener) override;
-
-  // RenderViewHostImpl:
-  bool IsTestRenderViewHost() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(RenderViewHostTest, FilterNavigate);

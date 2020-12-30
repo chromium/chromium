@@ -494,8 +494,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void RenderFrameCreated();
   void RenderFrameDeleted();
 
-  // Called for renderer-created windows to resume requests from this frame,
-  // after they are blocked in RenderWidgetHelper::CreateNewWindow.
+  // Signals that the renderer has requested for this main-frame's window to be
+  // shown, at which point we can service navigation requests.
   void Init();
 
   // This needs to be called to make sure that the parent-child relationship
@@ -2900,9 +2900,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   mojo::AssociatedReceiver<blink::mojom::LocalMainFrameHost>
       local_main_frame_host_receiver_{this};
 
-  // If this is true then this object was created in response to a renderer
-  // initiated request. Init() will be called, and until then navigation
-  // requests should be queued.
+  // If this is true then this main-frame object was created in response to a
+  // renderer initiated request. Init() will be called when the renderer wants
+  // the frame to become visible and to perform navigation requests. Until then
+  // navigation requests should be queued.
   bool waiting_for_init_;
 
   // If true then this frame's document has a focused element which is editable.

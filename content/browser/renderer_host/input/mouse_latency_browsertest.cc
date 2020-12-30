@@ -85,6 +85,7 @@ class TracingRenderWidgetHost : public RenderWidgetHostImpl {
                              agent_scheduling_group,
                              routing_id,
                              hidden,
+                             /*renderer_initiated_creation=*/false,
                              std::make_unique<FrameTokenMessageQueue>()) {}
 
   void OnMouseEventAck(

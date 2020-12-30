@@ -1163,7 +1163,7 @@ void RenderWidgetHostViewAndroid::MaybeCreateSynchronousCompositor() {
     sync_compositor_ =
         SynchronousCompositorHost::Create(this, host()->GetFrameSinkId());
     view_.SetCopyOutputCallback(sync_compositor_->GetCopyViewCallback());
-    if (render_widget_initialized_)
+    if (renderer_widget_created_)
       sync_compositor_->InitMojo();
   }
 }
@@ -2040,8 +2040,8 @@ const viz::LocalSurfaceId& RenderWidgetHostViewAndroid::GetLocalSurfaceId()
   return local_surface_id_allocator_.GetCurrentLocalSurfaceId();
 }
 
-void RenderWidgetHostViewAndroid::OnRenderWidgetInit() {
-  render_widget_initialized_ = true;
+void RenderWidgetHostViewAndroid::OnRendererWidgetCreated() {
+  renderer_widget_created_ = true;
   if (sync_compositor_)
     sync_compositor_->InitMojo();
 }

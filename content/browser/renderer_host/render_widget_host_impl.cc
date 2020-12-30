@@ -333,10 +333,11 @@ std::unique_ptr<RenderWidgetHostImpl> RenderWidgetHostImpl::Create(
     AgentSchedulingGroupHost& agent_scheduling_host,
     int32_t routing_id,
     bool hidden,
+    bool renderer_initiated_creation,
     std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue) {
   return base::WrapUnique(new RenderWidgetHostImpl(
       /*self_owned=*/false, delegate, agent_scheduling_host, routing_id, hidden,
-      std::move(frame_token_message_queue)));
+      renderer_initiated_creation, std::move(frame_token_message_queue)));
 }
 
 // static
@@ -348,6 +349,7 @@ RenderWidgetHostImpl* RenderWidgetHostImpl::CreateSelfOwned(
     std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue) {
   return new RenderWidgetHostImpl(/*self_owned=*/true, delegate,
                                   agent_scheduling_host, routing_id, hidden,
+                                  /*renderer_initiated_creation=*/true,
                                   std::move(frame_token_message_queue));
 }
 
@@ -357,8 +359,10 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
     AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t routing_id,
     bool hidden,
+    bool renderer_initiated_creation,
     std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue)
     : self_owned_(self_owned),
+      waiting_for_init_(renderer_initiated_creation),
       delegate_(delegate),
       agent_scheduling_group_(agent_scheduling_group),
       routing_id_(routing_id),
@@ -495,6 +499,20 @@ void RenderWidgetHostImpl::SetView(RenderWidgetHostViewBase* view) {
     view_ = view->GetWeakPtr();
     if (!create_frame_sink_callback_.is_null())
       std::move(create_frame_sink_callback_).Run(view_->GetFrameSinkId());
+
+    // SendScreenRects() and SynchronizeVisualProperties() delay until a view
+    // is set, however we come here with a newly created `view` that is not
+    // initialized and ready to be used.
+    // The portal codepath comes here because it replaces the view while the
+    // renderer-side widget is already created. In that case the renderer will
+    // hear about geometry changes from the view being moved/resized as a result
+    // of the change.
+    // Speculative RenderViews also end up setting a `view` after creating the
+    // renderer-side widget, as per https://crbug.com/1161585. That path must
+    // be responsible for updating the renderer geometry itself, which it does
+    // because it will start hidden, and will send them when shown.
+    // TODO(crbug.com/1161585): Once RendererWidgetCreated() is always called
+    // with a non-null `view` then this comment can go away. :)
   } else {
     view_.reset();
   }
@@ -521,17 +539,25 @@ const viz::FrameSinkId& RenderWidgetHostImpl::GetFrameSinkId() {
 }
 
 void RenderWidgetHostImpl::SendScreenRects() {
-  if (!renderer_initialized_ || !blink_widget_ || waiting_for_screen_rects_ack_)
+  // Sending screen rects are deferred until we have a connection to a
+  // renderer-side Widget to send them to. Further, if we're waiting for the
+  // renderer to show (aka Init()) the widget then we defer sending updates
+  // until the renderer is ready.
+  if (!renderer_widget_created_ || waiting_for_init_)
     return;
-
+  // TODO(danakj): The `renderer_widget_created_` flag is set to true for
+  // widgets owned by inactive RenderViewHosts, even though there is no widget
+  // created. In that case the `view_` will not be created.
+  if (!view_)
+    return;
+  // Throttle to one update at a time.
+  if (waiting_for_screen_rects_ack_)
+    return;
   if (is_hidden_) {
     // On GTK, this comes in for backgrounded tabs. Ignore, to match what
     // happens on Win & Mac, and when the view is shown it'll call this again.
     return;
   }
-
-  if (!view_)
-    return;
 
   last_view_screen_rect_ = view_->GetViewBounds();
   last_window_screen_rect_ = view_->GetBoundsInRootWindow();
@@ -562,35 +588,6 @@ void RenderWidgetHostImpl::SetIntersectsViewport(bool intersects) {
 void RenderWidgetHostImpl::UpdatePriority() {
   if (!destroyed_)
     GetProcess()->UpdateClientPriority(this);
-}
-
-void RenderWidgetHostImpl::Init() {
-  DCHECK(GetProcess()->IsInitializedAndNotDead());
-
-  set_renderer_initialized(true);
-
-  blink_widget_->GetWidgetInputHandler(
-      widget_input_handler_.BindNewPipeAndPassReceiver(),
-      input_router_->BindNewHost());
-  // If this is for a frame be sure to connect that handler too.
-  if (blink_frame_widget_) {
-    widget_input_handler_->GetFrameWidgetInputHandler(
-        frame_widget_input_handler_.BindNewEndpointAndPassReceiver());
-    blink_frame_widget_->BindInputTargetClient(
-        input_target_client_.BindNewPipeAndPassReceiver());
-  }
-
-  SendScreenRects();
-  SynchronizeVisualProperties();
-
-  if (owner_delegate_)
-    owner_delegate_->RenderWidgetDidInit();
-
-  if (view_)
-    view_->OnRenderWidgetInit();
-
-  if (pending_show_closure_)
-    std::move(pending_show_closure_).Run();
 }
 
 std::pair<mojo::PendingAssociatedRemote<blink::mojom::WidgetHost>,
@@ -655,27 +652,54 @@ void RenderWidgetHostImpl::BindFrameWidgetInterfaces(
   blink_frame_widget_.Bind(std::move(frame_widget));
 }
 
-void RenderWidgetHostImpl::InitForFrame() {
+void RenderWidgetHostImpl::RendererWidgetCreated(bool for_frame_widget) {
   DCHECK(GetProcess()->IsInitializedAndNotDead());
-  set_renderer_initialized(true);
 
-  // In situations where RenderFrameHostImpl::CreateNewFrame calls this
-  // the |blink_widget_| will not be bound before this method is called.
-  // However RenderWidgetHostImpl::Init will be called once the widget
-  // is shown and these handlers will be bound there.
-  if (blink_widget_) {
-    blink_widget_->GetWidgetInputHandler(
-        widget_input_handler_.BindNewPipeAndPassReceiver(),
-        input_router_->BindNewHost());
+  renderer_widget_created_ = true;
+
+  blink_widget_->GetWidgetInputHandler(
+      widget_input_handler_.BindNewPipeAndPassReceiver(),
+      input_router_->BindNewHost());
+  if (for_frame_widget) {
     widget_input_handler_->GetFrameWidgetInputHandler(
         frame_widget_input_handler_.BindNewEndpointAndPassReceiver());
     blink_frame_widget_->BindInputTargetClient(
         input_target_client_.BindNewPipeAndPassReceiver());
   }
 
+  // TODO(crbug.com/1161585): The `view_` can be null. :( Speculative
+  // RenderViews along with the main frame and its widget before the
+  // RenderWidgetHostView is created. Normally the RenderWidgetHostView should
+  // come first. Historically, unit tests also set things up in the wrong order
+  // and could get here with a null, but that is no longer the case (hopefully
+  // that remains true).
   if (view_)
-    view_->OnRenderWidgetInit();
+    view_->OnRendererWidgetCreated();
 
+  // These two methods avoid running until `renderer_widget_created_` is true,
+  // so we run them here after we set it.
+  SendScreenRects();
+  SynchronizeVisualProperties();
+}
+
+void RenderWidgetHostImpl::SetRendererWidgetCreatedForInactiveRenderView() {
+  renderer_widget_created_ = true;
+}
+
+void RenderWidgetHostImpl::Init() {
+  DCHECK(renderer_widget_created_);
+  DCHECK(waiting_for_init_);
+
+  waiting_for_init_ = false;
+
+  // These two methods avoid running while we are `waiting_for_init_`, so we
+  // run them here after we clear it.
+  SendScreenRects();
+  SynchronizeVisualProperties();
+  // Show/Hide state is not given to the renderer while we are
+  // `waiting_for_init_`, but Init() signals that the renderer is ready to
+  // receive them. This closure will inform the renderer that the widget is
+  // shown.
   if (pending_show_closure_)
     std::move(pending_show_closure_).Run();
 }
@@ -714,12 +738,17 @@ void RenderWidgetHostImpl::WasHidden() {
   // Don't bother reporting hung state when we aren't active.
   StopInputEventAckTimeout();
 
-  // If we have bound the blink widget interface, then inform it that we are
-  // being hidden so it can reduce its resource utilization.
-  if (blink_widget_)
-    blink_widget_->WasHidden();
-  else
+  // Show/Hide state is not sent to the renderer when it has requested for us to
+  // wait until it requests them via Init().
+  if (pending_show_closure_) {
     pending_show_closure_.Reset();
+  } else {
+    // Widgets start out hidden, so we must have previously been shown to get
+    // here, and we'd have a `pending_show_closure_` if we are
+    // `waiting_for_init_`.
+    DCHECK(!waiting_for_init_);
+    blink_widget_->WasHidden();
+  }
 
   // Tell the RenderProcessHost we were hidden.
   GetProcess()->UpdateClientPriority(this);
@@ -745,14 +774,20 @@ void RenderWidgetHostImpl::WasShown(
   // If we navigated in background, clear the displayed graphics of the
   // previous page before going visible.
   ForceFirstFrameAfterNavigationTimeout();
-
-  SendScreenRects();
   RestartInputEventAckTimeoutIfNecessary();
+
+  // This methods avoids running when the widget is hidden, so we run it here
+  // once it is no longer hidden.
+  SendScreenRects();
+  // SendScreenRects() and SynchronizeVisualProperties() should happen
+  // together as one message, but we send them back-to-back for now so that
+  // all state gets to the renderer as close together as possible.
+  SynchronizeVisualProperties();
 
   auto show_request_timestamp = record_tab_switch_time_request
                                     ? base::TimeTicks::Now()
                                     : base::TimeTicks();
-  if (blink_widget_) {
+  if (!waiting_for_init_) {
     blink_widget_->WasShown(show_request_timestamp, view_->is_evicted(),
                             std::move(record_tab_switch_time_request));
   } else {
@@ -1059,22 +1094,26 @@ bool RenderWidgetHostImpl::SynchronizeVisualProperties(
   // inactive, so there is no focused node, or anything to scroll and display.
   if (owner_delegate_ && !owner_delegate_->IsMainFrameActive())
     return false;
-  // This is similar to the above but when the renderer process has crashed, so
-  // more objects are gone than the RenderWidget.
-  if (!renderer_initialized_)
+  // Sending VisualProperties are deferred until we have a connection to a
+  // renderer-side Widget to send them to. Further, if we're waiting for the
+  // renderer to show (aka Init()) the widget then we defer sending updates
+  // until the renderer is ready.
+  if (!renderer_widget_created_ || waiting_for_init_)
     return false;
-
-  // If we have not bound the blink widget interface put this request off.
-  // SynchronizeVisualProperties will get called after the channel is bound.
-  if (!blink_widget_)
+  // TODO(danakj): The `renderer_widget_created_` flag is set to true for
+  // widgets owned by inactive RenderViewHosts, even though there is no widget
+  // created. In that case the `view_` will not be created.
+  if (!view_)
+    return false;
+  // Throttle to one update at a time.
+  if (visual_properties_ack_pending_)
     return false;
 
   // Skip if the |delegate_| has already been detached because it's web contents
   // is being deleted, or if LocalSurfaceId is suppressed, as we are
   // first updating our internal state from a child's request, before
   // subsequently merging ids to send.
-  if (visual_properties_ack_pending_ ||
-      !GetProcess()->IsInitializedAndNotDead() || !view_ || !view_->HasSize() ||
+  if (!GetProcess()->IsInitializedAndNotDead() || !view_->HasSize() ||
       !delegate_ || surface_id_allocation_suppressed_ ||
       !view_->CanSynchronizeVisualProperties()) {
     return false;
@@ -2004,12 +2043,14 @@ void RenderWidgetHostImpl::OnUpdateDragCursor(
 }
 
 void RenderWidgetHostImpl::RendererExited() {
-  if (!renderer_initialized_)
+  if (!renderer_widget_created_)
     return;
 
   // Clearing this flag causes us to re-create the renderer when recovering
   // from a crashed renderer.
-  set_renderer_initialized(false);
+  renderer_widget_created_ = false;
+  // This flag is set when creating the renderer widget.
+  waiting_for_init_ = false;
 
   // After the renderer crashes, the view is destroyed and so the
   // RenderWidgetHost cannot track its visibility anymore. We assume such
@@ -2233,7 +2274,6 @@ void RenderWidgetHostImpl::Destroy(bool also_delete) {
   blink_popup_widget_host_receiver_.reset();
 
   render_process_blocked_state_changed_subscription_ = {};
-  pending_show_closure_.Reset();
   GetProcess()->RemovePriorityClient(this);
   GetProcess()->RemoveObserver(this);
   g_routing_id_widget_map.Get().erase(

@@ -216,7 +216,8 @@ class CONTENT_EXPORT FrameTree {
   scoped_refptr<RenderViewHostImpl> CreateRenderViewHost(
       SiteInstance* site_instance,
       int32_t main_frame_routing_id,
-      bool swapped_out);
+      bool swapped_out,
+      bool renderer_initiated_creation);
 
   // Returns the existing RenderViewHost for a new RenderFrameHost.
   // There should always be such a RenderViewHost, because the main frame

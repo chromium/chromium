@@ -495,8 +495,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   virtual void DidNavigate();
 
-  // Called when the RenderWidgetHostImpl has be initialized.
-  virtual void OnRenderWidgetInit() {}
+  // Called when the RenderWidgetHostImpl establishes a connection to the
+  // renderer process Widget.
+  virtual void OnRendererWidgetCreated() {}
 
   virtual WebContentsAccessibility* GetWebContentsAccessibility();
 
