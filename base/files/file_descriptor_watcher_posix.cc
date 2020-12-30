@@ -234,7 +234,11 @@ void FileDescriptorWatcher::Controller::RunCallback() {
 
   WeakPtr<Controller> weak_this = weak_factory_.GetWeakPtr();
 
-  callback_.Run();
+  // Run a copy of the callback in case this Controller is deleted by the
+  // callback. This would cause the callback itself to be deleted while it is
+  // being run.
+  RepeatingClosure callback_copy = callback_;
+  callback_copy.Run();
 
   // If |this| wasn't deleted, re-enable the watch.
   if (weak_this)
