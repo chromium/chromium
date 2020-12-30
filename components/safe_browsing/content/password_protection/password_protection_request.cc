@@ -478,10 +478,8 @@ void PasswordProtectionRequest::SendRequest() {
       WebUIInfoSingleton::GetInstance()->AddToPGPings(*request_proto_);
 
   std::string serialized_request;
-  if (!request_proto_->SerializeToString(&serialized_request)) {
-    Finish(RequestOutcome::REQUEST_MALFORMED, nullptr);
-    return;
-  }
+  // TODO(crbug.com/1158582): Return early if request serialization fails.
+  request_proto_->SerializeToString(&serialized_request);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("password_protection_request", R"(
