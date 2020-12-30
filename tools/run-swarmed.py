@@ -157,10 +157,14 @@ def main():
   parser.add_argument('--target-os', default='detect', help='gn target_os')
   parser.add_argument('--arch', '-a', default='detect',
                       help='CPU architecture of the test binary.')
-  parser.add_argument('--build', dest='build', action='store_true',
-                      help='Build before isolating (default).')
-  parser.add_argument( '--no-build', dest='build', action='store_false',
-                      help='Do not build, just isolate.')
+  parser.add_argument('--build',
+                      dest='build',
+                      action='store_true',
+                      help='Build before isolating.')
+  parser.add_argument('--no-build',
+                      dest='build',
+                      action='store_false',
+                      help='Do not build, just isolate (default).')
   parser.add_argument('--isolate-map-file', '-i',
                       help='path to isolate map file if not using default')
   parser.add_argument('--copies', '-n', type=int, default=1,
