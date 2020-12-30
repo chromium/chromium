@@ -6,16 +6,24 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_observer.h"
+#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "mojo/public/cpp/system/data_pipe.h"
+#include "mojo/public/cpp/system/data_pipe_producer.h"
+#include "mojo/public/cpp/system/string_data_source.h"
+#include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/test/async_file_test_helper.h"
+#include "storage/browser/test/mock_blob_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {
@@ -37,11 +45,40 @@ storage::FileSystemOperationRunner* GetFileSystemOperationRunner(
   return GetFileSystemContext(profile)->operation_runner();
 }
 
+// Creates a mojo data pipe with the provided `content`.
+mojo::ScopedDataPipeConsumerHandle CreateStream(const std::string& contents) {
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  MojoCreateDataPipeOptions options;
+  options.struct_size = sizeof(MojoCreateDataPipeOptions);
+  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+  options.element_num_bytes = 1;
+  options.capacity_num_bytes = 16;
+  mojo::CreateDataPipe(&options, &producer_handle, &consumer_handle);
+  CHECK(producer_handle.is_valid());
+  auto producer =
+      std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
+  auto* producer_raw = producer.get();
+  producer_raw->Write(
+      std::make_unique<mojo::StringDataSource>(
+          contents, mojo::StringDataSource::AsyncWritingMode::
+                        STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION),
+      base::BindOnce(
+          base::DoNothing::Once<std::unique_ptr<mojo::DataPipeProducer>,
+                                MojoResult>(),
+          std::move(producer)));
+  return consumer_handle;
+}
+
 // MockFileChangeServiceObserver -----------------------------------------------
 
 class MockFileChangeServiceObserver : public FileChangeServiceObserver {
  public:
   // FileChangeServiceObserver:
+  MOCK_METHOD(void,
+              OnFileModified,
+              (const storage::FileSystemURL& url),
+              (override));
   MOCK_METHOD(void,
               OnFileCopied,
               (const storage::FileSystemURL& src,
@@ -98,6 +135,50 @@ class TempFileSystem {
         temp_dir_.GetPath().Append(base::FilePath::FromUTF8Unsafe(path)));
   }
 
+  // Synchronously writes `content` to the file specified by `url`.
+  base::File::Error WriteFile(const storage::FileSystemURL& url,
+                              const std::string& data) {
+    storage::BlobStorageContext blob_storage_context;
+    storage::ScopedTextBlob blob(&blob_storage_context, "blob-id:test", data);
+    base::File::Error result = base::File::FILE_OK;
+    base::RunLoop run_loop;
+    GetFileSystemContext(profile_)->operation_runner()->Write(
+        url, blob.GetBlobDataHandle(), 0,
+        base::BindLambdaForTesting([&](base::File::Error operation_result,
+                                       int64_t bytes, bool complete) {
+          if (!complete)
+            return;
+          result = operation_result;
+          run_loop.Quit();
+        }));
+    return result;
+  }
+
+  // Synchronously writes contents from `stream` to the file specified by `url`.
+  base::File::Error WriteStreamToFile(
+      const storage::FileSystemURL& url,
+      mojo::ScopedDataPipeConsumerHandle stream) {
+    base::File::Error result = base::File::FILE_OK;
+    base::RunLoop run_loop;
+    GetFileSystemContext(profile_)->operation_runner()->WriteStream(
+        url, std::move(stream), 0,
+        base::BindLambdaForTesting([&](base::File::Error operation_result,
+                                       int64_t bytes, bool complete) {
+          if (!complete)
+            return;
+          result = operation_result;
+          run_loop.Quit();
+        }));
+    return result;
+  }
+
+  // Synchronously truncates the file specified by `url` to `size`.
+  base::File::Error TruncateFile(const storage::FileSystemURL& url,
+                                 size_t size) {
+    storage::FileSystemContext* context = GetFileSystemContext(profile_);
+    return storage::AsyncFileTestHelper::TruncateFile(context, url, size);
+  }
+
   // Synchronously copies the file specified by `src` to `dst`.
   base::File::Error CopyFile(const storage::FileSystemURL& src,
                              const storage::FileSystemURL& dst) {
@@ -144,13 +225,19 @@ class TempFileSystem {
 
 class FileChangeServiceTest : public BrowserWithTestWindowTest {
  public:
-  FileChangeServiceTest() = default;
+  FileChangeServiceTest()
+      : fake_user_manager_(new chromeos::FakeChromeUserManager),
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
+
   FileChangeServiceTest(const FileChangeServiceTest& other) = delete;
   FileChangeServiceTest& operator=(const FileChangeServiceTest& other) = delete;
   ~FileChangeServiceTest() override = default;
 
   // Creates and returns a new profile for the specified `name`.
   TestingProfile* CreateProfileWithName(const std::string& name) {
+    const AccountId account_id(AccountId::FromUserEmail(name));
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
     return profile_manager()->CreateTestingProfile(name);
   }
 
@@ -160,6 +247,9 @@ class FileChangeServiceTest : public BrowserWithTestWindowTest {
     constexpr char kPrimaryProfileName[] = "primary_profile";
     return CreateProfileWithName(kPrimaryProfileName);
   }
+
+  chromeos::FakeChromeUserManager* fake_user_manager_;
+  user_manager::ScopedUserManager user_manager_enabler_;
 };
 
 }  // namespace
@@ -205,16 +295,61 @@ TEST_F(FileChangeServiceTest, PropagatesOnFileCopiedEvents) {
 
   ASSERT_EQ(temp_file_system.CreateFile(src), base::File::FILE_OK);
 
-  EXPECT_CALL(mock_observer, OnFileCopied)
-      .WillRepeatedly([&](const storage::FileSystemURL& propagated_src,
-                          const storage::FileSystemURL& propagated_dst) {
-        EXPECT_EQ(src, propagated_src);
-        EXPECT_EQ(dst, propagated_dst);
+  EXPECT_CALL(mock_observer, OnFileModified)
+      .WillRepeatedly([&](const storage::FileSystemURL& propagated_url) {
+        EXPECT_EQ(dst, propagated_url);
       });
 
-  ASSERT_EQ(temp_file_system.CopyFile(src, dst), base::File::FILE_OK);
+  {
+    base::RunLoop copy_run_loop;
+    EXPECT_CALL(mock_observer, OnFileCopied)
+        .WillOnce([&](const storage::FileSystemURL& propagated_src,
+                      const storage::FileSystemURL& propagated_dst) {
+          EXPECT_EQ(src, propagated_src);
+          EXPECT_EQ(dst, propagated_dst);
+          copy_run_loop.Quit();
+        })
+        .RetiresOnSaturation();
+
+    base::RunLoop modify_run_loop;
+    EXPECT_CALL(mock_observer, OnFileModified)
+        .WillOnce([&](const storage::FileSystemURL& propagated_url) {
+          EXPECT_EQ(dst, propagated_url);
+          modify_run_loop.Quit();
+        })
+        .RetiresOnSaturation();
+
+    ASSERT_EQ(temp_file_system.CopyFile(src, dst), base::File::FILE_OK);
+    copy_run_loop.Run();
+    modify_run_loop.Run();
+  }
+
+  ::testing::Mock::VerifyAndClearExpectations(&mock_observer);
   ASSERT_EQ(temp_file_system.RemoveFile(dst), base::File::FILE_OK);
-  ASSERT_EQ(temp_file_system.CopyFileLocal(src, dst), base::File::FILE_OK);
+
+  {
+    base::RunLoop copy_run_loop;
+    EXPECT_CALL(mock_observer, OnFileCopied)
+        .WillOnce([&](const storage::FileSystemURL& propagated_src,
+                      const storage::FileSystemURL& propagated_dst) {
+          EXPECT_EQ(src, propagated_src);
+          EXPECT_EQ(dst, propagated_dst);
+          copy_run_loop.Quit();
+        })
+        .RetiresOnSaturation();
+
+    base::RunLoop modify_run_loop;
+    EXPECT_CALL(mock_observer, OnFileModified)
+        .WillOnce([&](const storage::FileSystemURL& propagated_url) {
+          EXPECT_EQ(dst, propagated_url);
+          modify_run_loop.Quit();
+        })
+        .RetiresOnSaturation();
+
+    ASSERT_EQ(temp_file_system.CopyFileLocal(src, dst), base::File::FILE_OK);
+    copy_run_loop.Run();
+    modify_run_loop.Run();
+  }
 }
 
 // Verifies `OnFileMoved` events are propagated to observers.
@@ -236,16 +371,115 @@ TEST_F(FileChangeServiceTest, PropagatesOnFileMovedEvents) {
 
   ASSERT_EQ(temp_file_system.CreateFile(src), base::File::FILE_OK);
 
-  EXPECT_CALL(mock_observer, OnFileMoved)
-      .WillRepeatedly([&](const storage::FileSystemURL& propagated_src,
-                          const storage::FileSystemURL& propagated_dst) {
-        EXPECT_EQ(src, propagated_src);
-        EXPECT_EQ(dst, propagated_dst);
-      });
+  {
+    base::RunLoop move_run_loop;
+    EXPECT_CALL(mock_observer, OnFileMoved)
+        // NOTE: `Move()` internally calls `MoveFileLocal()`, so move operation
+        // gets reported twice.
+        .WillOnce([&](const storage::FileSystemURL& propagated_src,
+                      const storage::FileSystemURL& propagated_dst) {
+          EXPECT_EQ(src, propagated_src);
+          EXPECT_EQ(dst, propagated_dst);
+        })
+        .WillOnce([&](const storage::FileSystemURL& propagated_src,
+                      const storage::FileSystemURL& propagated_dst) {
+          EXPECT_EQ(src, propagated_src);
+          EXPECT_EQ(dst, propagated_dst);
+          move_run_loop.Quit();
+        })
+        .RetiresOnSaturation();
 
-  ASSERT_EQ(temp_file_system.MoveFile(src, dst), base::File::FILE_OK);
-  std::swap(dst, src);
-  ASSERT_EQ(temp_file_system.MoveFileLocal(src, dst), base::File::FILE_OK);
+    EXPECT_CALL(mock_observer, OnFileModified).Times(0);
+
+    ASSERT_EQ(temp_file_system.MoveFile(src, dst), base::File::FILE_OK);
+    move_run_loop.Run();
+  }
+
+  ::testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  {
+    base::RunLoop move_run_loop;
+    EXPECT_CALL(mock_observer, OnFileMoved)
+        .WillOnce([&](const storage::FileSystemURL& propagated_src,
+                      const storage::FileSystemURL& propagated_dst) {
+          EXPECT_EQ(dst, propagated_src);
+          EXPECT_EQ(src, propagated_dst);
+          move_run_loop.Quit();
+        })
+        .RetiresOnSaturation();
+
+    EXPECT_CALL(mock_observer, OnFileModified).Times(0);
+    ASSERT_EQ(temp_file_system.MoveFileLocal(dst, src), base::File::FILE_OK);
+
+    move_run_loop.Run();
+  }
+}
+
+// Verifies `OnFileModified` events are propagated to observers.
+TEST_F(FileChangeServiceTest, PropoagatesOnFileModifiedEvents) {
+  auto* profile = GetProfile();
+  auto* service = FileChangeServiceFactory::GetInstance()->GetService(profile);
+  ASSERT_TRUE(service);
+
+  testing::NiceMock<MockFileChangeServiceObserver> mock_observer;
+  base::ScopedObservation<FileChangeService, FileChangeServiceObserver>
+      scoped_observation{&mock_observer};
+  scoped_observation.Observe(service);
+
+  TempFileSystem temp_file_system(profile);
+  temp_file_system.SetUp();
+
+  storage::FileSystemURL url =
+      temp_file_system.CreateFileSystemURL("test_file");
+
+  ASSERT_EQ(temp_file_system.CreateFile(url), base::File::FILE_OK);
+
+  // Test writing to file.
+  {
+    base::RunLoop modify_run_loop;
+    EXPECT_CALL(mock_observer, OnFileModified)
+        .WillOnce([&](const storage::FileSystemURL& propagated_url) {
+          EXPECT_EQ(url, propagated_url);
+          modify_run_loop.Quit();
+        })
+        .RetiresOnSaturation();
+
+    ASSERT_EQ(temp_file_system.WriteFile(url, "Test file contents\n"),
+              base::File::FILE_OK);
+    modify_run_loop.Run();
+  }
+
+  ::testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Test truncating file.
+  {
+    base::RunLoop modify_run_loop;
+    EXPECT_CALL(mock_observer, OnFileModified)
+        .WillOnce([&](const storage::FileSystemURL& propagated_url) {
+          EXPECT_EQ(url, propagated_url);
+          modify_run_loop.Quit();
+        })
+        .RetiresOnSaturation();
+
+    ASSERT_EQ(temp_file_system.TruncateFile(url, 10), base::File::FILE_OK);
+    modify_run_loop.Run();
+  }
+
+  // Test writing a stream to file.
+  {
+    base::RunLoop modify_run_loop;
+    EXPECT_CALL(mock_observer, OnFileModified)
+        .WillOnce([&](const storage::FileSystemURL& propagated_url) {
+          EXPECT_EQ(url, propagated_url);
+          modify_run_loop.Quit();
+        })
+        .RetiresOnSaturation();
+
+    ASSERT_EQ(temp_file_system.WriteStreamToFile(
+                  url, CreateStream("Test file contents from stream")),
+              base::File::FILE_OK);
+    modify_run_loop.Run();
+  }
 }
 
 }  // namespace chromeos
