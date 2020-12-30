@@ -135,13 +135,13 @@ IndexedDBContextImpl::IndexedDBContextImpl(
                      // BLOCK_SHUTDOWN to support clearing session-only storage.
                      base::TaskShutdownBehavior::BLOCK_SHUTDOWN}))),
       dispatcher_host_(this, std::move(io_task_runner)),
+      data_path_(data_path.empty() ? base::FilePath()
+                                   : data_path.Append(kIndexedDBDirectory)),
       force_keep_session_state_(false),
       quota_manager_proxy_(quota_manager_proxy),
       clock_(clock),
       filesystem_proxy_(storage::CreateFilesystemProxy()) {
   IDB_TRACE("init");
-  if (!data_path.empty())
-    data_path_ = data_path.Append(kIndexedDBDirectory);
   quota_manager_proxy->RegisterClient(
       base::MakeRefCounted<IndexedDBQuotaClient>(this),
       storage::QuotaClientType::kIndexedDatabase,

@@ -178,15 +178,10 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // order.
   std::vector<base::FilePath> GetStoragePaths(const url::Origin& origin) const;
 
-  base::FilePath data_path() const { return data_path_; }
+  const base::FilePath& data_path() const { return data_path_; }
   bool IsInMemoryContext() const { return data_path_.empty(); }
   size_t GetConnectionCountSync(const url::Origin& origin);
   int GetOriginBlobFileCount(const url::Origin& origin);
-
-  // For unit tests allow to override the |data_path_|.
-  void set_data_path_for_testing(const base::FilePath& data_path) {
-    data_path_ = data_path;
-  }
 
   bool is_incognito() const { return data_path_.empty(); }
 
@@ -246,7 +241,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   // If |data_path_| is empty then this is an incognito session and the backing
   // store will be held in-memory rather than on-disk.
-  base::FilePath data_path_;
+  const base::FilePath data_path_;
 
   // If true, nothing (not even session-only data) should be deleted on exit.
   bool force_keep_session_state_;
