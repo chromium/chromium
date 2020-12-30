@@ -68,6 +68,13 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     return controller_ ? controller_->caption_bubble_->title_ : nullptr;
   }
 
+  std::string GetAccessibleWindowTitle() {
+    return controller_
+               ? base::UTF16ToUTF8(
+                     controller_->caption_bubble_->GetAccessibleWindowTitle())
+               : "";
+  }
+
   views::Button* GetCloseButton() {
     return controller_ ? controller_->caption_bubble_->close_button_ : nullptr;
   }
@@ -1089,6 +1096,14 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HidesAfterInactivity) {
   EXPECT_TRUE(IsWidgetVisible());
   test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(5));
   EXPECT_FALSE(IsWidgetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       HasAccessibleWindowTitle) {
+  OnPartialTranscription("A turtle's shell is part of its skeleton.");
+  EXPECT_FALSE(GetAccessibleWindowTitle().empty());
+  EXPECT_EQ(GetAccessibleWindowTitle(),
+            base::UTF16ToUTF8(GetTitle()->GetText()));
 }
 
 }  // namespace captions

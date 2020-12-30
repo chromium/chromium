@@ -594,6 +594,10 @@ void CaptionBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(title_->GetText());
 }
 
+base::string16 CaptionBubble::GetAccessibleWindowTitle() const {
+  return title_->GetText();
+}
+
 void CaptionBubble::AddedToWidget() {
   DCHECK(GetWidget());
   DCHECK(GetAnchorView());
