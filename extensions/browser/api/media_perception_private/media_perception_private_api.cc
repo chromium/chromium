@@ -108,7 +108,7 @@ ExtensionFunction::ResponseAction
 MediaPerceptionPrivateGetDiagnosticsFunction::Run() {
   MediaPerceptionAPIManager* manager =
       MediaPerceptionAPIManager::Get(browser_context());
-  manager->GetDiagnostics(base::Bind(
+  manager->GetDiagnostics(base::BindOnce(
       &MediaPerceptionPrivateGetDiagnosticsFunction::GetDiagnosticsCallback,
       this));
   return RespondLater();

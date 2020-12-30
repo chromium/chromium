@@ -147,8 +147,8 @@ media_perception::ServiceError GetDiagnosticsAndWaitForResponse(
   base::RunLoop run_loop;
   media_perception::ServiceError service_error;
   manager->GetDiagnostics(
-      base::Bind(&RecordServiceErrorFromDiagnosticsAndRunClosure,
-                 run_loop.QuitClosure(), &service_error));
+      base::BindOnce(&RecordServiceErrorFromDiagnosticsAndRunClosure,
+                     run_loop.QuitClosure(), &service_error));
   run_loop.Run();
   return service_error;
 }

@@ -34,7 +34,7 @@ class MediaPerceptionAPIManager
   using APIStateCallback = base::OnceCallback<void(
       extensions::api::media_perception_private::State state)>;
 
-  using APIGetDiagnosticsCallback = base::Callback<void(
+  using APIGetDiagnosticsCallback = base::OnceCallback<void(
       extensions::api::media_perception_private::Diagnostics diagnostics)>;
 
   explicit MediaPerceptionAPIManager(content::BrowserContext* context);
@@ -64,7 +64,7 @@ class MediaPerceptionAPIManager
   void GetState(APIStateCallback callback);
   void SetState(const extensions::api::media_perception_private::State& state,
                 APIStateCallback callback);
-  void GetDiagnostics(const APIGetDiagnosticsCallback& callback);
+  void GetDiagnostics(APIGetDiagnosticsCallback callback);
 
   // For testing purposes only. Allows the unittest to set the mount_point to
   // something non-empty.
@@ -102,7 +102,7 @@ class MediaPerceptionAPIManager
 
   // Callback for GetDiagnostics D-Bus method calls to the media analytics
   // process.
-  void GetDiagnosticsCallback(const APIGetDiagnosticsCallback& callback,
+  void GetDiagnosticsCallback(APIGetDiagnosticsCallback callback,
                               base::Optional<mri::Diagnostics> diagnostics);
 
   // Callbacks for Upstart command to start media analytics process.
