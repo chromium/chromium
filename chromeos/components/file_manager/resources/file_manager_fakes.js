@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1113981) rename to file_manager_api_proxy.js or similar.
-
 /** @suppress {checkTypes} */
 window.chrome.extension = {
   inIncognitoContext: false,
@@ -197,30 +195,6 @@ window.FileBrowserBackgroundFull = class extends FileBrowserBackground {
   }
 }
 
-window.DriveSyncHandler = class extends EventTarget {
-  /**
-   * Returns the completed event name.
-   * @return {string}
-   */
-  getCompletedEventName() {}
-
-  /**
-   * Returns whether the Drive sync is currently suppressed or not.
-   * @return {boolean}
-   */
-  isSyncSuppressed() {}
-
-  /**
-   * Shows a notification that Drive sync is disabled on cellular networks.
-   */
-  showDisabledMobileSyncNotification() {}
-
-  /**
-   * @return {boolean} Whether the handler is syncing items or not.
-   */
-  get syncing() {}
-}
-
 window.VolumeManager = class {
   constructor() {
     /**
@@ -405,6 +379,30 @@ window.VolumeInfoListFake = class {
     }
     return -1;
   }
+}
+
+window.DriveSyncHandler = class extends EventTarget {
+  /**
+   * Returns the completed event name.
+   * @return {string}
+   */
+  getCompletedEventName() {}
+
+  /**
+   * Returns whether the Drive sync is currently suppressed or not.
+   * @return {boolean}
+   */
+  isSyncSuppressed() {}
+
+  /**
+   * Shows a notification that Drive sync is disabled on cellular networks.
+   */
+  showDisabledMobileSyncNotification() {}
+
+  /**
+   * @return {boolean} Whether the handler is syncing items or not.
+   */
+  get syncing() {}
 }
 
 window.Crostini = class {
