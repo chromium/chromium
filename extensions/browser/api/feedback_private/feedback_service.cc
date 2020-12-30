@@ -37,7 +37,8 @@ FeedbackService::FeedbackService(content::BrowserContext* browser_context)
 FeedbackService::~FeedbackService() = default;
 
 void FeedbackService::SendFeedback(scoped_refptr<FeedbackData> feedback_data,
-                                   const SendFeedbackCallback& callback) {
+                                   SendFeedbackCallback callback) {
+  send_feedback_callback_ = std::move(callback);
   feedback_data->set_locale(
       ExtensionsBrowserClient::Get()->GetApplicationLocale());
   feedback_data->set_user_agent(ExtensionsBrowserClient::Get()->GetUserAgent());
@@ -45,45 +46,42 @@ void FeedbackService::SendFeedback(scoped_refptr<FeedbackData> feedback_data,
   if (!feedback_data->attached_file_uuid().empty()) {
     BlobReader::Read(browser_context_, feedback_data->attached_file_uuid(),
                      base::BindOnce(&FeedbackService::AttachedFileCallback,
-                                    AsWeakPtr(), feedback_data, callback));
+                                    AsWeakPtr(), feedback_data));
   }
 
   if (!feedback_data->screenshot_uuid().empty()) {
     BlobReader::Read(browser_context_, feedback_data->screenshot_uuid(),
                      base::BindOnce(&FeedbackService::ScreenshotCallback,
-                                    AsWeakPtr(), feedback_data, callback));
+                                    AsWeakPtr(), feedback_data));
   }
 
-  CompleteSendFeedback(feedback_data, callback);
+  CompleteSendFeedback(feedback_data);
 }
 
 void FeedbackService::AttachedFileCallback(
     scoped_refptr<feedback::FeedbackData> feedback_data,
-    const SendFeedbackCallback& callback,
     std::unique_ptr<std::string> data,
     int64_t /* total_blob_length */) {
   feedback_data->set_attached_file_uuid(std::string());
   if (data)
     feedback_data->AttachAndCompressFileData(std::move(*data));
 
-  CompleteSendFeedback(feedback_data, callback);
+  CompleteSendFeedback(feedback_data);
 }
 
 void FeedbackService::ScreenshotCallback(
     scoped_refptr<feedback::FeedbackData> feedback_data,
-    const SendFeedbackCallback& callback,
     std::unique_ptr<std::string> data,
     int64_t /* total_blob_length */) {
   feedback_data->set_screenshot_uuid(std::string());
   if (data)
     feedback_data->set_image(std::move(*data));
 
-  CompleteSendFeedback(feedback_data, callback);
+  CompleteSendFeedback(feedback_data);
 }
 
 void FeedbackService::CompleteSendFeedback(
-    scoped_refptr<feedback::FeedbackData> feedback_data,
-    const SendFeedbackCallback& callback) {
+    scoped_refptr<feedback::FeedbackData> feedback_data) {
   // A particular data collection is considered completed if,
   // a.) The blob URL is invalid - this will either happen because we never had
   //     a URL and never needed to read this data, or that the data read failed
@@ -114,7 +112,7 @@ void FeedbackService::CompleteSendFeedback(
 
     // TODO(rkc): Change this once we have FeedbackData/Util refactored to
     // report the status of the report being sent.
-    callback.Run(result);
+    std::move(send_feedback_callback_).Run(result);
   }
 }
 

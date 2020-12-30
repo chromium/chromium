@@ -412,8 +412,8 @@ void FeedbackPrivateSendFeedbackFunction::OnAllLogsFetched(
 
   service->SendFeedback(
       feedback_data,
-      base::Bind(&FeedbackPrivateSendFeedbackFunction::OnCompleted, this,
-                 GetLandingPageType(*feedback_data)));
+      base::BindOnce(&FeedbackPrivateSendFeedbackFunction::OnCompleted, this,
+                     GetLandingPageType(*feedback_data)));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

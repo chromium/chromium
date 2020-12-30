@@ -17,7 +17,7 @@ class MockFeedbackService : public FeedbackService {
 
   MOCK_METHOD2(SendFeedback,
                void(scoped_refptr<feedback::FeedbackData>,
-                    const FeedbackService::SendFeedbackCallback&));
+                    FeedbackService::SendFeedbackCallback));
 };
 
 }  // namespace extensions

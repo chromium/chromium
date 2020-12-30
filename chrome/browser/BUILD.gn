@@ -4298,8 +4298,6 @@ static_library("browser") {
       "download/notification/download_notification_manager.h",
       "enterprise/reporting/android_app_info_generator.cc",
       "enterprise/reporting/android_app_info_generator.h",
-      "feedback/feedback_util_chromeos.cc",
-      "feedback/feedback_util_chromeos.h",
       "google/google_brand_chromeos.cc",
       "google/google_brand_chromeos.h",
       "google/google_brand_code_map_chromeos.cc",
