@@ -736,20 +736,12 @@
   <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_ITEMS_REMAINING" desc="File Manager status message.">
     Importing <ph name="FILE_COUNT">$1<ex>5</ex></ph> files...
   </message>
-  <message name="IDS_FILE_BROWSER_COPIED" desc="File Manager status message.">
-    Copied.
-  </message>
-  <message name="IDS_FILE_BROWSER_COPIED_TO" desc="File Manager status message.">
-    Copied to <ph name="FOLDER_NAME">$1<ex>images</ex></ph>.
-  </message>
-  <!-- TODO (crbug/1093603): Clean up after FilesTransferDetails launch. -->
   <message name="IDS_FILE_BROWSER_COPY_FILE_NAME" desc="File Manager status message.">
     Copying <ph name="FILE_NAME">$1<ex>movie.avi</ex></ph>...
   </message>
   <message name="IDS_FILE_BROWSER_COPY_ITEMS_REMAINING" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
     Copying <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items...
   </message>
-  <!-- TODO: End. -->
   <message name="IDS_FILE_BROWSER_COPY_FILE_NAME_LONG" desc="File Manager status message including destination folder when copying one file.">
     Copying <ph name="FILE_NAME">$1<ex>movie.avi</ex></ph> to <ph name="FOLDER_NAME">$2<ex>images</ex></ph>
   </message>
@@ -791,14 +783,12 @@
   <message name="IDS_FILE_BROWSER_FILE_MOVED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
     <ph name="FILE_NAME">$1<ex>big.xz</ex></ph> moved.
   </message>
-   <!-- TODO (crbug/1093603): Clean up after FilesTransferDetails launch. -->
   <message name="IDS_FILE_BROWSER_MOVE_FILE_NAME" desc="File Manager status message.">
     Moving <ph name="FILE_NAME">$1<ex>movie.avi</ex></ph>...
   </message>
   <message name="IDS_FILE_BROWSER_MOVE_ITEMS_REMAINING" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
     Moving <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items...
   </message>
-  <!-- TODO: End. -->
   <message name="IDS_FILE_BROWSER_MOVE_FILE_NAME_LONG" desc="File Manager status message including destination folder when moving one file.">
     Moving <ph name="FILE_NAME">$1<ex>movie.avi</ex></ph> to <ph name="FOLDER_NAME">$2<ex>images</ex></ph>
   </message>
@@ -816,15 +806,6 @@
   </message>
   <message name="IDS_FILE_BROWSER_MOVE_UNEXPECTED_ERROR" desc="File Manager error message.">
     Move failed, unexpected error: <ph name="ERROR_MESSAGE">$1<ex>Could not move</ex></ph>
-  </message>
-  <message name="IDS_FILE_BROWSER_MOVED" desc="File Manager status message.">
-    Moved.
-  </message>
-  <message name="IDS_FILE_BROWSER_MOVED_TO" desc="File Manager status message.">
-    Moved to <ph name="FOLDER_NAME">$1<ex>images</ex></ph>.
-  </message>
-  <message name="IDS_FILE_BROWSER_TO_FOLDER_NAME" desc="File Manager status message.">
-    To <ph name="FOLDER_NAME">$1<ex>images</ex></ph>
   </message>
   <message name="IDS_FILE_BROWSER_ZIP_FILE_NAME" desc="File Manager status message.">
     Zipping <ph name="FILE_NAME">$1<ex>movie.avi</ex></ph>...
