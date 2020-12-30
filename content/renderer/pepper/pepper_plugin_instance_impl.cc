@@ -2039,7 +2039,7 @@ void PepperPluginInstanceImpl::UpdateLayer(bool force_creation) {
   }
 
   if (texture_layer_) {
-    container_->SetCcLayer(nullptr, false);
+    container_->SetCcLayer(nullptr);
     texture_layer_->ClearClient();
     texture_layer_ = nullptr;
   }
@@ -2065,7 +2065,7 @@ void PepperPluginInstanceImpl::UpdateLayer(bool force_creation) {
   }
 
   if (texture_layer_) {
-    container_->SetCcLayer(texture_layer_.get(), true);
+    container_->SetCcLayer(texture_layer_.get());
   }
 
   layer_is_hardware_ = want_3d_layer;

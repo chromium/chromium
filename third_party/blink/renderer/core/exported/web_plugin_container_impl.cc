@@ -361,15 +361,10 @@ float WebPluginContainerImpl::PageZoomFactor() {
   return frame->PageZoomFactor();
 }
 
-void WebPluginContainerImpl::SetCcLayer(cc::Layer* new_layer,
-                                        bool prevent_contents_opaque_changes) {
-  if (layer_ == new_layer &&
-      prevent_contents_opaque_changes == prevent_contents_opaque_changes_)
+void WebPluginContainerImpl::SetCcLayer(cc::Layer* new_layer) {
+  if (layer_ == new_layer)
     return;
-
   layer_ = new_layer;
-  prevent_contents_opaque_changes_ = prevent_contents_opaque_changes;
-
   if (element_)
     element_->SetNeedsCompositingUpdate();
 }
@@ -735,10 +730,6 @@ cc::Layer* WebPluginContainerImpl::CcLayer() const {
   return layer_;
 }
 
-bool WebPluginContainerImpl::PreventContentsOpaqueChangesToCcLayer() const {
-  return prevent_contents_opaque_changes_;
-}
-
 v8::Local<v8::Object> WebPluginContainerImpl::ScriptableObject(
     v8::Isolate* isolate) {
   // With Oilpan, on plugin element detach dispose() will be called to safely
@@ -783,7 +774,6 @@ WebPluginContainerImpl::WebPluginContainerImpl(HTMLPlugInElement& element,
       web_plugin_(web_plugin),
       layer_(nullptr),
       touch_event_request_type_(kTouchEventRequestTypeNone),
-      prevent_contents_opaque_changes_(false),
       wants_wheel_events_(false) {}
 
 WebPluginContainerImpl::~WebPluginContainerImpl() {

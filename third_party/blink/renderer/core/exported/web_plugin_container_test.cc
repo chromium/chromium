@@ -1435,12 +1435,12 @@ class CompositedPlugin : public FakeWebPlugin {
   bool Initialize(WebPluginContainer* container) override {
     if (!FakeWebPlugin::Initialize(container))
       return false;
-    container->SetCcLayer(layer_.get(), false);
+    container->SetCcLayer(layer_.get());
     return true;
   }
 
   void Destroy() override {
-    Container()->SetCcLayer(nullptr, false);
+    Container()->SetCcLayer(nullptr);
     FakeWebPlugin::Destroy();
   }
 

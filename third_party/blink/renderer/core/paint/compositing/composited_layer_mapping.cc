@@ -405,8 +405,7 @@ bool CompositedLayerMapping::UpdateGraphicsLayerConfiguration(
 
   if (layout_object.IsLayoutEmbeddedContent()) {
     if (WebPluginContainerImpl* plugin = GetPluginContainer(layout_object)) {
-      graphics_layer_->SetContentsToCcLayer(
-          plugin->CcLayer(), plugin->PreventContentsOpaqueChangesToCcLayer());
+      graphics_layer_->SetContentsToCcLayer(plugin->CcLayer(), true);
     } else if (auto* frame_owner =
                    DynamicTo<HTMLFrameOwnerElement>(layout_object.GetNode())) {
       if (auto* remote = DynamicTo<RemoteFrame>(frame_owner->ContentFrame())) {
