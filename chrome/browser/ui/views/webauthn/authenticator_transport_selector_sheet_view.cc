@@ -20,8 +20,13 @@ AuthenticatorTransportSelectorSheetView::
 std::unique_ptr<views::View>
 AuthenticatorTransportSelectorSheetView::BuildStepSpecificContent() {
   AuthenticatorRequestDialogModel* const dialog_model = model()->dialog_model();
+  base::flat_set<AuthenticatorTransport> transports =
+      dialog_model->available_transports();
+  // kAndroidAccessory is never shown as an option to the user. It's a fallback
+  // for caBLE.
+  transports.erase(AuthenticatorTransport::kAndroidAccessory);
+
   return std::make_unique<HoverListView>(
       std::make_unique<TransportHoverListModel>(
-          dialog_model->available_transports(),
-          dialog_model->win_native_api_enabled(), model()));
+          transports, dialog_model->win_native_api_enabled(), model()));
 }
