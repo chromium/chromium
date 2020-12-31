@@ -1214,7 +1214,7 @@ FreeListEntry* FreeList::Allocate(size_t allocation_size) {
 #if DCHECK_IS_ON() || defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER) || \
     defined(MEMORY_SANITIZER)
 NO_SANITIZE_MEMORY
-void NOINLINE FreeList::GetAllowedAndForbiddenCounts(Address address,
+NOINLINE void FreeList::GetAllowedAndForbiddenCounts(Address address,
                                                      size_t size,
                                                      size_t& allowed_count,
                                                      size_t& forbidden_count) {
@@ -1230,7 +1230,7 @@ void NOINLINE FreeList::GetAllowedAndForbiddenCounts(Address address,
 
 NO_SANITIZE_ADDRESS
 NO_SANITIZE_MEMORY
-void NOINLINE FreeList::ZapFreedMemory(Address address, size_t size) {
+NOINLINE void FreeList::ZapFreedMemory(Address address, size_t size) {
   for (size_t i = 0; i < size; i++) {
     // See the comment in addToFreeList().
     if (address[i] != kReuseAllowedZapValue)
@@ -1238,7 +1238,7 @@ void NOINLINE FreeList::ZapFreedMemory(Address address, size_t size) {
   }
 }
 
-void NOINLINE FreeList::CheckFreedMemoryIsZapped(Address address, size_t size) {
+NOINLINE void FreeList::CheckFreedMemoryIsZapped(Address address, size_t size) {
   for (size_t i = 0; i < size; i++) {
     DCHECK(address[i] == kReuseAllowedZapValue ||
            address[i] == kReuseForbiddenZapValue);
