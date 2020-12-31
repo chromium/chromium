@@ -112,9 +112,6 @@ Polymer({
   /** @private {boolean|undefined} */
   setLockEnabled_: undefined,
 
-  /** @private {boolean} */
-  simUnlockSent_: false,
-
   /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
   networkConfig_: null,
 
@@ -122,11 +119,6 @@ Polymer({
   created() {
     this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
                               .getMojoServiceRemote();
-  },
-
-  /** @override */
-  attached() {
-    this.simUnlockSent_ = false;
   },
 
   /** @override */
@@ -294,7 +286,6 @@ Polymer({
   setInProgress_() {
     this.error_ = ErrorType.NONE;
     this.inProgress_ = true;
-    this.simUnlockSent_ = true;
   },
 
   /**
@@ -530,11 +521,10 @@ Polymer({
         assertNotReached();
     }
 
-    const retriesLeft = (this.simUnlockSent_ && this.deviceState &&
-                         this.deviceState.simLockStatus) ?
+    const retriesLeft = (this.deviceState && this.deviceState.simLockStatus) ?
         this.deviceState.simLockStatus.retriesLeft :
         0;
-    if (retriesLeft > 1) {
+    if (retriesLeft !== 1) {
       errorStringId += 'Plural';
     }
     return this.i18n(errorStringId, retriesLeft);

@@ -37,4 +37,35 @@ suite('NetworkSiminfoTest', function() {
     Polymer.dom.flush();
     assertTrue(simMissingGroup.hidden);
   });
+
+  test('Show invalid unlock PIN error message properly', function() {
+    // Set sim to PIN locked state with multiple retries left.
+    simInfo.deviceState = {
+      simLockStatus: {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 3}
+    };
+    Polymer.dom.flush();
+    assertFalse(simInfo.$$('#simLocked').hidden);
+    simInfo.$$('#unlockPinButton').click();
+    Polymer.dom.flush();
+    assertTrue(simInfo.$$('#unlockPinDialog').open);
+
+    // Invalid PIN should show error message with correct retries count.
+    simInfo.$$('#unlockPin').value = 'invalid_pin';
+    simInfo.$$('#unlockPinDialog .action-button').click();
+    Polymer.dom.flush();
+    assertEquals(
+        simInfo.i18n('networkSimErrorInvalidPinPlural', 3),
+        simInfo.$$('#unlockPinDialog .dialog-error').textContent.trim());
+
+    // Set SIM to PIN locked state with single retry left.
+    simInfo.deviceState = {
+      simLockStatus: {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 1}
+    };
+    simInfo.$$('#unlockPin').value = 'invalid_pin2';
+    simInfo.$$('#unlockPinDialog .action-button').click();
+    Polymer.dom.flush();
+    assertEquals(
+        simInfo.i18n('networkSimErrorInvalidPin', 1),
+        simInfo.$$('#unlockPinDialog .dialog-error').textContent.trim());
+  });
 });
