@@ -5452,15 +5452,34 @@ void WebGLRenderingContextBase::TexImageHelperImageData(
                                     adjusted_source_image_rect.MaxY());
   }
 
-  // TODO(crbug.com/1115317): Should be compatible with uint_8, float16 and
-  // float32.
   Vector<uint8_t> data;
   bool need_conversion = true;
-  // The data from ImageData is always of format RGBA8.
+
+  GLenum image_type;
+  WebGLImageConversion::DataFormat data_format;
+  switch (pixels->GetImageDataStorageFormat()) {
+    case kUint8ClampedArrayStorageFormat:
+      image_type = GL_UNSIGNED_BYTE;
+      data_format = WebGLImageConversion::DataFormat::kDataFormatRGBA8;
+      break;
+    case kUint16ArrayStorageFormat:
+      image_type = GL_UNSIGNED_SHORT;
+      data_format = WebGLImageConversion::DataFormat::kDataFormatRGBA16;
+      break;
+    case kFloat32ArrayStorageFormat:
+      image_type = GL_FLOAT;
+      data_format = WebGLImageConversion::DataFormat::kDataFormatRGBA32F;
+      break;
+    default:
+      NOTREACHED();
+  }
+
   // No conversion is needed if destination format is RGBA and type is
-  // UNSIGNED_BYTE and no Flip or Premultiply operation is required.
+  // same as the source image type and no Flip or Premultiply operation is
+  // required.
   if (!unpack_flip_y_ && !unpack_premultiply_alpha_ && format == GL_RGBA &&
-      type == GL_UNSIGNED_BYTE && !selecting_sub_rectangle && depth == 1) {
+      type == image_type && !selecting_sub_rectangle && depth == 1 &&
+      data_format == format) {
     need_conversion = false;
   } else {
     if (type == GL_UNSIGNED_INT_10F_11F_11F_REV) {
@@ -5468,8 +5487,7 @@ void WebGLRenderingContextBase::TexImageHelperImageData(
       type = GL_FLOAT;
     }
     if (!WebGLImageConversion::ExtractImageData(
-            pixels->data().GetAsUint8ClampedArray()->Data(),
-            WebGLImageConversion::DataFormat::kDataFormatRGBA8, pixels->Size(),
+            pixels->GetSkPixmap().writable_addr(), data_format, pixels->Size(),
             adjusted_source_image_rect, depth, unpack_image_height, format,
             type, unpack_flip_y_, unpack_premultiply_alpha_, data)) {
       SynthesizeGLError(GL_INVALID_VALUE, func_name, "bad image data");
@@ -5477,9 +5495,8 @@ void WebGLRenderingContextBase::TexImageHelperImageData(
     }
   }
   ScopedUnpackParametersResetRestore temporary_reset_unpack(this);
-  const uint8_t* bytes = need_conversion
-                             ? data.data()
-                             : pixels->data().GetAsUint8ClampedArray()->Data();
+  const void* bytes =
+      need_conversion ? data.data() : pixels->GetSkPixmap().writable_addr();
   if (function_id == kTexImage2D) {
     DCHECK_EQ(unpack_image_height, 0);
     TexImage2DBase(
