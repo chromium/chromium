@@ -5438,7 +5438,7 @@
     Camera is off
   </message>
   <message name="IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE" desc="Message for a notification shown to the users when an app tries to use a camera while the camera privacy switch, which disables camera feed, is turned on">
-    An app is trying to access camera. Turn off the Webcam privacy switch to allow access
+    An app is trying to access camera. Turn off the camera privacy switch to allow access.
   </message>
 
   <!-- Strings for Account Manager error screen -->
