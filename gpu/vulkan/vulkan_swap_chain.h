@@ -188,6 +188,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
   // Acquired images queue.
   base::Optional<uint32_t> acquired_image_ GUARDED_BY(lock_);
 
+  bool destroy_swapchain_will_hang_ = false;
+
   // For executing task on GPU main thread.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

@@ -170,23 +170,9 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
 
   scoped_write_.emplace(vulkan_surface_->swap_chain());
   if (UNLIKELY(!scoped_write_->success())) {
+    // Return nullptr, and then the caller will make context lost.
     scoped_write_.reset();
-    if (UNLIKELY(vulkan_surface_->swap_chain()->state() !=
-                 VK_ERROR_SURFACE_LOST_KHR))
-      return nullptr;
-    auto result = RecreateSwapChain(vulkan_surface_->image_size(), color_space_,
-                                    vulkan_surface_->transform());
-    // If vulkan surface is lost, we will try to recreate swap chain.
-    if (UNLIKELY(!result)) {
-      LOG(DFATAL) << "Failed to recreate vulkan swap chain.";
-      return nullptr;
-    }
-
-    scoped_write_.emplace(vulkan_surface_->swap_chain());
-    if (UNLIKELY(!scoped_write_->success())) {
-      scoped_write_.reset();
-      return nullptr;
-    }
+    return nullptr;
   }
 
   auto& sk_surface =

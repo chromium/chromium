@@ -251,7 +251,16 @@ bool VulkanSwapChain::InitializeSwapChain(
 void VulkanSwapChain::DestroySwapChain() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   VkDevice device = device_queue_->GetVulkanDevice();
-  vkDestroySwapchainKHR(device, swap_chain_, nullptr /* pAllocator */);
+  // vkDestroySwapchainKHR() will hang on X11, after resuming from hibernate.
+  // It is because a Xserver issue. To workaround it, we will not call
+  // vkDestroySwapchainKHR(), if the problem is detected. When the problem is
+  // detected, we will consider it as context lost, so the GPU process will
+  // tear down all resources, and a new GPU process will be created. So it is OK
+  // to leak this swapchain.
+  // TODO(penghuang): remove this workaround when Xserver issue is fixed
+  // upstream. https://crbug.com/1130495
+  if (!destroy_swapchain_will_hang_)
+    vkDestroySwapchainKHR(device, swap_chain_, nullptr /* pAllocator */);
   swap_chain_ = VK_NULL_HANDLE;
 }
 
@@ -465,6 +474,7 @@ bool VulkanSwapChain::AcquireNextImage() {
     vkDestroySemaphore(device, present_semaphore, nullptr);
     vkDestroyFence(device, acquire_fence, nullptr);
     state_ = VK_ERROR_SURFACE_LOST_KHR;
+    destroy_swapchain_will_hang_ = true;
     return false;
   }
 
