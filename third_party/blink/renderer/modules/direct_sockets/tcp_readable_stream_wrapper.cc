@@ -86,6 +86,7 @@ TCPReadableStreamWrapper::TCPReadableStreamWrapper(
       WTF::BindRepeating(&TCPReadableStreamWrapper::OnPeerClosed,
                          WrapWeakPersistent(this)));
 
+  ScriptState::Scope scope(script_state_);
   // Set queuing strategy of default behavior with a high water mark of 1.
   readable_ = ReadableStream::CreateWithCountQueueingStrategy(
       script_state_,

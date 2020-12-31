@@ -32,13 +32,12 @@ class DirectSocketsUnitTest : public RenderViewHostTestHarness {
   }
 
   net::Error ValidateOptions(const blink::mojom::DirectSocketOptions& options) {
-    net::IPAddress remote_address;
-    return direct_sockets_service().ValidateOptions(options, remote_address);
+    return direct_sockets_service().ValidateOptions(options);
   }
 
   void PopulateLocalAddr(const blink::mojom::DirectSocketOptions& options,
                          base::Optional<net::IPEndPoint>& local_addr) {
-    return direct_sockets_service().PopulateLocalAddr(options, local_addr);
+    DirectSocketsServiceImpl::PopulateLocalAddrForTesting(options, local_addr);
   }
 
  private:

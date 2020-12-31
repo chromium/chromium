@@ -29,8 +29,10 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
     : public blink::mojom::DirectSocketsService,
       public WebContentsObserver {
  public:
-  using PermissionCallback = base::RepeatingCallback<
-      net::Error(const blink::mojom::DirectSocketOptions&, net::IPAddress&)>;
+  enum class ProtocolType { kTcp, kUdp };
+
+  using PermissionCallback = base::RepeatingCallback<net::Error(
+      const blink::mojom::DirectSocketOptions&)>;
 
   explicit DirectSocketsServiceImpl(RenderFrameHost& frame_host);
   ~DirectSocketsServiceImpl() override = default;
@@ -63,17 +65,17 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 
   static void SetNetworkContextForTesting(network::mojom::NetworkContext*);
 
+  static void PopulateLocalAddrForTesting(
+      const blink::mojom::DirectSocketOptions& options,
+      base::Optional<net::IPEndPoint>& local_addr);
+
  private:
   friend class DirectSocketsUnitTest;
 
-  // Returns net::OK and populates |remote_address| if the options are valid and
-  // the connection is permitted.
-  net::Error ValidateOptions(const blink::mojom::DirectSocketOptions& options,
-                             net::IPAddress& remote_address);
+  class ResolveHostAndOpenSocket;
 
-  // Populate |local_addr| from options.
-  void PopulateLocalAddr(const blink::mojom::DirectSocketOptions& options,
-                         base::Optional<net::IPEndPoint>& local_addr);
+  // Returns net::OK if the options are valid and the connection is permitted.
+  net::Error ValidateOptions(const blink::mojom::DirectSocketOptions& options);
 
   network::mojom::NetworkContext* GetNetworkContext();
 

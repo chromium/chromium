@@ -122,6 +122,7 @@ TCPWritableStreamWrapper::TCPWritableStreamWrapper(
       WTF::BindRepeating(&TCPWritableStreamWrapper::OnPeerClosed,
                          WrapWeakPersistent(this)));
 
+  ScriptState::Scope scope(script_state_);
   // Set the CountQueueingStrategy's high water mark as 1 to make the logic of
   // |WriteOrCacheData| much simpler
   writable_ = WritableStream::CreateWithCountQueueingStrategy(

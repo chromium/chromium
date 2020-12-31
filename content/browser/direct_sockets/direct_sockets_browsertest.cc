@@ -35,10 +35,8 @@ namespace content {
 
 namespace {
 
-enum class ProtocolType { kTcp, kUdp };
-
 struct RecordedCall {
-  ProtocolType protocol_type;
+  DirectSocketsServiceImpl::ProtocolType protocol_type;
 
   std::string remote_address;
   uint16_t remote_port;
@@ -65,8 +63,8 @@ class MockNetworkContext : public network::TestNetworkContext {
       mojo::PendingRemote<network::mojom::SocketObserver> observer,
       CreateTCPConnectedSocketCallback callback) override {
     history_.push_back(RecordedCall{
-        ProtocolType::kTcp, remote_addr_list[0].address().ToString(),
-        remote_addr_list[0].port(),
+        DirectSocketsServiceImpl::ProtocolType::kTcp,
+        remote_addr_list[0].address().ToString(), remote_addr_list[0].port(),
         tcp_connected_socket_options->send_buffer_size,
         tcp_connected_socket_options->receive_buffer_size,
         tcp_connected_socket_options->no_delay});
@@ -82,11 +80,8 @@ class MockNetworkContext : public network::TestNetworkContext {
 };
 
 net::Error UnconditionallyPermitConnection(
-    const blink::mojom::DirectSocketOptions& options,
-    net::IPAddress& remote_address) {
+    const blink::mojom::DirectSocketOptions& options) {
   DCHECK(options.remote_hostname.has_value());
-  DCHECK(remote_address.AssignFromIPLiteral(*options.remote_hostname));
-  EXPECT_EQ(remote_address.ToString(), *options.remote_hostname);
   return net::OK;
 }
 
@@ -162,15 +157,14 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, DISABLED_OpenTcp_Success) {
   EXPECT_EQ("openTcp succeeded", EvalJs(shell(), script));
 }
 
-IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_NotAllowedError) {
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_Success_Global) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
 
   const uint16_t listening_port = StartTcpServer();
   const std::string script = base::StringPrintf(
       "openTcp({remoteAddress: '127.0.0.1', remotePort: %d})", listening_port);
 
-  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
-            EvalJs(shell(), script));
+  EXPECT_EQ("openTcp succeeded", EvalJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_CannotEvadeCors) {
@@ -210,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, DISABLED_OpenTcp_OptionsOne) {
 
   DCHECK_EQ(1U, mock_network_context.history().size());
   const RecordedCall& call = mock_network_context.history()[0];
-  EXPECT_EQ(ProtocolType::kTcp, call.protocol_type);
+  EXPECT_EQ(DirectSocketsServiceImpl::ProtocolType::kTcp, call.protocol_type);
   EXPECT_EQ("12.34.56.78", call.remote_address);
   EXPECT_EQ(9012, call.remote_port);
   EXPECT_EQ(3456, call.send_buffer_size);
@@ -243,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, DISABLED_OpenTcp_OptionsTwo) {
 
   DCHECK_EQ(1U, mock_network_context.history().size());
   const RecordedCall& call = mock_network_context.history()[0];
-  EXPECT_EQ(ProtocolType::kTcp, call.protocol_type);
+  EXPECT_EQ(DirectSocketsServiceImpl::ProtocolType::kTcp, call.protocol_type);
   EXPECT_EQ("fedc:ba98:7654:3210:fedc:ba98:7654:3210", call.remote_address);
   EXPECT_EQ(789, call.remote_port);
   EXPECT_EQ(0, call.send_buffer_size);
