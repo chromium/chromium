@@ -187,6 +187,9 @@ However these files were uncompressed in {0} but compressed in Monochrome:
     def exists_in_some_form(f):
       if f in monochrome:
         return True
+      # Chrome.apk may have an extra classes.dex due to jdk library desugaring.
+      if f.startswith('classes') and f.endswith('.dex'):
+        return True
       if not f.startswith('res/'):
         return False
       name = '/' + posixpath.basename(f)
