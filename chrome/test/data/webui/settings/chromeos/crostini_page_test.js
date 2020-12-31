@@ -133,7 +133,7 @@ suite('CrostiniPageTests', function() {
     });
 
     suite('SubPageDefault', function() {
-      test('Sanity', function() {
+      test('Basic', function() {
         assertTrue(!!subpage.$$('#crostini-shared-paths'));
         assertTrue(!!subpage.$$('#crostini-shared-usb-devices'));
         assertTrue(!!subpage.$$('#crostini-export-import'));
@@ -987,7 +987,7 @@ suite('CrostiniPageTests', function() {
       assertTrue(!!subpage);
     });
 
-    test('Sanity', function() {
+    test('Basic', function() {
       assertEquals(
           3, subpage.shadowRoot.querySelectorAll('.settings-box').length);
       assertEquals(2, subpage.shadowRoot.querySelectorAll('.list-item').length);
