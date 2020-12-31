@@ -126,7 +126,7 @@ class WMStateWaiter : public X11PropertyChangeWaiter {
   // X11PropertyChangeWaiter:
   bool ShouldKeepOnWaiting() override {
     std::vector<x11::Atom> hints;
-    if (GetAtomArrayProperty(xwindow(), "_NET_WM_STATE", &hints))
+    if (GetArrayProperty(xwindow(), x11::GetAtom("_NET_WM_STATE"), &hints))
       return base::Contains(hints, x11::GetAtom(hint_)) != wait_till_set_;
     return true;
   }
@@ -447,7 +447,8 @@ TEST_F(X11WindowTest, ToggleMinimizePropogateToPlatformWindowDelegate) {
   {
     std::vector<x11::Atom> atom_list;
     atom_list.push_back(x11::GetAtom("_NET_WM_STATE_HIDDEN"));
-    ui::SetAtomArrayProperty(x11_window, "_NET_WM_STATE", "ATOM", atom_list);
+    SetArrayProperty(x11_window, x11::GetAtom("_NET_WM_STATE"), x11::Atom::ATOM,
+                     atom_list);
 
     x11::PropertyNotifyEvent xevent{
         .send_event = true,
@@ -468,7 +469,8 @@ TEST_F(X11WindowTest, ToggleMinimizePropogateToPlatformWindowDelegate) {
   {
     std::vector<x11::Atom> atom_list;
     atom_list.push_back(x11::GetAtom("_NET_WM_STATE_FOCUSED"));
-    ui::SetAtomArrayProperty(x11_window, "_NET_WM_STATE", "ATOM", atom_list);
+    SetArrayProperty(x11_window, x11::GetAtom("_NET_WM_STATE"), x11::Atom::ATOM,
+                     atom_list);
 
     x11::PropertyNotifyEvent xevent{
         .send_event = true,

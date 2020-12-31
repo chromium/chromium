@@ -5,12 +5,14 @@
 #include "ui/base/x/x11_screensaver_window_finder.h"
 
 #include "base/command_line.h"
+#include "base/strings/string_piece_forward.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/switches.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/scoped_ignore_errors.h"
 #include "ui/gfx/x/screensaver.h"
 #include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
@@ -40,13 +42,12 @@ bool ScreensaverWindowFinder::ScreensaverWindowExists() {
   // necessarily mean that a screensaver is not active, so add a special check
   // for xscreensaver.
   x11::Atom lock_atom = x11::GetAtom("LOCK");
-  std::vector<int> atom_properties;
-  if (GetIntArrayProperty(GetX11RootWindow(), "_SCREENSAVER_STATUS",
-                          &atom_properties) &&
+  std::vector<x11::Atom> atom_properties;
+  if (GetArrayProperty(GetX11RootWindow(), x11::GetAtom("_SCREENSAVER_STATUS"),
+                       &atom_properties) &&
       atom_properties.size() > 0) {
-    if (atom_properties[0] == static_cast<int>(lock_atom)) {
+    if (atom_properties[0] == lock_atom)
       return true;
-    }
   }
 
   // Also check the top level windows to see if any of them are screensavers.
@@ -74,11 +75,12 @@ bool ScreensaverWindowFinder::IsScreensaverWindow(x11::Window window) const {
 
   // For all others, like gnome-screensaver, the window's WM_CLASS property
   // should contain "screensaver".
-  std::string value;
-  if (!ui::GetStringProperty(window, "WM_CLASS", &value))
+  std::vector<char> value;
+  if (!GetArrayProperty(window, x11::Atom::WM_CLASS, &value))
     return false;
 
-  return value.find("screensaver") != std::string::npos;
+  return base::StringPiece(value.data(), value.size()).find("screensaver") !=
+         base::StringPiece::npos;
 }
 
 }  // namespace ui

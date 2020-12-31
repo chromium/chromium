@@ -60,7 +60,7 @@ bool GetAtomPairArrayProperty(
   std::vector<x11::Atom> atoms;
   // Since this is an array of atom pairs, ensure ensure |atoms|
   // has an element count that's a multiple of 2.
-  if (!x11::GetArrayProperty(window, property, &atoms) || atoms.size() % 2 != 0)
+  if (!GetArrayProperty(window, property, &atoms) || atoms.size() % 2 != 0)
     return false;
 
   value->clear();
@@ -149,8 +149,8 @@ void SelectionOwner::OnSelectionRequest(
 
       // Set the property to indicate which conversions succeeded. This matches
       // what GTK does.
-      x11::SetArrayProperty(requestor, requested_property,
-                            x11::GetAtom(kAtomPair), conversion_results);
+      SetArrayProperty(requestor, requested_property, x11::GetAtom(kAtomPair),
+                       conversion_results);
 
       reply.property = requested_property;
     }
@@ -198,8 +198,8 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
     return false;
 
   if (target == timestamp_atom) {
-    x11::SetProperty(requestor, property, x11::Atom::INTEGER,
-                     acquired_selection_timestamp_);
+    SetProperty(requestor, property, x11::Atom::INTEGER,
+                acquired_selection_timestamp_);
     return true;
   }
 
@@ -210,7 +210,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
                                       save_targets_atom, multiple_atom};
     RetrieveTargets(&targets);
 
-    x11::SetArrayProperty(requestor, property, x11::Atom::ATOM, targets);
+    SetArrayProperty(requestor, property, x11::Atom::ATOM, targets);
     return true;
   }
 
@@ -222,7 +222,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
       // the size of X requests. Notify the selection requestor that the data
       // will be sent incrementally by returning data of type "INCR".
       uint32_t length = it->second->size();
-      x11::SetProperty(requestor, property, x11::GetAtom(kIncr), length);
+      SetProperty(requestor, property, x11::GetAtom(kIncr), length);
 
       // Wait for the selection requestor to indicate that it has processed
       // the selection result before sending the first chunk of data. The
@@ -248,7 +248,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
     } else {
       auto& mem = it->second;
       std::vector<uint8_t> data(mem->data(), mem->data() + mem->size());
-      x11::SetArrayProperty(requestor, property, target, data);
+      SetArrayProperty(requestor, property, target, data);
     }
     return true;
   }
@@ -263,8 +263,7 @@ void SelectionOwner::ProcessIncrementalTransfer(IncrementalTransfer* transfer) {
   size_t chunk_length = std::min(remaining, max_request_size_);
   const uint8_t* data = transfer->data->front() + transfer->offset;
   std::vector<uint8_t> buf(data, data + chunk_length);
-  x11::SetArrayProperty(transfer->window, transfer->property, transfer->target,
-                        buf);
+  SetArrayProperty(transfer->window, transfer->property, transfer->target, buf);
   transfer->offset += chunk_length;
   transfer->timeout =
       base::TimeTicks::Now() +

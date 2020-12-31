@@ -71,8 +71,8 @@ GdkWindow* GtkUiDelegateX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
 bool GtkUiDelegateX11::SetGdkWindowTransientFor(GdkWindow* window,
                                                 gfx::AcceleratedWidget parent) {
   auto x11_window = static_cast<x11::Window>(gdk_x11_window_get_xid(window));
-  x11::SetProperty(x11_window, x11::Atom::WM_TRANSIENT_FOR, x11::Atom::WINDOW,
-                   parent);
+  SetProperty(x11_window, x11::Atom::WM_TRANSIENT_FOR, x11::Atom::WINDOW,
+              parent);
 
   ui::X11Window* parent_window =
       ui::X11WindowManager::GetInstance()->GetWindow(parent);

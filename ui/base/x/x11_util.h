@@ -190,7 +190,7 @@ COMPONENT_EXPORT(UI_BASE_X) bool IsShapeExtensionAvailable();
 COMPONENT_EXPORT(UI_BASE_X) x11::Window GetX11RootWindow();
 
 // Returns the user's current desktop.
-COMPONENT_EXPORT(UI_BASE_X) bool GetCurrentDesktop(int* desktop);
+COMPONENT_EXPORT(UI_BASE_X) bool GetCurrentDesktop(int32_t* desktop);
 
 enum HideTitlebarWhenMaximized : uint32_t {
   SHOW_TITLEBAR_WHEN_MAXIMIZED = 0,
@@ -235,49 +235,6 @@ bool GetRawBytesOfProperty(x11::Window window,
                            scoped_refptr<base::RefCountedMemory>* out_data,
                            x11::Atom* out_type);
 
-// Get the value of an int, int array, atom array or string property.  On
-// success, true is returned and the value is stored in |value|.
-//
-// These functions should no longer be used.  TODO(thomasanderson): migrate
-// existing callers to {Set,Get}{,Array}Property<> instead.
-COMPONENT_EXPORT(UI_BASE_X)
-bool GetIntProperty(x11::Window window,
-                    const std::string& property_name,
-                    int32_t* value);
-COMPONENT_EXPORT(UI_BASE_X)
-bool GetIntArrayProperty(x11::Window window,
-                         const std::string& property_name,
-                         std::vector<int32_t>* value);
-COMPONENT_EXPORT(UI_BASE_X)
-bool GetAtomArrayProperty(x11::Window window,
-                          const std::string& property_name,
-                          std::vector<x11::Atom>* value);
-COMPONENT_EXPORT(UI_BASE_X)
-bool GetStringProperty(x11::Window window,
-                       const std::string& property_name,
-                       std::string* value);
-
-COMPONENT_EXPORT(UI_BASE_X)
-void SetIntProperty(x11::Window window,
-                    const std::string& name,
-                    const std::string& type,
-                    int32_t value);
-COMPONENT_EXPORT(UI_BASE_X)
-void SetIntArrayProperty(x11::Window window,
-                         const std::string& name,
-                         const std::string& type,
-                         const std::vector<int32_t>& value);
-COMPONENT_EXPORT(UI_BASE_X)
-void SetAtomProperty(x11::Window window,
-                     const std::string& name,
-                     const std::string& type,
-                     x11::Atom value);
-COMPONENT_EXPORT(UI_BASE_X)
-void SetAtomArrayProperty(x11::Window window,
-                          const std::string& name,
-                          const std::string& type,
-                          const std::vector<x11::Atom>& value);
-
 // Sets the WM_CLASS attribute for a given X11 window.
 COMPONENT_EXPORT(UI_BASE_X)
 void SetWindowClassHint(x11::Connection* connection,
@@ -318,11 +275,11 @@ bool HasWMSpecProperty(const base::flat_set<x11::Atom>& properties,
 // frame based on the currently-running window manager.
 COMPONENT_EXPORT(UI_BASE_X) bool GetCustomFramePrefDefault();
 
-static const int kAllDesktops = -1;
+static const int32_t kAllDesktops = -1;
 // Queries the desktop |window| is on, kAllDesktops if sticky. Returns false if
 // property not found.
 COMPONENT_EXPORT(UI_BASE_X)
-bool GetWindowDesktop(x11::Window window, int* desktop);
+bool GetWindowDesktop(x11::Window window, int32_t* desktop);
 
 // Implementers of this interface receive a notification for every X window of
 // the main display.

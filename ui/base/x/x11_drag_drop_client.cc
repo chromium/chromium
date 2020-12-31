@@ -188,8 +188,8 @@ XDragDropClient::XDragDropClient(XDragDropClient::Delegate* delegate,
 
   // Mark that we are aware of drag and drop concepts.
   uint32_t xdnd_version = kMaxXdndVersion;
-  x11::SetProperty(xwindow_, x11::GetAtom(kXdndAware), x11::Atom::ATOM,
-                   xdnd_version);
+  SetProperty(xwindow_, x11::GetAtom(kXdndAware), x11::Atom::ATOM,
+              xdnd_version);
 
   // Some tests change the DesktopDragDropClientAuraX11 associated with an
   // |xwindow|.
@@ -466,7 +466,8 @@ void XDragDropClient::InitDrag(int operation, const OSExchangeData* data) {
                       x11::GetAtom(kMimeTypeText),
                       source_provider_->file_contents_name().AsUTF8Unsafe());
   }
-  SetAtomArrayProperty(xwindow_, kXdndActionList, "ATOM", actions);
+  SetArrayProperty(xwindow_, x11::GetAtom(kXdndActionList), x11::Atom::ATOM,
+                   actions);
 }
 
 void XDragDropClient::CleanupDrag() {
@@ -602,8 +603,8 @@ x11::Window XDragDropClient::FindWindowFor(const gfx::Point& screen_point) {
   // original value will remain.
   GetProperty(target, x11::GetAtom(kXdndProxy), &target);
 
-  int version;
-  if (GetIntProperty(target, kXdndAware, &version) &&
+  uint32_t version;
+  if (GetProperty(target, x11::GetAtom(kXdndAware), &version) &&
       version >= kMaxXdndVersion) {
     return target;
   }
@@ -636,7 +637,8 @@ void XDragDropClient::SendXdndEnter(x11::Window dest_window,
 
   if (targets.size() > 3) {
     xev.data.data32[1] |= 1;
-    SetAtomArrayProperty(xwindow(), kXdndTypeList, "ATOM", targets);
+    SetArrayProperty(xwindow(), x11::GetAtom(kXdndTypeList), x11::Atom::ATOM,
+                     targets);
   } else {
     // Pack the targets into the enter message.
     for (size_t i = 0; i < targets.size(); ++i)

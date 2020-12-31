@@ -20,6 +20,7 @@
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
@@ -52,8 +53,8 @@ void ClipWorkArea(std::vector<display::Display>* displays,
                   float scale) {
   x11::Window x_root_window = ui::GetX11RootWindow();
 
-  std::vector<int> value;
-  if (!ui::GetIntArrayProperty(x_root_window, "_NET_WORKAREA", &value) ||
+  std::vector<int32_t> value;
+  if (!GetArrayProperty(x_root_window, x11::GetAtom("_NET_WORKAREA"), &value) ||
       value.size() < 4) {
     return;
   }

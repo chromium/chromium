@@ -32,6 +32,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/desktop_aura/desktop_native_cursor_manager.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
@@ -541,7 +542,8 @@ void BasicStep2(TestDragDropClient* client, x11::Window toplevel) {
             static_cast<x11::Window>(events[0].data.data32[0]));
   EXPECT_EQ(1u, events[0].data.data32[1] & 1);
   std::vector<x11::Atom> targets;
-  ui::GetAtomArrayProperty(client->source_xwindow(), "XdndTypeList", &targets);
+  GetArrayProperty(client->source_xwindow(), x11::GetAtom("XdndTypeList"),
+                   &targets);
   EXPECT_FALSE(targets.empty());
 
   EXPECT_TRUE(client->MessageHasType(events[1], "XdndPosition"));

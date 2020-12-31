@@ -136,7 +136,11 @@ bool GetWindowManagerName(std::string* wm_name) {
     return false;
   }
 
-  return GetStringProperty(wm_window, "_NET_WM_NAME", wm_name);
+  std::vector<char> str;
+  if (!GetArrayProperty(wm_window, x11::GetAtom("_NET_WM_NAME"), &str))
+    return false;
+  wm_name->assign(str.data(), str.size());
+  return true;
 }
 
 // Returns whether the X11 Screen Saver Extension can be used to disable the
@@ -181,8 +185,8 @@ bool GetWmNormalHints(x11::Window window, SizeHints* hints) {
 void SetWmNormalHints(x11::Window window, const SizeHints& hints) {
   std::vector<uint32_t> hints32(sizeof(SizeHints) / 4);
   memcpy(hints32.data(), &hints, sizeof(SizeHints));
-  x11::SetArrayProperty(window, x11::GetAtom("WM_NORMAL_HINTS"),
-                        x11::GetAtom("WM_SIZE_HINTS"), hints32);
+  SetArrayProperty(window, x11::GetAtom("WM_NORMAL_HINTS"),
+                   x11::GetAtom("WM_SIZE_HINTS"), hints32);
 }
 
 bool GetWmHints(x11::Window window, WmHints* hints) {
@@ -198,8 +202,8 @@ bool GetWmHints(x11::Window window, WmHints* hints) {
 void SetWmHints(x11::Window window, const WmHints& hints) {
   std::vector<uint32_t> hints32(sizeof(WmHints) / 4);
   memcpy(hints32.data(), &hints, sizeof(WmHints));
-  x11::SetArrayProperty(window, x11::GetAtom("WM_HINTS"),
-                        x11::GetAtom("WM_HINTS"), hints32);
+  SetArrayProperty(window, x11::GetAtom("WM_HINTS"), x11::GetAtom("WM_HINTS"),
+                   hints32);
 }
 
 void WithdrawWindow(x11::Window window) {
@@ -397,8 +401,9 @@ x11::Window GetX11RootWindow() {
   return x11::Connection::Get()->default_screen().root;
 }
 
-bool GetCurrentDesktop(int* desktop) {
-  return GetIntProperty(GetX11RootWindow(), "_NET_CURRENT_DESKTOP", desktop);
+bool GetCurrentDesktop(int32_t* desktop) {
+  return GetProperty(GetX11RootWindow(), x11::GetAtom("_NET_CURRENT_DESKTOP"),
+                     desktop);
 }
 
 void SetHideTitlebarWhenMaximizedProperty(x11::Window window,
@@ -418,7 +423,7 @@ bool IsWindowVisible(x11::Window window) {
 
   // Minimized windows are not visible.
   std::vector<x11::Atom> wm_states;
-  if (GetAtomArrayProperty(window, "_NET_WM_STATE", &wm_states)) {
+  if (GetArrayProperty(window, x11::GetAtom("_NET_WM_STATE"), &wm_states)) {
     x11::Atom hidden_atom = x11::GetAtom("_NET_WM_STATE_HIDDEN");
     if (base::Contains(wm_states, hidden_atom))
       return false;
@@ -426,7 +431,7 @@ bool IsWindowVisible(x11::Window window) {
 
   // Some compositing window managers (notably kwin) do not actually unmap
   // windows on desktop switch, so we also must check the current desktop.
-  int window_desktop, current_desktop;
+  int32_t window_desktop, current_desktop;
   return (!GetWindowDesktop(window, &window_desktop) ||
           !GetCurrentDesktop(&current_desktop) ||
           window_desktop == kAllDesktops || window_desktop == current_desktop);
@@ -455,8 +460,8 @@ bool GetInnerWindowBounds(x11::Window window, gfx::Rect* rect) {
 }
 
 bool GetWindowExtents(x11::Window window, gfx::Insets* extents) {
-  std::vector<int> insets;
-  if (!GetIntArrayProperty(window, "_NET_FRAME_EXTENTS", &insets))
+  std::vector<int32_t> insets;
+  if (!GetArrayProperty(window, x11::GetAtom("_NET_FRAME_EXTENTS"), &insets))
     return false;
   if (insets.size() != 4)
     return false;
@@ -565,65 +570,6 @@ bool GetRawBytesOfProperty(x11::Window window,
   if (out_type)
     *out_type = response->type;
   return true;
-}
-
-bool GetIntProperty(x11::Window window,
-                    const std::string& property_name,
-                    int* value) {
-  return GetProperty(window, x11::GetAtom(property_name), value);
-}
-
-bool GetIntArrayProperty(x11::Window window,
-                         const std::string& property_name,
-                         std::vector<int32_t>* value) {
-  return GetArrayProperty(window, x11::GetAtom(property_name), value);
-}
-
-bool GetAtomArrayProperty(x11::Window window,
-                          const std::string& property_name,
-                          std::vector<x11::Atom>* value) {
-  return GetArrayProperty(window, x11::GetAtom(property_name), value);
-}
-
-bool GetStringProperty(x11::Window window,
-                       const std::string& property_name,
-                       std::string* value) {
-  std::vector<char> str;
-  if (!GetArrayProperty(window, x11::GetAtom(property_name), &str))
-    return false;
-
-  value->assign(str.data(), str.size());
-  return true;
-}
-
-void SetIntProperty(x11::Window window,
-                    const std::string& name,
-                    const std::string& type,
-                    int32_t value) {
-  std::vector<int> values(1, value);
-  return SetIntArrayProperty(window, name, type, values);
-}
-
-void SetIntArrayProperty(x11::Window window,
-                         const std::string& name,
-                         const std::string& type,
-                         const std::vector<int32_t>& value) {
-  SetArrayProperty(window, x11::GetAtom(name), x11::GetAtom(type), value);
-}
-
-void SetAtomProperty(x11::Window window,
-                     const std::string& name,
-                     const std::string& type,
-                     x11::Atom value) {
-  std::vector<x11::Atom> values(1, value);
-  return SetAtomArrayProperty(window, name, type, values);
-}
-
-void SetAtomArrayProperty(x11::Window window,
-                          const std::string& name,
-                          const std::string& type,
-                          const std::vector<x11::Atom>& value) {
-  SetArrayProperty(window, x11::GetAtom(name), x11::GetAtom(type), value);
 }
 
 void SetWindowClassHint(x11::Connection* connection,
@@ -738,8 +684,8 @@ bool IsWmTiling(WindowManagerName window_manager) {
   }
 }
 
-bool GetWindowDesktop(x11::Window window, int* desktop) {
-  return GetIntProperty(window, "_NET_WM_DESKTOP", desktop);
+bool GetWindowDesktop(x11::Window window, int32_t* desktop) {
+  return GetProperty(window, x11::GetAtom("_NET_WM_DESKTOP"), desktop);
 }
 
 // Returns true if |window| is a named window.
@@ -960,7 +906,8 @@ bool IsX11WindowFullScreen(x11::Window window) {
   x11::Atom fullscreen_atom = x11::GetAtom("_NET_WM_STATE_FULLSCREEN");
   if (WmSupportsHint(fullscreen_atom)) {
     std::vector<x11::Atom> atom_properties;
-    if (GetAtomArrayProperty(window, "_NET_WM_STATE", &atom_properties)) {
+    if (GetArrayProperty(window, x11::GetAtom("_NET_WM_STATE"),
+                         &atom_properties)) {
       return base::Contains(atom_properties, fullscreen_atom);
     }
   }
@@ -1018,8 +965,8 @@ bool WmSupportsHint(x11::Atom atom) {
     return false;
 
   std::vector<x11::Atom> supported_atoms;
-  if (!GetAtomArrayProperty(GetX11RootWindow(), "_NET_SUPPORTED",
-                            &supported_atoms)) {
+  if (!GetArrayProperty(GetX11RootWindow(), x11::GetAtom("_NET_SUPPORTED"),
+                        &supported_atoms)) {
     return false;
   }
 

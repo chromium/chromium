@@ -13,6 +13,7 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
@@ -51,8 +52,8 @@ XDragContext::XDragContext(x11::Window local_window,
     bool get_types_from_property = ((event.data.data32[1] & 1) != 0);
 
     if (get_types_from_property) {
-      if (!GetAtomArrayProperty(source_window_, kXdndTypeList,
-                                &unfetched_targets_)) {
+      if (!GetArrayProperty(source_window_, x11::GetAtom(kXdndTypeList),
+                            &unfetched_targets_)) {
         return;
       }
     } else {
@@ -164,10 +165,12 @@ void XDragContext::ReadActions() {
       XDragDropClient::GetForWindow(source_window_);
   if (!source_client) {
     std::vector<x11::Atom> atom_array;
-    if (!GetAtomArrayProperty(source_window_, kXdndActionList, &atom_array))
+    if (!GetArrayProperty(source_window_, x11::GetAtom(kXdndActionList),
+                          &atom_array)) {
       actions_.clear();
-    else
+    } else {
       actions_.swap(atom_array);
+    }
   } else {
     // We have a property notify set up for other windows in case they change
     // their action list. Thankfully, the views interface is static and you

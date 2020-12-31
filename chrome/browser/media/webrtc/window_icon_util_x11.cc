@@ -12,8 +12,8 @@ gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
   DCHECK(id.type == content::DesktopMediaID::TYPE_WINDOW);
 
   std::vector<uint32_t> data;
-  if (!x11::GetArrayProperty(static_cast<x11::Window>(id.id),
-                             x11::GetAtom("_NET_WM_ICON"), &data)) {
+  if (!GetArrayProperty(static_cast<x11::Window>(id.id),
+                        x11::GetAtom("_NET_WM_ICON"), &data)) {
     return gfx::ImageSkia();
   }
 

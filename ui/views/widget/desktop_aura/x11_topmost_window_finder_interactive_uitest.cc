@@ -24,6 +24,7 @@
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/x11_path.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
@@ -50,7 +51,8 @@ class MinimizeWaiter : public ui::X11PropertyChangeWaiter {
   // ui::X11PropertyChangeWaiter:
   bool ShouldKeepOnWaiting() override {
     std::vector<x11::Atom> wm_states;
-    if (ui::GetAtomArrayProperty(xwindow(), "_NET_WM_STATE", &wm_states)) {
+    if (GetArrayProperty(xwindow(), x11::GetAtom("_NET_WM_STATE"),
+                         &wm_states)) {
       return !base::Contains(wm_states, x11::GetAtom("_NET_WM_STATE_HIDDEN"));
     }
     return true;
@@ -422,8 +424,8 @@ TEST_F(X11TopmostWindowFinderTest, DISABLED_Menu) {
       .override_redirect = x11::Bool32(true),
   });
 
-  ui::SetAtomProperty(menu_window, "_NET_WM_WINDOW_TYPE", "ATOM",
-                      x11::GetAtom("_NET_WM_WINDOW_TYPE_MENU"));
+  SetProperty(menu_window, x11::GetAtom("_NET_WM_WINDOW_TYPE"), x11::Atom::ATOM,
+              x11::GetAtom("_NET_WM_WINDOW_TYPE_MENU"));
 
   ui::SetUseOSWindowFrame(menu_window, false);
   ShowAndSetXWindowBounds(menu_window, gfx::Rect(140, 110, 100, 100));

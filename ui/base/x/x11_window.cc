@@ -49,7 +49,7 @@ namespace {
 
 // Special value of the _NET_WM_DESKTOP property which indicates that the window
 // should appear on all workspaces/desktops.
-const int kAllWorkspaces = 0xFFFFFFFF;
+const int32_t kAllWorkspaces = -1;
 
 constexpr char kX11WindowRolePopup[] = "popup";
 constexpr char kX11WindowRoleBubble[] = "bubble";
@@ -362,11 +362,13 @@ void XWindow::Init(const Configuration& config) {
   workspace_ = base::nullopt;
   if (config.visible_on_all_workspaces) {
     window_properties_.insert(x11::GetAtom("_NET_WM_STATE_STICKY"));
-    SetIntProperty(xwindow_, "_NET_WM_DESKTOP", "CARDINAL", kAllWorkspaces);
+    SetProperty(xwindow_, x11::GetAtom("_NET_WM_DESKTOP"), x11::Atom::CARDINAL,
+                kAllWorkspaces);
   } else if (!config.workspace.empty()) {
-    int workspace;
+    int32_t workspace;
     if (base::StringToInt(config.workspace, &workspace))
-      SetIntProperty(xwindow_, "_NET_WM_DESKTOP", "CARDINAL", workspace);
+      SetProperty(xwindow_, x11::GetAtom("_NET_WM_DESKTOP"),
+                  x11::Atom::CARDINAL, workspace);
   }
 
   if (!config.wm_class_name.empty() || !config.wm_class_class.empty()) {
@@ -425,7 +427,9 @@ void XWindow::Init(const Configuration& config) {
   // Always composite Chromium windows if a compositing WM is used.  Sometimes,
   // WMs will not composite fullscreen windows as an optimization, but this can
   // lead to tearing of fullscreen videos.
-  SetIntProperty(xwindow_, "_NET_WM_BYPASS_COMPOSITOR", "CARDINAL", 2);
+  x11::SetProperty<uint32_t>(xwindow_,
+                             x11::GetAtom("_NET_WM_BYPASS_COMPOSITOR"),
+                             x11::Atom::CARDINAL, 2);
 
   if (config.icon)
     SetXWindowIcons(gfx::ImageSkia(), *config.icon);
@@ -456,9 +460,9 @@ void XWindow::Map(bool inactive) {
   if (window_properties_.empty()) {
     x11::DeleteProperty(xwindow_, x11::GetAtom("_NET_WM_STATE"));
   } else {
-    SetAtomArrayProperty(xwindow_, "_NET_WM_STATE", "ATOM",
-                         std::vector<x11::Atom>(std::begin(window_properties_),
-                                                std::end(window_properties_)));
+    SetArrayProperty(xwindow_, x11::GetAtom("_NET_WM_STATE"), x11::Atom::ATOM,
+                     std::vector<x11::Atom>(std::begin(window_properties_),
+                                            std::end(window_properties_)));
   }
 
   connection_->MapWindow({xwindow_});
@@ -1273,7 +1277,7 @@ void XWindow::OnWMStateUpdated() {
   // unmapped, leave the state unchanged so it will be restored when the window
   // is remapped.
   std::vector<x11::Atom> atom_list;
-  if (GetAtomArrayProperty(xwindow_, "_NET_WM_STATE", &atom_list) ||
+  if (GetArrayProperty(xwindow_, x11::GetAtom("_NET_WM_STATE"), &atom_list) ||
       window_mapped_in_client_) {
     UpdateWindowProperties(
         base::flat_set<x11::Atom>(std::begin(atom_list), std::end(atom_list)));
@@ -1298,8 +1302,8 @@ void XWindow::UpdateWindowProperties(
 }
 
 void XWindow::OnFrameExtentsUpdated() {
-  std::vector<int> insets;
-  if (GetIntArrayProperty(xwindow_, "_NET_FRAME_EXTENTS", &insets) &&
+  std::vector<int32_t> insets;
+  if (GetArrayProperty(xwindow_, x11::GetAtom("_NET_FRAME_EXTENTS"), &insets) &&
       insets.size() == 4) {
     // |insets| are returned in the order: [left, right, top, bottom].
     native_window_frame_borders_in_pixels_ =
@@ -1547,14 +1551,16 @@ bool XWindow::InitializeAsStatusIcon() {
     return false;
   auto manager = reply->owner;
 
-  SetIntArrayProperty(xwindow_, "_XEMBED_INFO", "CARDINAL",
-                      {kXembedInfoProtocolVersion, kXembedInfoFlags});
+  SetArrayProperty(
+      xwindow_, x11::GetAtom("_XEMBED_INFO"), x11::Atom::CARDINAL,
+      std::vector<uint32_t>{kXembedInfoProtocolVersion, kXembedInfoFlags});
 
   x11::ChangeWindowAttributesRequest req{xwindow_};
   if (has_alpha()) {
     req.background_pixel = 0;
   } else {
-    SetIntProperty(xwindow_, "CHROMIUM_COMPOSITE_WINDOW", "CARDINAL", 1);
+    SetProperty(xwindow_, x11::GetAtom("CHROMIUM_COMPOSITE_WINDOW"),
+                x11::GetAtom("CARDINAL"), static_cast<uint32_t>(1));
     req.background_pixmap =
         static_cast<x11::Pixmap>(x11::BackPixmap::ParentRelative);
   }

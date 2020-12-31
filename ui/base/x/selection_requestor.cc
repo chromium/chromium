@@ -99,7 +99,8 @@ void SelectionRequestor::PerformBlockingConvertSelectionWithParameter(
     x11::Atom selection,
     x11::Atom target,
     const std::vector<x11::Atom>& parameter) {
-  SetAtomArrayProperty(x_window_, kChromeSelection, "ATOM", parameter);
+  SetArrayProperty(x_window_, x11::GetAtom(kChromeSelection), x11::Atom::ATOM,
+                   parameter);
   PerformBlockingConvertSelection(selection, target, nullptr, nullptr);
 }
 

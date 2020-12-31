@@ -55,7 +55,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XCursorLoader {
 
   // Populate the |rm_*| variables from the value of the RESOURCE_MANAGER
   // property on the root window.
-  void ParseXResources(const std::string& resources);
+  void ParseXResources(base::StringPiece resources);
 
   uint16_t CursorNamesToChar(const std::vector<std::string>& names) const;
 

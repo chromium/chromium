@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(UI_BASE_X) X11SoftwareBitmapPresenter {
 
   // If nonzero, indicates that the widget should be drawn over its
   // parent-relative background.
-  int composite_ = 0;
+  uint8_t composite_ = 0;
 
   std::unique_ptr<ui::XShmImagePool> shm_pool_;
   bool needs_swap_ = false;
