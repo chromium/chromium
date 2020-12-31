@@ -342,7 +342,7 @@
 <translation id="3356951775008366684">讀出字詞的拼音發音</translation>
 <translation id="3359142382821736686">seprtr</translation>
 <translation id="3363015957057974366">您也可以按下 Tab 鍵，移至畫面上的下一個互動式項目。尋找位於搜尋鍵正上方的 Tab 鍵。如要繼續，請按下 Tab 鍵。</translation>
-<translation id="3366946046494222386"><ph name="TOPIC" />教學課程，<ph name="LESSONS" /> 節課堂</translation>
+<translation id="3366946046494222386"><ph name="TOPIC" />教學課程，<ph name="LESSONS" /> 課</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{1 個加號}other{# 個加號}}</translation>
 <translation id="338583716107319301">分隔符號</translation>
 <translation id="3389259863310851658">上一個表格欄位</translation>
@@ -569,7 +569,7 @@
 <translation id="5111640677200759579">欄標題</translation>
 <translation id="5115892389597951922">ChromeVox 記錄</translation>
 <translation id="5119330972669454698">硬木色</translation>
-<translation id="5130133513489020984">上一部分教學課程</translation>
+<translation id="5130133513489020984">上一課</translation>
 <translation id="513774504516943387">連結</translation>
 <translation id="5138912041966667164">中岩藍色</translation>
 <translation id="5140016802771803559">麗貝卡紫色</translation>
