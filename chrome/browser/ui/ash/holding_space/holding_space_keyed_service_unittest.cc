@@ -282,6 +282,20 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
              base::BindRepeating(&BuildVolumeManager)}});
   }
 
+  TestingProfile* CreateGuestProfile() {
+    user_manager::User* guest_user = fake_user_manager_->AddGuestUser();
+    fake_user_manager_->LoginUser(fake_user_manager_->GetGuestAccountId());
+
+    chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
+        guest_user);
+
+    return profile_manager()->CreateTestingProfile(
+        guest_user->GetAccountId().GetUserEmail(),
+        /*testing_factories=*/{
+            {file_manager::VolumeManagerFactory::GetInstance(),
+             base::BindRepeating(&BuildVolumeManager)}});
+  }
+
   TestingProfile* CreateSecondaryProfile(
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs = nullptr) {
     const std::string kSecondaryProfileName = "secondary_profile";
@@ -507,6 +521,56 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
             GetVirtualPathFromUrl(item_2->file_system_url(),
                                   downloads_mount->name()));
   EXPECT_EQ(base::ASCIIToUTF16("Screenshot 2.png"), item_2->text());
+}
+
+TEST_F(HoldingSpaceKeyedServiceTest, GuestUserProfile) {
+  // Service instances should be created for guest users.
+  TestingProfile* const guest_profile = CreateGuestProfile();
+  ASSERT_TRUE(guest_profile);
+  ASSERT_FALSE(guest_profile->IsOffTheRecord());
+  HoldingSpaceKeyedService* const guest_profile_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(guest_profile);
+  ASSERT_TRUE(guest_profile_service);
+
+  // Construct an incognito profile from `guest_profile`.
+  TestingProfile::Builder incognito_guest_profile_builder;
+  incognito_guest_profile_builder.SetGuestSession();
+  incognito_guest_profile_builder.SetProfileName(
+      guest_profile->GetProfileUserName());
+  Profile* const incognito_guest_profile =
+      incognito_guest_profile_builder.BuildIncognito(guest_profile);
+  ASSERT_TRUE(incognito_guest_profile);
+  ASSERT_TRUE(incognito_guest_profile->IsOffTheRecord());
+
+  // Service instances should be created for guest users w/ OTR profiles but
+  // should redirect to use the original (e.g. non-incognito) profile.
+  HoldingSpaceKeyedService* const incognito_guest_profile_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
+          incognito_guest_profile);
+  ASSERT_EQ(incognito_guest_profile_service, guest_profile_service);
+}
+
+TEST_F(HoldingSpaceKeyedServiceTest, OffTheRecordProfile) {
+  // Service instances should be created for on the record profiles.
+  HoldingSpaceKeyedService* const primary_profile_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
+  ASSERT_TRUE(primary_profile_service);
+
+  // Construct an incognito profile from the primary profile.
+  TestingProfile::Builder incognito_primary_profile_builder;
+  incognito_primary_profile_builder.SetProfileName(
+      GetProfile()->GetProfileUserName());
+  Profile* const incognito_primary_profile =
+      incognito_primary_profile_builder.BuildIncognito(GetProfile());
+  ASSERT_TRUE(incognito_primary_profile);
+  ASSERT_TRUE(incognito_primary_profile->IsOffTheRecord());
+
+  // Service instances should *not* typically be created for OTR profiles. The
+  // once exception is for guest users who redirect to use original profile.
+  HoldingSpaceKeyedService* const incognito_primary_profile_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
+          incognito_primary_profile);
+  ASSERT_FALSE(incognito_primary_profile_service);
 }
 
 TEST_F(HoldingSpaceKeyedServiceTest, SecondaryUserProfile) {

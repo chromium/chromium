@@ -26,6 +26,8 @@ class HoldingSpaceKeyedServiceFactory
 
  protected:
   // BrowserContextKeyedServiceFactory:
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(

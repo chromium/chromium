@@ -191,11 +191,11 @@ const char* HoldingSpaceTray::GetClassName() const {
 
 void HoldingSpaceTray::UpdateVisibility() {
   HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
+  LoginStatus login_status = shelf()->GetStatusAreaWidget()->login_status();
+  const bool in_active_session = login_status != LoginStatus::NOT_LOGGED_IN &&
+                                 login_status != LoginStatus::LOCKED;
 
-  const bool logged_in =
-      shelf()->GetStatusAreaWidget()->login_status() == LoginStatus::USER;
-
-  if (!model || !logged_in) {
+  if (!model || !in_active_session) {
     SetVisiblePreferred(false);
     return;
   }

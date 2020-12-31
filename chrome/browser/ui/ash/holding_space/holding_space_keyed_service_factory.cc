@@ -37,12 +37,33 @@ HoldingSpaceKeyedService* HoldingSpaceKeyedServiceFactory::GetService(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
+content::BrowserContext*
+HoldingSpaceKeyedServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  user_manager::User* user =
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  if (!user)
+    return nullptr;
+
+  // Guest users are supported but should redirect to create the holding space
+  // service for the original (e.g. non-incognito) profile.
+  if (user->GetType() == user_manager::USER_TYPE_GUEST)
+    return profile->GetOriginalProfile();
+
+  // Don't create the service for off the record profiles of other user types.
+  return profile->IsOffTheRecord() ? nullptr : context;
+}
+
 KeyedService* HoldingSpaceKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   if (!features::IsTemporaryHoldingSpaceEnabled())
     return nullptr;
 
   Profile* profile = Profile::FromBrowserContext(context);
+  DCHECK(!profile->IsOffTheRecord());
+
   user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
