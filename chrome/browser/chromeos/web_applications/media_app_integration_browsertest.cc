@@ -477,8 +477,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
             MediaAppUiBrowserTest::EvalJsInAppFrame(app, kTypeErrorScript));
   auto report = endpoint.WaitForReport();
   EXPECT_NE(std::string::npos,
-            report.query.find(
-                "error_message=event.notAFunction%20is%20not%20a%20function"))
+            report.query.find("event.notAFunction%20is%20not%20a%20function"))
       << report.query;
   EXPECT_NE(std::string::npos, report.query.find("prod=ChromeOS_MediaApp"));
 }
