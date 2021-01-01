@@ -2319,7 +2319,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Document, /*count*/ -1,
                   /*expected_text*/ tree_for_move_full_text.data(),
-                  /*expected_count*/ -1);
+                  /*expected_count*/ 0);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Document, /*count*/ 2,
                   /*expected_text*/ tree_for_move_full_text.data(),
                   /*expected_count*/ 0);

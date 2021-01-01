@@ -849,15 +849,10 @@ class AXPosition {
   // be made up of multiple accessibility trees stitched together, e.g. an
   // out-of-process iframe will be in its own accessibility tree.
   bool AtEndOfAXTree() const {
-    if (IsNullPosition() || !AtEndOfAnchor())
+    if (IsNullPosition() || !IsLeaf() || !AtEndOfAnchor())
       return false;
 
-    AXPositionInstance next_anchor = CreateNextAnchorPosition();
-    // The end of the whole content should also be the end of an AXTree.
-    if (next_anchor->IsNullPosition())
-      return true;
-
-    return next_anchor->tree_id() != tree_id();
+    return *CreatePositionAtEndOfAXTree() == *this;
   }
 
   AXBoundaryType GetFormatStartBoundaryType() const {
@@ -977,10 +972,10 @@ class AXPosition {
   // at the start of a specific accessibility tree, it might not be at the start
   // of the whole content.
   bool AtStartOfContent() const {
-    if (IsNullPosition())
+    if (IsNullPosition() || !AtStartOfAnchor())
       return false;
-    return GetAnchorRole() == ax::mojom::Role::kRootWebArea &&
-           AtStartOfAnchor();
+
+    return *CreatePositionAtStartOfContent() == *this;
   }
 
   // Returns true if this position is at the end of all content. This might
@@ -990,22 +985,10 @@ class AXPosition {
   // at the end of a specific accessibility tree, it might not be at the end of
   // the whole content.
   bool AtEndOfContent() const {
-    if (IsNullPosition())
-      return false;
-    return AtLastNodeInTree() && AtEndOfAnchor();
-  }
-
-  bool AtLastNodeInTree() const {
-    if (IsNullPosition())
+    if (IsNullPosition() || !AtEndOfAnchor())
       return false;
 
-    // Avoid a potentionally expensive MaxTextOffset call by only using tree
-    // positions. The only thing that matters is whether our anchor_id_ is at
-    // the last anchor of the whole content, so we're free to ignore
-    // |text_offset_|.
-    AXPositionInstance tree_position =
-        CreateTreePosition(tree_id_, anchor_id_, 0);
-    return tree_position->CreateNextAnchorPosition()->IsNullPosition();
+    return *CreatePositionAtEndOfContent() == *this;
   }
 
   // This method finds the lowest common ancestor node in the accessibility tree
@@ -1775,51 +1758,40 @@ class AXPosition {
     return CreateNullPosition();
   }
 
+  // Creates a position at the start of this position's accessibility tree, e.g.
+  // at the start of the current out-of-process iframe, PDF plugin, Views tree,
+  // etc.
+  //
+  // For a similar method that does not stop at iframe boundaries, see
+  // `CreatePositionAtStartOfContent()`.
   AXPositionInstance CreatePositionAtStartOfAXTree() const {
-    if (IsNullPosition() || AtStartOfAXTree())
-      return Clone();
-
-    // First check for positions on nodes which are AXTree boundaries, but where
-    // the text position on that node is not at the start of the anchor.
-    if (CreatePositionAtStartOfAnchor()->AtStartOfAXTree())
-      return CreatePositionAtStartOfAnchor();
-
-    // Iterate over tree positions until a boundary is reached.
-    AXPositionInstance previous_position = AsTreePosition();
-    do {
-      previous_position = previous_position->CreatePreviousAnchorPosition();
-    } while (!previous_position->AtStartOfAXTree());
-
-    // This method should not cross tree boundaries.
-    DCHECK_EQ(previous_position->tree_id(), tree_id());
-
+    AXPositionInstance root_position =
+        AsTreePosition()
+            ->CreateAXTreeRootAncestorPosition(
+                ax::mojom::MoveDirection::kBackward)
+            ->CreatePositionAtStartOfAnchor();
     if (IsTextPosition())
-      previous_position = previous_position->AsTextPosition();
-    return previous_position;
+      root_position = root_position->AsTextPosition();
+    DCHECK_EQ(root_position->tree_id_, tree_id_)
+        << "`CreatePositionAtStartOfAXTree` should not cross any tree "
+           "boundaries, neither return the null position.";
+    return root_position;
   }
 
+  // Creates a position at the end of this position's accessibility tree, e.g.
+  // at the end of the current out-of-process iframe, PDF plugin, etc.
+  //
+  // For a similar method that does not stop at iframe boundaries, see
+  // `CreatePositionAtEndOfContent()`.
   AXPositionInstance CreatePositionAtEndOfAXTree() const {
-    if (IsNullPosition() || AtEndOfAXTree())
-      return Clone();
-
-    // First check for positions on nodes which are AXTree boundaries, but where
-    // the text position on that node is not at the end of the anchor.
-    if (CreatePositionAtEndOfAnchor()->AtEndOfAXTree())
-      return CreatePositionAtEndOfAnchor();
-
-    // Iterate over tree positions until a boundary is reached.
-    AXPositionInstance next_position = AsTreePosition();
-    do {
-      next_position = next_position->CreateNextAnchorPosition()
-                          ->CreatePositionAtEndOfAnchor();
-    } while (!next_position->AtEndOfAXTree());
-
-    // This method should not cross tree boundaries.
-    DCHECK_EQ(next_position->tree_id(), tree_id());
-
+    AXPositionInstance root_position =
+        AsTreePosition()->CreateAXTreeRootAncestorPosition(
+            ax::mojom::MoveDirection::kBackward);
+    AXPositionInstance last_position =
+        root_position->CreatePositionAtEndOfAnchor()->AsLeafTreePosition();
     if (IsTextPosition())
-      next_position = next_position->AsTextPosition();
-    return next_position->CreatePositionAtEndOfAnchor();
+      last_position = last_position->AsTextPosition();
+    return last_position;
   }
 
   // Creates a position at the start of all content, e.g. at the start of the
@@ -1827,16 +1799,15 @@ class AXPosition {
   //
   // Note that this method will break out of an iframe and return a position at
   // the start of the top-level document. For a similar method that stops at
-  // iframe boundaries, see "CreatePositionAtStartOfAXTree()".
+  // iframe boundaries, see `CreatePositionAtStartOfAXTree()`.
   AXPositionInstance CreatePositionAtStartOfContent() const {
-    AXPositionInstance position =
-        AsTreePosition()->CreateRootWebAreaAncestorPosition();
-    if (!position->IsNullPosition()) {
-      position = position->CreatePositionAtStartOfAnchor();
-      if (IsTextPosition())
-        position = position->AsTextPosition();
-    }
-    return position;
+    AXPositionInstance root_position =
+        AsTreePosition()
+            ->CreateRootAncestorPosition(ax::mojom::MoveDirection::kBackward)
+            ->CreatePositionAtStartOfAnchor();
+    if (IsTextPosition())
+      root_position = root_position->AsTextPosition();
+    return root_position;
   }
 
   // Creates a position at the end of all content, e.g. at the end of the whole
@@ -1844,20 +1815,16 @@ class AXPosition {
   //
   // Note that this method will break out of an iframe and return a position at
   // the end of the top-level document. For a similar method that stops at
-  // iframe boundaries, see "CreatePositionAtEndOfAXTree()".
+  // iframe boundaries, see `CreatePositionAtEndOfAXTree()`.
   AXPositionInstance CreatePositionAtEndOfContent() const {
-    AXPositionInstance position =
-        AsTreePosition()->CreateRootWebAreaAncestorPosition();
-    if (!position->IsNullPosition()) {
-      while (!position->IsLeaf()) {
-        position =
-            position->CreateChildPositionAt(position->AnchorChildCount() - 1);
-      }
-      position = position->CreatePositionAtEndOfAnchor();
-      if (IsTextPosition())
-        position = position->AsTextPosition();
-    }
-    return position;
+    AXPositionInstance root_position =
+        AsTreePosition()->CreateRootAncestorPosition(
+            ax::mojom::MoveDirection::kBackward);
+    AXPositionInstance last_position =
+        root_position->CreatePositionAtEndOfAnchor()->AsLeafTreePosition();
+    if (IsTextPosition())
+      last_position = last_position->AsTextPosition();
+    return last_position;
   }
 
   AXPositionInstance CreateChildPositionAt(int child_index) const {
@@ -3438,7 +3405,7 @@ class AXPosition {
     if (AnchorUnignoredChildCount())
       return false;
 
-    // Embed element with non empty children should not be treated as empty
+    // Embed elements with non empty children should not be treated as empty
     // objects.
     if (GetAnchorRole() == ax::mojom::Role::kEmbeddedObject &&
         AnchorChildCount() > 0) {
@@ -3836,7 +3803,8 @@ class AXPosition {
   }
 
   // Creates a text position using the next leaf node as its anchor.
-  // Leaf nodes often make up the trees text representation.
+  // Nearly all of the text in the accessibility tree is contained in leaf
+  // nodes, so this method is mostly used to move through text nodes.
   AXPositionInstance CreateNextLeafTextPosition(
       const AbortMovePredicate& abort_predicate) const {
     // If this is an ancestor text position, resolve to its leaf text position.
@@ -3852,7 +3820,8 @@ class AXPosition {
   }
 
   // Creates a text position using the previous leaf node as its anchor.
-  // Leaf nodes often make up the trees text representation.
+  // Nearly all of the text in the accessibility tree is contained in leaf
+  // nodes, so this method is mostly used to move through text nodes.
   AXPositionInstance CreatePreviousLeafTextPosition(
       const AbortMovePredicate& abort_predicate) const {
     // If this is an ancestor text position, resolve to its leaf text position.
@@ -3870,8 +3839,9 @@ class AXPosition {
     return previous_leaf->AsLeafTextPosition();
   }
 
-  // Creates a tree position using the next text-only node as its anchor.
-  // Assumes that text-only nodes are leaf nodes.
+  // Creates a tree position using the next leaf node as its anchor.
+  // Nearly all of the text in the accessibility tree is contained in leaf
+  // nodes, so this method is mostly used to move through text nodes.
   AXPositionInstance CreateNextLeafTreePosition(
       const AbortMovePredicate& abort_predicate) const {
     AXPositionInstance next_leaf =
@@ -3883,8 +3853,9 @@ class AXPosition {
     return next_leaf;
   }
 
-  // Creates a tree position using the previous text-only node as its anchor.
-  // Assumes that text-only nodes are leaf nodes.
+  // Creates a tree position using the previous leaf node as its anchor.
+  // Nearly all of the text in the accessibility tree is contained in leaf
+  // nodes, so this method is mostly used to move through text nodes.
   AXPositionInstance CreatePreviousLeafTreePosition(
       const AbortMovePredicate& abort_predicate) const {
     AXPositionInstance previous_leaf =
@@ -4156,17 +4127,71 @@ class AXPosition {
     return position->GetWordEndOffsets();
   }
 
-  AXPositionInstance CreateRootWebAreaAncestorPosition() const {
-    AXPositionInstance iterator = Clone();
-    while (!iterator->IsNullPosition()) {
-      if ((iterator->GetAnchorRole() == ax::mojom::Role::kRootWebArea ||
-           iterator->GetAnchorRole() == ax::mojom::Role::kPdfRoot) &&
-          iterator->CreateParentPosition()->IsNullPosition()) {
+  // Creates an ancestor equivalent position at the root node of this position's
+  // accessibility tree, e.g. at the root of the current out-of-process iframe,
+  // PDF plugin, Views tree, etc.
+  //
+  // For a similar method that does not stop at iframe boundaries, see
+  // `CreateRootAncestorPosition`.
+  //
+  // See `CreateParentPosition` for an explanation of the use of
+  // |move_direction|.
+  AXPositionInstance CreateAXTreeRootAncestorPosition(
+      ax::mojom::MoveDirection move_direction) const {
+    if (IsNullPosition())
+      return Clone();
+
+    AXPositionInstance root_position = Clone();
+    while (!IsRootLike(root_position->GetAnchorRole())) {
+      AXPositionInstance parent_position =
+          root_position->CreateParentPosition(move_direction);
+      if (parent_position->IsNullPosition())
         break;
-      }
-      iterator = iterator->CreateParentPosition();
+      root_position = std::move(parent_position);
     }
-    return iterator;
+
+    return root_position;
+  }
+
+  // Creates an ancestor equivalent position at the root node of all content,
+  // e.g. at the root of the whole webpage or PDF document.
+  //
+  // Note that this method will break out of an iframe and return a position at
+  // the root of the top-level document. For a similar method that stops at
+  // iframe boundaries, see `CreateAXTreeRootAncestorPosition`.
+  //
+  // See `CreateParentPosition` for an explanation of the use of
+  // |move_direction|.
+  AXPositionInstance CreateRootAncestorPosition(
+      ax::mojom::MoveDirection move_direction) const {
+    AXPositionInstance root_position =
+        CreateAXTreeRootAncestorPosition(move_direction);
+    AXPositionInstance web_root_position = CreateNullPosition();
+    for (; !root_position->IsNullPosition();
+         root_position =
+             root_position->CreateAXTreeRootAncestorPosition(move_direction)) {
+      // An "ax::mojom::Role::kRootWebArea" could also be present at the root of
+      // iframes or embedded objects, so we need to check that for that specific
+      // role the position is also at the top of the forest of accessibility
+      // trees making up the webpage. Note that the forest of accessibility
+      // trees would include Views and on Chrome OS the whole desktop, so in the
+      // case of a web root, checking if the parent position is the null
+      // position will not work.
+      if (root_position->GetAnchorRole() != ax::mojom::Role::kRootWebArea) {
+        if (web_root_position->IsNullPosition())
+          return root_position;  // Original position is not in web contents.
+
+        // The previously saved web root is the shallowest in the forest of
+        // accessibility trees.
+        return web_root_position;
+      }
+
+      // Save this web root position and check if it is the shallowest in the
+      // forest of accessibility trees.
+      web_root_position = root_position->Clone();
+      root_position = root_position->CreateParentPosition(move_direction);
+    }
+    return web_root_position;
   }
 
   // Creates a text position that is in the same anchor as the current
@@ -4270,7 +4295,7 @@ class AXPosition {
   // than StopIfAlreadyAtBoundary is not equivalent to the initial position.
   //
   // Note that using CompareTo with text positions does not take into account
-  // position affinity or tree pre-order, two text positions are considered
+  // position affinity or tree pre-order: two text positions are considered
   // equivalent if their offsets in the text representation of the entire AXTree
   // are the same. As such, using Create[Next|Previous]LeafTextPosition is not
   // enough to create adjacent positions, e.g. the end of an anchor and the
