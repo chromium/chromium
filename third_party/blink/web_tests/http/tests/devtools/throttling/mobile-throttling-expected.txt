@@ -4,10 +4,10 @@ Initial throttling state
 === THROTTLING STATE ===
 Network throttling - download: -1 upload: -1 latency: 0
 CPU throttling rate: 1
-Device mode throttling: Online
-Network panel throttling: Online
-Network conditions drawer throttling: Online
-Performance panel network throttling: Online
+Device mode throttling: No throttling
+Network panel throttling: No throttling
+Network conditions drawer throttling: No throttling
+Performance panel network throttling: No throttling
 Performance panel CPU throttling: No throttling
 ========================
 
@@ -81,10 +81,10 @@ Change to no throttling in device mode
 === THROTTLING STATE ===
 Network throttling - download: -1 upload: -1 latency: 0
 CPU throttling rate: 1
-Device mode throttling: Online
-Network panel throttling: Online
-Network conditions drawer throttling: Online
-Performance panel network throttling: Online
+Device mode throttling: No throttling
+Network panel throttling: No throttling
+Network conditions drawer throttling: No throttling
+Performance panel network throttling: No throttling
 Performance panel CPU throttling: No throttling
 ========================
 
