@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class FakeProfileDataSource implements ProfileDataSource {
     protected final ObserverList<Observer> mObservers = new ObserverList<>();
-    private final Map<String, ProfileData> mProfileDataMap = new HashMap<>();
+    protected final Map<String, ProfileData> mProfileDataMap = new HashMap<>();
 
     public FakeProfileDataSource() {}
 
