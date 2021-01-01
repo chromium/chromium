@@ -516,7 +516,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlink(
           << " needs_update=" << hypertext_.needs_update
           << " hyperlink_id=" << id << "\nparent=" << GetData().ToString();
     static auto* hyperlink_err = base::debug::AllocateCrashKeyString(
-        "ax_hyperlink_err", base::debug::CrashKeySize::Size256);
+        "ax_hyperlink_err2", base::debug::CrashKeySize::Size256);
     base::debug::SetCrashKeyString(hyperlink_err, error.str().substr(230));
     base::debug::DumpWithoutCrashing();
     NOTREACHED() << "Hyperlink error: " << error.str();
