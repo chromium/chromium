@@ -33,10 +33,10 @@ namespace internal {
 // sorted_unique are indeed sorted and unique.
 template <typename Range, typename Comp>
 constexpr bool is_sorted_and_unique(const Range& range, Comp comp) {
-  return ranges::is_sorted(range, comp) &&
-         // Being unique implies that there are no adjacent elements that
-         // compare equal.
-         ranges::adjacent_find(range, base::not_fn(comp)) == ranges::end(range);
+  // Being unique implies that there are no adjacent elements that
+  // compare equal. So this checks that each element is strictly less
+  // than the element after it.
+  return ranges::adjacent_find(range, base::not_fn(comp)) == ranges::end(range);
 }
 
 // This is a convenience method returning true if Iterator is at least a
