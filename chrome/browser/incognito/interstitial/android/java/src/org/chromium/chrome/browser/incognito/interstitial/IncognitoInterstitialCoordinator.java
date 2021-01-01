@@ -19,9 +19,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 public class IncognitoInterstitialCoordinator {
     /**
-     * TODO(crbug.com/1103262): Instead of passing a general View element pass an
-     * IncognitoInterstitialView.
-     *
      * Constructs an IncognitoInterstitialCoordinator object.
      *
      * @param view The incognito interstitial view.

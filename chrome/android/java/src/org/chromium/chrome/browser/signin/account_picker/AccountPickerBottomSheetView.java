@@ -91,8 +91,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
             mDismissButton.setVisibility(View.GONE);
         }
 
-        // TODO(https://crbug.com/1146990): Use different continue buttons for different view
-        // states.
         setUpContinueButton(mViewFlipper.getChildAt(ViewState.NO_ACCOUNTS),
                 R.string.signin_add_account_to_device);
         setUpContinueButton(mViewFlipper.getChildAt(ViewState.SIGNIN_GENERAL_ERROR),
@@ -124,7 +122,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
     /**
      * Sets the listener of the continue button.
-     * TODO(https://crbug.com/1146990): Use different continue buttons for different view states.
      */
     void setOnClickListenerOfContinueButton(OnClickListener listener) {
         for (int i = 0; i < mViewFlipper.getChildCount(); ++i) {
