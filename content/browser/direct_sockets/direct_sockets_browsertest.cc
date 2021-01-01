@@ -6,6 +6,7 @@
 
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,16 +21,19 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "url/gurl.h"
+#include "url/url_canon_ip.h"
 
 namespace content {
 
@@ -47,9 +51,72 @@ struct RecordedCall {
   bool no_delay = false;
 };
 
+class MockHostResolver : public network::mojom::HostResolver {
+ public:
+  explicit MockHostResolver(
+      mojo::PendingReceiver<network::mojom::HostResolver> resolver_receiver)
+      : receiver_(this) {
+    receiver_.Bind(std::move(resolver_receiver));
+  }
+
+  MockHostResolver(const MockHostResolver&) = delete;
+  MockHostResolver& operator=(const MockHostResolver&) = delete;
+
+  void ResolveHost(const ::net::HostPortPair& host_port_pair,
+                   const ::net::NetworkIsolationKey& network_isolation_key,
+                   network::mojom::ResolveHostParametersPtr optional_parameters,
+                   ::mojo::PendingRemote<network::mojom::ResolveHostClient>
+                       pending_response_client) override {
+    mojo::Remote<network::mojom::ResolveHostClient> response_client(
+        std::move(pending_response_client));
+
+    const std::string host = host_port_pair.host();
+    net::IPAddress remote_address;
+    // TODO(crbug.com/1141241): Replace if/else with AssignFromIPLiteral.
+    if (host.find(':') != std::string::npos) {
+      // GURL expects IPv6 hostnames to be surrounded with brackets.
+      std::string host_brackets = base::StrCat({"[", host, "]"});
+      url::Component host_comp(0, host_brackets.size());
+      std::array<uint8_t, 16> bytes;
+      EXPECT_TRUE(url::IPv6AddressToNumber(host_brackets.data(), host_comp,
+                                           bytes.data()));
+      remote_address = net::IPAddress(bytes.data(), bytes.size());
+    } else {
+      // Otherwise the string is an IPv4 address.
+      url::Component host_comp(0, host.size());
+      std::array<uint8_t, 4> bytes;
+      int num_components;
+      url::CanonHostInfo::Family family = url::IPv4AddressToNumber(
+          host.data(), host_comp, bytes.data(), &num_components);
+      EXPECT_EQ(family, url::CanonHostInfo::IPV4);
+      EXPECT_EQ(num_components, 4);
+      remote_address = net::IPAddress(bytes.data(), bytes.size());
+    }
+    EXPECT_EQ(remote_address.ToString(), host);
+
+    response_client->OnComplete(net::OK, net::ResolveErrorInfo(),
+                                net::AddressList::CreateFromIPAddress(
+                                    remote_address, host_port_pair.port()));
+  }
+
+  void MdnsListen(
+      const ::net::HostPortPair& host,
+      ::net::DnsQueryType query_type,
+      ::mojo::PendingRemote<network::mojom::MdnsListenClient> response_client,
+      MdnsListenCallback callback) override {
+    NOTIMPLEMENTED();
+  }
+
+ private:
+  mojo::Receiver<network::mojom::HostResolver> receiver_;
+};
+
 class MockNetworkContext : public network::TestNetworkContext {
  public:
   explicit MockNetworkContext(net::Error result) : result_(result) {}
+
+  MockNetworkContext(const MockNetworkContext&) = delete;
+  MockNetworkContext& operator=(const MockNetworkContext&) = delete;
 
   const std::vector<RecordedCall>& history() const { return history_; }
 
@@ -69,14 +136,26 @@ class MockNetworkContext : public network::TestNetworkContext {
         tcp_connected_socket_options->receive_buffer_size,
         tcp_connected_socket_options->no_delay});
 
+    mojo::ScopedDataPipeProducerHandle producer;
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    DCHECK_EQ(MOJO_RESULT_OK,
+              mojo::CreateDataPipe(nullptr, &producer, &consumer));
     std::move(callback).Run(result_, base::nullopt, base::nullopt,
-                            mojo::ScopedDataPipeConsumerHandle(),
-                            mojo::ScopedDataPipeProducerHandle());
+                            std::move(consumer), std::move(producer));
+  }
+
+  void CreateHostResolver(
+      const base::Optional<net::DnsConfigOverrides>& config_overrides,
+      mojo::PendingReceiver<network::mojom::HostResolver> receiver) override {
+    DCHECK(!config_overrides.has_value());
+    DCHECK(!host_resolver_);
+    host_resolver_ = std::make_unique<MockHostResolver>(std::move(receiver));
   }
 
  private:
   const net::Error result_;
   std::vector<RecordedCall> history_;
+  std::unique_ptr<network::mojom::HostResolver> host_resolver_;
 };
 
 net::Error UnconditionallyPermitConnection(
@@ -143,8 +222,7 @@ class DirectSocketsBrowserTest : public ContentBrowserTest {
   mojo::Remote<network::mojom::TCPServerSocket> tcp_server_socket_;
 };
 
-// TODO(crbug.com/1141241): Resolve failures on linux-bfcache-rel bots.
-IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, DISABLED_OpenTcp_Success) {
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_Success) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
 
   DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
@@ -178,8 +256,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_CannotEvadeCors) {
             EvalJs(shell(), script));
 }
 
-// TODO(crbug.com/1141241): Resolve failures on linux-bfcache-rel bots.
-IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, DISABLED_OpenTcp_OptionsOne) {
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_OptionsOne) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
 
   DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
@@ -212,8 +289,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, DISABLED_OpenTcp_OptionsOne) {
   EXPECT_EQ(false, call.no_delay);
 }
 
-// TODO(crbug.com/1141241): Resolve failures on linux-bfcache-rel bots.
-IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, DISABLED_OpenTcp_OptionsTwo) {
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_OptionsTwo) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
 
   DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
