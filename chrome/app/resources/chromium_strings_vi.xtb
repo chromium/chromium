@@ -166,7 +166,6 @@
 <translation id="6403826409255603130">Chromium là trình duyệt web chạy các trang web và ứng dụng với tốc độ cực nhanh. Đây là một trình duyệt web nhanh, ổn định và dễ sử dụng. Duyệt web trở nên an toàn hơn với tính năng bảo vệ chống lại phần mềm độc hại và lừa đảo được tích hợp sẵn vào Chromium.</translation>
 <translation id="6434250628340475518">Hệ thống Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium sẽ khởi động lại sau 1 giây}other{Chromium sẽ khởi động lại sau # giây}}</translation>
-<translation id="6464340581899189425">Nếu có nhiều Tài khoản Google, bạn có thể thêm các tài khoản đó vào <ph name="DEVICE_TYPE" /> của mình. Bạn có thể sử dụng các tài khoản này trong trình duyệt Chromium và Cửa hàng Play, cũng như các dịch vụ như Gmail, Drive và YouTube.<ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chromium.</translation>
 <translation id="6510925080656968729">Gỡ cài đặt Chromium</translation>
 <translation id="6570579332384693436">Để sửa lỗi chính tả, Chromium sẽ gửi cho Google nội dung bạn nhập vào các trường văn bản</translation>
@@ -262,6 +261,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="9019929317751753759">Để làm cho Chromium an toàn hơn, chúng tôi đã vô hiệu hóa tiện ích không được liệt kê trong <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> và có thể đã được thêm mà bạn không biết.</translation>
 <translation id="9089354809943900324">Chromium đã lỗi thời</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium sẽ khởi động lại sau một giờ}other{Chromium sẽ khởi động lại sau # giờ}}</translation>
+<translation id="9107750757953039239">Nếu có nhiều Tài khoản Google, bạn có thể thêm các tài khoản đó vào <ph name="DEVICE_TYPE" /> của mình. Bạn có thể sử dụng các tài khoản nói trên trong trình duyệt Chromium và Cửa hàng Play, cũng như các dịch vụ như Gmail, Drive và YouTube. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Mở liên kết trong thẻ mới của Chromium</translation>
 <translation id="911206726377975832">Bạn cũng muốn xóa dữ liệu duyệt web của mình?</translation>
 <translation id="9158494823179993217">Quản trị viên hệ thống của bạn đã định cấu hình Chromium để mở một trình duyệt thay thế khi truy cập vào <ph name="TARGET_URL_HOSTNAME" />.</translation>

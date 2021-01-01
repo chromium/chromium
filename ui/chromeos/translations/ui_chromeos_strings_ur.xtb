@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">نارويجين</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1435838927755162558">‏Parallels ڈیسک ٹاپ کے ساتھ فولڈر کا اشتراک کریں</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> میں منتقل کر دیا گیا۔</translation>
 <translation id="1467432559032391204">بائیں</translation>
 <translation id="1471718551822868769">سلاواکی</translation>
 <translation id="1474339897586437869">‏"<ph name="FILENAME" />" کو اپ لوڈ نہیں کیا گیا۔ آپ کے Google Drive میں کافی خالی جگہ نہیں ہے۔</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">‏کیا آپ واقعی ‎<ph name="NUMBER_OF_ITEMS" /> آئٹمز حذف کرنا چاہتے ہیں؟</translation>
 <translation id="2230062665678605299">فولڈر "<ph name="FOLDER_NAME" />" بنانے سے قاصر۔ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">کوڑے دان سے بحال کریں</translation>
-<translation id="2275059641601412272">منتقل ہو گیا۔</translation>
 <translation id="2288278176040912387">ریکارڈ پلیئر</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> فائلیں کھل رہی ہیں۔</translation>
 <translation id="2303301624314357662">فائل <ph name="FILE_NAME" /> کھل رہی ہے۔</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">اسٹونين</translation>
 <translation id="3466147780910026086">آپ کے میڈیا آلے کو سکین کیا جا رہا ہے…</translation>
 <translation id="3468522857997926824">‏<ph name="FILE_COUNT" /> تصاویر کا <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> میں بیک اپ لیا گیا</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> میں کاپی ہو گيا۔</translation>
 <translation id="3475447146579922140">‏Google اسپریڈ شیٹ</translation>
 <translation id="3486821258960016770">منگؤلی</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> خرابیاں۔</translation>
@@ -410,7 +407,6 @@
     اس سے کوئی فرق نہیں پڑتا کہ آپ کے آلہ کو کیا ہوتا ہے، آپ کی فائلیں Google Drive میں محفوظ طریقہ سے اسٹور کی جاتی ہیں۔<ph name="MARKUP_6" />
     دوسروں کے ساتھ فائلیں <ph name="MARKUP_7" />اشتراک کریں، بنائیں اور ان پر اکٹھے کام کریں<ph name="MARKUP_8" />
     سب کچھ ایک جگہ سے۔<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">کاپی کیا۔</translation>
 <translation id="5275973617553375938">‏Google Drive سے بازیافت کردہ فائلیں</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5318819489018851358">‏Linux کے ساتھ اشتراک کریں</translation>
@@ -707,7 +703,6 @@
 <translation id="8336153091935557858">گزشتہ کل <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">اسی نام کی ایک فائل یا ڈائریکٹری پہلے سے موجود ہے۔</translation>
 <translation id="8372852072747894550">يونانی</translation>
-<translation id="8382450452152102026">بنام <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">ڈائمینشنز</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">غلط نام</translation>

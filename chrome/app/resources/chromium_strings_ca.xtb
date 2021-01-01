@@ -166,7 +166,6 @@
 <translation id="6403826409255603130">Chromium és un navegador web que executa les pàgines web i les aplicacions a gran velocitat. És ràpid, estable i fàcil d'utilitzar. Navegueu per Internet amb més seguretat amb protecció inserida a Chromium contra el programari maliciós i contra la pesca de credencials.</translation>
 <translation id="6434250628340475518">Sistema Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium es reiniciarà d'aquí a 1 segon}other{Chromium es reiniciarà d'aquí a # segons}}</translation>
-<translation id="6464340581899189425">Si tens diversos Comptes de Google, pots afegir-los al teu <ph name="DEVICE_TYPE" />. Estaran disponibles al navegador Chromium i a Play Store, i també en serveis com ara Gmail, Drive i YouTube. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">També controla la pàgina que es mostra quan inicieu Chromium.</translation>
 <translation id="6510925080656968729">Desinstal·la Chromium</translation>
 <translation id="6570579332384693436">Per corregir els errors d'ortografia, Chromium envia a Google el que escrius als camps de text</translation>

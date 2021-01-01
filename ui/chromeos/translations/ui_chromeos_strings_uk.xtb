@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Норвезька</translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1435838927755162558">Надати додатку Parallels Desktop доступ до папки</translation>
-<translation id="1439494416798956626">Переміщено в папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="1467432559032391204">Ліворуч</translation>
 <translation id="1471718551822868769">Словацька</translation>
 <translation id="1474339897586437869">Файл "<ph name="FILENAME" />" не додано. Замало вільного місця на Google Диску.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Видалити елементи (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не вдається створити папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Відновити з кошика</translation>
-<translation id="2275059641601412272">Переміщено.</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Відкриваються файли (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Відкривається файл "<ph name="FILE_NAME" />".</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Естонська</translation>
 <translation id="3466147780910026086">Сканування носія…</translation>
 <translation id="3468522857997926824">На <ph name="BEGIN_LINK" />Google Диск<ph name="END_LINK" /> імпортовано <ph name="FILE_COUNT" /> фото</translation>
-<translation id="3473378059788601120">Скопійовано в папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3475447146579922140">Таблиці Google</translation>
 <translation id="3486821258960016770">Монгольська</translation>
 <translation id="3495304270784461826">Помилок: <ph name="COUNT" />.</translation>
@@ -410,7 +407,6 @@
     Незалежно від того, що станеться з вашим пристроєм, файли надійно зберігаються на Google Диску.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Надсилайте та створюйте файли, а також працюйте<ph name="MARKUP_8" />
     над ними разом з іншими – усе в одному місці.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Скопійовано.</translation>
 <translation id="5275973617553375938">Відновлені файли з Google Диска</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Зберегти</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">Учора <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Файл або каталог з таким же ім’ям уже існує.</translation>
 <translation id="8372852072747894550">Грецька</translation>
-<translation id="8382450452152102026">У папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="8395901698320285466">Розміри</translation>
 <translation id="8437209419043462667">Американська</translation>
 <translation id="8456681095658380701">Недійсне ім’я</translation>

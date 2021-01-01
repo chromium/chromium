@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Norvegjisht</translation>
 <translation id="1430915738399379752">Printo</translation>
 <translation id="1435838927755162558">Ndaje dosjen me Parallels Desktop</translation>
-<translation id="1439494416798956626">Zhvendosur te <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Majtas</translation>
 <translation id="1471718551822868769">Sllovakisht</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" nuk u ngarkua. Nuk ka hapësirë të mjaftueshme në "Diskun e Google".</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Je i sigurt që dëshiron të fshish <ph name="NUMBER_OF_ITEMS" /> artikuj?</translation>
 <translation id="2230062665678605299">Nuk mundi ta krijonte dosjen "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Restauroje nga koshi</translation>
-<translation id="2275059641601412272">Zhvendosur.</translation>
 <translation id="2288278176040912387">Gramafoni</translation>
 <translation id="2291538123825441971">Po hapen <ph name="NUMBER_OF_FILES" /> skedarë.</translation>
 <translation id="2303301624314357662">Po hap skedarin <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Estonisht</translation>
 <translation id="3466147780910026086">Po skanon pajisjen e medias...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotografi u rezervuan te <ph name="BEGIN_LINK" />Disku i Google<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">Kopjuar te <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Fletëllogaritësja e Google</translation>
 <translation id="3486821258960016770">Mongolisht</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> gabime.</translation>
@@ -410,7 +407,6 @@
     Pavarësisht se çfarë ndodh me pajisjen tënde, skedarët e tu janë ruajtur në mënyrë të sigurt në "Diskun e Google".<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Ndaj, krijo dhe bashkëpuno<ph name="MARKUP_8" />
     me të tjerët për skedarët, të gjitha në një vend të vetëm.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Kopjuar.</translation>
 <translation id="5275973617553375938">Skedarët e rikuperuar nga "Disku i Google"</translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5318819489018851358">Ndaj me Linux</translation>
@@ -707,7 +703,6 @@
 <translation id="8336153091935557858">Dje <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Ekziston tashmë një skedar ose një direktori me të njëjtin emër.</translation>
 <translation id="8372852072747894550">Greqisht</translation>
-<translation id="8382450452152102026">Për <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Përmasat</translation>
 <translation id="8437209419043462667">Amerikane</translation>
 <translation id="8456681095658380701">Emër i pavlefshëm</translation>

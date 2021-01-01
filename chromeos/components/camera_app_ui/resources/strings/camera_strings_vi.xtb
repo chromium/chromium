@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1175958423215084756">Phát hiện thấy đường liên kết. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Ảnh trong thư viện</translation>
 <translation id="1430915738399379752">In</translation>
 <translation id="1473110567575736769">Đồng hồ hẹn giờ 3 giây</translation>
@@ -79,6 +80,7 @@ Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc v
 <translation id="7649070708921625228">Trợ giúp</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7670511624014457267">60 khung hình/giây</translation>
+<translation id="7983668134180549431">Phát hiện thấy văn bản.</translation>
 <translation id="8067883171444229417">Phát video</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
 <translation id="8145038249676204903">Chuyển sang chụp ảnh</translation>

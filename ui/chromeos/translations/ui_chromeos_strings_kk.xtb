@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Норвег тілі</translation>
 <translation id="1430915738399379752">Басып шығару</translation>
 <translation id="1435838927755162558">Қалтаны Parallels Desktop арқылы бөлісу</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> қалтасына ауыстырылды.</translation>
 <translation id="1467432559032391204">Сол жақ</translation>
 <translation id="1471718551822868769">Словак</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" жүктелген жоқ. Google Drive дискінде жеткілікті орын жоқ.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> элементті жойғыңыз келе ме?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" қалтасын жасау мүмкін емес. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Себеттен қалпына келтіру</translation>
-<translation id="2275059641601412272">Жылжытылған.</translation>
 <translation id="2288278176040912387">Пластина ойнатқыш</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файл ашылуда.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> файлы ашылуда.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Эстон</translation>
 <translation id="3466147780910026086">Мультимедиа құрылғыңыз тексерілуде…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> фотосуреттің сақтық көшірмесі <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> ішіне сақталды</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> қалтасына көшірілді.</translation>
 <translation id="3475447146579922140">Google электрондық кестесі</translation>
 <translation id="3486821258960016770">Моңғол</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> қате.</translation>
@@ -410,7 +407,6 @@
     Құрылғыңыз қандай жағдайға ұшыраса да, файлдар Google Drive ішінде қауіпсіз сақталады.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Файлдарыңыздың барлығын бір жерден бөлісіңіз, жасаңыз және<ph name="MARKUP_8" />
     басқалармен бірлесіп жұмыс істеңіз.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Көшірілген.</translation>
 <translation id="5275973617553375938">Google Drive жүйесінен қалпына келтірілген файлдар</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5318819489018851358">Linux арқылы бөлісу</translation>
@@ -707,7 +703,6 @@
 <translation id="8336153091935557858">Кеше <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Бұндай атауы бар файл немесе каталог бұрыннан бар.</translation>
 <translation id="8372852072747894550">Грек</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" /> қалтасына</translation>
 <translation id="8395901698320285466">Өлшемдер</translation>
 <translation id="8437209419043462667">АҚШ</translation>
 <translation id="8456681095658380701">Жарамсыз атау</translation>

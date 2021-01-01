@@ -164,7 +164,6 @@
 <translation id="6403826409255603130">‏Chromium הוא דפדפן אינטרנט המפעיל דפי אינטרנט ואפליקציות במהירות הבזק. זהו דפדפן מהיר, יציב וקל לשימוש שמאפשר לך לגלוש באינטרנט בצורה מאובטחת יותר הודות להגנה מפני תוכנות זדוניות ופישינג המובנית ב-Chromium.</translation>
 <translation id="6434250628340475518">‏מערכת Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{‏Chromium יבצע אתחול בעוד שנייה אחת}two{‏Chromium יבצע אתחול בעוד # שניות}many{‏Chromium יבצע אתחול בעוד # שניות}other{‏Chromium יבצע אתחול בעוד # שניות}}</translation>
-<translation id="6464340581899189425">‏אם יש לך מספר חשבונות Google, ניתן להוסיף אותם למכשיר ה-<ph name="DEVICE_TYPE" />. החשבונות יהיו זמינים בדפדפן Chromium ובחנות Play, בנוסף לשירותים כמו Gmail, ‏Drive ו-YouTube‏.<ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chromium.</translation>
 <translation id="6510925080656968729">‏הסרה של התקנת Chromium</translation>
 <translation id="6570579332384693436">‏Chromium שולח את הטקסט שמוקלד בשדות טקסט ל-Google כדי לתקן שגיאות כתיב</translation>
@@ -260,6 +259,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="9019929317751753759">‏כדי לשפר את האבטחה של Chromium, השבתנו את התוסף הבא שאינו רשום ב-<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> וייתכן שנוסף ללא ידיעתך.</translation>
 <translation id="9089354809943900324">‏Chromium אינו מעודכן</translation>
 <translation id="9093206154853821181">{0,plural, =1{‏Chromium יופעל מחדש בעוד שעה}two{‏Chromium יופעל מחדש בעוד # שעות}many{‏Chromium יופעל מחדש בעוד # שעות}other{‏Chromium יופעל מחדש בעוד # שעות}}</translation>
+<translation id="9107750757953039239">‏אם יש לך מספר חשבונות Google, ניתן להוסיף אותם למכשיר ה-<ph name="DEVICE_TYPE" />. החשבונות יהיו זמינים בדפדפן Chromium ובחנות Play, בנוסף לשירותים כמו Gmail, ‏Drive ו-YouTube‏. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">‏פתיחת הקישור &amp;בכרטיסיית Chromium חדשה</translation>
 <translation id="911206726377975832">למחוק גם את נתוני הגלישה שלך?</translation>
 <translation id="9158494823179993217">‏לפי הגדרת מנהל המערכת, Chromium יפתח דפדפן חלופי כדי לגשת אל <ph name="TARGET_URL_HOSTNAME" />.</translation>

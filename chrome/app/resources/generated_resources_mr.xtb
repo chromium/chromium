@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">पासवर्डचे परीक्षण करा</translation>
 <translation id="1244265436519979884">Linux रिस्टोअर सध्या प्रगतीपथावर आहे</translation>
 <translation id="1244303850296295656">एक्स्टेंशन एरर</translation>
-<translation id="1246158006305844142">तुमची अ‍ॅप्स आणि सेटिंग्ज तुम्ही तुमच्या Google खात्याने साइन इन केलेल्या सर्व Chrome OS डिव्हाइसवर सिंक होतील. ब्राउझर सिंक पर्यायांसाठी, <ph name="LINK_BEGIN" />Chrome सेटिंग्ज<ph name="LINK_END" /> वर जा.</translation>
 <translation id="1246905108078336582">क्लिपबोर्डवरून सूचना काढून टाकायची आहे का?</translation>
 <translation id="1251366534849411931">अपेक्षित खुला महिरपी कंस: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">हे साइट आणि इंस्टॉल केलेल्या ॲप्सनी स्टोअर केलेला <ph name="TOTAL_USAGE" /> डेटा साफ करेल</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">या प्रक्रियेला काही मिनिटे लागू शकतात. कंटेनर व्यवस्थापक सुरू करत आहे.</translation>
 <translation id="1296911687402551044">निवडलेला टॅब पिन करा</translation>
 <translation id="1297175357211070620">गंतव्य</translation>
-<translation id="1300415640239881824">संरक्षित आशयाची अधिक चांगल्या प्लेबॅकसाठी पात्रता निर्धारित करण्यासाठी <ph name="DOMAIN" /> ला तुमच्या डिव्हाइसची Google कडून ओळख पडताळणी करून हवी आहे.</translation>
 <translation id="1300806585489372370">हे सेटिंग बदलण्यासाठी, प्रथम <ph name="BEGIN_LINK" />आयडेंटिफायर सुरू करा<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> खालील फाइल संपादित करू शकते</translation>
 <translation id="1302139669997477151">स्क्रीनशॉट ब्लॉक केला आहे</translation>
@@ -1444,7 +1442,6 @@
 <translation id="2606246518223360146">डेटा लिंक करा</translation>
 <translation id="2606454609872547359">नाही, ChromeVox शिवाय पुढे सुरू ठेवा</translation>
 <translation id="2607101320794533334">विषय सार्वजनिक की माहिती</translation>
-<translation id="2607968157341167679">कोणतेही अल्बम नाहीत. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मध्ये अल्बम तयार करा.</translation>
 <translation id="2609896558069604090">शॉर्टकट तयार करा...</translation>
 <translation id="2609980095400624569">कनेक्शन जोडता आले नाही</translation>
 <translation id="2610157865375787051">स्लीप</translation>
@@ -1589,7 +1586,6 @@
 <translation id="2762441749940182211">कॅमेरा ब्लॉक केला आहे</translation>
 <translation id="2764786626780673772">VPN चे तपशील</translation>
 <translation id="2765217105034171413">लहान</translation>
-<translation id="2765729904637714153">तुमच्या आवडत्या आठवणी पुन्हा अनुभवा. अल्बम जोडण्यासाठी किंवा संपादित करण्यासाठी, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> वर जा.</translation>
 <translation id="2766006623206032690">पे&amp;स्ट करा आणि जा</translation>
 <translation id="2766161002040448006">पालकाला विचारा</translation>
 <translation id="2767127727915954024">तुम्ही या साइटसाठी सर्व टॅब बंद करेपर्यंत <ph name="ORIGIN" /> ला <ph name="FILENAME" /> संपादित करता येईल</translation>
@@ -4667,7 +4663,6 @@
 <translation id="6331566915566907158">Chrome OS ची वैशिष्ट्ये आणि परफॉर्मन्समध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="6331818708794917058">साइट MIDI डिव्हाइसशी कनेक्ट करण्यासाठी विचारू शकतात</translation>
 <translation id="6333064448949140209">फाइल डीबग करण्यासाठी Google कडे पाठवली जाईल</translation>
-<translation id="6334444530352320327">तुम्ही हे खाते वापरून साइन इन केले असेल त्या सर्व Chromebook वर तुमची अ‍ॅप्स आणि OS सेटिंग्ज सिंक होतील.<ph name="LINK_BEGIN" />सेटिंग्ज सिंक करा<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Linux सुरू करण्यासाठी, <ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे Chromebook फॅक्टरी सेटिंग्जवर रीसेट करणे आवश्यक आहे.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ने ADB डीबगिंग बंद केले आहे. यामुळे तुमचे <ph name="DEVICE_TYPE" /> २४ तासांमध्ये रीसेट होईल. तुम्हाला ठेवायच्या असलेल्या सर्व फाइलचा बॅकअप घ्या.</translation>
 <translation id="6338981933082930623">सर्व साइट तुम्हाला कोणत्याही जाहिराती दाखवू शकतात</translation>
@@ -5104,7 +5099,6 @@
 <translation id="6860097299815761905">प्रॉक्सी सेटिंग्ज...</translation>
 <translation id="686022878923628150">साइटना MIDI डिव्हाइसशी कनेक्ट करण्यापासून ब्लॉक करा</translation>
 <translation id="6860427144121307915">एका टॅबमध्ये उघडा</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> साठी तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि एका आठवड्याच्‍या आत हे <ph name="DEVICE_TYPE" /> परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पाहा<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">पासवर्ड हटवायचा का?</translation>
 <translation id="6865313869410766144">ऑटोफिल फॉर्म डेटा</translation>
 <translation id="6865598234501509159">पेज <ph name="LANGUAGE" /> मध्ये नाही</translation>
@@ -5187,7 +5181,6 @@
 <translation id="696103774840402661">या <ph name="DEVICE_TYPE" /> वरील सर्व वापरकर्त्यांसाठी सर्व फाइल आणि स्थानिक डेटा कायमचा हटवला गेला आहे.</translation>
 <translation id="6964390816189577014">नायक</translation>
 <translation id="6964760285928603117">गटामधून काढून टाका</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> साठी तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> आजच परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पाहा<ph name="LINK_END" />}other{<ph name="MANAGER" /> साठी तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि {NUM_DAYS} दिवसाच्‍या आत हे <ph name="DEVICE_TYPE" /> परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पाहा<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6965648386495488594">पोर्ट</translation>
 <translation id="6965978654500191972">डिव्हाइस</translation>
@@ -6317,7 +6310,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8227119283605456246">फाईल संलग्न करा</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> साठी पासवर्ड सेव्ह करायचा आहे का?</translation>
 <translation id="8234795456569844941">कृपया आमच्या इंजिनियरना ही समस्या सोडवण्यात मदत करा. तुम्हाला प्रोफाइल एरर मिळण्याआधी नेमके काय झाले ते आम्हाला सांगा:</translation>
-<translation id="8235605354099176425">Chrome टॅब पाहण्यासाठी <ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> सुरू करा.<ph name="LINK2_BEGIN" />अधिक जाणून घ्या<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">त्याऐवजी हा टॅब शेअर करा</translation>
 <translation id="8237647586961940482">गडद गुलाबी आणि लाल</translation>
 <translation id="8239032431519548577">एंटरप्राइझ नोंदणी पूर्ण झाली</translation>

@@ -168,7 +168,6 @@
 <translation id="6403826409255603130">Chromium은 빠른 속도로 웹페이지와 애플리케이션을 실행하는 웹 브라우저입니다. 빠르고 안정적이며 사용하기에 편리합니다. Chromium에 내장된 멀웨어 및 악성 코드 방지 기능을 사용하여 더욱 안전하게 웹을 검색하세요.</translation>
 <translation id="6434250628340475518">Chromium OS 시스템</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{1초 후에 Chromium이 다시 시작됩니다}other{#초 후에 Chromium이 다시 시작됩니다}}</translation>
-<translation id="6464340581899189425">Google 계정이 여러 개인 경우 <ph name="DEVICE_TYPE" />에 추가할 수 있습니다. Gmail, 드라이브, YouTube 같은 서비스와 Chromium 브라우저, Play Store에서 계정을 사용할 수 있습니다.<ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">또한 Chromium을 시작할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="6510925080656968729">Chromium 설치 제거</translation>
 <translation id="6570579332384693436">맞춤법 오류를 수정하기 위해 Chromium에서 사용자가 입력하는 텍스트를 Google로 전송합니다.</translation>
@@ -264,6 +263,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="9019929317751753759">Google에서는 Chromium의 보안을 강화하기 위해 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않고 사용자가 모르게 추가되었을 수 있는 다음 확장 프로그램의 사용을 중지했습니다.</translation>
 <translation id="9089354809943900324">Chromium이 이전 버전임</translation>
 <translation id="9093206154853821181">{0,plural, =1{1시간 후 Chromium이 다시 시작됩니다}other{#시간 후 Chromium이 다시 시작됩니다}}</translation>
+<translation id="9107750757953039239">Google 계정이 여러 개인 경우 <ph name="DEVICE_TYPE" />에 추가할 수 있습니다. Gmail, 드라이브, YouTube 같은 서비스와 Chromium 브라우저, Play 스토어에서 계정을 사용할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">새 Chromium 탭에서 링크 열기(&amp;T)</translation>
 <translation id="911206726377975832">인터넷 사용 기록도 삭제하시겠습니까?</translation>
 <translation id="9158494823179993217">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 대체 브라우저를 열도록 Chromium을 구성했습니다.</translation>

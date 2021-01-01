@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">नर्वेली</translation>
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
 <translation id="1435838927755162558">Parallels Desktop सँग फोल्डर सेयर गर्नुहोस्</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" />मा सारियो।</translation>
 <translation id="1467432559032391204">बाँया</translation>
 <translation id="1471718551822868769">स्लोभाकियाली</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />"अपलोड गरिएको थिएन। तपाईँको Google ड्राइभमा पर्याप्त खाली ठाउँ छैन।</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">तपाईंले <ph name="NUMBER_OF_ITEMS" /> वस्तुहरू मेटाउन खोज्नुभएकै हो?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /> फोल्डर सिर्जना गर्न सकिएन</translation>
 <translation id="2251368349685848079">ट्र्यासबाट रिस्टोर गर्नुहोस्</translation>
-<translation id="2275059641601412272">सारिएको।</translation>
 <translation id="2288278176040912387">रेकर्ड प्लेयर</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> फाइलहरू खोल्दै।</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> फाइल खोल्दै।</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">इस्टोनियन</translation>
 <translation id="3466147780910026086">तपाईँको मिडिया यन्त्र स्क्यान गरिँदै...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> तस्बिरहरू <ph name="BEGIN_LINK" />Google ड्राइभ<ph name="END_LINK" /> मा जगेडा गरियो</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> मा प्रतिलिपि गरियो।</translation>
 <translation id="3475447146579922140">Google स्प्रेडसिट</translation>
 <translation id="3486821258960016770">मङ्गोलियाली</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> त्रुटिहरू।</translation>
@@ -410,7 +407,6 @@
     तपाईँको यन्त्रलाई जे भए पनि तपाईँका फाइलहरूलाई सुरक्षित रूपमा Google ड्राइभमा भण्डारण गरिन्छ।<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />फाइलहरूलाई साझेदारी, सिर्जना गर्नुहोस् र अन्यसँग मिलेर तिनीहरूमा सहकार्य गर्नुहोस्<ph name="MARKUP_8" />
     र यो सब एकै ठाउँमा गर्नुहोस्।<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">कपी गरिएको।</translation>
 <translation id="5275973617553375938">Google ड्राइभ फाइलहरू पुन: प्राप्त गरियो</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5318819489018851358">Linux मार्फत सेयर गर्नुहोस्</translation>
@@ -707,7 +703,6 @@
 <translation id="8336153091935557858">हिजो <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">यही नामको फाइल वा एक निर्देशिका पहिले नै अस्तित्वमा छ ।</translation>
 <translation id="8372852072747894550">ग्रिक</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" /> मा</translation>
 <translation id="8395901698320285466">उचाइ तथा चौडाइ</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">अवैध नाम</translation>

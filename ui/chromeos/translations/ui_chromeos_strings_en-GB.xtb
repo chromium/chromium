@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Norwegian</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1435838927755162558">Share folder with Parallels Desktop</translation>
-<translation id="1439494416798956626">Moved to <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Left</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" was not uploaded. There is not enough free space in your Google Drive.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Are you sure that you want to delete <ph name="NUMBER_OF_ITEMS" /> items?</translation>
 <translation id="2230062665678605299">Unable to create folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Restore from bin</translation>
-<translation id="2275059641601412272">Moved.</translation>
 <translation id="2288278176040912387">Record player</translation>
 <translation id="2291538123825441971">Opening <ph name="NUMBER_OF_FILES" /> files.</translation>
 <translation id="2303301624314357662">Opening file <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Estonian</translation>
 <translation id="3466147780910026086">Scanning your media device...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> photos backed up to <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">Copied to <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3486821258960016770">Mongolian</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errors.</translation>
@@ -410,7 +407,6 @@
     No matter what happens to your device, your files are safely stored in Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Share, create and collaborate<ph name="MARKUP_8" />
     on files with others all in one place.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Copied.</translation>
 <translation id="5275973617553375938">Recovered files from Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Save</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">Yesterday <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">A file or a directory with the same name already exists.</translation>
 <translation id="8372852072747894550">Greek</translation>
-<translation id="8382450452152102026">To <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Dimensions</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">Invalid name</translation>

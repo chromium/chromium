@@ -181,7 +181,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="573759479754913123">Chrome OS 정보</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome을 실행할 수 없습니다. 다시 시도해 보세요.</translation>
-<translation id="5851757216820085940">Google 계정이 여러 개인 경우 <ph name="DEVICE_TYPE" />에 추가할 수 있습니다. Gmail, 드라이브, YouTube 같은 서비스와 Chrome 브라우저, Play Store에서 계정을 사용할 수 있습니다.<ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Chrome에서 비밀번호를 수정하려고 합니다.</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 네트워크 로그인</translation>
@@ -289,5 +288,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="911206726377975832">인터넷 사용 기록도 삭제하시겠습니까?</translation>
 <translation id="9138603949443464873">변경사항을 적용하려면 Chrome을 다시 실행하세요.</translation>
 <translation id="919706545465235479">동기화를 시작하려면 Chrome을 업데이트하세요.</translation>
+<translation id="94743460404517794">Google 계정이 여러 개인 경우 <ph name="DEVICE_TYPE" />에 추가할 수 있습니다. Gmail, 드라이브, YouTube 같은 서비스와 Chrome 브라우저, Play 스토어에서 계정을 사용할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Chrome이 기본 브라우저로 설정되어 있습니다.</translation>
 </translationbundle>

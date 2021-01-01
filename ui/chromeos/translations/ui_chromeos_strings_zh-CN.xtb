@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">挪威语</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1435838927755162558">与 Parallels Desktop 共享文件夹</translation>
-<translation id="1439494416798956626">已移至“<ph name="FOLDER_NAME" />”。</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="1471718551822868769">斯洛伐克语</translation>
 <translation id="1474339897586437869">未上传“<ph name="FILENAME" />”，因为您的 Google 云端硬盘没有足够的可用空间。</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">确定要删除这 <ph name="NUMBER_OF_ITEMS" /> 项吗？</translation>
 <translation id="2230062665678605299">无法创建文件夹“<ph name="FOLDER_NAME" />”。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">从回收站还原</translation>
-<translation id="2275059641601412272">已移动。</translation>
 <translation id="2288278176040912387">电唱机</translation>
 <translation id="2291538123825441971">正在打开 <ph name="NUMBER_OF_FILES" /> 个文件。</translation>
 <translation id="2303301624314357662">正在打开文件“<ph name="FILE_NAME" />”</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">爱沙尼亚语</translation>
 <translation id="3466147780910026086">正在扫描您的媒体设备…</translation>
 <translation id="3468522857997926824">已将 <ph name="FILE_COUNT" /> 张照片备份到 <ph name="BEGIN_LINK" />Google 云端硬盘<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">已复制到“<ph name="FOLDER_NAME" />”。</translation>
 <translation id="3475447146579922140">Google 电子表格</translation>
 <translation id="3486821258960016770">蒙古语</translation>
 <translation id="3495304270784461826"><ph name="COUNT" />个错误。</translation>
@@ -405,7 +402,6 @@
 <translation id="5253070652067921974">创建者</translation>
 <translation id="5257456363153333584">蜻蜓</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />可随时随地访问文件，即使处于离线状态也没关系。<ph name="MARKUP_2" />Google 云端硬盘上的文件是最新的，并可通过任意设备访问。<ph name="MARKUP_3" /><ph name="MARKUP_4" />可确保文件安全。<ph name="MARKUP_5" />无论您的设备出现什么状况，您的文件都会安全地存储在 Google 云端硬盘上。<ph name="MARKUP_6" /><ph name="MARKUP_7" />文件集中存储，方便您与他人在同一个地方共享、创建和协作处理<ph name="MARKUP_8" />文件。<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">已复制。</translation>
 <translation id="5275973617553375938">从 Google 云端硬盘恢复的文件</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">保存</translation>
@@ -703,7 +699,6 @@
 <translation id="8336153091935557858">昨天<ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">已存在具有相同名称的文件或目录。</translation>
 <translation id="8372852072747894550">希腊语</translation>
-<translation id="8382450452152102026">目标文件夹：<ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">尺寸</translation>
 <translation id="8437209419043462667">美国英语</translation>
 <translation id="8456681095658380701">名称无效</translation>

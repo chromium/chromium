@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">norska</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1435838927755162558">Dela mappen med Parallels Desktop</translation>
-<translation id="1439494416798956626">Har flyttats till <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Vänster</translation>
 <translation id="1471718551822868769">slovakiska</translation>
 <translation id="1474339897586437869"><ph name="FILENAME" /> laddades inte upp. Det fanns inte tillräckligt mycket ledigt utrymme på Google Drive.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Vill du ta bort <ph name="NUMBER_OF_ITEMS" /> objekt?</translation>
 <translation id="2230062665678605299">Det går inte att skapa mappen <ph name="FOLDER_NAME" />. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Återställ från papperskorgen</translation>
-<translation id="2275059641601412272">Flyttad.</translation>
 <translation id="2288278176040912387">Skivspelare</translation>
 <translation id="2291538123825441971">Öppnar <ph name="NUMBER_OF_FILES" /> filer.</translation>
 <translation id="2303301624314357662">Öppnar filen <ph name="FILE_NAME" /></translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">estniska</translation>
 <translation id="3466147780910026086">Söker igenom mediaenheten ...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> foton har säkerhetskopierats på <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">Kopierad till <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Kalkylark i Google Dokument</translation>
 <translation id="3486821258960016770">mongoliska</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> fel.</translation>
@@ -410,7 +407,6 @@
     Oavsett vad som händer med din enhet förvaras filerna säkert i Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Dela, skapa och jobba<ph name="MARKUP_8" />
     med filer tillsammans med andra på ett och samma ställe.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Kopierad.</translation>
 <translation id="5275973617553375938">Återställda filer från Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Spara</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">Igår kl. <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Det finns redan en fil eller en katalog med samma namn.</translation>
 <translation id="8372852072747894550">grekiska</translation>
-<translation id="8382450452152102026">Till <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Dimensioner</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8456681095658380701">Ogiltigt namn</translation>

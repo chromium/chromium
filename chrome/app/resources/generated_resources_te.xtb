@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">పాస్‌వర్డ్‌లను రివ్యూ చేయండి</translation>
 <translation id="1244265436519979884">ప్రస్తుతం Linux పునరుద్ధరణ ప్రోగ్రెస్‌లో ఉంది</translation>
 <translation id="1244303850296295656">ఎక్స్‌టెన్షన్ ఎర్రర్</translation>
-<translation id="1246158006305844142">మీరు Google ఖాతాతో సైన్ ఇన్ చేసిన Chrome OS పరికరాల అంతటా మీ యాప్‌లు, సెట్టింగ్‌లు సింక్ చేయబడతాయి. బ్రౌజర్ సింక్ ఎంపికల కోసం, <ph name="LINK_BEGIN" />Chrome సెట్టింగ్‌ల<ph name="LINK_END" />కు వెళ్లండి.</translation>
 <translation id="1246905108078336582">క్లిప్‌బోర్డ్ నుండి సూచనను తొలగించాలా?</translation>
 <translation id="1251366534849411931">తెరిచి ఉన్న వంకర కలుపు ఉండాలి: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">దీని వలన సైట్‌లు, ఇన్‌స్టాల్ చేయబడిన యాప్‌లు స్టోర్ చేసిన <ph name="TOTAL_USAGE" /> డేటా తొలగిపోతుంది.</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">ఈ ప్రాసెస్‌కు కొన్ని నిమిషాలు పట్టవచ్చు. కంటైనర్ మేనేజర్‌ను ప్రారంభిస్తోంది.</translation>
 <translation id="1296911687402551044">ఎంపిక చేసిన ట్యాబ్‌ను పిన్ చేయండి</translation>
 <translation id="1297175357211070620">గమ్యం</translation>
-<translation id="1300415640239881824">ఈ పరికరంలో రక్షిత కంటెంట్‌కు మెరుగుపరిచిన ప్లేబ్యాక్ అర్హత ఉందో లేదో నిర్ధారించడానికి, <ph name="DOMAIN" /> మీ పరికర గుర్తింపును Google ద్వారా ధృవీకరించాలనుకుంటోంది.</translation>
 <translation id="1300806585489372370">ఈ సెట్టింగ్‌ని మార్చాలంటే, ముందుగా <ph name="BEGIN_LINK" />ఐడెంటిఫైయర్‌లను ఆన్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> కింది ఫైల్‌లను సవరించగలదు</translation>
 <translation id="1302139669997477151">స్క్రీన్‌షాట్ బ్లాక్ చేయబడింది</translation>
@@ -1248,6 +1246,7 @@
 <translation id="2366260648632264559">సిస్టమ్ వచనాన్ని ఈ భాషలో చూపు</translation>
 <translation id="2367972762794486313">అనువర్తనాలను చూపు</translation>
 <translation id="2371076942591664043">&amp;పూర్తవగానే తెరువు</translation>
+<translation id="23721837607121582"><ph name="NETWORK_NAME" />, <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="2373666622366160481">కాగితానికి తగినట్లుగా అమర్చు</translation>
 <translation id="2375406435414127095">మీ ఫోన్‌కి కనెక్ట్ చేయండి</translation>
 <translation id="2377588536920405462">మీరు మీ పరికరంలో ప్రధాన లొకేషన్ సెట్టింగ్‌ను ఆఫ్ చేయడం ద్వారా లొకేషన్‌ను ఆఫ్ చేయవచ్చు. మీరు లొకేషన్ సెట్టింగ్‌లలో లొకేషన్ కోసం Wi‑Fi, మొబైల్ నెట్‌వర్క్‌లు, సెన్సార్‌ల వినియోగాన్ని కూడా ఆఫ్ చేయవచ్చు.</translation>
@@ -1445,7 +1444,6 @@
 <translation id="2606246518223360146">డేటాను లింక్ చేయి</translation>
 <translation id="2606454609872547359">వద్దు, ChromeVox లేకుండా కొనసాగించు</translation>
 <translation id="2607101320794533334">విషయం పబ్లిక్ కీ సమాచారం</translation>
-<translation id="2607968157341167679">ఆల్బమ్‌లు ఏవీ లేవు. <ph name="LINK_BEGIN" />Google ఫోటోల<ph name="LINK_END" />లో ఆల్బమ్‌ను క్రియేట్ చేయండి.</translation>
 <translation id="2609896558069604090">సత్వరమార్గాలను సృష్టించండి...</translation>
 <translation id="2609980095400624569">కనెక్షన్‌ను ఏర్పాటు చేయడం సాధ్యపడలేదు</translation>
 <translation id="2610157865375787051">నిద్రావస్థ</translation>
@@ -1590,7 +1588,6 @@
 <translation id="2762441749940182211">కెమెరా బ్లాక్ చేయబడింది</translation>
 <translation id="2764786626780673772">VPN వివరాలు</translation>
 <translation id="2765217105034171413">చిన్నది</translation>
-<translation id="2765729904637714153">మీకు ఇష్టమైన మధుర జ్ఞాపకాలను మళ్లీ ఆస్వాదించండి. ఆల్బమ్‌లకు జోడించడానికి లేదా ఎడిట్ చేయడానికి,<ph name="LINK_BEGIN" />Google ఫోటోల<ph name="LINK_END" />కు వెళ్లండి.</translation>
 <translation id="2766006623206032690">పే&amp;స్ట్ చేసి ముందుకు వెళ్ళండి</translation>
 <translation id="2766161002040448006">తల్లి/తండ్రిని అడగండి</translation>
 <translation id="2767127727915954024">మీరు ఈ సైట్‌లో అన్ని ట్యాబ్‌లను మూసివేసే వరకు <ph name="ORIGIN" />, <ph name="FILENAME" />ను ఎడిట్ చేయగలదు</translation>
@@ -2677,6 +2674,7 @@
 <translation id="3969092967100188979">ఆన్, రోమింగ్‌లో ఉంది</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">గణిస్తోంది...</translation>
+<translation id="3971140002794351170"><ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> నుండి <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="3971764089670057203">ఈ సెక్యూరిటీ 'కీ'లో వేలిముద్రలు ఉన్నాయి</translation>
 <translation id="3973660817924297510">పాస్‌వర్డ్‌లను తనిఖీ చేస్తోంది (<ph name="TOTAL_PASSWORDS" />లో <ph name="CHECKED_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">సర్వర్ కోసం నెట్‌వర్క్ పరిధిని కనెక్ట్ చేయడంలో విఫలమైంది</translation>
@@ -4669,7 +4667,6 @@
 <translation id="6331566915566907158">Chrome OS ఫీచర్‌లు మరియు పనితీరును మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="6331818708794917058">MIDI పరికరాలకు కనెక్ట్ చేయడానికి సైట్‌లు అడగగలవు</translation>
 <translation id="6333064448949140209">ఫైల్ డీబగ్గింగ్ కోసం Googleకు పంపబడుతుంది</translation>
-<translation id="6334444530352320327">మీరు ఈ ఖాతాతో సైన్ ఇన్ చేసిన Chromebookలన్నింటిలో మీ యాప్‌లు, OS సెట్టింగ్‌లు సింక్ చేయబడతాయి.<ph name="LINK_BEGIN" />సింక్ సెట్టింగ్‌లు<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Linuxను ప్రారంభించడానికి, <ph name="MANAGER" />కు మీ డేటాను బ్యాకప్ చేసి, ఈ Chromebookను ఫ్యాక్టరీ సెట్టింగ్‌లకు రీసెట్ చేయాలి.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" />, ADB డీబగ్గింగ్‌ను డిజేబుల్ చేసింది. ఇది మీ <ph name="DEVICE_TYPE" />ను 24 గంటలలో రీసెట్ చేస్తుంది. మీరు ఉంచాలనుకునే ఫైల్‌లను బ్యాకప్ చేసుకోండి.</translation>
 <translation id="6338981933082930623">అన్నీ సైట్‌లు మీకు ఎటువంటి యాడ్‌లనైనా చూపించగలవు</translation>
@@ -5106,7 +5103,6 @@
 <translation id="6860097299815761905">ప్రాక్సీ సెట్టింగ్‌లు...</translation>
 <translation id="686022878923628150">MIDI పరికరాలకు కనెక్ట్ చేయనివ్వకుండా సైట్‌లను బ్లాక్ చేయండి</translation>
 <translation id="6860427144121307915">ట్యాబ్‌లో తెరువు</translation>
-<translation id="6862729829592030773">మీ డేటాను బ్యాకప్ చేసి, <ph name="DEVICE_TYPE" />ను తిరిగి <ph name="MANAGER" />కు 1 వారంలోగా అందించాలి.<ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">పాస్‌వర్డ్‌ను తొలగించాలా?</translation>
 <translation id="6865313869410766144">ఆటో-ఫిల్ ఫారమ్ డేటా</translation>
 <translation id="6865598234501509159">పేజీ <ph name="LANGUAGE" />లో లేదు</translation>
@@ -5189,7 +5185,6 @@
 <translation id="696103774840402661">ఈ <ph name="DEVICE_TYPE" />లో యూజర్‌లందరికీ సంబంధించిన అన్ని ఫైల్‌లు, లోకల్ డేటా శాశ్వతంగా తొలగించబడ్డాయి.</translation>
 <translation id="6964390816189577014">వీరుడు</translation>
 <translation id="6964760285928603117">గుంపు నుండి తీసివేయి</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{మీ డేటాను బ్యాకప్ చేసి, <ph name="DEVICE_TYPE" />ను తిరిగి <ph name="MANAGER" />కు ఈరోజే తిరిగి ఇవ్వాల్సి ఉంటుంది.<ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" />}other{మీ డేటాను బ్యాకప్ చేసి, <ph name="DEVICE_TYPE" />ను తిరిగి <ph name="MANAGER" />కు {NUM_DAYS}లోపు తిరిగి ఇవ్వాల్సి ఉంటుంది.<ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">సరే</translation>
 <translation id="6965648386495488594">పోర్ట్</translation>
 <translation id="6965978654500191972">పరికరం</translation>
@@ -6317,7 +6312,6 @@
 <translation id="8227119283605456246">ఫైల్‌ను జోడించు</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> కోసం పాస్‌వర్డ్‌ని సేవ్ చేయాలా?</translation>
 <translation id="8234795456569844941">దయచేసి ఈ సమస్యను పరిష్కరించడంలో మా ఇంజినీర్‌లకు సహాయపడండి. ప్రొఫైల్ ఎర్రర్ సందేశం ఎదురయ్యే ముందు ఏమి జరిగిందో మాకు తెలియజేయండి:</translation>
-<translation id="8235605354099176425">ఇటీవలి Chrome ట్యాబ్‌లను చూడటానికి, <ph name="LINK1_BEGIN" />Chrome సింక్<ph name="LINK1_END" />ను ఆన్ చేయండి.<ph name="LINK2_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">బదులుగా, ఈ ట్యాబ్‌ను షేర్ చేయి</translation>
 <translation id="8237647586961940482">ముదురు గులాబీ రంగు మరియు ఎరుపు</translation>
 <translation id="8239032431519548577">ఎంటర్‌ప్రైజ్ నమోదు పూర్తయింది</translation>
@@ -6463,6 +6457,7 @@
 <translation id="8398877366907290961">ఏవైనా కొనసాగు</translation>
 <translation id="8400146488506985033">వ్యక్తులను నిర్వహించు</translation>
 <translation id="8401432541486058167">మీ స్మార్ట్ కార్డ్‌కు అనుబంధించబడిన పిన్‌ను అందించండి.</translation>
+<translation id="8403562727702715619">Google Drive నుండి ఇటీవలవి</translation>
 <translation id="8407199357649073301">లాగ్ స్థాయి:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> నెట్‌వర్క్, కనెక్ట్ చేస్తోంది</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6903,6 +6898,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" /> కింది ఫైల్‌లు, ఫోల్డర్‌లను సవరించగలదు</translation>
 <translation id="8890170499370378450">మొబైల్ డేటా ఛార్జీ‌లు విధించబడవచ్చు</translation>
 <translation id="8890516388109605451">మూలాధారాలు</translation>
+<translation id="8890529496706615641">ప్రొఫైల్ పేరు మార్చడం సాధ్యపడలేదు. దయచేసి మళ్లీ ట్రై చేయండి లేదా టెక్నికల్ సపోర్ట్ కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="8892168913673237979">అంతా పూర్తయింది!</translation>
 <translation id="8893801527741465188">అన్ఇన్‌స్టాల్ పూర్తయింది</translation>
 <translation id="8893928184421379330">క్షమించండి, పరికరం <ph name="DEVICE_LABEL" /> గుర్తించబడలేదు.</translation>

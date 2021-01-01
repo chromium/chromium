@@ -168,7 +168,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="6403826409255603130">Chromium je novi preglednik koji pokreće web stranice i aplikacije brzinom svjetlosti. On je brz, stabilan i jednostavan za upotrebu. Krećite se internetom u sigurnijem okruženju, zaštićeni od zlonamjernih softvera i krađe identiteta zahvaljujući elementima koji su ugrađeni u Chromium.</translation>
 <translation id="6434250628340475518">Sistem Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium će se ponovo pokrenuti za 1 sekundu}one{Chromium će se ponovo pokrenuti za # sekundu}few{Chromium će se ponovo pokrenuti za # sekunde}other{Chromium će se ponovo pokrenuti za # sekundi}}</translation>
-<translation id="6464340581899189425">Ako imate više Google računa, možete ih dodati na uređaj <ph name="DEVICE_TYPE" />. Vaši računi će biti dostupni u pregledniku Chromium i Play trgovini, kao i na drugim uslugama kao što su Gmail, Disk i YouTube.<ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Također kontrolira koja stranica se prikazuje kada pokrenete Chromium.</translation>
 <translation id="6510925080656968729">Deinstaliraj Chromium</translation>
 <translation id="6570579332384693436">Zbog ispravke pravopisnih grešaka, Chromium šalje Googleu tekst koji napišete u polja.</translation>
@@ -264,6 +263,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="9019929317751753759">Kako bi Chromium bio sigurniji, onemogućili smo sljedeću ekstenziju koja nije navedena na stranici <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i koja je dodana bez vašeg znanja.</translation>
 <translation id="9089354809943900324">Chromium nije ažuriran</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium će se ponovo pokrenuti za jedan sat}one{Chromium će se ponovo pokrenuti za # sat}few{Chromium će se ponovo pokrenuti za # sata}other{Chromium će se ponovo pokrenuti za # sati}}</translation>
+<translation id="9107750757953039239">Ako imate više Google računa, možete ih dodati na uređaj <ph name="DEVICE_TYPE" />. Vaši će računi biti dostupni u pregledniku Chromium i u Trgovini Play te na uslugama kao što su Gmail, Disk i YouTube. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Otvori link u novoj &amp;kartici Chromiuma</translation>
 <translation id="911206726377975832">Također izbrisati podatke pregledanja?</translation>
 <translation id="9158494823179993217">Vaš administrator sistema je konfigurirao Chromium da otvori alternativni preglednik za pristup URL-u<ph name="TARGET_URL_HOSTNAME" />.</translation>

@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">नॉर्वेजियन</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1435838927755162558">Parallels Desktop सोबत फोल्डर शेअर करा</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> मध्ये हलवले.</translation>
 <translation id="1467432559032391204">डावे</translation>
 <translation id="1471718551822868769">स्लोव्हाक</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" अपलोड केली नाही. आपल्या Google ड्राइव्हमध्ये पर्याप्त स्थान नाही.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">तुम्हाला नक्की <ph name="NUMBER_OF_ITEMS" /> आयटम हटवायचे आहेत का?</translation>
 <translation id="2230062665678605299">फोल्डर "<ph name="FOLDER_NAME" />" तयार करण्‍यात अक्षम. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">ट्रॅशमधून रिस्टोअर करा</translation>
-<translation id="2275059641601412272">हलवले.</translation>
 <translation id="2288278176040912387">रेकॉर्ड प्लेयर</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> फाइल उघडत आहे</translation>
 <translation id="2303301624314357662">फाइल <ph name="FILE_NAME" /> उघडत आहे.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">इस्टोनियन</translation>
 <translation id="3466147780910026086">तुमचे मीडिया डिव्हाइस स्कॅन करीत आहे...</translation>
 <translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google ड्राइव्ह<ph name="END_LINK" /> वर <ph name="FILE_COUNT" /> फोटोंचा बॅकअप घेतला</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> मध्ये कॉपी केले.</translation>
 <translation id="3475447146579922140">Google स्प्रेडशीट</translation>
 <translation id="3486821258960016770">मंगोलियन</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> एरर.</translation>
@@ -410,7 +407,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 तुमच्या डिव्हाइसला काहीही झाले तरीही, तुमच्या फाइल Google ड्राइव्ह मध्ये सुरक्षितपणे स्टोअर केल्या आहेत.<ph name="MARKUP_6" />
 <ph name="MARKUP_7" />फाइलवर इतरांसह सर्व एकाच ठिकाणी<ph name="MARKUP_8" />
 शेअर करा, तयार करा आणि सहयोग करा.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">कॉपी केले.</translation>
 <translation id="5275973617553375938">Google ड्राइव्ह वरून पुनर्प्राप्त केलेल्‍या फाइल</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
@@ -708,7 +704,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8336153091935557858">काल <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">समान नावाची एखादी फाइल किंवा डिरेक्टरी आधीपासूनच अस्तित्वात आहे.</translation>
 <translation id="8372852072747894550">ग्रीक</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" /> वर</translation>
 <translation id="8395901698320285466">परिमाण</translation>
 <translation id="8437209419043462667">यूएस</translation>
 <translation id="8456681095658380701">चुकीचे नाव</translation>

@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">கடவுச்சொற்களை மதிப்பாய்வு செய்வதற்கான பட்டன்</translation>
 <translation id="1244265436519979884">Linux மீட்டமைத்தல் செயலில் உள்ளது</translation>
 <translation id="1244303850296295656">நீட்டிப்புப் பிழை</translation>
-<translation id="1246158006305844142">நீங்கள் Google கணக்கின் மூலம் உள்நுழைந்துள்ள Chrome OS சாதனங்கள் அனைத்திலும் உங்கள் ஆப்ஸும் அமைப்புகளும் ஒத்திசையும். உலாவி ஒத்திசைவு விருப்பங்களுக்கு, <ph name="LINK_BEGIN" />Chrome அமைப்புகளுக்குச்<ph name="LINK_END" /> செல்லவும்.</translation>
 <translation id="1246905108078336582">கிளிப்போர்டிலிருந்து பரிந்துரையை அகற்றவா?</translation>
 <translation id="1251366534849411931">திறந்த நெளி அடைப்புக்குறி இல்லை: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">இது தளங்கள், நிறுவப்பட்ட ஆப்ஸ் ஆகியவற்றால் சேமிக்கப்பட்ட <ph name="TOTAL_USAGE" /> தரவை அழிக்கும்</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">இதற்குச் சில நிமிடங்கள் ஆகக்கூடும். கண்டெய்னர் நிர்வாகியைத் தொடங்குகிறது.</translation>
 <translation id="1296911687402551044">தேர்வுசெய்த தாவலை பின் செய்யவும்</translation>
 <translation id="1297175357211070620">இலக்கு</translation>
-<translation id="1300415640239881824">பாதுகாக்கப்பட்ட உள்ளடக்கத்தின் மேம்பட்ட பிளேபேக்கின் தகுதிநிலையைத் தீர்மானிக்க, உங்கள் சாதனத்தின் அடையாளத்தை Google சரிபார்க்க வேண்டுமென <ph name="DOMAIN" /> விரும்புகிறது.</translation>
 <translation id="1300806585489372370">இந்த அமைப்பை மாற்ற, முதலில் <ph name="BEGIN_LINK" />அடையாளங்காட்டிகளை இயக்கவும்<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080">பின்வரும் கோப்புகளை <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
 <translation id="1302139669997477151">ஸ்கிரீன்ஷாட் தடுக்கப்பட்டுள்ளது</translation>
@@ -1248,6 +1246,7 @@
 <translation id="2366260648632264559">சிஸ்டத்தின் உரையை இந்த மொழியில் காட்டு</translation>
 <translation id="2367972762794486313">பயன்பாடுகளைக் காட்டு</translation>
 <translation id="2371076942591664043">&amp;முடிந்ததும் திற</translation>
+<translation id="23721837607121582">இந்த மொபைல் சுயவிவரத்தைப் பதிவிறக்கும்: நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">பேப்பரின் அளவிற்குப் பொருத்து</translation>
 <translation id="2375406435414127095">உங்கள் ஃபோனுடன் இணைத்தல்</translation>
 <translation id="2377588536920405462">உங்கள் சாதனத்தில் உள்ள முதன்மை இருப்பிட அமைப்பை முடக்கி இருப்பிடத்தை முடக்கலாம். வைஃபை, மொபைல் நெட்வொர்க்குகள் மற்றும் இருப்பிடத்திற்காக இருப்பிட அமைப்புகளில் உள்ள சென்சார்களைப் பயன்படுத்துவதையும் நீங்கள் முடக்கலாம்.</translation>
@@ -1445,7 +1444,6 @@
 <translation id="2606246518223360146">தரவை இணை</translation>
 <translation id="2606454609872547359">வேண்டாம். ChromeVox இல்லாமல் தொடர்க</translation>
 <translation id="2607101320794533334">தலைப்பு பொதுவானவை தகவல்</translation>
-<translation id="2607968157341167679">ஆல்பங்கள் எதுவுமில்லை. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ஸில் ஓர் ஆல்பத்தை உருவாக்குங்கள்.</translation>
 <translation id="2609896558069604090">குறுக்குவழிகளை உருவாக்கு...</translation>
 <translation id="2609980095400624569">இணைப்பை ஏற்படுத்த இயலவில்லை</translation>
 <translation id="2610157865375787051">உறக்கநிலையிலிரு</translation>
@@ -1590,7 +1588,6 @@
 <translation id="2762441749940182211">கேமரா தடுக்கப்பட்டது</translation>
 <translation id="2764786626780673772">VPN விவரங்கள்</translation>
 <translation id="2765217105034171413">சிறிய</translation>
-<translation id="2765729904637714153">உங்களின் மனதிற்கினிய நினைவுகளை அசைபோடுங்கள். ஆல்பங்களைச் சேர்க்கவோ திருத்தவோ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ஸிற்குச் செல்லவும்.</translation>
 <translation id="2766006623206032690">ஒட்&amp;டி விட்டு செல்</translation>
 <translation id="2766161002040448006">பெற்றோரிடம் கேள்</translation>
 <translation id="2767127727915954024">இந்தத் தளத்தின் தாவல்கள் அனைத்தையும் மூடும் வரை <ph name="ORIGIN" /> தளத்தால் <ph name="FILENAME" /> கோப்பைத் திருத்த முடியும்</translation>
@@ -2677,6 +2674,7 @@
 <translation id="3969092967100188979">ஆன், ரோமிங்கில் உள்ளது</translation>
 <translation id="3970114302595058915">ஐடி</translation>
 <translation id="397105322502079400">கணக்கிடுகிறது...</translation>
+<translation id="3971140002794351170">இந்த மொபைல் சுயவிவரத்தைப் பதிவிறக்கும்: நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">இந்தப் பாதுகாப்பு விசையில் உள்ள கைரேகைகள்</translation>
 <translation id="3973660817924297510">(<ph name="CHECKED_PASSWORDS" /> / <ph name="TOTAL_PASSWORDS" />) கடவுச்சொற்களைச் சரிபார்க்கிறது…</translation>
 <translation id="3975565978598857337">டொமைனுக்காக சேவையகத்தைப் பயன்படுத்த இயலவில்லை</translation>
@@ -4670,7 +4668,6 @@
 <translation id="6331566915566907158">Chrome OSஸின் அம்சங்களையும் செயல்திறனையும் மேம்படுத்த உதவுக</translation>
 <translation id="6331818708794917058">MIDI சாதனங்களுடன் தளங்கள் இணைய முயலும்போது அனுமதி கேள்</translation>
 <translation id="6333064448949140209">கோப்பு பிழைத் திருத்தத்திற்காக Googleளுக்கு அனுப்பப்படும்</translation>
-<translation id="6334444530352320327">இந்தக் கணக்கின் மூலம் நீங்கள் உள்நுழைந்துள்ள Chromebook சாதனங்கள் அனைத்திலும் உங்கள் ஆப்ஸும் OS அமைப்புகளும் ஒத்திசைக்கப்படும்.<ph name="LINK_BEGIN" />ஒத்திசைவு அமைப்புகள்<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Linuxஸைத் தொடங்க, உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த Chromebookகை ஆரம்பநிலை அமைப்புகளுக்கு மீட்டமைக்குமாறு <ph name="MANAGER" /> கோருகிறது.</translation>
 <translation id="6336038146639916978">ADB பிழைதிருத்தத்தை <ph name="MANAGER" /> முடக்கியுள்ளது. இதனால் <ph name="DEVICE_TYPE" /> சாதனம் 24 மணிநேரத்தில் மீட்டமைக்கப்படும். உங்களுக்குத் தேவையான கோப்புகளைக் காப்புப் பிரதி எடுத்துக்கொள்ளவும்.</translation>
 <translation id="6338981933082930623">எந்த விளம்பரங்களையும் காட்டுவதற்கு அனைத்துத் தளங்களையும் அனுமதி</translation>
@@ -5107,7 +5104,6 @@
 <translation id="6860097299815761905">ப்ராக்ஸி அமைப்புகள்...</translation>
 <translation id="686022878923628150">MIDI சாதனங்களுடன் தளங்கள் இணைவதைத் தடு</translation>
 <translation id="6860427144121307915">தாவலில் திற</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> டொமைனைப் பயன்படுத்த, உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை 1 வாரத்திற்குள் திருப்பியளிக்க வேண்டும். <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">கடவுச்சொல்லை நீக்கவா?</translation>
 <translation id="6865313869410766144">தன்னிரப்பி படிவத் தரவு</translation>
 <translation id="6865598234501509159"><ph name="LANGUAGE" /> மொழியில் பக்கம் இல்லை</translation>
@@ -5190,7 +5186,6 @@
 <translation id="696103774840402661">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தில் உள்ள அனைத்துக் கோப்புகளும் அதில் சேமிக்கப்பட்டுள்ள அனைத்துப் பயனர்களின் தரவும் நிரந்தரமாக நீக்கப்பட்டன.</translation>
 <translation id="6964390816189577014">நாயகன்</translation>
 <translation id="6964760285928603117">குழுவிலிருந்து அகற்று</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> டொமைனைப் பயன்படுத்த, உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை இன்றே திருப்பியளிக்க வேண்டும். <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" />}other{<ph name="MANAGER" /> டொமைனைப் பயன்படுத்த, உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை {NUM_DAYS} நாட்களுக்குள் திருப்பியளிக்க வேண்டும். <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">சரி</translation>
 <translation id="6965648386495488594">போர்ட்</translation>
 <translation id="6965978654500191972">சாதனம்</translation>
@@ -6322,7 +6317,6 @@
 <translation id="8227119283605456246">கோப்பை இணை</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" />க்கான கடவுச்சொல்லைச் சேமிக்கவா?</translation>
 <translation id="8234795456569844941">சுயவிவரப் பிழைச் செய்தியைப் பெறும் முன், என்ன நடந்தது என்பதை விவரிப்பதன் மூலம், இந்தச் சிக்கலைச் சரிசெய்ய, எங்கள் பொறியாளர்களுக்கு உதவவும்.</translation>
-<translation id="8235605354099176425">சமீபத்திய Chrome தாவல்களைப் பார்க்க, <ph name="LINK1_BEGIN" />Chrome ஒத்திசைவை<ph name="LINK1_END" /> இயக்கவும்.<ph name="LINK2_BEGIN" />மேலும் அறிக<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">இந்தத் தாவலைப் பகிர்</translation>
 <translation id="8237647586961940482">அடர் இளஞ்சிவப்பு &amp; சிவப்பு</translation>
 <translation id="8239032431519548577">நிறுவனப் பதிவு நிறைவடைந்தது</translation>
@@ -6468,6 +6462,7 @@
 <translation id="8398877366907290961">இருப்பினும் தொடர்க</translation>
 <translation id="8400146488506985033">நபர்களை நிர்வகி</translation>
 <translation id="8401432541486058167">உங்கள் ஸ்மார்ட் கார்டுடன் தொடர்புடைய பின்னை இங்கே உள்ளிடவும்.</translation>
+<translation id="8403562727702715619">சமீபத்தியவை (Google Drive)</translation>
 <translation id="8407199357649073301">பதிவு நிலை:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> நெட்வொர்க், இணைக்கிறது</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6908,6 +6903,7 @@
 <translation id="8889651696183044030">பின்வரும் கோப்புகளையும் கோப்புறைகளையும் <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
 <translation id="8890170499370378450">மொபைல் டேட்டா கட்டணங்கள் விதிக்கப்படலாம்</translation>
 <translation id="8890516388109605451">மூலங்கள்</translation>
+<translation id="8890529496706615641">சுயவிவரப் பெயரை மாற்ற முடியவில்லை. மீண்டும் முயலவும் அல்லது தொழில்நுட்ப உதவியைப் பெற சேவை வழங்கும் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="8892168913673237979">எல்லாவற்றையும் அமைத்துவிட்டீர்கள்!</translation>
 <translation id="8893801527741465188">நிறுவல் நீக்கப்பட்டது</translation>
 <translation id="8893928184421379330"><ph name="DEVICE_LABEL" /> சாதனத்தை அறிய முடியவில்லை. மன்னிக்கவும்.</translation>

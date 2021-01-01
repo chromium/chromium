@@ -166,7 +166,6 @@
 <translation id="6403826409255603130">A Chromium olyan böngésző, amely villámgyorsan futtatja a weboldalakat és az alkalmazásokat. Gyors, stabil és könnyen használható. A beépített, adathalászat és kártékony programok elleni védelemmel biztonságosabban böngészhet az interneten.</translation>
 <translation id="6434250628340475518">Chromium OS rendszer</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{A Chromium 1 másodpercen belül újraindul}other{A Chromium # másodpercen belül újraindul}}</translation>
-<translation id="6464340581899189425">Ha több Google-fiókja is van, hozzáadhatja őket <ph name="DEVICE_TYPE" /> eszközéhez. Fiókjait használhatja majd a Chromium böngészőben és a Play Áruházban, valamint olyan szolgáltatásokban, mint például a Gmail, a Drive és a YouTube. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="6475912303565314141">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a Chromium indításakor.</translation>
 <translation id="6510925080656968729">Chromium eltávolítása</translation>
 <translation id="6570579332384693436">A nyelvtani hibák javítása érdekében a Chromium elküldi a szövegmezőkbe gépelt szöveget a Google-nak</translation>
@@ -259,6 +258,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="9019929317751753759">A Chromium biztonságosabbá tétele érdekében kikapcsoltuk a következő bővítményt, amely nem a(z) <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> szolgáltatásból származik, és előfordulhat, hogy az Ön tudta nélkül lett telepítve.</translation>
 <translation id="9089354809943900324">A Chromium elavult</translation>
 <translation id="9093206154853821181">{0,plural, =1{A Chromium 1 órán belül újraindul}other{A Chromium # órán belül újraindul}}</translation>
+<translation id="9107750757953039239">Ha több Google-fiókja is van, hozzáadhatja őket <ph name="DEVICE_TYPE" /> eszközéhez. Fiókjait használhatja majd a Chromium böngészőben és a Play Áruházban, valamint olyan szolgáltatásokban, mint például a Gmail, a Drive és a YouTube. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="91086099826398415">Link megnyi&amp;tása új Chromium-lapon</translation>
 <translation id="911206726377975832">Törli a böngészési adatait is?</translation>
 <translation id="9158494823179993217">Rendszergazdája úgy állította be a Chromiumot, hogy másik böngészőt nyisson meg a(z) <ph name="TARGET_URL_HOSTNAME" /> eléréséhez.</translation>

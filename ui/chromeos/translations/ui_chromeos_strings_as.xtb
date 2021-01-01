@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">ন’ৰৱেজিয়ান</translation>
 <translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
 <translation id="1435838927755162558">Parallels Desktopৰ জৰিয়তে ফ’ল্ডাৰটো শ্বেয়াৰ কৰক</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" />লৈ স্থানান্তৰ কৰা হ’ল।</translation>
 <translation id="1467432559032391204">বাওঁফালে</translation>
 <translation id="1471718551822868769">শ্ল’ভাক</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" আপল'ড কৰা হোৱা নাই। Google Driveত পর্যাপ্ত পৰিমাণৰ খালী ঠাই নাই।</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">আপুনি <ph name="NUMBER_OF_ITEMS" />টা বস্তু মচি পেলাবলৈ নিশ্চিতনে?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ফল্ডাৰ সৃষ্টি কৰিব পৰা নগ’ল। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">ট্ৰেশ্বৰ পৰা পুনঃস্থাপন কৰক</translation>
-<translation id="2275059641601412272">স্থানান্তৰ কৰা হ'ল।</translation>
 <translation id="2288278176040912387">ৰেকৰ্ড প্লেয়াৰ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" />টা ফাইল খুলি থকা হৈছে</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ফাইলটো খুলি থকা হৈছে।</translation>
@@ -224,7 +222,6 @@
 <translation id="3455931012307786678">ইষ্ট’নিয়া</translation>
 <translation id="3466147780910026086">আপোনাৰ মিডিয়া ডিভাইচ স্কেন কৰি থকা হৈছে...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> খন ফট’ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />লৈ বেক আপ লোৱা হৈছে</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" />লৈ প্ৰতিলিপি কৰা হ’ল।</translation>
 <translation id="3475447146579922140">Google স্প্ৰেডশ্বীট</translation>
 <translation id="3486821258960016770">মংগোলিয়ান</translation>
 <translation id="3495304270784461826"><ph name="COUNT" />টা আসোঁৱাহ।</translation>
@@ -407,7 +404,6 @@
     আপোনাৰ ডিভাইচৰ যিয়েই নহওক কিয়, আপোনাৰ ফাইলসমূহ Google Driveত সুৰক্ষিতভাৱে ষ্ট'ৰ হৈ থাকে।<ph name="MARKUP_6" />
     একেটা ঠাইতে অন্য লোকৰ সৈতে ফাইল <ph name="MARKUP_7" />শ্বেয়াৰ কৰক, সৃষ্টি কৰক আৰু সহযোগিতা কৰক<ph name="MARKUP_8" />।
     <ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">প্ৰতিলিপি কৰা হ'ল।</translation>
 <translation id="5275973617553375938">Google Driveৰ পৰা পুনৰুদ্ধাৰ কৰা ফাইল</translation>
 <translation id="5317780077021120954">ছেভ কৰক</translation>
 <translation id="5318819489018851358">Linuxৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
@@ -702,7 +698,6 @@
 <translation id="8336153091935557858">কালি <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">একেটা নামৰ ফাইল বা ডাইৰেক্টৰী আগৰেপৰাই আছে৷</translation>
 <translation id="8372852072747894550">গ্ৰীক</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" /> লৈ</translation>
 <translation id="8395901698320285466">দীঘ-প্ৰস্থ</translation>
 <translation id="8437209419043462667">ইউএছ</translation>
 <translation id="8456681095658380701">অমান্য নাম</translation>

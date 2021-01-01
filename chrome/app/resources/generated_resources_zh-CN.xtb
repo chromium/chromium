@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">查看密码</translation>
 <translation id="1244265436519979884">正在进行 Linux 恢复</translation>
 <translation id="1244303850296295656">扩展程序错误</translation>
-<translation id="1246158006305844142">您的应用和设置会在您使用自己的 Google 帐号登录的所有 Chrome 操作系统设备上保持同步。如需了解浏览器同步选项，请转到 <ph name="LINK_BEGIN" />Chrome 设置<ph name="LINK_END" />。</translation>
 <translation id="1246905108078336582">从剪贴板中移除建议？</translation>
 <translation id="1251366534849411931">缺少左大括号：<ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">此操作会清除网站及安装的应用存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">此过程可能需要几分钟的时间。正在启动容器管理器。</translation>
 <translation id="1296911687402551044">固定所选标签页</translation>
 <translation id="1297175357211070620">目标打印机</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> 想让 Google 对您的设备身份进行验证，以确定能否对受保护的内容使用增强播放功能。</translation>
 <translation id="1300806585489372370">要更改此设置，请先<ph name="BEGIN_LINK" />启用标识符<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> 可修改以下文件</translation>
 <translation id="1302139669997477151">屏幕截图功能已被禁用</translation>
@@ -1245,6 +1243,7 @@
 <translation id="2366260648632264559">用这种语言显示系统文字</translation>
 <translation id="2367972762794486313">显示应用</translation>
 <translation id="2371076942591664043">完成时打开(&amp;D)</translation>
+<translation id="23721837607121582">下载移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”</translation>
 <translation id="2373666622366160481">适合纸张大小</translation>
 <translation id="2375406435414127095">连接到您的手机</translation>
 <translation id="2377588536920405462">只需关闭您设备上的主要“位置信息”设置，即可关闭位置信息服务。您还可在“位置信息”设置中关闭那些使用 WLAN、移动网络和传感器来获取位置信息的功能。</translation>
@@ -1441,7 +1440,6 @@
 <translation id="2606246518223360146">关联数据</translation>
 <translation id="2606454609872547359">否，不启用 ChromeVox 并继续操作</translation>
 <translation id="2607101320794533334">证书持有者的公共密钥信息</translation>
-<translation id="2607968157341167679">无任何影集。请在 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />中创建影集。</translation>
 <translation id="2609896558069604090">创建快捷方式...</translation>
 <translation id="2609980095400624569">无法建立连接</translation>
 <translation id="2610157865375787051">休眠</translation>
@@ -1586,7 +1584,6 @@
 <translation id="2762441749940182211">已禁止使用摄像头</translation>
 <translation id="2764786626780673772">VPN 详细信息</translation>
 <translation id="2765217105034171413">小</translation>
-<translation id="2765729904637714153">重现您的美好回忆。如需添加或修改影集，请转至 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />。</translation>
 <translation id="2766006623206032690">粘贴并转到(&amp;S)</translation>
 <translation id="2766161002040448006">询问家长的意见</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> 将能够修改“<ph name="FILENAME" />”中的内容，除非您关闭此网站的所有标签页</translation>
@@ -2672,6 +2669,7 @@
 <translation id="3969092967100188979">已启用，正在使用漫游服务</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">正在计算...</translation>
+<translation id="3971140002794351170">下载移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”，网络服务提供商为“<ph name="NETWORK_PROVIDER_NAME" />”</translation>
 <translation id="3971764089670057203">此安全密钥上的指纹</translation>
 <translation id="3973660817924297510">正在检查密码 (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">无法连接到指定领域的服务器</translation>
@@ -4664,7 +4662,6 @@
 <translation id="6331566915566907158">帮助改进 Chrome 操作系统的功能和性能</translation>
 <translation id="6331818708794917058">网站可以请求连接到 MIDI 设备</translation>
 <translation id="6333064448949140209">文件将发送到 Google 进行调试</translation>
-<translation id="6334444530352320327">您的应用和操作系统设置会在您使用此帐号登录的所有 Chromebook 上保持同步。<ph name="LINK_BEGIN" />同步设置<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">根据 <ph name="MANAGER" /> 的要求，您必须先备份自己的数据并将此 Chromebook 恢复出厂设置，然后才能启动 Linux。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 调试。这会导致您的 <ph name="DEVICE_TYPE" /> 在 24 小时后重置。请备份您想保留的所有文件。</translation>
 <translation id="6338981933082930623">所有网站都可以向您显示任何广告</translation>
@@ -5101,7 +5098,6 @@
 <translation id="6860097299815761905">代理设置...</translation>
 <translation id="686022878923628150">禁止网站连接到 MIDI 设备</translation>
 <translation id="6860427144121307915">在标签页中打开</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> 要求您备份自己的数据并在 1 周内退还此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看详情<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">删除密码？</translation>
 <translation id="6865313869410766144">自动填充表单数据</translation>
 <translation id="6865598234501509159">不是<ph name="LANGUAGE" />网页</translation>
@@ -5184,7 +5180,6 @@
 <translation id="696103774840402661">这部 <ph name="DEVICE_TYPE" /> 上所有用户的全部文件和本地数据都已被永久删除。</translation>
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">从组中移除</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您备份自己的数据并在今天退还此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看详情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求您备份自己的数据并在 {NUM_DAYS} 天内退还此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看详情<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6965648386495488594">端口</translation>
 <translation id="6965978654500191972">设备</translation>
@@ -6315,7 +6310,6 @@
 <translation id="8227119283605456246">附上文件</translation>
 <translation id="8230134520748321204">要保存 <ph name="ORIGIN" /> 的密码吗？</translation>
 <translation id="8234795456569844941">请告诉我们在您收到个人资料错误消息之前发生的情况，以帮助我们的工程师解决此问题：</translation>
-<translation id="8235605354099176425">若要查看最近打开的 Chrome 标签页，请开启 <ph name="LINK1_BEGIN" />Chrome 同步<ph name="LINK1_END" />。<ph name="LINK2_BEGIN" />了解详情<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">改为分享此标签页</translation>
 <translation id="8237647586961940482">深粉色和红色</translation>
 <translation id="8239032431519548577">企业注册已完成</translation>
@@ -6461,6 +6455,7 @@
 <translation id="8398877366907290961">仍然继续</translation>
 <translation id="8400146488506985033">管理用户</translation>
 <translation id="8401432541486058167">请提供与您的智能卡关联的 PIN 码。</translation>
+<translation id="8403562727702715619">最近使用过的 Google 云端硬盘文件</translation>
 <translation id="8407199357649073301">日志级别：</translation>
 <translation id="8408068190360279472">“<ph name="NETWORK_TYPE" />”类型的网络，正在连接</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6901,6 +6896,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" /> 可修改以下文件和文件夹</translation>
 <translation id="8890170499370378450">可能会产生移动数据费用</translation>
 <translation id="8890516388109605451">来源</translation>
+<translation id="8890529496706615641">无法重命名配置文件。请重试，或者向您的运营商寻求技术支持。</translation>
 <translation id="8892168913673237979">搞定了！</translation>
 <translation id="8893801527741465188">已卸载完毕</translation>
 <translation id="8893928184421379330">抱歉，系统无法识别设备“<ph name="DEVICE_LABEL" />”。</translation>

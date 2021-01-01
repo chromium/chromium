@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1175958423215084756">检测到链接。<ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">图库图片</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1473110567575736769">3 秒计时器</translation>
@@ -79,6 +80,7 @@
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7983668134180549431">检测到文字。</translation>
 <translation id="8067883171444229417">播放视频</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8145038249676204903">切换到拍照模式</translation>

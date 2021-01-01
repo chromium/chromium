@@ -181,7 +181,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="573759479754913123">About Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Couldn't launch Chrome. Try again.</translation>
-<translation id="5851757216820085940">If you have multiple Google Accounts, you can add them to your <ph name="DEVICE_TYPE" />. Your accounts will be available in the Chrome browser and Play Store, as well as services like Gmail, Drive and YouTube.<ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome is trying to edit passwords.</translation>
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Network sign-in</translation>
@@ -289,5 +288,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>
 <translation id="9138603949443464873">To apply your changes, relaunch Chrome</translation>
 <translation id="919706545465235479">Update Chrome to start sync</translation>
+<translation id="94743460404517794">If you have multiple Google Accounts, you can add them to your <ph name="DEVICE_TYPE" />. Your accounts will be available in Chrome browser and Play Store, as well as services like Gmail, Drive and YouTube. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome is your default browser</translation>
 </translationbundle>

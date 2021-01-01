@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Norveççe</translation>
 <translation id="1430915738399379752">Yazdır</translation>
 <translation id="1435838927755162558">Parallels Desktop ile klasör paylaşın</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> klasörüne taşındı.</translation>
 <translation id="1467432559032391204">Sola</translation>
 <translation id="1471718551822868769">Slovakça</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" yüklenmedi. Google Drive'ınızda yeterli boş alan yok.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> öğeyi silmek istediğiniz emin misiniz?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" klasörü oluşturulamıyor. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Çöp kutusundan geri yükle</translation>
-<translation id="2275059641601412272">Taşındı.</translation>
 <translation id="2288278176040912387">Plak çalar</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> dosya açılıyor.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> dosyası açılıyor.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Estonca</translation>
 <translation id="3466147780910026086">Medya cihazınız taranıyor...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotoğraf <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />'a yedeklendi</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> klasörüne kopyalandı.</translation>
 <translation id="3475447146579922140">Google e-tablosu</translation>
 <translation id="3486821258960016770">Moğolca</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> hata.</translation>
@@ -410,7 +407,6 @@
     Cihazınıza ne olursa olsun, dosyalarınız Google Drive'da güvenli şekilde saklanır.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Tek bir yerden dosya oluşturun, başkalarıyla paylaşın ve<ph name="MARKUP_8" />
     ortak çalışın.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Kopyalandı.</translation>
 <translation id="5275973617553375938">Dosyalar Google Drive'dan geri yüklendi</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Kaydet</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">Dün <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Aynı adda bir dosya veya dizin zaten var.</translation>
 <translation id="8372852072747894550">Yunanca</translation>
-<translation id="8382450452152102026">Alıcı: <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Boyutlar</translation>
 <translation id="8437209419043462667">ABD</translation>
 <translation id="8456681095658380701">Geçersiz ad</translation>

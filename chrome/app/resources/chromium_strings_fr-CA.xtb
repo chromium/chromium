@@ -168,7 +168,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="6403826409255603130">Chromium est un navigateur Web qui exécute les pages Web et les applications à une vitesse fulgurante. Il est rapide, stable et simple d'utilisation. Naviguez sur Internet en toute sécurité, en bénéficiant de la protection offerte par Chromium contre les logiciels malveillants et l'hameçonnage.</translation>
 <translation id="6434250628340475518">Système Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium redémarrera dans 1 seconde}one{Chromium redémarrera dans # seconde}other{Chromium redémarrera dans # secondes}}</translation>
-<translation id="6464340581899189425">Si vous avez plusieurs comptes Google, vous pouvez les ajouter à votre <ph name="DEVICE_TYPE" />. Vos comptes seront accessibles dans le navigateur Chromium et dans la boutique Play Store ainsi que dans les services comme Gmail, Disque et YouTube.<ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Elle gère également la page qui s'affiche au démarrage de Chromium.</translation>
 <translation id="6510925080656968729">Désinstaller Chromium</translation>
 <translation id="6570579332384693436">Pour corriger les fautes d'orthographe, Chromium envoie le texte que vous entrez dans des zones de texte à Google</translation>

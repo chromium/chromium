@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">비밀번호 검토</translation>
 <translation id="1244265436519979884">현재 Linux 복원이 진행 중입니다.</translation>
 <translation id="1244303850296295656">확장 프로그램 오류</translation>
-<translation id="1246158006305844142">앱 및 설정은 Google 계정으로 로그인한 모든 Chrome OS 기기와 동기화됩니다. 브라우저 동기화 옵션을 보려면 <ph name="LINK_BEGIN" />Chrome 설정<ph name="LINK_END" />으로 이동하세요.</translation>
 <translation id="1246905108078336582">클립보드에서 추천 항목을 삭제하시겠습니까?</translation>
 <translation id="1251366534849411931">열림 중괄호 누락: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">사이트 및 설치된 앱에서 저장한 <ph name="TOTAL_USAGE" />의 데이터가 삭제됩니다.</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">이 과정은 몇 분 정도 걸릴 수 있습니다. 컨테이너 관리자를 시작합니다.</translation>
 <translation id="1296911687402551044">선택한 탭 고정</translation>
 <translation id="1297175357211070620">대상</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" />에서 보호된 콘텐츠의 개선된 재생 기능을 사용할 수 있는지 확인하려면 Google에서 기기의 ID를 인증해야 합니다.</translation>
 <translation id="1300806585489372370">이 설정을 변경하려면 우선 <ph name="BEGIN_LINK" />식별자를 사용 설정<ph name="END_LINK" />하세요</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" />에서 다음 파일을 수정할 수 있습니다.</translation>
 <translation id="1302139669997477151">스크린샷이 차단됨</translation>
@@ -1031,6 +1029,7 @@
 <translation id="2139919072249842737">설정 버튼</translation>
 <translation id="214169863967063661">모양 설정 열기</translation>
 <translation id="2142328300403846845">다음으로 링크 열기</translation>
+<translation id="2142582065325732898">최근 사용한 Chrome 탭을 확인하려면 <ph name="LINK1_BEGIN" />Chrome 동기화<ph name="LINK1_END" />를 사용 설정하세요. <ph name="LINK2_BEGIN" />자세히 알아보기<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">전체화면에서 툴바 항상 표시</translation>
 <translation id="2143778271340628265">수동 프록시 설정</translation>
 <translation id="2144536955299248197">인증서 뷰어: <ph name="CERTIFICATE_NAME" /></translation>
@@ -1248,6 +1247,7 @@
 <translation id="2366260648632264559">이 언어로 시스템 텍스트 표시</translation>
 <translation id="2367972762794486313">앱 표시</translation>
 <translation id="2371076942591664043">완료되면 열기(&amp;D)</translation>
+<translation id="23721837607121582">모바일 프로필 다운로드, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">용지에 맞춤</translation>
 <translation id="2375406435414127095">휴대전화에 연결</translation>
 <translation id="2377588536920405462">기기에서 기본 위치 설정을 사용 중지하여 위치를 사용 중지할 수 있습니다. 또한 위치 설정에서 위치 파악에 Wi‑Fi, 모바일 네트워크, 센서의 사용을 중지할 수도 있습니다.</translation>
@@ -1445,7 +1445,6 @@
 <translation id="2606246518223360146">데이터 연결</translation>
 <translation id="2606454609872547359">아니요, ChromeVox 활성화 없이 계속</translation>
 <translation id="2607101320794533334">대상 공개 키 정보</translation>
-<translation id="2607968157341167679">앨범이 없습니다. <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />에서 앨범을 만드세요.</translation>
 <translation id="2609896558069604090">바로가기 만들기...</translation>
 <translation id="2609980095400624569">연결을 설정할 수 없음</translation>
 <translation id="2610157865375787051">절전 모드</translation>
@@ -1590,7 +1589,6 @@
 <translation id="2762441749940182211">카메라 차단됨</translation>
 <translation id="2764786626780673772">VPN 세부정보</translation>
 <translation id="2765217105034171413">작게</translation>
-<translation id="2765729904637714153">소중한 추억을 되새겨 보세요. 앨범을 추가하거나 수정하려면 <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />로 이동하세요.</translation>
 <translation id="2766006623206032690">붙여넣어 바로가기(&amp;S)</translation>
 <translation id="2766161002040448006">부모님에게 묻기</translation>
 <translation id="2767127727915954024">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 수정할 수 있게 됩니다.</translation>
@@ -2385,6 +2383,7 @@
 <translation id="3677911431265050325">모바일 버전으로 보기</translation>
 <translation id="3677959414150797585">앱, 웹페이지 등이 포함됩니다. 사용 데이터를 공유하기로 선택한 경우에만 추천 기능 개선을 위해 통계를 전송합니다.</translation>
 <translation id="3678156199662914018">확장 프로그램: <ph name="EXTENSION_NAME" /></translation>
+<translation id="3679608942832457508">앱 및 OS 설정은 이 계정으로 로그인한 Chromebook과 동기화됩니다. <ph name="LINK_BEGIN" />동기화 설정<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">텍스트 음성 변환 음성</translation>
 <translation id="3681311097828166361">의견을 보내주셔서 감사합니다. 현재 오프라인 상태이므로 보고서는 나중에 전송됩니다.</translation>
 <translation id="3682824389861648626">움직임 기준</translation>
@@ -2677,6 +2676,7 @@
 <translation id="3969092967100188979">켜짐, 로밍 사용</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">계산 중...</translation>
+<translation id="3971140002794351170">모바일 프로필 다운로드, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">보안 키의 지문</translation>
 <translation id="3973660817924297510">비밀번호 확인 중(<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">영역 서버에 연락을 취하지 못했습니다.</translation>
@@ -3658,6 +3658,7 @@
 <translation id="5185386675596372454">'<ph name="EXTENSION_NAME" />'의 최신 버전에 더 많은 권한이 필요하여 사용이 중지되었습니다.</translation>
 <translation id="5185500136143151980">인터넷 연결 없음</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" />(<ph name="DEVICE" />)</translation>
+<translation id="5190187232518914472">소중한 추억을 되새겨 보세요. 앨범을 추가하거나 수정하려면 <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />로 이동하세요.</translation>
 <translation id="5190926251776387065">포트 활성화</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" />에서 여러 파일을 다운로드하려고 합니다.</translation>
 <translation id="5192062846343383368">Family Link 앱을 열어 감독 설정을 확인합니다.</translation>
@@ -3906,6 +3907,7 @@
 <translation id="5481273127572794904">여러 파일 자동 다운로드가 허용되지 않음</translation>
 <translation id="5481941284378890518">주변 프린터 추가</translation>
 <translation id="5483785310822538350">파일 및 기기 액세스 취소</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" />에서 데이터를 백업하고 오늘 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다. <ph name="LINK_BEGIN" />세부정보 보기<ph name="LINK_END" />}other{<ph name="MANAGER" />에서 데이터를 백업하고 {NUM_DAYS}일 이내에 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다. <ph name="LINK_BEGIN" />세부정보 보기<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835">보안을 위해 <ph name="DEVICE_TYPE" />이(가) 잠겨 있습니다. 계속하려면 비밀번호를 수동으로 입력하세요.</translation>
 <translation id="5485102783864353244">앱 추가</translation>
 <translation id="5485754497697573575">모든 탭 복원</translation>
@@ -4667,7 +4669,6 @@
 <translation id="6331566915566907158">Chrome OS의 기능 및 성능 개선에 참여</translation>
 <translation id="6331818708794917058">사이트에서 MIDI 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="6333064448949140209">디버깅을 위해 파일이 Google로 전송됩니다.</translation>
-<translation id="6334444530352320327">앱과 OS 설정은 이 계정으로 로그인한 Chromebook과 동기화됩니다.<ph name="LINK_BEGIN" />동기화 설정<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Linux를 시작하려면 <ph name="MANAGER" />의 요건에 따라 데이터를 백업하고 이 Chromebook을 초기화해야 합니다.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" />(으)로 인해 ADB 디버깅이 사용 중지되었습니다. 24시간 후 <ph name="DEVICE_TYPE" /> 기기가 초기화됩니다. 유지하고 싶은 파일이 있으면 백업해 주세요.</translation>
 <translation id="6338981933082930623">모든 사이트에서 광고를 표시할 수 있음</translation>
@@ -5104,7 +5105,6 @@
 <translation id="6860097299815761905">프록시 설정...</translation>
 <translation id="686022878923628150">사이트에서 MIDI 기기에 연결하지 못하도록 차단</translation>
 <translation id="6860427144121307915">탭에서 열기</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" />에서 데이터를 백업하고 일주일 이내에 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다. <ph name="LINK_BEGIN" />세부정보 보기<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">비밀번호를 삭제하시겠습니까?</translation>
 <translation id="6865313869410766144">양식 데이터 자동 완성</translation>
 <translation id="6865598234501509159">페이지 언어가 <ph name="LANGUAGE" />가 아님</translation>
@@ -5187,7 +5187,6 @@
 <translation id="696103774840402661">이 <ph name="DEVICE_TYPE" /> 기기 내 모든 사용자의 파일 및 로컬 데이터가 영구적으로 삭제되었습니다.</translation>
 <translation id="6964390816189577014">영웅</translation>
 <translation id="6964760285928603117">그룹에서 삭제</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" />에서 데이터를 백업하고 오늘 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다. <ph name="LINK_BEGIN" />세부정보 보기<ph name="LINK_END" />}other{<ph name="MANAGER" />에서 데이터를 백업하고 {NUM_DAYS}일 이내에 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다. <ph name="LINK_BEGIN" />세부정보 보기<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">확인</translation>
 <translation id="6965648386495488594">포트</translation>
 <translation id="6965978654500191972">기기</translation>
@@ -5637,6 +5636,7 @@
 <translation id="7476454130948140105">배터린 잔량이 부족하여(<ph name="BATTERY_PERCENT" />%) 업데이트할 수 없음</translation>
 <translation id="7477793887173910789">음악, 동영상 등의 항목 제어하기</translation>
 <translation id="7478485216301680444">키오스크 애플리케이션을 설치할 수 없습니다.</translation>
+<translation id="7478623944308207463">앱 및 설정은 Google 계정으로 로그인한 모든 Chrome OS 기기와 동기화됩니다. 브라우저 동기화 옵션을 보려면 <ph name="LINK_BEGIN" />Chrome 설정<ph name="LINK_END" />으로 이동하세요.</translation>
 <translation id="7479221278376295180">저장용량 사용량 개요</translation>
 <translation id="7481312909269577407">앞으로</translation>
 <translation id="7481358317100446445">준비</translation>
@@ -6306,6 +6306,7 @@
 <translation id="8211551284753798479">잘못된 PUK입니다. 기회가 <ph name="RETRIES" />번 남았습니다.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{다운로드 진행 중}other{다운로드 진행 중}}</translation>
 <translation id="8213449224684199188">사진 모드 시작됨</translation>
+<translation id="8213866992824776555"><ph name="DOMAIN" />에서 보호되는 고품질 동영상 및 오디오를 재생할 수 있도록 기기를 확인하고자 합니다.</translation>
 <translation id="8214489666383623925">파일 열기...</translation>
 <translation id="8214962590150211830">이 사용자 삭제</translation>
 <translation id="8216351761227087153">보기</translation>
@@ -6319,7 +6320,6 @@
 <translation id="8227119283605456246">파일 첨부</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" />의 비밀번호를 저장하시겠습니까?</translation>
 <translation id="8234795456569844941">Google 엔지니어가 이 문제를 해결하도록 도와주세요. 프로필 오류 메시지가 표시되기 직전에 무슨 일이 있었는지 알려 주시기 바랍니다.</translation>
-<translation id="8235605354099176425">최근 Chrome 탭을 보려면 <ph name="LINK1_BEGIN" />Chrome 동기화<ph name="LINK1_END" />를 사용 설정하세요. <ph name="LINK2_BEGIN" />자세히 알아보기<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">이 탭을 대신 공유</translation>
 <translation id="8237647586961940482">진한 분홍색 및 빨간색</translation>
 <translation id="8239032431519548577">기업 등록 완료</translation>
@@ -6465,6 +6465,7 @@
 <translation id="8398877366907290961">무시하고 계속하기</translation>
 <translation id="8400146488506985033">사용자 관리</translation>
 <translation id="8401432541486058167">스마트 카드와 연결된 PIN을 입력하세요.</translation>
+<translation id="8403562727702715619">Google 드라이브의 최근 항목</translation>
 <translation id="8407199357649073301">로그 수준:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> 네트워크, 연결 중</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6695,6 +6696,7 @@
 <translation id="8676374126336081632">입력내용 지우기</translation>
 <translation id="8676770494376880701">저출력 충전기 연결됨</translation>
 <translation id="8677212948402625567">모두 접기...</translation>
+<translation id="8677859815076891398">앨범이 없습니다. <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />에서 앨범을 만드세요.</translation>
 <translation id="8678933587484842200">이 애플리케이션을 실행할 방법을 선택하세요.</translation>
 <translation id="8680251145628383637">로그인하면 모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정이 동기화되며 Google 서비스에 자동으로 로그인됩니다.</translation>
 <translation id="8681614230122836773">Chrome이 컴퓨터에서 유해한 소프트웨어를 발견했습니다.</translation>
@@ -6852,6 +6854,7 @@
 <translation id="8831140208248705279"><ph name="DEVICE_TYPE" /> 기기를 Android 휴대전화와 함께 사용하면 더 좋습니다. 두 기기를 연결한 다음 컴퓨터에서 문자 메시지를 보내고, 인터넷 연결을 공유하고, 휴대전화로 <ph name="DEVICE_TYPE" /> 잠금을 해제하세요.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">네트워크 구성은 <ph name="USER_EMAIL" />님이 관리합니다.</translation>
 <translation id="8835786707922974220">언제든지 저장된 비밀번호에 액세스할 수 있도록 하세요</translation>
+<translation id="8836360711089151515"><ph name="MANAGER" />에서 데이터를 백업하고 1주일 이내에 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다. <ph name="LINK_BEGIN" />세부정보 보기<ph name="LINK_END" /></translation>
 <translation id="8838601485495657486">불투명</translation>
 <translation id="8838770651474809439">햄버거</translation>
 <translation id="883911313571074303">이미지에 주석 달기</translation>
@@ -6905,6 +6908,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" />에서 다음 파일과 폴더를 수정할 수 있습니다.</translation>
 <translation id="8890170499370378450">모바일 데이터 요금이 발생할 수 있음</translation>
 <translation id="8890516388109605451">소스</translation>
+<translation id="8890529496706615641">프로필 이름을 바꿀 수 없습니다. 다시 시도하거나 이동통신사에 기술 지원을 요청하세요.</translation>
 <translation id="8892168913673237979">설정 완료</translation>
 <translation id="8893801527741465188">제거 완료</translation>
 <translation id="8893928184421379330">죄송합니다. 기기(<ph name="DEVICE_LABEL" />)를 인식하지 못했습니다.</translation>
@@ -7137,6 +7141,7 @@
 <translation id="9148963623915467028">이 사이트는 위치에 액세스할 수 있습니다.</translation>
 <translation id="9149866541089851383">수정...</translation>
 <translation id="9150045010208374699">카메라 사용</translation>
+<translation id="9150079578948279438">프로필을 삭제할 수 없습니다. 다시 시도하거나 이동통신사에 기술 지원을 요청하세요.</translation>
 <translation id="9153934054460603056">ID와 비밀번호 저장</translation>
 <translation id="9154194610265714752">업데이트됨</translation>
 <translation id="91568222606626347">바로가기 만들기...</translation>

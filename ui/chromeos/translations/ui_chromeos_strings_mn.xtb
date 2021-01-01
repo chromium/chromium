@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Норвег</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1435838927755162558">Фолдерыг Parallels Desktop-тай хуваалцах</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> руу зөөсөн.</translation>
 <translation id="1467432559032391204">Зүүн</translation>
 <translation id="1471718551822868769">Словак</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />"-г байршуулаагүй. Tаны Google Drive-д хангалттай багтаамж алга.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Та <ph name="NUMBER_OF_ITEMS" /> зүйлийг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" /> ". <ph name="ERROR_MESSAGE" /> хавтас үүсгэх боломжгүй байна</translation>
 <translation id="2251368349685848079">Хогийн савнаас сэргээх</translation>
-<translation id="2275059641601412272">Зөөсөн.</translation>
 <translation id="2288278176040912387">Бичлэг тоглуулагч</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файлыг нээж байна.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> файлыг нээж байна.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Эстон</translation>
 <translation id="3466147780910026086">Таны төхөөрөмжийг уншиж байна...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> зургийг <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> дээр хадгалсан байна</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> руу хуулсан.</translation>
 <translation id="3475447146579922140">Google-ийн хүснэгт</translation>
 <translation id="3486821258960016770">Монгол</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> алдаа.</translation>
@@ -408,7 +405,6 @@
     Таны төхөөрөмжид юу ч тохиолдсон санаа зовох хэрэггүй. Учир нь таны файлыг Google Драйвт аюулгүй хадгалсан байна.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Бусадтай бүх файлаа<ph name="MARKUP_8" />
     нэг газар үүсгэж, хуваалцаж, ажиллаарай.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Хуулсан.</translation>
 <translation id="5275973617553375938">Google Drive-аас файлуудыг сэргээлээ</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5318819489018851358">Linux-р хуваалцах</translation>
@@ -705,7 +701,6 @@
 <translation id="8336153091935557858">Өчигдөр <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Ийм нэртэй файл болон файлын хадгалалтын сан байна.</translation>
 <translation id="8372852072747894550">Грек</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" /> руу</translation>
 <translation id="8395901698320285466">Хэмжээ</translation>
 <translation id="8437209419043462667">АНУ</translation>
 <translation id="8456681095658380701">Хүчин төгөлдөр бус нэр</translation>

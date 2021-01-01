@@ -234,7 +234,6 @@
 <translation id="1243436884219965846">مراجعة كلمات المرور</translation>
 <translation id="1244265436519979884">‏استعادة Linux قيد التقدم حاليًا</translation>
 <translation id="1244303850296295656">خطأ في الإضافة</translation>
-<translation id="1246158006305844142">‏ستتم مزامنة التطبيقات والإعدادات على جميع أجهزة "نظام التشغيل Chrome" التي سجّلت الدخول إليها باستخدام حسابك على Google. للوصول إلى خيارات مزامنة المتصفّح، انتقِل إلى <ph name="LINK_BEGIN" />إعدادات Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">هل تريد إزالة اقتراح من الحافظة؟</translation>
 <translation id="1251366534849411931">قوس متعرج مفتوح بشكلٍ متوقع: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">سيؤدي هذا الإجراء إلى محو <ph name="TOTAL_USAGE" /> من البيانات المُخزّنة من خلال المواقع الإلكترونية والتطبيقات المثبّتة.</translation>
@@ -276,7 +275,6 @@
 <translation id="1294807885394205587">قد تستغرق هذه العملية بضع دقائق. جار تشغيل مدير الحاويات.</translation>
 <translation id="1296911687402551044">تثبيت علامة التبويب المحددة</translation>
 <translation id="1297175357211070620">الوجهة</translation>
-<translation id="1300415640239881824">‏يرغب <ph name="DOMAIN" /> في أن تتحقَّق Google من هوية جهازك لتحديد مدى أهليته للتشغيل المُحسَّن للوسائط المحمية.</translation>
 <translation id="1300806585489372370">لتغيير هذا الإعداد، عليك أولاً <ph name="BEGIN_LINK" />تشغيل المُعرّفات<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080">بإمكان <ph name="ORIGIN" /> تعديل الملفات التالية:</translation>
 <translation id="1302139669997477151">لقطة الشاشة محظورة</translation>
@@ -1035,6 +1033,7 @@
 <translation id="2139919072249842737">زر الإعداد</translation>
 <translation id="214169863967063661">فتح إعدادات المظهر</translation>
 <translation id="2142328300403846845">فتح الرابط كـ</translation>
+<translation id="2142582065325732898">‏عليك تفعيل ميزة <ph name="LINK1_BEGIN" />مزامنة Chrome<ph name="LINK1_END" /> لعرض علامات التبويب الأخيرة في Chrome. <ph name="LINK2_BEGIN" />مزيد من المعلومات<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">عرض شريط الأدوات في وضع ملء الشاشة دائمًا</translation>
 <translation id="2143778271340628265">إعداد الخادم الوكيل يدويًّا</translation>
 <translation id="2144536955299248197">عارض الشهادة: <ph name="CERTIFICATE_NAME" /></translation>
@@ -1450,7 +1449,6 @@
 <translation id="2606246518223360146">ربط البيانات</translation>
 <translation id="2606454609872547359">‏لا، المتابعة بدون ChromeVox</translation>
 <translation id="2607101320794533334">معلومات المفتاح العام لصاحب الشهادة</translation>
-<translation id="2607968157341167679">‏لا تتوفّر أيّ ألبومات. أنشِئ ألبومًا في<ph name="LINK_BEGIN" />صور Google<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">إنشاء اختصارات...</translation>
 <translation id="2609980095400624569">تعذَّر إنشاء اتصال</translation>
 <translation id="2610157865375787051">السكون</translation>
@@ -1596,7 +1594,6 @@
 <translation id="2762441749940182211">تم حظر استخدام الكاميرا</translation>
 <translation id="2764786626780673772">‏تفاصيل الشبكة الافتراضية الخاصة (VPN)</translation>
 <translation id="2765217105034171413">صغير</translation>
-<translation id="2765729904637714153">‏استرجِع ذكرياتك المفضّلة. لإضافة أيّ ألبومات أو تعديلها، انتقِل إلى <ph name="LINK_BEGIN" />صور Google<ph name="LINK_END" />.</translation>
 <translation id="2766006623206032690">‏&amp;لصق عنوان URL والدخول إليه</translation>
 <translation id="2766161002040448006">طلب الإذن من أحد الوالدَين</translation>
 <translation id="2767127727915954024">سيتمكّن <ph name="ORIGIN" /> من تعديل <ph name="FILENAME" /> إلى أن يتم إغلاق جميع علامات تبويب هذا الموقع الإلكتروني.</translation>
@@ -2392,6 +2389,7 @@
 <translation id="3677911431265050325">طلب موقع إلكتروني متوافق مع الأجهزة الجوَالة</translation>
 <translation id="3677959414150797585">يتضمن المحتوى المُقترح التطبيقات وصفحات الويب والمزيد. لا يتم إرسال إحصاءات لتحسين المحتوى المُقترح إلا إذا اختَرت مشاركة بيانات الاستخدام.</translation>
 <translation id="3678156199662914018">الإضافة: <ph name="EXTENSION_NAME" /></translation>
+<translation id="3679608942832457508">‏ستتم مزامنة التطبيقات وإعدادات نظام التشغيل على أجهزة Chromebook التي سجّلت الدخول إليها باستخدام هذا الحساب. <ph name="LINK_BEGIN" />إعدادات المزامنة<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">صوت "تحويل النص إلى كلام"</translation>
 <translation id="3681311097828166361">شكرًا على تعليقاتك. أنت غير متصل الآن، وسيتم إرسال تقريرك لاحقًا.</translation>
 <translation id="3682824389861648626">الحد الأدنى للحركات</translation>
@@ -3665,6 +3663,7 @@
 <translation id="5185386675596372454">تم إيقاف أحدث إصدار من "<ph name="EXTENSION_NAME" />" لأنه يتطلب المزيد من الأذونات.</translation>
 <translation id="5185500136143151980">لا يتوفّر اتصال بالإنترنت</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190187232518914472">‏استرجِع ذكرياتك المفضّلة. ولإضافة أي ألبومات أو تعديلها، انتقِل إلى <ph name="LINK_BEGIN" />صور Google<ph name="LINK_END" />.</translation>
 <translation id="5190926251776387065">تفعيل المنفذ</translation>
 <translation id="51918995459521422">يريد <ph name="ORIGIN" /> تنزيل ملفات متعددة.</translation>
 <translation id="5192062846343383368">‏فتح تطبيق Family Link للاطّلاع على إعدادات الإشراف</translation>
@@ -3914,6 +3913,7 @@
 <translation id="5481273127572794904">المواقع الإلكترونية التي لا يُسمح لها بتنزيل الملفات المتعدّدة تلقائيًا</translation>
 <translation id="5481941284378890518">إضافة طابعات مجاورة</translation>
 <translation id="5483785310822538350">إبطال الوصول للملف والجهاز</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> اليوم. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}zero{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}two{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال يومَين ({NUM_DAYS}). <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}few{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} أيام. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}many{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يومًا. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}other{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835">يتم قفل جهاز <ph name="DEVICE_TYPE" /> للأمان. أدخل كلمة مرورك يدويًا للمتابعة.</translation>
 <translation id="5485102783864353244">إضافة تطبيق</translation>
 <translation id="5485754497697573575">استعادة جميع علامات التبويب</translation>
@@ -4676,7 +4676,6 @@
 <translation id="6331566915566907158">‏المساعدة على تحسين ميزات نظام التشغيل Chrome وأدائه</translation>
 <translation id="6331818708794917058">‏السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة MIDI</translation>
 <translation id="6333064448949140209">‏سيتم إرسال الملف إلى Google لتصحيح الأخطاء</translation>
-<translation id="6334444530352320327">‏ستتم مزامنة التطبيقات وإعدادات نظام التشغيل Chrome على أجهزة Chromebook التي سجّلت الدخول إليها باستخدام هذا الحساب. <ph name="LINK_BEGIN" />إعدادات المزامنة<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">‏لبدء تشغيل نظام التشغيل Linux، يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإعادة ضبط جهاز Chromebook هذا على الإعدادات الأصلية.</translation>
 <translation id="6336038146639916978">‏أوقَف <ph name="MANAGER" /> إعداد "تصحيح الأخطاء عبر ADB". وسيؤدي هذا إلى إعادة ضبط الجهاز <ph name="DEVICE_TYPE" /> خلال 24 ساعة. يُرجى الاحتفاظ بنسخة احتياطية من كل الملفات التي تريدها.</translation>
 <translation id="6338981933082930623">السماح لجميع المواقع الإلكترونية بعرض أيّ إعلانات لك</translation>
@@ -5113,7 +5112,6 @@
 <translation id="6860097299815761905">إعدادات الخادم الوكيل...</translation>
 <translation id="686022878923628150">‏منع المواقع الإلكترونية من الاتصال بأجهزة MIDI</translation>
 <translation id="6860427144121307915">فتح في علامة تبويب</translation>
-<translation id="6862729829592030773">يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا خلال أسبوع واحد. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">هل تريد حذف كلمة المرور؟</translation>
 <translation id="6865313869410766144">الملء التلقائي للبيانات</translation>
 <translation id="6865598234501509159">الصفحة ليست باللغة <ph name="LANGUAGE" />.</translation>
@@ -5196,7 +5194,6 @@
 <translation id="696103774840402661">تم حذف جميع الملفات والبيانات المحلّية لكلّ المستخدمين على الجهاز <ph name="DEVICE_TYPE" /> نهائيًا.</translation>
 <translation id="6964390816189577014">بطل</translation>
 <translation id="6964760285928603117">الإزالة من مجموعة</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> اليوم. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}zero{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا خلال {NUM_DAYS} يوم. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}two{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا خلال يومَين ({NUM_DAYS}). <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}few{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا خلال {NUM_DAYS} أيام. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}many{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا خلال {NUM_DAYS} يومًا. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}other{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا خلال {NUM_DAYS} يوم. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6965648386495488594">المنفذ</translation>
 <translation id="6965978654500191972">جهاز</translation>
@@ -5646,6 +5643,7 @@
 <translation id="7476454130948140105">مستوى البطارية ضعيف جدًا لإجراء التحديث (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">التحكم في الموسيقى والفيديوهات وغير ذلك</translation>
 <translation id="7478485216301680444">‏تعذر تثبيت تطبيق Kiosk.</translation>
+<translation id="7478623944308207463">‏ستتم مزامنة التطبيقات والإعدادات على جميع أجهزة "نظام التشغيل Chrome" التي سجّلت الدخول إليها باستخدام حسابك على Google. وللوصول إلى خيارات مزامنة المتصفّح، انتقِل إلى <ph name="LINK_BEGIN" />إعدادات Chrome<ph name="LINK_END" />.</translation>
 <translation id="7479221278376295180">نظرة عامة على استخدام مساحة التخزين</translation>
 <translation id="7481312909269577407">إلى الأمام</translation>
 <translation id="7481358317100446445">جاهزة</translation>
@@ -6315,6 +6313,7 @@
 <translation id="8211551284753798479">‏رمز PUK غير صحيح. يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{جارٍ تنزيل عنصر واحد}zero{جارٍ تنزيل عدّة عناصر}two{جارِ تنزيل عنصرين}few{جارٍ تنزيل عدّة عناصر}many{جارٍ تنزيل عدّة عناصر}other{جارٍ تنزيل عدّة عناصر}}</translation>
 <translation id="8213449224684199188">تم الدخول إلى وضع الصور</translation>
+<translation id="8213866992824776555">يريد <ph name="DOMAIN" /> تحديد هوية جهازك ليتمكّن من تشغيل الفيديوهات والملفات الصوتية المحمية بأعلى جودة ممكنة.</translation>
 <translation id="8214489666383623925">فتح ملف...</translation>
 <translation id="8214962590150211830">إزالة هذا الشخص</translation>
 <translation id="8216351761227087153">مشاهدة</translation>
@@ -6328,7 +6327,6 @@
 <translation id="8227119283605456246">إرفاق ملف</translation>
 <translation id="8230134520748321204">هل تريد حفظ كلمة المرور لـ <ph name="ORIGIN" />؟</translation>
 <translation id="8234795456569844941">يُرجى مساعدة مهندسينا في حل هذه المشكلة. أخبرنا بما حدث مباشرة قبل ظهور رسالة خطأ الملف الشخصي:</translation>
-<translation id="8235605354099176425">‏يمكنك تفعيل ميزة <ph name="LINK1_BEGIN" />مزامنة Chrome<ph name="LINK1_END" /> لعرض علامات تبويب Chrome الأخيرة.<ph name="LINK2_BEGIN" />مزيد من المعلومات<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">مشاركة علامة التبويب هذه بدلاً من ذلك</translation>
 <translation id="8237647586961940482">زهري داكن وأحمر</translation>
 <translation id="8239032431519548577">اكتمال التسجيل في المؤسسة</translation>
@@ -6705,6 +6703,7 @@
 <translation id="8676374126336081632">محو الإرسال</translation>
 <translation id="8676770494376880701">تمّ توصيل شاحن منخفض الطاقة</translation>
 <translation id="8677212948402625567">تصغير الكل...</translation>
+<translation id="8677859815076891398">‏لا تتوفّر أيّ ألبومات. يمكنك إنشاء ألبوم في <ph name="LINK_BEGIN" />صور Google<ph name="LINK_END" />.</translation>
 <translation id="8678933587484842200">كيف تريد بدء عمل هذا التطبيق؟</translation>
 <translation id="8680251145628383637">‏سجّل الدخول للحصول على الإشارات المرجعية، والسجل، وكلمات المرور، والإعدادات الأخرى على جميع أجهزتك. سيتم أيضًا تسجيل دخولك تلقائيًا إلى خدمات Google.</translation>
 <translation id="8681614230122836773">‏عثر متصفّح Chrome على برنامج ضارّ على جهاز الكمبيوتر.</translation>
@@ -6866,6 +6865,7 @@
 <translation id="8831140208248705279">‏يعمل جهاز <ph name="DEVICE_TYPE" /> وهاتف Android بشكلٍ أفضل معًا. ويمكنك ربطهما حتى تتمكَّن من إرسال رسائل نصية من جهاز الكمبيوتر ومشاركة اتصالك بالإنترنت وفتح قفل جهاز Chromebook باستخدام هاتفك.<ph name="DEVICE_TYPE" /><ph name="FOOTNOTE_POINTER" /><ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">يتم التحكم في إعداد الشبكة بواسطة <ph name="USER_EMAIL" />.</translation>
 <translation id="8835786707922974220">ضمان إمكانية الوصول إلى كلمات المرور المحفوظة دائمًا</translation>
+<translation id="8836360711089151515">يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال أسبوع. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" /></translation>
 <translation id="8838601485495657486">معتم</translation>
 <translation id="8838770651474809439">هامبورجر</translation>
 <translation id="883911313571074303">إضافة تعليق توضيحي على الصورة</translation>
@@ -7152,6 +7152,7 @@
 <translation id="9148963623915467028">يمكن لهذا الموقع الإلكتروني الوصول إلى موقعك الجغرافي.</translation>
 <translation id="9149866541089851383">تعديل...</translation>
 <translation id="9150045010208374699">استخدام الكاميرا</translation>
+<translation id="9150079578948279438">تعذَّرت إزالة الملف الشخصي. يُرجى إعادة المحاولة أو التواصل مع فريق الدعم الفني لدى مشغّل شبكة الجوّال.</translation>
 <translation id="9153934054460603056">حفظ الهوية وكلمة المرور</translation>
 <translation id="9154194610265714752">تم التحديث</translation>
 <translation id="91568222606626347">جارٍ إنشاء اختصار...</translation>

@@ -166,7 +166,6 @@
 <translation id="6403826409255603130">Chromium on veebibrauser, mis avab veebilehti ja rakendusi välgukiirusel. See on kiire, stabiilne ja hõlpsasti kasutatav. Sirvige veebi turvalisemalt tänu Chromiumi sisseehitatud pahavara- ja andmepüügikaitsele.</translation>
 <translation id="6434250628340475518">Chromium OS-i süsteem</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium taaskäivitub 1 sekundi pärast}other{Chromium taaskäivitub # sekundi pärast}}</translation>
-<translation id="6464340581899189425">Kui teil on mitu Google'i kontot, saate need lisada oma seadmesse <ph name="DEVICE_TYPE" />. Teie kontod on saadaval Chromiumi brauseris, Play poes ning teenustes, nagu Gmail, Drive ja YouTube. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Lisaks juhib see seda, mis leht kuvatakse Chromiumi käivitamisel.</translation>
 <translation id="6510925080656968729">Desinstalli Chromium</translation>
 <translation id="6570579332384693436">Õigekirjavigade parandamiseks saadab Chromium teie tekstiväljadel sisestatud teksti Google'ile</translation>
@@ -262,6 +261,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="9019929317751753759">Chromiumi turvalisemaks muutmiseks keelasime järgmise laienduse, mida ei leidu veebipoes <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ja mis võidi lisada teie teadmata.</translation>
 <translation id="9089354809943900324">Chromium on aegunud</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium käivitatakse uuesti tunni aja pärast}other{Chromium käivitatakse uuesti # tunni pärast}}</translation>
+<translation id="9107750757953039239">Kui teil on mitu Google'i kontot, saate need lisada oma seadmesse <ph name="DEVICE_TYPE" />. Teie kontod on saadaval Chromiumi brauseris, Play poes ning teenustes, nagu Gmail, Drive ja YouTube. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Ava link Chromiumi uuel &amp;vahekaardil</translation>
 <translation id="911206726377975832">Kas kustutada ka teie sirvimisandmed?</translation>
 <translation id="9158494823179993217">Teie süsteemiadministraator on konfigureerinud Chromiumi avama alternatiivset brauserit, et saada juurdepääs lehele <ph name="TARGET_URL_HOSTNAME" />.</translation>

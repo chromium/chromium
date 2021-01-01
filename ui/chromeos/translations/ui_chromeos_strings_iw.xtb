@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">נורווגית</translation>
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1435838927755162558">‏שיתוף תיקייה באמצעות Parallels Desktop</translation>
-<translation id="1439494416798956626">הועבר אל <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">שמאלה</translation>
 <translation id="1471718551822868769">סלובקית</translation>
 <translation id="1474339897586437869">‏הקובץ "<ph name="FILENAME" />" לא הועלה. אין לך מספיק שטח פנוי ב-Google Drive.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> פריטים יימחקו. להמשיך?</translation>
 <translation id="2230062665678605299">לא ניתן ליצור את התיקייה "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">שחזור מהאשפה</translation>
-<translation id="2275059641601412272">ההעברה הסתיימה.</translation>
 <translation id="2288278176040912387">פטיפון</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> קבצים נפתחים.</translation>
 <translation id="2303301624314357662">הקובץ <ph name="FILE_NAME" /> נפתח.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">אסטונית</translation>
 <translation id="3466147780910026086">מתבצעת סריקה של מכשיר המדיה...</translation>
 <translation id="3468522857997926824">‏<ph name="FILE_COUNT" /> תמונות גובו ב-<ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">הועתק אל <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">‏גיליון אלקטרוני של Google</translation>
 <translation id="3486821258960016770">מונגולית</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> שגיאות.</translation>
@@ -411,7 +408,6 @@
 ב-Google Drive‏.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />שתף, יצירה ועבודה במשותף<ph name="MARKUP_8" />
     על קבצים עם אנשים נוספים - הכול במקום אחד.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">ההעתקה הסתיימה.</translation>
 <translation id="5275973617553375938">‏קבצים ששוחזרו מ-Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">שמירה</translation>
@@ -709,7 +705,6 @@
 <translation id="8336153091935557858">אתמול <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">קובץ או ספרייה עם אותו שם כבר קיימים.</translation>
 <translation id="8372852072747894550">יוונית</translation>
-<translation id="8382450452152102026">בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">מידות</translation>
 <translation id="8437209419043462667">ארה"ב</translation>
 <translation id="8456681095658380701">שם לא חוקי</translation>

@@ -173,7 +173,6 @@
 <translation id="573759479754913123">Om Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Kunne ikke starte Chrome. Prøv på nytt.</translation>
-<translation id="5851757216820085940">Hvis du har flere Google-kontoer, kan du legge dem til på <ph name="DEVICE_TYPE" />. Kontoene dine blir tilgjengelige i Chrome-nettleseren, Play-butikken og tjenester som Gmail, Disk og YouTube.<ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome prøver å redigere passord.</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – nettverkspålogging</translation>
@@ -281,5 +280,6 @@
 <translation id="911206726377975832">Vil du slette all nettleserdata også?</translation>
 <translation id="9138603949443464873">For å bruke endringene dine må du starte Chrome på nytt</translation>
 <translation id="919706545465235479">Oppdater Chrome for å starte synkroniseringen</translation>
+<translation id="94743460404517794">Hvis du har flere Google-kontoer, kan du legge dem til på <ph name="DEVICE_TYPE" />. Kontoene dine blir tilgjengelige i Chrome-nettleseren, Play-butikken og tjenester som Gmail, Disk og YouTube. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome er standardnettleseren din</translation>
 </translationbundle>

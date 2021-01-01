@@ -5394,6 +5394,9 @@
 <translation id="8834641112681661892">通过设置此政策，您可以指定收到政策失效通知与从设备管理服务提取新政策之间的最大延迟（以毫秒为单位）。有效值范围为 1000（1 秒）至 300000（5 分钟）。此范围之外的值均会被相应地向上/向下舍入为邻近的限值。
 
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 将会使用默认值（10 秒）。</translation>
+<translation id="8835322836315560274">通过设置此政策，您可以控制应使用哪个命令在备用浏览器中打开网址。此政策可以设为下列任一值：<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />、<ph name="FIREFOX_VALUE_PLACEHOLDER" />、<ph name="SAFARI_VALUE_PLACEHOLDER" />、<ph name="OPERA_VALUE_PLACEHOLDER" />、<ph name="EDGE_VALUE_PLACEHOLDER" /> 或文件路径。如果此政策设为文件路径，系统会将相应文件用作可执行文件。<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> 仅适用于 <ph name="MS_WIN_NAME" />。<ph name="SAFARI_VALUE_PLACEHOLDER" /> 和 <ph name="EDGE_VALUE_PLACEHOLDER" /> 仅适用于 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" />。
+
+      如果您未设置此政策，系统会使用相应的平台专用默认浏览器：在 <ph name="MS_WIN_NAME" /> 上使用 <ph name="IE_PRODUCT_NAME" />，在 <ph name="MAC_OS_NAME" /> 上使用 <ph name="SAFARI_PRODUCT_NAME" />。在 <ph name="LINUX_OS_NAME" /> 上，无法启动备用浏览器。</translation>
 <translation id="885147810817138322">向用户显示推荐的媒体内容</translation>
 <translation id="8852579753940989645">启用“渲染程序代码完整性”</translation>
 <translation id="8854571659927427063">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入书签。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入任何书签。

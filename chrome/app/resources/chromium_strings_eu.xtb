@@ -168,7 +168,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="6403826409255603130">Web-orriak eta aplikazioak tximista bezain azkar abiarazten dituen web-arakatzailea da Chromium. Bizkorra, egonkorra eta erabiltzeko erraza da. Chromium-ek malwarearen eta phishingaren aurka dituen babes inkorporatuei esker, seguruago ibiliko zara Interneten.</translation>
 <translation id="6434250628340475518">Chromium OS sistema</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{1 segundo barru berrabiaraziko da Chromium}other{# segundo barru berrabiaraziko da Chromium}}</translation>
-<translation id="6464340581899189425">Google-ko kontu bat baino gehiago badituzu, <ph name="DEVICE_TYPE" /> gailuan gehi ditzakezu. Horrela, erabilgarri izango dituzu Chromium arakatzailean eta Play Store-n, baita beste zerbitzuetan ere: Gmail, Drive, YouTube eta abar.<ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Chromium abiarazten duzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="6510925080656968729">Desinstalatu Chromium</translation>
 <translation id="6570579332384693436">Ortografia-akatsak konpondu ahal izateko, testu-eremuetan idazten duzun testua Google-ri bidaltzen dio Chromium-ek</translation>

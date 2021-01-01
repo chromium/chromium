@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Norvégien</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1435838927755162558">Partager le dossier avec Parallels Desktop</translation>
-<translation id="1439494416798956626">Déplacé vers <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">À gauche</translation>
 <translation id="1471718551822868769">Slovaque</translation>
 <translation id="1474339897586437869">Le fichier "<ph name="FILENAME" />" n'a pas été importé, car l'espace disponible sur Google Drive est insuffisant.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Voulez-vous vraiment supprimer <ph name="NUMBER_OF_ITEMS" /> éléments ?</translation>
 <translation id="2230062665678605299">Impossible de créer le dossier "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Restaurer à partir de la corbeille</translation>
-<translation id="2275059641601412272">Déplacé.</translation>
 <translation id="2288278176040912387">Tourne-disque</translation>
 <translation id="2291538123825441971">Ouverture de <ph name="NUMBER_OF_FILES" /> fichiers.</translation>
 <translation id="2303301624314357662">Ouverture du fichier <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Estonien</translation>
 <translation id="3466147780910026086">Analyse du périphérique multimédia en cours</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> photos ont été sauvegardées sur <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />.</translation>
-<translation id="3473378059788601120">Copié dans <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Feuille de calcul Google</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erreurs</translation>
@@ -410,7 +407,6 @@
     Peu importe ce qui se passe sur votre appareil, vos fichiers sont stockés en toute sécurité dans Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Travaillez en groupe, et créez et partagez<ph name="MARKUP_8" />
     des fichiers depuis une seule et même interface.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Copié.</translation>
 <translation id="5275973617553375938">Fichiers récupérés sur Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Enregistrer</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">Hier à <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Un fichier ou un répertoire du même nom existe déjà.</translation>
 <translation id="8372852072747894550">Grec</translation>
-<translation id="8382450452152102026">Destination : <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Dimensions</translation>
 <translation id="8437209419043462667">Américain</translation>
 <translation id="8456681095658380701">Ce nom n'est pas valide.</translation>

@@ -166,7 +166,6 @@
 <translation id="6403826409255603130">Chromium 是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Chromium 内置的防护恶意软件和网上诱骗的功能可让您更安全地浏览网页。</translation>
 <translation id="6434250628340475518">Chromium 操作系统</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 将在 1 秒后重新启动}other{Chromium 将在 # 秒后重新启动}}</translation>
-<translation id="6464340581899189425">若有多个 Google 帐号，您可以将它们添加到自己的 <ph name="DEVICE_TYPE" />。这样您就能在 Chromium 浏览器和 Play 商店以及 Gmail、Google 云端硬盘和 YouTube 等服务中使用这些帐号了。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">它还能够控制Chromium启动后显示的页面。</translation>
 <translation id="6510925080656968729">卸载 Chromium</translation>
 <translation id="6570579332384693436">为了修正拼写错误，Chromium 会将您在文本字段中输入的文字发送给 Google</translation>

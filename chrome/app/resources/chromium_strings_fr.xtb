@@ -167,7 +167,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="6403826409255603130">Chromium est un navigateur Web qui exécute les pages Web et les applications à une vitesse fulgurante. Il est rapide, stable et simple d'utilisation. Naviguez sur le Web en toute sécurité tout en bénéficiant de la protection offerte par Chromium contre les logiciels malveillants et de phishing.</translation>
 <translation id="6434250628340475518">Système Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium va redémarrer dans 1 seconde}one{Chromium va redémarrer dans # seconde}other{Chromium va redémarrer dans # secondes}}</translation>
-<translation id="6464340581899189425">Si vous possédez plusieurs comptes Google, vous pouvez les ajouter à votre <ph name="DEVICE_TYPE" />. Ils seront accessibles depuis le navigateur Chromium et le Play Store, et vous pourrez les utiliser avec des services comme Gmail, Drive et YouTube.<ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Elle contrôle également la page qui s'affiche au démarrage de Chromium.</translation>
 <translation id="6510925080656968729">Désinstaller Chromium</translation>
 <translation id="6570579332384693436">Pour corriger les fautes d'orthographe, Chromium envoie à Google le texte que vous saisissez dans les champs</translation>
@@ -262,6 +261,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="9019929317751753759">Afin de rendre Chromium plus sûr, nous avons désactivé l'extension suivante qui n'est pas répertoriée sur le <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui a pu être ajoutée à votre insu.</translation>
 <translation id="9089354809943900324">Version de Chromium obsolète</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium va être relancé dans une heure}one{Chromium va être relancé dans # heure}other{Chromium va être relancé dans # heures}}</translation>
+<translation id="9107750757953039239">Si vous possédez plusieurs comptes Google, vous pouvez les ajouter à votre <ph name="DEVICE_TYPE" />. Ils seront accessibles depuis le navigateur Chromium et le Play Store, et vous pourrez les utiliser avec des services comme Gmail, Drive et YouTube. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Ouvrir le lien dans un nouvel ongle&amp;t Chromium</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation ?</translation>
 <translation id="9158494823179993217">Votre administrateur système a configuré Chromium pour que <ph name="TARGET_URL_HOSTNAME" /> s'ouvre dans un autre navigateur.</translation>

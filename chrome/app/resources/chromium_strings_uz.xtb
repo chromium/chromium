@@ -164,7 +164,6 @@
 <translation id="6403826409255603130">Chromium - veb sahifalarni va ilovalarni bir necha soniyada ochadigan brauzer. U tez, barqaror va undan foydalanish oson. Chromium brauzerining firibgarlik va zararli dasturlardan saqlovchi ichki o‘rnatilgan himoya vositasi Internetdagi faoliyatni maksimal havfsizlik bilan ta’minlaydi.</translation>
 <translation id="6434250628340475518">Chromium OS tizimi</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 1 soniyada qayta ishga tushiriladi}other{Chromium # soniyada qayta ishga tushiriladi}}</translation>
-<translation id="6464340581899189425">Agar bir necha Google hisoblaringiz boʻlsa, ularni <ph name="DEVICE_TYPE" /> qurilmangizga kiritishingiz mumkin. Hisoblaringizdan Chromium brauzerida, Play Marketda va Gmail, Drive va YouTube kabi xizmatlarda foydalana olasiz.<ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Bundan tashqari, kengaytma Chromium bosh sahifasini o‘zgarib qo‘ydi.</translation>
 <translation id="6510925080656968729">Chromium’ni o‘chirib tashlash</translation>
 <translation id="6570579332384693436">Imloni tekshirish uchun Chromium siz kiritgan matnni Google serverlariga yuboradi</translation>
@@ -260,6 +259,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="9019929317751753759">Ma’lumotlaringiz xavfsizligini ta’minlash maqsadida ayrim kengaytmalarni o‘chirib qo‘ydik, chunki <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />da ular haqida hech qanday ma’lumot yo‘q (ya’ni, ular sizning ruxsatingizsiz o‘rnatilgan bo‘lishi mumkin).</translation>
 <translation id="9089354809943900324">Chromium versiyasi eskirdi</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium bir soatda qayta ishga tushadi}other{Chromium # soatda qayta ishga tushadi}}</translation>
+<translation id="9107750757953039239">Agar bir necha Google hisoblaringiz boʻlsa, ularni <ph name="DEVICE_TYPE" /> qurilmangizga kiritishingiz mumkin. Hisoblaringizdan Chromium brauzerida, Play Marketda va Gmail, Drive va YouTube kabi xizmatlarda foydalana olasiz. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Havolani yangi Chromium varaqda ochish</translation>
 <translation id="911206726377975832">Brauzer faoliyati haqidagi ma’lumotlar ham tozalansinmi?</translation>
 <translation id="9158494823179993217">Tizim administratori <ph name="TARGET_URL_HOSTNAME" /> havolasini muqobil brauzerda ochiladigan qilib sozlagan.</translation>

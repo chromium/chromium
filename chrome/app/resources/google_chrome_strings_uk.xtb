@@ -173,7 +173,6 @@
 <translation id="573759479754913123">Про ОС Chrome</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Не вдалося запустити Chrome. Повторіть спробу.</translation>
-<translation id="5851757216820085940">Якщо у вас кілька облікових записів Google, їх можна додати на <ph name="DEVICE_TYPE" />. Облікові записи будуть доступні у веб-переглядачі Chrome, Google Play і таких сервісах, як Gmail, Диск та YouTube. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome намагається змінити паролі.</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Вхід у мережу</translation>
@@ -281,5 +280,6 @@
 <translation id="911206726377975832">Також видалити дані веб-перегляду?</translation>
 <translation id="9138603949443464873">Щоб застосувати зміни, перезапустіть Chrome</translation>
 <translation id="919706545465235479">Щоб почати синхронізацію, оновіть Chrome</translation>
+<translation id="94743460404517794">Якщо у вас кілька облікових записів Google, їх можна додати на <ph name="DEVICE_TYPE" />. Облікові записи будуть доступні у веб-переглядачі Chrome, Google Play і таких сервісах, як Gmail, Диск та YouTube. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome – ваш веб-переглядач за умовчанням</translation>
 </translationbundle>

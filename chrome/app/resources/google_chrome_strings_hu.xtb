@@ -172,7 +172,6 @@
 <translation id="573759479754913123">A Chrome OS névjegye</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Nem sikerült a Chrome elindítása. Próbálkozzon újra.</translation>
-<translation id="5851757216820085940">Ha több Google-fiókja is van, hozzáadhatja őket <ph name="DEVICE_TYPE" /> eszközéhez. Fiókjait használhatja majd a Chrome böngészőben és a Play Áruházban, valamint olyan szolgáltatásokban, mint például a Gmail, a Drive és a YouTube. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="5867197326698922595">A Google Chrome szerkeszteni próbálja a jelszavakat.</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Hálózati bejelentkezés</translation>
@@ -280,5 +279,6 @@
 <translation id="911206726377975832">Törli a böngészési adatait is?</translation>
 <translation id="9138603949443464873">A módosítások alkalmazásához indítsa újra a Chrome-ot</translation>
 <translation id="919706545465235479">Frissítse a Chrome-ot a szinkronizálás megkezdéséhez</translation>
+<translation id="94743460404517794">Ha több Google-fiókja is van, hozzáadhatja őket <ph name="DEVICE_TYPE" /> eszközéhez. Fiókjait használhatja majd a Chrome böngészőben és a Play Áruházban, valamint olyan szolgáltatásokban, mint például a Gmail, a Drive és a YouTube. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="989369509083708165">A Google Chrome az alapértelmezett böngésző</translation>
 </translationbundle>

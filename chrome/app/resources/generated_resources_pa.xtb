@@ -231,7 +231,6 @@
 <translation id="1243436884219965846">ਪਾਸਵਰਡਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="1244265436519979884">ਇਸ ਵੇਲੇ Linux ਦੀ ਮੁੜ-ਬਹਾਲੀ ਜਾਰੀ ਹੈ</translation>
 <translation id="1244303850296295656">ਐਕਸਟੈਂਸ਼ਨ ਗੜਬੜ</translation>
-<translation id="1246158006305844142">ਤੁਹਾਡੀਆਂ ਐਪਾਂ ਅਤੇ ਸੈਟਿੰਗਾਂ ਦਾ ਉਹਨਾਂ ਸਾਰੇ Chrome OS ਡੀਵਾਈਸਾਂ ਨਾਲ ਸਮਕਾਲੀਕਰਨ ਕੀਤਾ ਜਾਵੇਗਾ, ਜਿੱਥੇ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਹੋ। ਬ੍ਰਾਊਜ਼ਰ ਸਮਕਾਲੀਕਰਨ ਵਿਕਲਪਾਂ ਲਈ, <ph name="LINK_BEGIN" />Chrome ਸੈਟਿੰਗਾਂ<ph name="LINK_END" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="1246905108078336582">ਕੀ ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਸੁਝਾਅ ਨੂੰ ਹਟਾਉਣਾ ਹੈ?</translation>
 <translation id="1251366534849411931">ਕੁੰਡਲਦਾਰ ਬ੍ਰੇਸ ਦੀ ਸੰਭਾਵੀ ਸ਼ੁਰੂਆਤ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ਇੰਝ ਕਰਨ ਨਾਲ ਸਾਈਟਾਂ ਅਤੇ ਸਥਾਪਤ ਕੀਤੀਆਂ ਐਪਾਂ ਦੇ <ph name="TOTAL_USAGE" /> ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
@@ -273,7 +272,6 @@
 <translation id="1294807885394205587">ਇਸ ਪ੍ਰਕਿਰਿਆ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ। ਕੰਟੇਨਰ ਪ੍ਰਬੰਧਕ ਨੂੰ ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="1296911687402551044">ਚੁਣੀ ਗਈ ਟੈਬ ਨੂੰ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="1297175357211070620">ਨਿਯਤ ਥਾਂ</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਦੇ ਵਿਸਤ੍ਰਿਤ ਪਲੇਬੈਕ ਲਈ ਯੋਗਤਾ ਦਾ ਪਤਾ ਲਗਾਉਣ ਵਾਸਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ Google ਵੱਲੋਂ ਕਰਵਾਉਣਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
 <translation id="1300806585489372370">ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣ ਲਈ, ਪਹਿਲਾਂ <ph name="BEGIN_LINK" />ਪਛਾਣਕਰਤਾਵਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> ਸਾਈਟ ਅੱਗੇ ਦਿੱਤੀਆਂ ਫ਼ਾਈਲਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="1302139669997477151">ਸਕ੍ਰੀਨਸ਼ਾਟ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
@@ -1249,6 +1247,7 @@
 <translation id="2366260648632264559">ਸਿਸਟਮ ਲਿਖਤ ਇਸ ਭਾਸ਼ਾ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="2367972762794486313">ਐਪਸ ਦਿਖਾਓ</translation>
 <translation id="2371076942591664043">ਜਦੋਂ &amp;ਹੋ ਜਾਏ ਤਾਂ ਖੋਲ੍ਹੋ</translation>
+<translation id="23721837607121582">ਮੋਬਾਈਲ ਪ੍ਰੋਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰੋ, <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" /> ਨੈੱਟਵਰਕ, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">ਕਾਗਜ਼ 'ਤੇ ਫਿੱਟ ਕਰੋ</translation>
 <translation id="2375406435414127095">ਆਪਣੇ ਫ਼ੋਨ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="2377588536920405462">ਤੁਸੀਂ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਮੁੱਖ ਟਿਕਾਣਾ ਸੈਟਿੰਗ ਨੂੰ ਬੰਦ ਕਰਕੇ ਟਿਕਾਣਾ ਜਾਣਕਾਰੀ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। ਤੁਸੀਂ ਟਿਕਾਣਾ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਟਿਕਾਣਾ ਜਾਣਕਾਰੀ ਲਈ ਵਾਈ-ਫਾਈ, ਮੋਬਾਈਲ ਨੈੱਟਵਰਕਾਂ ਅਤੇ ਸੈਂਸਰਾਂ ਦੀ ਵਰਤੋਂ ਨੂੰ ਵੀ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
@@ -1445,7 +1444,6 @@
 <translation id="2606246518223360146">ਡਾਟਾ ਲਿੰਕ ਕਰੋ</translation>
 <translation id="2606454609872547359">ਨਹੀਂ, ChromeVox ਦੇ ਬਿਨਾਂ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2607101320794533334">ਵਿਸ਼ਾ ਜਨਤਕ ਕੁੰਜੀ ਜਾਣਕਾਰੀ</translation>
-<translation id="2607968157341167679">ਕੋਈ ਐਲਬਮ ਨਹੀਂ ਹੈ। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ਵਿੱਚ ਐਲਬਮ ਬਣਾਓ।</translation>
 <translation id="2609896558069604090">ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ...</translation>
 <translation id="2609980095400624569">ਕਨੈਕਸ਼ਨ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="2610157865375787051">ਸਲੀਪ</translation>
@@ -1590,7 +1588,6 @@
 <translation id="2762441749940182211">ਕੈਮਰਾ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2764786626780673772">VPN ਸੰਬੰਧੀ ਵੇਰਵੇ</translation>
 <translation id="2765217105034171413">ਛੋਟਾ</translation>
-<translation id="2765729904637714153">ਆਪਣੀਆਂ ਮਨਪਸੰਦ ਯਾਦਾਂ ਨੂੰ ਤਾਜ਼ਾ ਕਰੋ। ਐਲਬਮਾਂ ਸ਼ਾਮਲ ਜਾਂ ਉਨ੍ਹਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="2766006623206032690">ਪੇ&amp;ਸਟ ਕਰੋ ਅਤੇ ਜਾਓ</translation>
 <translation id="2766161002040448006">ਮਾਂ-ਪਿਓ ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> ਇਸ ਸਾਈਟ ਲਈ ਸਾਰੀਆਂ ਟੈਬਾਂ ਬੰਦ ਨਾ ਕੀਤੇ ਜਾਣ ਤੱਕ <ph name="FILENAME" /> ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕੇਗੀ</translation>
@@ -2676,6 +2673,7 @@
 <translation id="3969092967100188979">ਚਾਲੂ, ਰੋਮਿੰਗ</translation>
 <translation id="3970114302595058915">ਆਈ.ਡੀ.</translation>
 <translation id="397105322502079400">ਅਨੁਮਾਨ ਲਗਾ ਰਿਹਾ ਹੈ...</translation>
+<translation id="3971140002794351170">ਮੋਬਾਈਲ ਪ੍ਰੋਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰੋ, <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" /> ਨੈੱਟਵਰਕ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">ਇਸ ਸੁਰੱਖਿਆ ਕੁੰਜੀ 'ਤੇ ਫਿੰਗਰਪ੍ਰਿੰਟ</translation>
 <translation id="3973660817924297510">ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ (<ph name="TOTAL_PASSWORDS" /> ਵਿੱਚੋਂ <ph name="CHECKED_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">ਖੇਤਰ ਲਈ ਸਰਵਰ ਨਾਲ ਸੰਪਰਕ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
@@ -4667,7 +4665,6 @@
 <translation id="6331566915566907158">Chrome OS ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="6331818708794917058">ਸਾਈਟਾਂ MIDI ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="6333064448949140209">ਫ਼ਾਈਲ ਡੀਬੱਗਿੰਗ ਲਈ Google ਨੂੰ ਭੇਜੀ ਜਾਵੇਗੀ</translation>
-<translation id="6334444530352320327">ਤੁਹਾਡੀਆਂ ਐਪਾਂ ਅਤੇ OS ਸੈਟਿੰਗਾਂ ਦਾ ਉਹਨਾਂ ਸਾਰੀਆਂ Chromebooks ਨਾਲ ਸਮਕਾਲੀਕਰਨ ਕੀਤਾ ਜਾਵੇਗਾ, ਜਿੱਥੇ ਤੁਸੀਂ ਇਸ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਹੋ।<ph name="LINK_BEGIN" />ਸੈਟਿੰਗਾਂ ਦਾ ਸਮਕਾਲੀਕਰਨ ਕਰੋ<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Linux ਨੂੰ ਸ਼ੁਰੂ ਕਰਨ ਵਾਸਤੇ, <ph name="MANAGER" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਅਤੇ ਇਸ Chromebook ਨੂੰ ਫੈਕਟਰੀ ਸੈਟਿੰਗਾਂ 'ਤੇ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ਨੇ ADB ਡੀਬੱਗਿੰਗ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ। ਇਸ ਨਾਲ ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> 24 ਘੰਟਿਆਂ ਵਿੱਚ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗੀ। ਉਹਨਾਂ ਫ਼ਾਈਲਾਂ ਦਾ ਬੈਕਅੱਪ ਲਓ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ।</translation>
 <translation id="6338981933082930623">ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਕੋਈ ਵੀ ਵਿਗਿਆਪਨ ਦਿਖਾ ਸਕਦੀਆਂ ਹਨ</translation>
@@ -5104,7 +5101,6 @@
 <translation id="6860097299815761905">ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ...</translation>
 <translation id="686022878923628150">ਸਾਈਟਾਂ ਨੂੰ MIDI ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="6860427144121307915">ਇੱਕ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਅਤੇ 1 ਹਫ਼ਤੇ ਦੇ ਅੰਦਰ ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਵਾਪਸ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।<ph name="LINK_BEGIN" />ਵੇਰਵੇ ਦੇਖੋ<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">ਕੀ ਪਾਸਵਰਡ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="6865313869410766144">ਆਟੋਫਿਲ ਫ਼ਾਰਮ ਡਾਟਾ</translation>
 <translation id="6865598234501509159">ਪੰਨਾ <ph name="LANGUAGE" /> ਭਾਸ਼ਾ ਵਿੱਚ ਨਹੀਂ ਹੈ</translation>
@@ -5187,7 +5183,6 @@
 <translation id="696103774840402661">ਇਸ <ph name="DEVICE_TYPE" /> ਦੇ ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ ਦੀਆਂ ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਸਥਾਈ ਤੌਰ 'ਤੇ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="6964390816189577014">ਹੀਰੋ</translation>
 <translation id="6964760285928603117">ਗਰੁੱਪ ਵਿੱਚੋਂ ਹਟਾਓ</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਅਤੇ ਅੱਜ ਹੀ ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਵਾਪਸ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।<ph name="LINK_BEGIN" />ਵੇਰਵੇ ਦੇਖੋ<ph name="LINK_END" />}one{<ph name="MANAGER" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਅਤੇ {NUM_DAYS} ਦਿਨ ਦੇ ਅੰਦਰ ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਵਾਪਸ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।<ph name="LINK_BEGIN" />ਵੇਰਵੇ ਦੇਖੋ<ph name="LINK_END" />}other{<ph name="MANAGER" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਅਤੇ {NUM_DAYS} ਦਿਨਾਂ ਦੇ ਅੰਦਰ ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਵਾਪਸ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।<ph name="LINK_BEGIN" />ਵੇਰਵੇ ਦੇਖੋ<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
 <translation id="6965648386495488594">ਪੋਰਟ</translation>
 <translation id="6965978654500191972">ਡੀਵਾਈਸ</translation>
@@ -6316,7 +6311,6 @@
 <translation id="8227119283605456246">ਫ਼ਾਈਲ ਨੱਥੀ ਕਰੋ</translation>
 <translation id="8230134520748321204">ਕੀ <ph name="ORIGIN" /> ਲਈ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8234795456569844941">ਕਿਰਪਾ ਕਰਕੇ ਸਾਡੇ ਇੰਜੀਨੀਅਰਾਂ ਨੂੰ ਇਸ ਸਮੱਸਿਆ ਦਾ ਹੱਲ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰੋ। ਸਾਨੂੰ ਦੱਸੋ ਕਿ ਤੁਹਾਨੂੰ ਪ੍ਰੋਫਾਈਲ ਗੜਬੜ ਸੁਨੇਹਾ ਮਿਲਣ ਤੋਂ ਠੀਕ ਪਹਿਲਾਂ ਕੀ ਹੋਇਆ ਸੀ:</translation>
-<translation id="8235605354099176425">ਹਾਲੀਆ Chrome ਟੈਬਾਂ ਨੂੰ ਦੇਖਣ ਲਈ <ph name="LINK1_BEGIN" />Chrome ਸਮਕਾਲੀਕਰਨ<ph name="LINK1_END" /> ਨੂੰ ਚਾਲੂ ਕਰੋ।<ph name="LINK2_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">ਇਸਦੀ ਬਜਾਏ ਇਹ ਟੈਬ ਸਾਂਝੀ ਕਰੋ</translation>
 <translation id="8237647586961940482">ਗੂੜ੍ਹਾ ਗੁਲਾਬੀ ਅਤੇ ਲਾਲ</translation>
 <translation id="8239032431519548577">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਦਾਖਲਾ ਮੁਕੰਮਲ ਹੋਇਆ</translation>
@@ -6462,6 +6456,7 @@
 <translation id="8398877366907290961">ਫੇਰ ਵੀ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="8400146488506985033">ਲੋਕਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8401432541486058167">ਆਪਣੇ ਸਮਾਰਟ ਕਾਰਡ ਨਾਲ ਸੰਬੰਧਿਤ ਪਿੰਨ ਮੁਹੱਈਆ ਕਰਵਾਓ</translation>
+<translation id="8403562727702715619">ਹਾਲ ਹੀ ਵਿੱਚ Google Drive ਤੋਂ</translation>
 <translation id="8407199357649073301">ਲੌਗ ਪੱਧਰ:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ਨੈੱਟਵਰਕ, ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6903,6 +6898,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" /> ਸਾਈਟ ਅੱਗੇ ਦਿੱਤੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਫੋਲਡਰਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="8890170499370378450">ਸ਼ਾਇਦ ਮੋਬਾਈਲ ਡਾਟੇ ਸੰਬੰਧੀ ਖਰਚਾ ਦੇਣਾ ਪਵੇ</translation>
 <translation id="8890516388109605451">ਸਰੋਤ</translation>
+<translation id="8890529496706615641">ਪ੍ਰੋਫਾਈਲ ਦਾ ਨਾਮ ਬਦਲਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਤਕਨੀਕੀ ਸਹਾਇਤਾ ਲਈ ਆਪਣੇ ਕੈਰੀਅਰ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="8892168913673237979">ਪੂਰੀ ਤਰ੍ਹਾਂ ਤਿਆਰ!</translation>
 <translation id="8893801527741465188">ਅਣਸਥਾਪਤ ਕਰਨਾ ਮੁਕੰਮਲ ਹੋਇਆ</translation>
 <translation id="8893928184421379330">ਮਾਫ਼ ਕਰਨਾ, <ph name="DEVICE_LABEL" /> ਦੀ ਪਛਾਣ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>

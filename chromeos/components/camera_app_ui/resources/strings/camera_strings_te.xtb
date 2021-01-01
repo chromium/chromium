@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
+<translation id="1175958423215084756">లింక్ గుర్తించబడింది. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">గ్యాలరీ చిత్రాలు</translation>
 <translation id="1430915738399379752">ముద్రించు</translation>
 <translation id="1473110567575736769">3 సెకన్ల టైమర్</translation>
@@ -79,6 +80,7 @@
 <translation id="7649070708921625228">సహాయం</translation>
 <translation id="7658239707568436148">రద్దు చేయి</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7983668134180549431">టెక్స్ట్ గుర్తించబడింది.</translation>
 <translation id="8067883171444229417">వీడియోను ప్లే చేయి</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>
 <translation id="8145038249676204903">ఫోటోను తీయడానికి మార్చు</translation>

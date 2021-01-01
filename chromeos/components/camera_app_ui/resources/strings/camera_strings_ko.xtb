@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1175958423215084756">링크가 감지되었습니다. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">갤러리 이미지</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1473110567575736769">3초 타이머</translation>
@@ -79,6 +80,7 @@
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7670511624014457267">60FPS</translation>
+<translation id="7983668134180549431">텍스트가 감지되었습니다.</translation>
 <translation id="8067883171444229417">동영상 재생</translation>
 <translation id="8131740175452115882">확인</translation>
 <translation id="8145038249676204903">사진 촬영 모드로 전환</translation>

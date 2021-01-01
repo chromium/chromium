@@ -178,7 +178,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="573759479754913123">Over Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Kan Chrome niet starten. Probeer het opnieuw.</translation>
-<translation id="5851757216820085940">Als je meerdere Google-accounts hebt, kun je deze toevoegen aan je <ph name="DEVICE_TYPE" />. Je accounts zijn beschikbaar in de Chrome-browser en de Play Store. Je kunt ze ook gebruiken in services zoals Gmail, Drive en YouTube. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome probeert wachtwoorden te bewerken.</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Inloggen bij netwerk</translation>
@@ -286,5 +285,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="911206726377975832">Ook browsegegevens wissen?</translation>
 <translation id="9138603949443464873">Als je de wijzigingen wilt toepassen, start je Chrome opnieuw</translation>
 <translation id="919706545465235479">Chrome updaten om de synchronisatie te starten</translation>
+<translation id="94743460404517794">Als je meerdere Google-accounts hebt, kun je deze toevoegen aan je <ph name="DEVICE_TYPE" />. Je accounts zijn beschikbaar in de Chrome-browser en de Play Store. Je kunt ze ook gebruiken in services zoals Gmail, Drive en YouTube. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome is je standaardbrowser</translation>
 </translationbundle>

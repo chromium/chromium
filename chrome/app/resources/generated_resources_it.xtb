@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">Controlla le password</translation>
 <translation id="1244265436519979884">È in corso il ripristino di Linux</translation>
 <translation id="1244303850296295656">Errore delle estensioni</translation>
-<translation id="1246158006305844142">Le app e le impostazioni verranno sincronizzate su tutti i dispositivi Chrome OS a cui hai effettuato l'accesso con il tuo Account Google. Per le opzioni di sincronizzazione del browser, vai alle <ph name="LINK_BEGIN" />impostazioni di Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Rimuovere il suggerimento dagli appunti?</translation>
 <translation id="1251366534849411931">Parentesi graffa aperta prevista: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Verranno cancellati <ph name="TOTAL_USAGE" /> di dati memorizzati da siti e app installate</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">Questa procedura potrebbe richiedere alcuni minuti. Avvio del gestore di container.</translation>
 <translation id="1296911687402551044">Blocca scheda selezionata</translation>
 <translation id="1297175357211070620">Destinazione</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> richiede che Google controlli l'identità del tuo dispositivo per determinarne l'idoneità alla riproduzione avanzata di contenuti protetti.</translation>
 <translation id="1300806585489372370">Per poter modificare questa impostazione devi <ph name="BEGIN_LINK" />attivare gli identificatori<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> può modificare i seguenti file</translation>
 <translation id="1302139669997477151">Gli screenshot sono bloccati</translation>
@@ -1445,7 +1443,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2606246518223360146">Collega dati</translation>
 <translation id="2606454609872547359">No, continua senza ChromeVox</translation>
 <translation id="2607101320794533334">Info sulla chiave pubblica del soggetto</translation>
-<translation id="2607968157341167679">Nessun album. Crea un album in<ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Crea scorciatoie...</translation>
 <translation id="2609980095400624569">Impossibile stabilire la connessione</translation>
 <translation id="2610157865375787051">Sospensione</translation>
@@ -1590,7 +1587,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2762441749940182211">Videocamera bloccata</translation>
 <translation id="2764786626780673772">Dettagli VPN</translation>
 <translation id="2765217105034171413">Piccola</translation>
-<translation id="2765729904637714153">Rivivi i tuoi ricordi più cari. Per aggiungere o modificare album, vai a<ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="2766006623206032690">In&amp;colla e vai</translation>
 <translation id="2766161002040448006">Rivolgiti a un genitore</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> potrà modificare il file <ph name="FILENAME" /> fino alla chiusura di tutte le schede di questo sito</translation>
@@ -4670,7 +4666,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6331566915566907158">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome OS</translation>
 <translation id="6331818708794917058">I siti possono chiedere di connettersi ai dispositivi MIDI</translation>
 <translation id="6333064448949140209">Il file sarà inviato a Google per il debug</translation>
-<translation id="6334444530352320327">Le app e le impostazioni del sistema operativo verranno sincronizzate sui Chromebook su cui hai eseguito l'accesso con questo account.<ph name="LINK_BEGIN" />Impostazioni di sincronizzazione<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Per avviare Linux, <ph name="MANAGER" /> richiede il backup dei dati e il ripristino di Chromebook alle impostazioni di fabbrica.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ha disattivato il debug ADB. Tra 24 ore il tuo dispositivo <ph name="DEVICE_TYPE" /> verrà reimpostato. Effettua il backup di tutti i file che vuoi mantenere.</translation>
 <translation id="6338981933082930623">Tutti i siti possono mostrarti qualsiasi annuncio</translation>
@@ -5107,7 +5102,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6860097299815761905">Impostazioni proxy...</translation>
 <translation id="686022878923628150">Impedisci ai siti di connettersi ai dispositivi MIDI</translation>
 <translation id="6860427144121307915">Apri in una scheda</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> richiede di effettuare il backup dei dati e di restituire questo <ph name="DEVICE_TYPE" /> entro 1 settimana. <ph name="LINK_BEGIN" />Visualizza dettagli<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Vuoi eliminare la password?</translation>
 <translation id="6865313869410766144">Dati della compilazione automatica dei moduli</translation>
 <translation id="6865598234501509159">La pagina non è in <ph name="LANGUAGE" /></translation>
@@ -5190,7 +5184,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="696103774840402661">Tutti i file e i dati locali di tutti gli utenti su questo <ph name="DEVICE_TYPE" /> sono stati eliminati in modo permanente.</translation>
 <translation id="6964390816189577014">Eroe</translation>
 <translation id="6964760285928603117">Rimuovi dal gruppo</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> richiede di effettuare il backup dei dati e di restituire questo <ph name="DEVICE_TYPE" /> oggi stesso. <ph name="LINK_BEGIN" />Visualizza dettagli<ph name="LINK_END" />}other{<ph name="MANAGER" /> richiede di effettuare il backup dei dati e di restituire questo <ph name="DEVICE_TYPE" /> entro {NUM_DAYS} giorni. <ph name="LINK_BEGIN" />Visualizza dettagli<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Porta</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
@@ -6321,7 +6314,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8227119283605456246">Allega file</translation>
 <translation id="8230134520748321204">Salvare la password per <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Aiuta i nostri tecnici a risolvere il problema. Descrivi cosa è accaduto subito prima di ricevere il messaggio di errore del profilo:</translation>
-<translation id="8235605354099176425">Attiva <ph name="LINK1_BEGIN" />Sincronizzazione Chrome<ph name="LINK1_END" /> per visualizzare le schede recenti di Chrome. <ph name="LINK2_BEGIN" />Scopri di più<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Condividi questa scheda invece</translation>
 <translation id="8237647586961940482">Rosa scuro e rosso</translation>
 <translation id="8239032431519548577">Registrazione aziendale completata</translation>

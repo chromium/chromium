@@ -166,7 +166,6 @@
 <translation id="6403826409255603130">Chromium бол веб хуудсууд болон аппликейшнуудыг цахилгааны хурдаар ажиллуулдаг веб хөтөч юм. Энэ нь хурдан, найдвартай мөн хэрэглэхэд хялбар. Chromium-д бий болгосон хорт вирус болон фишингийн хамгаалалтыг ашиглан вебээр илүү аюулгүй хайлт хийгээрэй.</translation>
 <translation id="6434250628340475518">Chromium OS Систем</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 1 секундийн дараа дахин эхэлнэ}other{Chromium # секундийн дараа дахин эхэлнэ}}</translation>
-<translation id="6464340581899189425">Хэрэв танд олон Google Бүртгэл байгаа бол тэдгээрийг <ph name="DEVICE_TYPE" />-д нэмэх боломжтой. Таны бүртгэлүүд Chromium хөтөч, Play Store түүнчлэн Gmail, Драйв болон YouTube зэрэг үйлчилгээнүүдэд боломжтой болно.<ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Энэ нь мөн таныг Chromium-ыг эхлүүлж байх үед гарч ирсэн хуудсыг хянадаг.</translation>
 <translation id="6510925080656968729">Chromium-ийг устгах</translation>
 <translation id="6570579332384693436">Зөв бичгийн алдааг засахын тулд Chromium таны текстийн талбарт бичсэн текстийг Google-д илгээдэг</translation>

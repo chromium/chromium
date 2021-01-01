@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">Kagua manenosiri</translation>
 <translation id="1244265436519979884">Shughuli ya kupakia metadata ya Linux inaendelea wakati huu</translation>
 <translation id="1244303850296295656">Hitilafu ya kiendelezi</translation>
-<translation id="1246158006305844142">Mipangilio na programu zako zitasawazishwa kwenye vifaa vyote vinavyotumia Mfumo wa Uendeshaji wa Chrome, ambavyo umetumia kuingia katika akaunti yako ya Google. Ili upate chaguo za kusawazisha kwenye kivinjari, nenda katika <ph name="LINK_BEGIN" />Mipangilio ya Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Je, ungependa kuondoa pendekezo kwenye ubao wa kunakili?</translation>
 <translation id="1251366534849411931">Hamna mchirizi wa kufungua: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Hatua hii itafuta <ph name="TOTAL_USAGE" /> za data iliyohifadhiwa na tovuti na programu zilizosakinishwa</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">Huenda mchakato huu ukachukua dakika kadhaa. Inaanzisha kidhibiti cha metadata.</translation>
 <translation id="1296911687402551044">Bandika Kichupo Kilichoteuliwa</translation>
 <translation id="1297175357211070620">Itumwe kwenye</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> inahitaji utambulisho wa kifaa chako uthibitishwe na Google ili kubaini ustahiki kwa ajili ya kuimarisha uchezaji wa maudhui yanayolindwa.</translation>
 <translation id="1300806585489372370">Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />washa vitambulishaji<ph name="END_LINK" /> kwanza</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> inaweza kubadilisha faili zifuatazo</translation>
 <translation id="1302139669997477151">Kipengele cha kupiga picha ya skrini kimezuiwa</translation>
@@ -1443,7 +1441,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2606246518223360146">Unganisha Data</translation>
 <translation id="2606454609872547359">Hapana, endelea bila ChromeVox</translation>
 <translation id="2607101320794533334">Maelezo ya Ufunguo wa Umma wa Mhusika</translation>
-<translation id="2607968157341167679">Hakuna albamu. Anzisha albamu mpya katika<ph name="LINK_BEGIN" />Picha kwenye Google<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Unda Njia mikato...</translation>
 <translation id="2609980095400624569">Imeshindwa kuunganisha</translation>
 <translation id="2610157865375787051">Hali tuli</translation>
@@ -1588,7 +1585,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2762441749940182211">Kamera imezuiwa</translation>
 <translation id="2764786626780673772">Maelezo ya VPN</translation>
 <translation id="2765217105034171413">Ndogo</translation>
-<translation id="2765729904637714153">Jikumbushe matukio uyapendayo. Ili uongeze au ubadilishe albamu, nenda katika<ph name="LINK_BEGIN" />Picha kwenye Google<ph name="LINK_END" />.</translation>
 <translation id="2766006623206032690">&amp;Bandika na uende</translation>
 <translation id="2766161002040448006">Muulize mzazi</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> itaweza kubadilisha <ph name="FILENAME" /> hadi ufunge vichupo vyote vya tovuti hii</translation>
@@ -4666,7 +4662,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6331566915566907158">Tusaidie kuboresha utendaji na vipengele vya Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="6331818708794917058">Tovuti zinaweza kuomba ruhusa ya kuunganisha kwenye vifaa vya MIDI</translation>
 <translation id="6333064448949140209">Faili itatumwa kwa Google kwa ajili ya utatuzi</translation>
-<translation id="6334444530352320327">Programu na mipangilio yako ya mfumo wa uendeshaji itasawazishwa kwenye Chromebook zote ambazo umetumia kuingia katika akaunti hii.<ph name="LINK_BEGIN" />Mipangillio ya Kusawazisha<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Ili uweze kufungua Linux, <ph name="MANAGER" /> inahitaji uhifadhi nakala ya data yako na urejeshe mipangilio ambayo Chromebook hii ilitoka nayo kiwandani.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> imezima utatuzi wa ADB. Hatua hii itarejesha mipangilio ambayo <ph name="DEVICE_TYPE" /> yako ilitoka nayo kiwandani, baada ya saa 24. Hifadhi nakala za faili zozote ambazo ungependa zisipotee.</translation>
 <translation id="6338981933082930623">Tovuti zote zinaweza kukuonyesha matangazo yoyote</translation>
@@ -5103,7 +5098,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6860097299815761905">Mipangilio ya proksi...</translation>
 <translation id="686022878923628150">Zuia tovuti zisiunganishe kwenye vifaa vya MIDI</translation>
 <translation id="6860427144121307915">Fungua katika Kichupo</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> inahitaji uhifadhi nakala ya data yako na urudishe <ph name="DEVICE_TYPE" /> hii ndani ya wiki moja.<ph name="LINK_BEGIN" />Angalia maelezo<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Ungependa kufuta nenosiri?</translation>
 <translation id="6865313869410766144">Data ya fomu ya Kujaza Kiotomatiki</translation>
 <translation id="6865598234501509159">Ukurasa Haujaandikwa katika <ph name="LANGUAGE" /></translation>
@@ -5186,7 +5180,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="696103774840402661">Faili na data yote ya watumiaji wote iliyo kwenye <ph name="DEVICE_TYPE" /> imefutwa kabisa.</translation>
 <translation id="6964390816189577014">Shujaa</translation>
 <translation id="6964760285928603117">Ondoa Kwenye Kikundi</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> inahitaji uhifadhi nakala ya data yako na urudishe <ph name="DEVICE_TYPE" /> hii leo.<ph name="LINK_BEGIN" />Angalia maelezo<ph name="LINK_END" />}other{<ph name="MANAGER" /> inahitaji uhifadhi nakala ya data yako na urudishe <ph name="DEVICE_TYPE" /> hii ndani ya siku {NUM_DAYS}.<ph name="LINK_BEGIN" />Angalia maelezo<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">Sawa</translation>
 <translation id="6965648386495488594">Lango</translation>
 <translation id="6965978654500191972">Kifaa</translation>
@@ -6320,7 +6313,6 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8227119283605456246">Ambatisha faili</translation>
 <translation id="8230134520748321204">Ungependa kuhifadhi nenosiri la <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Tafadhali wasaidie wahandisi wetu kutatua tatizo hili. Tueleze hasa kilichotendeka kabla ya kupokea ujumbe wa hitilafu:</translation>
-<translation id="8235605354099176425">Washa<ph name="LINK1_BEGIN" />Usawazishaji wa Chrome<ph name="LINK1_END" /> ili uweze kuangalia vichupo vya Chrome vya hivi punde.<ph name="LINK2_BEGIN" />Pata Maelezo Zaidi<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Shiriki kichupo hiki badala yake</translation>
 <translation id="8237647586961940482">Nyekundu na waridi iliyokolea</translation>
 <translation id="8239032431519548577">Usajili wa biashara umekamilika</translation>

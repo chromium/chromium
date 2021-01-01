@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Norska</translation>
 <translation id="1430915738399379752">Prenta</translation>
 <translation id="1435838927755162558">Deila möppu með Parallels Desktop</translation>
-<translation id="1439494416798956626">Fært í <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Rangsælis</translation>
 <translation id="1471718551822868769">Slóvakíska</translation>
 <translation id="1474339897586437869">„<ph name="FILENAME" />“ var ekki hlaðið. Ekki er nægt pláss á Google Drive.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Ertu viss um að þú viljir eyða <ph name="NUMBER_OF_ITEMS" /> atriðum?</translation>
 <translation id="2230062665678605299">Ekki er hægt að búa til möppuna „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Endurheimta úr rusli</translation>
-<translation id="2275059641601412272">Flutt.</translation>
 <translation id="2288278176040912387">Grammófónn</translation>
 <translation id="2291538123825441971">Opnar <ph name="NUMBER_OF_FILES" /> skrár.</translation>
 <translation id="2303301624314357662">Opnar skrána <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Eistneska</translation>
 <translation id="3466147780910026086">Skannar geymslumiðilinn þinn...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> myndir afritaðar á <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">Afritað í <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google töflureiknir</translation>
 <translation id="3486821258960016770">Mongólska</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> villur.</translation>
@@ -410,7 +407,6 @@
     Jafnvel þótt eitthvað komi fyrir tækið þitt eru skrárnar þínar öruggar á Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Þú getur deilt, búið til og<ph name="MARKUP_8" />
     unnið í skrám ásamt öðrum, allt á einum stað.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Afritað.</translation>
 <translation id="5275973617553375938">Endurheimtar skrár af Google Drive</translation>
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5318819489018851358">Deila með Linux</translation>
@@ -707,7 +703,6 @@
 <translation id="8336153091935557858">Í gær <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Skrá eða mappa með sama heiti er þegar til.</translation>
 <translation id="8372852072747894550">Gríska</translation>
-<translation id="8382450452152102026">Í <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Stærð</translation>
 <translation id="8437209419043462667">Bandarískt</translation>
 <translation id="8456681095658380701">Ógilt heiti</translation>

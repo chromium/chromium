@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">norvég</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1435838927755162558">Mappa megosztása a Parallels Desktoppal</translation>
-<translation id="1439494416798956626">Áthelyezve ide: <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Balra</translation>
 <translation id="1471718551822868769">szlovák</translation>
 <translation id="1474339897586437869">A(z) „<ph name="FILENAME" />” feltöltése nem történt meg. Nincs elegendő szabad terület a Google Drive-on.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Biztosan törli ezt a(z) <ph name="NUMBER_OF_ITEMS" /> elemet?</translation>
 <translation id="2230062665678605299">Nem sikerült létrehozni a(z) "<ph name="FOLDER_NAME" />" könyvtárat. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Visszaállítás a kukából</translation>
-<translation id="2275059641601412272">Áthelyezve.</translation>
 <translation id="2288278176040912387">Lemezjátszó</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fájl megnyitása.</translation>
 <translation id="2303301624314357662">A <ph name="FILE_NAME" /> fájl megnyitása folyamatban van.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">észt</translation>
 <translation id="3466147780910026086">Adathordozó vizsgálata…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotó biztonsági mentése végrehajtva a <ph name="BEGIN_LINK" />Google Drive-on<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">Átmásolva ide: <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google-táblázat</translation>
 <translation id="3486821258960016770">mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> hiba.</translation>
@@ -410,7 +407,6 @@
     Nem számít, mi történik az eszközével, fájljai biztonságban vannak a Google Drive-on.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Megoszthat és létrehozhat fájlokat, amelyeken együtt dolgozhat<ph name="MARKUP_8" />
     másokkal – mindezt egy helyen.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Vágólapra másolva.</translation>
 <translation id="5275973617553375938">A Google Drive-ról visszaállított fájlok</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Mentés</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">Tegnap <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Már létezik ugyanezzel a névvel egy fájl vagy egy könyvtár.</translation>
 <translation id="8372852072747894550">görög</translation>
-<translation id="8382450452152102026">Ide: <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Méret</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8456681095658380701">Érvénytelen név</translation>

@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">Revisa les contrasenyes</translation>
 <translation id="1244265436519979884">Hi ha una restauració de Linux en curs</translation>
 <translation id="1244303850296295656">Error d'extensió</translation>
-<translation id="1246158006305844142">Les teves aplicacions i opcions de configuració se sincronitzaran en tots els dispositius amb Chrome OS en què hagis iniciat la sessió amb el teu Compte de Google. Per accedir a les opcions de sincronització del navegador, ves a la <ph name="LINK_BEGIN" />configuració de Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Vols suprimir el suggeriment del porta-retalls?</translation>
 <translation id="1251366534849411931">Hi ha d'haver una clau d'obertura: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Amb aquesta acció s'esborraran dades emmagatzemades pels llocs web i per les aplicacions instal·lades (<ph name="TOTAL_USAGE" />)</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">Aquest procés pot trigar uns quants minuts. S'està iniciant el gestor de contenidors.</translation>
 <translation id="1296911687402551044">Fixa la pestanya seleccionada</translation>
 <translation id="1297175357211070620">Destinació</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> vol que Google verifiqui la identitat del dispositiu per determinar si s'hi pot utilitzar la reproducció millorada de contingut protegit.</translation>
 <translation id="1300806585489372370">Per canviar aquesta opció de configuració, primer <ph name="BEGIN_LINK" />activa els identificadors<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> pot editar els fitxers següents</translation>
 <translation id="1302139669997477151">L'opció de capturar la pantalla està bloquejada</translation>
@@ -1445,7 +1443,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2606246518223360146">Enllaça les dades</translation>
 <translation id="2606454609872547359">No, continua sense ChromeVox</translation>
 <translation id="2607101320794533334">Informació de clau pública del subjecte</translation>
-<translation id="2607968157341167679">No hi ha cap àlbum. Crea un àlbum a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Crea dreceres...</translation>
 <translation id="2609980095400624569">No s'ha pogut establir la connexió</translation>
 <translation id="2610157865375787051">Repòs</translation>
@@ -1590,7 +1587,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2762441749940182211">La càmera està bloquejada</translation>
 <translation id="2764786626780673772">Detalls de la VPN</translation>
 <translation id="2765217105034171413">Petit</translation>
-<translation id="2765729904637714153">Reviu els teus records preferits. Per afegir o editar àlbums, ves a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="2766006623206032690">En&amp;ganxa i ves</translation>
 <translation id="2766161002040448006">Pregunta als teus pares</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> podrà editar <ph name="FILENAME" /> mentre no tanquis totes les pestanyes d'aquest lloc web.</translation>
@@ -4671,7 +4667,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6331566915566907158">Ajuda a millorar les funcions i el rendiment de Chrome OS</translation>
 <translation id="6331818708794917058">Els llocs web poden demanar permís per connectar-se a dispositius MIDI</translation>
 <translation id="6333064448949140209">El fitxer s'enviarà a Google per depurar-lo</translation>
-<translation id="6334444530352320327">Les teves aplicacions i la configuració del sistema operatiu se sincronitzaran en tots els Chromebook en què tinguis la sessió iniciada amb aquest compte. <ph name="LINK_BEGIN" />Configuració de sincronització<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Per iniciar Linux, <ph name="MANAGER" /> requereix que creïs una còpia de seguretat de les teves dades i que restableixis la configuració de fàbrica d'aquest Chromebook.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ha desactivat la depuració d'ADB. Aquesta acció restablirà el teu dispositiu <ph name="DEVICE_TYPE" /> en un termini de 24 hores. Fes una còpia de seguretat de tots els fitxers que vols conservar.</translation>
 <translation id="6338981933082930623">Tots els llocs web et poden mostrar qualsevol anunci</translation>
@@ -5108,7 +5103,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6860097299815761905">Config. servidor interm.</translation>
 <translation id="686022878923628150">Impedeix que els llocs web es connectin a dispositius MIDI</translation>
 <translation id="6860427144121307915">Obre en una pestanya</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> requereix que creïs una còpia de seguretat de les teves dades i que tornis aquest dispositiu <ph name="DEVICE_TYPE" /> en un termini d'1 setmana. <ph name="LINK_BEGIN" />Mostra els detalls<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Vols suprimir la contrasenya?</translation>
 <translation id="6865313869410766144">Dades d'Emplenament automàtic de formularis</translation>
 <translation id="6865598234501509159">La pàgina no està en <ph name="LANGUAGE" /></translation>
@@ -5191,7 +5185,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="696103774840402661">Tots els fitxers i totes les dades locals de tots els usuaris d'aquest dispositiu <ph name="DEVICE_TYPE" /> s'han suprimit permanentment.</translation>
 <translation id="6964390816189577014">Heroi</translation>
 <translation id="6964760285928603117">Suprimeix del grup</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requereix que creïs una còpia de seguretat de les teves dades i que tornis aquest dispositiu <ph name="DEVICE_TYPE" /> avui. <ph name="LINK_BEGIN" />Mostra els detalls<ph name="LINK_END" />}other{<ph name="MANAGER" /> requereix que creïs una còpia de seguretat de les teves dades i que tornis aquest dispositiu <ph name="DEVICE_TYPE" /> en un termini de {NUM_DAYS} dies. <ph name="LINK_BEGIN" />Mostra els detalls<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Dispositiu</translation>
@@ -6322,7 +6315,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8227119283605456246">Adjunta un fitxer</translation>
 <translation id="8230134520748321204">Vols desar la contrasenya per a <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Ajuda els nostres enginyers a solucionar aquest problema. Explica'ns què ha passat just abans de rebre el missatge d'error del perfil:</translation>
-<translation id="8235605354099176425">Activa <ph name="LINK1_BEGIN" />Sincronització de Chrome<ph name="LINK1_END" /> per consultar les pestanyes de Chrome recents. <ph name="LINK2_BEGIN" />Més informació<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Comparteix aquesta pestanya</translation>
 <translation id="8237647586961940482">Rosa fosc i vermell</translation>
 <translation id="8239032431519548577">La inscripció de l'empresa ha finalitzat</translation>

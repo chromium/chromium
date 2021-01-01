@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">Gjennomgå passord</translation>
 <translation id="1244265436519979884">Linux-gjenoppretting pågår</translation>
 <translation id="1244303850296295656">Feil med utvidelse</translation>
-<translation id="1246158006305844142">Appene og innstillingene dine blir synkronisert på alle Chrome OS-enheter hvor du er logget på med Google-kontoen din. For alternativer for nettlesersynkronisering, gå til<ph name="LINK_BEGIN" />Chrome-innstillingene<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Vil du fjerne forslaget fra utklippstavlen?</translation>
 <translation id="1251366534849411931">Forventet venstrestilt krøllparentes: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Dette sletter <ph name="TOTAL_USAGE" /> data som er lagret av nettsteder og installerte apper</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">Denne prosessen kan ta noen minutter. Starter beholderbehandling.</translation>
 <translation id="1296911687402551044">Fest den valgte fanen</translation>
 <translation id="1297175357211070620">Destinasjon</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> ønsker at identiteten til enheten din bekreftes av Google, for å avgjøre om den er kvalifisert for forbedret avspilling av beskyttet innhold.</translation>
 <translation id="1300806585489372370">For å endre denne innstillingen må du først <ph name="BEGIN_LINK" />slå på identifikatorer<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> kan redigere disse filene</translation>
 <translation id="1302139669997477151">Skjermdumper er blokkert</translation>
@@ -1028,6 +1026,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2139919072249842737">Konfigurer-knappen</translation>
 <translation id="214169863967063661">Åpne innstillingene for utseende</translation>
 <translation id="2142328300403846845">Åpne linken som</translation>
+<translation id="2142582065325732898">Slå på <ph name="LINK1_BEGIN" />Chrome-synkronisering<ph name="LINK1_END" /> for å se nylige Chrome-faner. <ph name="LINK2_BEGIN" />Finn ut mer<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Vis alltid verktøyraden i fullskjerm</translation>
 <translation id="2143778271340628265">Manuell konfigurasjon av proxy-tjener</translation>
 <translation id="2144536955299248197">Visningsprogram for sertifikat: <ph name="CERTIFICATE_NAME" /></translation>
@@ -1443,7 +1442,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2606246518223360146">Knytt sammen dataene</translation>
 <translation id="2606454609872547359">Nei, fortsett uten ChromeVox</translation>
 <translation id="2607101320794533334">Informasjon om enhetens offentlige nøkkel</translation>
-<translation id="2607968157341167679">Ingen album. Opprett et album i<ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Opprett snarveier</translation>
 <translation id="2609980095400624569">Kunne ikke koble til</translation>
 <translation id="2610157865375787051">Hvilemodus</translation>
@@ -1588,7 +1586,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2762441749940182211">Kameraet er blokkert</translation>
 <translation id="2764786626780673772">VPN-detaljer</translation>
 <translation id="2765217105034171413">Liten</translation>
-<translation id="2765729904637714153">Gjenopplev favorittøyeblikkene dine. For å legge til eller redigere album, gå til<ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="2766006623206032690">&amp;Lim inn og gå til</translation>
 <translation id="2766161002040448006">Spør en forelder</translation>
 <translation id="2767127727915954024">Da kan <ph name="ORIGIN" /> redigere <ph name="FILENAME" /> frem til du lukker alle fanene for dette nettstedet</translation>
@@ -2383,6 +2380,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3677911431265050325">Be om mobilversjonen av nettstedet</translation>
 <translation id="3677959414150797585">Inkluderer apper, nettsider med mer. Sender statistikk for å gjøre forslagene bedre kun hvis du har valgt å dele bruksdata.</translation>
 <translation id="3678156199662914018">Utvidelse: <ph name="EXTENSION_NAME" /></translation>
+<translation id="3679608942832457508">Appene og OS-innstillingene dine synkroniseres på Chromebook-enheter der du er pålogget med denne kontoen. <ph name="LINK_BEGIN" />Synkroniseringsinnstillinger<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Stemme for tekst til tale</translation>
 <translation id="3681311097828166361">Takk for tilbakemeldingen. Siden du er uten nett akkurat nå, sendes rapporten senere.</translation>
 <translation id="3682824389861648626">Bevegelsesterskel</translation>
@@ -3657,6 +3655,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5185386675596372454">Den nyeste versjonen av <ph name="EXTENSION_NAME" /> er deaktivert fordi den krever ytterligere tillatelser.</translation>
 <translation id="5185500136143151980">Ingen internettilkobling</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190187232518914472">Gjenopplev favorittøyeblikkene dine. For å legge til eller redigere album, gå til <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="5190926251776387065">Aktivér porten</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ber om å laste ned flere filer</translation>
 <translation id="5192062846343383368">Åpne Family Link-appen for å se tilsynsinnstillingene dine</translation>
@@ -3905,6 +3904,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5481273127572794904">Nettsteder som ikke har lov til å laste ned flere filer automatisk</translation>
 <translation id="5481941284378890518">Legg til skrivere i nærheten</translation>
 <translation id="5483785310822538350">Opphev fil- og enhetstilgangen</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> i dag. <ph name="LINK_BEGIN" />Se informasjon<ph name="LINK_END" />}other{<ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> innen {NUM_DAYS} dager. <ph name="LINK_BEGIN" />Se informasjon<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835"><ph name="DEVICE_TYPE" />-enheten er låst av sikkerhetshensyn. Skriv inn passordet ditt manuelt for å fortsette.</translation>
 <translation id="5485102783864353244">Legg til appen</translation>
 <translation id="5485754497697573575">Gjenopprett alle faner</translation>
@@ -4666,7 +4666,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6331566915566907158">Bidra til å gjøre funksjonene og ytelsen til Chrome OS bedre</translation>
 <translation id="6331818708794917058">Nettsteder kan be om å få koble til MIDI-enheter</translation>
 <translation id="6333064448949140209">Filen sendes til Google for feilsøking</translation>
-<translation id="6334444530352320327">Appene og OS-innstillingene dine synkroniseres på Chromebook-enheter der du er pålogget med denne kontoen.<ph name="LINK_BEGIN" />Innstillinger for synkronisering<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Før du kan starte Linux, krever <ph name="MANAGER" /> at du sikkerhetskopierer dataene dine og tilbakestiller Chromebook til fabrikkstandard.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> har slått av ADB-feilsøking. <ph name="DEVICE_TYPE" /> blir tilbakestilt om 24 timer. Sikkerhetskopiér eventuelle filer du vil ta vare på.</translation>
 <translation id="6338981933082930623">Alle nettsteder kan vise deg alle slags annonser</translation>
@@ -5103,7 +5102,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6860097299815761905">Innstillinger for proxy-tjener</translation>
 <translation id="686022878923628150">Blokkér nettsteder fra å koble til MIDI-enheter</translation>
 <translation id="6860427144121307915">Åpne i en fane</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> innen én uke.<ph name="LINK_BEGIN" />Se detaljer<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Vil du slette passordet?</translation>
 <translation id="6865313869410766144">Skjemadata lagret med autofyll</translation>
 <translation id="6865598234501509159">Siden er ikke på <ph name="LANGUAGE" /></translation>
@@ -5186,7 +5184,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="696103774840402661">Alle filer og lokale data for alle brukerne på denne <ph name="DEVICE_TYPE" />-enheten er slettet permanent.</translation>
 <translation id="6964390816189577014">Helt</translation>
 <translation id="6964760285928603117">Fjern fra gruppen</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> i dag.<ph name="LINK_BEGIN" />Se detaljer<ph name="LINK_END" />}other{<ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> innen {NUM_DAYS} dager.<ph name="LINK_BEGIN" />Se detaljer<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Enhet</translation>
@@ -5636,6 +5633,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7476454130948140105">Det er for lite batteri igjen til å starte oppdateringen (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7477793887173910789">Styr musikk, video og mer</translation>
 <translation id="7478485216301680444">Kiosk-appen kunne ikke installeres.</translation>
+<translation id="7478623944308207463">Appene og innstillingene dine blir synkronisert på alle Chrome OS-enheter hvor du er logget på med Google-kontoen din. For alternativer for nettlesersynkronisering, gå til<ph name="LINK_BEGIN" />Chrome-innstillingene<ph name="LINK_END" />.</translation>
 <translation id="7479221278376295180">Oversikt over bruk av lagring</translation>
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7481358317100446445">Klar</translation>
@@ -6305,6 +6303,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8211551284753798479">Ugyldig PUK. Du har <ph name="RETRIES" /> forsøk igjen.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Nedlasting pågår}other{Nedlastinger pågår}}</translation>
 <translation id="8213449224684199188">Fotomodus er aktivert</translation>
+<translation id="8213866992824776555"><ph name="DOMAIN" /> vil at du identifiserer enheten din, slik at beskyttet video og lyd i høyeste kvalitet kan spilles av.</translation>
 <translation id="8214489666383623925">Åpne fil</translation>
 <translation id="8214962590150211830">Fjern denne personen</translation>
 <translation id="8216351761227087153">Se</translation>
@@ -6318,7 +6317,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8227119283605456246">Legg ved fil</translation>
 <translation id="8230134520748321204">Vil du lagre passord for <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Hjelp programutviklerne våre med å løse dette problemet. Fortell oss hva som skjedde rett før du fikk profilfeilmeldingen:</translation>
-<translation id="8235605354099176425">Slå på<ph name="LINK1_BEGIN" />Chrome-synkronisering<ph name="LINK1_END" /> for å se nylige Chrome-faner.<ph name="LINK2_BEGIN" />Finn ut mer<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Del denne fanen i stedet</translation>
 <translation id="8237647586961940482">Mørk rosa og rød</translation>
 <translation id="8239032431519548577">Bedriftsregistreringen er fullført</translation>
@@ -6695,6 +6693,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="8676374126336081632">Slett teksten</translation>
 <translation id="8676770494376880701">Laveffektslader er tilkoblet</translation>
 <translation id="8677212948402625567">Skjul alle</translation>
+<translation id="8677859815076891398">Ingen album. Opprett et album i <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8678933587484842200">Hvordan vil du at denne appen skal starte?</translation>
 <translation id="8680251145628383637">Logg på for å hente bokmerkene dine, loggen din, passordene dine og andre innstillinger på alle enhetene du bruker. Du blir dessuten automatisk logget på Google-tjenestene du bruker.</translation>
 <translation id="8681614230122836773">Chrome fant skadelig programvare på datamaskinen</translation>
@@ -6852,6 +6851,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="8831140208248705279"><ph name="DEVICE_TYPE" /> og Android-telefonen din jobber best sammen. Koble dem sammen, slik at du kan sende tekstmeldinger fra datamaskinen, dele internettilkoblingen og låse opp <ph name="DEVICE_TYPE" /> med telefonen.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">Nettverkskonfigurasjonen kontrolleres av <ph name="USER_EMAIL" />.</translation>
 <translation id="8835786707922974220">Sørg for at du alltid har tilgang til de lagrede passordene dine</translation>
+<translation id="8836360711089151515"><ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> innen én uke. <ph name="LINK_BEGIN" />Se informasjon<ph name="LINK_END" /></translation>
 <translation id="8838601485495657486">Ugjennomsiktig</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="883911313571074303">Kommenter bildet</translation>
@@ -7138,6 +7138,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="9148963623915467028">Dette nettstedet har tilgang til posisjonen din.</translation>
 <translation id="9149866541089851383">Endre</translation>
 <translation id="9150045010208374699">bruke kameraet ditt</translation>
+<translation id="9150079578948279438">Kunne ikke fjerne profilen. Prøv på nytt, eller kontakt operatøren for å få teknisk støtte.</translation>
 <translation id="9153934054460603056">Lagre identitet og passord</translation>
 <translation id="9154194610265714752">Oppdatert</translation>
 <translation id="91568222606626347">Opprett snarvei</translation>

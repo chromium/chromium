@@ -168,7 +168,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="6403826409255603130">Ang Chromium ay isang web browser na nagpapatakbo ng mga webpage at application sa bilis ng kidlat. Ito ay mabilis, maaasahan, at madaling gamitin. Mas maingat na mag-browse sa web gamit ang proteksyon ng Chromium laban sa malware at phishing.</translation>
 <translation id="6434250628340475518">Chromium OS System</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Magre-restart ang Chromium pagkalipas ng 1 segundo}one{Magre-restart ang Chromium pagkalipas ng # segundo}other{Magre-restart ang Chromium pagkalipas ng # na segundo}}</translation>
-<translation id="6464340581899189425">Kung marami kang Google Account, puwede mong idagdag ang mga ito sa iyong <ph name="DEVICE_TYPE" />. Magiging available ang iyong mga account sa Chromium browser at Play Store, kasama ang mga serbisyo tulad ng Gmail, Drive, at YouTube.<ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chromium.</translation>
 <translation id="6510925080656968729">I-uninstall ang Chromium</translation>
 <translation id="6570579332384693436">Para maayos ang mga error sa pagbabaybay, ipinapadala ng Chromium sa Google ang text na na-type mo sa mga text field</translation>
@@ -264,6 +263,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="9019929317751753759">Upang mas gawing ligtas ang Chromium, na-disable namin ang sumusunod na extension na hindi nakalista sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na maaaring naidagdag nang hindi mo nalalalaman.</translation>
 <translation id="9089354809943900324">Luma na ang Chromium</translation>
 <translation id="9093206154853821181">{0,plural, =1{Muling ilulunsad ang Chromium sa loob ng isang oras}one{Muling ilulunsad ang Chromium sa loob ng # oras}other{Muling ilulunsad ang Chromium sa loob ng # na oras}}</translation>
+<translation id="9107750757953039239">Kung marami kang Google Account, puwede mong idagdag ang mga ito sa iyong <ph name="DEVICE_TYPE" />. Magiging available ang iyong mga account sa Chromium browser at Play Store, kasama ang mga serbisyo tulad ng Gmail, Drive, at YouTube. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Buksan ang Link sa bagong &amp;tab ng Chromium</translation>
 <translation id="911206726377975832">Tatanggalin din ang iyong data sa pag-browse?</translation>
 <translation id="9158494823179993217">Na-configure ng iyong system administrator ang Chromium na magbukas ng alternatibong browser para i-access ang <ph name="TARGET_URL_HOSTNAME" />.</translation>

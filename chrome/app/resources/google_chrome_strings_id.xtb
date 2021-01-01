@@ -173,7 +173,6 @@
 <translation id="573759479754913123">Tentang Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Tidak dapat meluncurkan Chrome. Harap coba lagi.</translation>
-<translation id="5851757216820085940">Jika memiliki beberapa Akun Google, Anda dapat menambahkannya ke <ph name="DEVICE_TYPE" />. Akun Anda akan tersedia di browser Chrome dan Play Store, serta berbagai layanan seperti Gmail, Drive, dan YouTube. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome mencoba mengedit sandi.</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Login Jaringan</translation>
@@ -281,5 +280,6 @@
 <translation id="911206726377975832">Hapus juga data browsing Anda?</translation>
 <translation id="9138603949443464873">Untuk menerapkan perubahan, luncurkan ulang Chrome</translation>
 <translation id="919706545465235479">Perbarui Chrome untuk memulai sinkronisasi</translation>
+<translation id="94743460404517794">Jika memiliki beberapa Akun Google, Anda dapat menambahkannya ke <ph name="DEVICE_TYPE" />. Akun Anda akan tersedia di browser Chrome dan Play Store, serta berbagai layanan seperti Gmail, Drive, dan YouTube. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome adalah browser default Anda</translation>
 </translationbundle>

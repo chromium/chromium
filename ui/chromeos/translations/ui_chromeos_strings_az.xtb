@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Norveç</translation>
 <translation id="1430915738399379752">Çap edin</translation>
 <translation id="1435838927755162558">Qovluğu Parallels Desktop ilə paylaşın</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> qovluğuna köçürülüb.</translation>
 <translation id="1467432559032391204">Sol</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" yüklənmədi. Google Diskdə kifayət qədər boş yer yoxdur.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> elementi silmək istədiyinizə əminsiniz?</translation>
 <translation id="2230062665678605299">Qovluq yaratmaq alınmadı "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Zibil qutusundan bərpa edin</translation>
-<translation id="2275059641601412272">Köçürülüb.</translation>
 <translation id="2288278176040912387">Rekord oyunçu</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fayl açılır.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> faylı açılır.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Eston</translation>
 <translation id="3466147780910026086">Media cihazınız skan edilir...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> şəkil <ph name="BEGIN_LINK" />Google Diskə<ph name="END_LINK" /> yedəkləndi</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> qovluğuna kopyalandı.</translation>
 <translation id="3475447146579922140">Google cədvəl</translation>
 <translation id="3486821258960016770">Monqol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> xətalar.</translation>
@@ -410,7 +407,6 @@
     Cihazınıza nə baş verdiyindən asılı olmayaraq, fayllarınız Google Diskdə təhlükəsiz şəkildə saxlanılır.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Bir məkandan başqaları ilə faylları<ph name="MARKUP_8" />
     paylaşın, yaradın əməkdaşlıq edin.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Kopyalanıb.</translation>
 <translation id="5275973617553375938">Google Diskdən bərpa edilmiş fayllar</translation>
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5318819489018851358">Linux ilə paylaşın</translation>
@@ -705,7 +701,6 @@
 <translation id="8336153091935557858">Dünən <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Eyni adlı fayl və ya kataloq var.</translation>
 <translation id="8372852072747894550">Yunan</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" /> qovluğuna</translation>
 <translation id="8395901698320285466">Ölçülər</translation>
 <translation id="8437209419043462667">ABŞ</translation>
 <translation id="8456681095658380701">Yanlış ad</translation>

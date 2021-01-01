@@ -178,7 +178,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="573759479754913123">Chrome OS haqida</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome ishga tushmadi. Qayta urining.</translation>
-<translation id="5851757216820085940">Agar bir necha Google hisoblaringiz boʻlsa, ularni <ph name="DEVICE_TYPE" /> qurilmangizga kiritishingiz mumkin. Hisoblaringizdan Chrome brauzerida, Play Marketda va Gmail, Drive va YouTube kabi xizmatlarda foydalana olasiz.<ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome parollarni tahrirlashga urinmoqda.</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Tarmoqqa kirish</translation>
@@ -286,5 +285,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="911206726377975832">Brauzer faoliyati haqidagi ma’lumotlar ham tozalansinmi?</translation>
 <translation id="9138603949443464873">O‘zgarishlarni tatbi qilish uchun Chrome qayta ishga tushirilishi zarur</translation>
 <translation id="919706545465235479">Sinxronizatsiyani boshlash uchun Chrome brauzerini yangilang</translation>
+<translation id="94743460404517794">Agar bir necha Google hisoblaringiz boʻlsa, ularni <ph name="DEVICE_TYPE" /> qurilmangizga kiritishingiz mumkin. Hisoblaringizdan Chrome brauzerida, Play Marketda va Gmail, Drive va YouTube kabi xizmatlarda foydalana olasiz. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Qurilmangizdagi asosiy brauzer – Google Chrome.</translation>
 </translationbundle>

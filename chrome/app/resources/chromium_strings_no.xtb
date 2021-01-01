@@ -166,7 +166,6 @@
 <translation id="6403826409255603130">Chromium er en nettleser som kjører nettsider og programmer i lynets hastighet. Den er rask, stabil og enkel å bruke. Surf på nettet på en tryggere måte med Chromium, som har innebygd beskyttelse mot skadelig programvare og nettfisking.</translation>
 <translation id="6434250628340475518">Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium startes på nytt om 1 sekund}other{Chromium startes på nytt om # sekunder}}</translation>
-<translation id="6464340581899189425">Hvis du har flere Google-kontoer, kan du legge dem til på <ph name="DEVICE_TYPE" />. Kontoene dine blir tilgjengelige i Chromium-nettleseren, Play-butikken og tjenester som Gmail, Disk og YouTube.<ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Den styrer også hvilken side som vises når du starter Chromium.</translation>
 <translation id="6510925080656968729">Avinstaller Chromium</translation>
 <translation id="6570579332384693436">For å rette opp i skrivefeil sender Chromium sender tekst du skriver i tekstfelt, til Google</translation>
@@ -262,6 +261,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="9019929317751753759">For å gjøre Chromium tryggere har vi slått av følgende utvidelse som ikke finnes i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, og som kan ha blitt lagt til uten at du vet det.</translation>
 <translation id="9089354809943900324">Chromium er utdatert</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium startes på nytt om en time}other{Chromium startes på nytt om # timer}}</translation>
+<translation id="9107750757953039239">Hvis du har flere Google-kontoer, kan du legge dem til på <ph name="DEVICE_TYPE" />. Kontoene dine blir tilgjengelige i Chromium-nettleseren, Play-butikken og tjenester som Gmail, Disk og YouTube. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Åpne linken i en ny &amp;fane i Chromium</translation>
 <translation id="911206726377975832">Vil du slette all nettleserdata også?</translation>
 <translation id="9158494823179993217">Systemadministratoren din har konfigurert Chromium til å åpne en annen nettleser når du går til <ph name="TARGET_URL_HOSTNAME" />.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1175958423215084756">Bol rozpoznaný odkaz. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Obrázky galérie</translation>
 <translation id="1430915738399379752">Tlačiť</translation>
 <translation id="1473110567575736769">Trojsekundový časovač</translation>
@@ -79,6 +80,7 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="7649070708921625228">Pomocník</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7670511624014457267">60 sním./s</translation>
+<translation id="7983668134180549431">Bol rozpoznaný text.</translation>
 <translation id="8067883171444229417">Prehrať video</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
 <translation id="8145038249676204903">Prepnúť na fotenie</translation>

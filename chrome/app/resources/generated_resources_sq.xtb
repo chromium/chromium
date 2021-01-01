@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">Rishiko fjalëkalimet</translation>
 <translation id="1244265436519979884">Restaurimi i Linux aktualisht në vazhdim</translation>
 <translation id="1244303850296295656">Shtesa e paketës</translation>
-<translation id="1246158006305844142">Aplikacionet dhe cilësimet e tua do të sinkronizohen nëpër të gjitha pajisjet me sistem operativ Chrome ku je identifikuar me llogarinë tënde të Google. Për opsionet e sinkronizimit të shfletuesit, shko te<ph name="LINK_BEGIN" />cilësimet e Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Të hiqet sugjerimi nga kujtesa e fragmenteve?</translation>
 <translation id="1251366534849411931">Kllapë gjarpërushe hapëse e pritshme: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Kjo do të pastrojë <ph name="TOTAL_USAGE" /> të dhëna të ruajtura nga sajtet dhe aplikacionet e instaluara</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">Ky proces mund të zgjasë disa minuta. Po fillon menaxheri i kontejnerit.</translation>
 <translation id="1296911687402551044">Gozhdo skedën e zgjedhur</translation>
 <translation id="1297175357211070620">Destinacioni</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> dëshiron që të verifikohet identiteti i pajisjes tënde nga Google për të përcaktuar përshtatshmërinë për luajtjen e përmirësuar të përmbajtjes së mbrojtur.</translation>
 <translation id="1300806585489372370">Për të ndryshuar këtë cilësim, fillimisht <ph name="BEGIN_LINK" />aktivizo identifikuesit<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> mund të modifikojë skedarët e mëposhtëm</translation>
 <translation id="1302139669997477151">Pamja e ekranit është e bllokuar</translation>
@@ -1245,6 +1243,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2366260648632264559">Shfaq tekstin e sistemit në këtë gjuhë</translation>
 <translation id="2367972762794486313">Shfaq aplikacionet</translation>
 <translation id="2371076942591664043">Hape kur të &amp;përfundosh</translation>
+<translation id="23721837607121582">Shkarko profilin e celularit, rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">Përshtate me letrën</translation>
 <translation id="2375406435414127095">Lidhu me telefonin</translation>
 <translation id="2377588536920405462">Mund ta çaktivizosh "Vendndodhjen" duke çaktivizuar cilësimin kryesor të vendndodhjes në pajisjen tënde. Mund të çaktivizosh po ashtu përdorimin e Wi‑Fi, rrjeteve celulare dhe sensorëve për vendndodhjen te cilësimet e vendndodhjes.</translation>
@@ -1442,7 +1441,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2606246518223360146">Lidh të dhënat</translation>
 <translation id="2606454609872547359">Jo, vazhdo me ChromeVox</translation>
 <translation id="2607101320794533334">Informacion i çelësit publik të subjektit</translation>
-<translation id="2607968157341167679">Nuk ka albume. Krijo një album në<ph name="LINK_BEGIN" />Fotografitë e Google<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Krijo shkurtore...</translation>
 <translation id="2609980095400624569">Nuk mund të krijohej lidhje</translation>
 <translation id="2610157865375787051">Gjumë</translation>
@@ -1587,7 +1585,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2762441749940182211">Kamera është bllokuar</translation>
 <translation id="2764786626780673772">Detajet e lidhjes VPN</translation>
 <translation id="2765217105034171413">E vogël</translation>
-<translation id="2765729904637714153">Rijeto kujtimet e tua të preferuara. Për të shtuar ose modifikuar albume, shko te<ph name="LINK_BEGIN" />Fotografitë e Google<ph name="LINK_END" />.</translation>
 <translation id="2766006623206032690">Ngj&amp;it dhe vazhdo</translation>
 <translation id="2766161002040448006">Pyet një prind</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> do të mund ta modifikojë <ph name="FILENAME" /> deri sa t'i mbyllësh të gjitha skedat për këtë sajt</translation>
@@ -2674,6 +2671,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3969092967100188979">Aktiv, në roaming</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
+<translation id="3971140002794351170">Shkarko profilin e celularit, rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">Gjurmët e gishtave në këtë çelës sigurie</translation>
 <translation id="3973660817924297510">Po kontrollon fjalëkalimet (<ph name="CHECKED_PASSWORDS" /> nga <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">Kontaktimi me serverin për zonën e verifikimit dështoi</translation>
@@ -4665,7 +4663,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6331566915566907158">Ndihmo në përmirësimin e veçorive dhe të cilësisë së funksionimit të sistemit operativ Chrome</translation>
 <translation id="6331818708794917058">Sajtet mund të kërkojnë të lidhen me pajisjet me MIDI</translation>
 <translation id="6333064448949140209">Skedari do të dërgohet te Google për korrigjimin e gabimeve</translation>
-<translation id="6334444530352320327">Aplikacionet e tua dhe cilësimet e sistemit tënd operativ do të sinkronizohen mes pajisjeve Chromebook ku je identifikuar me këtë llogari.<ph name="LINK_BEGIN" />Sinkronizo "Cilësimet"<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Për të nisur Linux, <ph name="MANAGER" /> kërkon që të rezervosh të dhënat e tua dhe ta rivendosësh këtë Chromebook te cilësimet e fabrikës.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ka çaktivizuar korrigjimin e ADB-së. Kjo do ta rivendosë pajisjen tënde <ph name="DEVICE_TYPE" /> brenda 24 orësh. Rezervo çdo skedar që dëshiron ta mbash.</translation>
 <translation id="6338981933082930623">Të gjitha sajtet mund të të shfaqin çdo reklamë</translation>
@@ -5102,7 +5099,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6860097299815761905">Cilësimet e përfaqësuesit...</translation>
 <translation id="686022878923628150">Blloko sajtet që të mos lidhen me pajisjet MIDI</translation>
 <translation id="6860427144121307915">Hap në një skedë</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> kërkon që t'i rezervosh të dhënat e tua dhe ta kthesh këtë pajisje <ph name="DEVICE_TYPE" /> brenda 1 jave.<ph name="LINK_BEGIN" />Shiko detajet<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Të fshihet fjalëkalimi?</translation>
 <translation id="6865313869410766144">Plotëso automatikisht të dhënat e formularit</translation>
 <translation id="6865598234501509159">Faqja nuk është në <ph name="LANGUAGE" /></translation>
@@ -5185,7 +5181,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="696103774840402661">Të gjithë skedarët dhe të dhënat lokale për të gjithë përdoruesit në këtë <ph name="DEVICE_TYPE" /> janë fshirë përfundimisht.</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Largo nga grupi</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kërkon që t'i rezervosh të dhënat e tua dhe ta kthesh këtë pajisje <ph name="DEVICE_TYPE" /> sot.<ph name="LINK_BEGIN" />Shiko detajet<ph name="LINK_END" />}other{<ph name="MANAGER" /> kërkon që t'i rezervosh të dhënat e tua dhe ta kthesh këtë pajisje <ph name="DEVICE_TYPE" /> brenda {NUM_DAYS} ditëve.<ph name="LINK_BEGIN" />Shiko detajet<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6965648386495488594">Porta</translation>
 <translation id="6965978654500191972">Pajisja</translation>
@@ -6315,7 +6310,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8227119283605456246">Bashkëngjit skedarin</translation>
 <translation id="8230134520748321204">Të ruhet fjalëkalimi për <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Ndihmoji inxhinierët tanë ta rregullojnë këtë problem. Na trego se çfarë ndodhi përpara se të merrje mesazhin e gabimit të profilit:</translation>
-<translation id="8235605354099176425">Aktivizo <ph name="LINK1_BEGIN" />Sinkronizimin e Chrome<ph name="LINK1_END" /> për të shikuar skedat e fundit të Chrome. <ph name="LINK2_BEGIN" />Mëso më shumë<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Ndaj këtë skedë më mirë</translation>
 <translation id="8237647586961940482">Rozë e errët dhe e kuqe</translation>
 <translation id="8239032431519548577">Regjistrimi i ndërmarrjes përfundoi</translation>
@@ -6461,6 +6455,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8398877366907290961">Vazhdo gjithsesi</translation>
 <translation id="8400146488506985033">Menaxho kontaktet</translation>
 <translation id="8401432541486058167">Jep kodin PIN të lidhur me kartën tënde smart.</translation>
+<translation id="8403562727702715619">Së fundi nga "Disku i Google"</translation>
 <translation id="8407199357649073301">Niveli i identifikimit:</translation>
 <translation id="8408068190360279472">Rrjeti <ph name="NETWORK_TYPE" />, po lidhet</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6901,6 +6896,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> mund t'i modifikojë skedarët dhe dosjet e mëposhtme</translation>
 <translation id="8890170499370378450">Mund të shkaktohen tarifa për të dhënat celulare</translation>
 <translation id="8890516388109605451">Burimet</translation>
+<translation id="8890529496706615641">Profili nuk mund të riemërtohej. Provo përsëri ose kontakto me operatorin celular për mbështetje teknike.</translation>
 <translation id="8892168913673237979">Gati!</translation>
 <translation id="8893801527741465188">Çinstalimi përfundoi</translation>
 <translation id="8893928184421379330">Na vjen keq, pajisja <ph name="DEVICE_LABEL" /> nuk mund të njihej.</translation>

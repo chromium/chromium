@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">Revisar contrasinais</translation>
 <translation id="1244265436519979884">Estase restaurando Linux</translation>
 <translation id="1244303850296295656">Erro de extensión</translation>
-<translation id="1246158006305844142">As túas aplicacións e opcións de configuración sincronizaranse en todos os dispositivos Chrome OS nos que teñas a sesión iniciada na túa Conta de Google. Para ver as opción de sincronización do navegador, accede á <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Queres quitar a suxestión do portapapeis?</translation>
 <translation id="1251366534849411931">Falta unha chave de apertura: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ao realizar esta acción, borraranse <ph name="TOTAL_USAGE" /> dos datos que almacenasen os sitios e as aplicacións instaladas</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">Este proceso pode tardar uns minutiños. Estase iniciando o xestor de contedores.</translation>
 <translation id="1296911687402551044">Fixar pestana seleccionada</translation>
 <translation id="1297175357211070620">Destino</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> quere que Google verifique a identidade do teu dispositivo para determinar se se pode utilizar a reprodución mellorada con contido protexido.</translation>
 <translation id="1300806585489372370">Para cambiar esta opción de configuración, en primeiro lugar <ph name="BEGIN_LINK" />activa os identificadores<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> pode editar os seguintes ficheiros</translation>
 <translation id="1302139669997477151">As capturas de pantalla están bloqueadas</translation>
@@ -1030,6 +1028,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2139919072249842737">Botón Configurar</translation>
 <translation id="214169863967063661">Abrir a configuración da aparencia</translation>
 <translation id="2142328300403846845">Abrir ligazón como</translation>
+<translation id="2142582065325732898">Activa <ph name="LINK1_BEGIN" />Sincronización de Chrome<ph name="LINK1_END" /> para ver as pestanas recentes de Chrome. <ph name="LINK2_BEGIN" />Máis información<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Mostrar sempre a barra de ferramentas no modo de pantalla completa</translation>
 <translation id="2143778271340628265">Configuración manual do proxy</translation>
 <translation id="2144536955299248197">Visualizador de certificados: <ph name="CERTIFICATE_NAME" /></translation>
@@ -1445,7 +1444,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2606246518223360146">Ligar datos</translation>
 <translation id="2606454609872547359">Non, continuar sen ChromeVox</translation>
 <translation id="2607101320794533334">Información de clave pública de entidade</translation>
-<translation id="2607968157341167679">Non hai ningún álbum. Crea un en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Crear atallos...</translation>
 <translation id="2609980095400624569">Non se puido establecer a conexión</translation>
 <translation id="2610157865375787051">Suspender</translation>
@@ -1590,7 +1588,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2762441749940182211">Bloqueouse a cámara</translation>
 <translation id="2764786626780673772">Detalles da VPN</translation>
 <translation id="2765217105034171413">Pequeno</translation>
-<translation id="2765729904637714153">Revive os teus recordos favoritos. Para engadir ou editar álbums, vai a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="2766006623206032690">Pe&amp;gar e ir</translation>
 <translation id="2766161002040448006">Preguntar a teu pai ou túa nai</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> poderá editar <ph name="FILENAME" /> ata que peches todas as pestanas deste sitio</translation>
@@ -2385,6 +2382,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3677911431265050325">Solicitar sitio para móbiles</translation>
 <translation id="3677959414150797585">Inclúe aplicacións, páxinas web e moito máis. Envía estatísticas para mellorar as suxestións só se escolliches compartir datos de uso.</translation>
 <translation id="3678156199662914018">Extensión: <ph name="EXTENSION_NAME" /></translation>
+<translation id="3679608942832457508">As aplicacións e a configuración do sistema operativo sincronizaranse cos Chromebook nos que teñas a sesión iniciada con esta conta. <ph name="LINK_BEGIN" />Configuración de sincronización<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Voz da síntese de voz</translation>
 <translation id="3681311097828166361">Grazas polo teu comentario. Agora estás sen conexión, polo que o informe se enviará máis tarde.</translation>
 <translation id="3682824389861648626">Límite de movemento</translation>
@@ -3661,6 +3659,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5185386675596372454">Desactivouse a versión máis recente de "<ph name="EXTENSION_NAME" />" porque require máis permisos.</translation>
 <translation id="5185500136143151980">Non hai conexión a Internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190187232518914472">Revive os teus recordos favoritos. Para engadir ou editar álbums, vai a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5190926251776387065">Activar porto</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> quere descargar varios ficheiros</translation>
 <translation id="5192062846343383368">Abrir a aplicación Family Link para ver a configuración de supervisión</translation>
@@ -3909,6 +3908,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5481273127572794904">Sitios que non poden descargar automaticamente varios ficheiros</translation>
 <translation id="5481941284378890518">Engadir impresoras que estean cerca</translation>
 <translation id="5483785310822538350">Revogar acceso a ficheiros e dispositivos</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este dispositivo (<ph name="DEVICE_TYPE" />) hoxe. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}other{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este dispositivo (<ph name="DEVICE_TYPE" />) no prazo de {NUM_DAYS} días. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835">O <ph name="DEVICE_TYPE" /> está bloqueado por cuestións de seguranza. Para continuar, introduce manualmente o teu contrasinal.</translation>
 <translation id="5485102783864353244">Engadir aplicación</translation>
 <translation id="5485754497697573575">Restaurar todas as pestanas</translation>
@@ -4669,7 +4669,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6331566915566907158">Axudar a mellorar funcións e rendemento de Chrome OS</translation>
 <translation id="6331818708794917058">Os sitios poden pedirche permiso para conectarse aos dispositivos MIDI</translation>
 <translation id="6333064448949140209">Enviarase o ficheiro a Google para proceder á depuración</translation>
-<translation id="6334444530352320327">As aplicacións e a configuración do sistema operativo sincronizaranse cos Chromebook nos que teñas a sesión iniciada con esta conta. <ph name="LINK_BEGIN" />Configuración de sincronización<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Para iniciar Linux, <ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que reinicies este Chromebook coa configuración de fábrica.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> desactivou a depuración de ADB. Esta acción restablecerá o dispositivo (<ph name="DEVICE_TYPE" />) en 24 horas. Crea copias de seguranza dos ficheiros que queiras conservar.</translation>
 <translation id="6338981933082930623">Todos os sitios poden mostrarche calquera anuncio</translation>
@@ -5106,7 +5105,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6860097299815761905">Configuración do proxy...</translation>
 <translation id="686022878923628150">Impedir que os sitios se conecten aos dispositivos MIDI</translation>
 <translation id="6860427144121307915">Abrir nunha pestana</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este dispositivo (<ph name="DEVICE_TYPE" />) no prazo de 1 semana.<ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Queres eliminar o contrasinal?</translation>
 <translation id="6865313869410766144">Autocompletar datos do formulario</translation>
 <translation id="6865598234501509159">A páxina non está en <ph name="LANGUAGE" /></translation>
@@ -5189,7 +5187,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="696103774840402661">Elimináronse permanentemente todos os ficheiros e os datos locais de todos os usuarios deste dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="6964390816189577014">Heroe</translation>
 <translation id="6964760285928603117">Quitar do grupo</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este dispositivo (<ph name="DEVICE_TYPE" />) hoxe.<ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}other{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este dispositivo (<ph name="DEVICE_TYPE" />) no prazo de {NUM_DAYS} días.<ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6965648386495488594">Porto</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
@@ -5639,6 +5636,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7476454130948140105">O nivel de batería é demasiado baixo para realizar a actualización (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7477793887173910789">Controlar a túa música, os vídeos e moito máis</translation>
 <translation id="7478485216301680444">Non se puido instalar a aplicación de quiosco.</translation>
+<translation id="7478623944308207463">As túas aplicacións e opcións de configuración sincronizaranse en todos os dispositivos Chrome OS nos que teñas a sesión iniciada na túa Conta de Google. Para ver as opción de sincronización do navegador, accede á <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
 <translation id="7479221278376295180">Visión xeral do uso do almacenamento</translation>
 <translation id="7481312909269577407">Adiante</translation>
 <translation id="7481358317100446445">Listo</translation>
@@ -6307,6 +6305,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8211551284753798479">O PUK non é válido. Quédanche <ph name="RETRIES" /> intentos.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{A descarga está en curso}other{As descargas están en curso}}</translation>
 <translation id="8213449224684199188">Iniciouse o modo de foto</translation>
+<translation id="8213866992824776555"><ph name="DOMAIN" /> quere identificar o teu dispositivo para poder reproducir audio e vídeo protexido da maior calidade posible.</translation>
 <translation id="8214489666383623925">Abrir ficheiro...</translation>
 <translation id="8214962590150211830">Eliminar esta persoa</translation>
 <translation id="8216351761227087153">Ver</translation>
@@ -6320,7 +6319,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8227119283605456246">Anexar ficheiro</translation>
 <translation id="8230134520748321204">Queres gardar o contrasinal de <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Axuda aos nosos enxeñeiros a solucionar este problema. Explícanos o que sucedeu antes de que recibises a mensaxe de erro do perfil.</translation>
-<translation id="8235605354099176425">Activa a <ph name="LINK1_BEGIN" />Sincronización de Chrome<ph name="LINK1_END" /> para acceder ás pestanas recentes de Chrome.<ph name="LINK2_BEGIN" />Máis información<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Mellor compartir esta pestana</translation>
 <translation id="8237647586961940482">Rosa escuro e vermello</translation>
 <translation id="8239032431519548577">A inscrición da empresa está completa</translation>
@@ -6697,6 +6695,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="8676374126336081632">Borrar texto</translation>
 <translation id="8676770494376880701">Cargador de baixa potencia conectado</translation>
 <translation id="8677212948402625567">Contraer todo...</translation>
+<translation id="8677859815076891398">Non hai ningún álbum. Crea un en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8678933587484842200">Como queres que se inicie esta aplicación?</translation>
 <translation id="8680251145628383637">Inicia sesión para  ter os marcadores, o historial, os contrasinais e o resto da túa configuración en todos os teus dispositivos. Tamén se iniciará sesión automaticamente nos teus servizos de Google.</translation>
 <translation id="8681614230122836773">Chrome atopou software daniño no teu ordenador</translation>
@@ -6854,6 +6853,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="8831140208248705279">O <ph name="DEVICE_TYPE" /> e o teléfono Android funcionan mellor xuntos. Conéctaos para enviar mensaxes de texto desde o ordenador, compartir a conexión a Internet e desbloquear o <ph name="DEVICE_TYPE" /> co teléfono.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">A configuración de rede contrólaa <ph name="USER_EMAIL" />.</translation>
 <translation id="8835786707922974220">Asegúrate de poder acceder sempre aos teus contrasinais gardados</translation>
+<translation id="8836360711089151515"><ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este dispositivo (<ph name="DEVICE_TYPE" />) no prazo de 1 semana. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" /></translation>
 <translation id="8838601485495657486">Opaco</translation>
 <translation id="8838770651474809439">Hamburguesa</translation>
 <translation id="883911313571074303">Engadir notas á imaxe</translation>
@@ -7140,6 +7140,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="9148963623915467028">Este sitio pode acceder á túa localización.</translation>
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9150045010208374699">Utilizar a túa cámara</translation>
+<translation id="9150079578948279438">Non se puido quitar o perfil. Téntao de novo ou ponte en contacto co teu operador para obter asistencia técnica.</translation>
 <translation id="9153934054460603056">Gardar identidade e contrasinal</translation>
 <translation id="9154194610265714752">Actualizado</translation>
 <translation id="91568222606626347">Crear atallo...</translation>

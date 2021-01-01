@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">норвешки</translation>
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1435838927755162558">Споделете папка со Parallels Desktop</translation>
-<translation id="1439494416798956626">Преместена во <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Лево</translation>
 <translation id="1471718551822868769">словачки</translation>
 <translation id="1474339897586437869">„<ph name="FILENAME" />“ не е поставена. Нема доволно простор на Google Drive.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Дали сигурно сакате да избришете <ph name="NUMBER_OF_ITEMS" /> ставки?</translation>
 <translation id="2230062665678605299">Не може да се создаде папка „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Врати од корпа</translation>
-<translation id="2275059641601412272">Преместено.</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Се отвораат <ph name="NUMBER_OF_FILES" /> датотеки.</translation>
 <translation id="2303301624314357662">Се отвора датотеката <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">естонски</translation>
 <translation id="3466147780910026086">Се скенира преносливиот уред...</translation>
 <translation id="3468522857997926824">Направивте резервна копија на <ph name="FILE_COUNT" /> фотографии на <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">Копирана во <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google табела</translation>
 <translation id="3486821258960016770">монголски</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
@@ -410,7 +407,6 @@
     Што и да се случува со уредот, вашите датотеки се безбедно складирани во Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Споделувајте, создавајте и соработувајте<ph name="MARKUP_8" />
     на датотеки со други, сѐ на едно место.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Копирано.</translation>
 <translation id="5275973617553375938">Повратени датотеки од Google Диск</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5318819489018851358">Споделете со Linux</translation>
@@ -707,7 +703,6 @@
 <translation id="8336153091935557858">Вчера <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Веќе постои датотека или директориум со истото име.</translation>
 <translation id="8372852072747894550">грчки</translation>
-<translation id="8382450452152102026">Во <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Димензии</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">Неважечко име</translation>

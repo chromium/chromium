@@ -231,7 +231,6 @@
 <translation id="1243436884219965846">પાસવર્ડનો રિવ્યૂ કરો</translation>
 <translation id="1244265436519979884">હાલમાં Linuxને પહેલાંના જેવું કરવાની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="1244303850296295656">એક્સટેંશન ભૂલ</translation>
-<translation id="1246158006305844142">તમે તમારા Google એકાઉન્ટ વડે જેમાં સાઇન ઇન કર્યું છે, તે તમામ Chrome OS ડિવાઇસ પર તમારી ઍપ અને સેટિંગ સિંક કરવામાં આવશે. બ્રાઉઝર સિંક કરવાના વિકલ્પો માટે, <ph name="LINK_BEGIN" />Chrome સેટિંગ<ph name="LINK_END" /> પર જાઓ.</translation>
 <translation id="1246905108078336582">શું ક્લિપબોર્ડમાંથી સૂચન કાઢી નાખીએ?</translation>
 <translation id="1251366534849411931">અપેક્ષિત ખુલતો વાંકળિયો કૌંસ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">આમ કરવાથી સાઇટ અને ઇન્સ્ટૉલ કરેલી ઍપ દ્વારા સ્ટોર કરવામાં આવેલો <ph name="TOTAL_USAGE" /> ડેટા સાફ કરવામાં આવશે</translation>
@@ -273,7 +272,6 @@
 <translation id="1294807885394205587">આ પ્રક્રિયામાં થોડો સમય લાગી શકે છે. કન્ટેનર મેનેજર શરૂ કરી રહ્યાં છીએ.</translation>
 <translation id="1296911687402551044">પસંદ કરેલી ટૅબને પિન કરો</translation>
 <translation id="1297175357211070620">લક્ષ્યસ્થાન</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> ઇચ્છે છે કે સુરક્ષિત કન્ટેન્ટના વિસ્તૃત પ્લેબૅક માટે પાત્રતા નિર્ધારિત કરવા માટે Google દ્વારા તમારા ઉપકરણની ઓળખ ચકાસવામાં આવે.</translation>
 <translation id="1300806585489372370">આ સેટિંગ બદલવા માટે, પહેલાં <ph name="BEGIN_LINK" />ઓળખકર્તાઓ ચાલુ કરો<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> નીચે આપેલી ફાઇલોમાં ફેરફાર કરી શકે છે</translation>
 <translation id="1302139669997477151">સ્ક્રીનશૉટ લેવાની ક્ષમતા બ્લૉક કરી છે</translation>
@@ -1443,7 +1441,6 @@
 <translation id="2606246518223360146">ડેટાને લિંક કરો</translation>
 <translation id="2606454609872547359">ના, ChromeVox વગર આગળ વધો</translation>
 <translation id="2607101320794533334">વિષય સાર્વજનિક કી માહિતી</translation>
-<translation id="2607968157341167679">કોઈ આલ્બમ નથી. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />માં કોઈ આલ્બમ બનાવો.</translation>
 <translation id="2609896558069604090">શૉર્ટકટ્સ બનાવો ...</translation>
 <translation id="2609980095400624569">કનેક્શન સ્થાપિત કરી શકાયું નથી</translation>
 <translation id="2610157865375787051">નિષ્ક્રિય કરો</translation>
@@ -1588,7 +1585,6 @@
 <translation id="2762441749940182211">કૅમેરા અવરોધિત</translation>
 <translation id="2764786626780673772">VPNની વિગતો</translation>
 <translation id="2765217105034171413">નાનું</translation>
-<translation id="2765729904637714153">તમારી મનગમતી યાદગીરીઓને ફરીથી માણો. આલ્બમ ઉમેરવા અથવા તેમાં ફેરફાર કરવા માટે, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> પર જાઓ.</translation>
 <translation id="2766006623206032690">પે&amp;સ્ટ કરો અને જાઓ</translation>
 <translation id="2766161002040448006">માતાપિતાને પૂછો</translation>
 <translation id="2767127727915954024">આ સાઇટ માટે, જ્યાં સુધી તમે બધી ટૅબ બંધ નહીં કરો ત્યાં સુધી <ph name="ORIGIN" />, <ph name="FILENAME" />માં ફેરફાર કરી શકશે</translation>
@@ -4670,7 +4666,6 @@ USB ડિવાઇસ</translation>
 <translation id="6331566915566907158">Chrome OSની સુવિધાઓ અને કાર્યપ્રદર્શનને સુધારવામાં સહાય કરો</translation>
 <translation id="6331818708794917058">સાઇટ MIDI ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
 <translation id="6333064448949140209">ડીબગિંગ માટે ફાઇલ Google ને મોકલવામાં આવશે</translation>
-<translation id="6334444530352320327">તમે આ એકાઉન્ટ વડે જેમાં સાઇન ઇન કર્યું છે, તે તમામ Chromebooks પર તમારી ઍપ અને OS સેટિંગ સિંક કરવામાં આવશે.<ph name="LINK_BEGIN" />સેટિંગ સિંક કરો<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Linux શરૂ કરવા, <ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લો અને આ Chromebookને ફેક્ટરી સેટિંગ પર રીસેટ કરો.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> દ્વારા ADB ડિબગીંગ બંધ કરાયું છે. આમ કરવાથી 24 કલાકમાં તમારું <ph name="DEVICE_TYPE" /> રીસેટ થશે. તમે રાખવા માગતા હો તેવી કોઈપણ ફાઇલોનું બૅકઅપ લો.</translation>
 <translation id="6338981933082930623">બધી સાઇટ તમને બધા પ્રકારની જાહેરાતો બતાવી શકે છે</translation>
@@ -5107,7 +5102,6 @@ USB ડિવાઇસ</translation>
 <translation id="6860097299815761905">પ્રૉક્સી સેટિંગ...</translation>
 <translation id="686022878923628150">સાઇટને MIDI ડિવાઇસ સાથે કનેક્ટ થવાથી બ્લૉક કરો</translation>
 <translation id="6860427144121307915">એક ટેબમાં ખોલો</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લઈને આ <ph name="DEVICE_TYPE" /> 1 અઠવાડિયાની અંદર પરત કરો.<ph name="LINK_BEGIN" />વિગતો જુઓ<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">પાસવર્ડ ડિલીટ કરીએ?</translation>
 <translation id="6865313869410766144">સ્વતઃભરણ ફોર્મ ડેટા</translation>
 <translation id="6865598234501509159">પેજ <ph name="LANGUAGE" />માં નથી</translation>
@@ -5190,7 +5184,6 @@ USB ડિવાઇસ</translation>
 <translation id="696103774840402661">આ <ph name="DEVICE_TYPE" /> પરના બધા વપરાશકર્તાઓ માટેની તમામ ફાઇલો અને સ્થાનિક ડેટા કાયમ માટે ડિલીટ કરવામાં આવ્યો છે.</translation>
 <translation id="6964390816189577014">હીરો</translation>
 <translation id="6964760285928603117">ગ્રૂપમાંથી દૂર કરો</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લઈને આ <ph name="DEVICE_TYPE" /> આજે જ પરત કરો.<ph name="LINK_BEGIN" />વિગતો જુઓ<ph name="LINK_END" />}one{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લઈને આ <ph name="DEVICE_TYPE" /> {NUM_DAYS} દિવસની અંદર પરત કરો.<ph name="LINK_BEGIN" />વિગતો જુઓ<ph name="LINK_END" />}other{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લઈને આ <ph name="DEVICE_TYPE" /> {NUM_DAYS} દિવસની અંદર પરત કરો.<ph name="LINK_BEGIN" />વિગતો જુઓ<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
 <translation id="6965648386495488594">પોર્ટ</translation>
 <translation id="6965978654500191972">ઉપકરણ</translation>
@@ -6316,7 +6309,6 @@ USB ડિવાઇસ</translation>
 <translation id="8227119283605456246">ફાઇલ જોડો</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> માટેનો પાસવર્ડ સાચવીએ?</translation>
 <translation id="8234795456569844941">કૃપા કરી અમારા એન્જિનિયરોને આ સમસ્યા ઠીક કરવામાં સહાય કરો. તમને પ્રોફાઇલમાં ભૂલ આવ્યાનો સંદેશ મળ્યો બિલકુલ તે પહેલા શું થયું હતું તે અમને જણાવો:</translation>
-<translation id="8235605354099176425">તાજેતરની Chrome ટૅબ જોવા માટે, <ph name="LINK1_BEGIN" />Chrome સિંક<ph name="LINK1_END" /> ચાલુ કરો.<ph name="LINK2_BEGIN" />વધુ જાણો<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">તેના બદલે આ ટૅબ શેર કરો</translation>
 <translation id="8237647586961940482">ઘેરો ગુલાબી અને લાલ</translation>
 <translation id="8239032431519548577">એન્ટરપ્રાઇઝ નોંધણી પૂર્ણ થઈ</translation>

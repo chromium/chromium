@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">നോർവീജിയൻ</translation>
 <translation id="1430915738399379752">അച്ചടിക്കുക</translation>
 <translation id="1435838927755162558">Parallels Desktop ഉപയോഗിച്ച് ഫോൾഡർ പങ്കിടുക</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> എന്നതിലേക്ക് നീക്കി.</translation>
 <translation id="1467432559032391204">ഇടത്</translation>
 <translation id="1471718551822868769">സ്ലോവാക്</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" അപ്‌ലോഡുചെയ്‌തില്ല. നിങ്ങളുടെ Google ഡ്രൈവിൽ മതിയായ ഇടമില്ല.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ഇല്ലാതാക്കണമെന്ന് ഉറപ്പാണോ?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ഫോൾഡർ സൃഷ്‌ടിക്കാനാവില്ല. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">ട്രാഷിൽ നിന്നും പുനഃസ്ഥാപിക്കുക</translation>
-<translation id="2275059641601412272">നീക്കി.</translation>
 <translation id="2288278176040912387">റെക്കോർഡ് പ്ലേയർ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ഫയലുകൾ തുറക്കുന്നു.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ഫയൽ തുറക്കുന്നു.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">എസ്തോണിയൻ</translation>
 <translation id="3466147780910026086">നിങ്ങളുടെ മീഡിയാ ഉപകരണം സ്‌‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ഫോട്ടോകൾ <ph name="BEGIN_LINK" />Google ഡ്രൈവിലേക്ക്<ph name="END_LINK" /> ബാക്കപ്പുചെയ്‌തു</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> എന്നതിലേക്ക് പകർത്തി.</translation>
 <translation id="3475447146579922140">Google സ്‌പ്രെഡ്‌ഷീറ്റ്</translation>
 <translation id="3486821258960016770">മംഗോളിയൻ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> പിശകുകൾ.</translation>
@@ -410,7 +407,6 @@
         ഉപകരണത്തിന് എന്തുസംഭവിച്ചാലും കുഴപ്പമില്ല, ഫയലുകൾ സുരക്ഷിതമായി Google ഡ്രൈവിൽ സൂക്ഷിച്ചിരിക്കും.<ph name="MARKUP_6" />
        <ph name="MARKUP_7" />മറ്റുള്ളവരുമായി ഒരിടത്തു നിന്നുതന്നെ ഫയലുകൾ<ph name="MARKUP_8" />
         പങ്കിടുകയും സൃഷ്‌ടിക്കുകയും സഹകരിക്കുകയും ചെയ്യുക.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">പകർത്തി.</translation>
 <translation id="5275973617553375938">Google ഡ്രൈവിൽ നിന്നും ഫയലുകൾ വീണ്ടെടുത്തു</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">ഇന്നലെ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">സമാന പേരിലുള്ള ഫയൽ അല്ലെങ്കിൽ ഡയറക്‌റ്ററി ഇതിനകം നിലവിലുണ്ട്.</translation>
 <translation id="8372852072747894550">ഗ്രീക്ക്</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" /> എന്ന ഫോൾഡറിലേക്ക്</translation>
 <translation id="8395901698320285466">തലങ്ങൾ</translation>
 <translation id="8437209419043462667">യുഎസ്</translation>
 <translation id="8456681095658380701">അസാധുവായ പേര്</translation>

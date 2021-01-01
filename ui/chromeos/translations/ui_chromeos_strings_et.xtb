@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">norra</translation>
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1435838927755162558">Kausta jagamine üksusega Parallels Desktop</translation>
-<translation id="1439494416798956626">Teisaldati kausta <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Vasakule</translation>
 <translation id="1471718551822868769">slovaki</translation>
 <translation id="1474339897586437869">Faili „<ph name="FILENAME" />” ei laaditud üles. Teie Google Drive’is ei ole piisavalt vaba ruumi.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Kas soovite <ph name="NUMBER_OF_ITEMS" /> üksust kindlasti kustutada?</translation>
 <translation id="2230062665678605299">Kausta „<ph name="FOLDER_NAME" />” ei saa luua. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Taasta prügikastist</translation>
-<translation id="2275059641601412272">Teisaldatud.</translation>
 <translation id="2288278176040912387">Grammofon</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> faili avamine.</translation>
 <translation id="2303301624314357662">Faili <ph name="FILE_NAME" /> avamine.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">eesti</translation>
 <translation id="3466147780910026086">Meediaseadme skannimine ...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotot on varundatud teenuses <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">Kopeeritud kausta <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google'i arvutustabel</translation>
 <translation id="3486821258960016770">mongoli</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> viga.</translation>
@@ -410,7 +407,6 @@
     Teie failid on Google Drive'is turvaliselt talletatud sellest olenemata, mis teie seadmega juhtub.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Jagage ja looge faile ning tehke teistega koostööd<ph name="MARKUP_8" />
     ühes kohas.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Kopeeritud.</translation>
 <translation id="5275973617553375938">Google Drive'ist taastatud failid</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Salvesta</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">Eile kell <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Sama nimega fail või kataloog on juba olemas.</translation>
 <translation id="8372852072747894550">kreeka</translation>
-<translation id="8382450452152102026">Kausta <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Dimensioonid</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8456681095658380701">Kehtetu nimi</translation>

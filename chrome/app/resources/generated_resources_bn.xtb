@@ -231,7 +231,6 @@
 <translation id="1243436884219965846">পাসওয়ার্ড পর্যালোচনা করুন</translation>
 <translation id="1244265436519979884">বর্তমানে Linux ফিরিয়ে আনার কাজ চলছে</translation>
 <translation id="1244303850296295656">এক্সটেনশন সমস্যা</translation>
-<translation id="1246158006305844142">আপনার Google অ্যাকাউন্ট দিয়ে সাইন-ইন করা সমস্ত Chrome OS ডিভাইসে আপনার অ্যাপ এবং সেটিংস সিঙ্ক হয়ে যাবে। ব্রাউজারে উপলভ্য সিঙ্ক করার বিকল্পটির জন্য, <ph name="LINK_BEGIN" />Chrome সেটিংসে যান<ph name="LINK_END" />।</translation>
 <translation id="1246905108078336582">ক্লিপবোর্ড থেকে সাজেশন সরাতে চান?</translation>
 <translation id="1251366534849411931">প্রত্যাশিত শুরুর সেকেন্ড ব্র্যাকেট: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">এর ফলে সাইট ও ইনস্টল করা অ্যাপগুলির স্টোর করা <ph name="TOTAL_USAGE" /> ডেটা মুছে যাবে</translation>
@@ -273,7 +272,6 @@
 <translation id="1294807885394205587">এই প্রক্রিয়া সম্পূর্ণ করতে কয়েক মিনিট সময় লাগতে পারে। কন্টেনার ম্যানেজার শুরু করা হচ্ছে।</translation>
 <translation id="1296911687402551044">বেছে নেওয়া ট্যাব পিন করুন</translation>
 <translation id="1297175357211070620">গন্তব্য</translation>
-<translation id="1300415640239881824">সুরক্ষিত কন্টেন্টের উন্নত প্লেব্যাকের জন্য যোগ্যতা নির্ধারণ করতে <ph name="DOMAIN" /> Google-এর মাধ্যমে আপনার ডিভাইসের পরিচয় যাচাই করতে চায়।</translation>
 <translation id="1300806585489372370">সেটিংসটি পরিবর্তন করার জন্য প্রথমে <ph name="BEGIN_LINK" />শনাক্তকারী চালু করুন<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" />-এর কাছে নিচে উল্লেখ করা ফাইলগুলি এডিট করার অনুমতি আছে</translation>
 <translation id="1302139669997477151">স্ক্রিনশট নেওয়ার সুবিধা ব্লক করা হয়েছে</translation>
@@ -1249,6 +1247,7 @@
 <translation id="2366260648632264559">এই ভাষায় সিস্টেম টেক্সট দেখুন</translation>
 <translation id="2367972762794486313">অ্যাপ্লিকেশানগুলি দেখান</translation>
 <translation id="2371076942591664043">&amp;সম্পন্ন হলে খুলুন</translation>
+<translation id="23721837607121582">মোবাইল প্রোফাইল ডাউনলোড করুন, <ph name="NETWORK_COUNT" />-এর <ph name="NETWORK_INDEX" /> নেটওয়ার্ক, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">কাগজে ফিট করো</translation>
 <translation id="2375406435414127095">আপনার ফোন কানেক্ট করুন</translation>
 <translation id="2377588536920405462">আপনার ডিভাইসে প্রধান লোকেশন সেটিং বন্ধ করে এই লোকেশন বন্ধ করতে পারেন। লোকেশন সেটিংসে গিয়ে লোকেশনের জন্য ওয়াই-ফাই, মোবাইল নেটওয়ার্ক এবং সেন্সরের ব্যবহারও বন্ধ করতে পারেন।</translation>
@@ -1445,7 +1444,6 @@
 <translation id="2606246518223360146">ডেটা লিঙ্ক করুন</translation>
 <translation id="2606454609872547359">না, ChromeVox ছাড়াই চালিয়ে যান</translation>
 <translation id="2607101320794533334">বিষয় সর্বজনীন কী তথ্য</translation>
-<translation id="2607968157341167679">কোনও অ্যালবাম নেই। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-এ একটি অ্যালবাম তৈরি করুন।</translation>
 <translation id="2609896558069604090">শর্টকাটগুলি তৈরি করুন...</translation>
 <translation id="2609980095400624569">কানেক্ট করা যায়নি</translation>
 <translation id="2610157865375787051">স্লীপ মোড</translation>
@@ -1590,7 +1588,6 @@
 <translation id="2762441749940182211">ক্যামেরার ব্যবহার ব্লক করা হয়েছে</translation>
 <translation id="2764786626780673772">VPN-এর বিবরণ</translation>
 <translation id="2765217105034171413">ক্ষুদ্র</translation>
-<translation id="2765729904637714153">আপনার প্রিয় স্মৃতিগুলি রোমন্থন করুন। অ্যালবাম যোগ ও এডিট করতে, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-এ যান।</translation>
 <translation id="2766006623206032690">প্র&amp;তিলেপন করুন ও যান</translation>
 <translation id="2766161002040448006">কোনও অভিভাবককে বলুন</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> <ph name="FILENAME" /> এডিট করতে পারবে যতক্ষণ না আপনি এই সাইটের জন্য সব ট্যাব বন্ধ করে দিচ্ছেন</translation>
@@ -2676,6 +2673,7 @@
 <translation id="3969092967100188979">চালু আছে, রোমিংয়ে রয়েছে</translation>
 <translation id="3970114302595058915">আইডি</translation>
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
+<translation id="3971140002794351170">মোবাইল প্রোফাইল ডাউনলোড করুন, <ph name="NETWORK_COUNT" />-এর মধ্যে <ph name="NETWORK_INDEX" /> নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">এই নিরাপত্তা কীতে এনরোল করা ফিঙ্গারপ্রিন্ট</translation>
 <translation id="3973660817924297510">(<ph name="TOTAL_PASSWORDS" />টির মধ্যে <ph name="CHECKED_PASSWORDS" />টি) পাসওয়ার্ড চেক করা হচ্ছে…</translation>
 <translation id="3975565978598857337">রিলমের জন্য সার্ভারের সাথে কানেক্ট করা যায়নি</translation>
@@ -4670,7 +4668,6 @@
 <translation id="6331566915566907158">Chrome OS-এর ফিচার ও পারফরম্যান্স আরও উন্নত করে তুলতে সাহায্য করুন</translation>
 <translation id="6331818708794917058">MIDI ডিভাইসের সাথে কানেক্ট করতে, সাইট অনুমতি চাইতে পারে</translation>
 <translation id="6333064448949140209">ফাইল ডিবাগ করার জন্য Google-এ পাঠানো হবে</translation>
-<translation id="6334444530352320327">এই অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করা সব Chromebooks-এ আপনার অ্যাপ ও OS সেটিংস সিঙ্ক করা থাকবে।<ph name="LINK_BEGIN" />সেটিংস সিঙ্ক করুন<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Linux চালু করার আগে, <ph name="MANAGER" /> আপনাকে ডেটা ব্যাকআপ নিতে ও এই Chromebook ফ্যাক্টরি সেটিংসে রিসেট করতে বলছে।</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ADB ডিবাগিং বন্ধ করে দিয়েছে। এটি করলে ২৪ ঘণ্টায় আপনার <ph name="DEVICE_TYPE" /> রিসেট হয়ে যাবে। কোনও ফাইল রাখতে চাইলে, সেটির ব্যাক-আপ নিন।</translation>
 <translation id="6338981933082930623">সব সাইটই আপনাকে যেকোনও ধরনের বিজ্ঞাপন দেখাতে পারে</translation>
@@ -5107,7 +5104,6 @@
 <translation id="6860097299815761905">প্রক্সি সেটিংস...</translation>
 <translation id="686022878923628150">MIDI ডিভাইসের সাথে কানেক্ট করা আটকাতে সাইট ব্লক করুন</translation>
 <translation id="6860427144121307915">একটি ট্যাবে খুলুন</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> আপনাকে নিজের ডেটার ব্যাক-আপ নিয়ে ১ সপ্তাহের মধ্যে এই <ph name="DEVICE_TYPE" /> ফেরত দিতে বলছে।<ph name="LINK_BEGIN" />বিস্তারিত দেখুন<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">পাসওয়ার্ড মুছবেন?</translation>
 <translation id="6865313869410766144">স্বতঃপূর্ণ ফর্ম ডেটা</translation>
 <translation id="6865598234501509159">পৃষ্ঠাটি <ph name="LANGUAGE" /> ভাষায় নেই</translation>
@@ -5190,7 +5186,6 @@
 <translation id="696103774840402661">এই <ph name="DEVICE_TYPE" /> থেকে সব ব্যবহারকারীর সমস্ত ফাইল ও স্থানীয় ডেটা স্থায়ীভাবে মুছে ফেলা হয়েছে।</translation>
 <translation id="6964390816189577014">হিরো</translation>
 <translation id="6964760285928603117">গ্রুপ থেকে সরান</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> আপনাকে আজই ডেটার ব্যাক-আপ নিতে ও এই <ph name="DEVICE_TYPE" /> ফেরত দিতে বলছে।<ph name="LINK_BEGIN" />বিস্তারিত দেখুন<ph name="LINK_END" />}one{<ph name="MANAGER" /> আপনাকে {NUM_DAYS} দিনের মধ্যে ডেটার ব্যাক-আপ নিতে ও এই <ph name="DEVICE_TYPE" /> ফেরত দিতে বলছে।<ph name="LINK_BEGIN" />বিস্তারিত দেখুন<ph name="LINK_END" />}other{<ph name="MANAGER" /> আপনাদের {NUM_DAYS} দিনের মধ্যে ডেটার ব্যাক-আপ নিতে ও এই <ph name="DEVICE_TYPE" /> ফেরত দিতে বলছে।<ph name="LINK_BEGIN" />বিস্তারিত দেখুন<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6965648386495488594">পোর্ট</translation>
 <translation id="6965978654500191972">ডিভাইস</translation>
@@ -6320,7 +6315,6 @@
 <translation id="8227119283605456246">ফাইল সংযুক্ত করুন</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" />-এর জন্য পাসওয়ার্ড সেভ করবেন?</translation>
 <translation id="8234795456569844941">এই সমস্যাটির সমাধান করতে আমাদের ইঞ্জিনিয়ারদের সাহায্য করুন। আমাদের জানান, ঠিক কি হওয়ার পরে এই প্রোফাইল ত্রুটির মেসেজটি দেখেছিলেন:</translation>
-<translation id="8235605354099176425">সাম্প্রতিক Chrome ট্যাব দেখতে, <ph name="LINK1_BEGIN" />Chrome সিঙ্ক<ph name="LINK1_END" /> বিকল্প চালু করুন।<ph name="LINK2_BEGIN" />আরও জানুন<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">পরিবর্তে এই ট্যাব শেয়ার করুন</translation>
 <translation id="8237647586961940482">গাঢ় গোলাপি ও লাল</translation>
 <translation id="8239032431519548577">এন্টারপ্রাইজ এনরোল করার কাজ সম্পূর্ণ হয়েছে</translation>
@@ -6466,6 +6460,7 @@
 <translation id="8398877366907290961">যাইহোক এগিয়ে যান</translation>
 <translation id="8400146488506985033">ব্যক্তিগণকে পরিচালনা করুন</translation>
 <translation id="8401432541486058167">আপনার স্মার্ট কার্ডের পিন নম্বরটি দিন।</translation>
+<translation id="8403562727702715619">Google Drive থেকে সাম্প্রতিক পাওয়া</translation>
 <translation id="8407199357649073301">লগ লেভেল:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> নেটওয়ার্ক, কানেক্ট করা হচ্ছে</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6907,6 +6902,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" /> নিচে উল্লেখ করা ফাইল এবং ফোল্ডার এডিট করতে পারবে</translation>
 <translation id="8890170499370378450">মোবাইল ডেটা খরচের জন্য আপনাকে চার্জ করা হতে পারে</translation>
 <translation id="8890516388109605451">উৎস</translation>
+<translation id="8890529496706615641">প্রোফাইলের নাম পরিবর্তন করা যাবে না। আবার চেষ্টা করুন অথবা প্রযুক্তিগত সহায়তার জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="8892168913673237979">সমস্ত সেট আছে!</translation>
 <translation id="8893801527741465188">আনইনস্টল করা হয়ে গেছে</translation>
 <translation id="8893928184421379330">দুঃখিত, <ph name="DEVICE_LABEL" />ডিভাইসটি স্বীকৃত হতে পারেনি৷</translation>

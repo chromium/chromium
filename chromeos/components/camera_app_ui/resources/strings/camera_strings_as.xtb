@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1175958423215084756">লিংক চিনাক্ত কৰা হৈছে। <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">গেলাৰীৰ প্ৰতিচ্ছবিসমূহ</translation>
 <translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
 <translation id="1473110567575736769">৩ ছেকেণ্ডৰ টাইমাৰ</translation>
@@ -79,6 +80,7 @@
 <translation id="7649070708921625228">সহায়</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7670511624014457267">৬০ FPS</translation>
+<translation id="7983668134180549431">পাঠ চিনাক্ত কৰা হৈছে।</translation>
 <translation id="8067883171444229417">ভিডিঅ’ প্লে কৰক</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>
 <translation id="8145038249676204903">ফট' উঠাবলৈ সলনি কৰক</translation>

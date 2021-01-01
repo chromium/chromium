@@ -168,7 +168,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="6403826409255603130">„Chromium“ – tai žiniatinklio naršyklė, kurią naudojant akimirksniu paleidžiami tinklalapiai ir programos. Ji greita, stabili ir lengvai naudojama. Saugiau naršykite žiniatinklį naudodami į „Chromium“ integruotą apsaugą nuo kenkėjiškų programų ir sukčiavimo.</translation>
 <translation id="6434250628340475518">„Chromium“ OS sistema</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{„Chromium“ bus paleista iš naujo po 1 sekundės}one{„Chromium“ bus paleista iš naujo po # sekundės}few{„Chromium“ bus paleista iš naujo po # sekundžių}many{„Chromium“ bus paleista iš naujo po # sekundės}other{„Chromium“ bus paleista iš naujo po # sekundžių}}</translation>
-<translation id="6464340581899189425">Jei turite kelias „Google“ paskyras, galite pridėti jas prie „<ph name="DEVICE_TYPE" />“. Paskyros bus pasiekiamos „Chromium“ naršyklėje ir „Play“ parduotuvėje bei naudojant tokias paslaugas kaip „Gmail“, Diską ir „YouTube“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Ji taip pat kontroliuoja, koks puslapis rodomas, kai paleidžiate „Chromium“.</translation>
 <translation id="6510925080656968729">Pašalinti „Chromium“</translation>
 <translation id="6570579332384693436">Kad ištaisytų rašybos klaidas, „Chromium“ siunčia „Google“ tekstą, kurį įvedate teksto laukuose</translation>
@@ -264,6 +263,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="9019929317751753759">Kad „Chromium“ būtų saugesnė, išjungėme toliau nurodytą plėtinį, kuris nepateiktas <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> sąraše ir tikriausiai buvo pridėtas be jūsų žinios.</translation>
 <translation id="9089354809943900324">„Chromium“ versija yra pasenusi</translation>
 <translation id="9093206154853821181">{0,plural, =1{„Chromium“ bus paleista iš naujo po valandos}one{„Chromium“ bus paleista iš naujo po # valandos}few{„Chromium“ bus paleista iš naujo po # valandų}many{„Chromium“ bus paleista iš naujo po # valandos}other{„Chromium“ bus paleista iš naujo po # valandų}}</translation>
+<translation id="9107750757953039239">Jei turite kelias „Google“ paskyras, galite pridėti jas prie „<ph name="DEVICE_TYPE" />“. Paskyros bus pasiekiamos „Chromium“ naršyklėje ir „Play“ parduotuvėje bei naudojant tokias paslaugas kaip „Gmail“, Diską ir „YouTube“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Atidaryti nuorodą naujame „Chromium“ &amp;skirtuke</translation>
 <translation id="911206726377975832">Ar ištrinti naršymo duomenis?</translation>
 <translation id="9158494823179993217">Sistemos administratorius sukonfigūravo „Chromium“ atidaryti alternatyvią naršyklę, kad būtų galima pasiekti <ph name="TARGET_URL_HOSTNAME" />.</translation>

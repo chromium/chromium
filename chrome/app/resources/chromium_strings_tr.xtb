@@ -164,7 +164,6 @@
 <translation id="6403826409255603130">Chromium, Web sayfalarını ve uygulamaları yıldırım hızıyla çalıştıran bir Web tarayıcısıdır. Hızlı ve kararlı çalışır, kolay kullanılır. Chromium'da dahili olarak bulunan zararlı yazılım ve kimlik avı koruması sayesinde Web'de daha güvenli gezinin.</translation>
 <translation id="6434250628340475518">Chromium OS Sistemi</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 1 saniye içinde yeniden başlatılacak}other{Chromium # saniye içinde yeniden başlatılacak}}</translation>
-<translation id="6464340581899189425">Birden fazla Google Hesabınız varsa bunları <ph name="DEVICE_TYPE" /> cihazınıza ekleyebilirsiniz. Hesaplarınız Chromium tarayıcısı ve Play Store'un yanı sıra Gmail, Drive ve YouTube gibi hizmetlerde de kullanılabilir. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Ayrıca, Chromium'u başlattığınızda gösterilecek sayfayı da denetler.</translation>
 <translation id="6510925080656968729">Chromium'u Kaldır</translation>
 <translation id="6570579332384693436">Yazım hatalarını düzeltmek için Chromium, metin alanlarına yazdığınız metinleri Google'a gönderir</translation>

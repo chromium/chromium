@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">नार्वेजियन</translation>
 <translation id="1430915738399379752">प्रिंट करें</translation>
 <translation id="1435838927755162558">Parallels Desktop के साथ फ़ोल्डर शेयर करें</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> में ले जाया गया.</translation>
 <translation id="1467432559032391204">बाएं</translation>
 <translation id="1471718551822868769">स्लोवाक</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" को अपलोड नहीं किया गया. आपकी Google डिस्क में काफ़ी जगह नहीं है.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">क्या आप वाकई <ph name="NUMBER_OF_ITEMS" /> आइटम मिटाना चाहते हैं?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" फ़ोल्डर बनाने में असमर्थ. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">ट्रैश से वापस लाएं</translation>
-<translation id="2275059641601412272">भेज दिया गया.</translation>
 <translation id="2288278176040912387">रिकॉर्ड प्‍लेयर</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> फ़ाइलें खुल रही हैं.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> फ़ाइल खुल रही है.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">एस्टोनियान</translation>
 <translation id="3466147780910026086">आपका मीडिया डिवाइस स्‍कैन किया जा रहा है...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> फ़ोटो का <ph name="BEGIN_LINK" />Google डिस्‍क<ph name="END_LINK" /> में बैक अप लिया गया</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> में कॉपी की गई.</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3486821258960016770">मंगोलियन</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> त्रुटियां.</translation>
@@ -410,7 +407,6 @@
     चाहे आपके डिवाइस को कुछ भी हो जाए, आपकी फ़ाइलें Google डिस्क में सुरक्षित रूप से स्टोर रहती हैं.<ph name="MARKUP_6" />
     दूसरे लोगों के साथ एक ही स्थान पर फ़ाइलें
 <ph name="MARKUP_7" />शेयर करें, बनाएं और सहयोग करें<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">कॉपी किया गया.</translation>
 <translation id="5275973617553375938">Google डिस्क से पुनर्प्राप्त की गई फ़ाइलें</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">सेव करें</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">कल <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">समान नाम वाली फ़ाइल या निर्देशिका पहले से ही मौजूद है.</translation>
 <translation id="8372852072747894550">ग्रीक</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" /> पर</translation>
 <translation id="8395901698320285466">आयाम</translation>
 <translation id="8437209419043462667">यूएस</translation>
 <translation id="8456681095658380701">गलत नाम</translation>

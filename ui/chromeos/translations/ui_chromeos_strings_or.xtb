@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">ନରୱେଜୀୟ</translation>
 <translation id="1430915738399379752">ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1435838927755162558">Parallels Desktop ସହ ଫୋଲ୍ଡର ସେୟାର୍ କରନ୍ତୁ</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" />କୁ ନିଆଗଲା।</translation>
 <translation id="1467432559032391204">ବାମ</translation>
 <translation id="1471718551822868769">ସ୍ଲୋଭାକ୍</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ଅପ୍‌ଲୋଡ୍‍ କରାଯାଇନଥିଲା। ଆପଣଙ୍କର Google Driveରେ ଯଥେଷ୍ଟ ମୁକ୍ତ ସ୍ଥାନ ନାହିଁ।</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">ଆପଣ କ'ଣ ନିଶ୍ଚିତ ରୂପେ <ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ଡିଲିଟ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="2230062665678605299">ଫୋଲ୍ଡର୍‌ ତିଆରି କରିବାରେ ଅକ୍ଷମ "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">ଟ୍ରାସରୁ ରିଷ୍ଟୋର୍ କରନ୍ତୁ</translation>
-<translation id="2275059641601412272">ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="2288278176040912387">ରେକର୍ଡ ପ୍ଲେୟାର୍</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" />ଟି ଫାଇଲ୍ ଖୋଲାଯାଉଛି।</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" />ଫାଇଲ୍ ଖୋଲୁଛି।</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">ଇସ୍ତୋନିଆନ୍</translation>
 <translation id="3466147780910026086">ଆପଣଙ୍କର ମେଡିଆ ଡିଭାଇସ୍ ସ୍କାନ୍ ହେଉଛି...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" />ଟି ଫଟୋକୁ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />ରେ ବ୍ୟାକ୍‌ଅପ୍‌ ନିଆଯାଇଛି</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" />କୁ କପି କରାଯାଇଛି।</translation>
 <translation id="3475447146579922140">Google ସ୍ପ୍ରେଡ୍‌ସିଟ୍</translation>
 <translation id="3486821258960016770">ମଙ୍ଗୋଲିଆନ୍</translation>
 <translation id="3495304270784461826"><ph name="COUNT" />ଟି ତ୍ରୁଟି।</translation>
@@ -405,7 +402,6 @@
 <translation id="5253070652067921974">ଏହାଙ୍କ ଦ୍ୱାରା ତିଆରି କରାଯାଇଛି</translation>
 <translation id="5257456363153333584">ଡ୍ରାଗନ୍‌ଫ୍ଲାଏ</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />ସବୁ ଜାଗାରୁ, ଏପରିକି ଅଫ୍‍ଲାଇନ୍‌ରେ ଫାଇଲ୍ ଆକ୍ସେସ୍ କରେ।<ph name="MARKUP_2" />Google ଡ୍ରାଇଭ୍‍‌ରେ ଫାଇଲ୍‍ଗୁଡ଼ିକ ଅପ୍ ଟୁ ଡେଟ୍ ଅଛି ଏବଂ ଯେକୌଣସି ଡିଭାଇସ୍‍ରୁ ଉପଲବ୍ଧ ଅଟେ।<ph name="MARKUP_3" /> <ph name="MARKUP_4" />ଆପଣଙ୍କର ଫାଇଲ୍‍ଗୁଡ଼ିକ ସୁରକ୍ଷିତ ରଖନ୍ତୁ।<ph name="MARKUP_5" /> ଆପଣଙ୍କ ଡିଭାଇସ୍‍ର ଯାହା ହେଉନା କାହିଁକି, ଆପଣଙ୍କର ଫାଇଲ୍‍ଗୁଡ଼ିକ Google ଡ୍ରାଇଭ୍‌ରେ ସୁରକ୍ଷିତ ଭାବେ ଷ୍ଟୋର୍ ହୋଇରହିବ।<ph name="MARKUP_6" /> <ph name="MARKUP_7" />ଗୋଟିଏ ସ୍ଥାନରେ ଫାଇଲ୍‍ଗୁଡ଼ିକ ସେୟାର୍ କରନ୍ତୁ, ତିଆରି କରନ୍ତୁ<ph name="MARKUP_8" /> ଏବଂ ଅନ୍ୟମାନଙ୍କ ସହ ସହଯୋଗିତା କରନ୍ତୁ।<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">କପି କରାଯାଇଛି।</translation>
 <translation id="5275973617553375938">Google Driveରୁ ଫାଇଲ୍ ପୁନରୁଦ୍ଧାର ହୋଇଛି</translation>
 <translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
 <translation id="5318819489018851358">Linux ସହିତ ସେୟାର୍ କରନ୍ତୁ</translation>
@@ -702,7 +698,6 @@
 <translation id="8336153091935557858">ଗତକାଲି <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">ସମାନ ନାମ ଥିବା ଗୋଟିଏ ଫାଇଲ୍ କିମ୍ବା ଡିରେକ୍ଟୋରୀ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି।</translation>
 <translation id="8372852072747894550">ଗ୍ରୀକ୍</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" /> କୁ</translation>
 <translation id="8395901698320285466">ପରିମେୟ ପରିସର</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">ଅବୈଧ ନାମ</translation>

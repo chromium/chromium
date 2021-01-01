@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">노르웨이어</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1435838927755162558">Parallels Desktop과 폴더 공유</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> 폴더로 이동했습니다.</translation>
 <translation id="1467432559032391204">왼쪽</translation>
 <translation id="1471718551822868769">슬로바키아어</translation>
 <translation id="1474339897586437869">'<ph name="FILENAME" />'이(가) 업로드되지 않았습니다. Google 드라이브에 충분한 여유 공간이 없습니다.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">선택한 <ph name="NUMBER_OF_ITEMS" />개의 항목을 삭제하시겠습니까?</translation>
 <translation id="2230062665678605299">'<ph name="FOLDER_NAME" />' 폴더를 생성할 수 없습니다. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">휴지통에서 복원</translation>
-<translation id="2275059641601412272">이동했습니다.</translation>
 <translation id="2288278176040912387">레코드 플레이어</translation>
 <translation id="2291538123825441971">파일 <ph name="NUMBER_OF_FILES" />개를 열고 있습니다.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> 파일을 엽니다.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">에스토니아어</translation>
 <translation id="3466147780910026086">미디어 기기 스캔 중...</translation>
 <translation id="3468522857997926824">사진 <ph name="FILE_COUNT" />장을 <ph name="BEGIN_LINK" />Google 드라이브<ph name="END_LINK" />에 백업</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" />에 복사되었습니다.</translation>
 <translation id="3475447146579922140">Google 스프레드시트</translation>
 <translation id="3486821258960016770">몽골어</translation>
 <translation id="3495304270784461826">오류가 <ph name="COUNT" />개 있습니다.</translation>
@@ -410,7 +407,6 @@
     기기에 어떤 일이 일어나더라도 파일은 Google 드라이브에 안전하게 저장됩니다.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />다른 사용자와 한 곳에서 파일을<ph name="MARKUP_8" />
     공유하고 만들고 공동작업하세요.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">복사했습니다.</translation>
 <translation id="5275973617553375938">Google 드라이브에서 복구된 파일</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">저장</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">어제 <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">같은 이름을 가진 파일 또는 디렉터리가 이미 존재합니다.</translation>
 <translation id="8372852072747894550">그리스어</translation>
-<translation id="8382450452152102026">대상 폴더: <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">크기</translation>
 <translation id="8437209419043462667">영어(미국)</translation>
 <translation id="8456681095658380701">잘못된 이름입니다.</translation>

@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Nórska klávesnica</translation>
 <translation id="1430915738399379752">Tlačiť</translation>
 <translation id="1435838927755162558">Zdieľanie priečinka aplikáciou Parallels Desktop</translation>
-<translation id="1439494416798956626">Presunuté do priečinka: <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Doľava</translation>
 <translation id="1471718551822868769">Slovenská klávesnica</translation>
 <translation id="1474339897586437869">Súbor <ph name="FILENAME" /> nebol nahraný. Na Disku Google nemáte dostatok voľného miesta.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Naozaj chcete odstrániť príslušné položky (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Priečinok <ph name="FOLDER_NAME" /> sa nepodarilo vytvoriť. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Obnoviť z koša</translation>
-<translation id="2275059641601412272">Presunuté.</translation>
 <translation id="2288278176040912387">Gramofón</translation>
 <translation id="2291538123825441971">Otvárajú sa súbory (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Otvára sa súbor <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Estónska klávesnica</translation>
 <translation id="3466147780910026086">Prehľadáva sa mediálne zariadenie...</translation>
 <translation id="3468522857997926824">Počet fotiek zálohovaných na <ph name="BEGIN_LINK" />Disk Google<ph name="END_LINK" />: <ph name="FILE_COUNT" /></translation>
-<translation id="3473378059788601120">Skopírované do priečinka: <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Tabuľka Google</translation>
 <translation id="3486821258960016770">Mongolská klávesnica</translation>
 <translation id="3495304270784461826">Počet chýb: <ph name="COUNT" />.</translation>
@@ -410,7 +407,6 @@ Súbory na Disku Google sú aktualizované a môžete k nim pristupovať z ak
 Vaše súbory sú bezpečne uložené na Disku Google bez ohľadu na to, čo sa stane s vaším zariadením.<ph name="MARKUP_6" />
 <ph name="MARKUP_7" />Zdieľajte a vytvárajte súbory, spolupracuje na nich<ph name="MARKUP_8" />
 s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Skopírované.</translation>
 <translation id="5275973617553375938">Obnovené súbory z Disku Google</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Uložiť</translation>
@@ -708,7 +704,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8336153091935557858">Včera o <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Súbor alebo priečinok s daným názvom už existuje.</translation>
 <translation id="8372852072747894550">Grécka klávesnica</translation>
-<translation id="8382450452152102026">Do priečinka <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Rozmery</translation>
 <translation id="8437209419043462667">Americká klávesnica</translation>
 <translation id="8456681095658380701">Neplatný názov</translation>

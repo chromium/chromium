@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Norvegiană</translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1435838927755162558">Permite accesul Parallels Desktop la dosar</translation>
-<translation id="1439494416798956626">Mutat în <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Stânga</translation>
 <translation id="1471718551822868769">Slovacă</translation>
 <translation id="1474339897586437869">„<ph name="FILENAME" />” nu s-a încărcat. Nu există spațiu liber suficient în Google Drive.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Sigur dorești să ștergi <ph name="NUMBER_OF_ITEMS" /> elemente?</translation>
 <translation id="2230062665678605299">Nu s-a putut crea dosarul „<ph name="FOLDER_NAME" />”. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Restabilește din coșul de gunoi</translation>
-<translation id="2275059641601412272">Mutat.</translation>
 <translation id="2288278176040912387">Picup</translation>
 <translation id="2291538123825441971">Se deschid <ph name="NUMBER_OF_FILES" /> fișiere.</translation>
 <translation id="2303301624314357662">Se deschide <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Estoniană</translation>
 <translation id="3466147780910026086">Se scanează dispozitivul media...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotografii cu backup pe <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">S-a copiat în <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Foaie de calcul Google</translation>
 <translation id="3486821258960016770">Mongolă</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erori.</translation>
@@ -410,7 +407,6 @@
     Indiferent de ceea ce se întâmplă cu dispozitivul, fișierele sunt stocate în siguranță în Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Trimite și creează fișiere. Colaborează<ph name="MARKUP_8" />
     cu alte persoane la realizarea fișierelor. Totul într-un singur loc.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Copiat.</translation>
 <translation id="5275973617553375938">Fișiere recuperate din Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Salvează</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">Ieri, la <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Un fișier sau un director cu același nume există deja.</translation>
 <translation id="8372852072747894550">Greacă</translation>
-<translation id="8382450452152102026">În <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Dimensiuni</translation>
 <translation id="8437209419043462667">S.U.A.</translation>
 <translation id="8456681095658380701">Nume nevalid</translation>

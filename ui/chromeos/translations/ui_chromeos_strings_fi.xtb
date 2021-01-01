@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">norja</translation>
 <translation id="1430915738399379752">Tulosta</translation>
 <translation id="1435838927755162558">Jaa kansio Parallels Desktopille</translation>
-<translation id="1439494416798956626">Siirretty kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="1467432559032391204">Vasemmalla</translation>
 <translation id="1471718551822868769">slovakki</translation>
 <translation id="1474339897586437869">Tiedostoa <ph name="FILENAME" /> ei lähetetty. Google Drivessasi ei ole riittävästi vapaata tallennustilaa.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Haluatko varmasti poistaa <ph name="NUMBER_OF_ITEMS" /> kohdetta?</translation>
 <translation id="2230062665678605299">Kansiota <ph name="FOLDER_NAME" /> ei voi luoda. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Palauta roskakorista</translation>
-<translation id="2275059641601412272">Siirretty</translation>
 <translation id="2288278176040912387">Levysoitin</translation>
 <translation id="2291538123825441971">Avataan <ph name="NUMBER_OF_FILES" /> tiedostoa.</translation>
 <translation id="2303301624314357662">Avataan tiedostoa <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">viro</translation>
 <translation id="3466147780910026086">Tarkistetaan medialaitettasi…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> kuvaa on varmuuskopioitu <ph name="BEGIN_LINK" />Google Driveen<ph name="END_LINK" />.</translation>
-<translation id="3473378059788601120">Kopioitu kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="3475447146579922140">Google-laskentataulukko</translation>
 <translation id="3486821258960016770">mongoli</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> virhettä.</translation>
@@ -410,7 +407,6 @@
         Vaikka laitteellesi sattuisi jotain, tiedostosi ovat turvassa Google Drivessa.<ph name="MARKUP_6" />
         <ph name="MARKUP_7" />Jaa, luo ja muokkaa<ph name="MARKUP_8" />
         tiedostoja yhdessä muiden käyttäjien kanssa.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Kopioitu</translation>
 <translation id="5275973617553375938">Google Drivesta palautetut tiedostot</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Tallenna</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">eilen <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Samanniminen tiedosto tai hakemisto on jo olemassa.</translation>
 <translation id="8372852072747894550">kreikkalainen</translation>
-<translation id="8382450452152102026">Kohde: <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Mittasuhteet</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8456681095658380701">Nimi ei kelpaa</translation>

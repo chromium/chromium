@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Norvegiarra</translation>
 <translation id="1430915738399379752">Inprimatu</translation>
 <translation id="1435838927755162558">Partekatu karpeta Parallels Desktop aplikazioarekin</translation>
-<translation id="1439494416798956626">Eraman da <ph name="FOLDER_NAME" /> karpetara.</translation>
 <translation id="1467432559032391204">Ezkerrera</translation>
 <translation id="1471718551822868769">Eslovakiarra</translation>
 <translation id="1474339897586437869">Ez da kargatu "<ph name="FILENAME" />". Ez dago leku nahikorik Google Drive-n.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Ziur <ph name="NUMBER_OF_ITEMS" /> elementu ezabatu nahi dituzula?</translation>
 <translation id="2230062665678605299">Ezin  izan da sortu "<ph name="FOLDER_NAME" />" fitxategia. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Leheneratu zaborrontzitik</translation>
-<translation id="2275059641601412272">Mugitu da.</translation>
 <translation id="2288278176040912387">Disko-jogailua</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fitxategi irekitzen.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> fitxategia irekitzen.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Estoniarra</translation>
 <translation id="3466147780910026086">Multimedia-gailuan bilatzen…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> argazkiren babeskopia egin da <ph name="BEGIN_LINK" />Google Drive-n<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">Kopiatu da <ph name="FOLDER_NAME" /> karpetan.</translation>
 <translation id="3475447146579922140">Google kalkulu-orria</translation>
 <translation id="3486821258960016770">Mongoliarra</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errore.</translation>
@@ -410,7 +407,6 @@
     Gailuari edozer gertatzen zaiola ere, babestuta egongo dira fitxategiak Google Drive-n.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Partekatu eta sortu fitxategiak, eta jardun elkarlanean<ph name="MARKUP_8" />
     beste erabiltzaile batzuekin. Toki bakarrean egin dezakezu hori guztia.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Kopiatu da.</translation>
 <translation id="5275973617553375938">Google Drive-tik berreskuratutako fitxategiak</translation>
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5318819489018851358">Partekatu Linux erabilita</translation>
@@ -707,7 +703,6 @@
 <translation id="8336153091935557858">Atzo (<ph name="YESTERDAY_DAYTIME" />)</translation>
 <translation id="8342318071240498787">Badago lehendik ere izen hori duen fitxategi edo direktorio bat.</translation>
 <translation id="8372852072747894550">Greziarra</translation>
-<translation id="8382450452152102026">Helmuga: <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Dimentsioak</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">Izenak ez du balio</translation>

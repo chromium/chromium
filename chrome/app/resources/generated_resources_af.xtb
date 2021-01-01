@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">Gaan wagwoorde na</translation>
 <translation id="1244265436519979884">Linux-terugstelling vind tans plaas</translation>
 <translation id="1244303850296295656">Uitbreidingfout</translation>
-<translation id="1246158006305844142">Jou programme en instellings sal op alle Chrome-bedryfstelseltoestelle waarop jy met jou Google-rekening aangemeld is, sinkroniseer. Gaan na <ph name="LINK_BEGIN" />Chrome-instellings<ph name="LINK_END" /> toe vir blaaiersinkroniseringopsies.</translation>
 <translation id="1246905108078336582">Verwyder voorstel van knipbord af?</translation>
 <translation id="1251366534849411931">Verwag beginkrulhakie: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Dit sal <ph name="TOTAL_USAGE" /> se data uitvee wat deur werwe en geïnstalleerde programme geberg is</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">Hierdie proses kan 'n paar minute neem. Begin tans die houerbestuurder.</translation>
 <translation id="1296911687402551044">Speld geselekteerde oortjie vas</translation>
 <translation id="1297175357211070620">Bestemming</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> wil hê dat jou toestel se identiteit deur Google geverifieer word om geskiktheid vir die verbeterde terugspeel van beskermde inhoud te bepaal.</translation>
 <translation id="1300806585489372370">Om hierdie instelling te verander, <ph name="BEGIN_LINK" />skakel identifiseerders eers aan<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> kan die volgende lêers wysig</translation>
 <translation id="1302139669997477151">Skermkiekie word geblokkeer</translation>
@@ -1446,7 +1444,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2606246518223360146">Koppel data</translation>
 <translation id="2606454609872547359">Nee, gaan voort sonder ChromeVox</translation>
 <translation id="2607101320794533334">Inligting oor entiteit se openbare sleutel</translation>
-<translation id="2607968157341167679">Geen albums nie. Skep 'n album in <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Skep kortpaaie …</translation>
 <translation id="2609980095400624569">Kon nie verbinding bewerkstellig nie</translation>
 <translation id="2610157865375787051">Slaap</translation>
@@ -1591,7 +1588,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2762441749940182211">Kamera word geblokkeer</translation>
 <translation id="2764786626780673772">VPN-besonderhede</translation>
 <translation id="2765217105034171413">Klein</translation>
-<translation id="2765729904637714153">Herleef jou gunstelingherinneringe. Gaan na <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> toe om albums by te voeg of te wysig.</translation>
 <translation id="2766006623206032690">Plak en gaan</translation>
 <translation id="2766161002040448006">Vra 'n ouer</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> sal <ph name="FILENAME" /> kan wysig totdat jy alle oortjies vir hierdie werf toemaak</translation>
@@ -4671,7 +4667,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6331566915566907158">Help om Chrome-bedryfstelselkenmerke en -werkverrigting beter te maak</translation>
 <translation id="6331818708794917058">Werwe kan vra om aan MIDI-toestelle te koppel</translation>
 <translation id="6333064448949140209">Lêer sal vir ontfouting na Google gestuur word</translation>
-<translation id="6334444530352320327">Jou programme en OS-instellings sal sinkroniseer op Chromebooks waar jy met hierdie rekening aangemeld is.<ph name="LINK_BEGIN" />Sinkroniseer instellings<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346"><ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie Chromebook na die fabriekinstellings terugstel om Linux te begin.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> het ADB-ontfouting gedeaktiveer. Dit sal jou <ph name="DEVICE_TYPE" /> oor 24 uur terugstel. Rugsteun enige lêers wat jy wil hou.</translation>
 <translation id="6338981933082930623">Alle werwe kan enige advertensies vir jou wys</translation>
@@ -5108,7 +5103,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6860097299815761905">Instaanbedienerinstellings …</translation>
 <translation id="686022878923628150">Keer dat werwe aan MIDI-toestelle koppel</translation>
 <translation id="6860427144121307915">Maak in 'n oortjie oop</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie <ph name="DEVICE_TYPE" /> binne 1 week terugstuur.<ph name="LINK_BEGIN" />Sien besonderhede<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Vee wagwoord uit?</translation>
 <translation id="6865313869410766144">Vul vormdata outomaties in</translation>
 <translation id="6865598234501509159">Bladsy is nie in <ph name="LANGUAGE" /> nie</translation>
@@ -5191,7 +5185,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="696103774840402661">Alle lêers en plaaslike data vir alle gebruikers op hierdie <ph name="DEVICE_TYPE" /> is permanent uitgevee.</translation>
 <translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Verwyder uit groep</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie <ph name="DEVICE_TYPE" /> vandag terugstuur.<ph name="LINK_BEGIN" />Sien besonderhede<ph name="LINK_END" />}other{<ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie <ph name="DEVICE_TYPE" /> binne {NUM_DAYS} dae terugstuur.<ph name="LINK_BEGIN" />Sien besonderhede<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Poort</translation>
 <translation id="6965978654500191972">Toestel</translation>
@@ -6322,7 +6315,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8227119283605456246">Heg lêer aan</translation>
 <translation id="8230134520748321204">Stoor wagwoord vir <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Help asseblief ons ingenieurs om hierdie probleem op te los. Sê vir ons wat gebeur het net voordat jy die profielfoutboodskap gekry het:</translation>
-<translation id="8235605354099176425">Skakel<ph name="LINK1_BEGIN" />Chrome-sinkronisering<ph name="LINK1_END" /> aan om onlangse Chrome-oortjies te bekyk.<ph name="LINK2_BEGIN" />Kom meer te wete<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Deel eerder hierdie oortjie</translation>
 <translation id="8237647586961940482">Donkerpienk en rooi</translation>
 <translation id="8239032431519548577">Onderneminginskrywing is voltooi</translation>

@@ -168,7 +168,6 @@
 <translation id="6403826409255603130">Chromium је веб прегледач који покреће веб-странице и апликације муњевитом брзином. Брз је, стабилан и једноставан за коришћење. Прегледајте Веб безбедније са заштитом од малвера и „пецања“ која је уграђена у Chromium.</translation>
 <translation id="6434250628340475518">Систем Chromium ОС</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium ће се рестартовати за 1 секунду}one{Chromium ће се рестартовати за # секунду}few{Chromium ће се рестартовати за # секунде}other{Chromium ће се рестартовати за # секунди}}</translation>
-<translation id="6464340581899189425">Ако имате више Google налога, можете да их додате на <ph name="DEVICE_TYPE" />. Налози ће бити доступни у прегледачу Chromium и Play продавници и у услугама, као што су Gmail, Диск и YouTube.<ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Контролише и страницу која се приказује када покренете Chromium.</translation>
 <translation id="6510925080656968729">Деинсталирај Chromium</translation>
 <translation id="6570579332384693436">Да би исправио правописне грешке, Chromium шаље Google-овим серверима текст који уносите у поља за текст.</translation>
@@ -264,6 +263,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="9019929317751753759">Да бисмо учинили Chromium безбеднијим, онемогућили смо следећи додатак који <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не наводи и који је можда додат без вашег знања.</translation>
 <translation id="9089354809943900324">Chromium је застарео</translation>
 <translation id="9093206154853821181">{0,plural, =1{Поново ћемо покренути Chromium за један сат}one{Поново ћемо покренути Chromium за # сат}few{Поново ћемо покренути Chromium за # сата}other{Поново ћемо покренути Chromium за # сати}}</translation>
+<translation id="9107750757953039239">Ако имате више Google налога, можете да их додате на <ph name="DEVICE_TYPE" />. Налози ће бити доступни у Chromium прегледачу и Play продавници и у услугама, као што су Gmail, Диск и YouTube. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Отвори линк у новој Chromium &amp;картици</translation>
 <translation id="911206726377975832">Желите ли да избришете и податке прегледања?</translation>
 <translation id="9158494823179993217">Администратор система је конфигурисао Chromium да отвара алтернативни прегледач за приступ URL-у <ph name="TARGET_URL_HOSTNAME" />.</translation>

@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">นอร์เวย์</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1435838927755162558">แชร์โฟลเดอร์กับ Parallels Desktop</translation>
-<translation id="1439494416798956626">ย้ายไปที่ <ph name="FOLDER_NAME" /> แล้ว</translation>
 <translation id="1467432559032391204">ซ้าย</translation>
 <translation id="1471718551822868769">สโลวัก</translation>
 <translation id="1474339897586437869">ไม่ได้อัปโหลด "<ph name="FILENAME" />" มีพื้นที่ว่างไม่เพียงพอใน Google ไดรฟ์ของคุณ</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">แน่ใจไหมว่าต้องการลบ <ph name="NUMBER_OF_ITEMS" /> รายการ</translation>
 <translation id="2230062665678605299">ไม่สามารถสร้างโฟลเดอร์ "<ph name="FOLDER_NAME" />" <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">กู้คืนจากถังขยะ</translation>
-<translation id="2275059641601412272">ย้ายแล้ว</translation>
 <translation id="2288278176040912387">เครื่องเล่นแผ่นเสียง</translation>
 <translation id="2291538123825441971">กำลังเปิด <ph name="NUMBER_OF_FILES" /> ไฟล์</translation>
 <translation id="2303301624314357662">กำลังเปิดไฟล์ <ph name="FILE_NAME" /></translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">เอสโทเนีย</translation>
 <translation id="3466147780910026086">กำลังสแกนอุปกรณ์สื่อ...</translation>
 <translation id="3468522857997926824">สำรองรูปภาพ <ph name="FILE_COUNT" /> รูปไปยัง <ph name="BEGIN_LINK" />Google ไดรฟ์<ph name="END_LINK" />แล้ว</translation>
-<translation id="3473378059788601120">คัดลอกไปที่ <ph name="FOLDER_NAME" /> แล้ว</translation>
 <translation id="3475447146579922140">สเปรดชีตของ Google</translation>
 <translation id="3486821258960016770">มองโกเลีย</translation>
 <translation id="3495304270784461826">ข้อผิดพลาด <ph name="COUNT" /> รายการ</translation>
@@ -410,7 +407,6 @@
     ไม่ว่าจะเกิดอะไรขึ้นกับอุปกรณ์ของคุณ ไฟล์จะได้รับการจัดเก็บไว้อย่างปลอดภัยใน Google ไดรฟ์<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />แชร์ สร้าง และทำงานร่วมกัน<ph name="MARKUP_8" />
     กับผู้อื่นบนไฟล์ได้ทั้งหมดในที่เดียว<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">คัดลอกแล้ว</translation>
 <translation id="5275973617553375938">ไฟล์ที่กู้คืนจาก Google ไดรฟ์</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">บันทึก</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">เมื่อวานนี้ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">มีไฟล์หรือไดเรกทอรีที่มีชื่อเดียวกันนี้อยู่แล้ว</translation>
 <translation id="8372852072747894550">กรีก</translation>
-<translation id="8382450452152102026">ไปยัง <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">มิติข้อมูล</translation>
 <translation id="8437209419043462667">สหรัฐอเมริกา</translation>
 <translation id="8456681095658380701">ชื่อไม่ถูกต้อง</translation>

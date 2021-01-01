@@ -231,7 +231,6 @@
 <translation id="1243436884219965846">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="1244265436519979884">ಪ್ರಸ್ತುತವಾಗಿ Linux ಮರುಸ್ಥಾಪನೆ ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
 <translation id="1244303850296295656">ವಿಸ್ತರಣೆ ದೋಷ</translation>
-<translation id="1246158006305844142">ನಿಮ್ಮ Google ಖಾತೆಯೊಂದಿಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ ಎಲ್ಲಾ Chrome OS ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ. ಬ್ರೌಸರ್ ಸಿಂಕ್ ಆಯ್ಕೆಗಳಿಗಾಗಿ, <ph name="LINK_BEGIN" />Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="LINK_END" /> ಹೋಗಿ.</translation>
 <translation id="1246905108078336582">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ನಿಂದ ಸಲಹೆಗಳನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="1251366534849411931">ಓಪನಿಂಗ್ ಕರ್ಲಿ ಬ್ರಾಕೆಟ್ ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ಸೈಟ್‌ಗಳು ಮತ್ತು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ <ph name="TOTAL_USAGE" /> ಡೇಟಾವನ್ನು ಇದು ತೆರವುಗೊಳಿಸುತ್ತದೆ</translation>
@@ -273,7 +272,6 @@
 <translation id="1294807885394205587">ಈ ಪ್ರಕ್ರಿಯೆಯು ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ತೆಗೆದುಕೊಳ್ಳಬಹುದು. ಕಂಟೇನರ್ ನಿರ್ವಾಹಕರನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="1296911687402551044">ಆಯ್ಕೆ ಮಾಡಲಾದ ಟ್ಯಾಬ್ ಅನ್ನು ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="1297175357211070620">ಗಮ್ಯಸ್ಥಾನ</translation>
-<translation id="1300415640239881824">ಸಂರಕ್ಷಿತ ವಿಷಯದ ವರ್ಧಿತ ಪ್ಲೇಬ್ಯಾಕ್ ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಿದೆಯೇ ಎಂದು ನಿರ್ಧರಿಸಲು ನಿಮ್ಮ ಸಾಧನದ ಗುರುತನ್ನು Google ಮೂಲಕ ಪರಿಶೀಲಿಸಬೇಕೆಂದು <ph name="DOMAIN" /> ಬಯಸಿದೆ.</translation>
 <translation id="1300806585489372370">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಲು, ಮೊದಲು <ph name="BEGIN_LINK" />ಗುರುತಿಸುವಿಕೆಗಳನ್ನು ಆನ್ ಮಾಡಿ<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080">ಈ ಮುಂದಿನ ಫೈಲ್‌ಗಳನ್ನು <ph name="ORIGIN" /> ಎಡಿಟ್ ಮಾಡಬಹುದು</translation>
 <translation id="1302139669997477151">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆಯುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
@@ -1250,6 +1248,7 @@
 <translation id="2366260648632264559">ಸಿಸ್ಟಂ ಪಠ್ಯವನ್ನು ಈ ಭಾಷೆಯಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="2367972762794486313">ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ತೋರಿಸು</translation>
 <translation id="2371076942591664043">&amp;ಮುಗಿಸಿದಾಗ ತೆರೆಯಿರಿ</translation>
+<translation id="23721837607121582">ಮೊಬೈಲ್ ಪ್ರೊಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">ಕಾಗದಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
 <translation id="2375406435414127095">ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="2377588536920405462">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಮುಖ್ಯ ಸ್ಥಳ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡುವ ಮೂಲಕ ನೀವು ಸ್ಥಳವನ್ನು ಆಫ್ ಮಾಡಬಹುದು. ನೀವು ಸ್ಥಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ, ಸ್ಥಳಕ್ಕಾಗಿ ವೈ-ಫೈ, ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳು ಮತ್ತು ಸೆನ್ಸರ್‌ಗಳ ಬಳಕೆಯನ್ನು ಸಹ ಆಫ್ ಮಾಡಬಹುದು.</translation>
@@ -1446,7 +1445,6 @@
 <translation id="2606246518223360146">ಡೇಟಾ ಲಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="2606454609872547359">ಇಲ್ಲ, ChromeVox ಇಲ್ಲದೆಯೇ ಮುಂದುವರಿಸಿ</translation>
 <translation id="2607101320794533334">ವಿಷಯ ಸಾರ್ವಜನಿಕ ಕೀಲಿ ಮಾಹಿತಿ</translation>
-<translation id="2607968157341167679">ಯಾವುದೇ ಆಲ್ಬಮ್‌ಗಳಿಲ್ಲ. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ನಲ್ಲಿ ಆಲ್ಬಮ್ ಅನ್ನು ರಚಿಸಿ.</translation>
 <translation id="2609896558069604090">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ರಚಿಸಿ...</translation>
 <translation id="2609980095400624569">ಕನೆಕ್ಷನ್ ಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="2610157865375787051">ನಿದ್ರಾವಸ್ಥೆ</translation>
@@ -1591,7 +1589,6 @@
 <translation id="2762441749940182211">ಕ್ಯಾಮೆರಾವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2764786626780673772">VPN ವಿವರಗಳು</translation>
 <translation id="2765217105034171413">ಸಣ್ಣ</translation>
-<translation id="2765729904637714153">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಮಧುರ ಕ್ಷಣಗಳನ್ನು ಮೆಲುಕು ಹಾಕಿ. ಆಲ್ಬಮ್‌ಗಳನ್ನು ಸೇರಿಸಲು ಅಥವಾ ಎಡಿಟ್ ಮಾಡಲು, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ಗೆ ಹೋಗಿ.</translation>
 <translation id="2766006623206032690">ಅಂ&amp;ಟಿಸಿ ಮತ್ತು ಹೋಗಿ</translation>
 <translation id="2766161002040448006">ಪೋಷಕರ ಬಳಿ ಕೇಳಿ</translation>
 <translation id="2767127727915954024">ಈ ಸೈಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೀವು ಮುಚ್ಚುವವರೆಗೆ, <ph name="FILENAME" /> ಫೈಲ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು <ph name="ORIGIN" /> ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
@@ -2678,6 +2675,7 @@
 <translation id="3969092967100188979">ಆನ್ ಆಗಿದೆ, ರೋಮಿಂಗ್ ಸೇವೆ ಇದೆ</translation>
 <translation id="3970114302595058915">ಐಡಿ</translation>
 <translation id="397105322502079400">ಎಣಿಸಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="3971140002794351170">ಮೊಬೈಲ್ ಪ್ರೊಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">ಈ ಭದ್ರತೆ ಕೀನಲ್ಲಿರುವ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ಗಳು</translation>
 <translation id="3973660817924297510">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ (<ph name="TOTAL_PASSWORDS" /> ರಲ್ಲಿ <ph name="CHECKED_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">ಕ್ಷೇತ್ರಕ್ಕಾಗಿ ಸರ್ವರ್ ಸಂಪರ್ಕಿಸುವುದು ವಿಫಲವಾಗಿದೆ</translation>
@@ -4672,7 +4670,6 @@
 <translation id="6331566915566907158">Chrome OS ನ ವೈಶಿಷ್ಟ್ಯಗಳು ಹಾಗೂ ಕೆಲಸ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="6331818708794917058">ಸೈಟ್‌ಗಳು MIDI ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="6333064448949140209">ಡೀಬಗ್ ಮಾಡಲು Google ಗೆ ಫೈಲ್ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
-<translation id="6334444530352320327">ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು OS ಸೆಟ್ಟಿಂಗ್‌ಗಳು ನೀವು ಈ ಖಾತೆಯನ್ನು ಬಳಸಿ ಸೈನ್ ಇನ್ ಆಗಿರುವ Chromebook ಗಳಾದ್ಯಂತ ಸಿಂಕ್ ಆಗುತ್ತದೆ.<ph name="LINK_BEGIN" />ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Linux ಅನ್ನು ಪ್ರಾರಂಭಿಸಲು, ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡುವುದು ಮತ್ತು ಈ Chromebook ಅನ್ನು ಫ್ಯಾಕ್ಟರಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಮರುಹೊಂದಿಸುವುದನ್ನು <ph name="MANAGER" /> ಬಯಸುತ್ತದೆ.</translation>
 <translation id="6336038146639916978">ADB ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು <ph name="MANAGER" /> ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದೆ. ಇದು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು 24 ಗಂಟೆಗಳಲ್ಲಿ ಮರುಹೊಂದಿಸುತ್ತದೆ. ನೀವು ಇರಿಸಿಕೊಳ್ಳಲು ಬಯಸುವ ಯಾವುದೇ ಫೈಲ್‌ಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ.</translation>
 <translation id="6338981933082930623">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳು ನಿಮಗೆ ಯಾವುದಾದರೂ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಬಹುದು</translation>
@@ -5109,7 +5106,6 @@
 <translation id="6860097299815761905">ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳು...</translation>
 <translation id="686022878923628150">MIDI ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡದಂತೆ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="6860427144121307915">ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" />, ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನೀವು ಬ್ಯಾಕಪ್ ಮಾಡಬೇಕೆಂದು ಮತ್ತು 1 ವಾರದ ಒಳಗಾಗಿ ಈ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು ಹಿಂತಿರುಗಿಸಬೇಕೆಂದು ಬಯಸುತ್ತದೆ.<ph name="LINK_BEGIN" />ವಿವರಗಳನ್ನು ನೋಡಿ<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">ಪಾಸ್‌ವರ್ಡ್ ಅಳಿಸುವುದೇ?</translation>
 <translation id="6865313869410766144">ಸ್ವಯಂತುಂಬುವಿಕೆ ಫಾರ್ಮ್ ಡೇಟಾ</translation>
 <translation id="6865598234501509159">ಪುಟವು <ph name="LANGUAGE" /> ಭಾಷೆಯಲ್ಲಿಲ್ಲ</translation>
@@ -5192,7 +5188,6 @@
 <translation id="696103774840402661">ಈ <ph name="DEVICE_TYPE" /> ದಲ್ಲಿ ಇರುವ ಎಲ್ಲಾ ಬಳಕೆದಾರರ ಎಲ್ಲಾ ಫೈಲ್‌ಗಳು ಮತ್ತು ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="6964390816189577014">ಹೀರೋ</translation>
 <translation id="6964760285928603117">ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" />, ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನೀವು ಬ್ಯಾಕಪ್ ಮಾಡಬೇಕೆಂದು ಮತ್ತು ಈ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು ಇಂದೇ ಹಿಂತಿರುಗಿಸಬೇಕೆಂದು ಬಯಸುತ್ತದೆ.<ph name="LINK_BEGIN" />ವಿವರಗಳನ್ನು ನೋಡಿ<ph name="LINK_END" />}one{<ph name="MANAGER" />, ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನೀವು ಬ್ಯಾಕಪ್ ಮಾಡಬೇಕೆಂದು ಮತ್ತು ಈ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು {NUM_DAYS} ಗಳ ಒಳಗಾಗಿ ಹಿಂತಿರುಗಿಸಬೇಕೆಂದು ಬಯಸುತ್ತದೆ.<ph name="LINK_BEGIN" />ವಿವರಗಳನ್ನು ನೋಡಿ<ph name="LINK_END" />}other{<ph name="MANAGER" />, ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನೀವು ಬ್ಯಾಕಪ್ ಮಾಡಬೇಕೆಂದು ಮತ್ತು ಈ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು {NUM_DAYS} ಗಳ ಒಳಗಾಗಿ ಹಿಂತಿರುಗಿಸಬೇಕೆಂದು ಬಯಸುತ್ತದೆ.<ph name="LINK_BEGIN" />ವಿವರಗಳನ್ನು ನೋಡಿ<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">ಸರಿ</translation>
 <translation id="6965648386495488594">ಪೋರ್ಟ್</translation>
 <translation id="6965978654500191972">ಸಾಧನ</translation>
@@ -6321,7 +6316,6 @@
 <translation id="8227119283605456246">ಫೈಲ್‌‎ ಲಗತ್ತಿಸಿ</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ ಉಳಿಸುವುದೇ?</translation>
 <translation id="8234795456569844941">ಈ ಸಮಸ್ಯೆಯನ್ನು ಸರಿಪಡಿಸಲು ನಮ್ಮ ಇಂಜಿನಿಯರ್‌ಗಳಿಗೆ ಸಹಾಯ ಮಾಡಿ. ಪ್ರೊಫೈಲ್ ದೋಷ ಸಂದೇಶವನ್ನು ಪಡೆಯುವುದಕ್ಕೆ ಸ್ವಲ್ಪ ಮೊದಲು ಏನಾಯಿತು ಎಂದು ನಮಗೆ ತಿಳಿಸಿ:</translation>
-<translation id="8235605354099176425">ಇತ್ತೀಚಿನ Chrome ಟ್ಯಾಬ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು <ph name="LINK1_BEGIN" />Chrome ಸಿಂಕ್<ph name="LINK1_END" /> ಅನ್ನು ಆನ್ ಮಾಡಿ. <ph name="LINK2_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">ಬದಲಾಗಿ ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="8237647586961940482">ಗಾಢ ಗುಲಾಬಿ ಮತ್ತು ಕೆಂಪು</translation>
 <translation id="8239032431519548577">ಎಂಟರ್‌ಪ್ರೈಸ್ ನೋಂದಣಿ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
@@ -6467,6 +6461,7 @@
 <translation id="8398877366907290961">ಏನಾಗಲಿ ಮುಂದುವರೆಯಿರಿ</translation>
 <translation id="8400146488506985033">ಜನರನ್ನು ನಿರ್ವಹಿಸು</translation>
 <translation id="8401432541486058167">ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್‌ನೊಂದಿಗೆ ಸಂಯೋಜಿತವಾಗಿರುವ ಪಿನ್ ಅನ್ನು ಒದಗಿಸಿ.</translation>
+<translation id="8403562727702715619">Google Drive ನಲ್ಲಿನ ಇತ್ತೀಚಿನದು</translation>
 <translation id="8407199357649073301">ಲಾಗ್ ಹಂತ:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ನೆಟ್‌ವರ್ಕ್, ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6908,6 +6903,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" />, ಕೆಳಗಿನ ಫೈಲ್‌ಗಳು ಮತ್ತು ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬಹುದು</translation>
 <translation id="8890170499370378450">ಮೊಬೈಲ್ ಡೇಟಾ ಶುಲ್ಕಗಳನ್ನು ತೆರಬೇಕಾಗಬಹುದು</translation>
 <translation id="8890516388109605451">ಮೂಲಗಳು</translation>
+<translation id="8890529496706615641">ಪ್ರೊಫೈಲ್ ಅನ್ನು ಮರುಹೆಸರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ತಾಂತ್ರಿಕ ಬೆಂಬಲಕ್ಕಾಗಿ ನಿಮ್ಮ ಕ್ಯಾರಿಯರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="8892168913673237979">ಎಲ್ಲ ಹೊಂದಿಸಿ!</translation>
 <translation id="8893801527741465188">ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಪ್ರಕ್ರಿಯೆ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="8893928184421379330">ಕ್ಷಮಿಸಿ, <ph name="DEVICE_LABEL" />ಸಾಧನವನ್ನು ಗುರುತಿಸಲಾಗಲಿಲ್ಲ.</translation>

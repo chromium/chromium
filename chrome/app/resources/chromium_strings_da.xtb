@@ -166,7 +166,6 @@
 <translation id="6403826409255603130">Chromium er en webbrowser, der kører websider og apps med lynets hast. Den er hurtig, stabil og brugervenlig. Beskyttelse mod malware og phishing er indbygget i Chromium, så du kan søge mere sikkert på internettet.</translation>
 <translation id="6434250628340475518">Chromium OS-system</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium genstarter om 1 sekund}one{Chromium genstarter om # sekund}other{Chromium genstarter om # sekunder}}</translation>
-<translation id="6464340581899189425">Hvis du har flere Google-konti, kan du føje dem til din <ph name="DEVICE_TYPE" />. Dine konti vil være tilgængelige i Chromium-browseren og Play Butik samt tjenester som f.eks. Gmail, Drev og YouTube.<ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Den styrer også, hvilken side der vises, når du åbner Chromium.</translation>
 <translation id="6510925080656968729">Afinstaller Chromium</translation>
 <translation id="6570579332384693436">Chromium sender den tekst, du skriver i tekstfelter, til Google for at rette stavefejl</translation>
@@ -262,6 +261,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="9019929317751753759">For at gøre Chromium mere sikker har vi deaktiveret følgende udvidelser, som ikke er anført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og muligvis er blevet tilføjet, uden at du vidste det.</translation>
 <translation id="9089354809943900324">Chromium er forældet</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium genstarter om en time}one{Chromium genstarter om # time}other{Chromium genstarter om # timer}}</translation>
+<translation id="9107750757953039239">Hvis du har flere Google-konti, kan du tilføje dem på din <ph name="DEVICE_TYPE" />. Dine konti vil være tilgængelige i Chromium-browseren og Play Butik samt tjenester som f.eks. Gmail, Drev og YouTube. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Åbn linket på en ny Chromium-&amp;fane</translation>
 <translation id="911206726377975832">Slet også dine browserdata?</translation>
 <translation id="9158494823179993217">Din systemadministrator har konfigureret Chromium til at åbne en anden browser for at få adgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>

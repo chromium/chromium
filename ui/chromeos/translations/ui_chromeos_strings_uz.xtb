@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Norveg</translation>
 <translation id="1430915738399379752">Chop etish</translation>
 <translation id="1435838927755162558">Jildni Parallels Desktopga ulashish</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> jildiga koʻchirildi</translation>
 <translation id="1467432559032391204">Chapga</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1474339897586437869"><ph name="FILENAME" /> faylini yuklab bo‘lmadi. Google Drive omborida yetarli bo‘sh joy yo‘q.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> ta element oʻchirib tashlansinmi?</translation>
 <translation id="2230062665678605299">“<ph name="FOLDER_NAME" />” jildini yaratib bo‘lmadi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Chiqitdondan tiklash</translation>
-<translation id="2275059641601412272">Boshqa joyga olindi.</translation>
 <translation id="2288278176040912387">Patefon</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ta fayl ochilmoqda.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> fayli ochilmoqda.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Eston</translation>
 <translation id="3466147780910026086">Media qurilmasi tekshirilmoqda...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ta rasm <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> omboriga zaxiralandi</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> jildiga nusxalandi.</translation>
 <translation id="3475447146579922140">Google elektron jadvali</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ta xatolik.</translation>
@@ -410,7 +407,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
     Qurilmangizda nima bo‘lishidan qat’i nazar fayllaringiz Google Drive xizmatiga saqlangan.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Ulashing, yarating va boshqalar bilan birga<ph name="MARKUP_8" />
     bir joyda joylashgan fayllaringiz ustida hamkorlikda ishlang. <ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Nusxa olindi.</translation>
 <translation id="5275973617553375938">Google Disk‘dan tiklangan fayllar</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5318819489018851358">Linux bilan ulashish</translation>
@@ -707,7 +703,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8336153091935557858">Kecha <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Shu nomli fayl yoki katalog avvaldan mavjud.</translation>
 <translation id="8372852072747894550">Grek</translation>
-<translation id="8382450452152102026">Kimga: <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">O‘lchamlar</translation>
 <translation id="8437209419043462667">Ingliz (AQSH)</translation>
 <translation id="8456681095658380701">Yaroqsiz nom</translation>

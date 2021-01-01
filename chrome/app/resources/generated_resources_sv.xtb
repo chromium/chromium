@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">Granska lösenord</translation>
 <translation id="1244265436519979884">Återställning av Linux pågår</translation>
 <translation id="1244303850296295656">Fel i tillägg</translation>
-<translation id="1246158006305844142">Appar och inställningar synkroniseras på alla Chrome OS-enheter där du är inloggad på ditt Google-konto. Alternativ för synkronisering av webbläsaren finns i <ph name="LINK_BEGIN" />Chrome-inställningarna<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Vill du ta bort förslaget från urklipp?</translation>
 <translation id="1251366534849411931">Oväntad vänster klammerparentes: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802"><ph name="TOTAL_USAGE" /> data som har lagrats av webbplatser och installerade appar raderas</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">Detta kan ta några minuter. Startar hanteraren av behållare.</translation>
 <translation id="1296911687402551044">Fäst vald flik</translation>
 <translation id="1297175357211070620">Destination</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> kräver att enhetens identitet verifieras av Google för att avgöra om enheten är kvalificerad för förbättrad uppspelning av skyddat innehåll.</translation>
 <translation id="1300806585489372370"><ph name="BEGIN_LINK" />Aktivera identifierare<ph name="END_LINK" /> om du vill ändra den här inställningen</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> har redigeringsbehörighet till följande filer</translation>
 <translation id="1302139669997477151">Skärmdump blockeras</translation>
@@ -1446,7 +1444,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2606246518223360146">Länka Data</translation>
 <translation id="2606454609872547359">Nej, fortsätt utan ChromeVox</translation>
 <translation id="2607101320794533334">Information om mottagarens publika nyckel</translation>
-<translation id="2607968157341167679">Inga album. Skapat ett album i <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Skapa genvägar ...</translation>
 <translation id="2609980095400624569">Det gick inte att upprätta anslutningen</translation>
 <translation id="2610157865375787051">Viloläge</translation>
@@ -1591,7 +1588,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2762441749940182211">Kamera är blockerad</translation>
 <translation id="2764786626780673772">VPN-information</translation>
 <translation id="2765217105034171413">Liten</translation>
-<translation id="2765729904637714153">Återupplev dina favoritminnen. Öppna <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" /> om du vill lägga till eller redigera album.</translation>
 <translation id="2766006623206032690">Kl&amp;istra in och öppna</translation>
 <translation id="2766161002040448006">Fråga en förälder</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> har redigeringsbehörighet till <ph name="FILENAME" /> tills du stänger alla flikar för den här webbplatsen</translation>
@@ -4671,7 +4667,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6331566915566907158">Hjälp oss att förbättra funktioner och prestanda i Chrome OS</translation>
 <translation id="6331818708794917058">Webbplatser får begära tillstånd att ansluta till MIDI-enheter</translation>
 <translation id="6333064448949140209">Filen skickas till Google för felsökning</translation>
-<translation id="6334444530352320327">Appar och systeminställningar synkroniseras på alla Chromebook-enheter där du är inloggad på detta konto.<ph name="LINK_BEGIN" />Synkroniseringsinställningar<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346"><ph name="MANAGER" /> kräver att du säkerhetskopierar din data och återställer Chromebook-enheten till standardinställningarna innan du startar Linux.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> har inaktiverat felsökning med ADB. Detta återställer din <ph name="DEVICE_TYPE" /> inom 24 timmar. Säkerhetskopiera alla filer du vill spara.</translation>
 <translation id="6338981933082930623">Alla webbplatser får visa vilka annonser som helst för dig</translation>
@@ -5108,7 +5103,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6860097299815761905">Proxyinställningar...</translation>
 <translation id="686022878923628150">Förhindra att webbplatser ansluter till MIDI-enheter</translation>
 <translation id="6860427144121307915">Öppna i en flik</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" /> inom 1 vecka.<ph name="LINK_BEGIN" />Mer information<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Vill du radera lösenordet?</translation>
 <translation id="6865313869410766144">Formuläruppgifter för Autofyll</translation>
 <translation id="6865598234501509159">Sidan är inte på <ph name="LANGUAGE" /></translation>
@@ -5191,7 +5185,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="696103774840402661">Alla filer och lokal data för alla användare på denna <ph name="DEVICE_TYPE" /> har raderats permanent.</translation>
 <translation id="6964390816189577014">Hjälte</translation>
 <translation id="6964760285928603117">Ta bort från gruppen</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" /> i dag.<ph name="LINK_BEGIN" />Mer information<ph name="LINK_END" />}other{<ph name="MANAGER" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" /> om {NUM_DAYS} dagar.<ph name="LINK_BEGIN" />Mer information<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Enhet</translation>
@@ -6323,7 +6316,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8227119283605456246">Bifoga fil</translation>
 <translation id="8230134520748321204">Vill du spara lösenordet för <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Hjälp våra programutvecklare att lösa problemet genom att berätta vad som hände precis innan profilmeddelandet visades:</translation>
-<translation id="8235605354099176425">Aktivera <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> för att se de senaste flikarna i Chrome.<ph name="LINK2_BEGIN" />Läs mer<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Dela den här fliken i stället</translation>
 <translation id="8237647586961940482">Mörkrosa och röd</translation>
 <translation id="8239032431519548577">Företagsregistreringen är klar</translation>

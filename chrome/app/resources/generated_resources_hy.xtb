@@ -232,7 +232,6 @@
 <translation id="1243436884219965846">Ստուգել գաղտնաբառերը</translation>
 <translation id="1244265436519979884">Լինուքսի վերականգնումն ընթացքի մեջ է</translation>
 <translation id="1244303850296295656">Ընդլայնման սխալ</translation>
-<translation id="1246158006305844142">Ձեր հավելվածներն ու կարգավորումները կհամաժամացվեն բոլոր Chrome OS սարքերում, որոնցում մտած եք ձեր Google հաշիվ։ Դիտարկիչներում համաժամացման տարբերակներին ծանոթանալու համար անցեք <ph name="LINK_BEGIN" />Chrome-ի կարգավորումներ<ph name="LINK_END" />։</translation>
 <translation id="1246905108078336582">Հեռացնե՞լ առաջարկը սեղմատախտակից:</translation>
 <translation id="1251366534849411931">Պակասում է բացող ձևավոր փակագիծ՝ <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Կայքերի և տեղադրված հավելվածների կողմից պահված <ph name="TOTAL_USAGE" /> ծավալով տվյալները կջնջվեն։</translation>
@@ -274,7 +273,6 @@
 <translation id="1294807885394205587">Սա կարող է մի քանի րոպե տևել։ Կոնտեյներների կառավարիչը գործարկվում է։</translation>
 <translation id="1296911687402551044">Ամրացնել այս ներդիրը</translation>
 <translation id="1297175357211070620">Նպատակակետ</translation>
-<translation id="1300415640239881824">Որպեսզի որոշվի՝ արդյոք ձեր սարքի համար մատչելի է պաշտպանված բովանդակության նվագարկումը <ph name="DOMAIN" /> տիրույթում, ձեր սարքի նույնականացումը պետք է հաստատվի Google-ի կողմից:</translation>
 <translation id="1300806585489372370">Այս կարգավորումը փոփոխելու համար նախ <ph name="BEGIN_LINK" />միացրեք նույնացուցիչները<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> կայքը կարող է փոփոխել հետևյալ ֆայլերը</translation>
 <translation id="1302139669997477151">Սքրինշոթն արգելափակված է</translation>
@@ -1250,6 +1248,7 @@
 <translation id="2366260648632264559">Համակարգի տեքստը ցուցադրել այս լեզվով</translation>
 <translation id="2367972762794486313">Ցույց տալ հավելվածները</translation>
 <translation id="2371076942591664043">Բացել ավարտվելուն &amp;պես</translation>
+<translation id="23721837607121582">Ներբեռնել բջջային պրոֆիլը, ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">Հարմարեցնել թղթին</translation>
 <translation id="2375406435414127095">Միացրեք ձեր հեռախոսը</translation>
 <translation id="2377588536920405462">Դուք կարող եք անջատել տեղորոշումը սարքի կարգավորումներում։ Բացի այդ, տեղորոշման կարգավորումներում հնարավոր է անջատել Wi-Fi-ի, բջջային ցանցերի ու տվիչների օգտագործումը տեղորոշման համար։</translation>
@@ -1447,7 +1446,6 @@
 <translation id="2606246518223360146">Կցել տվյալները</translation>
 <translation id="2606454609872547359">Ոչ, շարունակել առանց ChromeVox-ի</translation>
 <translation id="2607101320794533334">Տեղեկություններ սուբյեկտի հանրային բանալու մասին</translation>
-<translation id="2607968157341167679">Ալբոմներ չկան: Ստեղծեք ալբոմ <ph name="LINK_BEGIN" />Google Լուսանկարներում<ph name="LINK_END" />։</translation>
 <translation id="2609896558069604090">Ստեղծել դյուրանցումներ…</translation>
 <translation id="2609980095400624569">Չհաջողվեց կապ հաստատել հեռախոսի հետ</translation>
 <translation id="2610157865375787051">Քուն</translation>
@@ -1592,7 +1590,6 @@
 <translation id="2762441749940182211">Տեսախցիկի օգտագործումն արգելված է</translation>
 <translation id="2764786626780673772">Տեղեկություններ VPN-ի մասին</translation>
 <translation id="2765217105034171413">Փոքր</translation>
-<translation id="2765729904637714153">Կրկին վերապրեք լավագույն պահերը։ Ալբոմ ավելացնելու կամ առկա ալբոմներում փոփոխություններ անելու համար անցեք <ph name="LINK_BEGIN" />Google Լուսանկարներ<ph name="LINK_END" />։</translation>
 <translation id="2766006623206032690">Տեղա&amp;դրել և անցնել</translation>
 <translation id="2766161002040448006">Հարցնել ծնողին</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> կայքը կկարողանա փոփոխել <ph name="FILENAME" /> ֆայլը, մինչև չփակեք այս կայքի բոլոր ներդիրները</translation>
@@ -2679,6 +2676,7 @@
 <translation id="3969092967100188979">Միացված է, ռոումինգում է</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
+<translation id="3971140002794351170">Ներբեռնել բջջային պրոֆիլը, ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">Այս անվտանգության բանալու մատնահետքերը</translation>
 <translation id="3973660817924297510">Գաղտնաբառերը ստուգվում են (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">Չհաջողվեց կապվել սերվերի հետ այս տիրույթի համար</translation>
@@ -4673,7 +4671,6 @@
 <translation id="6331566915566907158">Օգնել ավելի լավը դարձնել Chrome OS-ի գործառույթներն ու աշխատանքը</translation>
 <translation id="6331818708794917058">Կայքերը կարող են MIDI սարքերին միանալու թույլտվություն խնդրել</translation>
 <translation id="6333064448949140209">Վրիպազերծման համար ֆայլը կուղարկվի Google-ին</translation>
-<translation id="6334444530352320327">Ձեր հավելվածները և OS-ի կարգավորումները կհամաժամացվեն բոլոր Chromebook սարքերում, որոնցում մտել եք այս հաշիվ։<ph name="LINK_BEGIN" />Համաժամացման կարգավորումներ<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Լինուքսը գործարկելու համար (կանոնի աղբյուրը՝ <ph name="MANAGER" />) անհրաժեշտ է, որ պահուստավորեք ձեր տվյալներն ու վերակայեք այս Chromebook-ի գործարանային կարգավորումները։</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> կայքն անջատել է ADB վրիպազերծումը։ 24 ժամ հետո ձեր <ph name="DEVICE_TYPE" /> սարքը կվերակայվի։ Պահուստավորեք ֆայլերը, որոնք ուզում եք պահել։</translation>
 <translation id="6338981933082930623">Բոլոր կայքերը կարող են գովազդ ցուցադրել</translation>
@@ -5110,7 +5107,6 @@
 <translation id="6860097299815761905">Պրոքսի-սերվերի կարգավորումներ…</translation>
 <translation id="686022878923628150">Արգելել կայքերին միանալ MIDI սարքերին</translation>
 <translation id="6860427144121307915">Բացել ներդիրով</translation>
-<translation id="6862729829592030773">Տիրույթի (<ph name="MANAGER" />) կանոնների համաձայն՝ դուք պետք է պահուստավորեք ձեր տվյալները և 1 շաբաթվա ընթացքում վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։<ph name="LINK_BEGIN" />Տեսնել մանրամասները<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Ջնջե՞լ գաղտնաբառը</translation>
 <translation id="6865313869410766144">Ինքնալցման տվյալներ</translation>
 <translation id="6865598234501509159">Էջը <ph name="LANGUAGE" /> չէ</translation>
@@ -5193,7 +5189,6 @@
 <translation id="696103774840402661">Այս <ph name="DEVICE_TYPE" /> սարքի բոլոր օգտատերերի ֆայլերն ու տեղային տվյալները ընդմիշտ ջնջվել են։</translation>
 <translation id="6964390816189577014">Հերոս</translation>
 <translation id="6964760285928603117">Հեռացնել խմբից</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{Տիրույթի (<ph name="MANAGER" />) կանոնների համաձայն՝ դուք պետք է պահուստավորեք ձեր տվյալները և այսօր վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։<ph name="LINK_BEGIN" />Տեսնել մանրամասները<ph name="LINK_END" />}one{Տիրույթի (<ph name="MANAGER" />) կանոնների համաձայն՝ դուք պետք է պահուստավորեք ձեր տվյալները և {NUM_DAYS} օրվա ընթացքում վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։<ph name="LINK_BEGIN" />Տեսնել մանրամասները<ph name="LINK_END" />}other{Տիրույթի (<ph name="MANAGER" />) կանոնների համաձայն՝ դուք պետք է պահուստավորեք ձեր տվյալները և {NUM_DAYS} օրվա ընթացքում վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։<ph name="LINK_BEGIN" />Տեսնել մանրամասները<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">Եղավ</translation>
 <translation id="6965648386495488594">Միացք</translation>
 <translation id="6965978654500191972">Սարք</translation>
@@ -6323,7 +6318,6 @@
 <translation id="8227119283605456246">Կցել ֆայլ</translation>
 <translation id="8230134520748321204">Պահե՞լ <ph name="ORIGIN" /> կայքի գաղտնաբառը</translation>
 <translation id="8234795456569844941">Օգնեք մեր ճարտարագետներին շտկել այս խնդիրը։ Նկարագրեք, թե ինչ տեղի ունեցավ նախքան պրոֆիլի սխալի մասին հաղորդագրություն ստանալը՝</translation>
-<translation id="8235605354099176425">Միացրեք <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" />-ը՝ Chrome-ի վերջին բացված ներդիրները դիտելու համար։<ph name="LINK2_BEGIN" />Իմանալ ավելին<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Փոխարենը կիսվեք այս ներդիրով</translation>
 <translation id="8237647586961940482">Մուգ վարդագույն և կարմիր</translation>
 <translation id="8239032431519548577">Ընկերության գրանցումն ավարտված է</translation>
@@ -6469,6 +6463,7 @@
 <translation id="8398877366907290961">Շարունակել</translation>
 <translation id="8400146488506985033">Օգտատերերի կառավարում</translation>
 <translation id="8401432541486058167">Մուտքագրեք PIN կոդը, որը կապված է ձեր խելացի քարտի հետ։</translation>
+<translation id="8403562727702715619">Վերջերս Google Drive-ից</translation>
 <translation id="8407199357649073301">Գրառման մակարդակը՝</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ցանց, միացում…</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6910,6 +6905,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" /> կայքը կարող է փոփոխել հետևյալ ֆայլերն ու պանակները</translation>
 <translation id="8890170499370378450">Բջջային ինտերնետի համար կարող է վճար գանձվել</translation>
 <translation id="8890516388109605451">Աղբյուրներ</translation>
+<translation id="8890529496706615641">Չհաջողվեց վերանվանել պրոֆիլը։ Նորից փորձեք կամ դիմեք օպերատորին՝ տեխնիկական աջակցման համար։</translation>
 <translation id="8892168913673237979">Կայված է:</translation>
 <translation id="8893801527741465188">Ապատեղադրումն ավարտվեց</translation>
 <translation id="8893928184421379330">Չհաջողվեց ճանաչել <ph name="DEVICE_LABEL" /> սարքը:</translation>

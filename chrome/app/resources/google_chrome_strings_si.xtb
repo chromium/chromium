@@ -181,7 +181,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="573759479754913123">Chrome OS පිළිබඳ</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome කැනරි</translation>
 <translation id="5804318322022881572">Chrome දියත් කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
-<translation id="5851757216820085940">ඔබට Google ගිණුම් කීපයක් ඇති නම්, ඔබට ඒවා ඔබගේ <ph name="DEVICE_TYPE" /> වෙත එක් කළ හැකිය. ඔබගේ ගිණුම් Chrome බ්‍රව්සරයෙහි සහ Play Store හි මෙන්ම Gmail, Drive සහ YouTube වැනි සේවාවල ලබා ගත හැකිය.<ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome මුරපද සංස්කරණ කිරීමට උත්සහ කරයි.</translation>
 <translation id="5895138241574237353">යළි අරඹන්න</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ජාල පුරනය</translation>
@@ -289,5 +288,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="911206726377975832">ඔබේ බ්‍රවුසිං දත්තත් මකන්නද?</translation>
 <translation id="9138603949443464873">ඔබේ වෙනස්කම් යෙදීමට, Chrome නැවත දියත් කරන්න</translation>
 <translation id="919706545465235479">සමමුහුර්ත කිරීම ආරම්භ කිරීමට Chrome යාවත්කාලීන කරන්න</translation>
+<translation id="94743460404517794">ඔබට Google ගිණුම් කීපයක් ඇති නම්, ඔබට ඒවා ඔබගේ <ph name="DEVICE_TYPE" /> වෙත එක් කළ හැකිය. ඔබගේ ගිණුම් Chrome බ්‍රව්සරයෙහි සහ Play Store හි මෙන්ම Gmail, Drive සහ YouTube වැනි සේවාවල ලබා ගත හැකිය. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome ඔබේ පෙරනිමි බ්‍රව්සරයයි</translation>
 </translationbundle>

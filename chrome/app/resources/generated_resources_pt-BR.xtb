@@ -231,7 +231,6 @@
 <translation id="1243436884219965846">Avaliar senhas</translation>
 <translation id="1244265436519979884">A restauração do Linux está em andamento</translation>
 <translation id="1244303850296295656">Erro na extensão</translation>
-<translation id="1246158006305844142">Seus apps e suas configurações serão sincronizados por todos os dispositivos Chrome OS conectados à sua Conta do Google. Para ver as opções de sincronização do navegador, acesse as <ph name="LINK_BEGIN" />configurações do Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Remover sugestão da área de transferência?</translation>
 <translation id="1251366534849411931">Chave de abertura esperada: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Isso limpará <ph name="TOTAL_USAGE" /> de dados de armazenados por sites e apps instalados</translation>
@@ -273,7 +272,6 @@
 <translation id="1294807885394205587">O processo pode levar alguns minutos. Iniciando o administrador de contêiner.</translation>
 <translation id="1296911687402551044">Fixar guia selecionada</translation>
 <translation id="1297175357211070620">Destino</translation>
-<translation id="1300415640239881824">O domínio <ph name="DOMAIN" /> quer que a identidade do seu dispositivo seja verificada pelo Google para determinar se ele está qualificado para reprodução aprimorada de conteúdo protegido.</translation>
 <translation id="1300806585489372370">Para alterar essa configuração, primeiro <ph name="BEGIN_LINK" />ative os identificadores<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> pode editar os seguintes arquivos</translation>
 <translation id="1302139669997477151">A captura de tela está bloqueada</translation>
@@ -1447,7 +1445,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2606246518223360146">Vincular dados</translation>
 <translation id="2606454609872547359">Não, continuar sem o ChromeVox</translation>
 <translation id="2607101320794533334">Informações da chave pública do requerente</translation>
-<translation id="2607968157341167679">Nenhum álbum. Crie um no <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Criar atalhos...</translation>
 <translation id="2609980095400624569">Não foi possível estabelecer a conexão</translation>
 <translation id="2610157865375787051">Suspender</translation>
@@ -1592,7 +1589,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2762441749940182211">Câmera bloqueada</translation>
 <translation id="2764786626780673772">Detalhes de VPN</translation>
 <translation id="2765217105034171413">Pequeno</translation>
-<translation id="2765729904637714153">Reviva suas lembranças favoritas. Para adicionar ou editar álbuns, acesse o <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="2766006623206032690">Co&amp;lar e ir</translation>
 <translation id="2766161002040448006">Pedir para pai/mãe</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> poderá editar <ph name="FILENAME" /> até que você feche todas as guias desse site</translation>
@@ -4675,7 +4671,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6331566915566907158">Ajudar a melhorar os recursos e o desempenho do Chrome OS</translation>
 <translation id="6331818708794917058">Os sites podem pedir para se conectar a dispositivos MIDI</translation>
 <translation id="6333064448949140209">O arquivo será enviado ao Google para depuração</translation>
-<translation id="6334444530352320327">Suas configurações de apps e de sistema operacional serão sincronizadas nos Chromebooks em que você fizer login com esta conta.<ph name="LINK_BEGIN" />Configurações de sincronização<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Para iniciar o Linux, <ph name="MANAGER" /> exige que você faça backup dos seus dados e redefina o Chromebook para as configurações originais.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> desativou a depuração do adb. O <ph name="DEVICE_TYPE" /> será redefinido em 24 horas. Faça backup dos arquivos importantes para você.</translation>
 <translation id="6338981933082930623">Todos os sites podem exibir anúncios</translation>
@@ -5112,7 +5107,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6860097299815761905">Configurações de proxy...</translation>
 <translation id="686022878923628150">Impedir que sites se conectem a dispositivos MIDI</translation>
 <translation id="6860427144121307915">Abrir em uma guia</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> em até uma semana. <ph name="LINK_BEGIN" />Veja os detalhes<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Excluir senha?</translation>
 <translation id="6865313869410766144">Preenchimento automático de dados de formulário</translation>
 <translation id="6865598234501509159">A página não está em <ph name="LANGUAGE" /></translation>
@@ -5195,7 +5189,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="696103774840402661">Todos os arquivos e dados locais para todos os usuários neste <ph name="DEVICE_TYPE" /> foram excluídos permanentemente.</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Remover do grupo</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> hoje. <ph name="LINK_BEGIN" />Veja os detalhes<ph name="LINK_END" />}one{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dia. <ph name="LINK_BEGIN" />Veja os detalhes<ph name="LINK_END" />}other{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dias. <ph name="LINK_BEGIN" />Veja os detalhes<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Porta</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
@@ -6327,7 +6320,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8227119283605456246">Anexar arquivo</translation>
 <translation id="8230134520748321204">Salvar senha para <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Ajude nossos engenheiros a corrigir esse problema. Conte-nos o que aconteceu logo antes de você receber a mensagem de erro de perfil:</translation>
-<translation id="8235605354099176425">Ativar a <ph name="LINK1_BEGIN" />Sincronização do Chrome<ph name="LINK1_END" /> para ver guias recentes do navegador. <ph name="LINK2_BEGIN" />Saiba mais<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Compartilhar esta guia</translation>
 <translation id="8237647586961940482">Rosa-escuro e vermelho</translation>
 <translation id="8239032431519548577">Inscrição na empresa concluída</translation>

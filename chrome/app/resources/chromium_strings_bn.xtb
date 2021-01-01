@@ -166,7 +166,6 @@
 <translation id="6403826409255603130">Chromium হল একটি ওয়েব ব্রাউজার যা ওয়েব পৃষ্ঠার গতি এবং অ্যাপগুলিকে বিদ্যুৎ গতিতে সঞ্চালিত করে৷ এটা দ্রুত, স্থিতিশীল এবং সহজে ব্যবহারের যোগ্য৷ Chromium নির্মিত ম্যালওয়ার এবং ফিশিং সুরক্ষার সাহায্যে আরও সুরক্ষিত ভাবে ওয়েব ব্রাউজ করুন৷</translation>
 <translation id="6434250628340475518">Chromium OS সিস্টেম</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium ১ সেকেন্ডের মধ্যে রিস্টার্ট হবে}one{Chromium # সেকেন্ডের মধ্যে রিস্টার্ট হবে}other{Chromium # সেকেন্ডের মধ্যে রিস্টার্ট হবে}}</translation>
-<translation id="6464340581899189425">আপনার একাধিক Google অ্যাকাউন্ট থাকলে, সেগুলি <ph name="DEVICE_TYPE" />-এ যোগ করতে পারবেন। এই অ্যাকাউন্টের মাধ্যমে আপনি Chromium ব্রাউজার ও Play Store সহ Gmail, Drive ও YouTube-এর মতো পরিষেবা অ্যাক্সেস করতে পারবেন।<ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">আপনি Chromium শুরু করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>
 <translation id="6510925080656968729">Chromium আনইনস্টল করুন</translation>
 <translation id="6570579332384693436">ভুল বানানগুলি ঠিক করতে, Chromium টেক্সট ফিল্ডে আপনার লেখা টেক্সট Google-এ পাঠায়</translation>

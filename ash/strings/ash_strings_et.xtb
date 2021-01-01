@@ -451,6 +451,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Jäädvusta</translation>
 <translation id="495046168593986294">Keri üles</translation>
+<translation id="4952936045814352993">Telefoni asukoha määramine pole saadaval, kui alarmi helid on keelatud</translation>
 <translation id="4961318399572185831">Ekraani ülekandmine</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Rakenduse ikooni märguandetäpp</translation>

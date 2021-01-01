@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">நார்வேஜியன்</translation>
 <translation id="1430915738399379752">அச்சிடுக</translation>
 <translation id="1435838927755162558">Parallels Desktop மூலம் கோப்புறையைப் பகிருங்கள்</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" />க்கு நகர்த்தப்பட்டது.</translation>
 <translation id="1467432559032391204">இடது</translation>
 <translation id="1471718551822868769">ஸ்லோவாக்</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ஏற்றப்படவில்லை. உங்கள் Google இயக்ககத்தில் போதுமான காலியிடம் இல்லை.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை நிச்சயமாக நீக்க விரும்புகிறீர்களா?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" கோப்புறையை உருவாக்க முடியவில்லை. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">நீக்கியவையில் இருந்து மீட்டெடு</translation>
-<translation id="2275059641601412272">நகர்த்தப்பட்டது.</translation>
 <translation id="2288278176040912387">பதிவு பிளேயர்</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> கோப்புகளைத் திறக்கிறது.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> கோப்பைத் திறக்கிறது.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">எஸ்தோனியன்</translation>
 <translation id="3466147780910026086">உங்கள் மீடியா சாதனத்தை ஸ்கேன் செய்கிறது...</translation>
 <translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google இயக்ககத்தில்<ph name="END_LINK" /> <ph name="FILE_COUNT" /> படங்கள் காப்புப் பிரதி எடுக்கப்பட்டன</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" />க்கு நகலெடுக்கப்பட்டது.</translation>
 <translation id="3475447146579922140">Google விரிதாள்</translation>
 <translation id="3486821258960016770">மங்கோலியன்</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> பிழைகள்.</translation>
@@ -410,7 +407,6 @@
     சாதனத்திற்கு எந்தவிதப் பாதிப்பு ஏற்பட்டாலும், உங்கள் கோப்புகள் Google இயக்ககத்தில் பாதுகாப்பாகச் சேமிக்கப்பட்டிருக்கும்.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />ஒரே இடத்தில் கோப்புகளைப் பகிரலாம், உருவாக்கலாம்,<ph name="MARKUP_8" />
      மேலும் பிறருடன் இணைந்து திருத்தலாம்.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">நகலெடுக்கப்பட்டது.</translation>
 <translation id="5275973617553375938">Google இயக்கத்திலிருந்து மீட்கப்பட்ட கோப்புகள்</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">சேமி</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">நேற்று <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">ஒரே பெயருடைய கோப்பு  அல்லது கோப்பகம் ஏற்கனவே உள்ளன.</translation>
 <translation id="8372852072747894550">கிரேக்கம்</translation>
-<translation id="8382450452152102026">பெறுநர்: <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">பரிமாணங்கள்</translation>
 <translation id="8437209419043462667">யு.எஸ்.</translation>
 <translation id="8456681095658380701">தவறான பெயர்</translation>

@@ -168,7 +168,6 @@
 <translation id="6403826409255603130">Chromium 網絡瀏覽器可快速開啟網頁和執行應用程式。除了迅速、穩定和易於使用外，Chromium 的內置惡意軟件與網絡釣魚防護功能，可讓您安心瀏覽網絡。</translation>
 <translation id="6434250628340475518">Chromium 作業系統</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 將於 1 秒後重新啟動}other{Chromium 將於 # 秒後重新啟動}}</translation>
-<translation id="6464340581899189425">如果您有多個 Google 帳戶，可以將這些帳戶新增至您的 <ph name="DEVICE_TYPE" />，這樣就能在 Chromium 瀏覽器和 Play 商店，以及 Gmail、雲端硬碟和 YouTube 等服務中使用這些帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">這個擴充功能也會管制您啟動 Chromium 時所顯示的網頁。</translation>
 <translation id="6510925080656968729">解除安裝 Chromium</translation>
 <translation id="6570579332384693436">為修正拼字錯誤，Chromium 會將您在文字欄中輸入的文字傳送給 Google</translation>
@@ -263,6 +262,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="9019929317751753759">為鞏固 Chromium 的安全性，我們已將未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，因為它們可能在您不知情的情況下加入瀏覽器。</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium 將於 1 小時後重新啟動}other{Chromium 將於 # 小時後重新啟動}}</translation>
+<translation id="9107750757953039239">如果你有多個 Google 帳戶，可以將這些帳戶新增到你的 <ph name="DEVICE_TYPE" />，這樣就能在 Chromium 瀏覽器和 Play 商店，以及 Gmail、雲端硬碟和 YouTube 等服務中使用這些帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">在 Chromium 的新分頁中開啟連結(&amp;T)</translation>
 <translation id="911206726377975832">您要一併刪除瀏覽數據嗎？</translation>
 <translation id="9158494823179993217">系統管理員已設定 Chromium 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>

@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">ตรวจสอบรหัสผ่าน</translation>
 <translation id="1244265436519979884">กำลังดำเนินการคืนค่า Linux</translation>
 <translation id="1244303850296295656">ข้อผิดพลาดของส่วนขยาย</translation>
-<translation id="1246158006305844142">แอปและการตั้งค่าของคุณจะซิงค์กับอุปกรณ์ Chrome OS ทั้งหมดที่คุณลงชื่อเข้าใช้ไว้ด้วยบัญชี Google ดูตัวเลือกการซิงค์เบราว์เซอร์ได้ที่<ph name="LINK_BEGIN" />การตั้งค่า Chrome<ph name="LINK_END" /></translation>
 <translation id="1246905108078336582">นำคำแนะนำออกจากคลิปบอร์ดไหม</translation>
 <translation id="1251366534849411931">เครื่องหมายวงเล็บปีกกาเปิดที่ต้องมี: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">การดำเนินการนี้จะล้างข้อมูลที่เว็บไซต์และแอปต่างๆ จัดเก็บไว้รวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">ขั้นตอนนี้อาจใช้เวลาสักครู่ กำลังเริ่มต้นตัวจัดการคอนเทนเนอร์</translation>
 <translation id="1296911687402551044">ตรึงแท็บที่เลือก</translation>
 <translation id="1297175357211070620">ปลายทาง</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> ต้องการให้ Google ยืนยันข้อมูลประจำตัวเพื่อตรวจสอบสิทธิ์ของอุปกรณ์นี้ เพื่อปรับปรุงการเล่นเนื้อหาที่มีการป้องกัน</translation>
 <translation id="1300806585489372370">หาต้องการเปลี่ยนแปลงการตั้งค่านี้ อันดับแรกให้<ph name="BEGIN_LINK" />เปิดตัวระบุ<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> แก้ไขไฟล์ต่อไปนี้ได้</translation>
 <translation id="1302139669997477151">ภาพหน้าจอถูกบล็อก</translation>
@@ -1031,6 +1029,7 @@
 <translation id="2139919072249842737">ปุ่มตั้งค่า</translation>
 <translation id="214169863967063661">เปิดการตั้งค่าลักษณะที่ปรากฏ</translation>
 <translation id="2142328300403846845">เปิดลิงก์ในฐานะ</translation>
+<translation id="2142582065325732898">เปิด<ph name="LINK1_BEGIN" />การซิงค์ของ Chrome<ph name="LINK1_END" /> เพื่อดูแท็บ Chrome ล่าสุด <ph name="LINK2_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">แสดงแถบเครื่องมือทุกครั้งในโหมดเต็มหน้าจอ</translation>
 <translation id="2143778271340628265">กำหนดค่าพร็อกซีด้วยตนเอง</translation>
 <translation id="2144536955299248197">ผู้ดูใบรับรอง: <ph name="CERTIFICATE_NAME" /></translation>
@@ -1446,7 +1445,6 @@
 <translation id="2606246518223360146">ลิงก์ข้อมูล</translation>
 <translation id="2606454609872547359">ไม่ ดำเนินการต่อโดยไม่ใช้ ChromeVox</translation>
 <translation id="2607101320794533334">ข้อมูลหัวเรื่องคีย์สาธารณะ</translation>
-<translation id="2607968157341167679">ไม่มีอัลบั้ม สร้างอัลบั้มใน <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
 <translation id="2609896558069604090">สร้างทางลัด...</translation>
 <translation id="2609980095400624569">เริ่มการเชื่อมต่อไม่ได้</translation>
 <translation id="2610157865375787051">สลีป</translation>
@@ -1591,7 +1589,6 @@
 <translation id="2762441749940182211">บล็อกกล้องถ่ายรูป</translation>
 <translation id="2764786626780673772">รายละเอียด VPN</translation>
 <translation id="2765217105034171413">ขนาดเล็ก</translation>
-<translation id="2765729904637714153">ระลึกถึงความทรงจำดีๆ ที่คุณโปรดปราน หากต้องการเพิ่มหรือแก้ไขอัลบั้ม ให้ไปที่ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
 <translation id="2766006623206032690">&amp;วางแล้วไป</translation>
 <translation id="2766161002040448006">ถามผู้ปกครอง</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> จะแก้ไข <ph name="FILENAME" /> ได้อยู่จนกว่าคุณจะปิดทุกแท็บของเว็บไซต์นี้</translation>
@@ -2386,6 +2383,7 @@
 <translation id="3677911431265050325">ขอเว็บไซต์ในอุปกรณ์เคลื่อนที่</translation>
 <translation id="3677959414150797585">รวมแอป หน้าเว็บ และอื่นๆ ส่งสถิติเพื่อปรับปรุงคำแนะนำต่อเมื่อคุณเลือกที่จะแชร์ข้อมูลการใช้งาน</translation>
 <translation id="3678156199662914018">ส่วนขยาย: <ph name="EXTENSION_NAME" /></translation>
+<translation id="3679608942832457508">แอปและการตั้งค่าระบบปฏิบัติการจะซิงค์กับ Chromebook ทุกเครื่องที่คุณลงชื่อเข้าใช้ไว้ด้วยบัญชีนี้ <ph name="LINK_BEGIN" />การตั้งค่าการซิงค์<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">เสียงของการอ่านออกเสียงข้อความ</translation>
 <translation id="3681311097828166361">ขอขอบคุณสำหรับความคิดเห็น คุณกำลังออฟไลน์อยู่ในขณะนี้ และระบบจะส่งรายงานของคุณในภายหลัง</translation>
 <translation id="3682824389861648626">เกณฑ์การเคลื่อนไหว</translation>
@@ -3662,6 +3660,7 @@
 <translation id="5185386675596372454">รุ่นใหม่ล่าสุดของ "<ph name="EXTENSION_NAME" />" ถูกปิดใช้งาน เนื่องจากต้องได้รับการอนุญาตมากกว่านี้</translation>
 <translation id="5185500136143151980">ไม่มีอินเทอร์เน็ต</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190187232518914472">ระลึกถึงความทรงจำดีๆ ที่คุณโปรดปราน หากต้องการเพิ่มหรือแก้ไขอัลบั้ม ให้ไปที่ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
 <translation id="5190926251776387065">เปิดใช้งานพอร์ต</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ต้องการดาวน์โหลดหลายไฟล์</translation>
 <translation id="5192062846343383368">เปิดแอป Family Link เพื่อดูการตั้งค่าการควบคุมดูแล</translation>
@@ -3910,6 +3909,7 @@
 <translation id="5481273127572794904">ไม่ได้รับอนุญาตให้ดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>
 <translation id="5481941284378890518">เพิ่มเครื่องพิมพ์ที่อยู่ใกล้เคียง</translation>
 <translation id="5483785310822538350">เพิกถอนสิทธิ์การเข้าถึงไฟล์และอุปกรณ์</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้วันนี้ <ph name="LINK_BEGIN" />ดูรายละเอียด<ph name="LINK_END" />}other{<ph name="MANAGER" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้ภายใน {NUM_DAYS} วัน <ph name="LINK_BEGIN" />ดูรายละเอียด<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835">ระบบทำการล็อก <ph name="DEVICE_TYPE" /> เพื่อความปลอดภัยแล้ว โปรดป้อนรหัสผ่านด้วยตนเองเพื่อดำเนินการต่อ</translation>
 <translation id="5485102783864353244">เพิ่มแอป</translation>
 <translation id="5485754497697573575">คืนค่าแท็บทั้งหมด</translation>
@@ -4671,7 +4671,6 @@
 <translation id="6331566915566907158">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chrome OS</translation>
 <translation id="6331818708794917058">เว็บไซต์ขอเชื่อมต่อกับอุปกรณ์ MIDI ได้</translation>
 <translation id="6333064448949140209">ระบบจะส่งไฟล์ไปยัง Google เพื่อแก้ไขข้อบกพร่อง</translation>
-<translation id="6334444530352320327">แอปและการตั้งค่า Chrome OS จะซิงค์กับ Chromebook ทุกเครื่องที่คุณลงชื่อเข้าใช้ด้วยบัญชีนี้ <ph name="LINK_BEGIN" />การตั้งค่าการซิงค์<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">ในการเริ่มต้น Linux นั้น <ph name="MANAGER" /> จะขอให้คุณสำรองข้อมูลและรีเซ็ต Chromebook เครื่องนี้เป็นการตั้งค่าเริ่มต้น</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ปิดใช้การแก้ไขข้อบกพร่อง ADB ซึ่งจะเป็นการรีเซ็ต <ph name="DEVICE_TYPE" /> ของคุณใน 24 ชั่วโมง โปรดสำรองข้อมูลไฟล์ที่ต้องการเก็บไว้</translation>
 <translation id="6338981933082930623">เว็บไซต์ทั้งหมดแสดงโฆษณาใดก็ตามให้คุณเห็นได้</translation>
@@ -5108,7 +5107,6 @@
 <translation id="6860097299815761905">การตั้งค่าพร็อกซี...</translation>
 <translation id="686022878923628150">บล็อกเว็บไซต์ไม่ให้เชื่อมต่อกับอุปกรณ์ MIDI</translation>
 <translation id="6860427144121307915">เปิดในแท็บ</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้ภายใน 1 สัปดาห์ <ph name="LINK_BEGIN" />ดูรายละเอียด<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">ลบรหัสผ่านไหม</translation>
 <translation id="6865313869410766144">ข้อมูลแบบฟอร์มที่ป้อนอัตโนมัติ</translation>
 <translation id="6865598234501509159">หน้านี้ไม่ใช่ภาษา<ph name="LANGUAGE" /></translation>
@@ -5191,7 +5189,6 @@
 <translation id="696103774840402661">ระบบได้ลบไฟล์ทั้งหมดและข้อมูลในเครื่องสำหรับผู้ใช้ทุกคนใน <ph name="DEVICE_TYPE" /> ออกแล้วอย่างถาวร</translation>
 <translation id="6964390816189577014">ฮีโร่</translation>
 <translation id="6964760285928603117">นำออกจากกลุ่ม</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้วันนี้ <ph name="LINK_BEGIN" />ดูรายละเอียด<ph name="LINK_END" />}other{<ph name="MANAGER" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้ภายใน {NUM_DAYS} วัน <ph name="LINK_BEGIN" />ดูรายละเอียด<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6965648386495488594">พอร์ต</translation>
 <translation id="6965978654500191972">อุปกรณ์</translation>
@@ -5641,6 +5638,7 @@
 <translation id="7476454130948140105">แบตเตอรี่เหลือน้อยเกินไปสำหรับอัปเดต (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">ควบคุมเพลง วิดีโอ และอื่นๆ</translation>
 <translation id="7478485216301680444">แอปพลิเคชันคีออสก์ไม่สามารถติดตั้งได้</translation>
+<translation id="7478623944308207463">แอปและการตั้งค่าจะซิงค์กับอุปกรณ์ Chrome OS ทุกเครื่องที่คุณลงชื่อเข้าใช้ไว้ด้วยบัญชี Google ดูตัวเลือกการซิงค์เบราว์เซอร์ได้ที่<ph name="LINK_BEGIN" />การตั้งค่า Chrome<ph name="LINK_END" /></translation>
 <translation id="7479221278376295180">ภาพรวมการใช้งานพื้นที่เก็บข้อมูล</translation>
 <translation id="7481312909269577407">ส่งต่อ</translation>
 <translation id="7481358317100446445">พร้อม</translation>
@@ -6310,6 +6308,7 @@
 <translation id="8211551284753798479">PUK ไม่ถูกต้อง คุณลองได้อีก <ph name="RETRIES" /> ครั้ง</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{อยู่ระหว่างการดาวน์โหลด}other{อยู่ระหว่างการดาวน์โหลด}}</translation>
 <translation id="8213449224684199188">เข้าสู่โหมดรูปภาพแล้ว</translation>
+<translation id="8213866992824776555"><ph name="DOMAIN" /> ต้องการระบุอุปกรณ์ของคุณเพื่อให้เล่นวิดีโอและเสียงที่มีการปกป้องเป็นคุณภาพสูงสุดได้</translation>
 <translation id="8214489666383623925">เปิดไฟล์...</translation>
 <translation id="8214962590150211830">นำบุคคลนี้ออก</translation>
 <translation id="8216351761227087153">ดู</translation>
@@ -6323,7 +6322,6 @@
 <translation id="8227119283605456246">แนบไฟล์</translation>
 <translation id="8230134520748321204">บันทึกรหัสผ่านสำหรับ <ph name="ORIGIN" /> ไหม</translation>
 <translation id="8234795456569844941">โปรดช่วยวิศวกรของเราแก้ปัญหานี้ แจ้งให้เราทราบถึงสิ่งที่เกิดขึ้นก่อนที่คุณจะได้รับข้อความแสดงข้อผิดพลาดของโปรไฟล์</translation>
-<translation id="8235605354099176425">เปิด<ph name="LINK1_BEGIN" />การซิงค์ของ Chrome<ph name="LINK1_END" /> เพื่อดูแท็บ Chrome ล่าสุด <ph name="LINK2_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">แชร์แท็บนี้แทน</translation>
 <translation id="8237647586961940482">สีชมพูเข้มและสีแดง</translation>
 <translation id="8239032431519548577">ลงทะเบียนองค์กรเสร็จสมบูรณ์</translation>
@@ -6700,6 +6698,7 @@
 <translation id="8676374126336081632">ล้างข้อมูลที่ป้อน</translation>
 <translation id="8676770494376880701">เชื่อมต่อกับที่ชาร์จพลังงานต่ำ</translation>
 <translation id="8677212948402625567">ยุบทั้งหมด...</translation>
+<translation id="8677859815076891398">ไม่มีอัลบั้ม สร้างอัลบั้มใน <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
 <translation id="8678933587484842200">คุณต้องการเปิดแอปพลิเคชันนี้ด้วยวิธีใด</translation>
 <translation id="8680251145628383637">ลงชื่อเข้าใช้เพื่อดึงบุ๊กมาร์ก ประวัติ รหัสผ่าน และการตั้งค่าอื่นๆ บนอุปกรณ์ทุกเครื่องของคุณ ทั้งนี้ ระบบจะลงชื่อเข้าใช้บริการต่างๆ ของ Google ให้คุณโดยอัตโนมัติ</translation>
 <translation id="8681614230122836773">Chrome พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ</translation>
@@ -6857,6 +6856,7 @@
 <translation id="8831140208248705279"><ph name="DEVICE_TYPE" /> และโทรศัพท์ Android จะทำงานได้ดียิ่งขึ้นเมื่อใช้ร่วมกัน เชื่อมต่ออุปกรณ์ทั้ง 2 อย่างนี้เพื่อให้ส่งข้อความจากคอมพิวเตอร์ แชร์การเชื่อมต่ออินเทอร์เน็ต และปลดล็อก <ph name="DEVICE_TYPE" /> ด้วยโทรศัพท์ได้<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">การกำหนดค่าเครือข่ายควบคุมโดย <ph name="USER_EMAIL" /></translation>
 <translation id="8835786707922974220">ตรวจสอบว่าคุณเข้าถึงรหัสผ่านที่บันทึกไว้ได้เสมอ</translation>
+<translation id="8836360711089151515"><ph name="MANAGER" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้ภายใน 1 สัปดาห์ <ph name="LINK_BEGIN" />ดูรายละเอียด<ph name="LINK_END" /></translation>
 <translation id="8838601485495657486">ทึบ</translation>
 <translation id="8838770651474809439">แฮมเบอร์เกอร์</translation>
 <translation id="883911313571074303">ใส่หมายเหตุในรูปภาพ</translation>
@@ -7143,6 +7143,7 @@
 <translation id="9148963623915467028">เว็บไซต์นี้เข้าถึงตำแหน่งของคุณได้</translation>
 <translation id="9149866541089851383">แก้ไข...</translation>
 <translation id="9150045010208374699">ใช้กล้องถ่ายรูปของคุณ</translation>
+<translation id="9150079578948279438">นำโปรไฟล์ออกไม่ได้ โปรดลองอีกครั้งหรือติดต่อผู้ให้บริการเพื่อรับการสนับสนุนด้านเทคนิค</translation>
 <translation id="9153934054460603056">บันทึกข้อมูลประจำตัวและรหัสผ่าน</translation>
 <translation id="9154194610265714752">อัปเดตแล้ว</translation>
 <translation id="91568222606626347">สร้างทางลัด...</translation>

@@ -179,7 +179,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="573759479754913123">À propos de Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Impossible de lancer Chrome. Réessayez.</translation>
-<translation id="5851757216820085940">Si vous possédez plusieurs comptes Google, vous pouvez les ajouter à votre <ph name="DEVICE_TYPE" />. Ils seront accessibles depuis le navigateur Chrome et le Play Store, et vous pourrez les utiliser avec des services comme Gmail, Drive et YouTube.<ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome tente de modifier les mots de passe.</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Connexion au réseau</translation>
@@ -287,5 +286,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation ?</translation>
 <translation id="9138603949443464873">Pour appliquer vos modifications, relancez Chrome</translation>
 <translation id="919706545465235479">Mettre à jour Chrome pour lancer la synchronisation</translation>
+<translation id="94743460404517794">Si vous possédez plusieurs comptes Google, vous pouvez les ajouter à votre <ph name="DEVICE_TYPE" />. Ils seront accessibles depuis le navigateur Chrome et le Play Store, et vous pourrez les utiliser avec des services comme Gmail, Drive et YouTube. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome est votre navigateur par défaut</translation>
 </translationbundle>

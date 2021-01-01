@@ -174,7 +174,6 @@
 <translation id="573759479754913123">Всичко за Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome не можа да се стартира. Опитайте отново.</translation>
-<translation id="5851757216820085940">Ако имате няколко профила в Google, можете да ги добавите към устройството си <ph name="DEVICE_TYPE" />. Профилите ви ще бъдат налични в браузъра Chrome, в Google Play Магазин и в други услуги, като например Gmail, Диск и YouTube. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome се опитва да редактира паролите.</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Вход в мрежата</translation>
@@ -282,5 +281,6 @@
 <translation id="911206726377975832">Да се изтрият ли и данните от сърфирането?</translation>
 <translation id="9138603949443464873">За да приложите промените си, рестартирайте Chrome</translation>
 <translation id="919706545465235479">Актуализирайте Chrome, за да стартира синхронизирането</translation>
+<translation id="94743460404517794">Ако имате няколко профила в Google, можете да ги добавите към устройството си <ph name="DEVICE_TYPE" />. Профилите ви ще бъдат налични в браузъра Chrome, в Google Play Магазин и в други услуги, като например Gmail, Диск и YouTube. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome е браузърът ви по подразбиране</translation>
 </translationbundle>

@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">Преглед на паролите</translation>
 <translation id="1244265436519979884">В момента се извършва възстановяване на Linux</translation>
 <translation id="1244303850296295656">Грешка в разширението</translation>
-<translation id="1246158006305844142">Приложенията и настройките ви ще се синхронизират с всички устройства с Chrome OS, в които сте влезли в профила си в Google. За да намерите опциите за синхронизиране на браузъра, отворете <ph name="LINK_BEGIN" />настройките на Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Искате ли да премахнете предложението от буферната памет?</translation>
 <translation id="1251366534849411931">Очаква се отваряща фигурна скоба: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Съхраняваните от сайтовете и инсталираните приложения данни в размер на <ph name="TOTAL_USAGE" /> ще бъдат изчистени</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">Този процес може да отнеме няколко минути. Мениджърът на контейнерите се стартира.</translation>
 <translation id="1296911687402551044">Фиксиране на избрания раздел</translation>
 <translation id="1297175357211070620">Принтер</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> изисква удостоверяване на идентичността на устройството ви чрез Google, за да се установи дали то отговаря на условията за подобрено възпроизвеждане на защитено съдържание.</translation>
 <translation id="1300806585489372370">За да промените тази настройка, първо, <ph name="BEGIN_LINK" />включете идентификаторите<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> може да редактира следните файлове</translation>
 <translation id="1302139669997477151">Екранните снимки са блокирани</translation>
@@ -1028,6 +1026,7 @@
 <translation id="2139919072249842737">Бутон за настройване</translation>
 <translation id="214169863967063661">Отваряне на настройките за облик</translation>
 <translation id="2142328300403846845">Отваряне на връзката като</translation>
+<translation id="2142582065325732898">Включете функцията за <ph name="LINK1_BEGIN" />синхронизиране в Chrome<ph name="LINK1_END" />, за да преглеждате скорошните раздели на браузъра. <ph name="LINK2_BEGIN" />Научете повече<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Лентата с инструменти да се показва винаги в режим на цял екран</translation>
 <translation id="2143778271340628265">Ръчна конфигурация на прокси сървър</translation>
 <translation id="2144536955299248197">Визуализатор на сертификата: <ph name="CERTIFICATE_NAME" /></translation>
@@ -1443,7 +1442,6 @@
 <translation id="2606246518223360146">Свързване на данните</translation>
 <translation id="2606454609872547359">Не, продължаване без ChromeVox</translation>
 <translation id="2607101320794533334">Информация за публичен ключ на субект</translation>
-<translation id="2607968157341167679">Няма албуми. Създайте албум в <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Създаване на преки пътища...</translation>
 <translation id="2609980095400624569">Не бе установена връзка</translation>
 <translation id="2610157865375787051">Спящ режим</translation>
@@ -1588,7 +1586,6 @@
 <translation id="2762441749940182211">Достъпът до камерата е блокиран</translation>
 <translation id="2764786626780673772">Подробности за VPN</translation>
 <translation id="2765217105034171413">Малък</translation>
-<translation id="2765729904637714153">Преживейте отново любимите си спомени. За да добавите или редактирате албуми, отворете <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
 <translation id="2766006623206032690">&amp;Поставяне и старт</translation>
 <translation id="2766161002040448006">Питане на родител</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> ще може да редактира <ph name="FILENAME" />, докато не затворите всички раздели със сайта</translation>
@@ -2383,6 +2380,7 @@
 <translation id="3677911431265050325">Заявка за мобилния сайт</translation>
 <translation id="3677959414150797585">Включва приложения, уеб страници и др. Изпраща статистически данни, за да подобри предложенията, само ако сте избрали да споделяте данни за употребата.</translation>
 <translation id="3678156199662914018">Разширение: <ph name="EXTENSION_NAME" /></translation>
+<translation id="3679608942832457508">Приложенията ви и настройките на операционната система ще се синхронизират на устройствата Chromebook, в които сте влезли с този профил. <ph name="LINK_BEGIN" />Синхронизиране на настройките<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Глас за синтезиран говор</translation>
 <translation id="3681311097828166361">Благодарим ви за отзива. В момента сте офлайн, така че сигналът ви ще бъде изпратен по-късно.</translation>
 <translation id="3682824389861648626">Праг на движение</translation>
@@ -3660,6 +3658,7 @@
 <translation id="5185386675596372454">Най-новата версия на „<ph name="EXTENSION_NAME" />“ бе деактивирана, тъй като изисква повече разрешения.</translation>
 <translation id="5185500136143151980">Няма интернет</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190187232518914472">Преживейте отново любимите си спомени. За да добавите или редактирате албуми, отворете <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
 <translation id="5190926251776387065">Активиране на порта</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> иска да изтегли няколко файла</translation>
 <translation id="5192062846343383368">Отворете приложението Family Link, за да прегледате настройките си за контролирането</translation>
@@ -3908,6 +3907,7 @@
 <translation id="5481273127572794904">Сайтове без разрешение за автоматично изтегляне на няколко файла</translation>
 <translation id="5481941284378890518">Добавяне на принтери в близост</translation>
 <translation id="5483785310822538350">Отмяна на достъпа до файловете и устройството</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да върнете това устройство <ph name="DEVICE_TYPE" /> днес. <ph name="LINK_BEGIN" />Вижте подробности<ph name="LINK_END" />}other{<ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да върнете това устройство <ph name="DEVICE_TYPE" /> в рамките на {NUM_DAYS} дни. <ph name="LINK_BEGIN" />Вижте подробности<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835">Вашият <ph name="DEVICE_TYPE" /> е заключен от съображения за сигурност. Въведете паролата си, за да продължите.</translation>
 <translation id="5485102783864353244">Добавяне на приложението</translation>
 <translation id="5485754497697573575">Възстановяване на всички раздели</translation>
@@ -4670,7 +4670,6 @@
 <translation id="6331566915566907158">Помощ за подобряването на функциите и ефективността на Chrome OS</translation>
 <translation id="6331818708794917058">Сайтовете могат да извеждат запитвания за свързване с MIDI устройства</translation>
 <translation id="6333064448949140209">Файлът ще бъде изпратен до Google за отстраняване на грешки</translation>
-<translation id="6334444530352320327">Приложенията ви и настройките на операционната система ще се синхронизират на устройствата Chromebook, в които сте влезли с този профил. <ph name="LINK_BEGIN" />Синхронизиране на настройките<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">За да стартирате Linux, <ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да възстановите фабричните настройки на този Chromebook.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> деактивира отстраняването на грешки през ADB. Това действие ще нулира устройството ви <ph name="DEVICE_TYPE" /> след 24 часа. Създайте резервно копие на файловете, които искате да запазите.</translation>
 <translation id="6338981933082930623">Всички сайтове могат да ви показват всякакви реклами</translation>
@@ -5107,7 +5106,6 @@
 <translation id="6860097299815761905">Настройки за прокси сървър...</translation>
 <translation id="686022878923628150">Блокиране на сайтовете, така че да не се свързват с MIDI устройства</translation>
 <translation id="6860427144121307915">Отваряне в раздел</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да върнете това устройство <ph name="DEVICE_TYPE" /> в рамките на 1 седмица. <ph name="LINK_BEGIN" />Вижте подробности<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Искате ли да изтриете паролата?</translation>
 <translation id="6865313869410766144">Данни за автоматично попълване на формуляри</translation>
 <translation id="6865598234501509159">Страницата не е на <ph name="LANGUAGE" /></translation>
@@ -5190,7 +5188,6 @@
 <translation id="696103774840402661">Всички файлове и локални данни за всички потребители на това устройство <ph name="DEVICE_TYPE" /> бяха изтрити за постоянно.</translation>
 <translation id="6964390816189577014">Герой</translation>
 <translation id="6964760285928603117">Премахване от групата</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да върнете това устройство <ph name="DEVICE_TYPE" /> днес. <ph name="LINK_BEGIN" />Вижте подробности<ph name="LINK_END" />}other{<ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да върнете това устройство <ph name="DEVICE_TYPE" /> в рамките на {NUM_DAYS} дни. <ph name="LINK_BEGIN" />Вижте подробности<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Порт</translation>
 <translation id="6965978654500191972">Устройство</translation>
@@ -5640,6 +5637,7 @@
 <translation id="7476454130948140105">Батерията е твърде изтощена (<ph name="BATTERY_PERCENT" />%) за стартиране на актуализацията</translation>
 <translation id="7477793887173910789">Управление на музиката, видеоклиповете и др.</translation>
 <translation id="7478485216301680444">Павилионното приложение не можа да бъде инсталирано.</translation>
+<translation id="7478623944308207463">Приложенията и настройките ви ще се синхронизират с всички устройства с Chrome OS, в които сте влезли в профила си в Google. За да намерите опциите за синхронизиране на браузъра, отворете <ph name="LINK_BEGIN" />настройките на Chrome<ph name="LINK_END" />.</translation>
 <translation id="7479221278376295180">Общ преглед на използваното място в хранилището</translation>
 <translation id="7481312909269577407">Напред</translation>
 <translation id="7481358317100446445">Готова</translation>
@@ -6309,6 +6307,7 @@
 <translation id="8211551284753798479">Невалиден PUK код. Остават ви <ph name="RETRIES" /> опита.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Изтегля се файл}other{Изтеглят се файлове}}</translation>
 <translation id="8213449224684199188">Преминахте в режим за снимки</translation>
+<translation id="8213866992824776555"><ph name="DOMAIN" /> иска да идентифицира устройството ви, за да може да възпроизвежда защитено видео- и аудиосъдържание с най-високо качество.</translation>
 <translation id="8214489666383623925">Отваряне на файл...</translation>
 <translation id="8214962590150211830">Премахване на този човек</translation>
 <translation id="8216351761227087153">Гледане</translation>
@@ -6322,7 +6321,6 @@
 <translation id="8227119283605456246">Прикачване на файл</translation>
 <translation id="8230134520748321204">Да се запази ли паролата за <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Моля, помогнете на инженерите ни да отстранят този проблем. Кажете ни какво се случи, точно преди да получите съобщението за грешка в потребителския профил:</translation>
-<translation id="8235605354099176425">Включете функцията за <ph name="LINK1_BEGIN" />синхронизиране в Chrome<ph name="LINK1_END" />, за да прегледате скорошните раздели на браузъра.<ph name="LINK2_BEGIN" />Научете повече<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Споделяне на този раздел</translation>
 <translation id="8237647586961940482">Тъмнорозово и червено</translation>
 <translation id="8239032431519548577">Корпоративното записване завърши</translation>
@@ -6699,6 +6697,7 @@
 <translation id="8676374126336081632">Изчистване на въведеното</translation>
 <translation id="8676770494376880701">Свързано е зарядно устройство с малка мощност</translation>
 <translation id="8677212948402625567">Свиване на всички...</translation>
+<translation id="8677859815076891398">Няма албуми. Създайте албум в <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
 <translation id="8678933587484842200">Как искате да се стартира това приложение?</translation>
 <translation id="8680251145628383637">Влезте в профила си, за да получите своите отметки, история, пароли и други настройки на всичките си устройства. Също така ще влезете автоматично в използваните от вас услуги на Google.</translation>
 <translation id="8681614230122836773">Chrome откри опасен софтуер на компютъра ви</translation>
@@ -6856,6 +6855,7 @@
 <translation id="8831140208248705279">Вашият <ph name="DEVICE_TYPE" /> и телефонът ви с Android работят по-добре заедно. Свържете ги, за да можете да изпращате SMS съобщения от компютъра си, да споделяте връзката с интернет и да отключвате своя <ph name="DEVICE_TYPE" /> с телефона си. <ph name="FOOTNOTE_POINTER" /><ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">Конфигурацията на мрежата се контролира от <ph name="USER_EMAIL" />.</translation>
 <translation id="8835786707922974220">Обезпечете си непрекъснат достъп до запазените си пароли</translation>
+<translation id="8836360711089151515"><ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да върнете това устройство <ph name="DEVICE_TYPE" /> в рамките на една седмица. <ph name="LINK_BEGIN" />Вижте подробности<ph name="LINK_END" /></translation>
 <translation id="8838601485495657486">Непрозрачно</translation>
 <translation id="8838770651474809439">Хамбургер</translation>
 <translation id="883911313571074303">Добавяне на пояснение към изображението</translation>
@@ -7142,6 +7142,7 @@
 <translation id="9148963623915467028">Този сайт има достъп до местоположението ви.</translation>
 <translation id="9149866541089851383">Редактиране...</translation>
 <translation id="9150045010208374699">Използване на камерата ви</translation>
+<translation id="9150079578948279438">Потребителският профил не бе премахнат. Моля, опитайте отново или се обърнете към оператора си за техническа поддръжка.</translation>
 <translation id="9153934054460603056">Запазване на самоличността и паролата</translation>
 <translation id="9154194610265714752">Актуализирано</translation>
 <translation id="91568222606626347">Създаване на пряк път...</translation>

@@ -166,7 +166,6 @@
 <translation id="6403826409255603130">Chromium – це веб-переглядач, який запускає веб-сторінки та програми з блискавичною швидкістю. Він швидкий, надійний і зручний у користуванні. Вбудований у Chromium захист від шкідливих програм і фішингу гарантує ще більшу безпеку під час перегляду веб-сторінок.</translation>
 <translation id="6434250628340475518">ОС Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium перезапуститься через 1 секунду}one{Chromium перезапуститься через # секунду}few{Chromium перезапуститься через # секунди}many{Chromium перезапуститься через # секунд}other{Chromium перезапуститься через # секунди}}</translation>
-<translation id="6464340581899189425">Якщо у вас кілька облікових записів Google, їх можна додати на <ph name="DEVICE_TYPE" />. Облікові записи будуть доступні у веб-переглядачі Chromium, Google Play і таких сервісах, як Gmail, Диск та YouTube.<ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Також указує сторінку, яка відкривається під час запуску Chromium.</translation>
 <translation id="6510925080656968729">Видалити Chromium</translation>
 <translation id="6570579332384693436">Щоб виправляти орфографічні помилки, Chromium надсилає введений текст у Google</translation>
@@ -262,6 +261,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="9019929317751753759">Щоб зробити Chromium безпечнішим, ми вимкнули наведене нижче розширення, установлене не із сайту <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і, можливо, додане без вашого відома.</translation>
 <translation id="9089354809943900324">Версія Chromium застаріла</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium перезапуститься через годину}one{Chromium перезапуститься через # годину}few{Chromium перезапуститься через # години}many{Chromium перезапуститься через # годин}other{Chromium перезапуститься через # години}}</translation>
+<translation id="9107750757953039239">Якщо у вас кілька облікових записів Google, їх можна додати на <ph name="DEVICE_TYPE" />. Облікові записи будуть доступні у веб-переглядачі Chromium, Google Play і таких сервісах, як Gmail, Диск та YouTube. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Відкрити посилання в новій &amp;вкладці Chromium</translation>
 <translation id="911206726377975832">Також видалити дані веб-перегляду?</translation>
 <translation id="9158494823179993217">Ваш системний адміністратор налаштував Chromium відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в альтернативному веб-переглядачі.</translation>

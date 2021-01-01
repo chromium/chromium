@@ -231,7 +231,6 @@
 <translation id="1243436884219965846">Прегледајте ги лозинките</translation>
 <translation id="1244265436519979884">Обновата на Linux моментално е во тек</translation>
 <translation id="1244303850296295656">Грешка на наставка</translation>
-<translation id="1246158006305844142">Вашите апликации и поставки ќе се синхронизираат на сите уреди со Chrome OS каде што сте најавени со сметката на Google. За опциите за синхронизирање на прелистувачот, одете во <ph name="LINK_BEGIN" />Поставки за Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Дали да се отстрани предлогот од привремената меморија?</translation>
 <translation id="1251366534849411931">Се очекува лева голема заграда: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ова ќе ги избрише податоците (<ph name="TOTAL_USAGE" />) складирани од сајтовите и инсталираните апликации</translation>
@@ -273,7 +272,6 @@
 <translation id="1294807885394205587">Процесов може да потрае неколку минути. Се стартува управувачот со контејнери.</translation>
 <translation id="1296911687402551044">Прикачи ја избраната картичка</translation>
 <translation id="1297175357211070620">Дестинација</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> сака Google да го потврди идентитетот на вашиот уред за да одреди дали е погоден за подобрена репродукција на заштитени содржини.</translation>
 <translation id="1300806585489372370">За да ја измените поставкава, прво <ph name="BEGIN_LINK" />вклучете ги идентификаторите<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> може да ги изменува следниве датотеки</translation>
 <translation id="1302139669997477151">Правењето слики од екранот е блокирано</translation>
@@ -1249,6 +1247,7 @@
 <translation id="2366260648632264559">Прикажи го системскиот текст на овој јазик</translation>
 <translation id="2367972762794486313">Покажи апликации</translation>
 <translation id="2371076942591664043">Отвори кога е &amp;готово</translation>
+<translation id="23721837607121582">Преземи го профилот на мобилниот уред, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">Приспособи според листот хартија</translation>
 <translation id="2375406435414127095">Поврзете се со телефонот</translation>
 <translation id="2377588536920405462">Може да ја исклучите локацијата со исклучување на главната поставка за „Локација“ на уредот. Може да го исклучите и користењето Wi-Fi, мобилни мрежи и сензори за локација во поставките за „Локација“.</translation>
@@ -1446,7 +1445,6 @@
 <translation id="2606246518223360146">Поврзи ги податоците</translation>
 <translation id="2606454609872547359">Не, продолжи без ChromeVox</translation>
 <translation id="2607101320794533334">Информации за јавен клуч на субјект</translation>
-<translation id="2607968157341167679">Нема албуми. Создајте албум во<ph name="LINK_BEGIN" />Фотографии на Google<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Направи кратенки...</translation>
 <translation id="2609980095400624569">Не можеше да се воспостави врска</translation>
 <translation id="2610157865375787051">Режим во мирување</translation>
@@ -1591,7 +1589,6 @@
 <translation id="2762441749940182211">Камерата е блокирана</translation>
 <translation id="2764786626780673772">Детали за VPN</translation>
 <translation id="2765217105034171413">Мало</translation>
-<translation id="2765729904637714153">Повторно доживејте ги омилените спомени. За додавање или изменување албуми, одете во<ph name="LINK_BEGIN" />Фотографии на Google<ph name="LINK_END" />.</translation>
 <translation id="2766006623206032690">З&amp;алепи и оди</translation>
 <translation id="2766161002040448006">Прашај родител</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> ќе може да ја изменува <ph name="FILENAME" /> сѐ додека не ги затворите сите картички за сајтов</translation>
@@ -2678,6 +2675,7 @@
 <translation id="3969092967100188979">Вклучена, во роаминг</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
+<translation id="3971140002794351170">Преземи го профилот на мобилниот уред, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">Отпечатоци на овој безбедносен клуч</translation>
 <translation id="3973660817924297510">Се проверуваат лозинките (<ph name="CHECKED_PASSWORDS" /> од <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">Контактирањето со серверот за домен не успеа</translation>
@@ -4669,7 +4667,6 @@
 <translation id="6331566915566907158">Помогнете да се подобрат функциите и изведбата на Chrome OS</translation>
 <translation id="6331818708794917058">Сајтовите може да прашуваат дали да се поврзат со MIDI-уредите</translation>
 <translation id="6333064448949140209">Датотеката ќе се испрати во Google за да се отстранат грешките</translation>
-<translation id="6334444530352320327">Вашите поставки за апликациите и OS ќе се синхронизираат на сите уреди Chromebook каде што сте најавени со сметкава.<ph name="LINK_BEGIN" />Поставки за синхронизација<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">За да стартувате Linux, <ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го ресетирате овој Chromebook на фабричките поставки.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> го оневозможи отстранувањето грешки на ADB Ова ќе го ресетира вашиот <ph name="DEVICE_TYPE" /> по 24 часа. Направете бекап на датотеките што сакате да ги задржите.</translation>
 <translation id="6338981933082930623">Сите сајтови може да ви прикажуваат секакви реклами</translation>
@@ -5106,7 +5103,6 @@
 <translation id="6860097299815761905">Поставки на прокси…</translation>
 <translation id="686022878923628150">Не дозволувај сајтовите да се поврзуваат со MIDI-уредите</translation>
 <translation id="6860427144121307915">Отвори во картичка</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> во рок од 1 седмица.<ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Да се избрише лозинката?</translation>
 <translation id="6865313869410766144">Автоматско пополнување податоци во формулар</translation>
 <translation id="6865598234501509159">Страницата не е на <ph name="LANGUAGE" /></translation>
@@ -5189,7 +5185,6 @@
 <translation id="696103774840402661">Сите датотеки и локални податоци за сите корисници на овој <ph name="DEVICE_TYPE" /> трајно се избришани.</translation>
 <translation id="6964390816189577014">Херој</translation>
 <translation id="6964760285928603117">Отстрани од групата</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> денес.<ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}one{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> во рок од {NUM_DAYS} ден.<ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}other{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> во рок од {NUM_DAYS} дена.<ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6965648386495488594">Порта</translation>
 <translation id="6965978654500191972">Уред</translation>
@@ -6320,7 +6315,6 @@
 <translation id="8227119283605456246">Прикачи датотека</translation>
 <translation id="8230134520748321204">Дали да се зачува лозинката за <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Помогнете им на нашите инженери да го решат проблемов. Кажете ни што се случи точно пред да ја добиете пораката за грешка на профилот:</translation>
-<translation id="8235605354099176425">Вклучете <ph name="LINK1_BEGIN" />Синхронизација на Chrome<ph name="LINK1_END" /> за да се прикажат неодамнешните картички на Chrome. <ph name="LINK2_BEGIN" />Дознајте повеќе<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Наместо тоа, сподели ја картичкава</translation>
 <translation id="8237647586961940482">Темно розова и црвена</translation>
 <translation id="8239032431519548577">Регистрацијата на организацијата е завршена</translation>
@@ -6469,6 +6463,7 @@
 <translation id="8398877366907290961">Сепак продолжи</translation>
 <translation id="8400146488506985033">Управувај со луѓе</translation>
 <translation id="8401432541486058167">Наведете го PIN-кодот што е поврзан со вашата паметна картичка.</translation>
+<translation id="8403562727702715619">Неодамна од Google Drive</translation>
 <translation id="8407199357649073301">Ниво на евиденција:</translation>
 <translation id="8408068190360279472">Мрежа со <ph name="NETWORK_TYPE" />, се поврзува</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6910,6 +6905,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" /> може да ги изменува следниве датотеки и папки</translation>
 <translation id="8890170499370378450">Може да произлезат трошоци за мобилен интернет</translation>
 <translation id="8890516388109605451">Извори</translation>
+<translation id="8890529496706615641">Профилот не можеше да се преименува. Обидете се повторно или побарајте техничка поддршка од вашиот оператор.</translation>
 <translation id="8892168913673237979">Сè е подготвено.</translation>
 <translation id="8893801527741465188">Деинсталирањето е завршено</translation>
 <translation id="8893928184421379330">Уредот <ph name="DEVICE_LABEL" /> не може да се препознае.</translation>

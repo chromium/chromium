@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">నార్వేజియన్</translation>
 <translation id="1430915738399379752">ముద్రించు</translation>
 <translation id="1435838927755162558">Parallels Desktopతో ఫోల్డర్‌ను షేర్ చేయండి</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" />లోకి తరలించబడింది.</translation>
 <translation id="1467432559032391204">ఎడమ</translation>
 <translation id="1471718551822868769">స్లోవాక్</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" అప్‌లోడ్ కాలేదు. మీ Google డిస్క్‌లో తగినంత ఖాళీ స్థలం లేదు.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">మీరు <ph name="NUMBER_OF_ITEMS" /> అంశాలను ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ఫోల్డర్‌ను సృష్టించడం సాధ్యపడలేదు. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">ట్రాష్ నుండి రీస్టోర్ చేయండి</translation>
-<translation id="2275059641601412272">తరలించబడింది.</translation>
 <translation id="2288278176040912387">రికార్డ్ ప్లేయర్</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ఫైల్‌లను తెరుస్తోంది.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ఫైల్‌ని తెరుస్తోంది.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">ఎస్టోనియన్</translation>
 <translation id="3466147780910026086">మీ మీడియా పరికరాన్ని స్కాన్ చేస్తోంది...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ఫోటోలు <ph name="BEGIN_LINK" />Google డిస్క్<ph name="END_LINK" />కి బ్యాకప్ చేయబడ్డాయి</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" />లోకి కాపీ చేయబడింది.</translation>
 <translation id="3475447146579922140">Google స్ప్రెడ్‌షీట్</translation>
 <translation id="3486821258960016770">మంగోలియన్</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> లోపాలు.</translation>
@@ -410,7 +407,6 @@
     మీ పరికరానికి ఏ విధమైన ఆపద సంభవించినా ఫర్వాలేదు, మీ ఫైల్‌లు Google డిస్క్‌లో సురక్షితంగా నిల్వ చేయబడి ఉంటాయి.<ph name="MARKUP_6" />
     అన్ని ఫైల్‌లు ఒకే చోట ఉంటాయి, కాబట్టి <ph name="MARKUP_7" />షేర్ చేయండి, సృష్టించండి,
     వాటిపై ఇతరులతో కలిసి పని చేయండి<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">కాపీ చేయబడింది.</translation>
 <translation id="5275973617553375938">Google డిస్క్ నుండి పునరుద్ధరించబడిన ఫైల్‌లు</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">నిన్న <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">ఫైల్ లేదా డైరెక్టరీ అదే పేరుతో ఇప్పటికే ఉనికిలో ఉంది.</translation>
 <translation id="8372852072747894550">గ్రీక్</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" />లోకి</translation>
 <translation id="8395901698320285466">కొలతలు</translation>
 <translation id="8437209419043462667">యుఎస్</translation>
 <translation id="8456681095658380701">చెల్లని పేరు</translation>

@@ -37,7 +37,6 @@
 <translation id="1404323374378969387">ನಾರ್ವೆಜಿಯನ್</translation>
 <translation id="1430915738399379752">ಮುದ್ರಿಸು</translation>
 <translation id="1435838927755162558">Parallels Desktop ಮೂಲಕ ಫೋಲ್ಡರ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> ಗೆ ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="1467432559032391204">ಎಡಕ್ಕೆ</translation>
 <translation id="1471718551822868769">ಸ್ಲೋವೇಕ್</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ಅನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿಲ್ಲ. ನಿಮ್ಮ Google ಡ್ರೈವ್‌ನಲ್ಲಿ ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶವಿಲ್ಲ.</translation>
@@ -112,7 +111,6 @@
 <translation id="2225536596944493418">ನೀವು ಖಂಡಿತವಾಗಿಯೂ <ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ಫೋಲ್ಡರ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">ಅನುಪಯುಕ್ತದಿಂದ ಮರುಸ್ಥಾಪಿಸಿ</translation>
-<translation id="2275059641601412272">ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="2288278176040912387">ರೆಕಾರ್ಡ್ ಪ್ಲೇಯರ್</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ಫೈಲ್ ಅನ್ನು ತೆರೆಯಲಾಗುತ್ತಿದೆ.</translation>
@@ -221,7 +219,6 @@
 <translation id="3455931012307786678">ಎಸ್ಟೋನಿಯನ್</translation>
 <translation id="3466147780910026086">ನಿಮ್ಮ ಮಾಧ್ಯಮ ಸಾಧನವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google ಡ್ರೈವ್<ph name="END_LINK" /> ಗೆ <ph name="FILE_COUNT" /> ಫೋಟೋಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> ಗೆ ನಕಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="3475447146579922140">Google ಸ್ಪ್ರೆಡ್‌ಶೀಟ್‌</translation>
 <translation id="3486821258960016770">ಮಂಗೋಲಿಯನ್</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ದೋಷಗಳು.</translation>
@@ -408,7 +405,6 @@
         ಫೈಲ್‌ಗಳಲ್ಲಿ ಇತರರೊಂದಿಗೆ ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ<ph name="MARKUP_8" />
     
         ಹಂಚಿ, ರಚಿಸಿ ಮತ್ತು ಸಹಯೋಗಿಸಿ.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">ನಕಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="5275973617553375938">Google ಡ್ರೈವ್‌ನಿಂದ ಮರುಪಡೆಯಲಾದ ಫೈಲ್‌ಗಳು</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">ಉಳಿಸು</translation>
@@ -696,7 +692,6 @@
 <translation id="8336153091935557858">ನಿನ್ನೆ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">ಒಂದೇ ಹೆಸರಿನೊಂದಿಗೆ ಫೈಲ್ ಅಥವಾ ಡೈರೆಕ್ಟರಿ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ.</translation>
 <translation id="8372852072747894550">ಗ್ರೀಕ್</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" /> ಗೆ</translation>
 <translation id="8395901698320285466">ಅಳತೆಗಳು</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">ಅಮಾನ್ಯವಾದ ಹೆಸರು</translation>

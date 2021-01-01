@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Норвежский</translation>
 <translation id="1430915738399379752">Печать</translation>
 <translation id="1435838927755162558">Предоставление Parallels Desktop доступа к папке</translation>
-<translation id="1439494416798956626">Перемещено в папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="1467432559032391204">Слева</translation>
 <translation id="1471718551822868769">Словацкий</translation>
 <translation id="1474339897586437869">Не удалось загрузить <ph name="FILENAME" />. Не хватает пространства на Google Диске.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Вы действительно хотите удалить объекты (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не удалось создать папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Восстановить из корзины</translation>
-<translation id="2275059641601412272">Перемещено.</translation>
 <translation id="2288278176040912387">Патефон</translation>
 <translation id="2291538123825441971">Открываются файлы (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Открывается файл <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Эстонский</translation>
 <translation id="3466147780910026086">Сканирование устройства...</translation>
 <translation id="3468522857997926824">На <ph name="BEGIN_LINK" />Google Диске<ph name="END_LINK" /> сохранено <ph name="FILE_COUNT" /> фото</translation>
-<translation id="3473378059788601120">Скопировано в папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3475447146579922140">Электронная таблица Google</translation>
 <translation id="3486821258960016770">Монгольский</translation>
 <translation id="3495304270784461826">Ошибок: <ph name="COUNT" />.</translation>
@@ -410,7 +407,6 @@
     Даже если с устройством что-то произойдет, резервная копия ваших данных хранится на Google Диске.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Вы можете создавать файлы, предоставлять к ним общий доступ и работать над ними<ph name="MARKUP_8" />
     вместе с коллегами в одном удобном сервисе.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Скопировано.</translation>
 <translation id="5275973617553375938">Восстановленные файлы с Google Диска</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Сохранить</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">Вчера, <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Такой файл или каталог уже существуют.</translation>
 <translation id="8372852072747894550">Греческий</translation>
-<translation id="8382450452152102026">В папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="8395901698320285466">Размеры</translation>
 <translation id="8437209419043462667">США</translation>
 <translation id="8456681095658380701">Недопустимое название</translation>

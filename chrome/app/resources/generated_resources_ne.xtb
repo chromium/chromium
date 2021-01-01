@@ -228,7 +228,6 @@
 <translation id="1243436884219965846">पासवर्डहरू समीक्षा गर्नुहोस्</translation>
 <translation id="1244265436519979884">हाल Linux को पुनर्स्थापना हुँदै छ</translation>
 <translation id="1244303850296295656">एक्स्टेन्सन त्रुटि</translation>
-<translation id="1246158006305844142">तपाईंले आफ्नो Google खातामार्फत साइन इन गर्नुभएका Chrome OS चल्ने यन्त्रहरूमा तपाईंका एप तथा सेटिङ सिंक हुने छन्। ब्राउजरका सिंकसम्बन्धी विकल्पहरू हेर्न <ph name="LINK_BEGIN" />Chrome का सेटिङ<ph name="LINK_END" />मा जानुहोस्।</translation>
 <translation id="1246905108078336582">क्लिपबोर्डको सुझाव हटाउने हो?</translation>
 <translation id="1251366534849411931">बायाँ मझौला कोष्ठक हुनु पर्ने हो: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">यस कार्यले साइट तथा इन्स्टल गरिएका एपहरूले भण्डारण गरेको <ph name="TOTAL_USAGE" /> डेटा मेटाउने छ</translation>
@@ -270,7 +269,6 @@
 <translation id="1294807885394205587">यो प्रक्रिया पूरा हुन केही बेर लाग्न सक्छ। कन्टेनर म्यानेजर सुरु गरिँदै छ।</translation>
 <translation id="1296911687402551044">चयन गरिएको ट्याब पिन गर्नुहोस्</translation>
 <translation id="1297175357211070620">गन्तव्य</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> ले सुरक्षित सामग्रीको उन्नत प्लेब्याकसम्बन्धी योग्यता निर्धारण गर्ने प्रयोजनका लागि Google मार्फत तपाईंको यन्त्रको पहिचान पुष्टि गर्न चाहन्छ।</translation>
 <translation id="1300806585489372370">यो सेटिङ बदल्न सर्वप्रथम <ph name="BEGIN_LINK" />पहिचानकर्ताहरू सक्रिय गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> ले निम्न फाइलहरू सम्पादन गर्न सक्छ</translation>
 <translation id="1302139669997477151">स्क्रिनसट खिच्ने सुविधा ब्लक गरिएको छ</translation>
@@ -1244,6 +1242,7 @@
 <translation id="2366260648632264559">प्रणालीको पाठ यो भाषामा देखाउनुहोस्</translation>
 <translation id="2367972762794486313">एप्स देखाउनुहोस्</translation>
 <translation id="2371076942591664043">&amp;भएपछि खोल्नुहोस्</translation>
+<translation id="23721837607121582">मोबाइल प्रोफाइल डाउनलोड गर्नुहोस्, <ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">कागजमा ठ्याक्कै अट्ने बनाउनुहोस्</translation>
 <translation id="2375406435414127095">आफ्नो फोनसँग जोड्नुहोस्</translation>
 <translation id="2377588536920405462">तपाईं आफ्नो यन्त्रमा स्थानसम्बन्धी मुख्य सेटिङ निष्क्रिय पारी स्थानसम्बन्धी सेवा निष्क्रिय पार्न सक्नुहुन्छ। तपाईं स्थानसम्बन्धी सेटिङमा गई स्थान पत्ता लगाउने प्रयोजनका लागि Wi-Fi, मोबाइल नेटवर्क र सेन्सरहरूको प्रयोग गर्न नदिन पनि सक्नुहुन्छ।</translation>
@@ -1441,7 +1440,6 @@
 <translation id="2606246518223360146">डेटा लिंक गर्नुहोस्</translation>
 <translation id="2606454609872547359">अहँ, ChromeVox सक्रिय नगरी अगाडि बढ्नुहोस्</translation>
 <translation id="2607101320794533334">विषय सार्वजनिक कुञ्जी जानकारी</translation>
-<translation id="2607968157341167679">कुनै पनि एल्बम छैन। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मा एउटा एल्बम बनाउनुहोस्।</translation>
 <translation id="2609896558069604090">सर्टकटहरू सिर्जना गर्नुहोस्...</translation>
 <translation id="2609980095400624569">कनेक्ट गर्न सकिएन</translation>
 <translation id="2610157865375787051">शयन अवस्थामा लानुहोस्</translation>
@@ -1586,7 +1584,6 @@
 <translation id="2762441749940182211">क्यामेरा प्रयोग गर्नमाथि रोक लगाइयो</translation>
 <translation id="2764786626780673772">VPN सम्बन्धी विवरण</translation>
 <translation id="2765217105034171413">सानो</translation>
-<translation id="2765729904637714153">आफ्ना खास स्मृतिहरू ताजा गर्नुहोस्। एल्बमहरू थप्न वा सम्पादन गर्न <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मा जानुहोस्।</translation>
 <translation id="2766006623206032690">टाँ&amp;स्नुहोस् र जानुहोस्</translation>
 <translation id="2766161002040448006">अभिभावकलाई सोध्नुहोस्</translation>
 <translation id="2767127727915954024">तपाईंले यो साइटका सबै ट्याबहरू बन्द नगरुन्जेल <ph name="ORIGIN" /> ले <ph name="FILENAME" /> सम्पादन गर्न सक्ने छ</translation>
@@ -2673,6 +2670,7 @@
 <translation id="3969092967100188979">सक्रिय, रोमिङमा छ</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
+<translation id="3971140002794351170">मोबाइल प्रोफाइल डाउनलोड गर्नुहोस्, <ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">यो सुरक्षा साँचोमा भएका फिंगरप्रिन्टहरू</translation>
 <translation id="3973660817924297510">पासवर्डहरू जाँच गर्दै (<ph name="TOTAL_PASSWORDS" /> मध्ये <ph name="CHECKED_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">क्षेत्रको सर्भरमा सम्पर्क गर्न सकिएन</translation>
@@ -4663,7 +4661,6 @@
 <translation id="6331566915566907158">Chrome OS का सुविधा र कार्यसम्पादनको गुणस्तरमा सुधार ल्याउन मद्दत गर्नुहोस्</translation>
 <translation id="6331818708794917058">साइटहरूले MIDI यन्त्रहरूमा कनेक्ट हुने अनुमति माग्न सक्छन्</translation>
 <translation id="6333064448949140209">फाइल डिबग प्रक्रियाका लागि Google मा पठाइनेछ</translation>
-<translation id="6334444530352320327">तपाईंका एप तथा OS का सेटिङ तपाईंले यो खाता प्रयोग गरी साइन इन गर्नुभएको Chromebook मा सिंक हुने छन्।<ph name="LINK_BEGIN" />सिंकसम्बन्धी सेटिङ<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Linux सुरु गर्न <ph name="MANAGER" /> का अनुसार तपाईंले आफ्नो डेटा ब्याकअप गरी यो Chromebook रिसेट गरेर फ्याक्ट्री सेटिङमा लैजानु पर्ने हुन्छ।</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ले ADB डिबग प्रक्रिया अफ गर्नुभएको छ। परिणामस्वरूप, अबको २४ घन्टामा तपाईंको <ph name="DEVICE_TYPE" /> रिसेट हुने छ। आफूले सुरक्षित राख्न चाहेका सबै फाइलहरू ब्याकअप गर्नुहोस्।</translation>
 <translation id="6338981933082930623">सबै साइटहरू तपाईंलाई जुनसुकै विज्ञापन देखाउन सक्छन्</translation>
@@ -5100,7 +5097,6 @@
 <translation id="6860097299815761905">प्रोक्सी सेटिङहरू...</translation>
 <translation id="686022878923628150">साइटहरूलाई MIDI यन्त्रहरूमा कनेक्ट हुन नदिनुहोस्</translation>
 <translation id="6860427144121307915">ट्याबमा खोल्नुहोस्</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> का अनुसार तपाईंले एक हप्ताभित्र आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />विवरण हेर्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">पासवर्ड मेट्ने हो?</translation>
 <translation id="6865313869410766144">स्वत: भर्ने फारम लगत</translation>
 <translation id="6865598234501509159">पृष्ठ <ph name="LANGUAGE" /> भाषामा उपलब्ध छैन</translation>
@@ -5183,7 +5179,6 @@
 <translation id="696103774840402661">यो <ph name="DEVICE_TYPE" /> का सबै प्रयोगकर्ताका सबै फाइल तथा स्थानीय डेटा सदाका लागि मेटाइएका छन्।</translation>
 <translation id="6964390816189577014">नायक</translation>
 <translation id="6964760285928603117">समूहबाट हटाउनुहोस्</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> का अनुसार तपाईंले आजै आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />विवरण हेर्नुहोस्<ph name="LINK_END" />}other{<ph name="MANAGER" /> का अनुसार तपाईंले {NUM_DAYS} दिनभित्र आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />विवरण हेर्नुहोस्<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6965648386495488594">पोर्ट</translation>
 <translation id="6965978654500191972">यन्त्र</translation>
@@ -6314,7 +6309,6 @@
 <translation id="8227119283605456246">फाइल समावेश गर्नुहोस्</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> को पासवर्ड सुरक्षित गर्ने हो?</translation>
 <translation id="8234795456569844941">कृपया यो समस्या समाधान गर्ने काममा हाम्रा इन्जिनियरहरूलाई मद्दत गर्नुहोस्। तपाईंले प्रोफाइल सम्बन्धी त्रुटिको यो सन्देश पाउनुभन्दा ठ्याक्कै अगाडि के भयो, हामीलाई बताउनुहोस्:</translation>
-<translation id="8235605354099176425">Chrome मा हालसालै खोलिएका ट्याबहरू हेर्न<ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> अन गर्नुहोस्।<ph name="LINK2_BEGIN" />थप जान्नुहोस्<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">बरु यो ट्याब सेयर गर्नुहोस्</translation>
 <translation id="8237647586961940482">गाढा गुलाबी र रातो</translation>
 <translation id="8239032431519548577">इन्टरप्राइज दर्ता गर्ने काम पूरा भयो</translation>
@@ -6460,6 +6454,7 @@
 <translation id="8398877366907290961">जे भए पनि अघि बढ्नुहोस्</translation>
 <translation id="8400146488506985033">व्यक्तिहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8401432541486058167">आफ्नो स्मार्ट कार्डसँग सम्बद्ध PIN प्रदान गर्नुहोस्।</translation>
+<translation id="8403562727702715619">हालसालै Google Drive बाट प्राप्त गरिएको</translation>
 <translation id="8407199357649073301">लगको स्तर:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> नेटवर्क, जोड्दै</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6900,6 +6895,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" /> ले निम्न फाइल र फोल्डरहरू सम्पादन गर्न सक्छ</translation>
 <translation id="8890170499370378450">मोबाइल डेटा प्रयोग गर्दा शुल्क लाग्न सक्छ</translation>
 <translation id="8890516388109605451">स्रोतहरू</translation>
+<translation id="8890529496706615641">प्रोफाइलको नाम बदल्न सकिएन। कृपया फेरि प्रयास गर्नुहोस् वा प्राविधिक सहायता प्राप्त गर्न आफ्नो मोबाइल सेवा प्रदायकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="8892168913673237979">सबै सेट गर्नुहोस्!</translation>
 <translation id="8893801527741465188">स्थापना रद्द गर्ने कार्य सम्पन्न भयो</translation>
 <translation id="8893928184421379330">माफ गर्नुहोस्, यन्त्र <ph name="DEVICE_LABEL" /> पहिचान गर्न सकिएन।</translation>

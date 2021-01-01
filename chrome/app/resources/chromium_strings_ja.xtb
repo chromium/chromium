@@ -166,7 +166,6 @@
 <translation id="6403826409255603130">Chromium は、ウェブページやアプリケーションを高速に実行できるスピードと、高い安定性を兼ね備えた非常に使いやすいウェブブラウザです。不正なソフトウェアやフィッシングに対する保護機能が組み込まれており、ウェブを安全にブラウジングできます。</translation>
 <translation id="6434250628340475518">Chromium OS システム</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium は 1 秒後に再起動します}other{Chromium は # 秒後に再起動します}}</translation>
-<translation id="6464340581899189425">Google アカウントを複数お持ちの場合、<ph name="DEVICE_TYPE" /> に追加できます。アカウントは Chromium ブラウザや Play ストアのほか、Gmail、ドライブ、YouTube などのサービスで使用できます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">この拡張機能では、Chromium の起動時に表示されるページも制御されます。</translation>
 <translation id="6510925080656968729">Chromium をアンインストール</translation>
 <translation id="6570579332384693436">スペルミスを修正するために、テキスト欄に入力したテキストが Chromium から Google に送信されます</translation>
@@ -262,6 +261,7 @@
 <translation id="9019929317751753759">Chromium をより安全にご利用いただくために、<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供していない次の拡張機能を無効にしました。これは知らないうちに追加された可能性があります。</translation>
 <translation id="9089354809943900324">Chromium は古いバージョンです</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium は 1 時間後に再起動されます}other{Chromium は # 時間後に再起動されます}}</translation>
+<translation id="9107750757953039239">Google アカウントを複数お持ちの場合、<ph name="DEVICE_TYPE" /> に追加できます。アカウントは Chromium ブラウザや Play ストアのほか、Gmail、ドライブ、YouTube などのサービスで使用できます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">新しい Chromium タブでリンクを開く(&amp;T)</translation>
 <translation id="911206726377975832">閲覧データも削除しますか？</translation>
 <translation id="9158494823179993217">システム管理者が、<ph name="TARGET_URL_HOSTNAME" /> へのアクセスに代替ブラウザを開くよう Chromium を設定しています。</translation>

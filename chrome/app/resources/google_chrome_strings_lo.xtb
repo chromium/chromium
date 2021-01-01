@@ -181,7 +181,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="573759479754913123">ກ່ຽວ​ກັບ Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">ບໍ່ສາມາດເປີດໃຊ້ Chrome. ກະລຸນາລອງອີກຄັ້ງ.</translation>
-<translation id="5851757216820085940">ຖ້າທ່ານມີບັນຊີ Google ຫຼາຍບັນຊີ, ທ່ານສາມາດເພີ່ມພວກມັນໃສ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານໄດ້. ບັນຊີຂອງທ່ານຈະມີໃຫ້ນຳໃຊ້ໃນໂປຣແກຣມທ່ອງເວັບ Chrome ແລະ Play Store, ເຊັ່ນດຽວກັບການບໍລິການຕ່າງໆ ເຊັ່ນ: Gmail, Drive ແລະ YouTube.<ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome ກໍາລັງພະຍາຍາມແກ້ໄຂລະຫັດຜ່ານ.</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ</translation>
@@ -257,7 +256,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="828798499196665338">ພໍ່ແມ່ຂອງທ່ານໄດ້ປິດ "ການອະນຸຍາດສຳລັບເວັບໄຊ, ແອັບ ແລະ ສ່ວນຂະຫຍາຍ" ສຳລັບ Chrome ແລ້ວ. ການເປີດການນຳໃຊ້ <ph name="EXTENSION_TYPE_PARAMETER" /> ນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດ.</translation>
 <translation id="8290100596633877290">ໂຮ້! Google Chrome ​ເກີດ​ຂັດຂ້ອງ. ເປີດໃຊ້ໃໝ່ດຽວນີ້ບໍ?</translation>
 <translation id="8342675569599923794">ໄຟລ໌ນີ້ເປັນອັນຕະລາຍ, ສະນັ້ນ Chrome ໄດ້ບລັອກມັນໄວ້ແລ້ວ.</translation>
-<translation id="8370517070665726704">ລິຂະສິດ <ph name="YEAR" /> Google LLC. ສະຫງວນລິຂະສິດ.</translation>
+<translation id="8370517070665726704">ລິຂະສິດ <ph name="YEAR" /> Google LLC. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="840084489713044809">Google Chrome ຕ້ອງການສົ່ງອອກລະຫັດຜ່ານຂອງທ່ານ.</translation>
 <translation id="8433638294851456451">ເພື່ອສົ່ງເບີຈາກບ່ອນນີ້ໃຫ້ໂທລະສັບ Android ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ຢູ່ໃນທັງສອງອຸປະກອນ.</translation>
 <translation id="8498858610309223613">ຫາກໍນຳໃຊ້ການອັບເດດຄວາມປອດໄພພິເສດສຳລັບ Google Chrome. ກະລຸນາປິດເປີດໃໝ່ຕອນນີ້ເລີຍ ແລ້ວພວກເຮົາຈະກູ້ຄືນແຖບຂອງທ່ານ.</translation>
@@ -289,5 +288,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="911206726377975832">ລຶບຂໍ້ມູນການທ່ອງເນັດຂອງທ່ານນໍາບໍ?</translation>
 <translation id="9138603949443464873">ເພື່ອນຳໃຊ້ການປ່ຽນແປງຂອງທ່ານ, ກະລຸນາເປີດ Chrome ຄືນໃໝ່</translation>
 <translation id="919706545465235479">ອັບເດດ Chrome ເພື່ອເລີ່ມຊິ້ງຂໍ້ມູນ</translation>
+<translation id="94743460404517794">ຖ້າທ່ານມີບັນຊີ Google ຫຼາຍບັນຊີ, ທ່ານສາມາດເພີ່ມພວກມັນໃສ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານໄດ້. ບັນຊີຂອງທ່ານຈະມີໃຫ້ນຳໃຊ້ໃນໂປຣແກຣມທ່ອງເວັບ Chrome ແລະ Play Store, ເຊັ່ນດຽວກັບການບໍລິການຕ່າງໆ ເຊັ່ນ: Gmail, Drive ແລະ YouTube. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome ແມ່ນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 </translationbundle>

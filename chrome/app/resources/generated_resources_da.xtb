@@ -231,7 +231,6 @@
 <translation id="1243436884219965846">Gennemgå dine adgangskoder</translation>
 <translation id="1244265436519979884">Linux er i øjeblikket ved at blive gendannet</translation>
 <translation id="1244303850296295656">Udvidelsesfejl</translation>
-<translation id="1246158006305844142">Dine apps og indstillinger synkroniseres på tværs af alle de Chrome OS-enheder, hvor du er logget ind med din Google-konto. Du kan se muligheder for synkronisering af browseren i <ph name="LINK_BEGIN" />indstillingerne for Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Vil du fjerne forslaget fra udklipsholderen?</translation>
 <translation id="1251366534849411931">Forventet krøllet startparentes: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Denne handling rydder <ph name="TOTAL_USAGE" /> data, der er gemt af websites og installerede apps</translation>
@@ -273,7 +272,6 @@
 <translation id="1294807885394205587">Denne proces kan tage et par minutter. Starter containeradministration.</translation>
 <translation id="1296911687402551044">Fastgør den valgte fane</translation>
 <translation id="1297175357211070620">Destination</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> beder om, at din enheds identitet bekræftes af Google for at fastslå muligheden for forbedret afspilning af beskyttet indhold.</translation>
 <translation id="1300806585489372370">Hvis du vil ændre denne indstilling, skal du først <ph name="BEGIN_LINK" />aktivere id<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> kan redigere følgende filer</translation>
 <translation id="1302139669997477151">Der kan ikke tages screenshots</translation>
@@ -1032,6 +1030,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2139919072249842737">Knappen Konfigurer</translation>
 <translation id="214169863967063661">Åbn indstillingerne for udseende</translation>
 <translation id="2142328300403846845">Åbn linket som</translation>
+<translation id="2142582065325732898">Aktivér <ph name="LINK1_BEGIN" />Chrome-synkronisering<ph name="LINK1_END" /> for at se de seneste Chrome-faner. <ph name="LINK2_BEGIN" />Få flere oplysninger<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Vis altid værktøjslinjen i fuld skærm</translation>
 <translation id="2143778271340628265">Manuel proxykonfiguration</translation>
 <translation id="2144536955299248197">Certifikatfremviser: <ph name="CERTIFICATE_NAME" /></translation>
@@ -1447,7 +1446,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2606246518223360146">Tilknyt data</translation>
 <translation id="2606454609872547359">Nej, fortsæt uden ChromeVox</translation>
 <translation id="2607101320794533334">Oplysninger om emnets offentlige nøgle</translation>
-<translation id="2607968157341167679">Der er ingen album. Opret et album i<ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Opret genveje...</translation>
 <translation id="2609980095400624569">Der kunne ikke oprettes forbindelse</translation>
 <translation id="2610157865375787051">Dvale</translation>
@@ -1592,7 +1590,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2762441749940182211">Der er blokeret for adgang til kameraet</translation>
 <translation id="2764786626780673772">Info om VPN</translation>
 <translation id="2765217105034171413">Lille</translation>
-<translation id="2765729904637714153">Genoplev dine bedste minder. Gå til <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" /> for at tilføje eller redigere album.</translation>
 <translation id="2766006623206032690">Indsæt og fortsæt</translation>
 <translation id="2766161002040448006">Spørg en forælder</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> vil kunne redigere <ph name="FILENAME" />, indtil du har lukket alle faner for dette website</translation>
@@ -2387,6 +2384,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3677911431265050325">Anmod om mobilversion</translation>
 <translation id="3677959414150797585">Omfatter apps, websider og mere. Sender kun statistik til forbedring af forslag, hvis du har valgt at dele dine brugsdata.</translation>
 <translation id="3678156199662914018">Udvidelse: <ph name="EXTENSION_NAME" /></translation>
+<translation id="3679608942832457508">Dine apps og OS-indstillinger synkroniseres med alle de Chromebooks, hvor du er logget ind med denne konto. <ph name="LINK_BEGIN" />Indstillinger for synkronisering<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Stemme til oplæsning</translation>
 <translation id="3681311097828166361">Tak for din feedback. Du er offline nu, og din rapport sendes senere.</translation>
 <translation id="3682824389861648626">Grænse for bevægelse</translation>
@@ -3663,6 +3661,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5185386675596372454">Den nyeste version af "<ph name="EXTENSION_NAME" />" er blevet deaktiveret, fordi den kræver flere tilladelser.</translation>
 <translation id="5185500136143151980">Der er ingen internetforbindelse</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190187232518914472">Genoplev dine bedste minder. Gå til <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" /> for at tilføje eller redigere album.</translation>
 <translation id="5190926251776387065">Aktivér port</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> vil downloade flere filer</translation>
 <translation id="5192062846343383368">Åbn Family Link-appen for at se dine indstillinger for forældrestyring</translation>
@@ -3911,6 +3910,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5481273127572794904">Har ikke tilladelse til at downloade flere filer automatisk</translation>
 <translation id="5481941284378890518">Tilføj printere i nærheden</translation>
 <translation id="5483785310822538350">Tilbagekald adgang til fil og enhed</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> i dag. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" />}one{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dag.<ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" />}other{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dage.<ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835">Din <ph name="DEVICE_TYPE" /> er låst af sikkerhedshensyn. Angiv din adgangskode manuelt for at fortsætte.</translation>
 <translation id="5485102783864353244">Tilføj app</translation>
 <translation id="5485754497697573575">Gendan alle faner</translation>
@@ -4673,7 +4673,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6331566915566907158">Vær med til at forbedre funktioner og ydeevne i Chrome OS</translation>
 <translation id="6331818708794917058">Websites kan anmode om tilladelse til at oprette forbindelse til MIDI-enheder</translation>
 <translation id="6333064448949140209">Filen sendes til Google til fejlretning</translation>
-<translation id="6334444530352320327">Dine apps og OS-indstillinger synkroniseres med alle de Chromebooks, hvor du er logget ind med denne konto.<ph name="LINK_BEGIN" />Indstillinger for synkronisering<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346"><ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og gendanner fabriksindstillingerne på denne Chromebook, før du kan starte Linux.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> har deaktiveret ADB-fejlretning. Dette medfører, at din <ph name="DEVICE_TYPE" /> nulstilles om 24 timer. Sikkerhedskopiér de filer, du vil beholde.</translation>
 <translation id="6338981933082930623">Alle websites kan vise dig alle slags annoncer</translation>
@@ -5110,7 +5109,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6860097299815761905">Indstillinger for proxy...</translation>
 <translation id="686022878923628150">Bloker websites, så de ikke kan oprette forbindelse til MIDI-enheder</translation>
 <translation id="6860427144121307915">Åbn på en fane</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for 1 uge.<ph name="LINK_BEGIN" />Se oplysninger<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Vil du slette adgangskoden?</translation>
 <translation id="6865313869410766144">Formulardata for AutoFyld</translation>
 <translation id="6865598234501509159">Siden findes ikke på <ph name="LANGUAGE" /></translation>
@@ -5193,7 +5191,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="696103774840402661">Alle filer og lokale data for alle brugere på denne <ph name="DEVICE_TYPE" /> er blevet slettet permanent.</translation>
 <translation id="6964390816189577014">Helt</translation>
 <translation id="6964760285928603117">Fjern fra gruppe</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> i dag.<ph name="LINK_BEGIN" />Se oplysninger<ph name="LINK_END" />}one{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dag.<ph name="LINK_BEGIN" />Se oplysninger<ph name="LINK_END" />}other{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dage.<ph name="LINK_BEGIN" />Se oplysninger<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Enhed</translation>
@@ -5643,6 +5640,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7476454130948140105">Batteriniveauet er for lavt til at opdatere (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7477793887173910789">Styr din musik, dine videoer og meget mere</translation>
 <translation id="7478485216301680444">Kioskapplikationen kunne ikke installeres.</translation>
+<translation id="7478623944308207463">Dine apps og indstillinger synkroniseres på tværs af alle de Chrome OS-enheder, hvor du er logget ind med din Google-konto. Du kan se muligheder for synkronisering af browseren i <ph name="LINK_BEGIN" />indstillingerne for Chrome<ph name="LINK_END" />.</translation>
 <translation id="7479221278376295180">Oversigt over brug af lagerplads</translation>
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7481358317100446445">Klar</translation>
@@ -6311,6 +6309,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8211551284753798479">PUK-koden er ugyldig. Du har <ph name="RETRIES" /> forsøg tilbage.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Downloaden er i gang}one{Downloaden er i gang}other{Downloadene er i gang}}</translation>
 <translation id="8213449224684199188">Fototilstand er aktiveret</translation>
+<translation id="8213866992824776555"><ph name="DOMAIN" /> vil gerne identificere din enhed, så den kan afspille beskyttet video- og lydindhold i højest mulig kvalitet.</translation>
 <translation id="8214489666383623925">Åbn fil...</translation>
 <translation id="8214962590150211830">Fjern denne person</translation>
 <translation id="8216351761227087153">Se</translation>
@@ -6324,7 +6323,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8227119283605456246">Vedhæft fil</translation>
 <translation id="8230134520748321204">Vil du gemme adgangskoden til <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Hjælp vores softwareudviklere med at løse dette problem. Fortæl os, hvad der skete, lige før du fik fejlmeddelelsen for profilen:</translation>
-<translation id="8235605354099176425">Aktivér<ph name="LINK1_BEGIN" />Chrome-synkronisering<ph name="LINK1_END" /> for at se de seneste Chrome-faner.<ph name="LINK2_BEGIN" />Få flere oplysninger<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Del denne fane i stedet</translation>
 <translation id="8237647586961940482">Mørk pink og rød</translation>
 <translation id="8239032431519548577">Tilmelding af virksomhed er gennemført</translation>
@@ -6701,6 +6699,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="8676374126336081632">Ryd indtastning</translation>
 <translation id="8676770494376880701">Oplader med lav kraft er tilsluttet</translation>
 <translation id="8677212948402625567">Skjul alle...</translation>
+<translation id="8677859815076891398">Der er ingen album. Opret et album i <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8678933587484842200">Hvordan vil du starte denne app?</translation>
 <translation id="8680251145628383637">Log ind for at få dine bogmærker, din historik, dine adgangskoder og dine øvrige indstillinger på alle dine enheder. Du bliver også automatisk logget ind på dine Google-tjenester.</translation>
 <translation id="8681614230122836773">Chrome har registreret skadelig software på din computer</translation>
@@ -6860,6 +6859,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="8831140208248705279">Din <ph name="DEVICE_TYPE" /> og Android-telefon fungerer bedre sammen. Opret forbindelse mellem dem, så du kan sende sms-beskeder fra din computer, dele din internetforbindelse og låse din <ph name="DEVICE_TYPE" /> op med telefonen.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">Netværkskonfiguration kontrolleres af <ph name="USER_EMAIL" />.</translation>
 <translation id="8835786707922974220">Sørg for, at du altid har adgang til dine gemte adgangskoder</translation>
+<translation id="8836360711089151515"><ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for 1 uge. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8838601485495657486">Uigennemsigtig</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="883911313571074303">Annoter billede</translation>
@@ -7146,6 +7146,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="9148963623915467028">Dette website har adgang til din placering.</translation>
 <translation id="9149866541089851383">Rediger...</translation>
 <translation id="9150045010208374699">Bruge dit kamera</translation>
+<translation id="9150079578948279438">Profilen kunne ikke fjernes. Prøv igen, eller kontakt dit mobilselskab for at få teknisk support.</translation>
 <translation id="9153934054460603056">Gem identitet og adgangskode</translation>
 <translation id="9154194610265714752">Opdateret</translation>
 <translation id="91568222606626347">Opret genvej...</translation>

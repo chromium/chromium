@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Норвежки</translation>
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1435838927755162558">Споделяне на папката с Parallels Desktop</translation>
-<translation id="1439494416798956626">Преместено във: <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Наляво</translation>
 <translation id="1471718551822868769">Словашки</translation>
 <translation id="1474339897586437869">Файлът „<ph name="FILENAME" />“ не бе качен. Нямате достатъчно свободно място в Google Диск.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Наистина ли искате да изтриете <ph name="NUMBER_OF_ITEMS" /> елемента?</translation>
 <translation id="2230062665678605299">Не можем да създадем папката „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Възстановяване от кошчето</translation>
-<translation id="2275059641601412272">Преместено.</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Отварят се <ph name="NUMBER_OF_FILES" /> файла.</translation>
 <translation id="2303301624314357662">Файлът „<ph name="FILE_NAME" />“ се отваря.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Естонски</translation>
 <translation id="3466147780910026086">Мултимедийното ви устройство се сканира...</translation>
 <translation id="3468522857997926824">На <ph name="FILE_COUNT" /> снимки бяха създадени резервни копия в <ph name="BEGIN_LINK" />Google Диск<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">Копирано във: <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Електронна таблица в Google</translation>
 <translation id="3486821258960016770">Монголски</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
@@ -410,7 +407,6 @@
 Каквото и да се случи с устройството ви, те ще се съхраняват надеждно в Google Диск.<ph name="MARKUP_6" />
 <ph name="MARKUP_7" />Споделяйте, създавайте и работете съвместно<ph name="MARKUP_8" />
 по файлове с други хора – всичко от едно място.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Копирано.</translation>
 <translation id="5275973617553375938">Възстановени от Google Диск файлове</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Запазване</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">Вчера, <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Вече съществува файл или директория със същото име.</translation>
 <translation id="8372852072747894550">Гръцки</translation>
-<translation id="8382450452152102026">До <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Размери</translation>
 <translation id="8437209419043462667">Американска клавиатура</translation>
 <translation id="8456681095658380701">Невалидно име</translation>

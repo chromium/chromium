@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">نروژی</translation>
 <translation id="1430915738399379752">چاپ</translation>
 <translation id="1435838927755162558">‏هم‌رسانی پوشه با Parallels Desktop</translation>
-<translation id="1439494416798956626">به <ph name="FOLDER_NAME" /> منتقل شد.</translation>
 <translation id="1467432559032391204">چپ</translation>
 <translation id="1471718551822868769">اسلوواکی</translation>
 <translation id="1474339897586437869">‏«<ph name="FILENAME" />» بارگذاری نشد. فضای کافی در Google Drive شما وجود ندارد.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">مطمئنید می‌خواهید <ph name="NUMBER_OF_ITEMS" /> مورد را حذف کنید؟</translation>
 <translation id="2230062665678605299">پوشه «<ph name="FOLDER_NAME" />» را نمی‌توان ایجاد کرد.<ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">بازیابی از حذف‌شده‌ها</translation>
-<translation id="2275059641601412272">منتقل شد.</translation>
 <translation id="2288278176040912387">ضبط صوت</translation>
 <translation id="2291538123825441971">درحال باز کردن <ph name="NUMBER_OF_FILES" /> فایل.</translation>
 <translation id="2303301624314357662">درحال باز کردن فایل <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">استونیایی</translation>
 <translation id="3466147780910026086">در حال اسکن دستگاه رسانه شما...</translation>
 <translation id="3468522857997926824">‏<ph name="FILE_COUNT" /> عکس در <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> پشتیبان گرفته شدند</translation>
-<translation id="3473378059788601120">در <ph name="FOLDER_NAME" /> کپی شد.</translation>
 <translation id="3475447146579922140">‏صفحه‌گسترده Google</translation>
 <translation id="3486821258960016770">مغولی</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> خطا.</translation>
@@ -410,7 +407,6 @@
         مهم نیست برای دستگاه شما چه اتفاقی می‌افتد، فایل‌های شما در Google Drive به‌صورت امن ذخیره می‌شوند.<ph name="MARKUP_6" />
        فایل‌ها را با دیگران <ph name="MARKUP_7" />اشتراک‌گذاری، ایجاد و مشارکت<ph name="MARKUP_8" />
        کنید، همه این کارها را در یک مکان انجام دهید.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">کپی شد.</translation>
 <translation id="5275973617553375938">‏فایل‌های بازیابی‌شده از Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">ذخیره</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">دیروز <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">یک فایل یا یک پوشه با همین نام از قبل وجود دارد.</translation>
 <translation id="8372852072747894550">یونانی</translation>
-<translation id="8382450452152102026">به <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">ابعاد</translation>
 <translation id="8437209419043462667">آمریکایی</translation>
 <translation id="8456681095658380701">نام نامعتبر</translation>

@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">ਨਾਰਵੇਜੀਆਈ</translation>
 <translation id="1430915738399379752">ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="1435838927755162558">Parallels Desktop ਨਾਲ ਫੋਲਡਰ ਸਾਂਝਾ ਕਰੋ</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਲਿਜਾਈ ਗਈ।</translation>
 <translation id="1467432559032391204">ਖੱਬੇ ਪਾਸੇ</translation>
 <translation id="1471718551822868769">ਸਲੋਵਾਕ</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ਅਪਲੋਡ ਨਹੀਂ ਕੀਤੀ ਗਈ ਸੀ। ਤੁਹਾਡੀ Google Drive ਵਿੱਚ ਪੂਰਾ ਖਾਲੀ ਸਪੇਸ ਨਹੀਂ ਹੈ।</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">ਕੀ ਤੁਸੀਂ ਪੱਕਾ <ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ਫੋਲਡਰ ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰੱਥ। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">ਰੱਦੀ ਵਿੱਚੋਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
-<translation id="2275059641601412272">ਲਿਜਾਈ ਗਈ।</translation>
 <translation id="2288278176040912387">ਰਿਕਾਰਡ ਪਲੇਅਰ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ।</translation>
 <translation id="2303301624314357662">ਫ਼ਾਈਲ <ph name="FILE_NAME" /> ਨੂੰ ਖੋਲ੍ਹਿਆ ਜਾ ਰਿਹਾ ਹੈ।</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">ਇਸਤੋਨੀਆਈ</translation>
 <translation id="3466147780910026086">ਤੁਹਾਡਾ ਮੀਡੀਆ ਡੀਵਾਈਸ ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ਫ਼ੋਟੋਆਂ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> ਵਿੱਚ ਬੈਕ ਅਪ ਕੀਤੀਆਂ ਗਈਆਂ</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਕਾਪੀ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3486821258960016770">ਮੰਗੋਲੀਆਈ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ਅਸ਼ੁੱਧੀਆਂ।</translation>
@@ -410,7 +407,6 @@
     ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨਾਲ ਕੁਝ ਵੀ ਵਾਪਰਨ 'ਤੇ, ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ 'Google ਡਰਾਈਵ' ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸਟੋਰ ਰਹਿੰਦੀਆਂ ਹਨ।<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />ਇੱਕੋ ਥਾਂ ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਹੋਰਾਂ ਨਾਲ<ph name="MARKUP_8" />
     ਸਾਂਝਾ ਕਰੋ, ਬਣਾਓ, ਅਤੇ ਉਹਨਾਂ 'ਤੇ ਸਹਿਯੋਗ ਦਿਓ।<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">ਕਾਪੀ ਕੀਤੀ ਗਈ।</translation>
 <translation id="5275973617553375938">Google Drive ਤੋਂ ਰਿਕਵਰ ਕੀਤੀਆਂ ਫਾਈਲਾਂ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5318819489018851358">Linux ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>
@@ -707,7 +703,6 @@
 <translation id="8336153091935557858">ਕੱਲ੍ਹ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">ਸਮਾਨ ਨਾਮ ਵਾਲੀ ਇੱਕ ਫਾਈਲ ਜਾਂ ਡਾਇਰੈਕਟਰੀ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ।</translation>
 <translation id="8372852072747894550">ਯੂਨਾਨੀ</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" /> ਵਿੱਚ</translation>
 <translation id="8395901698320285466">ਮਾਪ</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">ਅਵੈਧ ਨਾਮ</translation>

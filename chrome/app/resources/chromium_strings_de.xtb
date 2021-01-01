@@ -166,7 +166,6 @@
 <translation id="6403826409255603130">Chromium ist ein Webbrowser, der Webseiten und Apps in Sekundenschnelle lädt und dabei äußerst stabil und nutzerfreundlich ist. Dank des integrierten Malware- und Phishing-Schutzes können Sie bedenkenlos im Internet surfen.</translation>
 <translation id="6434250628340475518">Chromium OS-System</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium wird in 1 Sekunde neu gestartet}other{Chromium wird in # Sekunden neu gestartet}}</translation>
-<translation id="6464340581899189425">Wenn Sie mehrere Google-Konten haben, können Sie sie Ihrem <ph name="DEVICE_TYPE" /> hinzufügen. Ihre Konten sind im Chromium-Browser, im Play Store und für Dienste wie Gmail, Drive und YouTube verfügbar. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Die Erweiterung legt auch die Seite fest, die beim Start von Chromium angezeigt wird.</translation>
 <translation id="6510925080656968729">Chromium deinstallieren</translation>
 <translation id="6570579332384693436">Zur Behebung von Tippfehlern sendet Chromium eingegebenen Text an Google</translation>

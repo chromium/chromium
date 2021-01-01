@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">Semak kata laluan</translation>
 <translation id="1244265436519979884">Pemulihan Linux sedang dijalankan</translation>
 <translation id="1244303850296295656">Ralat sambungan</translation>
-<translation id="1246158006305844142">Apl dan tetapan anda akan disegerakkan pada semua peranti OS Chrome yang anda gunakan untuk log masuk dengan akaun Google anda. Untuk mendapatkan pilihan penyegerakan penyemak imbas, lawati <ph name="LINK_BEGIN" />tetapan Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Alih keluar cadangan daripada papan keratan?</translation>
 <translation id="1251366534849411931">Tiada tanda kurung keriting pembuka: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Tindakan ini akan mengosongkan <ph name="TOTAL_USAGE" /> daripada data yang disimpan oleh tapak dan apl yang dipasang</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">Proses ini mungkin mengambil masa beberapa minit. Memulakan pengurus bekas.</translation>
 <translation id="1296911687402551044">Sematkan Tab yang Dipilih</translation>
 <translation id="1297175357211070620">Destinasi</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> mahukan identiti peranti anda disahkan, oleh Google, untuk menentukan kelayakan bagi main balik yang dipertingkatkan untuk kandungan yang dilindungi.</translation>
 <translation id="1300806585489372370">Untuk menukar tetapan ini, mula-mula <ph name="BEGIN_LINK" />hidupkan pengecam<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> boleh mengedit fail yang berikut</translation>
 <translation id="1302139669997477151">Tangkapan skrin disekat</translation>
@@ -1248,6 +1246,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2366260648632264559">Tunjukkan teks sistem dalam bahasa ini</translation>
 <translation id="2367972762794486313">Paparkan apl</translation>
 <translation id="2371076942591664043">Buka apabila &amp;selesai</translation>
+<translation id="23721837607121582">Muat turun profil mudah alih, Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">Muatkan mengikut kertas</translation>
 <translation id="2375406435414127095">Sambung ke telefon anda</translation>
 <translation id="2377588536920405462">Anda boleh mematikan Lokasi dengan mematikan tetapan Lokasi utama pada peranti anda. Anda juga boleh mematikan penggunaan Wi-Fi, rangkaian mudah alih dan penderia untuk lokasi dalam tetapan lokasi.</translation>
@@ -1445,7 +1444,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2606246518223360146">Pautkan Data</translation>
 <translation id="2606454609872547359">Tidak, teruskan tanpa ChromeVox</translation>
 <translation id="2607101320794533334">Maklumat Penting Subjek Awam</translation>
-<translation id="2607968157341167679">Tiada album. Buat album dalam<ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Buat Pintasan...</translation>
 <translation id="2609980095400624569">Tidak dapat mewujudkan sambungan</translation>
 <translation id="2610157865375787051">Tidur</translation>
@@ -1590,7 +1588,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2762441749940182211">Kamera disekat</translation>
 <translation id="2764786626780673772">Butiran VPN</translation>
 <translation id="2765217105034171413">Kecil</translation>
-<translation id="2765729904637714153">Kenang kembali memori kegemaran anda. Untuk menambah atau mengedit album, pergi ke<ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="2766006623206032690">Ta&amp;mpal dan pergi</translation>
 <translation id="2766161002040448006">Tanya ibu/bapa</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> akan dapat mengedit <ph name="FILENAME" /> sehinggalah anda menutup semua tab bagi tapak ini</translation>
@@ -2677,6 +2674,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3969092967100188979">Dihidupkan, menggunakan perayauan</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Mengira...</translation>
+<translation id="3971140002794351170">Muat turun profil mudah alih, Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">Cap jari pada kunci keselamatan ini</translation>
 <translation id="3973660817924297510">Menyemak kata laluan (<ph name="CHECKED_PASSWORDS" /> daripada <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">Gagal menghubungi pelayan untuk realma</translation>
@@ -4669,7 +4667,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6331566915566907158">Bantu kami mempertingkat ciri dan prestasi OS Chrome</translation>
 <translation id="6331818708794917058">Tapak boleh meminta untuk menyambung kepada peranti MIDI</translation>
 <translation id="6333064448949140209">Fail akan dihantar kepada Google untuk dinyahpepijat</translation>
-<translation id="6334444530352320327">Tetapan apl dan OS anda akan disegerakkan pada semua Chromebook yang anda gunakan untuk log masuk dengan akaun ini.<ph name="LINK_BEGIN" />Tetapan Penyegerakan<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Untuk memulakan Linux, <ph name="MANAGER" /> menghendaki anda menyandarkan data anda dan menetapkan semula Chromebook ini kepada tetapan kilang.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> telah melumpuhkan penyahpepijatan ADB. Tindakan ini akan menetapkan semula <ph name="DEVICE_TYPE" /> anda dalam masa 24 jam. Sandarkan mana-mana fail yang ingin anda simpan.</translation>
 <translation id="6338981933082930623">Semua tapak boleh memaparkan sebarang iklan kepada anda</translation>
@@ -5106,7 +5103,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6860097299815761905">Tetapan proksi...</translation>
 <translation id="686022878923628150">Sekat tapak daripada menyambung kepada peranti MIDI</translation>
 <translation id="6860427144121307915">Buka dalam Tab</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> menghendaki anda menyandarkan data anda dan memulangkan <ph name="DEVICE_TYPE" /> ini dalam masa 1 minggu.<ph name="LINK_BEGIN" />Lihat butiran<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Padamkan kata laluan?</translation>
 <translation id="6865313869410766144">Autolengkap data borang</translation>
 <translation id="6865598234501509159">Halaman Bukan dalam <ph name="LANGUAGE" /></translation>
@@ -5189,7 +5185,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="696103774840402661">Semua fail dan data setempat untuk semua pengguna pada <ph name="DEVICE_TYPE" /> ini telah dipadamkan secara kekal.</translation>
 <translation id="6964390816189577014">Wira</translation>
 <translation id="6964760285928603117">Alih Keluar Daripada Kumpulan</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> menghendaki anda menyandarkan data anda dan memulangkan <ph name="DEVICE_TYPE" /> ini pada hari ini. <ph name="LINK_BEGIN" />Lihat butiran<ph name="LINK_END" />}other{<ph name="MANAGER" /> menghendaki anda menyandarkan data anda dan memulangkan <ph name="DEVICE_TYPE" /> ini dalam {NUM_DAYS} hari.<ph name="LINK_BEGIN" />Lihat butiran<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Peranti</translation>
@@ -6321,7 +6316,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8227119283605456246">Lampirkan fail</translation>
 <translation id="8230134520748321204">Simpan kata laluan untuk <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Sila bantu jurutera kami menyelesaikan masalah ini. Beritahu kami perkara yang berlaku sejurus sebelum anda mendapat mesej ralat profil:</translation>
-<translation id="8235605354099176425">Hidupkan <ph name="LINK1_BEGIN" />Penyegerakan Chrome<ph name="LINK1_END" /> untuk melihat tab Chrome baru-baru ini. <ph name="LINK2_BEGIN" />Ketahui Lebih Lanjut<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Kongsi tab ini</translation>
 <translation id="8237647586961940482">Merah jambu gelap dan merah</translation>
 <translation id="8239032431519548577">Pendaftaran perusahaan selesai</translation>
@@ -6468,6 +6462,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8398877366907290961">Teruskan juga</translation>
 <translation id="8400146488506985033">Urus orang</translation>
 <translation id="8401432541486058167">Sediakan PIN yang dikaitkan dengan kad pintar anda.</translation>
+<translation id="8403562727702715619">Baru-baru ini daripada Google Drive</translation>
 <translation id="8407199357649073301">Tahap Log:</translation>
 <translation id="8408068190360279472">Rangkaian <ph name="NETWORK_TYPE" />, menyambung</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6908,6 +6903,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> boleh mengedit fail dan folder berikut</translation>
 <translation id="8890170499370378450">Mungkin dikenakan caj data mudah alih</translation>
 <translation id="8890516388109605451">Sumber</translation>
+<translation id="8890529496706615641">Profil tidak dapat dinamakan semula. Sila cuba lagi atau hubungi pembawa anda untuk mendapatkan sokongan teknikal.</translation>
 <translation id="8892168913673237979">Sudah bersedia!</translation>
 <translation id="8893801527741465188">Penyahpasangan selesai</translation>
 <translation id="8893928184421379330">Maaf, peranti <ph name="DEVICE_LABEL" /> tidak dapat dikenali.</translation>

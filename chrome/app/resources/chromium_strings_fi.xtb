@@ -166,7 +166,6 @@
 <translation id="6403826409255603130">Chromium on selain, jolla verkkosivut ja sovellukset toimivat salamannopeasti. Se on nopea, vakaa ja helppokäyttöinen. Chromiumin sisäänrakennettu haittaohjelma- ja tietojenkalastelusuojaus tekevät verkkoselauksesta turvallisempaa.</translation>
 <translation id="6434250628340475518">Chromium-käyttöjärjestelmä</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium käynnistyy uudelleen 1 sekunnin kuluttua}other{Chromium käynnistyy uudelleen # sekunnin kuluttua}}</translation>
-<translation id="6464340581899189425">Jos sinulla on useita Google-tilejä, voit lisätä ne laitteellesi (<ph name="DEVICE_TYPE" />). Tilisi ovat käytettävissä Chromium-selaimella ja Play Kaupassa sekä Gmailin, Driven ja YouTuben kaltaisissa palveluissa.<ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Määrittää myös Chromiumin aloitussivun.</translation>
 <translation id="6510925080656968729">Poista Chromium</translation>
 <translation id="6570579332384693436">Chromium lähettää kenttiin kirjoittamasi tekstin Googlelle oikeinkirjoitusvirheiden korjaamiseksi.</translation>

@@ -231,7 +231,6 @@
 <translation id="1243436884219965846">পাছৱৰ্ড পৰ্যালোচনা কৰক</translation>
 <translation id="1244265436519979884">বর্তমান Linuxক পুনঃস্থাপন কৰা প্ৰক্ৰিয়া চলি আছে</translation>
 <translation id="1244303850296295656">এক্সটেনশ্বনৰ আসোঁৱাহ</translation>
-<translation id="1246158006305844142">আপোনাৰ এপ্‌ আৰু ছেটিংসমূহ সেই সকলো Chrome OS ডিভাইচত ছিংক কৰা হ’ব য’ত আপুনি নিজৰ Google একাউণ্টেৰে ছাইন ইন কৰি থৈছে। ব্ৰাউজাৰ ছিংক কৰাৰ বিকল্পসমূহৰ বাবে <ph name="LINK_BEGIN" />Chromeৰ ছেটিংসমূহ<ph name="LINK_END" />লৈ যাওক।</translation>
 <translation id="1246905108078336582">ক্লিপব’ৰ্ডৰ পৰা পৰামৰ্শ আঁতৰাবনে?</translation>
 <translation id="1251366534849411931">প্ৰত্যাশিত প্ৰাৰম্ভিক কার্লী ব্ৰাচ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">এই কাৰ্যই ছাইটসমূহ আৰু ইনষ্টল হৈ থকা এপ্‌সমূহে ষ্ট’ৰ কৰা <ph name="TOTAL_USAGE" /> ডেটা মচিব</translation>
@@ -273,7 +272,6 @@
 <translation id="1294807885394205587">এই প্ৰক্ৰিয়াৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে। কণ্টেইনাৰ মেনেজাৰটো আৰম্ভ কৰি থকা হৈছে।</translation>
 <translation id="1296911687402551044">বাছনি কৰা টেবটো পিন কৰক</translation>
 <translation id="1297175357211070620">গন্তব্যস্থান</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" />এ সুৰক্ষিত সমলৰ প্লে’বেক বৃদ্ধি কৰাৰ যোগ্যতা নির্ধাৰণ কৰিবলৈ Googleএ আপোনাৰ ডিভাইচৰ পৰিচয় সত্যাপন কৰাটো বিচাৰে।</translation>
 <translation id="1300806585489372370">এই ছেটিংটো সলনি কৰিবলৈ প্ৰথমে <ph name="BEGIN_LINK" />চিনাক্তকাৰীক অন কৰক<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" />এ তলৰ ফাইলসমূহ সম্পাদনা কৰিব পাৰে</translation>
 <translation id="1302139669997477151">স্ক্ৰীনশ্বট অৱৰোধ কৰা হৈছে</translation>
@@ -1246,6 +1244,7 @@
 <translation id="2366260648632264559">ছিষ্টেমৰ পাঠ এইটো ভাষাত দেখুওৱাক</translation>
 <translation id="2367972762794486313">এপ্‌সমূহ দেখুৱাওক</translation>
 <translation id="2371076942591664043">&amp;সম্পূর্ণ হ’লে খোলক</translation>
+<translation id="23721837607121582">ম’বাইলৰ প্ৰ’ফাইল ডাউনল’ড কৰক, <ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰৰটো, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">কাগজৰ আকাৰ অনুসৰি খাপ খুৱাওক</translation>
 <translation id="2375406435414127095">আপোনাৰ ফ’ন সংযোগ কৰক</translation>
 <translation id="2377588536920405462">আপুনি আপোনাৰ ডিভাইচটোত মূল অৱস্থানৰ ছেটিংটো অফ ৰাখি অৱস্থান অফ কৰিব পাৰে। আপুনি অৱস্থানৰ ছেটিংসমূহত অৱস্থানৰ বাবে ৱাই-ফাই, ম’বাইল নেটৱৰ্ক আৰু ছেন্সৰসমূহ ব্যৱহাৰ কৰাটো অফ কৰিবও পাৰে।</translation>
@@ -1443,7 +1442,6 @@
 <translation id="2606246518223360146">ডেটা লিংক কৰক</translation>
 <translation id="2606454609872547359">নহয়, ChromeVoxৰ অবিহনে অব্যাহত ৰাখক</translation>
 <translation id="2607101320794533334">প্ৰমাণপত্ৰ প্ৰাপকৰ ৰাজহুৱা চাবিৰ তথ্য</translation>
-<translation id="2607968157341167679">কোনো এলবাম নাই। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ত এটা এলবাম সৃষ্টি কৰক।</translation>
 <translation id="2609896558069604090">শ্বৰ্টকাট সৃষ্টি কৰক...</translation>
 <translation id="2609980095400624569">সংযোগ স্থাপন কৰিব পৰা নগ’ল</translation>
 <translation id="2610157865375787051">সুপ্ত অৱস্থা</translation>
@@ -1588,7 +1586,6 @@
 <translation id="2762441749940182211">কেমেৰা অৱৰোধ কৰা হৈছে</translation>
 <translation id="2764786626780673772">ভিপিএনৰ সবিশেষ</translation>
 <translation id="2765217105034171413">সৰু</translation>
-<translation id="2765729904637714153">আপোনাৰ প্ৰিয় স্মৃতিবোৰ ৰোমন্থন কৰক। এলবাম যোগ দিবলৈ অথবা সম্পাদনা কৰিবলৈ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />লৈ যাওক।</translation>
 <translation id="2766006623206032690">পে&amp;ষ্ট কৰক আৰু আগবাঢ়ক</translation>
 <translation id="2766161002040448006">এগৰাকী অভিভাৱকক সোধক</translation>
 <translation id="2767127727915954024">আপুনি এই ছাইটটোৰ বাবে সকলো টেব বন্ধ নকৰা পর্যন্ত <ph name="ORIGIN" />এ <ph name="FILENAME" /> সম্পাদনা কৰিব পাৰিব</translation>
@@ -2673,6 +2670,7 @@
 <translation id="3969092967100188979">অন কৰা আছে, ৰ’মিঙত আছে</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
+<translation id="3971140002794351170">ম’বাইলৰ প্ৰ’ফাইল ডাউনল’ড কৰক, <ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰৰটো, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">এই সুৰক্ষা চাবিটোত থকা ফিংগাৰপ্ৰিণ্টসমূহ</translation>
 <translation id="3973660817924297510">পাছৱর্ডসমূহ পৰীক্ষা কৰি থকা হৈছে (<ph name="TOTAL_PASSWORDS" /> টাৰ ভিতৰত <ph name="CHECKED_PASSWORDS" /> টা)…</translation>
 <translation id="3975565978598857337">ক্ষেত্ৰ বিফল হোৱাৰ বাবে ছার্ভাৰৰ সৈতে যোগাযোগ কৰি থকা হৈছে</translation>
@@ -4661,7 +4659,6 @@
 <translation id="6331566915566907158">Chrome OSৰ সুবিধাসমূহ আৰু কার্যদক্ষতা উন্নত কৰাত সহায় কৰক</translation>
 <translation id="6331818708794917058">ছাইটসমূহে MIDI ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="6333064448949140209">ডিবাগ কৰাৰ বাবে Google লৈ ফাইল পঠিওৱা হ’ব</translation>
-<translation id="6334444530352320327">আপোনাৰ এপ্‌ আৰু OSৰ ছেটিং সেই আটাইবোৰ Chromebookত ছিংক কৰা হ’ব য’ত আপুনি এই Google একাউণ্টটোৰে ছাইন ইন কৰি থৈছে।<ph name="LINK_BEGIN" />ছিংকৰ ছেটিং<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Linux ব্যৱহাৰ কৰা আৰম্ভ কৰিবলৈ <ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱাৰ আৰু এই Chromebookটো ফেক্টৰীৰ ছেটিঙলৈ ৰিছেট কৰাৰ আৱশ্যক।</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" />এ ADB ডিবাগিং অক্ষম কৰিছে। ই ২৪ ঘণ্টাত আপোনাৰ <ph name="DEVICE_TYPE" /> ৰিছেট কৰিব। আপুনি ৰাখিবলৈ বিচৰা যিকোনো ফাইলৰ বেক আপ লওক।</translation>
 <translation id="6338981933082930623">সকলো ছাইটে আপোনাক যিকোনো বিজ্ঞাপন দেখুৱাব পাৰে</translation>
@@ -5095,7 +5092,6 @@
 <translation id="6860097299815761905">প্ৰক্সি ছেটিংসমূহ...</translation>
 <translation id="686022878923628150">ছাইটসমূহক MIDI ডিভাইচসমূহৰ সৈতে সংযোগ কৰাৰ পৰা অৱৰোধ কৰক</translation>
 <translation id="6860427144121307915">কোনো টেবত খোলক</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱাৰ আৰু ১ সপ্তাহৰ ভিতৰত এই <ph name="DEVICE_TYPE" />টো ঘূৰাই দিয়াৰ আৱশ্যক হয়।<ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">পাছৱৰ্ড মচিবনে?</translation>
 <translation id="6865313869410766144">স্বয়ংক্ৰিয়ভাৱে পূৰ কৰা ফৰ্মৰ ডেটা</translation>
 <translation id="6865598234501509159">পৃষ্ঠাখন <ph name="LANGUAGE" />ত নাই</translation>
@@ -5178,7 +5174,6 @@
 <translation id="696103774840402661">এই <ph name="DEVICE_TYPE" />ত থকা আটাইবোৰ ব্যৱহাৰকাৰীৰ আটাইবোৰ ফাইল আৰু স্থানীয় ডেটা স্থায়ীভাৱে মচা হ’ল।</translation>
 <translation id="6964390816189577014">হিৰ'</translation>
 <translation id="6964760285928603117">গোটৰ পৰা আঁতৰাওক</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱাৰ আৰু এই <ph name="DEVICE_TYPE" />টো আজি উভতাই দিয়াৰ আৱশ্যক।<ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}one{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱাৰ আৰু {NUM_DAYS} দিনৰ ভিতৰত এই <ph name="DEVICE_TYPE" />টো ঘূৰাই দিয়াৰ আৱশ্যক।<ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}other{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱাৰ আৰু {NUM_DAYS} দিনৰ ভিতৰত এই <ph name="DEVICE_TYPE" />টো ঘূৰাই দিয়াৰ আৱশ্যক।<ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6965648386495488594">পৰ্ট</translation>
 <translation id="6965978654500191972">ডিভাইচ</translation>
@@ -6306,7 +6301,6 @@
 <translation id="8227119283605456246">ফাইল সংলগ্ন কৰক</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" />ৰ বাবে পাছৱর্ড ছেভ কৰিবনে?</translation>
 <translation id="8234795456569844941">আমাৰ অভিযন্তাই এই সমস্যাটো সমাধান কৰাত সহায় কৰক। আপুনি প্ৰ’ফাইল সম্পর্কীয় আসোঁৱাহৰ বার্তাটো লাভ কৰাৰ ঠিক আগে আগে কি হৈছিল সেয়া আমাক জনাওক:</translation>
-<translation id="8235605354099176425">Chromeৰ শেহতীয়া টেবসমূহ চাবলৈ <ph name="LINK1_BEGIN" />Chrome ছিংক<ph name="LINK1_END" /> অন কৰক।<ph name="LINK2_BEGIN" />অধিক জানক<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">তাৰ পৰিৱৰ্তে এই টেবটো শ্বেয়াৰ কৰক</translation>
 <translation id="8237647586961940482">গাঢ় গুলপীয়া আৰু ৰঙা</translation>
 <translation id="8239032431519548577">এণ্টাৰপ্ৰাইজৰ পঞ্জীয়ন সম্পূর্ণ হৈছে</translation>
@@ -6451,6 +6445,7 @@
 <translation id="8398877366907290961">যিকোনো প্ৰকাৰে অব্যাহত ৰাখক</translation>
 <translation id="8400146488506985033">লোক পৰিচালনা কৰক</translation>
 <translation id="8401432541486058167">আপোনাৰ স্মাৰ্ট কাৰ্ডখনৰ সৈতে জড়িত পিনটো দিয়ক।</translation>
+<translation id="8403562727702715619">Google Driveৰ পৰা শেহতীয়া</translation>
 <translation id="8407199357649073301">লগৰ স্তৰ:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> নেটৱৰ্ক, সংযোগ কৰি থকা হৈছে</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6892,6 +6887,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" />এ তলৰ ফাইলসমূহ আৰু ফ’ল্ডাৰসমূহ সম্পাদনা কৰিব পাৰে</translation>
 <translation id="8890170499370378450">ম’বাইল ডেটাৰ মাচুল প্ৰযোজ্য হ’ব পাৰে</translation>
 <translation id="8890516388109605451">উৎস</translation>
+<translation id="8890529496706615641">প্ৰ’ফাইলৰ নতুন নাম দিব পৰা নগ’ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক অথবা কাৰিকৰী সহায়ৰ বাবে আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="8892168913673237979">সকলো সাজু!</translation>
 <translation id="8893801527741465188">আনইনষ্টল সম্পূৰ্ণ হ’ল</translation>
 <translation id="8893928184421379330">দুঃখিত, <ph name="DEVICE_LABEL" /> ডিভাইচটো চিনাক্ত কৰিব পৰা নগ’ল।</translation>

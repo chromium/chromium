@@ -231,7 +231,6 @@
 <translation id="1243436884219965846">Vérifier les mots de passe</translation>
 <translation id="1244265436519979884">Restauration Linux…</translation>
 <translation id="1244303850296295656">Erreur au niveau des extensions.</translation>
-<translation id="1246158006305844142">Vos applications et paramètres seront synchronisés sur tous les appareils Chrome OS où vous êtes connecté à votre compte Google. Pour les options de synchronisation du navigateur, accédez aux <ph name="LINK_BEGIN" />paramètres Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Supprimer la suggestion du presse-papiers ?</translation>
 <translation id="1251366534849411931">Accolade ouvrante attendue : <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Cette action effacera <ph name="TOTAL_USAGE" /> des données stockées par les sites et les applications installées</translation>
@@ -273,7 +272,6 @@
 <translation id="1294807885394205587">Ce processus peut prendre quelques minutes. Démarrage du gestionnaire de conteneurs…</translation>
 <translation id="1296911687402551044">Épingler l'onglet sélectionné</translation>
 <translation id="1297175357211070620">Destination</translation>
-<translation id="1300415640239881824">La validation de l'identité de votre appareil est requise pour le site <ph name="DOMAIN" /> afin que Google puisse déterminer si vous pouvez bénéficier d'une lecture améliorée des contenus protégés.</translation>
 <translation id="1300806585489372370">Pour modifier ce paramètre, commencez par <ph name="BEGIN_LINK" />activer les identifiants<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080">Le site <ph name="ORIGIN" /> peut modifier les fichiers suivants</translation>
 <translation id="1302139669997477151">Capture d'écran bloquée</translation>
@@ -1032,6 +1030,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2139919072249842737">Bouton de configuration</translation>
 <translation id="214169863967063661">Ouvrir les paramètres d'apparence</translation>
 <translation id="2142328300403846845">Ouvrir le lien avec le compte</translation>
+<translation id="2142582065325732898">Activez la <ph name="LINK1_BEGIN" />synchronisation Chrome<ph name="LINK1_END" /> pour afficher les onglets Chrome récents. <ph name="LINK2_BEGIN" />En savoir plus<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Toujours afficher la barre d'outils en plein écran</translation>
 <translation id="2143778271340628265">Configuration manuelle du proxy</translation>
 <translation id="2144536955299248197">Lecteur du certificat : <ph name="CERTIFICATE_NAME" /></translation>
@@ -1249,6 +1248,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2366260648632264559">Afficher le texte du système dans cette langue</translation>
 <translation id="2367972762794486313">Afficher les applications</translation>
 <translation id="2371076942591664043">Ouvrir une fois le téléchargement &amp;terminé</translation>
+<translation id="23721837607121582">Téléchargez le profil mobile, Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">Ajuster à la taille du papier</translation>
 <translation id="2375406435414127095">Connexion à votre téléphone</translation>
 <translation id="2377588536920405462">Pour arrêter ce service, désactivez le paramètre de localisation principal sur votre appareil. Vous pouvez également désactiver l'utilisation du Wi-Fi, des réseaux mobiles et des capteurs dans les paramètres de localisation.</translation>
@@ -1446,7 +1446,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2606246518223360146">Associer les données</translation>
 <translation id="2606454609872547359">Non, continuer sans ChromeVox</translation>
 <translation id="2607101320794533334">Infos sur la clé publique de l'objet</translation>
-<translation id="2607968157341167679">Aucun album. Créez-en un dans <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Créer des raccourcis…</translation>
 <translation id="2609980095400624569">Impossible d'établir la connexion</translation>
 <translation id="2610157865375787051">Veille</translation>
@@ -1591,7 +1590,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2762441749940182211">Caméra bloquée</translation>
 <translation id="2764786626780673772">Informations sur le VPN</translation>
 <translation id="2765217105034171413">Léger</translation>
-<translation id="2765729904637714153">Revivez vos souvenirs préférés. Pour ajouter ou modifier un album, accédez à <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="2766006623206032690">Coller l'URL et y a&amp;ccéder</translation>
 <translation id="2766161002040448006">Demander à l'un des parents</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> pourra modifier le fichier <ph name="FILENAME" /> jusqu'à ce que vous fermiez tous les onglets de ce site</translation>
@@ -2386,6 +2384,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3677911431265050325">Demander le site mobile</translation>
 <translation id="3677959414150797585">Les suggestions de contenu concernent des applications, des pages Web et bien plus. Si vous avez choisi de partager les données d'utilisation, des statistiques sont envoyées pour améliorer ces suggestions.</translation>
 <translation id="3678156199662914018">Extension : <ph name="EXTENSION_NAME" /></translation>
+<translation id="3679608942832457508">Les paramètres de l'OS et des applis seront synchronisés sur tous les Chromebooks où vous êtes connecté avec ce compte. <ph name="LINK_BEGIN" />Paramètres de synchronisation<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Voix de la synthèse vocale</translation>
 <translation id="3681311097828166361">Merci de vos commentaires. Vous êtes hors connexion pour le moment, et votre rapport sera envoyé plus tard.</translation>
 <translation id="3682824389861648626">Seuil de mouvement</translation>
@@ -2678,6 +2677,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3969092967100188979">Activé, avec itinérance</translation>
 <translation id="3970114302595058915">Identifiant</translation>
 <translation id="397105322502079400">Calcul en cours…</translation>
+<translation id="3971140002794351170">Téléchargez le profil mobile, Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">Empreintes sur cette clé de sécurité</translation>
 <translation id="3973660817924297510">Vérification des mots de passe (<ph name="CHECKED_PASSWORDS" /> sur <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">Échec de la tentative de contact du serveur correspondant à ce domaine</translation>
@@ -3661,6 +3661,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5185386675596372454">La nouvelle version de "<ph name="EXTENSION_NAME" />" a été désactivée, car elle nécessite davantage d'autorisations.</translation>
 <translation id="5185500136143151980">Aucun accès à Internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190187232518914472">Revivez vos souvenirs préférés. Pour ajouter ou modifier un album, accédez à <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5190926251776387065">Activer le port</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> souhaite télécharger plusieurs fichiers</translation>
 <translation id="5192062846343383368">Ouvrez l'application Family Link pour accéder aux paramètres de supervision</translation>
@@ -3909,6 +3910,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5481273127572794904">Non autorisé à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="5481941284378890518">Ajouter des imprimantes à proximité</translation>
 <translation id="5483785310822538350">Retirer les droits d'accès aux fichiers et aux appareils</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> aujourd'hui. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}one{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jour. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}other{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jours. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835">Votre <ph name="DEVICE_TYPE" /> est verrouillé pour des raisons de sécurité. Saisissez votre mot de passe manuellement pour continuer.</translation>
 <translation id="5485102783864353244">Ajouter l'application</translation>
 <translation id="5485754497697573575">Restaurer tous les onglets</translation>
@@ -4671,7 +4673,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6331566915566907158">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome OS</translation>
 <translation id="6331818708794917058">Les sites peuvent demander à se connecter à des appareils MIDI</translation>
 <translation id="6333064448949140209">Le fichier sera envoyé à Google pour être débogué.</translation>
-<translation id="6334444530352320327">Les paramètres de l'OS et des applis seront synchronisés sur tous les Chromebooks où vous êtes connecté avec ce compte. <ph name="LINK_BEGIN" />Paramètres de synchronisation<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346"><ph name="MANAGER" /> vous demande de sauvegarder vos données et de rétablir la configuration d'usine de ce Chromebook pour démarrer Linux.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> a désactivé le débogage ADB. Votre <ph name="DEVICE_TYPE" /> sera donc réinitialisé dans 24 heures. Sauvegardez les fichiers que vous souhaitez conserver.</translation>
 <translation id="6338981933082930623">Tous les sites peuvent afficher n'importe quelle annonce</translation>
@@ -5108,7 +5109,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6860097299815761905">Paramètres du proxy...</translation>
 <translation id="686022878923628150">Empêcher les sites de se connecter à des appareils MIDI</translation>
 <translation id="6860427144121307915">Ouvrir dans un onglet</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> sous une semaine. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Supprimer le mot de passe ?</translation>
 <translation id="6865313869410766144">Données de saisie automatique</translation>
 <translation id="6865598234501509159">La page n'est pas en <ph name="LANGUAGE" /></translation>
@@ -5191,7 +5191,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="696103774840402661">L'ensemble des fichiers et des données locales de tous les utilisateurs sur cet appareil (<ph name="DEVICE_TYPE" />) ont été supprimés définitivement.</translation>
 <translation id="6964390816189577014">Héros</translation>
 <translation id="6964760285928603117">Retirer du groupe</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> aujourd'hui. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}one{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jour. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}other{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jours. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Périphérique</translation>
@@ -5641,6 +5640,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7476454130948140105">Batterie trop faible pour la mise à jour (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7477793887173910789">Contrôler votre musique, vos vidéos et d'autres contenus</translation>
 <translation id="7478485216301680444">Impossible d'installer l'application kiosque.</translation>
+<translation id="7478623944308207463">Vos applications et paramètres seront synchronisés sur tous les appareils Chrome OS où vous êtes connecté à votre compte Google. Pour voir les options de synchronisation du navigateur, accédez aux <ph name="LINK_BEGIN" />paramètres de Chrome<ph name="LINK_END" />.</translation>
 <translation id="7479221278376295180">Aperçu de l'espace de stockage utilisé</translation>
 <translation id="7481312909269577407">Avancer</translation>
 <translation id="7481358317100446445">Prêt</translation>
@@ -6310,6 +6310,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8211551284753798479">Clé PUK incorrecte. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Téléchargement en cours}one{Téléchargement en cours}other{Téléchargements en cours}}</translation>
 <translation id="8213449224684199188">Mode Photo activé</translation>
+<translation id="8213866992824776555"><ph name="DOMAIN" /> souhaite identifier votre appareil afin qu'il puisse lire des contenus vidéo et audio protégés de la meilleure qualité possible.</translation>
 <translation id="8214489666383623925">Ouvrir le fichier...</translation>
 <translation id="8214962590150211830">Supprimer ce profil utilisateur</translation>
 <translation id="8216351761227087153">Regarder</translation>
@@ -6323,7 +6324,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8227119283605456246">Joindre un fichier</translation>
 <translation id="8230134520748321204">Enregistrer le mot de passe pour <ph name="ORIGIN" /> ?</translation>
 <translation id="8234795456569844941">Pour aider nos ingénieurs à corriger ce problème, veuillez nous indiquer ce qui s'est passé juste avant de recevoir le message d'erreur concernant le profil :</translation>
-<translation id="8235605354099176425">Activez la<ph name="LINK1_BEGIN" />synchronisation Chrome<ph name="LINK1_END" /> pour afficher les onglets Chrome récents.<ph name="LINK2_BEGIN" />En savoir plus<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Partager cet onglet à la place</translation>
 <translation id="8237647586961940482">Rose foncé et rouge</translation>
 <translation id="8239032431519548577">Inscription de l'entreprise terminée</translation>
@@ -6469,6 +6469,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8398877366907290961">Poursuivre quand même</translation>
 <translation id="8400146488506985033">Gérer les utilisateurs</translation>
 <translation id="8401432541486058167">Utilisez le code associé à votre carte à puce.</translation>
+<translation id="8403562727702715619">Récemment à partir de Google Drive</translation>
 <translation id="8407199357649073301">Niveau de consignation :</translation>
 <translation id="8408068190360279472">Réseau <ph name="NETWORK_TYPE" /> : connexion…</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6699,6 +6700,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="8676374126336081632">Effacer la saisie</translation>
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>
 <translation id="8677212948402625567">Tout réduire...</translation>
+<translation id="8677859815076891398">Aucun album. Créez-en un dans <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8678933587484842200">Comment souhaitez-vous que cette application soit lancée ?</translation>
 <translation id="8680251145628383637">Connectez-vous pour retrouver vos favoris, votre historique, vos mots de passe et d'autres paramètres sur tous vos appareils. De plus, vous serez automatiquement connecté à vos services Google.</translation>
 <translation id="8681614230122836773">Chrome a détecté un logiciel malveillant sur votre ordinateur</translation>
@@ -6857,6 +6859,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="8831140208248705279">Votre <ph name="DEVICE_TYPE" /> et votre téléphone Android fonctionnent mieux ensemble. Connectez-les pour envoyer des SMS depuis votre ordinateur, partager votre connexion Internet et déverrouiller votre <ph name="DEVICE_TYPE" /> avec votre téléphone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">La configuration réseau est contrôlée par <ph name="USER_EMAIL" />.</translation>
 <translation id="8835786707922974220">Veillez à toujours avoir accès à vos mots de passe enregistrés</translation>
+<translation id="8836360711089151515"><ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner votre <ph name="DEVICE_TYPE" /> sous 1 semaine. <ph name="LINK_BEGIN" />Voir les détails<ph name="LINK_END" /></translation>
 <translation id="8838601485495657486">Opaque</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="883911313571074303">Annoter l'image</translation>
@@ -6910,6 +6913,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="8889651696183044030">Le site <ph name="ORIGIN" /> peut modifier les fichiers et les dossiers suivants</translation>
 <translation id="8890170499370378450">Des frais liés à la consommation de données mobiles peuvent s'appliquer</translation>
 <translation id="8890516388109605451">Sources</translation>
+<translation id="8890529496706615641">Impossible de renommer le profil. Veuillez réessayer ou contacter votre opérateur pour obtenir une assistance technique.</translation>
 <translation id="8892168913673237979">Vous êtes prêt</translation>
 <translation id="8893801527741465188">Désinstallation terminée</translation>
 <translation id="8893928184421379330">Désolé, impossible de reconnaître le périphérique <ph name="DEVICE_LABEL" />.</translation>
@@ -7142,6 +7146,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="9148963623915467028">Ce site a accès à votre position.</translation>
 <translation id="9149866541089851383">Modifier...</translation>
 <translation id="9150045010208374699">Utiliser votre caméra</translation>
+<translation id="9150079578948279438">Impossible de supprimer le profil. Veuillez réessayer ou contacter votre opérateur pour obtenir une assistance technique.</translation>
 <translation id="9153934054460603056">Enregistrer le nom d'utilisateur et le mot de passe</translation>
 <translation id="9154194610265714752">Mis à jour</translation>
 <translation id="91568222606626347">Créer un raccourci…</translation>

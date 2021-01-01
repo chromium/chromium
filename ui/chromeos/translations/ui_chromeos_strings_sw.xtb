@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Kinorwe</translation>
 <translation id="1430915738399379752">Chapisha</translation>
 <translation id="1435838927755162558">Shiriki folda na Parallels Desktop</translation>
-<translation id="1439494416798956626">Imehamishiwa kwenye <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Kushoto</translation>
 <translation id="1471718551822868769">Kislovakia</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" haikupakiwa. Hakuna nafasi ya kutosha katika Hifadhi yako ya Google.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Je, una uhakika ungependa kufuta vipengee <ph name="NUMBER_OF_ITEMS" />?</translation>
 <translation id="2230062665678605299">Haiwezi kuunda folda "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Rejesha kutoka kwenye tupio</translation>
-<translation id="2275059641601412272">Imehamishwa.</translation>
 <translation id="2288278176040912387">Kicheza rekodi</translation>
 <translation id="2291538123825441971">Inafungua faili <ph name="NUMBER_OF_FILES" />.</translation>
 <translation id="2303301624314357662">Inafungua faili ya <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Kiestonia</translation>
 <translation id="3466147780910026086">Inachaganua kifaa chako cha kuhifadhia data...</translation>
 <translation id="3468522857997926824">Picha <ph name="FILE_COUNT" /> zimehifadhiwa nakala rudufu kwenye <ph name="BEGIN_LINK" />Hifadhi ya Google<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">Imenakiliwa kwenye <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Lahajedwali ya Google</translation>
 <translation id="3486821258960016770">Kimongolia</translation>
 <translation id="3495304270784461826">Hitilafu <ph name="COUNT" />.</translation>
@@ -410,7 +407,6 @@
         Haijalishi kitakachotendekea kifaa chako, faili zako zinahifadhiwa kwa njia salama katika Hifadhi ya Google.<ph name="MARKUP_6" />
         <ph name="MARKUP_7" />Shiriki, unda na ushirikiane<ph name="MARKUP_8" />
         kwenye faili na wengine, vyote mahali pamoja.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Imenakiliwa.</translation>
 <translation id="5275973617553375938">Faili zilizorejeshwa kutoka Hifadhi ya Google</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Hifadhi</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">Jana <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Faili au saraka iliyo na jina sawa tayari ipo.</translation>
 <translation id="8372852072747894550">Kigiriki</translation>
-<translation id="8382450452152102026">Kwenye <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Vipimo</translation>
 <translation id="8437209419043462667">Kimarekani</translation>
 <translation id="8456681095658380701">Jina batili</translation>

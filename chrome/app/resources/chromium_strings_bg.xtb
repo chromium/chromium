@@ -164,7 +164,6 @@
 <translation id="6403826409255603130">Chromium е уеб браузър, който зарежда уеб страници и изпълнява приложения със светкавична скорост. Той е бърз, стабилен и лесен за употреба. Сърфирайте в мрежата по-безопасно с вградената защита на Chromium срещу злонамерен софтуер и фишинг.</translation>
 <translation id="6434250628340475518">Система Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium ще се рестартира след 1 секунда}other{Chromium ще се рестартира след # секунди}}</translation>
-<translation id="6464340581899189425">Ако имате няколко профила в Google, можете да ги добавите към устройството си <ph name="DEVICE_TYPE" />. Профилите ви ще бъдат налични в браузъра Chromium, в Google Play Магазин и в други услуги, като например Gmail, Диск и YouTube. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">То също контролира коя страница се показва при стартиране на Chromium.</translation>
 <translation id="6510925080656968729">Деинсталиране на Chromium</translation>
 <translation id="6570579332384693436">С цел поправка на правописни грешки Chromium изпраща до Google текста, който въвеждате в текстовите полета</translation>
@@ -255,6 +254,7 @@
 <translation id="9019929317751753759">За да направим Chromium по-безопасен, деактивирахме следното разширение, което липсва от <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да е било добавено без ваше знание.</translation>
 <translation id="9089354809943900324">Chromium не е актуален</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium ще се стартира отново след 1 час}other{Chromium ще се стартира отново след # часа}}</translation>
+<translation id="9107750757953039239">Ако имате няколко профила в Google, можете да ги добавите към устройството си <ph name="DEVICE_TYPE" />. Профилите ви ще бъдат налични в браузъра Chromium, в Google Play Магазин и в други услуги, като например Gmail, Диск и YouTube. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Отваряне на връзката в нов &amp;раздел на Chromium</translation>
 <translation id="911206726377975832">Да се изтрият ли и данните от сърфирането?</translation>
 <translation id="9158494823179993217">Системният ви администратор е конфигурирал Chromium да отваря алтернативен браузър за достъп до <ph name="TARGET_URL_HOSTNAME" />.</translation>

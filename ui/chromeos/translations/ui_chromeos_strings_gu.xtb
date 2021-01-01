@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">નૉર્વેજીયન</translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1435838927755162558">Parallels ડેસ્કટૉપ સાથે ફોલ્ડર શેર કરો</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" />માં ખસેડ્યું.</translation>
 <translation id="1467432559032391204">ડાબું</translation>
 <translation id="1471718551822868769">સ્લોવાક</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ને અપલોડ કરવામાં આવી ન હતી. તમારી Google ડ્રાઇવમાં પૂરતી ખાલી જગ્યા નથી.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">શું તમે ખરેખર <ph name="NUMBER_OF_ITEMS" /> આઇટમને ડિલીટ કરવા માંગો છો?</translation>
 <translation id="2230062665678605299">ફોલ્ડર "<ph name="FOLDER_NAME" />" બનાવવામાં અક્ષમ. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">ટ્રેશમાંથી રિસ્ટોર કરો</translation>
-<translation id="2275059641601412272">ખસેડી.</translation>
 <translation id="2288278176040912387">રેકોર્ડ પ્લેયર</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ફાઇલ ખુલી રહી છે.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ફાઇલ ખુલી રહી છે.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">એસ્ટોનિયન</translation>
 <translation id="3466147780910026086">તમારા મીડિયા ઉપકરણને સ્કેન કરી રહ્યું છે...</translation>
 <translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google ડ્રાઇવ<ph name="END_LINK" /> પર <ph name="FILE_COUNT" /> ફોટાનો બેક અપ લેવાયો</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" />માં કૉપિ કર્યા.</translation>
 <translation id="3475447146579922140">Google સ્પ્રેડશીટ</translation>
 <translation id="3486821258960016770">મૉંગોલિયન</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ભૂલો.</translation>
@@ -410,7 +407,6 @@
     તમારા ડિવાઇસને શું થયું છે એનાથી કોઈ ફેર પડતો નથી, તમારી ફાઇલને સલામત રીતે Google ડ્રાઇવમાં સ્ટોર કરવામાં આવે છે.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />એક જ સ્થાનમાં ફાઇલ શેર કરો, બનાવો<ph name="MARKUP_8" />
     અને અન્ય લોકો સાથે તેના પર સહયોગ કરો.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">કૉપિ કરી.</translation>
 <translation id="5275973617553375938">Google ડ્રાઇવમાંથી પુનર્પ્રાપ્ત ફાઇલો</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">સાચવો</translation>
@@ -706,7 +702,6 @@
 <translation id="8336153091935557858">ગઈ કાલે <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">સમાન નામની ફાઇલ અથવા ડિરેક્ટરી પહેલાથી જ અસ્તિત્વમાં છે.</translation>
 <translation id="8372852072747894550">ગ્રીક</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" />માં</translation>
 <translation id="8395901698320285466">પરિમાણો</translation>
 <translation id="8437209419043462667">અમેરિકા</translation>
 <translation id="8456681095658380701">અમાન્ય નામ</translation>

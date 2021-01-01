@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Норвежче</translation>
 <translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1435838927755162558">Файлды Parallels Desktop менен бөлүшүү</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> папкасына жылдырылды.</translation>
 <translation id="1467432559032391204">Сол</translation>
 <translation id="1471718551822868769">Словакча</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" жүктөп берилбей калды. Google Drive’да бош орун жетишпейт.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Чын эле <ph name="NUMBER_OF_ITEMS" /> нерсени жок кылгыңыз келеби?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" папкасын түзүү мүмкүн болбой жатат. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Таштандылар кутусунан калыбына келтирүү</translation>
-<translation id="2275059641601412272">Жылдырылды.</translation>
 <translation id="2288278176040912387">Жазууну ойноткуч</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файл ачылууда.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> файлы ачылууда.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Эстончо</translation>
 <translation id="3466147780910026086">Медиа түзмөгүңүз скандалууда…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> сүрөттүн камдык көчүрмөсү <ph name="BEGIN_LINK" />Google Drive'га<ph name="END_LINK" /> сакталды</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> папкасына көчүрүлдү.</translation>
 <translation id="3475447146579922140">Google электрондук жадыбал</translation>
 <translation id="3486821258960016770">Монголчо</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ката.</translation>
@@ -410,7 +407,6 @@
     Түзмөгүңүзгө эмне болсо да, файлдарыңыз ар дайым коопсуз шартта Google Drive'да сакталып турат.<ph name="MARKUP_6" />
     Файлдарыңыздын баарын бир жерден
     <ph name="MARKUP_7" />бөлүшүп, түзүп жана башкалар менен иштешиңиз<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Көчүрүлдү.</translation>
 <translation id="5275973617553375938">Калыбына келтирилген Google Drive файлдары</translation>
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5318819489018851358">Linux аркылуу бөлүшүү</translation>
@@ -707,7 +703,6 @@
 <translation id="8336153091935557858">Кечээ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Мындай аталыштагы файл же каталог мурунтан эле бар.</translation>
 <translation id="8372852072747894550">Грекче</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" /> папкасына</translation>
 <translation id="8395901698320285466">Чен-өлчөмү</translation>
 <translation id="8437209419043462667">АКШ</translation>
 <translation id="8456681095658380701">Жараксыз ат</translation>

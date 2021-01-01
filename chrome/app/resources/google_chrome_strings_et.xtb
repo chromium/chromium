@@ -177,7 +177,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="573759479754913123">Teave Chrome OS-i kohta</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome'i ei õnnestunud käivitada. Proovige uuesti.</translation>
-<translation id="5851757216820085940">Kui teil on mitu Google'i kontot, saate need lisada oma seadmesse <ph name="DEVICE_TYPE" />. Teie kontod on saadaval Chrome'i brauseris, Play poes ning teenustes, nagu Gmail, Drive ja YouTube. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome püüab paroole muuta.</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – võrku sisselogimine</translation>
@@ -285,5 +284,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="911206726377975832">Kas kustutada ka teie sirvimisandmed?</translation>
 <translation id="9138603949443464873">Muudatuste rakendamiseks käivitage Chrome uuesti</translation>
 <translation id="919706545465235479">Sünkroonimise alustamiseks värskendage Chrome'i</translation>
+<translation id="94743460404517794">Kui teil on mitu Google'i kontot, saate need lisada oma seadmesse <ph name="DEVICE_TYPE" />. Teie kontod on saadaval Chrome'i brauseris, Play poes ning teenustes, nagu Gmail, Drive ja YouTube. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome on teie vaikebrauser</translation>
 </translationbundle>

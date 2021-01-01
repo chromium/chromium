@@ -168,7 +168,6 @@
 <translation id="6403826409255603130">Chromium é un navegador web que executa páxinas web e aplicacións a gran velocidade. É rápido, estable e fácil de utilizar. Chromium permíteche navegar na web de forma máis segura, xa que inclúe protección contra malware e phishing.</translation>
 <translation id="6434250628340475518">Sistema Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium reiniciarase en 1 segundo}other{Chromium reiniciarase en # segundos}}</translation>
-<translation id="6464340581899189425">Se tes varias Contas de Google, podes engadilas ao teu dispositivo (<ph name="DEVICE_TYPE" />). Ao facelo, estarán dispoñibles no navegador Chromium e en Play Store, así como noutros servizos (por exemplo, Gmail, Drive e YouTube). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Tamén controla a páxina que se mostra ao iniciar Chromium.</translation>
 <translation id="6510925080656968729">Desinstalar Chromium</translation>
 <translation id="6570579332384693436">Para solucionar os erros ortográficos, Chromium envía a Google o texto que escribes nos campos de texto</translation>
@@ -264,6 +263,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="9019929317751753759">Para conseguir que Chromium resulte máis seguro, desactivamos a seguinte extensión que non aparece en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que quizais se engadise sen o teu coñecemento.</translation>
 <translation id="9089354809943900324">Chromium está desactualizado</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium reiniciarase en 1 hora}other{Chromium reiniciarase en # horas}}</translation>
+<translation id="9107750757953039239">Se tes varias Contas de Google, podes engadilas ao teu dispositivo (<ph name="DEVICE_TYPE" />). Ao facelo, estarán dispoñibles no navegador Chromium e en Play Store, así como noutros servizos (por exemplo, Gmail, Drive e YouTube). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Abrir ligazón nunha nova &amp;pestana de Chromium</translation>
 <translation id="911206726377975832">Queres eliminar tamén os teus datos de navegación?</translation>
 <translation id="9158494823179993217">O teu administrador do sistema configurou Chromium para abrir outro navegador co obxectivo de acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>

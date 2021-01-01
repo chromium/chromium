@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">Wachtwoorden checken</translation>
 <translation id="1244265436519979884">Linux-herstel wordt momenteel uitgevoerd</translation>
 <translation id="1244303850296295656">Fout met extensie</translation>
-<translation id="1246158006305844142">Je apps en instellingen worden gesynchroniseerd voor alle Chrome OS-apparaten waarop je bent ingelogd met je Google-account. Ga naar de <ph name="LINK_BEGIN" />Chrome-instellingen<ph name="LINK_END" /> voor opties voor browsersynchronisatie.</translation>
 <translation id="1246905108078336582">Suggestie verwijderen van klembord?</translation>
 <translation id="1251366534849411931">Verwachte openingsaccolade <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Hiermee wis je <ph name="TOTAL_USAGE" /> van de gegevens die zijn opgeslagen door sites en geïnstalleerde apps</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">Dit kan een paar minuten duren. Containerbeheer wordt gestart.</translation>
 <translation id="1296911687402551044">Geselecteerd tabblad vastzetten</translation>
 <translation id="1297175357211070620">Bestemming</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> wil dat de identiteit van je apparaat wordt geverifieerd door Google om de geschiktheid voor geoptimaliseerd afspelen van beschermde content vast te stellen.</translation>
 <translation id="1300806585489372370">Als je deze instelling wilt wijzigen, moet je eerst <ph name="BEGIN_LINK" />ID's inschakelen<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> kan de volgende bestanden bewerken</translation>
 <translation id="1302139669997477151">Screenshot is geblokkeerd</translation>
@@ -1031,6 +1029,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2139919072249842737">Knop Instellen</translation>
 <translation id="214169863967063661">Instellingen voor uiterlijk openen</translation>
 <translation id="2142328300403846845">Link openen als</translation>
+<translation id="2142582065325732898">Zet <ph name="LINK1_BEGIN" />Chrome-synchronisatie<ph name="LINK1_END" /> aan om recente Chrome-tabbladen te bekijken. <ph name="LINK2_BEGIN" />Meer informatie<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">De werkbalk altijd weergeven op volledig scherm</translation>
 <translation id="2143778271340628265">Handmatige proxyconfiguratie</translation>
 <translation id="2144536955299248197">Certificaatweergave: <ph name="CERTIFICATE_NAME" /></translation>
@@ -1446,7 +1445,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2606246518223360146">Gegevens linken</translation>
 <translation id="2606454609872547359">Nee, doorgaan zonder ChromeVox</translation>
 <translation id="2607101320794533334">Informatie van openbare sleutel van entiteit</translation>
-<translation id="2607968157341167679">Geen albums. Maak een album in <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Snelle links maken...</translation>
 <translation id="2609980095400624569">Kan geen verbinding maken</translation>
 <translation id="2610157865375787051">Slaapstand</translation>
@@ -1591,7 +1589,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2762441749940182211">Camera geblokkeerd</translation>
 <translation id="2764786626780673772">VPN-gegevens</translation>
 <translation id="2765217105034171413">Klein</translation>
-<translation id="2765729904637714153">Beleef je favoriete herinneringen opnieuw. Ga naar <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> om albums toe te voegen of te bewerken.</translation>
 <translation id="2766006623206032690">Pla&amp;kken en gaan</translation>
 <translation id="2766161002040448006">Aan een ouder vragen</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bewerken totdat je alle tabbladen voor deze site sluit</translation>
@@ -2386,6 +2383,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3677911431265050325">Mobiele site opvragen</translation>
 <translation id="3677959414150797585">Omvat apps, webpagina's en meer. Stuurt alleen statistieken om suggesties te verbeteren als je ervoor hebt gekozen gebruiksgegevens te delen.</translation>
 <translation id="3678156199662914018">Extensie: <ph name="EXTENSION_NAME" /></translation>
+<translation id="3679608942832457508">Je apps en OS-instellingen worden gesynchroniseerd voor alle Chromebooks waarop je bent ingelogd met je Google-account. <ph name="LINK_BEGIN" />Instellingen synchroniseren<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Stem voor tekst-naar-spraak</translation>
 <translation id="3681311097828166361">Bedankt voor je feedback. Je bent nu offline en je rapport wordt later verzonden.</translation>
 <translation id="3682824389861648626">Bewegingsdrempel</translation>
@@ -3662,6 +3660,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5185386675596372454">De nieuwste versie van '<ph name="EXTENSION_NAME" />' is uitgeschakeld omdat er meer rechten voor nodig zijn.</translation>
 <translation id="5185500136143151980">Geen internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190187232518914472">Beleef je favoriete herinneringen opnieuw. Ga naar <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> om albums toe te voegen of te bewerken.</translation>
 <translation id="5190926251776387065">Poort activeren</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> wil meerdere bestanden downloaden</translation>
 <translation id="5192062846343383368">Open de Family Link-app om de instellingen voor toezicht te bekijken</translation>
@@ -3910,6 +3909,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5481273127572794904">Geen toestemming om automatisch meerdere bestanden te downloaden</translation>
 <translation id="5481941284378890518">Printers in de buurt toevoegen</translation>
 <translation id="5483785310822538350">Toegang tot bestand en apparaat intrekken</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" />}other{<ph name="MANAGER" /> vereist dat je een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> binnen {NUM_DAYS} dagen terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835">Je <ph name="DEVICE_TYPE" /> is vergrendeld uit beveiligingsoverwegingen. Geef je wachtwoord handmatig op om door te gaan.</translation>
 <translation id="5485102783864353244">App toevoegen</translation>
 <translation id="5485754497697573575">Herstel alle tabbladen</translation>
@@ -4671,7 +4671,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6331566915566907158">Help de functies en prestaties van Chrome OS te verbeteren</translation>
 <translation id="6331818708794917058">Sites kunnen vragen of ze verbinding mogen maken met MIDI-apparaten</translation>
 <translation id="6333064448949140209">Bestanden worden naar Google gestuurd voor foutopsporing</translation>
-<translation id="6334444530352320327">Je apps en OS-instellingen worden gesynchroniseerd voor alle Chromebooks waarop je bent ingelogd met je Google-account. <ph name="LINK_BEGIN" />Instellingen synchroniseren<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Als je Linux wilt starten, vereist <ph name="MANAGER" /> dat je een back-up maakt van je gegevens en dat je deze Chromebook terugzet naar de fabrieksinstellingen.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> heeft ADB-foutopsporing uitgeschakeld. Hierdoor wordt je <ph name="DEVICE_TYPE" /> over 24 uur gereset. Maak een back-up van de bestanden die je wilt houden.</translation>
 <translation id="6338981933082930623">Alle sites kunnen alle soorten advertenties aan je laten zien</translation>
@@ -5108,7 +5107,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6860097299815761905">Proxyinstellingen...</translation>
 <translation id="686022878923628150">Voorkomen dat sites verbinding maken met MIDI-apparaten</translation>
 <translation id="6860427144121307915">Openen in een tabblad</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> vereist dat je een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> binnen 1 week terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Wachtwoord verwijderen?</translation>
 <translation id="6865313869410766144">Formuliergegevens voor 'Automatisch invullen'</translation>
 <translation id="6865598234501509159">Pagina is niet in het <ph name="LANGUAGE" /></translation>
@@ -5191,7 +5189,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="696103774840402661">Alle bestanden en lokale gegevens voor alle gebruikers op deze <ph name="DEVICE_TYPE" /> zijn definitief verwijderd.</translation>
 <translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Uit groep verwijderen</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> vandaag terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" />}other{<ph name="MANAGER" /> vereist dat je een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> binnen {NUM_DAYS} dagen terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Poort</translation>
 <translation id="6965978654500191972">Apparaat</translation>
@@ -5641,6 +5638,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7476454130948140105">Batterij niet voldoende opgeladen voor update (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Je muziek, video's en meer bedienen</translation>
 <translation id="7478485216301680444">Kiosk-app kan niet worden geïnstalleerd.</translation>
+<translation id="7478623944308207463">Je apps en instellingen worden gesynchroniseerd voor alle Chrome OS-apparaten waarop je bent ingelogd met je Google-account. Ga naar de <ph name="LINK_BEGIN" />Chrome-instellingen<ph name="LINK_END" /> voor opties voor browsersynchronisatie.</translation>
 <translation id="7479221278376295180">Gebruikersoverzicht van opslagruimte</translation>
 <translation id="7481312909269577407">Vooruit</translation>
 <translation id="7481358317100446445">Klaar</translation>
@@ -6309,6 +6307,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8211551284753798479">Ongeldige pukcode. Je hebt nog <ph name="RETRIES" /> pogingen.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download wordt uitgevoerd}other{Downloads worden uitgevoerd}}</translation>
 <translation id="8213449224684199188">Fotomodus geopend</translation>
+<translation id="8213866992824776555"><ph name="DOMAIN" /> wil je apparaat identificeren zodat het beveiligde video en audio van de hoogste kwaliteit kan afspelen.</translation>
 <translation id="8214489666383623925">Open bestand...</translation>
 <translation id="8214962590150211830">Deze persoon verwijderen</translation>
 <translation id="8216351761227087153">Bekijken</translation>
@@ -6322,7 +6321,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8227119283605456246">Bestand bijvoegen</translation>
 <translation id="8230134520748321204">Wachtwoord opslaan voor <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Help onze engineers dit probleem op te lossen. Vertel ons wat er gebeurde vlak voordat het bericht met de profielfout werd weergegeven:</translation>
-<translation id="8235605354099176425">Schakel <ph name="LINK1_BEGIN" />Chrome-synchronisatie<ph name="LINK1_END" /> in om recente Chrome-tabbladen te bekijken. <ph name="LINK2_BEGIN" />Meer informatie<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">In plaats daarvan dit tabblad delen</translation>
 <translation id="8237647586961940482">Donkerroze/rood</translation>
 <translation id="8239032431519548577">Inschrijving voor Enterprise voltooid</translation>
@@ -6699,6 +6697,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="8676374126336081632">Invoer wissen</translation>
 <translation id="8676770494376880701">Laag-vermogen-lader aangesloten</translation>
 <translation id="8677212948402625567">Alles samenvouwen...</translation>
+<translation id="8677859815076891398">Geen albums. Maak een album in <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" />.</translation>
 <translation id="8678933587484842200">Hoe moet deze app worden gestart?</translation>
 <translation id="8680251145628383637">Log in om je bookmarks, geschiedenis, wachtwoorden en andere instellingen op te halen op al je apparaten. Je wordt ook automatisch ingelogd bij je Google-services.</translation>
 <translation id="8681614230122836773">Chrome heeft schadelijke software gevonden op je computer</translation>
@@ -6857,6 +6856,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="8831140208248705279">Je <ph name="DEVICE_TYPE" /> en je Android-telefoon werken nog beter samen als ze gekoppeld zijn. Zo kun je sms'en vanaf je computer, je internetverbinding delen en je <ph name="DEVICE_TYPE" /> ontgrendelen met je telefoon.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">Netwerkconfiguratie wordt beheerd door <ph name="USER_EMAIL" />.</translation>
 <translation id="8835786707922974220">Zorg dat je altijd toegang hebt tot je opgeslagen wachtwoorden</translation>
+<translation id="8836360711089151515"><ph name="MANAGER" /> vereist dat je een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> binnen 1 week terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" /></translation>
 <translation id="8838601485495657486">Ondoorzichtig</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="883911313571074303">Afbeelding annoteren</translation>
@@ -7143,6 +7143,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="9148963623915467028">Deze site heeft toegang tot je locatie.</translation>
 <translation id="9149866541089851383">Bewerken...</translation>
 <translation id="9150045010208374699">Je camera gebruiken</translation>
+<translation id="9150079578948279438">Kan profiel niet verwijderen. Probeer het opnieuw of neem contact op met je provider voor technische support.</translation>
 <translation id="9153934054460603056">Identiteit en wachtwoord opslaan</translation>
 <translation id="9154194610265714752">Bijgewerkt</translation>
 <translation id="91568222606626347">Snelle link maken…</translation>

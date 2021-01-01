@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Noruec</translation>
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1435838927755162558">Comparteix la carpeta amb Parallels Desktop</translation>
-<translation id="1439494416798956626">S'ha mogut a <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Esquerra</translation>
 <translation id="1471718551822868769">Eslovac</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" no s'ha penjat. No hi ha prou espai lliure al vostre compte de Google Drive.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Confirmes que vols suprimir <ph name="NUMBER_OF_ITEMS" /> elements?</translation>
 <translation id="2230062665678605299">No es pot crear la carpeta "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Restaura de la paperera</translation>
-<translation id="2275059641601412272">S'ha mogut.</translation>
 <translation id="2288278176040912387">Tocadiscos</translation>
 <translation id="2291538123825441971">S'estan obrint <ph name="NUMBER_OF_FILES" /> fitxers.</translation>
 <translation id="2303301624314357662">S'està obrint el fitxer <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Estonià</translation>
 <translation id="3466147780910026086">S'està analitzant el dispositiu multimèdia...</translation>
 <translation id="3468522857997926824">S'ha creat una còpia de seguretat de <ph name="FILE_COUNT" /> fotos a <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">S'ha copiat a <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Full de càlcul de Google</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errors.</translation>
@@ -410,7 +407,6 @@
     Passi el que passi amb el vostre dispositiu, els fitxers s'emmagatzemen amb tota seguretat a Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Compartiu, creeu fitxers i col·laboreu-hi<ph name="MARKUP_8" />
     amb altres persones; tot en un sol lloc.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">S'ha copiat.</translation>
 <translation id="5275973617553375938">Fitxers recuperats de Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Desa</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">Ahir a les <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Ja existeix un fitxer o un directori amb aquest nom.</translation>
 <translation id="8372852072747894550">Grec</translation>
-<translation id="8382450452152102026">A: <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Dimensions</translation>
 <translation id="8437209419043462667">Nord-americà</translation>
 <translation id="8456681095658380701">El nom no és vàlid</translation>

@@ -177,7 +177,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="573759479754913123">Giới thiệu về Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Không thể mở Chrome. Hãy thử lại.</translation>
-<translation id="5851757216820085940">Nếu có nhiều Tài khoản Google, bạn có thể thêm các tài khoản đó vào <ph name="DEVICE_TYPE" /> của mình. Bạn có thể sử dụng các tài khoản đó trong trình duyệt Chrome và Cửa hàng Play, cũng như các dịch vụ như Gmail, Drive và YouTube.<ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome đang cố gắng chỉnh sửa mật khẩu.</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Đăng nhập vào mạng</translation>
@@ -285,5 +284,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="911206726377975832">Bạn cũng muốn xóa dữ liệu duyệt web của mình?</translation>
 <translation id="9138603949443464873">Để áp dụng các mục thay đổi của bạn, hãy khởi động lại Chrome</translation>
 <translation id="919706545465235479">Cập nhật Chrome để bắt đầu đồng bộ hóa</translation>
+<translation id="94743460404517794">Nếu có nhiều Tài khoản Google, bạn có thể thêm các tài khoản đó vào <ph name="DEVICE_TYPE" /> của mình. Bạn có thể sử dụng các tài khoản nói trên trong trình duyệt Chrome và Cửa hàng Play, cũng như các dịch vụ như Gmail, Drive và YouTube. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome là trình duyệt mặc định của bạn</translation>
 </translationbundle>

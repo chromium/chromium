@@ -233,7 +233,6 @@
 <translation id="1243436884219965846">Проверить пароли</translation>
 <translation id="1244265436519979884">Выполняется восстановление Linux.</translation>
 <translation id="1244303850296295656">Ошибка расширения</translation>
-<translation id="1246158006305844142">Ваши приложения и настройки синхронизируются на всех устройствах Chrome OS, на которых вы вошли в аккаунт Google. Изменить параметры синхронизации браузера можно в <ph name="LINK_BEGIN" />настройках Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Удалить подсказку из буфера обмена?</translation>
 <translation id="1251366534849411931">Отсутствует ожидаемая открывающая фигурная скобка: <ph name="ERROR_LINE" />.</translation>
 <translation id="1251480783646955802">Будут удалены сохраненные данные сайтов и установленных с них приложений (<ph name="TOTAL_USAGE" />).</translation>
@@ -275,7 +274,6 @@
 <translation id="1294807885394205587">Это может занять несколько минут. Запуск менеджера контейнеров…</translation>
 <translation id="1296911687402551044">Закрепить выбранную вкладку</translation>
 <translation id="1297175357211070620">Принтер</translation>
-<translation id="1300415640239881824">Для улучшенного воспроизведения защищенного контента домену <ph name="DOMAIN" /> требуется подтверждение того, что устройство прошло проверку в Google.</translation>
 <translation id="1300806585489372370">Чтобы изменить эту настройку, <ph name="BEGIN_LINK" />включите идентификаторы<ph name="END_LINK" />.</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> может изменять указанные ниже файлы.</translation>
 <translation id="1302139669997477151">Создание скриншотов заблокировано</translation>
@@ -1250,6 +1248,7 @@
 <translation id="2366260648632264559">Установить как язык системы</translation>
 <translation id="2367972762794486313">Показать сервисы</translation>
 <translation id="2371076942591664043">Открыть по &amp;завершении</translation>
+<translation id="23721837607121582">Скачать мобильный профиль, сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">По размеру бумаги</translation>
 <translation id="2375406435414127095">Настройте подключение к телефону</translation>
 <translation id="2377588536920405462">Определение местоположения можно отключить в настройках устройства. Там же можно запретить использование датчиков, Wi‑Fi и мобильных сетей для уточнения местоположения.</translation>
@@ -1446,7 +1445,6 @@
 <translation id="2606246518223360146">Связать данные</translation>
 <translation id="2606454609872547359">Нет, продолжить без ChromeVox</translation>
 <translation id="2607101320794533334">Информация об открытом ключе субъекта</translation>
-<translation id="2607968157341167679">Альбомов нет. Создайте альбом в<ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Создать ярлык…</translation>
 <translation id="2609980095400624569">Ошибка подключения</translation>
 <translation id="2610157865375787051">Включать спящий режим</translation>
@@ -1591,7 +1589,6 @@
 <translation id="2762441749940182211">Доступ к камере запрещен</translation>
 <translation id="2764786626780673772">Сведения о VPN</translation>
 <translation id="2765217105034171413">Мелкий</translation>
-<translation id="2765729904637714153">Вспоминайте яркие моменты своей жизни. Чтобы добавить или изменить альбом, перейдите в <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
 <translation id="2766006623206032690">Вс&amp;тавить из буфера и перейти</translation>
 <translation id="2766161002040448006">Отправить запрос родителям</translation>
 <translation id="2767127727915954024">Сайт <ph name="ORIGIN" /> сможет изменять файл "<ph name="FILENAME" />", пока вы не закроете все вкладки этого сайта.</translation>
@@ -2678,6 +2675,7 @@
 <translation id="3969092967100188979">Вкл., с роумингом</translation>
 <translation id="3970114302595058915">Идентификатор</translation>
 <translation id="397105322502079400">Вычисление…</translation>
+<translation id="3971140002794351170">Скачать мобильный профиль, сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">Цифровые отпечатки на этом электронном ключе</translation>
 <translation id="3973660817924297510">Проверка паролей (<ph name="CHECKED_PASSWORDS" /> из <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3975565978598857337">Не удалось связаться с областью сервера.</translation>
@@ -4670,7 +4668,6 @@
 <translation id="6331566915566907158">Помочь улучшить производительность и функции Chrome OS</translation>
 <translation id="6331818708794917058">Разрешить сайтам отправлять запрос на подключение к MIDI-устройствам</translation>
 <translation id="6333064448949140209">Файл будет отправлен в Google для отладки</translation>
-<translation id="6334444530352320327">Настройки приложений и операционной системы будут синхронизированы на всех устройствах Chromebook, где вы вошли в этот аккаунт. <ph name="LINK_BEGIN" />Настройки синхронизации<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Для запуска Linux требуется (источник правила: <ph name="MANAGER" />) выполнить резервное копирование данных и сбросить настройки устройства Chromebook до заводских.</translation>
 <translation id="6336038146639916978">Отладка с помощью ADB отключена администратором (<ph name="MANAGER" />). Настройки устройства <ph name="DEVICE_TYPE" /> будут сброшены через 24 часа. Чтобы сохранить нужные файлы, создайте их резервную копию.</translation>
 <translation id="6338981933082930623">Разрешить всем сайтам показывать любые объявления</translation>
@@ -5107,7 +5104,6 @@
 <translation id="6860097299815761905">Настройки прокси-сервера...</translation>
 <translation id="686022878923628150">Запретить сайтам подключаться к MIDI-устройствам</translation>
 <translation id="6860427144121307915">Открыть в новой вкладке</translation>
-<translation id="6862729829592030773">По правилам, установленным <ph name="MANAGER" />, вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение недели. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Удаление пароля</translation>
 <translation id="6865313869410766144">Данные для автозаполнения</translation>
 <translation id="6865598234501509159">Язык страницы – не <ph name="LANGUAGE" /></translation>
@@ -5190,7 +5186,6 @@
 <translation id="696103774840402661">Файлы и локальные данные всех пользователей будут удалены с этого устройства <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6964390816189577014">Герой</translation>
 <translation id="6964760285928603117">Удалить из группы</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{По правилам, установленным <ph name="MANAGER" />, вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> сегодня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}one{По правилам, установленным <ph name="MANAGER" />, вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}few{По правилам, установленным <ph name="MANAGER" />, вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дней. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}many{По правилам, установленным <ph name="MANAGER" />, вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дней. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}other{По правилам, установленным <ph name="MANAGER" />, вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6965648386495488594">Порт</translation>
 <translation id="6965978654500191972">Устройство</translation>
@@ -6321,7 +6316,6 @@
 <translation id="8227119283605456246">Прикрепить файл</translation>
 <translation id="8230134520748321204">Сохранить пароль для <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Чтобы нашим разработчикам было проще решить проблему, опишите, что произошло перед появлением сообщения об ошибке в профиле:</translation>
-<translation id="8235605354099176425">Чтобы посмотреть недавние вкладки, включите <ph name="LINK1_BEGIN" />синхронизацию Chrome<ph name="LINK1_END" />. <ph name="LINK2_BEGIN" />Подробнее…<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Поделиться текущей вкладкой</translation>
 <translation id="8237647586961940482">Темно-розовый с красным</translation>
 <translation id="8239032431519548577">Регистрация в корпоративном домене завершена</translation>
@@ -6467,6 +6461,7 @@
 <translation id="8398877366907290961">Продолжить все равно</translation>
 <translation id="8400146488506985033">Управлять пользователями</translation>
 <translation id="8401432541486058167">Укажите PIN-код, связанный с вашей смарт-картой.</translation>
+<translation id="8403562727702715619">Недавнее из Google Диска</translation>
 <translation id="8407199357649073301">Уровень:</translation>
 <translation id="8408068190360279472">Сеть <ph name="NETWORK_TYPE" />, подключение</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6910,6 +6905,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" /> может изменять указанные ниже файлы и папки.</translation>
 <translation id="8890170499370378450">За использование мобильного Интернета может взиматься плата</translation>
 <translation id="8890516388109605451">Источники</translation>
+<translation id="8890529496706615641">Не удалось переименовать профиль. Повторите попытку или обратитесь к своему оператору за технической поддержкой.</translation>
 <translation id="8892168913673237979">Все готово!</translation>
 <translation id="8893801527741465188">Приложение удалено</translation>
 <translation id="8893928184421379330">Не удалось распознать устройство <ph name="DEVICE_LABEL" />.</translation>

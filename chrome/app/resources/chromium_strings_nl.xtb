@@ -168,7 +168,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="6403826409255603130">Chromium is een webbrowser die webpagina's en applicaties bliksemsnel uitvoert. Chromium is snel, stabiel en eenvoudig in gebruik. Surf veiliger op internet met de in Chromium ingebouwde beveiliging tegen malware en phishing.</translation>
 <translation id="6434250628340475518">Chromium OS-systeem</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium wordt over één seconde opnieuw gestart}other{Chromium wordt over # seconden opnieuw gestart}}</translation>
-<translation id="6464340581899189425">Als je meerdere Google-accounts hebt, kun je deze toevoegen aan je <ph name="DEVICE_TYPE" />. Je accounts zijn beschikbaar in de Chromium-browser en de Play Store. Je kunt ze ook gebruiken in services zoals Gmail, Drive en YouTube. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Hiermee wordt ook gecontroleerd welke pagina wordt weergegeven wanneer je Chromium start.</translation>
 <translation id="6510925080656968729">Chromium verwijderen</translation>
 <translation id="6570579332384693436">Chromium verzendt de tekst die je in tekstvelden typt naar Google om spelfouten te corrigeren</translation>
@@ -263,6 +262,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="9019929317751753759">We hebben de volgende extensie uitgeschakeld die niet wordt vermeld in de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> en mogelijk zonder je medeweten is toegevoegd. We doen dit om Chromium veiliger te maken.</translation>
 <translation id="9089354809943900324">Chromium is verouderd</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium wordt over een uur opnieuw gestart}other{Chromium wordt over # uur opnieuw gestart}}</translation>
+<translation id="9107750757953039239">Als je meerdere Google-accounts hebt, kun je deze toevoegen aan je <ph name="DEVICE_TYPE" />. Je accounts zijn beschikbaar in de Chromium-browser en de Play Store. Je kunt ze ook gebruiken in services zoals Gmail, Drive en YouTube. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Link openen op een nieuw Chromium-&amp;tabblad</translation>
 <translation id="911206726377975832">Ook browsegegevens wissen?</translation>
 <translation id="9158494823179993217">Je systeembeheerder heeft geconfigureerd dat Chromium een alternatieve browser opent voor toegang tot <ph name="TARGET_URL_HOSTNAME" />.</translation>

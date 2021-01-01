@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">norveški</translation>
 <translation id="1430915738399379752">Ispis</translation>
 <translation id="1435838927755162558">Dijeljenje mape s Parallels Desktopom</translation>
-<translation id="1439494416798956626">Premješteno u <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Ulijevo</translation>
 <translation id="1471718551822868769">slovački</translation>
 <translation id="1474339897586437869">Datoteka "<ph name="FILENAME" />" nije prenesena. Nema dovoljno slobodnog prostora na Google disku.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Jeste li sigurni da želite izbrisati te stavke (njih <ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Nije moguće izraditi mapu "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Vrati iz otpada</translation>
-<translation id="2275059641601412272">Premješteno.</translation>
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Otvaranje datoteka (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Otvaranje datoteke <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">estonski</translation>
 <translation id="3466147780910026086">Pretraživanje medijskog uređaja...</translation>
 <translation id="3468522857997926824">Izrađene su sigurnosne kopije fotografija na <ph name="BEGIN_LINK" />Google disku<ph name="END_LINK" /> (ukupno <ph name="FILE_COUNT" />)</translation>
-<translation id="3473378059788601120">Kopirano u mapu <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Googleova proračunska tablica</translation>
 <translation id="3486821258960016770">mongolski</translation>
 <translation id="3495304270784461826">Broj pogrešaka: <ph name="COUNT" />.</translation>
@@ -410,7 +407,6 @@
     Što god da se dogodi s vašim uređajem, vaše su datoteke sigurno pohranjene na Google disku.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Dijelite, stvarajte i surađujte<ph name="MARKUP_8" />
     na datotekama s drugima i sve to na jednom mjestu.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Kopirano.</translation>
 <translation id="5275973617553375938">Oporavljene datoteke s Google diska</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Spremi</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">Jučer u <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Datoteka ili direktorij s istim imenom već postoje.</translation>
 <translation id="8372852072747894550">grčki</translation>
-<translation id="8382450452152102026">U mapu <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Dimenzije</translation>
 <translation id="8437209419043462667">američka</translation>
 <translation id="8456681095658380701">Pogrešno ime</translation>

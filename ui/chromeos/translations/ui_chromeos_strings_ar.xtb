@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">النرويجية</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1435838927755162558">‏مشاركة المجلد مع نظام Parallels Desktop</translation>
-<translation id="1439494416798956626">تم النقل إلى <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">اليسار</translation>
 <translation id="1471718551822868769">السلوفاكية</translation>
 <translation id="1474339897586437869">‏لم يتم تحميل "<ph name="FILENAME" />". حيث لا توجد لديك مساحة فارغة كافية في Google Drive.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">هل تريد بالتأكيد حذف <ph name="NUMBER_OF_ITEMS" /> من العناصر؟</translation>
 <translation id="2230062665678605299">تعذر إنشاء المجلد "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">الاستعادة من المهملات</translation>
-<translation id="2275059641601412272">تم النقل.</translation>
 <translation id="2288278176040912387">مشغّل أقراص مسجلة</translation>
 <translation id="2291538123825441971">جارٍ فتح <ph name="NUMBER_OF_FILES" /> من الملفات.</translation>
 <translation id="2303301624314357662">جارٍ فتح ملف <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">الإستونية</translation>
 <translation id="3466147780910026086">جارٍ فحص جهاز الوسائط...</translation>
 <translation id="3468522857997926824">‏تم نسخ <ph name="FILE_COUNT" /> من الصور احتياطيًا في <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">تم النسخ إلى <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">‏جدول بيانات Google</translation>
 <translation id="3486821258960016770">المنغولية</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> من الأخطاء.</translation>
@@ -410,7 +407,6 @@
     بصرف النظر عمّا يحدث لجهازك، تظل الملفات مخزَّنة في أمان في Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />المشاركة والإنشاء والتعاون<ph name="MARKUP_8" />
     في الملفات مع الآخرين في مكانٍ واحد.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">تم النسخ.</translation>
 <translation id="5275973617553375938">‏الملفات المستردة من Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">حفظ</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">الأمس <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">هناك ملف أو دليل موجود بهذا الاسم فعلاً.</translation>
 <translation id="8372852072747894550">اليونانية</translation>
-<translation id="8382450452152102026">إلى <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">الأبعاد</translation>
 <translation id="8437209419043462667">الأمريكية</translation>
 <translation id="8456681095658380701">اسم غير صالح</translation>

@@ -231,7 +231,6 @@
 <translation id="1243436884219965846">የይለፍ ቃላትን ገምግም</translation>
 <translation id="1244265436519979884">Linux ወደነበረበት መመለስ አሁን በሂደት ላይ ነው</translation>
 <translation id="1244303850296295656">የቅጥያ ስህተት</translation>
-<translation id="1246158006305844142">የእርስዎ መተግበሪያዎች እና ቅንብሮች በGoogle መለያዎ በገቡባቸው ሁሉም የChrome OS መሣሪያዎች ላይ ይሰምራሉ። ለአሳሽ ስምረት አማራጮች ወደ <ph name="LINK_BEGIN" />የChrome ቅንብሮች<ph name="LINK_END" /> ይሂዱ።</translation>
 <translation id="1246905108078336582">የአስተያየት ጥቆማ ከቅንጥብ ሰሌዳ ይወገድ?</translation>
 <translation id="1251366534849411931">የሚገመት ጠምዛዛ መያዣን መክፈቻ፦ <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ይህ በጣቢያዎች እና በተጫኑ መተግበሪያዎቹ የተከማቸ <ph name="TOTAL_USAGE" /> ውሂብ ያጠፋል</translation>
@@ -273,7 +272,6 @@
 <translation id="1294807885394205587">ይህ ሂደት ጥቂት ደቂቃዎችን ሊወስድ ይችላል። የመያዣ አስተዳዳሪውን በማስጀመር ላይ።</translation>
 <translation id="1296911687402551044">የተመረጠውን ትር ሰካ</translation>
 <translation id="1297175357211070620">መዳረሻ</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> መሣሪያዎ ለተሻሻለ የተጠበቀ ይዘት መልሶ ለማጫወት ብቁ መሆኑን ለመወሰን የመሣሪያዎን ማንነት በGoogle እንዲረጋገጥ ይፈልጋል።</translation>
 <translation id="1300806585489372370">ይህን ቅንብር ለመቀየር በመጀመሪያ <ph name="BEGIN_LINK" />ለዪዎችን ያብሩ<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> የሚከተሉትን ፋይሎች ማርትዕ ይችላል</translation>
 <translation id="1302139669997477151">ቅጽበታዊ ገጽ እይታ ታግዷል</translation>
@@ -1446,7 +1444,6 @@
 <translation id="2606246518223360146">ውሂብ አገናኝ</translation>
 <translation id="2606454609872547359">አይ፣ ያለChromeVox ቀጥል</translation>
 <translation id="2607101320794533334">የርዕሰ ጉዳዩ ህዝባዊ ቁልፍ መረጃ</translation>
-<translation id="2607968157341167679">ምንም አልበሞች የሉም። በ<ph name="LINK_BEGIN" />Google ፎቶዎች<ph name="LINK_END" /> ውስጥ አልበም ይፈጠሩ።</translation>
 <translation id="2609896558069604090">አቋራጮችን ይፍጠሩ...</translation>
 <translation id="2609980095400624569">ግንኙነት መፍጠር አልተቻለም</translation>
 <translation id="2610157865375787051">አንቀላፋ</translation>
@@ -1591,7 +1588,6 @@
 <translation id="2762441749940182211">ካሜራ ታግዷል</translation>
 <translation id="2764786626780673772">የቪፒኤን ዝርዝሮች</translation>
 <translation id="2765217105034171413">ትንሽ</translation>
-<translation id="2765729904637714153">የሚወዷቸውን ትውስታዎች ዳግም ይኑሯቸው። አልበሞችን ለማከል ወይም ለማርትዕ ወደ <ph name="LINK_BEGIN" />Google ፎቶዎች<ph name="LINK_END" /> ይሂዱ።</translation>
 <translation id="2766006623206032690">ለ&amp;ጥፍና እና ሂድ</translation>
 <translation id="2766161002040448006">አንድ ወላጅ ጠይቅ</translation>
 <translation id="2767127727915954024">ሁሉንም የዚህ ጣቢያ ትሮችን እስኪዘጉ ድረስ <ph name="ORIGIN" /> <ph name="FILENAME" />ን ማርትዕ ይችላሉ</translation>
@@ -4669,7 +4665,6 @@
 <translation id="6331566915566907158">የChrome OS ባህሪያት እና አፈጻጸም እንዲሻሻል ያግዙ</translation>
 <translation id="6331818708794917058">ጣቢያዎች ከMIDI መሣሪያዎች ጋር ለመገናኘት መጠየቅ ይችላሉ</translation>
 <translation id="6333064448949140209">ፋይሉ ለመታረም ወደ Google ይላካል</translation>
-<translation id="6334444530352320327">የእርስዎ የመተግበሪያዎች እና የስርዓተ ክወና ቅንብሮች እርስዎ በዚህ መለያ በገቡባቸው Chromebooks ላይ ይሰምራሉ።<ph name="LINK_BEGIN" />የስምረት ቅንብሮች<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Linuxን ለመጀመር <ph name="MANAGER" /> የውሂብዎን ምትኬ እንዲያስቀምጡና ይህን Chromebook ወደ የፋብሪካ ቅንብሮቹ እንዲመልሱት ይፈልግብዎታል።</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> የADB ስሕተት ማረሚያን አሰናክሏል። ይህ የእርስዎን <ph name="DEVICE_TYPE" /> በ24 ሰዓታት ውስጥ ዳግም ያስጀምረዋል። ለማቆየት የሚፈልጓቸውን ማናቸውም ፋይሎች ምትኬ ያስቀምጡላቸው።</translation>
 <translation id="6338981933082930623">ሁሉም ጣቢያዎች ማንኛውንም ማስታወቂያ ለእርስዎ ሊያሳዩዎት ይችላሉ</translation>
@@ -5106,7 +5101,6 @@
 <translation id="6860097299815761905">የተኪ ቅንብሮች...</translation>
 <translation id="686022878923628150">ጣቢያዎች ከMIDI መሣሪያዎች ጋር እንዳይገናኙ አግድ</translation>
 <translation id="6860427144121307915">በትር ውስጥ ክፈት</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> የውሂብዎን ምትኬ እንዲያስቀምጡና እና ይህን <ph name="DEVICE_TYPE" /> በ1 ሳምንት ውስጥ እንዲመልሱት ይፈልግብዎታል።<ph name="LINK_BEGIN" />ዝርዝሮችን ይመልከቱ<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">የይለፍ ቃል ይሰረዝ?</translation>
 <translation id="6865313869410766144">የራስ-ሙላ ቅጽ ውሂብ</translation>
 <translation id="6865598234501509159">ገጽ በ<ph name="LANGUAGE" /> አይደለም</translation>
@@ -5189,7 +5183,6 @@
 <translation id="696103774840402661">በዚህ <ph name="DEVICE_TYPE" /> ላይ ለሁሉም ተጠቃሚዎች ያሉ ሁሉም ፋይሎች እና አካባቢያዊ ውሂብ እስከመጨረሻው ተሰርዘዋል።</translation>
 <translation id="6964390816189577014">ጀግና</translation>
 <translation id="6964760285928603117">ከቡድን አስወግድ</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> የውሂብዎን ምትኬ ዛሬ እንዲያስቀምጡና እና ይህን <ph name="DEVICE_TYPE" /> እንዲመልሱት ይፈልግብዎታል።<ph name="LINK_BEGIN" />ዝርዝሮችን ይመልከቱ<ph name="LINK_END" />}one{<ph name="MANAGER" /> የእርስዎን ውሂብ ምትኬ በ{NUM_DAYS} ቀኖች ውስጥ እንዲያስቀምጡ እና ይህን <ph name="DEVICE_TYPE" /> እንዲመልሱት ይፈልግብዎታል።<ph name="LINK_BEGIN" />ዝርዝሮችን ይመልከቱ<ph name="LINK_END" />}other{<ph name="MANAGER" /> የእርስዎን ውሂብ ምትኬ በ{NUM_DAYS} ቀኖች ውስጥ እንዲያስቀምጡ እና ይህን <ph name="DEVICE_TYPE" /> እንዲመልሱት ይፈልግብዎታል።<ph name="LINK_BEGIN" />ዝርዝሮችን ይመልከቱ<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="6965648386495488594">ወደብ</translation>
 <translation id="6965978654500191972">መሣሪያ</translation>
@@ -6325,7 +6318,6 @@ nil</translation>
 <translation id="8227119283605456246">ፋይል አያይዝ</translation>
 <translation id="8230134520748321204">ለ<ph name="ORIGIN" /> የይለፍ ቃል ይቀመጥ?</translation>
 <translation id="8234795456569844941">እባክዎ መሐንዲሶቻችን ይህን ችግር እንዲፈቱት ያግዟቸው። ልክ የመገለጫ ስህተት መልዕክቱን ከማግኘትዎ በፊት ምን እንደተከሰተ ይንገሩን፦</translation>
-<translation id="8235605354099176425">የቅርብ ጊዜዎቹን የChrome ትሮችን ለመመልከት<ph name="LINK1_BEGIN" />የChrome ስምረት<ph name="LINK1_END" /> ያብሩ። <ph name="LINK2_BEGIN" />የበለጠ ለመረዳት<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">በምትኩ ይህን ትር አጋራ</translation>
 <translation id="8237647586961940482">ጠቆር ያለ ሮዝ እና ቀይ</translation>
 <translation id="8239032431519548577">የድርጅት ምዝገባ ተጠናቅቋል</translation>

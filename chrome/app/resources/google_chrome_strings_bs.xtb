@@ -179,7 +179,6 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="573759479754913123">O Chrome OS-u</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Pokretanje Chromea nije uspjelo. Ponovite.</translation>
-<translation id="5851757216820085940">Ako imate više Google računa, možete ih dodati na uređaj <ph name="DEVICE_TYPE" />. Vaši računi će biti dostupni u pregledniku Chrome i Play trgovini, kao i na drugim uslugama kao što je Gmail, Disk i YouTube.<ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome pokušava urediti lozinke.</translation>
 <translation id="5895138241574237353">Ponovo pokreni</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – prijava na mrežu</translation>
@@ -287,5 +286,6 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="911206726377975832">Također izbrisati podatke pregledanja?</translation>
 <translation id="9138603949443464873">Da primijenite promjene, ponovo pokrenite Chrome</translation>
 <translation id="919706545465235479">Ažurirajte Chrome da započnete sinhronizaciju</translation>
+<translation id="94743460404517794">Ako imate više Google računa, možete ih dodati na uređaj <ph name="DEVICE_TYPE" />. Vaši će računi biti dostupni u pregledniku Chrome i u Trgovini Play te na uslugama kao što su Gmail, Disk i YouTube. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome je vaš zadani preglednik</translation>
 </translationbundle>

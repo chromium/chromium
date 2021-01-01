@@ -166,7 +166,6 @@
 <translation id="6403826409255603130">Chromium ir tīmekļa pārlūks, kas darbina tīmekļa lapas un lietojumprogrammas zibenīgā ātrumā. Tas ir ātrs, stabils un ērti lietojams. Pārlūkojiet tīmekli vēl drošāk ar aizsardzību pret ļaunprātīgu programmatūru un pikšķerēšanu, kas iebūvēta pārlūkā Chromium.</translation>
 <translation id="6434250628340475518">Chromium OS sistēma</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Pārlūks Chromium tiks restartēts pēc 1 sekundes.}zero{Pārlūks Chromium tiks restartēts pēc # sekundēm.}one{Pārlūks Chromium tiks restartēts pēc # sekundes.}other{Pārlūks Chromium tiks restartēts pēc # sekundēm.}}</translation>
-<translation id="6464340581899189425">Ja jums ir vairāki Google konti, varat tos pievienot, lai <ph name="DEVICE_TYPE" /> atcerētos tos visus. Jūsu konti būs pieejami pārlūkprogrammā Chromium un Play veikalā, kā arī tādos pakalpojumos kā Gmail, Disks un YouTube. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Tas nosaka arī to, kāda lapa tiks rādīta, kad atvērsiet pārlūku Chromium.</translation>
 <translation id="6510925080656968729">Atinstalēt Chromium</translation>
 <translation id="6570579332384693436">Lai izlabotu pareizrakstības kļūdas, Chromium nosūta teksta laukos ievadīto tekstu Google serveriem.</translation>

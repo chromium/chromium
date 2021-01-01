@@ -168,7 +168,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="6403826409255603130">Chromium är en webbläsare som kör webbsidor och appar blixtsnabbt. Den är snabb, stabil och lätt att använda. Surfa säkrare med Chromiums skydd mot skadliga program och lösenordsfiske.</translation>
 <translation id="6434250628340475518">Chromium OS-system</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium startas om om en sekund}other{Chromium startas om om # sekunder}}</translation>
-<translation id="6464340581899189425">Om du har flera Google-konton kan du lägga till dem på <ph name="DEVICE_TYPE" />. Kontona blir tillgängliga i webbläsaren Chromium och Play Butik samt tjänster som Gmail, Drive och YouTube.<ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Det styr också vilken sida som visas när du startar Chromium.</translation>
 <translation id="6510925080656968729">Avinstallera Chromium</translation>
 <translation id="6570579332384693436">Chromium skickar det du skriver i textfält till Google för att kontrollera stavningen</translation>

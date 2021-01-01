@@ -168,7 +168,6 @@
 <translation id="6403826409255603130">Chromium — веб-беттер мен қолданбаларды өте жылдам ашатын веб-браузер. Ол жылдам, тұрақты және пайдалануға оңай. Chromium жүйесіне ендірілген зиянды бағдарлама және фишинг қорғанысымен интернетті уайымсыз пайдалана беруіңізге болады.</translation>
 <translation id="6434250628340475518">Chromium OS жүйесі</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 1 секундтан кейін қайта іске қосылады}other{Chromium # секундтан кейін қайта іске қосылады}}</translation>
-<translation id="6464340581899189425">Бірнеше Google есептік жазбаңыз болса, оларды <ph name="DEVICE_TYPE" /> құрылғыңызға қоса аласыз. Есептік жазбаларыңыз Chromium браузері мен Play Store қолданбасында, сондай-ақ Gmail, Drive және YouTube сияқты қызметтерде қолжетімді болады.<ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Сонымен қатар Chromium іске қосылғанда қайсы бет көрсетілуін бақылайды.</translation>
 <translation id="6510925080656968729">Chromium жою</translation>
 <translation id="6570579332384693436">Емле қателерін түзету үшін Chromium браузері мәтін жолына терілген сөздерді Google-ға жібереді</translation>
@@ -264,6 +263,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="9019929317751753759">Chromium браузерін қауіпсіз ету үшін, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> тізімінде жоқ келесі кеңейтім өшірілді, ол сізге ескертілмей қосылған болуы мүмкін.</translation>
 <translation id="9089354809943900324">Chromium ескірген</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium браузері бір сағаттан кейін қайта іске қосылады}other{Chromium браузері # сағаттан кейін қайта іске қосылады}}</translation>
+<translation id="9107750757953039239">Бірнеше Google есептік жазбаңыз болса, оларды <ph name="DEVICE_TYPE" /> құрылғыңызға қоса аласыз. Есептік жазбаларыңыз Chromium браузері мен Play Store қолданбасында, сондай-ақ Gmail, Drive және YouTube сияқты қызметтерде қолжетімді болады. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Сілтемені жаңа Chromium қойындысында ашу</translation>
 <translation id="911206726377975832">Сонымен қатар шолу деректеріңізді жоясыз ба?</translation>
 <translation id="9158494823179993217">Жүйе әкімшісі Chromium браузерін <ph name="TARGET_URL_HOSTNAME" /> сілтемесіне қосымша браузер арқылы кіре алатындай етіп конфигурациялады.</translation>

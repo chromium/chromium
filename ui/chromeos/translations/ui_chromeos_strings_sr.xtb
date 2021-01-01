@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">норвешки</translation>
 <translation id="1430915738399379752">Штампај</translation>
 <translation id="1435838927755162558">Делите директоријум са Parallels Desktop-ом</translation>
-<translation id="1439494416798956626">Премештено у: <ph name="FOLDER_NAME" /></translation>
 <translation id="1467432559032391204">Улево</translation>
 <translation id="1471718551822868769">словачки</translation>
 <translation id="1474339897586437869">Датотека „<ph name="FILENAME" />“ није отпремљена. Није било довољно слободног места на Google диску.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Желите ли стварно да избришете ставке (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Није могуће направити директоријум „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Врати из отпада</translation>
-<translation id="2275059641601412272">Премештено је.</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Отварају се датотеке (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Отвара се датотека <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">естонски</translation>
 <translation id="3466147780910026086">Медијски уређај се скенира...</translation>
 <translation id="3468522857997926824">Резервна копија слика (<ph name="FILE_COUNT" />) је направљена на <ph name="BEGIN_LINK" />Google диску<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">Копирано је у: <ph name="FOLDER_NAME" /></translation>
 <translation id="3475447146579922140">Google табела</translation>
 <translation id="3486821258960016770">монголски</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешака.</translation>
@@ -410,7 +407,6 @@
     Без обзира на то шта се деси са уређајем, датотеке се безбедно чувају на Google диску.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Делите и правите датотеке и сарађујте<ph name="MARKUP_8" />
     на њима са другима, и све то на једном месту.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Копирано је.</translation>
 <translation id="5275973617553375938">Враћене датотеке са Google диска</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Сачувај</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">Јуче у <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Већ постоји датотека или директоријум са истим називом.</translation>
 <translation id="8372852072747894550">грчки</translation>
-<translation id="8382450452152102026">У: <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Димензије</translation>
 <translation id="8437209419043462667">америчка</translation>
 <translation id="8456681095658380701">Неважеће име</translation>

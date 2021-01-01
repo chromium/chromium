@@ -173,7 +173,6 @@
 <translation id="573759479754913123">Despre sistemul de operare Chrome</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome nu a putut fi lansat. Încearcă din nou.</translation>
-<translation id="5851757216820085940">Dacă ai mai multe Conturi Google, le poți adăuga pe <ph name="DEVICE_TYPE" />. Conturile vor fi disponibile în browserul Chrome și în Magazinul Play și în servicii cum ar fi Gmail, Drive și YouTube.<ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome încearcă să modifice parolele.</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – conectare la rețea</translation>
@@ -281,5 +280,6 @@
 <translation id="911206726377975832">Ștergi și datele de navigare?</translation>
 <translation id="9138603949443464873">Pentru a aplica modificările, relansează Chrome</translation>
 <translation id="919706545465235479">Actualizează Chrome pentru a începe sincronizarea</translation>
+<translation id="94743460404517794">Dacă ai mai multe Conturi Google, le poți adăuga pe <ph name="DEVICE_TYPE" />. Conturile vor fi disponibile în browserul Chrome și în Magazinul Play și în servicii precum Gmail, Drive și YouTube. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome este browserul prestabilit</translation>
 </translationbundle>

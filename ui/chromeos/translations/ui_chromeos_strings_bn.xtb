@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">নরওয়েজিয়ান</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1435838927755162558">Parallels Desktop-এর সাথে ফোল্ডার শেয়ার করুন</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> এ সরানো হয়েছে।</translation>
 <translation id="1467432559032391204">বামে</translation>
 <translation id="1471718551822868769">স্লোভাক</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" আপলোড করা হয়নি। আপনার Google ড্রাইভে পর্যাপ্ত ফাঁকা স্থান নেই।</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">আপনি কি <ph name="NUMBER_OF_ITEMS" />টি আইটেম মুছে ফেলার ব্যাপারে নিশ্চিত?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" /> " ফোল্ডার তৈরী করতে ব্যর্থ৷<ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">ট্র্যাশ থেকে ফিরিয়ে আনুন</translation>
-<translation id="2275059641601412272">সরানো হয়েছে</translation>
 <translation id="2288278176040912387">রেকর্ড প্লেয়ার</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" />টি ফাইল খোলা হচ্ছে।</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> খোলা হচ্ছে।</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">এস্তোনিয়ান</translation>
 <translation id="3466147780910026086">আপনার মিডিয়া ডিভাইস স্ক্যান করা হচ্ছে...</translation>
 <translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google ড্রাইভ<ph name="END_LINK" /> এ <ph name="FILE_COUNT" />টি ফটো ব্যাকআপ নেওয়া হয়েছে</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> ফোল্ডারে কপি করা হয়েছে।</translation>
 <translation id="3475447146579922140">Google স্প্রেডশীট</translation>
 <translation id="3486821258960016770">মঙ্গোলিয়ান</translation>
 <translation id="3495304270784461826"><ph name="COUNT" />টি ত্রুটি৷</translation>
@@ -409,7 +406,6 @@
     <ph name="MARKUP_4" />আপনার ফাইলগুলিকে নিরাপদ রাখুন।<ph name="MARKUP_5" />
     আপনার ডিভাইসে কি ঘটছে তা গুরুত্বপূর্ণ নয়, আপনার ফাইলগুলি Google ড্রাইভে নিরাপদভাবে সঞ্চয় করা হয়।
     <ph name="MARKUP_6" />ফাইলগুলি অন্যদের সাথে <ph name="MARKUP_7" />শেয়ার করুন, তৈরি এবং সহযোগিতা<ph name="MARKUP_8" />করুন, সবকিছু এক জায়গাতেই।<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">কপি করা হয়েছে।</translation>
 <translation id="5275973617553375938">Google ড্রাইভ থেকে উদ্ধার করা ফাইলগুলি</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
@@ -707,7 +703,6 @@
 <translation id="8336153091935557858">গতলাক <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">একই নাম সহ ফাইল অথবা একটি নির্দেশিকা ইতিমধ্যেই বিদ্যমান আছে৷</translation>
 <translation id="8372852072747894550">গ্রিক</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" />-এ</translation>
 <translation id="8395901698320285466">আয়তন</translation>
 <translation id="8437209419043462667">মার্কিন যুক্তরাষ্ট্রীয়</translation>
 <translation id="8456681095658380701">ভুল নাম</translation>

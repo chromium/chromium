@@ -164,7 +164,6 @@
 <translation id="6403826409255603130">Chromium – браузер, который открывает веб-страницы и приложения за секунды. Он быстр, стабилен в работе и прост в использовании. Встроенная в Chromium защита от мошенничества и вредоносного ПО обеспечивает максимально безопасную работу в Интернете.</translation>
 <translation id="6434250628340475518">Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium перезапустится через 1 секунду}one{Chromium перезапустится через # секунду}few{Chromium перезапустится через # секунды}many{Chromium перезапустится через # секунд}other{Chromium перезапустится через # секунды}}</translation>
-<translation id="6464340581899189425">Если у вас несколько аккаунтов Google, их можно добавить на устройство <ph name="DEVICE_TYPE" />. Они будут доступны в браузере Chromium, на платформе Google Play и в других сервисах, таких как Gmail, Диск и YouTube. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Кроме того, расширение изменило стартовую страницу Chromium.</translation>
 <translation id="6510925080656968729">Удаление Chromium</translation>
 <translation id="6570579332384693436">Для проверки правописания Chromium отправляет введенный вами текст в Google.</translation>

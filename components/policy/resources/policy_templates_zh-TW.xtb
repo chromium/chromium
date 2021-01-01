@@ -5372,6 +5372,9 @@
 <translation id="8834641112681661892">你可以透過這項政策，指定系統從裝置管理服務收到政策無效通知及擷取新政策之間的最長延遲時間 (以毫秒為單位)。有效值範圍介於 1,000 (1 秒) 到 300,000 (5 分鐘) 之間。系統會將超出範圍的值調整成接近的上限值或下限值。
 
       如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會使用 10 秒的預設值。</translation>
+<translation id="8835322836315560274">你可以透過這項政策控管要使用哪些指令在替代瀏覽器中開啟網址。這項政策可以設為以下任一個值：<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />、<ph name="FIREFOX_VALUE_PLACEHOLDER" />、<ph name="SAFARI_VALUE_PLACEHOLDER" />、<ph name="OPERA_VALUE_PLACEHOLDER" />、<ph name="EDGE_VALUE_PLACEHOLDER" /> 或檔案路徑。如果將這項政策設為檔案路徑，系統會使用該檔案做為執行檔。<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> 僅適用於 <ph name="MS_WIN_NAME" />。<ph name="SAFARI_VALUE_PLACEHOLDER" /> 和 <ph name="EDGE_VALUE_PLACEHOLDER" /> 僅適用於 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" />。
+
+      如果不設定這項政策，系統會使用平台專屬的預設值：<ph name="MS_WIN_NAME" /> 使用 <ph name="IE_PRODUCT_NAME" />、<ph name="MAC_OS_NAME" /> 使用 <ph name="SAFARI_PRODUCT_NAME" />。<ph name="LINUX_OS_NAME" /> 將無法啟動替代瀏覽器。</translation>
 <translation id="885147810817138322">向使用者顯示媒體推薦內容</translation>
 <translation id="8852579753940989645">啟用轉譯器程式碼完整性功能</translation>
 <translation id="8854571659927427063">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入書籤。如果將這項政策設為停用或不設定，瀏覽器首次執行時不會匯入任何書籤。

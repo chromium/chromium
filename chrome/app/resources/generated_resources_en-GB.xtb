@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">Review passwords</translation>
 <translation id="1244265436519979884">Linux restore currently in progress</translation>
 <translation id="1244303850296295656">Extension error</translation>
-<translation id="1246158006305844142">Your apps and settings will sync across all Chrome OS devices where you are signed in with your Google Account. For browser sync options, go to<ph name="LINK_BEGIN" />Chrome settings<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Remove suggestion from clipboard?</translation>
 <translation id="1251366534849411931">Expected opening curly bracket: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">This will clear <ph name="TOTAL_USAGE" /> of data stored by sites and installed apps</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">This process may take a few minutes. Starting the container manager.</translation>
 <translation id="1296911687402551044">Pin Selected Tab</translation>
 <translation id="1297175357211070620">Destination</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> wants your device's identity to be verified, by Google, to determine eligibility for enhanced playback of protected content.</translation>
 <translation id="1300806585489372370">To change this setting, first <ph name="BEGIN_LINK" />turn on identifiers<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> can edit the following files</translation>
 <translation id="1302139669997477151">Screenshot is blocked</translation>
@@ -1031,6 +1029,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2139919072249842737">Set up button</translation>
 <translation id="214169863967063661">Open appearance settings</translation>
 <translation id="2142328300403846845">Open Link as</translation>
+<translation id="2142582065325732898">Turn on <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> to view recent Chrome tabs. <ph name="LINK2_BEGIN" />Learn more<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Always Show Toolbar in Full Screen</translation>
 <translation id="2143778271340628265">Manual proxy configuration</translation>
 <translation id="2144536955299248197">Certificate Viewer: <ph name="CERTIFICATE_NAME" /></translation>
@@ -1446,7 +1445,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2606246518223360146">Link Data</translation>
 <translation id="2606454609872547359">No, continue without ChromeVox</translation>
 <translation id="2607101320794533334">Subject Public Key Info</translation>
-<translation id="2607968157341167679">No albums. Create an album in<ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="2609896558069604090">Create Shortcuts...</translation>
 <translation id="2609980095400624569">Could not establish connection</translation>
 <translation id="2610157865375787051">Sleep</translation>
@@ -1591,7 +1589,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2762441749940182211">Camera blocked</translation>
 <translation id="2764786626780673772">VPN details</translation>
 <translation id="2765217105034171413">Small</translation>
-<translation id="2765729904637714153">Relive your favourite memories. To add or edit albums, go to<ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="2766006623206032690">Pa&amp;ste and go</translation>
 <translation id="2766161002040448006">Ask a parent</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> will be able to edit <ph name="FILENAME" /> until you close all tabs for this site</translation>
@@ -2386,6 +2383,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3677911431265050325">Request mobile site</translation>
 <translation id="3677959414150797585">Includes apps, web pages and more. Sends statistics to improve suggestions only if you’ve chosen to share usage data.</translation>
 <translation id="3678156199662914018">Extension: <ph name="EXTENSION_NAME" /></translation>
+<translation id="3679608942832457508">Your apps and OS settings will sync across Chromebooks where you're signed in with this account. <ph name="LINK_BEGIN" />Sync settings<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Text-to-speech voice</translation>
 <translation id="3681311097828166361">Thank you for your feedback. You are offline now, and your report will be sent later.</translation>
 <translation id="3682824389861648626">Movement threshold</translation>
@@ -3662,6 +3660,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5185386675596372454">The newest version of "<ph name="EXTENSION_NAME" />" has been disabled because it requires more permissions.</translation>
 <translation id="5185500136143151980">No Internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190187232518914472">Relive your favourite memories. To add or edit albums, go to <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5190926251776387065">Activate port</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> wants to download multiple files</translation>
 <translation id="5192062846343383368">Open the Family Link app to see your supervision settings</translation>
@@ -3910,6 +3909,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5481273127572794904">Not allowed to automatically download multiple files</translation>
 <translation id="5481941284378890518">Add Nearby Printers</translation>
 <translation id="5483785310822538350">Revoke file and device access</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> today. <ph name="LINK_BEGIN" />See details<ph name="LINK_END" />}other{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days. <ph name="LINK_BEGIN" />See details<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835">Your <ph name="DEVICE_TYPE" /> is locked for security. Manually enter your password to continue.</translation>
 <translation id="5485102783864353244">Add app</translation>
 <translation id="5485754497697573575">Restore All Tabs</translation>
@@ -4671,7 +4671,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6331566915566907158">Help improve Chrome OS features and performance</translation>
 <translation id="6331818708794917058">Sites can ask to connect to MIDI devices</translation>
 <translation id="6333064448949140209">File will be sent to Google for debugging</translation>
-<translation id="6334444530352320327">Your apps and OS settings will sync across Chromebooks where you're signed in with this account.<ph name="LINK_BEGIN" />Sync settings<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">To start Linux, <ph name="MANAGER" /> requires you to back up your data and reset this Chromebook to factory settings.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> has disabled ADB debugging. This will reset your <ph name="DEVICE_TYPE" /> in 24 hours. Back up any files that you'd like to keep.</translation>
 <translation id="6338981933082930623">All sites can show any ads to you</translation>
@@ -5108,7 +5107,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6860097299815761905">Proxy settings...</translation>
 <translation id="686022878923628150">Block sites from connecting to MIDI devices</translation>
 <translation id="6860427144121307915">Open in a Tab</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> within one week.<ph name="LINK_BEGIN" />See details<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">Delete password?</translation>
 <translation id="6865313869410766144">Auto-fill form data</translation>
 <translation id="6865598234501509159">Page Is not in <ph name="LANGUAGE" /></translation>
@@ -5191,7 +5189,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="696103774840402661">All files and local data for all users on this <ph name="DEVICE_TYPE" /> has been permanently deleted.</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Remove From Group</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> today.<ph name="LINK_BEGIN" />See details<ph name="LINK_END" />}other{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days.<ph name="LINK_BEGIN" />See details<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Device</translation>
@@ -5641,6 +5638,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7476454130948140105">Battery too low for update (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Control your music, videos and more</translation>
 <translation id="7478485216301680444">Kiosk application could not be installed.</translation>
+<translation id="7478623944308207463">Your apps and settings will sync across all Chrome OS devices where you are signed in with your Google Account. For browser sync options, go to <ph name="LINK_BEGIN" />Chrome settings<ph name="LINK_END" />.</translation>
 <translation id="7479221278376295180">Storage Usage Overview</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7481358317100446445">Ready</translation>
@@ -6310,6 +6308,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8211551284753798479">Invalid PUK. You have <ph name="RETRIES" /> remaining attempts.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download is in progress}other{Downloads are in progress}}</translation>
 <translation id="8213449224684199188">Photo mode entered</translation>
+<translation id="8213866992824776555"><ph name="DOMAIN" /> wants to identify your device so that it can play the highest-quality protected video and audio.</translation>
 <translation id="8214489666383623925">Open File...</translation>
 <translation id="8214962590150211830">Remove This Person</translation>
 <translation id="8216351761227087153">Watch</translation>
@@ -6323,7 +6322,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8227119283605456246">Attach file</translation>
 <translation id="8230134520748321204">Save password for <ph name="ORIGIN" />?</translation>
 <translation id="8234795456569844941">Please help our engineers fix this problem. Tell us what happened right before you got the profile error message:</translation>
-<translation id="8235605354099176425">Turn on<ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> to view recent Chrome tabs.<ph name="LINK2_BEGIN" />Learn more<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">Share this tab instead</translation>
 <translation id="8237647586961940482">Dark pink and red</translation>
 <translation id="8239032431519548577">Enterprise enrolment complete</translation>
@@ -6700,6 +6698,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="8676374126336081632">Clear input</translation>
 <translation id="8676770494376880701">Low-power charger connected</translation>
 <translation id="8677212948402625567">Collapse all...</translation>
+<translation id="8677859815076891398">No albums. Create an album in <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8678933587484842200">How would you like this application to launch?</translation>
 <translation id="8680251145628383637">Sign in to get your bookmarks, history, passwords and other settings on all your devices. You'll also automatically be signed in to your Google services.</translation>
 <translation id="8681614230122836773">Chrome found harmful software on your computer</translation>
@@ -6857,6 +6856,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="8831140208248705279">Your <ph name="DEVICE_TYPE" /> and Android phone work better together. Connect them so that you can text from your computer, share your Internet connection and unlock your <ph name="DEVICE_TYPE" /> with your phone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">Network configuration is controlled by <ph name="USER_EMAIL" />.</translation>
 <translation id="8835786707922974220">Make sure that you can always access your saved passwords</translation>
+<translation id="8836360711089151515"><ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> within one week. <ph name="LINK_BEGIN" />See details<ph name="LINK_END" /></translation>
 <translation id="8838601485495657486">Opaque</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="883911313571074303">Annotate image</translation>
@@ -7143,6 +7143,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="9148963623915467028">This site can access your location.</translation>
 <translation id="9149866541089851383">Edit...</translation>
 <translation id="9150045010208374699">Use your camera</translation>
+<translation id="9150079578948279438">Profile could not be removed. Please try again or contact your operator for technical support.</translation>
 <translation id="9153934054460603056">Save identity and password</translation>
 <translation id="9154194610265714752">Updated</translation>
 <translation id="91568222606626347">Create Shortcut...</translation>

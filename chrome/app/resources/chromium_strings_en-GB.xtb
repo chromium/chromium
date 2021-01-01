@@ -168,7 +168,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="6403826409255603130">Chromium is a web browser that runs webpages and applications with lightning speed. It's fast, stable, and easy to use. Browse the web more safely with malware and phishing protection built into Chromium.</translation>
 <translation id="6434250628340475518">Chromium OS System</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium will restart in 1 second}other{Chromium will restart in # seconds}}</translation>
-<translation id="6464340581899189425">If you have multiple Google Accounts, you can add them to your <ph name="DEVICE_TYPE" />. Your accounts will be available in the Chromium browser and Play Store, as well as services like Gmail, Drive and YouTube.<ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">It also controls what page is shown when you start Chromium.</translation>
 <translation id="6510925080656968729">Uninstall Chromium</translation>
 <translation id="6570579332384693436">To fix spelling errors, Chromium sends the text that you type in text fields to Google</translation>
@@ -264,6 +263,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="9019929317751753759">To make Chromium safer, we disabled the following extension that isn't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
 <translation id="9089354809943900324">Chromium is out of date</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium will relaunch in an hour}other{Chromium will relaunch in # hours}}</translation>
+<translation id="9107750757953039239">If you have multiple Google Accounts, you can add them to your <ph name="DEVICE_TYPE" />. Your accounts will be available in Chromium browser and Play Store, as well as services like Gmail, Drive and YouTube. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Open Link in New Chromium &amp;tab</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>
 <translation id="9158494823179993217">Your system administrator has configured Chromium to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME" />.</translation>

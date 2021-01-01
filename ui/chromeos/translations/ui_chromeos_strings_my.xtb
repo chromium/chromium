@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">နော်ဝေ</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1435838927755162558">ဖိုင်တွဲကို Parallels Desktop အား မျှဝေခြင်း</translation>
-<translation id="1439494416798956626"><ph name="FOLDER_NAME" /> ဖိုင်တွဲသို့ ရွှေ့ထားသည်။</translation>
 <translation id="1467432559032391204">ဘယ်</translation>
 <translation id="1471718551822868769">ဆလိုဗက်</translation>
 <translation id="1474339897586437869">" <ph name="FILENAME" /> " ကို အပ်လုဒ် လုပ်မရခဲ့ပါ။ သင်၏ Google Drive ထဲတွင် နေရာ မလုံလောက်ပါ။</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">အကြောင်းအရာ <ph name="NUMBER_OF_ITEMS" />ခုကို ဖျက်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="2230062665678605299">ဖိုလ်ဒါ  "<ph name="FOLDER_NAME" />"ကို ဖန်တီး မရခဲ့ပါ။ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">အမှိုက်ပုံးမှ ပြန်ယူရန်</translation>
-<translation id="2275059641601412272">ရွှေ့ထားသည်။</translation>
 <translation id="2288278176040912387">ကစားသူ မှတ်တမ်းတင်</translation>
 <translation id="2291538123825441971">ဖိုင် <ph name="NUMBER_OF_FILES" /> ခု ဖွင့်နေသည်။</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" />ဖိုင် ကို ဖွင့်နေသည်။</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">အက်စ်တိုနီးယား</translation>
 <translation id="3466147780910026086">သင့်မီဒီယာကို ဖတ်နေသည်...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ဓါတ်ပုံများကို <ph name="BEGIN_LINK" /> Google Drive <ph name="END_LINK" /> သို့အရံသိမ်းဆည်းမည်</translation>
-<translation id="3473378059788601120"><ph name="FOLDER_NAME" /> သို့ မိတ္တူကူးထားသည်။</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3486821258960016770">မွန်ဂိုလီးယား</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> အမှားများ။</translation>
@@ -410,7 +407,6 @@
     သင့်စက်ပစ္စည်း ဘာဖြစ်ဖြစ် သင့်ဖိုင်များကို Google Drive တွင်လုံခြုံစွာ သိမ်းဆည်းထားပါသည်။<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />ဖိုင်များကို မျှဝေခြင်း၊ ပြုစုခြင်းနှင့် ပူးပေါင်းလုပ်ဆောင်ခြင်း<ph name="MARKUP_8" />
     တို့ကို တစ်နေရာတည်းတွင်လုပ်ဆောင်နိုင်သည်<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">မိတ္တူကူးထားသည်။</translation>
 <translation id="5275973617553375938">Google Drive မှရှာဖွေထားသည့် ဖိုင်များ</translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5318819489018851358">Linux ဖြင့် မျှဝေရန်</translation>
@@ -707,7 +703,6 @@
 <translation id="8336153091935557858">မနေ့က <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">တူညီသည့် အမည်ဖြင့် ဖိုင်တစ်ဖိုင် သို့မဟုတ် လမ်းကြောင်းတစ်ခု ရှိပြီးဖြစ်သည်။</translation>
 <translation id="8372852072747894550">ဂရိ</translation>
-<translation id="8382450452152102026"><ph name="FOLDER_NAME" /> သို့</translation>
 <translation id="8395901698320285466">အတိုင်းအတာများ</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">အမည် မမှန်</translation>

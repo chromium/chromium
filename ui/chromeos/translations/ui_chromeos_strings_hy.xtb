@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">նորվեգերեն</translation>
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1435838927755162558">Կիսվեք պանակով Parallels Desktop-ի հետ</translation>
-<translation id="1439494416798956626">Տեղափոխվել է «<ph name="FOLDER_NAME" />» պանակ</translation>
 <translation id="1467432559032391204">Ձախ</translation>
 <translation id="1471718551822868769">սլովակերեն</translation>
 <translation id="1474339897586437869">«<ph name="FILENAME" />» ֆայլը չվերբեռնվեց: Ձեր Google Drive-ում բավարար չափով ազատ տարածություն չկա:</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Իսկապե՞ս ուզում եք ջնջել <ph name="NUMBER_OF_ITEMS" /> տարրերը։</translation>
 <translation id="2230062665678605299">Հնարավոր չէ ստեղծել «<ph name="FOLDER_NAME" />» պանակը: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Վերականգնել աղբարկղից</translation>
-<translation id="2275059641601412272">Տեղափոխվեց։</translation>
 <translation id="2288278176040912387">Գրամոֆոն</translation>
 <translation id="2291538123825441971">Բացվում է <ph name="NUMBER_OF_FILES" /> ֆայլ։</translation>
 <translation id="2303301624314357662">Բացվում է <ph name="FILE_NAME" /> ֆայլը։</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">էստոներեն</translation>
 <translation id="3466147780910026086">Որոնում մեդիա սարքում…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> լուսանկար կրկնօրինակվեց <ph name="BEGIN_LINK" />Google Drive-ում<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">Պատճենվեց «<ph name="FOLDER_NAME" />» պանակում</translation>
 <translation id="3475447146579922140">Google աղյուսակ</translation>
 <translation id="3486821258960016770">մոնղոլերեն</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> սխալ:</translation>
@@ -410,7 +407,6 @@
     Անկախ նրանից, թե ինչ կպատահի ձեր սարքին, ձեր ֆայլերը ապահով պահված կլինեն Google Drive-ում:<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Ստեղծեք, կիսվեք և համագործակցեք<ph name="MARKUP_8" />
     ուրիշների հետ մեկ վայրում:<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Պատճենվեց։</translation>
 <translation id="5275973617553375938">Վերականգնված ֆայլեր Google Drive-ից</translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5318819489018851358">Հասանելի դարձնել Լինուքսին</translation>
@@ -707,7 +703,6 @@
 <translation id="8336153091935557858">Երեկ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Այս անունով ֆայլ կամ գրացուցակ արդեն առկա է:</translation>
 <translation id="8372852072747894550">հունարեն</translation>
-<translation id="8382450452152102026">«<ph name="FOLDER_NAME" />» պանակ</translation>
 <translation id="8395901698320285466">Չափեր</translation>
 <translation id="8437209419043462667">ԱՄՆ</translation>
 <translation id="8456681095658380701">Սխալ անուն</translation>

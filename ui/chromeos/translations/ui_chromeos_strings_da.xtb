@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Norsk</translation>
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1435838927755162558">Del mappe med Parallels Desktop</translation>
-<translation id="1439494416798956626">Flyttet til <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Venstre</translation>
 <translation id="1471718551822868769">Slovakisk</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" blev ikke uploadet. Der er ikke plads nok i Google Drev.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Er du sikker på, at du vil slette <ph name="NUMBER_OF_ITEMS" /> elementer?</translation>
 <translation id="2230062665678605299">Mappen "<ph name="FOLDER_NAME" />" kunne ikke oprettes. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Gendan fra papirkurven</translation>
-<translation id="2275059641601412272">Blev flyttet.</translation>
 <translation id="2288278176040912387">Pladespiller</translation>
 <translation id="2291538123825441971">Åbner <ph name="NUMBER_OF_FILES" /> filer.</translation>
 <translation id="2303301624314357662">Åbner filen <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Estisk</translation>
 <translation id="3466147780910026086">Din medieenhed scannes...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> billeder blev sikkerhedskopieret til <ph name="BEGIN_LINK" />Google Drev<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">Kopieret til <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google-regneark</translation>
 <translation id="3486821258960016770">Mongolsk</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> fejl.</translation>
@@ -410,7 +407,6 @@
         Uanset hvad der sker på din enhed, er dine filer gemt sikkert i Google Drev.<ph name="MARKUP_6" />
         <ph name="MARKUP_7" />Del, opret og samarbejd<ph name="MARKUP_8" />
         om filer med andre på ét sted.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Blev kopieret.</translation>
 <translation id="5275973617553375938">Gendannede filer fra Google Drev</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Gem</translation>
@@ -708,7 +704,6 @@
 <translation id="8336153091935557858">I går <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Der findes allerede en fil eller en mappe med samme navn.</translation>
 <translation id="8372852072747894550">Græsk</translation>
-<translation id="8382450452152102026">I <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Mål</translation>
 <translation id="8437209419043462667">Amerikansk</translation>
 <translation id="8456681095658380701">Ugyldigt navn</translation>

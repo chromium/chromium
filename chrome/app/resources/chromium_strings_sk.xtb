@@ -168,7 +168,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="6403826409255603130">Chromium je webový prehliadač, ktorý spúšťa webové stránky a aplikácie rýchlosťou svetla. Je rýchly, stabilný a ľahko sa používa. S ochranou proti škodlivému softvéru a phishingu, ktorá je zabudovaná do prehliadača Chromium, môžete prehliadať web bezpečnejšie.</translation>
 <translation id="6434250628340475518">Systém Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium sa reštartuje o 1 sekundu}few{Chromium sa reštartujte o # sekundy}many{Chromium sa reštartujte o # sekundy}other{Chromium sa reštartujte o # sekúnd}}</translation>
-<translation id="6464340581899189425">Ak máte viac účtov Google, môžete si ich pridať do zariadenia <ph name="DEVICE_TYPE" />. Vaše účty budú k dispozícii v prehliadači Chromium a Obchode Play, ale aj službách, ako sú Gmail, Disk a YouTube.<ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Tiež určuje, ktorá stránka sa zobrazí pri spustení prehliadača Chromium.</translation>
 <translation id="6510925080656968729">Odinštalovať Chromium</translation>
 <translation id="6570579332384693436">Chromium odošle text zadaný v textových poliach Googlu s cieľom opraviť pravopisné chyby</translation>

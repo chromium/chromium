@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">ພາສານໍເວກຽນ</translation>
 <translation id="1430915738399379752">ພິມ</translation>
 <translation id="1435838927755162558">ແບ່ງປັນໂຟນເດີກັບ Parallels Desktop</translation>
-<translation id="1439494416798956626">ຍ້າຍໄປໃສ່ <ph name="FOLDER_NAME" /> ແລ້ວ.</translation>
 <translation id="1467432559032391204">ເບື້ອງຊ້າຍ</translation>
 <translation id="1471718551822868769">ພາສາສະໂລແວັກ</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ບໍ່​ຖືກ​ອັບ​ໂຫຼດ. ພື້ນ​ທີ່​ຫວ່າງ​ບໍ່​ພຽງ​ພໍ​ຢູ່​ໃນ Google Drive ຂອງ​ທ່ານ.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">ທ່ານ​ແນ່​ໃຈບໍ່ວ່​າ ​ທ່ານ​ຕ້ອງ​ການ​ລຶບ <ph name="NUMBER_OF_ITEMS" /> ລາຍ​ການ​?</translation>
 <translation id="2230062665678605299">ບໍ່​ສາ​ມາດ​​ສ້າງ​ໂຟລເດີ "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /> ໄດ້</translation>
 <translation id="2251368349685848079">ກູ້ຄືນຈາກຖັງຂີ້ເຫຍື້ອ</translation>
-<translation id="2275059641601412272">ຍ້າຍແລ້ວ.</translation>
 <translation id="2288278176040912387">ເຄື່ອງຫຼິ້ນ​ບັນ​ທຶກ</translation>
 <translation id="2291538123825441971">ກຳລັງເປີດ <ph name="NUMBER_OF_FILES" /> ໄຟລ໌.</translation>
 <translation id="2303301624314357662">ກຳລັງເປີດໄຟລ໌ <ph name="FILE_NAME" />.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">ພາສາເອສໂຕນຽນ</translation>
 <translation id="3466147780910026086">ກຳ​ລັງ​ສະ​ແກນອຸ​ປະ​ກອນ​ມີ​ເດຍ​ຂອງ​ທ່ານ...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ຮູບຖືກສຳ​ຮອງ​​ໃສ່ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> ແລ້ວ</translation>
-<translation id="3473378059788601120">ສຳເນົາໃສ່ <ph name="FOLDER_NAME" /> ແລ້ວ.</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3486821258960016770">ພາສາມອງໂກລຽນ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ຄວາມ​ຜິດ​ພາດ​.</translation>
@@ -410,7 +407,6 @@
     ບໍ່ວ່າຈະເກີດຫຍັງຂຶ້ນກັບອຸປະກອນຂອງທ່ານ, ໄຟລ໌ຂອງທ່ານຖືກເກັບໄວ້ຢ່າງປອດໄພໃນ Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />ແບ່ງປັນ, ສ້າງ ແລະ ເຮັດວຽກຮ່ວມກັນ<ph name="MARKUP_8" />
     ໃນໄຟລ໌ຕ່າງໆກັບຄົນອື່ນທັງໝົດຢູ່ບ່ອນດຽວ.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">ສຳເນົາແລ້ວ.</translation>
 <translation id="5275973617553375938">ໄຟລ໌ທີ່ກູ້ຄືນຈາກ Google Drive</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5318819489018851358">ແບ່ງປັນກັບ Linux</translation>
@@ -707,7 +703,6 @@
 <translation id="8336153091935557858">ມື້​ວານ​ນີ້ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">ມີໄຟລ໌ ຫຼືໄດເຣັກຕໍຣີທີ່ມີຊື່ດຽວກັນຢູ່ແລ້ວ.</translation>
 <translation id="8372852072747894550">ພາສາກຣີກ</translation>
-<translation id="8382450452152102026">ຫາ <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">ຂະໜາດພາບ</translation>
 <translation id="8437209419043462667">ສະ​ຫະ​ລັດ</translation>
 <translation id="8456681095658380701">ຊື່ໃຊ້ບໍ່ໄດ້</translation>

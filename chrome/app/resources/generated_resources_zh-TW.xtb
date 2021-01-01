@@ -230,7 +230,6 @@
 <translation id="1243436884219965846">查看密碼</translation>
 <translation id="1244265436519979884">目前正在執行 Linux 還原作業</translation>
 <translation id="1244303850296295656">擴充功能錯誤</translation>
-<translation id="1246158006305844142">當你使用 Google 帳戶登入後，所有 Chrome 作業系統裝置上的應用程式和設定都會保持同步。如要查看瀏覽器同步處理選項，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" />。</translation>
 <translation id="1246905108078336582">要從剪貼簿中移除建議嗎？</translation>
 <translation id="1251366534849411931">缺少左大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">這會清除網站儲存的資料 (共 <ph name="TOTAL_USAGE" />)，以及所安裝的應用程式</translation>
@@ -272,7 +271,6 @@
 <translation id="1294807885394205587">這項程序可能需要幾分鐘才能完成。正在啟動容器管理工具。</translation>
 <translation id="1296911687402551044">固定所選分頁</translation>
 <translation id="1297175357211070620">目的地</translation>
-<translation id="1300415640239881824"><ph name="DOMAIN" /> 需要 Google 驗證你的裝置身分，以判定是否能針對受保護的內容提供更完善的播放體驗。</translation>
 <translation id="1300806585489372370">如要變更這項設定，請先<ph name="BEGIN_LINK" />啟用 ID<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> 可以編輯下列檔案</translation>
 <translation id="1302139669997477151">螢幕截圖功能已遭到封鎖</translation>
@@ -1031,6 +1029,7 @@
 <translation id="2139919072249842737">「設定」按鈕</translation>
 <translation id="214169863967063661">開啟顯示外觀設定</translation>
 <translation id="2142328300403846845">以其他身分開啟連結</translation>
+<translation id="2142582065325732898">開啟 <ph name="LINK1_BEGIN" />Chrome 同步功能<ph name="LINK1_END" />即可查看最近開啟的 Chrome 分頁。<ph name="LINK2_BEGIN" />瞭解詳情<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">啟用全螢幕模式時一律顯示工具列</translation>
 <translation id="2143778271340628265">手動 Proxy 設定</translation>
 <translation id="2144536955299248197">憑證檢視者：<ph name="CERTIFICATE_NAME" /></translation>
@@ -1248,6 +1247,7 @@
 <translation id="2366260648632264559">以這個語言顯示系統文字</translation>
 <translation id="2367972762794486313">顯示應用程式</translation>
 <translation id="2371076942591664043">完成後開啟(&amp;D)</translation>
+<translation id="23721837607121582">下載行動裝置設定檔，<ph name="NETWORK_COUNT" /> 個網路中的第 <ph name="NETWORK_INDEX" /> 個，名稱為 <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">依紙張大小自動調整</translation>
 <translation id="2375406435414127095">連線至你的手機</translation>
 <translation id="2377588536920405462">關閉裝置的主要位置資訊設定即可停用定位服務。你也可以前往位置資訊設定，將使用 Wi‑Fi、行動網路和感應器的定位功能關閉。</translation>
@@ -1444,7 +1444,6 @@
 <translation id="2606246518223360146">連結資料</translation>
 <translation id="2606454609872547359">否，不啟動 ChromeVox 並繼續操作</translation>
 <translation id="2607101320794533334">主體公開金鑰資訊</translation>
-<translation id="2607968157341167679">沒有任何相簿。請在 <ph name="LINK_BEGIN" />Google 相簿<ph name="LINK_END" />中建立相簿。</translation>
 <translation id="2609896558069604090">建立捷徑...</translation>
 <translation id="2609980095400624569">無法建立連線</translation>
 <translation id="2610157865375787051">休眠</translation>
@@ -1589,7 +1588,6 @@
 <translation id="2762441749940182211">無法使用攝影機</translation>
 <translation id="2764786626780673772">VPN 詳細資料</translation>
 <translation id="2765217105034171413">小</translation>
-<translation id="2765729904637714153">重溫你最珍視的美好回憶。如要新增或編輯相簿，請前往 <ph name="LINK_BEGIN" />Google 相簿<ph name="LINK_END" />。</translation>
 <translation id="2766006623206032690">貼上及前往(&amp;S)</translation>
 <translation id="2766161002040448006">詢問家長</translation>
 <translation id="2767127727915954024">在你關閉這個網站的所有分頁前，<ph name="ORIGIN" /> 都可以編輯「<ph name="FILENAME" />」</translation>
@@ -2384,6 +2382,7 @@
 <translation id="3677911431265050325">切換為行動版網站</translation>
 <translation id="3677959414150797585">包括應用程式、網頁等。只有當你選擇提供使用資料時，系統才會傳送統計資料用來改善建議項目。</translation>
 <translation id="3678156199662914018">擴充功能：<ph name="EXTENSION_NAME" /></translation>
+<translation id="3679608942832457508">當你使用這個帳戶登入後，所有 Chromebook 上的應用程式和作業系統設定都會保持同步。<ph name="LINK_BEGIN" />同步處理設定<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">文字轉語音的聲音</translation>
 <translation id="3681311097828166361">感謝你提供意見！你目前處於離線狀態，重新上線後系統就會傳送你的意見回饋報告。</translation>
 <translation id="3682824389861648626">滑鼠移動限額</translation>
@@ -2675,6 +2674,7 @@
 <translation id="3969092967100188979">已啟用，正在使用漫遊服務</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">計算中…</translation>
+<translation id="3971140002794351170">下載行動裝置設定檔，<ph name="NETWORK_COUNT" /> 個網路中的第 <ph name="NETWORK_INDEX" /> 個，名稱為 <ph name="NETWORK_NAME" />，供應商為 <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">這個安全金鑰上的指紋</translation>
 <translation id="3973660817924297510">正在檢查密碼 (已檢查 <ph name="CHECKED_PASSWORDS" /> 個，共 <ph name="TOTAL_PASSWORDS" /> 個)…</translation>
 <translation id="3975565978598857337">無法連線至指定領域的伺服器</translation>
@@ -3658,6 +3658,7 @@
 <translation id="5185386675596372454">由於最新版本的 <ph name="EXTENSION_NAME" /> 需要更多權限，因此已經停用。</translation>
 <translation id="5185500136143151980">沒有網際網路連線</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190187232518914472">重溫你最珍視的美好回憶。如要新增或編輯相簿，請前往 <ph name="LINK_BEGIN" />Google 相簿<ph name="LINK_END" />。</translation>
 <translation id="5190926251776387065">啟用通訊埠</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> 想要下載多個檔案</translation>
 <translation id="5192062846343383368">開啟 Family Link 應用程式以查看監督功能設定</translation>
@@ -3906,6 +3907,7 @@
 <translation id="5481273127572794904">不得自動下載多個檔案</translation>
 <translation id="5481941284378890518">新增附近的印表機</translation>
 <translation id="5483785310822538350">撤銷檔案和裝置存取權</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你備份自己的資料，並且在今天內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求你備份自己的資料，並且在 {NUM_DAYS} 天內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835">你的 <ph name="DEVICE_TYPE" /> 因安全考量而進入鎖定狀態。如要繼續操作，請手動輸入你的密碼。</translation>
 <translation id="5485102783864353244">新增應用程式</translation>
 <translation id="5485754497697573575">還原所有分頁</translation>
@@ -4667,7 +4669,6 @@
 <translation id="6331566915566907158">協助改善 Chrome 作業系統的功能與效能</translation>
 <translation id="6331818708794917058">網站可以要求連線至 MIDI 裝置</translation>
 <translation id="6333064448949140209">檔案會傳送給 Google 進行偵錯</translation>
-<translation id="6334444530352320327">當你使用這個帳戶登入後，所有 Chromebook 上的應用程式和作業系統設定都會保持同步。<ph name="LINK_BEGIN" />同步設定<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346"><ph name="MANAGER" /> 要求你備份資料，並將這部 Chromebook 恢復原廠設定，才能啟動 Linux。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 偵錯，這會讓系統在 24 小時後重設 <ph name="DEVICE_TYPE" />。請備份你要保留的檔案。</translation>
 <translation id="6338981933082930623">所有網站都可以向你顯示任何廣告</translation>
@@ -5104,7 +5105,6 @@
 <translation id="6860097299815761905">Proxy 設定...</translation>
 <translation id="686022878923628150">禁止網站連線至 MIDI 裝置</translation>
 <translation id="6860427144121307915">在分頁中開啟</translation>
-<translation id="6862729829592030773"><ph name="MANAGER" /> 要求你備份自己的資料，並在 1 週內退還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">要刪除密碼嗎？</translation>
 <translation id="6865313869410766144">自動填入表單資料</translation>
 <translation id="6865598234501509159">網頁原文不是<ph name="LANGUAGE" /></translation>
@@ -5187,7 +5187,6 @@
 <translation id="696103774840402661">系統已永久刪除這部「<ph name="DEVICE_TYPE" />」上所有使用者的所有檔案與本機資料。</translation>
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">從群組中移除</translation>
-<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你備份自己的資料，並在今天退還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求你備份自己的資料，並在 {NUM_DAYS} 天內退還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6965648386495488594">通訊埠</translation>
 <translation id="6965978654500191972">裝置</translation>
@@ -5637,6 +5636,7 @@
 <translation id="7476454130948140105">電量過低，無法進行更新 (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">控管你的音樂、影片等項目</translation>
 <translation id="7478485216301680444">無法安裝 Kiosk 應用程式。</translation>
+<translation id="7478623944308207463">當你使用 Google 帳戶登入後，所有 Chrome 作業系統裝置上的應用程式和設定都會保持同步。如要查看瀏覽器同步處理選項，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" />。</translation>
 <translation id="7479221278376295180">儲存空間使用量總覽</translation>
 <translation id="7481312909269577407">往前</translation>
 <translation id="7481358317100446445">準備就緒</translation>
@@ -6305,6 +6305,7 @@
 <translation id="8211551284753798479">PUK 無效，你還有 <ph name="RETRIES" /> 次重試機會。</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在執行一項下載作業}other{正在執行多項下載作業}}</translation>
 <translation id="8213449224684199188">已進入相片模式</translation>
+<translation id="8213866992824776555"><ph name="DOMAIN" /> 需要識別你的裝置，才能讓該裝置以最高品質播放受保護的影片和音訊。</translation>
 <translation id="8214489666383623925">開啟檔案...</translation>
 <translation id="8214962590150211830">移除這個使用者</translation>
 <translation id="8216351761227087153">觀看</translation>
@@ -6318,7 +6319,6 @@
 <translation id="8227119283605456246">附加檔案</translation>
 <translation id="8230134520748321204">要儲存 <ph name="ORIGIN" /> 的密碼嗎？</translation>
 <translation id="8234795456569844941">請告訴我們在你收到設定檔錯誤訊息前執行的動作，以協助工程師修正此問題：</translation>
-<translation id="8235605354099176425">開啟 <ph name="LINK1_BEGIN" />Chrome 同步功能<ph name="LINK1_END" />即可查看最近開啟的 Chrome 分頁。<ph name="LINK2_BEGIN" />瞭解詳情<ph name="LINK2_END" /></translation>
 <translation id="8236917170563564587">改為分享這個分頁</translation>
 <translation id="8237647586961940482">深粉紅色與紅色</translation>
 <translation id="8239032431519548577">企業註冊完成</translation>
@@ -6464,6 +6464,7 @@
 <translation id="8398877366907290961">仍要繼續</translation>
 <translation id="8400146488506985033">管理使用者</translation>
 <translation id="8401432541486058167">請輸入與智慧型卡片相關聯的 PIN 碼。</translation>
+<translation id="8403562727702715619">近期存取的 Google 雲端硬碟檔案</translation>
 <translation id="8407199357649073301">記錄層級：</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />網路，連線中</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6694,6 +6695,7 @@
 <translation id="8676374126336081632">清除輸入</translation>
 <translation id="8676770494376880701">已連接低功率充電器</translation>
 <translation id="8677212948402625567">全部收合...</translation>
+<translation id="8677859815076891398">沒有任何相簿。請在 <ph name="LINK_BEGIN" />Google 相簿<ph name="LINK_END" />中建立相簿。</translation>
 <translation id="8678933587484842200">你希望如何啟動這個應用程式？</translation>
 <translation id="8680251145628383637">只要登入帳戶，你在任何裝置上都能取得自己的書籤、歷史記錄和密碼，並套用相同的設定。此外，系統還會自動讓您登入各項 Google 服務。</translation>
 <translation id="8681614230122836773">Chrome 發現你的電腦安裝了有害軟體</translation>
@@ -6851,6 +6853,7 @@
 <translation id="8831140208248705279">將你的 <ph name="DEVICE_TYPE" /> 與 Android 手機搭配使用，可發揮更大效益。只要連結這兩個裝置，你就能透過電腦收發簡訊、分享網際網路連線，以及使用手機解鎖 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /><ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717">網路設定由 <ph name="USER_EMAIL" /> 控制。</translation>
 <translation id="8835786707922974220">確保你可以隨時存取已儲存的密碼</translation>
+<translation id="8836360711089151515"><ph name="MANAGER" /> 要求你備份自己的資料，並且在 1 週內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">漢堡</translation>
 <translation id="883911313571074303">為圖片加註</translation>
@@ -6904,6 +6907,7 @@
 <translation id="8889651696183044030"><ph name="ORIGIN" /> 可以編輯下列檔案與資料夾</translation>
 <translation id="8890170499370378450">可能需要支付行動數據傳輸費用</translation>
 <translation id="8890516388109605451">來源</translation>
+<translation id="8890529496706615641">無法重新命名設定檔。請再試一次，或是向電信業者尋求技術支援。</translation>
 <translation id="8892168913673237979">設定完成！</translation>
 <translation id="8893801527741465188">已順利解除安裝</translation>
 <translation id="8893928184421379330">很抱歉，系統無法識別 <ph name="DEVICE_LABEL" /> 裝置。</translation>
@@ -7136,6 +7140,7 @@
 <translation id="9148963623915467028">這個網站可以存取你的位置資訊。</translation>
 <translation id="9149866541089851383">編輯...</translation>
 <translation id="9150045010208374699">使用你的相機</translation>
+<translation id="9150079578948279438">無法移除設定檔。請再試一次，或是向電信業者尋求技術支援。</translation>
 <translation id="9153934054460603056">儲存身分與密碼</translation>
 <translation id="9154194610265714752">已更新</translation>
 <translation id="91568222606626347">建立捷徑...</translation>

@@ -164,7 +164,6 @@
 <translation id="6403826409255603130">Chromium to przeglądarka obsługująca strony i aplikacje z szybkością błyskawicy. Jest szybka, stabilna i łatwa w użyciu. Bezpiecznie przeglądaj internet dzięki wbudowanej w Chromium ochronie przed złośliwym oprogramowaniem i phishingiem.</translation>
 <translation id="6434250628340475518">System operacyjny Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium uruchomi się ponownie za sekundę}few{Chromium uruchomi się ponownie za # sekundy}many{Chromium uruchomi się ponownie za # sekund}other{Chromium uruchomi się ponownie za # sekundy}}</translation>
-<translation id="6464340581899189425">Jeśli masz wiele kont Google, możesz je dodać na swoim urządzeniu (<ph name="DEVICE_TYPE" />). Będą one dostępne w przeglądarce Chromium i Sklepie Play, a także w usługach Google takich jak Gmail, Dysk czy YouTube. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chromium.</translation>
 <translation id="6510925080656968729">Odinstaluj Chromium</translation>
 <translation id="6570579332384693436">Aby naprawić błędy pisowni, Chromium wysyła tekst wpisany w polach tekstowych do Google</translation>
@@ -259,6 +258,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="9019929317751753759">Aby poprawić bezpieczeństwo Chromium, wyłączyliśmy to rozszerzenie. Nie jest ono dostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i mogło zostać dodane bez Twojej wiedzy.</translation>
 <translation id="9089354809943900324">Chromium jest nieaktualny</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium uruchomi się ponownie za godzinę}few{Chromium uruchomi się ponownie za # godziny}many{Chromium uruchomi się ponownie za # godzin}other{Chromium uruchomi się ponownie za # godziny}}</translation>
+<translation id="9107750757953039239">Jeśli masz wiele kont Google, możesz je dodać na swoim urządzeniu (<ph name="DEVICE_TYPE" />). Będą one dostępne w przeglądarce Chromium i Sklepie Play, a także w usługach Google takich jak Gmail, Dysk czy YouTube. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">O&amp;twórz link w nowej karcie Chromium</translation>
 <translation id="911206726377975832">Czy usunąć także dane przeglądania?</translation>
 <translation id="9158494823179993217">Administrator systemu skonfigurował Chromium w taki sposób, by strona <ph name="TARGET_URL_HOSTNAME" /> otwierała się w alternatywnej przeglądarce.</translation>

@@ -41,7 +41,6 @@
 <translation id="1404323374378969387">Noors</translation>
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1435838927755162558">Map delen met Parallels Desktop</translation>
-<translation id="1439494416798956626">Verplaatst naar <ph name="FOLDER_NAME" />.</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="1471718551822868769">Slowaaks</translation>
 <translation id="1474339897586437869">'<ph name="FILENAME" />' is niet geüpload. Er is onvoldoende ruimte beschikbaar in je Google Drive.</translation>
@@ -116,7 +115,6 @@
 <translation id="2225536596944493418">Weet je zeker dat je <ph name="NUMBER_OF_ITEMS" /> items wilt verwijderen?</translation>
 <translation id="2230062665678605299">Kan map '<ph name="FOLDER_NAME" />' niet maken. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Herstellen uit prullenbak</translation>
-<translation id="2275059641601412272">Verplaatst.</translation>
 <translation id="2288278176040912387">Platenspeler</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> bestanden openen.</translation>
 <translation id="2303301624314357662">Bestand <ph name="FILE_NAME" /> wordt geopend.</translation>
@@ -225,7 +223,6 @@
 <translation id="3455931012307786678">Estlands</translation>
 <translation id="3466147780910026086">Je media-apparaat scannen...</translation>
 <translation id="3468522857997926824">Er is een back-up van <ph name="FILE_COUNT" /> foto's gemaakt in <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="3473378059788601120">Gekopieerd naar <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google-spreadsheet</translation>
 <translation id="3486821258960016770">Mongools</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> fouten.</translation>
@@ -411,7 +408,6 @@
     Wat er ook gebeurt met je apparaat, je bestanden worden veilig opgeslagen in Google Drive.<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />Bestanden delen, maken en eraan samenwerken<ph name="MARKUP_8" />
     met anderen allemaal op één locatie.<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">Gekopieerd.</translation>
 <translation id="5275973617553375938">Bestanden hersteld vanaf Google Drive</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Opslaan</translation>
@@ -709,7 +705,6 @@
 <translation id="8336153091935557858">Gisteren <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Er bestaat al een bestand of map met dezelfde naam.</translation>
 <translation id="8372852072747894550">Grieks</translation>
-<translation id="8382450452152102026">Naar <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Afmetingen</translation>
 <translation id="8437209419043462667">Amerikaans</translation>
 <translation id="8456681095658380701">Ongeldige naam</translation>
