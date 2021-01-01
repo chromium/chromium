@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_system_access_initializer_base.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_keys_controller.h"
 #include "third_party/blink/renderer/modules/media_capabilities/media_capabilities_identifiability_metrics.h"
+#include "third_party/blink/renderer/modules/media_capabilities_names.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -310,9 +311,9 @@ WebAudioConfiguration ToWebAudioConfiguration(
   DCHECK(parsed_content_type.IsValid());
   DCHECK(!parsed_content_type.GetParameters().HasDuplicatedNames());
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const String, codecs, ("codecs"));
   web_configuration.mime_type = parsed_content_type.MimeType().LowerASCII();
-  web_configuration.codec = parsed_content_type.ParameterValueForName(codecs);
+  web_configuration.codec = parsed_content_type.ParameterValueForName(
+      media_capabilities_names::kCodecs);
 
   // |channels| is optional and will be set to a null WebString if not present.
   web_configuration.channels = configuration->hasChannels()
@@ -338,9 +339,9 @@ WebVideoConfiguration ToWebVideoConfiguration(
   DCHECK(parsed_content_type.IsValid());
   DCHECK(!parsed_content_type.GetParameters().HasDuplicatedNames());
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const String, codecs, ("codecs"));
   web_configuration.mime_type = parsed_content_type.MimeType().LowerASCII();
-  web_configuration.codec = parsed_content_type.ParameterValueForName(codecs);
+  web_configuration.codec = parsed_content_type.ParameterValueForName(
+      media_capabilities_names::kCodecs);
 
   DCHECK(configuration->hasWidth());
   web_configuration.width = configuration->width();
@@ -600,9 +601,9 @@ bool ParseContentType(const String& content_type,
     return false;
   }
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const String, codecs, ("codecs"));
   *mime_type = parsed_content_type.MimeType().LowerASCII();
-  *codec = parsed_content_type.ParameterValueForName(codecs);
+  *codec = parsed_content_type.ParameterValueForName(
+      media_capabilities_names::kCodecs);
   return true;
 }
 
