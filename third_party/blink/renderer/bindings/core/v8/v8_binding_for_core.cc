@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/bindings/core/v8/custom/v8_custom_xpath_ns_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -768,8 +769,10 @@ v8::Local<v8::Context> ToV8ContextEvenIfDetached(LocalFrame* frame,
   // TODO(crbug.com/1046282): The following bailout is a temporary fix
   // introduced due to crbug.com/1037985 .  Remove this temporary fix once
   // the root cause is fixed.
-  if (frame->IsProvisional())
+  if (frame->IsProvisional()) {
+    base::debug::DumpWithoutCrashing();
     return v8::Local<v8::Context>();
+  }
 
   return frame->WindowProxy(world)->ContextIfInitialized();
 }
