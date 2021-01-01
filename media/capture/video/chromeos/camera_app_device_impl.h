@@ -59,7 +59,8 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
       media::mojom::ImageCapture::TakePhotoCallback take_photo_callback);
 
   CameraAppDeviceImpl(const std::string& device_id,
-                      cros::mojom::CameraInfoPtr camera_info);
+                      cros::mojom::CameraInfoPtr camera_info,
+                      base::OnceClosure cleanup_callback);
   ~CameraAppDeviceImpl() override;
 
   // Binds the mojo receiver to this implementation.
@@ -121,6 +122,8 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
  private:
   static void DisableEeNr(ReprocessTask* task);
 
+  void OnMojoConnectionError();
+
   void SetReprocessResultOnMojoThread(SetReprocessOptionCallback callback,
                                       const int32_t status,
                                       media::mojom::BlobPtr blob);
@@ -132,6 +135,9 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   mojo::ReceiverSet<cros::mojom::CameraAppDevice> receivers_;
 
   cros::mojom::CameraInfoPtr camera_info_;
+
+  // Callback which should be triggered when the connection is down.
+  base::OnceClosure cleanup_callback_;
 
   // It is used to invalidate weak pointer.
   const scoped_refptr<base::SingleThreadTaskRunner> creation_task_runner_;

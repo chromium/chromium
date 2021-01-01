@@ -68,7 +68,9 @@ media::CameraAppDeviceImpl* CameraAppDeviceBridgeImpl::CreateCameraAppDevice(
   DCHECK(camera_info_getter_);
   auto device_info = camera_info_getter_.Run(device_id);
   auto device_impl = std::make_unique<media::CameraAppDeviceImpl>(
-      device_id, std::move(device_info));
+      device_id, std::move(device_info),
+      base::BindOnce(&CameraAppDeviceBridgeImpl::OnDeviceClosed,
+                     base::Unretained(this), device_id));
   auto result = camera_app_devices_.emplace(device_id, std::move(device_impl));
   return result.first->second.get();
 }

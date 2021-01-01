@@ -59,9 +59,11 @@ ReprocessTaskQueue CameraAppDeviceImpl::GetSingleShotReprocessOptions(
 }
 
 CameraAppDeviceImpl::CameraAppDeviceImpl(const std::string& device_id,
-                                         cros::mojom::CameraInfoPtr camera_info)
+                                         cros::mojom::CameraInfoPtr camera_info,
+                                         base::OnceClosure cleanup_callback)
     : device_id_(device_id),
       camera_info_(std::move(camera_info)),
+      cleanup_callback_(std::move(cleanup_callback)),
       creation_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       capture_intent_(cros::mojom::CaptureIntent::DEFAULT),
       next_metadata_observer_id_(0),
@@ -76,6 +78,9 @@ CameraAppDeviceImpl::~CameraAppDeviceImpl() {
 void CameraAppDeviceImpl::BindReceiver(
     mojo::PendingReceiver<cros::mojom::CameraAppDevice> receiver) {
   receivers_.Add(this, std::move(receiver));
+  receivers_.set_disconnect_handler(
+      base::BindRepeating(&CameraAppDeviceImpl::OnMojoConnectionError,
+                          weak_ptr_factory_->GetWeakPtr()));
   mojo_task_runner_ = base::ThreadTaskRunnerHandle::Get();
 }
 
@@ -287,6 +292,10 @@ void CameraAppDeviceImpl::DisableEeNr(ReprocessTask* task) {
       cros::mojom::AndroidNoiseReductionMode::ANDROID_NOISE_REDUCTION_MODE_OFF);
   task->extra_metadata.push_back(std::move(ee_entry));
   task->extra_metadata.push_back(std::move(nr_entry));
+}
+
+void CameraAppDeviceImpl::OnMojoConnectionError() {
+  std::move(cleanup_callback_).Run();
 }
 
 void CameraAppDeviceImpl::SetReprocessResultOnMojoThread(
