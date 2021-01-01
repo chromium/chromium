@@ -963,6 +963,7 @@ A timestamp of the server time when the property was changed.
     <item name="CAP_HEIGHT">           <value>66</value> </item>
     <item name="WM_CLASS">             <value>67</value> </item>
     <item name="WM_TRANSIENT_FOR">     <value>68</value> </item>
+    <item name="kLastPredefinedAtom">  <value>68</value> </item>
   </enum>
 
   <event name="SelectionRequest" number="30">
@@ -2624,7 +2625,7 @@ void my_example(xcb_connection_t *conn, xcb_screen_t *screen, xcb_cursor_t curso
     if ((reply = xcb_grab_pointer_reply(conn, cookie, NULL))) {
         if (reply->status == XCB_GRAB_STATUS_SUCCESS)
             printf("successfully grabbed the pointer\\n");
-        free(preply);
+        free(reply);
     }
 }
       ]]></example>

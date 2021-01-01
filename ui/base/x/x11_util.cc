@@ -174,7 +174,7 @@ base::Value NewDescriptionValuePair(base::StringPiece desc,
 
 bool GetWmNormalHints(x11::Window window, SizeHints* hints) {
   std::vector<uint32_t> hints32;
-  if (!GetArrayProperty(window, x11::GetAtom("WM_NORMAL_HINTS"), &hints32))
+  if (!GetArrayProperty(window, x11::Atom::WM_NORMAL_HINTS, &hints32))
     return false;
   if (hints32.size() != sizeof(SizeHints) / 4)
     return false;
@@ -185,13 +185,13 @@ bool GetWmNormalHints(x11::Window window, SizeHints* hints) {
 void SetWmNormalHints(x11::Window window, const SizeHints& hints) {
   std::vector<uint32_t> hints32(sizeof(SizeHints) / 4);
   memcpy(hints32.data(), &hints, sizeof(SizeHints));
-  SetArrayProperty(window, x11::GetAtom("WM_NORMAL_HINTS"),
-                   x11::GetAtom("WM_SIZE_HINTS"), hints32);
+  SetArrayProperty(window, x11::Atom::WM_NORMAL_HINTS, x11::Atom::WM_SIZE_HINTS,
+                   hints32);
 }
 
 bool GetWmHints(x11::Window window, WmHints* hints) {
   std::vector<uint32_t> hints32;
-  if (!GetArrayProperty(window, x11::GetAtom("WM_HINTS"), &hints32))
+  if (!GetArrayProperty(window, x11::Atom::WM_HINTS, &hints32))
     return false;
   if (hints32.size() != sizeof(WmHints) / 4)
     return false;
@@ -202,8 +202,7 @@ bool GetWmHints(x11::Window window, WmHints* hints) {
 void SetWmHints(x11::Window window, const WmHints& hints) {
   std::vector<uint32_t> hints32(sizeof(WmHints) / 4);
   memcpy(hints32.data(), &hints, sizeof(WmHints));
-  SetArrayProperty(window, x11::GetAtom("WM_HINTS"), x11::GetAtom("WM_HINTS"),
-                   hints32);
+  SetArrayProperty(window, x11::Atom::WM_HINTS, x11::Atom::WM_HINTS, hints32);
 }
 
 void WithdrawWindow(x11::Window window) {
@@ -542,11 +541,11 @@ bool WindowContainsPoint(x11::Window window, gfx::Point screen_loc) {
   return true;
 }
 
-bool PropertyExists(x11::Window window, const std::string& property_name) {
+bool PropertyExists(x11::Window window, x11::Atom property) {
   auto response = x11::Connection::Get()
                       ->GetProperty(x11::GetPropertyRequest{
                           .window = static_cast<x11::Window>(window),
-                          .property = x11::GetAtom(property_name),
+                          .property = property,
                           .long_length = 1,
                       })
                       .Sync();
@@ -690,7 +689,7 @@ bool GetWindowDesktop(x11::Window window, int32_t* desktop) {
 
 // Returns true if |window| is a named window.
 bool IsWindowNamed(x11::Window window) {
-  return PropertyExists(window, "WM_NAME");
+  return PropertyExists(window, x11::Atom::WM_NAME);
 }
 
 bool EnumerateChildren(EnumerateWindowsDelegate* delegate,

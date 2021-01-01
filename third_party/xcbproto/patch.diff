@@ -1,6 +1,6 @@
 diff -ru xcbproto/src/glx.xml src/src/glx.xml
---- xcbproto/src/glx.xml	2020-09-04 10:01:19.893846873 -0700
-+++ src/src/glx.xml	2020-09-04 10:00:42.997648219 -0700
+--- xcbproto/src/glx.xml	2020-12-21 18:22:26.734179651 -0800
++++ src/src/glx.xml	2020-09-11 12:56:21.295807897 -0700
 @@ -214,27 +214,27 @@
  
  	<!-- Enum for CopyContext: mask -->
@@ -64,8 +64,8 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  
  	<request name="Finish" opcode="108">
 diff -ru xcbproto/src/randr.xml src/src/randr.xml
---- xcbproto/src/randr.xml	2020-09-04 10:01:19.893846873 -0700
-+++ src/src/randr.xml	2020-07-07 18:37:12.793121218 -0700
+--- xcbproto/src/randr.xml	2020-12-21 18:22:26.734179651 -0800
++++ src/src/randr.xml	2020-09-04 10:01:19.913846980 -0700
 @@ -803,64 +803,6 @@
  		<item name="Lease">           <value>6</value></item>
  	</enum>
@@ -239,8 +239,8 @@ diff -ru xcbproto/src/randr.xml src/src/randr.xml
  	</event>
  </xcb>
 diff -ru xcbproto/src/shm.xml src/src/shm.xml
---- xcbproto/src/shm.xml	2020-09-04 10:01:19.897846895 -0700
-+++ src/src/shm.xml	2020-08-24 11:14:24.865499307 -0700
+--- xcbproto/src/shm.xml	2020-12-21 18:22:26.738179673 -0800
++++ src/src/shm.xml	2020-09-04 10:01:19.913846980 -0700
 @@ -78,7 +78,7 @@
      <field type="INT16" name="dst_x" />
      <field type="INT16" name="dst_y" />
@@ -251,8 +251,8 @@ diff -ru xcbproto/src/shm.xml src/src/shm.xml
      <pad bytes="1" />
      <field type="SEG" name="shmseg" />
 diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
---- xcbproto/src/xinput.xml	2020-09-04 10:01:19.897846895 -0700
-+++ src/src/xinput.xml	2020-08-24 11:14:24.865499307 -0700
+--- xcbproto/src/xinput.xml	2020-12-21 18:22:26.738179673 -0800
++++ src/src/xinput.xml	2020-09-04 10:01:19.913846980 -0700
 @@ -200,7 +200,12 @@
              <list type="STR" name="names">
                  <fieldref>devices_len</fieldref>
@@ -278,9 +278,17 @@ diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
          <item name="AllMaster"> <value>1</value> </item>
      </enum>
 diff -ru xcbproto/src/xproto.xml src/src/xproto.xml
---- xcbproto/src/xproto.xml	2020-09-04 10:01:19.897846895 -0700
-+++ src/src/xproto.xml	2020-07-30 12:03:48.681938397 -0700
-@@ -4686,7 +4686,7 @@
+--- xcbproto/src/xproto.xml	2020-12-21 18:22:26.746179718 -0800
++++ src/src/xproto.xml	2020-12-21 16:25:54.279363149 -0800
+@@ -963,6 +963,7 @@
+     <item name="CAP_HEIGHT">           <value>66</value> </item>
+     <item name="WM_CLASS">             <value>67</value> </item>
+     <item name="WM_TRANSIENT_FOR">     <value>68</value> </item>
++    <item name="kLastPredefinedAtom">  <value>68</value> </item>
+   </enum>
+ 
+   <event name="SelectionRequest" number="30">
+@@ -4686,7 +4687,7 @@
      <field type="CARD8" name="left_pad" />
      <field type="CARD8" name="depth" />
      <pad bytes="2" />
@@ -289,7 +297,7 @@ diff -ru xcbproto/src/xproto.xml src/src/xproto.xml
    </request>
  
    <!-- FIXME: data array in reply will include padding, but ought not to. -->
-@@ -4702,7 +4702,7 @@
+@@ -4702,7 +4703,7 @@
        <field type="CARD8" name="depth" />
        <field type="VISUALID" name="visual" />
        <pad bytes="20" />

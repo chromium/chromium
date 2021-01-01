@@ -18,80 +18,6 @@ namespace x11 {
 
 namespace {
 
-struct {
-  const char* atom_name;
-  Atom atom_value;
-} const kPredefinedAtoms[] = {
-    // {"PRIMARY", Atom::PRIMARY},
-    // {"SECONDARY", Atom::SECONDARY},
-    // {"ARC", Atom::ARC},
-    {"ATOM", Atom::ATOM},
-    // {"BITMAP", Atom::BITMAP},
-    {"CARDINAL", Atom::CARDINAL},
-    // {"COLORMAP", Atom::COLORMAP},
-    // {"CURSOR", Atom::CURSOR},
-    // {"CUT_BUFFER0", Atom::CUT_BUFFER0},
-    // {"CUT_BUFFER1", Atom::CUT_BUFFER1},
-    // {"CUT_BUFFER2", Atom::CUT_BUFFER2},
-    // {"CUT_BUFFER3", Atom::CUT_BUFFER3},
-    // {"CUT_BUFFER4", Atom::CUT_BUFFER4},
-    // {"CUT_BUFFER5", Atom::CUT_BUFFER5},
-    // {"CUT_BUFFER6", Atom::CUT_BUFFER6},
-    // {"CUT_BUFFER7", Atom::CUT_BUFFER7},
-    // {"DRAWABLE", Atom::DRAWABLE},
-    // {"FONT", Atom::FONT},
-    // {"INTEGER", Atom::INTEGER},
-    // {"PIXMAP", Atom::PIXMAP},
-    // {"POINT", Atom::POINT},
-    // {"RECTANGLE", Atom::RECTANGLE},
-    // {"RESOURCE_MANAGER", Atom::RESOURCE_MANAGER},
-    // {"RGB_COLOR_MAP", Atom::RGB_COLOR_MAP},
-    // {"RGB_BEST_MAP", Atom::RGB_BEST_MAP},
-    // {"RGB_BLUE_MAP", Atom::RGB_BLUE_MAP},
-    // {"RGB_DEFAULT_MAP", Atom::RGB_DEFAULT_MAP},
-    // {"RGB_GRAY_MAP", Atom::RGB_GRAY_MAP},
-    // {"RGB_GREEN_MAP", Atom::RGB_GREEN_MAP},
-    // {"RGB_RED_MAP", Atom::RGB_RED_MAP},
-    {"STRING", Atom::STRING},
-    // {"VISUALID", Atom::VISUALID},
-    // {"WINDOW", Atom::WINDOW},
-    // {"WM_COMMAND", Atom::WM_COMMAND},
-    // {"WM_HINTS", Atom::WM_HINTS},
-    // {"WM_CLIENT_MACHINE", Atom::WM_CLIENT_MACHINE},
-    // {"WM_ICON_NAME", Atom::WM_ICON_NAME},
-    // {"WM_ICON_SIZE", Atom::WM_ICON_SIZE},
-    // {"WM_NAME", Atom::WM_NAME},
-    // {"WM_NORMAL_HINTS", Atom::WM_NORMAL_HINTS},
-    // {"WM_SIZE_HINTS", Atom::WM_SIZE_HINTS},
-    // {"WM_ZOOM_HINTS", Atom::WM_ZOOM_HINTS},
-    // {"MIN_SPACE", Atom::MIN_SPACE},
-    // {"NORM_SPACE", Atom::NORM_SPACE},
-    // {"MAX_SPACE", Atom::MAX_SPACE},
-    // {"END_SPACE", Atom::END_SPACE},
-    // {"SUPERSCRIPT_X", Atom::SUPERSCRIPT_X},
-    // {"SUPERSCRIPT_Y", Atom::SUPERSCRIPT_Y},
-    // {"SUBSCRIPT_X", Atom::SUBSCRIPT_X},
-    // {"SUBSCRIPT_Y", Atom::SUBSCRIPT_Y},
-    // {"UNDERLINE_POSITION", Atom::UNDERLINE_POSITION},
-    // {"UNDERLINE_THICKNESS", Atom::UNDERLINE_THICKNESS},
-    // {"STRIKEOUT_ASCENT", Atom::STRIKEOUT_ASCENT},
-    // {"STRIKEOUT_DESCENT", Atom::STRIKEOUT_DESCENT},
-    // {"ITALIC_ANGLE", Atom::ITALIC_ANGLE},
-    // {"X_HEIGHT", Atom::X_HEIGHT},
-    // {"QUAD_WIDTH", Atom::QUAD_WIDTH},
-    // {"WEIGHT", Atom::WEIGHT},
-    // {"POINT_SIZE", Atom::POINT_SIZE},
-    // {"RESOLUTION", Atom::RESOLUTION},
-    // {"COPYRIGHT", Atom::COPYRIGHT},
-    // {"NOTICE", Atom::NOTICE},
-    // {"FONT_NAME", Atom::FONT_NAME},
-    // {"FAMILY_NAME", Atom::FAMILY_NAME},
-    // {"FULL_NAME", Atom::FULL_NAME},
-    // {"CAP_HEIGHT", Atom::CAP_HEIGHT},
-    {"WM_CLASS", Atom::WM_CLASS},
-    // {"WM_TRANSIENT_FOR", Atom::WM_TRANSIENT_FOR},
-};
-
 constexpr const char* kAtomsToCache[] = {
     "ATOM_PAIR",
     "Abs Dbl End Timestamp",
@@ -252,8 +178,11 @@ X11AtomCache* X11AtomCache::GetInstance() {
 }
 
 X11AtomCache::X11AtomCache() : connection_(Connection::Get()) {
-  for (const auto& predefined_atom : kPredefinedAtoms)
-    cached_atoms_[predefined_atom.atom_name] = predefined_atom.atom_value;
+  // Clipboard formats are keyed on their format string (eg. "STRING",
+  // "UTF8_STRING", "image/png").  Plumbing through x11::Atoms instead would be
+  // tricky, so set "STRING" here to prevent hitting the DCHECK_GT() in
+  // GetAtom().
+  cached_atoms_["STRING"] = x11::Atom::STRING;
 
   std::vector<Future<InternAtomReply>> requests;
   requests.reserve(kCacheCount);
@@ -278,7 +207,10 @@ Atom X11AtomCache::GetAtom(const std::string& name) const {
   Atom atom = Atom::None;
   if (auto response =
           connection_->InternAtom(InternAtomRequest{.name = name}).Sync()) {
-    atom = static_cast<Atom>(response->atom);
+    atom = response->atom;
+    DCHECK_GT(atom, x11::Atom::kLastPredefinedAtom)
+        << " Use x11::Atom::" << name << " instead of x11::GetAtom(\"" << name
+        << "\")";
     cached_atoms_.emplace(name, atom);
   } else {
     static int error_count = 0;

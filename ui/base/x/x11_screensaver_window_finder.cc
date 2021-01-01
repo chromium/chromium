@@ -70,7 +70,7 @@ bool ScreensaverWindowFinder::IsScreensaverWindow(x11::Window window) const {
     return false;
 
   // For xscreensaver, the window should have _SCREENSAVER_VERSION property.
-  if (ui::PropertyExists(window, "_SCREENSAVER_VERSION"))
+  if (ui::PropertyExists(window, x11::GetAtom("_SCREENSAVER_VERSION")))
     return true;
 
   // For all others, like gnome-screensaver, the window's WM_CLASS property

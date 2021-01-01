@@ -19,7 +19,7 @@ x11::Future<x11::GetPropertyReply> GetWorkspace() {
   return connection->GetProperty(x11::GetPropertyRequest{
       .window = connection->default_screen().root,
       .property = static_cast<x11::Atom>(x11::GetAtom("_NET_CURRENT_DESKTOP")),
-      .type = static_cast<x11::Atom>(x11::GetAtom("CARDINAL")),
+      .type = static_cast<x11::Atom>(x11::Atom::CARDINAL),
       .long_length = 1,
   });
 }
@@ -59,7 +59,7 @@ void X11WorkspaceHandler::OnWorkspaceResponse(
   if (!response || response->format != 32 || response->value->size() < 4)
     return;
   DCHECK_EQ(response->bytes_after, 0U);
-  DCHECK_EQ(response->type, static_cast<x11::Atom>(x11::GetAtom("CARDINAL")));
+  DCHECK_EQ(response->type, static_cast<x11::Atom>(x11::Atom::CARDINAL));
 
   uint32_t workspace;
   memcpy(&workspace, response->value->data(), 4);

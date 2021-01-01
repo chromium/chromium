@@ -298,8 +298,8 @@ XCursorLoader::XCursorLoader(x11::Connection* connection)
   connection_->OpenFont({cursor_font_, "cursor"});
 
   std::vector<char> resource_manager;
-  if (GetArrayProperty(connection_->default_root(),
-                       x11::GetAtom("RESOURCE_MANAGER"), &resource_manager)) {
+  if (GetArrayProperty(connection_->default_root(), x11::Atom::RESOURCE_MANAGER,
+                       &resource_manager)) {
     ParseXResources(
         base::StringPiece(resource_manager.data(), resource_manager.size()));
   }

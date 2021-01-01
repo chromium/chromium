@@ -329,8 +329,8 @@ void XWindow::Init(const Configuration& config) {
 
   // We need a WM_CLIENT_MACHINE value so we integrate with the desktop
   // environment.
-  SetStringProperty(xwindow_, x11::GetAtom("WM_CLIENT_MACHINE"),
-                    x11::GetAtom("STRING"), net::GetHostName());
+  SetStringProperty(xwindow_, x11::Atom::WM_CLIENT_MACHINE, x11::Atom::STRING,
+                    net::GetHostName());
 
   // Likewise, the X server needs to know this window's pid so it knows which
   // program to kill if the window hangs.
@@ -1560,7 +1560,7 @@ bool XWindow::InitializeAsStatusIcon() {
     req.background_pixel = 0;
   } else {
     SetProperty(xwindow_, x11::GetAtom("CHROMIUM_COMPOSITE_WINDOW"),
-                x11::GetAtom("CARDINAL"), static_cast<uint32_t>(1));
+                x11::Atom::CARDINAL, static_cast<uint32_t>(1));
     req.background_pixmap =
         static_cast<x11::Pixmap>(x11::BackPixmap::ParentRelative);
   }

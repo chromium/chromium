@@ -225,7 +225,7 @@ bool WindowContainsPoint(x11::Window window, gfx::Point screen_loc);
 
 // Return true if |window| has any property with |property_name|.
 COMPONENT_EXPORT(UI_BASE_X)
-bool PropertyExists(x11::Window window, const std::string& property_name);
+bool PropertyExists(x11::Window window, x11::Atom property);
 
 // Returns the raw bytes from a property with minimal
 // interpretation. |out_data| should be freed by XFree() after use.
