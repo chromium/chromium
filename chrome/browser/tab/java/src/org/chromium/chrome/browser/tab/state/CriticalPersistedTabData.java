@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab.state;
 
 import android.graphics.Color;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -21,6 +22,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.WebContentsStateBridge;
 import org.chromium.chrome.browser.tab.proto.CriticalPersistedTabData.CriticalPersistedTabDataProto;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.url.GURL;
@@ -70,10 +73,10 @@ public class CriticalPersistedTabData extends PersistedTabData {
 
     private ObserverList<CriticalPersistedTabDataObserver> mObservers =
             new ObserverList<CriticalPersistedTabDataObserver>();
+    private boolean mShouldSaveForTesting;
 
-    private boolean mIsStorageRetrievalEnabled;
-
-    private CriticalPersistedTabData(Tab tab) {
+    @VisibleForTesting
+    protected CriticalPersistedTabData(Tab tab) {
         super(tab,
                 PersistedTabDataConfiguration.get(CriticalPersistedTabData.class, tab.isIncognito())
                         .getStorage(),
@@ -191,7 +194,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         CriticalPersistedTabData res = PersistedTabData.build(tab, (data, storage, id) -> {
             return new CriticalPersistedTabData(tab, data, storage, id);
         }, serialized, CriticalPersistedTabData.class);
-        res.mIsStorageRetrievalEnabled = isStorageRetrievalEnabled;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -382,33 +384,38 @@ public class CriticalPersistedTabData extends PersistedTabData {
         return contentsStateBytes;
     }
 
-    // TODO(crbug.com/1113814) remove save() override
     @Override
     public void save() {
-        if (mIsStorageRetrievalEnabled) {
+        if (shouldSave()) {
             super.save();
         }
     }
 
     /**
-     * Used in tests when we need to save a CriticalPersistedTabData object.
-     * Ultimately will be deprecated by this.save() - for now this.save()
-     * is not saving while fields are being migrated to CriticalPersistedTabData
-     * TODO(crbug.com/1113813) Remove saveForTesting()
+     * Encapsulates use cases where saving is disabled - as taken from TabPersistentStore.java to
+     * ensure feature parity.
+     * @return
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected void saveForTesting() {
-        super.save();
+    @VisibleForTesting
+    protected boolean shouldSave() {
+        if (mShouldSaveForTesting) {
+            return true;
+        }
+        if (getUrl() == null || TextUtils.isEmpty(getUrl().getSpec())) {
+            return false;
+        }
+        if (UrlUtilities.isNTPUrl(getUrl().getSpec()) && !mTab.canGoBack()
+                && !mTab.canGoForward()) {
+            return false;
+        }
+        if (isTabUrlContentScheme(getUrl().getSpec())) {
+            return false;
+        }
+        return true;
     }
 
-    /**
-     * Delete {@link CriticalPersistedTabData} in storage
-     */
-    @Override
-    public void delete() {
-        if (mIsStorageRetrievalEnabled) {
-            super.delete();
-        }
+    private boolean isTabUrlContentScheme(String url) {
+        return url != null && url.startsWith(UrlConstants.CONTENT_SCHEME);
     }
 
     @Override
@@ -565,8 +572,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
         mObservers.removeObserver(criticalPersistedTabDataObserver);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected void setIsStorageRetrievalEnabled(boolean isStorageRetrievalEnabled) {
-        mIsStorageRetrievalEnabled = isStorageRetrievalEnabled;
+    @VisibleForTesting
+    protected void setShouldSaveForTesting(boolean shouldSaveForTesting) {
+        mShouldSaveForTesting = shouldSaveForTesting;
     }
 }

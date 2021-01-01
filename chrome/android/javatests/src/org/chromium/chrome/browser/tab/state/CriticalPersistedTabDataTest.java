@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,6 +28,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.url.GURL;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.Semaphore;
@@ -90,10 +93,12 @@ public class CriticalPersistedTabDataTest {
         Callback<CriticalPersistedTabData> callback = new Callback<CriticalPersistedTabData>() {
             @Override
             public void onResult(CriticalPersistedTabData res) {
-                mCriticalPersistedTabData = res;
-                if (mCriticalPersistedTabData != null) {
-                    mCriticalPersistedTabData.setIsStorageRetrievalEnabled(true);
+                ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
+                supplier.set(true);
+                if (res != null) {
+                    res.registerIsTabSaveEnabledSupplier(supplier);
                 }
+                mCriticalPersistedTabData = res;
                 semaphore.release();
             }
         };
@@ -103,11 +108,12 @@ public class CriticalPersistedTabDataTest {
                     new CriticalPersistedTabData(mockTab(TAB_ID, isEncrypted), "", "", PARENT_ID,
                             ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION,
                             OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
+            criticalPersistedTabData.setShouldSaveForTesting(true);
             mStorage.setSemaphore(saveSemaphore);
             ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
             supplier.set(true);
             criticalPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
-            criticalPersistedTabData.saveForTesting();
+            criticalPersistedTabData.save();
             acquireSemaphore(saveSemaphore);
             CriticalPersistedTabData.from(mockTab(TAB_ID, isEncrypted), callback);
         });
@@ -173,6 +179,50 @@ public class CriticalPersistedTabDataTest {
         tab.setIsTabSaveEnabled(true);
         verify(spyCriticalPersistedTabData, times(2)).save();
         verify(spyCriticalPersistedTabData, times(1)).delete();
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testShouldTabSaveNTP() throws Throwable {
+        for (boolean canGoBack : new boolean[] {false, true}) {
+            for (boolean canGoForward : new boolean[] {false, true}) {
+                CriticalPersistedTabData spyCriticalPersistedTabData =
+                        prepareCPTDShouldTabSave(canGoBack, canGoForward);
+                spyCriticalPersistedTabData.setUrl(new GURL(UrlConstants.NTP_URL));
+                Assert.assertEquals(
+                        canGoBack || canGoForward, spyCriticalPersistedTabData.shouldSave());
+            }
+        }
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testShouldTabSaveContentUrl() throws Throwable {
+        CriticalPersistedTabData spyCriticalPersistedTabData =
+                prepareCPTDShouldTabSave(false, false);
+        spyCriticalPersistedTabData.setUrl(new GURL("content://my_content"));
+        Assert.assertFalse(spyCriticalPersistedTabData.shouldSave());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testShouldTabSaveRegularUrl() throws Throwable {
+        CriticalPersistedTabData spyCriticalPersistedTabData =
+                prepareCPTDShouldTabSave(false, false);
+        spyCriticalPersistedTabData.setUrl(new GURL("https://www.google.com"));
+        Assert.assertTrue(spyCriticalPersistedTabData.shouldSave());
+    }
+
+    private CriticalPersistedTabData prepareCPTDShouldTabSave(
+            boolean canGoBack, boolean canGoForward) {
+        TabImpl tab = new MockTab(1, false);
+        TabImpl spyTab = spy(tab);
+        doReturn(canGoBack).when(spyTab).canGoBack();
+        doReturn(canGoForward).when(spyTab).canGoForward();
+        return spy(CriticalPersistedTabData.from(spyTab));
     }
 
     @UiThreadTest
