@@ -62,20 +62,95 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ImageData* Create(unsigned width, unsigned height, ExceptionState&);
-  static ImageData* Create(NotShared<DOMUint8ClampedArray>,
-                           unsigned width,
-                           ExceptionState&);
-  static ImageData* Create(NotShared<DOMUint8ClampedArray>,
-                           unsigned width,
-                           unsigned height,
-                           ExceptionState&);
-
+  // Constructor that takes width, height, and an optional ImageDataSettings.
   static ImageData* Create(unsigned width,
                            unsigned height,
-                           const ImageDataSettings*,
-                           ExceptionState&);
+                           ExceptionState& exception_state) {
+    return ValidateAndCreate(width, height, base::nullopt, nullptr,
+                             exception_state);
+  }
+  static ImageData* Create(unsigned width,
+                           unsigned height,
+                           const ImageDataSettings* settings,
+                           ExceptionState& exception_state) {
+    return ValidateAndCreate(width, height, base::nullopt, settings,
+                             exception_state, RequireCanvasColorManagement);
+  }
 
+  // Constructor that takes Uint8ClampedArray, width, optional height, and
+  // optional ImageDataSettings.
+  static ImageData* Create(NotShared<DOMUint8ClampedArray> data,
+                           unsigned width,
+                           ExceptionState& exception_state) {
+    return ValidateAndCreate(width, base::nullopt, data, nullptr,
+                             exception_state);
+  }
+  static ImageData* Create(NotShared<DOMUint8ClampedArray> data,
+                           unsigned width,
+                           unsigned height,
+                           ExceptionState& exception_state) {
+    return ValidateAndCreate(width, height, data, nullptr, exception_state);
+  }
+  static ImageData* Create(NotShared<DOMUint8ClampedArray> data,
+                           unsigned width,
+                           unsigned height,
+                           const ImageDataSettings* settings,
+                           ExceptionState& exception_state) {
+    return ValidateAndCreate(width, height, data, settings, exception_state,
+                             RequireCanvasColorManagement);
+  }
+
+  // Constructor that takes DOMUint16Array, width, optional height, and optional
+  // ImageDataSettings.
+  static ImageData* Create(NotShared<DOMUint16Array> data,
+                           unsigned width,
+                           ExceptionState& exception_state) {
+    return ValidateAndCreate(width, base::nullopt, data, nullptr,
+                             exception_state, RequireCanvasColorManagement);
+  }
+  static ImageData* Create(NotShared<DOMUint16Array> data,
+                           unsigned width,
+                           unsigned height,
+                           ExceptionState& exception_state) {
+    return ValidateAndCreate(width, height, data, nullptr, exception_state,
+                             RequireCanvasColorManagement);
+  }
+  static ImageData* Create(NotShared<DOMUint16Array> data,
+                           unsigned width,
+                           unsigned height,
+                           const ImageDataSettings* settings,
+                           ExceptionState& exception_state) {
+    return ValidateAndCreate(width, height, data, settings, exception_state,
+                             RequireCanvasColorManagement);
+  }
+
+  // Constructor that takes DOMFloat32Array, width, optional height, and
+  // optional ImageDataSettings.
+  static ImageData* Create(NotShared<DOMFloat32Array> data,
+                           unsigned width,
+                           ExceptionState& exception_state) {
+    return ValidateAndCreate(width, base::nullopt, data, nullptr,
+                             exception_state, RequireCanvasColorManagement);
+  }
+  static ImageData* Create(NotShared<DOMFloat32Array> data,
+                           unsigned width,
+                           unsigned height,
+                           ExceptionState& exception_state) {
+    return ValidateAndCreate(width, height, data, nullptr, exception_state,
+                             RequireCanvasColorManagement);
+  }
+  static ImageData* Create(NotShared<DOMFloat32Array> data,
+                           unsigned width,
+                           unsigned height,
+                           const ImageDataSettings* settings,
+                           ExceptionState& exception_state) {
+    return ValidateAndCreate(width, height, data, settings, exception_state,
+                             RequireCanvasColorManagement);
+  }
+
+  // ValidateAndCreate is the common path that all ImageData creation code
+  // should call directly. The other Create functions are to be called only by
+  // generated code.
   enum ValidateAndCreateFlags {
     None = 0x0,
     // When a too-large ImageData is created using a constructor, it has
@@ -83,6 +158,10 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
     // canvas, it has historically thrown a RangeError. This flag will
     // trigger the RangeError path.
     Context2DErrorMode = 0x1,
+    // Constructors in IDL files cannot specify RuntimeEnabled restrictions.
+    // This argument is passed by Create functions that should require that the
+    // CanvasColorManagement feature be enabled.
+    RequireCanvasColorManagement = 0x2,
   };
   static ImageData* ValidateAndCreate(
       unsigned width,

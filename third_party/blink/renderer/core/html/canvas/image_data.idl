@@ -35,8 +35,10 @@ typedef (Uint8ClampedArray or Uint16Array or Float32Array) ImageDataArray;
     Exposed=(Window,Worker),
     Serializable
 ] interface ImageData {
-    [RaisesException] constructor(unsigned long sw, unsigned long sh);
-    [RaisesException] constructor(Uint8ClampedArray data, unsigned long sw, optional unsigned long sh);
+    [RaisesException] constructor(unsigned long sw, unsigned long sh, optional ImageDataSettings settings);
+    [RaisesException] constructor(Uint8ClampedArray data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings);
+    [RaisesException] constructor(Uint16Array data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings);
+    [RaisesException] constructor(Float32Array data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings);
     [RuntimeEnabled=CanvasColorManagement] ImageDataSettings getSettings();
 
     readonly attribute unsigned long width;

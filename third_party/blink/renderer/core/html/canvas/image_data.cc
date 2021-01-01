@@ -42,10 +42,16 @@ ImageData* ImageData::ValidateAndCreate(
     unsigned width,
     base::Optional<unsigned> height,
     base::Optional<NotShared<DOMArrayBufferView>> data,
-    const ImageDataSettings* settings,
+    const ImageDataSettings* input_settings,
     ExceptionState& exception_state,
     uint32_t flags) {
   IntSize size;
+  if ((flags & RequireCanvasColorManagement &&
+       !RuntimeEnabledFeatures::CanvasColorManagementEnabled())) {
+    exception_state.ThrowTypeError("Overload resolution failed.");
+    return nullptr;
+  }
+
   if (!width) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
@@ -61,6 +67,13 @@ ImageData* ImageData::ValidateAndCreate(
       return nullptr;
     }
     size.SetHeight(*height);
+  }
+
+  // Populate the ImageDataSettings to use based on |input_settings|.
+  ImageDataSettings* settings = ImageDataSettings::Create();
+  if (input_settings) {
+    settings->setColorSpace(input_settings->colorSpace());
+    settings->setStorageFormat(input_settings->storageFormat());
   }
 
   // Ensure the size does not overflow.
@@ -88,18 +101,25 @@ ImageData* ImageData::ValidateAndCreate(
   }
 
   // If |data| is provided, ensure it is a reasonable format, and that it can
-  // work with |size|.
+  // work with |size|. Update |settings| to reflect |data|'s format.
   if (data) {
     DCHECK(data);
-    if ((*data)->GetType() != DOMArrayBufferView::ViewType::kTypeUint8Clamped &&
-        (*data)->GetType() != DOMArrayBufferView::ViewType::kTypeUint16 &&
-        (*data)->GetType() != DOMArrayBufferView::ViewType::kTypeFloat32) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotSupportedError,
-          "The input data type is not supported.");
-      return nullptr;
+    switch ((*data)->GetType()) {
+      case DOMArrayBufferView::ViewType::kTypeUint8Clamped:
+        settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
+        break;
+      case DOMArrayBufferView::ViewType::kTypeUint16:
+        settings->setStorageFormat(kUint16ArrayStorageFormatName);
+        break;
+      case DOMArrayBufferView::ViewType::kTypeFloat32:
+        settings->setStorageFormat(kFloat32ArrayStorageFormatName);
+        break;
+      default:
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            "The input data type is not supported.");
+        return nullptr;
     }
-
     static_assert(
         std::numeric_limits<unsigned>::max() >=
             std::numeric_limits<uint32_t>::max(),
@@ -153,8 +173,7 @@ ImageData* ImageData::ValidateAndCreate(
   NotShared<DOMArrayBufferView> allocated_data;
   if (!data) {
     ImageDataStorageFormat storage_format =
-        settings ? GetImageDataStorageFormat(settings->storageFormat())
-                 : kUint8ClampedArrayStorageFormat;
+        GetImageDataStorageFormat(settings->storageFormat());
     allocated_data = AllocateAndValidateDataArray(
         size_in_elements, storage_format, &exception_state);
     if (!allocated_data)
@@ -200,35 +219,6 @@ NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
   }
 
   return data_array;
-}
-
-ImageData* ImageData::Create(unsigned width,
-                             unsigned height,
-                             ExceptionState& exception_state) {
-  return ValidateAndCreate(width, height, base::nullopt, nullptr,
-                           exception_state);
-}
-
-ImageData* ImageData::Create(NotShared<DOMUint8ClampedArray> data,
-                             unsigned width,
-                             ExceptionState& exception_state) {
-  return ValidateAndCreate(width, base::nullopt, data, nullptr,
-                           exception_state);
-}
-
-ImageData* ImageData::Create(NotShared<DOMUint8ClampedArray> data,
-                             unsigned width,
-                             unsigned height,
-                             ExceptionState& exception_state) {
-  return ValidateAndCreate(width, height, data, nullptr, exception_state);
-}
-
-ImageData* ImageData::Create(unsigned width,
-                             unsigned height,
-                             const ImageDataSettings* settings,
-                             ExceptionState& exception_state) {
-  return ValidateAndCreate(width, height, base::nullopt, settings,
-                           exception_state);
 }
 
 // This function accepts size (0, 0) and always returns the ImageData in
@@ -423,8 +413,8 @@ ImageData::ImageData(const IntSize& size,
       GetImageDataStorageFormat(settings_->storageFormat());
   switch (storage_format) {
     case kUint8ClampedArrayStorageFormat:
-      DCHECK(data->GetType() ==
-             DOMArrayBufferView::ViewType::kTypeUint8Clamped);
+      DCHECK_EQ(data->GetType(),
+                DOMArrayBufferView::ViewType::kTypeUint8Clamped);
       data_u8_ = data;
       DCHECK(data_u8_);
       data_.SetUint8ClampedArray(data_u8_);
@@ -434,7 +424,7 @@ ImageData::ImageData(const IntSize& size,
       break;
 
     case kUint16ArrayStorageFormat:
-      DCHECK(data->GetType() == DOMArrayBufferView::ViewType::kTypeUint16);
+      DCHECK_EQ(data->GetType(), DOMArrayBufferView::ViewType::kTypeUint16);
       data_u16_ = data;
       DCHECK(data_u16_);
       data_.SetUint16Array(data_u16_);
@@ -444,7 +434,7 @@ ImageData::ImageData(const IntSize& size,
       break;
 
     case kFloat32ArrayStorageFormat:
-      DCHECK(data->GetType() == DOMArrayBufferView::ViewType::kTypeFloat32);
+      DCHECK_EQ(data->GetType(), DOMArrayBufferView::ViewType::kTypeFloat32);
       data_f32_ = data;
       DCHECK(data_f32_);
       data_.SetFloat32Array(data_f32_);
