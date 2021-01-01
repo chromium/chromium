@@ -418,8 +418,7 @@ void ProfilePickerView::SwitchToSyncConfirmation() {
 
   SyncConfirmationUI* sync_confirmation_ui = static_cast<SyncConfirmationUI*>(
       new_profile_contents_->GetWebUI()->GetController());
-  sync_confirmation_ui->InitializeMessageHandlerWithProfile(
-      signed_in_profile_being_created_);
+  sync_confirmation_ui->InitializeMessageHandlerForCreationFlow();
 }
 
 gfx::Size ProfilePickerView::CalculatePreferredSize() const {
