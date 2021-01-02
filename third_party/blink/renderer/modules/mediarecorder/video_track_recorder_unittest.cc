@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
-using media::VideoFrame;
 using video_track_recorder::kVEAEncoderMinResolutionHeight;
 using video_track_recorder::kVEAEncoderMinResolutionWidth;
 
@@ -156,7 +155,8 @@ class VideoTrackRecorderTest
                     base::TimeTicks timestamp,
                     bool keyframe));
 
-  void Encode(scoped_refptr<VideoFrame> frame, base::TimeTicks capture_time) {
+  void Encode(scoped_refptr<media::VideoFrame> frame,
+              base::TimeTicks capture_time) {
     EXPECT_TRUE(scheduler::GetSingleThreadTaskRunnerForTesting()
                     ->BelongsToCurrentThread());
     video_track_recorder_->OnVideoFrameForTesting(std::move(frame),
@@ -225,13 +225,14 @@ TEST_P(VideoTrackRecorderTest, VideoEncoding) {
   auto create_test_frame =
       [](media::VideoFrame::StorageType storage_type,
          const gfx::Size& frame_size,
-         bool encode_alpha_channel) -> scoped_refptr<VideoFrame> {
-    scoped_refptr<VideoFrame> video_frame;
+         bool encode_alpha_channel) -> scoped_refptr<media::VideoFrame> {
+    scoped_refptr<media::VideoFrame> video_frame;
     switch (storage_type) {
       case media::VideoFrame::STORAGE_OWNED_MEMORY:
-        video_frame = encode_alpha_channel
-                          ? VideoFrame::CreateTransparentFrame(frame_size)
-                          : VideoFrame::CreateBlackFrame(frame_size);
+        video_frame =
+            encode_alpha_channel
+                ? media::VideoFrame::CreateTransparentFrame(frame_size)
+                : media::VideoFrame::CreateBlackFrame(frame_size);
         break;
       case media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER: {
         video_frame = CreateTestFrame(frame_size, gfx::Rect(frame_size),
@@ -254,7 +255,7 @@ TEST_P(VideoTrackRecorderTest, VideoEncoding) {
     return video_frame;
   };
 
-  const scoped_refptr<VideoFrame> video_frame =
+  const scoped_refptr<media::VideoFrame> video_frame =
       create_test_frame(storage_type, frame_size, encode_alpha_channel);
   if (!video_frame)
     ASSERT_TRUE(!!video_frame);
@@ -285,7 +286,7 @@ TEST_P(VideoTrackRecorderTest, VideoEncoding) {
   // Send another Video Frame and expect only an OnEncodedVideo() callback.
   const gfx::Size frame_size2(frame_size.width() + kTrackRecorderTestSizeDiff,
                               frame_size.height());
-  const scoped_refptr<VideoFrame> video_frame2 =
+  const scoped_refptr<media::VideoFrame> video_frame2 =
       create_test_frame(storage_type, frame_size2, encode_alpha_channel);
 
   base::RunLoop run_loop;
@@ -333,10 +334,10 @@ TEST_P(VideoTrackRecorderTest, EncodeFrameWithPaddedCodedSize) {
       testing::get<3>(GetParam());
   const gfx::Size padded_size(frame_size.width() + kCodedSizePadding,
                               frame_size.height());
-  scoped_refptr<VideoFrame> video_frame;
+  scoped_refptr<media::VideoFrame> video_frame;
   switch (storage_type) {
     case media::VideoFrame::STORAGE_OWNED_MEMORY:
-      video_frame = VideoFrame::CreateZeroInitializedFrame(
+      video_frame = media::VideoFrame::CreateZeroInitializedFrame(
           media::PIXEL_FORMAT_I420, padded_size, gfx::Rect(frame_size),
           frame_size, base::TimeDelta());
       break;
@@ -364,8 +365,8 @@ TEST_F(VideoTrackRecorderTest, ForceKeyframeOnAlphaSwitch) {
   InitializeRecorder(VideoTrackRecorder::CodecId::VP8);
 
   const gfx::Size& frame_size = kTrackRecorderTestSize[0];
-  const scoped_refptr<VideoFrame> opaque_frame =
-      VideoFrame::CreateBlackFrame(frame_size);
+  const scoped_refptr<media::VideoFrame> opaque_frame =
+      media::VideoFrame::CreateBlackFrame(frame_size);
 
   InSequence s;
   base::StringPiece first_frame_encoded_alpha;
@@ -374,8 +375,8 @@ TEST_F(VideoTrackRecorderTest, ForceKeyframeOnAlphaSwitch) {
       .WillOnce(SaveArg<2>(&first_frame_encoded_alpha));
   Encode(opaque_frame, base::TimeTicks::Now());
 
-  const scoped_refptr<VideoFrame> alpha_frame =
-      VideoFrame::CreateTransparentFrame(frame_size);
+  const scoped_refptr<media::VideoFrame> alpha_frame =
+      media::VideoFrame::CreateTransparentFrame(frame_size);
   base::StringPiece second_frame_encoded_alpha;
   EXPECT_CALL(*this, OnEncodedVideo(_, _, _, _, true))
       .Times(1)
@@ -404,8 +405,8 @@ TEST_F(VideoTrackRecorderTest, HandlesOnError) {
   InitializeRecorder(VideoTrackRecorder::CodecId::VP8);
 
   const gfx::Size& frame_size = kTrackRecorderTestSize[0];
-  const scoped_refptr<VideoFrame> video_frame =
-      VideoFrame::CreateBlackFrame(frame_size);
+  const scoped_refptr<media::VideoFrame> video_frame =
+      media::VideoFrame::CreateBlackFrame(frame_size);
 
   InSequence s;
   EXPECT_CALL(*this, OnEncodedVideo(_, _, _, _, true)).Times(1);
@@ -431,8 +432,8 @@ TEST_F(VideoTrackRecorderTest, ReleasesFrame) {
   InitializeRecorder(VideoTrackRecorder::CodecId::VP8);
 
   const gfx::Size& frame_size = kTrackRecorderTestSize[0];
-  scoped_refptr<VideoFrame> video_frame =
-      VideoFrame::CreateBlackFrame(frame_size);
+  scoped_refptr<media::VideoFrame> video_frame =
+      media::VideoFrame::CreateBlackFrame(frame_size);
 
   base::RunLoop run_loop;
   bool frame_is_destroyed = false;
@@ -463,8 +464,8 @@ TEST_F(VideoTrackRecorderTest, WaitForEncoderSupport) {
   InitializeRecorder(VideoTrackRecorder::CodecId::VP8);
 
   const gfx::Size& frame_size = kTrackRecorderTestSize[0];
-  scoped_refptr<VideoFrame> video_frame =
-      VideoFrame::CreateBlackFrame(frame_size);
+  scoped_refptr<media::VideoFrame> video_frame =
+      media::VideoFrame::CreateBlackFrame(frame_size);
 
   base::RunLoop run_loop;
   EXPECT_CALL(*this, OnEncodedVideo(_, _, _, _, true))
