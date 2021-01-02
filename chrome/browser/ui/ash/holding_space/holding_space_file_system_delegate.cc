@@ -217,36 +217,84 @@ void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
                      weak_factory_.GetWeakPtr(), volume.mount_path()));
 }
 
+void HoldingSpaceFileSystemDelegate::OnFileModified(
+    const storage::FileSystemURL& url) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  model()->InvalidateItemImageIf(base::BindRepeating(
+      [](const base::FilePath& path, const HoldingSpaceItem* item) {
+        return item->file_path() == path;
+      },
+      url.path()));
+}
+
 void HoldingSpaceFileSystemDelegate::OnFileMoved(
     const storage::FileSystemURL& src,
     const storage::FileSystemURL& dst) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // Update backing files for any holding space `item` associated with `src`.
-  bool did_update_backing_file = false;
+
+  // Collect items that should be moved to a new path. This includes:
+  // *   Items whose path matches the source path.
+  // *   Items parented by the source path.
+  // Maps item ID to the item's new file path.
+  std::vector<std::pair<std::string, base::FilePath>> items_to_move;
   for (auto& item : model()->items()) {
-    base::FilePath new_file_path;
     if (src.path() == item->file_path()) {
-      // The file backing `item` has moved to `dst`.
-      new_file_path = dst.path();
-    } else if (src.path().IsParent(item->file_path())) {
-      // A parent directory of the file backing `item` has moved to `dst` so
-      // the file backing `item` needs to be re-parented.
-      new_file_path = dst.path();
-      if (!src.path().AppendRelativePath(item->file_path(), &new_file_path))
-        NOTREACHED();
+      items_to_move.push_back(std::make_pair(item->id(), dst.path()));
+      continue;
     }
-    if (!new_file_path.empty()) {
-      model()->UpdateBackingFileForItem(
-          item->id(), new_file_path,
-          holding_space_util::ResolveFileSystemUrl(profile(), new_file_path));
-      did_update_backing_file = true;
+
+    if (src.path().IsParent(item->file_path())) {
+      base::FilePath target_path = dst.path();
+      if (!src.path().AppendRelativePath(item->file_path(), &target_path)) {
+        NOTREACHED();
+        continue;
+      }
+      items_to_move.push_back(std::make_pair(item->id(), target_path));
     }
   }
+
+  // Handle existing holding space items under the target file path.
+  // Moving an existing item to a new path may create conflict within the
+  // holding space if an item with the target path already exists within the
+  // holding space. If this is the case, assume that the original item was
+  // overwritten, and remove it from the holding space.
+
+  // NOTE: Don't remove items at destination if no holding space items have to
+  // be updated due to the file move. The reason for this is to:
+  // *   Support use case where apps change files by moving temp file with
+  //     modifications to the file path.
+  // *   Handle duplicate file path move notifications.
+  // Instead, update the items as if the target path was modified.
+  if (items_to_move.empty()) {
+    OnFileModified(dst);
+    return;
+  }
+
+  // Resolve conflicts with existing items that arise from the move.
+  std::set<std::string> item_ids_to_remove;
+  for (auto& item : model()->items()) {
+    if (dst.path() == item->file_path() ||
+        dst.path().IsParent(item->file_path())) {
+      item_ids_to_remove.insert(item->id());
+    }
+  }
+  model()->RemoveItems(item_ids_to_remove);
+
+  // Finally, update the files that have been moved.
+  for (const auto& to_move : items_to_move) {
+    if (item_ids_to_remove.count(to_move.first))
+      continue;
+
+    model()->UpdateBackingFileForItem(
+        to_move.first, to_move.second,
+        holding_space_util::ResolveFileSystemUrl(profile(), to_move.second));
+  }
+
   // If a backing file update occurred, it's possible that there are no longer
   // any holding space items associated with `src`. When that is the case, `src`
   // no longer needs to be watched.
-  if (did_update_backing_file)
-    MaybeRemoveWatch(src.path());
+  MaybeRemoveWatch(src.path());
 }
 
 void HoldingSpaceFileSystemDelegate::OnFilePathChanged(

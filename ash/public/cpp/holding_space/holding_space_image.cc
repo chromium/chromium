@@ -14,6 +14,14 @@
 
 namespace ash {
 
+namespace {
+
+// Whether image invalidation should be done without a delay. May be set in
+// tests.
+bool g_use_zero_invalidation_delay_for_testing = false;
+
+}  // namespace
+
 // HoldingSpaceImage::ImageSkiaSource ------------------------------------------
 
 class HoldingSpaceImage::ImageSkiaSource : public gfx::ImageSkiaSource {
@@ -52,6 +60,11 @@ HoldingSpaceImage::HoldingSpaceImage(const base::FilePath& backing_file_path,
 }
 
 HoldingSpaceImage::~HoldingSpaceImage() = default;
+
+// static
+void HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(bool value) {
+  g_use_zero_invalidation_delay_for_testing = value;
+}
 
 bool HoldingSpaceImage::operator==(const HoldingSpaceImage& rhs) const {
   return gfx::BitmapsAreEqual(*image_skia_.bitmap(), *rhs.image_skia_.bitmap());
@@ -105,7 +118,10 @@ void HoldingSpaceImage::Invalidate() {
   // when multiple image invalidations are requested in quick succession. The
   // delay is selected somewhat arbitrarily to be non trivial but still not
   // easily noticable by the user.
-  invalidate_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(250),
+  invalidate_timer_.Start(FROM_HERE,
+                          g_use_zero_invalidation_delay_for_testing
+                              ? base::TimeDelta()
+                              : base::TimeDelta::FromMilliseconds(250),
                           base::BindOnce(&HoldingSpaceImage::OnInvalidateTimer,
                                          base::Unretained(this)));
 }

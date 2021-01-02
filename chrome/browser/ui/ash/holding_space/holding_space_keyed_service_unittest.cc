@@ -226,6 +226,27 @@ class ItemsFinalizedWaiter : public HoldingSpaceModelObserver {
   std::unique_ptr<base::RunLoop> wait_loop_;
 };
 
+class ItemImageUpdateWaiter {
+ public:
+  explicit ItemImageUpdateWaiter(const HoldingSpaceItem* item) {
+    image_subscription_ =
+        item->image().AddImageSkiaChangedCallback(base::BindRepeating(
+            &ItemImageUpdateWaiter::OnHoldingSpaceItemImageChanged,
+            base::Unretained(this)));
+  }
+  ItemImageUpdateWaiter(const ItemImageUpdateWaiter&) = delete;
+  ItemImageUpdateWaiter& operator=(const ItemImageUpdateWaiter&) = delete;
+  ~ItemImageUpdateWaiter() = default;
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  void OnHoldingSpaceItemImageChanged() { run_loop_.Quit(); }
+
+  base::RunLoop run_loop_;
+  base::CallbackListSubscription image_subscription_;
+};
+
 // A mock `content::DownloadManager` which can notify observers of events.
 class MockDownloadManager : public content::MockDownloadManager {
  public:
@@ -257,13 +278,16 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
         download_manager_(
             std::make_unique<testing::NiceMock<MockDownloadManager>>()) {
     scoped_feature_list_.InitAndEnableFeature(features::kTemporaryHoldingSpace);
+    HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(true);
   }
 
   HoldingSpaceKeyedServiceTest(const HoldingSpaceKeyedServiceTest& other) =
       delete;
   HoldingSpaceKeyedServiceTest& operator=(
       const HoldingSpaceKeyedServiceTest& other) = delete;
-  ~HoldingSpaceKeyedServiceTest() override = default;
+  ~HoldingSpaceKeyedServiceTest() override {
+    HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(false);
+  }
 
   TestingProfile* CreateProfile() override {
     const std::string kPrimaryProfileName = "primary_profile";
@@ -764,6 +788,144 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {
                   HoldingSpacePersistenceDelegate::kPersistencePath),
               persisted_holding_space_items);
   }
+}
+
+// Tests that holding space item's image representation gets updated when the
+// backing file is changed using move operation. Furthermore, verifies that
+// conflicts caused by moving a holding space item file to another path present
+// in the holding space get resolved.
+TEST_F(HoldingSpaceKeyedServiceTest, UpdateItemsOverwrittenByMove) {
+  // Create a file system mount point.
+  std::unique_ptr<ScopedTestMountPoint> downloads_mount =
+      ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
+  ASSERT_TRUE(downloads_mount->IsValid());
+
+  // Cache the holding space model for the primary profile.
+  HoldingSpaceKeyedService* const primary_holding_space_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
+  HoldingSpaceModel* const primary_holding_space_model =
+      HoldingSpaceController::Get()->model();
+  ASSERT_EQ(primary_holding_space_model,
+            primary_holding_space_service->model_for_testing());
+
+  // Cache the file system context.
+  storage::FileSystemContext* context =
+      file_manager::util::GetFileSystemContextForExtensionId(
+          GetProfile(), file_manager::kFileManagerAppId);
+  ASSERT_TRUE(context);
+
+  struct ItemInfo {
+    std::string item_id;
+    base::FilePath path;
+    GURL file_system_url;
+  };
+  struct TestCase {
+    ItemInfo src;
+    ItemInfo dst;
+  };
+  std::map<HoldingSpaceItem::Type, TestCase> test_config;
+
+  base::ListValue persisted_holding_space_items;
+
+  // Configure holding space state for the test. For each item adds two holding
+  // space items to the model - "src" and "dst" (during the test, the src item's
+  // file will be moved to the dst item's path).
+  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+    auto add_item = [&](const std::string& file_name, ItemInfo* info) {
+      info->path = downloads_mount->CreateFile(
+          base::FilePath(base::NumberToString(static_cast<int>(type)))
+              .Append(file_name),
+          /*content=*/std::string());
+      info->file_system_url = GetFileSystemUrl(GetProfile(), info->path);
+
+      // Create the holding space item.
+      auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+          type, info->path, info->file_system_url,
+          base::BindOnce(
+              &holding_space_util::ResolveImage,
+              primary_holding_space_service->thumbnail_loader_for_testing()));
+      info->item_id = holding_space_item->id();
+
+      // Add the holding space item to the model and verify persistence.
+      persisted_holding_space_items.Append(holding_space_item->Serialize());
+      primary_holding_space_model->AddItem(std::move(holding_space_item));
+    };
+
+    TestCase& test_case = test_config[type];
+    add_item("src.txt", &test_case.src);
+    add_item("dst.txt", &test_case.dst);
+
+    ASSERT_NE(test_case.src.item_id, test_case.dst.item_id);
+  }
+
+  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+                HoldingSpacePersistenceDelegate::kPersistencePath),
+            persisted_holding_space_items);
+
+  base::ListValue final_persisted_holding_space_items;
+  // Runs the test logic.
+  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+    const TestCase& test_case = test_config[type];
+
+    const HoldingSpaceItem* src_item =
+        primary_holding_space_model->GetItem(test_case.src.item_id);
+    ASSERT_TRUE(src_item);
+
+    // Move a file that was not in the holding space to the src path. Verify the
+    // holding space item associated with this path remains in the holding space
+    // in this case, and that its image representation gets updated.
+    const base::FilePath path_not_in_holding_space =
+        downloads_mount->CreateFile(
+            base::FilePath(base::NumberToString(static_cast<int>(type)))
+                .Append("not_in_holding_space.txt"),
+            /*content=*/std::string());
+
+    ItemImageUpdateWaiter image_update_waiter(src_item);
+    ASSERT_EQ(storage::AsyncFileTestHelper::Move(
+                  context,
+                  context->CrackURL(GetFileSystemUrl(
+                      GetProfile(), path_not_in_holding_space)),
+                  context->CrackURL(src_item->file_system_url())),
+              base::File::FILE_OK);
+
+    image_update_waiter.Wait();
+
+    ASSERT_EQ(src_item,
+              primary_holding_space_model->GetItem(test_case.src.item_id));
+    EXPECT_TRUE(primary_holding_space_model->GetItem(test_case.dst.item_id));
+
+    ASSERT_EQ(src_item->file_path(), test_case.src.path);
+    ASSERT_EQ(src_item->file_system_url(), test_case.src.file_system_url);
+
+    // Move the file at the source item path to the destination item path.
+    // Verify that, given that both paths are represented in the holding space,
+    // the item initially associated with the destination path is removed from
+    // the holding space (to avoid two items with the same backing file).
+    ASSERT_EQ(storage::AsyncFileTestHelper::Move(
+                  context, context->CrackURL(test_case.src.file_system_url),
+                  context->CrackURL(test_case.dst.file_system_url)),
+              base::File::FILE_OK);
+
+    // File changes must be posted to the UI thread, wait for the update to
+    // reach the holding space model.
+    ItemUpdatedWaiter(primary_holding_space_model).Wait(src_item);
+
+    const HoldingSpaceItem* item =
+        primary_holding_space_model->GetItem(test_case.src.item_id);
+    ASSERT_EQ(src_item,
+              primary_holding_space_model->GetItem(test_case.src.item_id));
+    EXPECT_FALSE(primary_holding_space_model->GetItem(test_case.dst.item_id));
+
+    // Verify that the holding space item has been updated in place.
+    ASSERT_EQ(src_item->file_path(), test_case.dst.path);
+    ASSERT_EQ(src_item->file_system_url(), test_case.dst.file_system_url);
+
+    final_persisted_holding_space_items.Append(item->Serialize());
+  }
+
+  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+                HoldingSpacePersistenceDelegate::kPersistencePath),
+            final_persisted_holding_space_items);
 }
 
 // Verifies that the holding space model is restored from persistence. Note that

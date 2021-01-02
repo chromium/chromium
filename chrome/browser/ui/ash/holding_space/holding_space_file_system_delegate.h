@@ -61,6 +61,7 @@ class HoldingSpaceFileSystemDelegate
                          const file_manager::Volume& volume) override;
 
   // chromeos::FileChangeServiceObserver:
+  void OnFileModified(const storage::FileSystemURL& url) override;
   void OnFileMoved(const storage::FileSystemURL& src,
                    const storage::FileSystemURL& dst) override;
 

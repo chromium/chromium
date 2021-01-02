@@ -37,6 +37,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   HoldingSpaceImage& operator=(const HoldingSpaceImage&) = delete;
   ~HoldingSpaceImage();
 
+  static void SetUseZeroInvalidationDelayForTesting(bool value);
+
   bool operator==(const HoldingSpaceImage& rhs) const;
 
   // Adds `callback` to be notified of changes to the underlying `image_skia_`.
@@ -58,6 +60,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   // the same, and old representations are thus still valid.
   void UpdateBackingFilePath(const base::FilePath& file_path);
 
+  // Fires the image invalidation timer if it's currently running.
   bool FireInvalidateTimerForTesting();
 
  private:

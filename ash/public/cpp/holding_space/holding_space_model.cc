@@ -119,6 +119,13 @@ void HoldingSpaceModel::RemoveIf(Predicate predicate) {
   }
 }
 
+void HoldingSpaceModel::InvalidateItemImageIf(Predicate predicate) {
+  for (auto& item : items_) {
+    if (predicate.Run(item.get()))
+      item->InvalidateImage();
+  }
+}
+
 void HoldingSpaceModel::RemoveAll() {
   // Clear the item list, but keep the items around until the observers have
   // been notified of the item removal.
