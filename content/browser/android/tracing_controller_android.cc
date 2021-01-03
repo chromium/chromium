@@ -161,12 +161,13 @@ void TracingControllerAndroid::StopTracing(
   session->data->Stop();
 }
 
-void TracingControllerAndroid::GenerateTracingFilePath(
-    base::FilePath* file_path) {
+base::FilePath TracingControllerAndroid::GenerateTracingFilePath(
+    const std::string& basename) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> jfilename =
-      Java_TracingControllerAndroidImpl_generateTracingFilePath(env);
-  *file_path = base::FilePath(
+      Java_TracingControllerAndroidImpl_generateTracingFilePath(
+          env, base::android::ConvertUTF8ToJavaString(env, basename));
+  return base::FilePath(
       base::android::ConvertJavaStringToUTF8(env, jfilename.obj()));
 }
 

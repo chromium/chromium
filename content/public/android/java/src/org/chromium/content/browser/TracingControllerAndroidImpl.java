@@ -122,23 +122,28 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
     }
 
     /**
-     * Generates a unique filename to be used for tracing in the Downloads directory.
+     * Generates a filepath to be used for tracing in the Downloads directory.
+     * @param basename The basename to be used, if empty a unique one will be generated.
      */
     @CalledByNative
-    private static String generateTracingFilePath() {
+    private static String generateTracingFilePath(String basename) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             String state = Environment.getExternalStorageState();
             if (!Environment.MEDIA_MOUNTED.equals(state)) {
                 return null;
             }
 
-            // Generate a hopefully-unique filename using the UTC timestamp.
-            // (Not a huge problem if it isn't unique, we'll just append more data.)
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HHmmss", Locale.US);
-            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            if (basename.isEmpty()) {
+                // Generate a hopefully-unique filename using the UTC timestamp.
+                // (Not a huge problem if it isn't unique, we'll just append more data.)
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HHmmss", Locale.US);
+                formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+                basename = "chrome-profile-results-" + formatter.format(new Date());
+            }
+
             Context context = ContextUtils.getApplicationContext();
             File dir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-            File file = new File(dir, "chrome-profile-results-" + formatter.format(new Date()));
+            File file = new File(dir, basename);
             return file.getPath();
         }
     }
@@ -169,7 +174,7 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
         mShowToasts = showToasts;
 
         if (filename == null) {
-            filename = generateTracingFilePath();
+            filename = generateTracingFilePath("");
             if (filename == null) {
                 logAndToastError(mContext.getString(R.string.profiler_no_storage_toast));
                 return false;

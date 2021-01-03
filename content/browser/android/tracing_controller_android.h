@@ -39,7 +39,11 @@ class TracingControllerAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& callback);
-  static void GenerateTracingFilePath(base::FilePath* file_path);
+
+  // Locate the appropriate directory to write the trace to and use it to
+  // generate the path. |basename| might be empty, then TracingControllerAndroid
+  // will generate an appropriate one as well.
+  static base::FilePath GenerateTracingFilePath(const std::string& basename);
 
  private:
   ~TracingControllerAndroid();

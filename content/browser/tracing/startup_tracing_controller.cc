@@ -213,7 +213,7 @@ base::FilePath GetStartupTraceFileName() {
   trace_file = tracing::TraceStartupConfig::GetInstance()->GetResultFile();
   if (trace_file.empty()) {
 #if defined(OS_ANDROID)
-    TracingControllerAndroid::GenerateTracingFilePath(&trace_file);
+    trace_file = TracingControllerAndroid::GenerateTracingFilePath("");
 #else
     // Default to saving the startup trace into the current dir.
     trace_file = base::FilePath().AppendASCII("chrometrace.log");
