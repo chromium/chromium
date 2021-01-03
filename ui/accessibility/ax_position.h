@@ -647,7 +647,9 @@ class AXPosition {
         // 2. The current position is not whitespace only, unless it is also
         //    the first leaf text position within the whole content.
         if (text_position->IsInWhiteSpace()) {
-          return text_position->CreatePreviousLeafTextPosition()
+          return text_position
+              ->CreatePreviousLeafTextPosition(
+                  base::BindRepeating(&AbortMoveAtRootBoundary))
               ->IsNullPosition();
         }
 
@@ -829,9 +831,12 @@ class AXPosition {
   }
 
   // Returns true if this position is at the start of the current accessibility
-  // tree, as indicated by its |tree_id_|. Note that the current webpage could
-  // be made up of multiple accessibility trees stitched together, e.g. an
-  // out-of-process iframe will be in its own accessibility tree.
+  // tree, such as the current iframe, webpage, PDF document, dialog or window.
+  // Note that the current webpage could be made up of multiple accessibility
+  // trees stitched together, e.g. an out-of-process iframe will be in its own
+  // accessibility tree. For the purposes of this method, we don't distinguish
+  // between out-of-process and in-process iframes, treating them both as tree
+  // boundaries.
   bool AtStartOfAXTree() const {
     if (IsNullPosition() || !AtStartOfAnchor())
       return false;
@@ -845,9 +850,12 @@ class AXPosition {
   }
 
   // Returns true if this position is at the end of the current accessibility
-  // tree, as indicated by its |tree_id_|. Note that the current webpage could
-  // be made up of multiple accessibility trees stitched together, e.g. an
-  // out-of-process iframe will be in its own accessibility tree.
+  // tree, such as the current iframe, webpage, PDF document, dialog or window.
+  // Note that the current webpage could be made up of multiple accessibility
+  // trees stitched together, e.g. an out-of-process iframe will be in its own
+  // accessibility tree. For the purposes of this method, we don't distinguish
+  // between out-of-process and in-process iframes, treating them both as tree
+  // boundaries.
   bool AtEndOfAXTree() const {
     if (IsNullPosition() || !IsLeaf() || !AtEndOfAnchor())
       return false;
@@ -862,8 +870,11 @@ class AXPosition {
       return AXBoundaryType::kNone;
 
     // Treat the first iterable node as a format boundary.
-    if (CreatePreviousLeafTreePosition()->IsNullPosition())
+    if (CreatePreviousLeafTreePosition(
+            base::BindRepeating(&AbortMoveAtRootBoundary))
+            ->IsNullPosition()) {
       return AXBoundaryType::kContentStart;
+    }
 
     // Ignored positions cannot be format boundaries.
     if (IsIgnored())
@@ -895,7 +906,9 @@ class AXPosition {
       return AXBoundaryType::kNone;
 
     // Treat the last iterable node as a format boundary
-    if (CreateNextLeafTreePosition()->IsNullPosition())
+    if (CreateNextLeafTreePosition(
+            base::BindRepeating(&AbortMoveAtRootBoundary))
+            ->IsNullPosition())
       return AXBoundaryType::kContentEnd;
 
     // Ignored positions cannot be format boundaries.
@@ -1759,8 +1772,9 @@ class AXPosition {
   }
 
   // Creates a position at the start of this position's accessibility tree, e.g.
-  // at the start of the current out-of-process iframe, PDF plugin, Views tree,
-  // etc.
+  // at the start of the current iframe, PDF plugin, Views tree, dialog, etc. We
+  // don't distinguish between out-of-process and in-process iframes, treating
+  // them both as tree boundaries.
   //
   // For a similar method that does not stop at iframe boundaries, see
   // `CreatePositionAtStartOfContent()`.
@@ -1779,7 +1793,9 @@ class AXPosition {
   }
 
   // Creates a position at the end of this position's accessibility tree, e.g.
-  // at the end of the current out-of-process iframe, PDF plugin, etc.
+  // at the end of the current iframe, PDF plugin, Views tree, dialog, etc. We
+  // don't distinguish between out-of-process and in-process iframes, treating
+  // them both as tree boundaries.
   //
   // For a similar method that does not stop at iframe boundaries, see
   // `CreatePositionAtEndOfContent()`.
@@ -1797,9 +1813,9 @@ class AXPosition {
   // Creates a position at the start of all content, e.g. at the start of the
   // whole webpage or PDF document.
   //
-  // Note that this method will break out of an iframe and return a position at
-  // the start of the top-level document. For a similar method that stops at
-  // iframe boundaries, see `CreatePositionAtStartOfAXTree()`.
+  // Note that this method will break out of an out-of-process iframe and return
+  // a position at the start of the top-level document. For a similar method
+  // that stops at all iframe boundaries, see `CreatePositionAtStartOfAXTree()`.
   AXPositionInstance CreatePositionAtStartOfContent() const {
     AXPositionInstance root_position =
         AsTreePosition()
@@ -1813,9 +1829,9 @@ class AXPosition {
   // Creates a position at the end of all content, e.g. at the end of the whole
   // webpage or PDF document.
   //
-  // Note that this method will break out of an iframe and return a position at
-  // the end of the top-level document. For a similar method that stops at
-  // iframe boundaries, see `CreatePositionAtEndOfAXTree()`.
+  // Note that this method will break out of an out-of-process iframe and return
+  // a position at the end of the top-level document. For a similar method that
+  // stops at all iframe boundaries, see `CreatePositionAtEndOfAXTree()`.
   AXPositionInstance CreatePositionAtEndOfContent() const {
     AXPositionInstance root_position =
         AsTreePosition()->CreateRootAncestorPosition(
@@ -2145,11 +2161,11 @@ class AXPosition {
       return text_position;
     }
 
-    text_position = text_position->CreateNextLeafTextPosition();
-    while (!text_position->IsNullPosition() &&
-           (text_position->IsIgnored() || !text_position->MaxTextOffset())) {
-      text_position = text_position->CreateNextLeafTextPosition();
-    }
+    do {
+      text_position = text_position->CreateNextLeafTextPosition(
+          base::BindRepeating(&AbortMoveAtRootBoundary));
+    } while (!text_position->IsNullPosition() &&
+             (text_position->IsIgnored() || !text_position->MaxTextOffset()));
     return text_position;
   }
 
@@ -2204,11 +2220,11 @@ class AXPosition {
       return text_position;
     }
 
-    text_position = text_position->CreatePreviousLeafTextPosition();
-    while (!text_position->IsNullPosition() &&
-           (text_position->IsIgnored() || !text_position->MaxTextOffset())) {
-      text_position = text_position->CreatePreviousLeafTextPosition();
-    }
+    do {
+      text_position = text_position->CreatePreviousLeafTextPosition(
+          base::BindRepeating(&AbortMoveAtRootBoundary));
+    } while (!text_position->IsNullPosition() &&
+             (text_position->IsIgnored() || !text_position->MaxTextOffset()));
     return text_position->CreatePositionAtEndOfAnchor();
   }
 
@@ -2458,7 +2474,8 @@ class AXPosition {
     AXPositionInstance tree_position =
         AsTreePosition()->CreatePositionAtStartOfAnchor();
     AXPositionInstance previous_tree_position =
-        tree_position->CreatePreviousLeafTreePosition();
+        tree_position->CreatePreviousLeafTreePosition(
+            base::BindRepeating(&AbortMoveAtRootBoundary));
 
     // If moving to the start of the current anchor hasn't changed our position
     // from the original position, we need to test the previous leaf tree
@@ -2466,7 +2483,8 @@ class AXPosition {
     if (AtStartOfAnchor() &&
         boundary_behavior != AXBoundaryBehavior::StopIfAlreadyAtBoundary) {
       tree_position = std::move(previous_tree_position);
-      previous_tree_position = tree_position->CreatePreviousLeafTreePosition();
+      previous_tree_position = tree_position->CreatePreviousLeafTreePosition(
+          base::BindRepeating(&AbortMoveAtRootBoundary));
     }
 
     // The first position in the whole content is also a format start boundary,
@@ -2476,7 +2494,8 @@ class AXPosition {
            !previous_tree_position->IsNullPosition() &&
            !tree_position->AtStartOfFormat()) {
       tree_position = std::move(previous_tree_position);
-      previous_tree_position = tree_position->CreatePreviousLeafTreePosition();
+      previous_tree_position = tree_position->CreatePreviousLeafTreePosition(
+          base::BindRepeating(&AbortMoveAtRootBoundary));
     }
 
     // If the format boundary is in the same subtree, return a position rooted
@@ -2523,7 +2542,9 @@ class AXPosition {
     AXPositionInstance tree_position =
         AsTreePosition()->CreatePositionAtEndOfAnchor();
     AXPositionInstance next_tree_position =
-        tree_position->CreateNextLeafTreePosition()
+        tree_position
+            ->CreateNextLeafTreePosition(
+                base::BindRepeating(&AbortMoveAtRootBoundary))
             ->CreatePositionAtEndOfAnchor();
 
     // If moving to the end of the current anchor hasn't changed our original
@@ -2531,7 +2552,9 @@ class AXPosition {
     if (AtEndOfAnchor() &&
         boundary_behavior != AXBoundaryBehavior::StopIfAlreadyAtBoundary) {
       tree_position = std::move(next_tree_position);
-      next_tree_position = tree_position->CreateNextLeafTreePosition()
+      next_tree_position = tree_position
+                               ->CreateNextLeafTreePosition(base::BindRepeating(
+                                   &AbortMoveAtRootBoundary))
                                ->CreatePositionAtEndOfAnchor();
     }
 
@@ -2541,7 +2564,9 @@ class AXPosition {
            !next_tree_position->IsNullPosition() &&
            !tree_position->AtEndOfFormat()) {
       tree_position = std::move(next_tree_position);
-      next_tree_position = tree_position->CreateNextLeafTreePosition()
+      next_tree_position = tree_position
+                               ->CreateNextLeafTreePosition(base::BindRepeating(
+                                   &AbortMoveAtRootBoundary))
                                ->CreatePositionAtEndOfAnchor();
     }
 
@@ -2627,7 +2652,8 @@ class AXPosition {
       while (!previous_position->IsNullPosition()) {
         AXPositionInstance look_back_position =
             previous_position->AsLeafTextPosition()
-                ->CreatePreviousLeafTextPosition()
+                ->CreatePreviousLeafTextPosition(
+                    base::BindRepeating(&AbortMoveAtRootBoundary))
                 ->CreatePositionAtEndOfAnchor();
         if (look_back_position->IsNullPosition()) {
           // Nowhere to look back to, so our candidate must be a valid paragraph
@@ -2635,7 +2661,9 @@ class AXPosition {
           break;
         }
         AXPositionInstance forward_step_position =
-            look_back_position->CreateNextLeafTextPosition()
+            look_back_position
+                ->CreateNextLeafTextPosition(
+                    base::BindRepeating(&AbortMoveAtRootBoundary))
                 ->CreatePositionAtEndOfAnchor();
         if (*forward_step_position == *previous_position)
           break;
@@ -2718,7 +2746,8 @@ class AXPosition {
             return CreateNullPosition();
           case ax::mojom::MoveDirection::kBackward:
             if (text_position->AtStartOfAnchor()) {
-              next_position = text_position->CreatePreviousLeafTextPosition();
+              next_position = text_position->CreatePreviousLeafTextPosition(
+                  base::BindRepeating(&AbortMoveAtRootBoundary));
             } else {
               text_position = text_position->CreatePositionAtStartOfAnchor();
               DCHECK(!text_position->IsNullPosition());
@@ -2726,7 +2755,8 @@ class AXPosition {
             }
             break;
           case ax::mojom::MoveDirection::kForward:
-            next_position = text_position->CreateNextLeafTextPosition();
+            next_position = text_position->CreateNextLeafTextPosition(
+                base::BindRepeating(&AbortMoveAtRootBoundary));
             break;
         }
 
@@ -2853,12 +2883,16 @@ class AXPosition {
             NOTREACHED();
             return CreateNullPosition();
           case ax::mojom::MoveDirection::kBackward:
-            next_position = text_position->CreatePreviousLeafTextPosition()
-                                ->CreatePositionAtEndOfAnchor();
+            next_position =
+                text_position
+                    ->CreatePreviousLeafTextPosition(
+                        base::BindRepeating(&AbortMoveAtRootBoundary))
+                    ->CreatePositionAtEndOfAnchor();
             break;
           case ax::mojom::MoveDirection::kForward:
             if (text_position->AtEndOfAnchor()) {
-              next_position = text_position->CreateNextLeafTextPosition();
+              next_position = text_position->CreateNextLeafTextPosition(
+                  base::BindRepeating(&AbortMoveAtRootBoundary));
             } else {
               text_position = text_position->CreatePositionAtEndOfAnchor();
               DCHECK(!text_position->IsNullPosition());
@@ -4055,12 +4089,51 @@ class AXPosition {
         // since the descendant is contained by it.
         return move_to_break;
       case AXMoveType::kSibling:
-        // For Sibling moves, abort if at both of the siblings are a page
-        // break, because that would mean exiting and/or entering a page break.
+        // For Sibling moves, abort if both of the siblings are a page break,
+        // because that would mean exiting and/or entering a page break.
         return move_from_break && move_to_break;
     }
-    NOTREACHED();
-    return false;
+  }
+
+  // AbortMovePredicate function used to detect crossing through the boundaries
+  // of a window-like container, such as a webpage, a PDF, a dialog, the
+  // browser's UI (AKA Views), or the whole desktop.
+  static bool AbortMoveAtRootBoundary(const AXPosition& move_from,
+                                      const AXPosition& move_to,
+                                      const AXMoveType move_type,
+                                      const AXMoveDirection direction) {
+    // Positions are null when moving past the whole content, therefore the root
+    // of a window-like container has certainly been crossed.
+    if (move_from.IsNullPosition() || move_to.IsNullPosition())
+      return true;
+
+    const ax::mojom::Role move_from_role = move_from.GetAnchorRole();
+    const ax::mojom::Role move_to_role = move_to.GetAnchorRole();
+    switch (move_type) {
+      case AXMoveType::kAncestor:
+        // For Ancestor moves, only abort when exiting a window-like container.
+        // We don't care if the ancestor is the root of a window-like container
+        // or not, since the descendant is contained by it. However, we do care
+        // if the ancestor is an iframe because a webpage should be navigated as
+        // a single document together with all its iframes, (out-of-process or
+        // otherwise).
+        return IsRootLike(move_from_role) && !IsIframe(move_to_role);
+      case AXMoveType::kDescendant:
+        // For Descendant moves, only abort when entering a window-like
+        // container. We don't care if the ancestor is the root of a window-like
+        // container or not, since the descendant is contained by it. However,
+        // we do care if the ancestor is an iframe because a webpage should be
+        // navigated as a single document together with all its iframes,
+        // (out-of-process or otherwise).
+        return IsRootLike(move_to_role) && !IsIframe(move_from_role);
+      case AXMoveType::kSibling:
+        // For Sibling moves, abort if both of the siblings are at the root of
+        // window-like containers because that would mean exiting and/or
+        // entering a new window-like container. Iframes should not be present
+        // in this case because an iframe should never contain more than one
+        // kRootWebArea as its immediate child.
+        return IsRootLike(move_from_role) && IsRootLike(move_to_role);
+    }
   }
 
   static bool AbortMoveAtStartOfInlineBlock(const AXPosition& move_from,
@@ -4128,10 +4201,11 @@ class AXPosition {
   }
 
   // Creates an ancestor equivalent position at the root node of this position's
-  // accessibility tree, e.g. at the root of the current out-of-process iframe,
-  // PDF plugin, Views tree, etc.
+  // accessibility tree, e.g. at the root of the current iframe (out-of-process
+  // or not), PDF plugin, Views tree, dialog (native, ARIA or HTML), window, or
+  // the whole desktop.
   //
-  // For a similar method that does not stop at iframe boundaries, see
+  // For a similar method that does not stop at all iframe boundaries, see
   // `CreateRootAncestorPosition`.
   //
   // See `CreateParentPosition` for an explanation of the use of
@@ -4156,9 +4230,9 @@ class AXPosition {
   // Creates an ancestor equivalent position at the root node of all content,
   // e.g. at the root of the whole webpage or PDF document.
   //
-  // Note that this method will break out of an iframe and return a position at
-  // the root of the top-level document. For a similar method that stops at
-  // iframe boundaries, see `CreateAXTreeRootAncestorPosition`.
+  // Note that this method will break out of an out-of-process iframe and return
+  // a position at the root of the top-level document. For a similar method that
+  // stops at all iframe boundaries, see `CreateAXTreeRootAncestorPosition`.
   //
   // See `CreateParentPosition` for an explanation of the use of
   // |move_direction|.
@@ -4322,7 +4396,9 @@ class AXPosition {
         // Same as the comment above, using AtStartOfAnchor is enough to skip
         // empty text nodes that are equivalent to the initial position.
         while (text_position->AtStartOfAnchor()) {
-          text_position = text_position->CreatePreviousLeafTextPosition()
+          text_position = text_position
+                              ->CreatePreviousLeafTextPosition(
+                                  base::BindRepeating(&AbortMoveAtRootBoundary))
                               ->CreatePositionAtEndOfAnchor();
         }
         if (!text_position->IsNullPosition())
@@ -4339,7 +4415,8 @@ class AXPosition {
         // since those positions are equivalent to both, the previous non-empty
         // leaf node's end and the next non-empty leaf node's start.
         while (text_position->AtEndOfAnchor()) {
-          text_position = text_position->CreateNextLeafTextPosition();
+          text_position = text_position->CreateNextLeafTextPosition(
+              base::BindRepeating(&AbortMoveAtRootBoundary));
         }
         if (!text_position->IsNullPosition())
           ++text_position->text_offset_;
