@@ -121,6 +121,9 @@ class AXPositionTest : public testing::Test, public TestAXTreeManager {
   AXNodeData inline_box2_;
 
  private:
+  // Manages a minimalistic Views tree that is hosting the test webpage.
+  TestAXTreeManager views_tree_manager_;
+
   DISALLOW_COPY_AND_ASSIGN(AXPositionTest);
 };
 
@@ -266,6 +269,39 @@ void AXPositionTest::SetUp() {
   // Most tests use kSuppressCharacter behavior.
   g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kSuppressCharacter;
 
+  // First create a minimalistic Views tree that would host the test webpage.
+  // Window (BrowserRootView)
+  // ++NonClientView
+  // ++++WebView
+
+  AXNodeData window;
+  window.id = 1;
+  window.role = ax::mojom::Role::kWindow;
+  window.SetName("Test page - Google Chrome");
+  window.AddStringAttribute(ax::mojom::StringAttribute::kClassName,
+                            "BrowserRootView");
+
+  AXNodeData non_client_view;
+  non_client_view.id = 2;
+  non_client_view.role = ax::mojom::Role::kClient;
+  non_client_view.SetName("Google Chrome");
+  non_client_view.AddStringAttribute(ax::mojom::StringAttribute::kClassName,
+                                     "NonClientView");
+  window.child_ids = {non_client_view.id};
+
+  AXNodeData web_view;
+  web_view.id = 3;
+  web_view.role = ax::mojom::Role::kWebView;
+  web_view.AddState(ax::mojom::State::kInvisible);
+  web_view.SetNameExplicitlyEmpty();
+  web_view.AddStringAttribute(ax::mojom::StringAttribute::kClassName,
+                              "WebView");
+  non_client_view.child_ids = {web_view.id};
+
+  std::unique_ptr<AXTree> views_tree =
+      CreateAXTree({window, non_client_view, web_view});
+
+  // Now create the webpage tree.
   // root_
   //  |
   //  +------------+-----------+
@@ -373,11 +409,19 @@ void AXPositionTest::SetUp() {
                          line_break_, static_text2_, inline_box2_};
   initial_state.has_tree_data = true;
   initial_state.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  initial_state.tree_data.parent_tree_id = views_tree->GetAXTreeID();
   initial_state.tree_data.title = "Dialog title";
 
   // "SetTree" is defined in "TestAXTreeManager" and it passes ownership of the
   // created AXTree to the manager.
   SetTree(std::make_unique<AXTree>(initial_state));
+
+  AXTreeUpdate views_tree_update;
+  web_view.AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
+                              GetTreeID().ToString());
+  views_tree_update.nodes = {web_view};
+  ASSERT_TRUE(views_tree->Unserialize(views_tree_update));
+  views_tree_manager_ = TestAXTreeManager(std::move(views_tree));
 }
 
 std::unique_ptr<AXTree> AXPositionTest::CreateMultipageDocument(
@@ -6675,7 +6719,8 @@ TEST_F(AXPositionTest, CreateParentPositionWithTreePosition) {
   ASSERT_NE(nullptr, tree_position);
   test_position = tree_position->CreateParentPosition();
   EXPECT_NE(nullptr, test_position);
-  EXPECT_TRUE(test_position->IsNullPosition());
+  EXPECT_TRUE(test_position->IsTreePosition())
+      << "We should cross into a minimalistic Views tree.";
 
   tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), inline_box2_.id,
@@ -6741,7 +6786,8 @@ TEST_F(AXPositionTest, CreateParentPositionWithTextPosition) {
   ASSERT_NE(nullptr, text_position);
   test_position = text_position->CreateParentPosition();
   EXPECT_NE(nullptr, test_position);
-  EXPECT_TRUE(test_position->IsNullPosition());
+  EXPECT_TRUE(test_position->IsTextPosition())
+      << "We should cross into a minimalistic Views tree.";
 
   text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box2_.id, 5 /* text_offset */,
