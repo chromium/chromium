@@ -15,7 +15,7 @@ if (is_ios) {
 import("//build/config/mac/mac_sdk.gni")
 import("//build/config/mac/symbols.gni")
 
-assert(host_os == "mac")
+assert((is_ios && host_os == "mac") || host_os != "win")
 
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/concurrent_links.gni")
@@ -444,7 +444,11 @@ template("mac_toolchain") {
       # Instead use clonefile to copy the files which is as efficient as
       # hardlink but ensure the file have distinct metadata (thus avoid the
       # error with ditto, see https://crbug.com/1042182).
-      command = "rm -rf {{output}} && cp -Rc {{source}} {{output}}"
+      if (host_os == "mac") {
+        command = "rm -rf {{output}} && cp -Rc {{source}} {{output}}"
+      } else {
+        command = "rm -rf {{output}} && cp -Rl {{source}} {{output}}"
+      }
       description = "COPY_BUNDLE_DATA {{source}} {{output}}"
       pool = ":bundle_pool($default_toolchain)"
     }
