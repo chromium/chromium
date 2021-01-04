@@ -4,7 +4,9 @@
 
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
 
+#include <array>
 #include <map>
+#include <string>
 
 #include "base/numerics/clamped_math.h"
 #include "components/autofill_assistant/browser/client_context.h"
@@ -19,31 +21,18 @@
 
 namespace {
 
-const char kScriptParameterDebugBundleId[] = "DEBUG_BUNDLE_ID";
-const char kScriptParameterDebugBundleVersion[] = "DEBUG_BUNDLE_VERSION";
-const char kScriptParameterDebugSocketId[] = "DEBUG_SOCKET_ID";
+constexpr std::array<const char*, 5> kWhitelistedScriptParameters = {
+    "DEBUG_BUNDLE_ID", "DEBUG_BUNDLE_VERSION", "DEBUG_SOCKET_ID",
+    "FALLBACK_BUNDLE_ID", "FALLBACK_BUNDLE_VERSION"};
 
 std::map<std::string, std::string> ExtractDebugScriptParameters(
     const autofill_assistant::TriggerContext& trigger_context) {
   std::map<std::string, std::string> debug_script_parameters;
-  auto debug_bundle_id =
-      trigger_context.GetParameter(kScriptParameterDebugBundleId);
-  auto debug_bundle_version =
-      trigger_context.GetParameter(kScriptParameterDebugBundleVersion);
-  auto debug_socket_id =
-      trigger_context.GetParameter(kScriptParameterDebugSocketId);
-
-  if (debug_bundle_id) {
-    debug_script_parameters.insert(
-        {kScriptParameterDebugBundleId, *debug_bundle_id});
-  }
-  if (debug_bundle_version) {
-    debug_script_parameters.insert(
-        {kScriptParameterDebugBundleVersion, *debug_bundle_version});
-  }
-  if (debug_socket_id) {
-    debug_script_parameters.insert(
-        {kScriptParameterDebugSocketId, *debug_socket_id});
+  for (const char* parameter : kWhitelistedScriptParameters) {
+    auto value = trigger_context.GetParameter(parameter);
+    if (value) {
+      debug_script_parameters.insert({parameter, *value});
+    }
   }
   return debug_script_parameters;
 }

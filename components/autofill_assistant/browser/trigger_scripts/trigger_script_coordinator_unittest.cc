@@ -148,12 +148,16 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
       {"DEBUG_BUNDLE_ID", "bundle_id"},
       {"DEBUG_SOCKET_ID", "socket_id"},
       {"keyB", "valueB"},
-      {"DEBUG_BUNDLE_VERSION", "socket_version"}};
+      {"DEBUG_BUNDLE_VERSION", "socket_version"},
+      {"FALLBACK_BUNDLE_ID", "fallback_id"},
+      {"FALLBACK_BUNDLE_VERSION", "fallback_version"}};
 
   std::map<std::string, std::string> expected_script_params{
       {"DEBUG_BUNDLE_ID", "bundle_id"},
       {"DEBUG_SOCKET_ID", "socket_id"},
-      {"DEBUG_BUNDLE_VERSION", "socket_version"}};
+      {"DEBUG_BUNDLE_VERSION", "socket_version"},
+      {"FALLBACK_BUNDLE_ID", "fallback_id"},
+      {"FALLBACK_BUNDLE_VERSION", "fallback_version"}};
 
   EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
       .WillOnce([&](const GURL& url, const std::string& request_body,
