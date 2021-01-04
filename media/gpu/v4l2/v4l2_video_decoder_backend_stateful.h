@@ -107,6 +107,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   // becomes available.
   scoped_refptr<VideoFrame> GetPoolVideoFrame();
 
+  bool SendStopCommand();
   bool InitiateFlush(VideoDecoder::DecodeCB flush_cb);
   bool CompleteFlush();
 
