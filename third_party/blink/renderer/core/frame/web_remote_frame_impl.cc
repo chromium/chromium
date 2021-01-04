@@ -252,10 +252,8 @@ WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
 }
 
 void WebRemoteFrameImpl::SetCcLayer(cc::Layer* layer,
-                                    bool prevent_contents_opaque_changes,
                                     bool is_surface_layer) {
-  GetFrame()->SetCcLayer(layer, prevent_contents_opaque_changes,
-                         is_surface_layer);
+  GetFrame()->SetCcLayer(layer, is_surface_layer);
 }
 
 void WebRemoteFrameImpl::SetCoreFrame(RemoteFrame* frame) {

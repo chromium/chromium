@@ -42,10 +42,8 @@ void ChildFrameCompositingHelper::ChildFrameGone(
   crash_ui_layer_->SetMasksToBounds(true);
   crash_ui_layer_->SetIsDrawable(true);
 
-  bool prevent_contents_opaque_changes = false;
   bool is_surface_layer = false;
-  child_frame_compositor_->SetLayer(
-      crash_ui_layer_, prevent_contents_opaque_changes, is_surface_layer);
+  child_frame_compositor_->SetLayer(crash_ui_layer_, is_surface_layer);
 }
 
 void ChildFrameCompositingHelper::SetSurfaceId(
@@ -66,9 +64,7 @@ void ChildFrameCompositingHelper::SetSurfaceId(
 
   // TODO(lfg): Investigate if it's possible to propagate the information
   // about the child surface's opacity. https://crbug.com/629851.
-  bool prevent_contents_opaque_changes = true;
   child_frame_compositor_->SetLayer(surface_layer_,
-                                    prevent_contents_opaque_changes,
                                     true /* is_surface_layer */);
 
   UpdateVisibility(true);

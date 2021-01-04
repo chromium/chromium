@@ -409,8 +409,7 @@ bool CompositedLayerMapping::UpdateGraphicsLayerConfiguration(
     } else if (auto* frame_owner =
                    DynamicTo<HTMLFrameOwnerElement>(layout_object.GetNode())) {
       if (auto* remote = DynamicTo<RemoteFrame>(frame_owner->ContentFrame())) {
-        graphics_layer_->SetContentsToCcLayer(
-            remote->GetCcLayer(), remote->WebLayerHasFixedContentsOpaque());
+        graphics_layer_->SetContentsToCcLayer(remote->GetCcLayer(), true);
       }
     }
   } else if (IsA<LayoutVideo>(layout_object)) {

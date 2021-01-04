@@ -20,7 +20,6 @@ class ChildFrameCompositor {
 
   // Passes ownership of a cc::Layer to the ChildFrameCompositor.
   virtual void SetLayer(scoped_refptr<cc::Layer> layer,
-                        bool prevent_contents_opaque_changes,
                         bool is_surface_layer) = 0;
 
   // Returns a sad page bitmap used when the child frame has crashed.

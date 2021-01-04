@@ -81,13 +81,8 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void AddResourceTimingFromChild(
       mojom::blink::ResourceTimingInfoPtr timing) override;
 
-  void SetCcLayer(cc::Layer*,
-                  bool prevent_contents_opaque_changes,
-                  bool is_surface_layer);
+  void SetCcLayer(cc::Layer*, bool is_surface_layer);
   cc::Layer* GetCcLayer() const { return cc_layer_; }
-  bool WebLayerHasFixedContentsOpaque() const {
-    return prevent_contents_opaque_changes_;
-  }
 
   void AdvanceFocus(mojom::blink::FocusType, LocalFrame* source);
 
@@ -218,7 +213,6 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   Member<RemoteFrameView> view_;
   RemoteSecurityContext security_context_;
   cc::Layer* cc_layer_ = nullptr;
-  bool prevent_contents_opaque_changes_ = false;
   bool is_surface_layer_ = false;
   ParsedFeaturePolicy feature_policy_header_;
   String unique_name_;

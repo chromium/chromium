@@ -233,9 +233,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
 
   // ChildFrameCompositor:
   cc::Layer* GetLayer() override;
-  void SetLayer(scoped_refptr<cc::Layer> layer,
-                bool prevent_contents_opaque_changes,
-                bool is_surface_layer) override;
+  void SetLayer(scoped_refptr<cc::Layer> layer, bool is_surface_layer) override;
   SkBitmap* GetSadPageBitmap() override;
 
   const viz::LocalSurfaceId& GetLocalSurfaceId() const;

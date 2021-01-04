@@ -242,7 +242,7 @@ bool RemoteFrame::DetachImpl(FrameDetachType type) {
   // of all these objects. Break the cycle by notifying of detachment.
   To<RemoteDOMWindow>(dom_window_.Get())->FrameDetached();
   if (cc_layer_)
-    SetCcLayer(nullptr, false, false);
+    SetCcLayer(nullptr, false);
   receiver_.reset();
   main_frame_receiver_.reset();
 
@@ -772,13 +772,10 @@ bool RemoteFrame::IsIgnoredForHitTest() const {
          !visible_to_hit_testing_;
 }
 
-void RemoteFrame::SetCcLayer(cc::Layer* cc_layer,
-                             bool prevent_contents_opaque_changes,
-                             bool is_surface_layer) {
+void RemoteFrame::SetCcLayer(cc::Layer* cc_layer, bool is_surface_layer) {
   DCHECK(Owner());
 
   cc_layer_ = cc_layer;
-  prevent_contents_opaque_changes_ = prevent_contents_opaque_changes;
   is_surface_layer_ = is_surface_layer;
   if (cc_layer_) {
     if (is_surface_layer) {
