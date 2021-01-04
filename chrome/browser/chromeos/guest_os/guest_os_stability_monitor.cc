@@ -9,16 +9,12 @@
 
 namespace guest_os {
 
-const char kCrostiniStabilityHistogram[] = "Crostini.Stability";
-
-GuestOsStabilityMonitor::GuestOsStabilityMonitor(
-    crostini::CrostiniManager* crostini_manager)
-    : concierge_observer_(this),
+GuestOsStabilityMonitor::GuestOsStabilityMonitor(const std::string& histogram)
+    : histogram_(histogram),
+      concierge_observer_(this),
       cicerone_observer_(this),
       seneschal_observer_(this),
-      chunneld_observer_(this),
-      vm_stopped_observer_(this),
-      crostini_manager_(crostini_manager->GetWeakPtr()) {
+      chunneld_observer_(this) {
   auto* concierge_client =
       chromeos::DBusThreadManager::Get()->GetConciergeClient();
   DCHECK(concierge_client);
@@ -46,8 +42,6 @@ GuestOsStabilityMonitor::GuestOsStabilityMonitor(
   chunneld_client->WaitForServiceToBeAvailable(
       base::BindOnce(&GuestOsStabilityMonitor::ChunneldStarted,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  vm_stopped_observer_.Observe(crostini_manager);
 }
 
 GuestOsStabilityMonitor::~GuestOsStabilityMonitor() {}
@@ -89,43 +83,27 @@ void GuestOsStabilityMonitor::ChunneldStarted(bool is_available) {
 }
 
 void GuestOsStabilityMonitor::ConciergeServiceStopped() {
-  base::UmaHistogramEnumeration(kCrostiniStabilityHistogram,
-                                FailureClasses::ConciergeStopped);
+  base::UmaHistogramEnumeration(histogram_, FailureClasses::ConciergeStopped);
 }
 void GuestOsStabilityMonitor::ConciergeServiceStarted() {}
 
 void GuestOsStabilityMonitor::CiceroneServiceStopped() {
-  base::UmaHistogramEnumeration(kCrostiniStabilityHistogram,
-                                FailureClasses::CiceroneStopped);
+  base::UmaHistogramEnumeration(histogram_, FailureClasses::CiceroneStopped);
 }
 void GuestOsStabilityMonitor::CiceroneServiceStarted() {}
 
 void GuestOsStabilityMonitor::SeneschalServiceStopped() {
-  base::UmaHistogramEnumeration(kCrostiniStabilityHistogram,
-                                FailureClasses::SeneschalStopped);
+  base::UmaHistogramEnumeration(histogram_, FailureClasses::SeneschalStopped);
 }
 void GuestOsStabilityMonitor::SeneschalServiceStarted() {}
 
 void GuestOsStabilityMonitor::ChunneldServiceStopped() {
-  base::UmaHistogramEnumeration(kCrostiniStabilityHistogram,
-                                FailureClasses::ChunneldStopped);
+  base::UmaHistogramEnumeration(histogram_, FailureClasses::ChunneldStopped);
 }
 void GuestOsStabilityMonitor::ChunneldServiceStarted() {}
 
-void GuestOsStabilityMonitor::OnVmShutdown(const std::string& vm_name) {
-  // CrostiniManager calls this observer method before removing the VM from its
-  // tracking list, so this list will tell us what state the VM was believed to
-  // be in before the stop signal was received.
-  //
-  // If it was STARTING then the error is tracked as a restart failure, not
-  // here. If it was STOPPING then the stop was expected and not an error. If it
-  // wasn't tracked by CrostiniManager, then we don't care what happens to it.
-  //
-  // So we can just ask if it was in the STARTED state with ::IsVmRunning.
-  if (crostini_manager_->IsVmRunning(vm_name)) {
-    base::UmaHistogramEnumeration(kCrostiniStabilityHistogram,
-                                  FailureClasses::VmStopped);
-  }
+void GuestOsStabilityMonitor::LogUnexpectedVmShutdown() {
+  base::UmaHistogramEnumeration(histogram_, FailureClasses::VmStopped);
 }
 
 }  // namespace guest_os

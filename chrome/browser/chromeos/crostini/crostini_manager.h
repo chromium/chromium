@@ -45,6 +45,8 @@ class GuestOsStabilityMonitor;
 
 namespace crostini {
 
+extern const char kCrostiniStabilityHistogram[];
+
 class CrostiniUpgradeAvailableNotification;
 
 class LinuxPackageOperationProgressObserver {

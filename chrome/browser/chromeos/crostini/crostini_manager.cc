@@ -193,6 +193,8 @@ void EmitTimeInStageHistogram(base::TimeDelta duration,
 
 }  // namespace
 
+const char kCrostiniStabilityHistogram[] = "Crostini.Stability";
+
 CrostiniManager::RestartOptions::RestartOptions() = default;
 CrostiniManager::RestartOptions::RestartOptions(RestartOptions&&) = default;
 CrostiniManager::RestartOptions::~RestartOptions() = default;
@@ -1069,7 +1071,8 @@ CrostiniManager::CrostiniManager(Profile* profile)
   }
   CrostiniThrottle::GetForBrowserContext(profile_);
   guest_os_stability_monitor_ =
-      std::make_unique<guest_os::GuestOsStabilityMonitor>(this);
+      std::make_unique<guest_os::GuestOsStabilityMonitor>(
+          kCrostiniStabilityHistogram);
 }
 
 CrostiniManager::~CrostiniManager() {
@@ -2528,6 +2531,24 @@ void CrostiniManager::OnStopVm(
 void CrostiniManager::OnVmStoppedCleanup(const std::string& vm_name) {
   for (auto& observer : vm_shutdown_observers_) {
     observer.OnVmShutdown(vm_name);
+  }
+
+  // Check what state the VM was believed to be in before the stop signal was
+  // received.
+  //
+  // If it was in the STARTED state, it's an unexpected shutdown and we should
+  // log it here.
+  //
+  // If it was STARTING then the error is tracked as a restart failure, not
+  // here. If it was STOPPING then the stop was expected and not an error. If
+  // it wasn't tracked by CrostiniManager, then we don't care what happens to
+  // it.
+  //
+  // Therefore this stop signal is unexpected if-and-only-if IsVmRunning().
+  //
+  // This check must run before removing the VM from |running_vms_|.
+  if (IsVmRunning(vm_name)) {
+    guest_os_stability_monitor_->LogUnexpectedVmShutdown();
   }
 
   // Remove from running_vms_, and other vm-keyed state.
