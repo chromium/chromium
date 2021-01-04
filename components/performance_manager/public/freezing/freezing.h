@@ -8,6 +8,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FREEZING_FREEZING_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FREEZING_FREEZING_H_
 
+#include <memory>
+
 #include "components/performance_manager/public/voting/voting.h"
 
 namespace content {
