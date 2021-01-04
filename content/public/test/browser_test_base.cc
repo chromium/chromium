@@ -46,7 +46,6 @@
 #include "content/browser/startup_helper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/tracing/memory_instrumentation_util.h"
-#include "content/browser/tracing/startup_tracing_controller.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/app/content_main.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -167,47 +166,10 @@ void RunTaskOnRendererThread(base::OnceClosure task,
   GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(quit_task));
 }
 
-enum class TraceBasenameType {
-  kWithoutTestStatus,
-  kWithTestStatus,
-};
-
-std::string GetDefaultTraceBasename(TraceBasenameType type) {
-  std::string test_suite_name = ::testing::UnitTest::GetInstance()
-                                    ->current_test_info()
-                                    ->test_suite_name();
-  std::string test_name =
-      ::testing::UnitTest::GetInstance()->current_test_info()->name();
-  // Parameterised tests might have slashes in their full name — replace them
-  // before using it as a file name to avoid trying to write to an incorrect
-  // location.
-  base::ReplaceChars(test_suite_name, "/", "_", &test_suite_name);
-  base::ReplaceChars(test_name, "/", "_", &test_name);
-  // Add random number to the trace file to distinguish traces from different
-  // test runs. We don't use timestamp here to avoid collisions with parallel
-  // runs of the same test. Browser test runner runs one test per browser
-  // process instantiation, so saving the seed here is appopriate.
-  // GetDefaultTraceBasename() is going to be called twice:
-  // - for the first time, before the test starts to get the name of the file to
-  // stream the results (to avoid losing them if test crashes).
-  // - the second time, if test execution finishes normally, to calculate the
-  // resulting name of the file, including test result.
-  static std::string random_seed =
-      base::NumberToString(base::RandInt(1e7, 1e8 - 1));
-  std::string status;
-  if (type == TraceBasenameType::kWithTestStatus) {
-    status = ::testing::UnitTest::GetInstance()
-                     ->current_test_info()
-                     ->result()
-                     ->Passed()
-                 ? "OK"
-                 : "FAIL";
-  } else {
-    // In order to be able to stream the test to the file,
-    status = "NOT_FINISHED";
-  }
-  return "trace_test_" + test_suite_name + "_" + test_name + "_" + random_seed +
-         "_" + status;
+void TraceStopTracingComplete(base::OnceClosure quit,
+                              const base::FilePath& file_path) {
+  LOG(ERROR) << "Tracing written to: " << file_path.value();
+  std::move(quit).Run();
 }
 
 // See SetInitialWebContents comment for more information.
@@ -521,16 +483,6 @@ void BrowserTestBase::SetUp() {
       std::make_unique<CreatedMainPartsClosure>(base::BindOnce(
           &BrowserTestBase::CreatedBrowserMainParts, base::Unretained(this)));
 
-  // If tracing is enabled, customise the output filename based on the name of
-  // the test.
-  StartupTracingController::GetInstance().SetDefaultBasename(
-      GetDefaultTraceBasename(TraceBasenameType::kWithoutTestStatus),
-      StartupTracingController::ExtensionType::kAppendAppropriate);
-  // Write to the provided file directly to recover at least some data when the
-  // test crashes or times out.
-  StartupTracingController::GetInstance().SetUsingTemporaryFile(
-      StartupTracingController::TempFilePolicy::kWriteDirectly);
-
 #if defined(OS_ANDROID)
   // For all other platforms, we call ContentMain for browser tests which goes
   // through the normal browser initialization paths. For Android, we must set
@@ -718,6 +670,36 @@ void BrowserTestBase::WaitUntilJavaIsReady(base::OnceClosure quit_closure) {
 }
 #endif
 
+namespace {
+
+std::string GetDefaultTraceFilename() {
+  std::string test_suite_name = ::testing::UnitTest::GetInstance()
+                                    ->current_test_info()
+                                    ->test_suite_name();
+  std::string test_name =
+      ::testing::UnitTest::GetInstance()->current_test_info()->name();
+  // Parameterised tests might have slashes in their full name — replace them
+  // before using it as a file name to avoid trying to write to an incorrect
+  // location.
+  base::ReplaceChars(test_suite_name, "/", "_", &test_suite_name);
+  base::ReplaceChars(test_name, "/", "_", &test_name);
+  // Add random number to the trace file to distinguish traces from different
+  // test runs.
+  // We don't use timestamp here to avoid collisions with parallel runs of the
+  // same test.
+  std::string random_seed = base::NumberToString(base::RandInt(1e7, 1e8 - 1));
+  std::string status = ::testing::UnitTest::GetInstance()
+                               ->current_test_info()
+                               ->result()
+                               ->Passed()
+                           ? "OK"
+                           : "FAIL";
+  return "trace_test_" + test_suite_name + "_" + test_name + "_" + random_seed +
+         "_" + status + ".json";
+}
+
+}  // namespace
+
 void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
 #if !defined(OS_ANDROID)
   // All FeatureList overrides should have been registered prior to browser test
@@ -745,6 +727,17 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
   if (handle_sigterm_)
     signal(SIGTERM, DumpStackTraceSignalHandler);
 #endif  // defined(OS_POSIX)
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableTracing)) {
+    base::trace_event::TraceConfig trace_config(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kEnableTracing),
+        base::trace_event::RECORD_CONTINUOUSLY);
+    TracingController::GetInstance()->StartTracing(
+        trace_config,
+        TracingController::StartTracingDoneCallback());
+  }
 
   {
     // This can be called from a posted task. Allow nested tasks here, because
@@ -789,23 +782,31 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     TearDownOnMainThread();
   }
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableTracing)) {
+    base::FilePath trace_file =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            switches::kEnableTracingOutput);
+    // If |trace_file| ends in a directory separator or is empty use a generated
+    // name in that directory (empty means current directory).
+    if (trace_file.empty() || trace_file.EndsWithSeparator())
+      trace_file = trace_file.AppendASCII(GetDefaultTraceFilename());
+
+    // Wait for tracing to collect results from the renderers.
+    base::RunLoop run_loop;
+    TracingController::GetInstance()->StopTracing(
+        TracingControllerImpl::CreateFileEndpoint(
+            trace_file, base::BindOnce(&TraceStopTracingComplete,
+                                       run_loop.QuitClosure(), trace_file)));
+    run_loop.Run();
+  }
+
   PostRunTestOnMainThread();
 
   // Sometimes tests initialize a storage partition and the initialization
   // schedules some tasks which need to be executed before finishing tests.
   // Run these tasks.
   content::RunAllPendingInMessageLoop();
-
-  // Update the trace output filename to include the test result.
-  StartupTracingController::GetInstance().SetDefaultBasename(
-      GetDefaultTraceBasename(TraceBasenameType::kWithTestStatus),
-      StartupTracingController::ExtensionType::kAppendAppropriate);
-
-#if defined(OS_ANDROID)
-  // On Android, browser main runner is not shut down, so stop trace recording
-  // here.
-  StartupTracingController::GetInstance().WaitUntilStopped();
-#endif
 }
 
 void BrowserTestBase::SetAllowNetworkAccessToHostResolutions() {
