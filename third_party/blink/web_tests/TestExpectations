@@ -3093,10 +3093,6 @@ crbug.com/1034807 [ Linux ] virtual/off-main-thread-css-paint/external/wpt/css/c
 crbug.com/1034807 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-gradient.https.html [ Failure ]
 crbug.com/1034807 [ Win ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-gradient.https.html [ Failure ]
 
-# WPT css-paint-api tests failing, possibly for the same reason as above
-crbug.com/1157960 external/wpt/css/css-paint-api/dynamic-import.html [ Failure ]
-crbug.com/1157960 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/dynamic-import.html [ Failure ]
-
 crbug.com/829028 external/wpt/css/css-break/avoid-border-break.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/borders-000.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/borders-001.html [ Failure ]
