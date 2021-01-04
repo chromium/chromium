@@ -1811,11 +1811,13 @@ class AXPosition {
   }
 
   // Creates a position at the start of all content, e.g. at the start of the
-  // whole webpage or PDF document.
+  // whole webpage, PDF plugin, Views tree, dialog (native, ARIA or HTML),
+  // window, or the whole desktop.
   //
   // Note that this method will break out of an out-of-process iframe and return
-  // a position at the start of the top-level document. For a similar method
-  // that stops at all iframe boundaries, see `CreatePositionAtStartOfAXTree()`.
+  // a position at the start of the top-level document, but it will not break
+  // into the Views tree if present. For a similar method that stops at all
+  // iframe boundaries, see `CreatePositionAtStartOfAXTree()`.
   AXPositionInstance CreatePositionAtStartOfContent() const {
     AXPositionInstance root_position =
         AsTreePosition()
@@ -1827,11 +1829,13 @@ class AXPosition {
   }
 
   // Creates a position at the end of all content, e.g. at the end of the whole
-  // webpage or PDF document.
+  // webpage, PDF plugin, Views tree, dialog (native, ARIA or HTML), window, or
+  // the whole desktop.
   //
   // Note that this method will break out of an out-of-process iframe and return
-  // a position at the end of the top-level document. For a similar method that
-  // stops at all iframe boundaries, see `CreatePositionAtEndOfAXTree()`.
+  // a position at the end of the top-level document, but it will not break into
+  // the Views tree if present. For a similar method that stops at all iframe
+  // boundaries, see `CreatePositionAtEndOfAXTree()`.
   AXPositionInstance CreatePositionAtEndOfContent() const {
     AXPositionInstance root_position =
         AsTreePosition()->CreateRootAncestorPosition(
@@ -4228,11 +4232,13 @@ class AXPosition {
   }
 
   // Creates an ancestor equivalent position at the root node of all content,
-  // e.g. at the root of the whole webpage or PDF document.
+  // e.g. at the root of the whole webpage, PDF plugin, Views tree, dialog
+  // (native, ARIA or HTML), window, or the whole desktop.
   //
   // Note that this method will break out of an out-of-process iframe and return
-  // a position at the root of the top-level document. For a similar method that
-  // stops at all iframe boundaries, see `CreateAXTreeRootAncestorPosition`.
+  // a position at the root of the top-level document, but it will not break
+  // into the Views tree if present. For a similar method that stops at all
+  // iframe boundaries, see `CreateAXTreeRootAncestorPosition`.
   //
   // See `CreateParentPosition` for an explanation of the use of
   // |move_direction|.
