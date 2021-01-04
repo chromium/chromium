@@ -6,13 +6,14 @@
 #define CONTENT_BROWSER_TRACING_STARTUP_TRACING_CONTROLLER_H_
 
 #include "base/threading/sequence_bound.h"
+#include "content/common/content_export.h"
 
 namespace content {
 
 // Class responsible for starting and stopping startup tracing as configured by
 // StartupTracingConfig. All interactions with it are limited to UI thread, but
 // the actual logic lives on a background ThreadPool sequence.
-class StartupTracingController {
+class CONTENT_EXPORT StartupTracingController {
  public:
   StartupTracingController();
   ~StartupTracingController();
@@ -22,16 +23,55 @@ class StartupTracingController {
   void StartIfNeeded();
   void WaitUntilStopped();
 
+  // By default, a trace is written into a temporary file which then is renamed,
+  // however this can lead to data loss when the browser process crashes.
+  // Embedders can disable this (especially if a name provided to
+  // SetDefaultBasename makes it clear that the trace is incomplete and final
+  // name will be provided via SetDefaultBasename call before calling Stop).
+  enum class TempFilePolicy {
+    kUseTemporaryFile,
+    kWriteDirectly,
+  };
+  void SetUsingTemporaryFile(TempFilePolicy temp_file_policy);
+
+  // Set default basename for the trace output file to allow //content embedders
+  // to customise it using some metadata (like test names).
+  //
+  // If --enable-trace-output is a directory (default value, empty, designated
+  // "current directory"), then the startup trace will be written in a file with
+  // the given basename in this directory. Depending on the |extension_type|,
+  // an appropriate extension (.json or .proto) will be added.
+  //
+  // Note that embedders can call it even after tracing has started and Perfetto
+  // started streaming the trace into it — in that case,
+  // StartupTracingController will rename the file after finishing. However,
+  // this is guaranteed to work only when tracing lasts until Stop() (not with
+  // duration-based tracing).
+  enum class ExtensionType {
+    kAppendAppropriate,
+    kNone,
+  };
+  void SetDefaultBasename(std::string basename, ExtensionType extension_type);
+  // As the test harness calls SetDefaultBasename, expose ForTest() version for
+  // the tests checking the StartupTracingController logic itself.
+  void SetDefaultBasenameForTest(std::string basename,
+                                 ExtensionType extension_type);
+
+  bool is_finished_for_testing() const { return state_ == State::kStopped; }
+
  private:
   void Stop(base::OnceClosure on_finished_callback);
 
   void OnStoppedOnUIThread();
 
+  base::FilePath GetOutputPath();
+
   enum class State {
+    kNotEnabled,
     kRunning,
-    kNotRunning,
+    kStopped,
   };
-  State state_ = State::kNotRunning;
+  State state_ = State::kNotEnabled;
 
   // All actual interactions with the tracing service and the process of writing
   // files happens on a background thread.
@@ -40,6 +80,11 @@ class StartupTracingController {
 
   base::OnceClosure on_tracing_finished_;
   base::FilePath output_file_;
+
+  std::string default_basename_;
+  bool basename_for_test_set_ = false;
+
+  TempFilePolicy temp_file_policy_ = TempFilePolicy::kUseTemporaryFile;
 };
 
 }  // namespace content

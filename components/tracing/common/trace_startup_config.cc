@@ -88,11 +88,11 @@ TraceStartupConfig::TraceStartupConfig() {
     DCHECK(IsEnabled());
     DCHECK(!IsTracingStartupForDuration());
     DCHECK_EQ(SessionOwner::kBackgroundTracing, session_owner_);
-    CHECK(!ShouldTraceToResultFile());
+    CHECK(GetResultFile().empty());
   } else if (EnableFromATrace()) {
     DCHECK(IsEnabled());
     DCHECK_EQ(SessionOwner::kSystemTracing, session_owner_);
-    CHECK(!ShouldTraceToResultFile());
+    CHECK(GetResultFile().empty());
   }
 }
 
@@ -126,18 +126,9 @@ TraceStartupConfig::OutputFormat TraceStartupConfig::GetOutputFormat() const {
   return output_format_;
 }
 
-bool TraceStartupConfig::ShouldTraceToResultFile() const {
-  return IsEnabled() && should_trace_to_result_file_;
-}
-
 base::FilePath TraceStartupConfig::GetResultFile() const {
   DCHECK(IsEnabled());
-  DCHECK(ShouldTraceToResultFile());
   return result_file_;
-}
-
-void TraceStartupConfig::OnTraceToResultFileFinished() {
-  finished_writing_to_file_ = true;
 }
 
 void TraceStartupConfig::SetBackgroundStartupTracingEnabled(bool enabled) {
@@ -172,25 +163,41 @@ bool TraceStartupConfig::EnableFromCommandLine() {
                     << "=" << startup_duration_str << " defaulting to 5 (secs)";
       startup_duration_in_seconds_ = kDefaultStartupDurationInSeconds;
     }
+  } else if (command_line->HasSwitch(switches::kEnableTracing)) {
+    // For --enable-tracing, tracing should last until browser shutdown.
+    startup_duration_in_seconds_ = 0;
   }
 
-  if (command_line->GetSwitchValueASCII(switches::kTraceStartupFormat) ==
-      "proto") {
-    // Default is "json".
+  if (command_line->HasSwitch(switches::kTraceStartupFormat)) {
+    if (command_line->GetSwitchValueASCII(switches::kTraceStartupFormat) ==
+        "proto") {
+      // Default is "json".
+      output_format_ = OutputFormat::kProto;
+    }
+  } else if (command_line->GetSwitchValueASCII(
+                 switches::kEnableTracingFormat) == "proto") {
     output_format_ = OutputFormat::kProto;
   }
 
-  if (!command_line->HasSwitch(switches::kTraceStartup))
+  if (!command_line->HasSwitch(switches::kTraceStartup) &&
+      !command_line->HasSwitch(switches::kEnableTracing)) {
     return false;
+  }
+
+  std::string categories;
+  if (command_line->HasSwitch(switches::kTraceStartup)) {
+    categories = command_line->GetSwitchValueASCII(switches::kTraceStartup);
+  } else {
+    categories = command_line->GetSwitchValueASCII(switches::kEnableTracing);
+  }
 
   trace_config_ = base::trace_event::TraceConfig(
-      command_line->GetSwitchValueASCII(switches::kTraceStartup),
+      categories,
       command_line->GetSwitchValueASCII(switches::kTraceStartupRecordMode));
 
   result_file_ = command_line->GetSwitchValuePath(switches::kTraceStartupFile);
 
   is_enabled_ = true;
-  should_trace_to_result_file_ = true;
   return true;
 }
 
@@ -225,7 +232,6 @@ bool TraceStartupConfig::EnableFromConfigFile() {
 
   if (trace_config_file.empty()) {
     is_enabled_ = true;
-    should_trace_to_result_file_ = true;
     DLOG(WARNING) << "Use default trace config.";
     return true;
   }
@@ -245,7 +251,6 @@ bool TraceStartupConfig::EnableFromConfigFile() {
   is_enabled_ = ParseTraceConfigFileContent(trace_config_file_content);
   if (!is_enabled_)
     DLOG(WARNING) << "Cannot parse the trace config file correctly.";
-  should_trace_to_result_file_ = is_enabled_;
   return is_enabled_;
 }
 
@@ -267,7 +272,6 @@ bool TraceStartupConfig::EnableFromBackgroundTracing() {
 
   is_enabled_ = true;
   session_owner_ = SessionOwner::kBackgroundTracing;
-  should_trace_to_result_file_ = false;
   // Set startup duration to 0 since background tracing config will configure
   // the durations later.
   startup_duration_in_seconds_ = 0;
