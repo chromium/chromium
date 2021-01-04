@@ -232,4 +232,13 @@ suite('ReadLaterAppTest', () => {
         keyDownOn(firstItem, 0, [], 'ArrowLeft');
         assertEquals(firstItem, readLaterApp.shadowRoot.activeElement);
       });
+
+  test('Favicons present in the dom', async () => {
+    const readLaterItems = /** @type {!NodeList<!Element>} */
+        (readLaterApp.shadowRoot.querySelectorAll('read-later-item'));
+
+    readLaterItems.forEach((readLaterItem) => {
+      assertTrue(!!readLaterItem.shadowRoot.querySelector('.favicon'));
+    });
+  });
 });

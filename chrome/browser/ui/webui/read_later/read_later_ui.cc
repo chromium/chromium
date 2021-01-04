@@ -7,12 +7,15 @@
 #include <string>
 #include <utility>
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/read_later/read_later_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/read_later_resources.h"
 #include "chrome/grit/read_later_resources_map.h"
+#include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -47,6 +50,11 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
   };
   for (const auto& str : kLocalizedStrings)
     AddLocalizedString(source, str.name, str.id);
+
+  Profile* profile = Profile::FromWebUI(web_ui);
+  content::URLDataSource::Add(
+      profile, std::make_unique<FaviconSource>(
+                   profile, chrome::FaviconUrlFormat::kFavicon2));
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kReadLaterResources, kReadLaterResourcesSize),

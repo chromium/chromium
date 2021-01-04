@@ -18,6 +18,15 @@
     width: auto;
   }
 
+  .favicon {
+    background-repeat: no-repeat;
+    background-size: var(--mwb-icon-size);
+    flex-shrink: 0;
+    height: var(--mwb-icon-size);
+    margin-inline-end: var(--mwb-list-item-horizontal-margin);
+    width: var(--mwb-icon-size);
+  }
+
   .text-container {
     flex-grow: 1;
     overflow: hidden;
@@ -65,6 +74,8 @@
   }
 </style>
 
+<div class="favicon" style="background-image:[[getFaviconUrl_(data.url.url)]]">
+</div>
 <div class="text-container">
   <div class="primary-text">[[data.title]]</div>
   <div class="secondary-text">
