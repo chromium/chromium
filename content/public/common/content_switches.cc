@@ -402,14 +402,6 @@ const char kEnableStrictPowerfulFeatureRestrictions[] =
 // Enabled threaded compositing for web tests.
 const char kEnableThreadedCompositing[]     = "enable-threaded-compositing";
 
-// Enable tracing during the execution of browser tests.
-const char kEnableTracing[]                 = "enable-tracing";
-
-// The filename to write the output of the test tracing to. If it is empty
-// or it ends in a directory separator then an auto-generated filename will be
-// appended.
-const char kEnableTracingOutput[]           = "enable-tracing-output";
-
 // Enable screen capturing support for MediaStream API.
 const char kEnableUserMediaScreenCapturing[] =
     "enable-usermedia-screen-capturing";
