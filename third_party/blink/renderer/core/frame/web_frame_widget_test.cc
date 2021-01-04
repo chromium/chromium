@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "cc/layers/solid_color_layer.h"
+#include "cc/test/property_tree_test_utils.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
@@ -468,14 +469,12 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
     WebView().StopDeferringMainFrameUpdate();
     FrameWidgetBase()->UpdateCompositorViewportRect(gfx::Rect(200, 100));
 
-    auto root_layer = cc::SolidColorLayer::Create();
-    root_layer->SetBounds(gfx::Size(200, 100));
-    root_layer->SetBackgroundColor(SK_ColorGREEN);
-    FrameWidgetBase()->LayerTreeHostForTesting()->SetRootLayer(root_layer);
-
+    auto* root_layer =
+        FrameWidgetBase()->LayerTreeHostForTesting()->root_layer();
     auto color_layer = cc::SolidColorLayer::Create();
     color_layer->SetBounds(gfx::Size(100, 100));
-    root_layer->AddChild(color_layer);
+    cc::CopyProperties(root_layer, color_layer.get());
+    root_layer->SetChildLayerList(cc::LayerList({color_layer}));
     color_layer->SetBackgroundColor(SK_ColorRED);
   }
 

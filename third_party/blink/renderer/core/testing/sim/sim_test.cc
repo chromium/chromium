@@ -57,6 +57,8 @@ void SimTest::SetUp() {
   local_frame_root_ = WebView().MainFrameImpl();
   compositor_->SetLayerTreeHost(
       local_frame_root_->FrameWidgetImpl()->LayerTreeHostForTesting());
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(300, 200));
 }
 
 void SimTest::TearDown() {
