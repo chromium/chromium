@@ -13,10 +13,7 @@ std::unique_ptr<webrtc::SessionDescriptionInterface> CopySessionDescription(
     const webrtc::SessionDescriptionInterface* description) {
   if (!description)
     return nullptr;
-  std::string sdp;
-  description->ToString(&sdp);
-  return std::unique_ptr<webrtc::SessionDescriptionInterface>(
-      webrtc::CreateSessionDescription(description->type(), sdp, nullptr));
+  return description->Clone();
 }
 
 WebRtcSetDescriptionObserver::States::States()
