@@ -37,6 +37,7 @@ public class SmartSelectionMetricsLogger implements SelectionMetricsLogger {
     private static final String TAG = "SmartSelectionLogger";
     private static final boolean DEBUG = false;
 
+    // May be null if {@link onWindowAndroidChanged()} sets it to null.
     private WindowAndroid mWindowAndroid;
 
     private TextClassifier mSession;
@@ -64,6 +65,8 @@ public class SmartSelectionMetricsLogger implements SelectionMetricsLogger {
     }
 
     public void logSelectionStarted(String selectionText, int startOffset, boolean editable) {
+        if (mWindowAndroid == null) return;
+
         Context context = mWindowAndroid.getContext().get();
         if (context == null) return;
 
