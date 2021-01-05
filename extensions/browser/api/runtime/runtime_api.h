@@ -89,7 +89,7 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
 
   void ReloadExtension(const std::string& extension_id);
   bool CheckForUpdates(const std::string& extension_id,
-                       const RuntimeAPIDelegate::UpdateCheckCallback& callback);
+                       RuntimeAPIDelegate::UpdateCheckCallback callback);
   void OpenURL(const GURL& uninstall_url);
   bool GetPlatformInfo(api::runtime::PlatformInfo* info);
   bool RestartDevice(std::string* error_message);

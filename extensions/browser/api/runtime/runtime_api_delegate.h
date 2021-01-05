@@ -43,7 +43,8 @@ class RuntimeAPIDelegate {
   virtual ~RuntimeAPIDelegate() {}
 
   // The callback given to RequestUpdateCheck.
-  typedef base::Callback<void(const UpdateCheckResult&)> UpdateCheckCallback;
+  using UpdateCheckCallback =
+      base::OnceCallback<void(const UpdateCheckResult&)>;
 
   // Registers an UpdateObserver on behalf of the runtime API.
   virtual void AddUpdateObserver(UpdateObserver* observer) = 0;
@@ -58,7 +59,7 @@ class RuntimeAPIDelegate {
   // are disabled. Otherwise |callback| is called with the result of the
   // update check.
   virtual bool CheckForUpdates(const std::string& extension_id,
-                               const UpdateCheckCallback& callback) = 0;
+                               UpdateCheckCallback callback) = 0;
 
   // Navigates the browser to a URL on behalf of the runtime API.
   virtual void OpenURL(const GURL& uninstall_url) = 0;

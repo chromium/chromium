@@ -259,8 +259,8 @@ void RuntimeAPI::ReloadExtension(const std::string& extension_id) {
 
 bool RuntimeAPI::CheckForUpdates(
     const std::string& extension_id,
-    const RuntimeAPIDelegate::UpdateCheckCallback& callback) {
-  return delegate_->CheckForUpdates(extension_id, callback);
+    RuntimeAPIDelegate::UpdateCheckCallback callback) {
+  return delegate_->CheckForUpdates(extension_id, std::move(callback));
 }
 
 void RuntimeAPI::OpenURL(const GURL& update_url) {
@@ -645,8 +645,8 @@ ExtensionFunction::ResponseAction RuntimeRequestUpdateCheckFunction::Run() {
            ->Get(browser_context())
            ->CheckForUpdates(
                extension_id(),
-               base::Bind(&RuntimeRequestUpdateCheckFunction::CheckComplete,
-                          this))) {
+               base::BindOnce(&RuntimeRequestUpdateCheckFunction::CheckComplete,
+                              this))) {
     return RespondNow(Error(kUpdatesDisabledError));
   }
   return RespondLater();

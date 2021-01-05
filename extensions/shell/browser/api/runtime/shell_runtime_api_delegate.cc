@@ -35,9 +35,8 @@ void ShellRuntimeAPIDelegate::ReloadExtension(const std::string& extension_id) {
       ->ReloadExtension(extension_id);
 }
 
-bool ShellRuntimeAPIDelegate::CheckForUpdates(
-    const std::string& extension_id,
-    const UpdateCheckCallback& callback) {
+bool ShellRuntimeAPIDelegate::CheckForUpdates(const std::string& extension_id,
+                                              UpdateCheckCallback callback) {
   return false;
 }
 
