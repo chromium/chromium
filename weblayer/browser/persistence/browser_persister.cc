@@ -58,6 +58,7 @@ BrowserPersister::BrowserPersister(const base::FilePath& path,
       browser_session_id_(SessionID::NewUnique()),
       command_storage_manager_(
           std::make_unique<sessions::CommandStorageManager>(
+              sessions::CommandStorageManager::kOther,
               path,
               this,
               browser->profile()->GetBrowserContext()->IsOffTheRecord())),

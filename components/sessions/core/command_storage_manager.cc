@@ -28,15 +28,17 @@ constexpr base::TimeDelta kSaveDelay = base::TimeDelta::FromMilliseconds(2500);
 }  // namespace
 
 CommandStorageManager::CommandStorageManager(
+    SessionType type,
     const base::FilePath& path,
     CommandStorageManagerDelegate* delegate,
     bool enable_crypto)
-    : CommandStorageManager(base::MakeRefCounted<CommandStorageBackend>(
-                                CreateDefaultBackendTaskRunner(),
-                                path),
-                            delegate) {
-  use_crypto_ = enable_crypto;
-}
+    : backend_(base::MakeRefCounted<CommandStorageBackend>(
+          CreateDefaultBackendTaskRunner(),
+          path,
+          type)),
+      use_crypto_(enable_crypto),
+      delegate_(delegate),
+      backend_task_runner_(backend_->owning_task_runner()) {}
 
 CommandStorageManager::~CommandStorageManager() = default;
 
@@ -145,12 +147,28 @@ void CommandStorageManager::GetCurrentSessionCommands(
       std::move(callback));
 }
 
-CommandStorageManager::CommandStorageManager(
-    scoped_refptr<CommandStorageBackend> backend,
-    CommandStorageManagerDelegate* delegate)
-    : backend_(std::move(backend)),
-      delegate_(delegate),
-      backend_task_runner_(backend_->owning_task_runner()) {}
+void CommandStorageManager::MoveCurrentSessionToLastSession() {
+  Save();
+  backend_task_runner()->PostNonNestableTask(
+      FROM_HERE,
+      base::BindOnce(&CommandStorageBackend::MoveCurrentSessionToLastSession,
+                     backend()));
+}
+
+void CommandStorageManager::DeleteLastSession() {
+  backend_task_runner()->PostNonNestableTask(
+      FROM_HERE,
+      base::BindOnce(&CommandStorageBackend::DeleteLastSession, backend()));
+}
+
+void CommandStorageManager::GetLastSessionCommands(
+    GetCommandsCallback callback) {
+  backend_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&CommandStorageBackend::ReadLastSessionCommands,
+                     backend()),
+      std::move(callback));
+}
 
 // static
 scoped_refptr<base::SequencedTaskRunner>

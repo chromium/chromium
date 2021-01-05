@@ -12,6 +12,8 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/optional.h"
+#include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/sessions_export.h"
 
@@ -42,14 +44,21 @@ class SESSIONS_EXPORT CommandStorageBackend
   // Number of bytes encryption adds.
   static const size_type kEncryptionOverheadInBytes;
 
+  // Represents data for a session. Public for tests.
+  struct SessionInfo {
+    base::FilePath path;
+    base::Time timestamp;
+  };
+
   // Creates a CommandStorageBackend. This method is invoked on the MAIN thread,
   // and does no IO. The real work is done from Init, which is invoked on
   // a background task runer.
   //
-  // |path| is the path the file is written to.
+  // See `CommandStorageManager` for details on `type` and `path`.
   CommandStorageBackend(
       scoped_refptr<base::SequencedTaskRunner> owning_task_runner,
-      const base::FilePath& path);
+      const base::FilePath& path,
+      CommandStorageManager::SessionType type);
   CommandStorageBackend(const CommandStorageBackend&) = delete;
   CommandStorageBackend& operator=(const CommandStorageBackend&) = delete;
 
@@ -76,17 +85,36 @@ class SESSIONS_EXPORT CommandStorageBackend
 
   bool inited() const { return inited_; }
 
- protected:
-  virtual ~CommandStorageBackend();
+  // Parses out the timestamp from a path pointing to a session file.
+  static bool TimestampFromPath(const base::FilePath& path, base::Time& result);
+
+  // Generates the path to a session file with the given timestamp.
+  static base::FilePath FilePathFromTime(
+      CommandStorageManager::SessionType type,
+      const base::FilePath& base_path,
+      base::Time time);
+
+  // Returns the commands from the last session file.
+  std::vector<std::unique_ptr<SessionCommand>> ReadLastSessionCommands();
+
+  // Deletes the file containing the commands for the last session.
+  void DeleteLastSession();
+
+  // Moves the current session file to the last session file. This is typically
+  // called during startup or if the user launches the app and no tabbed
+  // browsers are running.
+  void MoveCurrentSessionToLastSession();
+
+ private:
+  friend class base::RefCountedDeleteOnSequence<CommandStorageBackend>;
+  friend class base::DeleteHelper<CommandStorageBackend>;
+  friend class CommandStorageBackendTest;
+
+  ~CommandStorageBackend();
 
   // Performs initialization on the background task run, calling DoInit() if
   // necessary.
   void InitIfNecessary();
-
-  // Called the first time InitIfNecessary() is called.
-  virtual void DoInit() {}
-
-  const base::FilePath& path() const { return path_; }
 
   // Change the file path used to save the session. Must be called after closing
   // the file first (CloseFile())
@@ -94,9 +122,9 @@ class SESSIONS_EXPORT CommandStorageBackend
 
   // Reads the commands from the specified file.  If |crypto_key| is non-empty,
   // it is used to decrypt the file.
-  std::vector<std::unique_ptr<sessions::SessionCommand>> ReadCommandsFromFile(
-      const base::FilePath& path,
-      const std::vector<uint8_t>& crypto_key);
+  static std::vector<std::unique_ptr<sessions::SessionCommand>>
+  ReadCommandsFromFile(const base::FilePath& path,
+                       const std::vector<uint8_t>& crypto_key);
 
   // Closes the file. The next time AppendCommands() is called the file will
   // implicitly be reopened.
@@ -109,10 +137,6 @@ class SESSIONS_EXPORT CommandStorageBackend
   // NOTE: current_session_file_ may be null if the file couldn't be opened or
   // the header couldn't be written.
   void TruncateFile();
-
- private:
-  friend class base::RefCountedDeleteOnSequence<CommandStorageBackend>;
-  friend class base::DeleteHelper<CommandStorageBackend>;
 
   // Opens the current file and writes the header. On success a handle to
   // the file is returned.
@@ -136,8 +160,24 @@ class SESSIONS_EXPORT CommandStorageBackend
   // Returns true if commands are encrypted.
   bool IsEncrypted() const { return !crypto_key_.empty(); }
 
-  // Path commands are saved to.
-  base::FilePath path_;
+  // Gets data for the last session file.
+  void DetermineLastSessionFile();
+
+  // Attempt to delete all sessions besides the current and last. This is a
+  // best effort operation.
+  void DeleteLastSessionFiles();
+
+  // Gets all sessions files.
+  std::vector<SessionInfo> GetSessionFiles();
+
+  const CommandStorageManager::SessionType type_;
+
+  // This is the path supplied to the constructor. See CommandStorageManager
+  // constructor for details.
+  const base::FilePath supplied_path_;
+
+  // Path commands are currently being saved to.
+  base::FilePath current_path_;
 
   // This may be null, created as necessary.
   std::unique_ptr<base::File> file_;
@@ -151,6 +191,12 @@ class SESSIONS_EXPORT CommandStorageBackend
 
   // Incremented every time a command is written.
   int commands_written_ = 0;
+
+  // Timestamp when this session was started.
+  base::Time timestamp_;
+
+  // Data for the last session. If unset, fallback to legacy session data.
+  base::Optional<SessionInfo> last_session_info_;
 };
 
 }  // namespace sessions
