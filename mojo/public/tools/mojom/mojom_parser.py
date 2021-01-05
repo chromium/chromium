@@ -14,6 +14,7 @@ import argparse
 import codecs
 import errno
 import json
+import logging
 import os
 import os.path
 import sys
@@ -193,48 +194,52 @@ def _ParseMojoms(mojom_files,
   mojom_files_to_parse = dict((os.path.normcase(abs_path),
                                _RebaseAbsolutePath(abs_path, input_root_paths))
                               for abs_path in mojom_files)
+  logging.info('Parsing %d .mojom into ASTs', len(mojom_files_to_parse))
   abs_paths = dict(
       (path, abs_path) for abs_path, path in mojom_files_to_parse.items())
-  for mojom_abspath, _ in mojom_files_to_parse.items():
+  for mojom_abspath in mojom_files_to_parse:
     with codecs.open(mojom_abspath, encoding='utf-8') as f:
       ast = parser.Parse(''.join(f.readlines()), mojom_abspath)
       conditional_features.RemoveDisabledDefinitions(ast, enabled_features)
       loaded_mojom_asts[mojom_abspath] = ast
-      invalid_imports = []
-      for imp in ast.import_list:
-        import_abspath = _ResolveRelativeImportPath(imp.import_filename,
-                                                    input_root_paths)
-        if allowed_imports and import_abspath not in allowed_imports:
-          invalid_imports.append(imp.import_filename)
 
-        abs_paths[imp.import_filename] = import_abspath
-        if import_abspath in mojom_files_to_parse:
-          # This import is in the input list, so we're going to translate it
-          # into a module below; however it's also a dependency of another input
-          # module. We retain record of dependencies to help with input
-          # processing later.
-          input_dependencies[mojom_abspath].add((import_abspath,
-                                                 imp.import_filename))
-        else:
-          # We have an import that isn't being parsed right now. It must already
-          # be parsed and have a module file sitting in a corresponding output
-          # location.
-          module_path = _GetModuleFilename(imp.import_filename)
-          module_abspath = _ResolveRelativeImportPath(module_path,
-                                                      [output_root_path])
-          with open(module_abspath, 'rb') as module_file:
-            loaded_modules[import_abspath] = module.Module.Load(module_file)
+  logging.info('Processing dependencies')
+  for mojom_abspath, ast in loaded_mojom_asts.items():
+    invalid_imports = []
+    for imp in ast.import_list:
+      import_abspath = _ResolveRelativeImportPath(imp.import_filename,
+                                                  input_root_paths)
+      if allowed_imports and import_abspath not in allowed_imports:
+        invalid_imports.append(imp.import_filename)
 
-      if invalid_imports:
-        raise ValueError(
-            '\nThe file %s imports the following files not allowed by build '
-            'dependencies:\n\n%s\n' % (mojom_abspath,
-                                       '\n'.join(invalid_imports)))
+      abs_paths[imp.import_filename] = import_abspath
+      if import_abspath in mojom_files_to_parse:
+        # This import is in the input list, so we're going to translate it
+        # into a module below; however it's also a dependency of another input
+        # module. We retain record of dependencies to help with input
+        # processing later.
+        input_dependencies[mojom_abspath].add(
+            (import_abspath, imp.import_filename))
+      elif import_abspath not in loaded_modules:
+        # We have an import that isn't being parsed right now. It must already
+        # be parsed and have a module file sitting in a corresponding output
+        # location.
+        module_path = _GetModuleFilename(imp.import_filename)
+        module_abspath = _ResolveRelativeImportPath(module_path,
+                                                    [output_root_path])
+        with open(module_abspath, 'rb') as module_file:
+          loaded_modules[import_abspath] = module.Module.Load(module_file)
 
+    if invalid_imports:
+      raise ValueError(
+          '\nThe file %s imports the following files not allowed by build '
+          'dependencies:\n\n%s\n' % (mojom_abspath, '\n'.join(invalid_imports)))
+  logging.info('Loaded %d modules from dependencies', len(loaded_modules))
 
   # At this point all transitive imports not listed as inputs have been loaded
   # and we have a complete dependency tree of the unprocessed inputs. Now we can
   # load all the inputs, resolving dependencies among them recursively as we go.
+  logging.info('Ensuring inputs are loaded')
   num_existing_modules_loaded = len(loaded_modules)
   for mojom_abspath, mojom_path in mojom_files_to_parse.items():
     _EnsureInputLoaded(mojom_abspath, mojom_path, abs_paths, loaded_mojom_asts,
@@ -244,6 +249,7 @@ def _ParseMojoms(mojom_files,
 
   # Now we have fully translated modules for every input and every transitive
   # dependency. We can dump the modules to disk for other tools to use.
+  logging.info('Serializeing %d modules', len(mojom_files_to_parse))
   for mojom_abspath, mojom_path in mojom_files_to_parse.items():
     module_path = os.path.join(output_root_path, _GetModuleFilename(mojom_path))
     module_dir = os.path.dirname(module_path)
@@ -261,6 +267,11 @@ def _ParseMojoms(mojom_files,
 
 
 def Run(command_line):
+  debug_logging = os.environ.get('MOJOM_PARSER_DEBUG', '0') != '0'
+  logging.basicConfig(level=logging.DEBUG if debug_logging else logging.WARNING,
+                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
+  logging.info('Started (%s)', os.path.basename(sys.argv[0]))
+
   arg_parser = argparse.ArgumentParser(
       description="""
 Parses one or more mojom files and produces corresponding module outputs fully
@@ -368,6 +379,7 @@ already present in the provided output root.""")
   module_metadata = map(lambda kvp: tuple(kvp.split('=')), args.module_metadata)
   _ParseMojoms(mojom_files, input_roots, output_root, args.enabled_features,
                module_metadata, allowed_imports)
+  logging.info('Finished')
 
 
 if __name__ == '__main__':
