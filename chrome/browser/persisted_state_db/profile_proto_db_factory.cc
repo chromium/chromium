@@ -14,3 +14,10 @@ GetPersistedStateProfileProtoDBFactory() {
       instance;
   return instance.get();
 }
+
+template <>
+ProfileProtoDBFactory<persisted_state_db::PersistedStateContentProto>*
+ProfileProtoDBFactory<
+    persisted_state_db::PersistedStateContentProto>::GetInstance() {
+  return GetPersistedStateProfileProtoDBFactory();
+}

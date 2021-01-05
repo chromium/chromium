@@ -47,19 +47,6 @@ class ProfileProtoDBFactory : public BrowserContextKeyedServiceFactory {
 
 // static
 template <typename T>
-ProfileProtoDBFactory<T>* ProfileProtoDBFactory<T>::GetInstance() {
-  static_assert(
-      std::is_base_of<persisted_state_db::PersistedStateContentProto, T>::
-          value /** subsequent supported templates will be ORed in here */,
-      "Provided template is not supported. To support implement a factory "
-      "method similar to GetPersistedStateProfileProtoDBFactory and add to "
-      "list of "
-      "supported templates");
-  return GetPersistedStateProfileProtoDBFactory();
-}
-
-// static
-template <typename T>
 ProfileProtoDB<T>* ProfileProtoDBFactory<T>::GetForProfile(
     content::BrowserContext* context) {
   // Incognito is currently not supported
