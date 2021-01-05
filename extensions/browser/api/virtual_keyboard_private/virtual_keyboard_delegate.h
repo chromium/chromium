@@ -28,6 +28,9 @@ class VirtualKeyboardDelegate {
 
   using OnSetModeCallback = base::OnceCallback<void(bool success)>;
 
+  using OnGetClipboardHistoryCallback =
+      base::Callback<void(base::Value history)>;
+
   // Fetch information about the preferred configuration of the keyboard. On
   // exit, |settings| is populated with the keyboard configuration if execution
   // is successful, otherwise it's set to nullptr.
@@ -105,6 +108,22 @@ class VirtualKeyboardDelegate {
 
   // Sets the bounds of the keyboard window in screen coordinates.
   virtual bool SetWindowBoundsInScreen(const gfx::Rect& bounds_in_screen) = 0;
+
+  // Calls the |get_history_callback| function and passes a value containing the
+  // current cipboard history items. Only clipboard items which have an id in
+  // the |item_ids_filter| are included. If the filter is empty then all
+  // clipboard items are included.
+  virtual void GetClipboardHistory(
+      const std::set<std::string>& item_ids_filter,
+      OnGetClipboardHistoryCallback get_history_callback) = 0;
+
+  // Paste a clipboard item from the clipboard history. Returns whether the
+  // paste is successful.
+  virtual bool PasteClipboardItem(const std::string& clipboard_item_id) = 0;
+
+  // Delete a clipboard item from the clipboard history. Returns whether the
+  // deletion is successful.
+  virtual bool DeleteClipboardItem(const std::string& clipboard_item_id) = 0;
 
   // Restricts the virtual keyboard IME features.
   // Returns the values which were updated.

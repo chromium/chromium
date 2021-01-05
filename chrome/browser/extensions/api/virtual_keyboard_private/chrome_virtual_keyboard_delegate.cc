@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "base/bind.h"
@@ -330,6 +331,40 @@ bool ChromeVirtualKeyboardDelegate::SetWindowBoundsInScreen(
     return false;
 
   return keyboard_client->SetWindowBoundsInScreen(bounds_in_screen);
+}
+
+void ChromeVirtualKeyboardDelegate::GetClipboardHistory(
+    const std::set<std::string>& item_ids_filter,
+    OnGetClipboardHistoryCallback get_history_callback) {
+  ash::ClipboardHistoryController* clipboard_history_controller =
+      ash::ClipboardHistoryController::Get();
+  if (!clipboard_history_controller)
+    return;
+
+  std::move(get_history_callback)
+      .Run(clipboard_history_controller->GetHistoryValues(item_ids_filter));
+}
+
+bool ChromeVirtualKeyboardDelegate::PasteClipboardItem(
+    const std::string& clipboard_item_id) {
+  ash::ClipboardHistoryController* clipboard_history_controller =
+      ash::ClipboardHistoryController::Get();
+  if (!clipboard_history_controller)
+    return false;
+
+  return clipboard_history_controller->PasteClipboardItemById(
+      clipboard_item_id);
+}
+
+bool ChromeVirtualKeyboardDelegate::DeleteClipboardItem(
+    const std::string& clipboard_item_id) {
+  ash::ClipboardHistoryController* clipboard_history_controller =
+      ash::ClipboardHistoryController::Get();
+  if (!clipboard_history_controller)
+    return false;
+
+  return clipboard_history_controller->DeleteClipboardItemById(
+      clipboard_item_id);
 }
 
 bool ChromeVirtualKeyboardDelegate::SetDraggableArea(

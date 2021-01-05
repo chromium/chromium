@@ -6,17 +6,21 @@
 #define ASH_PUBLIC_CPP_CLIPBOARD_HISTORY_CONTROLLER_H_
 
 #include <memory>
+#include <set>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list_types.h"
 #include "ui/base/ui_base_types.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace gfx {
 class Rect;
 }  // namespace gfx
 
 namespace ash {
-
 class ScopedClipboardHistoryPause;
 
 // An interface implemented in Ash to enable the Chrome side to show the
@@ -48,6 +52,18 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   // Creates a ScopedClipboardHistoryPause, which pauses ClipboardHistory for
   // its lifetime.
   virtual std::unique_ptr<ScopedClipboardHistoryPause> CreateScopedPause() = 0;
+
+  // Returns the history which tracks what is being copied to the clipboard.
+  // Only the items listed in |item_id_filter| are returned. If |item_id_filter|
+  // is empty, then all items in the history are returned.
+  virtual base::Value GetHistoryValues(
+      const std::set<std::string>& item_id_filter) const = 0;
+
+  // Pastes the clipboard item specified by the item id.
+  virtual bool PasteClipboardItemById(const std::string& item_id) = 0;
+
+  // Deletes the clipboard item specified by the item id.
+  virtual bool DeleteClipboardItemById(const std::string& item_id) = 0;
 
  protected:
   ClipboardHistoryController();

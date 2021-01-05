@@ -46,6 +46,11 @@ class ShellVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
   bool SetHitTestBounds(const std::vector<gfx::Rect>& bounds) override;
   bool SetAreaToRemainOnScreen(const gfx::Rect& bounds) override;
   bool SetWindowBoundsInScreen(const gfx::Rect& bounds_in_screen) override;
+  void GetClipboardHistory(
+      const std::set<std::string>& item_ids_filter,
+      OnGetClipboardHistoryCallback get_history_callback) override;
+  bool PasteClipboardItem(const std::string& clipboard_item_id) override;
+  bool DeleteClipboardItem(const std::string& clipboard_item_id) override;
 
   api::virtual_keyboard::FeatureRestrictions RestrictFeatures(
       const api::virtual_keyboard::RestrictFeatures::Params& params) override;

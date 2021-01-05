@@ -75,6 +75,16 @@ class MockVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
   }
   const gfx::Rect& GetWindowBounds() { return window_bounds_; }
 
+  void GetClipboardHistory(
+      const std::set<std::string>& item_ids_filter,
+      OnGetClipboardHistoryCallback get_history_callback) override {}
+  bool PasteClipboardItem(const std::string& clipboard_item_id) override {
+    return false;
+  }
+  bool DeleteClipboardItem(const std::string& clipboard_item_id) override {
+    return false;
+  }
+
   api::virtual_keyboard::FeatureRestrictions RestrictFeatures(
       const api::virtual_keyboard::RestrictFeatures::Params& params) override {
     return api::virtual_keyboard::FeatureRestrictions();

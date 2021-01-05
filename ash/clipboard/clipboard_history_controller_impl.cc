@@ -13,9 +13,13 @@
 #include "ash/clipboard/clipboard_nudge_controller.h"
 #include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
+#include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
+#include "base/base64.h"
+#include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -32,11 +36,13 @@
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -44,6 +50,9 @@
 namespace ash {
 
 namespace {
+
+constexpr char kImageDataKey[] = "imageData";
+constexpr char kTextDataKey[] = "textData";
 
 ui::ClipboardNonBacked* GetClipboard() {
   auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
@@ -269,6 +278,82 @@ ClipboardHistoryControllerImpl::CreateScopedPause() {
       clipboard_history_.get());
 }
 
+base::Value ClipboardHistoryControllerImpl::GetHistoryValues(
+    const std::set<std::string>& item_id_filter) const {
+  base::Value item_results(base::Value::Type::LIST);
+
+  // Get the clipboard data for each clipboard history item.
+  for (const auto& item : history()->GetItems()) {
+    // If the |item_id_filter| contains values, then only return the clipboard
+    // items included in it.
+    if (!item_id_filter.empty() &&
+        item_id_filter.find(item.id().ToString()) == item_id_filter.end()) {
+      continue;
+    }
+
+    base::Value item_value(base::Value::Type::DICTIONARY);
+    switch (ash::ClipboardHistoryUtil::CalculateDisplayFormat(item.data())) {
+      case ash::ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kBitmap:
+        item_value.SetKey(
+            kImageDataKey,
+            base::Value(webui::GetBitmapDataUrl(item.data().bitmap())));
+        break;
+      case ash::ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml: {
+        const SkBitmap& bitmap =
+            *(resource_manager_->GetImageModel(item).GetImage().ToSkBitmap());
+        item_value.SetKey(kImageDataKey,
+                          base::Value(webui::GetBitmapDataUrl(bitmap)));
+        break;
+      }
+      case ash::ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kText:
+        item_value.SetKey(kTextDataKey, base::Value(item.data().text()));
+        break;
+      case ash::ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kFile: {
+        item_value.SetKey(
+            kTextDataKey,
+            base::Value(base::UTF16ToUTF8(resource_manager_->GetLabel(item))));
+        gfx::ImageSkia image = GetIconForPath(
+            base::FilePath(item.data().text()),
+            ash::AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconColorPrimary));
+        item_value.SetKey(
+            kImageDataKey,
+            base::Value(webui::GetBitmapDataUrl(*image.bitmap())));
+        break;
+      }
+    }
+    item_value.SetKey("idToken", base::Value(item.id().ToString()));
+    item_results.Append(std::move(item_value));
+  }
+
+  return item_results;
+}
+
+bool ClipboardHistoryControllerImpl::PasteClipboardItemById(
+    const std::string& item_id) {
+  if (currently_pasting_)
+    return false;
+
+  for (const auto& item : history()->GetItems()) {
+    if (item.id().ToString() == item_id) {
+      PasteClipboardHistoryItem(item, /*paste_plain_text=*/false);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ClipboardHistoryControllerImpl::DeleteClipboardItemById(
+    const std::string& item_id) {
+  for (const auto& item : history()->GetItems()) {
+    if (item.id().ToString() == item_id) {
+      DeleteClipboardHistoryItem(item);
+      return true;
+    }
+  }
+  return false;
+}
+
 void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {
   // Prevent clipboard contents getting restored if the Clipboard is cleared
   // soon after a `PasteMenuItemData()`.
@@ -332,6 +417,12 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(int command_id,
   const ClipboardHistoryItem& selected_item =
       context_menu_->GetItemFromCommandId(command_id);
 
+  PasteClipboardHistoryItem(selected_item, paste_plain_text);
+}
+
+void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
+    const ClipboardHistoryItem& item,
+    bool paste_plain_text) {
   auto* clipboard = GetClipboard();
   std::unique_ptr<ui::ClipboardData> original_data;
 
@@ -339,19 +430,19 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(int command_id,
   // we can paste the selected history item.
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
   if (paste_plain_text ||
-      selected_item.data() != *clipboard->GetClipboardData(&data_dst)) {
+      item.data() != *clipboard->GetClipboardData(&data_dst)) {
     std::unique_ptr<ui::ClipboardData> temp_data;
     if (paste_plain_text) {
       // When the shift key is pressed, we only paste plain text.
       temp_data = std::make_unique<ui::ClipboardData>();
-      temp_data->set_text(selected_item.data().text());
-      ui::DataTransferEndpoint* data_src = selected_item.data().source();
+      temp_data->set_text(item.data().text());
+      ui::DataTransferEndpoint* data_src = item.data().source();
       if (data_src) {
         temp_data->set_source(
             std::make_unique<ui::DataTransferEndpoint>(*data_src));
       }
     } else {
-      temp_data = std::make_unique<ui::ClipboardData>(selected_item.data());
+      temp_data = std::make_unique<ui::ClipboardData>(item.data());
     }
 
     // Pause clipboard history when manipulating the clipboard for a paste.
@@ -366,6 +457,8 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(int command_id,
 
   if (!original_data)
     return;
+
+  currently_pasting_ = true;
 
   // Replace the original item back on top of the clipboard. Some apps take a
   // long time to receive the paste event, also some apps will read from the
@@ -382,6 +475,7 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(int command_id,
             // should actually be opaque to the user.
             std::unique_ptr<ScopedClipboardHistoryPauseImpl> scoped_pause;
             if (weak_ptr) {
+              weak_ptr->currently_pasting_ = false;
               scoped_pause = std::make_unique<ScopedClipboardHistoryPauseImpl>(
                   weak_ptr->clipboard_history_.get());
             }
@@ -413,8 +507,7 @@ void ClipboardHistoryControllerImpl::DeleteItemWithCommandId(int command_id) {
   // process the key event.
   const auto& to_be_deleted_item =
       context_menu_->GetItemFromCommandId(command_id);
-  ClipboardHistoryUtil::RecordClipboardHistoryItemDeleted(to_be_deleted_item);
-  clipboard_history_->RemoveItemForId(to_be_deleted_item.id());
+  DeleteClipboardHistoryItem(to_be_deleted_item);
 
   // If the item to be deleted is the last one, close the whole menu.
   if (context_menu_->GetMenuItemsCount() == 1) {
@@ -424,6 +517,12 @@ void ClipboardHistoryControllerImpl::DeleteItemWithCommandId(int command_id) {
   }
 
   context_menu_->RemoveMenuItemWithCommandId(command_id);
+}
+
+void ClipboardHistoryControllerImpl::DeleteClipboardHistoryItem(
+    const ClipboardHistoryItem& item) {
+  ClipboardHistoryUtil::RecordClipboardHistoryItemDeleted(item);
+  clipboard_history_->RemoveItemForId(item.id());
 }
 
 void ClipboardHistoryControllerImpl::AdvancePseudoFocus(bool reverse) {

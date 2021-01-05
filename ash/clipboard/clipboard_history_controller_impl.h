@@ -80,6 +80,10 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   void ShowMenu(const gfx::Rect& anchor_rect,
                 ui::MenuSourceType source_type) override;
   std::unique_ptr<ScopedClipboardHistoryPause> CreateScopedPause() override;
+  base::Value GetHistoryValues(
+      const std::set<std::string>& item_id_filter) const override;
+  bool PasteClipboardItemById(const std::string& item_id) override;
+  bool DeleteClipboardItemById(const std::string& item_id) override;
 
   // ClipboardHistory::Observer:
   void OnClipboardHistoryCleared() override;
@@ -94,12 +98,19 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // clipboard data should be pasted.
   void PasteMenuItemData(int command_id, bool paste_plain_text);
 
+  // Pastes the specified clipboard history item.
+  void PasteClipboardHistoryItem(const ClipboardHistoryItem& item,
+                                 bool paste_plain_text);
+
   // Delete the menu item being selected and its corresponding data. If no item
   // is selected, do nothing.
   void DeleteSelectedMenuItemIfAny();
 
   // Delete the menu item specified by `command_id` and its corresponding data.
   void DeleteItemWithCommandId(int command_id);
+
+  // Deletes the specified clipboard history item.
+  void DeleteClipboardHistoryItem(const ClipboardHistoryItem& item);
 
   // Advances the pseudo focus (backward if `reverse` is true).
   void AdvancePseudoFocus(bool reverse);
@@ -126,6 +137,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   std::unique_ptr<MenuDelegate> menu_delegate_;
   // Controller that shows contextual nudges for multipaste.
   std::unique_ptr<ClipboardNudgeController> nudge_controller_;
+
+  // Whether a paste is currently being performed.
+  bool currently_pasting_ = false;
 
   base::WeakPtrFactory<ClipboardHistoryControllerImpl> weak_ptr_factory_{this};
 };

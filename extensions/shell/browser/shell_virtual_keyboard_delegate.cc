@@ -101,6 +101,24 @@ bool ShellVirtualKeyboardDelegate::SetWindowBoundsInScreen(
   return false;
 }
 
+void ShellVirtualKeyboardDelegate::GetClipboardHistory(
+    const std::set<std::string>& item_ids_filter,
+    OnGetClipboardHistoryCallback get_history_callback) {
+  NOTIMPLEMENTED();
+}
+
+bool ShellVirtualKeyboardDelegate::PasteClipboardItem(
+    const std::string& clipboard_item_id) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool ShellVirtualKeyboardDelegate::DeleteClipboardItem(
+    const std::string& clipboard_item_id) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 api::virtual_keyboard::FeatureRestrictions
 ShellVirtualKeyboardDelegate::RestrictFeatures(
     const api::virtual_keyboard::RestrictFeatures::Params& params) {
