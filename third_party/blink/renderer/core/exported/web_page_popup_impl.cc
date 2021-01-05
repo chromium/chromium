@@ -349,8 +349,15 @@ void WebPagePopupImpl::Initialize(WebViewImpl* opener_web_view,
   // an UpdateStyleAndLayoutTree() before opening the popup in the various
   // default event handlers.
   if (const auto* style = popup_client_->OwnerElement().GetComputedStyle()) {
+    // Avoid using dark color scheme stylesheet for popups when forced colors
+    // mode is active.
+    // TODO(iopopesc): move this to popup CSS when the FocedColors feature is
+    // enabled by default.
+    bool in_forced_colors_mode =
+        popup_client_->OwnerElement().GetDocument().InForcedColorsMode();
     page_->GetSettings().SetPreferredColorScheme(
-        style->UsedColorScheme() == mojom::blink::ColorScheme::kDark
+        style->UsedColorScheme() == mojom::blink::ColorScheme::kDark &&
+                !in_forced_colors_mode
             ? mojom::blink::PreferredColorScheme::kDark
             : mojom::blink::PreferredColorScheme::kLight);
   }

@@ -211,6 +211,14 @@ channel-label {
   format-toggler {
     border: 1px solid WindowText;
   }
+  format-toggler:hover,
+  input:hover {
+    border: 1px solid Highlight;
+  }
+  eye-dropper:hover {
+    border: 1px solid Highlight;
+    padding: 5px;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
