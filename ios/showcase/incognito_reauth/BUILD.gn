@@ -1,0 +1,17 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("incognito_reauth") {
+  sources = [
+    "sc_incognito_reauth_view_controller.h",
+    "sc_incognito_reauth_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_ui",
+    "//ios/showcase/common",
+  ]
+  frameworks = [ "UIKit.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

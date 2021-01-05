@@ -30,6 +30,7 @@ group("features") {
     "//ios/showcase/bubble",
     "//ios/showcase/content_suggestions",
     "//ios/showcase/credential_provider",
+    "//ios/showcase/incognito_reauth",
     "//ios/showcase/infobars",
     "//ios/showcase/omnibox_popup",
     "//ios/showcase/recent_tabs",

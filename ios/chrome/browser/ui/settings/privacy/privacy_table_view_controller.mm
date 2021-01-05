@@ -48,6 +48,7 @@ namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierPrivacyContent = kSectionIdentifierEnumZero,
   SectionIdentifierWebServices,
+  SectionIdentifierIncognitoAuth,
 
 };
 
@@ -151,6 +152,9 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierPrivacyContent];
   [model addSectionWithIdentifier:SectionIdentifierWebServices];
+  if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
+    [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
+  }
 
   // Clear Browsing item.
   [model addItem:[self clearBrowsingDetailItem]
@@ -166,7 +170,7 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
   if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
     // Incognito authentication item.
     [model addItem:self.incognitoReauthItem
-        toSectionWithIdentifier:SectionIdentifierWebServices];
+        toSectionWithIdentifier:SectionIdentifierIncognitoAuth];
   }
 }
 

@@ -162,6 +162,11 @@
       kClassForInstantiationKey : @"SCInfobarModalSaveCardCoordinator",
       showcase::kUseCaseKey : @"Save Card Modal",
     },
+    @{
+      showcase::kClassForDisplayKey : @"SCIncognitoReauthViewController",
+      showcase::kClassForInstantiationKey : @"SCIncognitoReauthViewController",
+      showcase::kUseCaseKey : @"Incognito Reauth Blocker",
+    },
   ];
 }
 

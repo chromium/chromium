@@ -946,7 +946,7 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
        Unlock Incognito Tabs With <ph name="BIOMETRIC_AUTHENITCATION_TYPE">$1<ex>Face ID</ex></ph>
       </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME" desc="Name of the Setting to protect incognito tabs with biometric authentication, e.g. Face ID or Touch ID. [iOS only]">
-       Lock Incognito tabs when you close Chrome
+       Lock Incognito Tabs When You Close Chrome
       </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_PASSCODE" desc="The passcode (pin code or password) used instead of biometric authentication, e.g. Face ID or Touch ID, for device authentication. [iOS only]">
        Passcode
