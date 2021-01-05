@@ -14,10 +14,9 @@
 
 namespace optimization_guide {
 
-std::unique_ptr<proto::PredictionModel> GetValidDecisionTreePredictionModel() {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
-      std::make_unique<proto::PredictionModel>();
-  prediction_model->mutable_model()->mutable_threshold()->set_value(5.0);
+proto::PredictionModel GetValidDecisionTreePredictionModel() {
+  proto::PredictionModel prediction_model;
+  prediction_model.mutable_model()->mutable_threshold()->set_value(5.0);
 
   proto::DecisionTree decision_tree_model = proto::DecisionTree();
   decision_tree_model.set_weight(2.0);
@@ -49,31 +48,30 @@ std::unique_ptr<proto::PredictionModel> GetValidDecisionTreePredictionModel() {
   tree_node->mutable_leaf()->mutable_vector()->add_value()->set_double_value(
       4.);
 
-  *prediction_model->mutable_model()->mutable_decision_tree() =
+  *prediction_model.mutable_model()->mutable_decision_tree() =
       decision_tree_model;
   return prediction_model;
 }
 
-std::unique_ptr<proto::PredictionModel> GetValidEnsemblePredictionModel() {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
-      std::make_unique<proto::PredictionModel>();
-  prediction_model->mutable_model()->mutable_threshold()->set_value(5.0);
+proto::PredictionModel GetValidEnsemblePredictionModel() {
+  proto::PredictionModel prediction_model;
+  prediction_model.mutable_model()->mutable_threshold()->set_value(5.0);
   proto::Ensemble ensemble = proto::Ensemble();
   *ensemble.add_members()->mutable_submodel() =
-      *GetValidDecisionTreePredictionModel()->mutable_model();
+      *GetValidDecisionTreePredictionModel().mutable_model();
 
   *ensemble.add_members()->mutable_submodel() =
-      *GetValidDecisionTreePredictionModel()->mutable_model();
+      *GetValidDecisionTreePredictionModel().mutable_model();
 
-  *prediction_model->mutable_model()->mutable_ensemble() = ensemble;
+  *prediction_model.mutable_model()->mutable_ensemble() = ensemble;
   return prediction_model;
 }
 
 TEST(DecisionTreePredictionModel, ValidDecisionTreeModel) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
+  proto::PredictionModel prediction_model =
       GetValidDecisionTreePredictionModel();
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -83,7 +81,7 @@ TEST(DecisionTreePredictionModel, ValidDecisionTreeModel) {
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
-      PredictionModel::Create(std::move(prediction_model));
+      PredictionModel::Create(prediction_model);
   EXPECT_TRUE(model);
 
   double prediction_score;
@@ -96,17 +94,17 @@ TEST(DecisionTreePredictionModel, ValidDecisionTreeModel) {
 }
 
 TEST(DecisionTreePredictionModel, InequalityLessThan) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
+  proto::PredictionModel prediction_model =
       GetValidDecisionTreePredictionModel();
 
-  prediction_model->mutable_model()
+  prediction_model.mutable_model()
       ->mutable_decision_tree()
       ->mutable_nodes(0)
       ->mutable_binary_node()
       ->mutable_inequality_left_child_test()
       ->set_type(proto::InequalityTest::LESS_THAN);
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -129,17 +127,17 @@ TEST(DecisionTreePredictionModel, InequalityLessThan) {
 }
 
 TEST(DecisionTreePredictionModel, InequalityGreaterOrEqual) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
+  proto::PredictionModel prediction_model =
       GetValidDecisionTreePredictionModel();
 
-  prediction_model->mutable_model()
+  prediction_model.mutable_model()
       ->mutable_decision_tree()
       ->mutable_nodes(0)
       ->mutable_binary_node()
       ->mutable_inequality_left_child_test()
       ->set_type(proto::InequalityTest::GREATER_OR_EQUAL);
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -149,7 +147,7 @@ TEST(DecisionTreePredictionModel, InequalityGreaterOrEqual) {
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
-      PredictionModel::Create(std::move(prediction_model));
+      PredictionModel::Create(prediction_model);
   EXPECT_TRUE(model);
 
   double prediction_score;
@@ -162,17 +160,17 @@ TEST(DecisionTreePredictionModel, InequalityGreaterOrEqual) {
 }
 
 TEST(DecisionTreePredictionModel, InequalityGreaterThan) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
+  proto::PredictionModel prediction_model =
       GetValidDecisionTreePredictionModel();
 
-  prediction_model->mutable_model()
+  prediction_model.mutable_model()
       ->mutable_decision_tree()
       ->mutable_nodes(0)
       ->mutable_binary_node()
       ->mutable_inequality_left_child_test()
       ->set_type(proto::InequalityTest::GREATER_THAN);
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -195,17 +193,17 @@ TEST(DecisionTreePredictionModel, InequalityGreaterThan) {
 }
 
 TEST(DecisionTreePredictionModel, MissingInequalityTest) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
+  proto::PredictionModel prediction_model =
       GetValidDecisionTreePredictionModel();
 
-  prediction_model->mutable_model()
+  prediction_model.mutable_model()
       ->mutable_decision_tree()
       ->mutable_nodes(0)
       ->mutable_binary_node()
       ->mutable_inequality_left_child_test()
       ->Clear();
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -220,12 +218,12 @@ TEST(DecisionTreePredictionModel, MissingInequalityTest) {
 }
 
 TEST(DecisionTreePredictionModel, NoDecisionTreeThreshold) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
+  proto::PredictionModel prediction_model =
       GetValidDecisionTreePredictionModel();
 
-  prediction_model->mutable_model()->clear_threshold();
+  prediction_model.mutable_model()->clear_threshold();
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -235,17 +233,17 @@ TEST(DecisionTreePredictionModel, NoDecisionTreeThreshold) {
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
-      PredictionModel::Create(std::move(prediction_model));
+      PredictionModel::Create(prediction_model);
   EXPECT_FALSE(model);
 }
 
 TEST(DecisionTreePredictionModel, EmptyTree) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
+  proto::PredictionModel prediction_model =
       GetValidDecisionTreePredictionModel();
 
-  prediction_model->mutable_model()->mutable_decision_tree()->clear_nodes();
+  prediction_model.mutable_model()->mutable_decision_tree()->clear_nodes();
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -260,12 +258,12 @@ TEST(DecisionTreePredictionModel, EmptyTree) {
 }
 
 TEST(DecisionTreePredictionModel, ModelFeatureNotInFeatureMap) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
+  proto::PredictionModel prediction_model =
       GetValidDecisionTreePredictionModel();
 
-  prediction_model->mutable_model()->mutable_decision_tree()->clear_nodes();
+  prediction_model.mutable_model()->mutable_decision_tree()->clear_nodes();
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -275,21 +273,21 @@ TEST(DecisionTreePredictionModel, ModelFeatureNotInFeatureMap) {
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
-      PredictionModel::Create(std::move(prediction_model));
+      PredictionModel::Create(prediction_model);
   EXPECT_FALSE(model);
 }
 
 TEST(DecisionTreePredictionModel, DecisionTreeMissingLeaf) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
+  proto::PredictionModel prediction_model =
       GetValidDecisionTreePredictionModel();
 
-  prediction_model->mutable_model()
+  prediction_model.mutable_model()
       ->mutable_decision_tree()
       ->mutable_nodes(1)
       ->mutable_leaf()
       ->Clear();
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -299,22 +297,22 @@ TEST(DecisionTreePredictionModel, DecisionTreeMissingLeaf) {
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
-      PredictionModel::Create(std::move(prediction_model));
+      PredictionModel::Create(prediction_model);
   EXPECT_FALSE(model);
 }
 
 TEST(DecisionTreePredictionModel, DecisionTreeLeftChildIndexInvalid) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
+  proto::PredictionModel prediction_model =
       GetValidDecisionTreePredictionModel();
 
-  prediction_model->mutable_model()
+  prediction_model.mutable_model()
       ->mutable_decision_tree()
       ->mutable_nodes(0)
       ->mutable_binary_node()
       ->mutable_left_child_id()
       ->set_value(3);
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -329,17 +327,17 @@ TEST(DecisionTreePredictionModel, DecisionTreeLeftChildIndexInvalid) {
 }
 
 TEST(DecisionTreePredictionModel, DecisionTreeRightChildIndexInvalid) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
+  proto::PredictionModel prediction_model =
       GetValidDecisionTreePredictionModel();
 
-  prediction_model->mutable_model()
+  prediction_model.mutable_model()
       ->mutable_decision_tree()
       ->mutable_nodes(0)
       ->mutable_binary_node()
       ->mutable_right_child_id()
       ->set_value(3);
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -349,16 +347,16 @@ TEST(DecisionTreePredictionModel, DecisionTreeRightChildIndexInvalid) {
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
-      PredictionModel::Create(std::move(prediction_model));
+      PredictionModel::Create(prediction_model);
   EXPECT_FALSE(model);
 }
 
 TEST(DecisionTreePredictionModel, DecisionTreeWithLoopOnLeftChild) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
+  proto::PredictionModel prediction_model =
       GetValidDecisionTreePredictionModel();
 
   proto::TreeNode* tree_node =
-      prediction_model->mutable_model()->mutable_decision_tree()->mutable_nodes(
+      prediction_model.mutable_model()->mutable_decision_tree()->mutable_nodes(
           1);
 
   tree_node->mutable_node_id()->set_value(0);
@@ -378,7 +376,7 @@ TEST(DecisionTreePredictionModel, DecisionTreeWithLoopOnLeftChild) {
   tree_node->mutable_binary_node()->mutable_left_child_id()->set_value(0);
   tree_node->mutable_binary_node()->mutable_right_child_id()->set_value(2);
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -388,16 +386,16 @@ TEST(DecisionTreePredictionModel, DecisionTreeWithLoopOnLeftChild) {
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
-      PredictionModel::Create(std::move(prediction_model));
+      PredictionModel::Create(prediction_model);
   EXPECT_FALSE(model);
 }
 
 TEST(DecisionTreePredictionModel, DecisionTreeWithLoopOnRightChild) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
+  proto::PredictionModel prediction_model =
       GetValidDecisionTreePredictionModel();
 
   proto::TreeNode* tree_node =
-      prediction_model->mutable_model()->mutable_decision_tree()->mutable_nodes(
+      prediction_model.mutable_model()->mutable_decision_tree()->mutable_nodes(
           1);
 
   tree_node->mutable_node_id()->set_value(0);
@@ -417,7 +415,7 @@ TEST(DecisionTreePredictionModel, DecisionTreeWithLoopOnRightChild) {
   tree_node->mutable_binary_node()->mutable_left_child_id()->set_value(2);
   tree_node->mutable_binary_node()->mutable_right_child_id()->set_value(0);
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -427,15 +425,14 @@ TEST(DecisionTreePredictionModel, DecisionTreeWithLoopOnRightChild) {
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
-      PredictionModel::Create(std::move(prediction_model));
+      PredictionModel::Create(prediction_model);
   EXPECT_FALSE(model);
 }
 
 TEST(DecisionTreePredictionModel, ValidEnsembleModel) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
-      GetValidEnsemblePredictionModel();
+  proto::PredictionModel prediction_model = GetValidEnsemblePredictionModel();
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -445,7 +442,7 @@ TEST(DecisionTreePredictionModel, ValidEnsembleModel) {
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
-      PredictionModel::Create(std::move(prediction_model));
+      PredictionModel::Create(prediction_model);
   EXPECT_TRUE(model);
 
   double prediction_score;
@@ -458,14 +455,13 @@ TEST(DecisionTreePredictionModel, ValidEnsembleModel) {
 }
 
 TEST(DecisionTreePredictionModel, EnsembleWithNoMembers) {
-  std::unique_ptr<proto::PredictionModel> prediction_model =
-      GetValidEnsemblePredictionModel();
-  prediction_model->mutable_model()
+  proto::PredictionModel prediction_model = GetValidEnsemblePredictionModel();
+  prediction_model.mutable_model()
       ->mutable_ensemble()
       ->mutable_members()
       ->Clear();
 
-  proto::ModelInfo* model_info = prediction_model->mutable_model_info();
+  proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
@@ -475,7 +471,7 @@ TEST(DecisionTreePredictionModel, EnsembleWithNoMembers) {
   model_info->add_supported_host_model_features("agg1");
 
   std::unique_ptr<PredictionModel> model =
-      PredictionModel::Create(std::move(prediction_model));
+      PredictionModel::Create(prediction_model);
   EXPECT_FALSE(model);
 }
 

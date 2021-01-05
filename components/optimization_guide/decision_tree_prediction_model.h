@@ -22,13 +22,12 @@ namespace optimization_guide {
 class DecisionTreePredictionModel : public PredictionModel {
  public:
   explicit DecisionTreePredictionModel(
-      std::unique_ptr<optimization_guide::proto::PredictionModel>
-          prediction_model);
+      const proto::PredictionModel& prediction_model);
 
   ~DecisionTreePredictionModel() override;
 
   // PredictionModel implementation:
-  optimization_guide::OptimizationTargetDecision Predict(
+  OptimizationTargetDecision Predict(
       const base::flat_map<std::string, float>& model_features,
       double* prediction_score) override;
 
@@ -89,7 +88,7 @@ class DecisionTreePredictionModel : public PredictionModel {
   // node of the |tree|. Returns false if any part of the tree is invalid.
   bool ValidateTreeNode(const proto::DecisionTree& tree,
                         const proto::TreeNode& node,
-                        const int& node_index) const;
+                        int node_index) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

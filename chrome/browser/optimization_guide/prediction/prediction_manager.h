@@ -318,8 +318,7 @@ class PredictionManager
       std::unique_ptr<PredictionModel> prediction_model);
 
   // Post-processing callback invoked after processing |model|.
-  void OnProcessLoadedModel(std::unique_ptr<proto::PredictionModel> model,
-                            bool success);
+  void OnProcessLoadedModel(const proto::PredictionModel& model, bool success);
 
   // Process |host_model_features| from the into host model features
   // usable by the PredictionManager. The processed host model features are

@@ -9,18 +9,17 @@
 namespace optimization_guide {
 
 DecisionTreePredictionModel::DecisionTreePredictionModel(
-    std::unique_ptr<optimization_guide::proto::PredictionModel>
-        prediction_model)
-    : PredictionModel(std::move(prediction_model)) {}
+    const proto::PredictionModel& prediction_model)
+    : PredictionModel(prediction_model) {}
 
 DecisionTreePredictionModel::~DecisionTreePredictionModel() = default;
 
 bool DecisionTreePredictionModel::ValidatePredictionModel() const {
   // Only the top-level ensemble or decision tree must have a threshold. Any
   // submodels of an ensemble will have model weights but no threshold.
-  if (!model_->has_threshold())
+  if (!model_.has_threshold())
     return false;
-  return ValidateModel(*model_.get());
+  return ValidateModel(model_);
 }
 
 bool DecisionTreePredictionModel::ValidateModel(
@@ -77,7 +76,7 @@ bool DecisionTreePredictionModel::ValidateInequalityTest(
 bool DecisionTreePredictionModel::ValidateTreeNode(
     const proto::DecisionTree& tree,
     const proto::TreeNode& node,
-    const int& node_index) const {
+    int node_index) const {
   if (node.has_leaf())
     return ValidateLeaf(node.leaf());
 
@@ -119,19 +118,18 @@ bool DecisionTreePredictionModel::ValidateTreeNode(
   return true;
 }
 
-optimization_guide::OptimizationTargetDecision
-DecisionTreePredictionModel::Predict(
+OptimizationTargetDecision DecisionTreePredictionModel::Predict(
     const base::flat_map<std::string, float>& model_features,
     double* prediction_score) {
   SEQUENCE_CHECKER(sequence_checker_);
 
   *prediction_score = 0.0;
   // TODO(mcrouse): Add metrics to record if the model evaluation fails.
-  if (!EvaluateModel(*model_.get(), model_features, prediction_score))
-    return optimization_guide::OptimizationTargetDecision::kUnknown;
-  if (*prediction_score > model_->threshold().value())
-    return optimization_guide::OptimizationTargetDecision::kPageLoadMatches;
-  return optimization_guide::OptimizationTargetDecision::kPageLoadDoesNotMatch;
+  if (!EvaluateModel(model_, model_features, prediction_score))
+    return OptimizationTargetDecision::kUnknown;
+  if (*prediction_score > model_.threshold().value())
+    return OptimizationTargetDecision::kPageLoadMatches;
+  return OptimizationTargetDecision::kPageLoadDoesNotMatch;
 }
 
 bool DecisionTreePredictionModel::TraverseTree(

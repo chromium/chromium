@@ -735,8 +735,7 @@ void PredictionManager::UpdateHostModelFeatures(
 std::unique_ptr<PredictionModel> PredictionManager::CreatePredictionModel(
     const proto::PredictionModel& model) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return PredictionModel::Create(
-      std::make_unique<proto::PredictionModel>(model));
+  return PredictionModel::Create(model);
 }
 
 void PredictionManager::UpdatePredictionModels(
@@ -916,26 +915,26 @@ void PredictionManager::OnLoadPredictionModel(
     return;
 
   bool success = ProcessAndStoreLoadedModel(*model);
-  OnProcessLoadedModel(std::move(model), success);
+  OnProcessLoadedModel(*model, success);
 }
 
 void PredictionManager::OnProcessLoadedModel(
-    std::unique_ptr<proto::PredictionModel> model,
+    const proto::PredictionModel& model,
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (success) {
     base::UmaHistogramSparse(
         "OptimizationGuide.PredictionModelLoadedVersion." +
             optimization_guide::GetStringNameForOptimizationTarget(
-                model->model_info().optimization_target()),
-        model->model_info().version());
+                model.model_info().optimization_target()),
+        model.model_info().version());
     return;
   }
 
   // Remove model from store if it exists.
   OptimizationGuideStore::EntryKey model_entry_key;
   if (model_and_features_store_->FindPredictionModelEntryKey(
-          model->model_info().optimization_target(), &model_entry_key)) {
+          model.model_info().optimization_target(), &model_entry_key)) {
     model_and_features_store_->RemovePredictionModelFromEntryKey(
         model_entry_key);
   }
