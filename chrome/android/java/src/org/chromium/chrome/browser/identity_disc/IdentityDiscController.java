@@ -38,6 +38,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -250,18 +251,22 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     /**
      * Implements {@link IdentityManager.Observer}.
      *
-     * TODO(https://crbug.com/1132291): This method only observes sign-in with sync, we should also
-     * observe sign-in without sync.
+     * IdentityDisc should be shown as long as the user is signed in. Whether the user is syncing
+     * or not should not matter.
      */
     @Override
-    public void onPrimaryAccountSet(CoreAccountInfo account) {
-        resetIdentityDiscCache();
-        notifyObservers(true);
-    }
-
-    @Override
-    public void onPrimaryAccountCleared(CoreAccountInfo account) {
-        notifyObservers(false);
+    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+        switch (eventDetails.getEventTypeFor(ConsentLevel.NOT_REQUIRED)) {
+            case PrimaryAccountChangeEvent.Type.SET:
+                resetIdentityDiscCache();
+                notifyObservers(true);
+                break;
+            case PrimaryAccountChangeEvent.Type.CLEARED:
+                notifyObservers(false);
+                break;
+            case PrimaryAccountChangeEvent.Type.NONE:
+                break;
+        }
     }
 
     /**
