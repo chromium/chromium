@@ -1080,7 +1080,7 @@ can be compared for the same population). -->
 </histogram>
 
 <histogram name="Sync.URLFetchResponse"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-05-02">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-07-04">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
