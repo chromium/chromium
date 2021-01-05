@@ -1694,6 +1694,9 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   if (options.drive_dss_pin) {
     enabled_features.push_back(
         chromeos::features::kDriveFsBidirectionalNativeMessaging);
+  } else {
+    disabled_features.push_back(
+        chromeos::features::kDriveFsBidirectionalNativeMessaging);
   }
 
   if (options.enable_sharesheet) {
