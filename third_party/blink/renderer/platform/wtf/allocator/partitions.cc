@@ -35,6 +35,7 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/debug/alias.h"
+#include "base/no_destructor.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/thread_annotations.h"
 #include "components/crash/core/common/crash_key.h"
@@ -70,35 +71,36 @@ void Partitions::Initialize() {
 // static
 bool Partitions::InitializeOnce() {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  static base::PartitionAllocator fast_malloc_allocator{};
-  fast_malloc_allocator.init(
+  static base::NoDestructor<base::PartitionAllocator> fast_malloc_allocator{};
+  fast_malloc_allocator->init(
       {base::PartitionOptions::Alignment::kRegular,
        base::PartitionOptions::ThreadCache::kEnabled,
        base::PartitionOptions::PCScan::kDisabledByDefault});
 
-  fast_malloc_root_ = fast_malloc_allocator.root();
+  fast_malloc_root_ = fast_malloc_allocator->root();
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-  static base::PartitionAllocator array_buffer_allocator{};
-  static base::PartitionAllocator buffer_allocator{};
-  static base::ThreadUnsafePartitionAllocator layout_allocator{};
+  static base::NoDestructor<base::PartitionAllocator> array_buffer_allocator{};
+  static base::NoDestructor<base::PartitionAllocator> buffer_allocator{};
+  static base::NoDestructor<base::ThreadUnsafePartitionAllocator>
+      layout_allocator{};
 
   base::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
 
-  array_buffer_allocator.init(
+  array_buffer_allocator->init(
       {base::PartitionOptions::Alignment::kRegular,
        base::PartitionOptions::ThreadCache::kDisabled,
        base::PartitionOptions::PCScan::kAlwaysDisabled});
-  buffer_allocator.init({base::PartitionOptions::Alignment::kRegular,
-                         base::PartitionOptions::ThreadCache::kDisabled,
-                         base::PartitionOptions::PCScan::kDisabledByDefault});
-  layout_allocator.init({base::PartitionOptions::Alignment::kRegular,
-                         base::PartitionOptions::ThreadCache::kDisabled,
-                         base::PartitionOptions::PCScan::kAlwaysDisabled});
+  buffer_allocator->init({base::PartitionOptions::Alignment::kRegular,
+                          base::PartitionOptions::ThreadCache::kDisabled,
+                          base::PartitionOptions::PCScan::kDisabledByDefault});
+  layout_allocator->init({base::PartitionOptions::Alignment::kRegular,
+                          base::PartitionOptions::ThreadCache::kDisabled,
+                          base::PartitionOptions::PCScan::kAlwaysDisabled});
 
-  array_buffer_root_ = array_buffer_allocator.root();
-  buffer_root_ = buffer_allocator.root();
-  layout_root_ = layout_allocator.root();
+  array_buffer_root_ = array_buffer_allocator->root();
+  buffer_root_ = buffer_allocator->root();
+  layout_root_ = layout_allocator->root();
 
   if (base::features::IsPartitionAllocPCScanEnabled() ||
       base::FeatureList::IsEnabled(kPCScanBlinkPartitions)) {

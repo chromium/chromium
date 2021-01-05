@@ -15,6 +15,7 @@ include_rules = [
     "+base/memory/ref_counted.h",
     "+base/memory/weak_ptr.h",
     "+base/metrics/histogram_macros.h",
+    "+base/no_destructor.h",
     "+base/numerics",
     "+base/optional.h",
     "+base/process/process_metrics.h",
