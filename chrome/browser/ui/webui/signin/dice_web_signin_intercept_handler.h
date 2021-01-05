@@ -48,6 +48,7 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
 
   void HandleAccept(const base::ListValue* args);
   void HandleCancel(const base::ListValue* args);
+  void HandleGuest(const base::ListValue* args);
   void HandlePageLoaded(const base::ListValue* args);
 
   // Gets the values sent to javascript.

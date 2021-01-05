@@ -32,7 +32,8 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-constexpr int kInterceptionBubbleHeight = 342;
+constexpr int kInterceptionBubbleWithGuestHeight = 362;
+constexpr int kInterceptionBubbleWithoutGuestHeight = 326;
 constexpr int kInterceptionBubbleWidth = 290;
 
 }  // namespace
@@ -155,7 +156,10 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
       std::make_unique<views::WebView>(profile);
   web_view->LoadInitialURL(GURL(chrome::kChromeUIDiceWebSigninInterceptURL));
   web_view->SetPreferredSize(
-      gfx::Size(kInterceptionBubbleWidth, kInterceptionBubbleHeight));
+      gfx::Size(kInterceptionBubbleWidth,
+                DiceWebSigninInterceptUI::ShouldShowGuestOption()
+                    ? kInterceptionBubbleWithGuestHeight
+                    : kInterceptionBubbleWithoutGuestHeight));
   DiceWebSigninInterceptUI* web_ui = web_view->GetWebContents()
                                          ->GetWebUI()
                                          ->GetController()

@@ -9,7 +9,7 @@ import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 /** @implements {DiceWebSigninInterceptBrowserProxy} */
 export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy {
   constructor() {
-    super(['accept', 'cancel', 'pageLoaded']);
+    super(['accept', 'cancel', 'guest', 'pageLoaded']);
     /** @private {!InterceptionParameters} */
     this.interceptionParameters_ = {
       headerText: '',
@@ -36,6 +36,11 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy {
   /** @override */
   cancel() {
     this.methodCalled('cancel');
+  }
+
+  /** @override */
+  guest() {
+    this.methodCalled('guest');
   }
 
   /** @override */

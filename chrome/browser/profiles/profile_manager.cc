@@ -847,6 +847,14 @@ base::FilePath ProfileManager::GetGuestProfilePath() {
 }
 
 // static
+bool ProfileManager::GuestProfileExists() {
+  Profile* guest_profile =
+      g_browser_process->profile_manager()->GetProfileByPath(
+          GetGuestProfilePath());
+  return guest_profile != nullptr;
+}
+
+// static
 base::FilePath ProfileManager::GetSystemProfilePath() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

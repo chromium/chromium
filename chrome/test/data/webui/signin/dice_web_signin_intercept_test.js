@@ -95,6 +95,26 @@ suite('DiceWebSigninInterceptTest', function() {
     return browserProxy.whenCalled('accept');
   });
 
+  test('ClickGuest', function() {
+    assertTrue(isChildVisible(app, '#footer-description'));
+    const spinner = app.$$('paper-spinner-lite');
+    const acceptButton = app.$$('#acceptButton');
+    const cancelButton = app.$$('#cancelButton');
+    const guestLink = app.$$('#footer-description');
+    assertFalse(spinner.active);
+    assertFalse(acceptButton.disabled);
+    assertFalse(cancelButton.disabled);
+
+    guestLink.click();
+
+    // Buttons are disabled and the spinner is active.
+    assertTrue(acceptButton.disabled);
+    assertTrue(cancelButton.disabled);
+    assertTrue(spinner.active);
+    return browserProxy.whenCalled('guest');
+  });
+
+
   test('ClickCancel', function() {
     assertTrue(isChildVisible(app, '#cancelButton'));
     app.$$('#cancelButton').click();

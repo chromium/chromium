@@ -52,6 +52,9 @@ void DiceWebSigninInterceptHandler::RegisterMessages() {
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandleCancel,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "guest", base::BindRepeating(&DiceWebSigninInterceptHandler::HandleGuest,
+                                   base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "pageLoaded",
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandlePageLoaded,
                           base::Unretained(this)));
@@ -103,6 +106,13 @@ void DiceWebSigninInterceptHandler::HandleAccept(const base::ListValue* args) {
 void DiceWebSigninInterceptHandler::HandleCancel(const base::ListValue* args) {
   if (callback_)
     std::move(callback_).Run(false);
+}
+
+void DiceWebSigninInterceptHandler::HandleGuest(const base::ListValue* args) {
+  // TODO(https://crbug.com/1157764): Update the callback to have 3 states and
+  // return 'Guest' state.
+  if (callback_)
+    std::move(callback_).Run(true);
 }
 
 void DiceWebSigninInterceptHandler::HandlePageLoaded(
