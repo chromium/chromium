@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.tasks;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+
 import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS;
 import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -26,6 +29,7 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
+import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoDescriptionView;
@@ -34,6 +38,8 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.base.ViewUtils;
 
@@ -55,6 +61,7 @@ class TasksView extends CoordinatorLayoutForPointer {
     private @CookieControlsEnforcement int mIncognitoCookieControlsToggleEnforcement =
             CookieControlsEnforcement.NO_ENFORCEMENT;
     private View.OnClickListener mIncognitoCookieControlsIconClickListener;
+    private UiConfig mUiConfig;
 
     /** Default constructor needed to inflate via XML. */
     public TasksView(Context context, AttributeSet attrs) {
@@ -77,12 +84,21 @@ class TasksView extends CoordinatorLayoutForPointer {
                 (FrameLayout) findViewById(R.id.carousel_tab_switcher_container);
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
         mHeaderView = (AppBarLayout) findViewById(R.id.task_surface_header);
+        mUiConfig = new UiConfig(this);
+        setHeaderPadding();
         AppBarLayout.LayoutParams layoutParams =
                 (AppBarLayout.LayoutParams) (findViewById(R.id.scroll_component_container)
                                                      .getLayoutParams());
         layoutParams.setScrollFlags(SCROLL_FLAG_SCROLL);
         adjustScrollMode(layoutParams);
         setTabCarouselTitleStyle();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mUiConfig.updateDisplayStyle();
+        alignHeaderForFeedV2();
     }
 
     private void adjustScrollMode(AppBarLayout.LayoutParams layoutParams) {
@@ -436,5 +452,52 @@ class TasksView extends CoordinatorLayoutForPointer {
                 marginLayoutParams.rightMargin, marginLayoutParams.bottomMargin);
 
         fakeSearchBox.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * Make the padding of header consistent with that of Feed recyclerview which is sized by {@link
+     * ViewResizer} in {@link FeedSurfaceCoordinator}
+     */
+    private void setHeaderPadding() {
+        int defaultPadding = 0;
+        int widePadding = getResources().getDimensionPixelSize(FeedFeatures.cachedIsV2Enabled()
+                        ? R.dimen.ntp_wide_card_lateral_margins_v2
+                        : R.dimen.ntp_wide_card_lateral_margins);
+
+        ViewResizer.createAndAttach(mHeaderView, mUiConfig, defaultPadding, widePadding);
+        alignHeaderForFeedV2();
+    }
+
+    /**
+     * Feed v2 has extra content padding, we need to align the header with it. However, the padding
+     * of the header is already bound with ViewResizer in setHeaderPadding(), so we update the left
+     * & right margins of MV tiles container and carousel tab switcher container.
+     */
+    private void alignHeaderForFeedV2() {
+        if (!FeedFeatures.cachedIsV2Enabled()) {
+            return;
+        }
+
+        MarginLayoutParams MVParams =
+                (MarginLayoutParams) mHeaderView.findViewById(R.id.mv_tiles_container)
+                        .getLayoutParams();
+
+        MarginLayoutParams carouselTabSwitcherParams =
+                (MarginLayoutParams) mCarouselTabSwitcherContainer.getLayoutParams();
+
+        int margin = getResources().getDimensionPixelSize(
+                R.dimen.content_suggestions_card_modern_padding_v2);
+        if (getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE) {
+            MVParams.leftMargin = margin;
+            MVParams.rightMargin = margin;
+            carouselTabSwitcherParams.leftMargin = margin;
+            carouselTabSwitcherParams.rightMargin = margin;
+        } else {
+            MVParams.leftMargin = 0;
+            MVParams.rightMargin = 0;
+            carouselTabSwitcherParams.leftMargin =
+                    getResources().getDimensionPixelSize(R.dimen.tab_carousel_start_margin);
+            carouselTabSwitcherParams.rightMargin = 0;
+        }
     }
 }
