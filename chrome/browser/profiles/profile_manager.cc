@@ -363,11 +363,6 @@ bool IsLoggedIn() {
 }
 #endif
 
-bool IsEphemeral(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles) ||
-         profile->IsEphemeralGuestProfile();
-}
-
 }  // namespace
 
 ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
@@ -1559,7 +1554,8 @@ void ProfileManager::RemoveProfile(const base::FilePath& profile_dir) {
   DCHECK(base::Contains(profiles_info_, profile_dir));
 
   Profile* profile = GetProfileByPath(profile_dir);
-  bool ephemeral = IsEphemeral(profile);
+  bool ephemeral =
+      profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles);
 
   // Remove from |profiles_info_|, eventually causing the Profile object's
   // destruction.
@@ -1908,10 +1904,12 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
       storage.GetProfileAttributesWithPath(profile->GetPath(), &entry);
   DCHECK(has_entry);
 
-  if (profile->IsEphemeralGuestProfile())
+  if (profile->IsEphemeralGuestProfile()) {
+    profile->GetPrefs()->SetBoolean(prefs::kForceEphemeralProfiles, true);
     entry->SetIsGuest(true);
+  }
 
-  if (IsEphemeral(profile))
+  if (profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles))
     entry->SetIsEphemeral(true);
 
   entry->SetSignedInWithCredentialProvider(
@@ -1968,7 +1966,7 @@ void ProfileManager::SaveActiveProfiles() {
     // Some profiles might become ephemeral after they are created.
     // Don't persist the System Profile as one of the last actives, it should
     // never get a browser.
-    if (!IsEphemeral(*it) &&
+    if (!(*it)->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles) &&
         profile_paths.find(profile_path) == profile_paths.end() &&
         profile_path !=
             base::FilePath(chrome::kSystemProfileDir).AsUTF8Unsafe()) {
@@ -1983,8 +1981,10 @@ void ProfileManager::OnBrowserOpened(Browser* browser) {
   DCHECK(browser);
   Profile* profile = browser->profile();
   DCHECK(profile);
-  if (!profile->IsOffTheRecord() && !IsEphemeral(profile) &&
-      !browser->is_type_app() && ++browser_counts_[profile] == 1) {
+  bool is_ephemeral =
+      profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles);
+  if (!profile->IsOffTheRecord() && !is_ephemeral && !browser->is_type_app() &&
+      ++browser_counts_[profile] == 1) {
     active_profiles_.push_back(profile);
     SaveActiveProfiles();
   }
@@ -2031,7 +2031,7 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
   base::FilePath path = profile->GetPath();
   if (IsProfileDirectoryMarkedForDeletion(path)) {
     // Do nothing if the profile is already being deleted.
-  } else if (IsEphemeral(profile)) {
+  } else if (profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
     // Avoid scheduling deletion if it's a testing profile that is not
     // registered with profile manager.
     if (profile->AsTestingProfile() &&
@@ -2111,7 +2111,7 @@ void ProfileManager::BrowserListObserver::OnBrowserSetLastActive(
 
   // Don't remember ephemeral profiles as last because they are not going to
   // persist after restart.
-  if (IsEphemeral(last_active))
+  if (last_active->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles))
     return;
 
   profile_manager_->UpdateLastUser(last_active);
