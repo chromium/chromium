@@ -788,17 +788,14 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
 CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
     const GURL& source_url,
     const CookieOptions& options,
-    const CookieAccessParams& params) const {
-  CookieAccessResult access_result;
-  IsSetPermittedInContext(source_url, options, params, &access_result);
-  return access_result;
-}
-
-void CanonicalCookie::IsSetPermittedInContext(
-    const GURL& source_url,
-    const CookieOptions& options,
     const CookieAccessParams& params,
-    CookieAccessResult* access_result) const {
+    const std::vector<std::string>& cookieable_schemes) const {
+  CookieAccessResult access_result;
+  if (!base::Contains(cookieable_schemes, source_url.scheme())) {
+    access_result.status.AddExclusionReason(
+        CookieInclusionStatus::EXCLUDE_NONCOOKIEABLE_SCHEME);
+  }
+
   CookieAccessScheme access_scheme =
       cookie_util::ProvisionalAccessScheme(source_url);
   if (access_scheme == CookieAccessScheme::kNonCryptographic &&
@@ -808,34 +805,34 @@ void CanonicalCookie::IsSetPermittedInContext(
 
   switch (access_scheme) {
     case CookieAccessScheme::kNonCryptographic:
-      access_result->is_allowed_to_access_secure_cookies = false;
+      access_result.is_allowed_to_access_secure_cookies = false;
       if (IsSecure()) {
-        access_result->status.AddExclusionReason(
+        access_result.status.AddExclusionReason(
             CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
       }
       break;
 
     case CookieAccessScheme::kCryptographic:
       // All cool!
-      access_result->is_allowed_to_access_secure_cookies = true;
+      access_result.is_allowed_to_access_secure_cookies = true;
       break;
 
     case CookieAccessScheme::kTrustworthy:
-      access_result->is_allowed_to_access_secure_cookies = true;
+      access_result.is_allowed_to_access_secure_cookies = true;
       if (IsSecure()) {
         // OK, but want people aware of this.
-        access_result->status.AddWarningReason(
+        access_result.status.AddWarningReason(
             CookieInclusionStatus::
                 WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
       }
       break;
   }
 
-  access_result->access_semantics = params.access_semantics;
+  access_result.access_semantics = params.access_semantics;
   if (options.exclude_httponly() && IsHttpOnly()) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "HttpOnly cookie not permitted in script context.";
-    access_result->status.AddExclusionReason(
+    access_result.status.AddExclusionReason(
         CookieInclusionStatus::EXCLUDE_HTTP_ONLY);
   }
 
@@ -847,7 +844,7 @@ void CanonicalCookie::IsSetPermittedInContext(
       SameSite() == CookieSameSite::NO_RESTRICTION && !IsSecure()) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "SetCookie() rejecting insecure cookie with SameSite=None.";
-    access_result->status.AddExclusionReason(
+    access_result.status.AddExclusionReason(
         CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE);
   }
   // Log whether a SameSite=None cookie is Secure or not.
@@ -862,11 +859,11 @@ void CanonicalCookie::IsSetPermittedInContext(
           ? options.same_site_cookie_context().context()
           : options.same_site_cookie_context().GetContextForCookieInclusion();
 
-  access_result->effective_same_site =
+  access_result.effective_same_site =
       GetEffectiveSameSite(params.access_semantics);
-  DCHECK(access_result->effective_same_site !=
+  DCHECK(access_result.effective_same_site !=
          CookieEffectiveSameSite::UNDEFINED);
-  switch (access_result->effective_same_site) {
+  switch (access_result.effective_same_site) {
     case CookieEffectiveSameSite::STRICT_MODE:
       // This intentionally checks for `< SAME_SITE_LAX`, as we allow
       // `SameSite=Strict` cookies to be set for top-level navigations that
@@ -876,7 +873,7 @@ void CanonicalCookie::IsSetPermittedInContext(
         DVLOG(net::cookie_util::kVlogSetCookies)
             << "Trying to set a `SameSite=Strict` cookie from a "
                "cross-site URL.";
-        access_result->status.AddExclusionReason(
+        access_result.status.AddExclusionReason(
             CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT);
       }
       break;
@@ -888,13 +885,13 @@ void CanonicalCookie::IsSetPermittedInContext(
           DVLOG(net::cookie_util::kVlogSetCookies)
               << "Cookies with no known SameSite attribute being treated as "
                  "lax; attempt to set from a cross-site URL denied.";
-          access_result->status.AddExclusionReason(
+          access_result.status.AddExclusionReason(
               CookieInclusionStatus::
                   EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX);
         } else {
           DVLOG(net::cookie_util::kVlogSetCookies)
               << "Trying to set a `SameSite=Lax` cookie from a cross-site URL.";
-          access_result->status.AddExclusionReason(
+          access_result.status.AddExclusionReason(
               CookieInclusionStatus::EXCLUDE_SAMESITE_LAX);
         }
       }
@@ -904,17 +901,19 @@ void CanonicalCookie::IsSetPermittedInContext(
   }
 
   ApplySameSiteCookieWarningToStatus(
-      SameSite(), access_result->effective_same_site, IsSecure(),
-      options.same_site_cookie_context(), &access_result->status,
+      SameSite(), access_result.effective_same_site, IsSecure(),
+      options.same_site_cookie_context(), &access_result.status,
       true /* is_cookie_being_set */);
 
-  if (access_result->status.IsInclude()) {
+  if (access_result.status.IsInclude()) {
     UMA_HISTOGRAM_ENUMERATION("Cookie.IncludedResponseEffectiveSameSite",
-                              access_result->effective_same_site,
+                              access_result.effective_same_site,
                               CookieEffectiveSameSite::COUNT);
   }
 
   // TODO(chlily): Log metrics.
+
+  return access_result;
 }
 
 std::string CanonicalCookie::DebugString() const {

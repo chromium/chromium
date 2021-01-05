@@ -311,13 +311,8 @@ class NET_EXPORT CanonicalCookie {
   CookieAccessResult IsSetPermittedInContext(
       const GURL& source_url,
       const CookieOptions& options,
-      const CookieAccessParams& params) const;
-
-  // Overload that updates an existing |status| rather than returning a new one.
-  void IsSetPermittedInContext(const GURL& source_url,
-                               const CookieOptions& options,
-                               const CookieAccessParams& params,
-                               CookieAccessResult* access_result) const;
+      const CookieAccessParams& params,
+      const std::vector<std::string>& cookieable_schemes) const;
 
   std::string DebugString() const;
 

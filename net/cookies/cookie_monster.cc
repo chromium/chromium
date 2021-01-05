@@ -479,12 +479,6 @@ void CookieMonster::SetPersistSessionCookies(bool persist_session_cookies) {
   persist_session_cookies_ = persist_session_cookies;
 }
 
-bool CookieMonster::IsCookieableScheme(const std::string& scheme) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  return base::Contains(cookieable_schemes_, scheme);
-}
-
 const char* const CookieMonster::kDefaultCookieableSchemes[] = {"http", "https",
                                                                 "ws", "wss"};
 const int CookieMonster::kDefaultCookieableSchemesCount =
@@ -1175,24 +1169,17 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
                                        SetCookiesCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  CookieAccessResult access_result;
-
   bool delegate_treats_url_as_trustworthy =
       cookie_access_delegate() &&
       cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(source_url);
 
-  if (!IsCookieableScheme(source_url.scheme())) {
-    access_result.status.AddExclusionReason(
-        CookieInclusionStatus::EXCLUDE_NONCOOKIEABLE_SCHEME);
-  }
-
-  const std::string key(GetKey(cc->Domain()));
-
-  cc->IsSetPermittedInContext(
+  CookieAccessResult access_result = cc->IsSetPermittedInContext(
       source_url, options,
       CookieAccessParams(GetAccessSemanticsForCookie(*cc),
                          delegate_treats_url_as_trustworthy),
-      &access_result);
+      cookieable_schemes_);
+
+  const std::string key(GetKey(cc->Domain()));
 
   base::Time creation_date = cc->CreationDate();
   if (creation_date.is_null()) {

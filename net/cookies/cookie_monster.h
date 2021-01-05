@@ -190,10 +190,6 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // (i.e. as part of the instance initialization process).
   void SetPersistSessionCookies(bool persist_session_cookies);
 
-  // Determines if the scheme of the URL is a scheme that cookies will be
-  // stored for.
-  bool IsCookieableScheme(const std::string& scheme);
-
   // The default list of schemes the cookie monster can handle.
   static const char* const kDefaultCookieableSchemes[];
   static const int kDefaultCookieableSchemesCount;
