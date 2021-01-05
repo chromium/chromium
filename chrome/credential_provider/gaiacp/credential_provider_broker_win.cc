@@ -136,8 +136,10 @@ void CredentialProviderBrokerWin::OpenDevice(
       // Only if the input device path is corresponding to a FIDO
       // device, we will return appropriate device handle. Otherwise,
       // return an invalid device handle.
-      if (usage_page && usage_page.value() == FIDO_USAGE_PAGE)
+      if (usage_page && usage_page.value() == FIDO_USAGE_PAGE) {
         std::move(callback).Run(PlatformHandle(std::move(device_handle)));
+        return;
+      }
       break;
     }
   }
@@ -145,6 +147,5 @@ void CredentialProviderBrokerWin::OpenDevice(
   // Return default PlatformHandle when we can't find any appropriate device
   // handle.
   std::move(callback).Run(PlatformHandle());
-  return;
 }
 }  // namespace credential_provider
