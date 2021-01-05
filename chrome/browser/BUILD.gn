@@ -476,8 +476,6 @@ static_library("browser") {
     "endpoint_fetcher/endpoint_fetcher.h",
     "engagement/history_aware_site_engagement_service.cc",
     "engagement/history_aware_site_engagement_service.h",
-    "engagement/important_sites_usage_counter.cc",
-    "engagement/important_sites_usage_counter.h",
     "engagement/important_sites_util.cc",
     "engagement/important_sites_util.h",
     "engagement/site_engagement_helper.cc",

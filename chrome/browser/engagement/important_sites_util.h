@@ -43,9 +43,6 @@ class ImportantSitesUtil {
     GURL example_origin;
     double engagement_score = 0;
     int32_t reason_bitfield = 0;
-    // |usage| has to be initialized by ImportantSitesUsageCounter before it
-    // will contain the number of bytes used for quota and localstorage.
-    int64_t usage = 0;
     // Only set if the domain belongs to an installed app.
     base::Optional<std::string> app_name;
   };

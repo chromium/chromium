@@ -3492,7 +3492,6 @@ test("unit_tests") {
     "../browser/download/download_ui_controller_unittest.cc",
     "../browser/download/offline_item_utils_unittest.cc",
     "../browser/endpoint_fetcher/endpoint_fetcher_unittest.cc",
-    "../browser/engagement/important_sites_usage_counter_unittest.cc",
     "../browser/engagement/important_sites_util_unittest.cc",
     "../browser/engagement/site_engagement_helper_unittest.cc",
     "../browser/engagement/site_engagement_score_unittest.cc",
