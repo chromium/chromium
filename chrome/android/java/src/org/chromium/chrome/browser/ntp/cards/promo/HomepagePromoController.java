@@ -153,8 +153,8 @@ public class HomepagePromoController implements HomepageStateListener {
                 .with(PromoCardProperties.IS_IMPRESSION_ON_PRIMARY_BUTTON, true);
 
         if (layoutStyle == LayoutStyle.SLIM) {
-            Drawable homeIcon =
-                    AppCompatResources.getDrawable(mContext, R.drawable.btn_toolbar_home);
+            Drawable homeIcon = AppCompatResources.getDrawable(
+                    mContext, org.chromium.chrome.browser.toolbar.R.drawable.btn_toolbar_home);
             ColorStateList tint =
                     AppCompatResources.getColorStateList(mContext, R.color.default_icon_color_blue);
 
@@ -181,8 +181,8 @@ public class HomepagePromoController implements HomepageStateListener {
                     .with(PromoCardProperties.SECONDARY_BUTTON_CALLBACK, (v) -> dismissPromo());
 
         } else { // layoutStyle == LayoutStyle.COMPACT
-            Drawable homeIcon =
-                    AppCompatResources.getDrawable(mContext, R.drawable.btn_toolbar_home);
+            Drawable homeIcon = AppCompatResources.getDrawable(
+                    mContext, org.chromium.chrome.browser.toolbar.R.drawable.btn_toolbar_home);
             ColorStateList tint =
                     AppCompatResources.getColorStateList(mContext, R.color.default_icon_color_blue);
 

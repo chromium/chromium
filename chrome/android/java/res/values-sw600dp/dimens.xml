@@ -14,9 +14,6 @@
     <!-- Data Saver -->
     <dimen name="data_usage_chart_height">325dp</dimen>
 
-    <!-- Tab Strip Dimensions -->
-    <dimen name="tab_strip_height">40dp</dimen>
-
     <!-- Full Screen Dimensions -->
     <dimen name="control_container_height">96dp</dimen>
     <dimen name="custom_tabs_control_container_height">64dp</dimen>

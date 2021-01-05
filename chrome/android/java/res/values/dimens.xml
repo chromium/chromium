@@ -176,9 +176,6 @@
     <!-- ModalDialogView dimensions -->
     <dimen name="tab_modal_scrim_vertical_margin">16dp</dimen>
 
-    <!-- Tab Strip Dimensions -->
-    <dimen name="tab_strip_height">0dp</dimen>
-
     <!-- Full Screen Dimensions -->
     <!-- Should match toolbar_height_no_shadow -->
     <dimen name="control_container_height">56dp</dimen>
