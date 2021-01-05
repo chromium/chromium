@@ -210,7 +210,7 @@ enum ExoImeSupport {
 // If ash-chrome is newer than lacros-chrome, then some fields may not be
 // processed by lacros-chrome.
 //
-// Next version: 10
+// Next version: 11
 [Stable]
 struct LacrosInitParams {
   // This is ash-chrome's version of the AshChromeService interface. This is
@@ -272,6 +272,11 @@ struct LacrosInitParams {
   // depending on the ash-chrome's support status via this flag.
   [MinVersion=9]
   ExoImeSupport exo_ime_support@9;
+
+  // Primary user ID hash. Used to set CROS_USER_ID_HASH env var in crosh.
+  // Do not use this to construct paths, use DefaultPaths for that purpose.
+  [MinVersion=10]
+  string? cros_user_id_hash@10;
 };
 
 // LacrosChromeService defines the APIs that live in lacros-chrome and
