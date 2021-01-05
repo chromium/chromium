@@ -241,9 +241,7 @@ function getMojoEchoRemote() {
   // MojoEchoRemote.getRemote() only works for frame interfaces
   // and MojoEcho is a process interface.
   let remote = new MojoEchoRemote;
-  Mojo.bindInterface(MojoEcho.$interfaceName,
-                     remote.$.bindNewPipeAndPassReceiver().handle,
-                     'process');
+  remote.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
   return remote;
 }
 

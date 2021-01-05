@@ -231,12 +231,8 @@ promise_test(() => {
 }, 'InterfaceTarget connection error handler runs when set on an InterfaceCallbackRouter object');
 
 function getMojoEchoRemote() {
-  // content.mojom.MojoEchoRemote.getRemote() only works for frame interfaces
-  // and MojoEcho is a process interface.
   let remote = new content.mojom.MojoEchoRemote;
-  Mojo.bindInterface(content.mojom.MojoEcho.$interfaceName,
-                     remote.$.bindNewPipeAndPassReceiver().handle,
-                     'process');
+  remote.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
   return remote;
 }
 

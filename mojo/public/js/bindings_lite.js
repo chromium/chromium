@@ -239,14 +239,15 @@ mojo.internal.computeTotalArraySize = function(arraySpec, value) {
 /** Owns an outgoing message buffer and facilitates serialization. */
 mojo.internal.Message = class {
   /**
+   * @param {number} interfaceId
    * @param {number} flags
    * @param {number} ordinal
    * @param {number} requestId
    * @param {!mojo.internal.StructSpec} paramStructSpec
    * @param {!Object} value
-   * @private
+   * @public
    */
-  constructor(flags, ordinal, requestId, paramStructSpec, value) {
+  constructor(interfaceId, flags, ordinal, requestId, paramStructSpec, value) {
     let headerSize, version;
     if ((flags &
          (mojo.internal.kMessageFlagExpectsResponse |
@@ -270,7 +271,7 @@ mojo.internal.Message = class {
     const header = new DataView(this.buffer);
     header.setUint32(0, headerSize, mojo.internal.kHostLittleEndian);
     header.setUint32(4, version, mojo.internal.kHostLittleEndian);
-    header.setUint32(8, 0);  // Interface ID (only for associated interfaces)
+    header.setUint32(8, interfaceId, mojo.internal.kHostLittleEndian);
     header.setUint32(12, ordinal, mojo.internal.kHostLittleEndian);
     header.setUint32(16, flags, mojo.internal.kHostLittleEndian);
     header.setUint32(20, 0);  // Padding
@@ -814,7 +815,7 @@ mojo.internal.Decoder = class {
       return null;
 
     const decoder = new mojo.internal.Decoder(
-      new DataView(this.data_.buffer, unionOffset), this.handles_);
+        new DataView(this.data_.buffer, unionOffset), this.handles_);
     return decoder.decodeUnion(unionSpec, 0);
   }
 
@@ -867,7 +868,7 @@ mojo.internal.Decoder = class {
     const handle = this.decodeHandle(offset);
     if (!handle)
       return null;
-    return new type(handle);
+    return new type(mojo.internal.interfaceSupport.createEndpoint(handle));
   }
 };
 
@@ -875,30 +876,20 @@ mojo.internal.Decoder = class {
 mojo.internal.Decoder.textDecoder = null;
 
 /**
- * @param {!MojoHandle} handle
- * @param {number} ordinal
- * @param {number} requestId
- * @param {number} flags
- * @param {!mojo.internal.MojomType} paramStruct
- * @param {!Object} value
+ * @typedef {{
+ *   headerSize: number,
+ *   headerVersion: number,
+ *   interfaceId: number,
+ *   ordinal: number,
+ *   flags: number,
+ *   requestId: number,
+ * }}
  */
-mojo.internal.serializeAndSendMessage = function(
-    handle, ordinal, requestId, flags, paramStruct, value) {
-  const message = new mojo.internal.Message(
-      flags, ordinal, requestId,
-      /** @type {!mojo.internal.StructSpec} */ (paramStruct.$.structSpec),
-      value);
-  handle.writeMessage(message.buffer, message.handles);
-};
+mojo.internal.MessageHeader;
 
 /**
  * @param {!DataView} data
- * @return {{
- *     headerSize: number,
- *     ordinal: number,
- *     flags: number,
- *     requestId: number,
- * }}
+ * @return {!mojo.internal.MessageHeader}
  */
 mojo.internal.deserializeMessageHeader = function(data) {
   const headerSize = data.getUint32(0, mojo.internal.kHostLittleEndian);
@@ -910,18 +901,16 @@ mojo.internal.deserializeMessageHeader = function(data) {
       headerVersion > 2) {
     throw new Error('Received invalid message header');
   }
-  if (headerVersion == 2)
-    throw new Error('v2 messages not yet supported');
-  const header = {
-    headerSize: headerSize,
+  return {
+    headerSize,
+    headerVersion,
+    interfaceId: data.getUint32(8, mojo.internal.kHostLittleEndian),
     ordinal: data.getUint32(12, mojo.internal.kHostLittleEndian),
     flags: data.getUint32(16, mojo.internal.kHostLittleEndian),
+    requestId: (headerVersion < 1) ?
+        0 :
+        data.getUint32(24, mojo.internal.kHostLittleEndian),
   };
-  if (headerVersion > 0)
-    header.requestId = data.getUint32(24, mojo.internal.kHostLittleEndian);
-  else
-    header.requestId = 0;
-  return header;
 };
 
 /**
@@ -1368,8 +1357,8 @@ mojo.internal.StructField = function(
  * @param {Array<!Array<number>>=} versionData
  * @export
  */
-mojo.internal.Struct =
-    function(objectToBlessAsType, name, fields, versionData) {
+mojo.internal.Struct = function(
+    objectToBlessAsType, name, fields, versionData) {
   const versions = versionData.map(v => ({version: v[0], packedSize: v[1]}));
   const packedSize = versions[versions.length - 1].packedSize;
   const structSpec = {name, packedSize, fields, versions};
@@ -1399,7 +1388,7 @@ mojo.internal.createStructDeserializer = function(structMojomType) {
   return function(dataView) {
     if (structMojomType.$ == undefined ||
         structMojomType.$.structSpec == undefined) {
-      throw new Error("Invalid struct mojom type!");
+      throw new Error('Invalid struct mojom type!');
     }
     const decoder = new mojo.internal.Decoder(dataView, []);
     return decoder.decodeStructInline(structMojomType.$.structSpec);
@@ -1445,12 +1434,13 @@ mojo.internal.InterfaceProxy = function(type) {
       encode: function(value, encoder, byteOffset, bitOffset, nullable) {
         if (!(value instanceof type))
           throw new Error('Invalid proxy type. Expected ' + type.name);
-        if (!value.proxy.handle)
-          throw new Error('Unexpected null ' + type.name);
 
-        encoder.encodeHandle(byteOffset, value.proxy.handle);
+        const endpoint = value.proxy.unbind();
+        console.assert(endpoint, `unexpected null ${type.name}`);
+
+        const pipe = endpoint.releasePipe();
+        encoder.encodeHandle(byteOffset, pipe);
         encoder.encodeUint32(byteOffset + 4, 0);  // TODO: Support versioning
-        value.proxy.unbind();
       },
       encodeNull: function(encoder, byteOffset) {
         encoder.encodeUint32(byteOffset, 0xffffffff);
@@ -1476,7 +1466,8 @@ mojo.internal.InterfaceRequest = function(type) {
           throw new Error('Invalid request type. Expected ' + type.name);
         if (!value.handle)
           throw new Error('Unexpected null ' + type.name);
-        encoder.encodeHandle(byteOffset, value.handle);
+
+        encoder.encodeHandle(byteOffset, value.handle.releasePipe());
       },
       encodeNull: function(encoder, byteOffset) {
         encoder.encodeUint32(byteOffset, 0xffffffff);

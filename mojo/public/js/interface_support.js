@@ -3,22 +3,309 @@
 // found in the LICENSE file.
 
 /**
- * Handles incoming interface control messages on a remote or router endpoint.
+ * Owns a single message pipe handle and facilitates message sending and routing
+ * on behalf of all the pipe's local Endpoints.
+ */
+mojo.internal.interfaceSupport.Router = class {
+  /**
+   * @param {!MojoHandle} pipe
+   * @public
+   */
+  constructor(pipe) {
+    /** @const {!MojoHandle} */
+    this.pipe_ = pipe;
+
+    /** @const {!mojo.internal.interfaceSupport.HandleReader} */
+    this.reader_ = new mojo.internal.interfaceSupport.HandleReader(pipe);
+    this.reader_.onRead = this.onMessageReceived_.bind(this);
+    this.reader_.onError = this.onError_.bind(this);
+
+    /** @const {!Map<number, !mojo.internal.interfaceSupport.Endpoint>} */
+    this.endpoints_ = new Map();
+  }
+
+  /** @return {!MojoHandle} */
+  get pipe() {
+    return this.pipe_;
+  }
+
+  /**
+   * @param {!mojo.internal.interfaceSupport.Endpoint} endpoint
+   * @param {number} interfaceId
+   */
+  addEndpoint(endpoint, interfaceId) {
+    if (interfaceId === 0) {
+      this.reader_.start();
+    }
+    console.assert(
+        this.isReading(), 'adding a secondary endpoint with no primary');
+    this.endpoints_.set(interfaceId, endpoint);
+  }
+
+  /** @param {number} interfaceId */
+  removeEndpoint(interfaceId) {
+    this.endpoints_.delete(interfaceId);
+    if (interfaceId === 0) {
+      this.reader_.stop();
+    }
+  }
+
+  close() {
+    console.assert(
+        this.endpoints_.size === 0,
+        'closing primary endpoint with secondary endpoints still bound');
+    this.reader_.stopAndCloseHandle();
+  }
+
+  /** @return {boolean} */
+  isReading() {
+    return !this.reader_.isStopped();
+  }
+
+  /** @param {!mojo.internal.Message} message */
+  send(message) {
+    this.pipe_.writeMessage(message.buffer, message.handles);
+  }
+
+  /**
+   * @param {!ArrayBuffer} buffer
+   * @param {!Array<MojoHandle>} handles
+   */
+  onMessageReceived_(buffer, handles) {
+    if (buffer.byteLength < mojo.internal.kMessageV0HeaderSize) {
+      console.error('Rejecting undersized message');
+      this.onError_();
+      return;
+    }
+
+    const header = mojo.internal.deserializeMessageHeader(new DataView(buffer));
+    const endpoint = this.endpoints_.get(header.interfaceId);
+    if (!endpoint) {
+      console.error(
+          `Received message for unknown endpoint ${header.interfaceId}`);
+      return;
+    }
+
+    endpoint.onMessageReceived(header, buffer, handles);
+  }
+
+  onError_() {
+    for (const endpoint of this.endpoints_.values()) {
+      endpoint.onError();
+    }
+    this.endpoints_.clear();
+  }
+};
+
+/**
+ * Something which can receive notifications from an Endpoint; generally this is
+ * the Endpoint's owner.
+ * @interface
+ */
+mojo.internal.interfaceSupport.EndpointClient = class {
+  /**
+   * @param {!mojo.internal.interfaceSupport.Endpoint} endpoint
+   * @param {!mojo.internal.MessageHeader} header
+   * @param {!ArrayBuffer} buffer
+   * @param {!Array<MojoHandle>} handles
+   */
+  onMessageReceived(endpoint, header, buffer, handles) {}
+
+  /**
+   * @param {!mojo.internal.interfaceSupport.Endpoint} endpoint
+   * @param {string=} reason
+   */
+  onError(endpoint, reason = undefined) {}
+};
+
+/**
+ * Encapsulates a single interface endpoint on a multiplexed Router object. This
+ * may be the primary (possibly only) endpoint on a pipe, or a secondary
+ * associated interface endpoint.
+ */
+mojo.internal.interfaceSupport.Endpoint = class {
+  /**
+   * @param {mojo.internal.interfaceSupport.Router=} router
+   * @param {number=} interfaceId
+   */
+  constructor(router = null, interfaceId = 0) {
+    /** @private {mojo.internal.interfaceSupport.Router} */
+    this.router_ = router;
+
+    /** @private {number} */
+    this.interfaceId_ = interfaceId;
+
+    /** @private {mojo.internal.interfaceSupport.ControlMessageHandler} */
+    this.controlMessageHandler_ =
+        new mojo.internal.interfaceSupport.ControlMessageHandler(this);
+
+    /** @private {mojo.internal.interfaceSupport.EndpointClient} */
+    this.client_ = null;
+
+    /** @private {number} */
+    this.nextRequestId_ = 0;
+  }
+
+  /** @return {boolean} */
+  isPrimary() {
+    return this.router_ !== null && this.interfaceId_ === 0;
+  }
+
+  /** @return {!MojoHandle} */
+  releasePipe() {
+    console.assert(this.isPrimary(), 'secondary endpoint cannot release pipe');
+    return this.router_.pipe;
+  }
+
+  /**
+   * @param {string} interfaceName
+   * @param {string} scope
+   */
+  bindInBrowser(interfaceName, scope) {
+    console.assert(
+        this.isPrimary() && !this.router_.isReading(),
+        'endpoint is either associated or already bound');
+    Mojo.bindInterface(interfaceName, this.router_.pipe, scope);
+  }
+
+  /** @return {number} */
+  generateRequestId() {
+    const id = this.nextRequestId_++;
+    if (this.nextRequestId_ > 0xffffffff) {
+      this.nextRequestId_ = 0;
+    }
+    return id;
+  }
+
+  /**
+   * @param {number} ordinal
+   * @param {number} requestId
+   * @param {number} flags
+   * @param {!mojo.internal.MojomType} paramStruct
+   * @param {!Object} value
+   */
+  send(ordinal, requestId, flags, paramStruct, value) {
+    const message = new mojo.internal.Message(
+        this.interfaceId_, flags, ordinal, requestId,
+        /** @type {!mojo.internal.StructSpec} */ (paramStruct.$.structSpec),
+        value);
+    console.assert(
+        this.router_, 'cannot send message on unassociated unbound endpoint');
+    this.router_.send(message);
+  }
+
+  /** @param {mojo.internal.interfaceSupport.EndpointClient} client */
+  start(client) {
+    console.assert(this.router_, 'starting unassociated secondary endpoint');
+    console.assert(!this.client_, 'endpoint already started');
+    this.client_ = client;
+    this.router_.addEndpoint(this, this.interfaceId_);
+  }
+
+  /** @return {boolean} */
+  get isStarted() {
+    return this.client_ !== null;
+  }
+
+  stop() {
+    if (this.router_) {
+      this.router_.removeEndpoint(this.interfaceId_);
+    }
+    this.client_ = null;
+    this.controlMessageHandler_ = null;
+  }
+
+  close() {
+    this.stop();
+    if (this.isPrimary()) {
+      this.router_.close();
+    }
+  }
+
+  async flushForTesting() {
+    return this.controlMessageHandler_.sendRunMessage({'flushForTesting': {}});
+  }
+
+  /**
+   * @param {!mojo.internal.MessageHeader} header
+   * @param {!ArrayBuffer} buffer
+   * @param {!Array<MojoHandle>} handles
+   */
+  onMessageReceived(header, buffer, handles) {
+    console.assert(this.client_, 'endpoint has no client');
+    const handled =
+        this.controlMessageHandler_.maybeHandleControlMessage(header, buffer);
+    if (handled) {
+      return;
+    }
+
+    this.client_.onMessageReceived(this, header, buffer, handles);
+  }
+
+  onError() {
+    if (this.client_) {
+      this.client_.onError(this);
+    }
+  }
+};
+
+/**
+ * Creates a new Endpoint wrapping a given pipe handle.
+ *
+ * @param {!MojoHandle} pipe
+ * @return {!mojo.internal.interfaceSupport.Endpoint}
+ */
+mojo.internal.interfaceSupport.createEndpoint = function(pipe) {
+  return new mojo.internal.interfaceSupport.Endpoint(
+      new mojo.internal.interfaceSupport.Router(pipe), 0);
+};
+
+/**
+ * Returns its input if given an existing Endpoint. If given a pipe handle,
+ * creates a new Endpoint to own it and returns that. This is a helper for
+ * generated PendingReceiver constructors since they can accept either type as
+ * input.
+ *
+ * @param {!MojoHandle|!mojo.internal.interfaceSupport.Endpoint} handle
+ * @return {!mojo.internal.interfaceSupport.Endpoint}
+ * @export
+ */
+mojo.internal.interfaceSupport.getEndpointForReceiver = function(handle) {
+  if (handle instanceof MojoHandle) {
+    return mojo.internal.interfaceSupport.createEndpoint(handle);
+  }
+
+  return handle;
+};
+
+/**
+ * @param {!mojo.internal.interfaceSupport.Endpoint} endpoint
+ * @param {string} interfaceName
+ * @param {string} scope
+ * @export
+ */
+mojo.internal.interfaceSupport.bind = function(endpoint, interfaceName, scope) {
+  endpoint.bindInBrowser(interfaceName, scope);
+};
+
+/**
+ * Handles incoming interface control messages on an interface endpoint.
  */
 mojo.internal.interfaceSupport.ControlMessageHandler = class {
-  /** @param {!MojoHandle} handle */
-  constructor(handle) {
-    /** @private {!MojoHandle} */
-    this.handle_ = handle;
+  /** @param {!mojo.internal.interfaceSupport.Endpoint} endpoint */
+  constructor(endpoint) {
+    /** @private {!mojo.internal.interfaceSupport.Endpoint} */
+    this.endpoint_ = endpoint;
 
     /** @private {!Map<number, function()>} */
     this.pendingFlushResolvers_ = new Map;
   }
 
-  sendRunMessage(requestId, input) {
+  sendRunMessage(input) {
+    const requestId = this.endpoint_.generateRequestId();
     return new Promise(resolve => {
-      mojo.internal.serializeAndSendMessage(
-          this.handle_, mojo.interfaceControl.RUN_MESSAGE_ID, requestId,
+      this.endpoint_.send(
+          mojo.interfaceControl.RUN_MESSAGE_ID, requestId,
           mojo.internal.kMessageFlagExpectsResponse,
           mojo.interfaceControl.RunMessageParamsSpec.$, {'input': input});
       this.pendingFlushResolvers_.set(requestId, resolve);
@@ -42,8 +329,8 @@ mojo.internal.interfaceSupport.ControlMessageHandler = class {
     const input = decoder.decodeStructInline(
         mojo.interfaceControl.RunMessageParamsSpec.$.$.structSpec)['input'];
     if (input.hasOwnProperty('flushForTesting')) {
-      mojo.internal.serializeAndSendMessage(
-          this.handle_, mojo.interfaceControl.RUN_MESSAGE_ID, requestId,
+      this.endpoint_.send(
+          mojo.interfaceControl.RUN_MESSAGE_ID, requestId,
           mojo.internal.kMessageFlagIsResponse,
           mojo.interfaceControl.RunResponseMessageParamsSpec.$,
           {'output': null});
@@ -66,39 +353,22 @@ mojo.internal.interfaceSupport.ControlMessageHandler = class {
 /**
  * Captures metadata about a request which was sent by a remote, for which a
  * response is expected.
+ *
+ * @typedef {{
+ *   requestId: number,
+ *   ordinal: number,
+ *   responseStruct: !mojo.internal.MojomType,
+ *   resolve: !Function,
+ *   reject: !Function,
+ * }}
  */
-mojo.internal.interfaceSupport.PendingResponse = class {
-  /**
-   * @param {number} requestId
-   * @param {number} ordinal
-   * @param {!mojo.internal.MojomType} responseStruct
-   * @param {!Function} resolve
-   * @param {!Function} reject
-   * @private
-   */
-  constructor(requestId, ordinal, responseStruct, resolve, reject) {
-    /** @public {number} */
-    this.requestId = requestId;
-
-    /** @public {number} */
-    this.ordinal = ordinal;
-
-    /** @public {!mojo.internal.MojomType} */
-    this.responseStruct = responseStruct;
-
-    /** @public {!Function} */
-    this.resolve = resolve;
-
-    /** @public {!Function} */
-    this.reject = reject;
-  }
-};
+mojo.internal.interfaceSupport.PendingResponse;
 
 /**
  * Exposed by endpoints to allow observation of remote peer closure. Any number
  * of listeners may be registered on a ConnectionErrorEventRouter, and the
- * router will dispatch at most one event in its lifetime, whenever its
- * associated bindings endpoint detects peer closure.
+ * router will dispatch at most one event in its lifetime, whenever its endpoint
+ * detects peer closure.
  * @export
  */
 mojo.internal.interfaceSupport.ConnectionErrorEventRouter = class {
@@ -147,7 +417,7 @@ mojo.internal.interfaceSupport.ConnectionErrorEventRouter = class {
  */
 mojo.internal.interfaceSupport.PendingReceiver = class {
   /**
-   * @return {!MojoHandle}
+   * @return {!mojo.internal.interfaceSupport.Endpoint}
    * @export
    */
   get handle() {}
@@ -160,43 +430,41 @@ mojo.internal.interfaceSupport.PendingReceiver = class {
  *
  * TODO(crbug.com/1012109): Use a bounded generic type instead of
  * mojo.internal.interfaceSupport.PendingReceiver.
+ * @implements {mojo.internal.interfaceSupport.EndpointClient}
  * @export
  */
 mojo.internal.interfaceSupport.InterfaceRemoteBase = class {
   /**
-   * @param {!function(new:mojo.internal.interfaceSupport.PendingReceiver, !MojoHandle)} requestType
-   * @param {MojoHandle=} opt_handle The message pipe handle to use as a remote
-   *     endpoint. If null, this object must be bound with bindHandle before
-   *     it can be used to send any messages.
+   * @param {!function(new:mojo.internal.interfaceSupport.PendingReceiver,
+   *     !mojo.internal.interfaceSupport.Endpoint)} requestType
+   * @param {MojoHandle|mojo.internal.interfaceSupport.Endpoint=} handle
+   *     The pipe or endpoint handle to use as a remote endpoint. If omitted,
+   *     this object must be bound with bindHandle before it can be used to send
+   *     messages.
    * @public
    */
-  constructor(requestType, opt_handle) {
-    /** @public {?MojoHandle} */
-    this.handle = null;
+  constructor(requestType, handle = undefined) {
+    /** @private {mojo.internal.interfaceSupport.Endpoint} */
+    this.endpoint_ = null;
 
-    /** @private {!function(new:mojo.internal.interfaceSupport.PendingReceiver, !MojoHandle)} */
+    /**
+     * @private {!function(new:mojo.internal.interfaceSupport.PendingReceiver,
+     *     !mojo.internal.interfaceSupport.Endpoint)}
+     */
     this.requestType_ = requestType;
-
-    /** @private {?mojo.internal.interfaceSupport.HandleReader} */
-    this.reader_ = null;
-
-    /** @private {number} */
-    this.nextRequestId_ = 0;
 
     /**
      * @private {!Map<number, !mojo.internal.interfaceSupport.PendingResponse>}
      */
     this.pendingResponses_ = new Map;
 
-    /** @private {mojo.internal.interfaceSupport.ControlMessageHandler} */
-    this.controlMessageHandler_ = null;
-
-    /** @private {!mojo.internal.interfaceSupport.ConnectionErrorEventRouter} */
+    /** @const {!mojo.internal.interfaceSupport.ConnectionErrorEventRouter} */
     this.connectionErrorEventRouter_ =
         new mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 
-    if (opt_handle instanceof MojoHandle)
-      this.bindHandle(opt_handle);
+    if (handle) {
+      this.bindHandle(handle);
+    }
   }
 
   /**
@@ -205,39 +473,45 @@ mojo.internal.interfaceSupport.InterfaceRemoteBase = class {
   bindNewPipeAndPassReceiver() {
     let {handle0, handle1} = Mojo.createMessagePipe();
     this.bindHandle(handle0);
-    return new this.requestType_(handle1);
+    return new this.requestType_(
+        mojo.internal.interfaceSupport.createEndpoint(handle1));
   }
 
   /**
-   * @param {!MojoHandle} handle
+   * @param {!MojoHandle|!mojo.internal.interfaceSupport.Endpoint} handle
    * @export
    */
   bindHandle(handle) {
-    if (this.handle)
-      throw new Error('Remote already bound.');
-    this.handle = handle;
-
-    const reader = new mojo.internal.interfaceSupport.HandleReader(handle);
-    reader.onRead = this.onMessageReceived_.bind(this);
-    reader.onError = this.onError_.bind(this);
-    reader.start();
-    this.controlMessageHandler_ =
-        new mojo.internal.interfaceSupport.ControlMessageHandler(handle);
-
-    this.reader_ = reader;
-    this.nextRequestId_ = 0;
+    console.assert(!this.endpoint_, 'already bound');
+    if (handle instanceof MojoHandle) {
+      handle = mojo.internal.interfaceSupport.createEndpoint(handle);
+    }
+    this.endpoint_ = handle;
+    this.endpoint_.start(this);
     this.pendingResponses_ = new Map;
   }
 
-  /** @export */
+  /**
+   * @return {?mojo.internal.interfaceSupport.Endpoint}
+   * @export
+   */
   unbind() {
-    if (this.reader_)
-      this.reader_.stop();
+    if (!this.endpoint_) {
+      return null;
+    }
+    const endpoint = this.endpoint_;
+    this.endpoint_ = null;
+    endpoint.stop();
+    return endpoint;
   }
 
   /** @export */
   close() {
     this.cleanupAndFlushPendingResponses_('Message pipe closed.');
+    if (this.endpoint_) {
+      this.endpoint_.close();
+    }
+    this.endpoint_ = null;
   }
 
   /**
@@ -251,40 +525,34 @@ mojo.internal.interfaceSupport.InterfaceRemoteBase = class {
   /**
    * @param {number} ordinal
    * @param {!mojo.internal.MojomType} paramStruct
-   * @param {?mojo.internal.MojomType} responseStruct
+   * @param {?mojo.internal.MojomType} maybeResponseStruct
    * @param {!Array} args
    * @return {!Promise}
    * @export
    */
-  sendMessage(ordinal, paramStruct, responseStruct, args) {
-    if (!this.handle) {
-      throw new Error(
-        'Attempting to use an unbound remote. Try ' +
-        '$.bindNewPipeAndPassReceiver() first.')
+  sendMessage(ordinal, paramStruct, maybeResponseStruct, args) {
+    // The pipe has already been closed, so just drop the message.
+    if (maybeResponseStruct && (!this.endpoint_ || !this.endpoint_.isStarted)) {
+      return Promise.reject(new Error('The pipe has already been closed.'));
     }
 
-    // The pipe has already been closed, so just drop the message.
-    if (responseStruct && (!this.reader_ || this.reader_.isStopped()))
-      return Promise.reject(new Error('The pipe has already been closed.'));
-
-    const requestId = this.nextRequestId_++;
     const value = {};
     paramStruct.$.structSpec.fields.forEach(
         (field, index) => value[field.name] = args[index]);
-    mojo.internal.serializeAndSendMessage(
-        this.handle, ordinal, requestId,
-        responseStruct ? mojo.internal.kMessageFlagExpectsResponse : 0,
+    const requestId = this.endpoint_.generateRequestId();
+    this.endpoint_.send(
+        ordinal, requestId,
+        maybeResponseStruct ? mojo.internal.kMessageFlagExpectsResponse : 0,
         paramStruct, value);
-    if (!responseStruct)
+    if (!maybeResponseStruct) {
       return Promise.resolve();
+    }
 
+    const responseStruct =
+        /** @type {!mojo.internal.MojomType} */ (maybeResponseStruct);
     return new Promise((resolve, reject) => {
       this.pendingResponses_.set(
-          requestId,
-          new mojo.internal.interfaceSupport.PendingResponse(
-              requestId, ordinal,
-              /** @type {!mojo.internal.MojomType} */ (responseStruct), resolve,
-              reject));
+          requestId, {requestId, ordinal, responseStruct, resolve, reject});
     });
   }
 
@@ -293,59 +561,49 @@ mojo.internal.interfaceSupport.InterfaceRemoteBase = class {
    * @export
    */
   flushForTesting() {
-    return this.controlMessageHandler_.sendRunMessage(
-        this.nextRequestId_++, {'flushForTesting': {}});
+    return this.endpoint_.flushForTesting();
   }
 
-  /**
-   * @param {!ArrayBuffer} buffer
-   * @param {!Array<MojoHandle>} handles
-   * @private
-   */
-  onMessageReceived_(buffer, handles) {
-    const data = new DataView(buffer);
-    const header = mojo.internal.deserializeMessageHeader(data);
-    if (this.controlMessageHandler_.maybeHandleControlMessage(header, buffer))
-      return;
+  /** @override */
+  onMessageReceived(endpoint, header, buffer, handles) {
     if (!(header.flags & mojo.internal.kMessageFlagIsResponse) ||
         header.flags & mojo.internal.kMessageFlagExpectsResponse) {
-      return this.onError_('Received unexpected request message');
+      return this.onError(endpoint, 'Received unexpected request message');
     }
     const pendingResponse = this.pendingResponses_.get(header.requestId);
     this.pendingResponses_.delete(header.requestId);
     if (!pendingResponse)
-      return this.onError_('Received unexpected response message');
+      return this.onError(endpoint, 'Received unexpected response message');
     const decoder = new mojo.internal.Decoder(
         new DataView(buffer, header.headerSize), handles);
     const responseValue = decoder.decodeStructInline(
         /** @type {!mojo.internal.StructSpec} */ (
             pendingResponse.responseStruct.$.structSpec));
     if (!responseValue)
-      return this.onError_('Received malformed response message');
+      return this.onError(endpoint, 'Received malformed response message');
     if (header.ordinal !== pendingResponse.ordinal)
-      return this.onError_('Received malformed response message');
+      return this.onError(endpoint, 'Received malformed response message');
 
     pendingResponse.resolve(responseValue);
   }
 
-  /**
-   * @param {string=} opt_reason
-   * @private
-   */
-  onError_(opt_reason) {
-    this.cleanupAndFlushPendingResponses_(opt_reason);
+  /** @override */
+  onError(endpoint, reason = undefined) {
+    this.cleanupAndFlushPendingResponses_(reason);
     this.connectionErrorEventRouter_.dispatchErrorEvent();
   }
 
   /**
-   * @param {string=} opt_reason
+   * @param {string=} reason
    * @private
    */
-  cleanupAndFlushPendingResponses_(opt_reason) {
-    this.reader_.stopAndCloseHandle();
-    this.reader_ = null;
-    for (const id of this.pendingResponses_.keys())
-      this.pendingResponses_.get(id).reject(new Error(opt_reason));
+  cleanupAndFlushPendingResponses_(reason = undefined) {
+    if (this.endpoint_) {
+      this.endpoint_.stop();
+    }
+    for (const id of this.pendingResponses_.keys()) {
+      this.pendingResponses_.get(id).reject(new Error(reason));
+    }
     this.pendingResponses_ = new Map;
   }
 };
@@ -496,60 +754,48 @@ mojo.internal.interfaceSupport.InterfaceCallbackReceiver = class {
 
 /**
  * Wraps message handlers attached to an InterfaceReceiver.
+ *
+ * @typedef {{
+ *   paramStruct: !mojo.internal.MojomType,
+ *   responseStruct: ?mojo.internal.MojomType,
+ *   handler: !Function,
+ * }}
  */
-mojo.internal.interfaceSupport.MessageHandler = class {
-  /**
-   * @param {!mojo.internal.MojomType} paramStruct
-   * @param {?mojo.internal.MojomType} responseStruct
-   * @param {!Function} handler
-   * @private
-   */
-  constructor(paramStruct, responseStruct, handler) {
-    /** @public {!mojo.internal.MojomType} */
-    this.paramStruct = paramStruct;
-
-    /** @public {?mojo.internal.MojomType} */
-    this.responseStruct = responseStruct;
-
-    /** @public {!Function} */
-    this.handler = handler;
-  }
-};
+mojo.internal.interfaceSupport.MessageHandler;
 
 /**
- * Generic helper that listens for incoming request messages on a message pipe,
- * dispatching them to any registered handlers. Handlers are registered against
- * a specific ordinal message number. It has methods to perform operations
- * related to the interface pipe e.g. bind the pipe, close it, etc. Should only
- * be used by the generated receiver classes.
+ * Generic helper that listens for incoming request messages on one or more
+ * endpoints of the same interface type, dispatching them to registered
+ * handlers. Handlers are registered against a specific ordinal message number.
+ *
  * @template T
+ * @implements {mojo.internal.interfaceSupport.EndpointClient}
  * @export
  */
 mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
   /**
-   * @param {!function(new:T)} remoteType
+   * @param {!function(new:T,
+   *     (!MojoHandle|!mojo.internal.interfaceSupport.Endpoint)=)} remoteType
    * @public
    */
   constructor(remoteType) {
-    /**
-     * @private {!Map<MojoHandle,
-     *     !mojo.internal.interfaceSupport.HandleReader>}
-     */
-    this.readers_ = new Map;
+    /** @private {!Set<!mojo.internal.interfaceSupport.Endpoint>} endpoints */
+    this.endpoints_ = new Set();
 
-    /** @private {!function(new:T)} */
+    /**
+     * @private {!function(new:T,
+     *     (!MojoHandle|!mojo.internal.interfaceSupport.Endpoint)=)}
+     */
     this.remoteType_ = remoteType;
+
     /**
      * @private {!Map<number, !mojo.internal.interfaceSupport.MessageHandler>}
      */
     this.messageHandlers_ = new Map;
 
-    /** @private {mojo.internal.interfaceSupport.ControlMessageHandler} */
-    this.controlMessageHandler_ = null;
-
-    /** @private {!mojo.internal.interfaceSupport.ConnectionErrorEventRouter} */
+    /** @const {!mojo.internal.interfaceSupport.ConnectionErrorEventRouter} */
     this.connectionErrorEventRouter_ =
-      new mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
+        new mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
   }
 
   /**
@@ -560,24 +806,19 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
    * @export
    */
   registerHandler(ordinal, paramStruct, responseStruct, handler) {
-    this.messageHandlers_.set(
-        ordinal,
-        new mojo.internal.interfaceSupport.MessageHandler(
-            paramStruct, responseStruct, handler));
+    this.messageHandlers_.set(ordinal, {paramStruct, responseStruct, handler});
   }
 
   /**
-   * @param {!MojoHandle} handle
+   * @param {!MojoHandle|!mojo.internal.interfaceSupport.Endpoint} handle
    * @export
    */
   bindHandle(handle) {
-    const reader = new mojo.internal.interfaceSupport.HandleReader(handle);
-    this.readers_.set(handle, reader);
-    reader.onRead = this.onMessageReceived_.bind(this, handle);
-    reader.onError = this.onError_.bind(this, handle);
-    reader.start();
-    this.controlMessageHandler_ =
-        new mojo.internal.interfaceSupport.ControlMessageHandler(handle);
+    if (handle instanceof MojoHandle) {
+      handle = mojo.internal.interfaceSupport.createEndpoint(handle);
+    }
+    this.endpoints_.add(handle);
+    handle.start(this);
   }
 
   /**
@@ -585,16 +826,17 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
    * @export
    */
   bindNewPipeAndPassRemote() {
-    let remote = new this.remoteType_;
+    let remote = new this.remoteType_();
     this.bindHandle(remote.$.bindNewPipeAndPassReceiver().handle);
     return remote;
   }
 
   /** @export */
   closeBindings() {
-    for (const reader of this.readers_.values())
-      reader.stopAndCloseHandle();
-    this.readers_.clear();
+    for (const endpoint of this.endpoints_) {
+      endpoint.close();
+    }
+    this.endpoints_.clear();
   }
 
   /**
@@ -605,17 +847,8 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
     return this.connectionErrorEventRouter_;
   }
 
-  /**
-   * @param {!MojoHandle} handle
-   * @param {!ArrayBuffer} buffer
-   * @param {!Array<MojoHandle>} handles
-   * @private
-   */
-  onMessageReceived_(handle, buffer, handles) {
-    const data = new DataView(buffer);
-    const header = mojo.internal.deserializeMessageHeader(data);
-    if (this.controlMessageHandler_.maybeHandleControlMessage(header, buffer))
-      return;
+  /** @override */
+  onMessageReceived(endpoint, header, buffer, handles) {
     if (header.flags & mojo.internal.kMessageFlagIsResponse)
       throw new Error('Received unexpected response on interface receiver');
     const handler = this.messageHandlers_.get(header.ordinal);
@@ -638,7 +871,7 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
     // well-formed response object, or a Promise that will eventually yield one.
     if (handler.responseStruct) {
       if (result === undefined) {
-        this.onError_(handle);
+        this.onError(endpoint);
         throw new Error(
             'Message expects a reply but its handler did not provide one.');
       }
@@ -648,8 +881,8 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
 
       result
           .then(value => {
-            mojo.internal.serializeAndSendMessage(
-                handle, header.ordinal, header.requestId,
+            endpoint.send(
+                header.ordinal, header.requestId,
                 mojo.internal.kMessageFlagIsResponse,
                 /** @type {!mojo.internal.MojomType} */
                 (handler.responseStruct), value);
@@ -658,22 +891,16 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
             // If the handler rejects, that means it didn't like the request's
             // contents for whatever reason. We close the binding to prevent
             // further messages from being received from that client.
-            this.onError_(handle);
+            this.onError(endpoint);
           });
     }
   }
 
-  /**
-   * @param {!MojoHandle} handle
-   * @private
-   */
-  onError_(handle) {
-    const reader = this.readers_.get(handle);
-    if (!reader)
-      return;
+  /** @override */
+  onError(endpoint, reason = undefined) {
+    this.endpoints_.delete(endpoint);
+    endpoint.close();
     this.connectionErrorEventRouter_.dispatchErrorEvent();
-    reader.stopAndCloseHandle();
-    this.readers_.delete(handle);
   }
 };
 
@@ -703,7 +930,7 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelper = class {
    * Binds a new handle to this object. Messages which arrive on the handle will
    * be read and dispatched to this object.
    *
-   * @param {!MojoHandle} handle
+   * @param {!MojoHandle|!mojo.internal.interfaceSupport.Endpoint} handle
    * @export
    */
   bindHandle(handle) {
@@ -735,7 +962,7 @@ mojo.internal.interfaceSupport.HandleReader = class {
    * @private
    */
   constructor(handle) {
-    /** @private {MojoHandle} */
+    /** @private {!MojoHandle} */
     this.handle_ = handle;
 
     /** @public {?function(!ArrayBuffer, !Array<MojoHandle>)} */
@@ -757,16 +984,17 @@ mojo.internal.interfaceSupport.HandleReader = class {
   }
 
   stop() {
-    if (!this.watcher_)
+    if (!this.watcher_) {
       return;
+    }
     this.watcher_.cancel();
     this.watcher_ = null;
   }
 
   stopAndCloseHandle() {
-    if (!this.watcher_)
-      return;
-    this.stop();
+    if (this.watcher_) {
+      this.stop();
+    }
     this.handle_.close();
   }
 
