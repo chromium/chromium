@@ -121,6 +121,7 @@ template("core_impl_source_set") {
         sources += [
           "broker_posix.cc",
           "channel_posix.cc",
+          "channel_posix.h",
         ]
       }
     }
