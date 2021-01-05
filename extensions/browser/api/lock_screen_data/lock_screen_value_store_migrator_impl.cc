@@ -69,8 +69,8 @@ void LockScreenValueStoreMigratorImpl::StartMigrationForExtension(
     const ExtensionId& extension_id) {
   DataItem::GetRegisteredValuesForExtension(
       context_, source_store_cache_, task_runner_, extension_id,
-      base::Bind(&LockScreenValueStoreMigratorImpl::OnGotItemsForExtension,
-                 weak_ptr_factory_.GetWeakPtr(), extension_id));
+      base::BindOnce(&LockScreenValueStoreMigratorImpl::OnGotItemsForExtension,
+                     weak_ptr_factory_.GetWeakPtr(), extension_id));
 }
 
 void LockScreenValueStoreMigratorImpl::OnGotItemsForExtension(

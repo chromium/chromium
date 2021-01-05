@@ -67,8 +67,8 @@ ExtensionMessageFilter::ExtensionMessageFilter(int render_process_id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   shutdown_notifier_subscription_ =
       ShutdownNotifierFactory::GetInstance()->Get(context)->Subscribe(
-          base::Bind(&ExtensionMessageFilter::ShutdownOnUIThread,
-                     base::Unretained(this)));
+          base::BindRepeating(&ExtensionMessageFilter::ShutdownOnUIThread,
+                              base::Unretained(this)));
 }
 
 void ExtensionMessageFilter::EnsureShutdownNotifierFactoryBuilt() {

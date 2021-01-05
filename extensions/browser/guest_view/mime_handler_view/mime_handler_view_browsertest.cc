@@ -125,7 +125,7 @@ class MimeHandlerViewTest : public extensions::ExtensionApiTest {
   void RunTestWithUrl(const GURL& url) {
     // Use the testing subclass of MimeHandlerViewGuest.
     GetGuestViewManager()->RegisterTestGuestViewType<MimeHandlerViewGuest>(
-        base::Bind(&TestMimeHandlerViewGuest::Create));
+        base::BindRepeating(&TestMimeHandlerViewGuest::Create));
 
     const extensions::Extension* extension = LoadTestExtension();
     ASSERT_TRUE(extension);
@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, AdoptNodeInOnLoadDoesNotCrash) {
 IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, DoNotLoadInSandboxedFrame) {
   // Use the testing subclass of MimeHandlerViewGuest.
   GetGuestViewManager()->RegisterTestGuestViewType<MimeHandlerViewGuest>(
-      base::Bind(&TestMimeHandlerViewGuest::Create));
+      base::BindRepeating(&TestMimeHandlerViewGuest::Create));
 
   const extensions::Extension* extension = LoadTestExtension();
   ASSERT_TRUE(extension);

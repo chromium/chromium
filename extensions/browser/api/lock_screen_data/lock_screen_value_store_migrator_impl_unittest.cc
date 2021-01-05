@@ -246,8 +246,8 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
     base::RunLoop run_loop;
     DataItem::GetRegisteredValuesForExtension(
         context_.get(), storage, task_runner_.get(), extension_id,
-        base::Bind(&GetRegisteredItemsCallback, run_loop.QuitClosure(), &result,
-                   &items_value));
+        base::BindOnce(&GetRegisteredItemsCallback, run_loop.QuitClosure(),
+                       &result, &items_value));
     run_loop.Run();
 
     if (result != OperationResult::kSuccess) {
@@ -1012,7 +1012,7 @@ TEST_F(LockScreenValueStoreMigratorImplTest,
 
   // Clear data for app 1.
   migrator()->ClearDataForExtension(
-      app->id(), base::Bind(&ExpectNotRun, "clear data callback"));
+      app->id(), base::BindOnce(&ExpectNotRun, "clear data callback"));
   EXPECT_FALSE(migrator()->IsMigratingExtensionData(app->id()));
 
   DeleteMigrator();
@@ -1048,7 +1048,7 @@ TEST_F(LockScreenValueStoreMigratorImplTest,
 
   // Clear data for app 1.
   migrator()->ClearDataForExtension(
-      app->id(), base::Bind(&ExpectNotRun, "clear data callback"));
+      app->id(), base::BindOnce(&ExpectNotRun, "clear data callback"));
   EXPECT_FALSE(migrator()->IsMigratingExtensionData(app->id()));
 
   // This should clear the target storage.

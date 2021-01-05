@@ -226,19 +226,16 @@ void WebViewAPITest::StartTestServer(const std::string& app_location) {
   test_data_dir = test_data_dir.AppendASCII(app_location.c_str());
   embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
 
-  embedded_test_server()->RegisterRequestHandler(
-      base::Bind(&RedirectResponseHandler,
-                 kRedirectResponsePath,
-                 embedded_test_server()->GetURL(kRedirectResponseFullPath)));
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &RedirectResponseHandler, kRedirectResponsePath,
+      embedded_test_server()->GetURL(kRedirectResponseFullPath)));
 
   embedded_test_server()->RegisterRequestHandler(
-      base::Bind(&EmptyResponseHandler, kEmptyResponsePath));
+      base::BindRepeating(&EmptyResponseHandler, kEmptyResponsePath));
 
-  embedded_test_server()->RegisterRequestHandler(
-      base::Bind(
-          &UserAgentResponseHandler,
-          kUserAgentRedirectResponsePath,
-          embedded_test_server()->GetURL(kRedirectResponseFullPath)));
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &UserAgentResponseHandler, kUserAgentRedirectResponsePath,
+      embedded_test_server()->GetURL(kRedirectResponseFullPath)));
 
   net::test_server::RegisterDefaultHandlers(embedded_test_server());
 

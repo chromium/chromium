@@ -112,7 +112,7 @@ class UsbFindDevicesFunction : public UsbExtensionFunction {
   uint16_t vendor_id_;
   uint16_t product_id_;
   std::unique_ptr<base::ListValue> result_;
-  base::Closure barrier_;
+  base::RepeatingClosure barrier_;
 
   DISALLOW_COPY_AND_ASSIGN(UsbFindDevicesFunction);
 };

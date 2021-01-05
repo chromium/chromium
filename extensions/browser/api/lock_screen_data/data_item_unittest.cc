@@ -251,8 +251,8 @@ class DataItemTest : public testing::Test {
     DataItem::GetRegisteredValuesForExtension(
         context_.get(), value_store_cache_.get(), task_runner_.get(),
         extension_id,
-        base::Bind(&GetRegisteredItemsCallback, run_loop.QuitClosure(), &result,
-                   &items_value));
+        base::BindOnce(&GetRegisteredItemsCallback, run_loop.QuitClosure(),
+                       &result, &items_value));
     run_loop.Run();
 
     if (result != OperationResult::kSuccess)
