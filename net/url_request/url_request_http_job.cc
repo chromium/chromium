@@ -44,6 +44,7 @@
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/known_roots.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/filter/brotli_source_stream.h"
@@ -153,12 +154,43 @@ void RecordCTHistograms(const net::SSLInfo& ssl_info) {
 }
 
 net::CookieOptions CreateCookieOptions(
-    net::CookieOptions::SameSiteCookieContext cookie_context) {
+    net::CookieOptions::SameSiteCookieContext same_site_context,
+    net::CookieOptions::SamePartyCookieContextType same_party_context,
+    const net::IsolationInfo& isolation_info) {
   net::CookieOptions options;
   options.set_return_excluded_cookies();
   options.set_include_httponly();
-  options.set_same_site_cookie_context(cookie_context);
+  options.set_same_site_cookie_context(same_site_context);
+  options.set_same_party_cookie_context_type(same_party_context);
+  if (isolation_info.party_context().has_value()) {
+    // Count the top-frame site since it's not in the party_context.
+    options.set_full_party_context_size(isolation_info.party_context()->size() +
+                                        1);
+  }
   return options;
+}
+
+// Return SamePartyCookieContextType::kCrossParty when:
+// 1) `isolation_info` is not fully populated.
+// 2) `isolation_info.party_context` is null.
+// 3) `cookie_access_delegate.IsContextSamePartyWithSite` returns false.
+//
+// In Chrome, all requests with credentials enabled have a fully populated
+// IsolationInfo.  But that might not be true for other embedders yet
+// (including cast, WebView, etc).  Also not sure about iOS.
+net::CookieOptions::SamePartyCookieContextType ComputeSamePartyContext(
+    const GURL& request_url,
+    const net::IsolationInfo& isolation_info,
+    const net::CookieAccessDelegate* cookie_access_delegate) {
+  if (!isolation_info.IsEmpty() && isolation_info.party_context().has_value() &&
+      cookie_access_delegate &&
+      cookie_access_delegate->IsContextSamePartyWithSite(
+          net::SchemefulSite(request_url),
+          isolation_info.network_isolation_key().GetTopFrameSite().value(),
+          isolation_info.party_context().value())) {
+    return net::CookieOptions::SamePartyCookieContextType::kSameParty;
+  }
+  return net::CookieOptions::SamePartyCookieContextType::kCrossParty;
 }
 
 }  // namespace
@@ -541,7 +573,11 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
             request_->method(), request_->url(), request_->site_for_cookies(),
             request_->initiator(), force_ignore_site_for_cookies);
 
-    CookieOptions options = CreateCookieOptions(same_site_context);
+    CookieOptions::SamePartyCookieContextType same_party_context =
+        ComputeSamePartyContext(request_->url(), request_->isolation_info(),
+                                cookie_store->cookie_access_delegate());
+    CookieOptions options = CreateCookieOptions(
+        same_site_context, same_party_context, request_->isolation_info());
 
     cookie_store->GetCookieListWithOptionsAsync(
         request_->url(), options,
@@ -680,10 +716,15 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
           request_->url(), request_->site_for_cookies(), request_->initiator(),
           force_ignore_site_for_cookies);
 
-  CookieOptions options = CreateCookieOptions(same_site_context);
+  CookieOptions::SamePartyCookieContextType same_party_context =
+      ComputeSamePartyContext(request_->url(), request_->isolation_info(),
+                              cookie_store->cookie_access_delegate());
 
-  // Set all cookies, without waiting for them to be set. Any subsequent read
-  // will see the combined result of all cookie operation.
+  CookieOptions options = CreateCookieOptions(
+      same_site_context, same_party_context, request_->isolation_info());
+
+  // Set all cookies, without waiting for them to be set. Any subsequent
+  // read will see the combined result of all cookie operation.
   const base::StringPiece name("Set-Cookie");
   std::string cookie_string;
   size_t iter = 0;
@@ -693,10 +734,10 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   // list has been fully processed, and it can either be called in the
   // callback or after the loop is called, depending on how the last element
   // was handled. |num_cookie_lines_left_| keeps track of how many async
-  // callbacks are currently out (starting from 1 to make sure the loop runs all
-  // the way through before trying to exit). If there are any callbacks still
-  // waiting when the loop ends, then NotifyHeadersComplete will be called when
-  // it reaches 0 in the callback itself.
+  // callbacks are currently out (starting from 1 to make sure the loop runs
+  // all the way through before trying to exit). If there are any callbacks
+  // still waiting when the loop ends, then NotifyHeadersComplete will be
+  // called when it reaches 0 in the callback itself.
   num_cookie_lines_left_ = 1;
   while (headers->EnumerateHeader(&iter, name, &cookie_string)) {
     CookieInclusionStatus returned_status;
