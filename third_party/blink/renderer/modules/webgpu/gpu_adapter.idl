@@ -5,6 +5,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 enum GPUExtensionName {
+    "pipeline-statistics-query",
     "texture-compression-bc",
     "timestamp-query",
     "shader-float16"

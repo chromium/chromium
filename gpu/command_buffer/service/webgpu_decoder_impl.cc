@@ -676,7 +676,9 @@ error::Error WebGPUDecoderImpl::InitDawnDeviceAndSetWireServer(
   if (request_device_properties.shaderFloat16) {
     device_descriptor.requiredExtensions.push_back("shader_float16");
   }
-
+  if (request_device_properties.pipelineStatisticsQuery) {
+    device_descriptor.requiredExtensions.push_back("pipeline_statistics_query");
+  }
   if (request_device_properties.timestampQuery) {
     device_descriptor.requiredExtensions.push_back("timestamp_query");
   }
