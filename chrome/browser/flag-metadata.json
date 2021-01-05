@@ -4827,18 +4827,18 @@
   },
   {
     "name": "webpage-alternative-text-zoom",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com@google.com" ],
-    "expiry_milestone": 86
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 91
   },
   {
     "name": "webpage-default-zoom-from-dynamic-type",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com@google.com" ],
-    "expiry_milestone": 87
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 91
   },
   {
     "name": "webpage-text-accessibility",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com@google.com" ],
-    "expiry_milestone": 86
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 91
   },
   {
     "name": "webui-dark-mode",
