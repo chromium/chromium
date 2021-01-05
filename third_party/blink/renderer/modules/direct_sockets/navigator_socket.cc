@@ -54,6 +54,7 @@ NavigatorSocket& NavigatorSocket::From(ScriptState* script_state) {
       Supplement<ExecutionContext>::From<NavigatorSocket>(context);
   if (!supplement) {
     supplement = MakeGarbageCollected<NavigatorSocket>(context);
+    supplement->UpdateStateIfNeeded();
     ProvideTo(*context, supplement);
   }
   return *supplement;

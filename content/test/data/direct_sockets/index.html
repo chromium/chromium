@@ -14,6 +14,19 @@
       }
     }
 
+    async function closeTcp(options, closeWriter) {
+      try {
+        let tcpSocket = await navigator.openTCPSocket(options);
+        let writer = tcpSocket.writable.getWriter();
+        if (closeWriter)
+          await writer.close();
+        await tcpSocket.close();
+        return 'closeTcp succeeded';
+      } catch(error) {
+        return ('closeTcp failed: ' + error);
+      }
+    }
+
     async function openUdp(options) {
       try {
         let udpSocket = await navigator.openUDPSocket(options);

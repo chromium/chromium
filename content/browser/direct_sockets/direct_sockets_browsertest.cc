@@ -321,6 +321,35 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_OptionsTwo) {
   EXPECT_EQ(true, call.no_delay);
 }
 
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, CloseTcp) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
+      base::BindRepeating(&UnconditionallyPermitConnection));
+
+  const uint16_t listening_port = StartTcpServer();
+  const std::string script = base::StringPrintf(
+      "closeTcp({remoteAddress: '127.0.0.1', remotePort: %d})", listening_port);
+
+  EXPECT_EQ("closeTcp succeeded", EvalJs(shell(), script));
+}
+
+// Tests that we can close the writer, then the socket.
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, CloseTcpWriter) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
+      base::BindRepeating(&UnconditionallyPermitConnection));
+
+  const uint16_t listening_port = StartTcpServer();
+  const std::string script = base::StringPrintf(
+      "closeTcp({remoteAddress: '127.0.0.1', remotePort: %d}, "
+      "/*closeWriter=*/true)",
+      listening_port);
+
+  EXPECT_EQ("closeTcp succeeded", EvalJs(shell(), script));
+}
+
 // TODO(crbug.com/1141241): Resolve failures on linux-bfcache-rel bots.
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, DISABLED_OpenUdp_Success) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
