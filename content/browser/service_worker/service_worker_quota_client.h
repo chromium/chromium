@@ -8,6 +8,8 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "content/common/content_export.h"
 #include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -25,6 +27,9 @@ class ServiceWorkerQuotaClient : public storage::QuotaClient {
   CONTENT_EXPORT explicit ServiceWorkerQuotaClient(
       ServiceWorkerContextWrapper* context);
 
+  ServiceWorkerQuotaClient(const ServiceWorkerQuotaClient&) = delete;
+  ServiceWorkerQuotaClient& operator=(const ServiceWorkerQuotaClient&) = delete;
+
   // QuotaClient method overrides
   void OnQuotaManagerDestroyed() override {}
   void GetOriginUsage(const url::Origin& origin,
@@ -41,18 +46,16 @@ class ServiceWorkerQuotaClient : public storage::QuotaClient {
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
 
-  static constexpr storage::QuotaClientType kType =
-      storage::QuotaClientType::kServiceWorker;
-
  private:
   friend class ServiceWorkerContextWrapper;
   friend class ServiceWorkerQuotaClientTest;
 
   ~ServiceWorkerQuotaClient() override;
 
-  scoped_refptr<ServiceWorkerContextWrapper> context_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerQuotaClient);
+  scoped_refptr<ServiceWorkerContextWrapper> context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content
