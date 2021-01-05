@@ -49,13 +49,12 @@ function computeStep(route) {
     case Routes.MAIN:
       return 'mainView';
     case Routes.NEW_PROFILE:
-      // TODO(msalama): Adjust once sign in profile creation is supported.
-      if (!isSignInProfileCreationSupported() || !isBrowserSigninAllowed()) {
-        assert(!isForceSigninEnabled());
-        return ProfileCreationSteps.LOCAL_PROFILE_CUSTOMIZATION;
-      }
       if (isForceSigninEnabled()) {
         return ProfileCreationSteps.LOAD_FORCE_SIGNIN;
+      }
+      // TODO(msalama): Adjust once sign in profile creation is supported.
+      if (!isSignInProfileCreationSupported() || !isBrowserSigninAllowed()) {
+        return ProfileCreationSteps.LOCAL_PROFILE_CUSTOMIZATION;
       }
       return ProfileCreationSteps.PROFILE_TYPE_CHOICE;
     default:
