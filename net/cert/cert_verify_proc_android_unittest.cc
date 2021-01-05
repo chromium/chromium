@@ -173,8 +173,9 @@ class CertVerifyProcAndroidTestWithAIAFetching : public testing::Test {
 
 // Tests that if the proper intermediates are supplied in the server-sent chain,
 // no AIA fetch occurs.
+// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
-       NoFetchIfProperIntermediatesSupplied) {
+       DISABLED_NoFetchIfProperIntermediatesSupplied) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
       base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
@@ -191,7 +192,8 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
 
 // Tests that if the certificate does not contain an AIA URL, no AIA fetch
 // occurs.
-TEST_F(CertVerifyProcAndroidTestWithAIAFetching, NoAIAURL) {
+// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
+TEST_F(CertVerifyProcAndroidTestWithAIAFetching, DISABLED_NoAIAURL) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
       base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
@@ -208,7 +210,9 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, NoAIAURL) {
 // Tests that if a certificate contains one file:// URL and one http:// URL,
 // there are two fetches, with the latter resulting in a successful
 // verification.
-TEST_F(CertVerifyProcAndroidTestWithAIAFetching, OneFileAndOneHTTPURL) {
+// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
+TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
+       DISABLED_OneFileAndOneHTTPURL) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
       base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
@@ -239,8 +243,9 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, OneFileAndOneHTTPURL) {
 
 // Tests that if an AIA request returns the wrong intermediate, certificate
 // verification should fail.
+// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
-       UnsuccessfulVerificationWithLeafOnly) {
+       DISABLED_UnsuccessfulVerificationWithLeafOnly) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
       base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
@@ -263,8 +268,9 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
 
 // Tests that if an AIA request returns an error, certificate verification
 // should fail.
+// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
-       UnsuccessfulVerificationWithLeafOnlyAndErrorOnFetch) {
+       DISABLED_UnsuccessfulVerificationWithLeafOnlyAndErrorOnFetch) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
       base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
@@ -284,8 +290,9 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
 
 // Tests that if an AIA request returns an unparseable cert, certificate
 // verification should fail.
+// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
-       UnsuccessfulVerificationWithLeafOnlyAndUnparseableFetch) {
+       DISABLED_UnsuccessfulVerificationWithLeafOnlyAndUnparseableFetch) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
       base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
@@ -306,7 +313,8 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
 // Tests that if a certificate has two HTTP AIA URLs, they are both fetched. If
 // one serves an unrelated certificate and one serves a proper intermediate, the
 // latter should be used to build a valid chain.
-TEST_F(CertVerifyProcAndroidTestWithAIAFetching, TwoHTTPURLs) {
+// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
+TEST_F(CertVerifyProcAndroidTestWithAIAFetching, DISABLED_TwoHTTPURLs) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
       base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
@@ -340,8 +348,9 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, TwoHTTPURLs) {
 
 // Tests that if an intermediate is fetched via AIA, and the intermediate itself
 // has an AIA URL, that URL is fetched if necessary.
+// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
-       AIAFetchForFetchedIntermediate) {
+       DISABLED_AIAFetchForFetchedIntermediate) {
   // Do not set up the test root to be trusted. If the test root were trusted,
   // then the intermediate i2.pem would not require an AIA fetch. With the test
   // root untrusted, i2.pem does not verify and so it will trigger an AIA fetch.
@@ -375,7 +384,8 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
 
 // Tests that if a certificate contains six AIA URLs, only the first five are
 // fetched, since the maximum number of fetches per Verify() call is five.
-TEST_F(CertVerifyProcAndroidTestWithAIAFetching, MaxAIAFetches) {
+// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
+TEST_F(CertVerifyProcAndroidTestWithAIAFetching, DISABLED_MaxAIAFetches) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
       base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
@@ -399,7 +409,9 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, MaxAIAFetches) {
 
 // Tests that if the supplied chain contains an intermediate with an AIA URL,
 // that AIA URL is fetched if necessary.
-TEST_F(CertVerifyProcAndroidTestWithAIAFetching, FetchForSuppliedIntermediate) {
+// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
+TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
+       DISABLED_FetchForSuppliedIntermediate) {
   // Do not set up the test root to be trusted. If the test root were trusted,
   // then the intermediate i.pem would not require an AIA fetch. With the test
   // root untrusted, i.pem does not verify and so it will trigger an AIA fetch.
