@@ -374,3 +374,28 @@ TEST(AutocompleteInputTest, InputTypeWithCursorPosition) {
               input.cursor_position());
   }
 }
+
+TEST(AutocompleteInputTest, UpgradeTypedNavigationsToHttps) {
+  struct test_data {
+    const base::string16 input;
+    const GURL expected_url;
+    bool expected_added_default_scheme_to_typed_url;
+  } input_cases[]{
+      {ASCIIToUTF16("example.com"), GURL("https://example.com"), true},
+      // Non-URL inputs shouldn't be upgraded.
+      {ASCIIToUTF16("example query"), GURL(), false},
+      // Fully typed URLs shouldn't be upgraded.
+      {ASCIIToUTF16("http://example.com"), GURL("http://example.com"), false},
+      {ASCIIToUTF16("HTTP://EXAMPLE.COM"), GURL("http://example.com"), false},
+  };
+  for (const test_data& input_case : input_cases) {
+    AutocompleteInput input(input_case.input, base::string16::npos,
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier(),
+                            /*should_use_https_as_default_scheme=*/true);
+    EXPECT_EQ(input_case.expected_url, input.canonicalized_url())
+        << input_case.input;
+    EXPECT_EQ(input_case.expected_added_default_scheme_to_typed_url,
+              input.added_default_scheme_to_typed_url());
+  }
+}

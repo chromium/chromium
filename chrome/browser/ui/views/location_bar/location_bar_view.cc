@@ -965,6 +965,10 @@ GURL LocationBarView::GetDestinationURL() const {
   return destination_url();
 }
 
+bool LocationBarView::IsInputTypedUrlWithoutScheme() const {
+  return destination_url_entered_without_scheme();
+}
+
 WindowOpenDisposition LocationBarView::GetWindowOpenDisposition() const {
   return disposition();
 }

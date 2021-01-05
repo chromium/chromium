@@ -111,6 +111,11 @@ bool IsInHostedApp(content::WebContents* web_contents) {
   return false;
 }
 
+bool ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps(
+    content::NavigationHandle* handle) {
+  return false;
+}
+
 class TestSSLErrorNavigationThrottle : public SSLErrorNavigationThrottle {
  public:
   TestSSLErrorNavigationThrottle(
@@ -122,7 +127,9 @@ class TestSSLErrorNavigationThrottle : public SSLErrorNavigationThrottle {
             handle,
             std::make_unique<FakeSSLCertReporter>(),
             base::BindOnce(&MockHandleSSLError, async_handle_ssl_error),
-            base::BindOnce(&IsInHostedApp)),
+            base::BindOnce(&IsInHostedApp),
+            base::BindOnce(
+                &ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps)),
         on_cancel_deferred_navigation_(
             std::move(on_cancel_deferred_navigation)) {}
 

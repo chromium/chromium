@@ -180,8 +180,13 @@ bool OmniboxPedal::IsConceptMatch(const Tokens& match_sequence) const {
 
 void OmniboxPedal::OpenURL(OmniboxPedal::ExecutionContext& context,
                            const GURL& url) const {
+  // destination_url_entered_without_scheme is used to determine whether
+  // navigations typed without a scheme and upgraded to HTTPS should fall back
+  // to HTTP. The URL might have been entered without a scheme, but pedal
+  // destination URLs don't need a fallback so it's fine to pass false here.
   context.controller_.OnAutocompleteAccept(
       url, nullptr, WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_GENERATED, AutocompleteMatchType::PEDAL,
-      context.match_selection_timestamp_);
+      context.match_selection_timestamp_,
+      /*destination_url_entered_without_scheme=*/false);
 }

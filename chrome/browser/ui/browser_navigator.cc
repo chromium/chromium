@@ -357,7 +357,8 @@ void LoadURLInContents(WebContents* target_contents,
       content::RenderFrameHost::kNoFrameTreeNodeId) {
     load_url_params.navigation_ui_data =
         ChromeNavigationUIData::CreateForMainFrameNavigation(
-            target_contents, params->disposition);
+            target_contents, params->disposition,
+            params->is_using_https_as_default_scheme);
   }
 
   if (params->post_data) {

@@ -74329,6 +74329,17 @@ Full version information for the fingerprint enum values:
   <int value="3" label="Mainframe fetched using an auto-detected proxy"/>
 </enum>
 
+<enum name="TypedNavigationUpgradeThrottleEvent">
+  <int value="1" label="Started the load of an upgraded HTTPS URL."/>
+  <int value="2" label="Successfully finished loading the upgraded HTTPS URL."/>
+  <int value="3"
+      label="Failed to load the upgraded HTTPS URL because of a cert error,
+             fell back to the HTTP URL."/>
+  <int value="4"
+      label="Failed to load the upgraded HTTPS URL because of a net error,
+             fell back to the HTTP URL."/>
+</enum>
+
 <enum name="TypeOfVideoInFrame">
   <int value="0" label="Frame do not have video"/>
   <int value="1" label="Frame has video (either inline or fullscreen)"/>

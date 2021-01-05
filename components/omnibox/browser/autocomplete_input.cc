@@ -66,6 +66,17 @@ void PopulateTermsPrefixedByHttpOrHttps(
   }
 }
 
+// Offsets |parts| of a URL after the scheme by |offset| amount.
+void OffsetComponentsExcludingScheme(url::Parsed* parts, int offset) {
+  url::Component* components[] = {
+      &parts->username, &parts->password, &parts->host, &parts->port,
+      &parts->path,     &parts->query,    &parts->ref,
+  };
+  for (size_t i = 0; i < base::size(components); ++i) {
+    url_formatter::OffsetComponent(offset, components[i]);
+  }
+}
+
 }  // namespace
 
 AutocompleteInput::AutocompleteInput()
@@ -76,38 +87,46 @@ AutocompleteInput::AutocompleteInput()
       prefer_keyword_(false),
       allow_exact_keyword_match_(true),
       keyword_mode_entry_method_(metrics::OmniboxEventProto::INVALID),
-      want_asynchronous_matches_(true) {}
+      want_asynchronous_matches_(true),
+      should_use_https_as_default_scheme_(false),
+      added_default_scheme_to_typed_url_(false) {}
 
 AutocompleteInput::AutocompleteInput(
     const base::string16& text,
     metrics::OmniboxEventProto::PageClassification current_page_classification,
-    const AutocompleteSchemeClassifier& scheme_classifier)
+    const AutocompleteSchemeClassifier& scheme_classifier,
+    bool should_use_https_as_default_scheme)
     : AutocompleteInput(text,
                         std::string::npos,
                         current_page_classification,
-                        scheme_classifier) {}
+                        scheme_classifier,
+                        should_use_https_as_default_scheme) {}
 
 AutocompleteInput::AutocompleteInput(
     const base::string16& text,
     size_t cursor_position,
     metrics::OmniboxEventProto::PageClassification current_page_classification,
-    const AutocompleteSchemeClassifier& scheme_classifier)
+    const AutocompleteSchemeClassifier& scheme_classifier,
+    bool should_use_https_as_default_scheme)
     : AutocompleteInput(text,
                         cursor_position,
                         "",
                         current_page_classification,
-                        scheme_classifier) {}
+                        scheme_classifier,
+                        should_use_https_as_default_scheme) {}
 
 AutocompleteInput::AutocompleteInput(
     const base::string16& text,
     size_t cursor_position,
     const std::string& desired_tld,
     metrics::OmniboxEventProto::PageClassification current_page_classification,
-    const AutocompleteSchemeClassifier& scheme_classifier)
+    const AutocompleteSchemeClassifier& scheme_classifier,
+    bool should_use_https_as_default_scheme)
     : AutocompleteInput() {
   cursor_position_ = cursor_position;
   current_page_classification_ = current_page_classification;
   desired_tld_ = desired_tld;
+  should_use_https_as_default_scheme_ = should_use_https_as_default_scheme;
   Init(text, scheme_classifier);
 }
 
@@ -128,6 +147,31 @@ void AutocompleteInput::Init(
   type_ = Parse(text_, desired_tld_, scheme_classifier, &parts_, &scheme_,
                 &canonicalized_url);
   PopulateTermsPrefixedByHttpOrHttps(text_, &terms_prefixed_by_http_or_https_);
+
+  DCHECK(!added_default_scheme_to_typed_url_);
+
+  if (should_use_https_as_default_scheme_ &&
+      type_ == metrics::OmniboxInputType::URL &&
+      scheme_ == base::ASCIIToUTF16(url::kHttpScheme) &&
+      !base::StartsWith(text_, scheme_, base::CompareCase::INSENSITIVE_ASCII)) {
+    // Use HTTPS as the default scheme for URLs that are typed without a scheme.
+    // Inputs of type UNKNOWN can still be valid URLs, but these will be mainly
+    // intranet hosts which we don't to upgrade to HTTPS so we only check the
+    // URL type here.
+    // In particular, we don't want to upgrade these types of inputs:
+    // - Non-unique hostnames such as intranet hosts
+    // - Single word hostnames (these are most likely non-unique).
+    // - IP addresses
+    // TODO(crbug.com/1141691): Add tests for these cases.
+    added_default_scheme_to_typed_url_ = true;
+    scheme_ = base::ASCIIToUTF16(url::kHttpsScheme);
+    GURL::Replacements replacements;
+    replacements.SetSchemeStr(url::kHttpsScheme);
+    canonicalized_url = canonicalized_url.ReplaceComponents(replacements);
+    // We changed the scheme from http to https. Offset remaining components
+    // by one.
+    OffsetComponentsExcludingScheme(&parts_, 1);
+  }
 
   if (((type_ == metrics::OmniboxInputType::UNKNOWN) ||
        (type_ == metrics::OmniboxInputType::URL)) &&
@@ -244,19 +288,8 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
       // Manually re-jigger the parsed parts to match |text| (without the
       // http scheme added).
       http_parts.scheme.reset();
-      url::Component* components[] = {
-        &http_parts.username,
-        &http_parts.password,
-        &http_parts.host,
-        &http_parts.port,
-        &http_parts.path,
-        &http_parts.query,
-        &http_parts.ref,
-      };
-      for (size_t i = 0; i < base::size(components); ++i) {
-        url_formatter::OffsetComponent(
-            -static_cast<int>(http_scheme_prefix.length()), components[i]);
-      }
+      OffsetComponentsExcludingScheme(
+          &http_parts, -static_cast<int>(http_scheme_prefix.length()));
 
       *parts = http_parts;
       if (scheme)

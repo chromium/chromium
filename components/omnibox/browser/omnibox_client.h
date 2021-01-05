@@ -84,6 +84,7 @@ class OmniboxClient {
   virtual TemplateURLService* GetTemplateURLService();
   virtual const AutocompleteSchemeClassifier& GetSchemeClassifier() const = 0;
   virtual AutocompleteClassifier* GetAutocompleteClassifier();
+  virtual bool ShouldDefaultTypedNavigationsToHttps() const = 0;
 
   // Returns the icon corresponding to |match| if match is an extension match
   // and an empty icon otherwise.

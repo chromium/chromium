@@ -1779,6 +1779,8 @@ static_library("browser") {
     "ssl/stateful_ssl_host_state_delegate_factory.h",
     "ssl/tls_deprecation_config.cc",
     "ssl/tls_deprecation_config.h",
+    "ssl/typed_navigation_upgrade_throttle.cc",
+    "ssl/typed_navigation_upgrade_throttle.h",
     "startup_data.cc",
     "startup_data.h",
     "status_icons/status_icon.cc",

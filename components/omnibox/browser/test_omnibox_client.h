@@ -43,6 +43,7 @@ class TestOmniboxClient : public OmniboxClient {
   TemplateURLService* GetTemplateURLService() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
+  bool ShouldDefaultTypedNavigationsToHttps() const override;
   gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,
                           SkColor vector_icon_color) const override;
   gfx::Image GetFaviconForPageUrl(

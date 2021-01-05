@@ -184,6 +184,11 @@ bool IsInHostedApp(content::WebContents* web_contents) {
   return false;
 }
 
+bool ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps(
+    content::NavigationHandle* handle) {
+  return false;
+}
+
 class SSLCertReporterImpl : public SSLCertReporter {
  public:
   void ReportInvalidCertificateChain(
@@ -694,7 +699,9 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
 
   throttles.push_back(std::make_unique<SSLErrorNavigationThrottle>(
       handle, std::make_unique<SSLCertReporterImpl>(),
-      base::BindOnce(&HandleSSLErrorWrapper), base::BindOnce(&IsInHostedApp)));
+      base::BindOnce(&HandleSSLErrorWrapper), base::BindOnce(&IsInHostedApp),
+      base::BindOnce(
+          &ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps)));
 
   std::unique_ptr<security_interstitials::InsecureFormNavigationThrottle>
       insecure_form_throttle = security_interstitials::

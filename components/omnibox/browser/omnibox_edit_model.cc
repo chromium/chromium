@@ -558,7 +558,8 @@ void OmniboxEditModel::StartAutocomplete(bool has_selected_text,
   }
   input_ =
       AutocompleteInput(input_text, cursor_position, GetPageClassification(),
-                        client_->GetSchemeClassifier());
+                        client_->GetSchemeClassifier(),
+                        client_->ShouldDefaultTypedNavigationsToHttps());
   input_.set_current_url(client_->GetURL());
   input_.set_current_title(client_->GetTitle());
   input_.set_prevent_inline_autocomplete(
@@ -779,8 +780,9 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
     input_text = user_input_in_progress_ ? user_text_ : url_for_editing_;
   // Create a dummy AutocompleteInput for use in calling SuggestExactInput()
   // to create an alternate navigational match.
-  AutocompleteInput alternate_input(input_text, GetPageClassification(),
-                                    client_->GetSchemeClassifier());
+  AutocompleteInput alternate_input(
+      input_text, GetPageClassification(), client_->GetSchemeClassifier(),
+      client_->ShouldDefaultTypedNavigationsToHttps());
   // Somehow we can occasionally get here with no active tab.  It's not
   // clear why this happens.
   alternate_input.set_current_url(client_->GetURL());
@@ -939,7 +941,8 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
         match.destination_url, match.post_content.get(), disposition,
         ui::PageTransitionFromInt(match.transition |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-        match.type, match_selection_timestamp);
+        match.type, match_selection_timestamp,
+        input_.added_default_scheme_to_typed_url());
 
     // The observer should have been synchronously notified of a pending load.
     if (observer && observer->HasSeenPendingLoad())
@@ -1160,7 +1163,8 @@ void OmniboxEditModel::StartZeroSuggestRequest(
   // Send the textfield contents exactly as-is, as otherwise the verbatim
   // match can be wrong. The full page URL is anyways in set_current_url().
   input_ = AutocompleteInput(view_->GetText(), GetPageClassification(),
-                             client_->GetSchemeClassifier());
+                             client_->GetSchemeClassifier(),
+                             client_->ShouldDefaultTypedNavigationsToHttps());
   input_.set_current_url(client_->GetURL());
   input_.set_current_title(client_->GetTitle());
   input_.set_focus_type(user_clobbered_permanent_text

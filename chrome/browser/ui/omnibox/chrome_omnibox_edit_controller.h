@@ -18,12 +18,14 @@ class WebContents;
 class ChromeOmniboxEditController : public OmniboxEditController {
  public:
   // OmniboxEditController:
-  void OnAutocompleteAccept(const GURL& destination_url,
-                            TemplateURLRef::PostContent* post_content,
-                            WindowOpenDisposition disposition,
-                            ui::PageTransition transition,
-                            AutocompleteMatchType::Type type,
-                            base::TimeTicks match_selection_timestamp) override;
+  void OnAutocompleteAccept(
+      const GURL& destination_url,
+      TemplateURLRef::PostContent* post_content,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      AutocompleteMatchType::Type type,
+      base::TimeTicks match_selection_timestamp,
+      bool destination_url_entered_without_scheme) override;
   void OnInputInProgress(bool in_progress) override;
 
   // Returns the WebContents of the currently active tab.

@@ -84,6 +84,7 @@ static_library("security_interstitial_page") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/network_time",
+    "//components/omnibox/common:common",
     "//components/pref_registry",
     "//components/prefs:prefs",
     "//components/resources",

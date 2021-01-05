@@ -24,10 +24,11 @@ void ChromeOmniboxEditController::OnAutocompleteAccept(
     WindowOpenDisposition disposition,
     ui::PageTransition transition,
     AutocompleteMatchType::Type match_type,
-    base::TimeTicks match_selection_timestamp) {
+    base::TimeTicks match_selection_timestamp,
+    bool destination_url_entered_without_scheme) {
   OmniboxEditController::OnAutocompleteAccept(
       destination_url, post_content, disposition, transition, match_type,
-      match_selection_timestamp);
+      match_selection_timestamp, destination_url_entered_without_scheme);
   if (command_updater_)
     command_updater_->ExecuteCommand(IDC_OPEN_CURRENT_URL);
 

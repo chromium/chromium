@@ -222,6 +222,7 @@ class TestBrowserWindow : public BrowserWindow {
 
     // LocationBar:
     GURL GetDestinationURL() const override;
+    bool IsInputTypedUrlWithoutScheme() const override;
     WindowOpenDisposition GetWindowOpenDisposition() const override;
     ui::PageTransition GetPageTransition() const override;
     base::TimeTicks GetMatchSelectionTimestamp() const override;

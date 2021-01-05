@@ -165,6 +165,10 @@ AutocompleteClassifier* ChromeOmniboxClient::GetAutocompleteClassifier() {
   return AutocompleteClassifierFactory::GetForProfile(profile_);
 }
 
+bool ChromeOmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {
+  return base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps);
+}
+
 gfx::Image ChromeOmniboxClient::GetIconIfExtensionMatch(
     const AutocompleteMatch& match) const {
   TemplateURLService* service =

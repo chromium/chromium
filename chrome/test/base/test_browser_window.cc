@@ -56,6 +56,9 @@ LocationBarTesting*
   return NULL;
 }
 
+bool TestBrowserWindow::TestLocationBar::IsInputTypedUrlWithoutScheme() const {
+  return false;
+}
 
 // TestBrowserWindow ----------------------------------------------------------
 

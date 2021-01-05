@@ -6495,6 +6495,7 @@ if (!is_android) {
       "../browser/sessions/session_restore_interactive_uitest.cc",
       "../browser/site_isolation/site_per_process_interactive_browsertest.cc",
       "../browser/site_isolation/site_per_process_text_input_browsertest.cc",
+      "../browser/ssl/typed_navigation_upgrade_throttle_browsertest.cc",
       "../browser/ui/autofill/autofill_popup_controller_interactive_uitest.cc",
       "../browser/ui/blocked_content/popup_blocker_browsertest.cc",
       "../browser/ui/browser_command_controller_interactive_browsertest.cc",

@@ -146,6 +146,7 @@
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/browser/ssl/ssl_client_auth_metrics.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
+#include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
 #include "chrome/browser/sync_file_system/local/sync_file_system_backend.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
@@ -237,6 +238,7 @@
 #include "components/no_state_prefetch/common/prerender_types.mojom.h"
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 #include "components/no_state_prefetch/common/prerender_util.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/payments/content/payment_request_display_manager.h"
@@ -4075,9 +4077,18 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   throttles.push_back(std::make_unique<SSLErrorNavigationThrottle>(
       handle,
       std::make_unique<CertificateReportingServiceCertReporter>(web_contents),
-      base::BindOnce(&HandleSSLErrorWrapper), base::BindOnce(&IsInHostedApp)));
+      base::BindOnce(&HandleSSLErrorWrapper), base::BindOnce(&IsInHostedApp),
+      base::BindOnce(
+          &TypedNavigationUpgradeThrottle::
+              ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps)));
 
   throttles.push_back(std::make_unique<LoginNavigationThrottle>(handle));
+
+  if (base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps)) {
+    MaybeAddThrottle(
+        TypedNavigationUpgradeThrottle::MaybeCreateThrottleFor(handle),
+        &throttles);
+  }
 
 #if !defined(OS_ANDROID)
   MaybeAddThrottle(DevToolsWindow::MaybeCreateNavigationThrottle(handle),

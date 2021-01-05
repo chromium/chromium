@@ -61,6 +61,10 @@ AutocompleteClassifier* OmniboxClient::GetAutocompleteClassifier() {
   return nullptr;
 }
 
+bool OmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {
+  return false;
+}
+
 gfx::Image OmniboxClient::GetIconIfExtensionMatch(
     const AutocompleteMatch& match) const {
   return gfx::Image();
