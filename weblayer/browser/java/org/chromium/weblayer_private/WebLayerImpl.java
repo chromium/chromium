@@ -152,7 +152,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 loadedCallbackWrapper, ValueCallback.class);
         BrowserStartupController.getInstance().startBrowserProcessesAsync(
                 LibraryProcessType.PROCESS_WEBLAYER,
-                /* startGpu */ false, /* startServiceManagerOnly */ false,
+                /* startGpu */ true, /* startServiceManagerOnly */ false,
                 new BrowserStartupController.StartupCallback() {
                     @Override
                     public void onSuccess() {
