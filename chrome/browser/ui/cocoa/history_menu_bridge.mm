@@ -400,8 +400,8 @@ void HistoryMenuBridge::GetFaviconForHistoryItem(HistoryItem* item) {
   base::CancelableTaskTracker::TaskId task_id =
       service->GetFaviconImageForPageURL(
           item->url,
-          base::Bind(
-              &HistoryMenuBridge::GotFaviconData, base::Unretained(this), item),
+          base::BindOnce(&HistoryMenuBridge::GotFaviconData,
+                         base::Unretained(this), item),
           &cancelable_task_tracker_);
   item->icon_task_id = task_id;
   item->icon_requested = true;

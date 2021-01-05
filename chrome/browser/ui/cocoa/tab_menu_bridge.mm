@@ -73,12 +73,13 @@ void UpdateItemForWebContents(NSMenuItem* item,
 TabMenuBridge::TabMenuBridge(TabStripModel* model, NSMenuItem* menu_item)
     : model_(model), menu_item_(menu_item) {
   menu_listener_.reset([[TabMenuListener alloc]
-      initWithCallback:base::Bind(&TabMenuBridge::OnDynamicItemChosen,
-                                  // Unretained is safe here: this class owns
-                                  // MenuListener, which holds the callback
-                                  // being constructed here, so the callback
-                                  // will be destructed before this class.
-                                  base::Unretained(this))]);
+      initWithCallback:base::BindRepeating(
+                           &TabMenuBridge::OnDynamicItemChosen,
+                           // Unretained is safe here: this class owns
+                           // MenuListener, which holds the callback
+                           // being constructed here, so the callback
+                           // will be destructed before this class.
+                           base::Unretained(this))]);
   model_->AddObserver(this);
 }
 
