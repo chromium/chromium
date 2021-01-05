@@ -28,6 +28,7 @@ class TestLayerAnimationObserver : public LayerAnimationObserver {
   void OnLayerAnimationStarted(LayerAnimationSequence* sequence) override;
   void OnLayerAnimationAborted(LayerAnimationSequence* sequence) override;
   void OnLayerAnimationEnded(LayerAnimationSequence* sequence) override;
+  void OnLayerAnimationCycleEnded(LayerAnimationSequence* sequence) override;
   bool RequiresNotificationWhenAnimatorDestroyed() const override;
 
   const LayerAnimationSequence* last_attached_sequence() const {
@@ -67,6 +68,14 @@ class TestLayerAnimationObserver : public LayerAnimationObserver {
   }
 
   int last_ended_sequence_epoch() const { return last_ended_sequence_epoch_; }
+
+  const LayerAnimationSequence* last_cycle_ended_sequence() const {
+    return last_cycle_ended_sequence_;
+  }
+
+  int last_cycle_ended_sequence_epoch() const {
+    return last_cycle_ended_sequence_epoch_;
+  }
 
   const LayerAnimationSequence* last_detached_sequence() const {
     return last_detached_sequence_;
@@ -120,6 +129,9 @@ class TestLayerAnimationObserver : public LayerAnimationObserver {
 
   const LayerAnimationSequence* last_ended_sequence_;
   int last_ended_sequence_epoch_;
+
+  const LayerAnimationSequence* last_cycle_ended_sequence_;
+  int last_cycle_ended_sequence_epoch_;
 
   const LayerAnimationSequence* last_detached_sequence_;
   int last_detached_sequence_epoch_;

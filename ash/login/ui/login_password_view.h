@@ -68,10 +68,8 @@ class ASH_EXPORT LoginPasswordView : public views::View,
     views::View* submit_button() const;
     views::ToggleImageButton* display_password_button() const;
     views::View* easy_unlock_icon() const;
+    views::View* capslock_icon() const;
     void set_immediately_hover_easy_unlock_icon();
-    // Sets the timers that are used to clear and hide the password.
-    void SetTimers(std::unique_ptr<base::RetainingOneShotTimer> clear_timer,
-                   std::unique_ptr<base::RetainingOneShotTimer> hide_timer);
 
    private:
     LoginPasswordView* view_;
@@ -155,6 +153,8 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string&) override {}
 
+  void HandleLeftIconsVisibilities(bool handling_capslock);
+
   // Submits the current password field text to mojo call and resets the text
   // field.
   void SubmitPassword();
@@ -164,6 +164,7 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   class DisplayPasswordButton;
   class LoginPasswordRow;
   class LoginTextfield;
+  class AlternateIconsView;
   friend class TestApi;
 
   // Increases/decreases the contrast of the capslock icon.
@@ -205,8 +206,12 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   LoginTextfield* textfield_ = nullptr;
   ArrowButtonView* submit_button_ = nullptr;
   DisplayPasswordButton* display_password_button_ = nullptr;
+  // Could show either the caps lock icon or the easy unlock icon.
+  AlternateIconsView* left_icon_ = nullptr;
   views::ImageView* capslock_icon_ = nullptr;
+  bool should_show_capslock_ = false;
   EasyUnlockIcon* easy_unlock_icon_ = nullptr;
+  bool should_show_easy_unlock_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(LoginPasswordView);
 };

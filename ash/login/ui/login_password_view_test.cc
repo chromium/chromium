@@ -10,8 +10,8 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/timer/mock_timer.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/image_button.h"
@@ -21,6 +21,15 @@
 namespace ash {
 
 namespace {
+
+constexpr base::TimeDelta kClearPasswordAfterDelay =
+    base::TimeDelta::FromSeconds(30);
+
+constexpr base::TimeDelta kHidePasswordAfterDelay =
+    base::TimeDelta::FromSeconds(5);
+
+constexpr base::TimeDelta kLeftIconDisplayTime =
+    base::TimeDelta::FromSeconds(4);
 
 class LoginPasswordViewTest : public LoginTestBase {
  protected:
@@ -290,34 +299,88 @@ TEST_F(LoginPasswordViewTest, CtrlZDisabled) {
   EXPECT_TRUE(is_password_field_empty_);
 }
 
+// Ensures that the switch animation between easy unlock icon and caps lock
+// icon works correctly.
+TEST_F(LoginPasswordViewTest, SwitchBetweenEasyUnlockAndCapsLock) {
+  LoginPasswordView::TestApi test_api(view_);
+
+  // Ensure there is no left icon shown.
+  EXPECT_FALSE(test_api.easy_unlock_icon()->GetVisible());
+  EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
+
+  // Show the easy unlock icon.
+  view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
+                           base::string16() /*accessibility_label*/);
+  // The easy unlock icon should be visible.
+  EXPECT_TRUE(test_api.easy_unlock_icon()->GetVisible());
+  EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
+
+  // Animations must be enabled for fast-forwarding to work.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  view_->OnCapsLockChanged(true);
+
+  EXPECT_FALSE(test_api.easy_unlock_icon()->GetVisible());
+  EXPECT_TRUE(test_api.capslock_icon()->GetVisible());
+
+  // After a delay, the left icon should display the easy unlock icon again.
+  task_environment()->FastForwardBy(kLeftIconDisplayTime);
+  EXPECT_TRUE(test_api.easy_unlock_icon()->GetVisible());
+  EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
+
+  // The Caps lock should be displayed again after a delay.
+  task_environment()->FastForwardBy(kLeftIconDisplayTime);
+  EXPECT_FALSE(test_api.easy_unlock_icon()->GetVisible());
+  EXPECT_TRUE(test_api.capslock_icon()->GetVisible());
+
+  // Disable Caps lock.
+  view_->OnCapsLockChanged(false);
+  // The easy unlock icon should be immediately visible.
+  EXPECT_TRUE(test_api.easy_unlock_icon()->GetVisible());
+  EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
+
+  // Hide the easy unlock icon.
+  view_->SetEasyUnlockIcon(EasyUnlockIconId::NONE,
+                           base::string16() /*accessibility_label*/);
+  // Nothing should be displayed.
+  EXPECT_FALSE(test_api.easy_unlock_icon()->GetVisible());
+  EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
+
+  // This time, show the Caps lock icon first.
+  view_->OnCapsLockChanged(true);
+  EXPECT_FALSE(test_api.easy_unlock_icon()->GetVisible());
+  EXPECT_TRUE(test_api.capslock_icon()->GetVisible());
+
+  // Then trigger the easy unlock icon, it should be displayed immediately.
+  view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
+                           base::string16() /*accessibility_label*/);
+  EXPECT_TRUE(test_api.easy_unlock_icon()->GetVisible());
+  EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
+}
+
 // Verifies that the password textfield clears after a delay when the display
 // password button is shown.
 TEST_F(LoginPasswordViewTest, PasswordAutoClearsAndHides) {
   LoginPasswordView::TestApi test_api(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
 
-  // Install mock timers into the password view.
-  auto clear_timer0 = std::make_unique<base::MockRetainingOneShotTimer>();
-  auto hide_timer0 = std::make_unique<base::MockRetainingOneShotTimer>();
-  base::MockRetainingOneShotTimer* clear_timer = clear_timer0.get();
-  base::MockRetainingOneShotTimer* hide_timer = hide_timer0.get();
-  test_api.SetTimers(std::move(clear_timer0), std::move(hide_timer0));
+  view_->SetDisplayPasswordButtonVisible(true);
 
   // Verify clearing timer works.
   generator->PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   EXPECT_FALSE(is_password_field_empty_);
 
-  clear_timer->Fire();
+  task_environment()->FastForwardBy(kClearPasswordAfterDelay);
   EXPECT_TRUE(is_password_field_empty_);
 
   // Check a second time.
   generator->PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   EXPECT_FALSE(is_password_field_empty_);
-  clear_timer->Fire();
+  task_environment()->FastForwardBy(kClearPasswordAfterDelay);
   EXPECT_TRUE(is_password_field_empty_);
 
-  // Verify hiding timer works; set the password visible first then fire the
-  // hiding timer and check it is hidden.
+  // Verify hiding timer works; set the password visible first then wait for
+  // the hiding timer to trigger and check it is hidden.
   generator->PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   EXPECT_EQ(test_api.textfield()->GetTextInputType(),
             ui::TEXT_INPUT_TYPE_PASSWORD);
@@ -325,11 +388,11 @@ TEST_F(LoginPasswordViewTest, PasswordAutoClearsAndHides) {
       test_api.display_password_button()->GetBoundsInScreen().CenterPoint());
   generator->ClickLeftButton();
   EXPECT_EQ(test_api.textfield()->GetTextInputType(), ui::TEXT_INPUT_TYPE_NULL);
-  hide_timer->Fire();
+  task_environment()->FastForwardBy(kHidePasswordAfterDelay);
   EXPECT_EQ(test_api.textfield()->GetTextInputType(),
             ui::TEXT_INPUT_TYPE_PASSWORD);
-  // Hide an empty password already hidden and make sure a second fire works.
-  hide_timer->Fire();
+  // Hide an empty password already hidden and make sure a second trigger works.
+  task_environment()->FastForwardBy(kHidePasswordAfterDelay);
   EXPECT_EQ(test_api.textfield()->GetTextInputType(),
             ui::TEXT_INPUT_TYPE_PASSWORD);
 }

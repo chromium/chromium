@@ -66,6 +66,7 @@ void LayerAnimationSequence::Progress(base::TimeTicks now,
     last_start_ = start_time_;
 
   size_t current_index = last_element_ % elements_.size();
+  bool just_completed_sequence = false;
   base::TimeDelta element_duration;
   while (is_cyclic_ || last_element_ < elements_.size()) {
     elements_[current_index]->set_requested_start_time(last_start_);
@@ -80,6 +81,8 @@ void LayerAnimationSequence::Progress(base::TimeTicks now,
     last_progressed_fraction_ =
         elements_[current_index]->last_progressed_fraction();
     current_index = last_element_ % elements_.size();
+    DCHECK(last_element_ > 0);
+    just_completed_sequence = current_index == 0;
   }
 
   if (is_cyclic_ || last_element_ < elements_.size()) {
@@ -101,11 +104,15 @@ void LayerAnimationSequence::Progress(base::TimeTicks now,
   if (redraw_required)
     delegate->ScheduleDrawForAnimation();
 
-  if (!is_cyclic_ && last_element_ == elements_.size()) {
-    last_element_ = 0;
-    waiting_for_group_start_ = false;
-    animation_group_id_ = 0;
-    NotifyEnded();
+  if (just_completed_sequence) {
+    if (!is_cyclic_) {
+      last_element_ = 0;
+      waiting_for_group_start_ = false;
+      animation_group_id_ = 0;
+      NotifyEnded();
+    } else {
+      NotifyCycleEnded();
+    }
   }
 }
 
@@ -158,6 +165,8 @@ void LayerAnimationSequence::ProgressToEnd(LayerAnimationDelegate* delegate) {
     waiting_for_group_start_ = false;
     animation_group_id_ = 0;
     NotifyEnded();
+  } else {
+    NotifyCycleEnded();
   }
 }
 
@@ -278,6 +287,11 @@ void LayerAnimationSequence::NotifyStarted() {
 void LayerAnimationSequence::NotifyEnded() {
   for (auto& observer : observers_)
     observer.OnLayerAnimationEnded(this);
+}
+
+void LayerAnimationSequence::NotifyCycleEnded() {
+  for (auto& observer : observers_)
+    observer.OnLayerAnimationCycleEnded(this);
 }
 
 void LayerAnimationSequence::NotifyAborted() {

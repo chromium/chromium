@@ -160,6 +160,9 @@ class COMPOSITOR_EXPORT LayerAnimationSequence
   // Notifies the observers that this sequence has ended.
   void NotifyEnded();
 
+  // Notifies the observers that this sequence cycle has ended.
+  void NotifyCycleEnded();
+
   // Notifies the observers that this sequence has been aborted.
   void NotifyAborted();
 

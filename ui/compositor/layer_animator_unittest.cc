@@ -3433,49 +3433,105 @@ TEST(LayerAnimatorTest, ObserverDeletesLayerInStopAnimating) {
   EXPECT_TRUE(animator->is_animating());
 }
 
+class CountCyclesObserver : public LayerAnimationObserver {
+ public:
+  explicit CountCyclesObserver(ui::LayerAnimator* animator)
+      : animator_(animator) {
+    animator_->AddObserver(this);
+  }
+  ~CountCyclesObserver() override { animator_->RemoveObserver(this); }
+  CountCyclesObserver(const CountCyclesObserver&) = delete;
+  CountCyclesObserver& operator=(const CountCyclesObserver&) = delete;
+
+  void OnLayerAnimationEnded(LayerAnimationSequence* sequence) override {}
+
+  void OnLayerAnimationAborted(LayerAnimationSequence* sequence) override {}
+
+  void OnLayerAnimationCycleEnded(LayerAnimationSequence* sequence) override {
+    cycles_count_++;
+  }
+
+  void OnLayerAnimationScheduled(LayerAnimationSequence* sequence) override {}
+
+  int cycles_count() { return cycles_count_; }
+
+ private:
+  ui::LayerAnimator* animator_;
+  int cycles_count_ = 0;
+};
+
+// Verifies that an observer is notified each time a LayerAnimationSequence's
+// cycle has ended.
+TEST(LayerAnimatorTest, ObserverGetsNotifiedOnCycleEnded) {
+  TestLayerAnimationDelegate delegate;
+  scoped_refptr<LayerAnimator> animator(CreateDefaultTestAnimator(&delegate));
+  CountCyclesObserver observer(animator.get());
+
+  constexpr base::TimeDelta kAnimationDuration =
+      base::TimeDelta::FromSeconds(1);
+  LayerAnimationSequence* sequence = new LayerAnimationSequence(
+      LayerAnimationElement::CreateBrightnessElement(1.0f, kAnimationDuration));
+  sequence->set_is_cyclic(true);
+  animator->StartAnimation(sequence);
+
+  for (int i = 0; i < 3; i++) {
+    EXPECT_EQ(observer.cycles_count(), i);
+    const base::TimeTicks last_time = animator->last_step_time();
+    animator->Step(last_time + kAnimationDuration);
+  }
+}
+
 // Verifies the LayerAnimatorObserver notification order for an animation
 // sequence that completes successfully.
 TEST(LayerAnimatorObserverNotificationOrderTest,
      SuccessfulCompletionOfSequence) {
-  TestLayerAnimationObserver observer;
-  TestLayerAnimationDelegate delegate;
-  scoped_refptr<LayerAnimator> animator(
-      CreateDefaultTestAnimator(&delegate, &observer));
-  observer.set_requires_notification_when_animator_destroyed(true);
+  for (int is_cyclic = 0; is_cyclic <= 0; is_cyclic++) {
+    TestLayerAnimationObserver observer;
+    TestLayerAnimationDelegate delegate;
+    scoped_refptr<LayerAnimator> animator(
+        CreateDefaultTestAnimator(&delegate, &observer));
+    observer.set_requires_notification_when_animator_destroyed(true);
 
-  const base::TimeDelta animation_duration = base::TimeDelta::FromSeconds(100);
+    const base::TimeDelta animation_duration =
+        base::TimeDelta::FromSeconds(100);
 
-  LayerAnimationSequence* sequence = new LayerAnimationSequence(
-      LayerAnimationElement::CreateBrightnessElement(1.0f, animation_duration));
+    LayerAnimationSequence* sequence = new LayerAnimationSequence(
+        LayerAnimationElement::CreateBrightnessElement(1.0f,
+                                                       animation_duration));
+    sequence->set_is_cyclic(is_cyclic);
 
-  EXPECT_TRUE(observer.NoEventsObserved());
+    EXPECT_TRUE(observer.NoEventsObserved());
 
-  animator->StartAnimation(sequence);
+    animator->StartAnimation(sequence);
 
-  EXPECT_EQ(observer.last_attached_sequence(), sequence);
-  EXPECT_EQ(observer.last_scheduled_sequence(), sequence);
-  EXPECT_EQ(observer.last_started_sequence(), sequence);
-  EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
-  EXPECT_EQ(observer.last_ended_sequence(), nullptr);
-  EXPECT_EQ(observer.last_detached_sequence(), nullptr);
+    EXPECT_EQ(observer.last_attached_sequence(), sequence);
+    EXPECT_EQ(observer.last_scheduled_sequence(), sequence);
+    EXPECT_EQ(observer.last_started_sequence(), sequence);
+    EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
+    EXPECT_EQ(observer.last_ended_sequence(), nullptr);
+    EXPECT_EQ(observer.last_cycle_ended_sequence(), nullptr);
+    EXPECT_EQ(observer.last_detached_sequence(), nullptr);
 
-  EXPECT_TRUE(observer.AttachedEpochIsBeforeScheduledEpoch());
-  EXPECT_TRUE(observer.ScheduledEpochIsBeforeStartedEpoch());
+    EXPECT_TRUE(observer.AttachedEpochIsBeforeScheduledEpoch());
+    EXPECT_TRUE(observer.ScheduledEpochIsBeforeStartedEpoch());
 
-  observer.ResetLayerAnimationObserverations();
+    observer.ResetLayerAnimationObserverations();
 
-  const base::TimeTicks start_time = animator->last_step_time();
+    const base::TimeTicks start_time = animator->last_step_time();
 
-  animator->Step(start_time + animation_duration);
+    animator->Step(start_time + animation_duration);
 
-  EXPECT_EQ(observer.last_attached_sequence(), nullptr);
-  EXPECT_EQ(observer.last_scheduled_sequence(), nullptr);
-  EXPECT_EQ(observer.last_started_sequence(), nullptr);
-  EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
-  EXPECT_EQ(observer.last_ended_sequence(), sequence);
-  EXPECT_EQ(observer.last_detached_sequence(), sequence);
+    EXPECT_EQ(observer.last_attached_sequence(), nullptr);
+    EXPECT_EQ(observer.last_scheduled_sequence(), nullptr);
+    EXPECT_EQ(observer.last_started_sequence(), nullptr);
+    EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
+    EXPECT_EQ(observer.last_ended_sequence(), is_cyclic ? nullptr : sequence);
+    EXPECT_EQ(observer.last_cycle_ended_sequence(),
+              is_cyclic ? sequence : nullptr);
+    EXPECT_EQ(observer.last_detached_sequence(), sequence);
 
-  EXPECT_TRUE(observer.EndedEpochIsBeforeDetachedEpoch());
+    EXPECT_TRUE(observer.EndedEpochIsBeforeDetachedEpoch());
+  }
 }
 
 // Verifies the LayerAnimatorObserver notification order for an animation
@@ -3501,6 +3557,7 @@ TEST(LayerAnimatorObserverNotificationOrderTest, AbortingAScheduledSequence) {
   EXPECT_EQ(observer.last_started_sequence(), sequence);
   EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
   EXPECT_EQ(observer.last_ended_sequence(), nullptr);
+  EXPECT_EQ(observer.last_cycle_ended_sequence(), nullptr);
   EXPECT_EQ(observer.last_detached_sequence(), nullptr);
 
   EXPECT_TRUE(observer.AttachedEpochIsBeforeScheduledEpoch());
@@ -3515,6 +3572,7 @@ TEST(LayerAnimatorObserverNotificationOrderTest, AbortingAScheduledSequence) {
   EXPECT_EQ(observer.last_started_sequence(), nullptr);
   EXPECT_EQ(observer.last_aborted_sequence(), sequence);
   EXPECT_EQ(observer.last_ended_sequence(), nullptr);
+  EXPECT_EQ(observer.last_cycle_ended_sequence(), nullptr);
   EXPECT_EQ(observer.last_detached_sequence(), sequence);
 
   EXPECT_TRUE(observer.AbortedEpochIsBeforeDetachedEpoch());
@@ -3525,63 +3583,75 @@ TEST(LayerAnimatorObserverNotificationOrderTest, AbortingAScheduledSequence) {
 // completes successfully.
 TEST(LayerAnimatorObserverNotificationOrderTest,
      RunningASequenceThatIsQueuedForLaterStartTime) {
-  TestLayerAnimationObserver observer;
-  TestLayerAnimationDelegate delegate;
-  scoped_refptr<LayerAnimator> animator(
-      CreateDefaultTestAnimator(&delegate, &observer));
-  observer.set_requires_notification_when_animator_destroyed(true);
+  for (int is_cyclic = 0; is_cyclic <= 0; is_cyclic++) {
+    TestLayerAnimationObserver observer;
+    TestLayerAnimationDelegate delegate;
+    scoped_refptr<LayerAnimator> animator(
+        CreateDefaultTestAnimator(&delegate, &observer));
+    observer.set_requires_notification_when_animator_destroyed(true);
 
-  const base::TimeDelta animation_duration = base::TimeDelta::FromSeconds(100);
+    const base::TimeDelta animation_duration =
+        base::TimeDelta::FromSeconds(100);
 
-  LayerAnimationSequence* first_sequence = new LayerAnimationSequence(
-      LayerAnimationElement::CreateBrightnessElement(1.0f, animation_duration));
+    LayerAnimationSequence* first_sequence = new LayerAnimationSequence(
+        LayerAnimationElement::CreateBrightnessElement(1.0f,
+                                                       animation_duration));
+    first_sequence->set_is_cyclic(is_cyclic);
 
-  LayerAnimationSequence* queued_sequence = new LayerAnimationSequence(
-      LayerAnimationElement::CreateBrightnessElement(1.0f, animation_duration));
+    LayerAnimationSequence* queued_sequence = new LayerAnimationSequence(
+        LayerAnimationElement::CreateBrightnessElement(1.0f,
+                                                       animation_duration));
+    queued_sequence->set_is_cyclic(is_cyclic);
 
-  EXPECT_TRUE(observer.NoEventsObserved());
+    EXPECT_TRUE(observer.NoEventsObserved());
 
-  animator->StartAnimation(first_sequence);
+    animator->StartAnimation(first_sequence);
 
-  EXPECT_EQ(observer.last_attached_sequence(), first_sequence);
-  EXPECT_EQ(observer.last_scheduled_sequence(), first_sequence);
-  EXPECT_EQ(observer.last_started_sequence(), first_sequence);
-  EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
-  EXPECT_EQ(observer.last_ended_sequence(), nullptr);
-  EXPECT_EQ(observer.last_detached_sequence(), nullptr);
+    EXPECT_EQ(observer.last_attached_sequence(), first_sequence);
+    EXPECT_EQ(observer.last_scheduled_sequence(), first_sequence);
+    EXPECT_EQ(observer.last_started_sequence(), first_sequence);
+    EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
+    EXPECT_EQ(observer.last_ended_sequence(), nullptr);
+    EXPECT_EQ(observer.last_cycle_ended_sequence(), nullptr);
+    EXPECT_EQ(observer.last_detached_sequence(), nullptr);
 
-  EXPECT_TRUE(observer.AttachedEpochIsBeforeScheduledEpoch());
-  EXPECT_TRUE(observer.ScheduledEpochIsBeforeStartedEpoch());
+    EXPECT_TRUE(observer.AttachedEpochIsBeforeScheduledEpoch());
+    EXPECT_TRUE(observer.ScheduledEpochIsBeforeStartedEpoch());
 
-  observer.ResetLayerAnimationObserverations();
+    observer.ResetLayerAnimationObserverations();
 
-  animator->set_preemption_strategy(LayerAnimator::ENQUEUE_NEW_ANIMATION);
-  animator->StartAnimation(queued_sequence);
+    animator->set_preemption_strategy(LayerAnimator::ENQUEUE_NEW_ANIMATION);
+    animator->StartAnimation(queued_sequence);
 
-  EXPECT_EQ(observer.last_attached_sequence(), queued_sequence);
-  EXPECT_EQ(observer.last_scheduled_sequence(), queued_sequence);
-  EXPECT_EQ(observer.last_started_sequence(), nullptr);
-  EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
-  EXPECT_EQ(observer.last_ended_sequence(), nullptr);
-  EXPECT_EQ(observer.last_detached_sequence(), nullptr);
+    EXPECT_EQ(observer.last_attached_sequence(), queued_sequence);
+    EXPECT_EQ(observer.last_scheduled_sequence(), queued_sequence);
+    EXPECT_EQ(observer.last_started_sequence(), nullptr);
+    EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
+    EXPECT_EQ(observer.last_ended_sequence(), nullptr);
+    EXPECT_EQ(observer.last_cycle_ended_sequence(), nullptr);
+    EXPECT_EQ(observer.last_detached_sequence(), nullptr);
 
-  EXPECT_TRUE(observer.AttachedEpochIsBeforeScheduledEpoch());
+    EXPECT_TRUE(observer.AttachedEpochIsBeforeScheduledEpoch());
 
-  observer.ResetLayerAnimationObserverations();
+    observer.ResetLayerAnimationObserverations();
 
-  base::TimeTicks start_time = animator->last_step_time();
+    base::TimeTicks start_time = animator->last_step_time();
 
-  animator->Step(start_time + animation_duration);
+    animator->Step(start_time + animation_duration);
 
-  EXPECT_EQ(observer.last_attached_sequence(), nullptr);
-  EXPECT_EQ(observer.last_scheduled_sequence(), nullptr);
-  EXPECT_EQ(observer.last_started_sequence(), queued_sequence);
-  EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
-  EXPECT_EQ(observer.last_ended_sequence(), first_sequence);
-  EXPECT_EQ(observer.last_detached_sequence(), first_sequence);
+    EXPECT_EQ(observer.last_attached_sequence(), nullptr);
+    EXPECT_EQ(observer.last_scheduled_sequence(), nullptr);
+    EXPECT_EQ(observer.last_started_sequence(), queued_sequence);
+    EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
+    EXPECT_EQ(observer.last_ended_sequence(),
+              is_cyclic ? nullptr : first_sequence);
+    EXPECT_EQ(observer.last_cycle_ended_sequence(),
+              is_cyclic ? first_sequence : nullptr);
+    EXPECT_EQ(observer.last_detached_sequence(), first_sequence);
 
-  EXPECT_TRUE(observer.EndedEpochIsBeforeDetachedEpoch());
-  EXPECT_TRUE(observer.EndedEpochIsBeforeStartedEpoch());
+    EXPECT_TRUE(observer.EndedEpochIsBeforeDetachedEpoch());
+    EXPECT_TRUE(observer.EndedEpochIsBeforeStartedEpoch());
+  }
 }
 
 // Verifies the LayerAnimatorObserver notification order for an animation
@@ -3611,6 +3681,7 @@ TEST(LayerAnimatorObserverNotificationOrderTest,
   EXPECT_EQ(observer.last_started_sequence(), first_sequence);
   EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
   EXPECT_EQ(observer.last_ended_sequence(), nullptr);
+  EXPECT_EQ(observer.last_cycle_ended_sequence(), nullptr);
   EXPECT_EQ(observer.last_detached_sequence(), nullptr);
 
   EXPECT_TRUE(observer.AttachedEpochIsBeforeScheduledEpoch());
@@ -3627,6 +3698,7 @@ TEST(LayerAnimatorObserverNotificationOrderTest,
   EXPECT_EQ(observer.last_started_sequence(), queued_sequence);
   EXPECT_EQ(observer.last_aborted_sequence(), first_sequence);
   EXPECT_EQ(observer.last_ended_sequence(), nullptr);
+  EXPECT_EQ(observer.last_cycle_ended_sequence(), nullptr);
   EXPECT_EQ(observer.last_detached_sequence(), first_sequence);
 
   EXPECT_TRUE(observer.AbortedEpochIsBeforeDetachedEpoch());
@@ -3639,36 +3711,43 @@ TEST(LayerAnimatorObserverNotificationOrderTest,
 // has already been scheduled.
 TEST(LayerAnimatorObserverNotificationOrderTest,
      ObserverAddedAfterAnimationStarts) {
-  TestLayerAnimationDelegate delegate;
-  scoped_refptr<LayerAnimator> animator(CreateDefaultTestAnimator(&delegate));
+  for (int is_cyclic = 0; is_cyclic <= 0; is_cyclic++) {
+    TestLayerAnimationDelegate delegate;
+    scoped_refptr<LayerAnimator> animator(CreateDefaultTestAnimator(&delegate));
 
-  constexpr base::TimeDelta kAnimationDuration =
-      base::TimeDelta::FromSeconds(1);
-  LayerAnimationSequence* sequence = new LayerAnimationSequence(
-      LayerAnimationElement::CreateBrightnessElement(1.0f, kAnimationDuration));
-  animator->StartAnimation(sequence);
+    constexpr base::TimeDelta kAnimationDuration =
+        base::TimeDelta::FromSeconds(1);
+    LayerAnimationSequence* sequence = new LayerAnimationSequence(
+        LayerAnimationElement::CreateBrightnessElement(1.0f,
+                                                       kAnimationDuration));
+    sequence->set_is_cyclic(is_cyclic);
+    animator->StartAnimation(sequence);
 
-  TestLayerAnimationObserver observer;
-  observer.set_requires_notification_when_animator_destroyed(true);
-  animator->AddObserver(&observer);
+    TestLayerAnimationObserver observer;
+    observer.set_requires_notification_when_animator_destroyed(true);
+    animator->AddObserver(&observer);
 
-  EXPECT_EQ(observer.last_attached_sequence(), sequence);
-  EXPECT_EQ(observer.last_scheduled_sequence(), nullptr);
-  EXPECT_EQ(observer.last_started_sequence(), nullptr);
-  EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
-  EXPECT_EQ(observer.last_ended_sequence(), nullptr);
-  EXPECT_EQ(observer.last_detached_sequence(), nullptr);
+    EXPECT_EQ(observer.last_attached_sequence(), sequence);
+    EXPECT_EQ(observer.last_scheduled_sequence(), nullptr);
+    EXPECT_EQ(observer.last_started_sequence(), nullptr);
+    EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
+    EXPECT_EQ(observer.last_ended_sequence(), nullptr);
+    EXPECT_EQ(observer.last_cycle_ended_sequence(), nullptr);
+    EXPECT_EQ(observer.last_detached_sequence(), nullptr);
 
-  animator->StopAnimating();
+    animator->StopAnimating();
 
-  EXPECT_EQ(observer.last_attached_sequence(), sequence);
-  EXPECT_EQ(observer.last_scheduled_sequence(), nullptr);
-  EXPECT_EQ(observer.last_started_sequence(), nullptr);
-  EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
-  EXPECT_EQ(observer.last_ended_sequence(), sequence);
-  EXPECT_EQ(observer.last_detached_sequence(), sequence);
+    EXPECT_EQ(observer.last_attached_sequence(), sequence);
+    EXPECT_EQ(observer.last_scheduled_sequence(), nullptr);
+    EXPECT_EQ(observer.last_started_sequence(), nullptr);
+    EXPECT_EQ(observer.last_aborted_sequence(), nullptr);
+    EXPECT_EQ(observer.last_ended_sequence(), is_cyclic ? nullptr : sequence);
+    EXPECT_EQ(observer.last_cycle_ended_sequence(),
+              is_cyclic ? sequence : nullptr);
+    EXPECT_EQ(observer.last_detached_sequence(), sequence);
 
-  animator->RemoveObserver(&observer);
+    animator->RemoveObserver(&observer);
+  }
 }
 
 }  // namespace ui
