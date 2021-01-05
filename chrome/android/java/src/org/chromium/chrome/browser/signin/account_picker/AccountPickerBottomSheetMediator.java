@@ -16,6 +16,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDelegate;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;

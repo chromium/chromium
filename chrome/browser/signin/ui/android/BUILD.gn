@@ -16,12 +16,16 @@ android_library("java") {
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/signin/core/browser:signin_enums_java",
+    "//components/signin/core/browser/android:java",
     "//components/signin/public/android:java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_appcompat_appcompat_java",
     "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
+    "//third_party/android_deps:androidx_core_core_java",
     "//third_party/android_deps:androidx_fragment_fragment_java",
+    "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_recycler_view_java",
     "//ui/android:ui_utils_java",
   ]
   sources = [
@@ -36,8 +40,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/ui/SigninActivityLauncher.java",
     "java/src/org/chromium/chrome/browser/signin/ui/SigninScrollView.java",
     "java/src/org/chromium/chrome/browser/signin/ui/SigninView.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerCoordinator.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerDelegate.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerFeatureUtils.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerMediator.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerProperties.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/account_picker/ExistingAccountRowViewBinder.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/OnClickListenerViewBinder.java",
   ]
   resources_package = "org.chromium.chrome.browser.signin.ui"
@@ -45,6 +53,11 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/layout/account_picker_incognito_row.xml",
+    "java/res/layout/account_picker_new_account_row.xml",
+    "java/res/layout/account_picker_new_account_row_legacy.xml",
+    "java/res/layout/account_picker_row.xml",
+    "java/res/layout/account_picker_row_legacy.xml",
     "java/res/layout/confirm_import_sync_data.xml",
     "java/res/layout/personalized_signin_promo_view_body.xml",
     "java/res/layout/personalized_signin_promo_view_bookmarks.xml",
@@ -57,6 +70,7 @@ android_resources("java_resources") {
     "java/res/layout/signout_wipe_storage_dialog.xml",
   ]
   deps = [
+    "//chrome/browser/signin/services/android:java_resources",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
@@ -73,6 +87,7 @@ android_library("junit") {
     "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmSyncDataStateMachineDelegateTest.java",
     "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmSyncDataStateMachineTest.java",
     "junit/src/org/chromium/chrome/browser/signin/ui/SignOutDialogFragmentTest.java",
+    "junit/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerMediatorTest.java",
   ]
   deps = [
     ":java",
@@ -81,12 +96,17 @@ android_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
+    "//chrome/test/android:chrome_java_test_support",
     "//components/signin/core/browser:signin_enums_java",
+    "//components/signin/core/browser/android:java",
+    "//components/signin/core/browser/android:signin_java_test_support",
+    "//components/signin/public/android:java",
     "//third_party/android_deps:androidx_appcompat_appcompat_java",
     "//third_party/android_deps:androidx_fragment_fragment_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 

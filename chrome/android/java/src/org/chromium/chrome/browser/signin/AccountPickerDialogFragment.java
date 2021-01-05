@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.signin.account_picker.AccountPickerCoordinator;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator;
 
 /**
  * This class implements dialog-based account picker that is used by SigninFragmentBase. This

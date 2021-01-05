@@ -22,6 +22,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerFeatureUtils;
+import org.chromium.chrome.browser.signin.ui.account_picker.ExistingAccountRowViewBinder;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.widget.ButtonCompat;
 

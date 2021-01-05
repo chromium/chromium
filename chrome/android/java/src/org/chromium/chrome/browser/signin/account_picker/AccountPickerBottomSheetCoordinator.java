@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialC
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;

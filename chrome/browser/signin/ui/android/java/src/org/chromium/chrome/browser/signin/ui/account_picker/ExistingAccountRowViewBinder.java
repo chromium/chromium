@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin.account_picker;
+package org.chromium.chrome.browser.signin.ui.account_picker;
 
 import android.text.TextUtils;
 import android.view.View;
@@ -12,9 +12,9 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.chrome.browser.signin.ui.R;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
@@ -22,8 +22,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 /**
  * This class regroups the buildView and bindView util methods of the
  * existing account row.
+ * TODO(https://crbug.com/1155123): Change this class to package internal after modularization
  */
-class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, View, PropertyKey> {
+public class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, View, PropertyKey> {
     /**
      * View binder that associates an existing account view with the model of
      * {@link ExistingAccountRowProperties}.
@@ -59,8 +60,9 @@ class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, View, Pr
      *
      * @param profileData profile data needs to bind.
      * @param view A view object inflated from @layout/account_picker_row.
+     * TODO(https://crbug.com/1155123): Change this method to package internal after modularization
      */
-    static void bindAccountView(DisplayableProfileData profileData, View view) {
+    public static void bindAccountView(DisplayableProfileData profileData, View view) {
         ImageView accountImage = view.findViewById(R.id.account_image);
         accountImage.setImageDrawable(profileData.getImage());
 

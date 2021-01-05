@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin.account_picker;
+package org.chromium.chrome.browser.signin.ui.account_picker;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.AddAccountRowProperties;
-import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.IncognitoAccountRowProperties;
-import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.ItemType;
-import org.chromium.chrome.browser.signin.ui.account_picker.OnClickListenerViewBinder;
+import org.chromium.chrome.browser.signin.ui.R;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.AddAccountRowProperties;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.IncognitoAccountRowProperties;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.ItemType;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
