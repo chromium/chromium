@@ -158,11 +158,6 @@ Browser* LaunchSystemWebApp(Profile* profile,
                             const GURL& url,
                             base::Optional<apps::AppLaunchParams> params,
                             bool* did_create) {
-  if (Browser::GetBrowserCreationStatusForProfile(profile) !=
-      Browser::BrowserCreationStatus::kOk) {
-    return nullptr;
-  }
-
   Profile* profile_for_launch = GetProfileForSystemWebAppLaunch(profile);
   if (profile_for_launch == nullptr || profile_for_launch != profile) {
     // The provided profile can't launch system web apps. Complain about this so
