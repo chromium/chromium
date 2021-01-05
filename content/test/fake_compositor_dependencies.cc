@@ -22,21 +22,8 @@ FakeCompositorDependencies::FakeCompositorDependencies() {
 FakeCompositorDependencies::~FakeCompositorDependencies() {
 }
 
-bool FakeCompositorDependencies::IsLcdTextEnabled() {
-  return false;
-}
-
-bool FakeCompositorDependencies::IsElasticOverscrollEnabled() {
-  return true;
-}
-
 bool FakeCompositorDependencies::IsUseZoomForDSFEnabled() {
   return use_zoom_for_dsf_;
-}
-
-bool FakeCompositorDependencies::IsSingleThreaded() {
-  // Currently never threaded compositing in unit tests.
-  return true;
 }
 
 blink::scheduler::WebThreadScheduler*
@@ -46,10 +33,6 @@ FakeCompositorDependencies::GetWebMainThreadScheduler() {
 
 cc::TaskGraphRunner* FakeCompositorDependencies::GetTaskGraphRunner() {
   return &task_graph_runner_;
-}
-
-bool FakeCompositorDependencies::IsScrollAnimatorEnabled() {
-  return false;
 }
 
 std::unique_ptr<cc::UkmRecorderFactory>

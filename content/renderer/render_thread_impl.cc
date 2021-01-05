@@ -1318,10 +1318,6 @@ RenderThreadImpl::GetCompositorMainThreadTaskRunner() {
   return main_thread_compositor_task_runner_;
 }
 
-bool RenderThreadImpl::IsSingleThreaded() {
-  return !compositor_task_runner_;
-}
-
 gpu::GpuMemoryBufferManager* RenderThreadImpl::GetGpuMemoryBufferManager() {
   return gpu_->gpu_memory_buffer_manager();
 }

@@ -30,13 +30,9 @@ namespace content {
 
 class CONTENT_EXPORT CompositorDependencies {
  public:
-  virtual bool IsLcdTextEnabled() = 0;
-  virtual bool IsElasticOverscrollEnabled() = 0;
   virtual bool IsUseZoomForDSFEnabled() = 0;
-  virtual bool IsSingleThreaded() = 0;
   virtual blink::scheduler::WebThreadScheduler* GetWebMainThreadScheduler() = 0;
   virtual cc::TaskGraphRunner* GetTaskGraphRunner() = 0;
-  virtual bool IsScrollAnimatorEnabled() = 0;
   virtual std::unique_ptr<cc::UkmRecorderFactory>
   CreateUkmRecorderFactory() = 0;
 

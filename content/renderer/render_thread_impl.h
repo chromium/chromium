@@ -195,14 +195,14 @@ class CONTENT_EXPORT RenderThreadImpl
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
 
   // CompositorDependencies implementation.
-  bool IsLcdTextEnabled() override;
-  bool IsElasticOverscrollEnabled() override;
   bool IsUseZoomForDSFEnabled() override;
-  bool IsSingleThreaded() override;
   blink::scheduler::WebThreadScheduler* GetWebMainThreadScheduler() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
-  bool IsScrollAnimatorEnabled() override;
   std::unique_ptr<cc::UkmRecorderFactory> CreateUkmRecorderFactory() override;
+
+  bool IsLcdTextEnabled();
+  bool IsElasticOverscrollEnabled();
+  bool IsScrollAnimatorEnabled();
 
   // TODO(crbug.com/1111231): The `enable_scroll_animator` flag is currently
   // being passed as part of `CreateViewParams`, despite it looking like a
