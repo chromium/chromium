@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -63,8 +64,7 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    std::string b = base::NumberToString(base::Time::Now().ToInternalValue());
-    TestingProfile* profile = profile_manager()->CreateTestingProfile(b);
+    Profile* profile = browser()->profile();
     SessionService* session_service = new SessionService(profile);
     path_ = profile->GetPath();
 
@@ -1227,6 +1227,34 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
     ASSERT_TRUE(base::Contains(tab_groups, group_id));
     EXPECT_EQ(visual_data[group_ndx], tab_groups[group_id]->visual_data);
   }
+}
+
+TEST_F(SessionServiceTest, Workspace) {
+  auto* test_browser_window =
+      static_cast<TestBrowserWindow*>(browser()->window());
+  test_browser_window->set_workspace(window_workspace);
+  AddTab(browser(), GURL("http://foo/1"));
+  // Force a reset, to verify that SessionService::BuildCommandsForBrowser
+  // handles workspaces correctly.
+  service()->ResetFromCurrentBrowsers();
+
+  sessions::CommandStorageManager* command_storage_manager =
+      service()->GetCommandStorageManagerForTest();
+  const std::vector<std::unique_ptr<sessions::SessionCommand>>&
+      pending_commands = command_storage_manager->pending_commands();
+  bool found_workspace_command = false;
+  std::unique_ptr<sessions::SessionCommand> workspace_command =
+      sessions::CreateSetWindowWorkspaceCommand(browser()->session_id(),
+                                                window_workspace);
+  for (const auto& command : pending_commands) {
+    if (command->id() == workspace_command->id() &&
+        command->contents_as_string_piece() ==
+            workspace_command->contents_as_string_piece()) {
+      found_workspace_command = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_workspace_command);
 }
 
 // Functions used by GetSessionsAndDestroy.

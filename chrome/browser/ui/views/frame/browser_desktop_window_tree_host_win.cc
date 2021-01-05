@@ -277,8 +277,12 @@ void BrowserDesktopWindowTreeHostWin::Show(ui::WindowShowState show_state,
   // and the session service is tracking the window.
   if (virtual_desktop_helper_ &&
       !virtual_desktop_helper_->GetInitialWorkspaceRemembered()) {
-    OnHostWorkspaceChanged();
-    virtual_desktop_helper_->SetInitialWorkspaceRemembered(true);
+    // If |virtual_desktop_helper_| has an empty workspace, kick off an update,
+    // which will eventually call OnHostWorkspaceChanged.
+    if (virtual_desktop_helper_->GetWorkspace().empty())
+      UpdateWorkspace();
+    else
+      OnHostWorkspaceChanged();
   }
   DesktopWindowTreeHostWin::Show(show_state, restore_bounds);
 }
@@ -419,13 +423,7 @@ void BrowserDesktopWindowTreeHostWin::PostHandleMSG(UINT message,
                                                     LPARAM l_param) {
   switch (message) {
     case WM_SETFOCUS: {
-      if (virtual_desktop_helper_) {
-        virtual_desktop_helper_->UpdateWindowDesktopId(
-            GetHWND(),
-            base::BindOnce(
-                &BrowserDesktopWindowTreeHostWin::OnHostWorkspaceChanged,
-                weak_factory_.GetWeakPtr()));
-      }
+      UpdateWorkspace();
       break;
     }
     case WM_CREATE:
@@ -550,6 +548,16 @@ void BrowserDesktopWindowTreeHostWin::OnProfileWasRemoved(
 
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHostWin, private:
+
+void BrowserDesktopWindowTreeHostWin::UpdateWorkspace() {
+  if (!virtual_desktop_helper_)
+    return;
+  virtual_desktop_helper_->UpdateWindowDesktopId(
+      GetHWND(),
+      base::BindOnce(&BrowserDesktopWindowTreeHostWin::OnHostWorkspaceChanged,
+                     weak_factory_.GetWeakPtr()));
+}
+
 bool BrowserDesktopWindowTreeHostWin::IsOpaqueHostedAppFrame() const {
   // TODO(https://crbug.com/868239): Support Windows 7 Aero glass for web-app
   // window titlebar controls.
