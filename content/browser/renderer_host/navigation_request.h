@@ -788,9 +788,6 @@ class CONTENT_EXPORT NavigationRequest
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy() const {
     return cross_origin_embedder_policy_;
   }
-  network::mojom::IPAddressSpace ip_address_space() const {
-    return ip_address_space_;
-  }
 
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy()
       const {
@@ -1569,8 +1566,6 @@ class CONTENT_EXPORT NavigationRequest
   // https://crbug.com/1154729
   bool is_web_secure_context_ = false;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
-  network::mojom::IPAddressSpace ip_address_space_ =
-      network::mojom::IPAddressSpace::kUnknown;
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
       network::mojom::PrivateNetworkRequestPolicy::kAllow;
 

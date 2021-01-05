@@ -8385,7 +8385,8 @@ RenderFrameHostImpl::BuildClientSecurityState() const {
   client_security_state->is_web_secure_context = is_web_secure_context_;
   client_security_state->cross_origin_embedder_policy =
       cross_origin_embedder_policy_;
-  client_security_state->ip_address_space = ip_address_space_;
+  client_security_state->ip_address_space =
+      policy_container_host_->ip_address_space();
   client_security_state->private_network_request_policy =
       private_network_request_policy_;
   return client_security_state;
@@ -8823,7 +8824,6 @@ void RenderFrameHostImpl::DidCommitNewDocument(
       navigation_request->coop_status().current_coop();
   if (navigation_request->IsWaitingToCommit()) {
     is_web_secure_context_ = navigation_request->is_web_secure_context();
-    ip_address_space_ = navigation_request->ip_address_space();
     private_network_request_policy_ =
         navigation_request->private_network_request_policy();
     cross_origin_embedder_policy_ =

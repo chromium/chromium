@@ -4421,8 +4421,13 @@ void NavigationRequest::UpdateClientSecurityStateInternals() {
   DCHECK(!IsSameDocument());
   DCHECK(!IsServedFromBackForwardCache());
 
-  ip_address_space_ =
+  // When we cannot compute the IPAddressSpace directly, the policy container
+  // inheritance mechanisms should have provided us with the correct value
+  // already. Do not overwrite it.
+  auto computed_ip_address_space =
       CalculateClientAddressSpace(common_params_->url, response_head_.get());
+  if (computed_ip_address_space != network::mojom::IPAddressSpace::kUnknown)
+    policy_container_host_->SetIPAddressSpace(computed_ip_address_space);
 
   is_web_secure_context_ = IsWebSecureContext();
 
@@ -4455,7 +4460,8 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
 
   if (!IsSameDocument() && !IsServedFromBackForwardCache()) {
     UpdateClientSecurityStateInternals();
-    commit_params_->ip_address_space = ip_address_space_;
+    commit_params_->ip_address_space =
+        policy_container_host_->ip_address_space();
   }
 
   if (appcache_handle_) {
@@ -5237,7 +5243,8 @@ NavigationRequest::BuildClientSecurityState() const {
   client_security_state->is_web_secure_context = is_web_secure_context_;
   client_security_state->cross_origin_embedder_policy =
       cross_origin_embedder_policy_;
-  client_security_state->ip_address_space = ip_address_space_;
+  client_security_state->ip_address_space =
+      policy_container_host_->ip_address_space();
   client_security_state->private_network_request_policy =
       private_network_request_policy_;
   return client_security_state;

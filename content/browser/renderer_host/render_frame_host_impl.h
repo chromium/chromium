@@ -3156,8 +3156,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //
   // TODO(crbug.com/1124346): Determine if this is correct, fix it if not.
   bool is_web_secure_context_ = false;
-  network::mojom::IPAddressSpace ip_address_space_ =
-      network::mojom::IPAddressSpace::kUnknown;
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
       network::mojom::PrivateNetworkRequestPolicy::kAllow;
 

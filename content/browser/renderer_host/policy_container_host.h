@@ -8,6 +8,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 
@@ -30,6 +31,13 @@ class CONTENT_EXPORT PolicyContainerHost
     // document.
     network::mojom::ReferrerPolicy referrer_policy =
         network::mojom::ReferrerPolicy::kDefault;
+
+    // The IPAddressSpace associated with the document. In all non-network
+    // pages (srcdoc, data urls, etc.) where we don't have an ip address to work
+    // with, it is inherited following the general rules of the
+    // PolicyContainerHost.
+    network::mojom::IPAddressSpace ip_address_space =
+        network::mojom::IPAddressSpace::kUnknown;
   };
 
   PolicyContainerHost();
@@ -40,6 +48,13 @@ class CONTENT_EXPORT PolicyContainerHost
 
   network::mojom::ReferrerPolicy referrer_policy() const {
     return document_policies_.referrer_policy;
+  }
+
+  network::mojom::IPAddressSpace ip_address_space() const {
+    return document_policies_.ip_address_space;
+  }
+  void SetIPAddressSpace(network::mojom::IPAddressSpace ip_address_space) {
+    document_policies_.ip_address_space = ip_address_space;
   }
 
   const DocumentPolicies& document_policies() const {
