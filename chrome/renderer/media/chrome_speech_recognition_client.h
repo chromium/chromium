@@ -80,13 +80,13 @@ class ChromeSpeechRecognitionClient
   media::mojom::AudioDataS16Ptr ConvertToAudioDataS16(
       scoped_refptr<media::AudioBuffer> buffer);
 
-  // Called as a response to sending a transcription to the browser.
-  void OnTranscriptionCallback(bool success);
-
   media::mojom::AudioDataS16Ptr ConvertToAudioDataS16(
       std::unique_ptr<media::AudioBus> audio_bus,
       int sample_rate,
       media::ChannelLayout channel_layout);
+
+  // Called as a response to sending a transcription to the browser.
+  void OnTranscriptionCallback(bool success);
 
   // Recreates the temporary audio bus if the frame count or channel count
   // changed and reads the frames from the buffer into the temporary audio bus.

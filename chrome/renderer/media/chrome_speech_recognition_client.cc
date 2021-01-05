@@ -55,24 +55,6 @@ ChromeSpeechRecognitionClient::ChromeSpeechRecognitionClient(
       std::move(speech_recognition_client_browser_interface_receiver));
 }
 
-void ChromeSpeechRecognitionClient::OnRecognizerBound(
-    bool is_multichannel_supported) {
-  is_multichannel_supported_ = is_multichannel_supported;
-  is_recognizer_bound_ = true;
-
-  if (on_ready_callback_)
-    std::move(on_ready_callback_).Run();
-}
-
-void ChromeSpeechRecognitionClient::OnRecognizerDisconnected() {
-  is_recognizer_bound_ = false;
-  caption_host_->OnError();
-}
-
-void ChromeSpeechRecognitionClient::OnCaptionHostDisconnected() {
-  is_browser_requesting_transcription_ = false;
-}
-
 ChromeSpeechRecognitionClient::~ChromeSpeechRecognitionClient() = default;
 
 void ChromeSpeechRecognitionClient::AddAudio(
@@ -91,7 +73,6 @@ void ChromeSpeechRecognitionClient::AddAudio(
 }
 
 bool ChromeSpeechRecognitionClient::IsSpeechRecognitionAvailable() {
-  // TODO(evliu): Check if SODA is available.
   return !is_website_blocked_ && is_browser_requesting_transcription_ &&
          is_recognizer_bound_;
 }
@@ -105,6 +86,15 @@ void ChromeSpeechRecognitionClient::SetOnReadyCallback(
 
   // Immediately run the callback if speech recognition is already available.
   if (IsSpeechRecognitionAvailable() && on_ready_callback_)
+    std::move(on_ready_callback_).Run();
+}
+
+void ChromeSpeechRecognitionClient::OnRecognizerBound(
+    bool is_multichannel_supported) {
+  is_multichannel_supported_ = is_multichannel_supported;
+  is_recognizer_bound_ = true;
+
+  if (on_ready_callback_)
     std::move(on_ready_callback_).Run();
 }
 
@@ -123,43 +113,6 @@ void ChromeSpeechRecognitionClient::SpeechRecognitionAvailabilityChanged(
     initialize_callback_.Run();
   } else {
     Reset();
-  }
-}
-
-void ChromeSpeechRecognitionClient::OnTranscriptionCallback(bool success) {
-  if (!success && is_browser_requesting_transcription_) {
-    speech_recognition_recognizer_->OnCaptionBubbleClosed();
-  }
-
-  is_browser_requesting_transcription_ = success;
-}
-
-void ChromeSpeechRecognitionClient::CopyBufferToTempAudioBus(
-    const media::AudioBuffer& buffer) {
-  if (!temp_audio_bus_ ||
-      buffer.channel_count() != temp_audio_bus_->channels() ||
-      buffer.frame_count() != temp_audio_bus_->frames()) {
-    temp_audio_bus_ =
-        media::AudioBus::Create(buffer.channel_count(), buffer.frame_count());
-  }
-
-  buffer.ReadFrames(buffer.frame_count(),
-                    /* source_frame_offset */ 0, /* dest_frame_offset */ 0,
-                    temp_audio_bus_.get());
-}
-
-void ChromeSpeechRecognitionClient::ResetChannelMixer(
-    int frame_count,
-    media::ChannelLayout channel_layout) {
-  if (!monaural_audio_bus_ || frame_count != monaural_audio_bus_->frames()) {
-    monaural_audio_bus_ =
-        media::AudioBus::Create(1 /* channels */, frame_count);
-  }
-
-  if (channel_layout != channel_layout_) {
-    channel_layout_ = channel_layout;
-    channel_mixer_ = std::make_unique<media::ChannelMixer>(
-        channel_layout, media::CHANNEL_LAYOUT_MONO);
   }
 }
 
@@ -300,6 +253,52 @@ ChromeSpeechRecognitionClient::ConvertToAudioDataS16(
   return signed_buffer;
 }
 
+void ChromeSpeechRecognitionClient::OnTranscriptionCallback(bool success) {
+  if (!success && is_browser_requesting_transcription_) {
+    speech_recognition_recognizer_->OnCaptionBubbleClosed();
+  }
+
+  is_browser_requesting_transcription_ = success;
+}
+
+void ChromeSpeechRecognitionClient::CopyBufferToTempAudioBus(
+    const media::AudioBuffer& buffer) {
+  if (!temp_audio_bus_ ||
+      buffer.channel_count() != temp_audio_bus_->channels() ||
+      buffer.frame_count() != temp_audio_bus_->frames()) {
+    temp_audio_bus_ =
+        media::AudioBus::Create(buffer.channel_count(), buffer.frame_count());
+  }
+
+  buffer.ReadFrames(buffer.frame_count(),
+                    /* source_frame_offset */ 0, /* dest_frame_offset */ 0,
+                    temp_audio_bus_.get());
+}
+
+void ChromeSpeechRecognitionClient::ResetChannelMixer(
+    int frame_count,
+    media::ChannelLayout channel_layout) {
+  if (!monaural_audio_bus_ || frame_count != monaural_audio_bus_->frames()) {
+    monaural_audio_bus_ =
+        media::AudioBus::Create(1 /* channels */, frame_count);
+  }
+
+  if (channel_layout != channel_layout_) {
+    channel_layout_ = channel_layout;
+    channel_mixer_ = std::make_unique<media::ChannelMixer>(
+        channel_layout, media::CHANNEL_LAYOUT_MONO);
+  }
+}
+
 bool ChromeSpeechRecognitionClient::IsUrlBlocked(const std::string& url) const {
   return blocked_urls_.find(url) != blocked_urls_.end();
+}
+
+void ChromeSpeechRecognitionClient::OnRecognizerDisconnected() {
+  is_recognizer_bound_ = false;
+  caption_host_->OnError();
+}
+
+void ChromeSpeechRecognitionClient::OnCaptionHostDisconnected() {
+  is_browser_requesting_transcription_ = false;
 }
