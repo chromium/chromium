@@ -294,11 +294,11 @@ struct BASE_EXPORT LaunchOptions {
   bool new_process_group = false;
 #endif  // defined(OS_POSIX)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // If non-negative, the specified file descriptor will be set as the launched
   // process' controlling terminal.
   int ctrl_terminal_fd = -1;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 // Launch a process via the command line |cmdline|.

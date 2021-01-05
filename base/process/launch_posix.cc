@@ -53,7 +53,7 @@
 #include <sys/prctl.h>
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include <sys/ioctl.h>
 #endif
 
@@ -418,7 +418,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     memset(reinterpret_cast<void*>(malloc), 0xff, 8);
 #endif  // 0
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     if (options.ctrl_terminal_fd >= 0) {
       // Set process' controlling terminal.
       if (HANDLE_EINTR(setsid()) != -1) {
@@ -430,7 +430,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
         RAW_LOG(WARNING, "setsid failed, ctrl terminal not set");
       }
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
     // Cannot use STL iterators here, since debug iterators use locks.
     // NOLINTNEXTLINE(modernize-loop-convert)
