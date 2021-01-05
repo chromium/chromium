@@ -196,10 +196,7 @@ void VmCameraMicManager::OnActiveClientChange(
     bool is_active) {
   // Crostini does not support camera yet.
 
-  // TODO(b/167491603): `UNKNOWN` is for Parallels using v0 camera API. We
-  // should be able to remove it soon.
-  if (type == cros::mojom::CameraClientType::UNKNOWN ||
-      type == cros::mojom::CameraClientType::PLUGINVM) {
+  if (type == cros::mojom::CameraClientType::PLUGINVM) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&VmCameraMicManager::UpdateVmInfoAndNotifications,
