@@ -114,22 +114,21 @@ DevToolsAndroidBridge::GetBrowserAgentHost(
   return DevToolsDeviceDiscovery::CreateBrowserAgentHost(it->second, browser);
 }
 
-void DevToolsAndroidBridge::SendJsonRequest(
-    const std::string& browser_id_str,
-    const std::string& url,
-    const JsonRequestCallback& callback) {
+void DevToolsAndroidBridge::SendJsonRequest(const std::string& browser_id_str,
+                                            const std::string& url,
+                                            JsonRequestCallback callback) {
   std::string serial;
   std::string browser_id;
   if (!BrowserIdFromString(browser_id_str, &serial, &browser_id)) {
-    callback.Run(net::ERR_FAILED, std::string());
+    std::move(callback).Run(net::ERR_FAILED, std::string());
     return;
   }
   auto it = device_map_.find(serial);
   if (it == device_map_.end()) {
-    callback.Run(net::ERR_FAILED, std::string());
+    std::move(callback).Run(net::ERR_FAILED, std::string());
     return;
   }
-  it->second->SendJsonRequest(browser_id, url, callback);
+  it->second->SendJsonRequest(browser_id, url, std::move(callback));
 }
 
 void DevToolsAndroidBridge::OpenRemotePage(scoped_refptr<RemoteBrowser> browser,

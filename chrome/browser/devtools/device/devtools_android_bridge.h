@@ -69,7 +69,7 @@ class DevToolsAndroidBridge : public KeyedService {
   using CompleteDevice = DevToolsDeviceDiscovery::CompleteDevice;
   using CompleteDevices = DevToolsDeviceDiscovery::CompleteDevices;
 
-  using JsonRequestCallback = base::Callback<void(int, const std::string&)>;
+  using JsonRequestCallback = base::OnceCallback<void(int, const std::string&)>;
 
   class DeviceListListener {
    public:
@@ -130,7 +130,7 @@ class DevToolsAndroidBridge : public KeyedService {
 
   void SendJsonRequest(const std::string& browser_id_str,
                        const std::string& url,
-                       const JsonRequestCallback& callback);
+                       JsonRequestCallback callback);
 
   using TCPProviderCallback =
       base::Callback<void(scoped_refptr<TCPDeviceProvider>)>;
