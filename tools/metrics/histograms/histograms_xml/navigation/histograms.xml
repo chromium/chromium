@@ -682,7 +682,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Navigation.IsLockedProcess" enum="NavigationIsLockedProcess"
-    expires_after="2021-05-09">
+    expires_after="2021-12-21">
   <owner>alexmos@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>
@@ -693,7 +693,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Navigation.IsLockedProcess.HTTPOrHTTPS"
-    enum="NavigationIsLockedProcess" expires_after="2020-12-31">
+    enum="NavigationIsLockedProcess" expires_after="2021-12-21">
   <owner>alexmos@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>
@@ -918,7 +918,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Navigation.RequiresDedicatedProcess"
-    enum="NavigationRequiresDedicatedProcess" expires_after="2021-06-20">
+    enum="NavigationRequiresDedicatedProcess" expires_after="2021-12-21">
   <owner>alexmos@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>
@@ -929,7 +929,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Navigation.RequiresDedicatedProcess.HTTPOrHTTPS"
-    enum="NavigationRequiresDedicatedProcess" expires_after="2020-12-31">
+    enum="NavigationRequiresDedicatedProcess" expires_after="2021-12-21">
   <owner>alexmos@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>
