@@ -49,8 +49,10 @@ class DeepScanningBrowserTestBase : public InProcessBrowserTest {
 
   const std::vector<base::FilePath>& created_file_paths() const;
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
   base::RepeatingClosure quit_closure_;
   enterprise_connectors::ContentAnalysisResponse
       connector_status_callback_response_;

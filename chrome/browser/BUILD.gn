@@ -496,6 +496,8 @@ static_library("browser") {
     "enterprise/browser_management/browser_management_service.h",
     "enterprise/browser_management/browser_management_status_provider.cc",
     "enterprise/browser_management/browser_management_status_provider.h",
+    "enterprise/util/affiliation.cc",
+    "enterprise/util/affiliation.h",
     "enterprise/util/managed_browser_utils.cc",
     "enterprise/util/managed_browser_utils.h",
     "expired_flags_list.h",

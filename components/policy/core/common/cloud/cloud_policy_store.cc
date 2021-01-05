@@ -87,4 +87,10 @@ void CloudPolicyStore::SetPolicyMapForTesting(const PolicyMap& policy_map) {
 void CloudPolicyStore::SetFirstPoliciesLoaded(bool loaded) {
   first_policies_loaded_ = loaded;
 }
+
+void CloudPolicyStore::set_policy_data_for_testing(
+    std::unique_ptr<enterprise_management::PolicyData> policy) {
+  policy_ = std::move(policy);
+}
+
 }  // namespace policy

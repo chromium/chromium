@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -343,16 +344,22 @@ void EventReportValidator::SetDoneClosure(base::RepeatingClosure closure) {
 
 void SetAnalysisConnector(PrefService* prefs,
                           enterprise_connectors::AnalysisConnector connector,
-                          const std::string& pref_value) {
+                          const std::string& pref_value,
+                          bool machine_scope) {
   ListPrefUpdate settings_list(prefs, ConnectorPref(connector));
   DCHECK(settings_list.Get());
   if (!settings_list->empty())
     settings_list->Clear();
 
   settings_list->Append(*base::JSONReader::Read(pref_value));
+  prefs->SetInteger(
+      ConnectorScopePref(connector),
+      machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
 }
 
-void SetOnSecurityEventReporting(PrefService* prefs, bool enabled) {
+void SetOnSecurityEventReporting(PrefService* prefs,
+                                 bool enabled,
+                                 bool machine_scope) {
   ListPrefUpdate settings_list(prefs,
                                enterprise_connectors::kOnSecurityEventPref);
   DCHECK(settings_list.Get());
@@ -364,18 +371,22 @@ void SetOnSecurityEventReporting(PrefService* prefs, bool enabled) {
                       base::Value("google"));
       settings_list->Append(std::move(settings));
     }
+    prefs->SetInteger(enterprise_connectors::kOnSecurityEventScopePref,
+                      machine_scope ? policy::POLICY_SCOPE_MACHINE
+                                    : policy::POLICY_SCOPE_USER);
   } else {
     settings_list->ClearList();
+    prefs->ClearPref(enterprise_connectors::kOnSecurityEventScopePref);
   }
 }
 
 void ClearAnalysisConnector(
     PrefService* prefs,
-
     enterprise_connectors::AnalysisConnector connector) {
   ListPrefUpdate settings_list(prefs, ConnectorPref(connector));
   DCHECK(settings_list.Get());
   settings_list->Clear();
+  prefs->ClearPref(ConnectorScopePref(connector));
 }
 
 }  // namespace safe_browsing
