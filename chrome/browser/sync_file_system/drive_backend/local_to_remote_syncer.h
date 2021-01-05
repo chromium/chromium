@@ -39,7 +39,7 @@ class SyncEngineContext;
 
 class LocalToRemoteSyncer : public SyncTask {
  public:
-  typedef base::Callback<void(std::unique_ptr<SyncTaskToken>)> Continuation;
+  typedef base::OnceCallback<void(std::unique_ptr<SyncTaskToken>)> Continuation;
 
   LocalToRemoteSyncer(SyncEngineContext* sync_context,
                       const SyncFileMetadata& local_metadata,
@@ -58,9 +58,9 @@ class LocalToRemoteSyncer : public SyncTask {
   }
 
  private:
-  void MoveToBackground(const Continuation& continuation,
+  void MoveToBackground(Continuation continuation,
                         std::unique_ptr<SyncTaskToken> token);
-  void ContinueAsBackgroundTask(const Continuation& continuation,
+  void ContinueAsBackgroundTask(Continuation continuation,
                                 std::unique_ptr<SyncTaskToken> token);
   void SyncCompleted(std::unique_ptr<SyncTaskToken> token,
                      SyncStatusCode status);

@@ -253,7 +253,7 @@ void LocalToRemoteSyncer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
 }
 
 void LocalToRemoteSyncer::MoveToBackground(
-    const Continuation& continuation,
+    Continuation continuation,
     std::unique_ptr<SyncTaskToken> token) {
   std::unique_ptr<TaskBlocker> blocker(new TaskBlocker);
   blocker->app_id = url_.origin().host();
@@ -277,11 +277,11 @@ void LocalToRemoteSyncer::MoveToBackground(
   SyncTaskManager::UpdateTaskBlocker(
       std::move(token), std::move(blocker),
       base::BindOnce(&LocalToRemoteSyncer::ContinueAsBackgroundTask,
-                     weak_ptr_factory_.GetWeakPtr(), continuation));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(continuation)));
 }
 
 void LocalToRemoteSyncer::ContinueAsBackgroundTask(
-    const Continuation& continuation,
+    Continuation continuation,
     std::unique_ptr<SyncTaskToken> token) {
   // The SyncTask runs as a background task beyond this point.
   // Note that any task can run between MoveToBackground() and
@@ -315,7 +315,7 @@ void LocalToRemoteSyncer::ContinueAsBackgroundTask(
     }
   }
 
-  continuation.Run(std::move(token));
+  std::move(continuation).Run(std::move(token));
 }
 
 void LocalToRemoteSyncer::SyncCompleted(std::unique_ptr<SyncTaskToken> token,
