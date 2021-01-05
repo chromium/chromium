@@ -41,6 +41,7 @@ enum PhoneHubViewID {
 
   kPhoneConnectedView,
   kPhoneConnectingView,
+  kTetherConnectionPendingView,
 };
 
 }  // namespace ash

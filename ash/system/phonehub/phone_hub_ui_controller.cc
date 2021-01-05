@@ -14,13 +14,16 @@
 #include "ash/system/phonehub/phone_connecting_view.h"
 #include "ash/system/phonehub/phone_disconnected_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
+#include "ash/system/phonehub/tether_connection_pending_view.h"
 #include "base/logging.h"
 #include "chromeos/components/phonehub/browser_tabs_model_provider.h"
 #include "chromeos/components/phonehub/connection_scheduler.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
+#include "chromeos/components/phonehub/tether_controller.h"
 #include "chromeos/components/phonehub/user_action_recorder.h"
 
 using FeatureStatus = chromeos::phonehub::FeatureStatus;
+using TetherStatus = chromeos::phonehub::TetherController::Status;
 
 namespace ash {
 
@@ -79,6 +82,8 @@ std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(
       return std::make_unique<BluetoothDisabledView>();
     case UiState::kPhoneConnecting:
       return std::make_unique<PhoneConnectingView>();
+    case UiState::kTetherConnectionPending:
+      return std::make_unique<TetherConnectionPendingView>();
     case UiState::kPhoneDisconnected:
       return std::make_unique<PhoneDisconnectedView>(
           phone_hub_manager_->GetConnectionScheduler());
@@ -147,6 +152,9 @@ PhoneHubUiController::GetUiStateFromPhoneHubManager() {
   auto* tracker = phone_hub_manager_->GetOnboardingUiTracker();
   auto* phone_model = phone_hub_manager_->GetPhoneModel();
   bool should_show_onboarding_ui = tracker->ShouldShowOnboardingUi();
+  bool is_tether_connecting =
+      phone_hub_manager_->GetTetherController()->GetStatus() ==
+      TetherStatus::kConnecting;
 
   switch (feature_status) {
     case FeatureStatus::kPhoneSelectedAndPendingSetup:
@@ -164,13 +172,24 @@ PhoneHubUiController::GetUiStateFromPhoneHubManager() {
     case FeatureStatus::kEnabledButDisconnected:
       return UiState::kPhoneDisconnected;
     case FeatureStatus::kEnabledAndConnecting:
-      return UiState::kPhoneConnecting;
+      // If a tether network is being connected to, or the |ui_state_|
+      // was UiState::kTetherConnectionPending, continue returning
+      // the UiState::kTetherConnectionPending state.
+      return is_tether_connecting ||
+                     ui_state_ == UiState::kTetherConnectionPending
+                 ? UiState::kTetherConnectionPending
+                 : UiState::kPhoneConnecting;
     case FeatureStatus::kEnabledAndConnected:
       // Delay displaying the connected view until the phone model is ready.
       if (phone_model->phone_status_model().has_value())
         return UiState::kPhoneConnected;
-      else
-        return UiState::kPhoneConnecting;
+
+      // If the the |ui_state_| was UiState::kTetherConnectionPending, continue
+      // returning the UiState::kTetherConnectionPending state.
+      if (ui_state_ == UiState::kTetherConnectionPending)
+        return UiState::kTetherConnectionPending;
+
+      return UiState::kPhoneConnecting;
     case FeatureStatus::kLockOrSuspended:
       return UiState::kHidden;
   }

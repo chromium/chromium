@@ -8,6 +8,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/optional.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
+#include "chromeos/components/phonehub/fake_tether_controller.h"
 #include "chromeos/components/phonehub/phone_model_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/view.h"
@@ -58,6 +59,10 @@ class PhoneHubUiControllerTest : public NoSessionAshTestBase,
 
   chromeos::phonehub::FakeOnboardingUiTracker* GetOnboardingUiTracker() {
     return phone_hub_manager_.fake_onboarding_ui_tracker();
+  }
+
+  chromeos::phonehub::FakeTetherController* GetTetherController() {
+    return phone_hub_manager_.fake_tether_controller();
   }
 
   void SetPhoneStatusModel(
@@ -147,12 +152,43 @@ TEST_F(PhoneHubUiControllerTest, PhoneDisconnected) {
 }
 
 TEST_F(PhoneHubUiControllerTest, PhoneConnecting) {
+  GetTetherController()->SetStatus(
+      chromeos::phonehub::TetherController::Status::kConnectionAvailable);
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnecting);
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnecting,
             controller_->ui_state());
 
   auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kPhoneConnectingView, content_view->GetID());
+}
+
+TEST_F(PhoneHubUiControllerTest, TetherConnectionPending) {
+  GetTetherController()->SetStatus(
+      chromeos::phonehub::TetherController::Status::kConnecting);
+  GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnecting);
+  EXPECT_EQ(PhoneHubUiController::UiState::kTetherConnectionPending,
+            controller_->ui_state());
+
+  // Tether status becomes connected, but the feature status is still
+  // |kEnabledAndConnecting|. The UiState should still be
+  // kTetherConnectionPending.
+  GetTetherController()->SetStatus(
+      chromeos::phonehub::TetherController::Status::kConnected);
+  GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnecting);
+  EXPECT_EQ(PhoneHubUiController::UiState::kTetherConnectionPending,
+            controller_->ui_state());
+
+  // Tether status is connected, the feature status is |kEnabledAndConnected|,
+  // but there is no phone model. The UiState should still be
+  // kTetherConnectionPending.
+  SetPhoneStatusModel(base::nullopt);
+  GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnected);
+  EXPECT_EQ(PhoneHubUiController::UiState::kTetherConnectionPending,
+            controller_->ui_state());
+
+  auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
+  EXPECT_EQ(PhoneHubViewID::kTetherConnectionPendingView,
+            content_view->GetID());
 }
 
 TEST_F(PhoneHubUiControllerTest, PhoneConnected) {

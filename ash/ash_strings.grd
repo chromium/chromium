@@ -1163,6 +1163,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_PHONE_CONNECTING_DIALOG_TITLE" desc="The title of the generic connecting dialog that indicates the device is trying to connect to your phone.">
         Connecting...
       </message>
+      <message name="IDS_ASH_PHONE_HUB_TETHER_CONNECTION_PENDING_DIALOG_TITLE" desc="The title of the connecting dialog that indicates a tether connection to the phone is in progress.">
+        Connecting to hotspot...
+      </message>
       <message name="IDS_ASH_PHONE_HUB_PHONE_CONNECTING_DIALOG_DESCRIPTION" desc="The description of the generic connecting dialog that indicates the device is trying to connect to your phone.">
         Make sure your phone is nearby and has Bluetooth turned on.
       </message>

@@ -58741,6 +58741,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="OnboardingDismissPrompt"/>
   <int value="8" label="Invalid"/>
   <int value="9" label="PhoneConnecting"/>
+  <int value="10" label="PhoneTetherConnectionPending"/>
 </enum>
 
 <enum name="PhoneHubTetherConnectionResult">

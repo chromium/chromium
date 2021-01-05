@@ -53,6 +53,7 @@ class ASH_EXPORT PhoneHubUiController
     kPhoneConnecting,
     kPhoneDisconnected,
     kPhoneConnected,
+    kTetherConnectionPending,
   };
 
   PhoneHubUiController();

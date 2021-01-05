@@ -1234,6 +1234,8 @@ component("ash") {
     "system/phonehub/silence_phone_quick_action_controller.h",
     "system/phonehub/task_continuation_view.cc",
     "system/phonehub/task_continuation_view.h",
+    "system/phonehub/tether_connection_pending_view.cc",
+    "system/phonehub/tether_connection_pending_view.h",
     "system/phonehub/ui_constants.h",
     "system/power/backlights_forced_off_setter.cc",
     "system/power/backlights_forced_off_setter.h",

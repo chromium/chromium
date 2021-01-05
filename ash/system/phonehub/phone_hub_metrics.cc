@@ -20,6 +20,8 @@ std::string GetInterstitialScreenEventHistogramName(Screen screen) {
       return "PhoneHub.InterstitialScreenEvent.BluetoothOrWifiDisabled";
     case Screen::kPhoneConnecting:
       return "PhoneHub.InterstitialScreenEvent.PhoneConnecting";
+    case Screen::kTetherConnectionPending:
+      return "PhoneHub.InterstitialScreenEvent.TetherConnectionPending";
     case Screen::kOnboardingExistingMultideviceUser:
       return "PhoneHub.InterstitialScreenEvent.Onboarding."
              "ExistingMultideviceUser";
