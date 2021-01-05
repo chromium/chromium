@@ -152,6 +152,7 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
       params.intent ? provider_->registrar().GetAppShareTarget(params.app_id)
                     : nullptr;
   const GURL url = GetLaunchUrl(*provider_, params, share_target);
+  DCHECK(url.is_valid());
 
   // Place new windows on the specified display.
   display::ScopedDisplayForNewWindows scoped_display(params.display_id);
