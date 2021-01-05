@@ -39,6 +39,7 @@ import org.chromium.base.BuildConfig;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.base.compat.ApiHelperForP;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -275,7 +276,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         }
 
         // Fetches NetworkInfo and records UMA for NullPointerExceptions.
-        private NetworkInfo getNetworkInfo(Network network) {
+        public NetworkInfo getNetworkInfo(Network network) {
             try {
                 return mConnectivityManager.getNetworkInfo(network);
             } catch (NullPointerException firstException) {
@@ -544,6 +545,96 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         }
     }
 
+    // NetworkCallback used for listening for changes to the default network.
+    // This version has two major bug fixes over the above DefaultNetworkCallback:
+    // 1. Avoids avoids calling synchronous ConnectivityManager methods which is prohibited inside
+    //    NetworkCallbacks see "Do NOT call" here:
+    //    https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onAvailable(android.net.Network)
+    // 2. Catches onCapabilitiesChanged() which includes cellular connections transitioning to and
+    //    from SUSPENDED states.  Failing to catch this could leave the NetworkChangeNotifier in
+    //    an incorrect disconnected state, see crbug.com/1120144.
+    @TargetApi(Build.VERSION_CODES.P)
+    private class AndroidRDefaultNetworkCallback extends NetworkCallback {
+        LinkProperties mLinkProperties;
+        NetworkCapabilities mNetworkCapabilities;
+
+        @Override
+        public void onAvailable(Network network) {
+            // Clear accumulated state and wait for new state to be received.
+            // Android guarantees we receive onLinkPropertiesChanged and
+            // onNetworkCapabilities calls after onAvailable:
+            // https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onCapabilitiesChanged(android.net.Network,%20android.net.NetworkCapabilities)
+            // so the call to connectionTypeChangedTo() is done when we have received the
+            // LinkProperties and NetworkCapabilities.
+            mLinkProperties = null;
+            mNetworkCapabilities = null;
+        }
+
+        @Override
+        public void onLost(final Network network) {
+            mLinkProperties = null;
+            mNetworkCapabilities = null;
+            if (mRegistered) {
+                connectionTypeChangedTo(new NetworkState(false, -1, -1, null, false, ""));
+            }
+        }
+
+        // LinkProperties changes include enabling/disabling DNS-over-TLS.
+        @Override
+        public void onLinkPropertiesChanged(Network network, LinkProperties linkProperties) {
+            mLinkProperties = linkProperties;
+            if (mRegistered && mLinkProperties != null && mNetworkCapabilities != null) {
+                connectionTypeChangedTo(getNetworkState(network));
+            }
+        }
+
+        // CapabilitiesChanged includes cellular connections switching in and out of SUSPENDED.
+        @Override
+        public void onCapabilitiesChanged(
+                Network network, NetworkCapabilities networkCapabilities) {
+            mNetworkCapabilities = networkCapabilities;
+            if (mRegistered && mLinkProperties != null && mNetworkCapabilities != null) {
+                connectionTypeChangedTo(getNetworkState(network));
+            }
+        }
+
+        // Calculate current NetworkState.  Unlike getNetworkState(), this method avoids calling
+        // synchronous ConnectivityManager methods which is prohibited inside NetworkCallbacks see
+        // "Do NOT call" here:
+        // https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onAvailable(android.net.Network)
+        private NetworkState getNetworkState(Network network) {
+            // Initialize to unknown values then extract more accurate info
+            int type = -1;
+            int subtype = -1;
+            if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                    || mNetworkCapabilities.hasTransport(
+                            NetworkCapabilities.TRANSPORT_WIFI_AWARE)) {
+                type = ConnectivityManager.TYPE_WIFI;
+            } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                type = ConnectivityManager.TYPE_MOBILE;
+                // To get the subtype we need to make a synchronous ConnectivityManager call
+                // unfortunately.  It's recommended to use TelephonyManager.getDataNetworkType()
+                // but that requires an additional permission.  Worst case this might be inaccurate
+                // but getting the correct subtype is much much less important than getting the
+                // correct type.  Incorrect type could make Chrome behave like it's offline,
+                // incorrect subtype will just make cellular bandwidth estimates incorrect.
+                NetworkInfo networkInfo = mConnectivityManagerDelegate.getNetworkInfo(network);
+                if (networkInfo != null) {
+                    subtype = networkInfo.getSubtype();
+                }
+            } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                type = ConnectivityManager.TYPE_ETHERNET;
+            } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) {
+                type = ConnectivityManager.TYPE_BLUETOOTH;
+            } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                type = ConnectivityManager.TYPE_VPN;
+            }
+            return new NetworkState(true, type, subtype, String.valueOf(networkToNetId(network)),
+                    ApiHelperForP.isPrivateDnsActive(mLinkProperties),
+                    ApiHelperForP.getPrivateDnsServerName(mLinkProperties));
+        }
+    }
+
     // This class gets called back by ConnectivityManager whenever networks come
     // and go. It gets called back on a special handler thread
     // ConnectivityManager creates for making the callbacks. The callbacks in
@@ -750,7 +841,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     private final Observer mObserver;
     private final RegistrationPolicy mRegistrationPolicy;
     // Starting with Android Pie, used to detect changes in default network.
-    private DefaultNetworkCallback mDefaultNetworkCallback;
+    private NetworkCallback mDefaultNetworkCallback;
 
     // mConnectivityManagerDelegates and mWifiManagerDelegate are only non-final for testing.
     private ConnectivityManagerDelegate mConnectivityManagerDelegate;
@@ -851,9 +942,18 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             mNetworkCallback = null;
             mNetworkRequest = null;
         }
-        mDefaultNetworkCallback = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-                ? new DefaultNetworkCallback()
-                : null;
+        // Use AndroidRDefaultNetworkCallback to fix Android R issue crbug.com/1120144.
+        // This NetworkCallback could be used on O+ (where onCapabilitiesChanged and
+        // onLinkProperties callbacks are guaranteed to be called after onAvailable)
+        // but is only necessary on Android R+.  For now it's only used on R+ to reduce
+        // churn.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            mDefaultNetworkCallback = new AndroidRDefaultNetworkCallback();
+        } else {
+            mDefaultNetworkCallback = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+                    ? new DefaultNetworkCallback()
+                    : null;
+        }
         mNetworkState = getCurrentNetworkState();
         mIntentFilter = new NetworkConnectivityIntentFilter();
         mIgnoreNextBroadcast = false;
@@ -1154,7 +1254,10 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     }
 
     private void connectionTypeChanged() {
-        NetworkState networkState = getCurrentNetworkState();
+        connectionTypeChangedTo(getCurrentNetworkState());
+    }
+
+    private void connectionTypeChangedTo(NetworkState networkState) {
         if (networkState.getConnectionType() != mNetworkState.getConnectionType()
                 || !networkState.getNetworkIdentifier().equals(mNetworkState.getNetworkIdentifier())
                 || networkState.isPrivateDnsActive() != mNetworkState.isPrivateDnsActive()
