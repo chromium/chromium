@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_PICKER_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_PICKER_HANDLER_H_
 
+#include <unordered_map>
+
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -81,11 +83,23 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void DidFirstVisuallyNonEmptyPaint() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
+  // Sets 'profiles_order_' that is used to freeze the order of the profiles on
+  // the picker when it was first shown.
+  void SetProfilesOrder(const std::vector<ProfileAttributesEntry*>& entries);
+
+  // Returns the list of profiles in the same order as when the picker
+  // was first shown.
+  std::vector<ProfileAttributesEntry*> GetProfileAttributes();
+
   // Creation time of the handler, to measure performance on startup. Only set
   // when the picker is shown on startup.
   base::TimeTicks creation_time_on_startup_;
   bool main_view_initialized_ = false;
 
+  // The order of the profiles when the picker was first shown. This is used
+  // to freeze the order of profiles on the picker. Newly added profiles, will
+  // be added to the end of the list.
+  std::unordered_map<base::FilePath, size_t> profiles_order_;
   base::WeakPtrFactory<ProfilePickerHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProfilePickerHandler);

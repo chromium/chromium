@@ -593,13 +593,54 @@ void ProfilePickerHandler::PushProfilesList() {
   FireWebUIListener("profiles-list-changed", GetProfilesList());
 }
 
-base::Value ProfilePickerHandler::GetProfilesList() {
-  base::ListValue profiles_list;
-  std::vector<ProfileAttributesEntry*> entries =
+void ProfilePickerHandler::SetProfilesOrder(
+    const std::vector<ProfileAttributesEntry*>& entries) {
+  profiles_order_.clear();
+  size_t index = 0;
+  for (const ProfileAttributesEntry* entry : entries) {
+    if (entry->IsGuest())
+      continue;
+
+    profiles_order_[entry->GetPath()] = index++;
+  }
+}
+
+std::vector<ProfileAttributesEntry*>
+ProfilePickerHandler::GetProfileAttributes() {
+  size_t number_of_profiles =
+      g_browser_process->profile_manager()->GetNumberOfProfiles();
+  std::vector<ProfileAttributesEntry*> ordered_entries =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetAllProfilesAttributesSortedByLocalProfilName();
 
+  if (profiles_order_.size() != number_of_profiles) {
+    // Should only happen the first time the function is called.
+    // Profile creation and deletion are handled at
+    // 'OnProfileAdded', 'OnProfileWasRemoved'.
+    DCHECK(!profiles_order_.size());
+    SetProfilesOrder(ordered_entries);
+    return ordered_entries;
+  }
+
+  // Vector of nullptr entries.
+  std::vector<ProfileAttributesEntry*> entries(number_of_profiles);
+  for (ProfileAttributesEntry* entry : ordered_entries) {
+    if (entry->IsGuest())
+      continue;
+
+    DCHECK(profiles_order_.find(entry->GetPath()) != profiles_order_.end());
+    size_t index = profiles_order_[entry->GetPath()];
+    DCHECK_LT(index, number_of_profiles);
+    DCHECK(!entries[index]);
+    entries[index] = entry;
+  }
+  return entries;
+}
+
+base::Value ProfilePickerHandler::GetProfilesList() {
+  base::ListValue profiles_list;
+  std::vector<ProfileAttributesEntry*> entries = GetProfileAttributes();
   const int avatar_icon_size =
       kProfileCardAvatarSize * web_ui()->GetDeviceScaleFactor();
   for (const ProfileAttributesEntry* entry : entries) {
@@ -630,6 +671,8 @@ base::Value ProfilePickerHandler::GetProfilesList() {
 }
 
 void ProfilePickerHandler::OnProfileAdded(const base::FilePath& profile_path) {
+  size_t number_of_profiles = profiles_order_.size();
+  profiles_order_[profile_path] = number_of_profiles;
   PushProfilesList();
 }
 
@@ -637,6 +680,12 @@ void ProfilePickerHandler::OnProfileWasRemoved(
     const base::FilePath& profile_path,
     const base::string16& profile_name) {
   DCHECK(IsJavascriptAllowed());
+  size_t index = profiles_order_[profile_path];
+  profiles_order_.erase(profile_path);
+  for (auto it : profiles_order_) {
+    if (it.second > index)
+      profiles_order_[it.first] = it.second - 1;
+  }
   FireWebUIListener("profile-removed", util::FilePathToValue(profile_path));
 }
 
