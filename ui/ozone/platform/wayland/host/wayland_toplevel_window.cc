@@ -267,7 +267,6 @@ void WaylandToplevelWindow::HandleSurfaceConfigure(int32_t width,
                                                    bool is_activated) {
   // Store the old state to propagte state changes if Wayland decides to change
   // the state to something else.
-  PlatformWindowState old_state = state_;
   if (state_ == PlatformWindowState::kMinimized && !is_activated) {
     state_ = PlatformWindowState::kMinimized;
   } else if (is_fullscreen) {
@@ -278,7 +277,6 @@ void WaylandToplevelWindow::HandleSurfaceConfigure(int32_t width,
     state_ = PlatformWindowState::kNormal;
   }
 
-  const bool state_changed = old_state != state_;
   const bool is_normal = state_ == PlatformWindowState::kNormal;
 
   // Update state before notifying delegate.
@@ -316,8 +314,8 @@ void WaylandToplevelWindow::HandleSurfaceConfigure(int32_t width,
   SetOrResetRestoredBounds();
   ApplyPendingBounds();
 
-  if (state_changed)
-    delegate()->OnWindowStateChanged(state_);
+  // Notify the delegate about the latest state set.
+  delegate()->OnWindowStateChanged(state_);
 
   if (did_active_change)
     delegate()->OnActivationChanged(is_active_);
@@ -426,22 +424,21 @@ void WaylandToplevelWindow::TriggerStateChanges() {
   if (!shell_surface_)
     return;
 
-  if (state_ == PlatformWindowState::kFullScreen)
-    shell_surface_->SetFullscreen();
-  else
-    shell_surface_->UnSetFullscreen();
-
   // Call UnSetMaximized only if current state is normal. Otherwise, if the
   // current state is fullscreen and the previous is maximized, calling
   // UnSetMaximized may result in wrong restored window position that clients
   // are not allowed to know about.
-  if (state_ == PlatformWindowState::kMaximized)
-    shell_surface_->SetMaximized();
-  else if (state_ == PlatformWindowState::kNormal)
-    shell_surface_->UnSetMaximized();
-
-  if (state_ == PlatformWindowState::kMinimized)
+  if (state_ == PlatformWindowState::kMinimized) {
     shell_surface_->SetMinimized();
+  } else if (state_ == PlatformWindowState::kFullScreen) {
+    shell_surface_->SetFullscreen();
+  } else if (previous_state_ == PlatformWindowState::kFullScreen) {
+    shell_surface_->UnSetFullscreen();
+  } else if (state_ == PlatformWindowState::kMaximized) {
+    shell_surface_->SetMaximized();
+  } else if (state_ == PlatformWindowState::kNormal) {
+    shell_surface_->UnSetMaximized();
+  }
 
   connection()->ScheduleFlush();
 }
