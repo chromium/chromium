@@ -122,6 +122,7 @@ void UserCreationScreen::OnUserAction(const std::string& action_id) {
     context()->is_child_gaia_account_new = true;
     exit_callback_.Run(Result::CHILD_ACCOUNT_CREATE);
   } else if (action_id == kUserActionCancel) {
+    context()->is_user_creation_enabled = false;
     exit_callback_.Run(Result::CANCEL);
   } else {
     BaseScreen::OnUserAction(action_id);

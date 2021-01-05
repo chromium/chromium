@@ -55,8 +55,10 @@ class WizardContext {
   bool skip_to_update_for_tests = false;
 
   // Whether user creation screen is enabled (could be disabled due to disabled
-  // feature or on managed device). Set by UserCreationScreen::MaybeSkip and
-  // will be flipped to true when screen is shown.
+  // feature or on managed device). It determines the behavior of back button
+  // for GaiaScreen and OfflineLoginScreen. Value is set to true in
+  // UserCreationScreen::MaybeSkip when screen is shown and will be set to false
+  // when screen is skipped or when cancel action is called.
   bool is_user_creation_enabled = false;
 };
 
