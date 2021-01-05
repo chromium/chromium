@@ -17349,6 +17349,16 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="7" label="Elements - Accessibility"/>
 </enum>
 
+<enum name="DexFixerReason">
+  <int value="0" label="Os.stat() failed"/>
+  <int value="1" label="Runtime.exec() failed"/>
+  <int value="2" label="Dexopt not needed"/>
+  <int value="5" label="Preemptive Dexopt after app updated"/>
+  <int value="6" label="DexFile.isDexOptNeeded() returned true"/>
+  <int value="7" label="DexFile.isDexOptNeeded() threw"/>
+  <int value="8" label="Dex files not world-readable"/>
+</enum>
+
 <enum name="DiagnosticsRecoveryRun">
   <int value="0" label="Recovery not run"/>
   <int value="1" label="Recovery run because of crash"/>

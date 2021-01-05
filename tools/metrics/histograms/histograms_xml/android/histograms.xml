@@ -607,6 +607,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.DexFixer" enum="DexFixerReason"
+    expires_after="2021-12-01">
+  <owner>agrieve@chromium.org</owner>
+  <owner>cduvall@chromium.org</owner>
+  <summary>
+    Records the number of times Chrome runs &quot;cmd package compile&quot; to
+    fix dexopt issues, and for what reason.
+  </summary>
+</histogram>
+
 <histogram name="Android.DirectAction.Perform" enum="DirectActionId"
     expires_after="M90">
   <owner>szermatt@chromium.org</owner>

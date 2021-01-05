@@ -3989,6 +3989,13 @@ if (is_android) {
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestRunner.java",
       "test/android/junit/src/org/chromium/base/test/util/TestRunnerTestRule.java",
     ]
+
+    # Make sure robolectric tests have classes filtered out of base_java by
+    # jar_excluded_patterns.
+    srcjar_deps = [
+      ":base_build_config_gen",
+      ":base_native_libraries_gen",
+    ]
     deps = [
       ":base_java",
       "//testing/android/junit:junit_test_support",

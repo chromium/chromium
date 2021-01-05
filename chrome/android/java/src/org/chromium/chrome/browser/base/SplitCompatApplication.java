@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
@@ -145,6 +146,10 @@ public class SplitCompatApplication extends Application {
 
         if (isBrowserProcess) {
             checkAppBeingReplaced();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Fixes are never required before O (where "cmd package compile" does not exist).
+                DexFixer.scheduleDexFix();
+            }
 
             PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
             // Renderer and GPU processes have command line passed to them via IPC

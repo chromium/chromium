@@ -14,22 +14,11 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.SystemClock;
 
-import dalvik.system.DexFile;
-
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.JNIUtils;
-import org.chromium.base.Log;
-import org.chromium.base.PackageUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.DeferredStartupHandler;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 
 import java.lang.reflect.Field;
 
@@ -68,13 +57,15 @@ public class SplitChromeApplication extends SplitCompatApplication {
     protected void attachBaseContext(Context context) {
         super.attachBaseContext(context);
         if (isBrowserProcess()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                DexFixer.setHasIsolatedSplits(true);
+            }
             setImplSupplier(() -> {
                 Context chromeContext = SplitCompatUtils.createChromeContext(this);
                 return (Impl) SplitCompatUtils.newInstance(
                         chromeContext, mChromeApplicationClassName);
             });
             applyActivityClassLoaderWorkaround();
-            applyDexCompileWorkaround();
         } else {
             setImplSupplier(() -> createNonBrowserApplication());
         }
@@ -156,71 +147,6 @@ public class SplitChromeApplication extends SplitCompatApplication {
                                 activity.getBaseContext(), activity.getClass().getClassLoader());
                     }
                 });
-    }
-
-    /**
-     * Android OMR1 has a bug where bg-dexopt-job will break optimized dex files for splits. This
-     * leads to *very* slow startup on those devices. To mitigate this, we attempt to force a dex
-     * compile if necessary.
-     */
-    private void applyDexCompileWorkaround() {
-        // This bug only happens in OMR1. Skip the workaround on local builds to avoid affecting
-        // perf bots.
-        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.O_MR1
-                || ChromeVersionInfo.isLocalBuild()) {
-            return;
-        }
-        // Wait until startup completes so this doesn't slow down early startup or mess with
-        // compiled dex files before they get loaded initially.
-        DeferredStartupHandler.getInstance().addDeferredTask(() -> {
-            // BEST_EFFORT will only affect when the task runs, the dexopt will run with
-            // normal priority (but in a separate process, due to using Runtime.exec()).
-            PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-                try {
-                    // If the app has just been updated, it will be compiled with
-                    // quicken. The next time bg-dexopt-job runs it will break the
-                    // optimized dex for splits. If we force compile now, then
-                    // bg-dexopt-job won't mess up the splits, and we save the user a
-                    // slow startup.
-                    if (needsDexCompileAfterUpdate()) {
-                        performDexCompile();
-                        return;
-                    }
-
-                    // Make sure all splits are compiled correclty, and if not force a
-                    // compile.
-                    String[] splitNames = ApiHelperForO.getSplitNames(getApplicationInfo());
-                    for (int i = 0; i < splitNames.length; i++) {
-                        // Ignore config splits like "config.en".
-                        if (splitNames[i].contains(".")) {
-                            continue;
-                        }
-                        if (DexFile.isDexOptNeeded(getApplicationInfo().splitSourceDirs[i])) {
-                            performDexCompile();
-                            return;
-                        }
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Error compiling dex.", e);
-                }
-            });
-        });
-    }
-
-    /** Returns whether the dex has been compiled since the last app update. */
-    private boolean needsDexCompileAfterUpdate() {
-        return SharedPreferencesManager.getInstance().readInt(
-                       ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION)
-                != PackageUtils.getPackageVersion(this, getPackageName());
-    }
-
-    /** Compiles dex for the app, and sets the pref key tracking the latest compiled version. */
-    private void performDexCompile() throws Exception {
-        Runtime.getRuntime().exec(
-                new String[] {"cmd", "package", "compile", "-r", "shared", getPackageName()});
-        SharedPreferencesManager.getInstance().writeInt(
-                ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION,
-                PackageUtils.getPackageVersion(this, getPackageName()));
     }
 
     private static void replaceClassLoader(Context baseContext, ClassLoader classLoader) {
