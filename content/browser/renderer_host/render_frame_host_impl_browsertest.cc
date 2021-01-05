@@ -92,8 +92,6 @@
 namespace content {
 namespace {
 
-using ::testing::NotNull;
-
 // Implementation of ContentBrowserClient that overrides
 // OverridePageVisibilityState() and allows consumers to set a value.
 class PrerenderTestContentBrowserClient : public TestContentBrowserClient {

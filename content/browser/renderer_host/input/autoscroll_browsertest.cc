@@ -14,8 +14,6 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "ui/events/base_event_utils.h"
 
-using blink::WebInputEvent;
-
 namespace {
 
 const std::string kAutoscrollDataURL = R"HTML(

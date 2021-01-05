@@ -22,8 +22,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 
-using blink::WebInputEvent;
-
 namespace {
 
 const std::string kBrowserFlingDataURL = R"HTML(

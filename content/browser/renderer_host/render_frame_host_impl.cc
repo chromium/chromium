@@ -266,8 +266,6 @@
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
 #endif
 
-using base::TimeDelta;
-
 namespace content {
 
 #if defined(AX_FAIL_FAST_BUILD)

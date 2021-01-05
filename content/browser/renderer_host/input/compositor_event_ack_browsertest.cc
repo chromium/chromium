@@ -33,8 +33,6 @@
 #include "ui/events/event_switches.h"
 #include "ui/latency/latency_info.h"
 
-using blink::WebInputEvent;
-
 namespace {
 
 // This value has to be larger than the height of the device this test is
@@ -303,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest,
   // test will timeout if the touch start event is cancelable since there is a
   // busy loop in the blocking touch start event listener.
   InputEventAckWaiter touch_start_ack_observer(
-      GetWidgetHost(), WebInputEvent::Type::kTouchStart);
+      GetWidgetHost(), blink::WebInputEvent::Type::kTouchStart);
   touch_event.PressPoint(50, 50);
   touch_event.SetTimeStamp(ui::EventTimeForNow());
   input_event_router->RouteTouchEvent(root_view, &touch_event,

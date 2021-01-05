@@ -142,8 +142,6 @@
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #endif
 
-using base::TimeDelta;
-using base::TimeTicks;
 using blink::DragOperationsMask;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -3098,7 +3096,7 @@ void RenderWidgetHostImpl::GotResponseToForceRedraw(int snapshot_id) {
       FROM_HERE,
       base::BindOnce(&RenderWidgetHostImpl::WindowSnapshotReachedScreen,
                      weak_factory_.GetWeakPtr(), snapshot_id),
-      TimeDelta::FromSecondsD(1. / 6));
+      base::TimeDelta::FromSecondsD(1. / 6));
 #else
   WindowSnapshotReachedScreen(snapshot_id);
 #endif
@@ -3322,7 +3320,7 @@ void RenderWidgetHostImpl::SetInputTargetClientForTesting(
   input_target_client_ = std::move(input_target_client);
 }
 
-void RenderWidgetHostImpl::ProgressFlingIfNeeded(TimeTicks current_time) {
+void RenderWidgetHostImpl::ProgressFlingIfNeeded(base::TimeTicks current_time) {
   fling_scheduler_->ProgressFlingOnBeginFrameIfneeded(current_time);
 }
 

@@ -118,9 +118,6 @@
 #include "ui/base/ui_base_features.h"
 #endif
 
-using base::TimeDelta;
-
-using blink::WebConsoleMessage;
 using blink::WebInputEvent;
 
 namespace content {
