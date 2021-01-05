@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_OOM_H_
 
 #include "base/allocator/partition_allocator/oom_callback.h"
+#include "base/compiler_specific.h"
 #include "base/process/memory.h"
 #include "build/build_config.h"
 
@@ -15,8 +16,9 @@
 
 namespace {
 // The crash is generated in a NOINLINE function so that we can classify the
-// crash as an OOM solely by analyzing the stack trace.
-[[noreturn]] NOINLINE void OnNoMemory(size_t size) {
+// crash as an OOM solely by analyzing the stack trace. It is tagged as
+// NOT_TAIL_CALLED to ensure that its parent function stays on the stack.
+[[noreturn]] NOINLINE void NOT_TAIL_CALLED OnNoMemory(size_t size) {
   base::internal::RunPartitionAllocOomCallback();
   base::internal::OnNoMemoryInternal(size);
   IMMEDIATE_CRASH();
