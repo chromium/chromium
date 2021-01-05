@@ -201,6 +201,13 @@ class BookmarkButtonBase : public views::LabelButton {
     return CreateBookmarkButtonBorder();
   }
 
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    views::LabelButton::GetAccessibleNodeData(node_data);
+    node_data->AddStringAttribute(
+        ax::mojom::StringAttribute::kRoleDescription,
+        l10n_util::GetStringUTF8(IDS_ACCNAME_BOOKMARK_BUTTON_ROLE_DESCRIPTION));
+  }
+
  private:
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
 
@@ -354,6 +361,14 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
       AnimateInkDrop(views::InkDropState::ACTION_PENDING, &event);
     }
     return BookmarkMenuButtonBase::OnMousePressed(event);
+  }
+
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    BookmarkMenuButtonBase::GetAccessibleNodeData(node_data);
+    node_data->AddStringAttribute(
+        ax::mojom::StringAttribute::kRoleDescription,
+        l10n_util::GetStringUTF8(
+            IDS_ACCNAME_BOOKMARK_FOLDER_BUTTON_ROLE_DESCRIPTION));
   }
 
  private:

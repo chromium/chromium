@@ -702,6 +702,10 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSString*)AXRoleDescription {
+  if (_node->HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription)) {
+    return [base::SysUTF8ToNSString(_node->GetStringAttribute(
+        ax::mojom::StringAttribute::kRoleDescription)) lowercaseString];
+  }
   switch (_node->GetData().role) {
     case ax::mojom::Role::kTab:
       // There is no NSAccessibilityTabRole or similar (AXRadioButton is used
@@ -1009,6 +1013,10 @@ bool IsAXSetter(SEL selector) {
 
 - (NSAccessibilitySubrole)accessibilitySubrole {
   return [self AXSubrole];
+}
+
+- (NSString*)accessibilityRoleDescription {
+  return [self AXRoleDescription];
 }
 
 - (BOOL)isAccessibilitySelectorAllowed:(SEL)selector {
