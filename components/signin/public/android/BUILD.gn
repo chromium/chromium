@@ -22,6 +22,7 @@ android_library("java") {
     "java/src/org/chromium/components/signin/base/GoogleServiceAuthError.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityManager.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityMutator.java",
+    "java/src/org/chromium/components/signin/identitymanager/PrimaryAccountChangeEvent.java",
     "java/src/org/chromium/components/signin/identitymanager/ProfileOAuth2TokenServiceDelegate.java",
   ]
 
@@ -37,6 +38,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/signin/base/GoogleServiceAuthError.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityManager.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityMutator.java",
+    "java/src/org/chromium/components/signin/identitymanager/PrimaryAccountChangeEvent.java",
     "java/src/org/chromium/components/signin/identitymanager/ProfileOAuth2TokenServiceDelegate.java",
   ]
 }

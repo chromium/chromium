@@ -5,8 +5,13 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_PRIMARY_ACCOUNT_CHANGE_EVENT_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_PRIMARY_ACCOUNT_CHANGE_EVENT_H_
 
+#include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/consent_level.h"
+
+#if defined(OS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
 
 namespace signin {
 
@@ -17,9 +22,9 @@ class PrimaryAccountChangeEvent {
     // No change.
     kNone = 0,
     // Primary account set or changed.
-    kSet,
+    kSet = 1,
     // Primary account cleared.
-    kCleared
+    kCleared = 2
   };
 
   struct State {
@@ -59,6 +64,14 @@ std::ostream& operator<<(std::ostream& os,
                          const PrimaryAccountChangeEvent::State& state);
 std::ostream& operator<<(std::ostream& os,
                          const PrimaryAccountChangeEvent& event);
+
+#if defined(OS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject>
+ConvertToJavaPrimaryAccountChangeEvent(
+    JNIEnv* env,
+    const PrimaryAccountChangeEvent& event_details);
+#endif
+
 }  // namespace signin
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_PRIMARY_ACCOUNT_CHANGE_EVENT_H_

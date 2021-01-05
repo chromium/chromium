@@ -29,6 +29,13 @@ public class IdentityManager {
      */
     public interface Observer {
         /**
+         * Called for all types of changes to the primary account such as - primary account
+         * set/cleared or sync consent granted/revoked in C++.
+         * @param eventDetails Details about the primary account change event.
+         */
+        default void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {}
+
+        /**
          * Called when an account becomes the user's primary account.
          * This method is not called during a reauth.
          */
@@ -100,6 +107,17 @@ public class IdentityManager {
      */
     public void removeObserver(Observer observer) {
         mObservers.removeObserver(observer);
+    }
+
+    /**
+     * Called for all types of changes to the primary account such as - primary account set/cleared
+     * or sync consent granted/revoked in C++.
+     */
+    @CalledByNative
+    private void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+        for (Observer observer : mObservers) {
+            observer.onPrimaryAccountChanged(eventDetails);
+        }
     }
 
     /**

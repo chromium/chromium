@@ -4,6 +4,10 @@
 
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 
+#if defined(OS_ANDROID)
+#include "components/signin/public/android/jni_headers/PrimaryAccountChangeEvent_jni.h"
+#endif
+
 namespace signin {
 
 PrimaryAccountChangeEvent::State::State() = default;
@@ -93,5 +97,17 @@ std::ostream& operator<<(std::ostream& os,
      << "current_state: " << event.GetCurrentState() << " }";
   return os;
 }
+
+#if defined(OS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject>
+ConvertToJavaPrimaryAccountChangeEvent(
+    JNIEnv* env,
+    const PrimaryAccountChangeEvent& event_details) {
+  return Java_PrimaryAccountChangeEvent_Constructor(
+      env, jint(event_details.GetEventTypeFor(ConsentLevel::kNotRequired)),
+      jint(event_details.GetEventTypeFor(ConsentLevel::kSync)));
+}
+
+#endif  // defined(OS_ANDROID)
 
 }  // namespace signin

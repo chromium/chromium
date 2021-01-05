@@ -506,6 +506,9 @@ void IdentityManager::OnPrimaryAccountChanged(
   if (!java_identity_manager_)
     return;
   JNIEnv* env = base::android::AttachCurrentThread();
+  Java_IdentityManager_onPrimaryAccountChanged(
+      env, java_identity_manager_,
+      ConvertToJavaPrimaryAccountChangeEvent(env, event_details));
   switch (event_details.GetEventTypeFor(ConsentLevel::kSync)) {
     case PrimaryAccountChangeEvent::Type::kSet:
       Java_IdentityManager_onPrimaryAccountSet(
