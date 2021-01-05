@@ -250,13 +250,17 @@ void PrimaryAccountManager::SetSyncPrimaryAccountInfo(
   FirePrimaryAccountChanged(previous_state);
 }
 
-void PrimaryAccountManager::UpdateSyncPrimaryAccountInfo() {
-  DCHECK(!primary_account_info().account_id.empty());
-  DCHECK(HasPrimaryAccount(signin::ConsentLevel::kSync));
-  const CoreAccountInfo info = account_tracker_service_->GetAccountInfo(
-      primary_account_info().account_id);
-  DCHECK_EQ(info.account_id, primary_account_info().account_id);
-  SetPrimaryAccountInternal(info, /*consented_to_sync=*/true);
+void PrimaryAccountManager::UpdatePrimaryAccountInfo() {
+  const CoreAccountId primary_account_id = primary_account_info().account_id;
+  DCHECK(!primary_account_id.empty());
+
+  const CoreAccountInfo updated_account_info =
+      account_tracker_service_->GetAccountInfo(primary_account_id);
+
+  CHECK_EQ(primary_account_id, updated_account_info.account_id);
+  // Calling SetPrimaryAccountInternal() is avoided in this case as the
+  // primary account id did not change.
+  primary_account_info_ = updated_account_info;
 }
 
 void PrimaryAccountManager::AddObserver(Observer* observer) {

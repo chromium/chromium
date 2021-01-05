@@ -108,7 +108,7 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   void SetUnconsentedPrimaryAccountInfo(const CoreAccountInfo& account_info);
 
   // Updates the primary account information from AccountTrackerService.
-  void UpdateSyncPrimaryAccountInfo();
+  void UpdatePrimaryAccountInfo();
 
   // Signout API surfaces (not supported on ChromeOS, where signout is not
   // permitted).
