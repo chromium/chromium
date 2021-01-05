@@ -102,7 +102,9 @@ const CGFloat kFontSize = 14.0;
 - (UIView*)resizeableBackgroundImageForStateSelected:(BOOL)selected {
   // Style the background image first.
   NSString* state = (selected ? @"foreground" : @"background");
-  NSString* imageName = [NSString stringWithFormat:@"tabstrip_%@_tab", state];
+  NSString* incognito = self.useIncognitoFallback ? @"incognito_" : @"";
+  NSString* imageName =
+      [NSString stringWithFormat:@"tabstrip_%@%@_tab", incognito, state];
 
   // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
   // Radar filled: b/137942721.
