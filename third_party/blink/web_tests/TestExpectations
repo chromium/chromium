@@ -5918,8 +5918,6 @@ crbug.com/626703 [ Linux ] wpt_internal/storage/estimate-usage-details-filesyste
 crbug.com/626703 [ Mac ] external/wpt/mediacapture-image/MediaStreamTrack-getConstraints.https.html [ Pass Failure ]
 
 # Wpt importer sheriff 2020-12-23
-crbug.com/626703 external/wpt/cookies/samesite/multiple-samesite-attributes.https.html?legacy-samesite [ Failure ]
-crbug.com/626703 virtual/legacy-samesite/external/wpt/cookies/samesite/multiple-samesite-attributes.https.html [ Failure ]
 crbug.com/1161590 external/wpt/html/semantics/forms/textfieldselection/select-event.html [ Failure Timeout ]
 
 # Wpt importer sheriff 2021-01-05
