@@ -5,7 +5,6 @@
 #include "content/browser/cache_storage/cache_storage_dispatcher_host.h"
 
 #include "base/bind.h"
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -571,6 +570,33 @@ class CacheStorageDispatcherHost::CacheImpl
               std::move(bad_message_callback).Run("CSDH_UNEXPECTED_OPERATION");
             },
             host_->cache_receivers_.GetBadMessageCallback()));
+  }
+
+  void WriteSideData(const GURL& url,
+                     base::Time expected_response_time,
+                     mojo_base::BigBuffer data,
+                     int64_t trace_id,
+                     WriteSideDataCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    TRACE_EVENT_WITH_FLOW1("CacheStorage",
+                           "CacheStorageDispatchHost::CacheImpl::WriteSideData",
+                           TRACE_ID_GLOBAL(trace_id),
+                           TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                           "url", url.spec());
+
+    content::CacheStorageCache* cache = cache_handle_.value();
+    if (!cache) {
+      std::move(callback).Run(CacheStorageError::kErrorNotFound);
+      return;
+    }
+
+    scoped_refptr<net::IOBuffer> buf =
+        base::MakeRefCounted<net::IOBuffer>(data.size());
+    if (data.size())
+      memcpy(buf->data(), data.data(), data.size());
+
+    cache->WriteSideData(std::move(callback), url, expected_response_time,
+                         trace_id, std::move(buf), data.size());
   }
 
   // Owns this.

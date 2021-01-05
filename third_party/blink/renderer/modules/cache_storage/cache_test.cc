@@ -189,6 +189,13 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
     CheckBatchOperationsIfProvided(batch_operations);
     std::move(callback).Run(CacheStorageVerboseError::New(error_, String()));
   }
+  void WriteSideData(const blink::KURL& url,
+                     base::Time expected_response_time,
+                     mojo_base::BigBuffer data,
+                     int64_t trace_id,
+                     WriteSideDataCallback callback) override {
+    NOTREACHED();
+  }
 
  protected:
   void CheckUrlIfProvided(const KURL& url) {

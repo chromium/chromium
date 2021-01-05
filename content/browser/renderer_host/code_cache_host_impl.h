@@ -21,10 +21,6 @@
 
 class GURL;
 
-namespace net {
-class IOBuffer;
-}
-
 namespace url {
 class Origin;
 }
@@ -75,13 +71,6 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
   void OnReceiveCachedCode(FetchCachedCodeCallback callback,
                            const base::Time& response_time,
                            mojo_base::BigBuffer data);
-  void OnCacheStorageOpenCallback(const GURL& url,
-                                  base::Time expected_response_time,
-                                  int64_t trace_id,
-                                  scoped_refptr<net::IOBuffer> buf,
-                                  int buf_len,
-                                  CacheStorageCacheHandle cache_handle,
-                                  blink::mojom::CacheStorageError error);
 
   // Our render process host ID, used to bind to the correct render process.
   const int render_process_id_;
