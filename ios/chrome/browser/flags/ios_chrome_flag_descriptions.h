@@ -96,6 +96,11 @@ extern const char kSyntheticCrashReportsForUteDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
+// Title and description for the flag to control if change password url should
+// be obtained by affiliation service.
+extern const char kChangePasswordAffiliationInfoName[];
+extern const char kChangePasswordAffiliationInfoDescription[];
+
 // Title and description for the flag that controls whether Collections are
 // presented using the new iOS13 Card style or the custom legacy one.
 extern const char kCollectionsCardPresentationStyleName[];
@@ -373,6 +378,10 @@ extern const char kURLBlocklistIOSDescription[];
 // Title and description for the flag to enable the new error page workflow.
 extern const char kUseJSForErrorPageName[];
 extern const char kUseJSForErrorPageDescription[];
+
+// Title and description for the flag to enable use of hash affiliation service.
+extern const char kUseOfHashAffiliationFetcherName[];
+extern const char kUseOfHashAffiliationFetcherDescription[];
 
 // Title and description for the flag to control if Google Payments API calls
 // should use the sandbox servers.

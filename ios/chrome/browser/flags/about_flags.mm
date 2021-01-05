@@ -587,6 +587,18 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSPersistCrashRestoreName,
      flag_descriptions::kIOSPersistCrashRestoreDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSPersistCrashRestore)},
+    {"change-password-affiliation",
+     flag_descriptions::kChangePasswordAffiliationInfoName,
+     flag_descriptions::kChangePasswordAffiliationInfoDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kChangePasswordAffiliationInfo)},
+    {"use-of-hash-affiliation-fetcher",
+     flag_descriptions::kUseOfHashAffiliationFetcherName,
+     flag_descriptions::kUseOfHashAffiliationFetcherDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kUseOfHashAffiliationFetcher)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
