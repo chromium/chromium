@@ -26,10 +26,11 @@ class UninstallPingSender : public ExtensionRegistryObserver {
   // A callback function that will be called each time an extension is
   // uninstalled, with the result used to determine if a ping should be
   // sent or not.
-  using Filter = base::Callback<FilterResult(const Extension* extension,
-                                             UninstallReason reason)>;
+  using Filter =
+      base::RepeatingCallback<FilterResult(const Extension* extension,
+                                           UninstallReason reason)>;
 
-  UninstallPingSender(ExtensionRegistry* registry, const Filter& filter);
+  UninstallPingSender(ExtensionRegistry* registry, Filter filter);
   ~UninstallPingSender() override;
 
  protected:

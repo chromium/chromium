@@ -10,8 +10,8 @@
 namespace extensions {
 
 UninstallPingSender::UninstallPingSender(ExtensionRegistry* registry,
-                                         const Filter& filter)
-    : filter_(filter) {
+                                         Filter filter)
+    : filter_(std::move(filter)) {
   observer_.Add(registry);
 }
 
