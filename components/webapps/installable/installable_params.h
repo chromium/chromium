@@ -29,6 +29,7 @@ struct InstallableParams {
   bool valid_primary_icon = false;
 
   // Whether to prefer an icon with purpose 'maskable' for the primary icon.
+  // An icon with purpose 'any' is still required for a valid manifest.
   bool prefer_maskable_icon = false;
 
   // Check whether there is a fetchable, non-empty icon in the manifest

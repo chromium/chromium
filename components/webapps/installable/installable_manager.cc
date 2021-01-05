@@ -138,42 +138,21 @@ bool IsIconTypeSupported(const blink::Manifest::ImageResource& icon) {
   return false;
 }
 
-// Returns true if |manifest| specifies an SVG or PNG icon that either
-// 1. has IconPurpose::ANY, with height and width >= kMinimumPrimaryIconSizeInPx
-// (or size "any")
-// 2. if maskable icon is preferred, has IconPurpose::MASKABLE with height and
-// width >= kMinimumPrimaryAdaptiveLauncherIconSizeInPx (or size "any")
-
-bool DoesManifestContainRequiredIcon(const blink::Manifest& manifest,
-                                     bool prefer_maskable_icon) {
+// Returns whether |manifest| specifies an SVG or PNG icon that has
+// IconPurpose::ANY, with size >= kMinimumPrimaryIconSizeInPx (or size "any").
+bool DoesManifestContainRequiredIcon(const blink::Manifest& manifest) {
   for (const auto& icon : manifest.icons) {
     if (!IsIconTypeSupported(icon))
       continue;
 
-    if (!(base::Contains(icon.purpose,
-                         blink::mojom::ManifestImageResource_Purpose::ANY) ||
-          (prefer_maskable_icon &&
-           base::Contains(
-               icon.purpose,
-               blink::mojom::ManifestImageResource_Purpose::MASKABLE)))) {
+    if (!base::Contains(icon.purpose, IconPurpose::ANY))
       continue;
-    }
 
     for (const auto& size : icon.sizes) {
       if (size.IsEmpty())  // "any"
         return true;
-      if (base::Contains(icon.purpose,
-                         blink::mojom::ManifestImageResource_Purpose::ANY) &&
-          size.width() >= kMinimumPrimaryIconSizeInPx &&
+      if (size.width() >= kMinimumPrimaryIconSizeInPx &&
           size.height() >= kMinimumPrimaryIconSizeInPx) {
-        return true;
-      }
-      if (prefer_maskable_icon &&
-          base::Contains(
-              icon.purpose,
-              blink::mojom::ManifestImageResource_Purpose::MASKABLE) &&
-          size.height() >= kMinimumPrimaryAdaptiveLauncherIconSizeInPx &&
-          size.width() >= kMinimumPrimaryAdaptiveLauncherIconSizeInPx) {
         return true;
       }
     }
@@ -581,8 +560,7 @@ void InstallableManager::WorkOnTask() {
                           GetMinimumPrimaryIconSizeInPx(), IconPurpose::ANY,
                           IconUsage::kPrimary);
   } else if (params.valid_manifest && !valid_manifest_->fetched) {
-    CheckManifestValid(params.check_webapp_manifest_display,
-                       params.prefer_maskable_icon);
+    CheckManifestValid(params.check_webapp_manifest_display);
   } else if (params.fetch_screenshots && !IsScreenshotsFetchComplete()) {
     CheckAndFetchScreenshots();
   } else if (params.has_worker && !worker_->fetched) {
@@ -640,21 +618,20 @@ void InstallableManager::OnDidGetManifest(const GURL& manifest_url,
   WorkOnTask();
 }
 
-void InstallableManager::CheckManifestValid(bool check_webapp_manifest_display,
-                                            bool prefer_maskable_icon) {
+void InstallableManager::CheckManifestValid(
+    bool check_webapp_manifest_display) {
   DCHECK(!valid_manifest_->fetched);
   DCHECK(!manifest().IsEmpty());
 
-  valid_manifest_->is_valid = IsManifestValidForWebApp(
-      manifest(), check_webapp_manifest_display, prefer_maskable_icon);
+  valid_manifest_->is_valid =
+      IsManifestValidForWebApp(manifest(), check_webapp_manifest_display);
   valid_manifest_->fetched = true;
   WorkOnTask();
 }
 
 bool InstallableManager::IsManifestValidForWebApp(
     const blink::Manifest& manifest,
-    bool check_webapp_manifest_display,
-    bool prefer_maskable_icon) {
+    bool check_webapp_manifest_display) {
   bool is_valid = true;
   if (manifest.IsEmpty()) {
     valid_manifest_->errors.push_back(MANIFEST_EMPTY);
@@ -694,7 +671,7 @@ bool InstallableManager::IsManifestValidForWebApp(
     }
   }
 
-  if (!DoesManifestContainRequiredIcon(manifest, prefer_maskable_icon)) {
+  if (!DoesManifestContainRequiredIcon(manifest)) {
     valid_manifest_->errors.push_back(MANIFEST_MISSING_SUITABLE_ICON);
     is_valid = false;
   }

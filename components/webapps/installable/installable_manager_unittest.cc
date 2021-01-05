@@ -43,12 +43,11 @@ class InstallableManagerUnitTest : public testing::Test {
   }
 
   bool IsManifestValid(const blink::Manifest& manifest,
-                       bool check_webapp_manifest_display = true,
-                       bool prefer_maskable_icon = false) {
+                       bool check_webapp_manifest_display = true) {
     // Explicitly reset the error code before running the method.
     manager_->set_valid_manifest_error(NO_ERROR_DETECTED);
-    return manager_->IsManifestValidForWebApp(
-        manifest, check_webapp_manifest_display, prefer_maskable_icon);
+    return manager_->IsManifestValidForWebApp(manifest,
+                                              check_webapp_manifest_display);
   }
 
   InstallableStatusCode GetErrorCode() {
@@ -218,32 +217,6 @@ TEST_F(InstallableManagerUnitTest, ManifestRequiresPurposeAny) {
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest,
-       ManifestRequiresPurposeAnyOrMaskableWhenPreferringMaskable) {
-  blink::Manifest manifest = GetValidManifest();
-
-  EXPECT_TRUE(IsManifestValid(manifest, true, true));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-
-  manifest.icons[0].purpose[0] = IconPurpose::MASKABLE;
-  EXPECT_TRUE(IsManifestValid(manifest, true, true));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-
-  // The icon MUST have IconPurpose::ANY or IconPurpose::Maskable.
-  manifest.icons[0].purpose[0] = IconPurpose::MONOCHROME;
-  EXPECT_FALSE(IsManifestValid(manifest, true, true));
-  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
-
-  // If one of the icon purposes match the requirement, it should be accepted.
-  manifest.icons[0].purpose.push_back(IconPurpose::ANY);
-  EXPECT_TRUE(IsManifestValid(manifest, true, true));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-
-  manifest.icons[0].purpose[1] = IconPurpose::MASKABLE;
-  EXPECT_TRUE(IsManifestValid(manifest, true, true));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-}
-
 TEST_F(InstallableManagerUnitTest, ManifestRequiresMinimalSize) {
   blink::Manifest manifest = GetValidManifest();
 
@@ -274,32 +247,6 @@ TEST_F(InstallableManagerUnitTest, ManifestRequiresMinimalSize) {
   // The representation of the keyword 'any' should be recognized.
   manifest.icons[0].sizes[1] = gfx::Size(0, 0);
   EXPECT_TRUE(IsManifestValid(manifest));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-
-  // When preferring maskable icons, both non-maskable and maskable
-  // icons are smaller than required.
-  manifest.icons[0].sizes.clear();
-  manifest.icons[0].sizes.push_back(gfx::Size(1, 1));
-
-  blink::Manifest::ImageResource maskable_icon;
-  maskable_icon.type = base::ASCIIToUTF16("image/png");
-  maskable_icon.sizes.push_back(gfx::Size(82, 82));
-  maskable_icon.purpose.push_back(IconPurpose::MASKABLE);
-  manifest.icons.push_back(maskable_icon);
-  EXPECT_FALSE(IsManifestValid(manifest, true, true));
-  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
-
-  // When preferring maskable icons, the maskable icon is smaller than required.
-  manifest.icons[0].sizes[0] = gfx::Size(144, 144);
-  manifest.icons[1].sizes[0] = gfx::Size(82, 82);
-  EXPECT_TRUE(IsManifestValid(manifest, true, true));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-
-  // When preferring maskable icons, the maskable icon satisfies the size
-  // requirement though the non maskable one doesn't
-  manifest.icons[0].sizes[0] = gfx::Size(1, 1);
-  manifest.icons[1].sizes[0] = gfx::Size(83, 83);
-  EXPECT_TRUE(IsManifestValid(manifest, true, true));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }
 
