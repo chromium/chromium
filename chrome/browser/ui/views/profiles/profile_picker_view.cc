@@ -52,6 +52,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/base/url_util.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -122,6 +123,14 @@ GURL CreateURLForEntryPoint(ProfilePicker::EntryPoint entry_point) {
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile:
       return base_url.Resolve("new-profile");
   }
+}
+
+GURL GetSigninURL() {
+  GURL signin_url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
+  if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+    signin_url = net::AppendQueryParameter(signin_url, "color_scheme", "dark");
+  }
+  return signin_url;
 }
 
 }  // namespace
@@ -400,8 +409,8 @@ void ProfilePickerView::OnProfileForSigninCreated(
   new_profile_contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(signed_in_profile_being_created_));
   new_profile_contents_->SetDelegate(this);
-  ShowScreen(new_profile_contents_.get(),
-             GaiaUrls::GetInstance()->signin_chrome_sync_dice(),
+
+  ShowScreen(new_profile_contents_.get(), GetSigninURL(),
              /*show_toolbar=*/true);
 }
 
