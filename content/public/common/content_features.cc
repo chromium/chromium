@@ -558,9 +558,6 @@ const base::Feature kRenderDocument{"RenderDocument",
 const base::Feature kSkipEarlyCommitPendingForCrashedFrame{
     "SkipEarlyCommitPendingForCrashedFrame", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kRequestUnbufferedDispatch{
-    "RequestUnbufferedDispatch", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Respect the MacOS system setting for subpixel text anti-aliasing.
 // https://crbug.com/1079418.
 const base::Feature kRespectMacLCDTextSetting{"RespectMacLCDTextSetting",

@@ -1163,9 +1163,6 @@ extern const char kRecordWebAppDebugInfoDescription[];
 extern const char kRewriteLevelDBOnDeletionName[];
 extern const char kRewriteLevelDBOnDeletionDescription[];
 
-extern const char kRequestUnbufferedDispatchName[];
-extern const char kRequestUnbufferedDispatchDescription[];
-
 extern const char kRestrictGamepadAccessName[];
 extern const char kRestrictGamepadAccessDescription[];
 

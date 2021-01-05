@@ -1989,11 +1989,6 @@ const char kRewriteLevelDBOnDeletionName[] =
 const char kRewriteLevelDBOnDeletionDescription[] =
     "Rewrite LevelDB instances to remove traces of deleted data from disk.";
 
-const char kRequestUnbufferedDispatchName[] = "Use RequestUnbufferedDispatch";
-const char kRequestUnbufferedDispatchDescription[] =
-    "Calls RequestUnbufferedDispatch in the Android API to disable buffering "
-    "of input by the OS.";
-
 const char kRestrictGamepadAccessName[] = "Restrict gamepad access";
 const char kRestrictGamepadAccessDescription[] =
     "Enables Feature Policy and Secure Context restrictions on the Gamepad API";

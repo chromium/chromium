@@ -3195,10 +3195,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"share-by-default-in-cct", flag_descriptions::kShareByDefaultInCCTName,
      flag_descriptions::kShareByDefaultInCCTDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kShareByDefaultInCCT)},
-    {"request-unbuffered-dispatch",
-     flag_descriptions::kRequestUnbufferedDispatchName,
-     flag_descriptions::kRequestUnbufferedDispatchDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kRequestUnbufferedDispatch)},
 #endif  // OS_ANDROID
     {"in-product-help-demo-mode-choice",
      flag_descriptions::kInProductHelpDemoModeChoiceName,

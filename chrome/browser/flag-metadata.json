@@ -4208,11 +4208,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "request-unbuffered-dispatch",
-    "owners": [ "bokan" ],
-    "expiry_milestone": 80
-  },
-  {
     "name": "restore-gaia-cookies-if-deleted",
     "owners": [ "fernandex", "chrome-signin-team" ],
     "expiry_milestone": 96
