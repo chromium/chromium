@@ -372,6 +372,12 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
       const cryptohome::AccountIdentifier& cryptohome_id,
       const std::vector<std::string>& flags) = 0;
 
+  // Sets feature flags to pass next time Chrome gets restarted by the session
+  // manager.
+  virtual void SetFeatureFlagsForUser(
+      const cryptohome::AccountIdentifier& cryptohome_id,
+      const std::vector<std::string>& feature_flags) = 0;
+
   using StateKeysCallback =
       base::OnceCallback<void(const std::vector<std::string>& state_keys)>;
 

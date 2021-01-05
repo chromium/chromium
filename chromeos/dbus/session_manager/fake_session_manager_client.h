@@ -117,6 +117,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   bool SupportsBrowserRestart() const override;
   void SetFlagsForUser(const cryptohome::AccountIdentifier& cryptohome_id,
                        const std::vector<std::string>& flags) override;
+  void SetFeatureFlagsForUser(
+      const cryptohome::AccountIdentifier& cryptohome_id,
+      const std::vector<std::string>& feature_flags) override;
   void GetServerBackedStateKeys(StateKeysCallback callback) override;
 
   void StartArcMiniContainer(

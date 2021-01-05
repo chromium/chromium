@@ -517,6 +517,20 @@ class SessionManagerClientImpl : public SessionManagerClient {
                                        base::DoNothing());
   }
 
+  void SetFeatureFlagsForUser(
+      const cryptohome::AccountIdentifier& cryptohome_id,
+      const std::vector<std::string>& feature_flags) override {
+    dbus::MethodCall method_call(
+        login_manager::kSessionManagerInterface,
+        login_manager::kSessionManagerSetFeatureFlagsForUser);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(cryptohome_id.account_id());
+    writer.AppendArrayOfStrings(feature_flags);
+    session_manager_proxy_->CallMethod(&method_call,
+                                       dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                       base::DoNothing());
+  }
+
   void GetServerBackedStateKeys(StateKeysCallback callback) override {
     dbus::MethodCall method_call(
         login_manager::kSessionManagerInterface,

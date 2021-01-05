@@ -591,6 +591,10 @@ void FakeSessionManagerClient::SetFlagsForUser(
   flags_for_user_[cryptohome_id] = flags;
 }
 
+void FakeSessionManagerClient::SetFeatureFlagsForUser(
+    const cryptohome::AccountIdentifier& cryptohome_id,
+    const std::vector<std::string>& feature_flags) {}
+
 void FakeSessionManagerClient::GetServerBackedStateKeys(
     StateKeysCallback callback) {
   if (force_state_keys_missing_) {
