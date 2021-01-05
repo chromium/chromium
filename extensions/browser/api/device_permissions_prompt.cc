@@ -71,10 +71,10 @@ class UsbDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
       content::BrowserContext* context,
       bool multiple,
       std::vector<UsbDeviceFilterPtr> filters,
-      const DevicePermissionsPrompt::UsbDevicesCallback& callback)
+      DevicePermissionsPrompt::UsbDevicesCallback callback)
       : Prompt(extension, context, multiple),
         filters_(std::move(filters)),
-        callback_(callback),
+        callback_(std::move(callback)),
         manager_observer_(this) {}
 
  private:
@@ -111,8 +111,7 @@ class UsbDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
       }
     }
     DCHECK(multiple() || devices.size() <= 1);
-    callback_.Run(std::move(devices));
-    callback_.Reset();
+    std::move(callback_).Run(std::move(devices));
   }
 
   // extensions::UsbDeviceManager::Observer implementation
@@ -369,9 +368,9 @@ void DevicePermissionsPrompt::AskForUsbDevices(
     content::BrowserContext* context,
     bool multiple,
     std::vector<UsbDeviceFilterPtr> filters,
-    const UsbDevicesCallback& callback) {
+    UsbDevicesCallback callback) {
   prompt_ = base::MakeRefCounted<UsbDevicePermissionsPrompt>(
-      extension, context, multiple, std::move(filters), callback);
+      extension, context, multiple, std::move(filters), std::move(callback));
   ShowDialog();
 }
 

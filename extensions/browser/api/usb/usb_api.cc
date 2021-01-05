@@ -757,7 +757,8 @@ ExtensionFunction::ResponseAction UsbGetUserSelectedDevicesFunction::Run() {
 
   prompt_->AskForUsbDevices(
       extension(), browser_context(), multiple, std::move(filters),
-      base::Bind(&UsbGetUserSelectedDevicesFunction::OnDevicesChosen, this));
+      base::BindOnce(&UsbGetUserSelectedDevicesFunction::OnDevicesChosen,
+                     this));
   return RespondLater();
 }
 

@@ -37,7 +37,7 @@ class Extension;
 class DevicePermissionsPrompt {
  public:
   using UsbDevicesCallback =
-      base::Callback<void(std::vector<device::mojom::UsbDeviceInfoPtr>)>;
+      base::OnceCallback<void(std::vector<device::mojom::UsbDeviceInfoPtr>)>;
   using HidDevicesCallback =
       base::OnceCallback<void(std::vector<device::mojom::HidDeviceInfoPtr>)>;
 
@@ -130,7 +130,7 @@ class DevicePermissionsPrompt {
                         content::BrowserContext* context,
                         bool multiple,
                         std::vector<device::mojom::UsbDeviceFilterPtr> filters,
-                        const UsbDevicesCallback& callback);
+                        UsbDevicesCallback callback);
 
   void AskForHidDevices(const Extension* extension,
                         content::BrowserContext* context,
