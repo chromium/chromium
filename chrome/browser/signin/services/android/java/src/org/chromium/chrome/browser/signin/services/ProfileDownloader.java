@@ -151,36 +151,9 @@ class ProfileDownloader {
                 new ProfileDataSource.ProfileData(accountEmail, avatar, fullName, givenName));
     }
 
-    /**
-     * @param profile Profile
-     * @return The profile full name if cached, or null.
-     */
-    public static String getCachedFullName(Profile profile) {
-        return ProfileDownloaderJni.get().getCachedFullNameForPrimaryAccount(profile);
-    }
-
-    /**
-     * @param profile Profile
-     * @return The profile given name if cached, or null.
-     */
-    public static String getCachedGivenName(Profile profile) {
-        return ProfileDownloaderJni.get().getCachedGivenNameForPrimaryAccount(profile);
-    }
-
-    /**
-     * @param profile Profile
-     * @return The profile avatar if cached, or null.
-     */
-    public static Bitmap getCachedAvatar(Profile profile) {
-        return ProfileDownloaderJni.get().getCachedAvatarForPrimaryAccount(profile);
-    }
-
     @NativeMethods
     interface Natives {
         void startFetchingAccountInfoFor(
                 Profile profile, String accountEmail, int imageSidePixels, boolean isPreSignin);
-        String getCachedFullNameForPrimaryAccount(Profile profile);
-        String getCachedGivenNameForPrimaryAccount(Profile profile);
-        Bitmap getCachedAvatarForPrimaryAccount(Profile profile);
     }
 }

@@ -9,8 +9,6 @@
 #include "base/macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_downloader.h"
 #include "chrome/browser/profiles/profile_downloader_delegate.h"
@@ -19,10 +17,7 @@
 #include "chrome/browser/signin/services/android/jni_headers/ProfileDownloader_jni.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/android/java_bitmap.h"
-#include "ui/gfx/image/image_skia.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -122,66 +117,6 @@ class AccountInfoRetriever : public ProfileDownloaderDelegate {
 };
 
 }  // namespace
-
-// static
-ScopedJavaLocalRef<jstring>
-JNI_ProfileDownloader_GetCachedFullNameForPrimaryAccount(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
-
-  base::string16 name;
-  ProfileAttributesEntry* entry;
-  if (g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
-    name = entry->GetGAIAName();
-  }
-
-  return base::android::ConvertUTF16ToJavaString(env, name);
-}
-
-// static
-ScopedJavaLocalRef<jstring>
-JNI_ProfileDownloader_GetCachedGivenNameForPrimaryAccount(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
-
-  base::string16 name;
-  ProfileAttributesEntry* entry;
-  if (g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
-    name = entry->GetGAIAGivenName();
-  }
-
-  return base::android::ConvertUTF16ToJavaString(env, name);
-}
-
-// static
-ScopedJavaLocalRef<jobject>
-JNI_ProfileDownloader_GetCachedAvatarForPrimaryAccount(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
-
-  ScopedJavaLocalRef<jobject> jbitmap;
-  ProfileAttributesEntry* entry;
-  if (g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
-    gfx::Image avatar_image = entry->GetAvatarIcon();
-    if (!avatar_image.IsEmpty() &&
-        avatar_image.Width() > profiles::kAvatarIconSize &&
-        avatar_image.Height() > profiles::kAvatarIconSize &&
-        avatar_image.AsImageSkia().bitmap()) {
-      jbitmap = gfx::ConvertToJavaBitmap(*avatar_image.AsImageSkia().bitmap());
-    }
-  }
-
-  return jbitmap;
-}
 
 // static
 void JNI_ProfileDownloader_StartFetchingAccountInfoFor(
