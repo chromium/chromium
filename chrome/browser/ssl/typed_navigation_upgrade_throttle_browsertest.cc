@@ -39,12 +39,23 @@ const char* const kSiteWithGoodHttpsOverHttp =
 // interstitial) but loads fine over HTTP.
 const char* const kSiteWithBadHttps = "https://site-with-bad-https.com";
 const char* const kSiteWithBadHttpsOverHttp = "http://site-with-bad-https.com";
+// Site that loads slowly over HTTPS, but loads fine over HTTP.
+const char* const kSiteWithSlowHttps = "https://site-with-slow-https.com";
+const char* const kSiteWithSlowHttpsOverHttp =
+    "http://site-with-slow-https.com";
 
 // Site that returns a connection error over HTTPS but loads fine over HTTP.
 const char* const kSiteWithNetError = "https://site-with-net-error.com";
 const char* const kSiteWithNetErrorOverHttp = "http://site-with-net-error.com";
 
 const char kNetErrorHistogram[] = "Net.ErrorPageCounts";
+
+enum class NavigationExpectation {
+  // Test should expect a successful navigation to HTTPS.
+  kExpectHttps,
+  // Test should expect a fallback navigation to HTTP.
+  kExpectHttp
+};
 
 std::string GetURLWithoutScheme(const GURL& url) {
   return url.spec().substr(url.scheme().size() + strlen("://"));
@@ -60,11 +71,20 @@ class TypedNavigationUpgradeThrottleBrowserTest
   ~TypedNavigationUpgradeThrottleBrowserTest() override = default;
 
   void SetUp() override {
+    // Set the delay long enough so that the HTTPS navigation is guaranteed
+    // to succeed or fail during this window.
+    SetUpFeature(base::TimeDelta::FromHours(12));
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpFeature(base::TimeDelta fallback_delay) {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
         enabled_features;
     std::vector<base::Feature> disabled_features;
     if (IsFeatureEnabled()) {
       base::FieldTrialParams params;
+      params["timeout"] =
+          base::NumberToString(fallback_delay.InMilliseconds()) + "ms";
       enabled_features.emplace_back(omnibox::kDefaultTypedNavigationsToHttps,
                                     params);
     } else {
@@ -72,9 +92,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
     }
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
-    InProcessBrowserTest::SetUp();
   }
-
   void SetUpOnMainThread() override {
     url_loader_interceptor_ =
         std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
@@ -97,6 +115,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
     status.error_code = net::OK;
 
     if (params->url_request.url == GURL(kSiteWithBadHttps)) {
+      // Fail with an SSL error.
       status.error_code = net::ERR_CERT_COMMON_NAME_INVALID;
       status.ssl_info = net::SSLInfo();
       status.ssl_info->cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
@@ -114,12 +133,24 @@ class TypedNavigationUpgradeThrottleBrowserTest
       return true;
     }
 
-    std::string headers =
-        "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
-    std::string body = "<html><title>Success</title>Hello world</html>";
-    content::URLLoaderInterceptor::WriteResponse(headers, body,
-                                                 params->client.get());
-    return true;
+    if (params->url_request.url == GURL(kSiteWithSlowHttps)) {
+      // Do nothing. This will hang the load.
+      return true;
+    }
+
+    if (params->url_request.url == GURL(kSiteWithHttp) ||
+        params->url_request.url == GURL(kSiteWithGoodHttps) ||
+        params->url_request.url == GURL(kSiteWithBadHttpsOverHttp) ||
+        params->url_request.url == GURL(kSiteWithSlowHttpsOverHttp) ||
+        params->url_request.url == GURL(kSiteWithNetErrorOverHttp)) {
+      std::string headers =
+          "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
+      std::string body = "<html><title>Success</title>Hello world</html>";
+      content::URLLoaderInterceptor::WriteResponse(headers, body,
+                                                   params->client.get());
+      return true;
+    }
+    return false;
   }
 
  protected:
@@ -149,6 +180,45 @@ class TypedNavigationUpgradeThrottleBrowserTest
     omnibox()->OnBeforePossibleChange();
     omnibox()->SetUserText(base::UTF8ToUTF16(text), true);
     omnibox()->OnAfterPossibleChange(true);
+  }
+
+  void TypeUrlAndCheckNavigation(const std::string& hostname,
+                                 const base::HistogramTester& histograms,
+                                 NavigationExpectation expectation) {
+    const GURL http_url(std::string("http://") + hostname);
+    const GURL https_url(std::string("https://") + hostname);
+    SetOmniboxText(hostname);
+
+    // Wait for navigations.
+    // - If the expectation is to successfully load the HTTPS URL, there should
+    // be a single navigation.
+    // - Otherwise, there should be two navigations: One for the initial HTTPS
+    // navigation (which will be cancelled because of the timeout, or SSL or net
+    // errors) and one for the fallback HTTP navigation (which will succeed).
+    PressEnterAndWaitForNavigations(
+        expectation == NavigationExpectation::kExpectHttps ? 1 : 2);
+
+    content::WebContents* contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    const GURL expected_url = expectation == NavigationExpectation::kExpectHttps
+                                  ? https_url
+                                  : http_url;
+    EXPECT_EQ(expected_url, contents->GetLastCommittedURL());
+
+    // Should never hit an error page.
+    histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(),
+                                0);
+    histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+
+    // Should have either the HTTP or the HTTPS URL in history, but not both.
+    ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+    if (expectation == NavigationExpectation::kExpectHttp) {
+      EXPECT_TRUE(base::Contains(enumerator.urls(), http_url));
+      EXPECT_FALSE(base::Contains(enumerator.urls(), https_url));
+    } else {
+      EXPECT_TRUE(base::Contains(enumerator.urls(), https_url));
+      EXPECT_FALSE(base::Contains(enumerator.urls(), http_url));
+    }
   }
 
   void PressEnterAndWaitForNavigations(size_t num_navigations) {
@@ -285,19 +355,9 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   const GURL http_url(kSiteWithGoodHttpsOverHttp);
 
   // Type "site-with-good-https.com".
-  SetOmniboxText(GetURLWithoutScheme(http_url));
-  PressEnterAndWaitForNavigations(1);
-
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
-  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
-  // Should never hit an SSL interstitial.
-  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
-  // Should have the HTTPS URL in history.
-  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
-  EXPECT_TRUE(base::Contains(enumerator.urls(), https_url));
-  EXPECT_FALSE(base::Contains(enumerator.urls(), http_url));
+  const GURL url(kSiteWithGoodHttps);
+  TypeUrlAndCheckNavigation(url.host(), histograms,
+                            NavigationExpectation::kExpectHttps);
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               2);
@@ -307,20 +367,16 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   histograms.ExpectBucketCount(
       TypedNavigationUpgradeThrottle::kHistogramName,
       TypedNavigationUpgradeThrottle::Event::kHttpsLoadSucceeded, 1);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
 
   // Now that the HTTPS URL is in history, try again. We should load it directly
   // without going through the upgrade.
   // Type "site-with-good-https.com".
-  SetOmniboxText(GetURLWithoutScheme(http_url));
-  PressEnterAndWaitForNavigations(1);
-
-  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
-  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
-  // Should never hit an SSL interstitial.
-  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
-  // Should have the HTTPS URL in history.
-  EXPECT_TRUE(base::Contains(enumerator.urls(), https_url));
-  EXPECT_FALSE(base::Contains(enumerator.urls(), http_url));
+  SetOmniboxText(url.host());
+  TypeUrlAndCheckNavigation(url.host(), histograms,
+                            NavigationExpectation::kExpectHttps);
 
   // Since the throttle wasn't involved in the second navigation, histogram
   // values shouldn't change.
@@ -332,6 +388,9 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   histograms.ExpectBucketCount(
       TypedNavigationUpgradeThrottle::kHistogramName,
       TypedNavigationUpgradeThrottle::Event::kHttpsLoadSucceeded, 1);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
 }
 
 // If the upgraded HTTPS URL is not available because of an SSL error), we
@@ -341,29 +400,15 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   if (!IsFeatureEnabled()) {
     return;
   }
+
   base::HistogramTester histograms;
   const GURL https_url(kSiteWithBadHttps);
   const GURL http_url(kSiteWithBadHttpsOverHttp);
 
   // Type "site-with-bad-https.com".
-  SetOmniboxText(GetURLWithoutScheme(http_url));
-
-  // Wait for two navigations, one for the HTTPS navigation (which fails with a
-  // cert error) and one for the fallback HTTP navigation (which succeeds).
-  PressEnterAndWaitForNavigations(2);
-
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
-  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
-
-  // Should never hit an error page.
-  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
-  histograms.ExpectTotalCount(kNetErrorHistogram, 0);
-  // Should only have the HTTP URL in history.
-  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
-  EXPECT_TRUE(base::Contains(enumerator.urls(), http_url));
-  EXPECT_FALSE(base::Contains(enumerator.urls(), https_url));
+  const GURL url(kSiteWithBadHttps);
+  TypeUrlAndCheckNavigation(url.host(), histograms,
+                            NavigationExpectation::kExpectHttp);
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               2);
@@ -373,6 +418,9 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   histograms.ExpectBucketCount(
       TypedNavigationUpgradeThrottle::kHistogramName,
       TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithCertError, 1);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
 
   // TODO(meacer): Try again and check that the histogram counts doubled. Doing
   // that currently fails on lacros because this time the navigation never gets
@@ -387,25 +435,11 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
     return;
   }
   base::HistogramTester histograms;
+  // Type "site-with-net-error.com".
   const GURL https_url(kSiteWithNetError);
   const GURL http_url(kSiteWithNetErrorOverHttp);
-
-  // Type "site-with-net-error.com".
-  SetOmniboxText(GetURLWithoutScheme(http_url));
-
-  // Wait for two navigations, one for the HTTPS navigation (which fails with
-  // a connection error) and one for the fallback HTTP navigation (which
-  // succeeds).
-  PressEnterAndWaitForNavigations(2);
-
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
-  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
-
-  // Should never hit an error page.
-  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
-  histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+  TypeUrlAndCheckNavigation(http_url.host(), histograms,
+                            NavigationExpectation::kExpectHttp);
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               2);
@@ -415,6 +449,9 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   histograms.ExpectBucketCount(
       TypedNavigationUpgradeThrottle::kHistogramName,
       TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithNetError, 1);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 0);
 
   ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
   EXPECT_TRUE(base::Contains(enumerator.urls(), http_url));
@@ -423,6 +460,45 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   // TODO(meacer): Try again and check that the histogram counts doubled. Doing
   // that currently fails on lacros because this time the navigation never gets
   // upgraded (probably because of an issue in the autocomplete logic).
+}
+
+class TypedNavigationUpgradeThrottleFastTimeoutBrowserTest
+    : public TypedNavigationUpgradeThrottleBrowserTest {
+ protected:
+  void SetUp() override {
+    // Set timeout to zero so that HTTPS upgrades immediately timeout.
+    SetUpFeature(base::TimeDelta::FromSeconds(0));
+    InProcessBrowserTest::SetUp();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TypedNavigationUpgradeThrottleFastTimeoutBrowserTest,
+                         testing::Bool() /* IsFeatureEnabled */);
+
+// If the upgraded HTTPS URL does not load within the timeout window, we should
+// load the HTTP URL.
+IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleFastTimeoutBrowserTest,
+                       UrlTypedWithoutScheme_SlowHttps_ShouldFallback) {
+  if (!IsFeatureEnabled()) {
+    return;
+  }
+
+  base::HistogramTester histograms;
+
+  // Type "site-with-slow-https.com".
+  const GURL url(kSiteWithSlowHttps);
+  TypeUrlAndCheckNavigation(url.host(), histograms,
+                            NavigationExpectation::kExpectHttp);
+
+  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
+                              2);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadTimedOut, 1);
 }
 
 // TODO(crbug.com/1141691): Test the following cases:

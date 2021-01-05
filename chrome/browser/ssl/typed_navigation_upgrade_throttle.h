@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "base/timer/timer.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "url/gurl.h"
 
 namespace content {
 class NavigationHandle;
@@ -30,7 +32,10 @@ class TypedNavigationUpgradeThrottle : public content::NavigationThrottle {
     // Failed to load the upgraded HTTPS URL because of a net error, fell back
     // to the HTTP URL.
     kHttpsLoadFailedWithNetError,
-    kMaxValue = kHttpsLoadFailedWithNetError,
+    // Failed to load the upgraded HTTPS URL within the timeout window, fell
+    // back to the HTTP URL.
+    kHttpsLoadTimedOut,
+    kMaxValue = kHttpsLoadTimedOut,
   };
 
   static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
@@ -61,9 +66,15 @@ class TypedNavigationUpgradeThrottle : public content::NavigationThrottle {
   TypedNavigationUpgradeThrottle& operator=(
       const TypedNavigationUpgradeThrottle&) = delete;
 
-  // Stops the current navigation and initiates a new navigation to the HTTP
-  // version of the original navigation's URL.
-  void FallbackToHttp();
+  void OnHttpsLoadTimeout();
+
+  // Initiates a new navigation to the HTTP version of the original navigation's
+  // URL. If |stop_navigation| is true, also stops any pending navigation in the
+  // current WebContents.
+  void FallbackToHttp(bool stop_navigation);
+
+  const GURL http_url_;
+  base::OneShotTimer timer_;
 };
 
 #endif  // CHROME_BROWSER_SSL_TYPED_NAVIGATION_UPGRADE_THROTTLE_H_
