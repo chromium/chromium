@@ -37,7 +37,7 @@ namespace {
 // It appends items in |printers| to |*printers_out|. If |done| is set, it runs
 // |callback|.
 void AppendPrintersAndRunCallbackIfDone(base::ListValue* printers_out,
-                                        const base::Closure& callback,
+                                        base::RepeatingClosure callback,
                                         const base::ListValue& printers,
                                         bool done) {
   for (size_t i = 0; i < printers.GetSize(); ++i) {
@@ -48,42 +48,42 @@ void AppendPrintersAndRunCallbackIfDone(base::ListValue* printers_out,
       printers_out->Append(printer->CreateDeepCopy());
   }
   if (done && !callback.is_null())
-    callback.Run();
+    std::move(callback).Run();
 }
 
 // Callback for PrinterProviderAPI::DispatchPrintRequested calls.
 // It fills the out params based on |status| and runs |callback|.
 void RecordPrintResultAndRunCallback(bool* result_success,
                                      std::string* result_status,
-                                     const base::Closure& callback,
+                                     base::OnceClosure callback,
                                      const base::Value& status) {
   bool success = status.is_none();
   std::string status_str = success ? "OK" : status.GetString();
   *result_success = success;
   *result_status = status_str;
-  if (callback)
-    callback.Run();
+  if (!callback.is_null())
+    std::move(callback).Run();
 }
 
 // Callback for PrinterProviderAPI::DispatchGetCapabilityRequested calls.
 // It saves reported |value| as JSON string to |*result| and runs |callback|.
 void RecordDictAndRunCallback(std::string* result,
-                              const base::Closure& callback,
+                              base::OnceClosure callback,
                               const base::DictionaryValue& value) {
   JSONStringValueSerializer serializer(result);
   EXPECT_TRUE(serializer.Serialize(value));
   if (!callback.is_null())
-    callback.Run();
+    std::move(callback).Run();
 }
 
 // Callback for PrinterProvider::DispatchGrantUsbPrinterAccess calls.
 // It expects |value| to equal |expected_value| and runs |callback|.
 void ExpectValueAndRunCallback(const base::Value* expected_value,
-                               const base::Closure& callback,
+                               base::OnceClosure callback,
                                const base::DictionaryValue& value) {
   EXPECT_TRUE(value.Equals(expected_value));
   if (!callback.is_null())
-    callback.Run();
+    std::move(callback).Run();
 }
 
 // Tests for chrome.printerProvider API.

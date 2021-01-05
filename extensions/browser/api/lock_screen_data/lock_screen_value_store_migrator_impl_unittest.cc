@@ -47,32 +47,32 @@ void ExpectNotRun(const std::string& message) {
   ADD_FAILURE() << "Unexpectedly run: " << message;
 }
 
-void WriteCallback(const base::Closure& callback,
+void WriteCallback(base::OnceClosure callback,
                    OperationResult* result_out,
                    OperationResult result) {
   *result_out = result;
-  callback.Run();
+  std::move(callback).Run();
 }
 
-void ReadCallback(const base::Closure& callback,
+void ReadCallback(base::OnceClosure callback,
                   OperationResult* result_out,
                   std::unique_ptr<std::vector<char>>* content_out,
                   OperationResult result,
                   std::unique_ptr<std::vector<char>> content) {
   *result_out = result;
   *content_out = std::move(content);
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void GetRegisteredItemsCallback(
-    const base::Closure& callback,
+    base::OnceClosure callback,
     OperationResult* result_out,
     std::unique_ptr<base::DictionaryValue>* value_out,
     OperationResult result,
     std::unique_ptr<base::DictionaryValue> value) {
   *result_out = result;
   *value_out = std::move(value);
-  callback.Run();
+  std::move(callback).Run();
 }
 
 }  // namespace

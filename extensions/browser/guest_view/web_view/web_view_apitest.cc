@@ -93,11 +93,10 @@ static std::unique_ptr<net::test_server::HttpResponse> UserAgentResponseHandler(
 class WebContentsHiddenObserver : public content::WebContentsObserver {
  public:
   WebContentsHiddenObserver(content::WebContents* web_contents,
-                            const base::Closure& hidden_callback)
+                            base::RepeatingClosure hidden_callback)
       : WebContentsObserver(web_contents),
-        hidden_callback_(hidden_callback),
-        hidden_observed_(false) {
-  }
+        hidden_callback_(std::move(hidden_callback)),
+        hidden_observed_(false) {}
 
   // WebContentsObserver.
   void OnVisibilityChanged(content::Visibility visibility) override {
@@ -110,7 +109,7 @@ class WebContentsHiddenObserver : public content::WebContentsObserver {
   bool hidden_observed() { return hidden_observed_; }
 
  private:
-  base::Closure hidden_callback_;
+  base::RepeatingClosure hidden_callback_;
   bool hidden_observed_;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsHiddenObserver);
