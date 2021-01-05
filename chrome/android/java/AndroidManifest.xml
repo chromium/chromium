@@ -622,6 +622,7 @@ by a child template that "extends" this file.
         <!-- Activities for video tutorials. -->
         <activity android:name="org.chromium.chrome.browser.app.video_tutorials.VideoTutorialListActivity"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
             android:exported="false">
         </activity>
 
@@ -636,7 +637,11 @@ by a child template that "extends" this file.
         <!-- Activities for video tutorials. -->
         <activity android:name="org.chromium.chrome.browser.app.video_tutorials.VideoPlayerActivity"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
-            android:exported="false">
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+            android:exported="false"
+            tools:ignore="LockedOrientationActivity">
+            <!-- We want to explicitly disallow landscape UI for video tutorials. -->
         </activity>
 
         <!-- Activities for history. -->
