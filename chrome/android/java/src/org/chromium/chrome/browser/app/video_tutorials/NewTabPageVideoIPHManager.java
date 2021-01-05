@@ -12,7 +12,6 @@ import android.view.ViewStub;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
@@ -43,7 +42,6 @@ public class NewTabPageVideoIPHManager {
      * before the video player activity launches.
      */
     private static final int CARD_HIDE_ANIMATION_DURATION_MS = 500;
-    private static final String VARIATION_SUMMARY_CARD_POSTER_URL = "summary_card_poster_url";
 
     private final Handler mHandler = new Handler();
     private Context mContext;
@@ -70,13 +68,15 @@ public class NewTabPageVideoIPHManager {
     private void onFetchTutorials(List<Tutorial> tutorials) {
         if (tutorials.isEmpty()) return;
 
-        // Make a copy of the list before adding summary card.
+        // Add the summary tutorial to the list.
         List<Tutorial> tutorialsCopy = new ArrayList<>(tutorials);
-        addSyntheticSummaryTutorial(tutorialsCopy);
-        mTracker.addOnInitializedCallback(success -> {
-            if (!success) return;
+        mVideoTutorialService.getTutorial(FeatureType.SUMMARY, tutorial -> {
+            if (tutorial != null) tutorialsCopy.add(tutorial);
 
-            showFirstEligibleIPH(tutorialsCopy);
+            mTracker.addOnInitializedCallback(success -> {
+                if (!success) return;
+                showFirstEligibleIPH(tutorialsCopy);
+            });
         });
     }
 
@@ -111,15 +111,6 @@ public class NewTabPageVideoIPHManager {
 
         // TODO(shaktisahu): Animate this. Maybe add a delay.
         mVideoTutorialService.getTutorials(this::onFetchTutorials);
-    }
-
-    private void addSyntheticSummaryTutorial(List<Tutorial> tutorials) {
-        String summaryCardImageUrl = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.VIDEO_TUTORIALS, VARIATION_SUMMARY_CARD_POSTER_URL);
-        Tutorial summary = new Tutorial(FeatureType.SUMMARY,
-                mContext.getString(R.string.video_tutorials_card_all_videos), null, null,
-                summaryCardImageUrl, summaryCardImageUrl, null, null, 0);
-        tutorials.add(summary);
     }
 
     @VisibleForTesting

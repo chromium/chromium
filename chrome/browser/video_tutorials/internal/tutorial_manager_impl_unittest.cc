@@ -23,13 +23,17 @@ namespace video_tutorials {
 namespace {
 
 std::vector<TutorialGroup> CreateSampleGroups(
-    const std::vector<std::string>& locales) {
+    const std::vector<std::string>& locales,
+    const std::vector<FeatureType>& features) {
   std::vector<TutorialGroup> groups;
   for (const auto& locale : locales) {
     TutorialGroup group;
     group.language = locale;
-    group.tutorials.emplace_back(Tutorial());
-    group.tutorials.emplace_back(Tutorial());
+    for (FeatureType feature : features) {
+      group.tutorials.emplace_back(
+          Tutorial(feature, "", "", "", "", "", "", "", 10));
+    }
+
     groups.emplace_back(group);
   }
 
@@ -37,9 +41,10 @@ std::vector<TutorialGroup> CreateSampleGroups(
 }
 
 std::unique_ptr<std::vector<TutorialGroup>> CreateSampleFetchData(
-    const std::vector<std::string>& locales) {
+    const std::vector<std::string>& locales,
+    const std::vector<FeatureType>& features) {
   auto groups = std::make_unique<std::vector<TutorialGroup>>();
-  for (const auto& group : CreateSampleGroups(locales)) {
+  for (const auto& group : CreateSampleGroups(locales, features)) {
     groups->emplace_back(group);
   }
 
@@ -150,7 +155,24 @@ class TutorialManagerTest : public testing::Test {
 };
 
 TEST_F(TutorialManagerTest, InitAndGetTutorials) {
-  auto groups = CreateSampleGroups({"hi", "kn"});
+  std::vector<FeatureType> features(
+      {FeatureType::kDownload, FeatureType::kSearch});
+  auto groups = CreateSampleGroups({"hi", "kn"}, features);
+  auto tutorial_store = std::make_unique<StrictMock<TestStore>>();
+  tutorial_store->InitStoreData("hi", groups);
+  CreateTutorialManager(std::move(tutorial_store));
+
+  auto languages = manager()->GetSupportedLanguages();
+  EXPECT_EQ(languages.size(), 2u);
+  manager()->SetPreferredLocale("hi");
+  GetTutorials();
+  EXPECT_EQ(last_results().size(), 2u);
+}
+
+TEST_F(TutorialManagerTest, InitAndGetTutorialsWithSummary) {
+  std::vector<FeatureType> features(
+      {FeatureType::kDownload, FeatureType::kSearch, FeatureType::kSummary});
+  auto groups = CreateSampleGroups({"hi", "kn"}, features);
   auto tutorial_store = std::make_unique<StrictMock<TestStore>>();
   tutorial_store->InitStoreData("hi", groups);
   CreateTutorialManager(std::move(tutorial_store));
@@ -163,7 +185,9 @@ TEST_F(TutorialManagerTest, InitAndGetTutorials) {
 }
 
 TEST_F(TutorialManagerTest, SaveNewData) {
-  auto groups = CreateSampleGroups({"hi", "kn"});
+  std::vector<FeatureType> features(
+      {FeatureType::kDownload, FeatureType::kSearch, FeatureType::kSummary});
+  auto groups = CreateSampleGroups({"hi", "kn"}, features);
   auto tutorial_store = std::make_unique<StrictMock<TestStore>>();
   tutorial_store->InitStoreData("hi", groups);
   CreateTutorialManager(std::move(tutorial_store));
@@ -172,14 +196,28 @@ TEST_F(TutorialManagerTest, SaveNewData) {
   auto languages = manager()->GetSupportedLanguages();
   EXPECT_EQ(languages.size(), 2u);
   GetTutorials();
-  EXPECT_EQ(last_results().size(), groups[0].tutorials.size());
+  EXPECT_EQ(last_results().size(), 2u);
 
-  auto new_groups = CreateSampleFetchData({"hi", "tl", "ar"});
+  // New fetch data.
+  features = std::vector<FeatureType>(
+      {FeatureType::kChromeIntro, FeatureType::kDownload, FeatureType::kSearch,
+       FeatureType::kVoiceSearch});
+  auto new_groups = CreateSampleFetchData({"hi", "tl", "ar"}, features);
   auto new_group = new_groups->at(0);
   SaveGroups(std::move(new_groups));
   manager()->SetPreferredLocale("ar");
   GetTutorials();
-  EXPECT_EQ(last_results().size(), new_group.tutorials.size());
+  EXPECT_EQ(last_results().size(), 4u);
+
+  // New fetch data with summary.
+  features = std::vector<FeatureType>(
+      {FeatureType::kChromeIntro, FeatureType::kVoiceSearch,
+       FeatureType::kSearch, FeatureType::kSummary});
+  new_groups = CreateSampleFetchData({"hi", "tl", "ar"}, features);
+  SaveGroups(std::move(new_groups));
+  manager()->SetPreferredLocale("tl");
+  GetTutorials();
+  EXPECT_EQ(last_results().size(), 3u);
 }
 
 }  // namespace

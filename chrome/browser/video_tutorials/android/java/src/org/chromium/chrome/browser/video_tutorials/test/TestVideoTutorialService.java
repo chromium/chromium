@@ -37,6 +37,17 @@ public class TestVideoTutorialService implements VideoTutorialService {
 
     @Override
     public void getTutorial(int featureType, Callback<Tutorial> callback) {
+        if (featureType == FeatureType.SUMMARY) {
+            Tutorial summary = new Tutorial(FeatureType.SUMMARY, "Videos on how to use chrome",
+                    "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.mp4",
+                    "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.png",
+                    "https://www.gstatic.com/chrome/video-tutorials/gif/sample_anim.gif",
+                    "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.png",
+                    "caption url", "share url", 25);
+            callback.onResult(summary);
+            return;
+        }
+
         for (Tutorial tutorial : mTutorials) {
             if (tutorial.featureType == featureType) callback.onResult(tutorial);
         }

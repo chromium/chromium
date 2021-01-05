@@ -13,6 +13,20 @@
 #include "components/prefs/pref_service.h"
 
 namespace video_tutorials {
+namespace {
+
+std::vector<Tutorial> FilterTutorials(const std::vector<Tutorial>& tutorials) {
+  std::vector<Tutorial> tutorials_excluding_summary;
+  for (const auto& tutorial : tutorials) {
+    if (tutorial.feature == FeatureType::kSummary)
+      continue;
+    tutorials_excluding_summary.emplace_back(tutorial);
+  }
+
+  return tutorials_excluding_summary;
+}
+
+}  // namespace
 
 TutorialManagerImpl::TutorialManagerImpl(std::unique_ptr<TutorialStore> store,
                                          PrefService* prefs)
@@ -43,7 +57,7 @@ void TutorialManagerImpl::GetTutorials(GetTutorialsCallback callback) {
                            ? preferred_locale.value()
                            : Config::GetDefaultPreferredLocale();
   if (tutorial_group_.has_value() && tutorial_group_->language == locale) {
-    std::move(callback).Run(tutorial_group_->tutorials);
+    std::move(callback).Run(FilterTutorials(tutorial_group_->tutorials));
     return;
   }
 
@@ -117,7 +131,7 @@ void TutorialManagerImpl::OnTutorialsLoaded(
   // We are loading tutorials only for the preferred locale.
   DCHECK(loaded_groups->size() == 1u);
   tutorial_group_ = loaded_groups->front();
-  std::move(callback).Run(tutorial_group_->tutorials);
+  std::move(callback).Run(FilterTutorials(tutorial_group_->tutorials));
 }
 
 void TutorialManagerImpl::SaveGroups(
