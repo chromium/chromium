@@ -696,9 +696,7 @@ TEST_P(CertVerifyProcInternalTest, CertWithNullInCommonNameAndNoSAN) {
   EXPECT_THAT(error, IsError(ERR_CERT_COMMON_NAME_INVALID));
 }
 
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
-TEST_P(CertVerifyProcInternalTest,
-       DISABLED_CertWithNullInCommonNameAndValidSAN) {
+TEST_P(CertVerifyProcInternalTest, CertWithNullInCommonNameAndValidSAN) {
   std::unique_ptr<CertBuilder> leaf, intermediate, root;
   CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
   ASSERT_TRUE(leaf && intermediate && root);
@@ -2646,8 +2644,7 @@ TEST_P(CertVerifyProcInternalTest, ValidityJustBeforeNotBefore) {
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_DATE_INVALID);
 }
 
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
-TEST_P(CertVerifyProcInternalTest, DISABLED_ValidityJustAfterNotBefore) {
+TEST_P(CertVerifyProcInternalTest, ValidityJustAfterNotBefore) {
   std::unique_ptr<CertBuilder> leaf, intermediate, root;
   CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
   ASSERT_TRUE(leaf && intermediate && root);
@@ -2670,8 +2667,7 @@ TEST_P(CertVerifyProcInternalTest, DISABLED_ValidityJustAfterNotBefore) {
   EXPECT_THAT(error, IsOk());
 }
 
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
-TEST_P(CertVerifyProcInternalTest, DISABLED_ValidityJustBeforeNotAfter) {
+TEST_P(CertVerifyProcInternalTest, ValidityJustBeforeNotAfter) {
   std::unique_ptr<CertBuilder> leaf, intermediate, root;
   CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
   ASSERT_TRUE(leaf && intermediate && root);
@@ -3183,12 +3179,11 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest, MAYBE_IntermediateFromAia404) 
 
 // Tries verifying a certificate chain that is missing an intermediate. The
 // intermediate is available via AIA.
-// TODO(crbug/1163045): Re-enable on non-iOS. Disabled due to expired
-// certificate.
+// TODO(crbug.com/860189): Failing on iOS
 #if defined(OS_IOS)
 #define MAYBE_IntermediateFromAia200Der DISABLED_IntermediateFromAia200Der
 #else
-#define MAYBE_IntermediateFromAia200Der DISABLED_IntermediateFromAia200Der
+#define MAYBE_IntermediateFromAia200Der IntermediateFromAia200Der
 #endif
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
        MAYBE_IntermediateFromAia200Der) {
@@ -3231,12 +3226,10 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // intermediate is available via AIA, however is served as a PEM file rather
 // than DER.
 // TODO(crbug.com/860189): Failing on iOS
-// TODO(crbug/1163045): Re-enable on non-iOS. Disabled due to expired
-// certificate.
 #if defined(OS_IOS)
 #define MAYBE_IntermediateFromAia200Pem DISABLED_IntermediateFromAia200Pem
 #else
-#define MAYBE_IntermediateFromAia200Pem DISABLED_IntermediateFromAia200Pem
+#define MAYBE_IntermediateFromAia200Pem IntermediateFromAia200Pem
 #endif
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
        MAYBE_IntermediateFromAia200Pem) {
@@ -3285,12 +3278,10 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // formatting on the PEM data.
 //
 // TODO(crbug.com/860189): Failing on iOS
-// TODO(crbug/1163045): Re-enable on non-iOS. Disabled due to expired
-// certificate.
 #if defined(OS_IOS)
 #define MAYBE_IntermediateFromAia200Pem2 DISABLED_IntermediateFromAia200Pem2
 #else
-#define MAYBE_IntermediateFromAia200Pem2 DISABLED_IntermediateFromAia200Pem2
+#define MAYBE_IntermediateFromAia200Pem2 IntermediateFromAia200Pem2
 #endif
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
        MAYBE_IntermediateFromAia200Pem2) {
@@ -3340,9 +3331,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // however, chasing the AIA can discover a SHA256 version of the intermediate.
 //
 // Path building should discover the stronger intermediate and use it.
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_Sha1IntermediateButAIAHasSha256) {
+       Sha1IntermediateButAIAHasSha256) {
   const char kHostname[] = "www.example.com";
 
   base::FilePath certs_dir =
@@ -3434,9 +3424,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   }
 }
 
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
-TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationHardFailNoCrls) {
+TEST_P(CertVerifyProcInternalWithNetFetchingTest, RevocationHardFailNoCrls) {
   if (!SupportsRevCheckingRequiredLocalAnchors()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS";
@@ -3468,9 +3456,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // CRL hard fail test where both leaf and intermediate are covered by valid
 // CRLs which have empty (non-present) revokedCertificates list. Verification
 // should succeed.
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationHardFailCrlGoodNoRevokedCertificates) {
+       RevocationHardFailCrlGoodNoRevokedCertificates) {
   if (!SupportsRevCheckingRequiredLocalAnchors()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS";
@@ -3509,9 +3496,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // CRL hard fail test where both leaf and intermediate are covered by valid
 // CRLs which have revokedCertificates lists that revoke other irrelevant
 // serial numbers. Verification should succeed.
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationHardFailCrlGoodIrrelevantSerialsRevoked) {
+       RevocationHardFailCrlGoodIrrelevantSerialsRevoked) {
   if (!SupportsRevCheckingRequiredLocalAnchors()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS";
@@ -3550,9 +3536,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationHardFailLeafRevokedByCrl) {
+       RevocationHardFailLeafRevokedByCrl) {
   if (!SupportsRevCheckingRequiredLocalAnchors()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS";
@@ -3588,9 +3573,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationHardFailIntermediateRevokedByCrl) {
+       RevocationHardFailIntermediateRevokedByCrl) {
   if (!SupportsRevCheckingRequiredLocalAnchors()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS";
@@ -3629,9 +3613,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // CRL hard fail test where the intermediate certificate has a good CRL, but
 // the leaf's distribution point returns an http error. Verification should
 // fail.
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationHardFailLeafCrlDpHttpError) {
+       RevocationHardFailLeafCrlDpHttpError) {
   if (!SupportsRevCheckingRequiredLocalAnchors()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS";
@@ -3670,9 +3653,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // CRL hard fail test where the leaf certificate has a good CRL, but
 // the intermediate's distribution point returns an http error. Verification
 // should fail.
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationHardFailIntermediateCrlDpHttpError) {
+       RevocationHardFailIntermediateCrlDpHttpError) {
   if (!SupportsRevCheckingRequiredLocalAnchors()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS";
@@ -3709,9 +3691,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
-TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationSoftFailNoCrls) {
+TEST_P(CertVerifyProcInternalWithNetFetchingTest, RevocationSoftFailNoCrls) {
   if (!SupportsSoftFailRevChecking()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_ENABLED";
@@ -3746,9 +3726,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // CRL soft fail test where both leaf and intermediate are covered by valid
 // CRLs which have empty (non-present) revokedCertificates list. Verification
 // should succeed.
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationSoftFailCrlGoodNoRevokedCertificates) {
+       RevocationSoftFailCrlGoodNoRevokedCertificates) {
   if (!SupportsSoftFailRevChecking()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_ENABLED";
@@ -3785,9 +3764,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // CRL soft fail test where both leaf and intermediate are covered by valid
 // CRLs which have revokedCertificates lists that revoke other irrelevant
 // serial numbers. Verification should succeed.
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationSoftFailCrlGoodIrrelevantSerialsRevoked) {
+       RevocationSoftFailCrlGoodIrrelevantSerialsRevoked) {
   if (!SupportsSoftFailRevChecking()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_ENABLED";
@@ -3824,9 +3802,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationSoftFailLeafRevokedByCrl) {
+       RevocationSoftFailLeafRevokedByCrl) {
   if (!SupportsSoftFailRevChecking()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_ENABLED";
@@ -3868,9 +3845,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationSoftFailIntermediateRevokedByCrl) {
+       RevocationSoftFailIntermediateRevokedByCrl) {
   if (!SupportsSoftFailRevChecking()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_ENABLED";
@@ -3912,9 +3888,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationSoftFailLeafRevokedBySha1Crl) {
+       RevocationSoftFailLeafRevokedBySha1Crl) {
   if (!SupportsSoftFailRevChecking()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_ENABLED";
@@ -3957,9 +3932,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationSoftFailLeafRevokedByMd5Crl) {
+       RevocationSoftFailLeafRevokedByMd5Crl) {
   if (!SupportsSoftFailRevChecking()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_ENABLED";
@@ -4007,9 +3981,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // CRL soft fail test where the intermediate certificate has a good CRL, but
 // the leaf's distribution point returns an http error. Verification should
 // succeed.
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationSoftFailLeafCrlDpHttpError) {
+       RevocationSoftFailLeafCrlDpHttpError) {
   if (!SupportsSoftFailRevChecking()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_ENABLED";
@@ -4048,9 +4021,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // CRL soft fail test where the leaf certificate has a good CRL, but
 // the intermediate's distribution point returns an http error. Verification
 // should succeed.
-// TODO(crbug/1163045): Re-enable. Disabled due to expired certificate.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       DISABLED_RevocationSoftFailIntermediateCrlDpHttpError) {
+       RevocationSoftFailIntermediateCrlDpHttpError) {
   if (!SupportsSoftFailRevChecking()) {
     LOG(INFO) << "Skipping test as verifier doesn't support "
                  "VERIFY_REV_CHECKING_ENABLED";
