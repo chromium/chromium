@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/flat_tree.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -438,9 +439,8 @@ base::flat_map<std::string, float> PredictionManager::BuildFeatureMap(
     const base::flat_map<proto::ClientModelFeature, float>&
         override_client_model_feature_values) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::flat_map<std::string, float> feature_map;
   if (model_features.size() == 0)
-    return feature_map;
+    return {};
 
   const base::flat_map<std::string, float>* host_model_features = nullptr;
 
@@ -457,21 +457,19 @@ base::flat_map<std::string, float> PredictionManager::BuildFeatureMap(
   // host model feature we have in the map. If it is not in either, a default is
   // created for it. This ensures that the prediction model will have values for
   // every feature that it requires to be evaluated.
+  std::vector<std::pair<std::string, float>> feature_map;
+  feature_map.reserve(model_features.size());
   for (const auto& model_feature : model_features) {
     base::Optional<float> value = GetValueForClientFeature(
         model_feature, navigation_handle, override_client_model_feature_values);
-    if (value) {
-      feature_map[model_feature] = *value;
-      continue;
+    if (!value && host_model_features) {
+      const auto it = host_model_features->find(model_feature);
+      if (it != host_model_features->end())
+        value = it->second;
     }
-    if (!host_model_features || !host_model_features->contains(model_feature)) {
-      feature_map[model_feature] = -1.0;
-      continue;
-    }
-    feature_map[model_feature] =
-        host_model_features->find(model_feature)->second;
+    feature_map.emplace_back(model_feature, value.value_or(-1.0f));
   }
-  return feature_map;
+  return {base::sorted_unique, std::move(feature_map)};
 }
 
 OptimizationTargetDecision PredictionManager::ShouldTargetNavigation(
