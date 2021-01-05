@@ -29,8 +29,8 @@ class HttpResponseHeaders;
 namespace extensions {
 
 using ExtensionProtocolTestHandler =
-    base::Callback<void(base::FilePath* directory_path,
-                        base::FilePath* relative_path)>;
+    base::RepeatingCallback<void(base::FilePath* directory_path,
+                                 base::FilePath* relative_path)>;
 
 // Builds HTTP headers for an extension request. Hashes the time to avoid
 // exposing the exact user installation time of the extension.
