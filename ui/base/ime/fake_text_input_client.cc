@@ -30,15 +30,7 @@ void FakeTextInputClient::ClearCompositionText() {}
 
 void FakeTextInputClient::InsertText(
     const base::string16& text,
-    TextInputClient::InsertTextCursorBehavior cursor_behavior) {
-  text_.insert(selection_.start(), text);
-
-  if (cursor_behavior ==
-      TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText) {
-    selection_ = gfx::Range(selection_.start() + text.length(),
-                            selection_.end() + text.length());
-  }
-}
+    TextInputClient::InsertTextCursorBehavior cursor_behavior) {}
 
 void FakeTextInputClient::InsertChar(const KeyEvent& event) {}
 

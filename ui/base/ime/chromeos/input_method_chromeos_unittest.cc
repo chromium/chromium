@@ -89,10 +89,8 @@ class TestableInputMethodChromeOS : public InputMethodChromeOS {
     }
     return details;
   }
-  void CommitText(
-      const std::string& text,
-      TextInputClient::InsertTextCursorBehavior cursor_behavior) override {
-    InputMethodChromeOS::CommitText(text, cursor_behavior);
+  void CommitText(const std::string& text) override {
+    InputMethodChromeOS::CommitText(text);
     text_committed_ = text;
   }
 
@@ -449,8 +447,7 @@ TEST_F(InputMethodChromeOSTest,
        OnWillChangeFocusedClientClearAutocorrectRange) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->SetFocusedTextInputClient(this);
-  ime_->CommitText(
-      "hello", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  ime_->CommitText("hello");
   ime_->SetAutocorrectRange(gfx::Range(0, 5));
   EXPECT_EQ(gfx::Range(0, 5), this->GetAutocorrectRange());
 
@@ -1021,9 +1018,7 @@ TEST_F(InputMethodChromeOSKeyEventTest, KeyEventDelayResponseTest) {
   EXPECT_EQ(kFlags, key_event->flags());
   EXPECT_EQ(0, ime_->process_key_event_post_ime_call_count());
 
-  static_cast<IMEInputContextHandlerInterface*>(ime_.get())
-      ->CommitText(
-          "A", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  static_cast<IMEInputContextHandlerInterface*>(ime_.get())->CommitText("A");
 
   EXPECT_EQ(0, inserted_char_);
 
@@ -1187,60 +1182,13 @@ TEST_F(InputMethodChromeOSKeyEventTest,
   ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
   ime_->DispatchKeyEvent(&event);
 
-  ime_->CommitText(
-      "a", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  ime_->CommitText("a");
   ime_->SetAutocorrectRange(gfx::Range(0, 1));
   std::move(mock_ime_engine_handler_->last_passed_callback())
       .Run(/*handled=*/true);
 
   EXPECT_EQ(L'a', inserted_char_);
   EXPECT_EQ(gfx::Range(0, 1), GetAutocorrectRange());
-}
-
-TEST_F(InputMethodChromeOSKeyEventTest,
-       MultipleCommitTextsWhileHandlingKeyEventCoalescesIntoOne) {
-  InputMethodChromeOS ime(this);
-  FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
-  ime.SetFocusedTextInputClient(&fake_text_input_client);
-
-  ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
-  ime.DispatchKeyEvent(&event);
-  ime.CommitText(
-      "a", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  ime.CommitText(
-      "b", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  ime.CommitText(
-      "cde", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  std::move(mock_ime_engine_handler_->last_passed_callback())
-      .Run(/*handled=*/true);
-
-  EXPECT_EQ(fake_text_input_client.text(), base::ASCIIToUTF16("abcde"));
-  EXPECT_EQ(fake_text_input_client.selection(), gfx::Range(5, 5));
-}
-
-TEST_F(InputMethodChromeOSKeyEventTest,
-       MultipleCommitTextsWhileHandlingKeyEventCoalescesByCaretBehavior) {
-  InputMethodChromeOS ime(this);
-  FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
-  ime.SetFocusedTextInputClient(&fake_text_input_client);
-
-  ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
-  ime.DispatchKeyEvent(&event);
-  ime.CommitText(
-      "a", TextInputClient::InsertTextCursorBehavior::kMoveCursorBeforeText);
-  ime.CommitText(
-      "b", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  ime.CommitText(
-      "c", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  ime.CommitText(
-      "d", TextInputClient::InsertTextCursorBehavior::kMoveCursorBeforeText);
-  ime.CommitText(
-      "e", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  std::move(mock_ime_engine_handler_->last_passed_callback())
-      .Run(/*handled=*/true);
-
-  EXPECT_EQ(fake_text_input_client.text(), base::ASCIIToUTF16("bceda"));
-  EXPECT_EQ(fake_text_input_client.selection(), gfx::Range(3, 3));
 }
 
 }  // namespace ui

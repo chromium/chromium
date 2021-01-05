@@ -33,9 +33,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEInputContextHandler
   MockIMEInputContextHandler();
   virtual ~MockIMEInputContextHandler();
 
-  void CommitText(
-      const std::string& text,
-      TextInputClient::InsertTextCursorBehavior cursor_behavior) override;
+  void CommitText(const std::string& text) override;
   void UpdateCompositionText(const CompositionText& text,
                              uint32_t cursor_pos,
                              bool visible) override;

@@ -25,8 +25,6 @@ class FakeTextInputClient : public TextInputClient {
   ~FakeTextInputClient() override;
 
   void set_text_input_type(TextInputType text_input_type);
-  const base::string16& text() const { return text_; }
-  const gfx::Range& selection() const { return selection_; }
 
   // TextInputClient:
   void SetCompositionText(const CompositionText& composition) override;
@@ -84,8 +82,6 @@ class FakeTextInputClient : public TextInputClient {
 
  private:
   TextInputType text_input_type_;
-  base::string16 text_;
-  gfx::Range selection_;
 };
 
 }  // namespace ui

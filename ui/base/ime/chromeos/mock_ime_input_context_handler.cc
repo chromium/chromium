@@ -21,9 +21,7 @@ MockIMEInputContextHandler::MockIMEInputContextHandler()
 
 MockIMEInputContextHandler::~MockIMEInputContextHandler() = default;
 
-void MockIMEInputContextHandler::CommitText(
-    const std::string& text,
-    TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+void MockIMEInputContextHandler::CommitText(const std::string& text) {
   ++commit_text_call_count_;
   last_commit_text_ = text;
 }
@@ -117,8 +115,7 @@ void MockIMEInputContextHandler::ConfirmCompositionText(bool reset_engine,
     return;
 
   CommitText(
-      base::UTF16ToUTF8(last_update_composition_arg_.composition_text.text),
-      TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+      base::UTF16ToUTF8(last_update_composition_arg_.composition_text.text));
   last_update_composition_arg_.composition_text.text = base::string16();
 }
 

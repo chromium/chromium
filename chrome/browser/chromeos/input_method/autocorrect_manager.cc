@@ -189,8 +189,7 @@ void AutocorrectManager::UndoAutocorrect() {
   input_context->CommitText(
       (base::UTF16ToUTF8(
            surrounding_text.surrounding_text.substr(0, range.start())) +
-       original_text_),
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+       original_text_));
   LogAssistiveAutocorrectAction(AutocorrectActions::kReverted);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectReverted);
   RecordAssistiveSuccess(AssistiveType::kAutocorrectReverted);
