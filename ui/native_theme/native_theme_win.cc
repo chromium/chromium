@@ -289,7 +289,7 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
     }
   }
   if (!IsForcedHighContrast()) {
-    set_high_contrast(IsUsingHighContrastThemeInternal());
+    set_forced_colors(IsUsingHighContrastThemeInternal());
   }
   // Initialize the cached system colors.
   UpdateSystemColors();
@@ -305,8 +305,8 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
 void NativeThemeWin::ConfigureWebInstance() {
   if (!IsForcedDarkMode() && !IsForcedHighContrast() &&
       base::SequencedTaskRunnerHandle::IsSet()) {
-    // Add the web native theme as an observer to stay in sync with dark mode,
-    // high contrast, and preferred color scheme changes.
+    // Add the web native theme as an observer to stay in sync with color scheme
+    // changes.
     color_scheme_observer_ =
         std::make_unique<NativeTheme::ColorSchemeNativeThemeObserver>(
             NativeTheme::GetInstanceForWeb());
@@ -316,7 +316,7 @@ void NativeThemeWin::ConfigureWebInstance() {
   // Initialize the native theme web instance with the system color info.
   NativeTheme* web_instance = NativeTheme::GetInstanceForWeb();
   web_instance->set_use_dark_colors(ShouldUseDarkColors());
-  web_instance->set_high_contrast(UsesHighContrastColors());
+  web_instance->set_forced_colors(InForcedColorsMode());
   web_instance->set_preferred_color_scheme(GetPreferredColorScheme());
   web_instance->set_preferred_contrast(GetPreferredContrast());
   web_instance->set_system_colors(GetSystemColors());
@@ -347,7 +347,7 @@ void NativeThemeWin::CloseHandlesInternal() {
 void NativeThemeWin::OnSysColorChange() {
   UpdateSystemColors();
   if (!IsForcedHighContrast())
-    set_high_contrast(IsUsingHighContrastThemeInternal());
+    set_forced_colors(IsUsingHighContrastThemeInternal());
   set_preferred_color_scheme(CalculatePreferredColorScheme());
   set_preferred_contrast(CalculatePreferredContrast());
   NotifyObservers();
@@ -727,14 +727,14 @@ bool NativeThemeWin::ShouldUseDarkColors() const {
   // Windows high contrast modes are entirely different themes,
   // so let them take priority over dark mode.
   // ...unless --force-dark-mode was specified in which case caveat emptor.
-  if (UsesHighContrastColors() && !IsForcedDarkMode())
+  if (InForcedColorsMode() && !IsForcedDarkMode())
     return false;
   return NativeTheme::ShouldUseDarkColors();
 }
 
 NativeTheme::PreferredColorScheme
 NativeThemeWin::CalculatePreferredColorScheme() const {
-  if (!UsesHighContrastColors())
+  if (!InForcedColorsMode())
     return NativeTheme::CalculatePreferredColorScheme();
 
   // According to the spec, the preferred color scheme for web content is 'dark'
@@ -751,7 +751,7 @@ NativeThemeWin::CalculatePreferredColorScheme() const {
 
 NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
     const {
-  if (!UsesHighContrastColors())
+  if (!InForcedColorsMode())
     return NativeTheme::CalculatePreferredContrast();
 
   // According to the spec [1], "when the user agent can determine whether the
@@ -783,8 +783,8 @@ NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
 }
 
 NativeTheme::ColorScheme NativeThemeWin::GetDefaultSystemColorScheme() const {
-  return UsesHighContrastColors() ? ColorScheme::kPlatformHighContrast
-                                  : NativeTheme::GetDefaultSystemColorScheme();
+  return InForcedColorsMode() ? ColorScheme::kPlatformHighContrast
+                              : NativeTheme::GetDefaultSystemColorScheme();
 }
 
 void NativeThemeWin::PaintIndirect(cc::PaintCanvas* destination_canvas,

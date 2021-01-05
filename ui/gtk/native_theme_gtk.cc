@@ -496,8 +496,11 @@ void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
   // case-insensitive.
   std::transform(theme_name.begin(), theme_name.end(), theme_name.begin(),
                  ::tolower);
-  set_high_contrast(theme_name.find("high") != std::string::npos &&
-                    theme_name.find("contrast") != std::string::npos);
+  bool high_contrast = theme_name.find("high") != std::string::npos &&
+                       theme_name.find("contrast") != std::string::npos;
+  set_preferred_contrast(
+      high_contrast ? ui::NativeThemeBase::PreferredContrast::kMore
+                    : ui::NativeThemeBase::PreferredContrast::kNoPreference);
 
   NotifyObservers();
 }

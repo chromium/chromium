@@ -182,7 +182,7 @@ bool GlassBrowserFrameView::HasVisibleBackgroundTabShapes(
   // colors).
   // TODO(pkasting): https://crbug.com/831769  Change the architecture of the
   // high contrast support to respect system colors, then remove this.
-  if (GetNativeTheme()->UsesHighContrastColors())
+  if (GetNativeTheme()->UserHasContrastPreference())
     return true;
 
   return BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(active_state);

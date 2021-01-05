@@ -238,14 +238,14 @@ void WebThemeEngineDefault::cacheScrollBarMetrics(
 #endif
 
 blink::ForcedColors WebThemeEngineDefault::GetForcedColors() const {
-  return ui::NativeTheme::GetInstanceForWeb()->UsesHighContrastColors()
+  return ui::NativeTheme::GetInstanceForWeb()->InForcedColorsMode()
              ? blink::ForcedColors::kActive
              : blink::ForcedColors::kNone;
 }
 
 void WebThemeEngineDefault::SetForcedColors(
     const blink::ForcedColors forced_colors) {
-  ui::NativeTheme::GetInstanceForWeb()->set_high_contrast(
+  ui::NativeTheme::GetInstanceForWeb()->set_forced_colors(
       forced_colors == blink::ForcedColors::kActive);
 }
 

@@ -332,7 +332,7 @@ void NativeThemeAura::PaintScrollbarThumb(cc::PaintCanvas* canvas,
     else
       thumb_rect.Inset(extra_padding, kThumbPadding);
 
-    if (UsesHighContrastColors() && features::IsForcedColorsEnabled()) {
+    if (InForcedColorsMode() && features::IsForcedColorsEnabled()) {
       thumb_alpha = 0xFF;
       thumb_color = GetControlColor(color_id, color_scheme);
     } else {

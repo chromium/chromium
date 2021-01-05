@@ -235,11 +235,11 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
     OmniboxPartState part_state) {
   DCHECK(view);
 
-  bool high_contrast = view->GetNativeTheme() &&
-                       view->GetNativeTheme()->UsesHighContrastColors();
+  bool prefers_contrast = view->GetNativeTheme() &&
+                          view->GetNativeTheme()->UserHasContrastPreference();
   // TODO(tapted): Consider using background()->SetNativeControlColor() and
   // always have a background.
-  if ((part_state == OmniboxPartState::NORMAL && !high_contrast))
+  if ((part_state == OmniboxPartState::NORMAL && !prefers_contrast))
     return nullptr;
 
   return views::CreateSolidBackground(GetOmniboxColor(
@@ -331,8 +331,8 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   //
   // TODO(tommycli): We should finish migrating this logic to live entirely
   // within OmniboxTextView, which should keep track of its own OmniboxPart.
-  bool high_contrast =
-      GetNativeTheme() && GetNativeTheme()->UsesHighContrastColors();
+  bool prefers_contrast =
+      GetNativeTheme() && GetNativeTheme()->UserHasContrastPreference();
   if (match_.answer) {
     suggestion_view_->content()->ApplyTextColor(
         OmniboxPart::RESULTS_TEXT_DEFAULT);
@@ -344,7 +344,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
         OmniboxPart::RESULTS_TEXT_DEFAULT);
     suggestion_view_->description()->ApplyTextColor(
         OmniboxPart::RESULTS_TEXT_DIMMED);
-  } else if (high_contrast || force_reapply_styles) {
+  } else if (prefers_contrast || force_reapply_styles) {
     // Normally, OmniboxTextView caches its appearance, but in high contrast,
     // selected-ness changes the text colors, so the styling of the text part of
     // the results needs to be recomputed.

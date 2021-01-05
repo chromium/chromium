@@ -30,14 +30,14 @@ class TestNativeTheme : public NativeTheme {
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
-  bool UsesHighContrastColors() const override;
+  bool UserHasContrastPreference() const override;
   bool ShouldUseDarkColors() const override;
   PreferredColorScheme GetPreferredColorScheme() const override;
   ColorScheme GetDefaultSystemColorScheme() const override;
 
   void SetDarkMode(bool dark_mode) { dark_mode_ = dark_mode; }
-  void SetUsesHighContrastColors(bool high_contrast) {
-    high_contrast_ = high_contrast;
+  void SetUserHasContrastPreference(bool contrast_preference) {
+    contrast_preference_ = contrast_preference;
   }
   void SetIsPlatformHighContrast(bool is_platform_high_contrast) {
     is_platform_high_contrast_ = is_platform_high_contrast;
@@ -46,7 +46,7 @@ class TestNativeTheme : public NativeTheme {
 
  private:
   bool dark_mode_ = false;
-  bool high_contrast_ = false;
+  bool contrast_preference_ = false;
   bool is_platform_high_contrast_ = false;
 
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>

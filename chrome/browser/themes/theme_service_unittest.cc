@@ -588,7 +588,7 @@ TEST_F(ThemeServiceTest, TranslucentOmniboxBackgroundAndText) {
 TEST_F(ThemeServiceTest, NativeIncreasedContrastChanged) {
   theme_service_->UseDefaultTheme();
 
-  native_theme_.SetUsesHighContrastColors(true);
+  native_theme_.SetUserHasContrastPreference(true);
   theme_service_->OnNativeThemeUpdated(&native_theme_);
   EXPECT_TRUE(theme_service_->UsingDefaultTheme());
   bool using_increased_contrast =
@@ -600,7 +600,7 @@ TEST_F(ThemeServiceTest, NativeIncreasedContrastChanged) {
           .ShouldUseIncreasedContrastThemeSupplier(&native_theme_);
   EXPECT_EQ(using_increased_contrast, expecting_increased_contrast);
 
-  native_theme_.SetUsesHighContrastColors(false);
+  native_theme_.SetUserHasContrastPreference(false);
   theme_service_->OnNativeThemeUpdated(&native_theme_);
   EXPECT_TRUE(theme_service_->UsingDefaultTheme());
   EXPECT_EQ(theme_service_->GetThemeSupplier(), nullptr);

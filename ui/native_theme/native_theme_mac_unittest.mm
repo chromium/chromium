@@ -34,6 +34,7 @@ TEST(NativeThemeMacTest, SystemColorsExist) {
 
 TEST(NativeThemeMacTest, GetPlatformHighContrastColorScheme) {
   using PrefScheme = NativeTheme::PreferredColorScheme;
+  using PrefContrast = NativeTheme::PreferredContrast;
 
   constexpr NativeTheme::PlatformHighContrastColorScheme kNone =
       NativeTheme::PlatformHighContrastColorScheme::kNone;
@@ -41,35 +42,25 @@ TEST(NativeThemeMacTest, GetPlatformHighContrastColorScheme) {
   NativeTheme* native_theme = NativeTheme::GetInstanceForNativeUi();
   ASSERT_TRUE(native_theme);
 
-  native_theme->set_high_contrast(false);
+  native_theme->set_forced_colors(false);
+  native_theme->set_preferred_contrast(PrefContrast::kNoPreference);
   native_theme->set_preferred_color_scheme(PrefScheme::kDark);
   EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
 
   native_theme->set_preferred_color_scheme(PrefScheme::kLight);
   EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
 
-  native_theme->set_high_contrast(true);
+  native_theme->set_forced_colors(true);
+  native_theme->set_preferred_contrast(PrefContrast::kMore);
   native_theme->set_preferred_color_scheme(PrefScheme::kDark);
   EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
 
   native_theme->set_preferred_color_scheme(PrefScheme::kLight);
   EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
 
-  native_theme->set_high_contrast(false);
+  native_theme->set_forced_colors(false);
+  native_theme->set_preferred_contrast(PrefContrast::kNoPreference);
   EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
-}
-
-TEST(NativeThemeMacTest, GetPreferredContrast) {
-  using PrefContrast = NativeTheme::PreferredContrast;
-
-  TestNativeThemeMac native_theme;
-
-  native_theme.set_high_contrast(false);
-  EXPECT_EQ(native_theme.CalculatePreferredContrast(),
-            PrefContrast::kNoPreference);
-
-  native_theme.set_high_contrast(true);
-  EXPECT_EQ(native_theme.CalculatePreferredContrast(), PrefContrast::kMore);
 }
 
 }  // namespace ui

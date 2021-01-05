@@ -65,7 +65,7 @@ SkColor ThemeHelperWin::GetDefaultColor(
   // In high contrast mode on Windows the platform provides the color. Try to
   // get that color first.
   SkColor color;
-  if (ui::NativeTheme::GetInstanceForNativeUi()->UsesHighContrastColors() &&
+  if (ui::NativeTheme::GetInstanceForNativeUi()->InForcedColorsMode() &&
       GetPlatformHighContrastColor(id, &color)) {
     return color;
   }

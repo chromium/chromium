@@ -171,7 +171,7 @@ SkColor NativeThemeMac::GetSystemColor(ColorId color_id,
        color_scheme != ColorScheme::kPlatformHighContrast))
     return NativeTheme::GetSystemColor(color_id, color_scheme);
 
-  if (UsesHighContrastColors()) {
+  if (UserHasContrastPreference()) {
     switch (color_id) {
       case kColorId_SelectedMenuItemForegroundColor:
         return color_scheme == ColorScheme::kDark ? SK_ColorBLACK
@@ -241,9 +241,8 @@ base::Optional<SkColor> NativeThemeMac::GetOSColor(
 
 NativeThemeAura::PreferredContrast NativeThemeMac::CalculatePreferredContrast()
     const {
-  return UsesHighContrastColors()
-             ? NativeThemeAura::PreferredContrast::kMore
-             : NativeThemeAura::PreferredContrast::kNoPreference;
+  return IsHighContrast() ? NativeThemeAura::PreferredContrast::kMore
+                          : NativeThemeAura::PreferredContrast::kNoPreference;
 }
 
 void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
@@ -588,7 +587,7 @@ NativeThemeMac::NativeThemeMac(bool configure_web_instance,
     InitializeDarkModeStateAndObserver();
 
   if (!IsForcedHighContrast()) {
-    set_high_contrast(IsHighContrast());
+    set_preferred_contrast(CalculatePreferredContrast());
     __block auto theme = this;
     high_contrast_notification_token_ =
         [[[NSWorkspace sharedWorkspace] notificationCenter]
@@ -597,7 +596,6 @@ NativeThemeMac::NativeThemeMac(bool configure_web_instance,
                         object:nil
                          queue:nil
                     usingBlock:^(NSNotification* notification) {
-                      theme->set_high_contrast(IsHighContrast());
                       theme->set_preferred_contrast(
                           CalculatePreferredContrast());
                       theme->NotifyObservers();
@@ -645,10 +643,9 @@ void NativeThemeMac::ConfigureWebInstance() {
   web_instance->set_use_dark_colors(IsDarkMode());
   web_instance->set_preferred_color_scheme(CalculatePreferredColorScheme());
   web_instance->set_preferred_contrast(CalculatePreferredContrast());
-  web_instance->set_high_contrast(IsHighContrast());
 
-  // Add the web native theme as an observer to stay in sync with dark mode,
-  // high contrast, and preferred color scheme changes.
+  // Add the web native theme as an observer to stay in sync with color scheme
+  // changes.
   color_scheme_observer_ =
       std::make_unique<NativeTheme::ColorSchemeNativeThemeObserver>(
           NativeTheme::GetInstanceForWeb());

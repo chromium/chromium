@@ -39,8 +39,8 @@ gfx::Rect TestNativeTheme::GetNinePatchAperture(Part part) const {
   return gfx::Rect();
 }
 
-bool TestNativeTheme::UsesHighContrastColors() const {
-  return high_contrast_;
+bool TestNativeTheme::UserHasContrastPreference() const {
+  return contrast_preference_;
 }
 
 bool TestNativeTheme::ShouldUseDarkColors() const {

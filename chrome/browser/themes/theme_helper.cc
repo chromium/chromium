@@ -300,7 +300,7 @@ bool ThemeHelper::ShouldUseNativeFrame(
 
 bool ThemeHelper::ShouldUseIncreasedContrastThemeSupplier(
     ui::NativeTheme* native_theme) const {
-  return native_theme && native_theme->UsesHighContrastColors();
+  return native_theme && native_theme->UserHasContrastPreference();
 }
 
 SkColor ThemeHelper::GetDefaultColor(

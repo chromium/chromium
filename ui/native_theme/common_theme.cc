@@ -674,7 +674,7 @@ SkColor GetAuraColor(NativeTheme::ColorId color_id,
 
   // High contrast overrides the normal colors for certain ColorIds to be much
   // darker or lighter.
-  if (base_theme->UsesHighContrastColors()) {
+  if (base_theme->UserHasContrastPreference()) {
     base::Optional<SkColor> color =
         GetHighContrastColor(color_id, color_scheme);
     if (color.has_value())

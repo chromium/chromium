@@ -1173,7 +1173,7 @@ void NativeThemeBase::PaintSliderTrack(cc::PaintCanvas* canvas,
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(kBorderWidth);
     SkColor border_color = ControlsBorderColorForState(state, color_scheme);
-    if (!UsesHighContrastColors() && state != kDisabled &&
+    if (!UserHasContrastPreference() && state != kDisabled &&
         color_scheme != ColorScheme::kDark)
       border_color = SkColorSetA(border_color, 0x80);
     flags.setColor(border_color);
@@ -1338,7 +1338,7 @@ void NativeThemeBase::PaintProgressBar(
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(kBorderWidth);
     SkColor border_color = GetControlColor(kBorder, color_scheme);
-    if (!UsesHighContrastColors() && color_scheme != ColorScheme::kDark)
+    if (!UserHasContrastPreference() && color_scheme != ColorScheme::kDark)
       border_color = SkColorSetA(border_color, 0x80);
     flags.setColor(border_color);
     track_rect.inset(kBorderWidth / 2, kBorderWidth / 2);
@@ -1608,7 +1608,7 @@ SkColor NativeThemeBase::ControlsBackgroundColorForState(
 SkColor NativeThemeBase::GetControlColor(ControlColorId color_id,
                                          ColorScheme color_scheme) const {
 #if defined(OS_WIN)
-  if (UsesHighContrastColors() && features::IsForcedColorsEnabled())
+  if (UserHasContrastPreference() && features::IsForcedColorsEnabled())
     return GetHighContrastControlColor(color_id, color_scheme);
 #endif
 

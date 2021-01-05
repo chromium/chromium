@@ -293,7 +293,7 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
   const ui::NativeTheme* native_theme = GetNativeTheme();
   bool use_outer_border =
       menu_config.use_outer_border ||
-      (native_theme && native_theme->UsesHighContrastColors());
+      (native_theme && native_theme->UserHasContrastPreference());
   corner_radius_ = menu_config.CornerRadiusForMenu(
       content_view_->GetMenuItem()->GetMenuController());
   int padding = use_outer_border && corner_radius_ > 0

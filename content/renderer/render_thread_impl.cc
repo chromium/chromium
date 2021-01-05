@@ -1747,7 +1747,7 @@ void RenderThreadImpl::UpdateSystemColorInfo(
     mojom::UpdateSystemColorInfoParamsPtr params) {
   bool did_system_color_info_change =
       ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(
-          params->is_dark_mode, params->is_high_contrast, params->colors);
+          params->is_dark_mode, params->forced_colors, params->colors);
   if (did_system_color_info_change) {
     blink::SystemColorsChanged();
     blink::ColorSchemeChanged();
