@@ -2259,6 +2259,7 @@
 <translation id="3538066758857505094">解除安裝 Linux 時發生錯誤，請再試一次。</translation>
 <translation id="354060433403403521">AC 變壓器</translation>
 <translation id="354068948465830244">可讀取及變更網站資料</translation>
+<translation id="3541823293333232175">已指派</translation>
 <translation id="3543393733900874979">更新失敗 (錯誤：<ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">使用 SHA-512 的 X9.62 ECDSA 簽章</translation>
 <translation id="3544879808695557954">使用者名稱 (選填)</translation>
@@ -2839,6 +2840,7 @@
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">語言</translation>
 <translation id="4184885522552335684">拖曳即可移動顯示畫面</translation>
+<translation id="4186763173530196927">有一個應用程式正在嘗試存取攝影機。如要允許存取，請將攝影機的隱私權開關切換為關閉。</translation>
 <translation id="4187424053537113647">正在設定「<ph name="APP_NAME" />」...</translation>
 <translation id="4190828427319282529">醒目顯示鍵盤焦點</translation>
 <translation id="4193575319002689239">顯示資訊卡</translation>
@@ -3293,6 +3295,7 @@
 <translation id="473546211690256853">這個帳戶是由 <ph name="DOMAIN" /> 負責管理。</translation>
 <translation id="4735803855089279419">系統無法判別這個裝置的裝置 ID。</translation>
 <translation id="4736292055110123391">讓你在所有裝置上的書籤、密碼、歷史記錄及其他設定保持同步</translation>
+<translation id="4736765933704278771">請按下要為「<ph name="ACTION" />」動作指派的切換按鍵。你可以針對該動作指派多個切換按鍵。</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="473936925429402449">已選取 <ph name="TOTAL_ELEMENTS" /> 個額外內容裡的第 <ph name="CURRENT_ELEMENT" /> 個</translation>
 <translation id="4739639199548674512">票證</translation>
@@ -4296,6 +4299,7 @@
 <translation id="5920543303088087579">你的管理員禁止使用者連線到這個網路</translation>
 <translation id="5920835625712313205">Chrome 作業系統映像檔寫入工具</translation>
 <translation id="5921257443092182237">Google 的定位服務會使用 Wi‑Fi、行動網路和感應器等來源，推測出這部裝置的所在位置。</translation>
+<translation id="5923205773724721589">按鍵不相符。按下任何按鍵即可結束作業。</translation>
 <translation id="5924047253200400718">查看說明。<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924287525504995925">禁止網站使用虛擬實境裝置和資料</translation>
 <translation id="5924527146239595929">你可以拍一張新的相片，也可以選擇現有的相片或圖示。
@@ -4357,6 +4361,7 @@
 <translation id="5984222099446776634">最近造訪的網站</translation>
 <translation id="598472838394900788">{0,plural, =1{無痕模式}other{無痕模式 (#)}}</translation>
 <translation id="5985458664595100876">網址格式無效。支援的格式為 \\server\share 和 smb://server/share。</translation>
+<translation id="598810097218913399">移除指派設定</translation>
 <translation id="5990266201903445068">僅限 Wi-Fi</translation>
 <translation id="5990386583461751448">已翻譯</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{為確保你可以持續瀏覽網路，請要求你的管理員移除這個應用程式。}other{為確保你可以持續瀏覽網路，請要求你的管理員移除這些應用程式。}}</translation>
@@ -5666,6 +5671,7 @@
 <translation id="7513029293694390567">使用已儲存的憑證自動登入網站。如果停用這項功能，每當你登入網站時，都必須向系統確認你的登入憑證。</translation>
 <translation id="7514239104543605883">複製到你的裝置</translation>
 <translation id="7514365320538308">下載</translation>
+<translation id="7514417110442087199">新增指派設定</translation>
 <translation id="751523031290522286">管理員已封鎖「<ph name="APP_NAME" />」。如要使用這個應用程式，請要求管理員授予權限。</translation>
 <translation id="7516981202574715431">「<ph name="APP_NAME" />」已暫停</translation>
 <translation id="7517063221058203587">{0,plural, =1{請在 1 分鐘內更新裝置}other{請在 # 分鐘內更新裝置}}</translation>
@@ -6265,6 +6271,7 @@
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{將分頁移到新視窗}other{將分頁移到新視窗}}</translation>
 <translation id="8165997195302308593">Crostini 通訊埠轉送</translation>
 <translation id="8168435359814927499">內容</translation>
+<translation id="8168943654413034772">這是為「選取」動作指派的唯一切換按鍵，因此無法移除。按下任何按鍵即可結束作業。</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{將分頁新增至閱讀清單}other{將分頁新增至閱讀清單}}</translation>
 <translation id="8174047975335711832">裝置資訊</translation>
 <translation id="8174876712881364124">備份到 Google 雲端硬碟。你隨時可以輕鬆還原資料或改用其他裝置。備份內容包含應用程式資料。備份內容會上傳到 Google，並以貴子女帳戶的 Google 帳戶密碼加密。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
