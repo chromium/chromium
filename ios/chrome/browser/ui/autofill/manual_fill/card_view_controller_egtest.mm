@@ -282,6 +282,10 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the "Add Credit Cards..." action works on OTR.
 - (void)testOTRAddCreditCardsActionOpensAddCreditCardSettings {
+#if TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1163116): Fails for ios14-beta/sdk-simulator.
+  EARL_GREY_TEST_DISABLED(@"Test disabled on simulator.");
+#endif
   // TODO(crbug.com/1162354): Re-enable this test for iPad after fixing this
   // issue.
   if ([ChromeEarlGrey isIPadIdiom]) {
