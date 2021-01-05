@@ -355,7 +355,7 @@
       },
       {
         "pattern_identifier": "en_address_line_1_label_preserving",
-        "positive_pattern": "(^\\W*address)|(address\\W*$)|(?:shipping|billing|mailing|pick.?up|drop.?off|delivery|sender|postal|recipient|home|work|office|school|business|mail)[\\s\\-]+address|address\\s+(of|for|to|from)",
+        "positive_pattern": "(^\\W*address)|(address\\W*$)|(?:shipping|billing|mailing|pick.?up|drop.?off|delivery|sender|postal|recipient|home|work|office|school|business|mail)[\\s\\-]+address|address\\s+(of|for|to|from)|street.*(house|building|apartment|floor)|(house|building|apartment|floor).*street",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 1,
@@ -454,6 +454,14 @@
         "negative_pattern": null,
         "match_field_attributes": 3,
         "match_field_input_types": 1
+      },
+      {
+        "pattern_identifier": "ru_address_line_1_label_preserving",
+        "positive_pattern": "улиц.*(дом|корпус|квартир|этаж)|(дом|корпус|квартир|этаж).*улиц",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 1,
+        "match_field_input_types": 1
       }
     ],
     "zh-CN": [
@@ -477,7 +485,7 @@
       },
       {
         "pattern_identifier": "tr_address_line_1_label_preserving",
-        "positive_pattern": "(\\b|_)adres(?! tarifi)(\\b|_)",
+        "positive_pattern": "(\\b|_)adres(?! tarifi)(\\b|_)|(sokak|cadde).*(apartman|bina|daire|mahalle)|(apartman|bina|daire|mahalle).*(sokak|cadde)",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 1,

@@ -288,4 +288,20 @@ TEST_F(AddressFieldTest, NotParseAddressName) {
   ClassifyAndVerify(/*parsed=*/false, LanguageCode("tr"));
 }
 
+// Tests that the address components sequence in a label is classified
+// as |ADDRESS_HOME_LINE1|.
+TEST_F(AddressFieldTest, ParseAddressComponentsSequenceAsAddressLine1) {
+  AddTextFormFieldData("detail", "Улица, дом, квартира", ADDRESS_HOME_LINE1);
+  ClassifyAndVerify(/*parsed=*/true, LanguageCode("ru"));
+}
+
+// Tests that the address components sequence in a label is classified
+// as |ADDRESS_HOME_STREET_ADDRESS|.
+TEST_F(AddressFieldTest, ParseAddressComponentsSequenceAsStreetAddress) {
+  AddFormFieldData("textarea", "detail",
+                   "Mahalle, sokak, cadde ve diğer bilgilerinizi girin",
+                   ADDRESS_HOME_STREET_ADDRESS);
+  ClassifyAndVerify(/*parsed=*/true, LanguageCode("tr"));
+}
+
 }  // namespace autofill

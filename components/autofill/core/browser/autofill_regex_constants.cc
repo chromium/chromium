@@ -77,7 +77,13 @@ const char kAddressLine1LabelRe[] =
     "|住所"                            // ja-JP
     "|地址"                            // zh-CN
     "|(\\b|_)adres(?! tarifi)(\\b|_)"  // tr
-    "|주소";                           // ko-KR
+    "|주소"                            // ko-KR
+    // Should contain street and any other address component, in any order
+    "|street.*(house|building|apartment|floor)"  // en
+    "|(house|building|apartment|floor).*street"
+    "|(sokak|cadde).*(apartman|bina|daire|mahalle)"  // tr
+    "|(apartman|bina|daire|mahalle).*(sokak|cadde)"
+    "|улиц.*(дом|корпус|квартир|этаж)|(дом|корпус|квартир|этаж).*улиц";  // ru
 const char kAddressLine2Re[] =
     "address[_-]?line(2|two)|address2|addr2|street|suite|unit"
     "|adresszusatz|ergänzende.?angaben"        // de-DE
