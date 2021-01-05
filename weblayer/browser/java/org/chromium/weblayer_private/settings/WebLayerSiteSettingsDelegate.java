@@ -14,9 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory.Type;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsClient;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsHelpClient;
-import org.chromium.components.browser_ui.site_settings.WebappSettingsClient;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.Origin;
@@ -27,17 +25,17 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * A SiteSettingsClient instance that contains WebLayer-specific Site Settings logic.
+ * A SiteSettingsDelegate instance that contains WebLayer-specific Site Settings logic.
  */
-public class WebLayerSiteSettingsClient implements SiteSettingsClient, ManagedPreferenceDelegate,
-                                                   SiteSettingsHelpClient, WebappSettingsClient {
+public class WebLayerSiteSettingsDelegate
+        implements SiteSettingsDelegate, ManagedPreferenceDelegate {
     private final BrowserContextHandle mBrowserContextHandle;
 
-    public WebLayerSiteSettingsClient(BrowserContextHandle browserContextHandle) {
+    public WebLayerSiteSettingsDelegate(BrowserContextHandle browserContextHandle) {
         mBrowserContextHandle = browserContextHandle;
     }
 
-    // SiteSettingsClient implementation:
+    // SiteSettingsDelegate implementation:
 
     @Override
     public BrowserContextHandle getBrowserContextHandle() {
@@ -46,16 +44,6 @@ public class WebLayerSiteSettingsClient implements SiteSettingsClient, ManagedPr
 
     @Override
     public ManagedPreferenceDelegate getManagedPreferenceDelegate() {
-        return this;
-    }
-
-    @Override
-    public SiteSettingsHelpClient getSiteSettingsHelpClient() {
-        return this;
-    }
-
-    @Override
-    public WebappSettingsClient getWebappSettingsClient() {
         return this;
     }
 
@@ -134,9 +122,6 @@ public class WebLayerSiteSettingsClient implements SiteSettingsClient, ManagedPr
         return false;
     }
 
-    // SiteSettingsHelpClient implementation:
-    // A no-op since WebLayer doesn't have help pages.
-
     @Override
     public boolean isHelpAndFeedbackEnabled() {
         return false;
@@ -147,9 +132,6 @@ public class WebLayerSiteSettingsClient implements SiteSettingsClient, ManagedPr
 
     @Override
     public void launchProtectedContentHelpAndFeedbackActivity(Activity currentActivity) {}
-
-    // WebappSettingsClient implementation:
-    // A no-op since WebLayer doesn't support webapps.
 
     @Override
     public Set<String> getOriginsWithInstalledApp() {

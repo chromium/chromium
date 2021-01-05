@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.site_settings;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -15,17 +16,17 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
+import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsClient;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsHelpClient;
-import org.chromium.components.browser_ui.site_settings.WebappSettingsClient;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
@@ -34,10 +35,12 @@ import org.chromium.components.page_info.PageInfoFeatureList;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentSwitches;
 
+import java.util.Set;
+
 /**
- * A SiteSettingsClient instance that contains Chrome-specific Site Settings logic.
+ * A SiteSettingsDelegate instance that contains Chrome-specific Site Settings logic.
  */
-public class ChromeSiteSettingsClient implements SiteSettingsClient {
+public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     // Constants for favicon processing.
     // TODO(crbug.com/1076571): Move these constants to colors.xml and dimens.xml
     private static final int FAVICON_BACKGROUND_COLOR = 0xff969696;
@@ -48,11 +51,9 @@ public class ChromeSiteSettingsClient implements SiteSettingsClient {
 
     private final Context mContext;
     private final BrowserContextHandle mBrowserContext;
-    private ChromeSiteSettingsHelpClient mChromeSiteSettingsHelpClient;
-    private ChromeWebappSettingsClient mChromeWebappSettingsClient;
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
 
-    public ChromeSiteSettingsClient(Context context, BrowserContextHandle browserContext) {
+    public ChromeSiteSettingsDelegate(Context context, BrowserContextHandle browserContext) {
         mContext = context;
         mBrowserContext = browserContext;
     }
@@ -73,22 +74,6 @@ public class ChromeSiteSettingsClient implements SiteSettingsClient {
             };
         }
         return mManagedPreferenceDelegate;
-    }
-
-    @Override
-    public SiteSettingsHelpClient getSiteSettingsHelpClient() {
-        if (mChromeSiteSettingsHelpClient == null) {
-            mChromeSiteSettingsHelpClient = new ChromeSiteSettingsHelpClient();
-        }
-        return mChromeSiteSettingsHelpClient;
-    }
-
-    @Override
-    public WebappSettingsClient getWebappSettingsClient() {
-        if (mChromeWebappSettingsClient == null) {
-            mChromeWebappSettingsClient = new ChromeWebappSettingsClient();
-        }
-        return mChromeWebappSettingsClient;
     }
 
     @Override
@@ -204,5 +189,35 @@ public class ChromeSiteSettingsClient implements SiteSettingsClient {
     @Override
     public boolean isPageInfoV2Enabled() {
         return PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_V2);
+    }
+
+    @Override
+    public boolean isHelpAndFeedbackEnabled() {
+        return true;
+    }
+
+    @Override
+    public void launchSettingsHelpAndFeedbackActivity(Activity currentActivity) {
+        HelpAndFeedbackLauncherImpl.getInstance().show(currentActivity,
+                currentActivity.getString(R.string.help_context_settings),
+                Profile.getLastUsedRegularProfile(), null);
+    }
+
+    @Override
+    public void launchProtectedContentHelpAndFeedbackActivity(Activity currentActivity) {
+        HelpAndFeedbackLauncherImpl.getInstance().show(currentActivity,
+                currentActivity.getString(R.string.help_context_protected_content),
+                Profile.getLastUsedRegularProfile(), null);
+    }
+
+    @Override
+    public Set<String> getOriginsWithInstalledApp() {
+        WebappRegistry registry = WebappRegistry.getInstance();
+        return registry.getOriginsWithInstalledApp();
+    }
+
+    @Override
+    public Set<String> getAllDelegatedNotificationOrigins() {
+        return TrustedWebActivityPermissionManager.get().getAllDelegatedOrigins();
     }
 }

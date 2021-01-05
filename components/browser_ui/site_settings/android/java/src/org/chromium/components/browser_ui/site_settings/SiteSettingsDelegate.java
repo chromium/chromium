@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
@@ -14,12 +15,13 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.Origin;
 
+import java.util.Set;
+
 /**
  * An interface implemented by the embedder that allows the Site Settings UI to access
  * embedder-specific logic.
  */
-// TODO(crbug.com/1077007): Clean up this interface.
-public interface SiteSettingsClient {
+public interface SiteSettingsDelegate {
     /**
      * @return The BrowserContextHandle that should be used to read and update settings.
      */
@@ -30,17 +32,6 @@ public interface SiteSettingsClient {
      *         Preferences.
      */
     ManagedPreferenceDelegate getManagedPreferenceDelegate();
-
-    /**
-     * @return The SiteSettingsHelpClient that should be used to provide help functionality to the
-     *     Site Settings UI.
-     */
-    SiteSettingsHelpClient getSiteSettingsHelpClient();
-
-    /**
-     * @return The WebappSettingsClient that should be used when showing the Site Settings UI.
-     */
-    WebappSettingsClient getWebappSettingsClient();
 
     /**
      * Asynchronously looks up the locally cached favicon image for the given URL, generating a
@@ -92,4 +83,33 @@ public interface SiteSettingsClient {
      * @return true if PageInfo V2 is enabled.
      */
     boolean isPageInfoV2Enabled();
+
+    /**
+     * @return true if Help and Feedback links and menu items should be shown to the user.
+     */
+    boolean isHelpAndFeedbackEnabled();
+
+    /**
+     * Launches a support page relevant to settings UI pages.
+     *
+     * @see org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher#show
+     */
+    void launchSettingsHelpAndFeedbackActivity(Activity currentActivity);
+
+    /**
+     * Launches a support page related to protected content.
+     *
+     * @see org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher#show
+     */
+    void launchProtectedContentHelpAndFeedbackActivity(Activity currentActivity);
+
+    /**
+     * @return The set of all origins that have a WebAPK or TWA installed.
+     */
+    Set<String> getOriginsWithInstalledApp();
+
+    /**
+     * @return The set of all origins whose notification permissions are delegated to another app.
+     */
+    Set<String> getAllDelegatedNotificationOrigins();
 }

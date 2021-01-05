@@ -19,7 +19,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsClient;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
@@ -31,7 +31,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.SettingsIntentHelper;
-import org.chromium.weblayer_private.settings.WebLayerSiteSettingsClient;
+import org.chromium.weblayer_private.settings.WebLayerSiteSettingsDelegate;
 
 /**
  * WebLayer's customization of PageInfoControllerDelegate.
@@ -120,8 +120,8 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
      */
     @Override
     @NonNull
-    public SiteSettingsClient getSiteSettingsClient() {
-        return new WebLayerSiteSettingsClient(getBrowserContext());
+    public SiteSettingsDelegate getSiteSettingsDelegate() {
+        return new WebLayerSiteSettingsDelegate(getBrowserContext());
     }
 
     @Override

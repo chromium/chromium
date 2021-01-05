@@ -169,7 +169,7 @@ android_library("java") {
     "org/chromium/weblayer_private/permissions/PermissionRequestUtils.java",
     "org/chromium/weblayer_private/resources/ResourceMapper.java",
     "org/chromium/weblayer_private/settings/SettingsFragmentImpl.java",
-    "org/chromium/weblayer_private/settings/WebLayerSiteSettingsClient.java",
+    "org/chromium/weblayer_private/settings/WebLayerSiteSettingsDelegate.java",
     _bundle_utils_output,
   ]
   resources_package = "org.chromium.weblayer_private"

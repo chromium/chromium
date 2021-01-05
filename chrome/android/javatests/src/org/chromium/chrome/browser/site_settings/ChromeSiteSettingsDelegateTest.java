@@ -28,14 +28,14 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Tests for Chrome's SiteSettingsClient implementation.
+ * Tests for Chrome's SiteSettingsDelegate implementation.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class ChromeSiteSettingsClientTest {
+public class ChromeSiteSettingsDelegateTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    ChromeSiteSettingsClient mSiteSettingsClient;
+    ChromeSiteSettingsDelegate mSiteSettingsDelegate;
 
     @Before
     public void setUp() throws Exception {
@@ -48,7 +48,7 @@ public class ChromeSiteSettingsClientTest {
     @SmallTest
     public void testFallbackFaviconLoads() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSiteSettingsClient = new ChromeSiteSettingsClient(
+            mSiteSettingsDelegate = new ChromeSiteSettingsDelegate(
                     mActivityTestRule.getActivity(), Profile.getLastUsedRegularProfile());
         });
 
@@ -57,7 +57,7 @@ public class ChromeSiteSettingsClientTest {
         Bitmap[] holder = new Bitmap[1];
         CallbackHelper helper = new CallbackHelper();
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-            mSiteSettingsClient.getFaviconImageForURL("url.with.no.favicon", favicon -> {
+            mSiteSettingsDelegate.getFaviconImageForURL("url.with.no.favicon", favicon -> {
                 holder[0] = favicon;
                 helper.notifyCalled();
             });

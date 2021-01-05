@@ -182,7 +182,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         }
 
         WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(
-                getSiteSettingsClient().getBrowserContextHandle(), false);
+                getSiteSettingsDelegate().getBrowserContextHandle(), false);
         fetcher.fetchPreferencesForCategory(mCategory, new ResultsPopulator());
     }
 
@@ -192,7 +192,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
      */
     private boolean isOnBlockList(WebsitePreference website) {
         BrowserContextHandle browserContextHandle =
-                getSiteSettingsClient().getBrowserContextHandle();
+                getSiteSettingsDelegate().getBrowserContextHandle();
         for (@SiteSettingsCategory.Type int i = 0; i < SiteSettingsCategory.Type.NUM_ENTRIES; i++) {
             if (!mCategory.showSites(i)) continue;
             @ContentSettingValues
@@ -285,7 +285,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Read which category we should be showing.
         BrowserContextHandle browserContextHandle =
-                getSiteSettingsClient().getBrowserContextHandle();
+                getSiteSettingsDelegate().getBrowserContextHandle();
         if (getArguments() != null) {
             mCategory = SiteSettingsCategory.createFromPreferenceKey(
                     browserContextHandle, getArguments().getString(EXTRA_CATEGORY, ""));
@@ -359,7 +359,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             if (queryHasChanged) getInfoForOrigins();
         });
 
-        if (getSiteSettingsClient().getSiteSettingsHelpClient().isHelpAndFeedbackEnabled()) {
+        if (getSiteSettingsDelegate().isHelpAndFeedbackEnabled()) {
             MenuItem help = menu.add(
                     Menu.NONE, R.id.menu_id_site_settings_help, Menu.NONE, R.string.menu_help);
             help.setIcon(VectorDrawableCompat.create(
@@ -371,13 +371,10 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_site_settings_help) {
             if (mCategory.showSites(SiteSettingsCategory.Type.PROTECTED_MEDIA)) {
-                getSiteSettingsClient()
-                        .getSiteSettingsHelpClient()
-                        .launchProtectedContentHelpAndFeedbackActivity(getActivity());
+                getSiteSettingsDelegate().launchProtectedContentHelpAndFeedbackActivity(
+                        getActivity());
             } else {
-                getSiteSettingsClient()
-                        .getSiteSettingsHelpClient()
-                        .launchSettingsHelpAndFeedbackActivity(getActivity());
+                getSiteSettingsDelegate().launchSettingsHelpAndFeedbackActivity(getActivity());
             }
             return true;
         }
@@ -402,7 +399,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         if (preference instanceof WebsitePreference) {
             WebsitePreference website_pref = (WebsitePreference) preference;
 
-            if (getSiteSettingsClient().isPageInfoV2Enabled()
+            if (getSiteSettingsDelegate().isPageInfoV2Enabled()
                     && !website_pref.getParent().getKey().equals(MANAGED_GROUP)) {
                 buildPreferenceDialog(website_pref.site()).show();
             } else {
@@ -424,7 +421,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         BrowserContextHandle browserContextHandle =
-                getSiteSettingsClient().getBrowserContextHandle();
+                getSiteSettingsDelegate().getBrowserContextHandle();
         PrefService prefService = UserPrefs.get(browserContextHandle);
         if (BINARY_TOGGLE_KEY.equals(preference.getKey())) {
             assert !mCategory.isManaged();
@@ -494,9 +491,10 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         }
 
         WebsitePreferenceBridge.setCategoryEnabled(
-                getSiteSettingsClient().getBrowserContextHandle(), ContentSettingsType.COOKIES,
+                getSiteSettingsDelegate().getBrowserContextHandle(), ContentSettingsType.COOKIES,
                 allowCookies);
-        PrefService prefService = UserPrefs.get(getSiteSettingsClient().getBrowserContextHandle());
+        PrefService prefService =
+                UserPrefs.get(getSiteSettingsDelegate().getBrowserContextHandle());
         prefService.setInteger(COOKIE_CONTROLS_MODE, mode);
     }
 
@@ -509,7 +507,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
     private String getAddExceptionDialogMessage() {
         BrowserContextHandle browserContextHandle =
-                getSiteSettingsClient().getBrowserContextHandle();
+                getSiteSettingsDelegate().getBrowserContextHandle();
         int resource = 0;
         if (mCategory.showSites(SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS)) {
             resource = R.string.website_settings_add_site_description_automatic_downloads;
@@ -571,7 +569,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     @Override
     public void onAddSite(String primaryPattern, String secondaryPattern) {
         BrowserContextHandle browserContextHandle =
-                getSiteSettingsClient().getBrowserContextHandle();
+                getSiteSettingsDelegate().getBrowserContextHandle();
         int setting;
         if (mCategory.showSites(SiteSettingsCategory.Type.COOKIES) && mRequiresFourStateSetting) {
             setting = cookieSettingsExceptionShouldBlock() ? ContentSettingValues.BLOCK
@@ -616,7 +614,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         configureGlobalToggles();
 
         BrowserContextHandle browserContextHandle =
-                getSiteSettingsClient().getBrowserContextHandle();
+                getSiteSettingsDelegate().getBrowserContextHandle();
         boolean exception = false;
         if (mCategory.showSites(SiteSettingsCategory.Type.SOUND)) {
             exception = true;
@@ -648,7 +646,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         for (Website site : sites) {
             if (mSearch == null || mSearch.isEmpty() || site.getTitle().contains(mSearch)) {
                 websites.add(new WebsitePreference(
-                        getStyledContext(), getSiteSettingsClient(), site, mCategory));
+                        getStyledContext(), getSiteSettingsDelegate(), site, mCategory));
             }
         }
 
@@ -682,9 +680,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
             Set<String> delegatedOrigins =
                     mCategory.showSites(SiteSettingsCategory.Type.NOTIFICATIONS)
-                    ? getSiteSettingsClient()
-                              .getWebappSettingsClient()
-                              .getAllDelegatedNotificationOrigins()
+                    ? getSiteSettingsDelegate().getAllDelegatedNotificationOrigins()
                     : Collections.emptySet();
 
             for (WebsitePreference website : websites) {
@@ -882,7 +878,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 screen.removePreference(notificationsVibrate);
             }
 
-            if (getSiteSettingsClient().isQuietNotificationPromptsFeatureEnabled()) {
+            if (getSiteSettingsDelegate().isQuietNotificationPromptsFeatureEnabled()) {
                 notificationsQuietUi.setOnPreferenceChangeListener(this);
             } else {
                 screen.removePreference(notificationsQuietUi);
@@ -896,11 +892,10 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
         // Only show the link that explains protected content settings when needed.
         if (mCategory.showSites(SiteSettingsCategory.Type.PROTECTED_MEDIA)
-                && getSiteSettingsClient().getSiteSettingsHelpClient().isHelpAndFeedbackEnabled()) {
+                && getSiteSettingsDelegate().isHelpAndFeedbackEnabled()) {
             explainProtectedMediaKey.setOnPreferenceClickListener(preference -> {
-                getSiteSettingsClient()
-                        .getSiteSettingsHelpClient()
-                        .launchProtectedContentHelpAndFeedbackActivity(getActivity());
+                getSiteSettingsDelegate().launchProtectedContentHelpAndFeedbackActivity(
+                        getActivity());
                 return true;
             });
 
@@ -937,7 +932,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         ChromeBasePreference osWarning = new ChromeBasePreference(getStyledContext(), null);
         ChromeBasePreference osWarningExtra = new ChromeBasePreference(getStyledContext(), null);
         mCategory.configurePermissionIsOffPreferences(osWarning, osWarningExtra, getContext(), true,
-                getSiteSettingsClient().getAppName());
+                getSiteSettingsDelegate().getAppName());
         if (osWarning.getTitle() != null) {
             osWarning.setKey(SingleWebsiteSettings.PREF_OS_PERMISSIONS_WARNING);
             screen.addPreference(osWarning);
@@ -954,8 +949,9 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         FourStateCookieSettingsPreference.Params params =
                 new FourStateCookieSettingsPreference.Params();
         params.allowCookies = WebsitePreferenceBridge.isCategoryEnabled(
-                getSiteSettingsClient().getBrowserContextHandle(), ContentSettingsType.COOKIES);
-        PrefService prefService = UserPrefs.get(getSiteSettingsClient().getBrowserContextHandle());
+                getSiteSettingsDelegate().getBrowserContextHandle(), ContentSettingsType.COOKIES);
+        PrefService prefService =
+                UserPrefs.get(getSiteSettingsDelegate().getBrowserContextHandle());
         params.cookieControlsMode = prefService.getInteger(COOKIE_CONTROLS_MODE);
         params.cookiesContentSettingEnforced = mCategory.isManaged();
         params.cookieControlsModeEnforced = prefService.isManagedPreference(COOKIE_CONTROLS_MODE);
@@ -967,7 +963,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         triStateToggle.setOnPreferenceChangeListener(this);
         @ContentSettingValues
         int setting = WebsitePreferenceBridge.getContentSetting(
-                getSiteSettingsClient().getBrowserContextHandle(), contentType);
+                getSiteSettingsDelegate().getBrowserContextHandle(), contentType);
         int[] descriptionIds =
                 ContentSettingsResources.getTriStateSettingDescriptionIDs(contentType);
         triStateToggle.initialize(setting, descriptionIds);
@@ -979,7 +975,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
         // Set summary on or off.
         BrowserContextHandle browserContextHandle =
-                getSiteSettingsClient().getBrowserContextHandle();
+                getSiteSettingsDelegate().getBrowserContextHandle();
         if (mCategory.showSites(SiteSettingsCategory.Type.DEVICE_LOCATION)
                 && WebsitePreferenceBridge.isLocationAllowedByPolicy(browserContextHandle)) {
             binaryToggle.setSummaryOn(ContentSettingsResources.getGeolocationAllowedSummary());
@@ -989,7 +985,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         binaryToggle.setSummaryOff(ContentSettingsResources.getDisabledSummary(contentType));
 
         binaryToggle.setManagedPreferenceDelegate(new SingleCategoryManagedPreferenceDelegate(
-                getSiteSettingsClient().getManagedPreferenceDelegate()));
+                getSiteSettingsDelegate().getManagedPreferenceDelegate()));
 
         // Set the checked value.
         binaryToggle.setChecked(
@@ -998,7 +994,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
     private void updateNotificationsSecondaryControls() {
         BrowserContextHandle browserContextHandle =
-                getSiteSettingsClient().getBrowserContextHandle();
+                getSiteSettingsDelegate().getBrowserContextHandle();
         Boolean categoryEnabled = WebsitePreferenceBridge.isCategoryEnabled(
                 browserContextHandle, ContentSettingsType.NOTIFICATIONS);
 
@@ -1008,7 +1004,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                         NOTIFICATIONS_VIBRATE_TOGGLE_KEY);
         if (vibrate_pref != null) vibrate_pref.setEnabled(categoryEnabled);
 
-        if (!getSiteSettingsClient().isQuietNotificationPromptsFeatureEnabled()) return;
+        if (!getSiteSettingsDelegate().isQuietNotificationPromptsFeatureEnabled()) return;
 
         // The notifications quiet ui checkbox.
         ChromeBaseCheckBoxPreference quiet_ui_pref =
@@ -1035,7 +1031,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         if (mCategory.isManagedByCustodian()) {
             ManagedPreferencesUtils.showManagedByParentToast(getContext(),
                     new SingleCategoryManagedPreferenceDelegate(
-                            getSiteSettingsClient().getManagedPreferenceDelegate()));
+                            getSiteSettingsDelegate().getManagedPreferenceDelegate()));
         } else {
             ManagedPreferencesUtils.showManagedByAdministratorToast(getContext());
         }
@@ -1047,7 +1043,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
      */
     private AlertDialog.Builder buildPreferenceDialog(Website site) {
         BrowserContextHandle browserContextHandle =
-                getSiteSettingsClient().getBrowserContextHandle();
+                getSiteSettingsDelegate().getBrowserContextHandle();
         @ContentSettingsType
         int contentSettingsType = mCategory.getContentSettingsType();
 

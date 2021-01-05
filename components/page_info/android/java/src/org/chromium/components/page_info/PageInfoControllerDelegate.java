@@ -14,7 +14,7 @@ import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Consumer;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsClient;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
@@ -234,10 +234,10 @@ public abstract class PageInfoControllerDelegate {
     public abstract BrowserContextHandle getBrowserContext();
 
     /**
-     * @return Returns the SiteSettingsClient for this page info.
+     * @return Returns the SiteSettingsDelegate for this page info.
      */
     @NonNull
-    public abstract SiteSettingsClient getSiteSettingsClient();
+    public abstract SiteSettingsDelegate getSiteSettingsDelegate();
 
     /**
      * Fetches a favicon for the current page and passes it to callback.

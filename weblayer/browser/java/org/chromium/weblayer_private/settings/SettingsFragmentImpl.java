@@ -170,7 +170,7 @@ public class SettingsFragmentImpl extends FragmentHostingRemoteFragmentImpl {
                 settingsFragment.setArguments(mFragmentArguments);
                 if (settingsFragment instanceof SiteSettingsPreferenceFragment) {
                     ((SiteSettingsPreferenceFragment) settingsFragment)
-                            .setSiteSettingsClient(new WebLayerSiteSettingsClient(mProfile));
+                            .setSiteSettingsDelegate(new WebLayerSiteSettingsDelegate(mProfile));
                 }
                 getSupportFragmentManager()
                         .beginTransaction()

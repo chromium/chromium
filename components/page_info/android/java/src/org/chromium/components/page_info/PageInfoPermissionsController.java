@@ -53,7 +53,7 @@ public class PageInfoPermissionsController
         Bundle fragmentArgs = SingleWebsiteSettings.createFragmentArgsForSite(mPageUrl);
         mSubPage = (SingleWebsiteSettings) Fragment.instantiate(
                 mRowView.getContext(), SingleWebsiteSettings.class.getName(), fragmentArgs);
-        mSubPage.setSiteSettingsClient(mDelegate.getSiteSettingsClient());
+        mSubPage.setSiteSettingsDelegate(mDelegate.getSiteSettingsDelegate());
         mSubPage.setHideNonPermissionPreferences(true);
         mSubPage.setWebsiteSettingsObserver(this);
         mDelegate.getFragmentManager().beginTransaction().add(mSubPage, null).commitNow();
