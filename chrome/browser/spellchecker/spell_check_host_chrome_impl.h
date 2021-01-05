@@ -16,6 +16,10 @@
 #include "components/spellcheck/browser/spelling_service_client.h"
 #endif
 
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/input_method/grammar_service_client.h"
+#endif
+
 class SpellcheckCustomDictionary;
 class SpellcheckService;
 class SpellingRequest;
@@ -125,6 +129,17 @@ class SpellCheckHostChromeImpl : public SpellCheckHostImpl {
 #if BUILDFLAG(ENABLE_SPELLING_SERVICE)
   // A JSON-RPC client that calls the remote Spelling service.
   SpellingServiceClient client_;
+#endif
+
+#if defined(OS_CHROMEOS)
+  // Invoked when the on-device grammar service has finished checking the
+  // text of a CallSpellingService request.
+  void CallGrammarServiceDone(
+      CallSpellingServiceCallback callback,
+      bool success,
+      const std::vector<SpellCheckResult>& service_results) const;
+
+  chromeos::GrammarServiceClient grammar_client_;
 #endif
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)

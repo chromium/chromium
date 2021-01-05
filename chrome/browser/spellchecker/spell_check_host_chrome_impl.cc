@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
@@ -22,6 +23,10 @@
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER) && BUILDFLAG(ENABLE_SPELLING_SERVICE)
 #include "chrome/browser/spellchecker/spelling_request.h"
+#endif
+
+#if defined(OS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
 #endif
 
 namespace {
@@ -134,8 +139,39 @@ void SpellCheckHostChromeImpl::CallSpellingServiceDone(
       base::UTF16ToUTF8(text), *spellcheck->GetCustomDictionary(),
       service_results);
 
+#if defined(OS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(chromeos::features::kOnDeviceGrammarCheck) &&
+      results.empty()) {
+    auto* host = content::RenderProcessHost::FromID(render_process_id_);
+    if (!host) {
+      std::move(callback).Run(false, std::vector<SpellCheckResult>());
+      return;
+    }
+    grammar_client_.RequestTextCheck(
+        Profile::FromBrowserContext(host->GetBrowserContext()), text,
+        base::BindOnce(&SpellCheckHostChromeImpl::CallGrammarServiceDone,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+#endif
+
   std::move(callback).Run(success, results);
 }
+
+#if defined(OS_CHROMEOS)
+void SpellCheckHostChromeImpl::CallGrammarServiceDone(
+    CallSpellingServiceCallback callback,
+    bool success,
+    const std::vector<SpellCheckResult>& results) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  SpellcheckService* spellcheck = GetSpellcheckService();
+  if (!spellcheck) {  // Teardown.
+    std::move(callback).Run(false, std::vector<SpellCheckResult>());
+    return;
+  }
+  std::move(callback).Run(success, results);
+}
+#endif
 
 // static
 std::vector<SpellCheckResult> SpellCheckHostChromeImpl::FilterCustomWordResults(
