@@ -201,6 +201,7 @@
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
   self.mediator.consumer = self;
+  self.mediator.webStateList = self.webStateList;
 
   self.steadyViewMediator = [[LocationBarSteadyViewMediator alloc]
       initWithLocationBarModel:[self locationBarModel]];
@@ -235,6 +236,7 @@
   _editController.reset();
 
   self.viewController = nil;
+  [self.mediator disconnect];
   self.mediator = nil;
   [self.steadyViewMediator disconnect];
   self.steadyViewMediator = nil;

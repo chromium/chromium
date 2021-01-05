@@ -11,6 +11,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -419,6 +420,65 @@ id<GREYMatcher> SearchCopiedTextButton() {
   // Verify that paste happened.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxContainingText(kPage1URL)];
+}
+
+- (void)testOmniboxDefocusesOnTabSwitch {
+  [self openPage1];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey waitForMainTabCount:2];
+  [self openPage2];
+
+  [ChromeEarlGreyUI focusOmnibox];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_typeText(@"Obama")];
+
+  // The popup should open.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kOmniboxPopupTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Switch to the first tab.
+  [ChromeEarlGrey selectTabAtIndex:0];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+
+  // The omnibox shouldn't be focused and the popup should be closed.
+  [self checkLocationBarSteadyState];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kOmniboxPopupTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+- (void)testOmniboxDefocusesOnTabSwitchIncognito {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+  [self openPage1];
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:2];
+  [self openPage2];
+
+  [ChromeEarlGreyUI focusOmnibox];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_typeText(@"Obama")];
+
+  // The popup should open.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kOmniboxPopupTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Switch to the first tab.
+  [ChromeEarlGrey selectTabAtIndex:0];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+
+  // The omnibox shouldn't be focused and the popup should be closed.
+  [self checkLocationBarSteadyState];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kOmniboxPopupTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 #pragma mark - Helpers
