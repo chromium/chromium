@@ -83,7 +83,7 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
 }
 
 void TabSearchPageHandler::GetProfileTabs(GetProfileTabsCallback callback) {
-  TRACE_EVENT0("browser", "TabSearchPageHandler::GetProfileTabs");
+  TRACE_EVENT0("browser", "webui_metric:TabSearchPageHandler:GetProfileTabs");
   auto profile_tabs = tab_search::mojom::ProfileTabs::New();
   for (auto* browser : *BrowserList::GetInstance()) {
     if (!ShouldTrackBrowser(browser))
@@ -231,7 +231,7 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
   Browser* browser = chrome::FindBrowserWithWebContents(contents);
   if (!browser)
     return;
-  TRACE_EVENT0("browser", "TabSearchPageHandler::TabChangedAt");
+  TRACE_EVENT0("browser", "webui_metric:TabSearchPageHandler:TabChangedAt");
   page_->TabUpdated(GetTabData(browser->tab_strip_model(), contents, index));
 }
 
