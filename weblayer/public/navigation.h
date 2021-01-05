@@ -135,6 +135,14 @@ class Navigation {
   // * page-initiated reloads, e.g. location.reload()
   // * reloads when the network interface is reconnected
   virtual bool IsReload() = 0;
+
+  // Whether the navigation is restoring a page from back-forward cache (see
+  // https://web.dev/bfcache/). Since a previously loaded page is being reused,
+  // there are some things embedders have to keep in mind such as:
+  //   * there will be no NavigationObserver::onFirstContentfulPaint callbacks
+  //   * if an embedder injects code using Tab::ExecuteScript there is no need
+  //     to reinject scripts
+  virtual bool IsServedFromBackForwardCache() = 0;
 };
 
 }  // namespace weblayer

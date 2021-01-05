@@ -111,7 +111,9 @@ public abstract class NavigationCallback {
 
     /**
      * This is fired after each navigation has completed to indicate that the first paint after a
-     * non-empty layout has finished. This is *not* called for same-document navigations.
+     * non-empty layout has finished. This is *not* called for same-document navigations or when the
+     * page is loaded from the back-forward cache; see {@link
+     * Navigation#isServedFromBackForwardCache}.
      */
     public void onFirstContentfulPaint() {}
 

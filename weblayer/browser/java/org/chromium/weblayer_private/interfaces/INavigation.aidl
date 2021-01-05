@@ -38,4 +38,5 @@ interface INavigation {
   boolean wasIntentLaunched() = 13;
   boolean isUserDecidingIntentLaunch() = 14;
   boolean isKnownProtocol() = 15;
+  boolean isServedFromBackForwardCache() = 16;
 }

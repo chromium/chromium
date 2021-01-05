@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -104,6 +105,7 @@ public class NavigationTest {
             private @NavigationState int mNavigationState;
             private boolean mIsKnownProtocol;
             private boolean mIsPageInitiatedNavigation;
+            private boolean mIsServedFromBackForwardCache;
 
             public void notifyCalled(Navigation navigation) {
                 mUri = navigation.getUri();
@@ -113,6 +115,7 @@ public class NavigationTest {
                 mLoadError = navigation.getLoadError();
                 mNavigationState = navigation.getState();
                 mIsKnownProtocol = navigation.isKnownProtocol();
+                mIsServedFromBackForwardCache = navigation.isServedFromBackForwardCache();
                 if (sShouldTrackPageInitiated) {
                     mIsPageInitiatedNavigation = navigation.isPageInitiated();
                 }
@@ -155,6 +158,10 @@ public class NavigationTest {
 
             public boolean isKnownProtocol() {
                 return mIsKnownProtocol;
+            }
+
+            public boolean isServedFromBackForwardCache() {
+                return mIsServedFromBackForwardCache;
             }
 
             public boolean isPageInitiated() {
@@ -1320,5 +1327,28 @@ public class NavigationTest {
         long largestContentfulPaint =
                 mCallback.onLargestContentfulPaintCallback.getLargestContentfulPaintMs();
         Assert.assertTrue(largestContentfulPaint <= (current - navigationStart));
+    }
+
+    @MinWebLayerVersion(89)
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add("enable-features=BackForwardCache")
+    public void testServedFromBackForwardCache() throws Exception {
+        TestWebServer testServer = TestWebServer.start();
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
+        setNavigationCallback(activity);
+
+        String url = mActivityTestRule.getTestServer().getURL("/echo");
+        navigateAndWaitForCompletion(url,
+                () -> { activity.getTab().getNavigationController().navigate(Uri.parse(url)); });
+        Assert.assertFalse(mCallback.onStartedCallback.isServedFromBackForwardCache());
+
+        String url2 = testServer.setResponse("/ok.html", "<html>ok</html>", null);
+        mActivityTestRule.navigateAndWait(url2);
+        Assert.assertFalse(mCallback.onStartedCallback.isServedFromBackForwardCache());
+
+        navigateAndWaitForCompletion(
+                url, () -> { activity.getTab().getNavigationController().goBack(); });
+        Assert.assertTrue(mCallback.onStartedCallback.isServedFromBackForwardCache());
     }
 }

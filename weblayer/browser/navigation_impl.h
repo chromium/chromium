@@ -80,6 +80,9 @@ class NavigationImpl : public Navigation {
       const base::android::JavaParamRef<jstring>& value);
   jboolean IsPageInitiated(JNIEnv* env) { return IsPageInitiated(); }
   jboolean IsReload(JNIEnv* env) { return IsReload(); }
+  jboolean IsServedFromBackForwardCache(JNIEnv* env) {
+    return IsServedFromBackForwardCache();
+  }
 
   void SetResponse(
       std::unique_ptr<embedder_support::WebResourceResponse> response);
@@ -106,6 +109,7 @@ class NavigationImpl : public Navigation {
   void SetUserAgentString(const std::string& value) override;
   bool IsPageInitiated() override;
   bool IsReload() override;
+  bool IsServedFromBackForwardCache() override;
 
  private:
   content::NavigationHandle* navigation_handle_;

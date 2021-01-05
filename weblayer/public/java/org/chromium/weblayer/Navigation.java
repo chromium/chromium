@@ -333,4 +333,25 @@ public class Navigation extends IClientNavigation.Stub {
             throw new APICallException(e);
         }
     }
+
+    /**
+     * Whether the navigation is restoring a page from back-forward cache (see
+     * https://web.dev/bfcache/). Since a previously loaded page is being reused, there are some
+     * things embedders have to keep in mind such as:
+     *   * there will be no NavigationObserver::onFirstContentfulPaint callbacks
+     *   * if an embedder injects code using Tab::ExecuteScript there is no need to reinject scripts
+     *
+     * @since 89
+     */
+    public boolean isServedFromBackForwardCache() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 89) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            return mNavigationImpl.isServedFromBackForwardCache();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
 }

@@ -186,6 +186,13 @@ public final class NavigationImpl extends INavigation.Stub {
         return NavigationImplJni.get().isReload(mNativeNavigationImpl);
     }
 
+    @Override
+    public boolean isServedFromBackForwardCache() {
+        StrictModeWorkaround.apply();
+        throwIfNativeDestroyed();
+        return NavigationImplJni.get().isServedFromBackForwardCache(mNativeNavigationImpl);
+    }
+
     public void setIntentLaunched() {
         mIntentLaunched = true;
     }
@@ -247,5 +254,6 @@ public final class NavigationImpl extends INavigation.Stub {
         boolean setUserAgentString(long nativeNavigationImpl, String value);
         boolean isPageInitiated(long nativeNavigationImpl);
         boolean isReload(long nativeNavigationImpl);
+        boolean isServedFromBackForwardCache(long nativeNavigationImpl);
     }
 }

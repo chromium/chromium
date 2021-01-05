@@ -114,6 +114,10 @@ bool NavigationImpl::IsReload() {
   return navigation_handle_->GetReloadType() != content::ReloadType::NONE;
 }
 
+bool NavigationImpl::IsServedFromBackForwardCache() {
+  return navigation_handle_->IsServedFromBackForwardCache();
+}
+
 GURL NavigationImpl::GetURL() {
   return navigation_handle_->GetURL();
 }
