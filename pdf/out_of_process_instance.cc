@@ -912,10 +912,8 @@ void OutOfProcessInstance::SendAccessibilityViewportInfo() {
   viewport_info.scroll.x = -plugin_offset_.x();
   viewport_info.scroll.y =
       -top_toolbar_height_in_viewport_coords() - plugin_offset_.y();
-  viewport_info.offset.x =
-      available_area_.point().x() / (device_scale() * zoom());
-  viewport_info.offset.y =
-      available_area_.point().y() / (device_scale() * zoom());
+  viewport_info.offset.x = available_area_.x() / (device_scale() * zoom());
+  viewport_info.offset.y = available_area_.y() / (device_scale() * zoom());
 
   viewport_info.zoom = zoom();
   viewport_info.scale = device_scale();
@@ -1118,7 +1116,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
   }
   if (first_paint()) {
     set_first_paint(false);
-    pp::Rect rect = pp::Rect(pp::Point(), image_data_.size());
+    gfx::Rect rect(SizeFromPPSize(image_data_.size()));
     FillRect(rect, GetBackgroundColor());
     ready->push_back(PaintReadyRect(rect, image_data_, /*flush_now=*/true));
   }
@@ -1131,26 +1129,24 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
   for (const auto& paint_rect : paint_rects) {
     // Intersect with plugin area since there could be pending invalidates from
     // when the plugin area was larger.
-    pp::Rect rect = PPRectFromRect(paint_rect);
-    rect = rect.Intersect(pp::Rect(pp::Point(), plugin_size_));
+    gfx::Rect rect = gfx::IntersectRects(
+        paint_rect, gfx::Rect(SizeFromPPSize(plugin_size_)));
     if (rect.IsEmpty())
       continue;
 
-    pp::Rect pdf_rect = available_area_.Intersect(rect);
+    gfx::Rect pdf_rect = gfx::IntersectRects(rect, available_area_);
     if (!pdf_rect.IsEmpty()) {
       pdf_rect.Offset(available_area_.x() * -1, 0);
 
       std::vector<gfx::Rect> pdf_ready;
       std::vector<gfx::Rect> pdf_pending;
-      engine()->Paint(RectFromPPRect(pdf_rect), skia_image_data_, pdf_ready,
-                      pdf_pending);
+      engine()->Paint(pdf_rect, skia_image_data_, pdf_ready, pdf_pending);
       for (auto& ready_rect : pdf_ready) {
-        ready_rect.Offset(VectorFromPPPoint(available_area_.point()));
-        ready->push_back(
-            PaintReadyRect(PPRectFromRect(ready_rect), image_data_));
+        ready_rect.Offset(available_area_.OffsetFromOrigin());
+        ready->push_back(PaintReadyRect(ready_rect, image_data_));
       }
       for (auto& pending_rect : pdf_pending) {
-        pending_rect.Offset(VectorFromPPPoint(available_area_.point()));
+        pending_rect.Offset(available_area_.OffsetFromOrigin());
         pending->push_back(pending_rect);
       }
     }
@@ -1160,14 +1156,15 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
                                   ? 0
                                   : engine()->GetPageScreenRect(0).y();
     if (rect.y() < first_page_ypos) {
-      pp::Rect region = rect.Intersect(pp::Rect(
-          pp::Point(), pp::Size(plugin_size_.width(), first_page_ypos)));
+      gfx::Rect region = gfx::IntersectRects(
+          rect, gfx::Rect(gfx::Size(plugin_size_.width(), first_page_ypos)));
       ready->push_back(PaintReadyRect(region, image_data_));
       FillRect(region, GetBackgroundColor());
     }
 
     for (const auto& background_part : background_parts_) {
-      pp::Rect intersection = background_part.location.Intersect(rect);
+      gfx::Rect intersection =
+          gfx::IntersectRects(RectFromPPRect(background_part.location), rect);
       if (!intersection.IsEmpty()) {
         FillRect(intersection, background_part.color);
         ready->push_back(PaintReadyRect(intersection, image_data_));
@@ -1240,7 +1237,7 @@ int OutOfProcessInstance::GetDocumentPixelHeight() const {
       ceil(document_size_.height() * zoom() * device_scale()));
 }
 
-void OutOfProcessInstance::FillRect(const pp::Rect& rect, uint32_t color) {
+void OutOfProcessInstance::FillRect(const gfx::Rect& rect, uint32_t color) {
   DCHECK(!image_data_.is_null() || rect.IsEmpty());
   uint32_t* buffer_start = static_cast<uint32_t*>(image_data_.data());
   int stride = image_data_.stride();
@@ -1285,14 +1282,13 @@ void OutOfProcessInstance::Invalidate(const gfx::Rect& rect) {
     return;
   }
 
-  gfx::Rect offset_rect(rect);
-  offset_rect.Offset(VectorFromPPPoint(available_area_.point()));
+  gfx::Rect offset_rect = rect + available_area_.OffsetFromOrigin();
   paint_manager().InvalidateRect(offset_rect);
 }
 
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
   if (!image_data_.is_null())
-    paint_manager().ScrollRect(RectFromPPRect(available_area_), offset);
+    paint_manager().ScrollRect(available_area_, offset);
 }
 
 void OutOfProcessInstance::ScrollToX(int x_in_screen_coords) {
@@ -1959,8 +1955,7 @@ void OutOfProcessInstance::HandleViewportMessage(
     DocumentLayout::Options layout_options;
     layout_options.FromValue(ValueFromVar(layout_options_var));
     // TODO(crbug.com/1013800): Eliminate need to get document size from here.
-    document_size_ =
-        PPSizeFromSize(engine()->ApplyDocumentLayout(layout_options));
+    document_size_ = engine()->ApplyDocumentLayout(layout_options);
     OnGeometryChanged(zoom(), device_scale());
   }
 
@@ -2192,7 +2187,7 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
   if (zoom() != old_zoom || device_scale() != old_device_scale)
     engine()->ZoomUpdated(zoom() * device_scale());
 
-  available_area_ = pp::Rect(plugin_size_);
+  available_area_ = gfx::Rect(SizeFromPPSize(plugin_size_));
   int doc_width = GetDocumentPixelWidth();
   if (doc_width < available_area_.width()) {
     available_area_.Offset((available_area_.width() - doc_width) / 2, 0);
@@ -2205,8 +2200,8 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
     available_area_.set_height(bottom_of_document);
 
   CalculateBackgroundParts();
-  engine()->PageOffsetUpdated(VectorFromPPPoint(available_area_.point()));
-  engine()->PluginSizeUpdated(SizeFromPPSize(available_area_.size()));
+  engine()->PageOffsetUpdated(available_area_.OffsetFromOrigin());
+  engine()->PluginSizeUpdated(available_area_.size());
 
   if (document_size_.IsEmpty())
     return;

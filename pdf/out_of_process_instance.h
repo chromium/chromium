@@ -229,7 +229,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   int GetDocumentPixelHeight() const;
 
   // Draws a rectangle with the specified dimensions and color in our buffer.
-  void FillRect(const pp::Rect& rect, uint32_t color);
+  void FillRect(const gfx::Rect& rect, uint32_t color);
 
   bool CanSaveEdits() const;
   void SaveToFile(const std::string& token);
@@ -352,10 +352,10 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   pp::Size plugin_dip_size_;
   // Remaining area, in pixels, to render the pdf in after accounting for
   // horizontal centering.
-  pp::Rect available_area_;
+  gfx::Rect available_area_;
   // Size of entire document in pixels (i.e. if each page is 800 pixels high and
   // there are 10 pages, the height will be 8000).
-  pp::Size document_size_;
+  gfx::Size document_size_;
   // Positional offset, in CSS pixels, of the plugin rectangle.
   pp::Point plugin_offset_;
   // The scroll offset in CSS pixels.

@@ -22,7 +22,7 @@ namespace chrome_pdf {
 // ready.
 class PaintReadyRect {
  public:
-  PaintReadyRect(const pp::Rect& rect,
+  PaintReadyRect(const gfx::Rect& rect,
                  const pp::ImageData& image_data,
                  bool flush_now = false);
   PaintReadyRect(const gfx::Rect& rect,
