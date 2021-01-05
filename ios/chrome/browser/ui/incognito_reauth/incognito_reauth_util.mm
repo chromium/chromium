@@ -15,8 +15,14 @@
 NSString* biometricAuthenticationTypeString() {
   LAContext* ctx = [[LAContext alloc] init];
   // Call canEvaluatePolicy:error: once to populate biometrics type
+  NSError* error;
   [ctx canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
-                   error:nil];
+                   error:&error];
+  if (error.code == LAErrorBiometryNotAvailable ||
+      error.code == LAErrorBiometryNotEnrolled) {
+    return l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_PASSCODE);
+  }
+
   switch (ctx.biometryType) {
     case LABiometryTypeFaceID:
       return @"Face ID";
