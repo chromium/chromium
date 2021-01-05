@@ -9,15 +9,6 @@
 
 namespace content {
 
-blink::ForcedColors WebThemeEngineMac::GetForcedColors() const {
-  return forced_colors_;
-}
-
-void WebThemeEngineMac::SetForcedColors(
-    const blink::ForcedColors forced_colors) {
-  forced_colors_ = forced_colors;
-}
-
 void WebThemeEngineMac::Paint(cc::PaintCanvas* canvas,
                               WebThemeEngine::Part part,
                               WebThemeEngine::State state,

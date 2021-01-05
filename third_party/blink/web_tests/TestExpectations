@@ -4986,14 +4986,7 @@ crbug.com/989717 [ Fuchsia ] http/tests/preload/avoid_delaying_onload_link_prelo
 # Expected failures for forced colors mode tests when the corresponding flags
 # are not enabled.
 crbug.com/970285 external/wpt/forced-colors-mode/* [ Failure ]
-
-# Virtual forced colors mode tests should fail on macOS since macOS high
-# contrast does not imply forced colors mode. The tests should pass on all other
-# platforms.
-crbug.com/970285 [ Mac ] virtual/forced-high-contrast-colors/* [ Failure ]
-crbug.com/970285 [ Win ] virtual/forced-high-contrast-colors/* [ Pass ]
-crbug.com/970285 [ Linux ] virtual/forced-high-contrast-colors/* [ Pass ]
-crbug.com/970285 [ Android ] virtual/forced-high-contrast-colors/* [ Pass ]
+crbug.com/970285 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/* [ Pass ]
 
 # Expected failures for dark mode tests when the corresponding flags
 # are not enabled.
