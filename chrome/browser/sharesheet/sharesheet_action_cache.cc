@@ -5,8 +5,11 @@
 #include "chrome/browser/sharesheet/sharesheet_action_cache.h"
 
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/about_flags.h"
+#include "chrome/browser/sharesheet/example_action.h"
 #include "chrome/browser/sharesheet/share_action.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chrome/common/chrome_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -24,6 +27,19 @@ SharesheetActionCache::SharesheetActionCache() {
     AddShareAction(std::make_unique<NearbyShareAction>());
   }
   AddShareAction(std::make_unique<DriveShareAction>());
+  // Add 9 example actions to show expanded view
+  if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews)) {
+    AddShareAction(std::make_unique<ExampleAction>());
+    AddShareAction(std::make_unique<ExampleAction>());
+    AddShareAction(std::make_unique<ExampleAction>());
+    AddShareAction(std::make_unique<ExampleAction>());
+    AddShareAction(std::make_unique<ExampleAction>());
+    AddShareAction(std::make_unique<ExampleAction>());
+    AddShareAction(std::make_unique<ExampleAction>());
+    AddShareAction(std::make_unique<ExampleAction>());
+    AddShareAction(std::make_unique<ExampleAction>());
+    AddShareAction(std::make_unique<ExampleAction>());
+  }
 #endif
 }
 
