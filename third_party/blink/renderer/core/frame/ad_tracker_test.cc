@@ -262,36 +262,6 @@ TEST_F(AdTrackerTest, TopScriptTaggedAsAdResource) {
       AdTracker::StackType::kBottomOnly));
 }
 
-TEST_F(AdTrackerTest, TopOfStackOnly_NoAdsOnTop) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kTopOfStackAdTagging);
-  CreateAdTracker();
-
-  String ad_script_url("https://example.com/bar.js");
-  AppendToKnownAdScripts(ad_script_url);
-
-  WillExecuteScript(ad_script_url);
-  WillExecuteScript("https://example.com/foo.js");
-  ad_tracker_->SetScriptAtTopOfStack("https://www.example.com/baz.js");
-
-  EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
-}
-
-TEST_F(AdTrackerTest, TopOfStackOnly_AdsOnTop) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kTopOfStackAdTagging);
-  CreateAdTracker();
-
-  String ad_script_url("https://example.com/bar.js");
-  AppendToKnownAdScripts(ad_script_url);
-
-  WillExecuteScript(ad_script_url);
-  WillExecuteScript("https://example.com/foo.js");
-  ad_tracker_->SetScriptAtTopOfStack(ad_script_url);
-
-  EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
-}
-
 // Tests that if neither script in the stack is an ad,
 // AnyExecutingScriptsTaggedAsAdResource should return false.
 TEST_F(AdTrackerTest, AnyExecutingScriptsTaggedAsAdResource_False) {
