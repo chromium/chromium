@@ -833,6 +833,109 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ONC_WIFI_SIGNAL_STRENGTH" desc="ONC Property label for WiFi.SignalStrength">
         Signal strength
       </message>
+      <message name="IDS_ONC_IPV4_ADDRESS" desc="ONC Property label for ipv4-IPAddress">
+        IP address
+      </message>
+      <message name="IDS_ONC_IPV4_GATEWAY" desc="ONC Property label for ipv4-Gateway">
+        Gateway
+      </message>
+      <message name="IDS_ONC_IPV4_NETMASK" desc="ONC Property label for ipv4-netmask">
+        Subnet mask
+      </message>
+      <message name="IDS_ONC_IPV6_ADDRESS" desc="ONC Property label for ipv6-Address">
+        IPv6 address
+      </message>
+      <message name="IDS_ONC_CONNECTED" desc="Settings > Internet, text in network summary when a network is connected.">
+        Connected
+      </message>
+      <message name="IDS_ONC_CONNECTING" desc="Settings > Internet, text in network summary when a network is connecting.">
+        Connecting
+      </message>
+      <message name="IDS_ONC_PORTAL_STATE" desc="Settings > Internet, label in network details page for the captive portal state.">
+        Portal State
+      </message>
+      <message name="IDS_ONC_PORTAL_STATE_NO_INTERNET" desc="Settings > Internet, text in network details page when no internet connection is avialable.">
+        No internet
+      </message>
+      <message name="IDS_ONC_PORTAL_STATE_PORTAL" desc="Settings > Internet, text in network details page when a portal state was detected.">
+        Captive portal detected
+      </message>
+      <message name="IDS_ONC_PORTAL_STATE_PORTAL_SUSPECTED" desc="Settings > Internet, text in network details page when a portal state is suspected.">
+        Captive portal suspected
+      </message>
+      <message name="IDS_ONC_PORTAL_STATE_PROXY_AUTH" desc="Settings > Internet, text in network details page when a portal state was detected.">
+        Proxy authentication required
+      </message>
+      <message name="IDS_ONC_WIFI_FREQUENCY" desc="ONC Property label for WiFi.Frequency">
+        Frequency
+      </message>
+      <message name="IDS_ONC_WIFI_PASSWORD" desc="ONC Property label for WiFi.Password">
+        Password
+      </message>
+      <message name="IDS_ONC_WIFI_SECURITY" desc="ONC Property label for WiFi.Security">
+        Security
+      </message>
+      <message name="IDS_ONC_WIFI_SECURITY_NONE" desc="In settings > Internet, a string specifying security type = none.">
+        None
+      </message>
+      <message name="IDS_ONC_WIFI_SECURITY_PSK" desc="In settings > Internet, a string specifying security type = PSK (either WPA-PSK or RSN-PSK).">
+        PSK (WPA or RSN)
+      </message>
+      <message name="IDS_ONC_WIFI_SECURITY_WEP" desc="In settings > Internet, a string specifying security type = WEP.">
+        WEP
+      </message>
+      <message name="IDS_ONC_WIFI_SECURITY_EAP" desc="In settings > Internet, a string specifying security type = EAP (802.1X).">
+        EAP
+      </message>
+      <message name="IDS_ONC_WIFI_SSID" desc="ONC Property label for WiFi.SSID">
+        SSID
+      </message>
+      <message name="IDS_ONC_WIFI_BSSID" desc="Settings > Network > Wifi Network Detail Page > label for BSSID property. BSSID is a a unique 48 bit identifier for a wireless access point.">
+        BSSID
+      </message>
+      <message name="IDS_ONC_VPN_HOST" desc="ONC Property label for VPN.Host">
+        Server hostname
+      </message>
+      <message name="IDS_ONC_VPN_TYPE" desc="ONC Property label for VPN.Type">
+        Provider type
+      </message>
+      <message name="IDS_ONC_VPN_IPSEC_GROUP" desc="ONC Property label for VPN.IPSec.Group">
+        Group name
+      </message>
+      <message name="IDS_ONC_VPN_THIRD_PARTY_VPN_PROVIDER_NAME" desc="ONC Property label for VPN.ThirdPartyVPN.ProviderName">
+        Provider name
+      </message>
+      <message name="IDS_ONC_VPN_OPENVPN_OTP" desc="ONC Property label for VPN.OpenVPN.OTP">
+        OTP
+      </message>
+      <message name="IDS_ONC_VPN_TYPE_L2TP_IPSEC" desc="ONC Property label for VPN.Type.L2TP-IPSec">
+        L2TP/IPsec
+      </message>
+      <message name="IDS_ONC_VPN_TYPE_L2TP_IPSEC_PSK" desc="ONC Property label for configuring VPN.Type.L2TP-IPSec with AuthenticationType = PSK">
+        L2TP/IPsec + pre-shared key
+      </message>
+      <message name="IDS_ONC_VPN_TYPE_L2TP_IPSEC_CERT" desc="ONC Property label for configuring VPN.Type.L2TP-IPSec  with AuthenticationType = Cert">
+        L2TP/IPsec + user certificate
+      </message>
+      <message name="IDS_ONC_VPN_OPENVPN_EXTRA_HOSTS" desc="ONC Property label for VPN.OpenVPN.ExtraHosts">
+        Extra hosts
+      </message>
+      <message name="IDS_ONC_VPN_IPSEC_PSK" desc="ONC Property label for VPN.IPSec.PSK">
+        Pre-shared key
+      </message>
+      <message name="IDS_ONC_VPN_PASSWORD" desc="ONC Property label for VPN.OpenVPN.Password or VPN.L2TP.Password">
+        Password
+      </message>
+      <message name="IDS_ONC_VPN_USERNAME" desc="ONC Property label for VPN.OpenVPN.Username or VPN.L2TP.Username">
+        Username
+      </message>
+      <message name="IDS_ONC_VPN_TYPE_OPENVPN" desc="ONC Property label for VPN.Type.OpenVPN">
+        Open VPN
+      </message>
+      <message name="IDS_ONC_VPN_TYPE_ARCVPN" desc="ONC Property label for VPN.Type.ARCVPN">
+        Android VPN
+      </message>
+
 
       <!-- Network Health display strings -->
       <message name="IDS_NETWORK_HEALTH_STATE" desc="Label for the current state of a networking device.">
