@@ -1485,21 +1485,27 @@ void PictureLayerImpl::RecalculateRasterScales() {
 void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
     float preserved_raster_contents_scale) {
   DCHECK(draw_properties().screen_space_transform_is_animating);
+
+  // We will cap the adjusted scale with the viewport area, which is impossible
+  // if the viewport is empty.
+  gfx::Size viewport = layer_tree_impl()->GetDeviceViewport().size();
+  if (viewport.IsEmpty())
+    return;
+
   CombinedAnimationScale animation_scales =
       layer_tree_impl()->property_trees()->GetAnimationScales(
           transform_tree_index(), layer_tree_impl());
   float maximum_scale = animation_scales.maximum_animation_scale;
   float starting_scale = animation_scales.starting_animation_scale;
   // Adjust raster scale only if the animation scale is known.
-  if (maximum_scale == kNotScaled && starting_scale == kNotScaled)
-    return;
-
-  gfx::Size viewport = layer_tree_impl()->GetDeviceViewport().size();
-  if (viewport.IsEmpty())
-    return;
-
-  // We rasterize at the maximum scale that will occur during the animation.
-  raster_contents_scale_ = std::max(maximum_scale, starting_scale);
+  if (maximum_scale == kNotScaled && starting_scale == kNotScaled) {
+    // Use at least the native scale if the animation scale is unknown.
+    raster_contents_scale_ = std::max(raster_contents_scale_,
+                                      ideal_page_scale_ * ideal_device_scale_);
+  } else {
+    // We rasterize at the maximum scale that will occur during the animation.
+    raster_contents_scale_ = std::max(maximum_scale, starting_scale);
+  }
   DCHECK_NE(raster_contents_scale_, kNotScaled);
 
   // However we want to avoid excessive memory use. Choose a scale at which this

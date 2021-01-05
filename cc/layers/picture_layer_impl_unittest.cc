@@ -2966,6 +2966,19 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTilingDuringAnimation) {
                                maximum_animation_scale,
                                starting_animation_scale, animating_transform);
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 11.f);
+
+  // When animating with an unknown animation scale factors, a new high-res
+  // tiling should be created at the native scale if the current contents
+  // scale is smaller.
+  animating_transform = true;
+  contents_scale = 0.5f;
+  maximum_animation_scale = kNotScaled;
+
+  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale,
+                               maximum_animation_scale,
+                               starting_animation_scale, animating_transform);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(),
+                 page_scale * device_scale);
 }
 
 TEST_F(LegacySWPictureLayerImplTest,
