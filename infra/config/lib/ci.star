@@ -172,6 +172,67 @@ def android_fyi_builder(*, name, **kwargs):
         **kwargs
     )
 
+def angle_builder(*, name, **kwargs):
+    return ci.builder(
+        name = name,
+        builder_group = "chromium.angle",
+        executable = "recipe:angle_chromium",
+        service_account =
+            "chromium-ci-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
+        properties = {
+            "perf_dashboard_machine_group": "ChromiumANGLE",
+        },
+        **kwargs
+    )
+
+def angle_linux_builder(
+        *,
+        name,
+        goma_backend = builders.goma.backend.RBE_PROD,
+        **kwargs):
+    return angle_builder(
+        name = name,
+        goma_backend = goma_backend,
+        os = builders.os.LINUX_DEFAULT,
+        pool = "luci.chromium.gpu.ci",
+        **kwargs
+    )
+
+def angle_mac_builder(*, name, **kwargs):
+    return angle_builder(
+        name = name,
+        builderless = False,
+        cores = None,
+        goma_backend = builders.goma.backend.RBE_PROD,
+        os = builders.os.MAC_ANY,
+        **kwargs
+    )
+
+# ANGLE testers are thin testers, they use linux VMs regardless of the
+# actual OS that the tests are built for
+def angle_thin_tester(
+        *,
+        name,
+        **kwargs):
+    return angle_linux_builder(
+        name = name,
+        cores = 2,
+        # Setting goma_backend for testers is a no-op, but better to be explicit
+        # here and also leave the generated configs unchanged for these testers.
+        goma_backend = None,
+        **kwargs
+    )
+
+def angle_windows_builder(*, name, **kwargs):
+    return angle_builder(
+        name = name,
+        builderless = True,
+        goma_backend = builders.goma.backend.RBE_PROD,
+        os = builders.os.WINDOWS_ANY,
+        pool = "luci.chromium.gpu.ci",
+        **kwargs
+    )
+
 def chromium_builder(*, name, tree_closing = True, **kwargs):
     return ci_builder(
         name = name,
@@ -691,6 +752,10 @@ ci = struct(
     # More specific builder wrapper functions
     android_builder = android_builder,
     android_fyi_builder = android_fyi_builder,
+    angle_linux_builder = angle_linux_builder,
+    angle_mac_builder = angle_mac_builder,
+    angle_thin_tester = angle_thin_tester,
+    angle_windows_builder = angle_windows_builder,
     chromium_builder = chromium_builder,
     chromiumos_builder = chromiumos_builder,
     clang_builder = clang_builder,

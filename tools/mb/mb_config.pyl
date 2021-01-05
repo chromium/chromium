@@ -137,6 +137,24 @@
       'android-weblayer-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
     },
 
+    'chromium.angle': {
+      'android-angle-arm64-builder': 'angle_specific_android_release_trybot_arm64',
+      'android-angle-chromium-arm64-builder': 'gpu_tests_android_release_trybot_arm64_fastbuild',
+      'android-angle-perf-arm64-builder': 'angle_specific_android_vulkan_ndk_release_trybot_dcheck_off_arm64',
+      'android-angle-vk-arm-builder': 'angle_specific_android_vulkan_ndk_release_trybot',
+      'android-angle-vk-arm64-builder': 'angle_specific_android_vulkan_ndk_release_trybot_arm64',
+      'fuchsia-angle-builder': 'angle_specific_release_trybot_fuchsia',
+      'linux-angle-builder': 'angle_specific_release_trybot',
+      'linux-angle-chromium-builder': 'gpu_tests_release_trybot',
+      'linux-ozone-angle-builder': 'angle_specific_ozone_linux_system_gbm_libdrm_release_trybot',
+      'mac-angle-builder': 'angle_specific_release_trybot',
+      'mac-angle-chromium-builder': 'gpu_tests_release_trybot_deterministic_mac',
+      'win-angle-chromium-x64-builder': 'gpu_tests_release_trybot',
+      'win-angle-chromium-x86-builder': 'gpu_tests_release_trybot_x86',
+      'win-angle-x64-builder': 'angle_specific_release_trybot',
+      'win-angle-x86-builder': 'angle_specific_release_trybot_x86',
+    },
+
     'chromium.chromiumos': {
       'Linux ChromiumOS Full': 'chromeos_with_codecs_release_bot',
 
@@ -1472,6 +1490,43 @@
       'angle_tests', 'ozone_linux', 'ozone_linux_non_x11', 'system_gbm_libdrm', 'release_trybot',
     ],
 
+    'angle_specific_android_vulkan_ndk_release_trybot': [
+      'angle_specific_tests', 'android_without_codecs', 'vulkan_ndk',
+      'shared_release_trybot',
+    ],
+
+    'angle_specific_android_vulkan_ndk_release_trybot_arm64': [
+      'angle_specific_tests', 'android_without_codecs', 'vulkan_ndk',
+      'shared_release_trybot', 'arm64',
+    ],
+
+    'angle_specific_android_vulkan_ndk_release_trybot_dcheck_off_arm64': [
+      'angle_specific_tests', 'android_without_codecs',  'vulkan_ndk',
+      'shared_release_trybot_dcheck_off', 'arm64',
+    ],
+
+    'angle_specific_android_release_trybot_arm64': [
+      'angle_specific_tests', 'android_without_codecs',
+      'shared_release_trybot', 'arm64',
+    ],
+
+    'angle_specific_ozone_linux_system_gbm_libdrm_release_trybot': [
+      'angle_specific_tests', 'ozone_linux', 'ozone_linux_non_x11',
+      'system_gbm_libdrm', 'shared_release_trybot',
+    ],
+
+    'angle_specific_release_trybot': [
+      'angle_specific_tests', 'shared_release_trybot',
+    ],
+
+    'angle_specific_release_trybot_fuchsia': [
+      'angle_specific_tests', 'shared_release_trybot', 'fuchsia',
+    ],
+
+    'angle_specific_release_trybot_x86': [
+      'angle_specific_tests', 'shared_release_trybot', 'x86',
+    ],
+
     'asan_clang_shared_v8_heap_minimal_symbols_release_tot': [
       'asan', 'clang_tot', 'shared', 'v8_heap', 'minimal_symbols', 'release',
     ],
@@ -2080,6 +2135,10 @@
       'gpu_tests', 'release_trybot', 'resource_whitelisting', 'invert_fieldtrials',
     ],
 
+    'gpu_tests_release_trybot_x86': [
+      'gpu_tests', 'release_trybot', 'x86',
+    ],
+
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange': [
       'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
     ],
@@ -2630,9 +2689,18 @@
       'gn_args': 'build_angle_deqp_tests=true',
     },
 
+    'angle_gles1_conform_tests': {
+      'gn_args': 'build_angle_gles1_conform_tests=true',
+    },
+
     'angle_tests': {
       'mixins': ['angle_trace_perf_tests', 'gpu_tests',
                  'internal_gles_conform_tests'],
+    },
+
+    'angle_specific_tests': {
+      'mixins': ['angle_gles1_conform_tests', 'angle_deqp_tests',
+                 'angle_trace_perf_tests'],
     },
 
     'angle_trace_perf_tests': {
@@ -3176,6 +3244,10 @@
 
     'shared_release_trybot': {
       'mixins': ['shared_release_bot', 'minimal_symbols', 'dcheck_always_on'],
+    },
+
+    'shared_release_trybot_dcheck_off': {
+      'mixins': ['shared_release_bot', 'minimal_symbols', 'dcheck_off'],
     },
 
     'sk_dawn': {

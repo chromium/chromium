@@ -5470,6 +5470,27 @@
       'rendering_mobile_representative_perf_tests_isolated_scripts',
     ],
 
+    'gpu_angle_android_gtests': [
+      'gpu_angle_deqp_egl_gles_gtests',
+      'gpu_angle_deqp_gles2_gles_gtests',
+      'gpu_angle_deqp_gles3_gles_gtests',
+      'gpu_angle_end2end_gtests',
+      'gpu_angle_unit_gtests',
+    ],
+
+    'gpu_angle_android_vulkan_gtests': [
+      'gpu_angle_deqp_egl_vulkan_gtests',
+      'gpu_angle_deqp_gles2_vulkan_gtests',
+      'gpu_angle_deqp_gles31_vulkan_gtests',
+      'gpu_angle_deqp_gles3_vulkan_gtests',
+      'gpu_angle_deqp_khr_gles2_vulkan_gtests',
+      'gpu_angle_deqp_khr_gles31_vulkan_gtests',
+      'gpu_angle_deqp_khr_gles32_vulkan_gtests',
+      'gpu_angle_deqp_khr_gles3_vulkan_gtests',
+      'gpu_angle_end2end_gtests',
+      'gpu_angle_unit_gtests',
+    ],
+
     'gpu_angle_deqp_android_gtests': [
       'gpu_angle_deqp_egl_gles_gtests',
       'gpu_angle_deqp_gles2_gles_gtests',
@@ -5582,12 +5603,54 @@
       'gpu_gles2_conform_gtests',
     ],
 
+    'gpu_angle_linux_intel_gtests': [
+      'gpu_angle_deqp_gles2_gl_gtests',
+      'gpu_angle_end2end_gtests',
+      'gpu_angle_unit_gtests',
+      'gpu_angle_white_box_gtests',
+    ],
+
+    'gpu_angle_linux_nvidia_gtests': [
+      'gpu_angle_deqp_egl_gl_gtests',
+      'gpu_angle_deqp_egl_vulkan_gtests',
+      'gpu_angle_deqp_gles2_gl_gtests',
+      'gpu_angle_deqp_gles2_vulkan_gtests',
+      'gpu_angle_deqp_gles31_gl_gtests',
+      'gpu_angle_deqp_gles31_vulkan_gtests',
+      'gpu_angle_deqp_gles31_vulkan_rotate180_gtests',
+      'gpu_angle_deqp_gles31_vulkan_rotate270_gtests',
+      'gpu_angle_deqp_gles31_vulkan_rotate90_gtests',
+      'gpu_angle_deqp_gles3_gl_gtests',
+      'gpu_angle_deqp_gles3_vulkan_gtests',
+      'gpu_angle_deqp_gles3_vulkan_rotate180_gtests',
+      'gpu_angle_deqp_gles3_vulkan_rotate270_gtests',
+      'gpu_angle_deqp_gles3_vulkan_rotate90_gtests',
+      'gpu_angle_deqp_khr_gles2_vulkan_gtests',
+      'gpu_angle_deqp_khr_gles31_vulkan_gtests',
+      'gpu_angle_deqp_khr_gles32_vulkan_gtests',
+      'gpu_angle_deqp_khr_gles3_vulkan_gtests',
+      'gpu_angle_end2end_gtests',
+      'gpu_angle_unit_gtests',
+      'gpu_angle_white_box_gtests',
+    ],
+
     'gpu_angle_linux_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_validating_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_validating_telemetry_tests',
+    ],
+
+    'gpu_angle_mac_amd_and_intel_gtests': [
+      'gpu_angle_deqp_egl_gl_gtests',
+      'gpu_angle_deqp_egl_metal_gtests',
+      'gpu_angle_deqp_gles2_gl_gtests',
+      'gpu_angle_deqp_gles2_metal_gtests',
+      'gpu_angle_deqp_gles3_gl_gtests',
+      'gpu_angle_deqp_gles3_metal_gtests',
+      'gpu_angle_end2end_gtests',
+      'gpu_angle_unit_gtests',
     ],
 
     'gpu_angle_mac_gtests': [
@@ -5612,6 +5675,14 @@
       'test_buildbucket_api_gpu_use_cases',
     ],
 
+    'gpu_angle_win_amd_gtests': [
+      'gpu_angle_deqp_gles2_d3d11_gtests',
+      'gpu_angle_deqp_gles2_vulkan_gtests',
+      'gpu_angle_end2end_with_retry_gtests',
+      'gpu_angle_unit_gtests',
+      'gpu_angle_white_box_gtests',
+    ],
+
     'gpu_angle_win_gtests': [
       'gpu_angle_end2end_gtests',
       'gpu_angle_gles1_conformance_gtests',
@@ -5621,6 +5692,14 @@
       'gpu_gles2_conform_d3d11_test',
     ],
 
+    'gpu_angle_win_intel_gtests': [
+      'gpu_angle_deqp_gles2_d3d11_gtests',
+      'gpu_angle_end2end_gtests',
+      'gpu_angle_gles1_conformance_gtests',
+      'gpu_angle_unit_gtests',
+      'gpu_angle_white_box_gtests',
+    ],
+
     'gpu_angle_win_intel_nvidia_telemetry_tests': [
       'gpu_info_collection_telemetry_tests',
       'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
@@ -5628,6 +5707,35 @@
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
+    ],
+
+    'gpu_angle_win_nvidia_gtests': [
+      'gpu_angle_deqp_egl_d3d11_gtests',
+      'gpu_angle_deqp_egl_gl_gtests',
+      'gpu_angle_deqp_egl_vulkan_gtests',
+      'gpu_angle_deqp_gles2_d3d11_gtests',
+      'gpu_angle_deqp_gles2_gl_gtests',
+      'gpu_angle_deqp_gles2_vulkan_gtests',
+      'gpu_angle_deqp_gles31_d3d11_gtests',
+      'gpu_angle_deqp_gles31_gl_gtests',
+      'gpu_angle_deqp_gles31_vulkan_gtests',
+      'gpu_angle_deqp_gles31_vulkan_rotate180_gtests',
+      'gpu_angle_deqp_gles31_vulkan_rotate270_gtests',
+      'gpu_angle_deqp_gles31_vulkan_rotate90_gtests',
+      'gpu_angle_deqp_gles3_d3d11_gtests',
+      'gpu_angle_deqp_gles3_gl_gtests',
+      'gpu_angle_deqp_gles3_vulkan_gtests',
+      'gpu_angle_deqp_gles3_vulkan_rotate180_gtests',
+      'gpu_angle_deqp_gles3_vulkan_rotate270_gtests',
+      'gpu_angle_deqp_gles3_vulkan_rotate90_gtests',
+      'gpu_angle_deqp_khr_gles2_vulkan_gtests',
+      'gpu_angle_deqp_khr_gles31_vulkan_gtests',
+      'gpu_angle_deqp_khr_gles32_vulkan_gtests',
+      'gpu_angle_deqp_khr_gles3_vulkan_gtests',
+      'gpu_angle_end2end_gtests',
+      'gpu_angle_gles1_conformance_gtests',
+      'gpu_angle_unit_gtests',
+      'gpu_angle_white_box_gtests',
     ],
 
     'gpu_blink_web_tests': [

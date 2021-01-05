@@ -1232,6 +1232,274 @@
     },
   },
   {
+    'name': 'chromium.angle',
+    'forbid_script_tests': True,
+    'mixins': [
+      'chromium-tester-service-account',
+      'swarming_containment_auto',
+    ],
+    'machines': {
+      'android-angle-arm64-builder': {},
+      'android-angle-arm64-nexus5x': {
+        'os_type': 'android',
+        'mixins': [
+          'enable_resultdb',
+          'marshmallow',
+          'bullhead',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_angle_android_gtests',
+          'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts',
+        },
+      },
+      'android-angle-chromium-arm64-builder': {},
+      'android-angle-chromium-arm64-nexus5x': {
+        'browser_config': 'android-chromium',
+        'os_type': 'android',
+        'mixins': [
+          'enable_resultdb',
+          'marshmallow',
+          'bullhead',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
+        },
+      },
+      'android-angle-perf-arm64-builder': {},
+      'android-angle-perf-arm64-pixel2': {
+        'os_type': 'android',
+        'mixins': [
+          'enable_resultdb',
+          'gpu-swarming-pool',
+          'android_q',
+          'walleye',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'gpu_angle_perf_isolated_scripts',
+        },
+      },
+      'android-angle-vk-arm-builder': {},
+      'android-angle-vk-arm-pixel2': {
+        'os_type': 'android',
+        'mixins': [
+          'enable_resultdb',
+          'gpu-swarming-pool',
+          'android_q',
+          'walleye',
+        ],
+        'additional_compile_targets': [
+          'angle_apks',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_angle_android_vulkan_gtests',
+          'isolated_scripts': 'gpu_angle_isolated_scripts',
+        },
+      },
+      'android-angle-vk-arm64-builder': {},
+      'android-angle-vk-arm64-pixel2': {
+        'os_type': 'android',
+        'mixins': [
+          'enable_resultdb',
+          'gpu-swarming-pool',
+          'android_q',
+          'walleye',
+        ],
+        'additional_compile_targets': [
+          'angle_apks',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_angle_deqp_android_vulkan_gtests',
+          'gtest_tests': 'gpu_angle_gtests',
+          'isolated_scripts': 'gpu_angle_isolated_scripts',
+        },
+      },
+      'fuchsia-angle-builder': {
+        'additional_compile_targets': [
+          'angle_end2end_tests',
+          'angle_unittests',
+        ],
+      },
+      'linux-angle-builder': {},
+      'linux-angle-chromium-builder': {},
+      'linux-angle-chromium-intel': {
+        'os_type': 'linux',
+        'browser_config': 'release',
+        'mixins': [
+          'linux_intel_hd_630_stable',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_common_gtests_passthrough',
+          'gpu_telemetry_tests': 'gpu_angle_linux_telemetry_tests',
+        },
+      },
+      'linux-angle-chromium-nvidia': {
+        'os_type': 'linux',
+        'browser_config': 'release',
+        'mixins': [
+          'linux_nvidia_quadro_p400_stable',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_common_gtests_passthrough',
+          'gpu_telemetry_tests': 'gpu_angle_linux_telemetry_tests',
+        },
+      },
+      'linux-angle-intel': {
+        'os_type': 'linux',
+        'mixins': [
+          'linux_intel_hd_630_stable',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_angle_linux_intel_gtests',
+          'isolated_scripts': 'gpu_angle_isolated_scripts',
+        },
+      },
+      'linux-angle-nvidia': {
+        'os_type': 'linux',
+        'mixins': [
+          'linux_nvidia_quadro_p400_stable',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_angle_linux_nvidia_gtests',
+          'isolated_scripts': 'gpu_angle_isolated_scripts',
+        },
+      },
+      'linux-ozone-angle-builder': {},
+      'linux-ozone-angle-intel': {
+        'os_type': 'linux',
+        'mixins': [
+          'linux_intel_hd_530',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_angle_gtests',
+        },
+      },
+      'mac-angle-amd': {
+        'os_type': 'mac',
+        'mixins': [
+          'mac_retina_amd_gpu_stable',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_angle_mac_amd_and_intel_gtests',
+        },
+      },
+      'mac-angle-builder': {},
+      'mac-angle-chromium-amd': {
+        'os_type': 'mac',
+        'browser_config': 'release',
+        'mixins': [
+          'mac_retina_amd_gpu_stable',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_common_gtests_passthrough',
+          'gpu_telemetry_tests': 'gpu_angle_mac_telemetry_tests',
+        },
+      },
+      'mac-angle-chromium-builder': {},
+      'mac-angle-chromium-intel': {
+        'os_type': 'mac',
+        'browser_config': 'release',
+        'mixins': [
+          'mac_mini_intel_gpu_stable',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_common_gtests_passthrough',
+          'gpu_telemetry_tests': 'gpu_angle_mac_telemetry_tests',
+        },
+      },
+      'mac-angle-intel': {
+        'os_type': 'mac',
+        'mixins': [
+          'mac_mini_intel_gpu_stable',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_angle_mac_amd_and_intel_gtests',
+        },
+      },
+      'mac-angle-nvidia': {
+        'os_type': 'mac',
+        'mixins': [
+          'mac_retina_nvidia_gpu_stable',
+        ],
+        'test_suites': {
+          # Fewer tests enabled on this config because of limited capacity.
+          'gtest_tests': 'gpu_angle_gtests',
+        },
+      },
+      'win-angle-chromium-x64-builder': {},
+      'win-angle-chromium-x86-builder': {},
+      'win-angle-x64-builder': {},
+      'win-angle-x86-builder': {},
+      'win10-angle-chromium-x64-intel': {
+        'os_type': 'win',
+        'browser_config': 'release_x64',
+        'mixins': [
+          'win10_intel_hd_630_stable',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_angle_win_intel_nvidia_telemetry_tests',
+        },
+      },
+      'win10-angle-chromium-x64-nvidia': {
+        'os_type': 'win',
+        'browser_config': 'release_x64',
+        'mixins': [
+          'win10_nvidia_quadro_p400_stable',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_angle_win_intel_nvidia_telemetry_tests',
+        },
+      },
+      'win10-angle-x64-intel': {
+        'os_type': 'win',
+        'mixins': [
+          'win10_intel_hd_630_stable',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_angle_win_intel_gtests',
+          'isolated_scripts': 'gpu_angle_isolated_scripts',
+        },
+      },
+      'win10-angle-x64-nvidia': {
+        'os_type': 'win',
+        'mixins': [
+          'win10_nvidia_quadro_p400_stable',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_angle_win_nvidia_gtests',
+          'isolated_scripts': 'gpu_angle_isolated_scripts',
+        },
+      },
+      'win7-angle-chromium-x86-amd': {
+        'os_type': 'win',
+        'browser_config': 'release',
+        'mixins': [
+          'win7_amd_r7_240',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_win_angle_amd_telemetry_tests',
+        },
+      },
+      'win7-angle-x64-nvidia': {
+        'os_type': 'win',
+        'mixins': [
+          'win7_nvidia_quadro_p400',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_angle_deqp_win7_nvidia_gtests',
+        },
+      },
+      'win7-angle-x86-amd': {
+        'os_type': 'win',
+        'mixins': [
+          'win7_amd_r7_240',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_angle_win_amd_gtests',
+        },
+      },
+    },
+  },
+  {
     'name': 'chromium.chromiumos',
     'mixins': ['chromium-tester-service-account'],
     'machines': {

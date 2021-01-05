@@ -74,6 +74,7 @@ luci.gitiles_poller(
         "chromium.linux",
         "chromium.chromiumos",
         "chromium.android",
+        "chromium.angle",
         "chrome",
         "chromium.memory",
         "chromium.dawn",
@@ -127,6 +128,22 @@ consoles.console_view(
     name = "chromium.android.fyi",
     ordering = {
         None: ["android", "memory", "weblayer", "webview"],
+    },
+)
+
+consoles.console_view(
+    name = "chromium.angle",
+    ordering = {
+        None: ["Android", "AndroidVk", "Fuchsia", "Linux", "LinuxOzone", "Mac", "Windows", "Perf"],
+        "*builder*": ["Builder"],
+        "Android": "*builder*",
+        "AndroidVk": "*builder*",
+        "Fuchsia": "*builder*",
+        "Linux": "*builder*",
+        "LinuxOzone": "*builder*",
+        "Mac": "*builder*",
+        "Windows": "*builder*",
+        "Perf": "*builder*",
     },
 )
 
@@ -1103,6 +1120,324 @@ ci.android_fyi_builder(
         category = "emulator|11|x86",
         short_name = "rel",
     ),
+)
+
+ci.angle_linux_builder(
+    name = "android-angle-arm64-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Android|Builder|ANGLE",
+        short_name = "arm64",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "android-angle-arm64-nexus5x",
+    console_view_entry = consoles.console_view_entry(
+        category = "Android|Nexus5X|ANGLE",
+        short_name = "arm64",
+    ),
+    triggered_by = ["android-angle-arm64-builder"],
+)
+
+ci.angle_linux_builder(
+    name = "android-angle-chromium-arm64-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Android|Builder|Chromium",
+        short_name = "arm64",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "android-angle-chromium-arm64-nexus5x",
+    console_view_entry = consoles.console_view_entry(
+        category = "Android|Nexus5X|Chromium",
+        short_name = "arm64",
+    ),
+    triggered_by = ["android-angle-chromium-arm64-builder"],
+)
+
+ci.angle_linux_builder(
+    name = "android-angle-vk-arm-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "AndroidVk|Builder|ANGLE",
+        short_name = "arm",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "android-angle-vk-arm-pixel2",
+    console_view_entry = consoles.console_view_entry(
+        category = "AndroidVk|Pixel2|ANGLE",
+        short_name = "arm",
+    ),
+    triggered_by = ["android-angle-vk-arm-builder"],
+)
+
+ci.angle_linux_builder(
+    name = "android-angle-vk-arm64-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "AndroidVk|Builder|ANGLE",
+        short_name = "arm64",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "android-angle-vk-arm64-pixel2",
+    console_view_entry = consoles.console_view_entry(
+        category = "AndroidVk|Pixel2|ANGLE",
+        short_name = "arm64",
+    ),
+    triggered_by = ["android-angle-vk-arm64-builder"],
+)
+
+ci.angle_linux_builder(
+    name = "fuchsia-angle-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Fuchsia|Builder|ANGLE",
+        short_name = "x64",
+    ),
+)
+
+ci.angle_linux_builder(
+    name = "linux-angle-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Linux|Builder|ANGLE",
+        short_name = "x64",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "linux-angle-intel",
+    console_view_entry = consoles.console_view_entry(
+        category = "Linux|Intel|ANGLE",
+        short_name = "x64",
+    ),
+    triggered_by = ["linux-angle-builder"],
+)
+
+ci.angle_thin_tester(
+    name = "linux-angle-nvidia",
+    console_view_entry = consoles.console_view_entry(
+        category = "Linux|NVIDIA|ANGLE",
+        short_name = "x64",
+    ),
+    triggered_by = ["linux-angle-builder"],
+)
+
+ci.angle_linux_builder(
+    name = "linux-angle-chromium-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Linux|Builder|Chromium",
+        short_name = "x64",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "linux-angle-chromium-intel",
+    console_view_entry = consoles.console_view_entry(
+        category = "Linux|Intel|Chromium",
+        short_name = "x64",
+    ),
+    triggered_by = ["linux-angle-chromium-builder"],
+)
+
+ci.angle_thin_tester(
+    name = "linux-angle-chromium-nvidia",
+    console_view_entry = consoles.console_view_entry(
+        category = "Linux|NVIDIA|Chromium",
+        short_name = "x64",
+    ),
+    triggered_by = ["linux-angle-chromium-builder"],
+)
+
+ci.angle_linux_builder(
+    name = "linux-ozone-angle-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "LinuxOzone|Builder|ANGLE",
+        short_name = "x64",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "linux-ozone-angle-intel",
+    console_view_entry = consoles.console_view_entry(
+        category = "LinuxOzone|Intel|ANGLE",
+        short_name = "x64",
+    ),
+    triggered_by = ["linux-ozone-angle-builder"],
+)
+
+ci.angle_mac_builder(
+    name = "mac-angle-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac|Builder|ANGLE",
+        short_name = "x64",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "mac-angle-amd",
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac|AMD|ANGLE",
+        short_name = "x64",
+    ),
+    triggered_by = ["mac-angle-builder"],
+)
+
+ci.angle_thin_tester(
+    name = "mac-angle-intel",
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac|Intel|ANGLE",
+        short_name = "x64",
+    ),
+    triggered_by = ["mac-angle-builder"],
+)
+
+ci.angle_thin_tester(
+    name = "mac-angle-nvidia",
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac|NVIDIA|ANGLE",
+        short_name = "x64",
+    ),
+    triggered_by = ["mac-angle-builder"],
+)
+
+ci.angle_mac_builder(
+    name = "mac-angle-chromium-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac|Builder|Chromium",
+        short_name = "x64",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "mac-angle-chromium-amd",
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac|AMD|Chromium",
+        short_name = "x64",
+    ),
+    triggered_by = ["mac-angle-chromium-builder"],
+)
+
+ci.angle_thin_tester(
+    name = "mac-angle-chromium-intel",
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac|Intel|Chromium",
+        short_name = "x64",
+    ),
+    triggered_by = ["mac-angle-chromium-builder"],
+)
+
+ci.angle_windows_builder(
+    name = "win-angle-chromium-x64-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Builder|Chromium",
+        short_name = "x64",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "win10-angle-chromium-x64-intel",
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Intel|Chromium",
+        short_name = "x64",
+    ),
+    triggered_by = ["win-angle-chromium-x64-builder"],
+)
+
+ci.angle_thin_tester(
+    name = "win10-angle-chromium-x64-nvidia",
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|NVIDIA|Chromium",
+        short_name = "x64",
+    ),
+    triggered_by = ["win-angle-chromium-x64-builder"],
+)
+
+ci.angle_windows_builder(
+    name = "win-angle-chromium-x86-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Builder|Chromium",
+        short_name = "x86",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "win7-angle-chromium-x86-amd",
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Win7-AMD|Chromium",
+        short_name = "x86",
+    ),
+    triggered_by = ["win-angle-chromium-x86-builder"],
+)
+
+ci.angle_windows_builder(
+    name = "win-angle-x64-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Builder|ANGLE",
+        short_name = "x64",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "win7-angle-x64-nvidia",
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Win7-NVIDIA|ANGLE",
+        short_name = "x64",
+    ),
+    triggered_by = ["win-angle-x64-builder"],
+)
+
+ci.angle_thin_tester(
+    name = "win10-angle-x64-intel",
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Intel|ANGLE",
+        short_name = "x64",
+    ),
+    triggered_by = ["win-angle-x64-builder"],
+)
+
+ci.angle_thin_tester(
+    name = "win10-angle-x64-nvidia",
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|NVIDIA|ANGLE",
+        short_name = "x64",
+    ),
+    triggered_by = ["win-angle-x64-builder"],
+)
+
+ci.angle_windows_builder(
+    name = "win-angle-x86-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Builder|ANGLE",
+        short_name = "x86",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "win7-angle-x86-amd",
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Win7-AMD|ANGLE",
+        short_name = "x86",
+    ),
+    triggered_by = ["win-angle-x86-builder"],
+)
+
+ci.angle_linux_builder(
+    name = "android-angle-perf-arm64-builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Perf|Android|Builder",
+        short_name = "arm64",
+    ),
+)
+
+ci.angle_thin_tester(
+    name = "android-angle-perf-arm64-pixel2",
+    console_view_entry = consoles.console_view_entry(
+        category = "Perf|Android|Pixel2",
+        short_name = "arm64",
+    ),
+    triggered_by = ["android-angle-perf-arm64-builder"],
 )
 
 ci.chromium_builder(

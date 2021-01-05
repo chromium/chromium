@@ -247,6 +247,11 @@ HEADER = _header(
                     alt = "Chromium Perf FYI console",
                 ),
                 _link(
+                    text = "angle",
+                    url = "/p/{}/g/chromium.angle".format(settings.project),
+                    alt = "Chromium ANGLE console",
+                ),
+                _link(
                     text = "swangle",
                     url = "/p/{}/g/chromium.swangle".format(settings.project),
                     alt = "Chromium SWANGLE console",
@@ -378,6 +383,7 @@ HEADER = _header(
                 "chromium/chromium.android",
                 "chrome/chrome.perf",
                 "chromium/chromium.gpu.fyi",
+                "chromium/chromium.angle",
                 "chromium/chromium.swangle",
                 "chromium/chromium.fuzz",
             ],
