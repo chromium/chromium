@@ -551,8 +551,6 @@ void PersonalDataManager::OnAccountsCookieDeletedByUserAction() {
   ::autofill::prefs::ClearSyncTransportOptIns(pref_service_);
 }
 
-// TODO(crbug.com/903896): Generalize this to all the possible states relavant
-// to Autofill.
 AutofillSyncSigninState PersonalDataManager::GetSyncSigninState() const {
   // Check if the user is signed out.
   if (!sync_service_ || !identity_manager_ ||
