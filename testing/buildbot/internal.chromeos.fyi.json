@@ -4,6 +4,28 @@
   "chromeos-amd64-generic-lacros-chrome": {
     "additional_compile_targets": [
       "chrome"
+    ],
+    "skylab_tests": [
+      {
+        "args": [],
+        "cros_board": "octopus",
+        "cros_img": "octopus-release/R89-13668.0.0",
+        "name": "tast.critical-chrome_OCTOPUS_TOT",
+        "suite": "tast.critical-chrome",
+        "swarming": {},
+        "test": "tast.critical-chrome",
+        "timeout": 10800
+      },
+      {
+        "args": [],
+        "cros_board": "octopus",
+        "cros_img": "octopus-release/R88-13597.30.0",
+        "name": "tast.critical-chrome_OCTOPUS_TOT-1",
+        "suite": "tast.critical-chrome",
+        "swarming": {},
+        "test": "tast.critical-chrome",
+        "timeout": 10800
+      }
     ]
   },
   "chromeos-betty-arc-r-chrome": {

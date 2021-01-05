@@ -1219,6 +1219,15 @@
       },
     },
 
+    'cros_skylab_chrome_critical': {
+      'tast.critical-chrome': {
+        # TODO(crbug/1139516): Update this once LaCrOS tast test is ready.
+        # A Tast suite, e.g. tast.informational-chrome.
+        'suite': 'tast.critical-chrome',
+        'timeout': 10800,
+      },
+    },
+
     'desktop_chromium_isolated_scripts': {
       'blink_python_tests': {
         'resultdb': {
@@ -6228,6 +6237,15 @@
           'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
         ]
       }
+    },
+
+    'cros_skylab_chrome_critical_x86_64': {
+      'cros_skylab_chrome_critical': {
+        'variants': [
+          'CROS_OCTOPUS_TOT',
+          'CROS_OCTOPUS_TOT-1',
+        ]
+      },
     },
 
     # ios14-beta-sim runs sims only on 14.0+ since

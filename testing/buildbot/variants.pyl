@@ -445,4 +445,19 @@
       ],
     },
   },
+  'CROS_OCTOPUS_TOT': {
+    'skylab': {
+      'cros_board': 'octopus',
+      # Find a released OS version at go/goldeneye.
+      'cros_img': 'octopus-release/R89-13668.0.0',
+    },
+    'identifier': 'OCTOPUS_TOT',
+  },
+  'CROS_OCTOPUS_TOT-1': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_img': 'octopus-release/R88-13597.30.0',
+    },
+    'identifier': 'OCTOPUS_TOT-1',
+  },
 }
