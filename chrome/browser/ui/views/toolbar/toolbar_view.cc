@@ -664,7 +664,6 @@ views::View* ToolbarView::GetDefaultFocusableChild() {
 
 void ToolbarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kToolbar;
-  node_data->SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_TOOLBAR));
 }
 
 void ToolbarView::InitLayout() {
