@@ -735,6 +735,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
             assert(document.fullscreenElement === null);
             scroller.removeEventListener('wheel', onWheel);
             this.pluginController_.setReadOnly(false);
+
+            // Ensure that directional keys still work after exiting.
+            this.shadowRoot.querySelector('embed').focus();
           });
 
           // Nothing else to do here. The viewport will be updated as a result
