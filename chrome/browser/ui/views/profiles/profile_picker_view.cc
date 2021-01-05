@@ -365,8 +365,6 @@ void ProfilePickerView::OnProfileForSigninCreated(
 
   if (signin_util::IsForceSigninEnabled()) {
     // Show the embedded sign-in flow if the force signin is enabled.
-    // TODO(https://crbug.com/1156096): set the local profile name at the end of
-    // the sign-in flow and show the profile customization bubble.
     UserManagerProfileDialog::ShowForceSigninDialog(
         web_view_->GetWebContents()->GetBrowserContext(), profile->GetPath());
     return;

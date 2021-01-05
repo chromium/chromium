@@ -7,6 +7,10 @@
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
 #include "components/sync/driver/sync_user_settings.h"
 
@@ -136,4 +140,18 @@ void ProfileCustomizationBubbleSyncController::
 void ProfileCustomizationBubbleSyncController::SkipBubble() {
   std::move(show_bubble_callback_).Run(false);
   delete this;
+}
+
+// Defined in
+// chrome/browser/ui/signin/profile_customization_bubble_sync_controller.h
+void ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced(
+    Browser* browser,
+    SkColor suggested_profile_color) {
+  views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
+                                 ->toolbar_button_provider()
+                                 ->GetAvatarToolbarButton();
+  DCHECK(anchor_view);
+  ProfileCustomizationBubbleSyncController::
+      ApplyColorAndShowBubbleWhenNoValueSynced(browser->profile(), anchor_view,
+                                               suggested_profile_color);
 }

@@ -2949,12 +2949,16 @@ static_library("ui") {
       "webui/welcome/welcome_ui.h",
     ]
 
-    deps += [ "//components/country_codes" ]
+    deps += [
+      "//chrome/common/search:generate_colors_info",
+      "//components/country_codes",
+    ]
 
     if (enable_dice_support) {
       sources += [
         "signin/dice_web_signin_interceptor_delegate.cc",
         "signin/dice_web_signin_interceptor_delegate.h",
+        "signin/profile_customization_bubble_sync_controller.h",
         "views/profiles/dice_web_signin_interception_bubble_view.cc",
         "views/profiles/dice_web_signin_interception_bubble_view.h",
         "views/profiles/profile_customization_bubble_sync_controller.cc",

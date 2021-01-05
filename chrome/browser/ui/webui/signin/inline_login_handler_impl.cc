@@ -45,6 +45,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/signin/profile_customization_bubble_sync_controller.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -56,6 +58,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
+#include "chrome/common/search/selected_colors_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -296,7 +299,11 @@ void OnSyncSetupComplete(Profile* profile,
               primary_account);
     }
     SetProfileName(profile->GetPath(), profile_name);
-    // TODO(https://crbug.com/1156096): show the profile customization bubble.
+    Browser* browser = chrome::FindBrowserWithProfile(profile);
+    if (browser) {
+      ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced(
+          browser, GenerateNewProfileColor().color);
+    }
   }
 
   if (!has_primary_account) {
