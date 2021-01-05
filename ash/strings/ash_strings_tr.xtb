@@ -194,6 +194,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2705001408393684014">Mikrofonu aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Yukarı</translation>
 <translation id="2718395828230677721">Gece Işığı</translation>
+<translation id="2726420622004325180">Hotspot sunabilmesi için telefonunuzun mobil verisi olmalıdır</translation>
 <translation id="2727175239389218057">Yanıtla</translation>
 <translation id="2727977024730340865">Düşük güçlü bir şarj cihazına takıldı. Şarj durumu güvenilir olmayabilir.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor</translation>
@@ -450,6 +451,7 @@ Başlamak için şunları deneyebilirsin.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Fotoğraf Çek</translation>
 <translation id="495046168593986294">Yukarı kaydır</translation>
+<translation id="4952936045814352993">Alarm sesleri devre dışıyken telefonu bulma özelliği kullanılamaz</translation>
 <translation id="4961318399572185831">Ekranı yayınla</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> sa. <ph name="MINUTES" /> dk. <ph name="SECONDS" /> sn.</translation>
 <translation id="4975771730019223894">Uygulama rozeti ekleme</translation>

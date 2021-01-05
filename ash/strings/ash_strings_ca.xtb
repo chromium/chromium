@@ -194,6 +194,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2705001408393684014">Commuta el micròfon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Amunt</translation>
 <translation id="2718395828230677721">Llum nocturna</translation>
+<translation id="2726420622004325180">El telèfon ha de tenir dades mòbils per proporcionar un punt d'accés</translation>
 <translation id="2727175239389218057">Respon</translation>
 <translation id="2727977024730340865">S'ha connectat a un carregador de baix consum. És possible que la càrrega de la bateria no sigui fiable.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gestionat per <ph name="MANAGER" /></translation>
@@ -450,6 +451,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Captura</translation>
 <translation id="495046168593986294">Desplaça't cap amunt</translation>
+<translation id="4952936045814352993">La funció Localitza el telèfon no està disponible quan els sons d'alarma estan desactivats</translation>
 <translation id="4961318399572185831">Emet la pantalla</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Cercles a les aplicacions</translation>

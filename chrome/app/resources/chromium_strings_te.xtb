@@ -257,6 +257,7 @@
 <translation id="9019929317751753759">Chromiumని సురక్షితం చేయడానికి, మేము క్రింది పొడిగింపుని నిలిపివేసాము, ఇది <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />లో జాబితా చేయబడలేదు మరియు మీకు తెలియకుండా జోడించబడి ఉండవచ్చు.</translation>
 <translation id="9089354809943900324">Chromium కాలం చెల్లినది</translation>
 <translation id="9093206154853821181">{0,plural, =1{ఒక గంటలో Chromium తిరిగి ప్రారంభించబడుతుంది}other{# గంటల్లో Chromium తిరిగి ప్రారంభించబడుతుంది}}</translation>
+<translation id="9107750757953039239">మీరు పలు Google ఖాతాలను కలిగి ఉంటే, మీరు వాటిని మీ <ph name="DEVICE_TYPE" />కు జోడించవచ్చు. మీ ఖాతాలు Chromium బ్రౌజర్, Play స్టోర్‌లోనే కాకుండా Gmail, Drive, ఇంకా YouTube వంటి సర్వీస్‌లలో కూడా అందుబాటులో ఉంటాయి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">కొత్త Chromium &amp;ట్యాబ్‌లో లింక్‌ని తెరువు</translation>
 <translation id="911206726377975832">మీ బ్రౌజింగ్ డేటాను కూడా తొలగించాలా?</translation>
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" />‌ను యాక్సెస్ చేయడం కోసం ఒక ప్రత్యామ్నాయ బ్రౌజర్‌ను తెరిచే విధంగా Chromiumను మీ సిస్టమ్ నిర్వాహకులు కాన్ఫిగర్ చేశారు.</translation>

@@ -263,7 +263,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="9019929317751753759">Kako bi Chromium bio sigurniji, onemogućili smo sljedeću ekstenziju koja nije navedena na stranici <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i koja je dodana bez vašeg znanja.</translation>
 <translation id="9089354809943900324">Chromium nije ažuriran</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium će se ponovo pokrenuti za jedan sat}one{Chromium će se ponovo pokrenuti za # sat}few{Chromium će se ponovo pokrenuti za # sata}other{Chromium će se ponovo pokrenuti za # sati}}</translation>
-<translation id="9107750757953039239">Ako imate više Google računa, možete ih dodati na uređaj <ph name="DEVICE_TYPE" />. Vaši će računi biti dostupni u pregledniku Chromium i u Trgovini Play te na uslugama kao što su Gmail, Disk i YouTube. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="9107750757953039239">Ako imate više Google računa, možete ih dodati na uređaj <ph name="DEVICE_TYPE" />. Vaši računi će biti dostupni u pregledniku Chromium i Play trgovini, kao i na drugim uslugama kao što su Gmail, Disk i YouTube. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Otvori link u novoj &amp;kartici Chromiuma</translation>
 <translation id="911206726377975832">Također izbrisati podatke pregledanja?</translation>
 <translation id="9158494823179993217">Vaš administrator sistema je konfigurirao Chromium da otvori alternativni preglednik za pristup URL-u<ph name="TARGET_URL_HOSTNAME" />.</translation>

@@ -192,6 +192,7 @@
 <translation id="2705001408393684014">മൈക്ക് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">മുകളിലേക്കുള്ള കീ</translation>
 <translation id="2718395828230677721">നൈറ്റ് ലൈറ്റ്</translation>
+<translation id="2726420622004325180">ഹോട്ട്‌സ്പോട്ട് നൽകാൻ നിങ്ങളുടെ ഫോണിൽ മൊബൈൽ ഡാറ്റ ഉണ്ടായിരിക്കണം</translation>
 <translation id="2727175239389218057">മറുപടി നൽകുക</translation>
 <translation id="2727977024730340865">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജ്ജറിലേക്ക് പ്ലഗ് ചെയ്‌തിരിക്കുന്നു. ബാറ്ററി ചാർജുചെയ്യൽ വിശ്വസനീയമാകണമെന്നില്ല.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്</translation>
@@ -448,6 +449,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">ക്യാപ്‌ചർ ചെയ്യുക</translation>
 <translation id="495046168593986294">മുകളിലേക്ക് സ്ക്രോള്‍ ചെയ്യുക</translation>
+<translation id="4952936045814352993">അലാറം ശബ്‌ദങ്ങൾ പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നതിനാൽ 'ഫോൺ കണ്ടെത്തൽ' ലഭ്യമല്ല</translation>
 <translation id="4961318399572185831">സ്‌ക്രീൻ കാസ്റ്റ് ചെയ്യുക</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />മണിക്കൂർ <ph name="MINUTES" />മിനിറ്റ് <ph name="SECONDS" />സെക്കൻഡ്</translation>
 <translation id="4975771730019223894">ആപ്പ് ബാഡ്‌ജ് ചെയ്യൽ</translation>

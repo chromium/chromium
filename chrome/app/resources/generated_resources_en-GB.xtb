@@ -2260,6 +2260,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3538066758857505094">Error uninstalling Linux. Please try again.</translation>
 <translation id="354060433403403521">AC adaptor</translation>
 <translation id="354068948465830244">This can read and change site data</translation>
+<translation id="3541823293333232175">Assigned</translation>
 <translation id="3543393733900874979">Update failed (error: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">X9.62 ECDSA Signature with SHA-512</translation>
 <translation id="3544879808695557954">Username (optional)</translation>
@@ -2841,6 +2842,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Languages</translation>
 <translation id="4184885522552335684">Drag to move a display</translation>
+<translation id="4186763173530196927">An app is trying to access camera. Turn off the camera privacy switch to allow access.</translation>
 <translation id="4187424053537113647">Setting up <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Highlight keyboard focus</translation>
 <translation id="4193575319002689239">Show cards</translation>
@@ -2936,7 +2938,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google Account}other{<ph name="EXTRA_ACCOUNTS" /> Google Accounts}}</translation>
 <translation id="4312866146174492540">Block (default)</translation>
 <translation id="4314815835985389558">Manage sync</translation>
-<translation id="4316735916549342071">Keys do not match. '<ph name="UNEXPECTEDKEY" />' was pressed. '<ph name="CURRENTKEY" />' was pressed before. Press any key to exit.</translation>
 <translation id="4316850752623536204">Developer Website</translation>
 <translation id="4317820549299924617">Verification was not successful</translation>
 <translation id="4320177379694898372">No internet connection</translation>
@@ -3296,6 +3297,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="473546211690256853">This account is managed by <ph name="DOMAIN" /></translation>
 <translation id="4735803855089279419">The system failed to determine device identifiers for this device.</translation>
 <translation id="4736292055110123391">Sync your bookmarks, passwords, history and more on all your devices</translation>
+<translation id="4736765933704278771">Press a switch to assign '<ph name="ACTION" />'. You can assign multiple switches to this action.</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="473936925429402449">Selected; extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
@@ -4299,6 +4301,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5920543303088087579">Connecting to this network is disabled by your administrator</translation>
 <translation id="5920835625712313205">Chrome OS System Image Writer</translation>
 <translation id="5921257443092182237">Google's location service uses sources like Wi-Fi, mobile networks and sensors to help estimate this device’s location.</translation>
+<translation id="5923205773724721589">Keys do not match. Press any key to exit.</translation>
 <translation id="5924047253200400718">Get help<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924287525504995925">Block sites from using virtual reality devices and data</translation>
 <translation id="5924527146239595929">Take a new photo or choose an existing photo or icon.
@@ -4357,10 +4360,10 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{You turned 1 potentially harmful extension back on}other{You turned {NUM_EXTENSIONS} potentially harmful extensions back on}}</translation>
 <translation id="5979421442488174909">&amp;Translate to <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">To bookmark pages, click the star in the address bar</translation>
-<translation id="5982945980973315070">An app is trying to access camera. Turn off the webcam privacy switch to allow access</translation>
 <translation id="5984222099446776634">Recently Visited</translation>
 <translation id="598472838394900788">{0,plural, =1{Incognito}other{Incognito (#)}}</translation>
 <translation id="5985458664595100876">Invalid URL format. Supported formats are \\server\share and smb://server/share.</translation>
+<translation id="598810097218913399">Remove assignment</translation>
 <translation id="5990266201903445068">Wi-Fi only</translation>
 <translation id="5990386583461751448">Translated</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{To ensure that you can keep browsing the web, ask your administrator to remove this application.}other{To ensure that you can keep browsing the web, ask your administrator to remove these applications.}}</translation>
@@ -5670,6 +5673,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7513029293694390567">Automatically sign in to websites using stored credentials. If disabled, you will be asked for confirmation every time before signing in to a website.</translation>
 <translation id="7514239104543605883">Copy to your device</translation>
 <translation id="7514365320538308">Download</translation>
+<translation id="7514417110442087199">Add assignment</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> is blocked by admin. Ask admin for permission to use this app.</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> is paused</translation>
 <translation id="7517063221058203587">{0,plural, =1{Update device within 1 minute}other{Update device within # minutes}}</translation>
@@ -6042,7 +6046,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> can view <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Add words that you want spell check to skip</translation>
-<translation id="7921276565737611663">Couldn't remove the only switch assigned to Select. Press any key to exit.</translation>
 <translation id="7924358170328001543">Error forwarding port</translation>
 <translation id="792514962475806987">Docked zoom level:</translation>
 <translation id="7925247922861151263">AAA check failed</translation>
@@ -6271,6 +6274,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Move tab to new window}other{Move tabs to new window}}</translation>
 <translation id="8165997195302308593">Crostini port forwarding</translation>
 <translation id="8168435359814927499">Content</translation>
+<translation id="8168943654413034772">Can’t remove the only switch assigned to Select. Press any key to exit.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Add tab to reading list}other{Add tabs to reading list}}</translation>
 <translation id="8174047975335711832">Device information</translation>
 <translation id="8174876712881364124">Back up to Google Drive. Easily restore data or switch device at any time. This backup includes app data. Backups are uploaded to Google and encrypted using your child's Google Account password. <ph name="BEGIN_LINK1" />Learn More<ph name="END_LINK1" /></translation>
@@ -6616,7 +6620,6 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="859246725979739260">This site has been blocked from accessing your location.</translation>
 <translation id="8593121833493516339">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK1" />Find out more<ph name="END_LINK1" /></translation>
 <translation id="8593735906501637689">Removed <ph name="MODULE_TITLE" /></translation>
-<translation id="859418833001586249">Press a new switch to start assignment.</translation>
 <translation id="8594908476761052472">Capture video</translation>
 <translation id="8596540852772265699">Customised Files</translation>
 <translation id="8597845839771543242">Property format:</translation>

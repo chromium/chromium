@@ -262,6 +262,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="9019929317751753759">Z dôvodu zvýšenia bezpečnosti prehliadača Chromium sme zakázali nasledujúce rozšírenie, ktoré nie je uvedené v službe <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohlo byť pridané bez vášho vedomia.</translation>
 <translation id="9089354809943900324">Prehliadač Chromium je zastaraný</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium sa znova spustí do jednej hodiny}few{Chromium sa znova spustí do # hodín}many{Chromium sa znova spustí do # hodiny}other{Chromium sa znova spustí do # hodín}}</translation>
+<translation id="9107750757953039239">Ak máte viac účtov Google, môžete si ich pridať do zariadenia <ph name="DEVICE_TYPE" />. Vaše účty budú k dispozícii v prehliadači Chromium a Obchode Play, ale aj v službách, ako sú Gmail, Disk a YouTube. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Otvoriť odkaz na novej &amp;karte prehliadača Chromium</translation>
 <translation id="911206726377975832">Chcete tiež odstrániť svoje údaje prehliadania?</translation>
 <translation id="9158494823179993217">Správca systému nakonfiguroval Chromium, aby web <ph name="TARGET_URL_HOSTNAME" /> otváral v alternatívnom prehliadači.</translation>

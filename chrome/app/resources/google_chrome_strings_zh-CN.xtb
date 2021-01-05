@@ -280,5 +280,6 @@
 <translation id="911206726377975832">同时删除您的浏览数据吗？</translation>
 <translation id="9138603949443464873">要想应用您的更改，请重新启动 Chrome</translation>
 <translation id="919706545465235479">更新 Chrome 以开始同步</translation>
+<translation id="94743460404517794">若有多个 Google 帐号，您可以将它们添加到自己的 <ph name="DEVICE_TYPE" />。这样您就能在 Chrome 浏览器和 Play 商店以及 Gmail、Google 云端硬盘和 YouTube 等服务中使用这些帐号了。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome 是您的默认浏览器</translation>
 </translationbundle>

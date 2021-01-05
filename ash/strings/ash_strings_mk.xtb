@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">Вклучете/исклучете го микрофонот. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Нагоре</translation>
 <translation id="2718395828230677721">Ноќно светло</translation>
+<translation id="2726420622004325180">Телефонот мора да има мобилен интернет за да обезбеди точка на пристап</translation>
 <translation id="2727175239389218057">Одговори</translation>
 <translation id="2727977024730340865">Приклучен на полнач со мало напојување. Полнењето на батеријата може да не е веродостојно.</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> управува со <ph name="DEVICE_TYPE" /></translation>
@@ -451,6 +452,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Сликајте</translation>
 <translation id="495046168593986294">Оди нагоре</translation>
+<translation id="4952936045814352993">„Лоцирај го телефонот“ не е достапна кога се оневозможени звуците на алармите</translation>
 <translation id="4961318399572185831">Емитувај го екранот</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч. <ph name="MINUTES" /> м. <ph name="SECONDS" /> с.</translation>
 <translation id="4975771730019223894">Значки за апликации</translation>

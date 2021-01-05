@@ -194,6 +194,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2705001408393684014">Ative/desative o microfone. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Para cima</translation>
 <translation id="2718395828230677721">Luz noturna</translation>
+<translation id="2726420622004325180">O seu telemóvel tem de ter dados móveis para fornecer uma zona Wi-Fi.</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Ligado a um carregador de baixo consumo. O carregamento da bateria pode não ser fiável.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gerido por <ph name="MANAGER" /></translation>
@@ -450,6 +451,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Capturar</translation>
 <translation id="495046168593986294">Deslocar para cima</translation>
+<translation id="4952936045814352993">A funcionalidade "Localizar telemóvel" não está disponível quando os sons de alarme estão desativados</translation>
 <translation id="4961318399572185831">Transmitir ecrã</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Emblemas de apps</translation>

@@ -263,6 +263,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="9019929317751753759">Chromiumን ይበልጥ ደህንነቱ የተጠበቀ እንዲሆን ለማድረግ፣ በ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ውስጥ ያልተዘረዘረውን የሚከተለውን ቅጥያ አሰናክለነዋል እና እርስዎ ሳያውቁት የታከለ ሊሆን ይችላል።</translation>
 <translation id="9089354809943900324">Chromium ጊዜው አልፎበታል</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium በአንድ ሰዓት ውስጥ ዳግም ይጀምራል}one{Chromium በ# ሰዓቶች ውስጥ ዳግም ይጀምራል}other{Chromium በ# ሰዓቶች ውስጥ ዳግም ይጀምራል}}</translation>
+<translation id="9107750757953039239">በርካታ የGoogle መለያዎች ካለዎት ወደ የእርስዎ <ph name="DEVICE_TYPE" /> ሊያክሏቸው ይችላሉ። የእርስዎ መለያዎች በChromium አሳሽ እና Play መደብር ላይ እና እንዲሁም እንደ Gmail፣ Drive እና YouTube ባሉ አገልግሎቶች ላይ ይገኛሉ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">አገናኙን በChromium አዲስ &amp;ትር ውስጥ ክፈት</translation>
 <translation id="911206726377975832">የአሰሳ ውሂብዎም ይሰረዝ?</translation>
 <translation id="9158494823179993217">የእርስዎ የስርዓት አስተዳዳሪ <ph name="TARGET_URL_HOSTNAME" />ን ለመድረስ Chromium ተለዋጭ አሳሽን እንዲከፍት አዋቅረውታል።</translation>

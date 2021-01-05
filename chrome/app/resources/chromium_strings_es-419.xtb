@@ -255,6 +255,7 @@
 <translation id="9019929317751753759">Para que Chromium sea más seguro, inhabilitamos algunas extensiones que no aparecen en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> y que posiblemente se hayan agregado sin tu conocimiento.</translation>
 <translation id="9089354809943900324">Chromium no actualizado</translation>
 <translation id="9093206154853821181">{0,plural, =1{Se reiniciará Chromium en una hora}other{Se reiniciará Chromium en # horas}}</translation>
+<translation id="9107750757953039239">Si tienes varias Cuentas de Google, podrás agregarlas a tu <ph name="DEVICE_TYPE" />. Tus cuentas estarán disponibles en el navegador Chromium y Play Store, además de los servicios como Gmail, Drive y YouTube. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Abrir vínculo en una pes&amp;taña nueva de Chromium</translation>
 <translation id="911206726377975832">¿También eliminar datos de navegación?</translation>
 <translation id="9158494823179993217">El administrador del sistema configuró Chromium de manera que abriera un navegador alternativo para acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>

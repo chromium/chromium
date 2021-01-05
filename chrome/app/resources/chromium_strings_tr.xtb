@@ -259,6 +259,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="9019929317751753759">Chromium'u daha güvenli bir hale getirmek için <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> altında listelenmeyen ve bilginiz dışında eklenmiş olabilecek aşağıdaki uzantıyı devre dışı bıraktık.</translation>
 <translation id="9089354809943900324">Chromium sürümü eski</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium bir saat içinde yeniden başlatılacak}other{Chromium # saat içinde yeniden başlatılacak}}</translation>
+<translation id="9107750757953039239">Birden fazla Google Hesabınız varsa bunları <ph name="DEVICE_TYPE" /> cihazınıza ekleyebilirsiniz. Hesaplarınız Chromium tarayıcısı ve Play Store'un yanı sıra Gmail, Drive ve YouTube gibi hizmetlerde de kullanılabilir. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Bağlantıyı Yeni Chromium &amp;sekmesinde aç</translation>
 <translation id="911206726377975832">Tarama verileriniz de silinsin mi?</translation>
 <translation id="9158494823179993217">Sistem yöneticiniz, Chromium'u, <ph name="TARGET_URL_HOSTNAME" /> sitesini alternatif bir tarayıcıda açacak şekilde yapılandırmış.</translation>

@@ -194,6 +194,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2705001408393684014">Activer/Désactiver le microphone. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Haut</translation>
 <translation id="2718395828230677721">Éclairage nocturne</translation>
+<translation id="2726420622004325180">Les données cellulaires doivent être activées sur votre téléphone pour que celui-ci puisse offrir un point d'accès sans fil</translation>
 <translation id="2727175239389218057">Répondre</translation>
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la recharge de la batterie ne soit pas fiable.</translation>
 <translation id="2778650143428714839">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" /></translation>
@@ -450,6 +451,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Capturer</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
+<translation id="4952936045814352993">Impossible de localiser le téléphone lorsque les sons de l'alarme sont désactivés</translation>
 <translation id="4961318399572185831">Diffuser un écran</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Badges d'applications</translation>

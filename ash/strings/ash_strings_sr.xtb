@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">Укључите/искључите микрофон. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Нагоре</translation>
 <translation id="2718395828230677721">Ноћно светло</translation>
+<translation id="2726420622004325180">Телефон мора да има мобилне податке да би пружао функцију хотспота</translation>
 <translation id="2727175239389218057">Одговори</translation>
 <translation id="2727977024730340865">Уређај је укључен у пуњач мале снаге. Пуњење батерије можда неће бити поуздано.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-ом управља <ph name="MANAGER" /></translation>

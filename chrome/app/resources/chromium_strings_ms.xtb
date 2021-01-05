@@ -261,6 +261,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="9019929317751753759">Untuk menjadikan Chromium lebih selamat, kami melumpuhkan sambungan berikut yang tidak disenaraikan dalam  <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa pengetahuan anda.</translation>
 <translation id="9089354809943900324">Chromium sudah usang</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium akan dilancarkan semula dalam masa sejam}other{Chromium akan dilancarkan semula dalam masa # jam}}</translation>
+<translation id="9107750757953039239">Jika anda mempunyai berbilang Akaun Google, anda boleh menambahkan akaun tersebut pada <ph name="DEVICE_TYPE" /> anda. Akaun anda akan tersedia dalam penyemak imbas Chromium dan Gedung Play, serta perkhidmatan seperti Gmail, Drive dan YouTube. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Buka Pautan dalam &amp;tab Chromium Baharu</translation>
 <translation id="911206726377975832">Padamkan juga data menyemak imbas anda?</translation>
 <translation id="9158494823179993217">Pentadbir sistem anda telah mengkonfigurasikan Chromium agar membuka penyemak imbas alternatif untuk mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>

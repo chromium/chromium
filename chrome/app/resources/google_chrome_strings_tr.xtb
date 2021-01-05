@@ -282,5 +282,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="911206726377975832">Tarama verileriniz de silinsin mi?</translation>
 <translation id="9138603949443464873">Yaptığınız değişiklikleri uygulamak için Chrome'u yeniden başlatın</translation>
 <translation id="919706545465235479">Senkronizasyonu başlatmak için Chrome'u güncelleyin</translation>
+<translation id="94743460404517794">Birden fazla Google Hesabınız varsa bunları <ph name="DEVICE_TYPE" /> cihazınıza ekleyebilirsiniz. Hesaplarınız Chrome tarayıcı ve Play Store'un yanı sıra Gmail, Drive ve YouTube gibi hizmetlerde de kullanılabilir. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome varsayılan tarayıcınız oldu</translation>
 </translationbundle>

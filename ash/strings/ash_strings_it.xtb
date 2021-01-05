@@ -194,6 +194,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2705001408393684014">Attiva/disattiva il microfono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Su</translation>
 <translation id="2718395828230677721">Luce notturna</translation>
+<translation id="2726420622004325180">Il telefono deve avere i dati mobili per poter fornire un hotspot</translation>
 <translation id="2727175239389218057">Rispondi</translation>
 <translation id="2727977024730340865">Collegato a un caricabatterie a basso consumo. La carica della batteria potrebbe non essere affidabile.</translation>
 <translation id="2778650143428714839">Dispositivo <ph name="DEVICE_TYPE" /> gestito da <ph name="MANAGER" /></translation>
@@ -451,6 +452,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Acquisisci</translation>
 <translation id="495046168593986294">Scorri verso l'alto</translation>
+<translation id="4952936045814352993">Localizza telefono non è disponibile quando i suoni di avviso sono disattivati</translation>
 <translation id="4961318399572185831">Trasmetti schermo</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> m <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Badge dell'app</translation>

@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">მიკროფონის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ზემოთ</translation>
 <translation id="2718395828230677721">ღამის განათება</translation>
+<translation id="2726420622004325180">უსადენო ქსელის უზრუნველსაყოფად თქვენს ტელეფონს უნდ ჰქონდეს მობილური ინტერნეტი</translation>
 <translation id="2727175239389218057">პასუხი</translation>
 <translation id="2727977024730340865">შეერთებულია დაბალი სიმძლავრის დამტენთან. ბატარეის დატენვა შეიძლება არ იყოს სანდო.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ</translation>
@@ -450,6 +451,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">აღბეჭდვა</translation>
 <translation id="495046168593986294">ზემოთ გადაადგილება</translation>
+<translation id="4952936045814352993">ტელეფონის მდებარეობის დადგენის ფუნქცია მიუწვდომელია, როცა მაღვიძარას ხმები გათიშულია</translation>
 <translation id="4961318399572185831">ეკრანის ტრანსლირება</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> სთ, <ph name="MINUTES" /> წთ, <ph name="SECONDS" /> წმ</translation>
 <translation id="4975771730019223894">აპებზე ბეჯების მიმაგრება</translation>

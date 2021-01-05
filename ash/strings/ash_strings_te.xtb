@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">మైక్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
 <translation id="2718395828230677721">రాత్రి కాంతి</translation>
+<translation id="2726420622004325180">హాట్‌స్పాట్‌ను అందించడానికి మీ ఫోన్ తప్పనిసరిగా మొబైల్ డేటాను కలిగి ఉండాలి</translation>
 <translation id="2727175239389218057">రిప్లయి ఇవ్వండి</translation>
 <translation id="2727977024730340865">తక్కువ-పవర్ గల ఛార్జర్‌కు ప్లగిన్ చేయబడింది. బ్యాటరీ ఛార్జింగ్ విశ్వసనీయంగా ఉండకపోవచ్చు.</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" />, <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తోంది</translation>
@@ -451,6 +452,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">క్యాప్చర్ చేయండి</translation>
 <translation id="495046168593986294">పైకి స్క్రోల్ చేయి</translation>
+<translation id="4952936045814352993">అలారం శబ్దాలు డిజేబుల్ చేయబడినప్పుడు 'ఫోన్‌ను గుర్తించు' ఫీచర్ అందుబాటులో ఉండదు</translation>
 <translation id="4961318399572185831">స్క్రీన్ ప్రసారం చేయండి</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />గం <ph name="MINUTES" />ని <ph name="SECONDS" />సె</translation>
 <translation id="4975771730019223894">యాప్ బ్యాడ్జింగ్</translation>

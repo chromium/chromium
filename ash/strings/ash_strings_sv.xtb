@@ -194,6 +194,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2705001408393684014">Aktivera eller inaktivera mikrofonen. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Upp</translation>
 <translation id="2718395828230677721">Nattljus</translation>
+<translation id="2726420622004325180">Telefonen måste ha mobildata för att användas som surfzon</translation>
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727977024730340865">Ansluten till en laddare med låg effekt. Batteriet kanske inte laddas ordentligt.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" /></translation>
@@ -450,6 +451,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Skärmbild/skärminspelning</translation>
 <translation id="495046168593986294">Rulla upp</translation>
+<translation id="4952936045814352993">Funktionen Hitta telefonen är inte tillgänglig när ljudet är avstängt för alarmet</translation>
 <translation id="4961318399572185831">Casta skärmen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> tim. <ph name="MINUTES" /> min. <ph name="SECONDS" /> sek.</translation>
 <translation id="4975771730019223894">Appmärkning</translation>

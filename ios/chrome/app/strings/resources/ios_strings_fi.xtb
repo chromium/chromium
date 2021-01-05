@@ -234,7 +234,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="3371831930909698441">Kääntäjä on käytössä. Asetukset löytyvät näytön alalaidasta.</translation>
 <translation id="3393920035788932672">Ponnahdusikk. sallittu</translation>
 <translation id="3399930248910934354">Avaa Chromen asetukset</translation>
-<translation id="3425644765244388016">Kortin lempinimi</translation>
+<translation id="3425644765244388016">Kortin lyhytnimi</translation>
 <translation id="3433057996795775706">Vaikka poistat salasanan, tiliäsi (<ph name="WEBSITE" />) ei poisteta. Vaihda salasana (<ph name="WEBSITE" />), jotta se pysyy turvassa muilta.</translation>
 <translation id="3443810440409579745">Välilehti vastaanotettu</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -599,7 +599,7 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="7192050974311852563">Aloita kirjaus</translation>
 <translation id="7203585745079012652">Puhu vastaukset</translation>
 <translation id="7207383424303353046">Uutta: Avaa sivustot Chromessa automaattisesti tekemällä siitä oletusselainsovelluksesi. <ph name="BEGIN_LINK" />Avaa Asetukset<ph name="END_LINK" /></translation>
-<translation id="721597782417389033">Virheellinen kortin lempinimi</translation>
+<translation id="721597782417389033">Virheellinen kortin lyhytnimi</translation>
 <translation id="7265758999917665941">Ei koskaan tälle sivustolle</translation>
 <translation id="7272437679830969316">Henkilöllisyytesi vahvistaminen ei onnistunut. Salasanaa ei kopioitu.</translation>
 <translation id="7291368939935408496">Valmistellaan salasanoja…</translation>

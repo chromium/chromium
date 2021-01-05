@@ -263,6 +263,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="9019929317751753759">Chromium seguruagoa izan dadin, zuk jakin gabe gehitu den eta <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dendan zerrendatu gabe dagoen luzapena desgaitu dugu.</translation>
 <translation id="9089354809943900324">Chromium zaharkituta dago</translation>
 <translation id="9093206154853821181">{0,plural, =1{Ordubete barru berrabiaraziko da Chromium}other{# ordu barru berrabiaraziko da Chromium}}</translation>
+<translation id="9107750757953039239">Google-ko kontu bat baino gehiago badituzu, <ph name="DEVICE_TYPE" /> gailuan gehi ditzakezu. Horrela, erabilgarri izango dituzu Chromium arakatzailean eta Play Store-n, baita beste zerbitzu batzuetan ere: Gmail, Drive, YouTube eta abar. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Ireki esteka Chromium-eko beste &amp;fitxa batean</translation>
 <translation id="911206726377975832">Arakatze-datuak ere ezabatu nahi dituzu?</translation>
 <translation id="9158494823179993217">Sistemaren administratzailearen konfigurazioaren arabera, Chromium-ek beste arakatzaile bat ireki behar du <ph name="TARGET_URL_HOSTNAME" /> helbidera joateko.</translation>

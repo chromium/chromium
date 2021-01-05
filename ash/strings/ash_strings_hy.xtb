@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">Միացնել/անջատել խոսափողը։ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
 <translation id="2718395828230677721">Գիշերային ռեժիմ</translation>
+<translation id="2726420622004325180">Թեժ կետն ակտիվացնելու համար հեռախոսում պետք է միացված լինի բջջային ինտերնետը</translation>
 <translation id="2727175239389218057">Պատասխանել</translation>
 <translation id="2727977024730340865">Միացված է թույլ լիցքավորիչի: Մարտկոցի լիցքավորումը կարող է հուսալի չլինել:</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
@@ -450,6 +451,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Լուսանկարել</translation>
 <translation id="495046168593986294">Ոլորել վեր</translation>
+<translation id="4952936045814352993">«Հեռախոսի տեղորոշում» գործառույթն անհասանելի է, երբ ծանուցումների ազդանշաններն անջատված են</translation>
 <translation id="4961318399572185831">Էկրանի հեռարձակում</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ժ <ph name="MINUTES" /> ր <ph name="SECONDS" /> վ</translation>
 <translation id="4975771730019223894">Նշանակների ավելացում հավելվածներին</translation>

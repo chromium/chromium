@@ -263,6 +263,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="9019929317751753759">Om Chromium veiliger te maak, het ons die volgende uitbreiding, wat nie in die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> gelys word nie en wat dalk sonder jou medewete bygevoeg is, gedeaktiveer.</translation>
 <translation id="9089354809943900324">Chromium is verouderd</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium sal oor 'n uur herbegin}other{Chromium sal oor # uur herbegin}}</translation>
+<translation id="9107750757953039239">As jy veelvuldige Google-rekeninge het, kan jy hulle by jou <ph name="DEVICE_TYPE" /> voeg. Jou rekeninge sal in Chromium-blaaier en Play Winkel beskikbaar wees, asook dienste soos Gmail, Drive en YouTube. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Maak skakel in 'n nuwe Chromium-oortjie oop</translation>
 <translation id="911206726377975832">Vee ook jou blaaidata uit?</translation>
 <translation id="9158494823179993217">Jou stelseladministrateur het Chromium opgestel om 'n alternatiewe blaaier oop te maak om na <ph name="TARGET_URL_HOSTNAME" /> toe te gaan.</translation>

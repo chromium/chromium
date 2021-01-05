@@ -263,6 +263,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="9019929317751753759">За Chromium да биде побезбеден, ја оневозможивме следнава екстензија што не е наведена во <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да е додадена без ваше знаење.</translation>
 <translation id="9089354809943900324">Chromium е застарен</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium ќе се рестартира по еден час}one{Chromium ќе се рестартира по # час}other{Chromium ќе се рестартира по # часа}}</translation>
+<translation id="9107750757953039239">Ако имате повеќе сметки на Google, може да ги додадете во вашиот <ph name="DEVICE_TYPE" />. Вашите сметки ќе бидат достапни во прелистувачот Chromium и Play Store, но и на услугите како Gmail, Drive и YouTube. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Отвори го линкот во нова &amp;картичка на Chromium</translation>
 <translation id="911206726377975832">Да се избришат ли и вашите податоци од пребарувањата?</translation>
 <translation id="9158494823179993217">Администраторот на системот го конфигурирал Chromium да отвора друг прелистувач за пристап до <ph name="TARGET_URL_HOSTNAME" />.</translation>

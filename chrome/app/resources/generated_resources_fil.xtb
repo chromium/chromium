@@ -2261,6 +2261,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3538066758857505094">Nagkaroon ng error sa pag-uninstall sa Linux. Pakisubukang muli.</translation>
 <translation id="354060433403403521">AC adapter</translation>
 <translation id="354068948465830244">Mari-read at mababago nito ang data ng site</translation>
+<translation id="3541823293333232175">Nakatalaga</translation>
 <translation id="3543393733900874979">Nabigo ang pag-update (error: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">X9.62 ECDSA Signature na may SHA-512</translation>
 <translation id="3544879808695557954">Username (opsyonal)</translation>
@@ -2842,6 +2843,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Mga Wika</translation>
 <translation id="4184885522552335684">I-drag upang ilipat ang isang display</translation>
+<translation id="4186763173530196927">May app na sumusubok na i-access ang camera. I-off ang switch ng privacy ng camera para payagan ang access.</translation>
 <translation id="4187424053537113647">Sine-set up ang <ph name="APP_NAME" />...</translation>
 <translation id="4190828427319282529">I-highlight ang focus ng keyboard</translation>
 <translation id="4193575319002689239">Ipakita ang mga card</translation>
@@ -2937,7 +2939,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google Account}one{<ph name="EXTRA_ACCOUNTS" /> Google Account}other{<ph name="EXTRA_ACCOUNTS" /> na Google Account}}</translation>
 <translation id="4312866146174492540">I-block (default)</translation>
 <translation id="4314815835985389558">Pamahalaan ang pag-sync</translation>
-<translation id="4316735916549342071">Hindi magkatugma ang mga key. Napindot ang "<ph name="UNEXPECTEDKEY" />." "<ph name="CURRENTKEY" />" ang dating pinindot. Pumindot ng anumang key para lumabas.</translation>
 <translation id="4316850752623536204">Website ng Developer</translation>
 <translation id="4317820549299924617">Hindi matagumpay ang pag-verify</translation>
 <translation id="4320177379694898372">Walang koneksyon sa internet</translation>
@@ -3297,6 +3298,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="473546211690256853">Pinamamahalaan ang account na ito ng <ph name="DOMAIN" /></translation>
 <translation id="4735803855089279419">Hindi natukoy ng system ang mga pagkakakilanlan ng device para sa device na ito.</translation>
 <translation id="4736292055110123391">I-sync ang iyong mga bookmark, password, history, at higit pa sa lahat ng device mo</translation>
+<translation id="4736765933704278771">Pumindot ng switch para maitalaga ang “<ph name="ACTION" />.” Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="473775607612524610">I-update</translation>
 <translation id="473936925429402449">Pinili, karagdagang content na <ph name="CURRENT_ELEMENT" /> sa <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Mga Ticket</translation>
@@ -4300,6 +4302,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5920543303088087579">Na-disable ng iyong administrator ang pagkonekta sa network na ito</translation>
 <translation id="5920835625712313205">Image Writer ng Chrome OS System</translation>
 <translation id="5921257443092182237">Ang serbisyo ng lokasyon ng Google ay gumagamit ng mga source gaya ng Wi-Fi, mga mobile network, at sensor para makatulong na tantyahin ang lokasyon ng device na ito.</translation>
+<translation id="5923205773724721589">Hindi magkatugma ang mga key. Pumindot ng anumang key para lumabas.</translation>
 <translation id="5924047253200400718">Humingi ng tulong<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924287525504995925">I-block ang mga site sa paggamit ng mga virtual reality device at data</translation>
 <translation id="5924527146239595929">Kumuha ng bagong larawan o pumili ng dati nang larawan o icon.
@@ -4358,10 +4361,10 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Na-on mo ulit ang 1 posibleng mapaminsalang extension}one{Na-on mo ulit ang {NUM_EXTENSIONS} posibleng mapaminsalang extension}other{Na-on mo ulit ang {NUM_EXTENSIONS} na posibleng mapaminsalang extension}}</translation>
 <translation id="5979421442488174909">&amp;Isalin sa <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Upang mag-bookmark ng mga page, i-click ang star sa address bar</translation>
-<translation id="5982945980973315070">May app na sumusubok na i-access ang camera. I-off ang switch ng privacy ng Webcam para payagan ang access</translation>
 <translation id="5984222099446776634">Kamakailang Binisita</translation>
 <translation id="598472838394900788">{0,plural, =1{Incognito}one{Incognito (#)}other{Incognito (#)}}</translation>
 <translation id="5985458664595100876">Invalid ang format ng URL. Ang mga sinusuportahang format ay \\server\share at smb://server/share.</translation>
+<translation id="598810097218913399">Alisin ang pagkakatalaga</translation>
 <translation id="5990266201903445068">Wi-Fi lang</translation>
 <translation id="5990386583461751448">Naisalin</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Para matiyak na makakapag-browse ka pa rin sa web, hilingin sa iyong administrator na alisin ang application na ito.}one{Para matiyak na makakapag-browse ka pa rin sa web, hilingin sa iyong administrator na alisin ang mga application na ito.}other{Para matiyak na makakapag-browse ka pa rin sa web, hilingin sa iyong administrator na alisin ang mga application na ito.}}</translation>
@@ -5671,6 +5674,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7513029293694390567">Awtomatikong mag-sign in sa mga website gamit ang mga naka-store na kredensyal. Kung naka-disable, hihingan ka ng kumpirmasyon sa bawat pagkakataon bago ka mag-sign in sa isang website.</translation>
 <translation id="7514239104543605883">Kopyahin sa iyong device</translation>
 <translation id="7514365320538308">I-download</translation>
+<translation id="7514417110442087199">Magdagdag ng pagkakatalaga</translation>
 <translation id="751523031290522286">Na-block ng admin ang <ph name="APP_NAME" />. Humiling sa admin ng pahintulot na gamitin ang app na ito.</translation>
 <translation id="7516981202574715431">Naka-pause ang <ph name="APP_NAME" /></translation>
 <translation id="7517063221058203587">{0,plural, =1{I-update ang device sa loob ng 1 minuto}one{I-update ang device sa loob ng # minuto}other{I-update ang device sa loob ng # na minuto}}</translation>
@@ -6043,7 +6047,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>
 <translation id="7920363873148656176">Puwedeng tingnan ng <ph name="ORIGIN" /> ang <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Magdagdag ng mga salitang gusto mong laktawan ng pang-check ng pagbabaybay</translation>
-<translation id="7921276565737611663">Hindi maalis ang tanging switch na nakatalaga sa Piliin. Pumindot ng anumang key para lumabas.</translation>
 <translation id="7924358170328001543">Nagka-error sa pag-forward ng port</translation>
 <translation id="792514962475806987">Antas ng naka-dock na pag-zoom:</translation>
 <translation id="7925247922861151263">Nabigo ang pagsusuri sa AAA</translation>
@@ -6272,6 +6275,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Ilipat ang Tab sa Bagong Window}one{Maglipat ng Mga Tab sa Bagong Window}other{Maglipat ng Mga Tab sa Bagong Window}}</translation>
 <translation id="8165997195302308593">Pag-forward ng port sa Crostini</translation>
 <translation id="8168435359814927499">Content</translation>
+<translation id="8168943654413034772">Hindi maalis ang tanging switch na nakatalaga sa Piliin. Pumindot ng anumang key para lumabas.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Idagdag ang Tab sa Listahan ng Babasahin}one{Idagdag ang Mga Tab sa Listahan ng Babasahin}other{Idagdag ang Mga Tab sa Listahan ng Babasahin}}</translation>
 <translation id="8174047975335711832">Impormasyon ng device</translation>
 <translation id="8174876712881364124">Mag-back up sa Google Drive. Madaling mag-restore ng data o magpalit ng device anumang oras. Kabilang sa backup na ito ang data ng app. Ina-upload sa Google ang mga backup at ine-encrypt gamit ang password ng Google Account ng iyong anak. <ph name="BEGIN_LINK1" />Matuto Pa<ph name="END_LINK1" /></translation>
@@ -6618,7 +6622,6 @@ Pumindot ng nakatalagang switch para alisin ang pagtatalaga.</translation>
 <translation id="859246725979739260">Na-block ang site na ito sa pag-access sa iyong lokasyon.</translation>
 <translation id="8593121833493516339">Magpadala ng data ng paggamit at diagnostic na data. Tumulong sa pagpapaganda ng karanasan ng iyong anak sa Android sa pamamagitan ng awtomatikong pagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Hindi ito gagamitin para tukuyin ang pagkakakilanlan ng iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang karagdagang Aktibidad sa Web at App para sa iyong anak, maaaring ma-save ang data na ito sa kanyang Google account. <ph name="BEGIN_LINK1" />Matuto Pa<ph name="END_LINK1" /></translation>
 <translation id="8593735906501637689">Inalis ang <ph name="MODULE_TITLE" /></translation>
-<translation id="859418833001586249">Pumindot ng bagong switch para simulan ang pagtatalaga.</translation>
 <translation id="8594908476761052472">Kumuha ng video</translation>
 <translation id="8596540852772265699">Mga Custom na File</translation>
 <translation id="8597845839771543242">Format ng property:</translation>

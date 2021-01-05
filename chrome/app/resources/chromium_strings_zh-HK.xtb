@@ -262,7 +262,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="9019929317751753759">為鞏固 Chromium 的安全性，我們已將未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，因為它們可能在您不知情的情況下加入瀏覽器。</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium 將於 1 小時後重新啟動}other{Chromium 將於 # 小時後重新啟動}}</translation>
-<translation id="9107750757953039239">如果你有多個 Google 帳戶，可以將這些帳戶新增到你的 <ph name="DEVICE_TYPE" />，這樣就能在 Chromium 瀏覽器和 Play 商店，以及 Gmail、雲端硬碟和 YouTube 等服務中使用這些帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="9107750757953039239">如果您有多個 Google 帳戶，可以將這些帳戶新增至您的 <ph name="DEVICE_TYPE" />，這樣就能在 Chromium 瀏覽器和 Play 商店，以及 Gmail、雲端硬碟和 YouTube 等服務中使用這些帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">在 Chromium 的新分頁中開啟連結(&amp;T)</translation>
 <translation id="911206726377975832">您要一併刪除瀏覽數據嗎？</translation>
 <translation id="9158494823179993217">系統管理員已設定 Chromium 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>

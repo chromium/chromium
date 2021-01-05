@@ -261,6 +261,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="9019929317751753759">为了提高 Chromium 的安全性，我们停用了以下扩展程序（该扩展程序未列在<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并且可能是在您不知情的情况下添加的）。</translation>
 <translation id="9089354809943900324">Chromium版本太旧</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium 将在 1 小时后重新启动}other{Chromium 将在 # 小时后重新启动}}</translation>
+<translation id="9107750757953039239">若有多个 Google 帐号，您可以将它们添加到自己的 <ph name="DEVICE_TYPE" />。这样您就能在 Chromium 浏览器和 Play 商店以及 Gmail、Google 云端硬盘和 YouTube 等服务中使用这些帐号了。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">在 Chromium 新标签页中打开链接(&amp;T)</translation>
 <translation id="911206726377975832">同时删除您的浏览数据吗？</translation>
 <translation id="9158494823179993217">您的系统管理员已将 Chromium 配置为使用备用浏览器访问 <ph name="TARGET_URL_HOSTNAME" />。</translation>

@@ -288,5 +288,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="911206726377975832">¿Quieres borrar también los datos de navegación?</translation>
 <translation id="9138603949443464873">Reinicia Chrome para aplicar los cambios</translation>
 <translation id="919706545465235479">Actualiza Chrome para iniciar la sincronización</translation>
+<translation id="94743460404517794">Si tienes varias cuentas de Google, puedes añadirlas a tu <ph name="DEVICE_TYPE" />. Tus cuentas estarán disponibles en el navegador Chrome, en Play Store y en servicios como Gmail, Drive y YouTube. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome es tu navegador predeterminado</translation>
 </translationbundle>

@@ -263,6 +263,7 @@
 <translation id="9019929317751753759">Каб павысіць бяспечнасць Chromium, мы выключылі прыведзенае ніжэй пашырэнне. <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не змяшчае звестак пра гэта пашырэнне, а значыць, яно магло быць дададзена без вашага ведама.</translation>
 <translation id="9089354809943900324">Chromium састарэў</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium будзе перазапушчаны праз гадзіну}one{Chromium будзе перазапушчаны праз # гадзіну}few{Chromium будзе перазапушчаны праз # гадзіны}many{Chromium будзе перазапушчаны праз # гадзін}other{Chromium будзе перазапушчаны праз # гадзіны}}</translation>
+<translation id="9107750757953039239">Калі ў вас некалькі Уліковых запісаў Google, вы можаце дадаць іх на сваю прыладу <ph name="DEVICE_TYPE" />. Імі можна будзе карыстацца ў Краме Play і браўзеры Chromium, а таксама ў такіх сэрвісах, як Gmail, Дыск і YouTube. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Адкрыць спасылку ў новай &amp;укладцы Chromium</translation>
 <translation id="911206726377975832">Выдаліць таксама гісторыю праглядаў?</translation>
 <translation id="9158494823179993217">Ваш сістэмны адміністратар наладзіў Chromium, каб адкрыць альтэрнатыўны браўзер для доступу да <ph name="TARGET_URL_HOSTNAME" />.</translation>

@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">মাইক ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ওপৰলৈ</translation>
 <translation id="2718395828230677721">ৰাতিৰ পোহৰ</translation>
+<translation id="2726420622004325180">এটা হটস্পট প্ৰদান কৰিবলৈ আপোনাৰ ফ’নত ম’বাইল ডেটা থাকিবই লাগিব</translation>
 <translation id="2727175239389218057">প্ৰত্যুত্তৰ দিয়ক</translation>
 <translation id="2727977024730340865">কম পাৱাৰৰ এটা চাৰ্জাৰত প্লাগ ইন কৰা হৈছে। বেটাৰীৰ চাৰ্জিং বিশ্বাসযোগ্য নহ'বও পাৰে।</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" />এ পৰিচালনা কৰে</translation>
@@ -449,6 +450,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">কেপচাৰ কৰক</translation>
 <translation id="495046168593986294">ওপৰলৈ স্ক্ৰল কৰক</translation>
+<translation id="4952936045814352993">এলাৰ্মৰ ধ্বনি অক্ষম কৰা থাকিলে ফ’নৰ অৱস্থান নিৰূপণ কৰাৰ সুবিধাটো উপলব্ধ নহয়</translation>
 <translation id="4961318399572185831">স্ক্রীণ কাষ্ট কৰক</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ঘ <ph name="MINUTES" /> মি <ph name="SECONDS" /> ছে</translation>
 <translation id="4975771730019223894">এপত বেজ লগোৱা</translation>

@@ -192,6 +192,7 @@
 <translation id="2705001408393684014">माइक टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">माथि</translation>
 <translation id="2718395828230677721">रात्रिकालीन प्रकाश</translation>
+<translation id="2726420622004325180">हटस्पट सुविधा अन गर्न तपाईंको फोनमा अनिवार्य रूपमा मोबाइल डेटा उपलब्ध हुनु पर्छ</translation>
 <translation id="2727175239389218057">जवाफ दिनुहोस्</translation>
 <translation id="2727977024730340865">कम शक्ति भएको चार्जरमा प्लग इन गरिएको छ। ब्याट्री चार्जिङ भरपर्दो नहुन सक्छ।</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> ले <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
@@ -448,6 +449,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">फोटो खिच्नुहोस्</translation>
 <translation id="495046168593986294">माथि स्क्रोल गर्नुहोस्</translation>
+<translation id="4952936045814352993">अलार्मका आवाजहरू अफ गरिएका बेला फोन रहेको स्थान पत्ता लगाउने सुविधा उपलब्ध हुँदैन</translation>
 <translation id="4961318399572185831">स्क्रिन cast गर्नुहोस्</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />घन्टा <ph name="MINUTES" />मिनेट <ph name="SECONDS" />सेकेन्ड</translation>
 <translation id="4975771730019223894">एपमा ब्याज देखाउने सुविधा</translation>

@@ -2261,6 +2261,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3538066758857505094">Erreur lors de la désinstallation de Linux. Veuillez réessayer.</translation>
 <translation id="354060433403403521">Adaptateur</translation>
 <translation id="354068948465830244">Possibilité de lire et de modifier les données du site</translation>
+<translation id="3541823293333232175">Attribué</translation>
 <translation id="3543393733900874979">Échec de la mise à jour (erreur : <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Signature X9.62 ECDSA avec SHA-512</translation>
 <translation id="3544879808695557954">Nom d'utilisateur (facultatif)</translation>
@@ -2842,6 +2843,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4184885522552335684">Faites glisser un affichage pour le déplacer</translation>
+<translation id="4186763173530196927">Une application tente d'accéder à la caméra. Pour lui accorder l'accès, désactivez le paramètre de confidentialité de la caméra.</translation>
 <translation id="4187424053537113647">Configuration de <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Mettre en surbrillance l'objet sélectionné au clavier</translation>
 <translation id="4193575319002689239">Afficher les fiches</translation>
@@ -2937,7 +2939,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 compte Google}one{<ph name="EXTRA_ACCOUNTS" /> compte Google}other{<ph name="EXTRA_ACCOUNTS" /> comptes Google}}</translation>
 <translation id="4312866146174492540">Bloquer (par défaut)</translation>
 <translation id="4314815835985389558">Gérer la synchronisation</translation>
-<translation id="4316735916549342071">Les touches ne correspondent pas. Vous avez appuyé sur <ph name="CURRENTKEY" />, puis sur <ph name="UNEXPECTEDKEY" />. Appuyez sur n'importe quelle touche pour quitter.</translation>
 <translation id="4316850752623536204">Site Web du développeur</translation>
 <translation id="4317820549299924617">Échec de la validation</translation>
 <translation id="4320177379694898372">Aucune connexion Internet.</translation>
@@ -3297,6 +3298,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="473546211690256853">Ce compte est géré par <ph name="DOMAIN" />.</translation>
 <translation id="4735803855089279419">Impossible de déterminer les identifiants de cet appareil.</translation>
 <translation id="4736292055110123391">Synchronisez vos favoris, vos mots de passe, votre historique et plus encore sur tous vos appareils</translation>
+<translation id="4736765933704278771">Appuyez sur un contacteur pour l'attribuer à l'action "<ph name="ACTION" />". Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="473775607612524610">Mettre à jour</translation>
 <translation id="473936925429402449">Sélectionné, contenu supplémentaire <ph name="CURRENT_ELEMENT" /> sur <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
@@ -4301,6 +4303,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5920543303088087579">Votre administrateur a désactivé la connexion à ce réseau</translation>
 <translation id="5920835625712313205">Écriture des images système Chrome OS</translation>
 <translation id="5921257443092182237">Le service de localisation de Google utilise des sources comme le Wi-Fi, les réseaux mobiles et des capteurs pour estimer la position de cet appareil.</translation>
+<translation id="5923205773724721589">Les touches ne correspondent pas. Appuyez sur n'importe quelle touche pour quitter.</translation>
 <translation id="5924047253200400718">Obtenir de l'aide<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924287525504995925">Empêcher les sites d'utiliser des données et des appareils de réalité virtuelle</translation>
 <translation id="5924527146239595929">Prenez une photo ou choisissez-en une.
@@ -4359,10 +4362,10 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Vous avez réactivé 1 extension potentiellement dangereuse}one{Vous avez réactivé {NUM_EXTENSIONS} extension potentiellement dangereuse}other{Vous avez réactivé {NUM_EXTENSIONS} extensions potentiellement dangereuses}}</translation>
 <translation id="5979421442488174909">&amp;Traduire en <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Pour ajouter des pages à vos favoris, cliquez sur l'étoile dans la barre d'adresse</translation>
-<translation id="5982945980973315070">Une application tente d'accéder à la caméra. Pour lui accorder l'accès, désactivez le paramètre de confidentialité de la caméra.</translation>
 <translation id="5984222099446776634">Consultations récentes</translation>
 <translation id="598472838394900788">{0,plural, =1{Navigation privée}one{Navigation privée (#)}other{Navigation privée (#)}}</translation>
 <translation id="5985458664595100876">Le format de l'URL n'est pas valide. Les formats acceptés sont \\server\share et smb://server/share.</translation>
+<translation id="598810097218913399">Supprimer l'attribution</translation>
 <translation id="5990266201903445068">Wi-Fi uniquement</translation>
 <translation id="5990386583461751448">Traduite</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer cette application.}one{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer cette application.}other{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer ces applications.}}</translation>
@@ -5672,6 +5675,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7513029293694390567">Permet de se connecter automatiquement aux sites Web à l'aide des identifiants enregistrés. Si cette fonctionnalité est désactivée, vous êtes invité à confirmer chaque connexion à un site Web.</translation>
 <translation id="7514239104543605883">Copier sur votre appareil</translation>
 <translation id="7514365320538308">Télécharger</translation>
+<translation id="7514417110442087199">Ajouter une attribution</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> est bloqué par l'administrateur. Vous avez besoin de son autorisation pour l'utiliser.</translation>
 <translation id="7516981202574715431">L'appli <ph name="APP_NAME" /> est mise en pause</translation>
 <translation id="7517063221058203587">{0,plural, =1{Mettre à jour l'appareil d'ici 1 minute}one{Mettre à jour l'appareil d'ici # minute}other{Mettre à jour l'appareil d'ici # minutes}}</translation>
@@ -6044,7 +6048,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> peut accéder à <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Ajoutez les termes que le correcteur orthographique doit ignorer</translation>
-<translation id="7921276565737611663">Impossible de supprimer l'unique contacteur associé à l'action "Sélectionner". Appuyez sur n'importe quelle touche pour quitter.</translation>
 <translation id="7924358170328001543">Erreur lors du transfert du port.</translation>
 <translation id="792514962475806987">Niveau de zoom ancré :</translation>
 <translation id="7925247922861151263">Échec de la vérification AAA</translation>
@@ -6273,6 +6276,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Déplacer l'onglet vers une nouvelle fenêtre}one{Déplacer l'onglet vers une nouvelle fenêtre}other{Déplacer les onglets vers une nouvelle fenêtre}}</translation>
 <translation id="8165997195302308593">Transfert de port Crostini</translation>
 <translation id="8168435359814927499">Contenu</translation>
+<translation id="8168943654413034772">Impossible de supprimer l'unique contacteur attribué à l'action "Sélectionner". Appuyez sur n'importe quelle touche pour quitter.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Ajouter l'onglet à la liste de lecture}one{Ajouter l'onglet à la liste de lecture}other{Ajouter les onglets à la liste de lecture}}</translation>
 <translation id="8174047975335711832">Informations sur l'appareil</translation>
 <translation id="8174876712881364124">Sauvegarder dans Google Drive. Restaurez des données ou changez d'appareil facilement et à tout moment. La sauvegarde inclut les données d'applications. Les sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe du compte Google de votre enfant. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
@@ -6618,7 +6622,6 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="859246725979739260">L'accès à votre position a été bloqué pour ce site.</translation>
 <translation id="8593121833493516339">Envoyer des données d'utilisation et de diagnostic. Contribuez à l'amélioration de l'expérience de votre enfant sur Android en envoyant automatiquement à Google des données relatives aux diagnostics et à l'utilisation de l'appareil et des applications. Ces informations ne seront pas utilisées pour identifier votre enfant, mais elles nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires, tels que les développeurs Android. Si vous activez le paramètre relatif à l'activité supplémentaire sur le Web et les applications pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="8593735906501637689">Module <ph name="MODULE_TITLE" /> supprimé</translation>
-<translation id="859418833001586249">Appuyez sur un nouveau contacteur pour commencer l'association.</translation>
 <translation id="8594908476761052472">Enregistrer une vidéo</translation>
 <translation id="8596540852772265699">Fichiers personnalisés</translation>
 <translation id="8597845839771543242">Format de propriété :</translation>

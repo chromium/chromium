@@ -194,6 +194,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2705001408393684014">Wissel mikrofoon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Op</translation>
 <translation id="2718395828230677721">Aandbeligting</translation>
+<translation id="2726420622004325180">Jou foon moet mobiele data hê om 'n warmkol te verskaf</translation>
 <translation id="2727175239389218057">Antwoord</translation>
 <translation id="2727977024730340865">By 'n laekrag-laaier ingeprop. Laai van battery is dalk nie betroubaar nie.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> bestuur deur <ph name="MANAGER" /></translation>
@@ -451,6 +452,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Vang vas</translation>
 <translation id="495046168593986294">Rollees op</translation>
+<translation id="4952936045814352993">Spoor foon op is nie beskikbaar wanneer wekkerklanke gedeaktiveer is nie</translation>
 <translation id="4961318399572185831">Saai skerm uit</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> u. <ph name="MINUTES" /> m. <ph name="SECONDS" /> s.</translation>
 <translation id="4975771730019223894">Programkentekens</translation>

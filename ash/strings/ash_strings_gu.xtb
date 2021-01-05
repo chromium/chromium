@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">માઇક્રોફોનના વિકલ્પને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
 <translation id="2718395828230677721">રાત્રિ પ્રકાશ</translation>
+<translation id="2726420622004325180">હૉટસ્પૉટની સુવિધા આપવા માટે, તમારા ફોનમાં મોબાઇલ ડેટા હોવો જરૂરી છે</translation>
 <translation id="2727175239389218057">જવાબ આપો</translation>
 <translation id="2727977024730340865">નિમ્ન-પાવર ચાર્જરમાં પ્લગ કરેલું છે. બૅટરી ચાર્જિંગ વિશ્વસનીય હશે નહીં.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
@@ -450,6 +451,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">કૅપ્ચર કરો</translation>
 <translation id="495046168593986294">ઉપર સ્ક્રોલ કરો</translation>
+<translation id="4952936045814352993">અલાર્મના સાઉન્ડ બંધ હોય ત્યારે ફોન શોધવાની સુવિધા ઉપલબ્ધ હોતી નથી</translation>
 <translation id="4961318399572185831">સ્ક્રીનને કાસ્ટ કરો</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> કલાક <ph name="MINUTES" /> મિનિટ <ph name="SECONDS" /> સેકન્ડ</translation>
 <translation id="4975771730019223894">ઍપ બૅજિંગ</translation>

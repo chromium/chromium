@@ -2934,7 +2934,6 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 個 Google 帳戶}other{<ph name="EXTRA_ACCOUNTS" /> 個 Google 帳戶}}</translation>
 <translation id="4312866146174492540">封鎖 (預設)</translation>
 <translation id="4314815835985389558">管理同步功能資料</translation>
-<translation id="4316735916549342071">按鍵不相符。剛才按下的是「<ph name="UNEXPECTEDKEY" />」鍵，但先前按下的是「<ph name="CURRENTKEY" />」鍵。請按下任何按鍵以離開。</translation>
 <translation id="4316850752623536204">開發人員網站</translation>
 <translation id="4317820549299924617">驗證失敗</translation>
 <translation id="4320177379694898372">沒有網際網路連線</translation>
@@ -4355,7 +4354,6 @@
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{你已重新開啟 1 個可能有害的擴充功能}other{你已重新開啟 {NUM_EXTENSIONS} 個可能有害的擴充功能}}</translation>
 <translation id="5979421442488174909">翻譯成<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="5979469435153841984">如要將網頁加入書籤，請按一下網址列的星號</translation>
-<translation id="5982945980973315070">有一個應用程式嘗試存取攝影機。如要允許存取，請將網路攝影機的隱私權開關切換為關閉</translation>
 <translation id="5984222099446776634">最近造訪的網站</translation>
 <translation id="598472838394900788">{0,plural, =1{無痕模式}other{無痕模式 (#)}}</translation>
 <translation id="5985458664595100876">網址格式無效。支援的格式為 \\server\share 和 smb://server/share。</translation>
@@ -6040,7 +6038,6 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可以檢視「<ph name="FILENAME" />」</translation>
 <translation id="7920482456679570420">新增要讓拼字檢查功能略過的字詞</translation>
-<translation id="7921276565737611663">這是為「選取」動作指派的唯一切換按鍵，因此無法移除。請按下任何按鍵以離開。</translation>
 <translation id="7924358170328001543">轉送通訊埠時發生錯誤</translation>
 <translation id="792514962475806987">停駐縮放比例：</translation>
 <translation id="7925247922861151263">AAA 檢查失敗</translation>
@@ -6613,7 +6610,6 @@
 <translation id="859246725979739260">已禁止這個網站存取你的位置資訊。</translation>
 <translation id="8593121833493516339">傳送使用狀況與診斷資料。讓系統自動將診斷資料以及裝置和應用程式的使用狀況資料傳送給 Google，協助改善你的 Android 使用體驗。這些資料將有助於系統和應用程式提高穩定性及做出其他改善，並不會用於識別貴子女的身分。部分匯總資料還能夠為 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提供幫助。如果貴子女的「其他網路和應用程式活動」設定為開啟，系統可能會將這些資料儲存到他們的 Google 帳戶。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="8593735906501637689">已移除「<ph name="MODULE_TITLE" />」</translation>
-<translation id="859418833001586249">按下新的切換按鍵即可開始指派。</translation>
 <translation id="8594908476761052472">錄影</translation>
 <translation id="8596540852772265699">自訂檔</translation>
 <translation id="8597845839771543242">屬性格式：</translation>

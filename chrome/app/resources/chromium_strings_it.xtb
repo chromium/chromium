@@ -260,6 +260,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="9019929317751753759">Per rendere Chromium più sicuro, abbiamo disattivato la seguente estensione non presente nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> che potrebbe essere stata aggiunta a tua insaputa.</translation>
 <translation id="9089354809943900324">Chromium non è aggiornato</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium verrà riavviato tra un'ora}other{Chromium verrà riavviato tra # ore}}</translation>
+<translation id="9107750757953039239">Se hai più Account Google, puoi aggiungerli al tuo <ph name="DEVICE_TYPE" />. I tuoi account saranno disponibili nel browser Chromium e nel Play Store, nonché in servizi come Gmail, Drive e YouTube. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Apri link in una nuova &amp;scheda di Chromium</translation>
 <translation id="911206726377975832">Eliminare anche i tuoi dati di navigazione?</translation>
 <translation id="9158494823179993217">L'amministratore di sistema ha configurato Chromium per l'apertura di un browser alternativo per accedere a <ph name="TARGET_URL_HOSTNAME" />.</translation>

@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">ማይክሮፎንን ቀያይር። <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ላይ</translation>
 <translation id="2718395828230677721">የምሽት ብርሃን</translation>
+<translation id="2726420622004325180">የእርስዎ ስልክ ሆትስፖት ማቅረብ እንዲችል ሞባይል ውሂብ ሊኖረው ይገባል</translation>
 <translation id="2727175239389218057">ምላሽ ስጥ</translation>
 <translation id="2727977024730340865">አነስተኛ ኃይል ወዳለው ባትሪ መሙያ ተሰክቷል። የባትሪ መሙላት አስተማማኝ ላይሆን ይችላል።</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው</translation>
@@ -450,6 +451,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">አንሳ</translation>
 <translation id="495046168593986294">ወደ ላይ ይሸብልሉ</translation>
+<translation id="4952936045814352993">የማንቂያ ድምጾች ሲሰናከሉ ስልክን ማስቀመጥ አይገኝም</translation>
 <translation id="4961318399572185831">የCast ማያ ገጽ</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ሰ <ph name="MINUTES" /> ደ <ph name="SECONDS" /> ሴ</translation>
 <translation id="4975771730019223894">የመተግበሪያ ባጅ አሰጣጥ</translation>

@@ -259,6 +259,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="9019929317751753759">Chromium'u təhlükəsiz etmək üçün, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> siyahısında olmayan və xəbəriniz olmadan əlavə edilən artırmanı deaktiv etdik.</translation>
 <translation id="9089354809943900324">Chromium'un vaxtı keçib</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium 1 saata yenidən başlayacaq}other{Chromium # saata yenidən başlayacaq}}</translation>
+<translation id="9107750757953039239">Birdən çox Google Hesabınız varsa, onları <ph name="DEVICE_TYPE" />cihazınıza əlavə edə bilərsiniz. Hesablarınız Chromium brauzerində və Play Marketdə, eləcə də Gmail, Disk və YouTube kimi xidmətlərdə əlçatan olacaq. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Linki Yeni Chromium tabında açın</translation>
 <translation id="911206726377975832">Brauzinq datanız da silinsin?</translation>
 <translation id="9158494823179993217">Sistem administratoru Chromium'u <ph name="TARGET_URL_HOSTNAME" /> ünvanına daxil olmaq məqsədilə alternativ brauzer açmaq üçün konfiqurasiya edib.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1175958423215084756">Выяўлена спасылка. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Відарысы ў галерэі</translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1473110567575736769">Таймер на 3 секунды</translation>
@@ -79,6 +80,7 @@
 <translation id="7649070708921625228">Даведка</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7670511624014457267">60 кадраў у секунду</translation>
+<translation id="7983668134180549431">Выяўлены тэкст.</translation>
 <translation id="8067883171444229417">Прайграць відэа</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
 <translation id="8145038249676204903">Пераключыцца на здымку фота</translation>

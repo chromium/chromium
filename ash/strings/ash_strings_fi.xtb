@@ -194,6 +194,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2705001408393684014">Mikrofoni päälle/pois. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Ylös</translation>
 <translation id="2718395828230677721">Yövalo</translation>
+<translation id="2726420622004325180">Puhelimen käyttäminen modeemina edellyttää mobiilidataa</translation>
 <translation id="2727175239389218057">Vastaa</translation>
 <translation id="2727977024730340865">Pienitehoinen laturi kytketty. Akku ei ehkä lataudu luotettavasti.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />: ylläpitäjä on <ph name="MANAGER" /></translation>
@@ -450,6 +451,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Kuvakaappaus</translation>
 <translation id="495046168593986294">Vieritä ylös</translation>
+<translation id="4952936045814352993">Paikanna puhelin ei ole käytettävissä, kun hälytysäänet on poistettu käytöstä</translation>
 <translation id="4961318399572185831">Suoratoista näyttö</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> t <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Sovellusten merkitseminen</translation>

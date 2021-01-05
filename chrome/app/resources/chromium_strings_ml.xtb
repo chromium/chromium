@@ -263,6 +263,7 @@
 <translation id="9019929317751753759">Chromium സുരക്ഷിതമാക്കാൻ, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> എന്നതിൽ ലിസ്റ്റ് ചെയ്യാത്ത ഇനിപ്പറയുന്ന വിപുലീകരണം ഞങ്ങൾ പ്രവർത്തനരഹിതമാക്കി, അവ നിങ്ങളുടെ അറിവില്ലാതെ ചേർത്തിരിക്കാനിടയുണ്ട്.</translation>
 <translation id="9089354809943900324">Chromium കാലഹരണപ്പെട്ടു</translation>
 <translation id="9093206154853821181">{0,plural, =1{ഒരു മണിക്കൂറിൽ Chromium വീണ്ടും സമാരംഭിക്കും}other{# മണിക്കൂറിൽ Chromium വീണ്ടും സമാരംഭിക്കും}}</translation>
+<translation id="9107750757953039239">നിങ്ങൾക്ക് ഒന്നിലധികം Google അക്കൗണ്ടുകൾ ഉണ്ടെങ്കിൽ, അവ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിലേക്ക് ചേർക്കാൻ കഴിയും. നിങ്ങളുടെ അക്കൗണ്ടുകൾ Chromium ബ്രൗസറിലും Play സ്റ്റോറിലും Gmail, Drive, YouTube പോലുള്ള സേവനങ്ങളിലും ലഭ്യമാകും. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">പുതിയ Chromium &amp;ടാബിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="911206726377975832">നിങ്ങളുടെ ബ്രൗസിംഗ് ഡാറ്റയും ഇതോടൊപ്പം ഇല്ലാതാക്കണോ?</translation>
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" /> ആക്‌സസ് ചെയ്യാൻ ഇതര ബ്രൗസർ തുറക്കുന്നതിനായി നിങ്ങളുടെ സിസ്‌റ്റം അഡ്‌മിൻ Chromium കോൺഫിഗർ ചെയ്‌തു.</translation>

@@ -194,6 +194,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2705001408393684014">Uključite/isključite mikrofon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Gore</translation>
 <translation id="2718395828230677721">Noćno svjetlo</translation>
+<translation id="2726420622004325180">Telefon mora imati prijenos podataka na mobilnoj mreži kako bi mogao pružiti pristupnu tačku</translation>
 <translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727977024730340865">Priključeno na niskonaponski punjač. Punjenje baterije može biti nepouzdano.</translation>
 <translation id="2778650143428714839">Uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" /></translation>
@@ -450,7 +451,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Snimi</translation>
 <translation id="495046168593986294">Klizni prema gore</translation>
-<translation id="4952936045814352993">Lociranje telefona nije moguće kad su onemogućeni zvukovi alarma</translation>
+<translation id="4952936045814352993">Lociranje telefona nije dostupno kada su isključeni zvukovi alarma</translation>
 <translation id="4961318399572185831">Emitiraj ekran</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Označavanje aplikacija</translation>

@@ -1028,6 +1028,7 @@
 <translation id="2139919072249842737">बटण सेट करा</translation>
 <translation id="214169863967063661">स्वरूप सेटिंग्ज उघडा</translation>
 <translation id="2142328300403846845">लिंक या फॉरमॅटमध्ये उघडा</translation>
+<translation id="2142582065325732898">अलीकडील Chrome टॅब पाहण्यासाठी <ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> सुरू करा. <ph name="LINK2_BEGIN" />अधिक जाणून घ्या<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">टूलबार नेहमी पूर्ण स्क्रीनमध्ये दर्शवा</translation>
 <translation id="2143778271340628265">व्यक्तिचलित प्रॉक्झी कॉंफिगरेशन</translation>
 <translation id="2144536955299248197">सर्टिफिकेट दर्शक: <ph name="CERTIFICATE_NAME" /></translation>
@@ -2380,6 +2381,7 @@
 <translation id="3677911431265050325">मोबाइल साइटची विनंती करा</translation>
 <translation id="3677959414150797585">अ‍ॅप्स, वेबपेज आणि बऱ्याच गोष्टींचा समावेश आहे. तुम्ही जर वापर डेटा शेअर करण्याचे निवडले असेल तरच सूचनांमध्ये सुधारणा करण्यासाठी आकडेवारी पाठवते.</translation>
 <translation id="3678156199662914018">एक्स्टेंशनः <ph name="EXTENSION_NAME" /></translation>
+<translation id="3679608942832457508">तुम्ही हे खाते वापरून साइन इन केले आहे त्या सर्व Chromebook वर तुमची अ‍ॅप्स आणि OS सेटिंग्ज सिंक होतील. <ph name="LINK_BEGIN" />सेटिंग्ज सिंक करा<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">टेक्‍स्‍ट टू स्‍पीच व्हॉइस</translation>
 <translation id="3681311097828166361">तुमच्या फीडबॅकाबद्दल धन्यवाद. तुम्ही आता ऑफलाइन आहात आणि तुमचा अहवाल नंतर पाठविला जाईल.</translation>
 <translation id="3682824389861648626">हालचालाची मर्यादा</translation>
@@ -2929,7 +2931,6 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{एक Google खाते}other{<ph name="EXTRA_ACCOUNTS" /> Google खाती}}</translation>
 <translation id="4312866146174492540">अवरोधित करा (डीफॉल्ट)</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापित करा</translation>
-<translation id="4316735916549342071">की जुळत नाहीत. “<ph name="UNEXPECTEDKEY" />” दाबली होती. त्याआधी “<ph name="CURRENTKEY" />” दाबली होती. बाहेर पडण्यासाठी कोणतीही की दाबा.</translation>
 <translation id="4316850752623536204">डेव्हलपर वेबसाइट</translation>
 <translation id="4317820549299924617">पडताळणी यशस्वी झाली नाही</translation>
 <translation id="4320177379694898372">कोणतेही इंटरनेट कनेक्शन नाही</translation>
@@ -3653,6 +3654,7 @@
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" ची नवीनतम आवृत्ती अक्षम केली गेली कारण यासाठी अधिक परवानग्या आवश्यक आहेत.</translation>
 <translation id="5185500136143151980">इंटरनेट नाही</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190187232518914472">तुमच्या आवडत्या आठवणी पुन्हा अनुभवा. अल्बम जोडण्यासाठी किंवा संपादित करण्यासाठी, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> वर जा.</translation>
 <translation id="5190926251776387065">पोर्ट सुरू करा</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ला एकाहून अधिक फाइल डाउनलोड करायच्या आहेत</translation>
 <translation id="5192062846343383368">तुमची पर्यवेक्षण सेटिंग्ज पाहण्यासाठी Family Link अ‍ॅप उघडा</translation>
@@ -3901,6 +3903,7 @@
 <translation id="5481273127572794904">एकाहून अधिक फाइल आपोआप डाउनलोड करण्याची अनुमती नाही</translation>
 <translation id="5481941284378890518">जवळपासचे प्रिंटर जोडा</translation>
 <translation id="5483785310822538350">फाइल आणि डिव्हाइस ॲक्सेस रद्द करा</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> आज परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पहा<ph name="LINK_END" />}other{<ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> {NUM_DAYS} दिवसांच्या आत परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पहा<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835">तुमचे <ph name="DEVICE_TYPE" /> सुरक्षेच्या कारणास्तव लॉक करण्यात आलेले आहे. पुढे जाण्यासाठी तुम्ही तुमचा पासवर्ड स्वतः टाका.</translation>
 <translation id="5485102783864353244">ॲप्लिकेशन जोडा</translation>
 <translation id="5485754497697573575">सर्व टॅब पुनर्संचयित करा</translation>
@@ -4349,7 +4352,6 @@
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{हानीकारक असू शकणारे एक एक्स्टेंशन तुम्ही पुन्हा सुरू केले}other{हानीकारक असू शकणारी {NUM_EXTENSIONS} एक्स्टेंशन तुम्ही पुन्हा सुरू केली}}</translation>
 <translation id="5979421442488174909"><ph name="LANGUAGE" /> मध्ये &amp;अनुवाद करा</translation>
 <translation id="5979469435153841984">पेज बुकमार्क करण्यासाठी, ॲड्रेस बारमधील स्टार क्लिक करा</translation>
-<translation id="5982945980973315070">अ‍ॅप कॅमेरा अ‍ॅक्सेस करण्याचा प्रयत्न करत आहे. अ‍ॅक्सेसला अनुमती देण्यासाठी वेबकॅम प्रायव्हसी स्विच बंद करा</translation>
 <translation id="5984222099446776634">अलीकडे भेट दिलेले</translation>
 <translation id="598472838394900788">{0,plural, =1{गुप्त}other{गुप्त (#)}}</translation>
 <translation id="5985458664595100876">चुकीचा URL फॉरमॅट. सपोर्ट केले जाणारे फॉरमॅट \\server\share आणि smb://server/share आहेत.</translation>
@@ -5630,6 +5632,7 @@
 <translation id="7476454130948140105">अपडेटसाठी बॅटरी खूप कमी (<ph name="BATTERY_PERCENT" />%) आहे</translation>
 <translation id="7477793887173910789">व्हिडिओ पाहा आणि बरेच काही नियंत्रित करा</translation>
 <translation id="7478485216301680444">कियोस्क ॲप्लिकेशन इंस्टॉल केले जाऊ शकले नाही.</translation>
+<translation id="7478623944308207463">तुम्ही तुमचे Google खाते वापरून साइन इन केले आहे त्या सर्व Chrome OS डिव्हाइसवर तुमची अ‍ॅप्स आणि सेटिंग्ज सिंक होतील. ब्राउझर सिंक पर्यायांसाठी, <ph name="LINK_BEGIN" />Chrome सेटिंग्ज<ph name="LINK_END" /> वर जा.</translation>
 <translation id="7479221278376295180">स्टोरेज वापराचे अवलोकन</translation>
 <translation id="7481312909269577407">पुढील</translation>
 <translation id="7481358317100446445">तयार</translation>
@@ -6031,7 +6034,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7919210519031517829"><ph name="DURATION" /> से</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ला <ph name="FILENAME" /> पाहता येते</translation>
 <translation id="7920482456679570420">तुम्हाला स्पेल चेकने वगळायला हवे असलेले शब्द जोडा</translation>
-<translation id="7921276565737611663">निवडा यासाठी असाइन केलेला एकमेव स्विच काढून टाकता आला नाही. बाहेर पडण्यासाठी कोणतीही की दाबा.</translation>
 <translation id="7924358170328001543">पोर्ट फॉरवर्ड करताना एरर आली</translation>
 <translation id="792514962475806987">डॉक केलेली झूम पातळी:</translation>
 <translation id="7925247922861151263">AAA तपास अयशस्वी</translation>
@@ -6297,6 +6299,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8211551284753798479">अवैध PUK. तुमच्याकडे <ph name="RETRIES" /> प्रयत्न शिल्लक आहेत.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{डाउनलोड सुरू आहे}other{डाउनलोड सुरू आहेत}}</translation>
 <translation id="8213449224684199188">फोटो मोड टाकला</translation>
+<translation id="8213866992824776555"><ph name="DOMAIN" /> ला तुमचे डिव्हाइस ओळखायचे आहे जेणेकरून, ते सर्वोच्च गुणवत्तेमधील संरक्षित व्हिडिओ आणि ऑडिओ प्ले करू शकेल.</translation>
 <translation id="8214489666383623925">फाइल उघडा...</translation>
 <translation id="8214962590150211830">या व्यक्तीस काढून टाका</translation>
 <translation id="8216351761227087153">पहा</translation>
@@ -6603,7 +6606,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="859246725979739260">या साइटला तुमचे स्थान अ‍ॅक्सेस करण्यापासून ब्लॉक केले आहे.</translation>
 <translation id="8593121833493516339">वापर आणि निदान डेटा पाठवा. Google ला आपोआप निदान आणि डिव्हाइस आणि अ‍ॅप वापर डेटा पाठवून तुमच्या लहान मुलाचा Android अनुभव सुधारण्यात मदत करा. हे तुमच्या लहान मुलाला ओळखण्यासाठी वापरले जाणार नाही आणि सिस्ट्म आणि अ‍ॅप स्थिरता आणि इतर सुधारणा करण्यात मदत करेल. काही एकत्रित केलेला डेटा Google अ‍ॅप्स आणि Android डेव्हलपर सारख्या भागीदारांना देखील मदत करेल. तुमच्या लहान मुलासाठी अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सुरू केलेली असल्यास, हा डेटा त्याच्या Google खात्यामध्ये स्टोअर केला जाऊ शकतो. <ph name="BEGIN_LINK1" />अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="8593735906501637689"><ph name="MODULE_TITLE" /> काढून टाकले</translation>
-<translation id="859418833001586249">असाइनमेंटला सुरुवात करण्यासाठी नवीन स्विच दाबा.</translation>
 <translation id="8594908476761052472">व्‍हिडिओ कॅप्‍चर करा</translation>
 <translation id="8596540852772265699">कस्टम फाइल</translation>
 <translation id="8597845839771543242">गुणधर्म स्‍वरूपन:</translation>
@@ -6685,6 +6687,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8676374126336081632">इनपुट साफ करा</translation>
 <translation id="8676770494376880701">निम्न-उर्जेचे चार्जर कनेक्ट केले</translation>
 <translation id="8677212948402625567">सर्व कोलॅप्स करा...</translation>
+<translation id="8677859815076891398">कोणतेही अल्बम नाहीत. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मध्ये एखादा अल्बम तयार करा.</translation>
 <translation id="8678933587484842200">हे ॲप्लिकेशन कसे लॉंच व्हावे असे तुम्हाला वाटते?</translation>
 <translation id="8680251145628383637">आपल्या सर्व डिव्हाइसेसवर तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज मिळविण्‍यासाठी साइन इन करा. तुम्ही स्वयंचलितपणे आपल्‍या Google सेवांवर देखील साइन इन कराल.</translation>
 <translation id="8681614230122836773">Chrome ला तुमच्या कॉंप्युटरवर हानिकारक सॉफ्टवेअर आढळले</translation>
@@ -6843,6 +6846,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8831140208248705279">तुमचे <ph name="DEVICE_TYPE" /> आणि Android एकत्रितपणे आणखी चांगले काम करतात. तुम्हाला तुमच्या काँप्युटरवरून एसएमएस करणे, तुमचे इंटरनेट कनेक्शन शेअर करणे आणि तुमच्या फोनने तुमचे <ph name="DEVICE_TYPE" /> अनलॉक करणे शक्य होण्यासाठी त्यांना कनेक्ट करा.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717"><ph name="USER_EMAIL" /> ने नेटवर्क कॉंफिगरेशन नियंत्रित केले आहे.</translation>
 <translation id="8835786707922974220">तुम्हाला तुमचे सेव्ह केलेले पासवर्ड नेहमी अ‍ॅक्सेस करता येतील याची खात्री करा</translation>
+<translation id="8836360711089151515"><ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> एका आठवड्याच्या आत परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पहा<ph name="LINK_END" /></translation>
 <translation id="8838601485495657486">अपारदर्शक</translation>
 <translation id="8838770651474809439">हॅमबर्गर</translation>
 <translation id="883911313571074303">इमेजवर भाष्य करा</translation>
@@ -7128,6 +7132,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9148963623915467028">ही साइट तुमचे स्थान अ‍ॅक्सेस करू शकते.</translation>
 <translation id="9149866541089851383">संपादन...</translation>
 <translation id="9150045010208374699">तुमचा कॅमेरा वापरा</translation>
+<translation id="9150079578948279438">प्रोफाइल काढून टाकता आली नाही. कृपया पुन्हा प्रयत्न करा किंवा तांत्रिक सपोर्टसाठी तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="9153934054460603056">ओळख आणि पासवर्ड सेव्ह करा</translation>
 <translation id="9154194610265714752">अपडेट केलेले</translation>
 <translation id="91568222606626347">शॉर्टकट तयार करा...</translation>

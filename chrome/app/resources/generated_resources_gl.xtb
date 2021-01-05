@@ -570,7 +570,7 @@
 <translation id="1616298854599875024">Non se puido importar a extensión "<ph name="IMPORT_NAME" />" porque non é un módulo compartido</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Comprobando que estes datos cumpran as políticas de seguranza da túa organización…}=1{Comprobando que este ficheiro cumpra as políticas de seguranza da túa organización…}other{Comprobando que estes ficheiros cumpran as políticas de seguranza da túa organización…}}</translation>
 <translation id="1618268899808219593">C&amp;entro de axuda</translation>
-<translation id="1620307519959413822">O contrasinal é incorrecto. Téntao de novo ou fai clic en Esqueciches o contrasinal? se queres restablecelo.</translation>
+<translation id="1620307519959413822">O contrasinal é incorrecto. Téntao de novo ou fai clic en "Esqueciches o contrasinal?" se queres restablecelo.</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1621729191093924223">As funcións que requiran un micrófono non estarán dispoñibles</translation>
 <translation id="1621831347985899379">Eliminaranse os datos do dispositivo (<ph name="DEVICE_TYPE" />)</translation>
@@ -2259,6 +2259,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3538066758857505094">Produciuse un erro ao desinstalar Linux. Téntao de novo.</translation>
 <translation id="354060433403403521">Adaptador de CA</translation>
 <translation id="354068948465830244">Pode consultar e modificar os datos do sitio</translation>
+<translation id="3541823293333232175">Asignado</translation>
 <translation id="3543393733900874979">Non se puido efectuar a actualización (erro: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Sinatura X9.62 ECDSA con SHA-512</translation>
 <translation id="3544879808695557954">Nome de usuario (opcional)</translation>
@@ -2840,6 +2841,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4184885522552335684">Para mover unha pantalla, arrástraa</translation>
+<translation id="4186763173530196927">Hai unha aplicación que está tentando acceder á cámara. Para darlle acceso, desactiva o interruptor de privacidade da cámara.</translation>
 <translation id="4187424053537113647">Configurando <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Destacar enfoque do teclado</translation>
 <translation id="4193575319002689239">Mostrar tarxetas</translation>
@@ -2935,7 +2937,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Conta de Google}other{<ph name="EXTRA_ACCOUNTS" /> Contas de Google}}</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Xestionar sincronización</translation>
-<translation id="4316735916549342071">As teclas non coinciden. Premiches <ph name="UNEXPECTEDKEY" />. Antes, premeras <ph name="CURRENTKEY" />. Preme unha tecla calquera para saír.</translation>
 <translation id="4316850752623536204">Sitio web para programadores</translation>
 <translation id="4317820549299924617">A verificación non se realizou correctamente</translation>
 <translation id="4320177379694898372">Non hai conexión a Internet</translation>
@@ -3295,6 +3296,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="473546211690256853">Esta conta está xestionada por <ph name="DOMAIN" /></translation>
 <translation id="4735803855089279419">O sistema non puido determinar os identificadores deste dispositivo.</translation>
 <translation id="4736292055110123391">Sincronizar os marcadores, os contrasinais, o historial e máis datos en todos os teus dispositivos</translation>
+<translation id="4736765933704278771">Preme un interruptor para asignarllo á acción <ph name="ACTION" />. Podes asignarlle varios a cada acción.</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="473936925429402449">Botón de contido extra (seleccionado): <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tíckets</translation>
@@ -4297,6 +4299,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5920543303088087579">O administrador desactivou a conexión a esta rede</translation>
 <translation id="5920835625712313205">Escritor de imaxes do sistema Chrome OS</translation>
 <translation id="5921257443092182237">O servizo de localización de Google utiliza fontes como a wifi, as redes de telefonía móbil e os sensores para calcular a localización deste dispositivo.</translation>
+<translation id="5923205773724721589">As teclas non coinciden. Preme unha tecla calquera para saír.</translation>
 <translation id="5924047253200400718">Obter axuda<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924287525504995925">Impedir que os sitios usen datos e dispositivos de realidade virtual</translation>
 <translation id="5924527146239595929">Saca unha foto. Se o prefires, podes escoller unha das imaxes ou iconas que xa teñas.
@@ -4355,10 +4358,10 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Activaches de novo 1 extensión potencialmente daniña}other{Activaches de novo {NUM_EXTENSIONS} extensións potencialmente daniñas}}</translation>
 <translation id="5979421442488174909">&amp;Traducir ao <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Para engadir páxinas aos marcadores, fai clic na estrela da barra de enderezos</translation>
-<translation id="5982945980973315070">Hai unha aplicación que está tentando acceder á cámara. Para darlle acceso, desactiva o interruptor de privacidade da cámara web</translation>
 <translation id="5984222099446776634">Visitados recentemente</translation>
 <translation id="598472838394900788">{0,plural, =1{Incógnito}other{Incógnito (#)}}</translation>
 <translation id="5985458664595100876">O formato do URL non é válido. Só se admiten os formatos \\server\share e smb://server/share.</translation>
+<translation id="598810097218913399">Quitar asignación</translation>
 <translation id="5990266201903445068">Só por wifi</translation>
 <translation id="5990386583461751448">Páxina traducida</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Para asegurarte de que podes seguir navegando pola web, pídelle ao administrador que elimine esta aplicación.}other{Para asegurarte de que podes seguir navegando pola web, pídelle ao administrador que elimine estas aplicacións.}}</translation>
@@ -5668,6 +5671,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7513029293694390567">Inicia sesión automaticamente nos sitios web coas credenciais almacenadas. Se se desactiva a función, solicitaráseche sempre a confirmación antes de iniciar sesión nun sitio web.</translation>
 <translation id="7514239104543605883">Copiar no teu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>
+<translation id="7514417110442087199">Engadir asignación</translation>
 <translation id="751523031290522286">O administrador bloqueou <ph name="APP_NAME" />. Pídelle permiso para utilizar esta aplicación.</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> púxose en pausa</translation>
 <translation id="7517063221058203587">{0,plural, =1{Actualiza o dispositivo en 1 minuto}other{Actualiza o dispositivo en # minutos}}</translation>
@@ -6040,7 +6044,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pode ver <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Engade as palabras que queiras que omita o corrector ortográfico</translation>
-<translation id="7921276565737611663">Non se puido quitar o único interruptor asignado á acción Seleccionar. Preme unha tecla calquera para saír.</translation>
 <translation id="7924358170328001543">Produciuse un erro co encamiñamento do porto</translation>
 <translation id="792514962475806987">Nivel de zoom da lupa ancorada:</translation>
 <translation id="7925247922861151263">Erro de comprobación de AAA</translation>
@@ -6268,6 +6271,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover pestana a unha ventá nova}other{Mover pestanas a unha ventá nova}}</translation>
 <translation id="8165997195302308593">Encamiñamento de porto de Crostini</translation>
 <translation id="8168435359814927499">Contido</translation>
+<translation id="8168943654413034772">Non se puido quitar o único interruptor asignado á acción Seleccionar. Preme unha tecla calquera para saír.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Engadir pestana á lista de lectura}other{Engadir pestanas á lista de lectura}}</translation>
 <translation id="8174047975335711832">Información do dispositivo</translation>
 <translation id="8174876712881364124">Crear copia de seguranza en Google Drive. Restaura facilmente os datos ou cambia de dispositivo en calquera momento. Esta copia de seguranza inclúe os datos das aplicacións. As copias de seguranza cárganse en Google e encríptanse co contrasinal da Conta de Google do teu fillo. <ph name="BEGIN_LINK1" />Máis información<ph name="END_LINK1" /></translation>
@@ -6613,7 +6617,6 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="859246725979739260">Impediuse que este sitio acceda á túa localización.</translation>
 <translation id="8593121833493516339">Enviar datos de uso e de diagnóstico. Envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google para axudar a mellorar a experiencia do teu fillo en Android. Esta información non se utilizará para identificar o teu fillo, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo, estes datos pódense gardar na súa conta de Google <ph name="BEGIN_LINK1" />Máis información<ph name="END_LINK1" /></translation>
 <translation id="8593735906501637689">Quitouse o módulo <ph name="MODULE_TITLE" /></translation>
-<translation id="859418833001586249">Preme un novo interruptor para asignalo a esta acción.</translation>
 <translation id="8594908476761052472">Gravar vídeo</translation>
 <translation id="8596540852772265699">Ficheiros personalizados</translation>
 <translation id="8597845839771543242">Formato de propiedade:</translation>

@@ -1026,6 +1026,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2139919072249842737">Botón de configuración</translation>
 <translation id="214169863967063661">Abrir configuración de apariencia</translation>
 <translation id="2142328300403846845">Abrir vínculo como</translation>
+<translation id="2142582065325732898">Activa la <ph name="LINK1_BEGIN" />Sincronización de Chrome<ph name="LINK1_END" /> para ver las pestañas recientes de Chrome. <ph name="LINK2_BEGIN" />Más información<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Siempre mostrar la barra de herramientas en pantalla completa</translation>
 <translation id="2143778271340628265">Configuración manual de proxy</translation>
 <translation id="2144536955299248197">Visualizador de certificados: <ph name="CERTIFICATE_NAME" /></translation>
@@ -2379,6 +2380,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3677911431265050325">Solicitar sitio móvil</translation>
 <translation id="3677959414150797585">Incluye apps, páginas web y mucho más. Envía estadísticas para mejorar las sugerencias solo si elegiste compartir los datos de uso.</translation>
 <translation id="3678156199662914018">Extensión: <ph name="EXTENSION_NAME" /></translation>
+<translation id="3679608942832457508">Se sincronizarán las apps y la configuración del SO en las Chromebooks a las que hayas accedido con esta cuenta. <ph name="LINK_BEGIN" />Configuración de sincronización<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Voz para texto a voz</translation>
 <translation id="3681311097828166361">Gracias por tus comentarios. Tu informe se enviará cuando tengas conexión.</translation>
 <translation id="3682824389861648626">Umbral de movimiento</translation>
@@ -2931,7 +2933,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Cuenta de Google}other{<ph name="EXTRA_ACCOUNTS" /> Cuentas de Google}}</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Administrar la sincronización</translation>
-<translation id="4316735916549342071">Las teclas no coinciden. Presionaste "<ph name="UNEXPECTEDKEY" />" y antes habías presionado "<ph name="CURRENTKEY" />". Presiona cualquier tecla para salir.</translation>
 <translation id="4316850752623536204">Sitio web del programador</translation>
 <translation id="4317820549299924617">No se completó la verificación</translation>
 <translation id="4320177379694898372">Sin conexión a Internet</translation>
@@ -3042,7 +3043,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4446933390699670756">Duplicado</translation>
 <translation id="4449948729197510913">Tu nombre de usuario pertenece a la cuenta empresarial de tu organización. Si deseas inscribir dispositivos en la cuenta, primero debes revisar la propiedad del dominio en la Consola del administrador. Deberás tener privilegios administrativos de la cuenta que deseas verificar.</translation>
 <translation id="4449996769074858870">Esta pestaña está reproduciendo audio.</translation>
-<translation id="4450274068924249931">Cuando la pantalla está inactiva, muestra información multimedia, fotos, la hora y el tiempo. Si habilitas el protector de pantalla, mantendrá la pantalla encendida durante la carga.</translation>
+<translation id="4450274068924249931">Cuando la pantalla está inactiva, muestra información sobre el contenido multimedia, fotos, la hora y el tiempo. Si habilitas el protector de pantalla, mantendrá la pantalla encendida durante la carga.</translation>
 <translation id="4450974146388585462">Diagnosticar</translation>
 <translation id="4451479197788154834">La contraseña está guardada en este dispositivo y en tu Cuenta de Google</translation>
 <translation id="4451757071857432900">Bloqueados en sitios que muestran anuncios intrusivos o engañosos (opción recomendada)</translation>
@@ -3655,6 +3656,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5185386675596372454">Se ha desactivado la versión más reciente de "<ph name="EXTENSION_NAME" />" porque requiere más permisos.</translation>
 <translation id="5185500136143151980">No hay conexión a Internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190187232518914472">Revive tus recuerdos favoritos. Para agregar o editar álbumes, ve a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5190926251776387065">Activar puerto</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> quiere descargar varios archivos</translation>
 <translation id="5192062846343383368">Abre la app de Family Link para administrar la supervisión</translation>
@@ -3903,6 +3905,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5481273127572794904">No puede descargar múltiples archivos de forma automática</translation>
 <translation id="5481941284378890518">Agregar impresoras cercanas</translation>
 <translation id="5483785310822538350">Revocar acceso al archivo y al dispositivo</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y devuelvas este dispositivo <ph name="DEVICE_TYPE" /> hoy mismo. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}other{<ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y devuelvas este dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de {NUM_DAYS} días. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835">Por razones de seguridad, se bloqueó tu <ph name="DEVICE_TYPE" />. Ingresa tu contraseña manualmente para continuar.</translation>
 <translation id="5485102783864353244">Agregar app</translation>
 <translation id="5485754497697573575">Restablecer todas las pestañas</translation>
@@ -4350,7 +4353,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Volviste a activar 1 extensión potencialmente dañina}other{Volviste a activar {NUM_EXTENSIONS} extensiones potencialmente dañinas}}</translation>
 <translation id="5979421442488174909">&amp;Traducir a <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Para agregar páginas a Favoritos, haz clic en la estrella que se encuentra en la barra de direcciones</translation>
-<translation id="5982945980973315070">Una app intenta acceder a la cámara. Para permitir el acceso, desactiva el interruptor de privacidad de la Cámara web.</translation>
 <translation id="5984222099446776634">Visitados recientemente</translation>
 <translation id="598472838394900788">{0,plural, =1{Incógnito}other{Incógnito (#)}}</translation>
 <translation id="5985458664595100876">El formato de la URL no es válido. Los formatos compatibles son \\server\share y smb://server/share.</translation>
@@ -5631,6 +5633,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7476454130948140105">El nivel de la batería es demasiado bajo para la actualización (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Controla tu música, videos y mucho más</translation>
 <translation id="7478485216301680444">No se pudo instalar la aplicación del kiosco.</translation>
+<translation id="7478623944308207463">Se sincronizarán tus apps y opciones de configuración en todos los dispositivos con Chrome OS a los que hayas accedido con tu Cuenta de Google. Para ver las opciones de sincronización del navegador, ve a la <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
 <translation id="7479221278376295180">Descripción general sobre el uso del almacenamiento</translation>
 <translation id="7481312909269577407">Reenviar</translation>
 <translation id="7481358317100446445">Listo</translation>
@@ -6034,7 +6037,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> puede ver <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Agrega las palabras que quieras que el corrector ortográfico omita</translation>
-<translation id="7921276565737611663">No se pudo quitar el único interruptor asignado a la acción Seleccionar. Presiona cualquier tecla para salir.</translation>
 <translation id="7924358170328001543">Se produjo un error al reenviar el puerto</translation>
 <translation id="792514962475806987">Nivel de zoom en vista acoplada:</translation>
 <translation id="7925247922861151263">Falló la verificación de AAA</translation>
@@ -6300,6 +6302,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8211551284753798479">La PUK no es válida. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Descarga en curso}other{Descargas en curso}}</translation>
 <translation id="8213449224684199188">Ingresaste al modo de foto</translation>
+<translation id="8213866992824776555"><ph name="DOMAIN" /> desea identificar tu dispositivo para que pueda reproducir audio y video protegidos de la más alta calidad.</translation>
 <translation id="8214489666383623925">Abrir archivo...</translation>
 <translation id="8214962590150211830">Eliminar a esta persona</translation>
 <translation id="8216351761227087153">Ver</translation>
@@ -6607,7 +6610,6 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="859246725979739260">Este sitio no tiene permiso para acceder a tu ubicación.</translation>
 <translation id="8593121833493516339">Envía datos de uso y diagnóstico. Para ayudar a mejorar la experiencia de Android de tu hijo, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información no se usará para identificar a tu hijo y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. Si habilitaste la "Actividad de web y de aplicaciones adicional" en la Cuenta de Google de tu hijo, es posible que se almacenen estos datos en esa cuenta. <ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
 <translation id="8593735906501637689">Se quitó <ph name="MODULE_TITLE" /></translation>
-<translation id="859418833001586249">Presiona un nuevo interruptor para iniciar la asignación.</translation>
 <translation id="8594908476761052472">Capturar video</translation>
 <translation id="8596540852772265699">Archivos personalizados</translation>
 <translation id="8597845839771543242">Formato de la propiedad:</translation>
@@ -6689,6 +6691,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8676374126336081632">Borrar entrada</translation>
 <translation id="8676770494376880701">Cargador de baja potencia conectado</translation>
 <translation id="8677212948402625567">Contraer todo...</translation>
+<translation id="8677859815076891398">No hay álbumes. Crea un álbum en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8678933587484842200">¿Cómo deseas que se ejecute esta app?</translation>
 <translation id="8680251145628383637">Accede para obtener tus favoritos, el historial, las contraseñas y otras opciones de configuración en todos tus dispositivos. Además, accederás de forma automática a los servicios de Google.</translation>
 <translation id="8681614230122836773">Chrome encontró software dañino en tu computadora</translation>
@@ -6846,6 +6849,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8831140208248705279">Tu <ph name="DEVICE_TYPE" /> y tu teléfono Android trabajan mejor juntos. Conéctalos para poder enviar mensajes de texto desde la computadora, compartir la conexión de Internet y desbloquear tu <ph name="DEVICE_TYPE" /> con el teléfono.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8834039744648160717"><ph name="USER_EMAIL" /> controla la configuración de la red.</translation>
 <translation id="8835786707922974220">Asegúrate de que siempre puedas acceder a tus contraseñas guardadas</translation>
+<translation id="8836360711089151515"><ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y devuelvas este dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de 1 semana. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" /></translation>
 <translation id="8838601485495657486">Opaco</translation>
 <translation id="8838770651474809439">Hamburguesa</translation>
 <translation id="883911313571074303">Escribir en la imagen</translation>
@@ -7132,6 +7136,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="9148963623915467028">Este sitio puede acceder a tu ubicación.</translation>
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9150045010208374699">Usar tu cámara</translation>
+<translation id="9150079578948279438">No se pudo quitar el perfil. Vuelve a intentarlo o comunícate con tu proveedor para solicitarle asistencia técnica.</translation>
 <translation id="9153934054460603056">Guardar la identidad y la contraseña</translation>
 <translation id="9154194610265714752">Actualizado</translation>
 <translation id="91568222606626347">Crear acceso directo…</translation>

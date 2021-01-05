@@ -259,6 +259,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="9019929317751753759">‏برای ایمن‌تر کردن Chromium، افزونه زیر را که در <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست نشده است و ممکن است بدون اطلاع شما اضافه شده باشد، غیرفعال کردیم.</translation>
 <translation id="9089354809943900324">‏نسخه Chromium قدیمی است</translation>
 <translation id="9093206154853821181">{0,plural, =1{‏Chromium یک ساعت دیگر راه‌اندازی مجدد می‌شود}one{‏Chromium # ساعت دیگر راه‌اندازی مجدد می‌شود}other{‏Chromium # ساعت دیگر راه‌اندازی مجدد می‌شود}}</translation>
+<translation id="9107750757953039239">‏اگر چند «حساب Google» دارید، می‌توانید آن‌ها را به <ph name="DEVICE_TYPE" /> اضافه کنید. حساب‌هایتان در مرورگر Chromium و «فروشگاه Play» و همچنین سرویس‌هایی مثل Gmail،‏ Drive، و YouTube دردسترس خواهند بود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">‏باز کردن پیوند در &amp;برگه جدید Chromium</translation>
 <translation id="911206726377975832">داده‌های مرور شما نیز حذف شود؟</translation>
 <translation id="9158494823179993217">‏سرپرست سیستم شما برای باز شدن مرورگر جایگزین برای دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Chromium را پیکربندی کرده است.</translation>

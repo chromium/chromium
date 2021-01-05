@@ -256,6 +256,7 @@
 <translation id="9019929317751753759">Чтобы обеспечить безопасность ваших данных, некоторые расширения были отключены, так как <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не содержит сведений о них (то есть они могли быть установлены без вашего ведома).</translation>
 <translation id="9089354809943900324">Версия Chromium устарела</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium перезапустится через 1 час}one{Chromium перезапустится через # час}few{Chromium перезапустится через # часа}many{Chromium перезапустится через # часов}other{Chromium перезапустится через # часа}}</translation>
+<translation id="9107750757953039239">Если у вас несколько аккаунтов Google, их можно добавить на устройство <ph name="DEVICE_TYPE" />. Они будут доступны в Chromium, Google Play и других сервисах, таких как Gmail, Диск и YouTube. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Открыть ссылку в новой вкладке браузера Chromium</translation>
 <translation id="911206726377975832">Также удалить данные о работе в браузере?</translation>
 <translation id="9158494823179993217">Ваш системный администратор задал настройки, согласно которым Chromium должен запускать альтернативный браузер для доступа к сайту <ph name="TARGET_URL_HOSTNAME" />.</translation>

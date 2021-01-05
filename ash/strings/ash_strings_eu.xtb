@@ -194,6 +194,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2705001408393684014">Aktibatu/Desaktibatu mikrofonoa. <ph name="STATE_TEXT" />.</translation>
 <translation id="2706462751667573066">Gora</translation>
 <translation id="2718395828230677721">Gaueko argia</translation>
+<translation id="2726420622004325180">Telefonoak datu-konexioa erabili behar du wifi-gune bat sortzeko</translation>
 <translation id="2727175239389218057">Erantzun</translation>
 <translation id="2727977024730340865">Potentzia txikiko kargagailu bat entxufatu duzu. Agian bateria kargatzeko prozesua ez da fidagarria izango.</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /> gailua</translation>
@@ -451,6 +452,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Atera argazkia</translation>
 <translation id="495046168593986294">Egin gora</translation>
+<translation id="4952936045814352993">Telefonoa aurkitzeko aukera ez dago erabilgarri alarmen soinuak desgaituta daudenean</translation>
 <translation id="4961318399572185831">Igorri pantaila</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Aplikazio-multzokatzea</translation>

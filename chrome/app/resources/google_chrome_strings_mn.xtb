@@ -288,5 +288,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="911206726377975832">Хайлтын мэдээллээ бас устгамаар байна уу?</translation>
 <translation id="9138603949443464873">Өөрчлөлтөө хэрэгжүүлэхийн тулд Chrome-г дахин ажиллуулна уу</translation>
 <translation id="919706545465235479">Синкийг эхлүүлэхийн тулд Chrome-г шинэчлэх</translation>
+<translation id="94743460404517794">Хэрэв танд олон Google Бүртгэл байгаа бол тэдгээрийг <ph name="DEVICE_TYPE" />-д нэмэх боломжтой. Таны бүртгэлүүд Chrome хөтөч, Play Store түүнчлэн Gmail, Драйв болон YouTube зэрэг үйлчилгээнүүдэд боломжтой болно. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome таны өгөгдмөл хөтөч байна</translation>
 </translationbundle>

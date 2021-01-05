@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">মাইক্রোফোন টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">উপরের</translation>
 <translation id="2718395828230677721">নাইট লাইট</translation>
+<translation id="2726420622004325180">হটস্পট দেওয়ার জন্য আপনার ফোনে মোবাইল ডেটার অ্যাক্সেস থাকতে হবে</translation>
 <translation id="2727175239389218057">উত্তর দিন</translation>
 <translation id="2727977024730340865">একটি নিম্ন শক্তির চার্জার প্লাগইন করা হয়েছে৷ বিশ্বস্ত ব্যাটারি চার্জ নাও হতে পারে৷</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />, <ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>
@@ -450,6 +451,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">ক্যাপচার করুন</translation>
 <translation id="495046168593986294">উপরের দিকে স্ক্রল করুন</translation>
+<translation id="4952936045814352993">অ্যালার্মের শব্দ বন্ধ করা হলে, ফোন শনাক্ত করার বিকল্প ব্যবহার করা যাবে না</translation>
 <translation id="4961318399572185831">স্ক্রিন কাস্ট করুন</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ঘঃ <ph name="MINUTES" />মিঃ <ph name="SECONDS" />সেঃ</translation>
 <translation id="4975771730019223894">অ্যাপ ব্যাজিং</translation>

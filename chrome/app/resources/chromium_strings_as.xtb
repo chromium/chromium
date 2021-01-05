@@ -263,6 +263,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="9019929317751753759">Chromiumক অধিক সুৰক্ষিত কৰিবলৈ, আমি <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ত সূচীবদ্ধ নোহোৱা আৰু হয়তো আপোনাৰ অজ্ঞাতে যোগ কৰা তলত উল্লেখ কৰা এক্সটেনশ্বনটো অক্ষম কৰিছোঁ।</translation>
 <translation id="9089354809943900324">Chromiumটো অতি পুৰণি</translation>
 <translation id="9093206154853821181">{0,plural, =1{এঘণ্টাৰ Chromium ভিতৰত পুনৰ লঞ্চ হ’ব}one{# ঘণ্টাৰ Chromium ভিতৰত পুনৰ লঞ্চ হ’ব}other{# ঘণ্টাৰ Chromium ভিতৰত পুনৰ লঞ্চ হ’ব}}</translation>
+<translation id="9107750757953039239">যদি আপোনাৰ একাধিক Google একাউণ্ট থাকে, আপুনি সেইসমূহ নিজৰ <ph name="DEVICE_TYPE" />ত যোগ দিব পাৰে। আপোনাৰ একাউণ্টসমূহ Chromium ব্ৰাউজাৰ আৰু Play Storeৰ লগতে Gmail, Drive আৰু YouTubeৰ দৰে সেৱাত উপলব্ধ হ’ব। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Chromiumৰ &amp;নতুন টেবত লিংক খোলক</translation>
 <translation id="911206726377975832">লগতে আপোনাৰ ব্ৰাউজিং ডেটাও মচিবনে?</translation>
 <translation id="9158494823179993217">আপোনাৰ ছিষ্টেমৰ প্ৰশাসকে <ph name="TARGET_URL_HOSTNAME" /> এক্সেছ কৰিবলৈ Chromiumক এটা বিকল্প ব্ৰাউজাৰ খুলিবলৈ কনফিগাৰ কৰিছে।</translation>

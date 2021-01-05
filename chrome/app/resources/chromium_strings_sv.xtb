@@ -263,6 +263,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="9019929317751753759">Vi har gjort Chromium säkrare genom att inaktivera följande tillägg som inte anges i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> och som kan ha lagts till utan att du vet om det.</translation>
 <translation id="9089354809943900324">Den här versionen av Chromium är inaktuell</translation>
 <translation id="9093206154853821181">{0,plural, =1{Om en timme startas Chromium om}other{Om # timmar startas Chromium om}}</translation>
+<translation id="9107750757953039239">Om du har flera Google-konton kan du lägga till dem på <ph name="DEVICE_TYPE" />. Kontona blir tillgängliga i webbläsaren Chromium och Play Butik samt tjänster som Gmail, Drive och YouTube. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Öppna länken i en ny &amp;flik i Chromium</translation>
 <translation id="911206726377975832">Vill du även ta bort din webbinformation?</translation>
 <translation id="9158494823179993217">Systemadministratören har konfigurerat Chromium så att <ph name="TARGET_URL_HOSTNAME" /> öppnas i en annan webbläsare.</translation>

@@ -263,6 +263,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="9019929317751753759">Për ta bërë më të sigurt Chromium, çaktivizuam shtesën e mëposhtme që nuk është e listuar në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jetë shtuar pa dijeninë tënde.</translation>
 <translation id="9089354809943900324">Chromium nuk është i përditësuar</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium do të hapet përsëri për një orë}other{Chromium do të hapet përsëri për # orë}}</translation>
+<translation id="9107750757953039239">Nëse ke disa "Llogari të Google", mund t'i shtosh ato te <ph name="DEVICE_TYPE" />. Llogaritë e tua do të ofrohen në shfletuesin Chromium dhe në "Dyqanin e Play", si dhe në shërbimet si Gmail, "Disku" dhe YouTube. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Hape lidhjen në një &amp;skedë të re të Chromium</translation>
 <translation id="911206726377975832">Të fshihen po ashtu të dhënat e shfletimit?</translation>
 <translation id="9158494823179993217">Administratori i sistemit ka konfiguruar Chromium që të hapë një shfletues alternativ për të pasur qasje te <ph name="TARGET_URL_HOSTNAME" />.</translation>

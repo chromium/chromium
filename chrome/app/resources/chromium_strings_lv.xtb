@@ -259,6 +259,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="9019929317751753759">Lai uzlabotu Chromium drošību, mēs atspējojām tālāk norādīto paplašinājumu, kas nav norādīts vietnē <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> un, iespējams, tika pievienots, jums nezinot.</translation>
 <translation id="9089354809943900324">Chromium versija ir novecojusi.</translation>
 <translation id="9093206154853821181">{0,plural, =1{Pārlūks Chromium pēc stundas tiks restartēts}zero{Pārlūks Chromium pēc # stundām tiks restartēts}one{Pārlūks Chromium pēc # stundas tiks restartēts}other{Pārlūks Chromium pēc # stundām tiks restartēts}}</translation>
+<translation id="9107750757953039239">Ja jums ir vairāki Google konti, varat tos pievienot, lai <ph name="DEVICE_TYPE" /> atcerētos tos visus. Jūsu konti būs pieejami pārlūkprogrammā Chromium un Play veikalā, kā arī tādos pakalpojumos kā Gmail, Disks un YouTube. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Atvērt saiti jaunā Chromium &amp;cilnē</translation>
 <translation id="911206726377975832">Vai dzēst arī pārlūkošanas datus?</translation>
 <translation id="9158494823179993217">Sistēmas administrators ir konfigurējis Chromium, lai vietne <ph name="TARGET_URL_HOSTNAME" /> tiktu atvērta papildu pārlūkā.</translation>

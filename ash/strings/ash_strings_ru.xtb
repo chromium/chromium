@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">Кнопка включения и отключения микрофона. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Вверх</translation>
 <translation id="2718395828230677721">Ночной свет</translation>
+<translation id="2726420622004325180">Чтобы включить точку доступа на телефоне, требуется подключение к мобильному Интернету</translation>
 <translation id="2727175239389218057">Ответить</translation>
 <translation id="2727977024730340865">Подключено маломощное зарядное устройство. Возможны проблемы при зарядке.</translation>
 <translation id="2778650143428714839">Устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />.</translation>
@@ -450,6 +451,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Снимок</translation>
 <translation id="495046168593986294">Прокрутить вверх</translation>
+<translation id="4952936045814352993">Функция "Найти телефон" недоступна, так как отключены сигналы оповещений</translation>
 <translation id="4961318399572185831">Трансляция экрана</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч. <ph name="MINUTES" /> мин. <ph name="SECONDS" /> сек.</translation>
 <translation id="4975771730019223894">Число уведомлений на значке приложения</translation>

@@ -263,6 +263,7 @@ Chromium жөндөөлөрүңүздү калыбына келтире алба
 <translation id="9019929317751753759">Жеке маалыматыңызды коргоо үчүн, айрым Chromium кеңейтүүлөрүн өчүрүп койдук, себеби <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ичинде аларга байланыштуу маалымат жок. Демек, бул курамдык бөлүктөр тымызын орнотулган.</translation>
 <translation id="9089354809943900324">Chromium эскирип калган.</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium 1 сааттан кийин кайра иштетилет}other{Chromium # сааттан кийин кайра иштетилет}}</translation>
+<translation id="9107750757953039239">Эгер бир нече Google аккаунтуңуз болсо, аларды <ph name="DEVICE_TYPE" /> түзмөгүнө кошуп койсоңуз болот. Аккаунттарыңыз, ошондой эле Gmail, Drive, жана YouTube сыяктуу кызматтар Chromium серепчисинде жана Play Store'до жеткиликтүү болот. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Шилтемени жаңы Chromium &amp;өтмөгүндө ачуу</translation>
 <translation id="911206726377975832">Серептөө дайын-даректериңизди өчүрөсүзбү?</translation>
 <translation id="9158494823179993217">Тутумуңуздун администратору Chromium'ду <ph name="TARGET_URL_HOSTNAME" /> шилтемесин кошумча серепчиде ачылгыдай кылып конфигурациялады.</translation>

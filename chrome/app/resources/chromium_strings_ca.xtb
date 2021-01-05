@@ -260,6 +260,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="9019929317751753759">Per tal que Chromium sigui més segur, hem desactivat algunes de les extensions que no figuren a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i que és possible que s'hagin afegit sense que ho sapigueu.</translation>
 <translation id="9089354809943900324">Chromium no està actualitzat</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium es reiniciarà d'aquí a 1 hora}other{Chromium es reiniciarà d'aquí a # hores}}</translation>
+<translation id="9107750757953039239">Si tens diversos Comptes de Google, pots afegir-los al teu <ph name="DEVICE_TYPE" />. Estaran disponibles al navegador Chromium i a Play Store, i també en serveis com ara Gmail, Drive i YouTube. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Obre l'enllaç en una pes&amp;tanya nova a Chromium</translation>
 <translation id="911206726377975832">També voleu suprimir les dades de navegació?</translation>
 <translation id="9158494823179993217">L'administrador del sistema ha configurat Chromium perquè obri un navegador alternatiu per accedir a <ph name="TARGET_URL_HOSTNAME" />.</translation>

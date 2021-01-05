@@ -279,5 +279,6 @@
 <translation id="911206726377975832">Также удалить данные о работе в браузере?</translation>
 <translation id="9138603949443464873">Чтобы изменения вступили в силу, перезапустите Chrome.</translation>
 <translation id="919706545465235479">Чтобы начать синхронизацию, обновите Chrome</translation>
+<translation id="94743460404517794">Если у вас несколько аккаунтов Google, их можно добавить на устройство <ph name="DEVICE_TYPE" />. Они будут доступны в Chrome, Google Play и других сервисах, таких как Gmail, Диск и YouTube. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome используется как браузер по умолчанию</translation>
 </translationbundle>

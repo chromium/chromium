@@ -259,6 +259,7 @@
 <translation id="9019929317751753759">Chromium-г илүү аюулгүй болгохын тулд <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> жагсаалтанд байхгүй, танд мэдэгдэлгүйгээр нэмэгдсэн байж болох дараах өргөтгөлийг идэвхгүй болголоо.</translation>
 <translation id="9089354809943900324">Chromium хуучирсан байна</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium-г 1 цагийн дотор дахин ажиллуулна}other{Chromium-г # цагийн дотор дахин ажиллуулна}}</translation>
+<translation id="9107750757953039239">Хэрэв танд олон Google Бүртгэл байгаа бол тэдгээрийг <ph name="DEVICE_TYPE" />-д нэмэх боломжтой. Таны бүртгэлүүд Chromium хөтөч, Play Store түүнчлэн Gmail, Драйв болон YouTube зэрэг үйлчилгээнүүдэд боломжтой болно. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Холбоосыг шинэ Chromium болон табад нээх</translation>
 <translation id="911206726377975832">Хайлтын мэдээллээ бас устгамаар байна уу?</translation>
 <translation id="9158494823179993217">Таны системийн админ Chromium-г<ph name="TARGET_URL_HOSTNAME" />-д хандахын тулд өөр хөтөч нээхээр тохируулсан байна.</translation>

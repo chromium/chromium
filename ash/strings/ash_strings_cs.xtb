@@ -194,6 +194,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2705001408393684014">Přepnout mikrofon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Nahoru</translation>
 <translation id="2718395828230677721">Noční režim</translation>
+<translation id="2726420622004325180">Aby telefon mohl sloužit jako hotspot, musí v něm být zapnutá mobilní data</translation>
 <translation id="2727175239389218057">Odpovědět</translation>
 <translation id="2727977024730340865">Byla připojena nabíječka s nízkým výkonem. Nabíjení baterie nemusí probíhat spolehlivě.</translation>
 <translation id="2778650143428714839">Zařízení <ph name="DEVICE_TYPE" /> spravované doménou <ph name="MANAGER" /></translation>
@@ -450,6 +451,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Zachytit</translation>
 <translation id="495046168593986294">Posunout nahoru</translation>
+<translation id="4952936045814352993">Když jsou vypnuté zvuky budíků, funkce Najít telefon není k dispozici</translation>
 <translation id="4961318399572185831">Odesílání obrazovky</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Označování aplikací odznakem</translation>

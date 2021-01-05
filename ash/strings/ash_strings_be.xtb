@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">Уключыць або выключыць мікрафон. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Уверх</translation>
 <translation id="2718395828230677721">Начная падсветка</translation>
+<translation id="2726420622004325180">Каб тэлефон мог дзейнічаць як хот-спот, ён павінен выкарыстоўваць мабільную перадачу даных</translation>
 <translation id="2727175239389218057">Адказаць</translation>
 <translation id="2727977024730340865">Падключана зарадная прылада нізкай магутнасці. Зарадка акумулятара можа быць нестабільнай.</translation>
 <translation id="2778650143428714839">Прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" /></translation>
@@ -450,6 +451,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Зняць</translation>
 <translation id="495046168593986294">Прагартаць уверх</translation>
+<translation id="4952936045814352993">Функцыя "Знайсці тэлефон" недаступная, бо вы адключылі гукі будзільніка</translation>
 <translation id="4961318399572185831">Трансляцыя экрана</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> гадз <ph name="MINUTES" /> хв <ph name="SECONDS" /> с</translation>
 <translation id="4975771730019223894">Значкі колькасці апавяшчэнняў у праграмах</translation>

@@ -194,6 +194,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2705001408393684014">Prepnúť mikrofón. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Hore</translation>
 <translation id="2718395828230677721">Nočný režim</translation>
+<translation id="2726420622004325180">Ak chcete aktivovať hotspot, musíte v telefóne používať mobilné dáta</translation>
 <translation id="2727175239389218057">Odpovedať</translation>
 <translation id="2727977024730340865">Batéria je zapojená do nabíjačky s nízkym výkonom. Nabíjanie batérie nemusí byť spoľahlivé.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" /></translation>
@@ -450,6 +451,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Nasnímať</translation>
 <translation id="495046168593986294">Posunúť nahor</translation>
+<translation id="4952936045814352993">Keď sú zvuky budíka vypnuté, lokalizácia telefónu nie je k dispozícii</translation>
 <translation id="4961318399572185831">Prenášanie obrazovky</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Označenie aplikácie odznakom</translation>

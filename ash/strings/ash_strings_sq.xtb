@@ -194,6 +194,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2705001408393684014">Aktivizo/çaktivizo mikrofonin. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Lart</translation>
 <translation id="2718395828230677721">Drita e natës</translation>
+<translation id="2726420622004325180">Telefoni yt duhet të përdorë të dhënat celulare për të ofruar një zonë qasjeje për internet</translation>
 <translation id="2727175239389218057">Përgjigju</translation>
 <translation id="2727977024730340865">E lidhur me një karikues me fuqi të ulët. Ngarkimi i baterisë mund të mos jetë i sigurt.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" /></translation>
@@ -450,6 +451,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Regjistrimi</translation>
 <translation id="495046168593986294">Lëviz lart</translation>
+<translation id="4952936045814352993">"Gjej telefonin" nuk ofrohet kur tingujt e alarmeve janë çaktivizuar</translation>
 <translation id="4961318399572185831">Ekrani i transmetimit</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> orë e <ph name="MINUTES" /> min. e <ph name="SECONDS" /> sek.</translation>
 <translation id="4975771730019223894">Distinktivi i aplikacionit</translation>

@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">மைக்கை நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
 <translation id="2718395828230677721">நைட் லைட்</translation>
+<translation id="2726420622004325180">ஹாட்ஸ்பாட் இணைப்பை வழங்க உங்கள் ஃபோனில் மொபைல் டேட்டா இருக்க வேண்டும்</translation>
 <translation id="2727175239389218057">பதிலளி</translation>
 <translation id="2727977024730340865">குறைந்த சக்தியிலான சார்ஜர் செருகப்பட்டுள்ளது. பேட்டரி சார்ஜிங் நம்பகமானதாக இல்லாமல் இருக்கலாம்.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது</translation>
@@ -450,6 +451,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">படமெடு</translation>
 <translation id="495046168593986294">மேலே நகர்த்து</translation>
+<translation id="4952936045814352993">அலாரத்தின் ஒலி முடக்கப்பட்டிருக்கும்போது ’மொபைல் இருக்குமிடத்தைக் கண்டறிதல்’ அம்சத்தைப் பயன்படுத்த முடியாது</translation>
 <translation id="4961318399572185831">திரையை அலைபரப்பு</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ம <ph name="MINUTES" />நி <ph name="SECONDS" />வி</translation>
 <translation id="4975771730019223894">ஆப்ஸ் பேட்ஜிங்</translation>

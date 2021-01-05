@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">마이크를 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">위</translation>
 <translation id="2718395828230677721">야간 조명</translation>
+<translation id="2726420622004325180">핫스팟을 제공하려면 휴대전화에서 모바일 데이터를 이용할 수 있어야 합니다.</translation>
 <translation id="2727175239389218057">답장</translation>
 <translation id="2727977024730340865">저출력 충전기에 연결되었습니다. 배터리 충전 상태가 불안정합니다.</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" />에서 관리하는 <ph name="DEVICE_TYPE" /></translation>
@@ -450,7 +451,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">캡처</translation>
 <translation id="495046168593986294">위로 스크롤</translation>
-<translation id="4952936045814352993">알림음이 사용 중지되어 있는 상태에서는 휴대전화 찾기를 사용할 수 없습니다.</translation>
+<translation id="4952936045814352993">알람 소리가 사용 중지되어 있는 상태에서는 휴대전화 찾기를 사용할 수 없습니다.</translation>
 <translation id="4961318399572185831">화면 전송</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />시간 <ph name="MINUTES" />분 <ph name="SECONDS" />초</translation>
 <translation id="4975771730019223894">앱 배지 설정</translation>

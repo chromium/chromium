@@ -263,6 +263,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="9019929317751753759">Para aumentar la seguridad de Chromium, hemos inhabilitado la siguiente extensión que no figura en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> y que puede haberse añadido sin tu conocimiento.</translation>
 <translation id="9089354809943900324">Chromium no está actualizado</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium se reiniciará dentro de 1 hora}other{Chromium se reiniciará dentro de # horas}}</translation>
+<translation id="9107750757953039239">Si tienes varias cuentas de Google, puedes añadirlas a tu <ph name="DEVICE_TYPE" />. Tus cuentas estarán disponibles en el navegador Chromium, en Play Store y en servicios como Gmail, Drive y YouTube. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Abrir enlace en una pes&amp;taña nueva de Chromium</translation>
 <translation id="911206726377975832">¿Quieres borrar también los datos de navegación?</translation>
 <translation id="9158494823179993217">El administrador del sistema ha configurado Chromium para que abra otro navegador al acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>

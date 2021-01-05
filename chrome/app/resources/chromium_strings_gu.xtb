@@ -263,6 +263,7 @@ Chromium તમારી સેટિંગ્સને પુનઃપ્રા
 <translation id="9019929317751753759">Chromium ને સુરક્ષિત બનાવવા માટે, અમે નીચેના એક્સ્ટેન્શનને અક્ષમ કર્યું છે કે જે <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યું હોઈ શકે છે.</translation>
 <translation id="9089354809943900324">Chromium જૂનું થઈ ગયું છે</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium એક કલાકમાં ફરીથી લૉન્ચ થશે}one{Chromium # કલાકમાં ફરીથી લૉન્ચ થશે}other{Chromium # કલાકમાં ફરીથી લૉન્ચ થશે}}</translation>
+<translation id="9107750757953039239">જો તમારી પાસે એકથી વધુ Google એકાઉન્ટ હોય, તો તમે તેને તમારી <ph name="DEVICE_TYPE" />માં ઉમેરી શકો છો. તમારા એકાઉન્ટ Chromium બ્રાઉઝર અને Play સ્ટોરમાં તેમજ Gmail, Drive અને YouTube જેવી સેવાઓમાં ઉપલબ્ધ રહેશે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">નવા Chromium &amp;ટૅબમાં લિંક ખોલો</translation>
 <translation id="911206726377975832">તમારો બ્રાઉઝિંગ ડેટા પણ ડિલીટ કરી દઈએ?</translation>
 <translation id="9158494823179993217">તમારા સિસ્ટમ વ્યવસ્થાપકે <ph name="TARGET_URL_HOSTNAME" />ને ઍક્સેસ કરવા Chromiumને વૈકલ્પિક બ્રાઉઝર ખોલવા માટે ગોઠવેલું છે.</translation>

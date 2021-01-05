@@ -263,6 +263,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="9019929317751753759">Ili kufanya Chromium salama zaidi, tumezima kiendelezi kinachofuata ambacho hakijaorodheshwa katika <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na huenda kimeongezwa bila ridhaa yako.</translation>
 <translation id="9089354809943900324">Chromium imepitwa na wakati</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium itafunguka upya ndani ya saa moja}other{Chromium itafunguka upya ndani ya saa #}}</translation>
+<translation id="9107750757953039239">Ikiwa una Akaunti nyingi za Google, unaweza kuziongeza kwenye <ph name="DEVICE_TYPE" /> yako. Akaunti zako zitapatikana katika kivinjari cha Chromium na Duka la Google Play na pia katika huduma kama vile Gmail, Hifadhi na YouTube. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Fungua Kiungo katika kichupo kipya cha Chromium</translation>
 <translation id="911206726377975832">Futa historia yako ya kuvinjari pia?</translation>
 <translation id="9158494823179993217">Msimamizi wa mfumo unaotumia ameweka mipangilio ya Chromium ifungue kivinjari mbadala ili ufikie<ph name="TARGET_URL_HOSTNAME" />.</translation>

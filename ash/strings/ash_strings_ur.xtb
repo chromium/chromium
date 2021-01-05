@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">تھیم کردہ رنگ وضع انٹرفیس کو ہلکا رنگ دینے کے لیے آپ کے وال پیپر سے ایکسٹریکٹ کیے گئے رنگوں کا استعمال کرتی ہے۔</translation>
 <translation id="112308213915226829">شیلف کو از خود چھپائیں</translation>
 <translation id="1153356358378277386">جوڑا بنائے ہوئے آلات</translation>
+<translation id="1165712434476988950">اپ ڈیٹ لاگو کرنے کیلئے آلے کو ری سٹارٹ کرنا درکار ہے۔</translation>
 <translation id="1175572348579024023">اسکرول کریں</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="118532027333893379">فُل اسکرین کیپچر کرنے کیلئے کہیں پر بھی تھپتھپائیں</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">متن ان پٹ</translation>
 <translation id="1993072747612765854">تازہ ترین <ph name="SYSTEM_APP_NAME" /> اپ ڈیٹ کے بارے میں مزید جانیں</translation>
 <translation id="1995660704900986789">پاور آف کریں</translation>
+<translation id="1998100899771863792">موجودہ ڈیسک</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">پیغام ٹائپ کریں</translation>
 <translation id="2018630726571919839">مجھے کوئی لطیفہ سنائيں</translation>
@@ -192,6 +194,7 @@
 <translation id="2705001408393684014">مائیک ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">اوپر</translation>
 <translation id="2718395828230677721">نائٹ لائٹ</translation>
+<translation id="2726420622004325180">ہاٹ سپاٹ فراہم کرنے کے لیے آپ کے فون میں موبائل ڈیٹا کا ہونا ضروری ہے</translation>
 <translation id="2727175239389218057">جواب دیں</translation>
 <translation id="2727977024730340865">ایک کم پاور کے چارجر میں پلگ ان ہے۔ بیٹری چارجنگ ممکن ہے بھروسہ مند نہ ہو۔</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے</translation>
@@ -448,6 +451,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">کیپچر کریں</translation>
 <translation id="495046168593986294">اوپر اسکرول کریں</translation>
+<translation id="4952936045814352993">الارم کی آوازیں غیر فعال ہونے پر فون کا پتہ لگانے والی خصوصیت دستیاب نہیں ہے</translation>
 <translation id="4961318399572185831">اسکرین کاسٹ کریں</translation>
 <translation id="4969092041573468113">h <ph name="MINUTES" />m <ph name="SECONDS" />s<ph name="HOURS" /></translation>
 <translation id="4975771730019223894">ایپ بیجینگ</translation>
@@ -897,6 +901,7 @@
 <translation id="9089416786594320554">اندراج کے طریقے</translation>
 <translation id="9091626656156419976">ڈسپلے <ph name="DISPLAY_NAME" /> کو ہٹا دیا گیا</translation>
 <translation id="9098969848082897657">فون کو خاموش کریں</translation>
+<translation id="9099154003160514616">‏Lacros اپ ڈیٹ دستیاب ہے</translation>
 <translation id="9151726767154816831">اپ ڈیٹ کرنے کیلئے ری اسٹارٹ اور پاور واش کریں</translation>
 <translation id="9166331175924255663">قریبی آلات کے ساتھ اشتراک کی اعلی مرئیت کو ٹوگل کریں۔</translation>
 <translation id="9168436347345867845">اسے بعد میں کریں</translation>
@@ -907,6 +912,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> ریزولیوشن کو <ph name="RESOLUTION" /> پر تبدیل کر دیا گیا ہے۔ تبدیلیاں باقی رکھنے کے لیے تصدیق کریں پر کلک کریں۔ گزشتہ تبدیلیوں کو <ph name="TIMEOUT_SECONDS" /> میں بحال کر دیا جائے گا۔</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="9210037371811586452">یونیفائیڈ ڈیسک ٹاپ وضع سے باہر نکل رہے ہیں</translation>
+<translation id="9211490828691860325">تمام ڈیسکس</translation>
 <translation id="9211681782751733685">بیٹری کے مکمل طور پر چارج ہونے میں <ph name="TIME_REMAINING" /> باقی ہے۔</translation>
 <translation id="9215934040295798075">وال پیپر سیٹ کریں</translation>
 <translation id="921989828232331238">آپ کے والد/والدہ نے آپ کے آلے کو دن بھر کے لئے مقفل کر دیا</translation>

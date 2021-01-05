@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">Микрофоныг унтраах/асаах. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Дээш</translation>
 <translation id="2718395828230677721">Шөнийн гэрэл</translation>
+<translation id="2726420622004325180">Таны утас сүлжээний цэг өгөхийн тулд мобайл дататай байх ёстой</translation>
 <translation id="2727175239389218057">Хариулах</translation>
 <translation id="2727977024730340865">Бага энергитэй цэнэглэгч залгасан байна. Тэжээлийг цэнэглэхгүй байж болох юм.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг</translation>
@@ -451,6 +452,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Зураг авах</translation>
 <translation id="495046168593986294">Дээш гүйлгэх</translation>
+<translation id="4952936045814352993">Сэрүүлгийн дууг идэвхгүй болгосон үед утасны байршил олох боломжгүй</translation>
 <translation id="4961318399572185831">Дэлгэцийг каст хийх</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ц <ph name="MINUTES" />м <ph name="SECONDS" />с</translation>
 <translation id="4975771730019223894">Аппын тэмдэг</translation>

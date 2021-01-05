@@ -261,6 +261,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="9019929317751753759">Paransimme Chromiumin turvallisuutta poistamalla käytöstä sovelluksia, joita <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ei tarjoa ja jotka on voitu lisätä ilman lupaasi.</translation>
 <translation id="9089354809943900324">Chromium on vanhentunut</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium käynnistetään uudelleen tunnin kuluttua}other{Chromium käynnistetään uudelleen # tunnin kuluttua}}</translation>
+<translation id="9107750757953039239">Jos sinulla on useita Google-tilejä, voit lisätä ne laitteellesi (<ph name="DEVICE_TYPE" />). Tilisi ovat käytettävissä Chromium-selaimella ja Play Kaupassa sekä Gmailin, Driven ja YouTuben kaltaisissa palveluissa. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Avaa linkki uudella Chromiumin välilehdellä</translation>
 <translation id="911206726377975832">Poistetaanko myös selailutiedot?</translation>
 <translation id="9158494823179993217">Järjestelmänvalvojasi on määrittänyt Chromiumin avaamaan toisen selaimen, jolla <ph name="TARGET_URL_HOSTNAME" /> avataan.</translation>

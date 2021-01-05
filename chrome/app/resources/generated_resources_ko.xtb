@@ -2260,6 +2260,7 @@
 <translation id="3538066758857505094">Linux를 제거하는 동안 문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="354060433403403521">AC 어댑터</translation>
 <translation id="354068948465830244">사이트 데이터를 읽고 변경할 수 있음</translation>
+<translation id="3541823293333232175">할당됨</translation>
 <translation id="3543393733900874979">업데이트 실패(오류: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">SHA-512를 포함한 X9.62 ECDSA 서명</translation>
 <translation id="3544879808695557954">사용자 이름(선택사항)</translation>
@@ -2839,6 +2840,7 @@
 <translation id="4181602000363099176">20배</translation>
 <translation id="4181841719683918333">언어</translation>
 <translation id="4184885522552335684">디스플레이를 이동하려면 드래그하세요.</translation>
+<translation id="4186763173530196927">앱에서 카메라에 액세스하려고 합니다. 액세스를 허용하려면 카메라 개인정보 보호 스위치를 끄세요.</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> 설정 중…</translation>
 <translation id="4190828427319282529">키보드 포커스 강조표시</translation>
 <translation id="4193575319002689239">카드 보기</translation>
@@ -2934,7 +2936,6 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{Google 계정 1개}other{Google 계정 <ph name="EXTRA_ACCOUNTS" />개}}</translation>
 <translation id="4312866146174492540">차단(기본값)</translation>
 <translation id="4314815835985389558">동기화 관리</translation>
-<translation id="4316735916549342071">키가 일치하지 않습니다. ‘<ph name="UNEXPECTEDKEY" />’ 키를 눌렀으나 이전에는 ‘<ph name="CURRENTKEY" />’ 키를 눌렀습니다. 종료하려면 아무 키나 누르세요.</translation>
 <translation id="4316850752623536204">개발자 웹사이트</translation>
 <translation id="4317820549299924617">확인 실패</translation>
 <translation id="4320177379694898372">인터넷에 연결되지 않음</translation>
@@ -3294,6 +3295,7 @@
 <translation id="473546211690256853">이 계정은 <ph name="DOMAIN" />에서 관리합니다.</translation>
 <translation id="4735803855089279419">시스템에서 이 기기의 기기 식별자를 확인하지 못했습니다.</translation>
 <translation id="4736292055110123391">북마크, 비밀번호, 방문 기록 등을 모든 기기에 동기화</translation>
+<translation id="4736765933704278771">‘<ph name="ACTION" />’ 작업을 할당할 스위치를 누르세요. 작업에 여러 스위치를 할당할 수 있습니다.</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" />개 중 <ph name="CURRENT_ELEMENT" />번째 추가 콘텐츠 선택됨</translation>
 <translation id="4739639199548674512">티켓</translation>
@@ -4297,6 +4299,7 @@
 <translation id="5920543303088087579">관리자가 이 네트워크에 연결할 수 없도록 설정했습니다.</translation>
 <translation id="5920835625712313205">Chrome OS 시스템 이미지 작성기</translation>
 <translation id="5921257443092182237">Google 위치 서비스는 이 기기의 위치를 파악하는 데에 Wi-Fi, 모바일 네트워크, 센서와 같은 소스를 사용합니다.</translation>
+<translation id="5923205773724721589">키가 일치하지 않습니다. 종료하려면 아무 키나 누르세요.</translation>
 <translation id="5924047253200400718">도움말 보기<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924287525504995925">사이트에서 가상 현실 기기 및 데이터를 사용하지 못하도록 차단</translation>
 <translation id="5924527146239595929">새로운 사진을 찍거나 기존 사진 또는 아이콘을 선택하세요.
@@ -4355,10 +4358,10 @@
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{1개의 잠재적으로 위험한 확장 프로그램을 다시 설정했습니다.}other{{NUM_EXTENSIONS}개의 잠재적으로 위험한 확장 프로그램을 다시 설정했습니다.}}</translation>
 <translation id="5979421442488174909"><ph name="LANGUAGE" />(으)로 번역(&amp;T)</translation>
 <translation id="5979469435153841984">페이지를 북마크에 추가하려면 검색주소창에서 별표를 클릭하세요.</translation>
-<translation id="5982945980973315070">앱에서 카메라에 액세스하려고 합니다. 액세스를 허용하려면 웹캠 개인정보 보호 스위치를 끄세요.</translation>
 <translation id="5984222099446776634">최근 방문</translation>
 <translation id="598472838394900788">{0,plural, =1{시크릿 모드}other{시크릿 모드(#개)}}</translation>
 <translation id="5985458664595100876">URL 형식이 잘못되었습니다. \\server\share 및 smb://server/share 형식이 지원됩니다.</translation>
+<translation id="598810097218913399">할당 삭제</translation>
 <translation id="5990266201903445068">Wi-Fi만 사용</translation>
 <translation id="5990386583461751448">번역됨</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{계속 웹을 탐색하려면 관리자에게 이 애플리케이션을 삭제해 달라고 요청하세요.}other{계속 웹을 탐색하려면 관리자에게 이 애플리케이션을 삭제해 달라고 요청하세요.}}</translation>
@@ -5668,6 +5671,7 @@
 <translation id="7513029293694390567">저장된 사용자 인증 정보를 사용하여 자동으로 웹사이트에 로그인합니다. 이 기능이 꺼져 있는 경우에는 웹사이트에 로그인할 때마다 확인 요청 메시지가 표시됩니다.</translation>
 <translation id="7514239104543605883">기기로 복사</translation>
 <translation id="7514365320538308">다운로드</translation>
+<translation id="7514417110442087199">할당 추가</translation>
 <translation id="751523031290522286">관리자가 <ph name="APP_NAME" /> 앱을 차단했습니다. 이 앱을 사용하려면 관리자에게 권한을 요청하세요.</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> 앱이 일시중지됨</translation>
 <translation id="7517063221058203587">{0,plural, =1{1분 내 기기 업데이트}other{#분 내 기기 업데이트}}</translation>
@@ -6040,7 +6044,6 @@
 <translation id="7919210519031517829"><ph name="DURATION" />초</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 볼 수 있습니다.</translation>
 <translation id="7920482456679570420">맞춤법 검사를 건너뛸 단어를 추가합니다.</translation>
-<translation id="7921276565737611663">선택 작업에 할당된 유일한 스위치는 삭제할 수 없습니다. 종료하려면 아무 키나 누르세요.</translation>
 <translation id="7924358170328001543">포트 전달 중 오류 발생</translation>
 <translation id="792514962475806987">고정 돋보기 확대/축소 수준:</translation>
 <translation id="7925247922861151263">AAA 확인 실패</translation>
@@ -6269,6 +6272,7 @@
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{탭을 새 창으로 이동}other{탭을 새 창으로 이동}}</translation>
 <translation id="8165997195302308593">Crostini 포트 전달</translation>
 <translation id="8168435359814927499">콘텐츠</translation>
+<translation id="8168943654413034772">선택 작업에 할당된 유일한 스위치는 삭제할 수 없습니다. 종료하려면 아무 키나 누르세요.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{읽기 목록에 탭 추가}other{읽기 목록에 탭 추가}}</translation>
 <translation id="8174047975335711832">기기 정보</translation>
 <translation id="8174876712881364124">Google 드라이브에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환하세요. 백업에는 앱 데이터가 포함됩니다. 백업 항목은 Google에 업로드되며 자녀의 Google 계정 비밀번호를 사용하여 암호화됩니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
@@ -6614,7 +6618,6 @@
 <translation id="859246725979739260">이 사이트는 위치에 액세스할 수 없도록 차단되었습니다.</translation>
 <translation id="8593121833493516339">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 이 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="8593735906501637689"><ph name="MODULE_TITLE" />이 삭제됨</translation>
-<translation id="859418833001586249">할당을 시작하려면 새 스위치를 누르세요.</translation>
 <translation id="8594908476761052472">동영상 촬영</translation>
 <translation id="8596540852772265699">사용자 지정 파일</translation>
 <translation id="8597845839771543242">속성 형식:</translation>

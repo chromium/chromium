@@ -280,5 +280,6 @@
 <translation id="911206726377975832">Poistetaanko myös selailutiedot?</translation>
 <translation id="9138603949443464873">Ota muutokset käyttöön käynnistämällä Chrome uudelleen</translation>
 <translation id="919706545465235479">Aloita synkronointi päivittämällä Chrome.</translation>
+<translation id="94743460404517794">Jos sinulla on useita Google-tilejä, voit lisätä ne laitteellesi (<ph name="DEVICE_TYPE" />). Tilisi ovat käytettävissä Chrome-selaimella ja Play Kaupassa sekä Gmailin, Driven ja YouTuben kaltaisissa palveluissa. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome on oletusselaimesi.</translation>
 </translationbundle>

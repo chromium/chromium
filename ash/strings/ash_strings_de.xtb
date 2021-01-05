@@ -194,6 +194,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2705001408393684014">Mikrofon ein-/ausschalten. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Aufwärts</translation>
 <translation id="2718395828230677721">Nachtlicht</translation>
+<translation id="2726420622004325180">Damit Ihr Smartphone einen Hotspot nutzen kann, müssen mobile Daten aktiviert sein</translation>
 <translation id="2727175239389218057">Antworten</translation>
 <translation id="2727977024730340865">Das Gerät ist an ein Schwachstrom-Ladegerät angeschlossen. Möglicherweise kann der Akku nicht zuverlässig aufgeladen werden.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> verwaltet von <ph name="MANAGER" /></translation>
@@ -450,6 +451,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Aufnahme</translation>
 <translation id="495046168593986294">Nach oben scrollen</translation>
+<translation id="4952936045814352993">„Smartphone suchen“ ist nicht verfügbar, wenn Wecktöne deaktiviert sind</translation>
 <translation id="4961318399572185831">Bildschirm streamen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">App-Benachrichtigungssymbol</translation>

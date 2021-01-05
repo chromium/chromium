@@ -2260,6 +2260,7 @@
 <translation id="3538066758857505094">Linux のアンインストール中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="354060433403403521">AC アダプター</translation>
 <translation id="354068948465830244">サイトデータの読み取りと変更を行います</translation>
+<translation id="3541823293333232175">割り当て済み</translation>
 <translation id="3543393733900874979">更新できませんでした（エラー: <ph name="ERROR_NUMBER" />）</translation>
 <translation id="3543597750097719865">X9.62 ECDSA 署名（SHA-512）</translation>
 <translation id="3544879808695557954">ユーザー名（任意）</translation>
@@ -2841,6 +2842,7 @@
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">言語</translation>
 <translation id="4184885522552335684">ディスプレイをドラッグして移動</translation>
+<translation id="4186763173530196927">アプリがカメラにアクセスしようとしています。アクセスを許可するには、カメラのプライバシー スイッチをオフにしてください。</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> をセットアップしています...</translation>
 <translation id="4190828427319282529">キーボード フォーカスをハイライト表示する</translation>
 <translation id="4193575319002689239">カードを表示</translation>
@@ -2936,7 +2938,6 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 件の Google アカウント}other{<ph name="EXTRA_ACCOUNTS" /> 件の Google アカウント}}</translation>
 <translation id="4312866146174492540">ブロック（デフォルト）</translation>
 <translation id="4314815835985389558">同期の管理</translation>
-<translation id="4316735916549342071">キーが一致しません。「<ph name="UNEXPECTEDKEY" />」キーが押されました。最初に押されたキーは「<ph name="CURRENTKEY" />」です。終了するには、どれかキーを押してください。</translation>
 <translation id="4316850752623536204">デベロッパーのウェブサイト</translation>
 <translation id="4317820549299924617">確認が失敗しました</translation>
 <translation id="4320177379694898372">インターネットに接続されていません</translation>
@@ -3296,6 +3297,7 @@
 <translation id="473546211690256853">このアカウントは <ph name="DOMAIN" /> によって管理されています。</translation>
 <translation id="4735803855089279419">このデバイスのデバイス識別子を特定できませんでした。</translation>
 <translation id="4736292055110123391">すべてのデバイスでブックマーク、パスワード、履歴、その他の設定を同期する</translation>
+<translation id="4736765933704278771">「<ph name="ACTION" />」を割り当てるスイッチを教えてください。この操作には複数のスイッチを割り当てることができます。</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="473936925429402449">追加コンテンツ <ph name="TOTAL_ELEMENTS" /> 件中 <ph name="CURRENT_ELEMENT" /> 件目を選択しています</translation>
 <translation id="4739639199548674512">チケット</translation>
@@ -4299,6 +4301,7 @@
 <translation id="5920543303088087579">このネットワークへの接続は管理者によって無効にされています</translation>
 <translation id="5920835625712313205">Chrome OS システム イメージ ライター</translation>
 <translation id="5921257443092182237">Google の位置情報サービスでは、このデバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。</translation>
+<translation id="5923205773724721589">キーが一致しません。終了するには、どれかキーを押してください。</translation>
 <translation id="5924047253200400718"><ph name="SCANNING_STATUS" /> ヘルプ</translation>
 <translation id="5924287525504995925">サイトがバーチャル リアリティ デバイスとデータを使用できないようにする</translation>
 <translation id="5924527146239595929">新しく写真を撮るか、既存の写真またはアイコンを選択してください。
@@ -4357,10 +4360,10 @@
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{1 個の有害な可能性がある拡張機能を再度有効にしました}other{{NUM_EXTENSIONS} 個の有害な可能性がある拡張機能を再度有効にしました}}</translation>
 <translation id="5979421442488174909"><ph name="LANGUAGE" />に翻訳(&amp;T)</translation>
 <translation id="5979469435153841984">ページをブックマークするには、アドレスバーのスターアイコンをクリックしてください</translation>
-<translation id="5982945980973315070">アプリがカメラにアクセスしようとしています。アクセスを許可するには、ウェブカメラのプライバシー スイッチをオフにしてください</translation>
 <translation id="5984222099446776634">最近のアクセス</translation>
 <translation id="598472838394900788">{0,plural, =1{シークレット}other{シークレット（#）}}</translation>
 <translation id="5985458664595100876">URL の形式が無効です。サポートされている形式は \\server\share と smb://server/share です。</translation>
+<translation id="598810097218913399">割り当てを解除</translation>
 <translation id="5990266201903445068">Wi-Fi のみ</translation>
 <translation id="5990386583461751448">翻訳済み</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{今後もウェブ ブラウジングを続けられるように、管理者にこのアプリケーションの削除を依頼してください。}other{今後もウェブ ブラウジングを続けられるように、管理者にこれらのアプリケーションの削除を依頼してください。}}</translation>
@@ -5670,6 +5673,7 @@
 <translation id="7513029293694390567">保存されている認証情報を使用してウェブサイトに自動的にログインします。この機能が無効になっている場合は、ウェブサイトにログインするときに毎回確認を求められます。</translation>
 <translation id="7514239104543605883">デバイスにコピー</translation>
 <translation id="7514365320538308">ダウンロード</translation>
+<translation id="7514417110442087199">割り当てを追加</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> は管理者によってブロックされています。このアプリを使用するには、管理者の許可が必要です。</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> は一時停止中です</translation>
 <translation id="7517063221058203587">{0,plural, =1{1 分以内にデバイスを更新してください}other{# 分以内にデバイスを更新してください}}</translation>
@@ -6042,7 +6046,6 @@
 <translation id="7919210519031517829"><ph name="DURATION" />秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を表示できます</translation>
 <translation id="7920482456679570420">スペルチェックしない語句を追加してください</translation>
-<translation id="7921276565737611663">「選択」に割り当てられているスイッチが 1 つしかないため、削除できませんでした。終了するには、どれかキーを押してください。</translation>
 <translation id="7924358170328001543">ポート転送エラー</translation>
 <translation id="792514962475806987">ドッキング画面のズームレベル:</translation>
 <translation id="7925247922861151263">AAA を確認できませんでした</translation>
@@ -6271,6 +6274,7 @@
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{タブを新しいウィンドウに移動}other{タブを新しいウィンドウに移動}}</translation>
 <translation id="8165997195302308593">Crostini のポート転送</translation>
 <translation id="8168435359814927499">コンテンツ</translation>
+<translation id="8168943654413034772">「選択」に割り当てられているスイッチが 1 つしかないため、削除できません。終了するには、どれかキーを押してください。</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{リーディング リストにタブを追加}other{リーディング リストにタブを追加}}</translation>
 <translation id="8174047975335711832">デバイス情報</translation>
 <translation id="8174876712881364124">Google ドライブにバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ対象にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
@@ -6616,7 +6620,6 @@
 <translation id="859246725979739260">このサイトでは位置情報へのアクセスがブロックされています。</translation>
 <translation id="8593121833493516339">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
 <translation id="8593735906501637689"><ph name="MODULE_TITLE" /> を削除しました</translation>
-<translation id="859418833001586249">割り当てを開始するには、新しいスイッチを押してください。</translation>
 <translation id="8594908476761052472">動画を撮影</translation>
 <translation id="8596540852772265699">カスタム ファイル</translation>
 <translation id="8597845839771543242">プロパティの書式:</translation>

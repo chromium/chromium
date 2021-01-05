@@ -192,6 +192,7 @@
 <translation id="2705001408393684014">ମାଇକ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ଅପ୍‍ କୀ</translation>
 <translation id="2718395828230677721">ରାତି ଆଲୋକ</translation>
+<translation id="2726420622004325180">ହଟସ୍ପଟ୍ ପ୍ରଦାନ କରିବାକୁ ଆପଣଙ୍କ ଫୋନରେ ନିଶ୍ଚିତ ରୂପେ ମୋବାଇଲ ଡାଟା ଥିବା ଆବଶ୍ୟକ</translation>
 <translation id="2727175239389218057">ପ୍ରତ୍ୟୁତ୍ତର ଦିଅନ୍ତୁ</translation>
 <translation id="2727977024730340865">କମ୍-ପାୱର୍‍ଯୁକ୍ତ ଚାର୍ଜର୍। ବ୍ୟାଟେରୀ ଚାର୍ଜିଂ ନିର୍ଭରଯୋଗ୍ୟ ହୋଇନପାରେ।</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
@@ -448,6 +449,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">କ୍ୟାପଚର୍ କରନ୍ତୁ</translation>
 <translation id="495046168593986294">ଉପରକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
+<translation id="4952936045814352993">ଆଲାରାମର ସାଉଣ୍ଡକୁ ଅକ୍ଷମ କରାଯାଇଥିବା ସମୟରେ ଲୋକେଟ୍ ଫୋନ୍ ଉପଲବ୍ଧ ହୁଏ ନାହିଁ</translation>
 <translation id="4961318399572185831">କାଷ୍ଟ ସ୍କ୍ରିନ୍‌</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ଘ <ph name="MINUTES" />ମି <ph name="SECONDS" />ସେ</translation>
 <translation id="4975771730019223894">ଆପ୍ ବ୍ୟାଜିଂ</translation>

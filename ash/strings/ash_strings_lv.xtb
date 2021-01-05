@@ -194,6 +194,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2705001408393684014">Pārslēgt mikrofonu. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Augšup</translation>
 <translation id="2718395828230677721">Nakts režīms</translation>
+<translation id="2726420622004325180">Jūsu tālrunī ir jābūt aktivizētiem mobilajiem datiem, lai iespējotu tīklāju.</translation>
 <translation id="2727175239389218057">Atbildēt</translation>
 <translation id="2727977024730340865">Pievienots lādētājs ar mazu strāvas padevi. Akumulatora uzlāde var nebūt uzticama.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" /></translation>
@@ -450,6 +451,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Tvert</translation>
 <translation id="495046168593986294">Ritināt uz augšu</translation>
+<translation id="4952936045814352993">Funkcija “Atrast tālruni” nav pieejama, ja brīdinājumu skaņas ir atspējotas</translation>
 <translation id="4961318399572185831">Ekrāna apraide</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Lietotnes paziņojumu emblēma</translation>

@@ -260,6 +260,7 @@ Chromium kann Ihre Einstellungen nicht wiederherstellen.</translation>
 <translation id="9019929317751753759">Um Chromium sicherer zu machen, haben wir die folgende Erweiterung deaktiviert. Sie ist nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt und wurde möglicherweise ohne Ihr Wissen hinzugefügt.</translation>
 <translation id="9089354809943900324">Chromium ist veraltet.</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium wird in einer Stunde neu gestartet}other{Chromium wird in # Stunden neu gestartet}}</translation>
+<translation id="9107750757953039239">Wenn Sie mehrere Google-Konten haben, können Sie sie Ihrem <ph name="DEVICE_TYPE" /> hinzufügen. Ihre Konten sind im Chromium-Browser, im Play Store und für Dienste wie Gmail, Drive und YouTube verfügbar. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Link in neuem Chromium-Tab öffnen</translation>
 <translation id="911206726377975832">Auch die Browserdaten löschen?</translation>
 <translation id="9158494823179993217">Ihr Systemadministrator hat Chromium so konfiguriert, dass ein alternativer Browser für den Zugriff auf <ph name="TARGET_URL_HOSTNAME" /> geöffnet wird.</translation>

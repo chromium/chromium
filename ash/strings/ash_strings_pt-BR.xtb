@@ -194,6 +194,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2705001408393684014">Alternar microfone. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Para cima</translation>
 <translation id="2718395828230677721">Modo noturno</translation>
+<translation id="2726420622004325180">Seu smartphone precisa usar dados móveis para fornecer um ponto de acesso</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a um carregador de baixa potência. O carregamento da bateria pode não ser confiável.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gerenciado por <ph name="MANAGER" /></translation>
@@ -450,6 +451,7 @@ Veja o que você pode fazer para começar.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">Capturar</translation>
 <translation id="495046168593986294">Rolar para cima</translation>
+<translation id="4952936045814352993">O recurso "Localizar smartphone" fica indisponível quando os sons do alarme estão desativados</translation>
 <translation id="4961318399572185831">Transmitir tela</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h<ph name="MINUTES" />min<ph name="SECONDS" />s</translation>
 <translation id="4975771730019223894">Notificações de apps</translation>

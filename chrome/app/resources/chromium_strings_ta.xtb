@@ -261,6 +261,7 @@
 <translation id="9019929317751753759">Chromiumஐப் பாதுகாப்பானதாக்க, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> இல் பட்டியலிடப்படாத பின்வரும் நீட்டிப்பை முடக்கியுள்ளோம், மேலும் அது உங்களுக்குத் தெரியாமல் சேர்க்கப்பட்டிருக்கலாம்.</translation>
 <translation id="9089354809943900324">Chromium காலாவதியானது</translation>
 <translation id="9093206154853821181">{0,plural, =1{ஒரு மணிநேரத்திற்குள் Chromium மீண்டும் தொடங்கும்}other{# மணிநேரத்திற்குள் Chromium மீண்டும் தொடங்கும்}}</translation>
+<translation id="9107750757953039239">உங்களிடம் ஒன்றுக்கும் மேற்பட்ட Google கணக்குகள் இருந்தால் அவற்றை உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் சேர்க்கலாம். Chromium உலாவி, Play ஸ்டோர் ஆகியவற்றிலும் Gmail, Drive, YouTube போன்ற சேவைகளிலும் உங்கள் கணக்குகளைப் பயன்படுத்த முடியும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">புதிய Chromium &amp;தாவலில் இணைப்பைத் திற</translation>
 <translation id="911206726377975832">உங்கள் உலாவிய தரவையும் நீக்க வேண்டுமா?</translation>
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" />ஐ அணுக Chromium அதை மாற்று உலாவியில் திறக்கும்படி உங்கள் சிஸ்டம் நிர்வாகி உள்ளமைத்துள்ளார்.</translation>

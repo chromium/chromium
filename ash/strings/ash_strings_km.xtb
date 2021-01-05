@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">បិទ/បើកមីក្រូហ្វូន។ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
 <translation id="2718395828230677721">ពន្លឺពេលយប់</translation>
+<translation id="2726420622004325180">ទូរសព្ទ​របស់អ្នក​ត្រូវតែមាន​ទិន្នន័យទូរសព្ទចល័ត ដើម្បីផ្ដល់​ហតស្ប៉ត</translation>
 <translation id="2727175239389218057">ឆ្លើយតប</translation>
 <translation id="2727977024730340865">បានដោតទៅឆ្នាំងសាកថាមពលខ្សោយ។ ការសាកថ្មប្រហែលជាមិនអាចជឿជាក់បានទេ។</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" /></translation>
@@ -450,6 +451,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">ថត</translation>
 <translation id="495046168593986294">រំកិលឡើងលើ</translation>
+<translation id="4952936045814352993">មុខងារ​កំណត់ទីតាំង​ទូរសព្ទ​មិនអាចប្រើបានទេ នៅពេលបិទ​សំឡេងម៉ោងរោទ៍</translation>
 <translation id="4961318399572185831">ខាសអេក្រង់</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ម៉ <ph name="MINUTES" />ន <ph name="SECONDS" />វិ</translation>
 <translation id="4975771730019223894">ការដាក់គ្រឿង​សម្គាល់កម្មវិធី</translation>

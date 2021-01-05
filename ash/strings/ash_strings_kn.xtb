@@ -194,6 +194,7 @@
 <translation id="2705001408393684014">ಮೈಕ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ಮೇಲಕ್ಕೆ</translation>
 <translation id="2718395828230677721">ನೈಟ್ ಲೈಟ್</translation>
+<translation id="2726420622004325180">ಹಾಟ್‌ಸ್ಪಾಟ್ ಒದಗಿಸಲು ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಮೊಬೈಲ್ ಡೇಟಾ ಇರಬೇಕು.</translation>
 <translation id="2727175239389218057">ಪ್ರತ್ಯುತ್ತರಿಸಿ</translation>
 <translation id="2727977024730340865">ಕಡಿಮೆ ವಿದ್ಯುತ್ ಚಾರ್ಜರ್‌ಗೆ ಪ್ಲಗ್ ಮಾಡಲಾಗಿದೆ. ಬ್ಯಾಟರಿ ಚಾರ್ಜಿಂಗ್ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲದಿರಬಹುದು.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತಿದೆ</translation>
@@ -450,6 +451,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">ಕ್ಯಾಪ್ಚರ್ ಮಾಡಿ</translation>
 <translation id="495046168593986294">ಮೇಲಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
+<translation id="4952936045814352993">ಅಲಾರಾಂ ಧ್ವನಿಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿರುವಾಗ "ಫೋನ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಿ" ಲಭ್ಯವಿರುವುದಿಲ್ಲ</translation>
 <translation id="4961318399572185831">ಪರದೆಯನ್ನು ಬಿತ್ತರಿಸಿ</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ಗ <ph name="MINUTES" />ನಿ <ph name="SECONDS" />ಸೆ</translation>
 <translation id="4975771730019223894">ಆ್ಯಪ್ ಬ್ಯಾಡ್ಜಿಂಗ್</translation>

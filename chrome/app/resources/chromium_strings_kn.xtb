@@ -254,6 +254,7 @@
 <translation id="9019929317751753759">Chromium ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ನಲ್ಲಿ ಪಟ್ಟಿ ಮಾಡದಿರುವ ಕೆಳಗಿನ ವಿಸ್ತರಣೆಯನ್ನು ನಾವು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದೇವೆ ಮತ್ತು ಇದು ನಿಮ್ಮ ಗಮನಕ್ಕೆ ಬಾರದೇ ಸೇರಿಸಲಾಗಿರಬಹುದು.</translation>
 <translation id="9089354809943900324">Chromium ನ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
 <translation id="9093206154853821181">{0,plural, =1{ಒಂದು ಗಂಟೆಯಲ್ಲಿ Chromium ಮರುಪ್ರಾರಂಭಗೊಳ್ಳುತ್ತದೆ}one{# ಗಂಟೆಗಳಲ್ಲಿ Chromium ಮರುಪ್ರಾರಂಭಗೊಳ್ಳುತ್ತದೆ}other{# ಗಂಟೆಗಳಲ್ಲಿ Chromium ಮರುಪ್ರಾರಂಭಗೊಳ್ಳುತ್ತದೆ}}</translation>
+<translation id="9107750757953039239">ನೀವು ಹಲವು Google ಖಾತೆಗಳನ್ನು ಹೊಂದಿದ್ದರೆ, ನೀವು ಅವುಗಳನ್ನು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ಸೇರಿಸಬಹುದು. ನಿಮ್ಮ ಖಾತೆಗಳು Chromium ಬ್ರೌಸರ್ ಮತ್ತು Play ಸ್ಟೋರ್‌‌‌ನಲ್ಲಿ ಲಭ್ಯವಾಗುವುದರ ಜೊತೆಗೆ Gmail, Drive ಮತ್ತು YouTube ನಂತಹ ಸೇವೆಗಳಲ್ಲಿ ಸಹ ಲಭ್ಯವಿರುತ್ತವೆ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">ಹೊಸ Chromium &amp;ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="911206726377975832">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಸಹ ಅಳಿಸುವುದೇ?</translation>
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" /> ಗೆ ಪ್ರವೇಶಿಸಲು ಒಂದು ಪರ್ಯಾಯ ಬ್ರೌಸರ್ ತೆರೆಯುವಂತೆ ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರು Chromium ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿದ್ದಾರೆ.</translation>

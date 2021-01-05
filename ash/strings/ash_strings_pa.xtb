@@ -192,6 +192,7 @@
 <translation id="2705001408393684014">ਮਾਈਕ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ਉੱਪਰ</translation>
 <translation id="2718395828230677721">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ</translation>
+<translation id="2726420622004325180">ਹੌਟਸਪੌਟ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ ਤੁਹਾਡੇ ਫ਼ੋਨ ਵਿੱਚ ਮੋਬਾਈਲ ਡਾਟਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="2727175239389218057">ਜਵਾਬ ਦਿਓ</translation>
 <translation id="2727977024730340865">ਇੱਕ ਘੱਟ-ਪਾਵਰ ਦੇ ਚਾਰਜਰ ਨਾਲ ਪਲੱਗ-ਇਨ ਕੀਤਾ ਗਿਆ। ਬੈਟਰੀ ਚਾਰਜਿੰਗ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਵੀ ਹੋ ਸਕਦੀ।</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> ਡੋਮੇਨ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ</translation>
@@ -448,6 +449,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">ਕੈਪਚਰ ਕਰੋ</translation>
 <translation id="495046168593986294">ਉੱਪਰ ਵੱਲ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
+<translation id="4952936045814352993">ਅਲਾਰਮ ਧੁਨੀਆਂ ਬੰਦ ਹੋਣ 'ਤੇ ਫ਼ੋਨ ਦਾ ਪਤਾ ਲਗਾਉਣ ਦੀ ਵਿਸ਼ੇਸ਼ਤਾ ਉਪਲਬਧ ਨਹੀਂ ਹੁੰਦੀ</translation>
 <translation id="4961318399572185831">ਸਕ੍ਰੀਨ ਕਾਸਟ ਕਰੋ</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ਘੰ <ph name="MINUTES" />ਮਿੰ <ph name="SECONDS" />ਸਕਿੰ</translation>
 <translation id="4975771730019223894">ਐਪ ਬੈਜਿੰਗ</translation>
