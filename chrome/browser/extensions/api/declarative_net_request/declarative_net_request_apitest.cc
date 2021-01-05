@@ -10,13 +10,13 @@
 #include "base/macros.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
+#include "extensions/common/features/feature_channel.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace {
 
 using ContextType = extensions::ExtensionApiTest::ContextType;
-using extensions::ScopedWorkerBasedExtensionsChannel;
+using extensions::ScopedCurrentChannel;
 
 class DeclarativeNetRequestAPItest
     : public extensions::ExtensionApiTest,
@@ -46,11 +46,6 @@ class DeclarativeNetRequestAPItest
 
     // Override the path used for loading the extension.
     test_data_dir_ = temp_dir_.GetPath().AppendASCII("declarative_net_request");
-
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
   }
 
   bool RunTest(const std::string& extension_path) {
@@ -63,8 +58,6 @@ class DeclarativeNetRequestAPItest
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
 };
 
 using DeclarativeNetRequestLazyAPItest = DeclarativeNetRequestAPItest;
@@ -75,8 +68,7 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          DeclarativeNetRequestLazyAPItest,
                          ::testing::Values(ContextType::kEventPage));
-// Flaky (https://crbug.com/1111240)
-INSTANTIATE_TEST_SUITE_P(DISABLED_ServiceWorker,
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          DeclarativeNetRequestLazyAPItest,
                          ::testing::Values(ContextType::kServiceWorker));
 
@@ -95,6 +87,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAPItest, ModifyHeaders) {
 }
 
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest, GetMatchedRules) {
+  // TODO(crbug.com/1043200): This test uses
+  // chrome.declarativeNetRequest.updateSessionRules, which is only available
+  // in the TRUNK channel.
+  ScopedCurrentChannel channel_override(version_info::Channel::UNKNOWN);
   ASSERT_TRUE(RunTest("get_matched_rules")) << message_;
 }
 
