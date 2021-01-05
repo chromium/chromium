@@ -59,9 +59,10 @@ WorkerThread::~WorkerThread() {
 
 void WorkerThread::Init() {
   thread_->StartAsync();
-  // TODO(carlscab): We could get rid of this if the NonMainThreadSchedulerImpl
-  // and the default_task_runner could be created on the main thread and then
-  // bound in the worker thread (similar to what happens with SequenceManager)
+  // TODO(https://crbug.com/1146622): We could get rid of this if the
+  // NonMainThreadSchedulerImpl and the default_task_runner could be created on
+  // the main thread and then bound in the worker thread (similar to what
+  // happens with SequenceManager)
   thread_->WaitForInit();
 }
 
