@@ -184,6 +184,52 @@ public class WebLayerShellActivity extends AppCompatActivity {
         }
     }
 
+    private static final class FullscreenCallbackImpl extends FullscreenCallback {
+        private WebLayerShellActivity mActivity;
+        private int mSystemVisibilityToRestore;
+
+        public FullscreenCallbackImpl(WebLayerShellActivity activity) {
+            mActivity = activity;
+        }
+
+        public void setActivity(WebLayerShellActivity activity) {
+            mActivity = activity;
+        }
+
+        @Override
+        public void onEnterFullscreen(Runnable exitFullscreenRunnable) {
+            if (mActivity == null) return;
+            // This comes from Chrome code to avoid an extra resize.
+            final WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+            attrs.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+            mActivity.getWindow().setAttributes(attrs);
+
+            View decorView = mActivity.getWindow().getDecorView();
+            // Caching the system ui visibility is ok for shell, but likely not ok for
+            // real code.
+            mSystemVisibilityToRestore = decorView.getSystemUiVisibility();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                    | View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+
+        @Override
+        public void onExitFullscreen() {
+            if (mActivity == null) return;
+            View decorView = mActivity.getWindow().getDecorView();
+            decorView.setSystemUiVisibility(mSystemVisibilityToRestore);
+
+            final WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+            if ((attrs.flags & WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS) != 0) {
+                attrs.flags &= ~WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+                mActivity.getWindow().setAttributes(attrs);
+            }
+        }
+    }
+
     private static final String TAG = "WebLayerShell";
     private static final float DEFAULT_TEXT_SIZE = 15.0F;
     private static final int EDITABLE_URL_TEXT_VIEW = 0;
@@ -199,12 +245,11 @@ public class WebLayerShellActivity extends AppCompatActivity {
     private View mAltTopContentsContainer;
     private TabListCallback mTabListCallback;
     private NewTabCallback mNewTabCallback;
-    private FullscreenCallback mFullscreenCallback;
+    private FullscreenCallbackImpl mFullscreenCallback;
     private NavigationCallback mNavigationCallback;
     private ErrorPageCallback mErrorPageCallback;
     private List<Tab> mPreviousTabList = new ArrayList<>();
     private Map<Tab, PerTabState> mTabToPerTabState = new HashMap<>();
-    private Runnable mExitFullscreenRunnable;
     private boolean mIsTopViewVisible = true;
     private View mBottomView;
     private int mTopViewMinHeight;
@@ -437,6 +482,9 @@ public class WebLayerShellActivity extends AppCompatActivity {
         if (mTabListCallback != null) {
             unregisterBrowserAndTabCallbacks();
         }
+        if (mFullscreenCallback != null) {
+            mFullscreenCallback.setActivity(null);
+        }
     }
 
     private void unregisterBrowserAndTabCallbacks() {
@@ -578,43 +626,6 @@ public class WebLayerShellActivity extends AppCompatActivity {
             }
         };
 
-        mFullscreenCallback = new FullscreenCallback() {
-            private int mSystemVisibilityToRestore;
-
-            @Override
-            public void onEnterFullscreen(Runnable exitFullscreenRunnable) {
-                mExitFullscreenRunnable = exitFullscreenRunnable;
-                // This comes from Chrome code to avoid an extra resize.
-                final WindowManager.LayoutParams attrs = getWindow().getAttributes();
-                attrs.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-                getWindow().setAttributes(attrs);
-
-                View decorView = getWindow().getDecorView();
-                // Caching the system ui visibility is ok for shell, but likely not ok for
-                // real code.
-                mSystemVisibilityToRestore = decorView.getSystemUiVisibility();
-                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                        | View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-            }
-
-            @Override
-            public void onExitFullscreen() {
-                mExitFullscreenRunnable = null;
-                View decorView = getWindow().getDecorView();
-                decorView.setSystemUiVisibility(mSystemVisibilityToRestore);
-
-                final WindowManager.LayoutParams attrs = getWindow().getAttributes();
-                if ((attrs.flags & WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS) != 0) {
-                    attrs.flags &= ~WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-                    getWindow().setAttributes(attrs);
-                }
-            }
-        };
-
         mNavigationCallback = new NavigationCallback() {
             @Override
             public void onLoadStateChanged(boolean isLoading, boolean toDifferentDocument) {
@@ -639,7 +650,17 @@ public class WebLayerShellActivity extends AppCompatActivity {
 
     private void registerTabCallbacks(Tab tab) {
         tab.setNewTabCallback(mNewTabCallback);
-        tab.setFullscreenCallback(mFullscreenCallback);
+
+        if (mFullscreenCallback != null) {
+            tab.setFullscreenCallback(mFullscreenCallback);
+        } else if (tab.getFullscreenCallback() != null) {
+            mFullscreenCallback = (FullscreenCallbackImpl) tab.getFullscreenCallback();
+            mFullscreenCallback.setActivity(this);
+        } else {
+            mFullscreenCallback = new FullscreenCallbackImpl(this);
+            tab.setFullscreenCallback(mFullscreenCallback);
+        }
+
         tab.getNavigationController().registerNavigationCallback(mNavigationCallback);
         tab.setErrorPageCallback(mErrorPageCallback);
         TabCallback tabCallback = new TabCallback() {
@@ -681,8 +702,9 @@ public class WebLayerShellActivity extends AppCompatActivity {
     }
 
     private void unregisterTabCallbacks(Tab tab) {
+        // Do not unset FullscreenCallback here which is called from onDestroy, since
+        // unsetting FullscreenCallback also exits fullscreen.
         tab.setNewTabCallback(null);
-        tab.setFullscreenCallback(null);
         tab.getNavigationController().unregisterNavigationCallback(mNavigationCallback);
         tab.setErrorPageCallback(null);
         PerTabState perTabState = mTabToPerTabState.get(tab);
