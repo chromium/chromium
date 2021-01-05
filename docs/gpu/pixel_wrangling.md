@@ -271,6 +271,10 @@ shift, and a calendar appointment.
         how important it is to eliminate flakiness rather than hiding it.
     1. For failures of rendering_representative_perf_tests please refer to its
     [instructions on updating expectations][rendering_representative_perf_tests].
+    1. It's always better to have the CL reviewed properly, but for urgent
+       suppressions when no reviewer is available, it is possible to rubber
+       stamp the CL via adding `rubber-stamper@appspot.gserviceaccount.com` as
+       your reviewer, in addition to the regular reviewer.
 1.  For the remaining Gtest-style tests, use the [`DISABLED_`
     modifier][gtest-DISABLED] to suppress any failures if necessary.
 
