@@ -147,7 +147,7 @@ const base::Feature kTemporaryHoldingSpace{"TemporaryHoldingSpace",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTemporaryHoldingSpacePreviews{
-    "TemporaryHoldingSpacePreviews", base::FEATURE_DISABLED_BY_DEFAULT};
+    "TemporaryHoldingSpacePreviews", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDragUnpinnedAppToPin{"DragUnpinnedAppToPin",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
