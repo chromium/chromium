@@ -547,13 +547,18 @@ TEST_F(NameFieldTest, HispanicLastNameRegexConverage) {
   }
 }
 
-// Tests that address name is not misclassified as name.
+// Tests that address name is not misclassified as name or honorific prefix.
 TEST_F(NameFieldTest, NotAddressName) {
   FormFieldData field;
   field.form_control_type = "text";
 
   field.label = base::UTF8ToUTF16("Identificação do Endereço");
   field.name = base::UTF8ToUTF16("name");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  field.label = base::UTF8ToUTF16("Adres Adı");
+  field.name = base::UTF8ToUTF16("title");
   field.unique_renderer_id = MakeFieldRendererId();
   list_.push_back(std::make_unique<AutofillField>(field));
 

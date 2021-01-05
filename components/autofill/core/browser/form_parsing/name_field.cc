@@ -210,6 +210,14 @@ FirstTwoLastNamesField::ParseComponentNames(AutofillScanner* scanner,
 
   // Allow name fields to appear in any order.
   while (!scanner->IsEnd()) {
+    // Skip over address label fields, which can have misleading names
+    // e.g. "title" or "name".
+    if (ParseFieldSpecifics(scanner, UTF8ToUTF16(kAddressNameIgnoredRe),
+                            MATCH_DEFAULT, address_name_ignored_patterns,
+                            nullptr, {log_manager, "kAddressNameIgnoredRe"})) {
+      continue;
+    }
+
     // Scan for the honorific prefix before checking for unrelated name fields
     // because a honorific prefix field is expected to have very specific labels
     // including "Title:". The latter is matched with |kNameIgnoredRe|.
@@ -226,10 +234,7 @@ FirstTwoLastNamesField::ParseComponentNames(AutofillScanner* scanner,
     if (ParseFieldSpecifics(scanner, UTF8ToUTF16(kNameIgnoredRe),
                             MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH,
                             name_ignored_patterns, nullptr,
-                            {log_manager, "kNameIgnoredRe"}) ||
-        ParseFieldSpecifics(scanner, UTF8ToUTF16(kAddressNameIgnoredRe),
-                            MATCH_DEFAULT, address_name_ignored_patterns,
-                            nullptr, {log_manager, "kAddressNameIgnoredRe"})) {
+                            {log_manager, "kNameIgnoredRe"})) {
       continue;
     }
 
@@ -362,6 +367,14 @@ std::unique_ptr<FirstLastNameField> FirstLastNameField::ParseComponentNames(
                                                       page_language);
 
   while (!scanner->IsEnd()) {
+    // Skip over address label fields, which can have misleading names
+    // e.g. "title" or "name".
+    if (ParseFieldSpecifics(scanner, UTF8ToUTF16(kAddressNameIgnoredRe),
+                            MATCH_DEFAULT, address_name_ignored_patterns,
+                            nullptr, {log_manager, "kAddressNameIgnoredRe"})) {
+      continue;
+    }
+
     // Scan for the honorific prefix before checking for unrelated fields
     // because a honorific prefix field is expected to have very specific labels
     // including "Title:". The latter is matched with |kNameIgnoredRe|.
@@ -381,10 +394,7 @@ std::unique_ptr<FirstLastNameField> FirstLastNameField::ParseComponentNames(
     if (ParseFieldSpecifics(scanner, UTF8ToUTF16(kNameIgnoredRe),
                             MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH,
                             name_ignored_patterns, nullptr,
-                            {log_manager, "kNameIgnoredRe"}) ||
-        ParseFieldSpecifics(scanner, UTF8ToUTF16(kAddressNameIgnoredRe),
-                            MATCH_DEFAULT, address_name_ignored_patterns,
-                            nullptr, {log_manager, "kAddressNameIgnoredRe"})) {
+                            {log_manager, "kNameIgnoredRe"})) {
       continue;
     }
 
