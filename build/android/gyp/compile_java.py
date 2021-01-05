@@ -29,6 +29,10 @@ _JAVAC_EXTRACTOR = os.path.join(build_utils.DIR_SOURCE_ROOT, 'third_party',
                                 'android_prebuilts', 'build_tools', 'common',
                                 'framework', 'javac_extractor.jar')
 
+# Add a check here to cause the suggested fix to be applied while compiling.
+# Use this when trying to enable more checks.
+ERRORPRONE_CHECKS_TO_APPLY = []
+
 # Full list of checks: https://errorprone.info/bugpatterns
 ERRORPRONE_WARNINGS_TO_DISABLE = [
     # The following are super useful, but existing issues need to be fixed first
@@ -656,15 +660,26 @@ def main(argv):
     # Make everything a warning so that when treat_warnings_as_errors is false,
     # they do not fail the build.
     errorprone_flags += ['-XepAllErrorsAsWarnings']
-    for warning in ERRORPRONE_WARNINGS_TO_DISABLE:
-      errorprone_flags.append('-Xep:{}:OFF'.format(warning))
-    for warning in ERRORPRONE_WARNINGS_TO_ENABLE:
-      errorprone_flags.append('-Xep:{}:WARN'.format(warning))
+    # Don't check generated files.
+    errorprone_flags += ['-XepDisableWarningsInGeneratedCode']
+    errorprone_flags.extend('-Xep:{}:OFF'.format(x)
+                            for x in ERRORPRONE_WARNINGS_TO_DISABLE)
+    errorprone_flags.extend('-Xep:{}:WARN'.format(x)
+                            for x in ERRORPRONE_WARNINGS_TO_ENABLE)
+
+    if ERRORPRONE_CHECKS_TO_APPLY:
+      errorprone_flags += [
+          '-XepPatchLocation:IN_PLACE',
+          '-XepPatchChecks:,' + ','.join(ERRORPRONE_CHECKS_TO_APPLY)
+      ]
+
     javac_args += ['-XDcompilePolicy=simple', ' '.join(errorprone_flags)]
+
     # This flag quits errorprone after checks and before code generation, since
     # we do not need errorprone outputs, this speeds up errorprone by 4 seconds
     # for chrome_java.
-    javac_args += ['-XDshould-stop.ifNoError=FLOW']
+    if not ERRORPRONE_CHECKS_TO_APPLY:
+      javac_args += ['-XDshould-stop.ifNoError=FLOW']
 
   if options.java_version:
     javac_args.extend([
