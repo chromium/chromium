@@ -5914,12 +5914,12 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-image/MediaStreamTrack-getCon
 crbug.com/1161590 external/wpt/html/semantics/forms/textfieldselection/select-event.html [ Failure Timeout ]
 
 # Wpt importer sheriff 2021-01-05
-crbug.com/626703 external/wpt/css/css-pseudo/first-letter-punctuation-and-space.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-004.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-006.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/replaced-element-031.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/replaced-element-032.html [ Failure ]
-crbug.com/626703 external/wpt/svg/embedded/image-embedding-svg-with-auto-height.svg [ Failure ]
+crbug.com/1163175 external/wpt/css/css-pseudo/first-letter-punctuation-and-space.html [ Failure ]
+crbug.com/1163176 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-004.html [ Failure ]
+crbug.com/1163176 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-006.html [ Failure ]
+crbug.com/1163176 external/wpt/css/css-sizing/aspect-ratio/replaced-element-031.html [ Failure ]
+crbug.com/1163176 external/wpt/css/css-sizing/aspect-ratio/replaced-element-032.html [ Failure ]
+crbug.com/1163178 external/wpt/svg/embedded/image-embedding-svg-with-auto-height.svg [ Failure ]
 
 # Sheriff 2020-12-14
 crbug.com/1046784 http/tests/devtools/console/console-context-selector.js [ Pass Timeout ]
