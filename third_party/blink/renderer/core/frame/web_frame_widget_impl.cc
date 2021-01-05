@@ -2053,7 +2053,11 @@ void WebFrameWidgetImpl::ApplyViewportChanges(
   // Viewport changes only change the main frame.
   if (!ForMainFrame())
     return;
-  View()->ApplyViewportChanges(args);
+  WebViewImpl* web_view = View();
+  // TODO(https://crbug.com/1160652): Figure out if View is null.
+  CHECK(widget_base_);
+  CHECK(web_view);
+  web_view->ApplyViewportChanges(args);
 }
 
 void WebFrameWidgetImpl::RecordManipulationTypeCounts(
