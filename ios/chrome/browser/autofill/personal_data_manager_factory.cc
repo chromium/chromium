@@ -75,6 +75,7 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
       chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   service->Init(
       autofill_db, nullptr, chrome_browser_state->GetPrefs(),
+      GetApplicationContext()->GetLocalState(),
       IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
       AutofillProfileValidatorFactory::GetInstance(), history_service,
       chrome_browser_state->IsOffTheRecord());

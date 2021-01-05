@@ -3904,7 +3904,8 @@ TEST_F(AutofillMetricsTest, AutofillProfileIsEnabledAtStartup) {
   personal_data_->SetAutofillProfileEnabled(true);
   personal_data_->Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
-                       autofill_client_.GetPrefs(),
+                       /*pref_service=*/autofill_client_.GetPrefs(),
+                       /*local_state=*/autofill_client_.GetPrefs(),
                        /*identity_manager=*/nullptr,
                        /*client_profile_validator=*/nullptr,
                        /*history_service=*/nullptr,
@@ -3919,7 +3920,8 @@ TEST_F(AutofillMetricsTest, AutofillProfileIsDisabledAtStartup) {
   personal_data_->SetAutofillProfileEnabled(false);
   personal_data_->Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
-                       autofill_client_.GetPrefs(),
+                       /*pref_service=*/autofill_client_.GetPrefs(),
+                       /*local_state=*/autofill_client_.GetPrefs(),
                        /*identity_manager=*/nullptr,
                        /*client_profile_validator=*/nullptr,
                        /*history_service=*/nullptr,
@@ -3934,7 +3936,8 @@ TEST_F(AutofillMetricsTest, AutofillCreditCardIsEnabledAtStartup) {
   personal_data_->SetAutofillCreditCardEnabled(true);
   personal_data_->Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
-                       autofill_client_.GetPrefs(),
+                       /*pref_service=*/autofill_client_.GetPrefs(),
+                       /*local_state=*/autofill_client_.GetPrefs(),
                        /*identity_manager=*/nullptr,
                        /*client_profile_validator=*/nullptr,
                        /*history_service=*/nullptr,
@@ -3949,7 +3952,8 @@ TEST_F(AutofillMetricsTest, AutofillCreditCardIsDisabledAtStartup) {
   personal_data_->SetAutofillCreditCardEnabled(false);
   personal_data_->Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
-                       autofill_client_.GetPrefs(),
+                       /*pref_service=*/autofill_client_.GetPrefs(),
+                       /*local_state=*/autofill_client_.GetPrefs(),
                        /*identity_manager=*/nullptr,
                        /*client_profile_validator=*/nullptr,
                        /*history_service=*/nullptr,

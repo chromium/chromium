@@ -241,7 +241,7 @@ class PersonalDataManagerTestBase {
             features::kAutofillEnableAccountWalletStorage)
             ? scoped_refptr<AutofillWebDataService>(account_database_service_)
             : nullptr,
-        prefs_.get(), identity_test_env_.identity_manager(),
+        prefs_.get(), prefs_.get(), identity_test_env_.identity_manager(),
         TestAutofillProfileValidator::GetInstance(),
         /*history_service=*/nullptr, is_incognito);
 

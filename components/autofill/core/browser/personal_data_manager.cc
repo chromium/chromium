@@ -270,6 +270,7 @@ void PersonalDataManager::Init(
     scoped_refptr<AutofillWebDataService> profile_database,
     scoped_refptr<AutofillWebDataService> account_database,
     PrefService* pref_service,
+    PrefService* local_state,
     signin::IdentityManager* identity_manager,
     AutofillProfileValidator* client_profile_validator,
     history::HistoryService* history_service,
@@ -285,6 +286,10 @@ void PersonalDataManager::Init(
       prefs::kAutofillProfileValidity,
       base::BindRepeating(&PersonalDataManager::ResetProfileValidity,
                           base::Unretained(this)));
+
+  alternative_state_name_map_updater_ =
+      std::make_unique<AlternativeStateNameMapUpdater>(local_state, this);
+  AddObserver(alternative_state_name_map_updater_.get());
 
   // Listen for URL deletions from browsing history.
   history_service_ = history_service;
@@ -319,8 +324,8 @@ void PersonalDataManager::Init(
 
   Refresh();
 
-  personal_data_manager_cleaner_ =
-      std::make_unique<PersonalDataManagerCleaner>(this, pref_service);
+  personal_data_manager_cleaner_ = std::make_unique<PersonalDataManagerCleaner>(
+      this, alternative_state_name_map_updater_.get(), pref_service);
 }
 
 PersonalDataManager::~PersonalDataManager() {
@@ -328,6 +333,9 @@ PersonalDataManager::~PersonalDataManager() {
   CancelPendingLocalQuery(&pending_creditcards_query_);
   CancelPendingLocalQuery(&pending_upi_ids_query_);
   CancelPendingServerQueries();
+
+  if (alternative_state_name_map_updater_)
+    RemoveObserver(alternative_state_name_map_updater_.get());
 }
 
 void PersonalDataManager::Shutdown() {
@@ -484,10 +492,11 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
     // On initial data load, is_data_loaded_ will be false here.
     if (!is_data_loaded_) {
       is_data_loaded_ = true;
-      personal_data_manager_cleaner_->CleanupData();
+      personal_data_manager_cleaner_
+          ->CleanupDataAndNotifyPersonalDataObservers();
+    } else {
+      NotifyPersonalDataObserver();
     }
-
-    NotifyPersonalDataObserver();
   }
 }
 

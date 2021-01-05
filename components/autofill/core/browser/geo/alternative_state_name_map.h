@@ -62,12 +62,8 @@ namespace autofill {
 //               b. ("US", "CA") -> "California"
 //               c. ("US", "TheGoldenState") -> "California"
 //
-// Example: Assuming the user creates an unknown state in the profile
-//          "Random State".
-//          1. Entries added to the |localized_state_names_map_| are:
-//              ("RandomState", Empty StateEntry object)
-//          2. Nothing is added to the
-//              |localized_state_names_reverse_lookup_map_| in this case
+// In case, the user has an unknown state in the profile, nothing is added to
+// the AlternativeStateNameMap;
 class AlternativeStateNameMap {
  public:
   // Represents ISO 3166-1 alpha-2 codes (always uppercase ASCII).
@@ -118,18 +114,16 @@ class AlternativeStateNameMap {
 
   // Adds ((|country_code|, state key), |state_entry|) to the
   // |localized_state_names_map_|, where state key corresponds to
-  // |normalized_canonical_state_name| if it is not null, or to
-  // |normalized_state_value_from_profile| otherwise.
-  // If |normalized_canonical_state_name| is not null, each entry from
-  // |normalized_alternative_state_names| is added as a tuple
-  // ((|country_code|, entry), |normalized_canonical_state_name|) to the
+  // |normalized_canonical_state_name|.
+  // Also, each entry from |normalized_alternative_state_names| is added as a
+  // tuple ((|country_code|, |entry|), |normalized_canonical_state_name|) to the
   // |localized_state_names_reverse_lookup_map_|.
   void AddEntry(
       const CountryCode& country_code,
       const StateName& normalized_state_value_from_profile,
       const StateEntry& state_entry,
       const std::vector<StateName>& normalized_alternative_state_names,
-      CanonicalStateName* normalized_canonical_state_name);
+      const CanonicalStateName& normalized_canonical_state_name);
 
   // Returns true if the |localized_state_names_map_| is empty.
   bool IsLocalisedStateNamesMapEmpty() const;

@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager_cleaner.h"
@@ -93,6 +94,7 @@ class PersonalDataManager : public KeyedService,
   void Init(scoped_refptr<AutofillWebDataService> profile_database,
             scoped_refptr<AutofillWebDataService> account_database,
             PrefService* pref_service,
+            PrefService* local_state,
             signin::IdentityManager* identity_manager,
             AutofillProfileValidator* client_profile_validator,
             history::HistoryService* history_service,
@@ -629,6 +631,11 @@ class PersonalDataManager : public KeyedService,
 
   // The observers.
   base::ObserverList<PersonalDataManagerObserver>::Unchecked observers_;
+
+  // Used to populate AlternativeStateNameMap with the geographical state data
+  // (including their abbreviations and localized names).
+  std::unique_ptr<AlternativeStateNameMapUpdater>
+      alternative_state_name_map_updater_;
 
   // |profile_valditiies_need_update| whenever the profile validities are out of
   bool profiles_server_validities_need_update_ = true;
