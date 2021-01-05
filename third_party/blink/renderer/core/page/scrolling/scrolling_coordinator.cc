@@ -161,7 +161,7 @@ static void SetupScrollbarLayer(GraphicsLayer* scrollbar_graphics_layer,
   scrollbar_layer->SetScrollElementId(scrolling_layer->element_id());
   scrollbar_graphics_layer->SetContentsToCcLayer(
       scrollbar_layer,
-      /*prevent_contents_opaque_changes=*/false);
+      /*prevent_contents_opaque_changes=*/true);
   scrollbar_graphics_layer->SetDrawsContent(false);
   scrollbar_graphics_layer->SetHitTestable(false);
 }
@@ -215,16 +215,18 @@ void ScrollingCoordinator::ScrollableAreaScrollbarLayerDidChange(
         cc::ScrollbarLayerBase::CreateOrReuse(std::move(scrollbar_delegate),
                                               scrollbar_layer);
     new_scrollbar_layer->SetElementId(scrollbar.GetElementId());
+    // Root layer non-overlay scrollbars should be marked opaque to disable
+    // blending.
+    // TODO(paint-dev): Opaqueness should be determined by the scrollbar,
+    // regardless of whether it's for the main frame root scroller.
+    bool contents_opaque =
+        IsForMainFrame(scrollable_area) && !scrollbar.IsOverlayScrollbar();
+    new_scrollbar_layer->SetContentsOpaque(contents_opaque);
     SetupScrollbarLayer(scrollbar_graphics_layer, new_scrollbar_layer.get(),
                         scrollable_area->LayerForScrolling());
     SetScrollbarLayer(scrollable_area, orientation,
                       std::move(new_scrollbar_layer));
-
-    // Root layer non-overlay scrollbars should be marked opaque to disable
-    // blending.
-    bool is_opaque_scrollbar = !scrollbar.IsOverlayScrollbar();
-    scrollbar_graphics_layer->SetContentsOpaque(
-        IsForMainFrame(scrollable_area) && is_opaque_scrollbar);
+    scrollbar_graphics_layer->SetContentsOpaque(contents_opaque);
   } else {
     RemoveScrollbarLayer(scrollable_area, orientation);
   }
