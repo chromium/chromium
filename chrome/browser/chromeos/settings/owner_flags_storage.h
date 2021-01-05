@@ -18,7 +18,8 @@ namespace about_flags {
 
 // Implements the FlagsStorage interface for the owner flags. It inherits from
 // PrefServiceFlagsStorage but extends it with storing the flags in the signed
-// settings as well which effectively applies them to the login session as well.
+// device settings as well which effectively applies them to the Chrome OS login
+// screen as well.
 class OwnerFlagsStorage : public ::flags_ui::PrefServiceFlagsStorage {
  public:
   OwnerFlagsStorage(PrefService* prefs,
@@ -30,6 +31,33 @@ class OwnerFlagsStorage : public ::flags_ui::PrefServiceFlagsStorage {
  private:
   ownership::OwnerSettingsService* owner_settings_service_;
 };
+
+// FlagsStorage implementation for Chrome OS startup. It is backed by a set of
+// flags that are provided at initialization time. Functions other than
+// GetFlags() are implemented as no-ops.
+class ReadOnlyFlagsStorage : public ::flags_ui::FlagsStorage {
+ public:
+  // Initializes the object with a given set of flags.
+  explicit ReadOnlyFlagsStorage(const std::set<std::string>& flags);
+  ~ReadOnlyFlagsStorage() override;
+
+  // ::flags_ui::FlagsStorage:
+  std::set<std::string> GetFlags() const override;
+  bool SetFlags(const std::set<std::string>& flags) override;
+  void CommitPendingWrites() override;
+  std::string GetOriginListFlag(
+      const std::string& internal_entry_name) const override;
+  void SetOriginListFlag(const std::string& internal_entry_name,
+                         const std::string& origin_list_value) override;
+
+ private:
+  std::set<std::string> flags_;
+};
+
+// Parses flags specified in the --feature-flags command line switch. This is
+// used by Chrome OS to pass flags configuration from session_manager to Chrome
+// on startup.
+std::set<std::string> ParseFlagsFromCommandLine();
 
 }  // namespace about_flags
 }  // namespace chromeos

@@ -525,6 +525,11 @@ void UserSessionManager::CompleteGuestSessionLogin(const GURL& start_url) {
   const base::CommandLine user_flags(base::CommandLine::NO_PROGRAM);
   if (!about_flags::AreSwitchesIdenticalToCurrentCommandLine(
           user_flags, *base::CommandLine::ForCurrentProcess(), NULL)) {
+    SessionManagerClient::Get()->SetFeatureFlagsForUser(
+        cryptohome::CreateAccountIdentifierFromAccountId(
+            user_manager::GuestAccountId()),
+        {});
+
     SessionManagerClient::Get()->SetFlagsForUser(
         cryptohome::CreateAccountIdentifierFromAccountId(
             user_manager::GuestAccountId()),
@@ -2240,6 +2245,13 @@ void UserSessionManager::SetSwitchesForUser(
     all_switches.insert(all_switches.end(), pair.second.begin(),
                         pair.second.end());
   }
+
+  // Clear session_manager's feature flag state so it doesn't pass flags on
+  // restart. This is necessary until in-session feature flags have been
+  // converted to use the new way.
+  // TODO(crbug.com/1073940): Remove after conversion is complete.
+  SessionManagerClient::Get()->SetFeatureFlagsForUser(
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id), {});
 
   SessionManagerClient::Get()->SetFlagsForUser(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id),
