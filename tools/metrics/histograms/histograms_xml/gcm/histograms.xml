@@ -248,7 +248,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GCM.LoadStatus" enum="GCMLoadStatus"
-    expires_after="2021-05-02">
+    expires_after="2021-07-04">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>Status code of loading from the persistent GCM store.</summary>

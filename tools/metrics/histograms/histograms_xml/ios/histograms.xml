@@ -678,7 +678,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.RestoreNavigationItemCount" units="rank"
-    expires_after="2021-05-02">
+    expires_after="2021-07-04">
   <owner>eugenebut@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -692,7 +692,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.RestoreNavigationTime" units="ms"
-    expires_after="2021-05-02">
+    expires_after="2021-07-04">
   <owner>eugenebut@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -728,7 +728,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.SearchExtension.DisplayCount" units="count"
-    expires_after="2021-05-02">
+    expires_after="2021-07-04">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>

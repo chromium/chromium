@@ -31,7 +31,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <histogram name="VideoTutorials.Player.LoadTimeLatency" units="ms"
-    expires_after="2021-05-02">
+    expires_after="2021-07-04">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
