@@ -7,17 +7,16 @@ package org.chromium.chrome.browser.tabmodel;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
-import android.support.test.InstrumentationRegistry;
-
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -27,10 +26,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.EmbeddedTestServerRule;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -40,9 +41,18 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class ChromeTabCreatorTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+
+    @ClassRule
+    public static EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
 
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
 
@@ -50,13 +60,7 @@ public class ChromeTabCreatorTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
-    }
-
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
+        mTestServer = sTestServerRule.getServer();
     }
 
     /**
@@ -67,11 +71,11 @@ public class ChromeTabCreatorTest {
     @MediumTest
     @Feature({"Browser"})
     public void testCreateNewTabInBackgroundLowEnd() throws ExecutionException {
-        final Tab fgTab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab fgTab = sActivityTestRule.getActivity().getActivityTab();
         final Tab bgTab = TestThreadUtils.runOnUiThreadBlocking(new Callable<Tab>() {
             @Override
             public Tab call() {
-                return mActivityTestRule.getActivity().getCurrentTabCreator().createNewTab(
+                return sActivityTestRule.getActivity().getCurrentTabCreator().createNewTab(
                         new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
                         TabLaunchType.FROM_LONGPRESS_BACKGROUND, fgTab);
             }
@@ -86,7 +90,7 @@ public class ChromeTabCreatorTest {
             public void run() {
                 TestThreadUtils.runOnUiThreadBlocking(() -> {
                     TabModelUtils.setIndex(
-                            mActivityTestRule.getActivity().getCurrentTabModel(), indexOf(bgTab));
+                            sActivityTestRule.getActivity().getCurrentTabModel(), indexOf(bgTab));
                 });
             }
         });
@@ -101,11 +105,11 @@ public class ChromeTabCreatorTest {
     @MediumTest
     @Feature({"Browser"})
     public void testCreateNewTabInBackground() throws ExecutionException {
-        final Tab fgTab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab fgTab = sActivityTestRule.getActivity().getActivityTab();
         Tab bgTab = TestThreadUtils.runOnUiThreadBlocking(new Callable<Tab>() {
             @Override
             public Tab call() {
-                return mActivityTestRule.getActivity().getCurrentTabCreator().createNewTab(
+                return sActivityTestRule.getActivity().getCurrentTabCreator().createNewTab(
                         new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
                         TabLaunchType.FROM_LONGPRESS_BACKGROUND, fgTab);
             }
@@ -123,13 +127,13 @@ public class ChromeTabCreatorTest {
     @MediumTest
     @Feature({"Browser"})
     public void testCreateNewTabTakesSpareWebContents() throws Throwable {
-        mActivityTestRule.runOnUiThread(new Runnable() {
+        sActivityTestRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
+                Tab currentTab = sActivityTestRule.getActivity().getActivityTab();
                 WarmupManager.getInstance().createSpareWebContents(!WarmupManager.FOR_CCT);
                 Assert.assertTrue(WarmupManager.getInstance().hasSpareWebContents());
-                mActivityTestRule.getActivity().getCurrentTabCreator().createNewTab(
+                sActivityTestRule.getActivity().getCurrentTabCreator().createNewTab(
                         new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
                         TabLaunchType.FROM_EXTERNAL_APP, currentTab);
                 Assert.assertFalse(WarmupManager.getInstance().hasSpareWebContents());
@@ -141,6 +145,6 @@ public class ChromeTabCreatorTest {
      * @return the index of the given tab in the current tab model
      */
     private int indexOf(Tab tab) {
-        return mActivityTestRule.getActivity().getCurrentTabModel().indexOf(tab);
+        return sActivityTestRule.getActivity().getCurrentTabModel().indexOf(tab);
     }
 }
