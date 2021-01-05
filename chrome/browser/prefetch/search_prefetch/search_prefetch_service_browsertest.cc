@@ -678,7 +678,8 @@ class SearchPrefetchServiceEnabledBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {{kSearchPrefetchServicePrefetching,
           {{"stream_responses", GetParam() ? "true" : "false"},
-           {"cache_size", "1"}}},
+           {"cache_size", "1"},
+           {"device_memory_threshold_MB", "0"}}},
          {{kSearchPrefetchService}, {}}},
         {});
   }
@@ -2217,7 +2218,8 @@ class SearchPrefetchServiceZeroCacheTimeBrowserTest
   SearchPrefetchServiceZeroCacheTimeBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{kSearchPrefetchServicePrefetching,
-          {{"prefetch_caching_limit_ms", "10"}}},
+          {{"prefetch_caching_limit_ms", "10"},
+           {"device_memory_threshold_MB", "0"}}},
          {{kSearchPrefetchService}, {}}},
         {});
 
@@ -2290,7 +2292,8 @@ class SearchPrefetchServiceZeroErrorTimeBrowserTest
   SearchPrefetchServiceZeroErrorTimeBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{kSearchPrefetchServicePrefetching,
-          {{"error_backoff_duration_ms", "10"}}},
+          {{"error_backoff_duration_ms", "10"},
+           {"device_memory_threshold_MB", "0"}}},
          {{kSearchPrefetchService}, {}}},
         {});
   }
@@ -2333,7 +2336,8 @@ class SearchPrefetchServiceDefaultMatchOnlyBrowserTest
   SearchPrefetchServiceDefaultMatchOnlyBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{kSearchPrefetchServicePrefetching,
-          {{"only_prefetch_default_match", "true"}}},
+          {{"only_prefetch_default_match", "true"},
+           {"device_memory_threshold_MB", "0"}}},
          {{kSearchPrefetchService}, {}}},
         {});
   }
@@ -2382,6 +2386,39 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceDefaultMatchOnlyBrowserTest,
 
   EXPECT_TRUE(base::Contains(inner_html, "regular"));
   EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+}
+
+class SearchPrefetchServiceLowMemoryDeviceBrowserTest
+    : public SearchPrefetchBaseBrowserTest {
+ public:
+  SearchPrefetchServiceLowMemoryDeviceBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kSearchPrefetchServicePrefetching,
+          {{"device_memory_threshold_MB", "2000000000"}}},
+         {{kSearchPrefetchService}, {}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceLowMemoryDeviceBrowserTest,
+                       NoFetchWhenLowMemoryDevice) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+
+  EXPECT_FALSE(prefetch_status.has_value());
 }
 
 class GooglePFTest : public InProcessBrowserTest {

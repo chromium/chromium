@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/system/sys_info.h"
 
 // Enables the feature completely with a few skipped checks to make local
 // testing easier.
@@ -26,9 +27,19 @@ bool SearchPrefetchServiceIsEnabled() {
 }
 
 bool SearchPrefetchServicePrefetchingIsEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             kSearchPrefetchServiceCommandLineFlag) ||
-         base::FeatureList::IsEnabled(kSearchPrefetchServicePrefetching);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kSearchPrefetchServiceCommandLineFlag)) {
+    return true;
+  }
+
+  if (!base::FeatureList::IsEnabled(kSearchPrefetchServicePrefetching)) {
+    return false;
+  }
+
+  return base::SysInfo::AmountOfPhysicalMemoryMB() >
+         base::GetFieldTrialParamByFeatureAsInt(
+             kSearchPrefetchServicePrefetching, "device_memory_threshold_MB",
+             3000);
 }
 
 base::TimeDelta SearchPrefetchCachingLimit() {
