@@ -27,6 +27,7 @@ extern const base::Feature kOfflinePagesShowAlternateDinoPageFeature;
 extern const base::Feature kOfflineIndicatorFeature;
 extern const base::Feature kOfflineIndicatorAlwaysHttpProbeFeature;
 extern const base::Feature kOnTheFlyMhtmlHashComputationFeature;
+extern const base::Feature kOfflinePagesNetworkStateLikelyUnknown;
 
 // The parameter name used to find the experiment tag for prefetching offline
 // pages.
@@ -100,6 +101,11 @@ bool IsOfflineIndicatorAlwaysHttpProbeEnabled();
 // Returns true if we are saving MHTML files to the target location and
 // calculating their content digests in one step.
 bool IsOnTheFlyMhtmlHashComputationEnabled();
+
+// Returns true if the network state returned by Android device APIs can't be
+// trusted. See https://crbug.com/1120144. In such cases, we want to disable
+// offline pages to avoid showing them even when the device is online.
+bool IsOfflinePagesNetworkStateLikelyUnknown();
 
 }  // namespace offline_pages
 

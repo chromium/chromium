@@ -32,6 +32,7 @@
 #include "components/offline_pages/core/archive_validator.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/model/offline_page_model_taskified.h"
+#include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 #include "components/offline_pages/core/offline_page_test_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_test_archiver.h"
@@ -1126,6 +1127,28 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageOnDisconnectedNetwork) {
       offline_id, kFileSize1,
       OfflinePageRequestHandler::AggregatedRequestResult::
           SHOW_OFFLINE_ON_DISCONNECTED_NETWORK);
+}
+
+TEST_F(OfflinePageRequestHandlerTest,
+       DoNotLoadOfflinePageOnDisconnectedNetworkWhenNetworkStateLikelyUnknown) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      offline_pages::kOfflinePagesNetworkStateLikelyUnknown);
+
+  this->SimulateHasNetworkConnectivity(false);
+
+  int64_t offline_id = this->SaveInternalPage(Url(), GURL(), kFilename1,
+                                              kFileSize1, std::string());
+
+  this->LoadPage(Url());
+
+  // When the network is good, we will fall back to the default handling
+  // immediately. So no request result should be reported. Passing
+  // AGGREGATED_REQUEST_RESULT_MAX to skip checking request result in
+  // the helper function.
+  this->ExpectNoOfflinePageServed(
+      offline_id, OfflinePageRequestHandler::AggregatedRequestResult::
+                      AGGREGATED_REQUEST_RESULT_MAX);
 }
 
 TEST_F(OfflinePageRequestHandlerTest, PageNotFoundOnDisconnectedNetwork) {

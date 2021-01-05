@@ -65,6 +65,9 @@ const base::Feature kOfflineIndicatorFeature{"OfflineIndicator",
 const base::Feature kOfflineIndicatorAlwaysHttpProbeFeature{
     "OfflineIndicatorAlwaysHttpProbe", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kOfflinePagesNetworkStateLikelyUnknown{
+    "OfflinePagesNetworkStateLikelyUnknown", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kPrefetchingOfflinePagesExperimentsOption[] = "exp";
 
 bool IsOffliningRecentPagesEnabled() {
@@ -146,6 +149,10 @@ bool IsOfflineIndicatorAlwaysHttpProbeEnabled() {
 
 bool IsOnTheFlyMhtmlHashComputationEnabled() {
   return false;
+}
+
+bool IsOfflinePagesNetworkStateLikelyUnknown() {
+  return base::FeatureList::IsEnabled(kOfflinePagesNetworkStateLikelyUnknown);
 }
 
 }  // namespace offline_pages
