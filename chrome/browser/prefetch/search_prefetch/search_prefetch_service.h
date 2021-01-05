@@ -97,15 +97,30 @@ class SearchPrefetchService : public KeyedService,
   // Clear all prefetches from the service.
   void ClearPrefetches();
 
+  // Clear the disk cache entry for |url|.
+  void ClearCacheEntry(const GURL& navigation_url);
+
+  // Update the last serving time of |url|, so it's eviction priority is
+  // lowered.
+  void UpdateServeTime(const GURL& navigation_url);
+
   // Takes the response from this object if |url| matches a prefetched URL.
-  std::unique_ptr<SearchPrefetchURLLoader> TakePrefetchResponse(
-      const GURL& url);
+  std::unique_ptr<SearchPrefetchURLLoader> TakePrefetchResponseFromMemoryCache(
+      const GURL& navigation_url);
+
+  // Creates a cache loader to serve a cache only response with fallback to
+  // network fetch.
+  std::unique_ptr<SearchPrefetchURLLoader> TakePrefetchResponseFromDiskCache(
+      const GURL& navigation_url);
 
   // Reports the status of a prefetch for a given search term.
   base::Optional<SearchPrefetchStatus> GetSearchPrefetchStatusForTesting(
       base::string16 search_terms);
 
  private:
+  // Records a cache entry for a navigation that is being served.
+  void AddCacheEntry(const GURL& navigation_url, const GURL& prefetch_url);
+
   // Removes the prefetch and prefetch timers associated with |search_terms|.
   void DeletePrefetch(base::string16 search_terms);
 
@@ -141,6 +156,11 @@ class SearchPrefetchService : public KeyedService,
       observer_{this};
 
   Profile* profile_;
+
+  // A map of previously handled URLs that allows certain navigations to be
+  // served from cache. The value is the prefetch URL in cache and the latest
+  // serving time of the response.
+  std::map<GURL, std::pair<GURL, base::Time>> prefetch_cache_;
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_SERVICE_H_

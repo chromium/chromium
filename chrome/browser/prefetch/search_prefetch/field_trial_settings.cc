@@ -73,3 +73,8 @@ bool StreamSearchPrefetchResponses() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kSearchPrefetchServicePrefetching, "stream_responses", true);
 }
+
+size_t SearchPrefetchMaxCacheEntries() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kSearchPrefetchServicePrefetching, "cache_size", 10);
+}

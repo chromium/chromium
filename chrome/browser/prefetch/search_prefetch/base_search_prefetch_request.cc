@@ -94,9 +94,10 @@ BaseSearchPrefetchRequest::BaseSearchPrefetchRequest(
 
 BaseSearchPrefetchRequest::~BaseSearchPrefetchRequest() = default;
 
-bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
-  net::NetworkTrafficAnnotationTag network_traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("search_prefetch_service", R"(
+// static
+net::NetworkTrafficAnnotationTag
+BaseSearchPrefetchRequest::NetworkAnnotationForPrefetch() {
+  return net::DefineNetworkTrafficAnnotation("search_prefetch_service", R"(
         semantics {
           sender: "Search Prefetch Service"
           description:
@@ -129,6 +130,11 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
             }
           }
         })");
+}
+
+bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
+  net::NetworkTrafficAnnotationTag network_traffic_annotation =
+      NetworkAnnotationForPrefetch();
 
   url::Origin prefetch_origin = url::Origin::Create(prefetch_url_);
 
@@ -137,7 +143,6 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   // navigation speeding and relatively high likelihood of being served to a
   // navigation, the request is relatively high priority.
   resource_request->priority = net::MEDIUM;
-  resource_request->load_flags |= net::LOAD_PREFETCH;
   resource_request->url = prefetch_url_;
   // Search prefetch URL Loaders should check |report_raw_headers| on the
   // intercepted request to clear out the raw headers when |report_raw_headers|

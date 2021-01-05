@@ -40,10 +40,13 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
+#include "content/public/test/content_mock_cert_verifier.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -273,13 +276,24 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
 
     SetDSEWithURL(
         GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"));
+
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
     InProcessBrowserTest::SetUpCommandLine(cmd);
-    // For the proxy.
     cmd->AppendSwitch("ignore-certificate-errors");
     cmd->AppendSwitch("force-enable-metrics-reporting");
+
+    mock_cert_verifier_.SetUpCommandLine(cmd);
   }
 
   size_t search_server_request_count() const {
@@ -451,6 +465,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
       resp->set_code(net::HTTP_OK);
       resp->set_content(static_files_[request.relative_url].first);
       resp->set_content_type(static_files_[request.relative_url].second);
+      resp->AddCustomHeader("cache-control", "private, max-age=0");
       return resp;
     }
 
@@ -468,6 +483,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
       resp->set_code(is_prefetch ? net::HTTP_BAD_GATEWAY : net::HTTP_OK);
       resp->set_content_type("text/html");
       resp->set_content(content);
+      resp->AddCustomHeader("cache-control", "private, max-age=0");
       return resp;
     }
 
@@ -488,6 +504,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     content.append(is_prefetch ? "prefetch" : "regular");
     content.append(" </body></html>");
     resp->set_content(content);
+    resp->AddCustomHeader("cache-control", "private, max-age=0");
     return resp;
   }
 
@@ -560,6 +577,8 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     resp->set_content(content);
     return resp;
   }
+
+  content::ContentMockCertVerifier mock_cert_verifier_;
 
   std::vector<net::test_server::HttpRequest> search_server_requests_;
   std::unique_ptr<net::EmbeddedTestServer> search_server_;
@@ -658,7 +677,8 @@ class SearchPrefetchServiceEnabledBrowserTest
   SearchPrefetchServiceEnabledBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{kSearchPrefetchServicePrefetching,
-          {{"stream_responses", GetParam() ? "true" : "false"}}},
+          {{"stream_responses", GetParam() ? "true" : "false"},
+           {"cache_size", "1"}}},
          {{kSearchPrefetchService}, {}}},
         {});
   }
@@ -1174,6 +1194,129 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchFinalStatus",
       SearchPrefetchStatus::kComplete, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       BackPrefetchServed) {
+  // This test prefetches and serves two SRP responses. It then navigates back
+  // then forward, the back navigation should not be cached, due to cache limit
+  // size of 1, the second navigation should be cached.
+
+  base::HistogramTester histogram_tester;
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms + "&pf=cs");
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kComplete);
+  ui_test_utils::NavigateToURL(browser(),
+                               GetSearchServerQueryURL(search_terms));
+
+  // The prefetch should be served, and only 1 request should be issued.
+  EXPECT_EQ(1u, search_server_requests().size());
+  auto inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+
+  search_terms = "prefetch_content_2";
+  prefetch_url = GetSearchServerQueryURL(search_terms + "&pf=cs");
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kComplete);
+  ui_test_utils::NavigateToURL(browser(),
+                               GetSearchServerQueryURL(search_terms));
+
+  // The prefetch should be served, and only 1 request (now the second total
+  // request) should be issued.
+  EXPECT_EQ(2u, search_server_requests().size());
+  inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+
+  content::TestNavigationObserver back_load_observer(GetWebContents());
+  GetWebContents()->GetController().GoBack();
+  back_load_observer.Wait();
+
+  // There should not be a cached prefetch request, so there should be a network
+  // request.
+  EXPECT_EQ(3u, search_server_requests().size());
+  inner_html = GetDocumentInnerHTML();
+  EXPECT_TRUE(base::Contains(inner_html, "regular"));
+  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+
+  content::TestNavigationObserver forward_load_observer(GetWebContents());
+  GetWebContents()->GetController().GoForward();
+  forward_load_observer.Wait();
+
+  // There should be a cached prefetch request, so there should not be a new
+  // network request.
+  EXPECT_EQ(3u, search_server_requests().size());
+  inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       EvictedCacheFallsback) {
+  // This test prefetches and serves a SRP responses. It then navigates to a
+  // different URL. Then it clears cache as if it was evicted. Then it navigates
+  // back to the prefetched SRP. As a result, the back forward cache should
+  // attempt to use the prefetch, but fall back to network on the original URL.
+
+  base::HistogramTester histogram_tester;
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms + "&pf=cs");
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kComplete);
+  ui_test_utils::NavigateToURL(browser(),
+                               GetSearchServerQueryURL(search_terms));
+
+  // The prefetch should be served, and only 1 request should be issued.
+  ASSERT_EQ(1u, search_server_requests().size());
+  EXPECT_TRUE(
+      base::Contains(search_server_requests()[0].GetURL().spec(), "pf=cs"));
+  auto inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+
+  ui_test_utils::NavigateToURL(browser(), GetSearchServerQueryURL("search"));
+
+  // The prefetch should be served, and only 1 request (now the second total
+  // request) should be issued.
+  EXPECT_EQ(2u, search_server_requests().size());
+  inner_html = GetDocumentInnerHTML();
+  EXPECT_TRUE(base::Contains(inner_html, "regular"));
+  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+
+  // Clearing cache should cause the back forward loader to fail over to the
+  // regular URL.
+  base::RunLoop run_loop;
+  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+      ->GetNetworkContext()
+      ->ClearHttpCache(base::Time(), base::Time(), nullptr,
+                       run_loop.QuitClosure());
+  run_loop.Run();
+
+  content::TestNavigationObserver back_load_observer(GetWebContents());
+  GetWebContents()->GetController().GoBack();
+  back_load_observer.Wait();
+
+  // There should not be a cached prefetch request, so there should be a network
+  // request.
+  ASSERT_EQ(3u, search_server_requests().size());
+  EXPECT_FALSE(
+      base::Contains(search_server_requests()[2].GetURL().spec(), "pf=cs"));
+  inner_html = GetDocumentInnerHTML();
+  EXPECT_TRUE(base::Contains(inner_html, "regular"));
+  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
@@ -1986,6 +2129,87 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          SearchPrefetchServiceEnabledBrowserTest,
                          testing::Bool());
+
+class SearchPrefetchServiceBFCacheTest : public SearchPrefetchBaseBrowserTest {
+ public:
+  SearchPrefetchServiceBFCacheTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kSearchPrefetchServicePrefetching,
+          {{"stream_responses", "true"}, {"cache_size", "1"}}},
+         {{kSearchPrefetchService}, {}},
+         {{features::kBackForwardCache}, {{"enable_same_site", "true"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceBFCacheTest,
+                       BackForwardPrefetchServedFromBFCache) {
+  // This test prefetches and serves two SRP responses. It then navigates back
+  // then forward, the back navigation should not be cached, due to cache limit
+  // size of 1, the second navigation should be cached.
+
+  base::HistogramTester histogram_tester;
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms + "&pf=cs");
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kComplete);
+  ui_test_utils::NavigateToURL(browser(),
+                               GetSearchServerQueryURL(search_terms));
+
+  // The prefetch should be served, and only 1 request should be issued.
+  EXPECT_EQ(1u, search_server_requests().size());
+  auto inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+
+  search_terms = "prefetch_content_2";
+  prefetch_url = GetSearchServerQueryURL(search_terms + "&pf=cs");
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kComplete);
+  ui_test_utils::NavigateToURL(browser(),
+                               GetSearchServerQueryURL(search_terms));
+
+  // The page should be restored from BF cache.
+  EXPECT_EQ(2u, search_server_requests().size());
+  inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  histogram_tester.ExpectTotalCount("BackForwardCache.HistoryNavigationOutcome",
+                                    0);
+
+  content::TestNavigationObserver back_load_observer(GetWebContents());
+  GetWebContents()->GetController().GoBack();
+  back_load_observer.Wait();
+
+  // The page should be restored from BF cache.
+  EXPECT_EQ(2u, search_server_requests().size());
+  inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  histogram_tester.ExpectUniqueSample(
+      "BackForwardCache.HistoryNavigationOutcome", 0 /* Restored */, 1);
+
+  content::TestNavigationObserver forward_load_observer(GetWebContents());
+  GetWebContents()->GetController().GoForward();
+  forward_load_observer.Wait();
+
+  // The page should be restored from BF cache.
+  EXPECT_EQ(2u, search_server_requests().size());
+  inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  histogram_tester.ExpectUniqueSample(
+      "BackForwardCache.HistoryNavigationOutcome", 0 /* Restored */, 2);
+}
 
 class SearchPrefetchServiceZeroCacheTimeBrowserTest
     : public SearchPrefetchBaseBrowserTest {

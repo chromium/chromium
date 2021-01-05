@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/net/prediction_options.h"
+#include "chrome/browser/prefetch/search_prefetch/back_forward_search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/full_body_search_prefetch_request.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
@@ -227,7 +228,8 @@ SearchPrefetchService::GetSearchPrefetchStatusForTesting(
 }
 
 std::unique_ptr<SearchPrefetchURLLoader>
-SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
+SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
+    const GURL& navigation_url) {
   SearchPrefetchServingReasonRecorder recorder;
 
   auto* template_url_service =
@@ -248,15 +250,16 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
   auto* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile_);
   if (!content_settings ||
-      content_settings->GetContentSetting(
-          url, url, ContentSettingsType::JAVASCRIPT) == CONTENT_SETTING_BLOCK) {
+      content_settings->GetContentSetting(navigation_url, navigation_url,
+                                          ContentSettingsType::JAVASCRIPT) ==
+          CONTENT_SETTING_BLOCK) {
     recorder.reason_ = SearchPrefetchServingReason::kJavascriptDisabled;
     return nullptr;
   }
 
   base::string16 search_terms;
   template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
-      url, template_url_service->search_terms_data(), &search_terms);
+      navigation_url, template_url_service->search_terms_data(), &search_terms);
 
   if (search_terms.length() == 0) {
     recorder.reason_ = SearchPrefetchServingReason::kNotDefaultSearchWithTerms;
@@ -274,7 +277,7 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
   // checks should address this by clearing prefetches on user changes to
   // default search, it is paramount to never serve content from one origin to
   // another.
-  if (url::Origin::Create(url) !=
+  if (url::Origin::Create(navigation_url) !=
       url::Origin::Create(iter->second->prefetch_url())) {
     recorder.reason_ =
         SearchPrefetchServingReason::kPrefetchWasForDifferentOrigin;
@@ -302,14 +305,29 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
   std::unique_ptr<SearchPrefetchURLLoader> response =
       iter->second->TakeSearchPrefetchURLLoader();
 
+  AddCacheEntry(navigation_url, iter->second->prefetch_url());
+
   DeletePrefetch(search_terms);
 
   return response;
 }
 
+std::unique_ptr<SearchPrefetchURLLoader>
+SearchPrefetchService::TakePrefetchResponseFromDiskCache(
+    const GURL& navigation_url) {
+  if (prefetch_cache_.find(navigation_url) == prefetch_cache_.end()) {
+    return nullptr;
+  }
+
+  return std::make_unique<BackForwardSearchPrefetchURLLoader>(
+      profile_, BaseSearchPrefetchRequest::NetworkAnnotationForPrefetch(),
+      prefetch_cache_[navigation_url].first);
+}
+
 void SearchPrefetchService::ClearPrefetches() {
   prefetches_.clear();
   prefetch_expiry_timers_.clear();
+  prefetch_cache_.clear();
 }
 
 void SearchPrefetchService::DeletePrefetch(base::string16 search_terms) {
@@ -417,4 +435,37 @@ void SearchPrefetchService::OnTemplateURLServiceChanged() {
 
   template_url_service_data_ = template_url_service_data;
   ClearPrefetches();
+}
+
+void SearchPrefetchService::ClearCacheEntry(const GURL& navigation_url) {
+  prefetch_cache_.erase(navigation_url);
+}
+
+void SearchPrefetchService::UpdateServeTime(const GURL& navigation_url) {
+  if (prefetch_cache_.find(navigation_url) == prefetch_cache_.end())
+    return;
+  prefetch_cache_[navigation_url].second = base::Time::Now();
+}
+
+void SearchPrefetchService::AddCacheEntry(const GURL& navigation_url,
+                                          const GURL& prefetch_url) {
+  // TODO(ryansturm): Add prefs support to handle session restore.
+  // https://crbug.com/1162121.
+  prefetch_cache_.emplace(navigation_url,
+                          std::make_pair(prefetch_url, base::Time::Now()));
+
+  if (prefetch_cache_.size() <= SearchPrefetchMaxCacheEntries()) {
+    return;
+  }
+
+  GURL url_to_remove;
+  base::Time earliest_time = base::Time::Now();
+  for (const auto& entry : prefetch_cache_) {
+    base::Time last_used_time = entry.second.second;
+    if (last_used_time < earliest_time) {
+      earliest_time = last_used_time;
+      url_to_remove = entry.first;
+    }
+  }
+  ClearCacheEntry(url_to_remove);
 }

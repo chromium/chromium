@@ -20,6 +20,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/load_flags.h"
 
 SearchPrefetchURLLoaderInterceptor::SearchPrefetchURLLoaderInterceptor(
     int frame_tree_node_id)
@@ -56,7 +57,15 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   if (!service)
     return nullptr;
 
-  return service->TakePrefetchResponse(tentative_resource_request.url);
+  auto loader = service->TakePrefetchResponseFromMemoryCache(
+      tentative_resource_request.url);
+  if (loader)
+    return loader;
+  if (tentative_resource_request.load_flags & net::LOAD_SKIP_CACHE_VALIDATION) {
+    return service->TakePrefetchResponseFromDiskCache(
+        tentative_resource_request.url);
+  }
+  return nullptr;
 }
 
 void SearchPrefetchURLLoaderInterceptor::MaybeCreateLoader(
