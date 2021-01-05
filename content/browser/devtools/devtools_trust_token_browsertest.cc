@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/net/trust_token_browsertest.h"
@@ -12,6 +13,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "services/network/public/cpp/features.h"
 
 namespace content {
 
@@ -69,6 +71,85 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
   WaitForNotification("Network.loadingFinished", true);
   WaitForNotification("Network.trustTokenOperationDone", true);
 }
+
+class DevToolsTrustTokenBrowsertestWithPlatformIssuance
+    : public DevToolsTrustTokenBrowsertest {
+ public:
+  DevToolsTrustTokenBrowsertestWithPlatformIssuance() {
+    // This assertion helps guard against the brittleness of deserializing
+    // "true", in case we refactor the parameter's type.
+    static_assert(
+        std::is_same<decltype(
+                         network::features::kPlatformProvidedTrustTokenIssuance
+                             .default_value),
+                     const bool>::value,
+        "Need to update this initialization logic if the type of the param "
+        "changes.");
+    features_.InitAndEnableFeatureWithParameters(
+        network::features::kTrustTokens,
+        {{network::features::kPlatformProvidedTrustTokenIssuance.name,
+          "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+#if defined(OS_ANDROID)
+// After a successful platform-provided issuance operation (which involves an
+// IPC to a system-local provider, not an HTTP request to a server), the
+// request's outcome should show as a cache hit in the network panel.
+IN_PROC_BROWSER_TEST_F(
+    DevToolsTrustTokenBrowsertestWithPlatformIssuance,
+    SuccessfulPlatformProvidedIssuanceIsReportedAsLoadingFinished) {
+  TrustTokenRequestHandler::Options options;
+  options.specify_platform_issuance_on = {
+      network::mojom::TrustTokenKeyCommitmentResult::Os::kAndroid};
+  request_handler_.UpdateOptions(std::move(options));
+
+  HandlerWrappingLocalTrustTokenFulfiller fulfiller(request_handler_);
+
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
+
+  GURL start_url = server_.GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  // Open DevTools and enable Network domain.
+  Attach();
+  SendCommand("Network.enable", std::make_unique<base::DictionaryValue>());
+
+  // Make sure there are no existing DevTools events in the queue.
+  EXPECT_EQ(notifications_.size(), 0ul);
+
+  // Issuance operations successfully answered locally result in
+  // NoModificationAllowedError.
+  std::string command = R"(
+  (async () => {
+    try {
+      await fetch("/issue", {trustToken: {type: 'token-request'}});
+      return "Unexpected success";
+    } catch (e) {
+      if (e.name !== "NoModificationAllowedError") {
+        return "Unexpected exception";
+      }
+      const hasToken = await document.hasTrustToken($1);
+      if (!hasToken)
+        return "Unexpectedly absent token";
+      return "Success";
+    }})(); )";
+
+  // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
+  // resolve.
+  EXPECT_EQ(
+      "Success",
+      EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
+
+  // Verify the request is marked as successful and not as failed.
+  WaitForNotification("Network.requestServedFromCache", true);
+  WaitForNotification("Network.loadingFinished", true);
+  WaitForNotification("Network.trustTokenOperationDone", true);
+}
+#endif  // defined(OS_ANDROID)
 
 namespace {
 

@@ -888,17 +888,21 @@ void URLLoader::OnDoneBeginningTrustTokenOperation(
     mojom::TrustTokenOperationStatus status) {
   trust_token_status_ = status;
 
-  // In case the operation failed or we hit the cache, the DevTools event is
-  // emitted from here. Otherwise the DevTools event is always emitted from
-  // |OnDoneFinalizeTrustTokenOperation|.
+  // In case the operation failed or it succeeded in a manner where the request
+  // does not need to be sent onwards, the DevTools event is emitted from here.
+  // Otherwise the DevTools event is always emitted from
+  // |OnDoneFinalizingTrustTokenOperation|.
   if (status != mojom::TrustTokenOperationStatus::kOk) {
     MaybeSendTrustTokenOperationResultToDevTools();
   }
 
   if (status == mojom::TrustTokenOperationStatus::kOk) {
     ScheduleStart();
-  } else if (status == mojom::TrustTokenOperationStatus::kAlreadyExists) {
-    // Cache hit: no need to send the request; we return an empty resource.
+  } else if (status == mojom::TrustTokenOperationStatus::kAlreadyExists ||
+             status == mojom::TrustTokenOperationStatus::
+                           kOperationSuccessfullyFulfilledLocally) {
+    // The Trust Tokens operation succeeded without needing to send the request;
+    // we return early with an "error" representing this success.
     //
     // Here and below, defer calling NotifyCompleted to make sure the URLLoader
     // finishes initializing before getting deleted.

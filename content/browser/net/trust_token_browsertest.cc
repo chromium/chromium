@@ -12,10 +12,8 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
-#include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/common/trust_tokens.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -44,11 +42,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_canon_stdstring.h"
-
-#if defined(OS_ANDROID)
-#include "content/public/browser/android/java_interfaces.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
-#endif  // defined(OS_ANDROID)
 
 namespace content {
 
@@ -1668,6 +1661,41 @@ class TrustTokenBrowsertestWithPlatformIssuance : public TrustTokenBrowsertest {
 };
 
 #if defined(OS_ANDROID)
+HandlerWrappingLocalTrustTokenFulfiller::
+    HandlerWrappingLocalTrustTokenFulfiller(TrustTokenRequestHandler& handler)
+    : handler_(handler) {
+  interface_overrider_.SetBinderForName(
+      mojom::LocalTrustTokenFulfiller::Name_,
+      base::BindRepeating(&HandlerWrappingLocalTrustTokenFulfiller::Bind,
+                          base::Unretained(this)));
+}
+HandlerWrappingLocalTrustTokenFulfiller::
+    ~HandlerWrappingLocalTrustTokenFulfiller() = default;
+
+void HandlerWrappingLocalTrustTokenFulfiller::FulfillTrustTokenIssuance(
+    network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
+    FulfillTrustTokenIssuanceCallback callback) {
+  base::Optional<std::string> maybe_result =
+      handler_.Issue(std::move(request->request));
+  if (maybe_result) {
+    std::move(callback).Run(
+        network::mojom::FulfillTrustTokenIssuanceAnswer::New(
+            network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kOk,
+            std::move(*maybe_result)));
+    return;
+  }
+  std::move(callback).Run(network::mojom::FulfillTrustTokenIssuanceAnswer::New(
+      network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kUnknownError,
+      ""));
+}
+
+void HandlerWrappingLocalTrustTokenFulfiller::Bind(
+    mojo::ScopedMessagePipeHandle handle) {
+  receiver_.Bind(
+      mojo::PendingReceiver<content::mojom::LocalTrustTokenFulfiller>(
+          std::move(handle)));
+}
+
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertestWithPlatformIssuance,
                        EndToEndAndroidPlatformIssuance) {
   TrustTokenRequestHandler::Options options;
@@ -1675,49 +1703,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertestWithPlatformIssuance,
       network::mojom::TrustTokenKeyCommitmentResult::Os::kAndroid};
   request_handler_.UpdateOptions(std::move(options));
 
-  class HandlerWrappingLocalTrustTokenFulfiller
-      : public content::mojom::LocalTrustTokenFulfiller {
-   public:
-    HandlerWrappingLocalTrustTokenFulfiller(TrustTokenRequestHandler& handler)
-        : handler_(handler) {}
-    void FulfillTrustTokenIssuance(
-        network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
-        FulfillTrustTokenIssuanceCallback callback) override {
-      base::Optional<std::string> maybe_result =
-          handler_.Issue(std::move(request->request));
-      if (maybe_result) {
-        std::move(callback).Run(
-            network::mojom::FulfillTrustTokenIssuanceAnswer::New(
-                network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kOk,
-                std::move(*maybe_result)));
-        return;
-      }
-      std::move(callback).Run(
-          network::mojom::FulfillTrustTokenIssuanceAnswer::New(
-              network::mojom::FulfillTrustTokenIssuanceAnswer::Status::
-                  kUnknownError,
-              ""));
-    }
-
-    void Bind(mojo::ScopedMessagePipeHandle handle) {
-      receiver_.Bind(
-          mojo::PendingReceiver<content::mojom::LocalTrustTokenFulfiller>(
-              std::move(handle)));
-    }
-
-   private:
-    TrustTokenRequestHandler& handler_;
-    mojo::Receiver<content::mojom::LocalTrustTokenFulfiller> receiver_{this};
-  };
-
-  service_manager::InterfaceProvider::TestApi interface_overrider(
-      content::GetGlobalJavaInterfaces());
-
   HandlerWrappingLocalTrustTokenFulfiller fulfiller(request_handler_);
-  interface_overrider.SetBinderForName(
-      mojom::LocalTrustTokenFulfiller::Name_,
-      base::BindRepeating(&HandlerWrappingLocalTrustTokenFulfiller::Bind,
-                          base::Unretained(&fulfiller)));
 
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
 
