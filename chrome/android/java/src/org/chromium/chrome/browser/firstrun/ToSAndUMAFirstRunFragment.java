@@ -86,7 +86,6 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
                 mSendReportCheckBox.getPaddingTop(), ViewCompat.getPaddingEnd(mSendReportCheckBox),
                 mSendReportCheckBox.getPaddingBottom());
         mSendReportCheckBox.setChecked(FirstRunActivity.DEFAULT_METRICS_AND_CRASH_REPORTING);
-
         if (!canShowUmaCheckBox()) {
             mSendReportCheckBox.setVisibility(View.GONE);
         }
@@ -175,8 +174,7 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         }
 
         mTriggerAcceptAfterNativeInit = false;
-        boolean allowCrashUpload = (mSendReportCheckBox.getVisibility() == View.VISIBLE)
-                && mSendReportCheckBox.isChecked();
+        boolean allowCrashUpload = canShowUmaCheckBox() && mSendReportCheckBox.isChecked();
         getPageDelegate().acceptTermsOfService(allowCrashUpload);
     }
 

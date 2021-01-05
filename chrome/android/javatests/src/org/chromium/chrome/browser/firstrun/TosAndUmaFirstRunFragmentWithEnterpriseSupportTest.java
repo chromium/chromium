@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.firstrun;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -27,9 +29,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -38,6 +43,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.init.BrowserParts;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.policy.EnterpriseInfo;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -62,12 +69,14 @@ import java.util.List;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
-    @IntDef({FragmentState.LOADING, FragmentState.NO_POLICY, FragmentState.HAS_POLICY})
+    @IntDef({FragmentState.LOADING, FragmentState.NO_POLICY, FragmentState.HAS_POLICY,
+            FragmentState.WAITING_UNTIL_NEXT_PAGE})
     @Retention(RetentionPolicy.SOURCE)
     @interface FragmentState {
         int LOADING = 0;
         int NO_POLICY = 1;
         int HAS_POLICY = 2;
+        int WAITING_UNTIL_NEXT_PAGE = 3;
     }
 
     @IntDef({SpeedComparedToInflation.NOT_RECORDED, SpeedComparedToInflation.FASTER,
@@ -91,6 +100,11 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     @Mock
     public EnterpriseInfo mMockEnterpriseInfo;
 
+    @Spy
+    public ChromeBrowserInitializer mInitializer;
+    @Captor
+    public ArgumentCaptor<BrowserParts> mBrowserParts;
+
     private FirstRunActivity mActivity;
     private final List<PolicyService.Observer> mPolicyServiceObservers = new ArrayList<>();
     private final List<Callback<Boolean>> mAppRestrictionsCallbacks = new ArrayList<>();
@@ -102,7 +116,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
     private View mTosText;
     private View mAcceptButton;
-    private View mLargeSpinner;
+    private View mLowerSpinner;
+    private View mCenterSpinner;
     private CheckBox mUmaCheckBox;
 
     @Before
@@ -111,6 +126,11 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
         Assert.assertFalse(
                 CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE));
+
+        Mockito.doNothing()
+                .when(mInitializer)
+                .handlePostNativeStartup(anyBoolean(), any(BrowserParts.class));
+        ChromeBrowserInitializer.setForTesting(mInitializer);
 
         FirstRunAppRestrictionInfo.setInitializedInstanceForTest(mMockAppRestrictionInfo);
         ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(true);
@@ -174,8 +194,42 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         assertHistograms(true, SpeedComparedToInflation.SLOWER,
                 SpeedComparedToInflation.NOT_RECORDED, SpeedComparedToInflation.NOT_RECORDED);
 
-        // Try to accept Tos.
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
+        Assert.assertFalse("Crash report should be disabled by shared preference.",
+                PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
+
+        // Try to accept ToS.
         TestThreadUtils.runOnUiThreadBlocking((Runnable) mAcceptButton::performClick);
+        Assert.assertTrue("Crash report should be enabled.",
+                PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
+    }
+
+    @Test
+    @SmallTest
+    public void testNoRestriction_AcceptBeforeNative() {
+        launchFirstRunThroughCustomTabPreNative();
+        assertUIState(FragmentState.LOADING);
+
+        setAppRestrictionsMockInitialized(false);
+        assertUIState(FragmentState.NO_POLICY);
+
+        assertHistograms(true, SpeedComparedToInflation.SLOWER,
+                SpeedComparedToInflation.NOT_RECORDED, SpeedComparedToInflation.NOT_RECORDED);
+
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
+        Assert.assertFalse("Crash report should be disabled by shared preference.",
+                PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
+
+        // Try to accept ToS.
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) mAcceptButton::performClick);
+        assertUIState(FragmentState.WAITING_UNTIL_NEXT_PAGE);
+        Assert.assertFalse("Crash report should not be enabled before native initialized.",
+                PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
+
+        // ToS should be accepted when native is initialized.
+        startNativeInitializationAndWait();
         Assert.assertTrue("Crash report should be enabled.",
                 PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
     }
@@ -402,10 +456,15 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
                 PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
     }
 
+    private void launchFirstRunThroughCustomTab() {
+        launchFirstRunThroughCustomTabPreNative();
+        startNativeInitializationAndWait();
+    }
+
     /**
      * Launch chrome through custom tab and trigger first run.
      */
-    private void launchFirstRunThroughCustomTab() {
+    private void launchFirstRunThroughCustomTabPreNative() {
         final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
         final Context context = instrumentation.getTargetContext();
 
@@ -431,25 +490,24 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         CriteriaHelper.pollUiThread(
                 () -> mActivity.getSupportFragmentManager().getFragments().size() > 0);
 
-        // Force this to happen now to try to make the tests more deterministic. Ideally the tests
-        // could control when this happens and test for difference sequences.
-        waitUntilNativeLoaded();
-
         mTosText = mActivity.findViewById(R.id.tos_and_privacy);
         mUmaCheckBox = mActivity.findViewById(R.id.send_report_checkbox);
         mAcceptButton = mActivity.findViewById(R.id.terms_accept);
-        mLargeSpinner = mActivity.findViewById(R.id.progress_spinner_large);
+        mLowerSpinner = mActivity.findViewById(R.id.progress_spinner);
+        mCenterSpinner = mActivity.findViewById(R.id.progress_spinner_large);
     }
 
     private void assertUIState(@FragmentState int fragmentState) {
         int tosVisibility = (fragmentState == FragmentState.NO_POLICY) ? View.VISIBLE : View.GONE;
         int spinnerVisibility = (fragmentState == FragmentState.LOADING) ? View.VISIBLE : View.GONE;
+        int lowerSpinnerVisibility =
+                (fragmentState == FragmentState.WAITING_UNTIL_NEXT_PAGE) ? View.VISIBLE : View.GONE;
 
         CriteriaHelper.pollUiThread(
                 ()
                         -> Criteria.checkThat(
                                 "Visibility of Loading spinner never reached test setting.",
-                                mLargeSpinner.getVisibility(), Matchers.is(spinnerVisibility)));
+                                mCenterSpinner.getVisibility(), Matchers.is(spinnerVisibility)));
 
         Assert.assertEquals("Visibility of ToS text is different than the test setting.",
                 tosVisibility, mTosText.getVisibility());
@@ -457,11 +515,27 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
                 tosVisibility, mUmaCheckBox.getVisibility());
         Assert.assertEquals("Visibility of accept button is different than the test setting.",
                 tosVisibility, mAcceptButton.getVisibility());
-
+        Assert.assertEquals("Visibility of lower spinner is different than the test setting.",
+                lowerSpinnerVisibility, mLowerSpinner.getVisibility());
         Assert.assertTrue("Uma Check Box should be checked.", mUmaCheckBox.isChecked());
 
         int expectedExitCount = fragmentState == FragmentState.HAS_POLICY ? 1 : 0;
         Assert.assertEquals(expectedExitCount, mExitCount);
+    }
+
+    private void startNativeInitializationAndWait() {
+        Mockito.verify(mInitializer, Mockito.timeout(3000L))
+                .handlePostNativeStartup(eq(true), mBrowserParts.capture());
+        Mockito.doCallRealMethod()
+                .when(mInitializer)
+                .handlePostNativeStartup(anyBoolean(), any(BrowserParts.class));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mInitializer.handlePostNativeStartup(
+                                /*isAsync*/ false, mBrowserParts.getValue()));
+        CriteriaHelper.pollUiThread(
+                (() -> mActivity.isNativeSideIsInitializedForTest()), "native never initialized.");
     }
 
     /**
@@ -506,11 +580,6 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     private void assertSingleHistogram(String histogram, boolean recorded) {
         Assert.assertEquals("Histogram <" + histogram + "> is not recorded correctly.",
                 recorded ? 1 : 0, RecordHistogram.getHistogramTotalCountForTesting(histogram));
-    }
-
-    private void waitUntilNativeLoaded() {
-        CriteriaHelper.pollUiThread(
-                (() -> mActivity.isNativeSideIsInitializedForTest()), "native never initialized.");
     }
 
     private void setAppRestrictionsMockNotInitialized() {
