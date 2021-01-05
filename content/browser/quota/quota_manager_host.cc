@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/post_task.h"
@@ -22,10 +23,8 @@
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/quota/quota_manager.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
-
-using blink::mojom::StorageType;
-using storage::QuotaClient;
 
 namespace content {
 
@@ -41,7 +40,7 @@ QuotaManagerHost::QuotaManagerHost(
       origin_(origin),
       quota_manager_(quota_manager),
       permission_context_(permission_context),
-      quota_change_dispatcher_(quota_change_dispatcher) {
+      quota_change_dispatcher_(std::move(quota_change_dispatcher)) {
   DCHECK(quota_manager);
   // TODO(sashab): Work out the conditions for permission_context to be set and
   // add a DCHECK for it here.
@@ -58,7 +57,7 @@ void QuotaManagerHost::AddChangeListener(
 }
 
 void QuotaManagerHost::QueryStorageUsageAndQuota(
-    StorageType storage_type,
+    blink::mojom::StorageType storage_type,
     QueryStorageUsageAndQuotaCallback callback) {
   quota_manager_->GetUsageAndQuotaWithBreakdown(
       origin_, storage_type,
@@ -67,11 +66,11 @@ void QuotaManagerHost::QueryStorageUsageAndQuota(
 }
 
 void QuotaManagerHost::RequestStorageQuota(
-    StorageType storage_type,
+    blink::mojom::StorageType storage_type,
     uint64_t requested_size,
     blink::mojom::QuotaManagerHost::RequestStorageQuotaCallback callback) {
-  if (storage_type != StorageType::kTemporary &&
-      storage_type != StorageType::kPersistent) {
+  if (storage_type != blink::mojom::StorageType::kTemporary &&
+      storage_type != blink::mojom::StorageType::kPersistent) {
     mojo::ReportBadMessage("Unsupported storage type specified.");
     return;
   }
@@ -87,9 +86,9 @@ void QuotaManagerHost::RequestStorageQuota(
     return;
   }
 
-  DCHECK(storage_type == StorageType::kTemporary ||
-         storage_type == StorageType::kPersistent);
-  if (storage_type == StorageType::kPersistent) {
+  DCHECK(storage_type == blink::mojom::StorageType::kTemporary ||
+         storage_type == blink::mojom::StorageType::kPersistent);
+  if (storage_type == blink::mojom::StorageType::kPersistent) {
     quota_manager_->GetUsageAndQuotaForWebApps(
         origin_, storage_type,
         base::BindOnce(&QuotaManagerHost::DidGetPersistentUsageAndQuota,
@@ -114,7 +113,7 @@ void QuotaManagerHost::DidQueryStorageUsageAndQuota(
 }
 
 void QuotaManagerHost::DidGetPersistentUsageAndQuota(
-    StorageType storage_type,
+    blink::mojom::StorageType storage_type,
     uint64_t requested_quota,
     RequestStorageQuotaCallback callback,
     blink::mojom::QuotaStatusCode status,
