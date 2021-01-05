@@ -26,10 +26,20 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppLaunchInfo {
                 int64_t display_id,
                 std::vector<base::FilePath> launch_files,
                 apps::mojom::IntentPtr intent);
-  ~AppLaunchInfo();
+
+  AppLaunchInfo(const std::string& app_id,
+                int32_t event_flags,
+                int64_t display_id);
+
+  AppLaunchInfo(const std::string& app_id,
+                int32_t event_flags,
+                apps::mojom::IntentPtr intent,
+                int64_t display_id);
 
   AppLaunchInfo(const AppLaunchInfo&) = delete;
   AppLaunchInfo& operator=(const AppLaunchInfo&) = delete;
+
+  ~AppLaunchInfo();
 
   std::string app_id;
   base::Optional<int32_t> id;

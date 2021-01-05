@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/task/post_task.h"
@@ -39,6 +40,8 @@
 #include "components/arc/mojom/app_permissions.mojom.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "extensions/grit/extensions_browser_resources.h"
@@ -548,7 +551,11 @@ arc::mojom::OpenUrlsRequestPtr ConstructOpenUrlsRequest(
   return request;
 }
 
-void OnContentUrlResolved(apps::mojom::IntentPtr intent,
+void OnContentUrlResolved(const base::FilePath& file_path,
+                          const std::string& app_id,
+                          int32_t event_flags,
+                          int64_t display_id,
+                          apps::mojom::IntentPtr intent,
                           arc::mojom::ActivityNamePtr activity,
                           const std::vector<GURL>& content_urls) {
   for (const auto& content_url : content_urls) {
@@ -566,11 +573,17 @@ void OnContentUrlResolved(apps::mojom::IntentPtr intent,
   arc::mojom::FileSystemInstance* arc_file_system = ARC_GET_INSTANCE_FOR_METHOD(
       arc_service_manager->arc_bridge_service()->file_system(),
       OpenUrlsWithPermission);
-  if (arc_file_system) {
-    arc_file_system->OpenUrlsWithPermission(
-        ConstructOpenUrlsRequest(intent, activity, content_urls),
-        base::DoNothing());
+  if (!arc_file_system) {
+    return;
   }
+
+  arc_file_system->OpenUrlsWithPermission(
+      ConstructOpenUrlsRequest(intent, activity, content_urls),
+      base::DoNothing());
+
+  ::full_restore::SaveAppLaunchInfo(
+      file_path, std::make_unique<full_restore::AppLaunchInfo>(
+                     app_id, event_flags, std::move(intent), display_id));
 }
 
 }  // namespace
@@ -750,6 +763,10 @@ void ArcApps::Launch(const std::string& app_id,
 
   arc::LaunchApp(profile_, app_id, event_flags, user_interaction_type.value(),
                  display_id);
+
+  full_restore::SaveAppLaunchInfo(profile_->GetPath(),
+                                  std::make_unique<full_restore::AppLaunchInfo>(
+                                      app_id, event_flags, display_id));
 }
 
 void ArcApps::LaunchAppWithIntent(const std::string& app_id,
@@ -788,7 +805,8 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
       const auto file_urls = intent->file_urls.value();
       file_manager::util::ConvertToContentUrls(
           apps::GetFileSystemURL(profile_, file_urls),
-          base::BindOnce(&OnContentUrlResolved, std::move(intent),
+          base::BindOnce(&OnContentUrlResolved, profile_->GetPath(), app_id,
+                         event_flags, display_id, std::move(intent),
                          std::move(activity)));
       return;
     }
@@ -804,6 +822,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
       return;
     }
 
+    auto intent_for_full_restore = intent.Clone();
     auto arc_intent = CreateArcIntent(std::move(intent));
 
     if (!arc_intent) {
@@ -814,6 +833,12 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
     instance->HandleIntent(std::move(arc_intent), std::move(activity));
 
     prefs->SetLastLaunchTime(app_id);
+
+    full_restore::SaveAppLaunchInfo(
+        profile_->GetPath(),
+        std::make_unique<full_restore::AppLaunchInfo>(
+            app_id, event_flags, std::move(intent_for_full_restore),
+            display_id));
     return;
   }
 

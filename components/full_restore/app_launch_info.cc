@@ -4,6 +4,8 @@
 
 #include "components/full_restore/app_launch_info.h"
 
+#include <utility>
+
 namespace full_restore {
 
 AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
@@ -19,6 +21,20 @@ AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
       disposition(static_cast<int32_t>(disposition)),
       display_id(display_id),
       file_paths(std::move(launch_files)),
+      intent(std::move(intent)) {}
+
+AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
+                             int32_t event_flags,
+                             int64_t display_id)
+    : app_id(app_id), event_flag(event_flags), display_id(display_id) {}
+
+AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
+                             int32_t event_flags,
+                             apps::mojom::IntentPtr intent,
+                             int64_t display_id)
+    : app_id(app_id),
+      event_flag(event_flags),
+      display_id(display_id),
       intent(std::move(intent)) {}
 
 AppLaunchInfo::~AppLaunchInfo() = default;
