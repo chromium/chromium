@@ -78,6 +78,8 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
 
     bool IsTransitionPropertySpecificKeyframe() const final { return true; }
 
+    const TypedInterpolationValue* GetValue() const { return value_.get(); }
+
     void Trace(Visitor*) const override;
 
    private:

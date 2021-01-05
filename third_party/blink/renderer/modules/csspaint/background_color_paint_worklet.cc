@@ -88,12 +88,11 @@ class BackgroundColorPaintWorkletProxyClient
   }
 };
 
-void GetAnimatedColorsFromKeyframes(const PropertySpecificKeyframe* frame,
-                                    Vector<Color>* animated_colors,
-                                    const Element* element) {
+void GetColorsFromStringKeyframe(const PropertySpecificKeyframe* frame,
+                                 Vector<Color>* animated_colors,
+                                 const Element* element) {
   DCHECK(frame->IsCSSPropertySpecificKeyframe());
-  const CSSValue* value =
-      static_cast<const CSSPropertySpecificKeyframe*>(frame)->Value();
+  const CSSValue* value = To<CSSPropertySpecificKeyframe>(frame)->Value();
   const CSSPropertyName property_name =
       CSSPropertyName(CSSPropertyID::kBackgroundColor);
   const CSSValue* computed_value = StyleResolver::ComputeValue(
@@ -102,6 +101,20 @@ void GetAnimatedColorsFromKeyframes(const PropertySpecificKeyframe* frame,
   const cssvalue::CSSColorValue* color_value =
       static_cast<const cssvalue::CSSColorValue*>(computed_value);
   animated_colors->push_back(color_value->Value());
+}
+
+void GetColorsFromTransitionKeyframe(const PropertySpecificKeyframe* frame,
+                                     Vector<Color>* animated_colors,
+                                     const Element* element) {
+  DCHECK(frame->IsTransitionPropertySpecificKeyframe());
+  const TransitionKeyframe::PropertySpecificKeyframe* keyframe =
+      To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
+  InterpolableValue* value =
+      keyframe->GetValue()->Value().interpolable_value.get();
+  const InterpolableList& list = To<InterpolableList>(*value);
+  // Only the first one has the real value.
+  Color rgba = CSSColorInterpolationType::GetRGBA(*(list.Get(0)));
+  animated_colors->push_back(rgba);
 }
 
 }  // namespace
@@ -137,17 +150,21 @@ scoped_refptr<Image> BackgroundColorPaintWorklet::Paint(
       continue;
     const KeyframeEffectModelBase* model =
         static_cast<const KeyframeEffect*>(effect)->Model();
-    // TODO(crbug.com/1153670): handle transition keyframes here.
-    if (!model->IsStringKeyframeEffectModel())
-      continue;
     const PropertySpecificKeyframeVector* frames =
         model->GetPropertySpecificKeyframes(
             PropertyHandle(GetCSSPropertyBackgroundColor()));
     DCHECK_GE(frames->size(), 2u);
     // TODO(crbug.com/1153671): right now we keep the first and last keyframe
     // values only, we need to keep all keyframe values.
-    GetAnimatedColorsFromKeyframes(frames->front(), &animated_colors, element);
-    GetAnimatedColorsFromKeyframes(frames->back(), &animated_colors, element);
+    if (model->IsStringKeyframeEffectModel()) {
+      GetColorsFromStringKeyframe(frames->front(), &animated_colors, element);
+      GetColorsFromStringKeyframe(frames->back(), &animated_colors, element);
+    } else {
+      GetColorsFromTransitionKeyframe(frames->front(), &animated_colors,
+                                      element);
+      GetColorsFromTransitionKeyframe(frames->back(), &animated_colors,
+                                      element);
+    }
   }
 
   node->GetLayoutObject()->GetMutableForPainting().EnsureId();
