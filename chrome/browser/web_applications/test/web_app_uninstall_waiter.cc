@@ -18,7 +18,7 @@ void WebAppUninstallWaiter::Wait() {
   run_loop_.Run();
 }
 
-void WebAppUninstallWaiter::OnWebAppUninstalled(const AppId& app_id) {
+void WebAppUninstallWaiter::OnWebAppWillBeUninstalled(const AppId& app_id) {
   if (app_id == app_id_)
     run_loop_.Quit();
 }

@@ -289,7 +289,7 @@ void WebAppsChromeOs::ExecuteContextMenuCommand(const std::string& app_id,
   NOTIMPLEMENTED();
 }
 
-void WebAppsChromeOs::OnWebAppUninstalled(const web_app::AppId& app_id) {
+void WebAppsChromeOs::OnWebAppWillBeUninstalled(const web_app::AppId& app_id) {
   const web_app::WebApp* web_app = GetWebApp(app_id);
   if (!web_app || !Accepts(app_id)) {
     return;
@@ -298,7 +298,7 @@ void WebAppsChromeOs::OnWebAppUninstalled(const web_app::AppId& app_id) {
   app_notifications_.RemoveNotificationsForApp(app_id);
   paused_apps_.MaybeRemoveApp(app_id);
 
-  WebAppsBase::OnWebAppUninstalled(app_id);
+  WebAppsBase::OnWebAppWillBeUninstalled(app_id);
 }
 
 // If is_disabled is set, the app backed by |app_id| is published with readiness

@@ -95,7 +95,7 @@ class AppLauncherHandler
 
   // web_app::AppRegistrarObserver:
   void OnWebAppInstalled(const web_app::AppId& app_id) override;
-  void OnWebAppUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
   // Populate the given dictionary with all installed app info.

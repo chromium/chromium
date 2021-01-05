@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   AppId app_id = InstallWebApp();
   EXPECT_EQ(GetProvider().registrar().GetAppThemeColor(app_id), SK_ColorBLUE);
 
-  // Check that OnWebAppInstalled and OnWebAppUninstalled are not called
+  // Check that OnWebAppInstalled and OnWebAppWillBeUninstalled are not called
   // if in-place web app update happens.
   WebAppInstallObserver install_observer(&GetProvider().registrar());
   install_observer.SetWebAppInstalledDelegate(

@@ -262,7 +262,7 @@ void WebAppUninstallDialogViews::OnIconsRead(
   view_->ProcessAutoConfirmValue();
 }
 
-void WebAppUninstallDialogViews::OnWebAppUninstalled(
+void WebAppUninstallDialogViews::OnWebAppWillBeUninstalled(
     const web_app::AppId& app_id) {
   // Handle the case when web app was uninstalled externally and we have to
   // cancel current dialog.
@@ -279,7 +279,7 @@ void WebAppUninstallDialogViews::OnAppRegistrarDestroyed() {
 base::OnceCallback<void(bool uninstalled)>
 WebAppUninstallDialogViews::UninstallStarted() {
   DCHECK(closed_callback_);
-  // Next OnWebAppUninstalled should be ignored. Unsubscribe:
+  // Next OnWebAppWillBeUninstalled should be ignored. Unsubscribe:
   registrar_observer_.RemoveAll();
   // The view can now be destroyed without us knowing, so clear it to prevent
   // UAF in the destructor.

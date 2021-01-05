@@ -98,7 +98,7 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
   void OnWebAppInstalledWithOsHooks(const AppId& app_id) override;
   void OnWebAppsWillBeUpdatedFromSync(
       const std::vector<const WebApp*>& new_apps_state) override;
-  void OnWebAppUninstalled(const AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
   void OnWebAppProfileWillBeDeleted(const AppId& app_id) override;
 
  private:

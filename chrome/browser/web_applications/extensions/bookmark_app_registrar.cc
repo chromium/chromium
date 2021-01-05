@@ -77,7 +77,7 @@ void BookmarkAppRegistrar::OnExtensionUninstalled(
     DCHECK(!bookmark_app_being_observed_);
     bookmark_app_being_observed_ = extension;
 
-    NotifyWebAppUninstalled(extension->id());
+    NotifyWebAppWillBeUninstalled(extension->id());
     os_integration_manager().UninstallAllOsHooks(extension->id(),
                                                   base::DoNothing());
 

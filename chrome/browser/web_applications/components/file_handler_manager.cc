@@ -106,7 +106,7 @@ void FileHandlerManager::DisableAndUnregisterOsFileHandlers(
 
   // Temporarily allow file handlers unregistration only if an app has them.
   // TODO(crbug.com/1088434, crbug.com/1076688): Do not start async
-  // CreateShortcuts process in OnWebAppUninstalled / Unregistration.
+  // CreateShortcuts process in OnWebAppWillBeUninstalled / Unregistration.
   const apps::FileHandlers* file_handlers = GetAllFileHandlers(app_id);
 
   if (!ShouldRegisterFileHandlersWithOs() || !file_handlers ||

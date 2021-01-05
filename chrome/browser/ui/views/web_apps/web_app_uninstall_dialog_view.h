@@ -105,7 +105,7 @@ class WebAppUninstallDialogViews : public web_app::WebAppUninstallDialog,
 
  private:
   // web_app::AppRegistrarObserver:
-  void OnWebAppUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
   void OnIconsRead(std::map<SquareSizePx, SkBitmap> icon_bitmaps);

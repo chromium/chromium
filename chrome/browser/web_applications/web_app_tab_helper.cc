@@ -148,7 +148,8 @@ void WebAppTabHelper::OnWebAppInstalled(const AppId& installed_app_id) {
       web_contents(), installed_app_id);
 }
 
-void WebAppTabHelper::OnWebAppUninstalled(const AppId& uninstalled_app_id) {
+void WebAppTabHelper::OnWebAppWillBeUninstalled(
+    const AppId& uninstalled_app_id) {
   if (GetAppId() == uninstalled_app_id)
     ResetAppId();
 }

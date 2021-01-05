@@ -316,10 +316,10 @@ void ApkWebAppService::OnPackageRemoved(const std::string& package_name,
   // associated with an installed web app. If it is, there are 2 potential
   // cases:
   // 1) The user has uninstalled the web app already (e.g. via the
-  // launcher), which has called OnWebAppUninstalled() below and triggered
+  // launcher), which has called OnWebAppWillBeUninstalled() below and triggered
   // the uninstallation of the Android package.
   //
-  // In this case, OnWebAppUninstalled() will have removed the associated
+  // In this case, OnWebAppWillBeUninstalled() will have removed the associated
   // web_app_id from the pref dict before triggering uninstallation, so this
   // method will do nothing.
   //
@@ -330,7 +330,7 @@ void ApkWebAppService::OnPackageRemoved(const std::string& package_name,
   // called, so the associated web_app_id is in the pref dict, and this method
   // will trigger the uninstallation of the web app. Similarly, this method
   // removes the associated web_app_id before triggering uninstallation, so
-  // OnWebAppUninstalled() will do nothing.
+  // OnWebAppWillBeUninstalled() will do nothing.
   if (!base::FeatureList::IsEnabled(features::kApkWebAppInstalls))
     return;
 
@@ -400,7 +400,8 @@ void ApkWebAppService::OnPackageListInitialRefreshed() {
   }
 }
 
-void ApkWebAppService::OnWebAppUninstalled(const web_app::AppId& web_app_id) {
+void ApkWebAppService::OnWebAppWillBeUninstalled(
+    const web_app::AppId& web_app_id) {
   if (!base::FeatureList::IsEnabled(features::kApkWebAppInstalls))
     return;
 

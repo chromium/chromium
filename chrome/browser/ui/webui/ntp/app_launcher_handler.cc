@@ -569,7 +569,8 @@ void AppLauncherHandler::OnWebAppInstalled(const web_app::AppId& app_id) {
   web_ui()->CallJavascriptFunctionUnsafe("ntp.appAdded", *app_info, highlight);
 }
 
-void AppLauncherHandler::OnWebAppUninstalled(const web_app::AppId& app_id) {
+void AppLauncherHandler::OnWebAppWillBeUninstalled(
+    const web_app::AppId& app_id) {
   std::unique_ptr<base::DictionaryValue> app_info =
       std::make_unique<base::DictionaryValue>();
   app_info->SetString(kInfoIdKey, app_id);

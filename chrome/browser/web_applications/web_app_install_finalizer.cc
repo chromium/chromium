@@ -204,7 +204,8 @@ void WebAppInstallFinalizer::FinalizeUninstallAfterSync(
     UninstallWebAppCallback callback) {
   DCHECK(started_);
   // WebAppSyncBridge::ApplySyncChangesToRegistrar does the actual
-  // NotifyWebAppUninstalled and unregistration of the app from the registry.
+  // NotifyWebAppWillBeUninstalled and unregistration of the app from the
+  // registry.
   DCHECK(!GetWebAppRegistrar().GetAppById(app_id));
 
   icon_manager_->DeleteData(
@@ -314,7 +315,7 @@ void WebAppInstallFinalizer::Shutdown() {
 
 void WebAppInstallFinalizer::UninstallWebApp(const AppId& app_id,
                                              UninstallWebAppCallback callback) {
-  registrar().NotifyWebAppUninstalled(app_id);
+  registrar().NotifyWebAppWillBeUninstalled(app_id);
   os_integration_manager().UninstallAllOsHooks(
       app_id, base::BindOnce(&WebAppInstallFinalizer::OnUninstallOsHooks,
                              weak_ptr_factory_.GetWeakPtr(), app_id,

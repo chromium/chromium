@@ -56,7 +56,7 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
                    content::WebContents* web_contents);
 
   // AppRegistrarObserver:
-  void OnWebAppUninstalled(const AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
 
   // |app_id| will be nullptr when |result| is kNoAppInScope.
   using ResultCallback =

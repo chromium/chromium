@@ -144,7 +144,7 @@ void AppShortcutManager::OnExtensionUninstalled(
     const Extension* extension,
     extensions::UninstallReason reason) {
   // Bookmark apps are handled in
-  // web_app::AppShortcutManager::OnWebAppUninstalled()
+  // web_app::AppShortcutManager::OnWebAppWillBeUninstalled()
   if (!extension->from_bookmark() && !g_suppress_shortcuts_for_testing)
     web_app::DeleteAllShortcuts(profile_, extension);
 }

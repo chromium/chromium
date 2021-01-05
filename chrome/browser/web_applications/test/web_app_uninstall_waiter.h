@@ -20,7 +20,7 @@ class WebAppUninstallWaiter final : public AppRegistrarObserver {
   void Wait();
 
   // AppRegistrarObserver:
-  void OnWebAppUninstalled(const AppId& app_id) final;
+  void OnWebAppWillBeUninstalled(const AppId& app_id) final;
 
  private:
   AppId app_id_;

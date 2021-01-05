@@ -13,7 +13,6 @@ class Time;
 }
 
 namespace web_app {
-
 class WebApp;
 
 class AppRegistrarObserver : public base::CheckedObserver {
@@ -39,7 +38,7 @@ class AppRegistrarObserver : public base::CheckedObserver {
   // Called before a web app is uninstalled. |app_id| is still registered in the
   // AppRegistrar. For bookmark apps, use BookmarkAppRegistrar::FindExtension to
   // convert this |app_id| to Extension pointer.
-  virtual void OnWebAppUninstalled(const AppId& app_id) {}
+  virtual void OnWebAppWillBeUninstalled(const AppId& app_id) {}
 
   // For bookmark apps, use BookmarkAppRegistrar::FindExtension to convert this
   // |app_id| to Extension pointer.

@@ -534,7 +534,7 @@ void WebAppSyncBridge::ApplySyncChangesToRegistrar(
   // Notify observers that web apps will be uninstalled. |apps_to_delete| are
   // still registered at this stage.
   for (const AppId& app_id : update_local_data->apps_to_delete) {
-    registrar_->NotifyWebAppUninstalled(app_id);
+    registrar_->NotifyWebAppWillBeUninstalled(app_id);
     os_integration_manager().UninstallAllOsHooks(app_id, base::DoNothing());
   }
 

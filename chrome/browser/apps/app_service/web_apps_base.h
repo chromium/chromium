@@ -59,7 +59,7 @@ class WebAppsBase : public apps::PublisherBase,
   const web_app::WebApp* GetWebApp(const web_app::AppId& app_id) const;
 
   // web_app::AppRegistrarObserver:
-  void OnWebAppUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnWebAppLastLaunchTimeChanged(
       const std::string& app_id,
       const base::Time& last_launch_time) override;

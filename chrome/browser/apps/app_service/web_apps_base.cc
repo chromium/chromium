@@ -120,7 +120,7 @@ const web_app::WebApp* WebAppsBase::GetWebApp(
   return GetRegistrar() ? GetRegistrar()->GetAppById(app_id) : nullptr;
 }
 
-void WebAppsBase::OnWebAppUninstalled(const web_app::AppId& app_id) {
+void WebAppsBase::OnWebAppWillBeUninstalled(const web_app::AppId& app_id) {
   const web_app::WebApp* web_app = GetWebApp(app_id);
   if (!web_app || !Accepts(app_id)) {
     return;

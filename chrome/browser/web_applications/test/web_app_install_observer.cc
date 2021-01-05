@@ -161,7 +161,7 @@ void WebAppInstallObserver::OnWebAppsWillBeUpdatedFromSync(
     app_will_be_updated_from_sync_delegate_.Run(new_apps_state);
 }
 
-void WebAppInstallObserver::OnWebAppUninstalled(const AppId& app_id) {
+void WebAppInstallObserver::OnWebAppWillBeUninstalled(const AppId& app_id) {
   listening_for_uninstall_app_ids_.erase(app_id);
   if (!listening_for_uninstall_app_ids_.empty())
     return;

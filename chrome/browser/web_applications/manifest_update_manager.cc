@@ -92,7 +92,7 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
 }
 
 // AppRegistrarObserver:
-void ManifestUpdateManager::OnWebAppUninstalled(const AppId& app_id) {
+void ManifestUpdateManager::OnWebAppWillBeUninstalled(const AppId& app_id) {
   DCHECK(started_);
 
   auto it = tasks_.find(app_id);

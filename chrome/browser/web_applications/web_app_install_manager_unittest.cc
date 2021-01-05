@@ -830,7 +830,7 @@ TEST_F(WebAppInstallManagerTest, UninstallWebAppsAfterSync) {
   file_utils().SetNextDeleteFileRecursivelyResult(true);
 
   enum Event {
-    kObserver_OnWebAppUninstalled,
+    kObserver_OnWebAppWillBeUninstalled,
     kUninstallWebAppsAfterSync_Callback
   };
   std::vector<Event> event_order;
@@ -839,7 +839,7 @@ TEST_F(WebAppInstallManagerTest, UninstallWebAppsAfterSync) {
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
         EXPECT_EQ(uninstalled_app_id, app_id);
-        event_order.push_back(Event::kObserver_OnWebAppUninstalled);
+        event_order.push_back(Event::kObserver_OnWebAppWillBeUninstalled);
       }));
 
   base::RunLoop run_loop;
@@ -863,7 +863,7 @@ TEST_F(WebAppInstallManagerTest, UninstallWebAppsAfterSync) {
   run_loop.Run();
 
   const std::vector<Event> expected_event_order{
-      Event::kObserver_OnWebAppUninstalled,
+      Event::kObserver_OnWebAppWillBeUninstalled,
       Event::kUninstallWebAppsAfterSync_Callback};
   EXPECT_EQ(expected_event_order, event_order);
 }

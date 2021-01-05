@@ -92,7 +92,7 @@ class ApkWebAppService : public KeyedService,
   void OnPackageListInitialRefreshed() override;
 
   // web_app::AppRegistrarObserver overrides.
-  void OnWebAppUninstalled(const web_app::AppId& web_app_id) override;
+  void OnWebAppWillBeUninstalled(const web_app::AppId& web_app_id) override;
 
   void OnDidGetWebAppIcon(const std::string& package_name,
                           arc::mojom::WebAppInfoPtr web_app_info,
