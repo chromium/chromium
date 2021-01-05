@@ -26,6 +26,9 @@
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
@@ -152,6 +155,9 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 // Whether an overlay is currently presented over the web content area.
 @property(nonatomic, assign, getter=isWebContentAreaShowingOverlay)
     BOOL webContentAreaShowingOverlay;
+
+// Whether the web content is currently being blocked.
+@property(nonatomic, assign) BOOL contentBlocked;
 
 #pragma mark*** Specific Items ***
 
@@ -581,6 +587,16 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   [self.popupMenu itemsHaveChanged:@[ self.readingListItem ]];
 }
 
+#pragma mark - BrowserContainerConsumer
+
+- (void)setContentBlocked:(BOOL)contentBlocked {
+  if (_contentBlocked == contentBlocked) {
+    return;
+  }
+  _contentBlocked = contentBlocked;
+  [self updatePopupMenu];
+}
+
 #pragma mark - Popup updates (Private)
 
 // Updates the popup menu to have its state in sync with the current page
@@ -668,6 +684,10 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   // Do not show site info for NTP.
   if (URL.spec() == kChromeUIAboutNewTabURL ||
       URL.spec() == kChromeUINewTabURL) {
+    return NO;
+  }
+
+  if (self.contentBlocked) {
     return NO;
   }
 
