@@ -16540,7 +16540,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="TrustedWebActivity.LocationDelegationEnrolled" enum="Boolean"
-    expires_after="2021-05-09">
+    expires_after="2021-06-30">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -16551,7 +16551,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="TrustedWebActivity.LocationPermissionChanged"
-    enum="TrustedWebActivityPermissionChanged" expires_after="2020-12-31">
+    enum="TrustedWebActivityPermissionChanged" expires_after="2021-06-30">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -16561,7 +16561,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="TrustedWebActivity.LocationPermissionRequestIsGranted"
-    enum="Boolean" expires_after="2020-12-31">
+    enum="Boolean" expires_after="2021-06-30">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -16571,7 +16571,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="TrustedWebActivity.LocationUpdateErrorCode"
-    enum="TrustedWebActivityLocationErrorCode" expires_after="2020-12-31">
+    enum="TrustedWebActivityLocationErrorCode" expires_after="2021-06-30">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
