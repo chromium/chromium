@@ -252,6 +252,18 @@
       },
     },
 
+    'android_specific_chromium_gtests_for_paeverywhere': {
+      'android_browsertests': {
+        'swarming': {
+          'shards': 1,
+        },
+      },
+      'android_webview_unittests': {},
+      'breakpad_unittests': {},
+      'gl_unittests': {},
+      'ui_android_unittests': {},
+    },
+
     'android_trichrome_smoke_tests': {
       'trichrome_chrome_bundle_fake_modules_smoke_test': {},
       'trichrome_chrome_bundle_smoke_test': {},
@@ -4192,13 +4204,6 @@
       },
     },
 
-    'paeverywhere_common_tests': {
-      'base_unittests': {},
-      'blink_platform_unittests': {},
-      'unit_tests': {},
-      'wtf_unittests': {},
-    },
-
     'perfetto_gtests': {
       'base_unittests': {},
       'content_browsertests': {
@@ -6142,27 +6147,27 @@
     ],
 
     'paeverywhere_android_gtests': [
-      'android_specific_chromium_gtests',
+      'android_specific_chromium_gtests_for_paeverywhere',
       'android_smoke_tests',
-      'paeverywhere_common_tests'
+      'chromium_gtests'
     ],
 
     'paeverywhere_linux_gtests': [
       'chromium_gtests_for_linux_and_mac_only',
       'chromium_gtests_for_linux_only',
       'chromium_gtests_for_win_and_linux_only',
-      'paeverywhere_common_tests',
+      'chromium_gtests',
     ],
 
     'paeverywhere_mac_gtests': [
       'chromium_gtests_for_linux_and_mac_only',
       'mac_specific_chromium_gtests',
-      'paeverywhere_common_tests',
+      'chromium_gtests',
     ],
 
     'paeverywhere_win_gtests': [
       'chromium_gtests_for_win_and_linux_only',
-      'paeverywhere_common_tests',
+      'chromium_gtests',
       'win_specific_chromium_gtests',
     ],
 
