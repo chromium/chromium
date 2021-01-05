@@ -1196,7 +1196,9 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
           install_status = OS_ERROR;
         } else {
           chrome_exe = installer_state.target_path().Append(kChromeExe);
-          quoted_chrome_exe = L"\"" + chrome_exe.value() + L"\"";
+          quoted_chrome_exe =
+              GetPostInstallLaunchCommand(installer_state.target_path())
+                  .GetCommandLineString();
           install_msg_base = 0;
         }
       }

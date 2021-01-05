@@ -742,6 +742,12 @@ const char kDisableWindows10CustomTitlebar[] =
 // they use a custom-user-data-dir which disables this.
 const char kEnableProfileShortcutManager[]  = "enable-profile-shortcut-manager";
 
+// Indicates that this launch of the browser originated from the installer
+// (i.e., following a successful new install or over-install). This triggers
+// browser behaviors for this specific launch, such as a welcome announcement
+// for accessibility software (see https://crbug.com/1072735).
+extern const char kFromInstaller[] = "from-installer";
+
 // Makes Windows happy by allowing it to show "Enable access to this program"
 // checkbox in Add/Remove Programs->Set Program Access and Defaults. This only
 // shows an error box because the only way to hide Chrome is by uninstalling

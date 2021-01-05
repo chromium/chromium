@@ -53,6 +53,7 @@
 #include "chrome/browser/safe_browsing/settings_reset_prompt/settings_reset_prompt_config.h"
 #include "chrome/browser/safe_browsing/settings_reset_prompt/settings_reset_prompt_util_win.h"
 #include "chrome/browser/shell_integration_win.h"
+#include "chrome/browser/ui/accessibility_util.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/uninstall_browser_prompt.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/last_browser_file_util.h"
@@ -739,6 +740,11 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
       ->PostTask(FROM_HERE,
                  base::BindOnce(&MigratePinnedTaskBarShortcutsIfNeeded));
 
+  // Send an accessibility announcement if this launch originated from the
+  // installer.
+  if (parsed_command_line().HasSwitch(switches::kFromInstaller))
+    AnnounceInActiveBrowser(l10n_util::GetStringUTF16(IDS_WELCOME_TO_CHROME));
+
   base::ImportantFileWriterCleaner::GetInstance().Start();
 }
 
@@ -907,6 +913,10 @@ base::CommandLine ChromeBrowserMainPartsWin::GetRestartCommandLine(
 
   // Remove flag switches added by about::flags.
   about_flags::RemoveFlagsSwitches(&switches);
+
+  // Remove switches that should never be conveyed to the restart.
+  switches.erase(switches::kFromInstaller);
+
   // Add remaining switches, but not non-switch arguments.
   for (const auto& it : switches)
     restart_command.AppendSwitchNative(it.first, it.second);

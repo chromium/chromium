@@ -4274,7 +4274,11 @@ static_library("ui") {
     }
 
     if (is_win) {
-      sources += [ "views/chrome_views_delegate_win.cc" ]
+      sources += [
+        "accessibility_util.h",
+        "views/accessibility/accessibility_util.cc",
+        "views/chrome_views_delegate_win.cc",
+      ]
     }
 
     if (is_win || (is_linux || is_chromeos_lacros)) {

@@ -6717,6 +6717,7 @@ if (!is_android) {
       }
       if (is_win) {
         sources += [
+          "../browser/ui/views/accessibility/post_install_announcement_browsertest.cc",
           "../browser/ui/views/frame/browser_window_property_manager_browsertest_win.cc",
           "../browser/ui/views/status_icons/status_tray_state_changer_interactive_uitest_win.cc",
         ]

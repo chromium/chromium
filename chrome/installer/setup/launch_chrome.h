@@ -7,14 +7,21 @@
 
 #include <stdint.h>
 
+#include "base/command_line.h"
+
 namespace base {
-class CommandLine;
 class FilePath;
 }  // namespace base
 
 namespace installer {
 
-// Launches Chrome without waiting for it to exit.
+// Returns a command line to be used to launch the browser in |application_path|
+// following a successful install.
+base::CommandLine GetPostInstallLaunchCommand(
+    const base::FilePath& application_path);
+
+// Launches the browser following a successful install without waiting for it to
+// exit.
 bool LaunchChromeBrowser(const base::FilePath& application_path);
 
 // Launches Chrome with given command line, waits for Chrome indefinitely (until
