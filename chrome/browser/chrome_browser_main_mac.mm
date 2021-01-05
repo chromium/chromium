@@ -38,6 +38,9 @@
 #include "components/version_info/channel.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
+#include "net/base/features.h"
+#include "net/cert/internal/system_trust_store.h"
+#include "services/network/public/cpp/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_handle.h"
@@ -135,6 +138,12 @@ void ChromeBrowserMainPartsMac::PostMainMessageLoopStart() {
   MacStartupProfiler::GetInstance()->Profile(
       MacStartupProfiler::POST_MAIN_MESSAGE_LOOP_START);
   ChromeBrowserMainPartsPosix::PostMainMessageLoopStart();
+
+  if (base::FeatureList::IsEnabled(network::features::kCertVerifierService) &&
+      base::FeatureList::IsEnabled(
+          net::features::kCertVerifierBuiltinFeature)) {
+    net::InitializeTrustStoreMacCache();
+  }
 }
 
 void ChromeBrowserMainPartsMac::PreProfileInit() {
