@@ -6,9 +6,12 @@
 
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -96,13 +99,25 @@ void SearchEnginePreconnector::PreconnectDSE() {
   if (!loading_predictor)
     return;
 
-  loading_predictor->PreconnectURLIfAllowed(
-      preconnect_url, /*allow_credentials=*/true,
-      net::NetworkIsolationKey(url::Origin::Create(preconnect_url),
-                               url::Origin::Create(preconnect_url)));
+  const bool is_browser_app_likely_in_foreground =
+      IsBrowserAppLikelyInForeground();
+  base::UmaHistogramBoolean(
+      "NavigationPredictor.SearchEnginePreconnector."
+      "IsBrowserAppLikelyInForeground",
+      is_browser_app_likely_in_foreground);
 
-  loading_predictor->PreconnectURLIfAllowed(
-      preconnect_url, /*allow_credentials=*/false, net::NetworkIsolationKey());
+  if (!base::GetFieldTrialParamByFeatureAsBool(features::kPreconnectToSearch,
+                                               "skip_in_background", false) ||
+      is_browser_app_likely_in_foreground) {
+    loading_predictor->PreconnectURLIfAllowed(
+        preconnect_url, /*allow_credentials=*/true,
+        net::NetworkIsolationKey(url::Origin::Create(preconnect_url),
+                                 url::Origin::Create(preconnect_url)));
+
+    loading_predictor->PreconnectURLIfAllowed(preconnect_url,
+                                              /*allow_credentials=*/false,
+                                              net::NetworkIsolationKey());
+  }
 
   // The delay beyond the idle socket timeout that net uses when
   // re-preconnecting. If negative, no retries occur.
@@ -129,4 +144,12 @@ GURL SearchEnginePreconnector::GetDefaultSearchEngineOriginURL() const {
   if (!search_provider)
     return GURL();
   return search_provider->GenerateSearchURL({}).GetOrigin();
+}
+
+bool SearchEnginePreconnector::IsBrowserAppLikelyInForeground() const {
+  NavigationPredictorKeyedService* keyed_service =
+      NavigationPredictorKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context_));
+
+  return keyed_service && keyed_service->IsBrowserAppLikelyInForeground();
 }

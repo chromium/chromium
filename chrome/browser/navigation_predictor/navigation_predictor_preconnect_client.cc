@@ -13,6 +13,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
@@ -37,14 +39,37 @@ const base::Feature kPreconnectOnDidFinishNavigation{
 NavigationPredictorPreconnectClient::NavigationPredictorPreconnectClient(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      web_contents_(web_contents),
       browser_context_(web_contents->GetBrowserContext()),
       current_visibility_(web_contents->GetVisibility()) {}
 
-NavigationPredictorPreconnectClient::~NavigationPredictorPreconnectClient() =
-    default;
+NavigationPredictorPreconnectClient::~NavigationPredictorPreconnectClient() {
+  NavigationPredictorKeyedService* navigation_predictor_service =
+      GetNavigationPredictorKeyedService();
+  if (navigation_predictor_service) {
+    navigation_predictor_service->OnWebContentsDestroyed(web_contents_);
+  }
+}
+
+NavigationPredictorKeyedService*
+NavigationPredictorPreconnectClient::GetNavigationPredictorKeyedService()
+    const {
+  return NavigationPredictorKeyedServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context_));
+}
 
 void NavigationPredictorPreconnectClient::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  // Notify navigation predictor service of any same-document navigations that
+  // may be captured here. Same-document navigations imply that user is
+  // interacting with the browser app.
+  NavigationPredictorKeyedService* navigation_predictor_service =
+      GetNavigationPredictorKeyedService();
+  if (navigation_predictor_service) {
+    navigation_predictor_service->OnWebContentsVisibilityChanged(
+        web_contents_, current_visibility_ == content::Visibility::VISIBLE);
+  }
+
   if (!navigation_handle->IsInMainFrame() ||
       !navigation_handle->HasCommitted()) {
     return;
@@ -93,6 +118,13 @@ void NavigationPredictorPreconnectClient::DidFinishNavigation(
 void NavigationPredictorPreconnectClient::OnVisibilityChanged(
     content::Visibility visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  NavigationPredictorKeyedService* navigation_predictor_service =
+      GetNavigationPredictorKeyedService();
+  if (navigation_predictor_service) {
+    navigation_predictor_service->OnWebContentsVisibilityChanged(
+        web_contents_, visibility == content::Visibility::VISIBLE);
+  }
 
   // Check for same state.
   if (current_visibility_ == visibility)

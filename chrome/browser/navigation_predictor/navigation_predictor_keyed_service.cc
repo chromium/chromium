@@ -9,6 +9,7 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/time/default_tick_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_renderer_warmup_client.h"
@@ -161,7 +162,8 @@ NavigationPredictorKeyedService::NavigationPredictorKeyedService(
     : search_engine_preconnector_(browser_context),
       renderer_warmup_client_(
           std::make_unique<NavigationPredictorRendererWarmupClient>(
-              Profile::FromBrowserContext(browser_context))) {
+              Profile::FromBrowserContext(browser_context))),
+      tick_clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!browser_context->IsOffTheRecord());
 
@@ -232,6 +234,42 @@ void NavigationPredictorKeyedService::AddObserver(Observer* observer) {
 void NavigationPredictorKeyedService::RemoveObserver(Observer* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   observer_list_.RemoveObserver(observer);
+}
+
+void NavigationPredictorKeyedService::OnWebContentsVisibilityChanged(
+    content::WebContents* web_contents,
+    bool is_in_foreground) {
+  visible_web_contents_.erase(web_contents);
+  last_web_contents_state_change_time_ = tick_clock_->NowTicks();
+  if (is_in_foreground) {
+    visible_web_contents_.insert(web_contents);
+  }
+}
+
+void NavigationPredictorKeyedService::OnWebContentsDestroyed(
+    content::WebContents* web_contents) {
+  visible_web_contents_.erase(web_contents);
+  last_web_contents_state_change_time_ = tick_clock_->NowTicks();
+}
+
+bool NavigationPredictorKeyedService::IsBrowserAppLikelyInForeground() const {
+  // If no web contents is in foreground, then allow a very short cool down
+  // period before considering app in background. This cooldown period is needed
+  // since when switching between the tabs, none of the web contents is in
+  // foreground for a very short period.
+  if (visible_web_contents_.empty() &&
+      tick_clock_->NowTicks() - last_web_contents_state_change_time_ >
+          base::TimeDelta::FromSeconds(1)) {
+    return false;
+  }
+
+  return tick_clock_->NowTicks() - last_web_contents_state_change_time_ <=
+         base::TimeDelta::FromSeconds(120);
+}
+
+void NavigationPredictorKeyedService::SetTickClockForTesting(
+    const base::TickClock* tick_clock) {
+  tick_clock_ = tick_clock;
 }
 
 SearchEnginePreconnector*
