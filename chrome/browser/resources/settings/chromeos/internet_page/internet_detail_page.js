@@ -1895,8 +1895,10 @@ Polymer({
     /** @type {!Array<string>} */ const fields = [];
     switch (this.managedProperties_.type) {
       case chromeos.networkConfig.mojom.NetworkType.kCellular:
-        fields.push(
-            'cellular.activationState', 'cellular.servingOperator.name');
+        if (!this.isUpdatedCellularUiEnabled_) {
+          fields.push('cellular.activationState');
+        }
+        fields.push('cellular.servingOperator.name');
         break;
       case chromeos.networkConfig.mojom.NetworkType.kTether:
         fields.push(
@@ -1972,6 +1974,9 @@ Polymer({
     const type = this.managedProperties_.type;
     switch (type) {
       case chromeos.networkConfig.mojom.NetworkType.kCellular:
+        if (this.isUpdatedCellularUiEnabled_) {
+          fields.push('cellular.activationState');
+        }
         fields.push(
             'cellular.family', 'cellular.networkTechnology',
             'cellular.servingOperator.code');
