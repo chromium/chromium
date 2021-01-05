@@ -90,18 +90,64 @@ class CommandStorageBackendTest : public testing::Test {
     return backend->last_session_info_;
   }
 
+  static base::FilePath FilePathFromTime(
+      CommandStorageManager::SessionType type,
+      const base::FilePath& path,
+      base::Time time) {
+    return CommandStorageBackend::FilePathFromTime(type, path, time);
+  }
+
   const base::FilePath& file_path() const { return file_path_; }
 
   const base::FilePath& restore_path() const { return restore_path_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
-  // Path used when a SessionType is not supplied.
+  // Path used by CreateBackend().
   base::FilePath file_path_;
   // Path used by CreateBackendWithRestoreType().
   base::FilePath restore_path_;
   base::ScopedTempDir temp_dir_;
 };
+
+TEST_F(CommandStorageBackendTest, MigrateOther) {
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+  const auto path = backend->current_path();
+  EXPECT_EQ(file_path().DirName(), path.DirName());
+  auto base_name = file_path().BaseName().value();
+  EXPECT_EQ(base_name, path.BaseName().value().substr(0, base_name.length()));
+  struct TestData data = {1, "a"};
+  SessionCommands commands;
+  commands.push_back(CreateCommandFromData(data));
+  backend->AppendCommands(std::move(commands), true);
+  backend = nullptr;
+
+  // Move the file to the original path. This gives the logic before kOther
+  // started using timestamps.
+  ASSERT_TRUE(base::PathExists(path));
+  ASSERT_TRUE(base::Move(path, file_path()));
+
+  // Create the backend, should get back the data written.
+  backend = CreateBackend();
+  commands = backend->ReadLastSessionCommands();
+  ASSERT_EQ(1U, commands.size());
+  AssertCommandEqualsData(data, commands[0].get());
+
+  // Write some more data.
+  struct TestData data2 = {1, "b"};
+  commands.clear();
+  commands.push_back(CreateCommandFromData(data2));
+  backend->AppendCommands(std::move(commands), true);
+
+  // Recreate, verify updated data read back and the original file has been
+  // removed.
+  backend = nullptr;
+  backend = CreateBackend();
+  commands = backend->ReadLastSessionCommands();
+  EXPECT_FALSE(base::PathExists(file_path()));
+  ASSERT_EQ(1U, commands.size());
+  AssertCommandEqualsData(data2, commands[0].get());
+}
 
 TEST_F(CommandStorageBackendTest, SimpleReadWriteEncrypted) {
   std::vector<uint8_t> key = CommandStorageManager::CreateCryptoKey();
@@ -115,7 +161,7 @@ TEST_F(CommandStorageBackendTest, SimpleReadWriteEncrypted) {
   // Read it back in.
   backend = nullptr;
   backend = CreateBackend();
-  commands = backend->ReadCurrentSessionCommands(key);
+  commands = backend->ReadLastSessionCommands(key);
 
   ASSERT_EQ(1U, commands.size());
   AssertCommandEqualsData(data, commands[0].get());
@@ -124,7 +170,7 @@ TEST_F(CommandStorageBackendTest, SimpleReadWriteEncrypted) {
   backend = nullptr;
   ++(key[0]);
   backend = CreateBackend();
-  commands = backend->ReadCurrentSessionCommands(key);
+  commands = backend->ReadLastSessionCommands(key);
   EXPECT_TRUE(commands.empty());
 }
 
@@ -151,7 +197,7 @@ TEST_F(CommandStorageBackendTest, RandomDataEncrypted) {
     SessionCommands commands;
     if (i != 0) {
       // Read previous data.
-      commands = backend->ReadCurrentSessionCommands(key);
+      commands = backend->ReadLastSessionCommands(key);
       ASSERT_EQ(i, commands.size());
       for (auto j = commands.begin(); j != commands.end(); ++j)
         AssertCommandEqualsData(data[j - commands.begin()], j->get());
@@ -189,7 +235,7 @@ TEST_F(CommandStorageBackendTest, BigDataEncrypted) {
   backend = nullptr;
   backend = CreateBackend();
 
-  commands = backend->ReadCurrentSessionCommands(key);
+  commands = backend->ReadLastSessionCommands(key);
   ASSERT_EQ(3U, commands.size());
   AssertCommandEqualsData(data[0], commands[0].get());
   AssertCommandEqualsData(data[1], commands[2].get());
@@ -215,7 +261,7 @@ TEST_F(CommandStorageBackendTest, EmptyCommandEncrypted) {
   backend = nullptr;
   backend = CreateBackend();
   std::vector<std::unique_ptr<SessionCommand>> commands =
-      backend->ReadCurrentSessionCommands(key2);
+      backend->ReadLastSessionCommands(key2);
   ASSERT_EQ(1U, commands.size());
   AssertCommandEqualsData(empty_command, commands[0].get());
 }
@@ -240,7 +286,7 @@ TEST_F(CommandStorageBackendTest, TruncateEncrypted) {
   // Read it back in.
   backend = nullptr;
   backend = CreateBackend();
-  commands = backend->ReadCurrentSessionCommands(key2);
+  commands = backend->ReadLastSessionCommands(key2);
 
   // And make sure we get back the expected data.
   ASSERT_EQ(1U, commands.size());
@@ -267,7 +313,7 @@ TEST_F(CommandStorageBackendTest, MaxSizeTypeEncrypted) {
   // Read it back in.
   backend = nullptr;
   backend = CreateBackend();
-  commands = backend->ReadCurrentSessionCommands(key);
+  commands = backend->ReadLastSessionCommands(key);
 
   // Encryption restricts the main size, and results in truncation.
   ASSERT_EQ(1U, commands.size());
@@ -292,7 +338,7 @@ TEST_F(CommandStorageBackendTest, MaxSizeType) {
   // Read it back in.
   backend = nullptr;
   backend = CreateBackend();
-  commands = backend->ReadCurrentSessionCommands({});
+  commands = backend->ReadLastSessionCommands({});
 
   ASSERT_EQ(1U, commands.size());
   auto expected_command = CreateCommandWithMaxSize();
@@ -314,10 +360,11 @@ TEST_F(CommandStorageBackendTest, IsValidFileWithInvalidFiles) {
 
 TEST_F(CommandStorageBackendTest, IsValidFileWithValidFile) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+  const auto path = backend->current_path();
   backend->AppendCommands({}, true);
   backend = nullptr;
 
-  EXPECT_TRUE(CommandStorageBackend::IsValidFile(file_path()));
+  EXPECT_TRUE(CommandStorageBackend::IsValidFile(path));
 }
 
 TEST_F(CommandStorageBackendTest, SimpleReadWriteWithRestoreType) {
@@ -500,16 +547,16 @@ TEST_F(CommandStorageBackendTest, TimestampFromPathWithRestoreType) {
 TEST_F(CommandStorageBackendTest, FilePathFromTimeWithRestoreType) {
   const auto base_dir = base::FilePath(kSessionsDirectory);
   const auto test_time_1 = base::Time();
-  const auto result_path_1 = CommandStorageBackend::FilePathFromTime(
-      CommandStorageManager::SessionType::kSessionRestore, base::FilePath(),
-      test_time_1);
+  const auto result_path_1 =
+      FilePathFromTime(CommandStorageManager::SessionType::kSessionRestore,
+                       base::FilePath(), test_time_1);
   EXPECT_EQ(base_dir.Append(FILE_PATH_LITERAL("Session_0")), result_path_1);
 
   const auto test_time_2 = base::Time::FromDeltaSinceWindowsEpoch(
       base::TimeDelta::FromMicroseconds(13234316721694577));
-  const auto result_path_2 = CommandStorageBackend::FilePathFromTime(
-      CommandStorageManager::SessionType::kTabRestore, base::FilePath(),
-      test_time_2);
+  const auto result_path_2 =
+      FilePathFromTime(CommandStorageManager::SessionType::kTabRestore,
+                       base::FilePath(), test_time_2);
   EXPECT_EQ(base_dir.Append(FILE_PATH_LITERAL("Tabs_13234316721694577")),
             result_path_2);
 }
@@ -630,6 +677,31 @@ TEST_F(CommandStorageBackendTest,
   ASSERT_EQ(0, base::ReadFile(last_session, buffer, 0));
   backend->MoveCurrentSessionToLastSession();
   ASSERT_EQ(-1, base::ReadFile(last_session, buffer, 0));
+}
+
+TEST_F(CommandStorageBackendTest, GetSessionFiles) {
+  EXPECT_TRUE(CommandStorageBackend::GetSessionFilePaths(
+                  file_path(), CommandStorageManager::kOther)
+                  .empty());
+  ASSERT_EQ(0, base::WriteFile(file_path(), "", 0));
+  // Not a valid name, as doesn't contain timestamp separator.
+  ASSERT_EQ(0, base::WriteFile(file_path().DirName().AppendASCII("Session 123"),
+                               "", 0));
+  // Valid name.
+  ASSERT_EQ(0, base::WriteFile(file_path().DirName().AppendASCII("Session_124"),
+                               "", 0));
+  // Valid name, but should not be returned as beginning doesn't match.
+  ASSERT_EQ(
+      0, base::WriteFile(file_path().DirName().AppendASCII("Foo_125"), "", 0));
+  auto paths = CommandStorageBackend::GetSessionFilePaths(
+      file_path(), CommandStorageManager::kOther);
+  ASSERT_EQ(1u, paths.size());
+  EXPECT_EQ("Session_124", paths.begin()->BaseName().MaybeAsASCII());
+}
+
+TEST_F(CommandStorageBackendTest, TimestampSeparatorIsAscii) {
+  // Code in WebLayer relies on the timestamp separator being ascii.
+  ASSERT_TRUE(!base::FilePath(kTimestampSeparator).MaybeAsASCII().empty());
 }
 
 }  // namespace sessions

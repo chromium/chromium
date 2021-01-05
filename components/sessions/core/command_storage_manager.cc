@@ -137,16 +137,6 @@ bool CommandStorageManager::HasPendingSave() const {
   return weak_factory_for_timer_.HasWeakPtrs();
 }
 
-void CommandStorageManager::GetCurrentSessionCommands(
-    GetCommandsCallback callback,
-    const std::vector<uint8_t>& decryption_key) {
-  backend_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&CommandStorageBackend::ReadCurrentSessionCommands,
-                     backend_.get(), decryption_key),
-      std::move(callback));
-}
-
 void CommandStorageManager::MoveCurrentSessionToLastSession() {
   Save();
   backend_task_runner()->PostNonNestableTask(
@@ -162,11 +152,12 @@ void CommandStorageManager::DeleteLastSession() {
 }
 
 void CommandStorageManager::GetLastSessionCommands(
-    GetCommandsCallback callback) {
+    GetCommandsCallback callback,
+    const std::vector<uint8_t>& decryption_key) {
   backend_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&CommandStorageBackend::ReadLastSessionCommands,
-                     backend()),
+      base::BindOnce(&CommandStorageBackend::ReadLastSessionCommands, backend(),
+                     decryption_key),
       std::move(callback));
 }
 

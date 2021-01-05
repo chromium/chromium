@@ -278,30 +278,49 @@ base::FilePath::StringType TimestampToString(const base::Time time) {
 #endif
 }
 
-base::FilePath::StringType GetSessionFilename(
-    const CommandStorageManager::SessionType type,
-    const base::FilePath::StringType& timestamp_str) {
-  DCHECK_NE(CommandStorageManager::SessionType::kOther, type);
-  if (type == CommandStorageManager::kTabRestore)
-    return base::JoinString({kTabSessionFileNamePrefix, timestamp_str},
-                            FILE_PATH_LITERAL("_"));
+// Returns the directory the files are stored in.
+base::FilePath GetSessionDirName(CommandStorageManager::SessionType type,
+                                 const base::FilePath& supplied_path) {
+  if (type == CommandStorageManager::kOther)
+    return supplied_path.DirName();
+  return supplied_path.Append(kSessionsDirectory);
+}
 
-  return base::JoinString({kSessionFileNamePrefix, timestamp_str},
-                          FILE_PATH_LITERAL("_"));
+base::FilePath::StringType GetSessionBaseName(
+    CommandStorageManager::SessionType type,
+    const base::FilePath& supplied_path) {
+  switch (type) {
+    case CommandStorageManager::kTabRestore:
+      return kTabSessionFileNamePrefix;
+    case CommandStorageManager::kSessionRestore:
+      return kSessionFileNamePrefix;
+    case CommandStorageManager::kOther:
+      return supplied_path.BaseName().value();
+  }
+}
+
+base::FilePath::StringType GetSessionFilename(
+    CommandStorageManager::SessionType type,
+    const base::FilePath& supplied_path,
+    const base::FilePath::StringType& timestamp_str) {
+  return base::JoinString(
+      {GetSessionBaseName(type, supplied_path), timestamp_str},
+      kTimestampSeparator);
 }
 
 base::FilePath GetLegacySessionPath(CommandStorageManager::SessionType type,
                                     const base::FilePath& base_path,
                                     bool current) {
-  DCHECK_NE(CommandStorageManager::SessionType::kOther, type);
-  base::FilePath session_path = base_path;
-
-  if (type == CommandStorageManager::kTabRestore) {
-    return session_path.Append(current ? kLegacyCurrentTabSessionFileName
-                                       : kLegacyLastTabSessionFileName);
+  switch (type) {
+    case CommandStorageManager::kTabRestore:
+      return base_path.Append(current ? kLegacyCurrentTabSessionFileName
+                                      : kLegacyLastTabSessionFileName);
+    case CommandStorageManager::kSessionRestore:
+      return base_path.Append(current ? kLegacyCurrentSessionFileName
+                                      : kLegacyLastSessionFileName);
+    case CommandStorageManager::kOther:
+      return base_path;
   }
-  return session_path.Append(current ? kLegacyCurrentSessionFileName
-                                     : kLegacyLastSessionFileName);
 }
 
 }  // namespace
@@ -325,10 +344,7 @@ CommandStorageBackend::CommandStorageBackend(
       supplied_path_(path),
       timestamp_(base::Time::Now()) {
   // This is invoked on the main thread, don't do file access here.
-  if (type == CommandStorageManager::kOther)
-    current_path_ = path;
-  else
-    current_path_ = FilePathFromTime(type, path, timestamp_);
+  current_path_ = FilePathFromTime(type, path, timestamp_);
 }
 
 // static
@@ -375,19 +391,11 @@ void CommandStorageBackend::AppendCommands(
   }
 }
 
-std::vector<std::unique_ptr<SessionCommand>>
-CommandStorageBackend::ReadCurrentSessionCommands(
-    const std::vector<uint8_t>& crypto_key) {
-  InitIfNecessary();
-
-  return ReadCommandsFromFile(current_path_, crypto_key);
-}
-
 // static
 bool CommandStorageBackend::TimestampFromPath(const base::FilePath& path,
                                               base::Time& timestamp_result) {
   auto parts =
-      base::SplitString(path.BaseName().value(), FILE_PATH_LITERAL("_"),
+      base::SplitString(path.BaseName().value(), kTimestampSeparator,
                         base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (parts.size() != 2u)
     return false;
@@ -402,22 +410,22 @@ bool CommandStorageBackend::TimestampFromPath(const base::FilePath& path,
 }
 
 // static
-base::FilePath CommandStorageBackend::FilePathFromTime(
-    const SessionType type,
-    const base::FilePath& base_path,
-    base::Time time) {
-  DCHECK_NE(CommandStorageManager::SessionType::kOther, type);
-  return base_path.Append(kSessionsDirectory)
-      .Append(GetSessionFilename(type, TimestampToString(time)));
+std::set<base::FilePath> CommandStorageBackend::GetSessionFilePaths(
+    const base::FilePath& path,
+    CommandStorageManager::SessionType type) {
+  std::set<base::FilePath> result;
+  for (const auto& info : GetSessionFiles(path, type))
+    result.insert(info.path);
+  return result;
 }
 
 std::vector<std::unique_ptr<SessionCommand>>
-CommandStorageBackend::ReadLastSessionCommands() {
+CommandStorageBackend::ReadLastSessionCommands(
+    const std::vector<uint8_t>& crypto_key) {
   InitIfNecessary();
 
   if (last_session_info_)
-    return ReadCommandsFromFile(last_session_info_->path,
-                                std::vector<uint8_t>());
+    return ReadCommandsFromFile(last_session_info_->path, crypto_key);
   return {};
 }
 
@@ -488,9 +496,6 @@ void CommandStorageBackend::InitIfNecessary() {
   inited_ = true;
   base::CreateDirectory(current_path_.DirName());
 
-  if (type_ == CommandStorageManager::kOther)
-    return;
-
   DetermineLastSessionFile();
   if (last_session_info_) {
     // Check that the last session's timestamp is before the current file's.
@@ -508,6 +513,15 @@ void CommandStorageBackend::InitIfNecessary() {
   // Create and open the file for the current session.
   DCHECK(!base::PathExists(current_path_));
   TruncateFile();
+}
+
+// static
+base::FilePath CommandStorageBackend::FilePathFromTime(
+    const SessionType type,
+    const base::FilePath& path,
+    base::Time time) {
+  return GetSessionDirName(type, path)
+      .Append(GetSessionFilename(type, path, TimestampToString(time)));
 }
 
 void CommandStorageBackend::SetPath(const base::FilePath& path) {
@@ -650,10 +664,10 @@ void CommandStorageBackend::DetermineLastSessionFile() {
   // Determine the session with the most recent timestamp that
   // does not match the current session path.
   for (const SessionInfo& session : GetSessionFiles()) {
-    if (session.path != current_path_) {
-      if (!last_session_info_ ||
-          session.timestamp > last_session_info_->timestamp)
-        last_session_info_ = session;
+    if (session.path != current_path_ &&
+        (!last_session_info_ ||
+         session.timestamp > last_session_info_->timestamp)) {
+      last_session_info_ = session;
     }
   }
 
@@ -669,8 +683,8 @@ void CommandStorageBackend::DetermineLastSessionFile() {
 }
 
 void CommandStorageBackend::DeleteLastSessionFiles() {
-  // Delete session files whose paths do not match the current
-  // or last session path.
+  // Delete session files whose paths do not match the current or last session
+  // path.
   for (const SessionInfo& session : GetSessionFiles()) {
     if (session.path != current_path_ &&
         (!last_session_info_ || session.path != last_session_info_->path)) {
@@ -679,25 +693,32 @@ void CommandStorageBackend::DeleteLastSessionFiles() {
   }
 
   // Delete legacy session files, unless they are being used.
-  base::FilePath current_session_path =
+  const base::FilePath legacy_current_session_path =
       GetLegacySessionPath(type_, supplied_path_, true);
-  if (last_session_info_ && current_session_path != last_session_info_->path &&
-      base::PathExists(current_session_path))
-    base::DeleteFile(current_session_path);
+  if (last_session_info_ &&
+      legacy_current_session_path != last_session_info_->path &&
+      base::PathExists(legacy_current_session_path)) {
+    base::DeleteFile(legacy_current_session_path);
+  }
 
-  base::FilePath last_session_path =
-      GetLegacySessionPath(type_, supplied_path_, false);
-  if (base::PathExists(last_session_path))
-    base::DeleteFile(last_session_path);
+  // `kOther` does not differentiate between last and current.
+  if (type_ != CommandStorageManager::kOther) {
+    const base::FilePath legacy_last_session_path =
+        GetLegacySessionPath(type_, supplied_path_, false);
+    if (base::PathExists(legacy_last_session_path))
+      base::DeleteFile(legacy_last_session_path);
+  }
 }
 
+// static
 std::vector<CommandStorageBackend::SessionInfo>
-CommandStorageBackend::GetSessionFiles() {
+CommandStorageBackend::GetSessionFiles(
+    const base::FilePath& path,
+    CommandStorageManager::SessionType type) {
   std::vector<SessionInfo> sessions;
   base::FileEnumerator file_enum(
-      supplied_path_.Append(kSessionsDirectory), false,
-      base::FileEnumerator::FILES,
-      GetSessionFilename(type_, FILE_PATH_LITERAL("*")));
+      GetSessionDirName(type, path), false, base::FileEnumerator::FILES,
+      GetSessionFilename(type, path, FILE_PATH_LITERAL("*")));
   for (base::FilePath name = file_enum.Next(); !name.empty();
        name = file_enum.Next()) {
     base::Time file_time;

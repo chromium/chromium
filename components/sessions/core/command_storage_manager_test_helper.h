@@ -31,7 +31,8 @@ class CommandStorageManagerTestHelper {
   bool ProcessedAnyCommands();
 
   // Read the last session commands directly from file.
-  std::vector<std::unique_ptr<SessionCommand>> ReadLastSessionCommands();
+  std::vector<std::unique_ptr<SessionCommand>> ReadLastSessionCommands(
+      const std::vector<uint8_t>& decryption_key = {});
 
   scoped_refptr<base::SequencedTaskRunner> GetBackendTaskRunner();
 

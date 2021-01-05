@@ -29,8 +29,10 @@ bool CommandStorageManagerTestHelper::ProcessedAnyCommands() {
 }
 
 std::vector<std::unique_ptr<SessionCommand>>
-CommandStorageManagerTestHelper::ReadLastSessionCommands() {
-  return command_storage_manager_->backend_.get()->ReadLastSessionCommands();
+CommandStorageManagerTestHelper::ReadLastSessionCommands(
+    const std::vector<uint8_t>& decryption_key) {
+  return command_storage_manager_->backend_.get()->ReadLastSessionCommands(
+      decryption_key);
 }
 
 scoped_refptr<base::SequencedTaskRunner>

@@ -103,7 +103,7 @@ class BrowserPersister : public sessions::CommandStorageManagerDelegate,
   void ScheduleRebuildOnNextSave();
 
   // Called with the contents of the previous session.
-  void OnGotCurrentSessionCommands(
+  void OnGotLastSessionCommands(
       std::vector<std::unique_ptr<sessions::SessionCommand>> commands);
 
   // Schedules commands to recreate the state of the specified tab.

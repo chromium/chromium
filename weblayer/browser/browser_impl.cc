@@ -394,7 +394,7 @@ std::unique_ptr<Tab> BrowserImpl::RemoveTab(Tab* tab) {
 }
 
 base::FilePath BrowserImpl::GetBrowserPersisterDataPath() {
-  return BuildPathForBrowserPersister(
+  return BuildBasePathForBrowserPersister(
       profile_->GetBrowserPersisterDataBaseDir(), GetPersistenceId());
 }
 

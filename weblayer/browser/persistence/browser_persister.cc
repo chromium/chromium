@@ -65,8 +65,8 @@ BrowserPersister::BrowserPersister(const base::FilePath& path,
       rebuild_on_next_save_(false),
       crypto_key_(decryption_key) {
   browser_->AddObserver(this);
-  command_storage_manager_->GetCurrentSessionCommands(
-      base::BindOnce(&BrowserPersister::OnGotCurrentSessionCommands,
+  command_storage_manager_->GetLastSessionCommands(
+      base::BindOnce(&BrowserPersister::OnGotLastSessionCommands,
                      weak_factory_.GetWeakPtr()),
       decryption_key);
 }
@@ -273,7 +273,7 @@ void BrowserPersister::ScheduleRebuildOnNextSave() {
   command_storage_manager_->StartSaveTimer();
 }
 
-void BrowserPersister::OnGotCurrentSessionCommands(
+void BrowserPersister::OnGotLastSessionCommands(
     std::vector<std::unique_ptr<sessions::SessionCommand>> commands) {
   ScheduleRebuildOnNextSave();
 

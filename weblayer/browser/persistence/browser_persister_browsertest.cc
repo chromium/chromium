@@ -13,7 +13,9 @@
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "components/sessions/core/command_storage_backend.h"
 #include "components/sessions/core/command_storage_manager_test_helper.h"
+#include "components/sessions/core/session_constants.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/base/filename_util.h"
@@ -362,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(BrowserPersisterTestWithTwoPersistedIds,
     // Create a file that has the name of a valid persistence file, but has
     // invalid contents.
     base::ScopedAllowBlockingForTesting allow_blocking;
-    base::WriteFile(BuildPathForBrowserPersister(
+    base::WriteFile(BuildBasePathForBrowserPersister(
                         GetProfile()->GetBrowserPersisterDataBaseDir(), "z"),
                     "a bogus persistence file");
   }
@@ -380,17 +382,23 @@ IN_PROC_BROWSER_TEST_F(BrowserPersisterTestWithTwoPersistedIds,
   EXPECT_TRUE(persistence_ids.contains("y"));
 }
 
+bool HasSessionFileStartingWith(const base::FilePath& path) {
+  auto paths = sessions::CommandStorageBackend::GetSessionFilePaths(
+      path, sessions::CommandStorageManager::kOther);
+  return paths.size() == 1;
+}
+
 IN_PROC_BROWSER_TEST_F(BrowserPersisterTestWithTwoPersistedIds,
                        RemoveBrowserPersistenceStorage) {
-  base::FilePath file_path1 = BuildPathForBrowserPersister(
+  base::FilePath file_path1 = BuildBasePathForBrowserPersister(
       GetProfile()->GetBrowserPersisterDataBaseDir(), "x");
-  base::FilePath file_path2 = BuildPathForBrowserPersister(
+  base::FilePath file_path2 = BuildBasePathForBrowserPersister(
       GetProfile()->GetBrowserPersisterDataBaseDir(), "y");
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(base::PathExists(file_path1));
-    ASSERT_TRUE(base::PathExists(file_path2));
+    ASSERT_TRUE(HasSessionFileStartingWith(file_path1));
+    ASSERT_TRUE(HasSessionFileStartingWith(file_path2));
   }
   base::RunLoop run_loop;
   base::flat_set<std::string> persistence_ids;

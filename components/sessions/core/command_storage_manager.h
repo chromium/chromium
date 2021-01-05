@@ -111,13 +111,6 @@ class SESSIONS_EXPORT CommandStorageManager {
   // occurred.
   bool HasPendingSave() const;
 
-  // Requests the commands for the current session. If |decryption_key| is
-  // non-empty it is used to decrypt the contents of the file.
-  // WARNING: |callback| may be called after |this| is deleted. In other words,
-  // be sure to use a WeakPtr with |callback|.
-  void GetCurrentSessionCommands(GetCommandsCallback callback,
-                                 const std::vector<uint8_t>& decryption_key);
-
   // Moves the current session to the last session.
   void MoveCurrentSessionToLastSession();
 
@@ -127,7 +120,8 @@ class SESSIONS_EXPORT CommandStorageManager {
   // Uses the backend to load the last session commands from disk. |callback|
   // is called once the data has arrived, and may be called after this is
   // deleted.
-  void GetLastSessionCommands(GetCommandsCallback callback);
+  void GetLastSessionCommands(GetCommandsCallback callback,
+                              const std::vector<uint8_t>& decryption_key = {});
 
  private:
   friend class CommandStorageManagerTestHelper;
