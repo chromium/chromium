@@ -7,8 +7,10 @@
 #include <limits>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -93,6 +95,21 @@ class LevelDBSiteDataStoreTest : public ::testing::Test {
     WaitForAsyncOperationsToComplete();
     EXPECT_TRUE(db_);
     db_path_ = path;
+  }
+
+  bool DbIsInitialized() {
+    base::RunLoop run_loop;
+    bool ret = false;
+    auto cb = base::BindOnce(
+        [](bool* ret, base::OnceClosure quit_closure, bool db_is_initialized) {
+          *ret = db_is_initialized;
+          std::move(quit_closure).Run();
+        },
+        base::Unretained(&ret), run_loop.QuitClosure());
+    db_->DatabaseIsInitializedForTesting(std::move(cb));
+    run_loop.Run();
+
+    return ret;
   }
 
   const base::FilePath& GetTempPath() { return temp_dir_.GetPath(); }
@@ -228,7 +245,7 @@ TEST_F(LevelDBSiteDataStoreTest, DatabaseRecoveryTest) {
   // Open the corrupt DB and ensure that the appropriate histograms gets
   // updated.
   OpenDB();
-  EXPECT_TRUE(db_->DatabaseIsInitializedForTesting());
+  EXPECT_TRUE(DbIsInitialized());
   histogram_tester.ExpectUniqueSample(
       "ResourceCoordinator.LocalDB.DatabaseInit", 1 /* kInitStatusCorruption */,
       1);
@@ -247,7 +264,7 @@ TEST_F(LevelDBSiteDataStoreTest, DatabaseOpeningFailure) {
   ScopedReadOnlyDirectory read_only_dir(GetTempPath());
 
   OpenDB(read_only_dir.GetReadOnlyPath());
-  EXPECT_FALSE(db_->DatabaseIsInitializedForTesting());
+  EXPECT_FALSE(DbIsInitialized());
 
   SiteDataProto proto_temp;
   EXPECT_FALSE(
@@ -263,14 +280,19 @@ TEST_F(LevelDBSiteDataStoreTest, DatabaseOpeningFailure) {
 }
 
 TEST_F(LevelDBSiteDataStoreTest, DBGetsClearedOnVersionUpgrade) {
-  leveldb::DB* raw_db = db_->GetDBForTesting();
-  EXPECT_TRUE(raw_db);
-
   // Remove the entry containing the DB version number, this will cause the DB
   // to be cleared the next time it gets opened.
-  leveldb::Status s = raw_db->Delete(leveldb::WriteOptions(),
-                                     LevelDBSiteDataStore::kDbMetadataKey);
-  EXPECT_TRUE(s.ok());
+  {
+    base::RunLoop run_loop;
+    db_->RunTaskWithRawDBForTesting(base::BindOnce([](leveldb::DB* raw_db) {
+                                      leveldb::Status s = raw_db->Delete(
+                                          leveldb::WriteOptions(),
+                                          LevelDBSiteDataStore::kDbMetadataKey);
+                                      EXPECT_TRUE(s.ok());
+                                    }),
+                                    run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
   // Add some dummy data to the data store to ensure the data store gets cleared
   // when upgrading it to the new version.
@@ -284,14 +306,23 @@ TEST_F(LevelDBSiteDataStoreTest, DBGetsClearedOnVersionUpgrade) {
 
   // Reopen the data store and ensure that it has been cleared.
   OpenDB();
-  raw_db = db_->GetDBForTesting();
-  std::string db_metadata;
-  s = raw_db->Get(leveldb::ReadOptions(), LevelDBSiteDataStore::kDbMetadataKey,
-                  &db_metadata);
-  EXPECT_TRUE(s.ok());
-  size_t version = std::numeric_limits<size_t>::max();
-  EXPECT_TRUE(base::StringToSizeT(db_metadata, &version));
-  EXPECT_EQ(LevelDBSiteDataStore::kDbVersion, version);
+
+  {
+    base::RunLoop run_loop;
+    db_->RunTaskWithRawDBForTesting(
+        base::BindOnce([](leveldb::DB* raw_db) {
+          std::string db_metadata;
+          leveldb::Status s =
+              raw_db->Get(leveldb::ReadOptions(),
+                          LevelDBSiteDataStore::kDbMetadataKey, &db_metadata);
+          EXPECT_TRUE(s.ok());
+          size_t version = std::numeric_limits<size_t>::max();
+          EXPECT_TRUE(base::StringToSizeT(db_metadata, &version));
+          EXPECT_EQ(LevelDBSiteDataStore::kDbVersion, version);
+        }),
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
   SiteDataProto proto_temp;
   EXPECT_FALSE(ReadFromDB(kDummyOrigin, &proto_temp));

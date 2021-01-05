@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_LEVELDB_SITE_DATA_STORE_H_
 
 #include "base/auto_reset.h"
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
@@ -44,14 +45,11 @@ class LevelDBSiteDataStore : public SiteDataStore {
   void GetStoreSize(GetStoreSizeCallback callback) override;
   void SetInitializationCallbackForTesting(base::OnceClosure callback) override;
 
-  bool DatabaseIsInitializedForTesting();
+  void DatabaseIsInitializedForTesting(base::OnceCallback<void(bool)> reply_cb);
 
-  // Returns a raw pointer to the database for testing purposes. Note that as
-  // the DB operations are made on a separate sequence it's recommended to call
-  // TaskEnvironment::RunUntilIdle before calling this function to ensure
-  // that the database has been fully initialized. The LevelDB implementation is
-  // thread safe.
-  leveldb::DB* GetDBForTesting();
+  // Run a task against the raw DB implementation and wait for it to complete.
+  void RunTaskWithRawDBForTesting(base::OnceCallback<void(leveldb::DB*)> task,
+                                  base::OnceClosure after_task_run_closure);
 
   // Make the new instances of this class use an in memory database rather than
   // creating it on disk.
@@ -70,8 +68,8 @@ class LevelDBSiteDataStore : public SiteDataStore {
   // to run on |blocking_task_runner_|, it is guaranteed that the AsyncHelper
   // held by this object will only be destructed once all the tasks that have
   // been posted to it have completed.
-  // TODO(https://crbug.com/1159407): GUARDED_BY_CONTEXT(sequence_checker_)
-  std::unique_ptr<AsyncHelper, base::OnTaskRunnerDeleter> async_helper_;
+  std::unique_ptr<AsyncHelper, base::OnTaskRunnerDeleter> async_helper_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
