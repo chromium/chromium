@@ -465,7 +465,7 @@ void UpdateNavigationRequestClientUaHeadersImpl(
   bool disable_due_to_custom_ua = false;
   if (override_ua) {
     NavigatorDelegate* nav_delegate =
-        frame_tree_node->navigator().GetDelegate();
+        frame_tree_node ? frame_tree_node->navigator().GetDelegate() : nullptr;
     ua_metadata =
         nav_delegate ? nav_delegate->GetUserAgentOverride().ua_metadata_override
                      : base::nullopt;
@@ -474,7 +474,8 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     disable_due_to_custom_ua = !ua_metadata.has_value();
   }
 
-  if (devtools_instrumentation::ApplyUserAgentMetadataOverrides(frame_tree_node,
+  if (frame_tree_node &&
+      devtools_instrumentation::ApplyUserAgentMetadataOverrides(frame_tree_node,
                                                                 &ua_metadata)) {
     // Likewise, if devtools says to override client hints but provides no
     // value, disable them. This overwrites previous decision from UI.
