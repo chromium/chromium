@@ -39,7 +39,8 @@ bool VulkanDeviceQueue::Initialize(
     const std::vector<const char*>& required_extensions,
     const std::vector<const char*>& optional_extensions,
     bool allow_protected_memory,
-    const GetPresentationSupportCallback& get_presentation_support) {
+    const GetPresentationSupportCallback& get_presentation_support,
+    uint32_t heap_memory_limit) {
   DCHECK_EQ(static_cast<VkPhysicalDevice>(VK_NULL_HANDLE), vk_physical_device_);
   DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), owned_vk_device_);
   DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), vk_device_);
@@ -266,8 +267,11 @@ bool VulkanDeviceQueue::Initialize(
     vkGetDeviceQueue(vk_device_, queue_index, 0, &vk_queue_);
   }
 
+  std::vector<VkDeviceSize> heap_size_limit(
+      VK_MAX_MEMORY_HEAPS,
+      heap_memory_limit ? heap_memory_limit : VK_WHOLE_SIZE);
   vma::CreateAllocator(vk_physical_device_, vk_device_, vk_instance_,
-                       &vma_allocator_);
+                       heap_size_limit.data(), &vma_allocator_);
   cleanup_helper_ = std::make_unique<VulkanFenceHelper>(this);
 
   allow_protected_memory_ = allow_protected_memory;
@@ -291,7 +295,7 @@ bool VulkanDeviceQueue::InitializeForWebView(
   vk_queue_index_ = vk_queue_index;
   enabled_extensions_ = std::move(enabled_extensions);
 
-  vma::CreateAllocator(vk_physical_device_, vk_device_, vk_instance_,
+  vma::CreateAllocator(vk_physical_device_, vk_device_, vk_instance_, nullptr,
                        &vma_allocator_);
 
   cleanup_helper_ = std::make_unique<VulkanFenceHelper>(this);

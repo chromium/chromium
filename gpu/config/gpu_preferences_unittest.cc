@@ -77,6 +77,9 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.use_vulkan, right.use_vulkan);
   EXPECT_EQ(left.enable_vulkan_protected_memory,
             right.enable_vulkan_protected_memory);
+  EXPECT_EQ(left.vulkan_heap_memory_limit, right.vulkan_heap_memory_limit);
+  EXPECT_EQ(left.vulkan_sync_cpu_memory_limit,
+            right.vulkan_sync_cpu_memory_limit);
   EXPECT_EQ(left.enable_gpu_benchmarking_extension,
             right.enable_gpu_benchmarking_extension);
   EXPECT_EQ(left.enable_webgpu, right.enable_webgpu);
@@ -172,6 +175,8 @@ TEST(GpuPreferencesTest, EncodeDecode) {
                                mojom::GrContextType::kVulkan)
     GPU_PREFERENCES_FIELD_ENUM(use_vulkan, VulkanImplementationName::kNative,
                                mojom::VulkanImplementationName::kNative)
+    GPU_PREFERENCES_FIELD(vulkan_heap_memory_limit, 1);
+    GPU_PREFERENCES_FIELD(vulkan_sync_cpu_memory_limit, 1);
     GPU_PREFERENCES_FIELD(enable_gpu_benchmarking_extension, true)
     GPU_PREFERENCES_FIELD(enable_webgpu, true)
     GPU_PREFERENCES_FIELD(enable_dawn_backend_validation, true)
@@ -267,6 +272,8 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
   PRINT_BOOL(watchdog_starts_backgrounded);
   PRINT_INT(gr_context_type);
   PRINT_INT(use_vulkan);
+  PRINT_INT(vulkan_heap_memory_limit);
+  PRINT_INT(vulkan_sync_cpu_memory_limit);
   PRINT_BOOL(enable_gpu_benchmarking_extension);
   PRINT_BOOL(enable_webgpu);
   PRINT_BOOL(enable_dawn_backend_validation);

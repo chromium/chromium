@@ -170,6 +170,8 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
     out->disable_vulkan_surface = prefs.disable_vulkan_surface();
     out->disable_vulkan_fallback_to_gl_for_testing =
         prefs.disable_vulkan_fallback_to_gl_for_testing();
+    out->vulkan_heap_memory_limit = prefs.vulkan_heap_memory_limit();
+    out->vulkan_sync_cpu_memory_limit = prefs.vulkan_sync_cpu_memory_limit();
     out->enable_metal = prefs.enable_metal();
     out->enable_gpu_benchmarking_extension =
         prefs.enable_gpu_benchmarking_extension();
@@ -346,6 +348,13 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
   static bool disable_vulkan_fallback_to_gl_for_testing(
       const gpu::GpuPreferences& prefs) {
     return prefs.disable_vulkan_fallback_to_gl_for_testing;
+  }
+  static uint32_t vulkan_heap_memory_limit(const gpu::GpuPreferences& prefs) {
+    return prefs.vulkan_heap_memory_limit;
+  }
+  static uint32_t vulkan_sync_cpu_memory_limit(
+      const gpu::GpuPreferences& prefs) {
+    return prefs.vulkan_sync_cpu_memory_limit;
   }
   static bool enable_metal(const gpu::GpuPreferences& prefs) {
     return prefs.enable_metal;

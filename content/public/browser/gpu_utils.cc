@@ -48,6 +48,13 @@ void KillGpuProcessImpl(content::GpuProcessHost* host) {
   }
 }
 
+bool GetUintFromSwitch(const base::CommandLine* command_line,
+                       const base::StringPiece& switch_string,
+                       uint32_t* value) {
+  std::string switch_value(command_line->GetSwitchValueASCII(switch_string));
+  return base::StringToUint(switch_value, value);
+}
+
 }  // namespace
 
 namespace content {
@@ -130,6 +137,15 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
   gpu_preferences.disable_oopr_debug_crash_dump =
       command_line->HasSwitch(switches::kDisableOoprDebugCrashDump);
 #endif
+
+  if (GetUintFromSwitch(command_line, switches::kVulkanHeapMemoryLimitMb,
+                        &gpu_preferences.vulkan_heap_memory_limit)) {
+    gpu_preferences.vulkan_heap_memory_limit *= 1024 * 1024;
+  }
+  if (GetUintFromSwitch(command_line, switches::kVulkanSyncCpuMemoryLimitMb,
+                        &gpu_preferences.vulkan_sync_cpu_memory_limit)) {
+    gpu_preferences.vulkan_sync_cpu_memory_limit *= 1024 * 1024;
+  }
 
   // Some of these preferences are set or adjusted in
   // GpuDataManagerImplPrivate::AppendGpuCommandLine.

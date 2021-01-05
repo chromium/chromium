@@ -23,7 +23,8 @@ VulkanImplementation::~VulkanImplementation() {}
 std::unique_ptr<VulkanDeviceQueue> CreateVulkanDeviceQueue(
     VulkanImplementation* vulkan_implementation,
     uint32_t option,
-    const GPUInfo* gpu_info) {
+    const GPUInfo* gpu_info,
+    uint32_t heap_memory_limmit) {
   auto device_queue = std::make_unique<VulkanDeviceQueue>(
       vulkan_implementation->GetVulkanInstance()->vk_instance(),
       vulkan_implementation->enforce_protected_memory());
@@ -38,7 +39,8 @@ std::unique_ptr<VulkanDeviceQueue> CreateVulkanDeviceQueue(
           option, gpu_info,
           vulkan_implementation->GetVulkanInstance()->vulkan_info(),
           std::move(required_extensions), std::move(optional_extensions),
-          vulkan_implementation->allow_protected_memory(), callback)) {
+          vulkan_implementation->allow_protected_memory(), callback,
+          heap_memory_limmit)) {
     device_queue->Destroy();
     return nullptr;
   }

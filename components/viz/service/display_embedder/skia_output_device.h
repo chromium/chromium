@@ -103,7 +103,9 @@ class SkiaOutputDevice {
 
   // Submit the GrContext and run |callback| after. Note most but not all
   // implementations will run |callback| in this call stack.
-  virtual void Submit(base::OnceClosure callback);
+  // If the |sync_cpu| flag is true this function will return once the gpu
+  // has finished with all submitted work.
+  virtual void Submit(bool sync_cpu, base::OnceClosure callback);
 
   // Presents the back buffer.
   virtual void SwapBuffers(BufferPresentedCallback feedback,

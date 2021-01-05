@@ -23,6 +23,7 @@ COMPONENT_EXPORT(VULKAN)
 VkResult CreateAllocator(VkPhysicalDevice physical_device,
                          VkDevice device,
                          VkInstance instance,
+                         const VkDeviceSize* heap_size_limit,
                          VmaAllocator* allocator);
 
 COMPONENT_EXPORT(VULKAN) void DestroyAllocator(VmaAllocator allocator);
@@ -94,6 +95,9 @@ void GetPhysicalDeviceProperties(
 
 COMPONENT_EXPORT(VULKAN)
 void CalculateStats(VmaAllocator allocator, VmaStats* stats);
+
+COMPONENT_EXPORT(VULKAN)
+uint64_t GetTotalAllocatedMemory(VmaAllocator allocator);
 
 }  // namespace vma
 }  // namespace gpu

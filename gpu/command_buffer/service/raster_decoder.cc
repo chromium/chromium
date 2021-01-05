@@ -636,8 +636,12 @@ class RasterDecoderImpl final : public RasterDecoder,
   void FlushAndSubmitIfNecessary(
       SkSurface* surface,
       std::vector<GrBackendSemaphore> signal_semaphores) {
+    bool sync_cpu = gpu::ShouldVulkanSyncCpuForSkiaSubmit(
+        shared_context_state_->vk_context_provider());
     if (signal_semaphores.empty()) {
       surface->flush();
+      if (sync_cpu)
+        gr_context()->submit(sync_cpu);
       return;
     }
 
@@ -654,7 +658,7 @@ class RasterDecoderImpl final : public RasterDecoder,
     // If the |signal_semaphores| is empty, we can deferred the queue
     // submission.
     DCHECK_EQ(result, GrSemaphoresSubmitted::kYes);
-    gr_context()->submit();
+    gr_context()->submit(sync_cpu);
   }
 
 #if defined(NDEBUG)

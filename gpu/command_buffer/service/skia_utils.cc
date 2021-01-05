@@ -293,4 +293,21 @@ GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
 
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
+bool ShouldVulkanSyncCpuForSkiaSubmit(
+    viz::VulkanContextProvider* context_provider) {
+#if BUILDFLAG(ENABLE_VULKAN)
+  if (context_provider) {
+    uint32_t sync_cpu_memory_limit = context_provider->GetSyncCpuMemoryLimit();
+    if (sync_cpu_memory_limit) {
+      uint64_t total_allocated_bytes = gpu::vma::GetTotalAllocatedMemory(
+          context_provider->GetDeviceQueue()->vma_allocator());
+      if (total_allocated_bytes > sync_cpu_memory_limit) {
+        return true;
+      }
+    }
+  }
+#endif
+  return false;
+}
+
 }  // namespace gpu

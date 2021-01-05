@@ -173,6 +173,8 @@ bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
       switches::kUseLegacyAndroidUserAgent,
       switches::kWebglAntialiasingMode,
       switches::kWebglMSAASampleCount,
+      switches::kVulkanHeapMemoryLimitMb,
+      switches::kVulkanSyncCpuMemoryLimitMb,
   };
 
   for (const auto& arg : args->DictItems()) {

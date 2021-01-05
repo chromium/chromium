@@ -269,12 +269,13 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
   presenter_->ScheduleOverlays(std::move(overlays), std::move(accesses));
 }
 
-void SkiaOutputDeviceBufferQueue::Submit(base::OnceClosure callback) {
+void SkiaOutputDeviceBufferQueue::Submit(bool sync_cpu,
+                                         base::OnceClosure callback) {
   // The current image may be missing, for example during WebXR presentation.
   if (current_image_)
     current_image_->PreGrContextSubmit();
 
-  SkiaOutputDevice::Submit(std::move(callback));
+  SkiaOutputDevice::Submit(sync_cpu, std::move(callback));
 }
 
 void SkiaOutputDeviceBufferQueue::SwapBuffers(

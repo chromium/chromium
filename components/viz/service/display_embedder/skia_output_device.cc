@@ -99,8 +99,8 @@ SkiaOutputDevice::~SkiaOutputDevice() {
     latency_tracker_runner_->DeleteSoon(FROM_HERE, std::move(latency_tracker_));
 }
 
-void SkiaOutputDevice::Submit(base::OnceClosure callback) {
-  gr_context_->submit();
+void SkiaOutputDevice::Submit(bool sync_cpu, base::OnceClosure callback) {
+  gr_context_->submit(sync_cpu);
   std::move(callback).Run();
 }
 

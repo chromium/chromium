@@ -92,6 +92,12 @@ GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
     const base::Optional<VulkanYCbCrInfo>& ycbcr_info);
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
+// Helper that returns true when Vulkan memory usage is high enough
+// that Skia submit calls should synchronize with the CPU in order
+// to free released memory immediately.
+GPU_GLES2_EXPORT bool ShouldVulkanSyncCpuForSkiaSubmit(
+    viz::VulkanContextProvider* context_provider);
+
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SKIA_UTILS_H_

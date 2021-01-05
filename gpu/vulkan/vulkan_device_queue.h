@@ -46,7 +46,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
       const std::vector<const char*>& required_extensions,
       const std::vector<const char*>& optional_extensions,
       bool allow_protected_memory,
-      const GetPresentationSupportCallback& get_presentation_support);
+      const GetPresentationSupportCallback& get_presentation_support,
+      uint32_t heap_memory_limit);
 
   bool InitializeForWebView(VkPhysicalDevice vk_physical_device,
                             VkDevice vk_device,
