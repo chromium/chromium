@@ -55,8 +55,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.AsyncTargeting.AsyncClientDepth" units="clients"
-    expires_after="2021-01-31">
-  <owner>yigu@chromium.org</owner>
+    expires_after="2021-06-06">
+  <owner>sadrul@chromium.org</owner>
   <owner>event-targeting@chromium.org</owner>
   <summary>
     Tracks how many clients were queried (asynchronously) to determine the
@@ -66,12 +66,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.AsyncTargeting.ResponseTime" units="ms"
     expires_after="2021-06-06">
-  <owner>yigu@chromium.org</owner>
+  <owner>sadrul@chromium.org</owner>
+  <owner>event-targeting@chromium.org</owner>
   <summary>
     Tracks how long it takes for a client to respond to an asynchronous request
     to find a target for an input event.
-
-    Team: event-targeting@chromium.org.
   </summary>
 </histogram>
 
@@ -1621,13 +1620,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.VizHitTest.AsyncHitTestReasons"
-    enum="AsyncHitTestReasons" expires_after="2021-06-27">
-  <owner>yigu@chromium.org</owner>
+    enum="AsyncHitTestReasons" expires_after="2021-06-06">
+  <owner>sadrul@chromium.org</owner>
+  <owner>event-targeting@chromium.org</owner>
   <summary>
     Tracks the reasons why sychronous hit testing could not be done for each hit
     test requests processd by HitTestQuery.
-
-    Team: event-targeting@chromium.org.
   </summary>
 </histogram>
 
