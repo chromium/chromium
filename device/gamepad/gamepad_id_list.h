@@ -71,6 +71,7 @@ enum class GamepadId : uint32_t {
   kMicrosoftProduct0b05 = 0x045e0b05,
   kMicrosoftProduct0b0a = 0x045e0b0a,
   kMicrosoftProduct0b0c = 0x045e0b0c,
+  kMicrosoftProduct0b13 = 0x045e0b13,
   kNintendoProduct2006 = 0x057e2006,
   kNintendoProduct2007 = 0x057e2007,
   kNintendoProduct2009 = 0x057e2009,
