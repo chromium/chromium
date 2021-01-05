@@ -138,6 +138,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   void ComputeStartFragmentIndexAndRelativeOffset(
       const ContainingBlockInfo& container_info,
       WritingMode default_writing_mode,
+      LayoutUnit block_estimate,
       wtf_size_t* start_index,
       LogicalOffset* offset) const;
 

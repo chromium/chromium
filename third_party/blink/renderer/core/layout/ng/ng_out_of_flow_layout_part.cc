@@ -641,9 +641,6 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     for (auto& descendant : *descendants) {
       scoped_refptr<const NGLayoutResult> result =
           LayoutFragmentainerDescendant(descendant);
-      // TODO(bebeaudr): The final offset of the innermost abspos is wrong. It
-      // seems like it is off by exactly the offset of the outermost abspos.
-      // Don't we already take into account that value?
       container_builder_->PropagateOOFPositionedFragmentainerDescendants(
           result->PhysicalFragment(), result->OutOfFlowPositionedOffset());
     }
@@ -876,6 +873,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
         container_writing_direction, &node_dimensions);
     has_computed_block_dimensions = true;
   }
+  block_estimate = node_dimensions.size.block_size;
 
   // Calculate the offsets.
   NGBoxStrut inset =
@@ -896,7 +894,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
     DCHECK_GT(num_children, 0u);
     ComputeStartFragmentIndexAndRelativeOffset(
         container_info, default_writing_direction.GetWritingMode(),
-        &start_index, &offset);
+        *block_estimate, &start_index, &offset);
   }
 
   if (!only_layout && !can_traverse_fragments_) {
@@ -971,7 +969,6 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
     // Skip this step if we produced a fragment that can be reused when
     // estimating the block-size.
     if (!layout_result) {
-      block_estimate = node_dimensions.size.block_size;
       const NGConstraintSpace* fragmentainer_constraint_space =
           is_fragmentainer_descendant
               ? &GetFragmentainerConstraintSpace(start_index)
@@ -1254,6 +1251,7 @@ void NGOutOfFlowLayoutPart::AddOOFResultToFragmentainerResults(
 void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
     const ContainingBlockInfo& container_info,
     WritingMode default_writing_mode,
+    LayoutUnit block_estimate,
     wtf_size_t* start_index,
     LogicalOffset* offset) const {
   wtf_size_t child_index = 0;
@@ -1272,7 +1270,16 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
                                      .block_size;
       current_max_block_size += fragmentainer_block_size;
 
-      if (offset->block_offset < current_max_block_size) {
+      // Edge case: an abspos with an height of 0 positioned exactly at the
+      // |current_max_block_size| won't be fragmented, so no break token will be
+      // produced - as we'd expect. However, the break token is used to compute
+      // the |fragmentainer_consumed_block_size_| stored on the
+      // |container_builder_| when we have a nested abspos. Because we use that
+      // value to position the nested abspos, its start offset would be off by
+      // exactly one fragmentainer block size.
+      if (offset->block_offset < current_max_block_size ||
+          (offset->block_offset == current_max_block_size &&
+           block_estimate == 0)) {
         *start_index = child_index;
         offset->block_offset -= used_block_size;
         return;
