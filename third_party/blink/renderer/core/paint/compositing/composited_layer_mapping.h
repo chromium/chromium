@@ -247,10 +247,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   bool AdjustForCompositedScrolling(const GraphicsLayer*,
                                     IntSize& offset) const;
 
-  bool DrawsBackgroundOntoContentLayer() const {
-    return draws_background_onto_content_layer_;
-  }
-
  private:
   // Returns true for layers with scrollable overflow which have a background
   // that can be painted into the composited scrolling contents layer (i.e.
@@ -459,8 +455,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   PhysicalRect composited_bounds_;
 
   unsigned pending_update_scope_ : 2;
-
-  bool draws_background_onto_content_layer_;
 
   friend class CompositedLayerMappingTest;
 };

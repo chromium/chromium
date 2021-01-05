@@ -89,12 +89,6 @@ static PhysicalRect ContentsRect(const LayoutObject& layout_object) {
   return To<LayoutBox>(layout_object).PhysicalContentBoxRect();
 }
 
-static PhysicalRect BackgroundRect(const LayoutObject& layout_object) {
-  if (const auto* box = DynamicTo<LayoutBox>(layout_object))
-    return box->PhysicalBackgroundRect(kBackgroundClipRect);
-  return PhysicalRect();
-}
-
 static inline bool IsTextureLayerCanvas(const LayoutObject& layout_object) {
   if (layout_object.IsCanvas()) {
     auto* canvas = To<HTMLCanvasElement>(layout_object.GetNode());
@@ -106,31 +100,8 @@ static inline bool IsTextureLayerCanvas(const LayoutObject& layout_object) {
   return false;
 }
 
-static inline bool IsSurfaceLayerCanvas(const LayoutObject& layout_object) {
-  if (layout_object.IsCanvas()) {
-    auto* canvas = To<HTMLCanvasElement>(layout_object.GetNode());
-    return canvas->SurfaceLayerBridge();
-  }
-  return false;
-}
-
 static bool HasBoxDecorationsOrBackgroundImage(const ComputedStyle& style) {
   return style.HasBoxDecorations() || style.HasBackgroundImage();
-}
-
-static bool ContentLayerSupportsDirectBackgroundComposition(
-    const LayoutObject& layout_object) {
-  // No support for decorations - border, border-radius or outline.
-  // Only simple background - solid color or transparent.
-  if (HasBoxDecorationsOrBackgroundImage(layout_object.StyleRef()))
-    return false;
-
-  // If there is no background, there is nothing to support.
-  if (!layout_object.StyleRef().HasBackground())
-    return true;
-
-  // Simple background that is contained within the contents rect.
-  return ContentsRect(layout_object).Contains(BackgroundRect(layout_object));
 }
 
 static WebPluginContainerImpl* GetPluginContainer(LayoutObject& layout_object) {
@@ -195,9 +166,7 @@ static bool NeedsDecorationOutlineLayer(const PaintLayer& paint_layer,
 }
 
 CompositedLayerMapping::CompositedLayerMapping(PaintLayer& layer)
-    : owning_layer_(layer),
-      pending_update_scope_(kGraphicsLayerUpdateNone),
-      draws_background_onto_content_layer_(false) {
+    : owning_layer_(layer), pending_update_scope_(kGraphicsLayerUpdateNone) {
   CreatePrimaryGraphicsLayer();
 }
 
@@ -273,30 +242,7 @@ void CompositedLayerMapping::UpdateContentsOpaque() {
   // not graphics_layer_, and so don't contribute to the opaqueness of the
   // latter.
   bool should_check_children = !foreground_layer_.get();
-  if (IsTextureLayerCanvas(GetLayoutObject())) {
-    CanvasRenderingContext* context =
-        To<HTMLCanvasElement>(GetLayoutObject().GetNode())->RenderingContext();
-    cc::Layer* layer = context ? context->CcLayer() : nullptr;
-    // Determine whether the external texture layer covers the whole graphics
-    // layer. This may not be the case if there are box decorations or
-    // shadows.
-    if (layer && layer->bounds() == graphics_layer_->CcLayer().bounds()) {
-      // Determine whether the rendering context's external texture layer is
-      // opaque.
-      if (!context->CreationAttributes().alpha) {
-        graphics_layer_->SetContentsOpaque(true);
-      } else {
-        graphics_layer_->SetContentsOpaque(
-            !Color(layer->background_color()).HasAlpha());
-      }
-    } else {
-      graphics_layer_->SetContentsOpaque(false);
-    }
-  } else if (IsSurfaceLayerCanvas(GetLayoutObject())) {
-    // TODO(crbug.com/705019): Contents could be opaque, but that cannot be
-    // determined from the main thread. Or can it?
-    graphics_layer_->SetContentsOpaque(false);
-  } else if (BackgroundPaintsOntoScrollingContentsLayer()) {
+  if (BackgroundPaintsOntoScrollingContentsLayer()) {
     DCHECK(scrolling_contents_layer_);
     // Backgrounds painted onto the foreground are clipped by the padding box
     // rect.
@@ -420,7 +366,7 @@ bool CompositedLayerMapping::UpdateGraphicsLayerConfiguration(
   } else if (layout_object.IsCanvas()) {
     graphics_layer_->SetContentsToCcLayer(
         To<HTMLCanvasElement>(layout_object.GetNode())->ContentsCcLayer(),
-        /*prevent_contents_opaque_changes=*/false);
+        /*prevent_contents_opaque_changes=*/true);
     layer_config_changed = true;
   }
 
@@ -986,21 +932,10 @@ void CompositedLayerMapping::UpdateDrawsContentAndPaintsHitTest() {
     scrolling_contents_layer_->SetPaintsHitTest(paints_hit_test);
   }
 
-  draws_background_onto_content_layer_ = false;
-  if (has_painted_content && IsTextureLayerCanvas(GetLayoutObject())) {
-    CanvasRenderingContext* context =
-        To<HTMLCanvasElement>(GetLayoutObject().GetNode())->RenderingContext();
-    // Content layer may be null if context is lost.
-    if (cc::Layer* content_layer = context->CcLayer()) {
-      if (ContentLayerSupportsDirectBackgroundComposition(GetLayoutObject())) {
-        has_painted_content = false;
-        draws_background_onto_content_layer_ = true;
-        Color contents_layer_background_color =
-            GetLayoutObject().ResolveColor(GetCSSPropertyBackgroundColor());
-        graphics_layer_->SetContentsLayerBackgroundColor(
-            contents_layer_background_color);
-      }
-    }
+  if (has_painted_content && GetLayoutObject().IsCanvas() &&
+      To<LayoutHTMLCanvas>(GetLayoutObject())
+          .DrawsBackgroundOntoContentLayer()) {
+    has_painted_content = false;
   }
 
   // FIXME: we could refine this to only allocate backings for one of these

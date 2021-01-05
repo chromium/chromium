@@ -46,9 +46,19 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
 
   bool flatten_composited_layers =
       paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      !flatten_composited_layers) {
-    if (auto* layer = canvas->ContentsCcLayer()) {
+
+  if (auto* layer = canvas->ContentsCcLayer()) {
+    // TODO(crbug.com/705019): For a texture layer canvas, setting the layer
+    // background color to an opaque color will cause the layer to be treated as
+    // opaque. For a surface layer canvas, contents could be opaque, but that
+    // cannot be determined from the main thread. Or can it?
+    if (layout_html_canvas_.DrawsBackgroundOntoContentLayer()) {
+      Color background_color =
+          layout_html_canvas_.ResolveColor(GetCSSPropertyBackgroundColor());
+      layer->SetBackgroundColor(background_color.Rgb());
+    }
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+        !flatten_composited_layers) {
       IntRect pixel_snapped_rect = PixelSnappedIntRect(paint_rect);
       layer->SetBounds(gfx::Size(pixel_snapped_rect.Size()));
       layer->SetIsDrawable(true);

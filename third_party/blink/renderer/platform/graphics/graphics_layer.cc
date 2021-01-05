@@ -591,11 +591,6 @@ void GraphicsLayer::SetContentsVisible(bool contents_visible) {
   UpdateLayerIsDrawable();
 }
 
-void GraphicsLayer::SetContentsLayerBackgroundColor(Color color) {
-  if (contents_layer_)
-    contents_layer_->SetBackgroundColor(color.Rgb());
-}
-
 bool GraphicsLayer::ContentsOpaque() const {
   return CcLayer().contents_opaque();
 }

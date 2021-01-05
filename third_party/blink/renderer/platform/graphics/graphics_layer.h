@@ -139,8 +139,6 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   bool ContentsAreVisible() const { return contents_visible_; }
   void SetContentsVisible(bool);
 
-  void SetContentsLayerBackgroundColor(Color color);
-
   // Opaque means that we know the layer contents have no alpha.
   bool ContentsOpaque() const;
   void SetContentsOpaque(bool);

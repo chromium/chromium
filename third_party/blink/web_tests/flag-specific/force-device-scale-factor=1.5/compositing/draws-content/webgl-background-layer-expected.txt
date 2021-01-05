@@ -16,13 +16,13 @@
     {
       "name": "ContentsLayer for LayoutHTMLCanvas CANVAS id='canvas-simple'",
       "bounds": [75, 75],
-      "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 1
     },
     {
       "name": "LayoutHTMLCanvas CANVAS id='canvas-padding'",
       "bounds": [90, 90],
+      "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 2
     },
@@ -35,6 +35,7 @@
     {
       "name": "LayoutHTMLCanvas CANVAS id='canvas-border'",
       "bounds": [90, 90],
+      "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 3
     },
@@ -47,6 +48,7 @@
     {
       "name": "LayoutHTMLCanvas CANVAS id='canvas-image'",
       "bounds": [75, 75],
+      "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 4
     },
