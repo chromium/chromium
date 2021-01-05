@@ -20,9 +20,12 @@ class CartHandler : public chrome_cart::mojom::CartHandler {
 
   // chrome_cart::mojom::CartHandler:
   void GetMerchantCarts(GetMerchantCartsCallback callback) override;
+  void DismissCartModule() override;
+  void RestoreCartModule() override;
 
  private:
   mojo::Receiver<chrome_cart::mojom::CartHandler> handler_;
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_CART_CART_HANDLER_H_

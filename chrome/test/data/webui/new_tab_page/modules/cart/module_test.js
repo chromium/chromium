@@ -5,6 +5,7 @@
 import {chromeCartDescriptor, ChromeCartProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {eventToPromise} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageModulesChromeCartModuleTest', () => {
   /**
@@ -152,5 +153,47 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
             .shadowRoot.querySelector('#chip');
     assertEquals(
         loadTimeData.getString('modulesCartHeaderNew'), headerChip.innerText);
+  });
+
+  test('Backend is notified when module is dismissed or restored', async () => {
+    // Arrange.
+    const carts = [
+      {
+        merchant: 'Amazon',
+        cartUrl: {url: 'https://amazon.com'},
+        productImageUrls: [
+          {url: 'https://image1.com'}, {url: 'https://image2.com'},
+          {url: 'https://image3.com'}
+        ],
+      },
+    ];
+    testProxy.handler.setResultFor(
+        'getMerchantCarts', Promise.resolve({carts}));
+
+    // Arrange.
+    await chromeCartDescriptor.initialize();
+    const moduleElement = chromeCartDescriptor.element;
+    document.body.append(moduleElement);
+    moduleElement.$.cartItemRepeat.render();
+
+    // Act.
+    const waitForDismissEvent = eventToPromise('dismiss-module', moduleElement);
+    const dismissButton =
+        moduleElement.shadowRoot.querySelector('ntp-module-header')
+            .shadowRoot.querySelector('#dismissButton');
+    dismissButton.click();
+    const dismissEvent = await waitForDismissEvent;
+    const toastMessage = dismissEvent.detail.message;
+    const restoreCallback = dismissEvent.detail.restoreCallback;
+
+    // Assert.
+    assertEquals('Your carts', toastMessage);
+    assertEquals(1, testProxy.handler.getCallCount('dismissCartModule'));
+
+    // Act.
+    restoreCallback();
+
+    // Assert.
+    assertEquals(1, testProxy.handler.getCallCount('restoreCartModule'));
   });
 });

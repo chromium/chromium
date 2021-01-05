@@ -54,6 +54,24 @@ class ChromeCartModuleElement extends PolymerElement {
   getImagesToShow_(imageUrls) {
     return imageUrls.slice(0, 3);
   }
+
+  /** @private */
+  onDismissButtonClick_() {
+    ChromeCartProxy.getInstance().handler.dismissCartModule();
+    this.dispatchEvent(new CustomEvent('dismiss-module', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: 'Your carts',
+        restoreCallback: this.onRestore_.bind(this),
+      },
+    }));
+  }
+
+  /** @private */
+  onRestore_() {
+    ChromeCartProxy.getInstance().handler.restoreCartModule();
+  }
 }
 
 customElements.define(ChromeCartModuleElement.is, ChromeCartModuleElement);

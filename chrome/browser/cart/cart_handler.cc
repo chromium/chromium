@@ -3,18 +3,20 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/cart_handler.h"
+#include "chrome/browser/cart/cart_service.h"
+#include "chrome/browser/cart/cart_service_factory.h"
 #include "components/search/ntp_features.h"
 
 CartHandler::CartHandler(
     mojo::PendingReceiver<chrome_cart::mojom::CartHandler> handler,
     Profile* profile)
-    : handler_(this, std::move(handler)) {}
+    : handler_(this, std::move(handler)), profile_(profile) {}
 
 CartHandler::~CartHandler() = default;
 
 void CartHandler::GetMerchantCarts(GetMerchantCartsCallback callback) {
   std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
-  // TODO(https://crbug.com/1157892):  Replace this with a feature parameter for
+  // TODO(https://crbug.com/1157892): Replace this with a feature parameter for
   // fake data when real data is available.
   if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule)) {
     auto dummy_cart1 = chrome_cart::mojom::MerchantCart::New();
@@ -43,4 +45,12 @@ void CartHandler::GetMerchantCarts(GetMerchantCartsCallback callback) {
     carts.push_back(std::move(dummy_cart2));
   }
   std::move(callback).Run(std::move(carts));
+}
+
+void CartHandler::DismissCartModule() {
+  CartServiceFactory::GetForProfile(profile_)->Dismiss();
+}
+
+void CartHandler::RestoreCartModule() {
+  CartServiceFactory::GetForProfile(profile_)->Restore();
 }

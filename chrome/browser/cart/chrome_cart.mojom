@@ -20,4 +20,8 @@ struct MerchantCart {
 interface CartHandler {
   // Returns the merchant carts in chrome cart.
   GetMerchantCarts() => (array<MerchantCart> carts);
+  // Dismisses the cart module.
+  DismissCartModule();
+  // Restores the cart module.
+  RestoreCartModule();
 };
