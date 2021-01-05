@@ -13,6 +13,7 @@
 #include "android_webview/browser/aw_browser_terminator.h"
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_web_ui_controller_factory.h"
+#include "android_webview/browser/metrics/aw_metrics_service_accessor.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/network_service/aw_network_change_notifier_factory.h"
 #include "android_webview/browser/tracing/background_tracing_field_trial.h"
@@ -23,6 +24,7 @@
 #include "android_webview/common/crash_reporter/aw_crash_reporter_client.h"
 #include "base/android/apk_assets.h"
 #include "base/android/build_info.h"
+#include "base/android/bundle_utils.h"
 #include "base/android/memory_pressure_listener_android.h"
 #include "base/base_paths_android.h"
 #include "base/callback_helpers.h"
@@ -37,9 +39,12 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/android/metrics/memory_metrics_logger.h"
 #include "components/heap_profiling/multi_process/supervisor.h"
+#include "components/metrics/metrics_service.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_crash_keys.h"
+#include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -118,7 +123,30 @@ int AwBrowserMainParts::PreCreateThreads() {
   crash_reporter::InitializeCrashKeys();
   variations::InitCrashKeys();
 
+  RegisterSyntheticTrials();
+
   return content::RESULT_CODE_NORMAL_EXIT;
+}
+
+void AwBrowserMainParts::RegisterSyntheticTrials() {
+  metrics::MetricsService* metrics =
+      AwMetricsServiceClient::GetInstance()->GetMetricsService();
+  metrics->synthetic_trial_registry()->AddSyntheticTrialObserver(
+      variations::VariationsIdsProvider::GetInstance());
+  metrics->synthetic_trial_registry()->AddSyntheticTrialObserver(
+      variations::SyntheticTrialsActiveGroupIdProvider::GetInstance());
+
+  // If isolated splits are enabled at build time, Monochrome and Trichrome will
+  // have a different bundle layout, so measure N+ even though isolated splits
+  // are only supported by Android in O+.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_NOUGAT) {
+    static constexpr char kIsolatedSplitsTrial[] = "IsolatedSplitsSynthetic";
+    AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        metrics, kIsolatedSplitsTrial,
+        base::android::BundleUtils::IsolatedSplitsEnabled() ? "Enabled"
+                                                            : "Disabled");
+  }
 }
 
 void AwBrowserMainParts::PreMainMessageLoopRun() {

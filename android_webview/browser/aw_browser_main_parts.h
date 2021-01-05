@@ -35,6 +35,8 @@ class AwBrowserMainParts : public content::BrowserMainParts {
   void PostCreateThreads() override;
 
  private:
+  void RegisterSyntheticTrials();
+
   // Android specific UI SingleThreadTaskExecutor.
   std::unique_ptr<base::SingleThreadTaskExecutor> main_task_executor_;
 
