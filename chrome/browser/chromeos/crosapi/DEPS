@@ -18,6 +18,11 @@ specific_include_rules = {
     # For Chrome OS-specific file manager parameters.
     "+chrome/browser/ui/views/select_file_dialog_extension.h",
   ],
+  "test_controller_ash\.cc": [
+    # Glue for tests.
+    "+ash/shell.h",
+    "+ash/wm",
+  ],
   "window_util\.cc":[
     "+ash/shell.h",
   ],

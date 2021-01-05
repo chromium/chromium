@@ -26,8 +26,20 @@ class TestControllerAsh : public mojom::TestController {
   void DoesWindowExist(const std::string& window_id,
                        DoesWindowExistCallback callback) override;
   void ClickWindow(const std::string& window_id) override;
+  void EnterOverviewMode(EnterOverviewModeCallback callback) override;
+  void ExitOverviewMode(ExitOverviewModeCallback callback) override;
 
  private:
+  class OverviewWaiter;
+
+  // Called when a waiter has finished waiting for its event.
+  void WaiterFinished(OverviewWaiter* waiter);
+
+  // Each call to EnterOverviewMode or ExitOverviewMode spawns a waiter for the
+  // corresponding event. The waiters are stored in this struct and deleted once
+  // the event triggers.
+  std::vector<std::unique_ptr<OverviewWaiter>> overview_waiters_;
+
   // This class supports any number of connections. This allows multiple
   // crosapi clients.
   mojo::ReceiverSet<mojom::TestController> receivers_;

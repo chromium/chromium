@@ -64,8 +64,9 @@ IN_PROC_BROWSER_TEST_F(ClipboardLacrosBrowserTest, GetCopyPasteText) {
   aura::Window* window = BrowserView::GetBrowserViewForBrowser(browser())
                              ->frame()
                              ->GetNativeWindow();
-  WaitForWindowToBeAvailableInAsh(window->GetRootWindow());
-  SendAndWaitForMouseClick(window->GetRootWindow());
+  std::string id = browser_test_util::GetWindowId(window->GetRootWindow());
+  browser_test_util::WaitForWindowCreation(id);
+  browser_test_util::SendAndWaitForMouseClick(window->GetRootWindow());
 
   // Write some clipboard text and read it back.
   std::string write_text =

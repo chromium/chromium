@@ -15,20 +15,8 @@
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/platform_window/platform_window.h"
 
+namespace browser_test_util {
 namespace {
-
-std::string GetWindowUniqueId(aura::Window* window) {
-  DCHECK(window);
-  DCHECK(window->IsRootWindow());
-  // On desktop aura there is one WindowTreeHost per top-level window.
-  aura::WindowTreeHost* window_tree_host = window->GetHost();
-  DCHECK(window_tree_host);
-  // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
-  // aura::WindowTreeHostPlatform.
-  aura::WindowTreeHostPlatform* window_tree_host_platform =
-      static_cast<aura::WindowTreeHostPlatform*>(window_tree_host);
-  return window_tree_host_platform->platform_window()->GetWindowUniqueId();
-}
 
 // Observes Aura and waits for both a mouse down and a mouse up event.
 class AuraObserver : public aura::WindowEventDispatcherObserver {
@@ -54,15 +42,11 @@ class AuraObserver : public aura::WindowEventDispatcherObserver {
   bool mouse_up_seen_ = false;
 };
 
-}  // namespace
-
-void WaitForWindowToBeAvailableInAsh(aura::Window* window) {
-  DCHECK(window->IsRootWindow());
-  std::string id = GetWindowUniqueId(window);
-
+void WaitForWindow(const std::string& id, bool exists) {
   base::RunLoop outer_loop;
   auto wait_for_window = base::BindRepeating(
-      [](base::RunLoop* outer_loop, const std::string& id) {
+      [](base::RunLoop* outer_loop, const std::string& id,
+         bool expected_exists) {
         auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
         CHECK(lacros_chrome_service->IsTestControllerAvailable());
 
@@ -77,10 +61,10 @@ void WaitForWindowToBeAvailableInAsh(aura::Window* window) {
                     &inner_loop, &exists));
         inner_loop.Run();
 
-        if (exists)
+        if (exists == expected_exists)
           outer_loop->Quit();
       },
-      &outer_loop, id);
+      &outer_loop, id, exists);
 
   // Wait for the window to be available.
   base::RepeatingTimer timer;
@@ -89,13 +73,36 @@ void WaitForWindowToBeAvailableInAsh(aura::Window* window) {
   outer_loop.Run();
 }
 
+}  // namespace
+
+std::string GetWindowId(aura::Window* window) {
+  DCHECK(window);
+  DCHECK(window->IsRootWindow());
+  // On desktop aura there is one WindowTreeHost per top-level window.
+  aura::WindowTreeHost* window_tree_host = window->GetHost();
+  DCHECK(window_tree_host);
+  // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
+  // aura::WindowTreeHostPlatform.
+  aura::WindowTreeHostPlatform* window_tree_host_platform =
+      static_cast<aura::WindowTreeHostPlatform*>(window_tree_host);
+  return window_tree_host_platform->platform_window()->GetWindowUniqueId();
+}
+
+void WaitForWindowCreation(const std::string& id) {
+  WaitForWindow(id, /*exists=*/true);
+}
+
+void WaitForWindowDestruction(const std::string& id) {
+  WaitForWindow(id, /*exists=*/false);
+}
+
 // Sends a TestController message to Ash to send a mouse click to this |window|.
 // Waits for both the mouse-down and the mouse-up events to be seen by
 // |window|. The AuraObserver only waits for the up-event to start processing
 // before quitting the run loop.
 void SendAndWaitForMouseClick(aura::Window* window) {
   DCHECK(window->IsRootWindow());
-  std::string id = GetWindowUniqueId(window);
+  std::string id = GetWindowId(window);
 
   base::RunLoop run_loop;
   std::unique_ptr<AuraObserver> obs = std::make_unique<AuraObserver>(&run_loop);
@@ -106,3 +113,5 @@ void SendAndWaitForMouseClick(aura::Window* window) {
   run_loop.Run();
   aura::Env::GetInstance()->RemoveWindowEventDispatcherObserver(obs.get());
 }
+
+}  // namespace browser_test_util
