@@ -152,10 +152,9 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
   }
 
   if (!excluding_domains.empty() || !ignoring_domains.empty()) {
-    site_engagement::ImportantSitesUtil::
-        RecordBlacklistedAndIgnoredImportantSites(
-            profile, excluding_domains, excluding_domain_reasons,
-            ignoring_domains, ignoring_domain_reasons);
+    site_engagement::ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
+        profile, excluding_domains, excluding_domain_reasons, ignoring_domains,
+        ignoring_domain_reasons);
   }
 
   base::OnceCallback<void(uint64_t)> callback = base::BindOnce(

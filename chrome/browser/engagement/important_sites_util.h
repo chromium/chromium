@@ -90,16 +90,15 @@ class ImportantSitesUtil {
   static std::set<std::string> GetInstalledRegisterableDomains(
       Profile* profile);
 
-  // Record the sites that the user chose to blacklist from clearing (in the
-  // Clear Browsing Dialog) and the sites they ignored. The blacklisted sites
-  // are NOT cleared as they are 'blacklisted' from the clear operation.
-  // This records metrics for blacklisted and ignored sites and removes any
-  // 'ignored' sites from our important sites list if they were ignored 3 times
-  // in a row.
-  static void RecordBlacklistedAndIgnoredImportantSites(
+  // Record the sites that the user explicitly chose to exclude from clearing
+  // (in the Clear Browsing Dialog) and the sites they ignored. This records
+  // metrics for excluded and ignored sites and suppresses any 'ignored' sites
+  // from appearing in our important sites list if they were ignored 3 times in
+  // a row.
+  static void RecordExcludedAndIgnoredImportantSites(
       Profile* profile,
-      const std::vector<std::string>& blacklisted_sites,
-      const std::vector<int32_t>& blacklisted_sites_reason_bitfield,
+      const std::vector<std::string>& excluded_sites,
+      const std::vector<int32_t>& excluded_sites_reason_bitfield,
       const std::vector<std::string>& ignored_sites,
       const std::vector<int32_t>& ignored_sites_reason_bitfield);
 

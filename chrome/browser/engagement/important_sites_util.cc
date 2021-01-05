@@ -58,10 +58,10 @@ using ImportantReason = ImportantSitesUtil::ImportantReason;
 // dictionary and the dialog preference dictionary.
 
 static const char kTimeLastIgnored[] = "TimeLastIgnored";
-static const int kBlacklistExpirationTimeDays = 30 * 5;
+static const int kSuppressionExpirationTimeDays = 30 * 5;
 
 static const char kNumTimesIgnoredName[] = "NumTimesIgnored";
-static const int kTimesIgnoredForBlacklist = 3;
+static const int kTimesIgnoredForSuppression = 3;
 
 // These are the maximum # of bookmarks we can use as signals. If the user has
 // <= kMaxBookmarks, then we just use those bookmarks. Otherwise we filter all
@@ -109,14 +109,14 @@ void RecordIgnore(base::DictionaryValue* dict) {
   dict->SetDouble(kTimeLastIgnored, base::Time::Now().ToDoubleT());
 }
 
-// If we should blacklist the item with the given dictionary ignored record.
+// If we should suppress the item with the given dictionary ignored record.
 bool ShouldSuppressItem(base::Value* dict) {
   base::Optional<double> last_ignored_time =
       dict->FindDoubleKey(kTimeLastIgnored);
   if (last_ignored_time) {
     base::TimeDelta diff =
         base::Time::Now() - base::Time::FromDoubleT(*last_ignored_time);
-    if (diff >= base::TimeDelta::FromDays(kBlacklistExpirationTimeDays)) {
+    if (diff >= base::TimeDelta::FromDays(kSuppressionExpirationTimeDays)) {
       dict->SetIntKey(kNumTimesIgnoredName, 0);
       dict->RemoveKey(kTimeLastIgnored);
       return false;
@@ -124,7 +124,7 @@ bool ShouldSuppressItem(base::Value* dict) {
   }
 
   base::Optional<int> times_ignored = dict->FindIntKey(kNumTimesIgnoredName);
-  return times_ignored && *times_ignored >= kTimesIgnoredForBlacklist;
+  return times_ignored && *times_ignored >= kTimesIgnoredForSuppression;
 }
 
 CrossedReason GetCrossedReasonFromBitfield(int32_t reason_bitfield) {
@@ -212,7 +212,7 @@ bool CompareDescendingImportantInfo(
   return a.second.engagement_score > b.second.engagement_score;
 }
 
-std::unordered_set<std::string> GetBlacklistedImportantDomains(
+std::unordered_set<std::string> GetSuppressedImportantDomains(
     Profile* profile) {
   ContentSettingsForOneType content_settings_list;
   HostContentSettingsMap* map =
@@ -466,8 +466,8 @@ ImportantSitesUtil::GetImportantRegisterableDomains(Profile* profile,
 
   PopulateInfoMapWithBookmarks(profile, engagement_map, &important_info);
 
-  std::unordered_set<std::string> blacklisted_domains =
-      GetBlacklistedImportantDomains(profile);
+  std::unordered_set<std::string> suppressed_domains =
+      GetSuppressedImportantDomains(profile);
 
   std::vector<std::pair<std::string, ImportantDomainInfo>> items;
   for (auto& item : important_info)
@@ -478,10 +478,9 @@ ImportantSitesUtil::GetImportantRegisterableDomains(Profile* profile,
   for (std::pair<std::string, ImportantDomainInfo>& domain_info : items) {
     if (final_list.size() >= max_results)
       return final_list;
-    if (blacklisted_domains.find(domain_info.first) !=
-        blacklisted_domains.end()) {
+    if (suppressed_domains.find(domain_info.first) != suppressed_domains.end())
       continue;
-    }
+
     final_list.push_back(std::move(domain_info.second));
     RECORD_UMA_FOR_IMPORTANT_REASON(
         "Storage.ImportantSites.GeneratedReason",
@@ -504,7 +503,7 @@ ImportantSitesUtil::GetInstalledRegisterableDomains(
                                                   &installed_app_info);
 
   std::unordered_set<std::string> excluded_domains =
-      GetBlacklistedImportantDomains(profile);
+      GetSuppressedImportantDomains(profile);
 
   std::vector<std::pair<std::string, ImportantDomainInfo>> items;
   for (auto& item : installed_app_info)
@@ -522,14 +521,14 @@ ImportantSitesUtil::GetInstalledRegisterableDomains(
 }
 #endif
 
-void ImportantSitesUtil::RecordBlacklistedAndIgnoredImportantSites(
+void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
     Profile* profile,
-    const std::vector<std::string>& blacklisted_sites,
-    const std::vector<int32_t>& blacklisted_sites_reason_bitfield,
+    const std::vector<std::string>& excluded_sites,
+    const std::vector<int32_t>& excluded_sites_reason_bitfield,
     const std::vector<std::string>& ignored_sites,
     const std::vector<int32_t>& ignored_sites_reason_bitfield) {
-  // First, record the metrics for blacklisted and ignored sites.
-  for (int32_t reason_bitfield : blacklisted_sites_reason_bitfield) {
+  // First, record the metrics for excluded and ignored sites.
+  for (int32_t reason_bitfield : excluded_sites_reason_bitfield) {
     RECORD_UMA_FOR_IMPORTANT_REASON(
         "Storage.ImportantSites.CBDChosenReason",
         "Storage.ImportantSites.CBDChosenReasonCount", reason_bitfield);
@@ -543,9 +542,9 @@ void ImportantSitesUtil::RecordBlacklistedAndIgnoredImportantSites(
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile);
 
-  // We use the ignored sites to update our important sites blacklist only if
-  // the user chose to blacklist a site.
-  if (!blacklisted_sites.empty()) {
+  // We use the ignored sites to update our ignore counter only if the user
+  // chose to exclude a site.
+  if (!excluded_sites.empty()) {
     for (const std::string& ignored_site : ignored_sites) {
       GURL origin("http://" + ignored_site);
       std::unique_ptr<base::DictionaryValue> dict =
@@ -569,9 +568,9 @@ void ImportantSitesUtil::RecordBlacklistedAndIgnoredImportantSites(
     RecordIgnore(update.Get());
   }
 
-  // We clear our blacklist for sites that the user chose.
-  for (const std::string& blacklisted_site : blacklisted_sites) {
-    GURL origin("http://" + blacklisted_site);
+  // We clear our ignore counter for sites that the user chose.
+  for (const std::string& excluded_site : excluded_sites) {
+    GURL origin("http://" + excluded_site);
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
     dict->SetInteger(kNumTimesIgnoredName, 0);
     dict->Remove(kTimeLastIgnored, nullptr);
@@ -583,7 +582,7 @@ void ImportantSitesUtil::RecordBlacklistedAndIgnoredImportantSites(
   // Finally, record our old crossed-stats.
   // Note: we don't plan on adding new metrics here, this is just for the finch
   // experiment to give us initial data on what signals actually mattered.
-  for (int32_t reason_bitfield : blacklisted_sites_reason_bitfield) {
+  for (int32_t reason_bitfield : excluded_sites_reason_bitfield) {
     UMA_HISTOGRAM_ENUMERATION("Storage.BlacklistedImportantSites.Reason",
                               GetCrossedReasonFromBitfield(reason_bitfield),
                               CROSSED_REASON_BOUNDARY);

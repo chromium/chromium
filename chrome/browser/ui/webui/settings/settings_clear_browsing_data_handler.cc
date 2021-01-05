@@ -222,10 +222,9 @@ ClearBrowsingDataHandler::ProcessInstalledApps(
     }
   }
   if (!excluded_domains.empty() || !ignored_domains.empty()) {
-    site_engagement::ImportantSitesUtil::
-        RecordBlacklistedAndIgnoredImportantSites(
-            profile_->GetOriginalProfile(), excluded_domains,
-            excluded_domain_reasons, ignored_domains, ignored_domain_reasons);
+    site_engagement::ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
+        profile_->GetOriginalProfile(), excluded_domains,
+        excluded_domain_reasons, ignored_domains, ignored_domain_reasons);
   }
 
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder(
