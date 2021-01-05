@@ -267,21 +267,6 @@ TEST_F(ArcUtilTest, IsArcOptInVerificationDisabled) {
   EXPECT_TRUE(IsArcOptInVerificationDisabled());
 }
 
-TEST_F(ArcUtilTest, IsArcAppWindow) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(0, nullptr));
-  EXPECT_FALSE(IsArcAppWindow(window.get()));
-
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(ash::AppType::CHROME_APP));
-  EXPECT_FALSE(IsArcAppWindow(window.get()));
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(ash::AppType::ARC_APP));
-  EXPECT_TRUE(IsArcAppWindow(window.get()));
-
-  EXPECT_FALSE(IsArcAppWindow(nullptr));
-}
-
 TEST_F(ArcUtilTest, IsArcAllowedForUser) {
   user_manager::FakeUserManager* fake_user_manager =
       new user_manager::FakeUserManager();

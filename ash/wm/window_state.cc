@@ -821,7 +821,7 @@ void WindowState::UpdatePipBounds() {
 }
 
 void WindowState::CollectPipEnterExitMetrics(bool enter) {
-  const bool is_arc = window_util::IsArcWindow(window());
+  const bool is_arc = IsArcWindow(window());
   if (enter) {
     pip_start_time_ = base::TimeTicks::Now();
 

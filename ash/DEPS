@@ -7,7 +7,6 @@ include_rules = [
   "+components/account_id",
   "+components/discardable_memory/public",
   "+components/discardable_memory/service/discardable_shared_memory_manager.h",
-  "+components/exo",
   "+components/media_message_center",
   "+components/pref_registry",
   "+components/prefs",

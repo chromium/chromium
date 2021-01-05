@@ -146,10 +146,6 @@ bool IsArcAllowedForUser(const user_manager::User* user);
 // In most cases, it is disabled for testing purpose.
 bool IsArcOptInVerificationDisabled();
 
-// Returns true if the |window|'s aura::client::kAppType is ARC_APP. When
-// |window| is nullptr, returns false.
-bool IsArcAppWindow(const aura::Window* window);
-
 constexpr int kNoTaskId = -1;
 constexpr int kSystemWindowTaskId = 0;
 // Returns the task id given by the exo shell's application id, or |kNoTaskId|

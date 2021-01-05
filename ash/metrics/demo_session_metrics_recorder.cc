@@ -138,10 +138,6 @@ AppType GetAppType(const aura::Window* window) {
   return static_cast<AppType>(window->GetProperty(aura::client::kAppType));
 }
 
-bool IsArcWindow(const aura::Window* window) {
-  return (GetAppType(window) == AppType::ARC_APP);
-}
-
 const std::string* GetArcPackageName(const aura::Window* window) {
   DCHECK(IsArcWindow(window));
   return window->GetProperty(kArcPackageNameKey);

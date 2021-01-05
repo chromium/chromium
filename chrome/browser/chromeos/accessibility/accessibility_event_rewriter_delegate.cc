@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/accessibility/accessibility_event_rewriter_delegate.h"
 
 #include "ash/public/cpp/accessibility_controller_enums.h"
+#include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/accessibility/event_handler_common.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "components/arc/arc_util.h"
 #include "components/exo/wm_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -181,5 +181,5 @@ void AccessibilityEventRewriterDelegate::OnWindowActivated(
   if (gained_active == lost_active)
     return;
 
-  is_arc_window_active_ = arc::IsArcAppWindow(gained_active);
+  is_arc_window_active_ = ash::IsArcWindow(gained_active);
 }

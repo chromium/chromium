@@ -6,10 +6,10 @@
 
 #include <algorithm>
 
+#include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/check.h"
-#include "components/arc/arc_util.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/window.h"
 
@@ -53,7 +53,7 @@ void ArcPipWindowThrottleObserver::StopObserving() {
 }
 
 void ArcPipWindowThrottleObserver::OnWindowAdded(aura::Window* window) {
-  if (IsArcAppWindow(window))
+  if (ash::IsArcWindow(window))
     SetActive(true);
 }
 
@@ -62,7 +62,7 @@ void ArcPipWindowThrottleObserver::OnWindowRemoved(aura::Window* window) {
   // window may be removed after a new one is added.
   auto* const container = GetPipContainer();
   if (std::none_of(container->children().begin(), container->children().end(),
-                   &IsArcAppWindow)) {
+                   &ash::IsArcWindow)) {
     SetActive(false);
   }
 }

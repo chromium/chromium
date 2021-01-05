@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/wm/window_util.h"
+#include "ash/public/cpp/app_types.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -240,7 +240,7 @@ ui::EndpointType ChromeDataExchangeDelegate::GetDataTransferEndpointType(
     aura::Window* target) const {
   auto* top_level_window = target->GetToplevelWindow();
 
-  if (ash::window_util::IsArcWindow(top_level_window))
+  if (ash::IsArcWindow(top_level_window))
     return ui::EndpointType::kArc;
 
   if (borealis::BorealisWindowManager::IsBorealisWindow(top_level_window))
@@ -320,9 +320,8 @@ std::vector<ui::FileInfo> ChromeDataExchangeDelegate::GetFilenames(
 
 std::string ChromeDataExchangeDelegate::GetMimeTypeForUriList(
     aura::Window* target) const {
-  return ash::window_util::IsArcWindow(target->GetToplevelWindow())
-             ? kMimeTypeArcUriList
-             : kMimeTypeTextUriList;
+  return ash::IsArcWindow(target->GetToplevelWindow()) ? kMimeTypeArcUriList
+                                                       : kMimeTypeTextUriList;
 }
 
 void ChromeDataExchangeDelegate::SendFileInfo(
@@ -330,7 +329,7 @@ void ChromeDataExchangeDelegate::SendFileInfo(
     const std::vector<ui::FileInfo>& files,
     SendDataCallback callback) const {
   // ARC converts to ArcUrl and uses utf-16.
-  if (ash::window_util::IsArcWindow(target->GetToplevelWindow())) {
+  if (ash::IsArcWindow(target->GetToplevelWindow())) {
     std::vector<std::string> lines;
     GURL url;
     for (const auto& info : files) {
@@ -375,7 +374,7 @@ void ChromeDataExchangeDelegate::SendPickle(aura::Window* target,
   GetFileSystemUrlsFromPickle(pickle, &file_system_urls);
 
   // ARC FileSystemURLs are converted to Content URLs.
-  if (ash::window_util::IsArcWindow(target->GetToplevelWindow())) {
+  if (ash::IsArcWindow(target->GetToplevelWindow())) {
     if (file_system_urls.empty()) {
       std::move(callback).Run(nullptr);
       return;

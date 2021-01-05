@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/app_types.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -54,7 +55,7 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
       return false;
     aura::Window* active = exo::WMHelper::GetInstance()->GetActiveWindow();
     for (; window; window = window->parent()) {
-      if (IsArcAppWindow(window))
+      if (ash::IsArcWindow(window))
         return true;
 
       // IsArcAppWindow returns false for a window of ARC++ Kiosk app, so we

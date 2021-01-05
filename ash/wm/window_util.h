@@ -107,9 +107,6 @@ ASH_EXPORT aura::Window* GetRootWindowAt(const gfx::Point& point_in_screen);
 // virtual screen coordinates.
 ASH_EXPORT aura::Window* GetRootWindowMatching(const gfx::Rect& rect_in_screen);
 
-// Returns true if |window| is an ARC app window.
-ASH_EXPORT bool IsArcWindow(const aura::Window* window);
-
 // Returns true if |window| is an ARC PIP window.
 ASH_EXPORT bool IsArcPipWindow(const aura::Window* window);
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/arc/instance_throttle/arc_active_window_throttle_observer.h"
 
-#include "components/arc/arc_util.h"
+#include "ash/public/cpp/app_types.h"
 
 namespace arc {
 
@@ -16,7 +16,7 @@ bool ArcActiveWindowThrottleObserver::ProcessWindowActivation(
     ActivationReason reason,
     aura::Window* gained_active,
     aura::Window* lost_active) {
-  return IsArcAppWindow(gained_active);
+  return ash::IsArcWindow(gained_active);
 }
 
 }  // namespace arc

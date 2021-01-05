@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -567,8 +568,8 @@ void ArcAccessibilityHelperBridge::OnWindowActivated(
   // ToggleNativeChromeVoxArcSupport event.
   //  - When non-ChromeVox ARC window becomes inactive, dispatch |true|.
   //  - When non-ChromeVox ARC window becomes active, dispatch |false|.
-  bool lost_arc = arc::IsArcAppWindow(lost_active);
-  bool gained_arc = arc::IsArcAppWindow(gained_active);
+  bool lost_arc = ash::IsArcWindow(lost_active);
+  bool gained_arc = ash::IsArcWindow(gained_active);
   bool talkback_enabled = !native_chromevox_enabled_;
   if (talkback_enabled && lost_arc != gained_arc)
     DispatchCustomSpokenFeedbackToggled(gained_arc);
@@ -760,7 +761,7 @@ void ArcAccessibilityHelperBridge::UpdateEnabledFeature() {
 
   exo::WMHelper* wm_helper = exo::WMHelper::GetInstance();
   aura::Window* active_window = GetActiveWindow();
-  bool is_arc_active = arc::IsArcAppWindow(active_window);
+  bool is_arc_active = ash::IsArcWindow(active_window);
   if (add_activation_observer) {
     wm_helper->AddActivationObserver(this);
     activation_observer_added_ = true;
@@ -776,7 +777,7 @@ void ArcAccessibilityHelperBridge::UpdateEnabledFeature() {
 
 void ArcAccessibilityHelperBridge::UpdateWindowProperties(
     aura::Window* window) {
-  if (!arc::IsArcAppWindow(window))
+  if (!ash::IsArcWindow(window))
     return;
 
   int32_t task_id = arc::GetWindowTaskId(window);

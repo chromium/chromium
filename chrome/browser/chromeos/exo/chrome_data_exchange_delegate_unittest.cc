@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/exo/chrome_data_exchange_delegate.h"
 
 #include "ash/public/cpp/app_types.h"
-#include "ash/wm/window_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/pickle.h"
@@ -96,11 +95,10 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
         &delegate_, 0, gfx::Rect(), nullptr);
     arc_toplevel_->SetProperty(aura::client::kAppType,
                                static_cast<int>(ash::AppType::ARC_APP));
-    ASSERT_TRUE(ash::window_util::IsArcWindow(arc_toplevel_));
+    ASSERT_TRUE(ash::IsArcWindow(arc_toplevel_));
     arc_window_ =
         aura::test::CreateTestWindowWithBounds(gfx::Rect(), arc_toplevel_);
-    ASSERT_TRUE(
-        ash::window_util::IsArcWindow(arc_window_->GetToplevelWindow()));
+    ASSERT_TRUE(ash::IsArcWindow(arc_window_->GetToplevelWindow()));
 
     // Crostini:
     crostini_toplevel_ = aura::test::CreateTestWindowWithDelegate(

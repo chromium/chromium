@@ -11,6 +11,7 @@
 #include <map>
 #include <vector>
 
+#include "ash/public/cpp/app_types.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -293,7 +294,7 @@ void TabManagerDelegate::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,
     aura::Window* lost_active) {
-  if (arc::IsArcAppWindow(gained_active)) {
+  if (ash::IsArcWindow(gained_active)) {
     // Currently there is no way to know which app is displayed in the ARC
     // window, so schedule an early adjustment for all processes to reflect
     // the change.
@@ -308,7 +309,7 @@ void TabManagerDelegate::OnWindowActivated(
         TimeDelta::FromMilliseconds(kFocusedProcessScoreAdjustIntervalMs), this,
         &TabManagerDelegate::ScheduleEarlyOomPrioritiesAdjustment);
   }
-  if (arc::IsArcAppWindow(lost_active)) {
+  if (ash::IsArcWindow(lost_active)) {
     // Do not bother adjusting OOM score if the ARC window is deactivated
     // shortly.
     if (focused_process_->ResetIfIsArcApp() &&

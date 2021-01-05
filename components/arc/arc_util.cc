@@ -266,13 +266,6 @@ bool IsArcOptInVerificationDisabled() {
       chromeos::switches::kDisableArcOptInVerification);
 }
 
-bool IsArcAppWindow(const aura::Window* window) {
-  if (!window)
-    return false;
-  return window->GetProperty(aura::client::kAppType) ==
-         static_cast<int>(ash::AppType::ARC_APP);
-}
-
 int GetWindowTaskId(const aura::Window* window) {
   if (!window)
     return kNoTaskId;

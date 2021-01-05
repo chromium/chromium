@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/app_types.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -101,7 +102,7 @@ ArcMetricsService::ArcMetricsService(content::BrowserContext* context,
                                      ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service),
       guest_os_engagement_metrics_(user_prefs::UserPrefs::Get(context),
-                                   base::BindRepeating(arc::IsArcAppWindow),
+                                   base::BindRepeating(ash::IsArcWindow),
                                    prefs::kEngagementPrefsPrefix,
                                    kUmaPrefix),
       process_observer_(this),
@@ -362,7 +363,7 @@ void ArcMetricsService::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,
     aura::Window* lost_active) {
-  was_arc_window_active_ = arc::IsArcAppWindow(gained_active);
+  was_arc_window_active_ = ash::IsArcWindow(gained_active);
   if (!was_arc_window_active_) {
     gamepad_interaction_recorded_ = false;
     return;

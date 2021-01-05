@@ -38,7 +38,6 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_util.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/services/app_service/public/cpp/instance.h"
@@ -464,7 +463,7 @@ AppServiceAppWindowLauncherController::GetArcWindows() {
   std::vector<aura::Window*> arc_windows;
   std::copy_if(window_list_.begin(), window_list_.end(),
                std::inserter(arc_windows, arc_windows.end()),
-               [](aura::Window* w) { return arc::IsArcAppWindow(w); });
+               [](aura::Window* w) { return ash::IsArcWindow(w); });
   return arc_windows;
 }
 

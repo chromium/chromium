@@ -55,6 +55,7 @@ component("cpp") {
     "app_list/app_list_types.h",
     "app_list/internal_app_id_constants.h",
     "app_menu_constants.h",
+    "app_types.cc",
     "app_types.h",
     "arc_app_id_provider.cc",
     "arc_app_id_provider.h",

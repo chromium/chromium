@@ -5,6 +5,12 @@
 #ifndef ASH_PUBLIC_CPP_APP_TYPES_H_
 #define ASH_PUBLIC_CPP_APP_TYPES_H_
 
+#include "ash/public/cpp/ash_public_export.h"
+
+namespace aura {
+class Window;
+}
+
 namespace ash {
 
 // App type of the window.
@@ -21,6 +27,9 @@ enum class AppType {
   // TODO(crbug.com/1090663): Migrate this into BROWSER.
   LACROS,
 };
+
+// Returns true if |window| is an ARC app window.
+ASH_PUBLIC_EXPORT bool IsArcWindow(const aura::Window* window);
 
 }  // namespace ash
 

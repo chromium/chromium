@@ -295,11 +295,6 @@ aura::Window* GetRootWindowMatching(const gfx::Rect& rect_in_screen) {
                                 : nullptr;
 }
 
-bool IsArcWindow(const aura::Window* window) {
-  return window->GetProperty(aura::client::kAppType) ==
-         static_cast<int>(ash::AppType::ARC_APP);
-}
-
 bool IsArcPipWindow(const aura::Window* window) {
   return IsArcWindow(window) && WindowState::Get(window)->IsPip();
 }
