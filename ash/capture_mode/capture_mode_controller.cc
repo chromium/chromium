@@ -304,6 +304,12 @@ void CaptureModeController::SetSource(CaptureModeSource source) {
 }
 
 void CaptureModeController::SetType(CaptureModeType type) {
+  if (is_recording_in_progress_ && type == CaptureModeType::kVideo) {
+    // Overwrite video capture types to image, as we can't have more than one
+    // recording at a time.
+    type = CaptureModeType::kImage;
+  }
+
   if (type == type_)
     return;
 
@@ -320,6 +326,12 @@ void CaptureModeController::Start(CaptureModeEntryType entry_type) {
     ShowDisabledNotification();
     return;
   }
+
+  // Before we start the session, if video recording is in progress, we need to
+  // set the current type to image, as we can't have more than one recording at
+  // a time. The video toggle button in the capture mode bar will be disabled.
+  if (is_recording_in_progress_)
+    SetType(CaptureModeType::kImage);
 
   RecordCaptureModeEntryType(entry_type);
   capture_mode_session_ = std::make_unique<CaptureModeSession>(this);

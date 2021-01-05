@@ -70,6 +70,11 @@ void CaptureModeToggleButton::SetIcon(const gfx::VectorIcon& icon) {
 
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(icon, normal_color));
+  SetImage(views::Button::STATE_DISABLED,
+           gfx::CreateVectorIcon(
+               icon, color_provider->GetDisabledColor(normal_color)));
+  // Note that a disabled button cannot be toggled, so we don't need to set a
+  // toggled icon for the disabled state.
   const auto toggled_icon = gfx::CreateVectorIcon(icon, toggled_color);
   SetToggledImage(views::Button::STATE_NORMAL, &toggled_icon);
 }
