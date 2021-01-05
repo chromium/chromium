@@ -52,6 +52,9 @@ struct AutofillFieldDisplayInfo {
 };
 
 static const AutofillFieldDisplayInfo kFieldsToDisplay[] = {
+    {autofill::NAME_HONORIFIC_PREFIX, IDS_IOS_AUTOFILL_HONORIFIC_PREFIX,
+     UIReturnKeyNext, UIKeyboardTypeDefault,
+     UITextAutocapitalizationTypeSentences},
     {autofill::NAME_FULL, IDS_IOS_AUTOFILL_FULLNAME, UIReturnKeyNext,
      UIKeyboardTypeDefault, UITextAutocapitalizationTypeSentences},
     {autofill::COMPANY_NAME, IDS_IOS_AUTOFILL_COMPANY_NAME, UIReturnKeyNext,
@@ -186,6 +189,13 @@ static const AutofillFieldDisplayInfo kFieldsToDisplay[] = {
   [model addSectionWithIdentifier:SectionIdentifierFields];
   for (size_t i = 0; i < base::size(kFieldsToDisplay); ++i) {
     const AutofillFieldDisplayInfo& field = kFieldsToDisplay[i];
+
+    if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&
+        !base::FeatureList::IsEnabled(
+            autofill::features::
+                kAutofillEnableUIForHonorificPrefixesInSettings)) {
+      continue;
+    }
 
     AutofillEditItem* item =
         [[AutofillEditItem alloc] initWithType:ItemTypeField];

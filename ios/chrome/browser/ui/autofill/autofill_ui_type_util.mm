@@ -22,6 +22,8 @@ AutofillUIType AutofillUITypeFromAutofillType(autofill::ServerFieldType type) {
       return AutofillUITypeCreditCardExpMonth;
     case autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR:
       return AutofillUITypeCreditCardExpYear;
+    case autofill::NAME_HONORIFIC_PREFIX:
+      return AutofillUITypeProfileHonorificPrefix;
     case autofill::NAME_FULL:
       return AutofillUITypeProfileFullName;
     case autofill::COMPANY_NAME:
@@ -66,6 +68,8 @@ autofill::ServerFieldType AutofillTypeFromAutofillUIType(AutofillUIType type) {
       return autofill::CREDIT_CARD_EXP_MONTH;
     case AutofillUITypeCreditCardExpYear:
       return autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR;
+    case AutofillUITypeProfileHonorificPrefix:
+      return autofill::NAME_HONORIFIC_PREFIX;
     case AutofillUITypeProfileFullName:
       return autofill::NAME_FULL;
     case AutofillUITypeProfileCompanyName:
