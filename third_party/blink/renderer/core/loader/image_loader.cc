@@ -85,7 +85,7 @@ bool CheckForUnoptimizedImagePolicy(ExecutionContext* context,
   // Note: UnoptimizedImagePolicies is currently part of DocumentPolicy.
   // The original runtime feature UnoptimizedImagePolicies is no longer used,
   // and are planned to be removed.
-  if (RuntimeEnabledFeatures::DocumentPolicyEnabled(context) &&
+  if (RuntimeEnabledFeatures::DocumentPolicyEnabled() &&
       !new_image->IsAcceptableCompressionRatio(*context)) {
     return true;
   }

@@ -78,7 +78,7 @@ SecurityContextInit::SecurityContextInit(ExecutionContext* context)
 void SecurityContextInit::ApplyDocumentPolicy(
     DocumentPolicy::ParsedDocumentPolicy& document_policy,
     const String& report_only_document_policy_header) {
-  if (!RuntimeEnabledFeatures::DocumentPolicyEnabled(execution_context_))
+  if (!RuntimeEnabledFeatures::DocumentPolicyEnabled())
     return;
 
   // Because Document-Policy http header is parsed in DocumentLoader,

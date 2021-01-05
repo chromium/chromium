@@ -518,7 +518,7 @@ bool ExecutionContext::IsFeatureEnabled(
     const String& source_file) const {
   // The default value for any feature should be true unless restricted by
   // document policy
-  if (!RuntimeEnabledFeatures::DocumentPolicyEnabled(this))
+  if (!RuntimeEnabledFeatures::DocumentPolicyEnabled())
     return true;
 
   SecurityContext::FeatureStatus status =
