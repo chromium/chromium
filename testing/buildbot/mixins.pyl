@@ -605,7 +605,7 @@
     'swarming': {
       'dimensions': {
         'gpu': '8086:3e9b',
-        'os': 'Mac-10.15.5',
+        'os': 'Mac-10.15.7',
       },
     },
   },
