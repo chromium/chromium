@@ -42,9 +42,6 @@ struct WebRequestInfo;
 // other threads, as long as there is no concurrent access.
 class WebRequestEventDetails {
  public:
-  using DeterminedFrameDataCallback =
-      base::Callback<void(std::unique_ptr<WebRequestEventDetails>)>;
-
   // Create a WebRequestEventDetails with the following keys:
   // - method
   // - requestId
