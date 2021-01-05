@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
@@ -70,6 +71,13 @@ TEST(TCPSocketTest, CloseBeforeInit) {
 
   create_tester.WaitUntilSettled();
   ASSERT_TRUE(create_tester.IsRejected());
+
+  DOMException* create_exception = V8DOMException::ToImplWithTypeCheck(
+      scope.GetIsolate(), create_tester.Value().V8Value());
+  ASSERT_TRUE(create_exception);
+  EXPECT_EQ(create_exception->name(), "AbortError");
+  EXPECT_EQ(create_exception->message(), "The request was aborted locally");
+
   close_tester.WaitUntilSettled();
   ASSERT_TRUE(close_tester.IsFulfilled());
 }
@@ -95,6 +103,13 @@ TEST(TCPSocketTest, CloseAfterInitWithoutResultOK) {
 
   create_tester.WaitUntilSettled();
   ASSERT_TRUE(create_tester.IsRejected());
+
+  DOMException* create_exception = V8DOMException::ToImplWithTypeCheck(
+      scope.GetIsolate(), create_tester.Value().V8Value());
+  ASSERT_TRUE(create_exception);
+  EXPECT_EQ(create_exception->name(), "NotAllowedError");
+  EXPECT_EQ(create_exception->message(), "Permission denied");
+
   close_tester.WaitUntilSettled();
   ASSERT_TRUE(close_tester.IsFulfilled());
 }
@@ -124,6 +139,31 @@ TEST(TCPSocketTest, CloseAfterInitWithResultOK) {
   ASSERT_TRUE(create_tester.IsFulfilled());
   close_tester.WaitUntilSettled();
   ASSERT_TRUE(close_tester.IsFulfilled());
+}
+
+TEST(TCPSocketTest, OnSocketObserverConnectionError) {
+  V8TestingScope scope;
+  TCPSocketCreator tcp_socket_creator;
+
+  auto* tcp_socket = tcp_socket_creator.Create(scope);
+  auto* script_state = scope.GetScriptState();
+  auto create_promise = tcp_socket_creator.GetSciptPromise();
+  ScriptPromiseTester create_tester(script_state, create_promise);
+  ASSERT_FALSE(create_tester.IsRejected());
+
+  // Trigger OnSocketObserverConnectionError().
+  auto observer = tcp_socket->GetTCPSocketObserver();
+  observer.reset();
+
+  create_tester.WaitUntilSettled();
+  ASSERT_TRUE(create_tester.IsRejected());
+
+  DOMException* create_exception = V8DOMException::ToImplWithTypeCheck(
+      scope.GetIsolate(), create_tester.Value().V8Value());
+  ASSERT_TRUE(create_exception);
+  EXPECT_EQ(create_exception->name(), "NetworkError");
+  EXPECT_EQ(create_exception->message(),
+            "The request was aborted due to connection error");
 }
 
 }  // namespace

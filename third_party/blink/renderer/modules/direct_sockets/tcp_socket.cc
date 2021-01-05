@@ -76,35 +76,7 @@ void TCPSocket::Init(int32_t result,
 }
 
 ScriptPromise TCPSocket::close(ScriptState* script_state, ExceptionState&) {
-  local_addr_ = base::nullopt;
-  peer_addr_ = base::nullopt;
-  tcp_socket_.reset();
-  socket_observer_receiver_.reset();
-  feature_handle_for_scheduler_.reset();
-  if (resolver_) {
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, "The request was aborted locally"));
-    resolver_ = nullptr;
-
-    DCHECK(!tcp_readable_stream_wrapper_);
-    DCHECK(!tcp_writable_stream_wrapper_);
-
-    return ScriptPromise::CastUndefined(script_state);
-  }
-
-  if (tcp_readable_stream_wrapper_ &&
-      tcp_readable_stream_wrapper_->GetState() ==
-          TCPReadableStreamWrapper::State::kOpen) {
-    tcp_readable_stream_wrapper_->Reset();
-  }
-  tcp_readable_stream_wrapper_ = nullptr;
-
-  if (tcp_writable_stream_wrapper_ &&
-      tcp_writable_stream_wrapper_->GetState() ==
-          TCPWritableStreamWrapper::State::kOpen) {
-    tcp_writable_stream_wrapper_->Reset();
-  }
-  tcp_writable_stream_wrapper_ = nullptr;
+  DoClose(/*is_local_close=*/true);
 
   return ScriptPromise::CastUndefined(script_state);
 }
@@ -130,13 +102,19 @@ uint16_t TCPSocket::remotePort() const {
 }
 
 void TCPSocket::OnReadError(int32_t net_error) {
-  // TODO(crbug.com/905818): Implement error handling.
-  NOTIMPLEMENTED();
+  if (net_error > 0 || net_error == net::Error::ERR_IO_PENDING) {
+    return;
+  }
+
+  ResetReadableStream();
 }
 
 void TCPSocket::OnWriteError(int32_t net_error) {
-  // TODO(crbug.com/905818): Implement error handling.
-  NOTIMPLEMENTED();
+  if (net_error > 0 || net_error == net::Error::ERR_IO_PENDING) {
+    return;
+  }
+
+  ResetWritableStream();
 }
 
 void TCPSocket::Trace(Visitor* visitor) const {
@@ -147,24 +125,65 @@ void TCPSocket::Trace(Visitor* visitor) const {
 }
 
 void TCPSocket::OnSocketObserverConnectionError() {
-  // TODO(crbug.com/905818): Implement error handling.
-  NOTIMPLEMENTED();
+  DoClose(/*is_local_close=*/false);
 }
 
 void TCPSocket::OnReadableStreamAbort() {
-  if (tcp_writable_stream_wrapper_->GetState() ==
-      TCPWritableStreamWrapper::State::kAborted) {
-    return;
-  }
-  tcp_writable_stream_wrapper_->Reset();
+  ResetWritableStream();
 }
 
 void TCPSocket::OnWritableStreamAbort() {
+  ResetReadableStream();
+}
+
+void TCPSocket::DoClose(bool is_local_close) {
+  local_addr_ = base::nullopt;
+  peer_addr_ = base::nullopt;
+  tcp_socket_.reset();
+  socket_observer_receiver_.reset();
+  feature_handle_for_scheduler_.reset();
+
+  if (resolver_) {
+    DOMExceptionCode code = is_local_close ? DOMExceptionCode::kAbortError
+                                           : DOMExceptionCode::kNetworkError;
+    String message =
+        String::Format("The request was aborted %s",
+                       is_local_close ? "locally" : "due to connection error");
+    resolver_->Reject(MakeGarbageCollected<DOMException>(code, message));
+    resolver_ = nullptr;
+
+    DCHECK(!tcp_readable_stream_wrapper_);
+    DCHECK(!tcp_writable_stream_wrapper_);
+
+    return;
+  }
+
+  ResetReadableStream();
+  ResetWritableStream();
+}
+
+void TCPSocket::ResetReadableStream() {
+  if (!tcp_readable_stream_wrapper_)
+    return;
+
   if (tcp_readable_stream_wrapper_->GetState() ==
       TCPReadableStreamWrapper::State::kAborted) {
     return;
   }
   tcp_readable_stream_wrapper_->Reset();
+  tcp_readable_stream_wrapper_ = nullptr;
+}
+
+void TCPSocket::ResetWritableStream() {
+  if (!tcp_writable_stream_wrapper_)
+    return;
+
+  if (tcp_writable_stream_wrapper_->GetState() ==
+      TCPWritableStreamWrapper::State::kAborted) {
+    return;
+  }
+  tcp_writable_stream_wrapper_->Reset();
+  tcp_writable_stream_wrapper_ = nullptr;
 }
 
 }  // namespace blink

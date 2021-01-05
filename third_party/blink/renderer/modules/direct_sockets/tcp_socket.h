@@ -71,6 +71,10 @@ class MODULES_EXPORT TCPSocket final
   void OnReadableStreamAbort();
   void OnWritableStreamAbort();
 
+  void DoClose(bool is_local_close);
+  void ResetReadableStream();
+  void ResetWritableStream();
+
   Member<ScriptPromiseResolver> resolver_;
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
