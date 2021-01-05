@@ -4353,7 +4353,12 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
     intersection_observation_state_ = kNotNeeded;
   }
 
-  UpdateViewportIntersection(flags, needs_occlusion_tracking);
+  {
+    SCOPED_UMA_AND_UKM_TIMER(
+        EnsureUkmAggregator(),
+        LocalFrameUkmAggregator::kUpdateViewportIntersection);
+    UpdateViewportIntersection(flags, needs_occlusion_tracking);
+  }
 
   for (Frame* child = frame_->Tree().FirstChild(); child;
        child = child->Tree().NextSibling()) {

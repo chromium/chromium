@@ -139,6 +139,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kJavascriptIntersectionObserver,
     kLazyLoadIntersectionObserver,
     kMediaIntersectionObserver,
+    kUpdateViewportIntersection,
     kCount,
     kMainFrame
   };
@@ -175,7 +176,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
         {"DisplayLockIntersectionObserver", true},
         {"JavascriptIntersectionObserver", true},
         {"LazyLoadIntersectionObserver", true},
-        {"MediaIntersectionObserver", true}};
+        {"MediaIntersectionObserver", true},
+        {"UpdateViewportIntersection", true}};
     static_assert(base::size(data) == kCount, "Metrics data mismatch");
     return data;
   }

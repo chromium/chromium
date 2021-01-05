@@ -2121,6 +2121,12 @@ be describing additional metrics about the same event.
       First Contentful Paint, in microseconds.
     </summary>
   </metric>
+  <metric name="UpdateViewportIntersection">
+    <summary>
+      Time spent computing internal geometry information about iframes, in
+      microseconds.
+    </summary>
+  </metric>
   <metric name="WaitForCommit">
     <summary>
       The time spent waiting for the compositor thread to begin processing a
@@ -3279,6 +3285,26 @@ be describing additional metrics about the same event.
     <summary>
       The percentage of the main frame time used by LayerTreeHost::UpdateLayers.
       An int in the range [0,100].
+    </summary>
+  </metric>
+  <metric name="UpdateViewportIntersection">
+    <summary>
+      Time spent computing internal geometry information about iframes, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UpdateViewportIntersectionBeginMainFrame">
+    <summary>
+      The total main frame time used to compute internal geometry information
+      about iframes, in microseconds.
     </summary>
   </metric>
   <metric name="WaitForCommit">

@@ -374,6 +374,7 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent() {
       CASE_FOR_ID(JavascriptIntersectionObserver);
       CASE_FOR_ID(LazyLoadIntersectionObserver);
       CASE_FOR_ID(MediaIntersectionObserver);
+      CASE_FOR_ID(UpdateViewportIntersection);
       case kCount:
       case kMainFrame:
         NOTREACHED();
@@ -424,6 +425,7 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
       CASE_FOR_ID(JavascriptIntersectionObserver, i);
       CASE_FOR_ID(LazyLoadIntersectionObserver, i);
       CASE_FOR_ID(MediaIntersectionObserver, i);
+      CASE_FOR_ID(UpdateViewportIntersection, i);
       case kCount:
       case kMainFrame:
         NOTREACHED();
