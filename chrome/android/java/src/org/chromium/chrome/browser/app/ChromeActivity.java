@@ -40,6 +40,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.MathUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.SysUtils;
@@ -1813,7 +1814,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public void performOnConfigurationChanged(Configuration newConfig) {
         super.performOnConfigurationChanged(newConfig);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_LAYOUT_CHANGE_TAB_REPARENT)
+        if (FeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_LAYOUT_CHANGE_TAB_REPARENT)
                 && didChangeTabletMode()) {
             onScreenLayoutSizeChange();
             return;
