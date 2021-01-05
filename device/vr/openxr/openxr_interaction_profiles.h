@@ -281,11 +281,13 @@ constexpr OpenXrButtonPathMap kHPReverbG2RightControllerButtonPathMaps[] = {
 
 constexpr OpenXrButtonPathMap kGenericHandSelectGraspButtonPathMaps[] = {
     {OpenXrButtonType::kTrigger,
-     {{OpenXrButtonActionType::kValue, "/input/select/value"}},
-     1},
+     {{OpenXrButtonActionType::kPress, "/input/select/value"},
+      {OpenXrButtonActionType::kValue, "/input/select/value"}},
+     2},
     {OpenXrButtonType::kTrigger,
-     {{OpenXrButtonActionType::kValue, "/input/squeeze/value"}},
-     1},
+     {{OpenXrButtonActionType::kPress, "/input/squeeze/value"},
+      {OpenXrButtonActionType::kValue, "/input/squeeze/value"}},
+     2},
 };
 
 constexpr OpenXrAxisPathMap kMicrosoftMotionControllerAxisPathMaps[] = {
