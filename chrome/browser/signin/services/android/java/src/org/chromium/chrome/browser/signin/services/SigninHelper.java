@@ -51,7 +51,7 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
      * Uses GoogleAuthUtil.getAccountChangeEvents to detect if account
      * renaming has occurred.
      */
-    public static final class SystemAccountChangeEventChecker
+    private static final class SystemAccountChangeEventChecker
             implements SigninHelper.AccountChangeEventChecker {
         @Override
         public List<String> getAccountChangeEvents(Context context, int index, String accountName) {
@@ -123,7 +123,7 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
             Log.i(TAG,
                     "handleAccountRename from: " + syncAccount.getEmail() + " to "
                             + renamedAccount);
-            handleAccountRename(renamedAccount);
+            signOutAndThenSignin(renamedAccount);
             return;
         }
 
@@ -143,14 +143,14 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
 
                 @Override
                 protected void onPostExecute(Void result) {
-                    String renamedAccount = mPrefsManager.getNewSignedInAccountName();
-                    if (renamedAccount != null || mSigninManager.isOperationInProgress()) {
+                    if (mPrefsManager.getNewSignedInAccountName() != null
+                            || mSigninManager.isOperationInProgress()) {
                         // Found account rename event or there's a sign-in/sign-out operation in
                         // progress. Restart validation process.
                         validateAccountsInternal(true);
-                        return;
+                    } else {
+                        mSigninManager.signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
                     }
-                    mSigninManager.signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
                 }
             };
             task.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
@@ -165,40 +165,28 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
     }
 
     /**
-     * Deal with account rename. The current approach is to sign out and then sign back in.
-     * In the (near) future, we should just be clearing all the cached email address here
-     * and have the UI re-fetch the emailing address based on the ID.
+     * Perform a sign-out with a callback to sign-in again.
      */
-    private void handleAccountRename(final String newName) {
-        // TODO(acleung): I think most of the operations need to run on the main
-        // thread. May be we should have a progress Dialog?
+    private void signOutAndThenSignin(String accountEmail) {
+        final Account account = AccountUtils.createAccountFromName(accountEmail);
+        final SigninManager.SignInCallback signinCallback = new SigninManager.SignInCallback() {
+            @Override
+            public void onSignInComplete() {
+                validateAccountsInternal(true);
+            }
 
-        // TODO(acleung): Deal with passphrase or just prompt user to re-enter it?
-        // Perform a sign-out with a callback to sign-in again.
+            @Override
+            public void onSignInAborted() {}
+        };
         mSigninManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, () -> {
             // Clear the shared perf only after signOut is successful.
             // If Chrome dies, we can try it again on next run.
             // Otherwise, if re-sign-in fails, we'll just leave chrome
             // signed-out.
             mPrefsManager.clearNewSignedInAccountName();
-            performResignin(newName);
+            mSigninManager.signinAndEnableSync(
+                    SigninAccessPoint.ACCOUNT_RENAMED, account, signinCallback);
         }, false);
-    }
-
-    private void performResignin(String newName) {
-        // This is the correct account now.
-        final Account account = AccountUtils.createAccountFromName(newName);
-
-        mSigninManager.signinAndEnableSync(
-                SigninAccessPoint.ACCOUNT_RENAMED, account, new SigninManager.SignInCallback() {
-                    @Override
-                    public void onSignInComplete() {
-                        validateAccountsInternal(true);
-                    }
-
-                    @Override
-                    public void onSignInAborted() {}
-                });
     }
 
     @VisibleForTesting

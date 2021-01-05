@@ -15,7 +15,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.MockChangeEventChecker;
 
 /**
- * Instrumentation tests for {@link SigninHelper}.
+ * Unit tests for {@link SigninHelper}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SigninHelperTest {
