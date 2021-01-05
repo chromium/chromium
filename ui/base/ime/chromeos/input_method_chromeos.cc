@@ -442,6 +442,7 @@ void InputMethodChromeOS::ResetContext(bool reset_engine) {
 
   pending_composition_ = base::nullopt;
   result_text_.clear();
+  result_text_cursor_ = 0;
   composing_text_ = false;
   composition_changed_ = false;
 
@@ -578,9 +579,22 @@ void InputMethodChromeOS::ProcessInputMethodResult(ui::KeyEvent* event,
         client->InsertChar(ch_event);
       }
     } else {
-      client->InsertText(
-          result_text_,
-          TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+      // Split |result_text_| into two separate commits, one for the substring
+      // before |result_text_cursor_| and one for the substring after.
+      const base::string16 before_cursor =
+          result_text_.substr(0, result_text_cursor_);
+      if (!before_cursor.empty()) {
+        client->InsertText(
+            before_cursor,
+            TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+      }
+      const base::string16 after_cursor =
+          result_text_.substr(result_text_cursor_);
+      if (!after_cursor.empty()) {
+        client->InsertText(
+            after_cursor,
+            TextInputClient::InsertTextCursorBehavior::kMoveCursorBeforeText);
+      }
       composing_text_ = false;
     }
   }
@@ -612,20 +626,24 @@ void InputMethodChromeOS::ProcessInputMethodResult(ui::KeyEvent* event,
   // We should not clear composition text here, as it may belong to the next
   // composition session.
   result_text_.clear();
+  result_text_cursor_ = 0;
   composition_changed_ = false;
 }
 
 bool InputMethodChromeOS::NeedInsertChar() const {
   return GetTextInputClient() &&
-      (IsTextInputTypeNone() ||
-       (!composing_text_ && result_text_.length() == 1));
+         (IsTextInputTypeNone() ||
+          (!composing_text_ && result_text_.length() == 1 &&
+           result_text_cursor_ == 1));
 }
 
 bool InputMethodChromeOS::HasInputMethodResult() const {
   return result_text_.length() || composition_changed_;
 }
 
-void InputMethodChromeOS::CommitText(const std::string& text) {
+void InputMethodChromeOS::CommitText(
+    const std::string& text,
+    TextInputClient::InsertTextCursorBehavior cursor_behavior) {
   if (text.empty())
     return;
 
@@ -646,7 +664,11 @@ void InputMethodChromeOS::CommitText(const std::string& text) {
 
   // Append the text to the buffer, because commit signal might be fired
   // multiple times when processing a key event.
-  result_text_.append(utf16_text);
+  result_text_.insert(result_text_cursor_, utf16_text);
+  if (cursor_behavior ==
+      TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText) {
+    result_text_cursor_ += utf16_text.length();
+  }
 
   // If we are not handling key event, do not bother sending text result if the
   // focused text input client does not support text input.
@@ -657,6 +679,7 @@ void InputMethodChromeOS::CommitText(const std::string& text) {
           TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
     SendFakeProcessKeyEvent(false);
     result_text_.clear();
+    result_text_cursor_ = 0;
   }
 }
 
@@ -767,7 +790,8 @@ bool InputMethodChromeOS::ExecuteCharacterComposer(const ui::KeyEvent& event) {
   std::string commit_text =
       base::UTF16ToUTF8(character_composer_.composed_character());
   if (!commit_text.empty()) {
-    CommitText(commit_text);
+    CommitText(commit_text,
+               TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   }
   return true;
 }

@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/events/event.h"
 
 namespace ui {
@@ -23,7 +24,9 @@ struct SurroundingTextInfo {
 class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEInputContextHandlerInterface {
  public:
   // Called when the engine commit a text.
-  virtual void CommitText(const std::string& text) = 0;
+  virtual void CommitText(
+      const std::string& text,
+      TextInputClient::InsertTextCursorBehavior cursor_behavior) = 0;
 
   // Called when the engine changes the composition range.
   // Returns true if the operation was successful.
