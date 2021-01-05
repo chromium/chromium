@@ -470,6 +470,7 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
      * @param inProgress Whether a URL focus change is taking place.
      */
     protected void setUrlFocusChangeInProgress(boolean inProgress) {
+        if (mUrlCoordinator == null) return;
         mUrlFocusChangeInProgress = inProgress;
         if (!inProgress) {
             updateButtonVisibility();
@@ -776,13 +777,14 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
 
     /**
      * Handles any actions to be performed after all other actions triggered by the URL focus
-     * change.  This will be called after any animations are performed to transition from one
+     * change. This will be called after any animations are performed to transition from one
      * focus state to the other.
      * @param hasFocus Whether the URL field has gained focus.
      * @param shouldShowKeyboard Whether the keyboard should be shown. This value should be the same
      *         as hasFocus by default.
      */
     protected void finishUrlFocusChange(boolean hasFocus, boolean shouldShowKeyboard) {
+        if (mUrlCoordinator == null) return;
         mUrlCoordinator.setKeyboardVisibility(hasFocus && shouldShowKeyboard, true);
         setUrlFocusChangeInProgress(false);
         updateShouldAnimateIconChanges();

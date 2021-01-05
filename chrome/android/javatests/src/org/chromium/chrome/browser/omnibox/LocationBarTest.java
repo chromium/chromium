@@ -247,4 +247,17 @@ public class LocationBarTest {
                 mLocationBarMediator.getStatusCoordinatorForTesting()
                         .getSecurityIconResourceIdForTesting());
     }
+
+    @Test
+    @MediumTest
+    public void testPostDestroyFocusLogic() {
+        startActivityNormally();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            LocationBarLayout locationBarLayout =
+                    mActivity.findViewById(org.chromium.chrome.R.id.location_bar);
+            locationBarLayout.destroy();
+            locationBarLayout.finishUrlFocusChange(true, true);
+            locationBarLayout.setUrlFocusChangeInProgress(false);
+        });
+    }
 }
