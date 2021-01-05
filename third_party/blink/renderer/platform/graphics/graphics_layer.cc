@@ -67,7 +67,6 @@ namespace blink {
 
 GraphicsLayer::GraphicsLayer(GraphicsLayerClient& client)
     : client_(client),
-      prevent_contents_opaque_changes_(false),
       draws_content_(false),
       paints_hit_test_(false),
       contents_visible_(true),
@@ -459,14 +458,12 @@ void GraphicsLayer::UpdateContentsLayerBounds() {
 }
 
 void GraphicsLayer::SetContentsToCcLayer(
-    scoped_refptr<cc::Layer> contents_layer,
-    bool prevent_contents_opaque_changes) {
+    scoped_refptr<cc::Layer> contents_layer) {
   DCHECK_NE(contents_layer, layer_);
-  SetContentsTo(std::move(contents_layer), prevent_contents_opaque_changes);
+  SetContentsTo(std::move(contents_layer));
 }
 
-void GraphicsLayer::SetContentsTo(scoped_refptr<cc::Layer> layer,
-                                  bool prevent_contents_opaque_changes) {
+void GraphicsLayer::SetContentsTo(scoped_refptr<cc::Layer> layer) {
   if (layer) {
     if (contents_layer_ != layer) {
       contents_layer_ = std::move(layer);
@@ -478,7 +475,6 @@ void GraphicsLayer::SetContentsTo(scoped_refptr<cc::Layer> layer,
       NotifyChildListChange();
     }
     UpdateContentsLayerBounds();
-    prevent_contents_opaque_changes_ = prevent_contents_opaque_changes;
   } else if (contents_layer_) {
     contents_layer_ = nullptr;
     NotifyChildListChange();
@@ -589,20 +585,6 @@ void GraphicsLayer::SetContentsVisible(bool contents_visible) {
 
   contents_visible_ = contents_visible;
   UpdateLayerIsDrawable();
-}
-
-bool GraphicsLayer::ContentsOpaque() const {
-  return CcLayer().contents_opaque();
-}
-
-void GraphicsLayer::SetContentsOpaque(bool opaque) {
-  CcLayer().SetContentsOpaque(opaque);
-  if (contents_layer_ && !prevent_contents_opaque_changes_)
-    contents_layer_->SetContentsOpaque(opaque);
-}
-
-void GraphicsLayer::SetContentsOpaqueForText(bool opaque) {
-  CcLayer().SetContentsOpaqueForText(opaque);
 }
 
 void GraphicsLayer::SetPaintsHitTest(bool paints_hit_test) {

@@ -112,7 +112,8 @@ class PaintLayerScrollableAreaTest : public RenderingTest,
     return To<LayoutBoxModelObject>(scroller)
         ->Layer()
         ->GraphicsLayerBacking()
-        ->ContentsOpaque();
+        ->CcLayer()
+        .contents_opaque();
   }
 
  private:

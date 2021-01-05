@@ -143,7 +143,7 @@ static void DetachScrollbarLayerFromGraphicsLayer(
     GraphicsLayer* scrollbar_graphics_layer) {
   DCHECK(scrollbar_graphics_layer);
 
-  scrollbar_graphics_layer->SetContentsToCcLayer(nullptr, false);
+  scrollbar_graphics_layer->SetContentsToCcLayer(nullptr);
   scrollbar_graphics_layer->SetDrawsContent(true);
   scrollbar_graphics_layer->SetHitTestable(true);
 }
@@ -159,9 +159,7 @@ static void SetupScrollbarLayer(GraphicsLayer* scrollbar_graphics_layer,
   }
 
   scrollbar_layer->SetScrollElementId(scrolling_layer->element_id());
-  scrollbar_graphics_layer->SetContentsToCcLayer(
-      scrollbar_layer,
-      /*prevent_contents_opaque_changes=*/true);
+  scrollbar_graphics_layer->SetContentsToCcLayer(scrollbar_layer);
   scrollbar_graphics_layer->SetDrawsContent(false);
   scrollbar_graphics_layer->SetHitTestable(false);
 }
@@ -226,7 +224,7 @@ void ScrollingCoordinator::ScrollableAreaScrollbarLayerDidChange(
                         scrollable_area->LayerForScrolling());
     SetScrollbarLayer(scrollable_area, orientation,
                       std::move(new_scrollbar_layer));
-    scrollbar_graphics_layer->SetContentsOpaque(contents_opaque);
+    scrollbar_graphics_layer->CcLayer().SetContentsOpaque(contents_opaque);
   } else {
     RemoveScrollbarLayer(scrollable_area, orientation);
   }

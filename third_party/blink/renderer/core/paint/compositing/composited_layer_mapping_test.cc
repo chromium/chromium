@@ -1475,7 +1475,7 @@ TEST_F(CompositedLayerMappingTest, ContentsNotOpaqueWithForegroundLayer) {
   PaintLayer* target_layer = GetPaintLayerByElementId("target");
   CompositedLayerMapping* mapping = target_layer->GetCompositedLayerMapping();
   EXPECT_TRUE(mapping->ForegroundLayer());
-  EXPECT_FALSE(mapping->MainGraphicsLayer()->ContentsOpaque());
+  EXPECT_FALSE(mapping->MainGraphicsLayer()->CcLayer().contents_opaque());
 }
 
 TEST_F(CompositedLayerMappingTest, EmptyBoundsDoesntDrawContent) {
@@ -1532,7 +1532,7 @@ TEST_F(CompositedLayerMappingTest, ContentsOpaque) {
   PaintLayer* target_layer = GetPaintLayerByElementId("target");
   CompositedLayerMapping* mapping = target_layer->GetCompositedLayerMapping();
   EXPECT_FALSE(mapping->ForegroundLayer());
-  EXPECT_TRUE(mapping->MainGraphicsLayer()->ContentsOpaque());
+  EXPECT_TRUE(mapping->MainGraphicsLayer()->CcLayer().contents_opaque());
 }
 
 TEST_F(CompositedLayerMappingTest, NullOverflowControlLayers) {

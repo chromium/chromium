@@ -224,16 +224,16 @@ void CompositedLayerMapping::UpdateGraphicsLayerContentsOpaque(
   if (BackgroundPaintsOntoGraphicsLayer()) {
     bool contents_opaque = owning_layer_.BackgroundIsKnownToBeOpaqueInRect(
         CompositedBounds(), should_check_children);
-    graphics_layer_->SetContentsOpaque(contents_opaque);
+    graphics_layer_->CcLayer().SetContentsOpaque(contents_opaque);
     if (!contents_opaque) {
-      graphics_layer_->SetContentsOpaqueForText(
+      graphics_layer_->CcLayer().SetContentsOpaqueForText(
           GetLayoutObject().TextIsKnownToBeOnOpaqueBackground());
     }
   } else {
     // If we only paint the background onto the scrolling contents layer we
     // are going to leave a hole in the m_graphicsLayer where the background
     // is so it is not opaque.
-    graphics_layer_->SetContentsOpaque(false);
+    graphics_layer_->CcLayer().SetContentsOpaque(false);
   }
 }
 
@@ -252,9 +252,9 @@ void CompositedLayerMapping::UpdateContentsOpaque() {
     bool contents_opaque = owning_layer_.BackgroundIsKnownToBeOpaqueInRect(
         To<LayoutBox>(GetLayoutObject()).PhysicalPaddingBoxRect(),
         should_check_children);
-    scrolling_contents_layer_->SetContentsOpaque(contents_opaque);
+    scrolling_contents_layer_->CcLayer().SetContentsOpaque(contents_opaque);
     if (!contents_opaque) {
-      scrolling_contents_layer_->SetContentsOpaqueForText(
+      scrolling_contents_layer_->CcLayer().SetContentsOpaqueForText(
           GetLayoutObject().TextIsKnownToBeOnOpaqueBackground());
     }
 
@@ -262,12 +262,12 @@ void CompositedLayerMapping::UpdateContentsOpaque() {
   } else {
     DCHECK(BackgroundPaintsOntoGraphicsLayer());
     if (scrolling_contents_layer_)
-      scrolling_contents_layer_->SetContentsOpaque(false);
+      scrolling_contents_layer_->CcLayer().SetContentsOpaque(false);
     UpdateGraphicsLayerContentsOpaque(should_check_children);
   }
 
   if (non_scrolling_squashing_layer_) {
-    non_scrolling_squashing_layer_->SetContentsOpaque(false);
+    non_scrolling_squashing_layer_->CcLayer().SetContentsOpaque(false);
     bool contents_opaque_for_text = true;
     for (const GraphicsLayerPaintInfo& squashed_layer :
          non_scrolling_squashed_layers_) {
@@ -277,7 +277,7 @@ void CompositedLayerMapping::UpdateContentsOpaque() {
         break;
       }
     }
-    non_scrolling_squashing_layer_->SetContentsOpaqueForText(
+    non_scrolling_squashing_layer_->CcLayer().SetContentsOpaqueForText(
         contents_opaque_for_text);
   }
 }
@@ -351,22 +351,19 @@ bool CompositedLayerMapping::UpdateGraphicsLayerConfiguration(
 
   if (layout_object.IsLayoutEmbeddedContent()) {
     if (WebPluginContainerImpl* plugin = GetPluginContainer(layout_object)) {
-      graphics_layer_->SetContentsToCcLayer(plugin->CcLayer(), true);
+      graphics_layer_->SetContentsToCcLayer(plugin->CcLayer());
     } else if (auto* frame_owner =
                    DynamicTo<HTMLFrameOwnerElement>(layout_object.GetNode())) {
       if (auto* remote = DynamicTo<RemoteFrame>(frame_owner->ContentFrame())) {
-        graphics_layer_->SetContentsToCcLayer(remote->GetCcLayer(), true);
+        graphics_layer_->SetContentsToCcLayer(remote->GetCcLayer());
       }
     }
   } else if (IsA<LayoutVideo>(layout_object)) {
     auto* media_element = To<HTMLMediaElement>(layout_object.GetNode());
-    graphics_layer_->SetContentsToCcLayer(
-        media_element->CcLayer(),
-        /*prevent_contents_opaque_changes=*/true);
+    graphics_layer_->SetContentsToCcLayer(media_element->CcLayer());
   } else if (layout_object.IsCanvas()) {
     graphics_layer_->SetContentsToCcLayer(
-        To<HTMLCanvasElement>(layout_object.GetNode())->ContentsCcLayer(),
-        /*prevent_contents_opaque_changes=*/true);
+        To<HTMLCanvasElement>(layout_object.GetNode())->ContentsCcLayer());
     layer_config_changed = true;
   }
 
