@@ -3220,8 +3220,8 @@ TEST_P(DeepScanningDownloadTest, UnsupportedFiletypeBlockedByPreference) {
 
 TEST_F(DownloadProtectionServiceTest, NativeFileSystemWriteRequest_NotABinary) {
   auto item = PrepareBasicNativeFileSystemWriteItem(
-      /*tmp_path=*/FILE_PATH_LITERAL("a.txt.crswap"),
-      /*final_path=*/FILE_PATH_LITERAL("a.txt"));
+      /*tmp_path_literal=*/FILE_PATH_LITERAL("a.txt.crswap"),
+      /*final_path_literal=*/FILE_PATH_LITERAL("a.txt"));
 
   RunLoop run_loop;
   download_service_->CheckNativeFileSystemWrite(
@@ -3239,8 +3239,8 @@ TEST_F(DownloadProtectionServiceTest,
   PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK, net::OK);
 
   auto item = PrepareBasicNativeFileSystemWriteItem(
-      /*tmp_path=*/FILE_PATH_LITERAL("a.txt.crswap"),
-      /*final_path=*/FILE_PATH_LITERAL("a.txt"));
+      /*tmp_path_literal=*/FILE_PATH_LITERAL("a.txt.crswap"),
+      /*final_path_literal=*/FILE_PATH_LITERAL("a.txt"));
 
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
       .Times(1);
@@ -3272,8 +3272,8 @@ TEST_F(DownloadProtectionServiceTest,
     // Case (2): is_extended_reporting && !is_incognito.
     //           A "light" ClientDownloadRequest should be sent.
     item = PrepareBasicNativeFileSystemWriteItem(
-        /*tmp_path=*/FILE_PATH_LITERAL("a.txt.crswap"),
-        /*final_path=*/FILE_PATH_LITERAL("a.txt"));
+        /*tmp_path_literal=*/FILE_PATH_LITERAL("a.txt.crswap"),
+        /*final_path_literal=*/FILE_PATH_LITERAL("a.txt"));
     RunLoop run_loop;
     download_service_->CheckNativeFileSystemWrite(
         std::move(item),
@@ -3300,8 +3300,8 @@ TEST_F(DownloadProtectionServiceTest,
     //           ClientDownloadRequest should NOT be sent.
     SetExtendedReportingPreference(false);
     item = PrepareBasicNativeFileSystemWriteItem(
-        /*tmp_path=*/FILE_PATH_LITERAL("a.txt.crswap"),
-        /*final_path=*/FILE_PATH_LITERAL("a.txt"));
+        /*tmp_path_literal=*/FILE_PATH_LITERAL("a.txt.crswap"),
+        /*final_path_literal=*/FILE_PATH_LITERAL("a.txt"));
     item->browser_context = profile()->GetPrimaryOTRProfile();
 
     RunLoop run_loop;
@@ -3317,8 +3317,8 @@ TEST_F(DownloadProtectionServiceTest,
     // Case (4): !is_extended_reporting && !is_incognito.
     //           ClientDownloadRequest should NOT be sent.
     item = PrepareBasicNativeFileSystemWriteItem(
-        /*tmp_path=*/FILE_PATH_LITERAL("a.txt.crswap"),
-        /*final_path=*/FILE_PATH_LITERAL("a.txt"));
+        /*tmp_path_literal=*/FILE_PATH_LITERAL("a.txt.crswap"),
+        /*final_path_literal=*/FILE_PATH_LITERAL("a.txt"));
     RunLoop run_loop;
     download_service_->CheckNativeFileSystemWrite(
         std::move(item),
@@ -3337,8 +3337,8 @@ TEST_F(DownloadProtectionServiceTest,
                   net::ERR_FAILED);
 
   auto item = PrepareBasicNativeFileSystemWriteItem(
-      /*tmp_path=*/FILE_PATH_LITERAL("a.exe.crswap"),
-      /*final_path=*/FILE_PATH_LITERAL("a.exe"));
+      /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
+      /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadWhitelistUrl(_))
@@ -3360,8 +3360,8 @@ TEST_F(DownloadProtectionServiceTest, NativeFileSystemWriteRequest_Success) {
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
   auto item = PrepareBasicNativeFileSystemWriteItem(
-      /*tmp_path=*/FILE_PATH_LITERAL("a.exe.crswap"),
-      /*final_path=*/FILE_PATH_LITERAL("a.exe"));
+      /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
+      /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadWhitelistUrl(_))
@@ -3434,8 +3434,8 @@ TEST_F(DownloadProtectionServiceTest,
   AddDomainToEnterpriseWhitelist("example.com");
 
   auto item = PrepareBasicNativeFileSystemWriteItem(
-      /*tmp_path=*/FILE_PATH_LITERAL("a.txt.crswap"),
-      /*final_path=*/FILE_PATH_LITERAL("a.txt"));
+      /*tmp_path_literal=*/FILE_PATH_LITERAL("a.txt.crswap"),
+      /*final_path_literal=*/FILE_PATH_LITERAL("a.txt"));
   item->frame_url = GURL("https://example.com/foo");
   download_service_->CheckNativeFileSystemWrite(
       std::move(item),
@@ -3451,8 +3451,8 @@ TEST_F(DownloadProtectionServiceTest,
 TEST_F(DownloadProtectionServiceTest,
        NativeFileSystemWriteRequest_CheckRequest) {
   auto item = PrepareBasicNativeFileSystemWriteItem(
-      /*tmp_path=*/FILE_PATH_LITERAL("a.exe.crswap"),
-      /*final_path=*/FILE_PATH_LITERAL("a.exe"));
+      /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
+      /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
   item->frame_url = GURL("http://www.google.com/");
 
   GURL tab_url("http://tab.com/final");
