@@ -205,6 +205,8 @@ void ProfilePickerHandler::RegisterMessages() {
       base::BindRepeating(
           &ProfilePickerHandler::HandleLoadSignInProfileCreationFlow,
           base::Unretained(this)));
+  // TODO(crbug.com/1115056): Consider renaming this message to
+  // 'createLocalProfile' as this is only used for local profiles.
   web_ui()->RegisterMessageCallback(
       "createProfile",
       base::BindRepeating(&ProfilePickerHandler::HandleCreateProfile,
@@ -373,7 +375,8 @@ void ProfilePickerHandler::HandleCreateProfile(const base::ListValue* args) {
   DCHECK(profiles::IsDefaultAvatarIconUrl(avatar_url, &icon_index));
 #endif
 
-  ProfileMetrics::LogProfileAddNewUser(ProfileMetrics::ADD_NEW_PROFILE_PICKER);
+  ProfileMetrics::LogProfileAddNewUser(
+      ProfileMetrics::ADD_NEW_PROFILE_PICKER_LOCAL);
   ProfileManager::CreateMultiProfileAsync(
       profile_name, avatar_url,
       base::BindRepeating(&ProfilePickerHandler::OnProfileCreated,

@@ -667,6 +667,8 @@ void ProfilePickerView::FinishSignedInCreationFlowImpl(
   // Unmark this profile ephemeral so that it is not deleted upon next startup.
   entry->SetIsEphemeral(false);
   entry->SetLocalProfileName(name_for_signed_in_profile_);
+  ProfileMetrics::LogProfileAddNewUser(
+      ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
 
   // If sync is not enabled (and will not likely be enabled with an enterprise
   // consent), apply a new color to the profile (otherwise, a more complicated

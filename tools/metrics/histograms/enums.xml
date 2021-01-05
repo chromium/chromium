@@ -61091,13 +61091,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ProfileAddNewUser">
-  <int value="0" label="(Deprecated) Add new user from icon menu"/>
-  <int value="1" label="(Deprecated) Add new user from title bar menu"/>
-  <int value="2" label="Add new user from settings dialog"/>
-  <int value="3" label="Add new user from the Profile picker"/>
+  <int value="0" label="(Deprecated) Add new profile from icon menu"/>
+  <int value="1" label="(Deprecated) Add new profile from title bar menu"/>
+  <int value="2" label="Add new profile from the old create profile dialog"/>
+  <int value="3" label="Add new local profile from the Profile picker"/>
   <int value="4" label="Auto-created after deleting last user"/>
-  <int value="5" label="Add new user from sign-in interception"/>
-  <int value="6" label="Add new user from the sync flow (to avoid data clash)"/>
+  <int value="5" label="Add new profile from sign-in interception"/>
+  <int value="6"
+      label="Add new profile from the sync flow (to avoid data clash)"/>
+  <int value="7" label="Add new signed-in profile from the Profile picker"/>
 </enum>
 
 <enum name="ProfileAllAccountsCategories">

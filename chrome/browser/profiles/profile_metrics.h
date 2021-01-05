@@ -40,10 +40,10 @@ class ProfileMetrics {
     // ADD_NEW_USER_ICON = 0,
     // User adds new user from menu bar -- no longer used
     // ADD_NEW_USER_MENU = 1,
-    // User adds new user from create-profile dialog
+    // User adds new profile from the (old) create-profile dialog
     ADD_NEW_USER_DIALOG = 2,
-    // User adds new user from Profile Picker
-    ADD_NEW_PROFILE_PICKER = 3,
+    // User adds new local profile from Profile Picker
+    ADD_NEW_PROFILE_PICKER_LOCAL = 3,
     // Auto-created after deleting last user
     ADD_NEW_USER_LAST_DELETED = 4,
     // Created by the sign-in interception prompt
@@ -51,7 +51,9 @@ class ProfileMetrics {
     // Created during the sync flow (to avoid clash with data in the existing
     // profile)
     ADD_NEW_USER_SYNC_FLOW = 6,
-    kMaxValue = ADD_NEW_USER_SYNC_FLOW
+    // User adds new signed-in profile from Profile Picker
+    ADD_NEW_PROFILE_PICKER_SIGNED_IN = 7,
+    kMaxValue = ADD_NEW_PROFILE_PICKER_SIGNED_IN
   };
 
   enum ProfileDelete {
