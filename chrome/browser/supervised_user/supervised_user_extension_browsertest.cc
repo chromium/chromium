@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/logged_in_user_mixin.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -37,8 +35,6 @@ class SupervisedUserExtensionTest : public ExtensionBrowserTest {
   // We have to essentially replicate what MixinBasedInProcessBrowserTest does
   // here because ExtensionBrowserTest doesn't inherit from that class.
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        supervised_users::kSupervisedUserInitiatedExtensionInstall);
     mixin_host_.SetUp();
     ExtensionBrowserTest::SetUp();
   }
@@ -118,8 +114,6 @@ class SupervisedUserExtensionTest : public ExtensionBrowserTest {
       content::IsPreTest() ? chromeos::LoggedInUserMixin::LogInType::kChild
                            : chromeos::LoggedInUserMixin::LogInType::kRegular,
       embedded_test_server(), this};
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Removing supervision should also remove associated disable reasons, such as

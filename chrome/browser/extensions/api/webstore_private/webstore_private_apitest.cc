@@ -48,10 +48,8 @@
 // flag to #if defined(OS_CHROMEOS)
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/supervised_user/logged_in_user_mixin.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
@@ -366,11 +364,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, EmptyCrx) {
 static constexpr char kTestChildEmail[] = "test_child_user@google.com";
 static constexpr char kTestChildGaiaId[] = "8u8tuw09sufncmnaos";
 
+static constexpr char kTestAppId[] = "iladmdjkfniedhfhcfoefgojhgaiaccc";
+static constexpr char kTestAppVersion[] = "0.1";
+
+// Test fixture for various cases of installation for child accounts.
 class ExtensionWebstorePrivateApiTestChild
-    : public ExtensionWebstorePrivateApiTest {
+    : public ExtensionWebstorePrivateApiTest,
+      public TestParentPermissionDialogViewObserver {
  public:
+  // The next dialog action to take.
+  enum class NextDialogAction {
+    kCancel,
+    kAccept,
+  };
+
   ExtensionWebstorePrivateApiTestChild()
-      : embedded_test_server_(std::make_unique<net::EmbeddedTestServer>()),
+      : TestParentPermissionDialogViewObserver(this),
+        embedded_test_server_(std::make_unique<net::EmbeddedTestServer>()),
         logged_in_user_mixin_(
             &mixin_host_,
             chromeos::LoggedInUserMixin::LogInType::kChild,
@@ -428,67 +438,6 @@ class ExtensionWebstorePrivateApiTestChild
         ->SetNextReAuthStatus(next_status);
   }
 
- protected:
-  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
-
- private:
-  // Create another embedded test server to avoid starting the same one twice.
-  std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
-  chromeos::LoggedInUserMixin logged_in_user_mixin_;
-};
-
-class ExtensionWebstorePrivateApiTestChildInstallDisabled
-    : public ExtensionWebstorePrivateApiTestChild {
- public:
-  ExtensionWebstorePrivateApiTestChildInstallDisabled() {
-    feature_list_.InitWithFeatures(
-        {}, {supervised_users::kSupervisedUserInitiatedExtensionInstall});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that extension installation is blocked for child accounts when
-// the feature flag is disabled.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallDisabled,
-                       InstallBlocked) {
-  base::HistogramTester histogram_tester;
-  base::UserActionTester user_action_tester;
-  ASSERT_TRUE(RunInstallTest("install_blocked_child.html", "app.crx"));
-  histogram_tester.ExpectUniqueSample(
-      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
-      SupervisedUserExtensionsMetricsRecorder::EnablementState::kFailedToEnable,
-      1);
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName, 1);
-  EXPECT_EQ(
-      1,
-      user_action_tester.GetActionCount(
-          SupervisedUserExtensionsMetricsRecorder::kFailedToEnableActionName));
-}
-
-static constexpr char kTestAppId[] = "iladmdjkfniedhfhcfoefgojhgaiaccc";
-static constexpr char kTestAppVersion[] = "0.1";
-
-// Test fixture for various cases of installation for child accounts
-// when the feature flag is enabled.
-class ExtensionWebstorePrivateApiTestChildInstallEnabled
-    : public ExtensionWebstorePrivateApiTestChild,
-      public TestParentPermissionDialogViewObserver {
- public:
-  // The next dialog action to take.
-  enum class NextDialogAction {
-    kCancel,
-    kAccept,
-  };
-
-  ExtensionWebstorePrivateApiTestChildInstallEnabled()
-      : TestParentPermissionDialogViewObserver(this) {
-    feature_list_.InitWithFeatures(
-        {supervised_users::kSupervisedUserInitiatedExtensionInstall}, {});
-  }
-
   // TestParentPermissionDialogViewObserver override:
   void OnTestParentPermissionDialogViewCreated(
       ParentPermissionDialogView* view) override {
@@ -511,13 +460,18 @@ class ExtensionWebstorePrivateApiTestChildInstallEnabled
     next_dialog_action_ = action;
   }
 
+ protected:
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+
  private:
-  base::test::ScopedFeatureList feature_list_;
+  // Create another embedded test server to avoid starting the same one twice.
+  std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
+  chromeos::LoggedInUserMixin logged_in_user_mixin_;
   base::Optional<NextDialogAction> next_dialog_action_;
 };
 
 // Tests install for a child when parent permission is granted.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallEnabled,
+IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
                        ParentPermissionGranted) {
   WebstoreInstallListener listener;
   WebstorePrivateApi::SetWebstoreInstallerDelegateForTesting(&listener);
@@ -543,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallEnabled,
 
 // Tests no install occurs for a child when the parent permission
 // dialog is canceled.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallEnabled,
+IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
                        ParentPermissionCanceled) {
   WebstoreInstallListener listener;
   set_next_dialog_action(NextDialogAction::kCancel);
@@ -565,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallEnabled,
 }
 
 // Tests that no parent permission is required for a child to install a theme.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallEnabled,
+IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
                        NoParentPermissionRequiredForTheme) {
   WebstoreInstallListener listener;
   WebstorePrivateApi::SetWebstoreInstallerDelegateForTesting(&listener);
@@ -578,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallEnabled,
 // Tests that even if the kSupervisedUserInitiatedExtensionInstall feature flag
 // is enabled, supervised user extension installs are blocked if the
 // "Permissions for sites, apps and extensions" toggle is off.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallEnabled,
+IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
                        InstallBlockedWhenPermissionsToggleOff) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;

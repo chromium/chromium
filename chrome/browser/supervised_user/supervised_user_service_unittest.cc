@@ -15,7 +15,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -347,17 +345,9 @@ class SupervisedUserServiceExtensionTestBase
     return extension;
   }
 
-  void InitSupervisedUserInitiatedExtensionInstallFeature(bool enabled) {
-    if (enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          supervised_users::kSupervisedUserInitiatedExtensionInstall);
-    }
-  }
-
   bool is_supervised_;
   extensions::ScopedCurrentChannel channel_;
   SupervisedUserURLFilterObserver url_filter_observer_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class SupervisedUserServiceExtensionTestUnsupervised
@@ -376,8 +366,6 @@ class SupervisedUserServiceExtensionTest
 
 TEST_F(SupervisedUserServiceExtensionTest,
        ExtensionManagementPolicyProviderWithoutSUInitiatedInstalls) {
-  InitSupervisedUserInitiatedExtensionInstallFeature(true);
-
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
   supervised_user_service
@@ -429,12 +417,10 @@ TEST_F(SupervisedUserServiceExtensionTest,
 
 TEST_F(SupervisedUserServiceExtensionTest,
        ExtensionManagementPolicyProviderWithSUInitiatedInstalls) {
-  // Enable child users to initiate extension installs by simulating the
-  // toggling of "Permissions for sites and apps" to enabled.
-  InitSupervisedUserInitiatedExtensionInstallFeature(true);
-
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
+  // Enable child users to initiate extension installs by simulating the
+  // toggling of "Permissions for sites, apps and extensions" to enabled.
   supervised_user_service
       ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(true);
   EXPECT_TRUE(supervised_user_service

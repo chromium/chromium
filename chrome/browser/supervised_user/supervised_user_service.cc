@@ -281,11 +281,6 @@ bool SupervisedUserService::IsChild() const {
   return profile_->IsChild();
 }
 
-bool SupervisedUserService::IsSupervisedUserExtensionInstallEnabled() const {
-  return base::FeatureList::IsEnabled(
-      supervised_users::kSupervisedUserInitiatedExtensionInstall);
-}
-
 bool SupervisedUserService::HasACustodian() const {
   return !GetCustodianEmailAddress().empty() ||
          !GetSecondCustodianEmailAddress().empty();
@@ -389,7 +384,7 @@ void SupervisedUserService::
 }
 
 bool SupervisedUserService::CanInstallExtensions() const {
-  return IsSupervisedUserExtensionInstallEnabled() && HasACustodian() &&
+  return HasACustodian() &&
          GetSupervisedUserExtensionsMayRequestPermissionsPref();
 }
 
@@ -789,12 +784,6 @@ SupervisedUserService::ExtensionState SupervisedUserService::GetExtensionState(
 
   if (base::Contains(kAllowlistExtensionIds, extension.id())) {
     return ExtensionState::ALLOWED;
-  }
-
-  // Feature flag for gating new behavior.
-  if (!base::FeatureList::IsEnabled(
-          supervised_users::kSupervisedUserInitiatedExtensionInstall)) {
-    return ExtensionState::BLOCKED;
   }
 
   if (ShouldBlockExtension(extension.id())) {
