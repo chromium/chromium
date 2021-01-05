@@ -14,6 +14,7 @@
 #include "ui/display/manager/configure_displays_task.h"
 #include "ui/display/manager/test/action_logger_util.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
+#include "ui/display/types/display_constants.h"
 
 namespace display {
 namespace test {
@@ -25,20 +26,24 @@ class ConfigureDisplaysTaskTest : public testing::Test {
   ConfigureDisplaysTaskTest()
       : delegate_(&log_),
         small_mode_(gfx::Size(1366, 768), false, 60.0f),
+        medium_mode_(gfx::Size(1920, 1080), false, 60.0f),
         big_mode_(gfx::Size(2560, 1600), false, 60.0f) {}
   ~ConfigureDisplaysTaskTest() override = default;
 
   void SetUp() override {
     displays_.push_back(FakeDisplaySnapshot::Builder()
                             .SetId(123)
-                            .SetNativeMode(small_mode_.Clone())
-                            .SetCurrentMode(small_mode_.Clone())
+                            .SetNativeMode(medium_mode_.Clone())
+                            .SetCurrentMode(medium_mode_.Clone())
+                            .AddMode(small_mode_.Clone())
+                            .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
                             .Build());
     displays_.push_back(FakeDisplaySnapshot::Builder()
                             .SetId(456)
                             .SetNativeMode(big_mode_.Clone())
                             .SetCurrentMode(big_mode_.Clone())
                             .AddMode(small_mode_.Clone())
+                            .SetType(DISPLAY_CONNECTION_TYPE_DISPLAYPORT)
                             .Build());
   }
 
@@ -56,6 +61,7 @@ class ConfigureDisplaysTaskTest : public testing::Test {
   ConfigureDisplaysTask::Status status_ = ConfigureDisplaysTask::ERROR;
 
   const DisplayMode small_mode_;
+  const DisplayMode medium_mode_;
   const DisplayMode big_mode_;
 
   std::vector<std::unique_ptr<DisplaySnapshot>> displays_;
@@ -71,16 +77,16 @@ TEST_F(ConfigureDisplaysTaskTest, ConfigureWithOneDisplay) {
       &ConfigureDisplaysTaskTest::ConfigureCallback, base::Unretained(this));
 
   std::vector<DisplayConfigureRequest> requests(
-      1,
-      DisplayConfigureRequest(displays_[0].get(), &small_mode_, gfx::Point()));
+      1, DisplayConfigureRequest(displays_[0].get(),
+                                 displays_[0]->native_mode(), gfx::Point()));
   ConfigureDisplaysTask task(&delegate_, requests, std::move(callback));
   task.Run();
 
   EXPECT_TRUE(callback_called_);
   EXPECT_EQ(ConfigureDisplaysTask::SUCCESS, status_);
-  EXPECT_EQ(
-      GetCrtcAction({displays_[0]->display_id(), gfx::Point(), &small_mode_}),
-      log_.GetActionsAndClear());
+  EXPECT_EQ(GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+                           displays_[0]->native_mode()}),
+            log_.GetActionsAndClear());
 }
 
 TEST_F(ConfigureDisplaysTaskTest, ConfigureWithTwoDisplay) {
@@ -98,7 +104,7 @@ TEST_F(ConfigureDisplaysTaskTest, ConfigureWithTwoDisplay) {
   EXPECT_TRUE(callback_called_);
   EXPECT_EQ(ConfigureDisplaysTask::SUCCESS, status_);
   EXPECT_EQ(JoinActions(GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                                       &small_mode_})
+                                       displays_[0]->native_mode()})
                             .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &big_mode_})
@@ -120,10 +126,26 @@ TEST_F(ConfigureDisplaysTaskTest, DisableDisplayFails) {
 
   EXPECT_TRUE(callback_called_);
   EXPECT_EQ(ConfigureDisplaysTask::ERROR, status_);
-  EXPECT_EQ(JoinActions(GetCrtcAction(
-                            {displays_[0]->display_id(), gfx::Point(), nullptr})
-                            .c_str(),
-                        nullptr),
+  EXPECT_EQ(GetCrtcAction({displays_[0]->display_id(), gfx::Point(), nullptr}),
+            log_.GetActionsAndClear());
+}
+
+TEST_F(ConfigureDisplaysTaskTest, NoModeChangeAttemptWhenInternalDisplayFails) {
+  ConfigureDisplaysTask::ResponseCallback callback = base::BindOnce(
+      &ConfigureDisplaysTaskTest::ConfigureCallback, base::Unretained(this));
+
+  delegate_.set_max_configurable_pixels(1);
+
+  std::vector<DisplayConfigureRequest> requests(
+      1, DisplayConfigureRequest(displays_[0].get(),
+                                 displays_[0]->native_mode(), gfx::Point()));
+  ConfigureDisplaysTask task(&delegate_, requests, std::move(callback));
+  task.Run();
+
+  EXPECT_TRUE(callback_called_);
+  EXPECT_EQ(ConfigureDisplaysTask::ERROR, status_);
+  EXPECT_EQ(GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+                           displays_[0]->native_mode()}),
             log_.GetActionsAndClear());
 }
 
@@ -167,13 +189,13 @@ TEST_F(ConfigureDisplaysTaskTest, ConfigureWithTwoDisplayFails) {
   EXPECT_TRUE(callback_called_);
   EXPECT_EQ(ConfigureDisplaysTask::ERROR, status_);
   EXPECT_EQ(JoinActions(GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                                       &small_mode_})
+                                       displays_[0]->native_mode()})
                             .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &big_mode_})
                             .c_str(),
                         GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                                       &small_mode_})
+                                       displays_[0]->native_mode()})
                             .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &small_mode_})
@@ -186,7 +208,7 @@ TEST_F(ConfigureDisplaysTaskTest, ReconfigureLastDisplayPartialSuccess) {
   ConfigureDisplaysTask::ResponseCallback callback = base::BindOnce(
       &ConfigureDisplaysTaskTest::ConfigureCallback, base::Unretained(this));
 
-  delegate_.set_max_configurable_pixels(small_mode_.size().GetArea());
+  delegate_.set_max_configurable_pixels(medium_mode_.size().GetArea());
 
   std::vector<DisplayConfigureRequest> requests;
   for (const auto& display : displays_) {
@@ -199,13 +221,13 @@ TEST_F(ConfigureDisplaysTaskTest, ReconfigureLastDisplayPartialSuccess) {
   EXPECT_TRUE(callback_called_);
   EXPECT_EQ(ConfigureDisplaysTask::PARTIAL_SUCCESS, status_);
   EXPECT_EQ(JoinActions(GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                                       &small_mode_})
+                                       displays_[0]->native_mode()})
                             .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &big_mode_})
                             .c_str(),
                         GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                                       &small_mode_})
+                                       displays_[0]->native_mode()})
                             .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &small_mode_})
@@ -222,9 +244,10 @@ TEST_F(ConfigureDisplaysTaskTest, ReconfigureMiddleDisplayPartialSuccess) {
                           .SetId(789)
                           .SetNativeMode(small_mode_.Clone())
                           .SetCurrentMode(small_mode_.Clone())
+                          .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
                           .Build());
 
-  delegate_.set_max_configurable_pixels(small_mode_.size().GetArea());
+  delegate_.set_max_configurable_pixels(medium_mode_.size().GetArea());
 
   std::vector<DisplayConfigureRequest> requests;
   for (const auto& display : displays_) {
@@ -237,7 +260,7 @@ TEST_F(ConfigureDisplaysTaskTest, ReconfigureMiddleDisplayPartialSuccess) {
   EXPECT_TRUE(callback_called_);
   EXPECT_EQ(ConfigureDisplaysTask::PARTIAL_SUCCESS, status_);
   EXPECT_EQ(JoinActions(GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                                       &small_mode_})
+                                       displays_[0]->native_mode()})
                             .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &big_mode_})
@@ -246,7 +269,7 @@ TEST_F(ConfigureDisplaysTaskTest, ReconfigureMiddleDisplayPartialSuccess) {
                                        &small_mode_})
                             .c_str(),
                         GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                                       &small_mode_})
+                                       displays_[0]->native_mode()})
                             .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &small_mode_})
@@ -263,7 +286,7 @@ TEST_F(ConfigureDisplaysTaskTest, AsyncConfigureWithTwoDisplaysPartialSuccess) {
       &ConfigureDisplaysTaskTest::ConfigureCallback, base::Unretained(this));
 
   delegate_.set_run_async(true);
-  delegate_.set_max_configurable_pixels(small_mode_.size().GetArea());
+  delegate_.set_max_configurable_pixels(medium_mode_.size().GetArea());
 
   std::vector<DisplayConfigureRequest> requests;
   for (const auto& display : displays_) {
@@ -279,13 +302,13 @@ TEST_F(ConfigureDisplaysTaskTest, AsyncConfigureWithTwoDisplaysPartialSuccess) {
   EXPECT_TRUE(callback_called_);
   EXPECT_EQ(ConfigureDisplaysTask::PARTIAL_SUCCESS, status_);
   EXPECT_EQ(JoinActions(GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                                       &small_mode_})
+                                       displays_[0]->native_mode()})
                             .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &big_mode_})
                             .c_str(),
                         GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                                       &small_mode_})
+                                       displays_[0]->native_mode()})
                             .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &small_mode_})

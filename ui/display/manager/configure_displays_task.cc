@@ -16,6 +16,7 @@
 #include "base/stl_util.h"
 #include "ui/display/manager/display_util.h"
 #include "ui/display/types/display_configuration_params.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
 
@@ -34,6 +35,12 @@ constexpr int kMaxDisplaysCount = 5;
 // nullptr.
 const DisplayMode* FindNextMode(const DisplaySnapshot& display_state,
                                 const DisplayMode* display_mode) {
+  // Internal displays are restricted to their native mode. We do not attempt to
+  // downgrade their modes upon failure.
+  if (display_state.type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
+    return nullptr;
+  }
+
   if (!display_mode)
     return nullptr;
 
@@ -49,6 +56,28 @@ const DisplayMode* FindNextMode(const DisplaySnapshot& display_state,
   }
 
   return best_mode;
+}
+
+void LogIfInvalidRequestForInternalDisplay(
+    const DisplayConfigureRequest& request) {
+  if (request.display->type() != DISPLAY_CONNECTION_TYPE_INTERNAL)
+    return;
+
+  if (request.mode == nullptr)
+    return;
+
+  if (request.mode == request.display->native_mode())
+    return;
+
+  LOG(ERROR) << "A mode other than the preferred mode was requested for the "
+                "internal display: preferred="
+             << request.display->native_mode()->ToString()
+             << " vs. requested=" << request.mode->ToString()
+             << ". Current mode="
+             << (request.display->current_mode()
+                     ? request.display->current_mode()->ToString()
+                     : "nullptr (disabled)")
+             << ".";
 }
 
 // Samples used to define buckets used by DisplayResolution enum.
@@ -185,6 +214,8 @@ void ConfigureDisplaysTask::Run() {
 
   std::vector<display::DisplayConfigurationParams> config_requests;
   for (const auto& request : requests_) {
+    LogIfInvalidRequestForInternalDisplay(request);
+
     config_requests.emplace_back(request.display->display_id(), request.origin,
                                  request.mode);
 
