@@ -820,11 +820,7 @@ void PopulateChromeWebUIFrameBinders(
                                          KaleidoscopeUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      media::mojom::KaleidoscopeNTPDataProvider, NewTabPageUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      media::mojom::KaleidoscopeIdentityManager, KaleidoscopeUI, NewTabPageUI>(
-      map);
+      media::mojom::KaleidoscopeIdentityManager, KaleidoscopeUI>(map);
 #endif  // !defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

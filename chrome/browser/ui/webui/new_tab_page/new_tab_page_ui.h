@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
-#include "chrome/browser/media/kaleidoscope/mojom/kaleidoscope.mojom.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom-forward.h"
 #include "chrome/browser/search/instant_service_observer.h"
 #include "chrome/browser/search/task_module/task_module.mojom.h"
@@ -34,8 +33,6 @@ class FooHandler;
 #endif
 class GURL;
 class InstantService;
-class KaleidoscopeDataProviderImpl;
-class KaleidoscopeIdentityManagerImpl;
 class NewTabPageHandler;
 class Profile;
 class PromoBrowserCommandHandler;
@@ -73,20 +70,6 @@ class NewTabPageUI
   void BindInterface(mojo::PendingReceiver<
                      customize_themes::mojom::CustomizeThemesHandlerFactory>
                          pending_receiver);
-
-  // Instantiates the implementor of the
-  // media::mojom::KaleidoscopeNTPDataProvider mojo interface passing the
-  // pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<media::mojom::KaleidoscopeNTPDataProvider>
-          pending_receiver);
-
-  // Instantiates the implementor of the
-  // media::mojom::KaleidoscopeIdentityManager mojo interface passing the
-  // pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<media::mojom::KaleidoscopeIdentityManager>
-          pending_receiver);
 
   // Instantiates the implementor of the
   // shopping_tasks::mojom::ShoppingTasksHandler mojo interface passing the
@@ -153,9 +136,6 @@ class NewTabPageUI
   base::Time navigation_start_time_;
 
   // Mojo implementations for modules:
-  std::unique_ptr<KaleidoscopeDataProviderImpl> kaleidoscope_data_provider_;
-  std::unique_ptr<KaleidoscopeIdentityManagerImpl>
-      kaleidoscope_identity_manager_;
   std::unique_ptr<TaskModuleHandler> task_module_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();

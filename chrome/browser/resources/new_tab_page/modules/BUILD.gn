@@ -18,7 +18,6 @@ js_library("modules") {
     ":module_registry",
     "cart:module",
     "drive:module",
-    "kaleidoscope:module",
     "task_module:module",
   ]
   if (!is_official_build) {
@@ -59,7 +58,6 @@ group("web_components") {
     "cart:web_components",
     "drive:web_components",
     "dummy:web_components",
-    "kaleidoscope:web_components",
     "task_module:web_components",
   ]
 }
@@ -109,7 +107,6 @@ preprocess_if_expr("preprocess_gen") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
-    "kaleidoscope/module.js",
     "module_header.js",
     "module_wrapper.js",
     "task_module/module.js",

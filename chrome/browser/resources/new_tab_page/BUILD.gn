@@ -13,7 +13,8 @@ import("//ui/webui/webui_features.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [ "browser_resolver_prefix_replacements=\"chrome://kaleidoscope/=../../chrome/browser/media/kaleidoscope/internal/resources\"" ]
+
+  closure_flags = default_closure_args + mojom_js_args
 
   deps = [
     ":app",
@@ -59,7 +60,6 @@ js_library("lazy_load") {
     ":most_visited",
     ":voice_search_overlay",
     "modules/dummy:module",
-    "modules/kaleidoscope:module",
   ]
 }
 

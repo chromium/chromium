@@ -9,10 +9,6 @@
 
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/cart/cart_handler.h"
-#include "chrome/browser/media/kaleidoscope/constants.h"
-#include "chrome/browser/media/kaleidoscope/kaleidoscope_data_provider_impl.h"
-#include "chrome/browser/media/kaleidoscope/kaleidoscope_identity_manager_impl.h"
-#include "chrome/browser/media/kaleidoscope/kaleidoscope_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -242,12 +238,6 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {omnibox::kTrendingUpIconResourceName, IDR_LOCAL_NTP_ICONS_TRENDING_UP}};
   webui::AddResourcePathsBulk(source, kImages);
 
-#if BUILDFLAG(ENABLE_KALEIDOSCOPE)
-  source->AddBoolean("kaleidoscopeModuleEnabled",
-                     base::FeatureList::IsEnabled(media::kKaleidoscopeModule));
-#else
-  source->AddBoolean("kaleidoscopeModuleEnabled", false);
-#endif  // BUILDFLAG(ENABLE_KALEIDOSCOPE)
   source->AddBoolean(
       "recipeTasksModuleEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpRecipeTasksModule));
@@ -271,17 +261,15 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   // script-src.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test chrome://kaleidoscope "
+      "script-src chrome://resources chrome://test "
       "'self' 'unsafe-inline' https:;");
   // Allow embedding of iframes from the One Google Bar and
-  // chrome-untrusted://new-tab-page for other external content and resources
-  // and chrome-untrusted://kaleidoscope for Kaleidoscope.
+  // chrome-untrusted://new-tab-page for other external content and resources.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
-      base::StringPrintf("child-src https: %s %s %s;",
+      base::StringPrintf("child-src https: %s %s;",
                          google_util::CommandLineGoogleBaseURL().spec().c_str(),
-                         chrome::kChromeUIUntrustedNewTabPageUrl,
-                         kKaleidoscopeUntrustedContentUIURL));
+                         chrome::kChromeUIUntrustedNewTabPageUrl));
 
   return source;
 }
@@ -318,12 +306,6 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile_,
       std::make_unique<ThemeSource>(profile_, /*serve_untrusted=*/true));
-
-  content::WebUIDataSource::Add(profile_,
-                                KaleidoscopeUI::CreateWebUIDataSource());
-
-  content::WebUIDataSource::Add(
-      profile_, KaleidoscopeUI::CreateUntrustedWebUIDataSource());
 
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
@@ -367,21 +349,6 @@ void NewTabPageUI::BindInterface(
     customize_themes_factory_receiver_.reset();
   }
   customize_themes_factory_receiver_.Bind(std::move(pending_receiver));
-}
-
-void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<media::mojom::KaleidoscopeNTPDataProvider>
-        pending_page_handler) {
-  kaleidoscope_data_provider_ = std::make_unique<KaleidoscopeDataProviderImpl>(
-      std::move(pending_page_handler), profile_, nullptr);
-}
-
-void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<media::mojom::KaleidoscopeIdentityManager>
-        pending_page_handler) {
-  kaleidoscope_identity_manager_ =
-      std::make_unique<KaleidoscopeIdentityManagerImpl>(
-          std::move(pending_page_handler), profile_);
 }
 
 void NewTabPageUI::BindInterface(
