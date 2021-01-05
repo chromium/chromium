@@ -5,6 +5,9 @@
 import '../../img.js';
 import '../module_header.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
@@ -71,6 +74,17 @@ class ChromeCartModuleElement extends PolymerElement {
   /** @private */
   onRestore_() {
     ChromeCartProxy.getInstance().handler.restoreCartModule();
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onMenuButtonClick_(e) {
+    e.preventDefault();
+    const index = this.$.cartItemRepeat.indexForElement(
+        e.target.parentElement.parentElement);
+    this.$.actionMenu.showAt(e.target);
   }
 }
 
