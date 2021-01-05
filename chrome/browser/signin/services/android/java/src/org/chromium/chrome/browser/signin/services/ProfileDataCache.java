@@ -140,17 +140,16 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
      * sent to observers of ProfileDownloader. The instance must have at least one observer (see
      * {@link #addObserver}) when this method is called.
      */
-    public void update(List<String> accounts) {
+    public void update(List<String> accountEmails) {
         ThreadUtils.assertOnUiThread();
         assert !mObservers.isEmpty();
 
         // ProfileDataSource is updated automatically.
         if (mProfileDataSource != null) return;
 
-        for (int i = 0; i < accounts.size(); i++) {
-            if (mCachedProfileData.get(accounts.get(i)) == null) {
-                ProfileDownloader.get().startFetchingAccountInfoFor(
-                        mContext, accounts.get(i), mImageSize, true);
+        for (String accountEmail : accountEmails) {
+            if (!mCachedProfileData.containsKey(accountEmail)) {
+                ProfileDownloader.get().startFetchingAccountInfoFor(accountEmail, mImageSize);
             }
         }
     }
