@@ -149,6 +149,7 @@ void HidConnectionWin::PlatformWrite(
   if (!IsValidHandle(file_handle)) {
     HID_LOG(DEBUG) << "HID write failed due to invalid handle.";
     std::move(callback).Run(false);
+    return;
   }
 
   transfers_.push_back(std::make_unique<PendingHidTransfer>(
@@ -170,6 +171,7 @@ void HidConnectionWin::PlatformGetFeatureReport(uint8_t report_id,
   if (!IsValidHandle(file_handle)) {
     HID_LOG(DEBUG) << "HID read failed due to invalid handle.";
     std::move(callback).Run(false, nullptr, 0);
+    return;
   }
 
   transfers_.push_back(std::make_unique<PendingHidTransfer>(
