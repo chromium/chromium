@@ -25,7 +25,8 @@
         focus-config="[[focusConfig_]]">
       <div route-path="default">
         <template is="dom-if" if="[[!isSecondaryUser_]]">
-          <div id="bluetoothDevices" class="settings-box two-line no-padding">
+          <div id="bluetoothDevices"
+              class="settings-box two-line first no-padding">
             <div class="link-wrapper" actionable on-click="onTap_">
               <iron-icon icon="[[getIcon_(bluetoothToggleState_)]]"></iron-icon>
               <div class="middle settings-box-text" aria-hidden="true">

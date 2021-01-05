@@ -7,6 +7,11 @@
 
 <dom-module id="network-summary">
   <template>
+    <style>
+      network-summary-item:first-child {
+        --cr-separator-line: 0;
+      }
+    </style>
     <div id="summary">
       <template is="dom-repeat" items="[[activeNetworkStates_]]">
         <network-summary-item id="[[getTypeString_(item)]]"

@@ -38,11 +38,12 @@
               pref="{{prefs.generated.resolve_timezone_by_geolocation_on_off}}"
               deep-link-focus-id$="[[Setting.kChangeTimeZone]]">
           </settings-toggle-button>
+          <div class="hr"></div>
         </template>
         <template is="dom-if"
             if="[[prefs.cros.flags.fine_grained_time_zone_detection_enabled.value]]"
             restamp>
-          <cr-link-row id="timeZoneSettingsTrigger" class="hr"
+          <cr-link-row id="timeZoneSettingsTrigger"
               on-click="onTimeZoneSettings_" label="$i18n{timeZoneButton}"
               sub-label="[[timeZoneSettingSubLabel_]]"
               role-description="$i18n{subpageArrowRoleDescription}">

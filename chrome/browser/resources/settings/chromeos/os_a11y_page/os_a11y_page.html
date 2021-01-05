@@ -25,22 +25,22 @@
         <template is="dom-if" if="[[showAccessibilityLabelsSetting_]]">
           <settings-toggle-button
               id="a11yImageLabels"
-              class="hr"
               pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
               on-change="onToggleAccessibilityImageLabels_"
               label="$i18n{accessibleImageLabelsTitle}"
               sub-label="$i18n{accessibleImageLabelsSubtitle}"
               deep-link-focus-id$="[[Setting.kGetImageDescriptionsFromGoogle]]">
           </settings-toggle-button>
+          <div class="hr"></div>
         </template>
         <settings-toggle-button id="optionsInMenuToggle"
-            class="hr"
             hidden="[[isKioskModeActive_]]"
             label="$i18n{optionsInMenuLabel}"
             pref="{{prefs.settings.a11y.enable_menu}}"
             deep-link-focus-id$="[[Setting.kA11yQuickSettings]]">
         </settings-toggle-button>
-        <cr-link-row class="hr" id="subpage-trigger"
+        <div class="hr" hidden="[[isKioskModeActive_]]"></div>
+        <cr-link-row id="subpage-trigger"
             label="$i18n{manageAccessibilityFeatures}"
             on-click="onManageAccessibilityFeaturesTap_"
             sub-label="$i18n{moreFeaturesLinkDescription}"
