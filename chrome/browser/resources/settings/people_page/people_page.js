@@ -169,7 +169,7 @@ Polymer({
         if (routes.MANAGE_PROFILE) {
           map.set(
               routes.MANAGE_PROFILE.path,
-              this.signinAllowed_ ? '#edit-profile .subpage-arrow' :
+              this.signinAllowed_ ? '#edit-profile' :
                                     '#profile-row .subpage-arrow');
         }
         // </if>
