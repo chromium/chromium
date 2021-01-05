@@ -87,13 +87,13 @@ class MTPDeviceTaskHelper {
   // notify the caller about the file error.
   void GetFileInfo(uint32_t file_id,
                    GetFileInfoSuccessCallback success_callback,
-                   const ErrorCallback& error_callback);
+                   ErrorCallback error_callback);
 
   // Forwards CreateDirectory request to the MediaTransferProtocolManager.
   void CreateDirectory(const uint32_t parent_id,
                        const std::string& directory_name,
                        const CreateDirectorySuccessCallback& success_callback,
-                       const ErrorCallback& error_callback);
+                       ErrorCallback error_callback);
 
   // Dispatches the read directory request to the MediaTransferProtocolManager.
   //
@@ -110,7 +110,7 @@ class MTPDeviceTaskHelper {
   // notify the caller about the file error.
   void ReadDirectory(const uint32_t directory_id,
                      const ReadDirectorySuccessCallback& success_callback,
-                     const ErrorCallback& error_callback);
+                     ErrorCallback error_callback);
 
   // Dispatches a read directory request to the MediaTransferProtocolManager to
   // check if |directory_id| is empty.
@@ -122,16 +122,15 @@ class MTPDeviceTaskHelper {
   // notify the caller about the file error.
   void CheckDirectoryEmpty(uint32_t directory_id,
                            CheckDirectoryEmptySuccessCallback success_callback,
-                           const ErrorCallback& error_callback);
+                           ErrorCallback error_callback);
 
   // Forwards the WriteDataIntoSnapshotFile request to the MTPReadFileWorker
   // object.
   //
   // |request_info| specifies the snapshot file request params.
   // |snapshot_file_info| specifies the metadata of the snapshot file.
-  void WriteDataIntoSnapshotFile(
-      const SnapshotRequestInfo& request_info,
-      const base::File::Info& snapshot_file_info);
+  void WriteDataIntoSnapshotFile(SnapshotRequestInfo request_info,
+                                 const base::File::Info& snapshot_file_info);
 
   // Dispatches the read bytes request to the MediaTransferProtocolManager.
   //
@@ -144,7 +143,7 @@ class MTPDeviceTaskHelper {
   void RenameObject(const uint32_t object_id,
                     const std::string& new_name,
                     const RenameObjectSuccessCallback& success_callback,
-                    const ErrorCallback& error_callback);
+                    ErrorCallback error_callback);
 
   // Forwards CopyFileFromLocal request to the MediaTransferProtocolManager.
   void CopyFileFromLocal(
@@ -153,12 +152,12 @@ class MTPDeviceTaskHelper {
       const uint32_t parent_id,
       const std::string& file_name,
       const CopyFileFromLocalSuccessCallback& success_callback,
-      const ErrorCallback& error_callback);
+      ErrorCallback error_callback);
 
   // Forwards DeleteObject request to the MediaTransferProtocolManager.
   void DeleteObject(const uint32_t object_id,
                     const DeleteObjectSuccessCallback& success_callback,
-                    const ErrorCallback& error_callback);
+                    ErrorCallback error_callback);
 
   // Dispatches the CloseStorage request to the MediaTransferProtocolManager.
   void CloseStorage() const;
@@ -185,13 +184,13 @@ class MTPDeviceTaskHelper {
   // error has occurred. In this case, |error_callback| is invoked on the IO
   // thread to notify the caller.
   void OnGetFileInfo(GetFileInfoSuccessCallback success_callback,
-                     const ErrorCallback& error_callback,
+                     ErrorCallback error_callback,
                      std::vector<device::mojom::MtpFileEntryPtr> entries,
                      bool error) const;
 
   // Called when CreateDirectory completes.
   void OnCreateDirectory(const CreateDirectorySuccessCallback& success_callback,
-                         const ErrorCallback& error_callback,
+                         ErrorCallback error_callback,
                          const bool error) const;
 
   // Query callback for ReadDirectoryEntryIds().
@@ -205,7 +204,7 @@ class MTPDeviceTaskHelper {
   // invoked on the IO thread to notify the caller.
   void OnReadDirectoryEntryIdsToReadDirectory(
       const ReadDirectorySuccessCallback& success_callback,
-      const ErrorCallback& error_callback,
+      ErrorCallback error_callback,
       const std::vector<uint32_t>& file_ids,
       bool error);
 
@@ -220,7 +219,7 @@ class MTPDeviceTaskHelper {
   // |error| indicates if the GetFileInfo() call succeeded or failed.
   void OnGotDirectoryEntries(
       const ReadDirectorySuccessCallback& success_callback,
-      const ErrorCallback& error_callback,
+      ErrorCallback error_callback,
       const std::vector<uint32_t>& expected_file_ids,
       const std::vector<uint32_t>& file_ids_to_read,
       std::vector<device::mojom::MtpFileEntryPtr> file_entries,
@@ -236,7 +235,7 @@ class MTPDeviceTaskHelper {
   // and |error_callback| is invoked on the IO thread to notify the caller.
   void OnCheckedDirectoryEmpty(
       CheckDirectoryEmptySuccessCallback success_callback,
-      const ErrorCallback& error_callback,
+      ErrorCallback error_callback,
       const std::vector<uint32_t>& file_ids,
       bool error) const;
 
@@ -262,25 +261,25 @@ class MTPDeviceTaskHelper {
 
   // Called when RenameObject completes.
   void OnRenameObject(const RenameObjectSuccessCallback& success_callback,
-                      const ErrorCallback& error_callback,
+                      ErrorCallback error_callback,
                       const bool error) const;
 
   // Called when CopyFileFromLocal completes.
   void OnCopyFileFromLocal(
       const CopyFileFromLocalSuccessCallback& success_callback,
-      const ErrorCallback& error_callback,
+      ErrorCallback error_callback,
       const bool error) const;
 
   // Called when DeleteObject completes.
   void OnDeleteObject(const DeleteObjectSuccessCallback& success_callback,
-                      const ErrorCallback& error_callback,
+                      ErrorCallback error_callback,
                       const bool error) const;
 
   // Called when the device is uninitialized.
   //
   // Runs |error_callback| on the IO thread to notify the caller about the
   // device |error|.
-  void HandleDeviceError(const ErrorCallback& error_callback,
+  void HandleDeviceError(ErrorCallback error_callback,
                          base::File::Error error) const;
 
   // Handle to communicate with the MTP device.

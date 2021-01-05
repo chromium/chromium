@@ -96,29 +96,27 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
   // MTPDeviceAsyncDelegate:
   void GetFileInfo(const base::FilePath& file_path,
                    GetFileInfoSuccessCallback success_callback,
-                   const ErrorCallback& error_callback) override;
-  void CreateDirectory(
-      const base::FilePath& directory_path,
-      const bool exclusive,
-      const bool recursive,
-      const CreateDirectorySuccessCallback& success_callback,
-      const ErrorCallback& error_callback) override;
-  void ReadDirectory(
-      const base::FilePath& root,
-      const ReadDirectorySuccessCallback& success_callback,
-      const ErrorCallback& error_callback) override;
+                   ErrorCallback error_callback) override;
+  void CreateDirectory(const base::FilePath& directory_path,
+                       const bool exclusive,
+                       const bool recursive,
+                       const CreateDirectorySuccessCallback& success_callback,
+                       ErrorCallback error_callback) override;
+  void ReadDirectory(const base::FilePath& root,
+                     const ReadDirectorySuccessCallback& success_callback,
+                     ErrorCallback error_callback) override;
   void CreateSnapshotFile(
       const base::FilePath& device_file_path,
       const base::FilePath& local_path,
       const CreateSnapshotFileSuccessCallback& success_callback,
-      const ErrorCallback& error_callback) override;
+      ErrorCallback error_callback) override;
   bool IsStreaming() override;
   void ReadBytes(const base::FilePath& device_file_path,
                  const scoped_refptr<net::IOBuffer>& buf,
                  int64_t offset,
                  int buf_len,
                  ReadBytesSuccessCallback success_callback,
-                 const ErrorCallback& error_callback) override;
+                 ErrorCallback error_callback) override;
   bool IsReadOnly() const override;
   void CopyFileLocal(
       const base::FilePath& source_file_path,
@@ -126,24 +124,24 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
       const CreateTemporaryFileCallback& create_temporary_file_callback,
       const CopyFileProgressCallback& progress_callback,
       const CopyFileLocalSuccessCallback& success_callback,
-      const ErrorCallback& error_callback) override;
+      ErrorCallback error_callback) override;
   void MoveFileLocal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
       const CreateTemporaryFileCallback& create_temporary_file_callback,
       const MoveFileLocalSuccessCallback& success_callback,
-      const ErrorCallback& error_callback) override;
+      ErrorCallback error_callback) override;
   void CopyFileFromLocal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
       const CopyFileFromLocalSuccessCallback& success_callback,
-      const ErrorCallback& error_callback) override;
+      ErrorCallback error_callback) override;
   void DeleteFile(const base::FilePath& file_path,
                   const DeleteFileSuccessCallback& success_callback,
-                  const ErrorCallback& error_callback) override;
+                  ErrorCallback error_callback) override;
   void DeleteDirectory(const base::FilePath& file_path,
                        const DeleteDirectorySuccessCallback& success_callback,
-                       const ErrorCallback& error_callback) override;
+                       ErrorCallback error_callback) override;
   void AddWatcher(const GURL& origin,
                   const base::FilePath& file_path,
                   const bool recursive,
@@ -190,7 +188,7 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
   // If the GetFileInfo() fails, |file_info| is not set and |error_callback| is
   // invoked to notify the caller about the platform file |error|.
   void OnGetFileInfo(GetFileInfoSuccessCallback success_callback,
-                     const ErrorCallback& error_callback,
+                     ErrorCallback error_callback,
                      base::File::Info* file_info,
                      base::File::Error error);
 
@@ -203,7 +201,7 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
   // If the ReadDirectory() fails, |file_list| is not set and |error_callback|
   // is invoked to notify the caller about the platform file |error|.
   void OnDidReadDirectory(const ReadDirectorySuccessCallback& success_callback,
-                          const ErrorCallback& error_callback,
+                          ErrorCallback error_callback,
                           storage::AsyncFileUtil::EntryList* file_list,
                           base::File::Error error);
 

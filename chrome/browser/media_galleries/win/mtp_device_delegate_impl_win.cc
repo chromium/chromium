@@ -273,13 +273,14 @@ base::File::Error GetFileStreamOnBlockingPoolThread(
 // Returns the total number of bytes written to the snapshot file for non-empty
 // files, or 0 on failure. For empty files, just return 0.
 DWORD WriteDataChunkIntoSnapshotFileOnBlockingPoolThread(
-    const SnapshotFileDetails& file_details) {
-  if (file_details.file_info().size == 0)
+    const base::File::Info& file_info,
+    Microsoft::WRL::ComPtr<IStream> device_file_stream,
+    const base::FilePath& snapshot_file_path,
+    DWORD optimal_transfer_size) {
+  if (file_info.size == 0)
     return 0;
   return media_transfer_protocol::CopyDataChunkToLocalFile(
-      file_details.device_file_stream(),
-      file_details.request_info().snapshot_file_path,
-      file_details.optimal_transfer_size());
+      device_file_stream.Get(), snapshot_file_path, optimal_transfer_size);
 }
 
 void DeletePortableDeviceOnBlockingPoolThread(
@@ -376,7 +377,7 @@ MTPDeviceDelegateImplWin::~MTPDeviceDelegateImplWin() {
 void MTPDeviceDelegateImplWin::GetFileInfo(
     const base::FilePath& file_path,
     GetFileInfoSuccessCallback success_callback,
-    const ErrorCallback& error_callback) {
+    ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!file_path.empty());
   base::File::Info* file_info = new base::File::Info;
@@ -386,7 +387,7 @@ void MTPDeviceDelegateImplWin::GetFileInfo(
                      file_path, base::Unretained(file_info)),
       base::BindOnce(&MTPDeviceDelegateImplWin::OnGetFileInfo,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(success_callback), error_callback,
+                     std::move(success_callback), std::move(error_callback),
                      base::Owned(file_info))));
 }
 
@@ -395,14 +396,14 @@ void MTPDeviceDelegateImplWin::CreateDirectory(
     const bool exclusive,
     const bool recursive,
     const CreateDirectorySuccessCallback& success_callback,
-    const ErrorCallback& error_callback) {
+    ErrorCallback error_callback) {
   NOTREACHED();
 }
 
 void MTPDeviceDelegateImplWin::ReadDirectory(
     const base::FilePath& root,
     const ReadDirectorySuccessCallback& success_callback,
-    const ErrorCallback& error_callback) {
+    ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!root.empty());
   storage::AsyncFileUtil::EntryList* entries =
@@ -413,20 +414,20 @@ void MTPDeviceDelegateImplWin::ReadDirectory(
                      root, base::Unretained(entries)),
       base::BindOnce(&MTPDeviceDelegateImplWin::OnDidReadDirectory,
                      weak_ptr_factory_.GetWeakPtr(), success_callback,
-                     error_callback, base::Owned(entries))));
+                     std::move(error_callback), base::Owned(entries))));
 }
 
 void MTPDeviceDelegateImplWin::CreateSnapshotFile(
     const base::FilePath& device_file_path,
     const base::FilePath& snapshot_file_path,
     const CreateSnapshotFileSuccessCallback& success_callback,
-    const ErrorCallback& error_callback) {
+    ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!device_file_path.empty());
   DCHECK(!snapshot_file_path.empty());
   std::unique_ptr<SnapshotFileDetails> file_details(new SnapshotFileDetails(
       SnapshotRequestInfo(device_file_path, snapshot_file_path,
-                          success_callback, error_callback)));
+                          success_callback, std::move(error_callback))));
   // Passing a raw SnapshotFileDetails* to the blocking pool is safe, because
   // it is owned by |file_details| in the reply callback.
   EnsureInitAndRunTask(PendingTaskInfo(
@@ -447,7 +448,7 @@ void MTPDeviceDelegateImplWin::ReadBytes(
     int64_t offset,
     int buf_len,
     ReadBytesSuccessCallback success_callback,
-    const ErrorCallback& error_callback) {
+    ErrorCallback error_callback) {
   NOTREACHED();
 }
 
@@ -461,7 +462,7 @@ void MTPDeviceDelegateImplWin::CopyFileLocal(
     const CreateTemporaryFileCallback& create_temporary_file_callback,
     const CopyFileProgressCallback& progress_callback,
     const CopyFileLocalSuccessCallback& success_callback,
-    const ErrorCallback& error_callback) {
+    ErrorCallback error_callback) {
   NOTREACHED();
 }
 
@@ -470,7 +471,7 @@ void MTPDeviceDelegateImplWin::MoveFileLocal(
     const base::FilePath& device_file_path,
     const CreateTemporaryFileCallback& create_temporary_file_callback,
     const MoveFileLocalSuccessCallback& success_callback,
-    const ErrorCallback& error_callback) {
+    ErrorCallback error_callback) {
   NOTREACHED();
 }
 
@@ -478,21 +479,21 @@ void MTPDeviceDelegateImplWin::CopyFileFromLocal(
     const base::FilePath& source_file_path,
     const base::FilePath& device_file_path,
     const CopyFileFromLocalSuccessCallback& success_callback,
-    const ErrorCallback& error_callback) {
+    ErrorCallback error_callback) {
   NOTREACHED();
 }
 
 void MTPDeviceDelegateImplWin::DeleteFile(
     const base::FilePath& file_path,
     const DeleteFileSuccessCallback& success_callback,
-    const ErrorCallback& error_callback) {
+    ErrorCallback error_callback) {
   NOTREACHED();
 }
 
 void MTPDeviceDelegateImplWin::DeleteDirectory(
     const base::FilePath& file_path,
     const DeleteDirectorySuccessCallback& success_callback,
-    const ErrorCallback& error_callback) {
+    ErrorCallback error_callback) {
   NOTREACHED();
 }
 
@@ -557,8 +558,13 @@ void MTPDeviceDelegateImplWin::WriteDataChunkIntoSnapshotFile() {
   DCHECK(current_snapshot_details_.get());
   base::PostTaskAndReplyWithResult(
       media_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&WriteDataChunkIntoSnapshotFileOnBlockingPoolThread,
-                     *current_snapshot_details_),
+      base::BindOnce(
+          &WriteDataChunkIntoSnapshotFileOnBlockingPoolThread,
+          current_snapshot_details_->file_info(),
+          Microsoft::WRL::ComPtr<IStream>(
+              current_snapshot_details_->device_file_stream()),
+          current_snapshot_details_->request_info().snapshot_file_path,
+          current_snapshot_details_->optimal_transfer_size()),
       base::BindOnce(
           &MTPDeviceDelegateImplWin::OnWroteDataChunkIntoSnapshotFile,
           weak_ptr_factory_.GetWeakPtr(),
@@ -586,7 +592,7 @@ void MTPDeviceDelegateImplWin::OnInitCompleted(bool succeeded) {
 
 void MTPDeviceDelegateImplWin::OnGetFileInfo(
     GetFileInfoSuccessCallback success_callback,
-    const ErrorCallback& error_callback,
+    ErrorCallback error_callback,
     base::File::Info* file_info,
     base::File::Error error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -594,14 +600,14 @@ void MTPDeviceDelegateImplWin::OnGetFileInfo(
   if (error == base::File::FILE_OK)
     std::move(success_callback).Run(*file_info);
   else
-    error_callback.Run(error);
+    std::move(error_callback).Run(error);
   task_in_progress_ = false;
   ProcessNextPendingRequest();
 }
 
 void MTPDeviceDelegateImplWin::OnDidReadDirectory(
     const ReadDirectorySuccessCallback& success_callback,
-    const ErrorCallback& error_callback,
+    ErrorCallback error_callback,
     storage::AsyncFileUtil::EntryList* file_list,
     base::File::Error error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -609,7 +615,7 @@ void MTPDeviceDelegateImplWin::OnDidReadDirectory(
   if (error == base::File::FILE_OK)
     success_callback.Run(*file_list, false /*no more entries*/);
   else
-    error_callback.Run(error);
+    std::move(error_callback).Run(error);
   task_in_progress_ = false;
   ProcessNextPendingRequest();
 }
@@ -623,7 +629,7 @@ void MTPDeviceDelegateImplWin::OnGetFileStream(
   DCHECK(!file_details->request_info().snapshot_file_path.empty());
   DCHECK(!current_snapshot_details_.get());
   if (error != base::File::FILE_OK) {
-    file_details->request_info().error_callback.Run(error);
+    std::move(file_details->error_callback()).Run(error);
     task_in_progress_ = false;
     ProcessNextPendingRequest();
     return;
@@ -670,8 +676,8 @@ void MTPDeviceDelegateImplWin::OnWroteDataChunkIntoSnapshotFile(
         current_snapshot_details_->file_info(),
         current_snapshot_details_->request_info().snapshot_file_path);
   } else {
-    current_snapshot_details_->request_info().error_callback.Run(
-        base::File::FILE_ERROR_FAILED);
+    std::move(current_snapshot_details_->error_callback())
+        .Run(base::File::FILE_ERROR_FAILED);
   }
   task_in_progress_ = false;
   current_snapshot_details_.reset();
