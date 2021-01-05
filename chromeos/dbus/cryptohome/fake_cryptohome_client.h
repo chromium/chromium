@@ -246,7 +246,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   bool to_migrate_from_ecryptfs() const {
     return last_mount_request_.to_migrate_from_ecryptfs();
   }
-  bool hidden_mount() const { return last_mount_request_.hidden_mount(); }
   bool public_mount() const { return last_mount_request_.public_mount(); }
   const cryptohome::AuthorizationRequest& get_last_mount_authentication()
       const {
