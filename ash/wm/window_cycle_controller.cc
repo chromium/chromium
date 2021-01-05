@@ -89,8 +89,6 @@ void WindowCycleController::HandleCycleWindow(Direction direction) {
   if (!IsCycling())
     StartCycling();
 
-  // TODO(crbug.com/1157100): Handle window highlighting after switching
-  // alt-tab mode.
   Step(direction);
 }
 
@@ -175,10 +173,23 @@ WindowCycleController::WindowList WindowCycleController::CreateWindowList() {
 }
 
 void WindowCycleController::SetAltTabMode(DesksMruType alt_tab_mode) {
+  DCHECK(features::IsBentoEnabled());
   if (alt_tab_mode_ == alt_tab_mode)
     return;
   alt_tab_mode_ = alt_tab_mode;
   MaybeResetCycleList();
+
+  is_switching_mode_ = true;
+  // When user first press alt + tab, `HandleCycleForwardMRU` triggers
+  // `HandleCycleWindow(WindowCycleController::FORWARD)` since it considers
+  // the initial tab as forward cycling. Therefore, switching the mode
+  // should imitate the same forward cycling behavior after the cycle is reset.
+  HandleCycleWindow(WindowCycleController::FORWARD);
+  is_switching_mode_ = false;
+}
+
+bool WindowCycleController::IsSwitchingMode() {
+  return features::IsBentoEnabled() && is_switching_mode_;
 }
 
 bool WindowCycleController::IsAltTabPerActiveDesk() {
