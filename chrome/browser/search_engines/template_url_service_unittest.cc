@@ -1967,6 +1967,41 @@ TEST_F(TemplateURLServiceTest, CheckReplaceableEnginesKeywordsConflicts) {
   EXPECT_EQ(user5, model()->GetTemplateURLForHost("test5"));
 }
 
+TEST_F(TemplateURLServiceTest, CleanUpLegacyUniquifiedKeywords) {
+  test_util()->VerifyLoad();
+
+  // 1. Add a "better" replaceable engine with keyword = "test1_".
+  // Expect that the keyword is reset to "test1".
+  const TemplateURL* replaceable1 = AddKeywordWithDate(
+      "replaceable1", "test1", "https://test1", std::string(), std::string(),
+      std::string(), true, "UTF-8", base::Time::FromTimeT(20));
+  ASSERT_TRUE(replaceable1);
+  EXPECT_EQ(replaceable1,
+            model()->GetTemplateURLForKeyword(base::ASCIIToUTF16("test1")));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(base::ASCIIToUTF16("test1_")));
+
+  // 2. Add a "worse" replaceable engine with keyword = "test1_".
+  // Expect that it is silently collapsed with the above engine.
+  EXPECT_FALSE(AddKeywordWithDate("replaceable2", "test1_", "https://test1",
+                                  std::string(), std::string(), std::string(),
+                                  true));
+  EXPECT_EQ(replaceable1,
+            model()->GetTemplateURLForKeyword(base::ASCIIToUTF16("test1")));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(base::ASCIIToUTF16("test1_")));
+
+  // 3. But for user engines (non-replaceable ones), do not reset keywords
+  // ending with underscores. Expect that it gets successfully added with
+  // "test1_" keyword, and that replaceable1 still exists with "test1" keyword.
+  const TemplateURL* user1 =
+      AddKeywordWithDate("user1", "test1_", "https://test1", std::string(),
+                         std::string(), std::string(), false);
+  ASSERT_TRUE(user1);
+  EXPECT_EQ(replaceable1,
+            model()->GetTemplateURLForKeyword(base::ASCIIToUTF16("test1")));
+  EXPECT_EQ(user1,
+            model()->GetTemplateURLForKeyword(base::ASCIIToUTF16("test1_")));
+}
+
 // Check that two extensions with the same engine are handled correctly.
 TEST_F(TemplateURLServiceTest, ExtensionsWithSameKeywords) {
   test_util()->VerifyLoad();
