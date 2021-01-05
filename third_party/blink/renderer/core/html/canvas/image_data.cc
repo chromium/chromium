@@ -365,6 +365,7 @@ bool ImageData::IsBufferBaseDetached() const {
 }
 
 SkPixmap ImageData::GetSkPixmap() const {
+  CHECK(!IsBufferBaseDetached());
   SkColorType color_type = kRGBA_8888_SkColorType;
   const void* data = nullptr;
   if (data_.IsUint8ClampedArray()) {

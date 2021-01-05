@@ -345,10 +345,14 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     WriteUint32Enum(ImageSerializationTag::kEndTag);
     WriteUint32(image_data->width());
     WriteUint32(image_data->height());
-    SkPixmap image_data_pixmap = image_data->GetSkPixmap();
-    size_t pixel_buffer_length = image_data_pixmap.computeByteSize();
-    WriteUint64(base::strict_cast<uint64_t>(pixel_buffer_length));
-    WriteRawBytes(image_data_pixmap.addr(), pixel_buffer_length);
+    if (image_data->IsBufferBaseDetached()) {
+      WriteUint64(0u);
+    } else {
+      SkPixmap image_data_pixmap = image_data->GetSkPixmap();
+      size_t pixel_buffer_length = image_data_pixmap.computeByteSize();
+      WriteUint64(base::strict_cast<uint64_t>(pixel_buffer_length));
+      WriteRawBytes(image_data_pixmap.addr(), pixel_buffer_length);
+    }
     return true;
   }
   if (wrapper_type_info == V8DOMPoint::GetWrapperTypeInfo()) {
