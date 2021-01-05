@@ -286,7 +286,7 @@ class WPTManifest(object):
 
     @staticmethod
     def ensure_manifest(port, path=None):
-        """Updates the MANIFEST.json file, or generates if it does not exist.
+        """Regenerates the WPT MANIFEST.json file.
 
         Args:
             port: A blinkpy.web_tests.port.Port object.
@@ -302,6 +302,7 @@ class WPTManifest(object):
         # manifest from scratch (when version is bumped) or invalid/out-of-date
         # local manifest breaking the runner.
         if fs.exists(manifest_path):
+            _log.debug('Removing existing manifest file "%s".', manifest_path)
             fs.remove(manifest_path)
 
         # TODO(crbug.com/853815): perhaps also cache the manifest for wpt_internal.
@@ -309,6 +310,8 @@ class WPTManifest(object):
             base_manifest_path = fs.join(port.web_tests_dir(), 'external',
                                          BASE_MANIFEST_NAME)
             if fs.exists(base_manifest_path):
+                _log.debug('Copying base manifest from "%s" to "%s".',
+                           base_manifest_path, manifest_path)
                 fs.copyfile(base_manifest_path, manifest_path)
             else:
                 _log.error('Manifest base not found at "%s".',
@@ -335,10 +338,13 @@ class WPTManifest(object):
         ]
 
         # ScriptError will be raised if the command fails.
-        port.host.executive.run_command(
+        output = port.host.executive.run_command(
             cmd,
+            timeout_seconds=300,
             # This will also include stderr in the exception message.
             return_stderr=True)
+        if output:
+            _log.debug('Output: %s', output)
 
     @staticmethod
     def _flatten_items(items):
