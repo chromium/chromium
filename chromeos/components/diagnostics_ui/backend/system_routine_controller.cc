@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chromeos/components/diagnostics_ui/backend/cros_healthd_helpers.h"
+#include "chromeos/components/diagnostics_ui/backend/histogram_util.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 
 namespace chromeos {
@@ -199,17 +200,19 @@ SystemRoutineController::SystemRoutineController() {
 }
 
 SystemRoutineController::~SystemRoutineController() {
-  if (!inflight_routine_runner_) {
-    return;
+  if (inflight_routine_runner_) {
+    // Since SystemRoutineController is torn down at the same time as the
+    // frontend, there's no guarantee that the disconnect handler will be
+    // called. If there's a routine inflight, cancel it but do not pass a
+    // callback.
+    BindCrosHealthdDiagnosticsServiceIfNeccessary();
+    diagnostics_service_->GetRoutineUpdate(
+        inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kCancel,
+        /*should_include_output=*/false, base::DoNothing());
   }
 
-  // Since SystemRoutineController is torn down at the same time as the
-  // frontend, there's no guarantee that the disconnect handler will be called.
-  // If there's a routine inflight, cancel it but do not pass a callback.
-  BindCrosHealthdDiagnosticsServiceIfNeccessary();
-  diagnostics_service_->GetRoutineUpdate(
-      inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kCancel,
-      /*should_include_output=*/false, base::DoNothing());
+  // Emit the total number of routines run.
+  metrics::EmitRoutineRunCount(routine_count_);
 }
 
 void SystemRoutineController::RunRoutine(
@@ -224,6 +227,8 @@ void SystemRoutineController::RunRoutine(
     routine_runner->OnRoutineResult(std::move(result));
     return;
   }
+
+  ++routine_count_;
 
   inflight_routine_runner_ =
       mojo::Remote<mojom::RoutineRunner>(std::move(runner));

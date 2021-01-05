@@ -119,6 +119,10 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   // routine.
   int32_t inflight_routine_id_ = kInvalidRoutineId;
 
+  // Records the number of routines that a user attempts to run during one
+  // session in the app. Emitted when the app is closed.
+  uint16_t routine_count_ = 0;
+
   mojo::Remote<mojom::RoutineRunner> inflight_routine_runner_;
   std::unique_ptr<base::OneShotTimer> inflight_routine_timer_;
 

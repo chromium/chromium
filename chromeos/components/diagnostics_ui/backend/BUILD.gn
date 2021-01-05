@@ -12,6 +12,8 @@ static_library("backend") {
     "cros_healthd_helpers.h",
     "diagnostics_manager.cc",
     "diagnostics_manager.h",
+    "histogram_util.cc",
+    "histogram_util.h",
     "power_manager_client_conversions.cc",
     "power_manager_client_conversions.h",
     "system_data_provider.cc",

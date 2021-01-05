@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_service.h"
@@ -578,6 +579,53 @@ TEST_F(SystemRoutineControllerTest, CancelRoutineDtor) {
   EXPECT_EQ(expected_id, update_params->id);
   EXPECT_EQ(healthd::DiagnosticRoutineCommandEnum::kCancel,
             update_params->command);
+}
+
+TEST_F(SystemRoutineControllerTest, RunRoutineCount0) {
+  base::HistogramTester histogram_tester;
+
+  system_routine_controller_.reset();
+
+  histogram_tester.ExpectBucketCount("ChromeOS.DiagnosticsUi.RoutineCount", 0,
+                                     1);
+}
+
+TEST_F(SystemRoutineControllerTest, RunRoutineCount1) {
+  // Run a routine.
+  SetRunRoutineResponse(/*id=*/1,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  FakeRoutineRunner routine_runner;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kCpuStress,
+      routine_runner.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner.result.is_null());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kPassed,
+      mojo::ScopedHandle());
+
+  // Before the update interval, the routine status is not processed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(59));
+  EXPECT_TRUE(routine_runner.result.is_null());
+
+  // After the update interval, the update is fetched and processed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_FALSE(routine_runner.result.is_null());
+  VerifyRoutineResult(*routine_runner.result, mojom::RoutineType::kCpuStress,
+                      mojom::StandardRoutineResult::kTestPassed);
+
+  // Destroy the SystemRoutineController and check the emitted result.
+  base::HistogramTester histogram_tester;
+
+  system_routine_controller_.reset();
+
+  histogram_tester.ExpectBucketCount("ChromeOS.DiagnosticsUi.RoutineCount", 1,
+                                     1);
 }
 
 }  // namespace diagnostics
