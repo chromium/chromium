@@ -136,8 +136,11 @@ WebAppLaunchManager::~WebAppLaunchManager() = default;
 
 content::WebContents* WebAppLaunchManager::OpenApplication(
     apps::AppLaunchParams&& params) {
-  if (!provider_->registrar().IsInstalled(params.app_id))
+  if (Browser::GetBrowserCreationStatusForProfile(profile_) !=
+          Browser::BrowserCreationStatus::kOk ||
+      !provider_->registrar().IsInstalled(params.app_id)) {
     return nullptr;
+  }
 
   if (params.container == apps::mojom::LaunchContainer::kLaunchContainerWindow)
     RecordAppWindowLaunch(profile_, params.app_id);

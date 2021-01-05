@@ -13,6 +13,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -45,6 +51,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/background_color_change_waiter.h"
@@ -55,6 +62,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -953,6 +961,26 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PermissionBubble) {
   EXPECT_TRUE(content::ExecuteScript(
       render_frame_host,
       "navigator.geolocation.getCurrentPosition(function(){});"));
+}
+
+// Check that no web app is launched during shutdown.
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, Shutdown) {
+  const GURL app_url = GetSecureAppURL();
+  const AppId app_id = InstallPWA(app_url);
+  apps::AppLaunchParams params(
+      app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_WINDOW,
+      apps::mojom::AppLaunchSource::kSourceTest);
+
+  BrowserHandler handler(nullptr, std::string());
+  handler.Close();
+  ui_test_utils::WaitForBrowserToClose();
+
+  content::WebContents* const web_contents =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->BrowserAppLauncher()
+          ->LaunchAppWithParams(std::move(params));
+  EXPECT_EQ(web_contents, nullptr);
 }
 
 // Ensure that web app windows with blank titles don't display the URL as a
