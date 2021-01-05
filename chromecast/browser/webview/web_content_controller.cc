@@ -174,6 +174,16 @@ void WebContentController::ProcessRequest(
       }
       break;
 
+    case webview::WebviewRequest::kSetInsets:
+      if (request.has_set_insets()) {
+        HandleSetInsets(gfx::Insets(
+            request.set_insets().top(), request.set_insets().left(),
+            request.set_insets().bottom(), request.set_insets().right()));
+      } else {
+        client_->OnError("set_insets() not supplied");
+      }
+      break;
+
     default:
       client_->OnError("Unknown request code");
       break;
@@ -504,6 +514,12 @@ void WebContentController::HandleResize(const gfx::Size& size) {
     surface_->SetEmbeddedSurfaceSize(size);
     surface_->Commit();
   }
+}
+
+void WebContentController::HandleSetInsets(const gfx::Insets& insets) {
+  auto* contents = GetWebContents();
+  if (contents && contents->GetTopLevelRenderWidgetHostView())
+    contents->GetTopLevelRenderWidgetHostView()->SetInsets(insets);
 }
 
 viz::SurfaceId WebContentController::GetSurfaceId() {

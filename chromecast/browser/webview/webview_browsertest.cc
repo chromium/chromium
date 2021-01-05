@@ -11,6 +11,7 @@
 #include "chromecast/browser/extensions/cast_extension_system_factory.h"
 #include "chromecast/browser/webview/webview_controller.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
@@ -122,6 +123,51 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, Navigate) {
   WebviewController webview(context_.get(), &client_, true);
 
   GURL test_url = embedded_test_server()->GetURL("foo.com", "/test");
+
+  webview::WebviewRequest nav;
+  nav.mutable_navigate()->set_url(test_url.spec());
+  webview.ProcessRequest(nav);
+
+  RunMessageLoop();
+}
+
+IN_PROC_BROWSER_TEST_F(WebviewTest, SetInsets) {
+  // Webview creation sends messages to the client (eg: accessibility ID).
+  EXPECT_CALL(client_, EnqueueSend(_)).Times(testing::AnyNumber());
+
+  WebviewController webview(context_.get(), &client_, true);
+  GURL test_url = embedded_test_server()->GetURL("foo.com", "/test");
+
+  auto check = [](const std::unique_ptr<webview::WebviewResponse>& response) {
+    return response->has_page_event() &&
+           response->page_event().current_page_state() ==
+               webview::AsyncPageEvent_State_LOADED;
+  };
+  EXPECT_CALL(client_, EnqueueSend(Truly(check)))
+      .Times(testing::AtLeast(1))
+      .WillOnce(
+          [this, &webview](std::unique_ptr<webview::WebviewResponse> response) {
+            webview::WebviewRequest request;
+            request.mutable_set_insets()->set_top(0);
+            request.mutable_set_insets()->set_left(0);
+            request.mutable_set_insets()->set_bottom(200);
+            request.mutable_set_insets()->set_right(0);
+            webview.ProcessRequest(request);
+
+            gfx::Size size_after = webview.GetWebContents()
+                                       ->GetRenderWidgetHostView()
+                                       ->GetVisibleViewportSize();
+            EXPECT_EQ(gfx::Size(800, 400), size_after);
+
+            Quit();
+          });
+
+  // Requests are executed serially. Resize first to make sure the Webview is
+  // properly sized by the time the page loads.
+  webview::WebviewRequest resize;
+  resize.mutable_resize()->set_width(800);
+  resize.mutable_resize()->set_height(600);
+  webview.ProcessRequest(resize);
 
   webview::WebviewRequest nav;
   nav.mutable_navigate()->set_url(test_url.spec());

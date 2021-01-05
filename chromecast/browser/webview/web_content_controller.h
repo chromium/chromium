@@ -117,6 +117,8 @@ class WebContentController
   void HandleClearCookies(int64_t id);
   void HandleGetTitle(int64_t id);
   void HandleResize(const gfx::Size& size);
+  void HandleSetInsets(const gfx::Insets& insets);
+
   viz::SurfaceId GetSurfaceId();
   void ChannelModified(content::RenderFrameHost* frame,
                        const std::string& channel,
