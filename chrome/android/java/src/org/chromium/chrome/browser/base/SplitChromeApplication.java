@@ -95,8 +95,6 @@ public class SplitChromeApplication extends SplitCompatApplication {
         // N), the onComplete function will run immediately so it must handle the case where the
         // base context of the application has not been set yet.
         sSplitPreloader.preload(CHROME_SPLIT_NAME, (chromeContext) -> {
-            // When installed, the vr module is always loaded on startup, so preload here.
-            sSplitPreloader.preload("vr", null);
             // If the chrome module is not enabled or isolated splits are not supported,
             // chromeContext will have the same ClassLoader as the base context, so no need to
             // replace the ClassLoaders here.
