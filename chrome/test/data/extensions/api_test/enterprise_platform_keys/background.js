@@ -493,30 +493,35 @@ function verifyRsaKeySign(
 function verifyEcKeySign(token, params, keyPair, spki, debugMessage, callback) {
   var cachedSignature;
   token.subtleCrypto.sign(params.sign, keyPair.privateKey, DATA)
-      .then(function(signature) {
-        assertTrue(!!signature, debugMessage + ': No signature.');
-        assertTrue(
-            signature.length != 0, debugMessage + ': Signature is empty.');
-        cachedSignature = signature;
-        return window.crypto.subtle.importKey(
-            'spki', cachedSpki, params.importKey, false, ['verify']);
-      }),
-      function(error) {
-        fail(debugMessage + ': Sign failed: ' + error);
-      }.then(function(webCryptoPublicKey) {
-        assertTrue(!!webCryptoPublicKey);
-        return window.crypto.subtle.verify(
-            params.verify, webCryptoPublicKey, cachedSignature, DATA);
-      }),
-      function(error) {
-        fail(debugMessage + ': Import failed: ' + error);
-      }.then(function(success) {
-        assertEq(true, success, debugMessage + ': Signature invalid.');
-        callback(keyPair, spki);
-      }),
-      function(error) {
-        fail(debugMessage + ': Verification failed: ' + error);
-      };
+      .then(
+          function(signature) {
+            assertTrue(!!signature, debugMessage + ': No signature.');
+            assertTrue(
+                signature.length != 0, debugMessage + ': Signature is empty.');
+            cachedSignature = signature;
+            return window.crypto.subtle.importKey(
+                'spki', spki, params.importKey, false, ['verify']);
+          },
+          function(error) {
+            fail(debugMessage + ': Sign failed: ' + error);
+          })
+      .then(
+          function(webCryptoPublicKey) {
+            assertTrue(!!webCryptoPublicKey);
+            return window.crypto.subtle.verify(
+                params.verify, webCryptoPublicKey, cachedSignature, DATA);
+          },
+          function(error) {
+            fail(debugMessage + ': Import failed: ' + error);
+          })
+      .then(
+          function(success) {
+            assertEq(true, success, debugMessage + ': Signature invalid.');
+            callback(keyPair, spki);
+          },
+          function(error) {
+            fail(debugMessage + ': Verification failed: ' + error);
+          });
 }
 
 // Generates an RSA key with the |algorithm| parameters. Signs random data using
@@ -589,7 +594,7 @@ function generateEcKeyAndVerify(token, params, callback) {
             var publicKey = cachedKeyPair.publicKey;
             assertEq([], publicKey.usages);
 
-            verifyEcKeySign(
+            return verifyEcKeySign(
                 token, params, cachedKeyPair, publicKeySpki,
                 /*debugMessage=*/ 'First signing attempt', callback);
           },
