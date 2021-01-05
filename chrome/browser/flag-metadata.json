@@ -2331,11 +2331,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "enable-text-fragment-anchor",
-    "owners": [ "bokan", "input-dev" ],
-    "expiry_milestone": 83
-  },
-  {
     "name": "enable-tls13-early-data",
     "owners": [ "svaldez" ],
     "expiry_milestone": 90

@@ -593,9 +593,6 @@ extern const char kEnableTabSearchFlagId[];
 extern const char kEnableTabSearchName[];
 extern const char kEnableTabSearchDescription[];
 
-extern const char kEnableTextFragmentAnchorName[];
-extern const char kEnableTextFragmentAnchorDescription[];
-
 extern const char kEnableUseZoomForDsfName[];
 extern const char kEnableUseZoomForDsfDescription[];
 extern const char kEnableUseZoomForDsfChoiceDefault[];

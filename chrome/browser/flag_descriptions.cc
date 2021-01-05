@@ -1003,10 +1003,6 @@ const char kEnableTabSearchDescription[] =
     "Enable the Tab Search feature in Top Chrome UI, which will show a popup "
     "bubble that allows users to search over their currently open tabs.";
 
-const char kEnableTextFragmentAnchorName[] = "Enable Text Fragment Anchor.";
-const char kEnableTextFragmentAnchorDescription[] =
-    "Enables scrolling to text specified in URL's fragment.";
-
 const char kEnableUseZoomForDsfName[] =
     "Use Blink's zoom for device scale factor.";
 const char kEnableUseZoomForDsfDescription[] =
