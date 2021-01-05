@@ -141,7 +141,7 @@ xcode = struct(
     # (current default) xc12 gm seed
     x12a7209 = xcode_enum("12a7209"),
     # latest Xcode 12 beta version.
-    x12b5044c = xcode_enum("12b5044c"),
+    x12c33 = xcode_enum("12c33"),
 )
 
 ################################################################################
