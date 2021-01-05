@@ -2,6 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import './strings.m.js';
+
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {AddSupervisionAPIServer} from './add_supervision_api_server.js';
+
 /**
  * List of URL hosts that can be requested by the webview.
  * @const {!Array<string>}
@@ -39,6 +48,8 @@ const addSupervisionHandler =
 
 Polymer({
   is: 'add-supervision-ui',
+
+  _template: html`{__html_template__}`,
 
   /** Attempts to close the dialog */
   closeDialog_() {

@@ -20,7 +20,7 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
  * methods provided in methodList should be implemented as methods
  * of the subclass.
  */
-/* #export */ class PostMessageAPIServer {
+export class PostMessageAPIServer {
   constructor(clientElement, methodList, targetURL, messageOriginURLFilter) {
     /**
      * The Window type element to which this server will listen for messages,
@@ -220,7 +220,7 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
  * over the postMessage API.  This should be subclassed and the methods in the
  * server that the client needs to access should be provided in methodList.
  */
-/* #export */ class PostMessageAPIClient {
+export class PostMessageAPIClient {
   /**
    * @param {!Array<string>} methodList The list of methods accessible via the
    *     client.
