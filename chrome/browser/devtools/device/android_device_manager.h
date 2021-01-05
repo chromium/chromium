@@ -34,10 +34,10 @@ class AndroidDeviceManager {
   // |body_head| should contain the body (WebSocket frame data) part that has
   // been read during processing the header (WebSocket handshake).
   using HttpUpgradeCallback =
-      base::Callback<void(int result,
-                          const std::string& extensions,
-                          const std::string& body_head,
-                          std::unique_ptr<net::StreamSocket>)>;
+      base::OnceCallback<void(int result,
+                              const std::string& extensions,
+                              const std::string& body_head,
+                              std::unique_ptr<net::StreamSocket>)>;
   using SerialsCallback = base::OnceCallback<void(std::vector<std::string>)>;
 
   struct BrowserInfo {
@@ -124,7 +124,7 @@ class AndroidDeviceManager {
     void HttpUpgrade(const std::string& socket_name,
                      const std::string& path,
                      const std::string& extensions,
-                     const HttpUpgradeCallback& callback);
+                     HttpUpgradeCallback callback);
     AndroidWebSocket* CreateWebSocket(
         const std::string& socket_name,
         const std::string& path,
@@ -180,7 +180,7 @@ class AndroidDeviceManager {
                              const std::string& socket_name,
                              const std::string& path,
                              const std::string& extensions,
-                             const HttpUpgradeCallback& callback);
+                             HttpUpgradeCallback callback);
 
     virtual void ReleaseDevice(const std::string& serial);
 
