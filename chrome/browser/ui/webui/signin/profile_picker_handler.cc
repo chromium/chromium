@@ -84,7 +84,7 @@ void RecordNewProfileSpec(base::Optional<SkColor> profile_color,
   int theme_id =
       profile_color.has_value()
           ? chrome_colors::ChromeColorsService::GetColorId(*profile_color)
-          : -1;
+          : chrome_colors::kDefaultColorId;
   base::UmaHistogramSparse("ProfilePicker.NewProfileTheme", theme_id);
 
   if (ProfileShortcutManager::IsFeatureEnabled()) {

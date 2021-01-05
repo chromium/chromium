@@ -155,6 +155,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeColors.ColorApplied" enum="ChromeColorsInfo"
+    expires_after="M90">
+  <owner>alexilin@chromium.org</owner>
+  <owner>jkrcal@chromium.org</owner>
+  <summary>
+    Records the theme color every time the user clicks on a color icon in the
+    color picker.
+  </summary>
+</histogram>
+
 <histogram name="ChromeColors.ColorOnLoad" enum="ChromeColorsInfo"
     expires_after="2021-05-16">
   <owner>gayane@chromium.org</owner>
