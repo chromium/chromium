@@ -168,7 +168,7 @@ public class CustomTabToolbarColorController {
                 mIntentDataProvider, mUseTabThemeColor, tab, () -> Previews.isPreview(tab));
         switch (toolbarColorType) {
             case ToolbarColorType.THEME_COLOR:
-                return mTopUiThemeColorProvider.getThemeColor();
+                return mTopUiThemeColorProvider.calculateColor(tab, tab.getThemeColor());
             case ToolbarColorType.DEFAULT_COLOR:
                 return getDefaultColor();
             case ToolbarColorType.INTENT_TOOLBAR_COLOR:
