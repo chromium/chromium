@@ -205,6 +205,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     public CoreAccountInfo setUpAccountAndEnableSyncForTesting() {
         CoreAccountInfo accountInfo =
                 mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mProfileSyncService);
+        // Enable UKM when enabling sync as it is done by the sync confirmation UI.
         enableUKM();
         SyncTestUtil.waitForSyncActive();
         SyncTestUtil.triggerSyncAndWaitForCompletion();
@@ -216,9 +217,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      * @return the test accountInfo that is signed in.
      */
     public CoreAccountInfo setUpAccountAndSignInForTesting() {
-        CoreAccountInfo accountInfo = mAccountManagerTestRule.addTestAccountThenSignin();
-        enableUKM();
-        return accountInfo;
+        return mAccountManagerTestRule.addTestAccountThenSignin();
     }
 
     /**
@@ -228,6 +227,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     public CoreAccountInfo setUpTestAccountAndSignInWithSyncSetupAsIncomplete() {
         CoreAccountInfo accountInfo = mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(
                 /* profileSyncService= */ null);
+        // Enable UKM when enabling sync as it is done by the sync confirmation UI.
         enableUKM();
         SyncTestUtil.waitForSyncTransportActive();
         return accountInfo;
@@ -251,6 +251,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     public void signinAndEnableSync(final CoreAccountInfo accountInfo) {
         SigninTestUtil.signinAndEnableSync(accountInfo, mProfileSyncService);
+        // Enable UKM when enabling sync as it is done by the sync confirmation UI.
         enableUKM();
         SyncTestUtil.waitForSyncActive();
         SyncTestUtil.triggerSyncAndWaitForCompletion();
