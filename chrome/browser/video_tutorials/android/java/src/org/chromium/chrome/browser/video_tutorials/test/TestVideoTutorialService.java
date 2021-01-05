@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** A video tutorial service implementation for tests. */
@@ -93,5 +94,11 @@ public class TestVideoTutorialService implements VideoTutorialService {
         mLanguages.add("hi");
         mLanguages.add("ta");
         mLanguages.add("en");
+    }
+
+    /** Initialized to a set of test languages. */
+    public void initializeTestLanguages(String[] languages) {
+        mLanguages.clear();
+        mLanguages.addAll(Arrays.asList(languages));
     }
 }
