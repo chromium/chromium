@@ -24,21 +24,12 @@ constexpr base::FeatureState kOverlayScrollbarFeatureState =
 const base::Feature kOverlayScrollbar{"OverlayScrollbar",
                                       kOverlayScrollbarFeatureState};
 
-// Enables will flash all scrollbars in page after any scroll update.
-const base::Feature kOverlayScrollbarFlashAfterAnyScrollUpdate{
-    "OverlayScrollbarFlashAfterAnyScrollUpdate", kOverlayScrollbarFeatureState};
-
 }  // namespace features
 
 namespace ui {
 
 bool IsOverlayScrollbarEnabled() {
   return base::FeatureList::IsEnabled(features::kOverlayScrollbar);
-}
-
-bool OverlayScrollbarFlashAfterAnyScrollUpdate() {
-  return base::FeatureList::IsEnabled(
-      features::kOverlayScrollbarFlashAfterAnyScrollUpdate);
 }
 
 }  // namespace ui

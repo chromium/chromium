@@ -1023,9 +1023,6 @@ extern const char kEnableDeJellyDescription[];
 extern const char kOverlayScrollbarsName[];
 extern const char kOverlayScrollbarsDescription[];
 
-extern const char kOverlayScrollbarsFlashAfterAnyScrollUpdateName[];
-extern const char kOverlayScrollbarsFlashAfterAnyScrollUpdateDescription[];
-
 extern const char kOverlayStrategiesName[];
 extern const char kOverlayStrategiesDescription[];
 extern const char kOverlayStrategiesDefault[];

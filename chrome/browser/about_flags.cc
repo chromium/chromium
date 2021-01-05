@@ -2690,11 +2690,6 @@ const FeatureEntry kFeatureEntries[] = {
      // Uses the system preference on Mac (a different implementation).
      // On Android, this is always enabled.
      kOsAura, FEATURE_VALUE_TYPE(features::kOverlayScrollbar)},
-    {"overlay-scrollbars-flash-after-scroll-update",
-     flag_descriptions::kOverlayScrollbarsFlashAfterAnyScrollUpdateName,
-     flag_descriptions::kOverlayScrollbarsFlashAfterAnyScrollUpdateDescription,
-     kOsAura,
-     FEATURE_VALUE_TYPE(features::kOverlayScrollbarFlashAfterAnyScrollUpdate)},
 #endif  // USE_AURA
     {"enable-quic", flag_descriptions::kQuicName,
      flag_descriptions::kQuicDescription, kOsAll,
