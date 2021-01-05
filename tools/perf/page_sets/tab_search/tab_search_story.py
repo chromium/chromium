@@ -145,6 +145,18 @@ class TabSearchStory(page.Page):
     action_runner.tab.browser.ExecuteBrowserCommand('openTabSearch')
     action_runner.Wait(5)
 
+  def CloseAndOpenLoading(self, action_runner):
+    action_runner.Wait(1)
+    action_runner.tab.browser.ExecuteBrowserCommand('closeTabSearch')
+    action_runner.Wait(1)
+    tabs = action_runner.tab.browser.tabs
+    i = 0
+    for url in self.URL_LIST2:
+      tabs[i].Navigate('https://' + url)
+      i = i + 1
+    action_runner.tab.browser.ExecuteBrowserCommand('openTabSearch')
+    action_runner.Wait(5)
+
   def ScrollUpAndDown(self, action_runner):
     action_runner.Wait(1)
     self.StartMeasuringFrameTime(action_runner,
@@ -217,6 +229,17 @@ class TabSearchStoryCloseAndOpen(TabSearchStory):
 
   def InteractWithPage(self, action_runner):
     self.CloseAndOpen(action_runner)
+
+
+class TabSearchStoryCloseAndOpenLoading(TabSearchStory):
+  NAME = 'tab_search:close_and_open:loading:2020'
+  URL_LIST = TOP_URL[:10]
+  URL_LIST2 = TOP_URL[10:20]
+  URL = 'https://' + URL_LIST[0]
+  WAIT_FOR_NETWORK_QUIESCENCE = False
+
+  def InteractWithPage(self, action_runner):
+    self.CloseAndOpenLoading(action_runner)
 
 
 class TabSearchStoryScrollUpAndDown(TabSearchStory):

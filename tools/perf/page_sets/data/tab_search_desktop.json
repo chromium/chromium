@@ -3,6 +3,9 @@
         "tab_search:close_and_open:2020": {
             "DEFAULT": "tab_search_desktop_1b410a96cc.wprgo"
         },
+        "tab_search:close_and_open:loading:2020": {
+            "DEFAULT": "tab_search_desktop_5284f907bd.wprgo"
+        },
         "tab_search:scroll_up_and_down:2020": {
             "DEFAULT": "tab_search_desktop_0c9707c535.wprgo"
         },
