@@ -61,8 +61,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'CatchFail',
     # TODO(crbug.com/803485): Follow steps in bug.
     'JUnitAmbiguousTestClass',
-    # TODO(crbug.com/1027683): Follow steps in bug.
-    'UnnecessaryParentheses',
     # Android platform default is always UTF-8.
     # https://developer.android.com/reference/java/nio/charset/Charset.html#defaultCharset()
     'DefaultCharset',
@@ -169,6 +167,8 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # We already have presubmit checks for this. Not necessary to warn on
     # every build.
     'RemoveUnusedImports',
+    # We do not care about unnecessary parenthesis enough to check for them.
+    'UnnecessaryParentheses',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
