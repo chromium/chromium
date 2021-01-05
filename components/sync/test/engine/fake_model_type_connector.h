@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_FAKE_MODEL_TYPE_CONNECTOR_H_
-#define COMPONENTS_SYNC_ENGINE_FAKE_MODEL_TYPE_CONNECTOR_H_
+#ifndef COMPONENTS_SYNC_TEST_ENGINE_FAKE_MODEL_TYPE_CONNECTOR_H_
+#define COMPONENTS_SYNC_TEST_ENGINE_FAKE_MODEL_TYPE_CONNECTOR_H_
 
 #include <memory>
 
@@ -27,4 +27,4 @@ class FakeModelTypeConnector : public ModelTypeConnector {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_FAKE_MODEL_TYPE_CONNECTOR_H_
+#endif  // COMPONENTS_SYNC_TEST_ENGINE_FAKE_MODEL_TYPE_CONNECTOR_H_

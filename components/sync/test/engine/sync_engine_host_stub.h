@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_HOST_STUB_H_
-#define COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_HOST_STUB_H_
+#ifndef COMPONENTS_SYNC_TEST_ENGINE_SYNC_ENGINE_HOST_STUB_H_
+#define COMPONENTS_SYNC_TEST_ENGINE_SYNC_ENGINE_HOST_STUB_H_
 
 #include <string>
 
@@ -34,4 +34,4 @@ class SyncEngineHostStub : public SyncEngineHost {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_HOST_STUB_H_
+#endif  // COMPONENTS_SYNC_TEST_ENGINE_SYNC_ENGINE_HOST_STUB_H_

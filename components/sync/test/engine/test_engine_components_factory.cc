@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/test_engine_components_factory.h"
+#include "components/sync/test/engine/test_engine_components_factory.h"
 
 #include "components/sync/engine_impl/cycle/sync_cycle_context.h"
 #include "components/sync/test/engine/fake_sync_scheduler.h"

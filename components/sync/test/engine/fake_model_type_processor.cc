@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/fake_model_type_processor.h"
+#include "components/sync/test/engine/fake_model_type_processor.h"
 
 #include <utility>
 

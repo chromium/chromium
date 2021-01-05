@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_FAKE_SYNC_ENGINE_H_
-#define COMPONENTS_SYNC_ENGINE_FAKE_SYNC_ENGINE_H_
+#ifndef COMPONENTS_SYNC_TEST_ENGINE_FAKE_SYNC_ENGINE_H_
+#define COMPONENTS_SYNC_TEST_ENGINE_FAKE_SYNC_ENGINE_H_
 
 #include <memory>
 #include <string>
@@ -88,4 +88,4 @@ class FakeSyncEngine : public SyncEngine {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_FAKE_SYNC_ENGINE_H_
+#endif  // COMPONENTS_SYNC_TEST_ENGINE_FAKE_SYNC_ENGINE_H_

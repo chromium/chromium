@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/sync_engine_host_stub.h"
+#include "components/sync/test/engine/sync_engine_host_stub.h"
 
 namespace syncer {
 

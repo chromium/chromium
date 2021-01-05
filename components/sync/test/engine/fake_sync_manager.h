@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_FAKE_SYNC_MANAGER_H_
-#define COMPONENTS_SYNC_ENGINE_FAKE_SYNC_MANAGER_H_
+#ifndef COMPONENTS_SYNC_TEST_ENGINE_FAKE_SYNC_MANAGER_H_
+#define COMPONENTS_SYNC_TEST_ENGINE_FAKE_SYNC_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -15,8 +15,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine/fake_model_type_connector.h"
 #include "components/sync/engine/sync_manager.h"
+#include "components/sync/test/engine/fake_model_type_connector.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
 
 namespace base {
@@ -135,4 +135,4 @@ class FakeSyncManager : public SyncManager {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_FAKE_SYNC_MANAGER_H_
+#endif  // COMPONENTS_SYNC_TEST_ENGINE_FAKE_SYNC_MANAGER_H_

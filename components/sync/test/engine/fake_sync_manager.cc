@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/fake_sync_manager.h"
+#include "components/sync/test/engine/fake_sync_manager.h"
 
 #include <cstddef>
 #include <utility>
@@ -16,8 +16,8 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/engine_components_factory.h"
-#include "components/sync/engine/fake_model_type_connector.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
+#include "components/sync/test/engine/fake_model_type_connector.h"
 
 class GURL;
 
