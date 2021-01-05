@@ -2,21 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {TrashDirs} from '../../common/js/trash.m.js';
+
+import {MockVolumeManager} from './mock_volume_manager.m.js';
+import {Trash} from './trash.m.js';
+
 /** @type {!MockVolumeManager} */
 let volumeManager;
 
+/**
+ * State for the feature flags for faking in loadTimeData.
+ * @type {Object<string, boolean>}
+ * */
+let flags = {};
+
 // Set up the test components.
-function setUp() {
+export function setUp() {
   // Mock LoadTimeData strings.
-  window.loadTimeData = {
-    data: {
-      'FILES_TRASH_ENABLED': true,
-    },
-    getBoolean: function(key) {
-      return window.loadTimeData.data[key];
-    },
-    getString: id => id,
+  flags = {
+    'FILES_TRASH_ENABLED': true,
   };
+  loadTimeData.getBoolean = id => flags[id];
+  loadTimeData.getString = id => id;
 
   volumeManager = new MockVolumeManager();
 }
@@ -31,7 +44,7 @@ function setUp() {
 function checkRemoveFileOrDirectory(
     filesTrashEnabled, rootType, path, deletePermanently,
     expectPermanentlyDelete) {
-  window.loadTimeData.data['FILES_TRASH_ENABLED'] = filesTrashEnabled;
+  flags['FILES_TRASH_ENABLED'] = filesTrashEnabled;
   const volumeInfo =
       volumeManager.createVolumeInfo(rootType, 'volumeId', 'label');
   const f = MockFileEntry.create(volumeInfo.fileSystem, path);
@@ -58,7 +71,7 @@ function checkRemoveFileOrDirectory(
  * Test that removeFileOrDirectory() correctly moves to trash, or permanently
  * deletes.
  */
-function testRemoveFileOrDirectory() {
+export function testRemoveFileOrDirectory() {
   // Only use trash if flag is enabled, entry is in 'downloads' volume, but not
   // in /.Trash.
 
@@ -79,7 +92,7 @@ function testRemoveFileOrDirectory() {
  *
  * @suppress {accessControls} Access permanentlyDeleteFileOrDirectory_().
  */
-async function testPermanentlyDeleteFileOrDirectory(done) {
+export async function testPermanentlyDeleteFileOrDirectory(done) {
   const trash = new Trash();
   const fs = new MockFileSystem('volumeId');
   const dir = MockDirectoryEntry.create(fs, '/dir');
@@ -108,7 +121,7 @@ async function testPermanentlyDeleteFileOrDirectory(done) {
 /**
  * Test trash in MyFiles.
  */
-async function testMyFilesTrash(done) {
+export async function testMyFilesTrash(done) {
   const trash = new Trash();
   const deletePermanently = false;
   const downloads = volumeManager.getCurrentProfileVolumeInfo(
@@ -163,7 +176,7 @@ async function testMyFilesTrash(done) {
  * Test that Downloads has its own /Downloads/.Trash since it is a separate
  * mount on a device and we don't want move to trash to be a copy operation.
  */
-async function testDownloadsHasOwnTrash(done) {
+export async function testDownloadsHasOwnTrash(done) {
   const trash = new Trash();
   const deletePermanently = false;
   const downloads = volumeManager.getCurrentProfileVolumeInfo(
@@ -224,7 +237,7 @@ async function testDownloadsHasOwnTrash(done) {
 /**
  * Test crostini trash in .local/share/Trash.
  */
-async function testCrostiniTrash(done) {
+export async function testCrostiniTrash(done) {
   const trash = new Trash();
   const deletePermanently = false;
   const crostini = volumeManager.createVolumeInfo(
@@ -277,7 +290,7 @@ async function testCrostiniTrash(done) {
 /**
  * Test restore().
  */
-async function testRestore(done) {
+export async function testRestore(done) {
   const trash = new Trash();
   const deletePermanently = false;
   const downloads = volumeManager.getCurrentProfileVolumeInfo(
@@ -328,7 +341,7 @@ async function testRestore(done) {
  *
  * @suppress {accessControls} Access removeOldItems_() and inProgress_.
  */
-async function testRemoveOldItems_(done) {
+export async function testRemoveOldItems_(done) {
   const trash = new Trash();
   const deletePermanently = false;
   const downloads = volumeManager.getCurrentProfileVolumeInfo(

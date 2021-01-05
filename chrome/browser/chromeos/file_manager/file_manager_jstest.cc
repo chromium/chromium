@@ -87,11 +87,11 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileManagerDialogBaseTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileOperationHandlerTest) {
-  RunTestURL("background/js/file_operation_handler_unittest_gen.html");
+  RunTestURL("background/js/file_operation_handler_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileOperationManagerTest) {
-  RunTestURL("background/js/file_operation_manager_unittest_gen.html");
+  RunTestURL("background/js/file_operation_manager_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesAppEntryTypes) {
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ThumbnailModel) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Trash) {
-  RunTestURL("background/js/trash_unittest_gen.html");
+  RunTestURL("background/js/trash_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, UtilTest) {

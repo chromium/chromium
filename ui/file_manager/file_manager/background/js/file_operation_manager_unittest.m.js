@@ -1,7 +1,24 @@
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-'use strict';
+
+// clang-format off
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import { assertArrayEquals, assertEquals, assertFalse,assertTrue} from 'chrome://test/chai_assert.js';
+
+import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
+import {reportPromise, waitUntil} from '../../../base/js/test_error_reporting.m.js';
+import {FileOperationManager} from '../../../externs/background/file_operation_manager.m.js';
+import {EntryLocation} from '../../../externs/entry_location.m.js';
+import {FileOperationProgressEvent} from '../../common/js/file_operation_common.m.js';
+import { joinPath, MockDirectoryEntry, MockEntry, MockFileEntry,MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {util} from '../../common/js/util.m.js';
+
+import {FileOperationManagerImpl} from './file_operation_manager.m.js';
+import {fileOperationUtil} from './file_operation_util.m.js';
+import {volumeManagerFactory} from './volume_manager_factory.m.js';
+
+// clang-format on
 
 /**
  * Mock chrome APIs.
@@ -32,7 +49,8 @@ mockChrome.fileManagerPrivate = {
       mockChrome.fileManagerPrivate.onCopyProgress.listener_ = null;
     },
     listener_: null
-  }
+  },
+
 };
 
 /**
@@ -261,9 +279,6 @@ function waitForEvents(fileOperationManager) {
  */
 let volumeManager;
 
-// eslint-disable-next-line no-var
-var volumeManagerFactory = volumeManagerFactory || {};
-
 /**
  * Provide VolumeManager.getInstance() for FileOperationManager using mocked
  * volume manager instance.
@@ -282,17 +297,15 @@ let fileOperationManager;
 /**
  * Initializes the test environment.
  */
-function setUp() {
+export function setUp() {
   // Mock LoadTimeData strings.
-  window.loadTimeData = {
-    data: {
-      'FILES_TRASH_ENABLED': true,
-    },
-    getBoolean: function(key) {
-      return window.loadTimeData.data[key];
-    },
-    getString: id => id,
+  loadTimeData.data = {
+    'FILES_TRASH_ENABLED': true,
   };
+  loadTimeData.getBoolean = function(key) {
+    return loadTimeData.data_[key];
+  };
+  loadTimeData.getString = id => id;
 
   // Install mock chrome APIs.
   installMockChrome(mockChrome);
@@ -302,7 +315,7 @@ function setUp() {
  * Tests the fileOperationUtil.resolvePath function.
  * @param {function(boolean)} callback Callback to be passed true on error.
  */
-function testResolvePath(callback) {
+export function testResolvePath(callback) {
   const fileSystem = createTestFileSystem('testVolume', {
     '/': DIRECTORY_SIZE,
     '/file': 10,
@@ -345,7 +358,7 @@ function testResolvePath(callback) {
 /**
  * @param {function(boolean)} callback Callback to be passed true on error.
  */
-function testFindEntriesRecursively(callback) {
+export function testFindEntriesRecursively(callback) {
   const fileSystem = createTestFileSystem('testVolume', {
     '/': DIRECTORY_SIZE,
     '/file.txt': 10,
@@ -381,7 +394,7 @@ function testFindEntriesRecursively(callback) {
 /**
  * @param {function(boolean)} callback Callback to be passed true on error.
  */
-function testFindFilesRecursively(callback) {
+export function testFindFilesRecursively(callback) {
   const fileSystem = createTestFileSystem('testVolume', {
     '/': DIRECTORY_SIZE,
     '/file.txt': 10,
@@ -420,7 +433,7 @@ function testFindFilesRecursively(callback) {
 /**
  * @param {function(boolean)} callback Callback to be passed true on error.
  */
-function testGatherEntriesRecursively(callback) {
+export function testGatherEntriesRecursively(callback) {
   const fileSystem = createTestFileSystem('testVolume', {
     '/': DIRECTORY_SIZE,
     '/file.txt': 10,
@@ -451,7 +464,7 @@ function testGatherEntriesRecursively(callback) {
  * Tests the fileOperationUtil.deduplicatePath
  * @param {function(boolean)} callback Callback to be passed true on error.
  */
-function testDeduplicatePath(callback) {
+export function testDeduplicatePath(callback) {
   const fileSystem1 = createTestFileSystem('testVolume', {'/': DIRECTORY_SIZE});
   const fileSystem2 = createTestFileSystem('testVolume', {
     '/': DIRECTORY_SIZE,
@@ -499,7 +512,7 @@ function testDeduplicatePath(callback) {
  * Tests fileOperationManager copy.
  * @param {function(boolean)} callback Callback to be passed true on error.
  */
-function testCopy(callback) {
+export function testCopy(callback) {
   // Prepare entries and their resolver.
   const fileSystem = createTestFileSystem('testVolume', {
     '/': DIRECTORY_SIZE,
@@ -573,7 +586,7 @@ function testCopy(callback) {
  * Tests copying files when the destination volumes are same: the copy
  * operations should be run sequentially.
  */
-function testCopyInSequential(callback) {
+export function testCopyInSequential(callback) {
   // Prepare entries and their resolver.
   const fileSystem = createTestFileSystem('testVolume', {
     '/': DIRECTORY_SIZE,
@@ -664,7 +677,7 @@ function testCopyInSequential(callback) {
  * Tests copying files when the destination volumes are different: the copy
  * operations should be run in parallel.
  */
-function testCopyInParallel(callback) {
+export function testCopyInParallel(callback) {
   // Prepare entries and their resolver.
   const fileSystemA = createTestFileSystem('volumeA', {
     '/': DIRECTORY_SIZE,
@@ -751,7 +764,7 @@ function testCopyInParallel(callback) {
  * Tests that copy operations fail when the destination volume is not
  * available.
  */
-function testCopyFails(callback) {
+export function testCopyFails(callback) {
   // Prepare entries.
   const fileSystem = createTestFileSystem('testVolume', {
     '/': DIRECTORY_SIZE,
@@ -801,7 +814,7 @@ function testCopyFails(callback) {
  * Tests the fileOperationUtil.paste for move.
  * @param {function(boolean)} callback Callback to be passed true on error.
  */
-function testMove(callback) {
+export function testMove(callback) {
   // Prepare entries and their resolver.
   const fileSystem = createTestFileSystem('testVolume', {
     '/': DIRECTORY_SIZE,
@@ -860,7 +873,7 @@ function testMove(callback) {
  * Tests fileOperationManager.deleteEntries.
  * @param {function(boolean)} callback Callback to be passed true on error.
  */
-function testDelete(callback) {
+export function testDelete(callback) {
   // Prepare entries and their resolver.
   const fileSystem = createTestFileSystem('testVolume', {
     '/': DIRECTORY_SIZE,
@@ -897,7 +910,7 @@ function testDelete(callback) {
  * Tests fileOperationManager.restore.
  * @param {function(boolean)} callback Callback to be passed true on error.
  */
-function testRestore(callback) {
+export function testRestore(callback) {
   // Prepare entries and their resolver.
   const fileSystem = createTestFileSystem('testVolume', {
     '/': DIRECTORY_SIZE,
@@ -948,7 +961,7 @@ function testRestore(callback) {
  * Tests fileOperationManager.zipSelection.
  * @param {function(boolean)} callback Callback to be passed true on error.
  */
-function testZip(callback) {
+export function testZip(callback) {
   // Prepare entries and their resolver.
   const fileSystem = createTestFileSystem('testVolume', {
     '/': DIRECTORY_SIZE,

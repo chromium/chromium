@@ -10,7 +10,7 @@
  * @param {string} b Path.
  * @return {string} Joined path.
  */
-function joinPath(a, b) {
+/* #export */ function joinPath(a, b) {
   return a.replace(/\/+$/, '') + '/' + b.replace(/^\/+/, '');
 }
 

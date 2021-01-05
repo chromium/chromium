@@ -2,7 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+// clang-format off
+import { assertArrayEquals,assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {FileOperationProgressEvent} from '../../common/js/file_operation_common.m.js';
+import {ProgressItemState} from '../../common/js/progress_center_common.m.js';
+import {util} from '../../common/js/util.m.js';
+
+import {FileOperationHandler} from './file_operation_handler.m.js';
+import {fileOperationUtil} from './file_operation_util.m.js';
+import {MockFileOperationManager} from './mock_file_operation_manager.m.js';
+import {MockProgressCenter} from './mock_progress_center.m.js';
+// clang-format on
+
 
 /** @type {!MockFileOperationManager} */
 let fileOperationManager;
@@ -51,7 +63,7 @@ class MockDate {
 }
 
 // Set up the test components.
-function setUp() {
+export function setUp() {
   // Mock LoadTimeData strings.
   window.loadTimeData.data = {
     COPY_FILE_NAME: 'Copying $1...',
@@ -74,7 +86,7 @@ function setUp() {
 /**
  * Tests copy success.
  */
-function testCopySuccess() {
+export function testCopySuccess() {
   // Dispatch copy event.
   fileOperationManager.dispatchEvent(
       /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
@@ -121,7 +133,7 @@ function testCopySuccess() {
 /**
  * Tests copy cancel.
  */
-function testCopyCancel() {
+export function testCopyCancel() {
   // Dispatch copy event.
   fileOperationManager.dispatchEvent(
       /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
@@ -170,7 +182,7 @@ function testCopyCancel() {
 /**
  * Tests target already exists error.
  */
-function testCopyTargetExistsError() {
+export function testCopyTargetExistsError() {
   // Dispatch error event.
   fileOperationManager.dispatchEvent(
       /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
@@ -199,7 +211,7 @@ function testCopyTargetExistsError() {
 /**
  * Tests file system error.
  */
-function testCopyFileSystemError() {
+export function testCopyFileSystemError() {
   // Dispatch error event.
   fileOperationManager.dispatchEvent(
       /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
@@ -228,7 +240,7 @@ function testCopyFileSystemError() {
 /**
  * Tests unexpected error.
  */
-function testCopyUnexpectedError() {
+export function testCopyUnexpectedError() {
   // Dispatch error event.
   fileOperationManager.dispatchEvent(
       /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
@@ -257,7 +269,7 @@ function testCopyUnexpectedError() {
 /**
  * Tests Speedometer moving average calculations.
  */
-function testSpeedometerMovingAverage() {
+export function testSpeedometerMovingAverage() {
   const bufferLength = 20;
   const speedometer = new fileOperationUtil.Speedometer(bufferLength);
   const mockDate = new MockDate();
@@ -283,7 +295,7 @@ function testSpeedometerMovingAverage() {
 /**
  * Tests Speedometer buffer ring rotate and substitute.
  */
-function testSpeedometerBufferRing() {
+export function testSpeedometerBufferRing() {
   const bufferLength = 20;
   const speedometer = new fileOperationUtil.Speedometer(bufferLength);
   const mockDate = new MockDate();

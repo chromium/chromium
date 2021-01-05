@@ -2,12 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {TrashEntry} from '../../common/js/trash.m.js';
+// #import {FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {EntryLocation} from '../../../externs/entry_location.m.js';
+// #import {MockEntry} from '../../common/js/mock_entry.m.js';
+// #import {FileOperationManager} from '../../../externs/background/file_operation_manager.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {metadataProxy} from './metadata_proxy.m.js';
+// #import {AsyncUtil} from '../../common/js/async_util.m.js';
+// #import {volumeManagerFactory} from './volume_manager_factory.m.js';
+// #import {FileOperationProgressEvent, FileOperationError} from '../../common/js/file_operation_common.m.js';
+// #import {Trash} from './trash.m.js';
+
+// #import {util} from '../../common/js/util.m.js';
+// #import {fileOperationUtil} from './file_operation_util.m.js';
+// clang-format on
+
 /**
  * FileOperationManagerImpl: implementation of {FileOperationManager}.
  *
  * @implements {FileOperationManager}
  */
-class FileOperationManagerImpl {
+/* #export */ class FileOperationManagerImpl {
   constructor() {
     /**
      * @private {VolumeManager}
