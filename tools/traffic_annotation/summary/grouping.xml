@@ -74,6 +74,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="cast_socket"/>
       <traffic_annotation unique_id="dom_distiller"/>
       <traffic_annotation unique_id="download_manager_resume"/>
+      <traffic_annotation unique_id="file_system_connector_to_box"/>
       <traffic_annotation unique_id="parallel_download_job"/>
       <traffic_annotation unique_id="interest_feedv2_send"/>
       <traffic_annotation unique_id="mirroring_get_setup_info"/>

@@ -5766,6 +5766,10 @@ test("unit_tests") {
     sources += [ "../browser/safe_browsing/telemetry/android/android_telemetry_service_unittest.cc" ]
   }
 
+  if (is_linux || is_chromeos || is_mac || is_win) {
+    sources += [ "../browser/enterprise/connectors/file_system/box_api_call_flow_unittests.cc" ]
+  }
+
   if (enable_plugins) {
     sources += [
       "../browser/metrics/plugin_metrics_provider_unittest.cc",
