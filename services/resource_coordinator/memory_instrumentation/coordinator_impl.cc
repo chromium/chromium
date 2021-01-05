@@ -89,11 +89,6 @@ CoordinatorImpl* CoordinatorImpl::GetInstance() {
   return g_coordinator_impl;
 }
 
-void CoordinatorImpl::BindController(
-    mojo::PendingReceiver<mojom::CoordinatorController> receiver) {
-  controller_receiver_.Bind(std::move(receiver));
-}
-
 void CoordinatorImpl::RegisterHeapProfiler(
     mojo::PendingRemote<mojom::HeapProfiler> profiler,
     mojo::PendingReceiver<mojom::HeapProfilerHelper> helper_receiver) {

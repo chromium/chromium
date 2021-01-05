@@ -4,42 +4,19 @@
 
 #include "content/public/browser/resource_coordinator_service.h"
 
-#include "base/no_destructor.h"
 #include "base/trace_event/memory_dump_manager.h"
-#include "content/public/browser/browser_thread.h"
-#include "services/resource_coordinator/public/mojom/resource_coordinator_service.mojom.h"
-#include "services/resource_coordinator/resource_coordinator_service.h"
+#include "services/resource_coordinator/memory_instrumentation/coordinator_impl.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/registry.h"
 
 namespace content {
 
-resource_coordinator::mojom::ResourceCoordinatorService*
-GetResourceCoordinatorService() {
+memory_instrumentation::Registry* GetMemoryInstrumentationRegistry() {
   DCHECK(base::trace_event::MemoryDumpManager::GetInstance()
              ->GetDumpThreadTaskRunner()
              ->RunsTasksInCurrentSequence());
-  static base::NoDestructor<
-      mojo::Remote<resource_coordinator::mojom::ResourceCoordinatorService>>
-      remote;
-  static base::NoDestructor<resource_coordinator::ResourceCoordinatorService>
-      service(remote->BindNewPipeAndPassReceiver());
-  return remote->get();
-}
-
-memory_instrumentation::mojom::CoordinatorController*
-GetMemoryInstrumentationCoordinatorController() {
-  DCHECK(base::trace_event::MemoryDumpManager::GetInstance()
-             ->GetDumpThreadTaskRunner()
-             ->RunsTasksInCurrentSequence());
-  static base::NoDestructor<
-      mojo::Remote<memory_instrumentation::mojom::CoordinatorController>>
-      controller([] {
-        mojo::Remote<memory_instrumentation::mojom::CoordinatorController> c;
-        GetResourceCoordinatorService()
-            ->BindMemoryInstrumentationCoordinatorController(
-                c.BindNewPipeAndPassReceiver());
-        return c;
-      }());
-  return controller->get();
+  static memory_instrumentation::Registry* registry =
+      new memory_instrumentation::CoordinatorImpl();
+  return registry;
 }
 
 }  // namespace content

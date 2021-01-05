@@ -6,19 +6,12 @@
 #define CONTENT_PUBLIC_BROWSER_RESOURCE_COORDINATOR_SERVICE_H_
 
 #include "content/common/content_export.h"
-#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
-#include "services/resource_coordinator/public/mojom/resource_coordinator_service.mojom.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/registry.h"
 
 namespace content {
 
-// Gets the browser's connection to the in-process Resource Coordinator service.
-CONTENT_EXPORT resource_coordinator::mojom::ResourceCoordinatorService*
-GetResourceCoordinatorService();
-
-// Gets the browser's connection to the Resource Coordinator's
-// memory instrumentation CoordinatorController.
-CONTENT_EXPORT memory_instrumentation::mojom::CoordinatorController*
-GetMemoryInstrumentationCoordinatorController();
+CONTENT_EXPORT memory_instrumentation::Registry*
+GetMemoryInstrumentationRegistry();
 
 }  // namespace content
 

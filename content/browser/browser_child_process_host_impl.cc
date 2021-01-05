@@ -680,10 +680,9 @@ void BrowserChildProcessHostImpl::RegisterCoordinatorClient(
                  memory_instrumentation::mojom::ProcessType process_type,
                  base::ProcessId process_id,
                  base::Optional<std::string> service_name) {
-                GetMemoryInstrumentationCoordinatorController()
-                    ->RegisterClientProcess(
-                        std::move(receiver), std::move(client_process),
-                        process_type, process_id, std::move(service_name));
+                GetMemoryInstrumentationRegistry()->RegisterClientProcess(
+                    std::move(receiver), std::move(client_process),
+                    process_type, process_id, std::move(service_name));
               },
               std::move(receiver), std::move(client_process),
               GetCoordinatorClientProcessType(

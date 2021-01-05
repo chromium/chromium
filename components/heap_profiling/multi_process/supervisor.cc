@@ -86,7 +86,7 @@ void Supervisor::StartProfilingOnMemoryInfraThread(Mode mode,
   mojo::PendingRemote<memory_instrumentation::mojom::HeapProfilerHelper> helper;
   mojo::PendingRemote<memory_instrumentation::mojom::HeapProfiler> profiler;
   auto profiler_receiver = profiler.InitWithNewPipeAndPassReceiver();
-  content::GetResourceCoordinatorService()->RegisterHeapProfiler(
+  content::GetMemoryInstrumentationRegistry()->RegisterHeapProfiler(
       std::move(profiler), helper.InitWithNewPipeAndPassReceiver());
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,

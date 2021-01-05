@@ -11,7 +11,6 @@ mojom_component("mojom") {
   sources = [
     "memory_instrumentation/constants.mojom",
     "memory_instrumentation/memory_instrumentation.mojom",
-    "resource_coordinator_service.mojom",
   ]
 
   public_deps = [
