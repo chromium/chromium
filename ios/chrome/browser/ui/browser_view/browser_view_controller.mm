@@ -2879,18 +2879,24 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // parent is hidden but the view itself is not, the snapshot will not be a
   // blank view.
   [self.tabStripSnapshot removeFromSuperview];
-  self.tabStripSnapshot = [self.tabStripView screenshotForAnimation];
-  self.tabStripSnapshot.translatesAutoresizingMaskIntoConstraints = NO;
-  self.tabStripSnapshot.transform =
-      currentViewRevealState == ViewRevealState::Hidden
-          ? [self.tabStripView adjustTransformForRTL:CGAffineTransformIdentity]
-          : [self.tabStripView
-                adjustTransformForRTL:CGAffineTransformMakeTranslation(
-                                          0,
-                                          self.tabStripView.frame.size.height)];
-  self.tabStripView.hidden = YES;
-  [self.contentArea addSubview:self.tabStripSnapshot];
-  AddSameConstraints(self.tabStripSnapshot, self.tabStripView);
+  // During initial setup, the tab strip view may be nil, but the missing
+  // snapshot will never be visible because all three animation methods are
+  // called in succession.
+  if (self.tabStripView) {
+    self.tabStripSnapshot = [self.tabStripView screenshotForAnimation];
+    self.tabStripSnapshot.translatesAutoresizingMaskIntoConstraints = NO;
+    self.tabStripSnapshot.transform =
+        currentViewRevealState == ViewRevealState::Hidden
+            ? [self.tabStripView
+                  adjustTransformForRTL:CGAffineTransformIdentity]
+            : [self.tabStripView
+                  adjustTransformForRTL:CGAffineTransformMakeTranslation(
+                                            0, self.tabStripView.frame.size
+                                                   .height)];
+    self.tabStripView.hidden = YES;
+    [self.contentArea addSubview:self.tabStripSnapshot];
+    AddSameConstraints(self.tabStripSnapshot, self.tabStripView);
+  }
 
   // Remove the fake status bar to allow the thumb strip animations to appear.
   [_fakeStatusBarView removeFromSuperview];
