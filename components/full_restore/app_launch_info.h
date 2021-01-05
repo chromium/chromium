@@ -27,6 +27,15 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppLaunchInfo {
                 std::vector<base::FilePath> launch_files,
                 apps::mojom::IntentPtr intent);
 
+  AppLaunchInfo(const std::string& app_id, int32_t session_id);
+
+  AppLaunchInfo(const std::string& app_id,
+                apps::mojom::LaunchContainer container,
+                WindowOpenDisposition disposition,
+                int64_t display_id,
+                std::vector<base::FilePath> launch_files,
+                apps::mojom::IntentPtr intent);
+
   AppLaunchInfo(const std::string& app_id,
                 int32_t event_flags,
                 int64_t display_id);

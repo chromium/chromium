@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
@@ -50,6 +51,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/arc/arc_service_manager.h"
+#include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
@@ -690,6 +693,41 @@ void ExtensionAppsChromeOs::GetMenuModelForChromeBrowserApp(
                  &menu_items);
 
   std::move(callback).Run(std::move(menu_items));
+}
+
+content::WebContents* ExtensionAppsChromeOs::LaunchImpl(
+    AppLaunchParams&& params) {
+  AppLaunchParams params_for_restore(params.app_id, params.container,
+                                     params.disposition, params.display_id,
+                                     params.launch_files, params.intent);
+
+  auto* web_contents = ExtensionAppsBase::LaunchImpl(std::move(params));
+
+  std::unique_ptr<full_restore::AppLaunchInfo> launch_info;
+  int session_id = GetSessionIdForRestoreFromWebContents(
+      params_for_restore.container, web_contents);
+  if (SessionID::IsValidValue(session_id)) {
+    // If the app is launched via browser, the browser session restore can
+    // restore the app after reboot, so we don't need to save the launch
+    // parameters to launch the app after reboot. Only the browser session id is
+    // saved as the window id, to restore the window stack, snap, etc. The app
+    // id is modified as the Chrome browser id, so that it won't be launched
+    // after reboot. Also for apps opened with tabs in one browser window, we
+    // don't need to save multiple records in the full restore data.
+    launch_info = std::make_unique<full_restore::AppLaunchInfo>(
+        extension_misc::kChromeAppId, session_id);
+  } else {
+    // Save all launch information for platform apps, which can launch via
+    // event, e.g. file app.
+    launch_info = std::make_unique<full_restore::AppLaunchInfo>(
+        params_for_restore.app_id, params_for_restore.container,
+        params_for_restore.disposition, params_for_restore.display_id,
+        std::move(params_for_restore.launch_files),
+        std::move(params_for_restore.intent));
+  }
+
+  full_restore::SaveAppLaunchInfo(profile()->GetPath(), std::move(launch_info));
+  return web_contents;
 }
 
 }  // namespace apps

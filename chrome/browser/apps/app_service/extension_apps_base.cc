@@ -318,6 +318,10 @@ content::WebContents* ExtensionAppsBase::LaunchAppWithIntentImpl(
   return LaunchImpl(std::move(params));
 }
 
+content::WebContents* ExtensionAppsBase::LaunchImpl(AppLaunchParams&& params) {
+  return ::OpenApplication(profile_, std::move(params));
+}
+
 const extensions::Extension* ExtensionAppsBase::MaybeGetExtension(
     const std::string& app_id) {
   DCHECK(profile_);
@@ -644,10 +648,6 @@ bool ExtensionAppsBase::RunExtensionEnableFlow(const std::string& app_id,
 
   enable_flow_map_[app_id]->Run(std::move(callback));
   return true;
-}
-
-content::WebContents* ExtensionAppsBase::LaunchImpl(AppLaunchParams&& params) {
-  return ::OpenApplication(profile_, std::move(params));
 }
 
 // static

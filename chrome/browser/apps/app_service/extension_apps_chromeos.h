@@ -148,6 +148,8 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   void GetMenuModelForChromeBrowserApp(apps::mojom::MenuType menu_type,
                                        GetMenuModelCallback callback);
 
+  content::WebContents* LaunchImpl(AppLaunchParams&& params) override;
+
   apps::InstanceRegistry* instance_registry_;
   ScopedObserver<extensions::AppWindowRegistry,
                  extensions::AppWindowRegistry::Observer>

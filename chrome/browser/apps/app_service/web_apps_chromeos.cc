@@ -58,6 +58,7 @@
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/origin.h"
 
@@ -510,13 +511,29 @@ content::WebContents* WebAppsChromeOs::LaunchAppWithParams(
     return web_contents;
   }
 
-  full_restore::SaveAppLaunchInfo(
-      profile()->GetPath(),
-      std::make_unique<full_restore::AppLaunchInfo>(
-          params_for_restore.app_id, session_id, params_for_restore.container,
-          params_for_restore.disposition, params_for_restore.display_id,
-          std::move(params_for_restore.launch_files),
-          std::move(params_for_restore.intent)));
+  const web_app::WebApp* web_app = GetWebApp(params_for_restore.app_id);
+  std::unique_ptr<full_restore::AppLaunchInfo> launch_info;
+  if (web_app && web_app->IsSystemApp()) {
+    // Save all launch information for system web apps, because the browser
+    // session restore can't restore system web apps.
+    launch_info = std::make_unique<full_restore::AppLaunchInfo>(
+        params_for_restore.app_id, session_id, params_for_restore.container,
+        params_for_restore.disposition, params_for_restore.display_id,
+        std::move(params_for_restore.launch_files),
+        std::move(params_for_restore.intent));
+  } else {
+    // If the app is not a system web app, the browser session restore can
+    // restore the app after reboot, so we don't need to save the launch
+    // parameters to launch the app after reboot. Only the browser session id is
+    // saved as the window id, to restore the window stack, snap, etc. The app
+    // id is modified as the Chrome browser id, so that it won't be launched
+    // after reboot. Also for web apps opened with tabs in one browser window,
+    // we don't need to save multiple records in the full restore data.
+    launch_info = std::make_unique<full_restore::AppLaunchInfo>(
+        extension_misc::kChromeAppId, session_id);
+  }
+
+  full_restore::SaveAppLaunchInfo(profile()->GetPath(), std::move(launch_info));
   return web_contents;
 }
 

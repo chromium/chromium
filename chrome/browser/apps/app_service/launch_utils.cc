@@ -229,22 +229,16 @@ int GetEventFlags(apps::mojom::LaunchContainer container,
 int GetSessionIdForRestoreFromWebContents(
     apps::mojom::LaunchContainer container,
     const content::WebContents* web_contents) {
-  if (web_contents == nullptr) {
+  if (!web_contents) {
     return SessionID::InvalidValue().id();
   }
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (browser == nullptr) {
+  if (!browser) {
     return SessionID::InvalidValue().id();
   }
 
-  if ((browser->app_controller() &&
-       browser->app_controller()->is_for_system_web_app()) ||
-      container != apps::mojom::LaunchContainer::kLaunchContainerTab) {
-    return browser->session_id().id();
-  }
-
-  return SessionID::InvalidValue().id();
+  return browser->session_id().id();
 }
 
 }  // namespace apps

@@ -84,6 +84,8 @@ class ExtensionAppsBase : public apps::PublisherBase,
       apps::mojom::LaunchSource launch_source,
       int64_t display_id);
 
+  virtual content::WebContents* LaunchImpl(AppLaunchParams&& params);
+
   // Returns extensions::Extension* for the valid |app_id|. Otherwise, returns
   // nullptr.
   const extensions::Extension* MaybeGetExtension(const std::string& app_id);
@@ -160,8 +162,6 @@ class ExtensionAppsBase : public apps::PublisherBase,
   // running, and run |callback| to launch the app.
   bool RunExtensionEnableFlow(const std::string& app_id,
                               base::OnceClosure callback);
-
-  content::WebContents* LaunchImpl(AppLaunchParams&& params);
 
   virtual bool ShouldShownInLauncher(
       const extensions::Extension* extension) = 0;
