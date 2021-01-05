@@ -10,7 +10,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.ProfileDataSource;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,12 +22,6 @@ public class FakeProfileDataSource implements ProfileDataSource {
     protected final Map<String, ProfileData> mProfileDataMap = new HashMap<>();
 
     public FakeProfileDataSource() {}
-
-    @Override
-    public Map<String, ProfileData> getProfileDataMap() {
-        ThreadUtils.assertOnUiThread();
-        return Collections.unmodifiableMap(mProfileDataMap);
-    }
 
     @Override
     public @Nullable ProfileData getProfileDataForAccount(String accountEmail) {

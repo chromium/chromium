@@ -336,7 +336,7 @@ public class AccountPickerBottomSheetTest {
         });
         checkZeroAccountBottomSheet();
 
-        mAccountManagerTestRule.addAccount(PROFILE_DATA1.getAccountEmail());
+        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         checkCollapsedAccountList(PROFILE_DATA1);
     }
 

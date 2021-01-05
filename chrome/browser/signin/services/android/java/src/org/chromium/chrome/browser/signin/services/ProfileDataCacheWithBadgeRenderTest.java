@@ -33,6 +33,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
@@ -50,8 +51,12 @@ import java.io.IOException;
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
 public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase {
     @Rule
-    public ChromeRenderTestRule mRenderTestRule =
+    public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
+
+    @Rule
+    public final AccountManagerTestRule mAccountManagerTestRule =
+            new AccountManagerTestRule(new FakeProfileDataSource());
 
     @Mock
     private Profile mProfileMock;
@@ -69,7 +74,6 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
 
     private FrameLayout mContentView;
     private ImageView mImageView;
-    private FakeProfileDataSource mProfileDataSource;
     private ProfileDataCache mProfileDataCache;
 
     @Before
@@ -86,8 +90,6 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
             mContentView.addView(mImageView, ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
             activity.setContentView(mContentView);
-
-            mProfileDataSource = new FakeProfileDataSource();
         });
     }
 
@@ -124,14 +126,13 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
 
     private void setUpProfileDataCache(@DrawableRes int badgeResId) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfileDataCache = ProfileDataCache.createProfileDataCache(
-                    getActivity(), badgeResId, mProfileDataSource);
+            mProfileDataCache = ProfileDataCache.createProfileDataCache(getActivity(), badgeResId);
             // ProfileDataCache only populates the cache when an observer is added.
             mProfileDataCache.addObserver(mObserver);
 
             ProfileDataSource.ProfileData profileData = new ProfileDataSource.ProfileData(
                     TEST_ACCOUNT_NAME, createAvatar(), "Full Name", "Given Name");
-            mProfileDataSource.addProfileData(profileData);
+            mAccountManagerTestRule.addAccount(profileData);
             mImageView.setImageDrawable(
                     mProfileDataCache.getProfileDataOrDefault(TEST_ACCOUNT_NAME).getImage());
         });

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.signin.services;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ProfileDataSource;
+import org.chromium.components.signin.ProfileDataSource.ProfileData;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -225,9 +227,16 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
     }
 
     private void updateCacheFromProfileDataSource() {
-        for (ProfileDataSource.ProfileData profileData :
-                mProfileDataSource.getProfileDataMap().values()) {
-            updateCachedProfileDataAndNotifyObservers(createDisplayableProfileData(profileData));
+        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(this::updateAccounts);
+    }
+
+    private void updateAccounts(final List<Account> accounts) {
+        for (Account account : accounts) {
+            ProfileData profileData = mProfileDataSource.getProfileDataForAccount(account.name);
+            if (profileData != null) {
+                updateCachedProfileDataAndNotifyObservers(
+                        createDisplayableProfileData(profileData));
+            }
         }
     }
 

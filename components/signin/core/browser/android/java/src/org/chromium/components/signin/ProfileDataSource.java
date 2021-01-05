@@ -84,8 +84,11 @@ public interface ProfileDataSource {
      * Gets ProfileData for all accounts. There must be at least one active observer when this
      * method is invoked (see {@link #addObserver}).
      * @return unmodifiable map of ProfileData for all accounts (keyed by account name).
+     * TODO(crbug/1136452): Remove this method after removing the downstream implementation.
      */
-    Map<String, ProfileData> getProfileDataMap();
+    default Map<String, ProfileData> getProfileDataMap() {
+        return null;
+    }
 
     /**
      * Gets ProfileData for single account. There must be at least one active observer when this

@@ -41,6 +41,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
@@ -81,6 +82,10 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
     @Rule
+    public final AccountManagerTestRule mAccountManagerTestRule =
+            new AccountManagerTestRule(new FakeProfileDataSource());
+
+    @Rule
     public final JniMocker mocker = new JniMocker();
 
     @Mock
@@ -97,7 +102,7 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
 
     private FrameLayout mContentView;
     private ImageView mImageView;
-    private FakeProfileDataSource mProfileDataSource;
+
     private ProfileDataCache mProfileDataCache;
 
     @Before
@@ -116,9 +121,7 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
             mContentView.addView(mImageView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             activity.setContentView(mContentView);
 
-            mProfileDataSource = new FakeProfileDataSource();
-            mProfileDataCache =
-                    new ProfileDataCache(getActivity(), mImageSize, null, mProfileDataSource);
+            mProfileDataCache = new ProfileDataCache(getActivity(), mImageSize, null);
             // ProfileDataCache only populates the cache when an observer is added.
             mProfileDataCache.addObserver(accountId -> {});
         });
@@ -141,7 +144,7 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
                 .thenReturn(new AccountInfo(
                         new CoreAccountId("gaia-id-test"), accountEmail, "gaia-id-test", null));
 
-        mProfileDataSource.addProfileData(
+        mAccountManagerTestRule.addAccount(
                 new ProfileDataSource.ProfileData(accountEmail, null, "Full Name", "Given Name"));
         mIdentityManager.onExtendedAccountInfoUpdated(new AccountInfo(
                 new CoreAccountId("gaia-id-test"), accountEmail, "gaia-id-test", createAvatar()));
@@ -166,7 +169,7 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
         String accountName = "test@example.com";
         ProfileDataSource.ProfileData profileData = new ProfileDataSource.ProfileData(
                 accountName, createAvatar(), "Full Name", "Given Name");
-        mProfileDataSource.addProfileData(profileData);
+        mAccountManagerTestRule.addAccount(profileData);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             checkImageIsScaled(accountName);
         });
