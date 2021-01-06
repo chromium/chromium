@@ -37,7 +37,8 @@ namespace updater {
 
 namespace {
 
-constexpr char kLoggingModuleSwitchValue[] = "*/updater/*=2";
+constexpr char kLoggingModuleSwitchValue[] =
+    "*/updater/*=2,*/update_client/*=2";
 
 #pragma mark Helpers
 const base::FilePath GetUpdaterAppName() {

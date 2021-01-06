@@ -10,21 +10,28 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/test/server.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace updater {
 
@@ -42,6 +49,25 @@ void ExpectActiveVersion(std::string expected) {
   EXPECT_EQ(CreateGlobalPrefs()->GetActiveVersion(), expected);
 }
 
+#if defined(OS_MAC)
+void RegisterApp(const std::string& app_id) {
+  scoped_refptr<UpdateService> update_service = CreateUpdateService();
+  RegistrationRequest registration;
+  registration.app_id = app_id;
+  registration.version = base::Version("0.1");
+  base::RunLoop loop;
+  update_service->RegisterApp(
+      registration, base::BindOnce(base::BindLambdaForTesting(
+                        [&loop](const RegistrationResponse& response) {
+                          EXPECT_EQ(response.status_code, 0);
+                          loop.Quit();
+                        })));
+  loop.Run();
+}
+#endif  // defined(OS_MAC)
+
+}  // namespace
+
 void PrintLog() {
   std::string contents;
   VLOG(0) << GetDataDirPath().AppendASCII("updater.log");
@@ -53,7 +79,6 @@ void PrintLog() {
     VLOG(0) << "Failed to read updater.log file.";
   }
 }
-}  // namespace
 
 const testing::TestInfo* GetTestInfo() {
   return testing::UnitTest::GetInstance()->current_test_info();
@@ -152,7 +177,7 @@ class IntegrationTest : public ::testing::Test {
   void SetUp() override {
     Clean();
     ExpectClean();
-    EnterTestMode();
+    EnterTestMode(GURL("http://localhost:1234"));
   }
 
   void TearDown() override {
@@ -200,11 +225,51 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
 }
 
 #if defined(OS_MAC)
+// TODO(crbug.com/1163524): Enable on Windows.
 TEST_F(IntegrationTest, RegisterTestApp) {
   RegisterTestApp();
   ExpectInstalled();
   ExpectActiveVersion(UPDATER_VERSION_STRING);
   ExpectActive();
+  Uninstall();
+}
+
+// TODO(crbug.com/1163524): Enable on Windows.
+TEST_F(IntegrationTest, ReportsActive) {
+  // A longer than usual timeout is needed for this test because the macOS
+  // UpdateServiceInternal server takes at least 10 seconds to shut down after
+  // Install, and RegisterApp cannot make progress until it shut downs and
+  // releases the global prefs lock. We give it at most 18 seconds to be safe.
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE,
+                                           base::TimeDelta::FromSeconds(18));
+
+  ScopedServer test_server;
+  Install();
+  ExpectInstalled();
+
+  // Register apps test1 and test2. Expect registration pings for each.
+  // TODO(crbug.com/1159525): Registration pings are currently not being sent.
+  RegisterApp("test1");
+  RegisterApp("test2");
+
+  // Set test1 to be active and do a background updatecheck.
+  SetActive("test1");
+  ExpectActive("test1");
+  ExpectNotActive("test2");
+  test_server.ExpectOnce(
+      R"(.*"appid":"test1","enabled":true,"ping":{"a":-2,.*)",
+      R"()]}')"
+      "\n"
+      R"({"response":{"protocol":"3.1","daystart":{"elapsed_)"
+      R"(days":5098}},"app":[{"appid":"test1","status":"ok",)"
+      R"("updatecheck":{"status":"noupdate"}},{"appid":"test2",)"
+      R"("status":"ok","updatecheck":{"status":"noupdate"}}]})");
+  RunWake(0);
+
+  // The updater has cleared the active bits.
+  ExpectNotActive("test1");
+  ExpectNotActive("test2");
+
   Uninstall();
 }
 

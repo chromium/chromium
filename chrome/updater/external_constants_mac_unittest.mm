@@ -20,7 +20,9 @@ namespace {
 
 void ClearUserDefaults() {
   @autoreleasepool {
-    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults* userDefaults = [[NSUserDefaults alloc]
+        initWithSuiteName:[NSString
+                              stringWithUTF8String:kUserDefaultsSuiteName]];
     [userDefaults
         removeObjectForKey:[NSString stringWithUTF8String:kDevOverrideKeyUrl]];
     [userDefaults
@@ -43,7 +45,9 @@ TEST_F(DevOverrideTest, TestDevOverrides) {
   std::unique_ptr<ExternalConstants> consts = CreateExternalConstants();
 
   @autoreleasepool {
-    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults* userDefaults = [[NSUserDefaults alloc]
+        initWithSuiteName:[NSString
+                              stringWithUTF8String:kUserDefaultsSuiteName]];
     [userDefaults setURL:[NSURL URLWithString:@"http://localhost:8080"]
                   forKey:[NSString stringWithUTF8String:kDevOverrideKeyUrl]];
     [userDefaults

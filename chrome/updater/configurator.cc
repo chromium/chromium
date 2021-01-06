@@ -7,6 +7,7 @@
 #include <utility>
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/crx_downloader_factory.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/patcher.h"
@@ -38,9 +39,11 @@ const int kDelayOneHour = kDelayOneMinute * 60;
 
 namespace updater {
 
+// TODO(crbug.com/1096654): Add support for machine `activity_data_service_`.
 Configurator::Configurator(std::unique_ptr<UpdaterPrefs> prefs)
     : prefs_(std::move(prefs)),
       external_constants_(CreateExternalConstants()),
+      activity_data_service_(std::make_unique<ActivityDataService>(false)),
       unzip_factory_(base::MakeRefCounted<UnzipperFactory>()),
       patch_factory_(base::MakeRefCounted<PatcherFactory>()) {}
 Configurator::~Configurator() = default;
@@ -149,7 +152,7 @@ PrefService* Configurator::GetPrefService() const {
 
 update_client::ActivityDataService* Configurator::GetActivityDataService()
     const {
-  return nullptr;
+  return activity_data_service_.get();
 }
 
 bool Configurator::IsPerUserInstall() const {

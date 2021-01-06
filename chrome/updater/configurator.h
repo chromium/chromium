@@ -29,6 +29,7 @@ class ProtocolHandlerFactory;
 
 namespace updater {
 
+class ActivityDataService;
 class UpdaterPrefs;
 class ExternalConstants;
 
@@ -75,6 +76,7 @@ class Configurator : public update_client::Configurator {
 
   std::unique_ptr<UpdaterPrefs> prefs_;
   std::unique_ptr<ExternalConstants> external_constants_;
+  std::unique_ptr<ActivityDataService> activity_data_service_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;

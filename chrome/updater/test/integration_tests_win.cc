@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include <wrl/client.h>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
@@ -23,10 +26,13 @@
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace updater {
 namespace test {
 namespace {
+
+constexpr base::char16 kDidRun[] = L"dr";
 
 base::FilePath GetInstallerPath() {
   base::FilePath test_executable;
@@ -42,6 +48,10 @@ base::FilePath GetProductPath() {
   return app_data_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING)
       .AppendASCII(UPDATER_VERSION_STRING);
+}
+
+base::string16 GetAppClientStateKey(const std::string& id) {
+  return base::ASCIIToUTF16(base::StrCat({CLIENT_STATE_KEY, id}));
 }
 
 }  // namespace
@@ -88,13 +98,12 @@ void ExpectClean() {
   EXPECT_FALSE(base::PathExists(GetDataDirPath()));
 }
 
-void EnterTestMode() {
-  // TODO(crbug.com/1119857): Point this to an actual fake server.
+void EnterTestMode(const GURL& url) {
   base::win::RegKey key(HKEY_CURRENT_USER, L"", KEY_SET_VALUE);
   ASSERT_EQ(key.Create(HKEY_CURRENT_USER, UPDATE_DEV_KEY, KEY_WRITE),
             ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(base::UTF8ToUTF16(kDevOverrideKeyUrl).c_str(),
-                           L"http://localhost:8367"),
+                           base::UTF8ToUTF16(url.spec()).c_str()),
             ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(base::UTF8ToUTF16(kDevOverrideKeyUseCUP).c_str(),
                            DWORD{0}),
@@ -139,6 +148,8 @@ void Install() {
 }
 
 void Uninstall() {
+  if (::testing::Test::HasFailure())
+    PrintLog();
   // Copy logs from GetDataDirPath() before updater uninstalls itself
   // and deletes the path.
   CopyLog(GetDataDirPath());
@@ -158,6 +169,37 @@ void Uninstall() {
   // Uninstallation involves a race with the uninstall.cmd script and the
   // process exit. Sleep to allow the script to complete its work.
   SleepFor(5);
+}
+
+void SetActive(const std::string& id) {
+  // TODO(crbug/1159498): Standardize registry access.
+  base::win::RegKey key;
+  ASSERT_EQ(key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
+                     KEY_WRITE | KEY_WOW64_32KEY),
+            ERROR_SUCCESS);
+  EXPECT_EQ(key.WriteValue(kDidRun, L"1"), ERROR_SUCCESS);
+}
+
+void ExpectActive(const std::string& id) {
+  // TODO(crbug/1159498): Standardize registry access.
+  base::win::RegKey key;
+  ASSERT_EQ(key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
+                     KEY_READ | KEY_WOW64_32KEY),
+            ERROR_SUCCESS);
+  base::string16 value;
+  ASSERT_EQ(key.ReadValue(kDidRun, &value), ERROR_SUCCESS);
+  EXPECT_EQ(value, L"1");
+}
+
+void ExpectNotActive(const std::string& id) {
+  // TODO(crbug/1159498): Standardize registry access.
+  base::win::RegKey key;
+  if (key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
+               KEY_READ | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
+    base::string16 value;
+    if (key.ReadValue(kDidRun, &value) == ERROR_SUCCESS)
+      EXPECT_EQ(value, L"0");
+  }
 }
 
 // Tests if the typelibs and some of the public, internal, and

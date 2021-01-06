@@ -13,11 +13,15 @@
 #include "chrome/updater/updater_version.h"
 #include "url/gurl.h"
 
+#include "base/logging.h"
+
 namespace updater {
 
 std::vector<GURL> DevOverrideProvider::UpdateURL() const {
   @autoreleasepool {
-    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults* userDefaults = [[NSUserDefaults alloc]
+        initWithSuiteName:[NSString
+                              stringWithUTF8String:kUserDefaultsSuiteName]];
     NSURL* url = [userDefaults
         URLForKey:[NSString stringWithUTF8String:kDevOverrideKeyUrl]];
     if (url == nil)
@@ -28,7 +32,9 @@ std::vector<GURL> DevOverrideProvider::UpdateURL() const {
 
 bool DevOverrideProvider::UseCUP() const {
   @autoreleasepool {
-    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults* userDefaults = [[NSUserDefaults alloc]
+        initWithSuiteName:[NSString
+                              stringWithUTF8String:kUserDefaultsSuiteName]];
     id use_cup = [userDefaults
         objectForKey:[NSString stringWithUTF8String:kDevOverrideKeyUseCUP]];
     if (use_cup)

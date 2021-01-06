@@ -153,6 +153,11 @@ constexpr int kWaitForInstallerProgressSec = 1;
 constexpr int kWaitForLaunchctlUpdateSec = 5;
 #endif  // defined(OS_MAC)
 
+#if defined(OS_MAC)
+// The user defaults suite name.
+extern const char kUserDefaultsSuiteName[];
+#endif  // defined(OS_MAC)
+
 // Install Errors.
 //
 // Specific install errors for the updater are reported in such a way that

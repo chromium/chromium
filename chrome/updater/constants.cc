@@ -4,6 +4,8 @@
 
 #include "chrome/updater/constants.h"
 
+#include "chrome/updater/updater_version.h"
+
 namespace updater {
 
 // App ids.
@@ -65,5 +67,10 @@ const char kProxyModeSystem[] = "system";
 
 // Specifies that urls that can be cached by proxies are preferred.
 const char kDownloadPreferenceCacheable[] = "cacheable";
+
+#if defined(OS_MAC)
+// The user defaults suite name.
+const char kUserDefaultsSuiteName[] = MAC_BUNDLE_IDENTIFIER_STRING ".defaults";
+#endif  // defined(OS_MAC)
 
 }  // namespace updater

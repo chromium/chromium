@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -25,6 +26,7 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace updater {
 namespace test {
@@ -73,6 +75,15 @@ base::FilePath GetProductPath() {
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
+base::FilePath GetActiveFile(const std::string& id) {
+  return base::GetHomeDir()
+      .AppendASCII("Library")
+      .AppendASCII(COMPANY_SHORTNAME_STRING)
+      .AppendASCII(COMPANY_SHORTNAME_STRING "SoftwareUpdate")
+      .AppendASCII("Actives")
+      .AppendASCII(id);
+}
+
 void ExpectServiceAbsent(const std::string& service) {
   bool success = false;
   base::RunLoop loop;
@@ -87,6 +98,25 @@ void ExpectServiceAbsent(const std::string& service) {
 }
 
 }  // namespace
+
+#endif  // defined(COMPONENT_BUILD
+
+void EnterTestMode(const GURL& url) {
+  @autoreleasepool {
+    NSUserDefaults* userDefaults = [[NSUserDefaults alloc]
+        initWithSuiteName:[NSString
+                              stringWithUTF8String:kUserDefaultsSuiteName]];
+    [userDefaults
+        setURL:[NSURL URLWithString:base::SysUTF8ToNSString(url.spec())]
+        forKey:[NSString stringWithUTF8String:kDevOverrideKeyUrl]];
+    [userDefaults
+        setBool:NO
+         forKey:[NSString stringWithUTF8String:kDevOverrideKeyUseCUP]];
+  }
+}
+
+// crbug.com/1112527: These tests are not compatible with component build.
+#if !defined(COMPONENT_BUILD)
 
 base::FilePath GetDataDirPath() {
   return base::mac::GetUserLibraryPath()
@@ -107,7 +137,9 @@ void Clean() {
   EXPECT_TRUE(base::DeletePathRecursively(GetDataDirPath()));
 
   @autoreleasepool {
-    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults* userDefaults = [[NSUserDefaults alloc]
+        initWithSuiteName:[NSString
+                              stringWithUTF8String:kUserDefaultsSuiteName]];
     [userDefaults
         removeObjectForKey:[NSString stringWithUTF8String:kDevOverrideKeyUrl]];
     [userDefaults
@@ -136,18 +168,6 @@ void ExpectClean() {
   EXPECT_FALSE(base::PathExists(GetDataDirPath()));
   ExpectServiceAbsent(kUpdateServiceLaunchdName);
   ExpectServiceAbsent(kUpdateServiceInternalLaunchdName);
-}
-
-void EnterTestMode() {
-  // TODO(crbug.com/1119857): Point this to an actual fake server.
-  @autoreleasepool {
-    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-    [userDefaults setURL:[NSURL URLWithString:@"http://localhost:8367"]
-                  forKey:[NSString stringWithUTF8String:kDevOverrideKeyUrl]];
-    [userDefaults
-        setBool:NO
-         forKey:[NSString stringWithUTF8String:kDevOverrideKeyUseCUP]];
-  }
 }
 
 void ExpectInstalled() {
@@ -200,6 +220,8 @@ void ExpectCandidateUninstalled() {
 }
 
 void Uninstall() {
+  if (::testing::Test::HasFailure())
+    PrintLog();
   // Copy logs from GetDataDirPath() before updater uninstalls itself
   // and deletes the path.
   CopyLog(GetDataDirPath());
@@ -216,6 +238,26 @@ void Uninstall() {
 
 base::FilePath GetFakeUpdaterInstallFolderPath(const base::Version& version) {
   return GetExecutableFolderPathForVersion(version);
+}
+
+void SetActive(const std::string& app_id) {
+  base::File::Error err = base::File::FILE_OK;
+  base::FilePath actives_file = GetActiveFile(app_id);
+  EXPECT_TRUE(base::CreateDirectoryAndGetError(actives_file.DirName(), &err))
+      << "Error: " << err;
+  EXPECT_TRUE(base::WriteFile(actives_file, ""));
+}
+
+void ExpectActive(const std::string& app_id) {
+  base::FilePath path = GetActiveFile(app_id);
+  EXPECT_TRUE(base::PathExists(path) && base::PathIsWritable(path))
+      << app_id << " is not active";
+}
+
+void ExpectNotActive(const std::string& app_id) {
+  base::FilePath path = GetActiveFile(app_id);
+  EXPECT_FALSE(base::PathExists(path) && base::PathIsWritable(path))
+      << app_id << " is active.";
 }
 
 #endif  // !defined(COMPONENT_BUILD)
