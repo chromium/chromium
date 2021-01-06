@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("../../optimize_webui.gni")
+import("../../tools/optimize_webui.gni")
 
 optimize_webui("build") {
   host = "internet_config_dialog"

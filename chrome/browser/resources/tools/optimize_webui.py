@@ -16,7 +16,7 @@ import tempfile
 
 
 _HERE_PATH = os.path.dirname(__file__)
-_SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..', '..'))
+_SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..', '..', '..'))
 _CWD = os.getcwd()  # NOTE(dbeam): this is typically out/<gn_name>/.
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'node'))
@@ -209,7 +209,7 @@ def _bundle_v3(tmp_out_dir, in_path, out_path, manifest_out_path, args,
   if not os.path.exists(tmp_out_dir):
     os.makedirs(tmp_out_dir)
   path_to_plugin = os.path.join(
-      os.path.abspath(_HERE_PATH), 'tools', 'rollup_plugin.js')
+      os.path.abspath(_HERE_PATH), 'rollup_plugin.js')
   rollup_config_file = _generate_rollup_config(tmp_out_dir, path_to_plugin,
                                                in_path, args.host, excludes,
                                                external_paths)

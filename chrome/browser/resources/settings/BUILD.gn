@@ -12,7 +12,7 @@ import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//ui/webui/webui_features.gni")
-import("../optimize_webui.gni")
+import("../tools/optimize_webui.gni")
 import("settings.gni")
 
 preprocess_folder = "preprocessed"
