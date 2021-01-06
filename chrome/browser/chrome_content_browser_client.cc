@@ -704,10 +704,6 @@ using plugins::ChromeContentBrowserClientPluginsPart;
 
 namespace {
 
-#if !defined(OS_ANDROID)
-constexpr base::TimeDelta kKeepaliveDuration = base::TimeDelta::FromSeconds(1);
-#endif
-
 #if defined(OS_WIN) && !defined(COMPONENT_BUILD) && !defined(ADDRESS_SANITIZER)
 // Enables pre-launch Code Integrity Guard (CIG) for Chrome renderers, when
 // running on Windows 10 1511 and above. See
@@ -1304,6 +1300,19 @@ blink::UserAgentMetadata GetUserAgentMetadata() {
 
   return metadata;
 }
+
+#if !defined(OS_ANDROID)
+base::TimeDelta GetKeepaliveTimerTimeout() {
+  constexpr base::TimeDelta kDefaultValue = base::TimeDelta::FromSeconds(1);
+
+  const int seconds = base::GetFieldTrialParamByFeatureAsInt(
+      features::kShutdownSupportForKeepalive, "timeout", -1);
+  if (seconds < 0 || seconds > 60) {
+    return kDefaultValue;
+  }
+  return base::TimeDelta::FromSeconds(seconds);
+}
+#endif
 
 ChromeContentBrowserClient::ChromeContentBrowserClient() {
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -5931,13 +5940,22 @@ ukm::UkmService* ChromeContentBrowserClient::GetUkmService() {
 void ChromeContentBrowserClient::OnKeepaliveRequestStarted() {
 #if !defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kShutdownSupportForKeepalive)) {
+    // TODO(crbug.com/1161996): Remove this entry once the investigation is
+    // done.
+    VLOG(1) << "OnKeepaliveRequestStarted: " << num_keepalive_requests_
+            << " ==> " << num_keepalive_requests_ + 1;
     ++num_keepalive_requests_;
 
     DCHECK_GT(num_keepalive_requests_, 0u);
     last_keepalive_request_time_ = base::TimeTicks::Now();
     if (!keepalive_timer_.IsRunning()) {
+      const auto timeout = GetKeepaliveTimerTimeout();
+      // TODO(crbug.com/1161996): Remove this entry once the investigation is
+      // done.
+      VLOG(1) << "Starting a keepalive timer(" << timeout.InSecondsF()
+              << " seconds)";
       keepalive_timer_.Start(
-          FROM_HERE, kKeepaliveDuration,
+          FROM_HERE, timeout,
           base::BindOnce(
               &ChromeContentBrowserClient::OnKeepaliveTimerFired,
               weak_factory_.GetWeakPtr(),
@@ -5952,8 +5970,15 @@ void ChromeContentBrowserClient::OnKeepaliveRequestFinished() {
 #if !defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kShutdownSupportForKeepalive)) {
     DCHECK_GT(num_keepalive_requests_, 0u);
+    // TODO(crbug.com/1161996): Remove this entry once the investigation is
+    // done.
+    VLOG(1) << "OnKeepaliveRequestFinished: " << num_keepalive_requests_
+            << " ==> " << num_keepalive_requests_ - 1;
     --num_keepalive_requests_;
     if (num_keepalive_requests_ == 0) {
+      // TODO(crbug.com/1161996): Remove this entry once the investigation is
+      // done.
+      VLOG(1) << "Stopping the keepalive timer";
       keepalive_timer_.Stop();
       // This deletes the keep alive handle attached to the timer function and
       // unblock the shutdown sequence.
@@ -6009,10 +6034,15 @@ ChromeContentBrowserClient::CreateIdentityRequestDialogController() {
 void ChromeContentBrowserClient::OnKeepaliveTimerFired(
     std::unique_ptr<ScopedKeepAlive> keep_alive_handle) {
 #if !defined(OS_ANDROID)
+  // TODO(crbug.com/1161996): Remove this entry once the investigation is done.
+  VLOG(1) << "OnKeepaliveTimerFired";
   DCHECK(base::FeatureList::IsEnabled(features::kShutdownSupportForKeepalive));
   const auto now = base::TimeTicks::Now();
-  const auto then = last_keepalive_request_time_ + kKeepaliveDuration;
+  const auto then = last_keepalive_request_time_ + GetKeepaliveTimerTimeout();
   if (now < then) {
+    // TODO(crbug.com/1161996): Remove this entry once the investigation is
+    // done.
+    VLOG(1) << "Extending keepalive timer";
     keepalive_timer_.Start(
         FROM_HERE, then - now,
         base::BindOnce(&ChromeContentBrowserClient::OnKeepaliveTimerFired,
