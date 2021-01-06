@@ -630,6 +630,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.LiveCaption.UseSodaForLiveCaption"
+    enum="BooleanEnabled" expires_after="2021-04-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Live Caption feature is powered by the Speech On-Device API
+    (SODA). This is logged once during the initialization of the caption
+    controller at browser start up.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.LiveCaption.WebsiteBlocked"
     enum="BooleanEnabled" expires_after="2021-04-30">
   <owner>katie@chromium.org</owner>

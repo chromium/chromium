@@ -64,6 +64,9 @@ void CaptionController::Init() {
   if (!base::FeatureList::IsEnabled(media::kLiveCaption))
     return;
 
+  base::UmaHistogramBoolean(
+      "Accessibility.LiveCaption.UseSodaForLiveCaption",
+      base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile_->GetPrefs());
   auto* command_line = base::CommandLine::ForCurrentProcess();
