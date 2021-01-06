@@ -271,6 +271,12 @@ void WebApp::SetLaunchQueryParams(
   launch_query_params_ = std::move(launch_query_params);
 }
 
+WebApp::ClientData::ClientData() = default;
+
+WebApp::ClientData::~ClientData() = default;
+
+WebApp::ClientData::ClientData(const ClientData& client_data) = default;
+
 WebApp::SyncFallbackData::SyncFallbackData() = default;
 
 WebApp::SyncFallbackData::~SyncFallbackData() = default;
@@ -362,6 +368,12 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
   if (app.chromeos_data_.has_value())
     out << app.chromeos_data_.value();
 
+  out << " system_web_app: " << app.client_data_.system_web_app_data.has_value()
+      << std::endl;
+
+  if (app.client_data_.system_web_app_data.has_value())
+    out << app.client_data_.system_web_app_data.value();
+
   return out;
 }
 
@@ -416,7 +428,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.install_time_,
         app.run_on_os_login_mode_,
         app.sync_fallback_data_,
-        app.url_handlers_
+        app.url_handlers_,
+        app.client_data_.system_web_app_data
         // clang-format on
     );
   };

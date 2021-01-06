@@ -12,9 +12,12 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/components/system_web_app_types.h"
+#include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
@@ -196,6 +199,16 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     mutable_chromeos_data->set_show_in_management(
         chromeos_data.show_in_management);
     mutable_chromeos_data->set_is_disabled(chromeos_data.is_disabled);
+  }
+
+  if (web_app.client_data().system_web_app_data.has_value()) {
+    auto& swa_data = web_app.client_data().system_web_app_data.value();
+
+    auto* mutable_swa_data =
+        local_data->mutable_client_data()->mutable_system_web_app_data();
+    mutable_swa_data->set_system_app_type(
+        static_cast<::web_app::SystemWebAppDataProto_SystemAppType>(
+            swa_data.system_app_type));
   }
 
   if (web_app.run_on_os_login_mode() != RunOnOsLoginMode::kUndefined) {
@@ -401,6 +414,14 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
         chromeos_data_proto.show_in_management();
     chromeos_data->is_disabled = chromeos_data_proto.is_disabled();
     web_app->SetWebAppChromeOsData(std::move(chromeos_data));
+  }
+
+  if (local_data.client_data().has_system_web_app_data()) {
+    WebAppSystemWebAppData& swa_data =
+        web_app->client_data()->system_web_app_data.emplace();
+
+    swa_data.system_app_type = static_cast<SystemAppType>(
+        local_data.client_data().system_web_app_data().system_app_type());
   }
 
   // Optional fields:

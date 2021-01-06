@@ -11,6 +11,7 @@
 
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/components/system_web_app_types.h"
 
 namespace web_app {
 
@@ -148,7 +149,11 @@ std::ostream& operator<<(std::ostream& out,
          << base::JoinString(install_options.additional_search_terms, "\n   ")
          << "\n only_use_app_info_factory: "
          << install_options.only_use_app_info_factory << "\n app_info_factory: "
-         << !install_options.app_info_factory.is_null();
+         << !install_options.app_info_factory.is_null()
+         << "\n system_app_type: "
+         << (install_options.system_app_type.has_value()
+                 ? static_cast<int32_t>(install_options.system_app_type.value())
+                 : -1);
 }
 
 InstallManager::InstallParams ConvertExternalInstallOptionsToParams(
@@ -174,6 +179,8 @@ InstallManager::InstallParams ConvertExternalInstallOptionsToParams(
   params.additional_search_terms = install_options.additional_search_terms;
 
   params.launch_query_params = install_options.launch_query_params;
+
+  params.system_app_type = install_options.system_app_type;
 
   return params;
 }

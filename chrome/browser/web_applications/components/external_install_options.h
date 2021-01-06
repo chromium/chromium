@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/optional.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
+#include "chrome/browser/web_applications/components/system_web_app_types.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -152,6 +154,9 @@ struct ExternalInstallOptions {
   // A factory callback that returns a unique_ptr<WebApplicationInfo> to be used
   // as the app's installation metadata.
   WebApplicationInfoFactory app_info_factory;
+
+  // The type of SystemWebApp, if this app is a System Web App.
+  base::Optional<SystemAppType> system_app_type = base::nullopt;
 };
 
 std::ostream& operator<<(std::ostream& out,

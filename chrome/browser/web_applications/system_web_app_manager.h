@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/system_web_app_types.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/gfx/geometry/size.h"
@@ -42,29 +43,6 @@ namespace web_app {
 class WebAppUiManager;
 class OsIntegrationManager;
 class AppRegistryController;
-
-// An enum that lists the different System Apps that exist. Can be used to
-// retrieve the App ID from the underlying Web App system.
-enum class SystemAppType {
-  SETTINGS,
-  CAMERA,
-  TERMINAL,
-  MEDIA,
-  HELP,
-  PRINT_MANAGEMENT,
-  SCANNING,
-  DIAGNOSTICS,
-  CONNECTIVITY_DIAGNOSTICS,
-#if !defined(OFFICIAL_BUILD)
-  FILE_MANAGER,
-  TELEMETRY,
-  SAMPLE,
-#endif  // !defined(OFFICIAL_BUILD)
-
-  // When adding a new System App, add a corresponding histogram suffix in
-  // WebAppSystemAppInternalName (histograms.xml). The suffix name should match
-  // the App's |internal_name|. This is for reporting per-app install results.
-};
 
 using OriginTrialsMap = std::map<url::Origin, std::vector<std::string>>;
 using WebApplicationInfoFactory =
@@ -285,8 +263,6 @@ class SystemWebAppManager {
 
   base::flat_map<SystemAppType, SystemAppInfo> system_app_infos_;
 
-  base::flat_map<AppId, SystemAppType> app_id_to_app_type_;
-
   PrefService* const pref_service_;
 
   // Used to install, uninstall, and update apps. Should outlive this class.
@@ -303,7 +279,6 @@ class SystemWebAppManager {
   PrefChangeRegistrar local_state_pref_change_registrar_;
 
   base::WeakPtrFactory<SystemWebAppManager> weak_ptr_factory_{this};
-
 };
 
 }  // namespace web_app

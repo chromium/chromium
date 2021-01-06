@@ -221,7 +221,6 @@ class SystemWebAppManagerTest : public WebAppTest {
 
     install_manager().Start();
     install_finalizer().Start();
-
   }
 
   void TearDown() override {
@@ -363,7 +362,6 @@ class SystemWebAppManagerTest : public WebAppTest {
   std::unique_ptr<TestWebAppUiManager> test_ui_manager_;
   TestWebAppUrlLoader* url_loader_ = nullptr;
   std::unique_ptr<TestDataRetrieverFactory> test_data_retriever_factory_;
-
 };
 
 // Test that System Apps do install with the feature enabled.
@@ -1049,6 +1047,37 @@ TEST_F(SystemWebAppManagerTest, ForceReinstallFeature) {
     EXPECT_TRUE(install_requests[1].force_reinstall);
     EXPECT_TRUE(IsInstalled(AppUrl1()));
   }
+}
+
+TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
+  system_web_app_manager().SetUpdatePolicy(
+      SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+
+  InitEmptyRegistrar();
+
+  // Set up and install a baseline
+  base::flat_map<SystemAppType, SystemAppInfo> system_apps;
+  system_apps.emplace(
+      SystemAppType::SETTINGS,
+      SystemAppInfo(kSettingsAppInternalName, AppUrl1(),
+                    base::BindRepeating(&GetApp1WebApplicationInfo)));
+  system_web_app_manager().SetSystemAppsForTesting(system_apps);
+
+  system_web_app_manager().set_current_version(base::Version("1.0.0.0"));
+  StartAndWaitForAppsToSynchronize();
+  EXPECT_TRUE(
+      system_web_app_manager().IsSystemWebApp(GenerateAppIdFromURL(AppUrl1())));
+
+  auto unsynced_system_web_app_manager =
+      std::make_unique<TestSystemWebAppManager>(profile());
+
+  unsynced_system_web_app_manager->SetSubsystems(
+      &pending_app_manager(), &controller().registrar(),
+      &controller().sync_bridge(), &ui_manager(),
+      &controller().os_integration_manager());
+
+  EXPECT_TRUE(unsynced_system_web_app_manager->IsSystemWebApp(
+      GenerateAppIdFromURL(AppUrl1())));
 }
 
 }  // namespace web_app

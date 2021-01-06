@@ -4,6 +4,8 @@
 
 #include <utility>
 
+#include "chrome/browser/web_applications/components/install_finalizer.h"
+#include "chrome/browser/web_applications/components/web_app_system_web_app_data.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
 
 #include "base/bind.h"
@@ -196,6 +198,26 @@ void WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback(
                      GetWeakPtr()));
 }
 
+void UpdateFinalizerClientData(
+    const base::Optional<InstallManager::InstallParams>& params,
+    InstallFinalizer::FinalizeOptions* options) {
+  if (params) {
+    if (IsChromeOs()) {
+      options->chromeos_data.emplace();
+      options->chromeos_data->show_in_launcher =
+          params->add_to_applications_menu;
+      options->chromeos_data->show_in_search = params->add_to_search;
+      options->chromeos_data->show_in_management = params->add_to_management;
+      options->chromeos_data->is_disabled = params->is_disabled;
+    }
+    if (params->system_app_type.has_value()) {
+      options->system_web_app_data.emplace();
+      options->system_web_app_data->system_app_type =
+          params->system_app_type.value();
+    }
+  }
+}
+
 void WebAppInstallTask::InstallWebAppFromInfo(
     std::unique_ptr<WebApplicationInfo> web_application_info,
     ForInstallableSite for_installable_site,
@@ -217,15 +239,9 @@ void WebAppInstallTask::InstallWebAppFromInfo(
   InstallFinalizer::FinalizeOptions options;
   options.install_source = install_source;
   options.locally_installed = true;
-  if (IsChromeOs() && install_params_) {
-    options.chromeos_data.emplace();
-    options.chromeos_data->show_in_launcher =
-        install_params_->add_to_applications_menu;
-    options.chromeos_data->show_in_search = install_params_->add_to_search;
-    options.chromeos_data->show_in_management =
-        install_params_->add_to_management;
-    options.chromeos_data->is_disabled = install_params_->is_disabled;
-  }
+
+  UpdateFinalizerClientData(install_params_, &options);
+
   install_finalizer_->FinalizeInstall(*web_application_info, options,
                                       std::move(callback));
 }
@@ -355,8 +371,8 @@ void WebAppInstallTask::CallInstallCallback(const AppId& app_id,
 
 bool WebAppInstallTask::ShouldStopInstall() const {
   // Install should stop early if WebContents is being destroyed.
-  // WebAppInstallTask::WebContentsDestroyed will get called eventually and the
-  // callback will be invoked at that point.
+  // WebAppInstallTask::WebContentsDestroyed will get called eventually and
+  // the callback will be invoked at that point.
   return !web_contents() || web_contents()->IsBeingDestroyed();
 }
 
@@ -545,8 +561,8 @@ void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
     ForInstallableSite for_installable_site,
     bool skip_page_favicons) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Background installations are not a user-triggered installs, and thus cannot
-  // be sent to the store.
+  // Background installations are not a user-triggered installs, and thus
+  // cannot be sent to the store.
   if (base::FeatureList::IsEnabled(features::kApkWebAppInstalls) &&
       for_installable_site == ForInstallableSite::kYes &&
       !background_installation_ && manifest) {
@@ -685,9 +701,10 @@ void WebAppInstallTask::OnIconsRetrievedShowDialog(
 
   DCHECK(web_app_info);
 
-  // The old BookmarkApp Sync System uses |WebAppInstallTask::OnIconsRetrieved|.
-  // The new WebApp USS System has no sync wars and it doesn't need to preserve
-  // icons. |is_for_sync| is always false for USS.
+  // The old BookmarkApp Sync System uses
+  // |WebAppInstallTask::OnIconsRetrieved|. The new WebApp USS System has no
+  // sync wars and it doesn't need to preserve icons. |is_for_sync| is always
+  // false for USS.
   FilterAndResizeIconsGenerateMissing(web_app_info.get(), &icons_map);
 
   if (background_installation_) {
@@ -748,16 +765,11 @@ void WebAppInstallTask::OnDialogCompleted(
   if (install_params_) {
     finalize_options.locally_installed = install_params_->locally_installed;
 
-    if (IsChromeOs()) {
-      finalize_options.chromeos_data.emplace();
-      finalize_options.chromeos_data->show_in_launcher =
-          install_params_->add_to_applications_menu;
-      finalize_options.chromeos_data->show_in_search =
-          install_params_->add_to_search;
-      finalize_options.chromeos_data->show_in_management =
-          install_params_->add_to_management;
-      finalize_options.chromeos_data->is_disabled =
-          install_params_->is_disabled;
+    UpdateFinalizerClientData(install_params_, &finalize_options);
+
+    if (install_params_->user_display_mode != DisplayMode::kUndefined) {
+      web_app_info_copy.open_as_window =
+          install_params_->user_display_mode != DisplayMode::kBrowser;
     }
   }
 

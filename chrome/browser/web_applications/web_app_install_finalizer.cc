@@ -4,8 +4,8 @@
 
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 
-#include <utility>
 #include <map>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_shortcuts_menu.h"
+#include "chrome/browser/web_applications/components/web_app_system_web_app_data.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -163,6 +164,13 @@ void WebAppInstallFinalizer::FinalizeInstall(
   // caller provided a new value.
   if (options.chromeos_data.has_value())
     web_app->SetWebAppChromeOsData(options.chromeos_data.value());
+
+  // `WebApp::system_web_app_data` has a default value already. Only override if
+  // the caller provided a new value.
+  if (options.system_web_app_data.has_value()) {
+    web_app->client_data()->system_web_app_data =
+        options.system_web_app_data.value();
+  }
 
   web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);
   web_app->AddSource(source);

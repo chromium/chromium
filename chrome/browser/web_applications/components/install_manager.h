@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
+#include "chrome/browser/web_applications/components/system_web_app_types.h"
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -126,6 +127,7 @@ class InstallManager {
     std::vector<std::string> additional_search_terms;
 
     base::Optional<std::string> launch_query_params;
+    base::Optional<SystemAppType> system_app_type;
   };
   // Starts a background web app installation process for a given
   // |web_contents|.

@@ -54,6 +54,31 @@ message ChromeOSDataProto {
   required bool is_disabled = 4;
 }
 
+// Properties for System Web Apps.
+message SystemWebAppDataProto {
+  enum SystemAppType {
+    FILE_MANAGER = 1;
+    TELEMETRY = 2;
+    SAMPLE = 3;
+    SETTINGS = 4;
+    CAMERA = 5;
+    TERMINAL = 6;
+    MEDIA = 7;
+    HELP = 8;
+    PRINT_MANAGEMENT = 9;
+    SCANNING = 10;
+    DIAGNOSTICS = 11;
+    CONNECTIVITY_DIAGNOSTICS = 12;
+  };
+
+  optional SystemAppType system_app_type = 1;
+}
+
+// Properties for System Web Apps.
+message ClientDataProto {
+  optional SystemWebAppDataProto system_web_app_data = 1;
+}
+
 // Properties for a WebApp's shortcuts menu item.
 message WebAppShortcutsMenuItemInfoProto {
   required string name = 1;
@@ -166,4 +191,6 @@ message WebAppProto {
   optional string launch_query_params = 26;
 
   repeated WebAppUrlHandlerProto url_handlers = 27;
+
+  optional ClientDataProto client_data = 28;
 }

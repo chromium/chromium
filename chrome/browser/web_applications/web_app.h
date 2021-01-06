@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_app_system_web_app_data.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -74,6 +75,17 @@ class WebApp {
   const base::Optional<WebAppChromeOsData>& chromeos_data() const {
     return chromeos_data_;
   }
+
+  struct ClientData {
+    ClientData();
+    ~ClientData();
+    ClientData(const ClientData& client_data);
+    base::Optional<WebAppSystemWebAppData> system_web_app_data;
+  };
+
+  const ClientData& client_data() const { return client_data_; }
+
+  ClientData* client_data() { return &client_data_; }
 
   // Locally installed apps have shortcuts installed on various UI surfaces.
   // If app isn't locally installed, it is excluded from UIs and only listed as
@@ -262,6 +274,7 @@ class WebApp {
   RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kUndefined;
   SyncFallbackData sync_fallback_data_;
   apps::UrlHandlers url_handlers_;
+  ClientData client_data_;
   // New fields must be added to |operator==| and |operator<<|.
 };
 
