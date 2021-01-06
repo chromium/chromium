@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/image_util/image_saver.h"
 
+#import <Photos/Photos.h>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
@@ -69,6 +71,8 @@
       return;
     }
 
+    // Use -imageWithData to validate |data|, but continue to pass the raw
+    // |data| to -savePhoto to ensure no data loss occurs.
     UIImage* savedImage = [UIImage imageWithData:data];
     if (!savedImage) {
       [strongSelf
@@ -77,10 +81,33 @@
       return;
     }
 
-    UIImageWriteToSavedPhotosAlbum(
-        savedImage, weakSelf,
-        @selector(image:didFinishSavingWithError:contextInfo:), nullptr);
+    [self savePhoto:data];
   });
+}
+
+// Dump |data| into the photo library. Requires the usage of
+// NSPhotoLibraryAddUsageDescription.
+- (void)savePhoto:(NSData*)data {
+  [[PHPhotoLibrary sharedPhotoLibrary]
+      performChanges:^{
+        PHAssetResourceCreationOptions* options =
+            [[PHAssetResourceCreationOptions alloc] init];
+        [[PHAssetCreationRequest creationRequestForAsset]
+            addResourceWithType:PHAssetResourceTypePhoto
+                           data:data
+                        options:options];
+      }
+      completionHandler:^(BOOL success, NSError* error) {
+        if (error) {
+          // Saving photo failed, likely due to a permissions issue.
+          // This code may be executed outside of the main thread. Make sure to
+          // display the error on the main thread.
+          [self displayImageErrorAlertWithSettingsOnMainQueue];
+        } else {
+          // TODO(crbug.com/797277): Provide a way for the user to easily
+          // reach the photos app.
+        }
+      }];
 }
 
 // Called when Chrome has been denied access to add photos or videos and the
@@ -156,23 +183,6 @@
                                       style:UIAlertActionStyleDefault];
     [self.alertCoordinator start];
   });
-}
-
-// Called after the system attempts to write the image to the saved photos
-// album.
-- (void)image:(UIImage*)image
-    didFinishSavingWithError:(NSError*)error
-                 contextInfo:(void*)contextInfo {
-  // Was there an error?
-  if (error) {
-    // Saving photo failed, likely due to a permissions issue.
-    // This code may be execute outside of the main thread. Make sure to display
-    // the error on the main thread.
-    [self displayImageErrorAlertWithSettingsOnMainQueue];
-  } else {
-    // TODO(crbug.com/797277): Provide a way for the user to easily reach the
-    // photos app.
-  }
 }
 
 @end
