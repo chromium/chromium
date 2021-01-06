@@ -95,7 +95,7 @@
 #include "third_party/blink/public/mojom/device/device.mojom.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom.h"
 #include "third_party/blink/public/mojom/file/file_utilities.mojom.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/blink/public/mojom/geolocation/geolocation_service.mojom.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom.h"
@@ -598,7 +598,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::IdleManager>(base::BindRepeating(
       &RenderFrameHostImpl::BindIdleManager, base::Unretained(host)));
 
-  map->Add<blink::mojom::NativeFileSystemManager>(
+  map->Add<blink::mojom::FileSystemAccessManager>(
       base::BindRepeating(&RenderFrameHostImpl::GetNativeFileSystemManager,
                           base::Unretained(host)));
 
@@ -999,7 +999,7 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePermissionService, host));
   map->Add<blink::mojom::FileSystemManager>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindFileSystemManager, host));
-  map->Add<blink::mojom::NativeFileSystemManager>(BindWorkerReceiverForOrigin(
+  map->Add<blink::mojom::FileSystemAccessManager>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindNativeFileSystemManager, host));
   map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindNativeIOHost, host));
@@ -1077,7 +1077,7 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePaymentManagerForOrigin, host));
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
-  map->Add<blink::mojom::NativeFileSystemManager>(BindWorkerReceiverForOrigin(
+  map->Add<blink::mojom::FileSystemAccessManager>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindNativeFileSystemManager, host));
   map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindNativeIOHost, host));
@@ -1178,7 +1178,7 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePaymentManagerForOrigin, host));
   map->Add<blink::mojom::PermissionService>(BindServiceWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
-  map->Add<blink::mojom::NativeFileSystemManager>(
+  map->Add<blink::mojom::FileSystemAccessManager>(
       BindServiceWorkerReceiverForOrigin(
           &RenderProcessHostImpl::BindNativeFileSystemManager, host));
   map->Add<blink::mojom::NativeIOHost>(BindServiceWorkerReceiverForOrigin(

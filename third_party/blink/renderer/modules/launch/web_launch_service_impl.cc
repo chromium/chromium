@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_directory_handle.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/script/script.h"
@@ -33,7 +33,7 @@ WebLaunchServiceImpl::WebLaunchServiceImpl(LocalDOMWindow& window)
 WebLaunchServiceImpl::~WebLaunchServiceImpl() = default;
 
 void WebLaunchServiceImpl::SetLaunchFiles(
-    WTF::Vector<mojom::blink::NativeFileSystemEntryPtr> entries) {
+    WTF::Vector<mojom::blink::FileSystemAccessEntryPtr> entries) {
   if (!window_)
     return;
 

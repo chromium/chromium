@@ -58,15 +58,15 @@ class CONTENT_EXPORT NativeFileSystemHandleBase : public WebContentsObserver {
   PermissionStatus GetWritePermissionStatus();
 
   // Implementation for the GetPermissionStatus method in the
-  // blink::mojom::NativeFileSystemFileHandle and DirectoryHandle interfaces.
+  // blink::mojom::FileSystemAccessFileHandle and DirectoryHandle interfaces.
   void DoGetPermissionStatus(
       bool writable,
       base::OnceCallback<void(PermissionStatus)> callback);
   // Implementation for the RequestPermission method in the
-  // blink::mojom::NativeFileSystemFileHandle and DirectoryHandle interfaces.
+  // blink::mojom::FileSystemAccessFileHandle and DirectoryHandle interfaces.
   void DoRequestPermission(
       bool writable,
-      base::OnceCallback<void(blink::mojom::NativeFileSystemErrorPtr,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                               PermissionStatus)> callback);
 
   // Invokes |callback|, possibly after first requesting write permission. If
@@ -75,7 +75,7 @@ class CONTENT_EXPORT NativeFileSystemHandleBase : public WebContentsObserver {
   template <typename CallbackArgType>
   void RunWithWritePermission(
       base::OnceCallback<void(CallbackArgType)> callback,
-      base::OnceCallback<void(blink::mojom::NativeFileSystemErrorPtr,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                               CallbackArgType)> no_permission_callback,
       CallbackArgType callback_arg);
 
@@ -185,7 +185,7 @@ class CONTENT_EXPORT NativeFileSystemHandleBase : public WebContentsObserver {
  private:
   void DidRequestPermission(
       bool writable,
-      base::OnceCallback<void(blink::mojom::NativeFileSystemErrorPtr,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                               PermissionStatus)> callback,
       NativeFileSystemPermissionGrant::PermissionRequestOutcome outcome);
 
@@ -206,7 +206,7 @@ class CONTENT_EXPORT NativeFileSystemHandleBase : public WebContentsObserver {
 template <typename CallbackArgType>
 void NativeFileSystemHandleBase::RunWithWritePermission(
     base::OnceCallback<void(CallbackArgType)> callback,
-    base::OnceCallback<void(blink::mojom::NativeFileSystemErrorPtr,
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                             CallbackArgType)> no_permission_callback,
     CallbackArgType callback_arg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -214,18 +214,18 @@ void NativeFileSystemHandleBase::RunWithWritePermission(
       /*writable=*/true,
       base::BindOnce(
           [](base::OnceCallback<void(CallbackArgType)> callback,
-             base::OnceCallback<void(blink::mojom::NativeFileSystemErrorPtr,
+             base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                                      CallbackArgType)> no_permission_callback,
              CallbackArgType callback_arg,
-             blink::mojom::NativeFileSystemErrorPtr result,
+             blink::mojom::FileSystemAccessErrorPtr result,
              blink::mojom::PermissionStatus status) {
             if (status == blink::mojom::PermissionStatus::GRANTED) {
               std::move(callback).Run(std::move(callback_arg));
               return;
             }
-            if (result->status == blink::mojom::NativeFileSystemStatus::kOk) {
+            if (result->status == blink::mojom::FileSystemAccessStatus::kOk) {
               result->status =
-                  blink::mojom::NativeFileSystemStatus::kPermissionDenied;
+                  blink::mojom::FileSystemAccessStatus::kPermissionDenied;
             }
             std::move(no_permission_callback)
                 .Run(std::move(result), std::move(callback_arg));

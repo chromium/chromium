@@ -12,13 +12,13 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/native_file_system_permission_context.h"
 #include "ipc/ipc_message.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_directory_handle.mojom-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 
-// Exposes methods for creating NativeFileSystemEntries. All these methods need
+// Exposes methods for creating FileSystemAccessEntries. All these methods need
 // to be called on the UI thread.
 class CONTENT_EXPORT NativeFileSystemEntryFactory
     : public base::RefCountedThreadSafe<NativeFileSystemEntryFactory,
@@ -49,17 +49,17 @@ class CONTENT_EXPORT NativeFileSystemEntryFactory
     int process_id() const { return frame_id.child_id; }
   };
 
-  // Creates a new NativeFileSystemEntryPtr from the path to a file. Assumes the
+  // Creates a new FileSystemAccessEntryPtr from the path to a file. Assumes the
   // passed in path is valid and represents a file.
-  virtual blink::mojom::NativeFileSystemEntryPtr CreateFileEntryFromPath(
+  virtual blink::mojom::FileSystemAccessEntryPtr CreateFileEntryFromPath(
       const BindingContext& binding_context,
       PathType path_type,
       const base::FilePath& file_path,
       UserAction user_action) = 0;
 
-  // Creates a new NativeFileSystemEntryPtr from the path to a directory.
+  // Creates a new FileSystemAccessEntryPtr from the path to a directory.
   // Assumes the passed in path is valid and represents a directory.
-  virtual blink::mojom::NativeFileSystemEntryPtr CreateDirectoryEntryFromPath(
+  virtual blink::mojom::FileSystemAccessEntryPtr CreateDirectoryEntryFromPath(
       const BindingContext& binding_context,
       PathType path_type,
       const base::FilePath& directory_path,

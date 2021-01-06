@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/native_file_system_handle.h"
 
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_error.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_handle_permission_descriptor.h"
@@ -16,8 +16,8 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-using mojom::blink::NativeFileSystemEntryPtr;
-using mojom::blink::NativeFileSystemErrorPtr;
+using mojom::blink::FileSystemAccessEntryPtr;
+using mojom::blink::FileSystemAccessErrorPtr;
 
 NativeFileSystemHandle::NativeFileSystemHandle(
     ExecutionContext* execution_context,
@@ -26,7 +26,7 @@ NativeFileSystemHandle::NativeFileSystemHandle(
 
 // static
 NativeFileSystemHandle* NativeFileSystemHandle::CreateFromMojoEntry(
-    mojom::blink::NativeFileSystemEntryPtr e,
+    mojom::blink::FileSystemAccessEntryPtr e,
     ExecutionContext* execution_context) {
   if (e->entry_handle->is_file()) {
     return MakeGarbageCollected<NativeFileSystemFileHandle>(
@@ -79,9 +79,9 @@ ScriptPromise NativeFileSystemHandle::requestPermission(
   RequestPermissionImpl(
       descriptor->mode() == "readwrite",
       WTF::Bind(
-          [](ScriptPromiseResolver* resolver, NativeFileSystemErrorPtr result,
+          [](ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result,
              mojom::blink::PermissionStatus status) {
-            if (result->status != mojom::blink::NativeFileSystemStatus::kOk) {
+            if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
               native_file_system_error::Reject(resolver, *result);
               return;
             }
@@ -101,9 +101,9 @@ ScriptPromise NativeFileSystemHandle::isSameEntry(
   IsSameEntryImpl(
       other->Transfer(),
       WTF::Bind(
-          [](ScriptPromiseResolver* resolver, NativeFileSystemErrorPtr result,
+          [](ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result,
              bool same) {
-            if (result->status != mojom::blink::NativeFileSystemStatus::kOk) {
+            if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
               native_file_system_error::Reject(resolver, *result);
               return;
             }

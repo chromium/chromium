@@ -10,7 +10,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -46,21 +46,21 @@ void GetDirectoryImpl(ScriptPromiseResolver* resolver, bool allow_access) {
     return;
   }
 
-  mojo::Remote<mojom::blink::NativeFileSystemManager> manager;
+  mojo::Remote<mojom::blink::FileSystemAccessManager> manager;
   context->GetBrowserInterfaceBroker().GetInterface(
       manager.BindNewPipeAndPassReceiver());
 
   auto* raw_manager = manager.get();
   raw_manager->GetSandboxedFileSystem(WTF::Bind(
       [](ScriptPromiseResolver* resolver,
-         mojo::Remote<mojom::blink::NativeFileSystemManager>,
-         mojom::blink::NativeFileSystemErrorPtr result,
-         mojo::PendingRemote<mojom::blink::NativeFileSystemDirectoryHandle>
+         mojo::Remote<mojom::blink::FileSystemAccessManager>,
+         mojom::blink::FileSystemAccessErrorPtr result,
+         mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>
              handle) {
         ExecutionContext* context = resolver->GetExecutionContext();
         if (!context)
           return;
-        if (result->status != mojom::blink::NativeFileSystemStatus::kOk) {
+        if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
           native_file_system_error::Reject(resolver, *result);
           return;
         }

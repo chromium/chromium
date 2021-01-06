@@ -20,9 +20,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
+#include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/mojom/indexed_db_control_test.mojom.h"
-#include "components/services/storage/public/mojom/native_file_system_context.mojom.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -69,7 +69,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
       base::Clock* clock,
       mojo::PendingRemote<storage::mojom::BlobStorageContext>
           blob_storage_context,
-      mojo::PendingRemote<storage::mojom::NativeFileSystemContext>
+      mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
           native_file_system_context,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> custom_task_runner);
@@ -188,7 +188,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   storage::mojom::BlobStorageContext* blob_storage_context() const {
     return blob_storage_context_ ? blob_storage_context_.get() : nullptr;
   }
-  storage::mojom::NativeFileSystemContext* native_file_system_context() const {
+  storage::mojom::FileSystemAccessContext* native_file_system_context() const {
     return native_file_system_context_ ? native_file_system_context_.get()
                                        : nullptr;
   }
@@ -237,7 +237,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   // Bound and accessed on the |idb_task_runner_|.
   mojo::Remote<storage::mojom::BlobStorageContext> blob_storage_context_;
-  mojo::Remote<storage::mojom::NativeFileSystemContext>
+  mojo::Remote<storage::mojom::FileSystemAccessContext>
       native_file_system_context_;
   std::unique_ptr<IndexedDBFactoryImpl> indexeddb_factory_;
 

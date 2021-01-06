@@ -6,8 +6,8 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/file_error.mojom";
 
-// Always returned as a member of a NativeFileSystemError, which is declared below.
-enum NativeFileSystemStatus {
+// Always returned as a member of a FileSystemAccessError, which is declared below.
+enum FileSystemAccessStatus {
   kOk,
   // The website doesn't/didn't have permission to do what it tried to do.
   kPermissionDenied,
@@ -26,9 +26,9 @@ enum NativeFileSystemStatus {
   kFileError,
 };
 
-// Errors reported by Native File System API methods.
-struct NativeFileSystemError {
-  NativeFileSystemStatus status;
+// Errors reported by File System Access API methods.
+struct FileSystemAccessError {
+  FileSystemAccessStatus status;
   // Only meaningful when |status| is kFileError.
   // Conceptually, this should be an optional member, but mojo does not
   // currently support optionals.

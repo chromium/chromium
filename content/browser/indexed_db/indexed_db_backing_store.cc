@@ -627,7 +627,7 @@ IndexedDBBackingStore::IndexedDBBackingStore(
     const base::FilePath& blob_path,
     std::unique_ptr<TransactionalLevelDBDatabase> db,
     storage::mojom::BlobStorageContext* blob_storage_context,
-    storage::mojom::NativeFileSystemContext* native_file_system_context,
+    storage::mojom::FileSystemAccessContext* native_file_system_context,
     std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
     BlobFilesCleanedCallback blob_files_cleaned,
     ReportOutstandingBlobsCallback report_outstanding_blobs,
@@ -3611,7 +3611,7 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
           // TODO(dmurph): Refactor IndexedDBExternalObject to not use a
           // SharedRemote, so this code can just move the remote, instead of
           // cloning.
-          mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken>
+          mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
               token_clone;
           entry.native_file_system_token_remote()->Clone(
               token_clone.InitWithNewPipeAndPassReceiver());

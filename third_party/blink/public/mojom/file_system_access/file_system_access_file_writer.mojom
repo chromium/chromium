@@ -5,16 +5,16 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/blob/blob.mojom";
-import "third_party/blink/public/mojom/file_system_access/native_file_system_error.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
 
 // Represents an object to modify a file.
-interface NativeFileSystemFileWriter {
+interface FileSystemAccessFileWriter {
   // Write data from |data| to the given |position| in the file being written
   // to. Returns whether the operation succeeded and if so how many bytes were
   // written.
   // TODO(mek): This might need some way of reporting progress events back to
   // the renderer.
-  Write(uint64 offset, pending_remote<Blob> data) => (NativeFileSystemError result,
+  Write(uint64 offset, pending_remote<Blob> data) => (FileSystemAccessError result,
                                       uint64 bytes_written);
 
   // Write data from |stream| to the given |position| in the file being written
@@ -23,22 +23,22 @@ interface NativeFileSystemFileWriter {
   // TODO(mek): This might need some way of reporting progress events back to
   // the renderer.
   WriteStream(uint64 offset, handle<data_pipe_consumer> stream) =>
-      (NativeFileSystemError result, uint64 bytes_written);
+      (FileSystemAccessError result, uint64 bytes_written);
 
   // Changes the length of the file to be |length|. If |length| is larger than
   // the current size of the file, the file will be extended, and the extended
   // part is filled with null bytes.
-  Truncate(uint64 length) => (NativeFileSystemError result);
+  Truncate(uint64 length) => (FileSystemAccessError result);
 
   // Closes the file writer. This will materialize the writes operations on the
   // intended file target in the case of atomic writes.
   // Specify the |autoClose| flag to ensure Close() is automatically invoked
   // when the mojo pipe closes.
   // Returns whether the operation succeeded.
-  Close() => (NativeFileSystemError result);
+  Close() => (FileSystemAccessError result);
 
   // Aborts the write operation, resulting in the writes not being committed,
   // even if autoClose is specified. All further operations will be rejected.
   // Returns whether the write operation was aborted successfully.
-  Abort() => (NativeFileSystemError result);
+  Abort() => (FileSystemAccessError result);
 };

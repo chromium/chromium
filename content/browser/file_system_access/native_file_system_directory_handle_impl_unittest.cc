@@ -137,24 +137,24 @@ TEST_F(NativeFileSystemDirectoryHandleImplTest, IsSafePathComponent) {
 
 namespace {
 class TestNativeFileSystemDirectoryEntriesListener
-    : public blink::mojom::NativeFileSystemDirectoryEntriesListener {
+    : public blink::mojom::FileSystemAccessDirectoryEntriesListener {
  public:
   TestNativeFileSystemDirectoryEntriesListener(
-      std::vector<blink::mojom::NativeFileSystemEntryPtr>* entries,
-      blink::mojom::NativeFileSystemErrorPtr* final_result,
+      std::vector<blink::mojom::FileSystemAccessEntryPtr>* entries,
+      blink::mojom::FileSystemAccessErrorPtr* final_result,
       base::OnceClosure done)
       : entries_(entries),
         final_result_(final_result),
         done_(std::move(done)) {}
 
   void DidReadDirectory(
-      blink::mojom::NativeFileSystemErrorPtr result,
-      std::vector<blink::mojom::NativeFileSystemEntryPtr> entries,
+      blink::mojom::FileSystemAccessErrorPtr result,
+      std::vector<blink::mojom::FileSystemAccessEntryPtr> entries,
       bool has_more_entries) override {
     entries_->insert(entries_->end(), std::make_move_iterator(entries.begin()),
                      std::make_move_iterator(entries.end()));
     if (has_more_entries) {
-      EXPECT_EQ(result->status, blink::mojom::NativeFileSystemStatus::kOk);
+      EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
     } else {
       *final_result_ = std::move(result);
       std::move(done_).Run();
@@ -162,8 +162,8 @@ class TestNativeFileSystemDirectoryEntriesListener
   }
 
  private:
-  std::vector<blink::mojom::NativeFileSystemEntryPtr>* entries_;
-  blink::mojom::NativeFileSystemErrorPtr* final_result_;
+  std::vector<blink::mojom::FileSystemAccessEntryPtr>* entries_;
+  blink::mojom::FileSystemAccessErrorPtr* final_result_;
   base::OnceClosure done_;
 };
 }  // namespace
@@ -192,10 +192,10 @@ TEST_F(NativeFileSystemDirectoryHandleImplTest, GetEntries) {
 #endif
   }
 
-  std::vector<blink::mojom::NativeFileSystemEntryPtr> entries;
-  blink::mojom::NativeFileSystemErrorPtr result;
+  std::vector<blink::mojom::FileSystemAccessEntryPtr> entries;
+  blink::mojom::FileSystemAccessErrorPtr result;
   base::RunLoop loop;
-  mojo::PendingRemote<blink::mojom::NativeFileSystemDirectoryEntriesListener>
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryEntriesListener>
       listener;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<TestNativeFileSystemDirectoryEntriesListener>(
@@ -204,7 +204,7 @@ TEST_F(NativeFileSystemDirectoryHandleImplTest, GetEntries) {
   handle_->GetEntries(std::move(listener));
   loop.Run();
 
-  EXPECT_EQ(result->status, blink::mojom::NativeFileSystemStatus::kOk);
+  EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
   std::vector<std::string> names;
   for (const auto& entry : entries) {
     names.push_back(entry->name);
@@ -219,11 +219,11 @@ TEST_F(NativeFileSystemDirectoryHandleImplTest, GetFile_NoReadAccess) {
   denied_handle_->GetFile(
       "filename", /*create=*/false,
       base::BindLambdaForTesting(
-          [](blink::mojom::NativeFileSystemErrorPtr result,
-             mojo::PendingRemote<blink::mojom::NativeFileSystemFileHandle>
+          [](blink::mojom::FileSystemAccessErrorPtr result,
+             mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>
                  file_handle) {
             EXPECT_EQ(result->status,
-                      blink::mojom::NativeFileSystemStatus::kPermissionDenied);
+                      blink::mojom::FileSystemAccessStatus::kPermissionDenied);
             EXPECT_FALSE(file_handle.is_valid());
           })
           .Then(loop.QuitClosure()));
@@ -237,11 +237,11 @@ TEST_F(NativeFileSystemDirectoryHandleImplTest, GetDirectory_NoReadAccess) {
   denied_handle_->GetDirectory(
       "GetDirectory_NoReadAccess", /*create=*/false,
       base::BindLambdaForTesting(
-          [](blink::mojom::NativeFileSystemErrorPtr result,
-             mojo::PendingRemote<blink::mojom::NativeFileSystemDirectoryHandle>
+          [](blink::mojom::FileSystemAccessErrorPtr result,
+             mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
                  dir_handle) {
             EXPECT_EQ(result->status,
-                      blink::mojom::NativeFileSystemStatus::kPermissionDenied);
+                      blink::mojom::FileSystemAccessStatus::kPermissionDenied);
             EXPECT_FALSE(dir_handle.is_valid());
           })
           .Then(loop.QuitClosure()));
@@ -251,10 +251,10 @@ TEST_F(NativeFileSystemDirectoryHandleImplTest, GetDirectory_NoReadAccess) {
 TEST_F(NativeFileSystemDirectoryHandleImplTest, GetEntries_NoReadAccess) {
   ASSERT_TRUE(base::WriteFile(dir_.GetPath().AppendASCII("filename"), "data"));
 
-  std::vector<blink::mojom::NativeFileSystemEntryPtr> entries;
-  blink::mojom::NativeFileSystemErrorPtr result;
+  std::vector<blink::mojom::FileSystemAccessEntryPtr> entries;
+  blink::mojom::FileSystemAccessErrorPtr result;
   base::RunLoop loop;
-  mojo::PendingRemote<blink::mojom::NativeFileSystemDirectoryEntriesListener>
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryEntriesListener>
       listener;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<TestNativeFileSystemDirectoryEntriesListener>(
@@ -264,7 +264,7 @@ TEST_F(NativeFileSystemDirectoryHandleImplTest, GetEntries_NoReadAccess) {
   loop.Run();
 
   EXPECT_EQ(result->status,
-            blink::mojom::NativeFileSystemStatus::kPermissionDenied);
+            blink::mojom::FileSystemAccessStatus::kPermissionDenied);
   EXPECT_TRUE(entries.empty());
 }
 

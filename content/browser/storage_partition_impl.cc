@@ -1208,7 +1208,7 @@ void StoragePartitionImpl::Initialize(
           browser_context_->GetNativeFileSystemPermissionContext(),
           browser_context_->IsOffTheRecord());
 
-  mojo::PendingRemote<storage::mojom::NativeFileSystemContext>
+  mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
       native_file_system_context;
   native_file_system_manager_->BindInternalsReceiver(
       native_file_system_context.InitWithNewPipeAndPassReceiver());

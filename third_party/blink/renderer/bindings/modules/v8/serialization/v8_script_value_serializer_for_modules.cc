@@ -304,7 +304,7 @@ bool V8ScriptValueSerializerForModules::WriteCryptoKey(
 bool V8ScriptValueSerializerForModules::WriteNativeFileSystemHandle(
     SerializationTag tag,
     NativeFileSystemHandle* native_file_system_handle) {
-  mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken> token =
+  mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> token =
       native_file_system_handle->Transfer();
 
   SerializedScriptValue::NativeFileSystemTokensArray& tokens_array =

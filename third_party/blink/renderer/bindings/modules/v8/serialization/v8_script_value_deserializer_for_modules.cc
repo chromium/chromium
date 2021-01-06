@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_crypto.h"
@@ -334,13 +334,13 @@ V8ScriptValueDeserializerForModules::ReadNativeFileSystemHandle(
 
   // IndexedDB code assumes that deserializing a SSV is non-destructive. So
   // rather than consuming the token here instead we clone it.
-  mojo::Remote<mojom::blink::NativeFileSystemTransferToken> token(
+  mojo::Remote<mojom::blink::FileSystemAccessTransferToken> token(
       std::move(tokens_array[token_index]));
   if (!token) {
     return nullptr;
   }
 
-  mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken> token_clone;
+  mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> token_clone;
   token->Clone(token_clone.InitWithNewPipeAndPassReceiver());
   tokens_array[token_index] = std::move(token_clone);
 
@@ -348,7 +348,7 @@ V8ScriptValueDeserializerForModules::ReadNativeFileSystemHandle(
   // FileSystemHandle.
   ExecutionContext* execution_context =
       ExecutionContext::From(GetScriptState());
-  mojo::Remote<mojom::blink::NativeFileSystemManager>
+  mojo::Remote<mojom::blink::FileSystemAccessManager>
       native_file_system_manager;
   execution_context->GetBrowserInterfaceBroker().GetInterface(
       native_file_system_manager.BindNewPipeAndPassReceiver());
@@ -356,7 +356,7 @@ V8ScriptValueDeserializerForModules::ReadNativeFileSystemHandle(
   // Clone the FileSystemHandle object.
   switch (tag) {
     case kNativeFileSystemFileHandleTag: {
-      mojo::PendingRemote<mojom::blink::NativeFileSystemFileHandle> file_handle;
+      mojo::PendingRemote<mojom::blink::FileSystemAccessFileHandle> file_handle;
 
       native_file_system_manager->GetFileHandleFromToken(
           token.Unbind(), file_handle.InitWithNewPipeAndPassReceiver());
@@ -365,7 +365,7 @@ V8ScriptValueDeserializerForModules::ReadNativeFileSystemHandle(
           execution_context, name, std::move(file_handle));
     }
     case kNativeFileSystemDirectoryHandleTag: {
-      mojo::PendingRemote<mojom::blink::NativeFileSystemDirectoryHandle>
+      mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>
           directory_handle;
 
       native_file_system_manager->GetDirectoryHandleFromToken(

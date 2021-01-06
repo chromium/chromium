@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -102,10 +102,10 @@ bool StructTraits<
   item.storage_type = blink::WebDragData::Item::kStorageTypeFilename;
   item.filename_data = blink::FilePathToWebString(filename_data);
   item.display_name_data = blink::FilePathToWebString(display_name_data);
-  mojo::PendingRemote<::blink::mojom::blink::NativeFileSystemDragDropToken>
+  mojo::PendingRemote<::blink::mojom::blink::FileSystemAccessDragDropToken>
       native_file_system_token(
-          data.TakeNativeFileSystemToken<mojo::PendingRemote<
-              ::blink::mojom::blink::NativeFileSystemDragDropToken>>());
+          data.TakeFileSystemAccessToken<mojo::PendingRemote<
+              ::blink::mojom::blink::FileSystemAccessDragDropToken>>());
   item.native_file_system_entry =
       base::MakeRefCounted<::blink::NativeFileSystemDropData>(
           std::move(native_file_system_token));
@@ -182,9 +182,9 @@ WTF::String StructTraits<blink::mojom::DragItemFileSystemFileDataView,
 }
 
 //  static
-mojo::PendingRemote<blink::mojom::blink::NativeFileSystemDragDropToken>
+mojo::PendingRemote<blink::mojom::blink::FileSystemAccessDragDropToken>
 StructTraits<blink::mojom::DragItemFileDataView, blink::WebDragData::Item>::
-    native_file_system_token(const blink::WebDragData::Item& item) {
+    file_system_access_token(const blink::WebDragData::Item& item) {
   // Should never have to send a transfer token information from the renderer
   // to the browser.
   DCHECK(!item.native_file_system_entry);

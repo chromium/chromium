@@ -18,7 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom.h"
 #include "third_party/blink/public/mojom/page/drag.mojom.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
@@ -83,8 +83,7 @@ blink::mojom::DragDataPtr DropDataToDragData(
     blink::mojom::DragItemFilePtr item = blink::mojom::DragItemFile::New();
     item->path = file.path;
     item->display_name = file.display_name;
-
-    mojo::PendingRemote<blink::mojom::NativeFileSystemDragDropToken>
+    mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken>
         pending_token;
     base::FilePath entry_path = file.path;
     NativeFileSystemManagerImpl::PathType path_type =
@@ -92,7 +91,7 @@ blink::mojom::DragDataPtr DropDataToDragData(
     native_file_system_manager->CreateNativeFileSystemDragDropToken(
         path_type, entry_path, child_id,
         pending_token.InitWithNewPipeAndPassReceiver());
-    item->native_file_system_token = std::move(pending_token);
+    item->file_system_access_token = std::move(pending_token);
 
     items.push_back(blink::mojom::DragItem::NewFile(std::move(item)));
   }

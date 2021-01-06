@@ -5,11 +5,11 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
-import "third_party/blink/public/mojom/file_system_access/native_file_system_directory_handle.mojom";
-import "third_party/blink/public/mojom/file_system_access/native_file_system_file_handle.mojom";
-import "third_party/blink/public/mojom/file_system_access/native_file_system_error.mojom";
-import "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom";
-import "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom";
 
 enum ChooseFileSystemEntryType {
   kOpenFile,
@@ -40,16 +40,16 @@ struct ChooseFileSystemEntryAcceptsOption {
 };
 
 // Interface provided by the browser to the renderer as main entry point to the
-// Native File System API. The renderer can request this interface for a
+// File System Access API. The renderer can request this interface for a
 // specific worker or document, so the browser process will always be able to
 // tell what operations are being done by which document or worker.
-interface NativeFileSystemManager {
+interface FileSystemAccessManager {
   // Opens the sandboxed filesystem for the origin of the current document or worker.
   GetSandboxedFileSystem() =>
-      (NativeFileSystemError result,
-       pending_remote<NativeFileSystemDirectoryHandle>? directory);
+      (FileSystemAccessError result,
+       pending_remote<FileSystemAccessDirectoryHandle>? directory);
 
-  // Prompts the user to select a file from the native filesystem. Returns an
+  // Prompts the user to select a file from the local filesystem. Returns an
   // error code if something failed, or a list of the selected entries on
   // success.
   // If |include_accepts_all| is true, a "all files" option is included in the
@@ -59,32 +59,32 @@ interface NativeFileSystemManager {
                 array<ChooseFileSystemEntryAcceptsOption> accepts,
                 CommonDirectory starting_directory,
                 bool include_accepts_all) =>
-      (NativeFileSystemError result,
-       array<NativeFileSystemEntry> entries);
+      (FileSystemAccessError result,
+       array<FileSystemAccessEntry> entries);
 
   // Used to redeem tokens received by a postMessage() target. Clones
   // FileSystemFileHandles. Token redemption should never fail. The
   // postMessage() target should perform an origin check before
   // redeeming tokens. Origin check failures must dispatch a messageerror
-  // event instead of cloning the objects. NativeFileSystemManager will also
+  // event instead of cloning the objects. FileSystemAccessManager will also
   // validate the redeemed token, including the token's origin, before binding the
   // FileSystemHandle.
   GetFileHandleFromToken(
-    pending_remote<NativeFileSystemTransferToken> token,
-    pending_receiver<NativeFileSystemFileHandle> file_handle);
+    pending_remote<FileSystemAccessTransferToken> token,
+    pending_receiver<FileSystemAccessFileHandle> file_handle);
 
   // Same as GetFileHandleFromToken(), but for FileSystemDirectoryHandles.
   // See GetFileHandleFromToken() comment above for details.
   GetDirectoryHandleFromToken(
-    pending_remote<NativeFileSystemTransferToken> token,
-    pending_receiver<NativeFileSystemDirectoryHandle> directory_handle);
+    pending_remote<FileSystemAccessTransferToken> token,
+    pending_receiver<FileSystemAccessDirectoryHandle> directory_handle);
 
-  // Used to redeem NativeFileSystemDragDropToken that are passed to the
+  // Used to redeem FileSystemAccessDragDropToken that are passed to the
   // renderer from the browser during a drag and drop operation. Token
   // redemption can fail if the id of the process trying to redeem the token
   // does not match the id assigned to the token at creation or if the
-  // NativeFileSystemManager does not have record of the token.
+  // FileSystemAccessManager does not have record of the token.
   GetEntryFromDragDropToken(
-    pending_remote<NativeFileSystemDragDropToken> token
-  )  => (NativeFileSystemEntry entry);
+    pending_remote<FileSystemAccessDragDropToken> token
+  )  => (FileSystemAccessEntry entry);
 };

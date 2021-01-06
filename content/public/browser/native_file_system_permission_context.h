@@ -9,7 +9,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/native_file_system_permission_grant.h"
 #include "content/public/browser/native_file_system_write_item.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-shared.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
 #include "url/origin.h"
 
 namespace content {

@@ -7,10 +7,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_directory_handle.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_error.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_file_handle.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
@@ -22,13 +22,13 @@
 namespace blink {
 
 class MockNativeFileSystemManager
-    : public mojom::blink::NativeFileSystemManager {
+    : public mojom::blink::FileSystemAccessManager {
  public:
   MockNativeFileSystemManager(BrowserInterfaceBrokerProxy& broker,
                               base::OnceClosure reached_callback)
       : reached_callback_(std::move(reached_callback)), broker_(broker) {
     broker_.SetBinderForTesting(
-        mojom::blink::NativeFileSystemManager::Name_,
+        mojom::blink::FileSystemAccessManager::Name_,
         WTF::BindRepeating(
             &MockNativeFileSystemManager::BindNativeFileSystemManager,
             WTF::Unretained(this)));
@@ -36,13 +36,13 @@ class MockNativeFileSystemManager
   MockNativeFileSystemManager(BrowserInterfaceBrokerProxy& broker)
       : broker_(broker) {
     broker_.SetBinderForTesting(
-        mojom::blink::NativeFileSystemManager::Name_,
+        mojom::blink::FileSystemAccessManager::Name_,
         WTF::BindRepeating(
             &MockNativeFileSystemManager::BindNativeFileSystemManager,
             WTF::Unretained(this)));
   }
   ~MockNativeFileSystemManager() override {
-    broker_.SetBinderForTesting(mojom::blink::NativeFileSystemManager::Name_,
+    broker_.SetBinderForTesting(mojom::blink::FileSystemAccessManager::Name_,
                                 {});
   }
 
@@ -76,30 +76,30 @@ class MockNativeFileSystemManager
   }
 
   void GetFileHandleFromToken(
-      mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken>,
-      mojo::PendingReceiver<mojom::blink::NativeFileSystemFileHandle>)
+      mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>,
+      mojo::PendingReceiver<mojom::blink::FileSystemAccessFileHandle>)
       override {}
 
   void GetDirectoryHandleFromToken(
-      mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken>,
-      mojo::PendingReceiver<mojom::blink::NativeFileSystemDirectoryHandle>)
+      mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>,
+      mojo::PendingReceiver<mojom::blink::FileSystemAccessDirectoryHandle>)
       override {}
 
   void GetEntryFromDragDropToken(
-      mojo::PendingRemote<blink::mojom::blink::NativeFileSystemDragDropToken>
+      mojo::PendingRemote<blink::mojom::blink::FileSystemAccessDragDropToken>
           token,
       GetEntryFromDragDropTokenCallback callback) override {}
 
  private:
   void BindNativeFileSystemManager(mojo::ScopedMessagePipeHandle handle) {
     receivers_.Add(this,
-                   mojo::PendingReceiver<mojom::blink::NativeFileSystemManager>(
+                   mojo::PendingReceiver<mojom::blink::FileSystemAccessManager>(
                        std::move(handle)));
   }
 
   base::OnceClosure reached_callback_;
   ChooseEntriesResponseCallback choose_entries_response_callback_;
-  mojo::ReceiverSet<mojom::blink::NativeFileSystemManager> receivers_;
+  mojo::ReceiverSet<mojom::blink::FileSystemAccessManager> receivers_;
   BrowserInterfaceBrokerProxy& broker_;
 };
 
@@ -151,18 +151,18 @@ TEST_F(GlobalNativeFileSystemTest, UserActivationChooseEntriesSuccessful) {
                                       manager_run_loop.QuitClosure());
   manager.SetChooseEntriesResponse(WTF::Bind(
       [](MockNativeFileSystemManager::ChooseEntriesCallback callback) {
-        auto error = mojom::blink::NativeFileSystemError::New();
-        error->status = mojom::blink::NativeFileSystemStatus::kOk;
+        auto error = mojom::blink::FileSystemAccessError::New();
+        error->status = mojom::blink::FileSystemAccessStatus::kOk;
         error->message = "";
 
-        mojo::PendingRemote<mojom::blink::NativeFileSystemFileHandle>
+        mojo::PendingRemote<mojom::blink::FileSystemAccessFileHandle>
             pending_remote;
         ignore_result(pending_remote.InitWithNewPipeAndPassReceiver());
-        auto handle = mojom::blink::NativeFileSystemHandle::NewFile(
+        auto handle = mojom::blink::FileSystemAccessHandle::NewFile(
             std::move(pending_remote));
-        auto entry = mojom::blink::NativeFileSystemEntry::New(std::move(handle),
+        auto entry = mojom::blink::FileSystemAccessEntry::New(std::move(handle),
                                                               "foo.txt");
-        Vector<mojom::blink::NativeFileSystemEntryPtr> entries;
+        Vector<mojom::blink::FileSystemAccessEntryPtr> entries;
         entries.push_back(std::move(entry));
 
         std::move(callback).Run(std::move(error), std::move(entries));
@@ -187,19 +187,19 @@ TEST_F(GlobalNativeFileSystemTest, UserActivationChooseEntriesErrors) {
   LocalFrame* frame = &GetFrame();
   EXPECT_FALSE(frame->HasStickyUserActivation());
 
-  using mojom::blink::NativeFileSystemStatus;
+  using mojom::blink::FileSystemAccessStatus;
 
-  NativeFileSystemStatus statuses[] = {
-      NativeFileSystemStatus::kPermissionDenied,
-      NativeFileSystemStatus::kInvalidState,
-      NativeFileSystemStatus::kInvalidArgument,
-      NativeFileSystemStatus::kOperationFailed,
+  FileSystemAccessStatus statuses[] = {
+      FileSystemAccessStatus::kPermissionDenied,
+      FileSystemAccessStatus::kInvalidState,
+      FileSystemAccessStatus::kInvalidArgument,
+      FileSystemAccessStatus::kOperationFailed,
       // kOperationAborted is when the user cancels the file selection.
-      NativeFileSystemStatus::kOperationAborted,
+      FileSystemAccessStatus::kOperationAborted,
   };
   MockNativeFileSystemManager manager(frame->GetBrowserInterfaceBroker());
 
-  for (const NativeFileSystemStatus& status : statuses) {
+  for (const FileSystemAccessStatus& status : statuses) {
     LocalFrame::NotifyUserActivation(
         frame, mojom::UserActivationNotificationType::kTest);
     EXPECT_TRUE(frame->HasStickyUserActivation());
@@ -207,12 +207,12 @@ TEST_F(GlobalNativeFileSystemTest, UserActivationChooseEntriesErrors) {
     base::RunLoop manager_run_loop;
     manager.SetQuitClosure(manager_run_loop.QuitClosure());
     manager.SetChooseEntriesResponse(WTF::Bind(
-        [](mojom::blink::NativeFileSystemStatus status,
+        [](mojom::blink::FileSystemAccessStatus status,
            MockNativeFileSystemManager::ChooseEntriesCallback callback) {
-          auto error = mojom::blink::NativeFileSystemError::New();
+          auto error = mojom::blink::FileSystemAccessError::New();
           error->status = status;
           error->message = "";
-          Vector<mojom::blink::NativeFileSystemEntryPtr> entries;
+          Vector<mojom::blink::FileSystemAccessEntryPtr> entries;
 
           std::move(callback).Run(std::move(error), std::move(entries));
         },

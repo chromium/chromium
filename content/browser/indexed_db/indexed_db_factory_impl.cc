@@ -779,7 +779,7 @@ std::unique_ptr<IndexedDBBackingStore> IndexedDBFactoryImpl::CreateBackingStore(
     const base::FilePath& blob_path,
     std::unique_ptr<TransactionalLevelDBDatabase> db,
     storage::mojom::BlobStorageContext* blob_storage_context,
-    storage::mojom::NativeFileSystemContext* native_file_system_context,
+    storage::mojom::FileSystemAccessContext* native_file_system_context,
     std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
     IndexedDBBackingStore::BlobFilesCleanedCallback blob_files_cleaned,
     IndexedDBBackingStore::ReportOutstandingBlobsCallback

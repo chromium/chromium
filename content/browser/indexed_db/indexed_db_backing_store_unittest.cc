@@ -74,7 +74,7 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
       storage::mojom::BlobStorageContext* blob_storage_context,
-      storage::mojom::NativeFileSystemContext* native_file_system_context,
+      storage::mojom::FileSystemAccessContext* native_file_system_context,
       std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       BlobFilesCleanedCallback blob_files_cleaned,
       ReportOutstandingBlobsCallback report_outstanding_blobs,
@@ -123,7 +123,7 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
   explicit TestIDBFactory(
       IndexedDBContextImpl* idb_context,
       storage::mojom::BlobStorageContext* blob_storage_context,
-      storage::mojom::NativeFileSystemContext* native_file_system_context)
+      storage::mojom::FileSystemAccessContext* native_file_system_context)
       : IndexedDBFactoryImpl(idb_context,
                              IndexedDBClassFactory::Get(),
                              base::DefaultClock::GetInstance()),
@@ -143,7 +143,7 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
       storage::mojom::BlobStorageContext*,
-      storage::mojom::NativeFileSystemContext*,
+      storage::mojom::FileSystemAccessContext*,
       std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       IndexedDBBackingStore::BlobFilesCleanedCallback blob_files_cleaned,
       IndexedDBBackingStore::ReportOutstandingBlobsCallback
@@ -161,7 +161,7 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
 
  private:
   storage::mojom::BlobStorageContext* blob_storage_context_;
-  storage::mojom::NativeFileSystemContext* native_file_system_context_;
+  storage::mojom::FileSystemAccessContext* native_file_system_context_;
 };
 
 struct BlobWrite {
@@ -229,20 +229,20 @@ class MockBlobStorageContext : public ::storage::mojom::BlobStorageContext {
   bool write_files_to_disk_ = false;
 };
 
-class FakeNativeFileSystemTransferToken
-    : public ::blink::mojom::NativeFileSystemTransferToken {
+class FakeFileSystemAccessTransferToken
+    : public ::blink::mojom::FileSystemAccessTransferToken {
  public:
-  explicit FakeNativeFileSystemTransferToken(const base::UnguessableToken& id)
+  explicit FakeFileSystemAccessTransferToken(const base::UnguessableToken& id)
       : id_(id) {}
 
   void GetInternalID(GetInternalIDCallback callback) override {
     std::move(callback).Run(id_);
   }
 
-  void Clone(mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken>
+  void Clone(mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
                  clone_receiver) override {
     mojo::MakeSelfOwnedReceiver(
-        std::make_unique<FakeNativeFileSystemTransferToken>(id_),
+        std::make_unique<FakeFileSystemAccessTransferToken>(id_),
         std::move(clone_receiver));
   }
 
@@ -251,12 +251,12 @@ class FakeNativeFileSystemTransferToken
 };
 
 class MockNativeFileSystemContext
-    : public ::storage::mojom::NativeFileSystemContext {
+    : public ::storage::mojom::FileSystemAccessContext {
  public:
   ~MockNativeFileSystemContext() override = default;
 
   void SerializeHandle(
-      mojo::PendingRemote<::blink::mojom::NativeFileSystemTransferToken>
+      mojo::PendingRemote<::blink::mojom::FileSystemAccessTransferToken>
           pending_token,
       SerializeHandleCallback callback) override {
     writes_.emplace_back(std::move(pending_token));
@@ -268,20 +268,20 @@ class MockNativeFileSystemContext
   void DeserializeHandle(
       const url::Origin& origin,
       const std::vector<uint8_t>& bits,
-      mojo::PendingReceiver<::blink::mojom::NativeFileSystemTransferToken>
+      mojo::PendingReceiver<::blink::mojom::FileSystemAccessTransferToken>
           token) override {
     NOTREACHED();
   }
 
   const std::vector<
-      mojo::Remote<::blink::mojom::NativeFileSystemTransferToken>>&
+      mojo::Remote<::blink::mojom::FileSystemAccessTransferToken>>&
   writes() {
     return writes_;
   }
   void ClearWrites() { writes_.clear(); }
 
  private:
-  std::vector<mojo::Remote<::blink::mojom::NativeFileSystemTransferToken>>
+  std::vector<mojo::Remote<::blink::mojom::FileSystemAccessTransferToken>>
       writes_;
 };
 
@@ -547,16 +547,16 @@ class IndexedDBBackingStoreTestWithExternalObjects
 
   IndexedDBExternalObject CreateNativeFileSystemHandle() {
     auto id = base::UnguessableToken::Create();
-    mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> remote;
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> remote;
     base::ThreadPool::CreateSequencedTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](base::UnguessableToken id,
                mojo::PendingReceiver<
-                   blink::mojom::NativeFileSystemTransferToken>
+                   blink::mojom::FileSystemAccessTransferToken>
                    pending_receiver) {
               mojo::MakeSelfOwnedReceiver(
-                  std::make_unique<FakeNativeFileSystemTransferToken>(id),
+                  std::make_unique<FakeFileSystemAccessTransferToken>(id),
                   std::move(pending_receiver));
             },
             id, remote.InitWithNewPipeAndPassReceiver()));

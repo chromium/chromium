@@ -22,7 +22,7 @@ class CONTENT_EXPORT IndexedDBControlWrapper
       base::Clock* clock,
       mojo::PendingRemote<storage::mojom::BlobStorageContext>
           blob_storage_context,
-      mojo::PendingRemote<storage::mojom::NativeFileSystemContext>
+      mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
           native_file_system_context,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> custom_task_runner);

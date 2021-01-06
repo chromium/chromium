@@ -314,7 +314,7 @@ void FileSystemChooser::FileSelectionCanceled(void* params) {
   RecordFileSelectionResult(type_, 0);
   std::move(callback_).Run(
       native_file_system_error::FromStatus(
-          blink::mojom::NativeFileSystemStatus::kOperationAborted),
+          blink::mojom::FileSystemAccessStatus::kOperationAborted),
       {});
   delete this;
 }

@@ -189,9 +189,9 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
         std::move(image_bitmap_contents_array));
   }
 
-  // Convert the PendingRemote<NativeFileSystemTransferToken> from the
+  // Convert the PendingRemote<FileSystemAccessTransferToken> from the
   // blink::mojom namespace to the blink::mojom::blink namespace.
-  for (auto& token : message.native_file_system_tokens) {
+  for (auto& token : message.file_system_access_tokens) {
     result.message->NativeFileSystemTokens().push_back(
         ToCrossVariantMojoType(std::move(token)));
   }

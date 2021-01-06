@@ -89,7 +89,7 @@ void NativeFileSystemHandleBase::DoGetPermissionStatus(
 
 void NativeFileSystemHandleBase::DoRequestPermission(
     bool writable,
-    base::OnceCallback<void(blink::mojom::NativeFileSystemErrorPtr,
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                             PermissionStatus)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PermissionStatus current_status =
@@ -137,7 +137,7 @@ void NativeFileSystemHandleBase::DoRequestPermission(
 
 void NativeFileSystemHandleBase::DidRequestPermission(
     bool writable,
-    base::OnceCallback<void(blink::mojom::NativeFileSystemErrorPtr,
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                             PermissionStatus)> callback,
     NativeFileSystemPermissionGrant::PermissionRequestOutcome outcome) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -147,14 +147,14 @@ void NativeFileSystemHandleBase::DidRequestPermission(
     case Outcome::kThirdPartyContext:
       std::move(callback).Run(
           native_file_system_error::FromStatus(
-              blink::mojom::NativeFileSystemStatus::kSecurityError,
+              blink::mojom::FileSystemAccessStatus::kSecurityError,
               "Not allowed to request permissions in this context."),
           writable ? GetWritePermissionStatus() : GetReadPermissionStatus());
       return;
     case Outcome::kNoUserActivation:
       std::move(callback).Run(
           native_file_system_error::FromStatus(
-              blink::mojom::NativeFileSystemStatus::kSecurityError,
+              blink::mojom::FileSystemAccessStatus::kSecurityError,
               "User activation is required to request permissions."),
           writable ? GetWritePermissionStatus() : GetReadPermissionStatus());
       return;

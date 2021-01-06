@@ -12,7 +12,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/native_file_system_entry_factory.h"
 #include "storage/browser/file_system/isolated_context.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace content {
@@ -33,7 +33,7 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
   };
 
   using ResultCallback =
-      base::OnceCallback<void(blink::mojom::NativeFileSystemErrorPtr,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                               std::vector<ResultEntry>)>;
 
   class CONTENT_EXPORT Options {

@@ -39,8 +39,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-shared.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
 
 namespace content {
 
@@ -79,14 +79,14 @@ std::string ReadDataPipe(mojo::ScopedDataPipeConsumerHandle pipe) {
 // Returns the contents of the file referred to by `file_remote` as a
 // `std::string`.
 std::string ReadStringFromFileRemote(
-    mojo::Remote<blink::mojom::NativeFileSystemFileHandle> file_remote) {
+    mojo::Remote<blink::mojom::FileSystemAccessFileHandle> file_remote) {
   base::RunLoop await_get_blob;
   mojo::Remote<blink::mojom::Blob> blob;
   file_remote->AsBlob(base::BindLambdaForTesting(
-      [&](blink::mojom::NativeFileSystemErrorPtr result,
+      [&](blink::mojom::FileSystemAccessErrorPtr result,
           const base::File::Info& info,
           blink::mojom::SerializedBlobPtr received_blob) {
-        EXPECT_EQ(result->status, blink::mojom::NativeFileSystemStatus::kOk);
+        EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
         EXPECT_FALSE(received_blob.is_null());
         blob.Bind(std::move(received_blob->blob));
         await_get_blob.Quit();
@@ -173,7 +173,7 @@ class NativeFileSystemManagerImplTest : public testing::Test {
     return result;
   }
 
-  mojo::Remote<blink::mojom::NativeFileSystemDirectoryHandle>
+  mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle>
   GetHandleForDirectory(const base::FilePath& path) {
     auto grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
         FixedNativeFileSystemPermissionGrant::PermissionStatus::GRANTED, path);
@@ -189,16 +189,16 @@ class NativeFileSystemManagerImplTest : public testing::Test {
                     NativeFileSystemPermissionContext::UserAction::kOpen))
         .WillOnce(testing::Return(grant));
 
-    blink::mojom::NativeFileSystemEntryPtr entry =
+    blink::mojom::FileSystemAccessEntryPtr entry =
         manager_->CreateDirectoryEntryFromPath(
             kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
             path, NativeFileSystemPermissionContext::UserAction::kOpen);
-    return mojo::Remote<blink::mojom::NativeFileSystemDirectoryHandle>(
+    return mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle>(
         std::move(entry->entry_handle->get_directory()));
   }
 
   NativeFileSystemTransferTokenImpl* SerializeAndDeserializeToken(
-      mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken>
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
           token_remote) {
     std::vector<uint8_t> serialized;
     base::RunLoop serialize_loop;
@@ -231,7 +231,7 @@ class NativeFileSystemManagerImplTest : public testing::Test {
       NativeFileSystemEntryFactory::PathType path_type,
       const std::string& expected_file_contents) {
     // Create a token representing a dropped file at `file_path`.
-    mojo::PendingRemote<blink::mojom::NativeFileSystemDragDropToken>
+    mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken>
         token_remote;
     manager_->CreateNativeFileSystemDragDropToken(
         path_type, file_path, kBindingContext.process_id(),
@@ -253,12 +253,12 @@ class NativeFileSystemManagerImplTest : public testing::Test {
         .WillOnce(testing::Return(allow_grant_));
 
     // Attempt to resolve `token_remote` and store the resulting
-    // NativeFileSystemFileHandle in `file_remote`.
+    // FileSystemAccessFileHandle in `file_remote`.
     base::RunLoop await_token_resolution;
-    blink::mojom::NativeFileSystemEntryPtr native_file_system_entry;
+    blink::mojom::FileSystemAccessEntryPtr native_file_system_entry;
     manager_remote_->GetEntryFromDragDropToken(
         std::move(token_remote),
-        base::BindLambdaForTesting([&](blink::mojom::NativeFileSystemEntryPtr
+        base::BindLambdaForTesting([&](blink::mojom::FileSystemAccessEntryPtr
                                            returned_native_file_system_entry) {
           native_file_system_entry =
               std::move(returned_native_file_system_entry);
@@ -268,10 +268,10 @@ class NativeFileSystemManagerImplTest : public testing::Test {
 
     ASSERT_FALSE(native_file_system_entry.is_null());
     ASSERT_TRUE(native_file_system_entry->entry_handle->is_file());
-    mojo::Remote<blink::mojom::NativeFileSystemFileHandle> file_handle(
+    mojo::Remote<blink::mojom::FileSystemAccessFileHandle> file_handle(
         std::move(native_file_system_entry->entry_handle->get_file()));
 
-    // Check to see if the resulting NativeFileSystemFileHandle can read the
+    // Check to see if the resulting FileSystemAccessFileHandle can read the
     // contents of the file at `file_path`.
     EXPECT_EQ(ReadStringFromFileRemote(std::move(file_handle)),
               expected_file_contents);
@@ -281,7 +281,7 @@ class NativeFileSystemManagerImplTest : public testing::Test {
       const base::FilePath& dir_path,
       NativeFileSystemEntryFactory::PathType path_type,
       const std::string& expected_child_file_name) {
-    mojo::PendingRemote<blink::mojom::NativeFileSystemDragDropToken>
+    mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken>
         token_remote;
     manager_->CreateNativeFileSystemDragDropToken(
         path_type, dir_path, kBindingContext.process_id(),
@@ -303,12 +303,12 @@ class NativeFileSystemManagerImplTest : public testing::Test {
         .WillOnce(testing::Return(allow_grant_));
 
     // Attempt to resolve `token_remote` and store the resulting
-    // NativeFileSystemDirectoryHandle in `dir_remote`.
+    // FileSystemAccessDirectoryHandle in `dir_remote`.
     base::RunLoop await_token_resolution;
-    blink::mojom::NativeFileSystemEntryPtr native_file_system_entry;
+    blink::mojom::FileSystemAccessEntryPtr native_file_system_entry;
     manager_remote_->GetEntryFromDragDropToken(
         std::move(token_remote),
-        base::BindLambdaForTesting([&](blink::mojom::NativeFileSystemEntryPtr
+        base::BindLambdaForTesting([&](blink::mojom::FileSystemAccessEntryPtr
                                            returned_native_file_system_entry) {
           native_file_system_entry =
               std::move(returned_native_file_system_entry);
@@ -318,7 +318,7 @@ class NativeFileSystemManagerImplTest : public testing::Test {
 
     ASSERT_FALSE(native_file_system_entry.is_null());
     ASSERT_TRUE(native_file_system_entry->entry_handle->is_directory());
-    mojo::Remote<blink::mojom::NativeFileSystemDirectoryHandle> dir_remote(
+    mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> dir_remote(
         std::move(native_file_system_entry->entry_handle->get_directory()));
 
     // Use `dir_remote` to verify that dir_path contains a child called
@@ -327,11 +327,11 @@ class NativeFileSystemManagerImplTest : public testing::Test {
     dir_remote->GetFile(
         expected_child_file_name, /*create=*/false,
         base::BindLambdaForTesting(
-            [&](blink::mojom::NativeFileSystemErrorPtr result,
-                mojo::PendingRemote<blink::mojom::NativeFileSystemFileHandle>
+            [&](blink::mojom::FileSystemAccessErrorPtr result,
+                mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>
                     file_handle) {
               await_get_file.Quit();
-              ASSERT_EQ(blink::mojom::NativeFileSystemStatus::kOk,
+              ASSERT_EQ(blink::mojom::FileSystemAccessStatus::kOk,
                         result->status);
             }));
     await_get_file.Run();
@@ -360,7 +360,7 @@ class NativeFileSystemManagerImplTest : public testing::Test {
   testing::StrictMock<MockNativeFileSystemPermissionContext>
       permission_context_;
   scoped_refptr<NativeFileSystemManagerImpl> manager_;
-  mojo::Remote<blink::mojom::NativeFileSystemManager> manager_remote_;
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote_;
 
   scoped_refptr<FixedNativeFileSystemPermissionGrant> ask_grant_ =
       base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
@@ -377,19 +377,19 @@ class NativeFileSystemManagerImplTest : public testing::Test {
 };
 
 TEST_F(NativeFileSystemManagerImplTest, GetSandboxedFileSystem_Permissions) {
-  mojo::PendingRemote<blink::mojom::NativeFileSystemDirectoryHandle>
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
       directory_remote;
   base::RunLoop loop;
   manager_remote_->GetSandboxedFileSystem(base::BindLambdaForTesting(
-      [&](blink::mojom::NativeFileSystemErrorPtr result,
-          mojo::PendingRemote<blink::mojom::NativeFileSystemDirectoryHandle>
+      [&](blink::mojom::FileSystemAccessErrorPtr result,
+          mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
               handle) {
-        EXPECT_EQ(blink::mojom::NativeFileSystemStatus::kOk, result->status);
+        EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOk, result->status);
         directory_remote = std::move(handle);
         loop.Quit();
       }));
   loop.Run();
-  mojo::Remote<blink::mojom::NativeFileSystemDirectoryHandle> root(
+  mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> root(
       std::move(directory_remote));
   ASSERT_TRUE(root);
   EXPECT_EQ(PermissionStatus::GRANTED,
@@ -412,11 +412,11 @@ TEST_F(NativeFileSystemManagerImplTest, CreateFileEntryFromPath_Permissions) {
                   NativeFileSystemPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(ask_grant_));
 
-  blink::mojom::NativeFileSystemEntryPtr entry =
+  blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
           kTestPath, NativeFileSystemPermissionContext::UserAction::kOpen);
-  mojo::Remote<blink::mojom::NativeFileSystemFileHandle> handle(
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
   EXPECT_EQ(PermissionStatus::GRANTED,
@@ -440,11 +440,11 @@ TEST_F(NativeFileSystemManagerImplTest,
                   NativeFileSystemPermissionContext::UserAction::kSave))
       .WillOnce(testing::Return(allow_grant_));
 
-  blink::mojom::NativeFileSystemEntryPtr entry =
+  blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
           kTestPath, NativeFileSystemPermissionContext::UserAction::kSave);
-  mojo::Remote<blink::mojom::NativeFileSystemFileHandle> handle(
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
   EXPECT_EQ(PermissionStatus::GRANTED,
@@ -468,11 +468,11 @@ TEST_F(NativeFileSystemManagerImplTest,
                   NativeFileSystemPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(ask_grant_));
 
-  blink::mojom::NativeFileSystemEntryPtr entry =
+  blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateDirectoryEntryFromPath(
           kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
           kTestPath, NativeFileSystemPermissionContext::UserAction::kOpen);
-  mojo::Remote<blink::mojom::NativeFileSystemDirectoryHandle> handle(
+  mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> handle(
       std::move(entry->entry_handle->get_directory()));
   EXPECT_EQ(PermissionStatus::GRANTED,
             GetPermissionStatusSync(/*writable=*/false, handle.get()));
@@ -498,7 +498,7 @@ TEST_F(NativeFileSystemManagerImplTest,
             storage::AsyncFileTestHelper::CreateFile(file_system_context_.get(),
                                                      test_swap_url));
 
-  mojo::Remote<blink::mojom::NativeFileSystemFileWriter> writer_remote(
+  mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
                                  NativeFileSystemManagerImpl::SharedHandleState(
                                      allow_grant_, allow_grant_, {}),
@@ -531,7 +531,7 @@ TEST_F(NativeFileSystemManagerImplTest, FileWriterCloseDoesNotAbortOnDestruct) {
             storage::AsyncFileTestHelper::CreateFileWithData(
                 file_system_context_.get(), test_swap_url, "foo", 3));
 
-  mojo::Remote<blink::mojom::NativeFileSystemFileWriter> writer_remote(
+  mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
                                  NativeFileSystemManagerImpl::SharedHandleState(
                                      allow_grant_, allow_grant_, {}),
@@ -575,7 +575,7 @@ TEST_F(NativeFileSystemManagerImplTest,
             storage::AsyncFileTestHelper::CreateFileWithData(
                 file_system_context_.get(), test_swap_url, "foo", 3));
 
-  mojo::Remote<blink::mojom::NativeFileSystemFileWriter> writer_remote(
+  mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
                                  NativeFileSystemManagerImpl::SharedHandleState(
                                      allow_grant_, allow_grant_, {}),
@@ -608,7 +608,7 @@ TEST_F(NativeFileSystemManagerImplTest,
             storage::AsyncFileTestHelper::CreateFileWithData(
                 file_system_context_.get(), test_swap_url, "foo", 3));
 
-  mojo::Remote<blink::mojom::NativeFileSystemFileWriter> writer_remote(
+  mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
                                  NativeFileSystemManagerImpl::SharedHandleState(
                                      allow_grant_, allow_grant_, {}),
@@ -645,7 +645,7 @@ TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_SandboxedFile) {
   NativeFileSystemFileHandleImpl file(manager_.get(), kBindingContext,
                                       test_file_url,
                                       {ask_grant_, ask_grant_, {}});
-  mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token_remote;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
   manager_->CreateTransferToken(file,
                                 token_remote.InitWithNewPipeAndPassReceiver());
 
@@ -670,7 +670,7 @@ TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_SandboxedDirectory) {
   NativeFileSystemDirectoryHandleImpl directory(manager_.get(), kBindingContext,
                                                 test_file_url,
                                                 {ask_grant_, ask_grant_, {}});
-  mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token_remote;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
   manager_->CreateTransferToken(directory,
                                 token_remote.InitWithNewPipeAndPassReceiver());
 
@@ -707,14 +707,14 @@ TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_Native_SingleFile) {
                   NativeFileSystemPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(grant));
 
-  blink::mojom::NativeFileSystemEntryPtr entry =
+  blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           kBindingContext, NativeFileSystemEntryFactory::PathType::kLocal,
           kTestPath, NativeFileSystemPermissionContext::UserAction::kOpen);
-  mojo::Remote<blink::mojom::NativeFileSystemFileHandle> handle(
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
-  mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token_remote;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
   handle->Transfer(token_remote.InitWithNewPipeAndPassReceiver());
 
   // Deserializing tokens should re-request grants, with correct user action.
@@ -747,10 +747,10 @@ TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_Native_SingleFile) {
 TEST_F(NativeFileSystemManagerImplTest,
        SerializeHandle_Native_SingleDirectory) {
   const base::FilePath kTestPath(dir_.GetPath().AppendASCII("foobar"));
-  mojo::Remote<blink::mojom::NativeFileSystemDirectoryHandle> handle =
+  mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> handle =
       GetHandleForDirectory(kTestPath);
 
-  mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token_remote;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
   handle->Transfer(token_remote.InitWithNewPipeAndPassReceiver());
 
   // Deserializing tokens should re-request grants, with correct user action.
@@ -786,26 +786,26 @@ TEST_F(NativeFileSystemManagerImplTest,
   const std::string kTestName = "test file name ☺";
   base::CreateDirectory(kDirectoryPath);
 
-  mojo::Remote<blink::mojom::NativeFileSystemDirectoryHandle> directory_handle =
+  mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> directory_handle =
       GetHandleForDirectory(kDirectoryPath);
 
-  mojo::Remote<blink::mojom::NativeFileSystemFileHandle> file_handle;
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> file_handle;
   base::RunLoop get_file_loop;
   directory_handle->GetFile(
       kTestName, /*create=*/true,
       base::BindLambdaForTesting(
-          [&](blink::mojom::NativeFileSystemErrorPtr result,
-              mojo::PendingRemote<blink::mojom::NativeFileSystemFileHandle>
+          [&](blink::mojom::FileSystemAccessErrorPtr result,
+              mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>
                   handle) {
             get_file_loop.Quit();
-            ASSERT_EQ(blink::mojom::NativeFileSystemStatus::kOk,
+            ASSERT_EQ(blink::mojom::FileSystemAccessStatus::kOk,
                       result->status);
             file_handle.Bind(std::move(handle));
           }));
   get_file_loop.Run();
   ASSERT_TRUE(file_handle.is_bound());
 
-  mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token_remote;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
   file_handle->Transfer(token_remote.InitWithNewPipeAndPassReceiver());
 
   // Deserializing tokens should re-request grants, with correct user action.
@@ -842,26 +842,26 @@ TEST_F(NativeFileSystemManagerImplTest,
   const std::string kTestName = "test dir name";
   base::CreateDirectory(kDirectoryPath);
 
-  mojo::Remote<blink::mojom::NativeFileSystemDirectoryHandle> directory_handle =
+  mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> directory_handle =
       GetHandleForDirectory(kDirectoryPath);
 
-  mojo::Remote<blink::mojom::NativeFileSystemDirectoryHandle> child_handle;
+  mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> child_handle;
   base::RunLoop get_directory_loop;
   directory_handle->GetDirectory(
       kTestName, /*create=*/true,
       base::BindLambdaForTesting(
-          [&](blink::mojom::NativeFileSystemErrorPtr result,
-              mojo::PendingRemote<blink::mojom::NativeFileSystemDirectoryHandle>
+          [&](blink::mojom::FileSystemAccessErrorPtr result,
+              mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
                   handle) {
             get_directory_loop.Quit();
-            ASSERT_EQ(blink::mojom::NativeFileSystemStatus::kOk,
+            ASSERT_EQ(blink::mojom::FileSystemAccessStatus::kOk,
                       result->status);
             child_handle.Bind(std::move(handle));
           }));
   get_directory_loop.Run();
   ASSERT_TRUE(child_handle.is_bound());
 
-  mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token_remote;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
   child_handle->Transfer(token_remote.InitWithNewPipeAndPassReceiver());
 
   // Deserializing tokens should re-request grants, with correct user action.
@@ -911,14 +911,14 @@ TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_ExternalFile) {
                   NativeFileSystemPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(grant));
 
-  blink::mojom::NativeFileSystemEntryPtr entry =
+  blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           kBindingContext, NativeFileSystemEntryFactory::PathType::kExternal,
           kTestPath, NativeFileSystemPermissionContext::UserAction::kOpen);
-  mojo::Remote<blink::mojom::NativeFileSystemFileHandle> handle(
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
-  mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token_remote;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
   handle->Transfer(token_remote.InitWithNewPipeAndPassReceiver());
 
   // Deserializing tokens should re-request grants, with correct user action.
@@ -949,7 +949,7 @@ TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_ExternalFile) {
 
 // NativeFileSystemManager should successfully resolve a
 // NativeFileSystemDragDropToken representing a file in the user's file system
-// into a valid Remote<blink::mojom::NativeFileSystemFileHandle>, given
+// into a valid Remote<blink::mojom::FileSystemAccessFileHandle>, given
 // that the PID is valid.
 TEST_F(NativeFileSystemManagerImplTest,
        GetEntryFromDragDropToken_File_ValidPID) {
@@ -964,7 +964,7 @@ TEST_F(NativeFileSystemManagerImplTest,
 
 // NativeFileSystemManager should successfully resolve a
 // NativeFileSystemDragDropToken representing a NativeFileSystemDirectoryEntry
-// into a valid Remote<blink::mojom::NativeFileSystemDirectoryHandle>, given
+// into a valid Remote<blink::mojom::FileSystemAccessDirectoryHandle>, given
 // that the PID is valid.
 TEST_F(NativeFileSystemManagerImplTest,
        GetEntryFromDragDropToken_Directory_ValidPID) {
@@ -982,7 +982,7 @@ TEST_F(NativeFileSystemManagerImplTest,
 
 // NativeFileSystemManager should successfully resolve a
 // NativeFileSystemDragDropToken representing a file in the user's file system
-// into a valid Remote<blink::mojom::NativeFileSystemFileHandle>, given
+// into a valid Remote<blink::mojom::FileSystemAccessFileHandle>, given
 // that the PID is valid.
 TEST_F(NativeFileSystemManagerImplTest,
        GetEntryFromDragDropToken_File_ExternalPath) {
@@ -1002,7 +1002,7 @@ TEST_F(NativeFileSystemManagerImplTest,
 
 // NativeFileSystemManager should successfully resolve a
 // NativeFileSystemDragDropToken representing a NativeFileSystemDirectoryEntry
-// into a valid Remote<blink::mojom::NativeFileSystemDirectoryHandle>, given
+// into a valid Remote<blink::mojom::FileSystemAccessDirectoryHandle>, given
 // that the PID is valid.
 TEST_F(NativeFileSystemManagerImplTest,
        GetEntryFromDragDropToken_Directory_ExternalPath) {
@@ -1033,7 +1033,7 @@ TEST_F(NativeFileSystemManagerImplTest,
 
   // Create a NativeFileSystemDragDropToken with a PID different than the
   // process attempting to redeem to the token.
-  mojo::PendingRemote<blink::mojom::NativeFileSystemDragDropToken> token_remote;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken> token_remote;
   manager_->CreateNativeFileSystemDragDropToken(
       NativeFileSystemEntryFactory::PathType::kLocal, file_path,
       /*renderer_id=*/kBindingContext.process_id() - 1,
@@ -1059,7 +1059,7 @@ TEST_F(NativeFileSystemManagerImplTest,
 
   // Create a NativeFileSystemDragDropToken with an PID different than the
   // process attempting to redeem to the token.
-  mojo::PendingRemote<blink::mojom::NativeFileSystemDragDropToken> token_remote;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken> token_remote;
   manager_->CreateNativeFileSystemDragDropToken(
       NativeFileSystemEntryFactory::PathType::kLocal, kDirPath,
       /*renderer_id=*/kBindingContext.process_id() - 1,
@@ -1084,7 +1084,7 @@ TEST_F(NativeFileSystemManagerImplTest,
 
   // Create a NativeFileSystemDragDropToken without registering it to the
   // NativeFileSystemManager.
-  mojo::PendingRemote<blink::mojom::NativeFileSystemDragDropToken> token_remote;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken> token_remote;
   auto drag_drop_token_impl =
       std::make_unique<NativeFileSystemDragDropTokenImpl>(
           manager_.get(), NativeFileSystemEntryFactory::PathType::kLocal,
@@ -1113,7 +1113,7 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_OpenFile) {
   static_cast<TestRenderFrameHost*>(web_contents_->GetMainFrame())
       ->SimulateUserActivation();
 
-  mojo::Remote<blink::mojom::NativeFileSystemManager> manager_remote;
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   NativeFileSystemManagerImpl::BindingContext binding_context = {
       kTestOrigin, kTestURL,
       web_contents_->GetMainFrame()->GetGlobalFrameRoutingId()};
@@ -1159,8 +1159,8 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_OpenFile) {
       blink::mojom::ChooseFileSystemEntryType::kOpenFile, /*accepts=*/{},
       blink::mojom::CommonDirectory::kDefault, /*include_accepts_all=*/true,
       base::BindLambdaForTesting(
-          [&](blink::mojom::NativeFileSystemErrorPtr result,
-              std::vector<blink::mojom::NativeFileSystemEntryPtr> entries) {
+          [&](blink::mojom::FileSystemAccessErrorPtr result,
+              std::vector<blink::mojom::FileSystemAccessEntryPtr> entries) {
             loop.Quit();
           }));
   loop.Run();
@@ -1178,7 +1178,7 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_SaveFile) {
   static_cast<TestRenderFrameHost*>(web_contents_->GetMainFrame())
       ->SimulateUserActivation();
 
-  mojo::Remote<blink::mojom::NativeFileSystemManager> manager_remote;
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   NativeFileSystemManagerImpl::BindingContext binding_context = {
       kTestOrigin, kTestURL,
       web_contents_->GetMainFrame()->GetGlobalFrameRoutingId()};
@@ -1226,8 +1226,8 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_SaveFile) {
       blink::mojom::ChooseFileSystemEntryType::kSaveFile, /*accepts=*/{},
       blink::mojom::CommonDirectory::kDefault, /*include_accepts_all=*/true,
       base::BindLambdaForTesting(
-          [&](blink::mojom::NativeFileSystemErrorPtr result,
-              std::vector<blink::mojom::NativeFileSystemEntryPtr> entries) {
+          [&](blink::mojom::FileSystemAccessErrorPtr result,
+              std::vector<blink::mojom::FileSystemAccessEntryPtr> entries) {
             loop.Quit();
           }));
   loop.Run();
@@ -1244,7 +1244,7 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_OpenDirectory) {
   static_cast<TestRenderFrameHost*>(web_contents_->GetMainFrame())
       ->SimulateUserActivation();
 
-  mojo::Remote<blink::mojom::NativeFileSystemManager> manager_remote;
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   NativeFileSystemManagerImpl::BindingContext binding_context = {
       kTestOrigin, kTestURL,
       web_contents_->GetMainFrame()->GetGlobalFrameRoutingId()};
@@ -1289,8 +1289,8 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_OpenDirectory) {
       blink::mojom::ChooseFileSystemEntryType::kOpenDirectory, {},
       blink::mojom::CommonDirectory::kDefault, true,
       base::BindLambdaForTesting(
-          [&](blink::mojom::NativeFileSystemErrorPtr result,
-              std::vector<blink::mojom::NativeFileSystemEntryPtr> entries) {
+          [&](blink::mojom::FileSystemAccessErrorPtr result,
+              std::vector<blink::mojom::FileSystemAccessEntryPtr> entries) {
             loop.Quit();
           }));
   loop.Run();

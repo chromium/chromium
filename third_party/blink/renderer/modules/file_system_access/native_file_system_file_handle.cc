@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/native_file_system_file_handle.h"
 
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_error.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_file_writer.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_create_writer_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -20,12 +20,12 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-using mojom::blink::NativeFileSystemErrorPtr;
+using mojom::blink::FileSystemAccessErrorPtr;
 
 NativeFileSystemFileHandle::NativeFileSystemFileHandle(
     ExecutionContext* context,
     const String& name,
-    mojo::PendingRemote<mojom::blink::NativeFileSystemFileHandle> mojo_ptr)
+    mojo::PendingRemote<mojom::blink::FileSystemAccessFileHandle> mojo_ptr)
     : NativeFileSystemHandle(context, name), mojo_ptr_(context) {
   mojo_ptr_.Bind(std::move(mojo_ptr),
                  context->GetTaskRunner(TaskType::kMiscPlatformAPI));
@@ -48,13 +48,13 @@ ScriptPromise NativeFileSystemFileHandle::createWritable(
       options->keepExistingData(), options->autoClose(),
       WTF::Bind(
           [](ScriptPromiseResolver* resolver,
-             mojom::blink::NativeFileSystemErrorPtr result,
-             mojo::PendingRemote<mojom::blink::NativeFileSystemFileWriter>
+             mojom::blink::FileSystemAccessErrorPtr result,
+             mojo::PendingRemote<mojom::blink::FileSystemAccessFileWriter>
                  writer) {
             ScriptState* script_state = resolver->GetScriptState();
             if (!script_state)
               return;
-            if (result->status != mojom::blink::NativeFileSystemStatus::kOk) {
+            if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
               native_file_system_error::Reject(resolver, *result);
               return;
             }
@@ -80,9 +80,9 @@ ScriptPromise NativeFileSystemFileHandle::getFile(
 
   mojo_ptr_->AsBlob(WTF::Bind(
       [](ScriptPromiseResolver* resolver, const String& name,
-         NativeFileSystemErrorPtr result, const base::File::Info& info,
+         FileSystemAccessErrorPtr result, const base::File::Info& info,
          const scoped_refptr<BlobDataHandle>& blob) {
-        if (result->status != mojom::blink::NativeFileSystemStatus::kOk) {
+        if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
           native_file_system_error::Reject(resolver, *result);
           return;
         }
@@ -94,9 +94,9 @@ ScriptPromise NativeFileSystemFileHandle::getFile(
   return result;
 }
 
-mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken>
+mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>
 NativeFileSystemFileHandle::Transfer() {
-  mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken> result;
+  mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> result;
   if (mojo_ptr_.is_bound())
     mojo_ptr_->Transfer(result.InitWithNewPipeAndPassReceiver());
   return result;
@@ -119,12 +119,12 @@ void NativeFileSystemFileHandle::QueryPermissionImpl(
 
 void NativeFileSystemFileHandle::RequestPermissionImpl(
     bool writable,
-    base::OnceCallback<void(mojom::blink::NativeFileSystemErrorPtr,
+    base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                             mojom::blink::PermissionStatus)> callback) {
   if (!mojo_ptr_.is_bound()) {
     std::move(callback).Run(
-        mojom::blink::NativeFileSystemError::New(
-            mojom::blink::NativeFileSystemStatus::kInvalidState,
+        mojom::blink::FileSystemAccessError::New(
+            mojom::blink::FileSystemAccessStatus::kInvalidState,
             base::File::Error::FILE_ERROR_FAILED, "Context Destroyed"),
         mojom::blink::PermissionStatus::DENIED);
     return;
@@ -134,13 +134,13 @@ void NativeFileSystemFileHandle::RequestPermissionImpl(
 }
 
 void NativeFileSystemFileHandle::IsSameEntryImpl(
-    mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken> other,
-    base::OnceCallback<void(mojom::blink::NativeFileSystemErrorPtr, bool)>
+    mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> other,
+    base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr, bool)>
         callback) {
   if (!mojo_ptr_.is_bound()) {
     std::move(callback).Run(
-        mojom::blink::NativeFileSystemError::New(
-            mojom::blink::NativeFileSystemStatus::kInvalidState,
+        mojom::blink::FileSystemAccessError::New(
+            mojom::blink::FileSystemAccessStatus::kInvalidState,
             base::File::Error::FILE_ERROR_FAILED, "Context Destroyed"),
         false);
     return;

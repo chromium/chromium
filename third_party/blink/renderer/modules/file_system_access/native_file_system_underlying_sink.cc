@@ -21,7 +21,7 @@ namespace blink {
 
 NativeFileSystemUnderlyingSink::NativeFileSystemUnderlyingSink(
     ExecutionContext* context,
-    mojo::PendingRemote<mojom::blink::NativeFileSystemFileWriter> writer_remote)
+    mojo::PendingRemote<mojom::blink::FileSystemAccessFileWriter> writer_remote)
     : writer_remote_(context) {
   writer_remote_.Bind(std::move(writer_remote),
                       context->GetTaskRunner(TaskType::kMiscPlatformAPI));
@@ -225,13 +225,13 @@ ScriptPromise NativeFileSystemUnderlyingSink::Seek(
 }
 
 void NativeFileSystemUnderlyingSink::WriteComplete(
-    mojom::blink::NativeFileSystemErrorPtr result,
+    mojom::blink::FileSystemAccessErrorPtr result,
     uint64_t bytes_written) {
   DCHECK(pending_operation_);
   native_file_system_error::ResolveOrReject(pending_operation_, *result);
   pending_operation_ = nullptr;
 
-  if (result->status == mojom::blink::NativeFileSystemStatus::kOk) {
+  if (result->status == mojom::blink::FileSystemAccessStatus::kOk) {
     // Advance offset.
     offset_ += bytes_written;
   }
@@ -239,12 +239,12 @@ void NativeFileSystemUnderlyingSink::WriteComplete(
 
 void NativeFileSystemUnderlyingSink::TruncateComplete(
     uint64_t to_size,
-    mojom::blink::NativeFileSystemErrorPtr result) {
+    mojom::blink::FileSystemAccessErrorPtr result) {
   DCHECK(pending_operation_);
   native_file_system_error::ResolveOrReject(pending_operation_, *result);
   pending_operation_ = nullptr;
 
-  if (result->status == mojom::blink::NativeFileSystemStatus::kOk) {
+  if (result->status == mojom::blink::FileSystemAccessStatus::kOk) {
     // Set offset to smallest last set size so that a subsequent write is not
     // out of bounds.
     offset_ = to_size < offset_ ? to_size : offset_;
@@ -252,7 +252,7 @@ void NativeFileSystemUnderlyingSink::TruncateComplete(
 }
 
 void NativeFileSystemUnderlyingSink::CloseComplete(
-    mojom::blink::NativeFileSystemErrorPtr result) {
+    mojom::blink::FileSystemAccessErrorPtr result) {
   DCHECK(pending_operation_);
   native_file_system_error::ResolveOrReject(pending_operation_, *result);
   pending_operation_ = nullptr;

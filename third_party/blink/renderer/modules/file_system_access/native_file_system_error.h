@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_ERROR_H_
 
 #include "base/files/file.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_error.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink-forward.h"
 
 namespace blink {
 class ScriptPromiseResolver;
@@ -15,12 +15,12 @@ namespace native_file_system_error {
 // Rejects |resolver| with an appropriate exception if |status| represents an
 // error. Resolves |resolver| with undefined otherwise.
 void ResolveOrReject(ScriptPromiseResolver* resolver,
-                     const mojom::blink::NativeFileSystemError& status);
+                     const mojom::blink::FileSystemAccessError& status);
 
 // Rejects |resolver| with an appropriate exception if |status| represents an
 // error. DCHECKs otherwise.
 void Reject(ScriptPromiseResolver* resolver,
-            const mojom::blink::NativeFileSystemError& error);
+            const mojom::blink::FileSystemAccessError& error);
 
 }  // namespace native_file_system_error
 }  // namespace blink

@@ -6,12 +6,12 @@
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_directory_handle.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_error.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_file_handle.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
@@ -36,13 +36,13 @@ ScriptPromise DataTransferItemNativeFileSystem::getAsFileSystemHandle(
     return ScriptPromise::CastUndefined(script_state);
   }
 
-  // If the DataObjectItem doesn't have an associated NativeFileSystemEntry,
+  // If the DataObjectItem doesn't have an associated FileSystemAccessEntry,
   // return nullptr.
-  if (!data_transfer_item.GetDataObjectItem()->HasNativeFileSystemEntry()) {
+  if (!data_transfer_item.GetDataObjectItem()->HasFileSystemAccessEntry()) {
     return ScriptPromise::CastUndefined(script_state);
   }
 
-  mojo::Remote<mojom::blink::NativeFileSystemManager> nfs_manager;
+  mojo::Remote<mojom::blink::FileSystemAccessManager> nfs_manager;
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   execution_context->GetBrowserInterfaceBroker().GetInterface(
       nfs_manager.BindNewPipeAndPassReceiver());
@@ -52,8 +52,8 @@ ScriptPromise DataTransferItemNativeFileSystem::getAsFileSystemHandle(
 
   // Since tokens are move-only, we need to create a clone in order
   // to preserve the state of `data_object_item` for future calls.
-  mojo::PendingRemote<mojom::blink::NativeFileSystemDragDropToken>
-      token_remote = data_object_item.CloneNativeFileSystemEntryToken();
+  mojo::PendingRemote<mojom::blink::FileSystemAccessDragDropToken>
+      token_remote = data_object_item.CloneFileSystemAccessEntryToken();
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
@@ -66,9 +66,9 @@ ScriptPromise DataTransferItemNativeFileSystem::getAsFileSystemHandle(
   raw_nfs_manager->GetEntryFromDragDropToken(
       std::move(token_remote),
       WTF::Bind(
-          [](mojo::Remote<mojom::blink::NativeFileSystemManager>,
+          [](mojo::Remote<mojom::blink::FileSystemAccessManager>,
              ScriptPromiseResolver* resolver,
-             mojom::blink::NativeFileSystemEntryPtr entry) {
+             mojom::blink::FileSystemAccessEntryPtr entry) {
             ScriptState* script_state = resolver->GetScriptState();
             if (!script_state)
               return;

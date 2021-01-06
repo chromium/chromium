@@ -12,7 +12,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "components/download/public/common/quarantine_connection.h"
-#include "components/services/storage/public/mojom/native_file_system_context.mojom.h"
+#include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/common/content_export.h"
@@ -26,9 +26,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_file_writer.mojom.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace storage {
@@ -57,8 +57,8 @@ class StoragePartitionImpl;
 // thread only.
 class CONTENT_EXPORT NativeFileSystemManagerImpl
     : public NativeFileSystemEntryFactory,
-      public blink::mojom::NativeFileSystemManager,
-      public storage::mojom::NativeFileSystemContext {
+      public blink::mojom::FileSystemAccessManager,
+      public storage::mojom::FileSystemAccessContext {
  public:
   using BindingContext = NativeFileSystemEntryFactory::BindingContext;
   using PassKey = base::PassKey<NativeFileSystemManagerImpl>;
@@ -94,12 +94,12 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
 
   void BindReceiver(
       const BindingContext& binding_context,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemManager> receiver);
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver);
 
   void BindInternalsReceiver(
-      mojo::PendingReceiver<storage::mojom::NativeFileSystemContext> receiver);
+      mojo::PendingReceiver<storage::mojom::FileSystemAccessContext> receiver);
 
-  // blink::mojom::NativeFileSystemManager:
+  // blink::mojom::FileSystemAccessManager:
   void GetSandboxedFileSystem(GetSandboxedFileSystemCallback callback) override;
   void ChooseEntries(
       blink::mojom::ChooseFileSystemEntryType type,
@@ -108,34 +108,34 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       bool include_accepts_all,
       ChooseEntriesCallback callback) override;
   void GetFileHandleFromToken(
-      mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemFileHandle>
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessFileHandle>
           file_handle_receiver) override;
   void GetDirectoryHandleFromToken(
-      mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemDirectoryHandle>
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessDirectoryHandle>
           directory_handle_receiver) override;
   void GetEntryFromDragDropToken(
-      mojo::PendingRemote<blink::mojom::NativeFileSystemDragDropToken> token,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken> token,
       GetEntryFromDragDropTokenCallback token_resolved_callback) override;
 
-  // storage::mojom::NativeFileSystemContext:
+  // storage::mojom::FileSystemAccessContext:
   void SerializeHandle(
-      mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       SerializeHandleCallback callback) override;
   void DeserializeHandle(
       const url::Origin& origin,
       const std::vector<uint8_t>& bits,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken> token)
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token)
       override;
 
   // NativeFileSystemEntryFactory:
-  blink::mojom::NativeFileSystemEntryPtr CreateFileEntryFromPath(
+  blink::mojom::FileSystemAccessEntryPtr CreateFileEntryFromPath(
       const BindingContext& binding_context,
       PathType path_type,
       const base::FilePath& file_path,
       UserAction user_action) override;
-  blink::mojom::NativeFileSystemEntryPtr CreateDirectoryEntryFromPath(
+  blink::mojom::FileSystemAccessEntryPtr CreateDirectoryEntryFromPath(
       const BindingContext& binding_context,
       PathType path_type,
       const base::FilePath& directory_path,
@@ -143,21 +143,21 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
 
   // Creates a new NativeFileSystemFileHandleImpl for a given url. Assumes the
   // passed in URL is valid and represents a file.
-  mojo::PendingRemote<blink::mojom::NativeFileSystemFileHandle>
+  mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>
   CreateFileHandle(const BindingContext& binding_context,
                    const storage::FileSystemURL& url,
                    const SharedHandleState& handle_state);
 
   // Creates a new NativeFileSystemDirectoryHandleImpl for a given url. Assumes
   // the passed in URL is valid and represents a directory.
-  mojo::PendingRemote<blink::mojom::NativeFileSystemDirectoryHandle>
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
   CreateDirectoryHandle(const BindingContext& context,
                         const storage::FileSystemURL& url,
                         const SharedHandleState& handle_state);
 
   // Creates a new NativeFileSystemFileWriterImpl for a given target and
   // swap file URLs. Assumes the passed in URLs are valid and represent files.
-  mojo::PendingRemote<blink::mojom::NativeFileSystemFileWriter>
+  mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>
   CreateFileWriter(const BindingContext& binding_context,
                    const storage::FileSystemURL& url,
                    const storage::FileSystemURL& swap_url,
@@ -170,7 +170,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       const storage::FileSystemURL& url,
       const storage::FileSystemURL& swap_url,
       const SharedHandleState& handle_state,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemFileWriter> receiver,
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
       bool has_transient_user_activation,
       bool auto_close,
       download::QuarantineConnectionCallback quarantine_connection_callback);
@@ -178,22 +178,22 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   // Create a transfer token for a specific file or directory.
   void CreateTransferToken(
       const NativeFileSystemFileHandleImpl& file,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken>
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
           receiver);
   void CreateTransferToken(
       const NativeFileSystemDirectoryHandleImpl& directory,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken>
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
           receiver);
 
   // Creates an instance of NativeFileSystemDragDropTokenImpl with `file_path`
   // and `renderer_id` and attaches the instance to `receiver`. The `receiver`'s
-  // associated remote can be redeemed for a NativeFileSystemEntry object by a
+  // associated remote can be redeemed for a FileSystemAccessEntry object by a
   // process with ID matching `renderer_id`.
   void CreateNativeFileSystemDragDropToken(
       PathType path_type,
       const base::FilePath& file_path,
       int renderer_id,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemDragDropToken>
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessDragDropToken>
           receiver);
 
   // Given a mojom transfer token, looks up the token in our internal list of
@@ -202,7 +202,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   using ResolvedTokenCallback =
       base::OnceCallback<void(NativeFileSystemTransferTokenImpl*)>;
   void ResolveTransferToken(
-      mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       ResolvedTokenCallback callback);
 
   storage::FileSystemContext* context() {
@@ -280,7 +280,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   void DidChooseEntries(const BindingContext& binding_context,
                         const FileSystemChooser::Options& options,
                         ChooseEntriesCallback callback,
-                        blink::mojom::NativeFileSystemErrorPtr result,
+                        blink::mojom::FileSystemAccessErrorPtr result,
                         std::vector<FileSystemChooser::ResultEntry> entries);
   void DidVerifySensitiveDirectoryAccess(
       const BindingContext& binding_context,
@@ -305,39 +305,39 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       const url::Origin& origin,
       const SharedHandleState& handle_state,
       NativeFileSystemPermissionContext::HandleType handle_type,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken>
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
           receiver);
   void DoResolveTransferToken(
-      mojo::Remote<blink::mojom::NativeFileSystemTransferToken>,
+      mojo::Remote<blink::mojom::FileSystemAccessTransferToken>,
       ResolvedTokenCallback callback,
       const base::UnguessableToken& token);
 
   void DidResolveTransferTokenForFileHandle(
       const BindingContext& binding_context,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemFileHandle>
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessFileHandle>
           file_handle_receiver,
       NativeFileSystemTransferTokenImpl* resolved_token);
   void DidResolveTransferTokenForDirectoryHandle(
       const BindingContext& binding_context,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemDirectoryHandle>
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessDirectoryHandle>
           directory_handle_receiver,
       NativeFileSystemTransferTokenImpl* resolved_token);
   void DidResolveForSerializeHandle(
       SerializeHandleCallback callback,
       NativeFileSystemTransferTokenImpl* resolved_token);
 
-  // Calls `token_resolved_callback` with a NativeFileSystemEntry object
+  // Calls `token_resolved_callback` with a FileSystemAccessEntry object
   // that's at the file path of the NativeFileSystemDragDropToken with token
   // value `token`. If no such token exists, calls
   // `failed_token_redemption_callback`.
   void ResolveDragDropToken(
-      mojo::Remote<blink::mojom::NativeFileSystemDragDropToken>,
+      mojo::Remote<blink::mojom::FileSystemAccessDragDropToken>,
       const BindingContext& binding_context,
       GetEntryFromDragDropTokenCallback token_resolved_callback,
       mojo::ReportBadMessageCallback failed_token_redemption_callback,
       const base::UnguessableToken& token);
 
-  // Calls `token_resolved_callback` with a NativeFileSystemEntry representing
+  // Calls `token_resolved_callback` with a FileSystemAccessEntry representing
   // the file/directory at `file_path`. Called by
   // NativeFileSystemManager::ResolveDragDropToken after it looks up
   // whether the token's file path refers to a file or directory.
@@ -359,17 +359,17 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   // track of associated origin and other state as well to not have to rely on
   // the renderer passing that in, and to be able to do security checks around
   // transferability etc.
-  mojo::ReceiverSet<blink::mojom::NativeFileSystemManager, BindingContext>
+  mojo::ReceiverSet<blink::mojom::FileSystemAccessManager, BindingContext>
       receivers_;
 
-  mojo::ReceiverSet<storage::mojom::NativeFileSystemContext>
+  mojo::ReceiverSet<storage::mojom::FileSystemAccessContext>
       internals_receivers_;
 
   // All the receivers for file and directory handles that have references to
   // them.
-  mojo::UniqueReceiverSet<blink::mojom::NativeFileSystemFileHandle>
+  mojo::UniqueReceiverSet<blink::mojom::FileSystemAccessFileHandle>
       file_receivers_;
-  mojo::UniqueReceiverSet<blink::mojom::NativeFileSystemDirectoryHandle>
+  mojo::UniqueReceiverSet<blink::mojom::FileSystemAccessDirectoryHandle>
       directory_receivers_;
   base::flat_set<std::unique_ptr<NativeFileSystemFileWriterImpl>,
                  base::UniquePtrComparator>

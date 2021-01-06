@@ -18,7 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_file_writer.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom.h"
 
 namespace content {
 
@@ -31,7 +31,7 @@ namespace content {
 // sequence.
 class CONTENT_EXPORT NativeFileSystemFileWriterImpl
     : public NativeFileSystemHandleBase,
-      public blink::mojom::NativeFileSystemFileWriter {
+      public blink::mojom::FileSystemAccessFileWriter {
  public:
   // Creates a FileWriter that writes in a swap file URL and
   // materializes the changes in the target file URL only after `Close`
@@ -47,7 +47,7 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
       const storage::FileSystemURL& url,
       const storage::FileSystemURL& swap_url,
       const SharedHandleState& handle_state,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemFileWriter> receiver,
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
       bool has_transient_user_activation,
       bool auto_close,
       download::QuarantineConnectionCallback quarantine_connection_callback);
@@ -80,13 +80,13 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
   // progress until the write completes.
   struct WriteState;
 
-  mojo::Receiver<blink::mojom::NativeFileSystemFileWriter> receiver_;
+  mojo::Receiver<blink::mojom::FileSystemAccessFileWriter> receiver_;
 
   void OnDisconnect();
 
   // Delete the FileWriter after Close if the mojo pipe is unbound.
   void CallCloseCallbackAndMaybeDeleteThis(
-      blink::mojom::NativeFileSystemErrorPtr result);
+      blink::mojom::FileSystemAccessErrorPtr result);
 
   void WriteImpl(uint64_t offset,
                  mojo::PendingRemote<blink::mojom::Blob> data,

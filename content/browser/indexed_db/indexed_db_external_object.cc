@@ -43,7 +43,7 @@ void IndexedDBExternalObject::ConvertToMojo(
         // Contents of token will be filled in later by
         // IndexedDBDispatcherHost::CreateAllExternalObjects.
         mojo_objects->push_back(
-            blink::mojom::IDBExternalObject::NewNativeFileSystemToken(
+            blink::mojom::IDBExternalObject::NewFileSystemAccessToken(
                 mojo::NullRemote()));
         break;
     }
@@ -101,7 +101,7 @@ IndexedDBExternalObject::IndexedDBExternalObject(
       blob_number_(blob_number) {}
 
 IndexedDBExternalObject::IndexedDBExternalObject(
-    mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken>
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
         token_remote)
     : object_type_(ObjectType::kNativeFileSystemHandle),
       token_remote_(std::move(token_remote)) {}

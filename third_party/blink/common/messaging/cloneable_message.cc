@@ -20,19 +20,19 @@ CloneableMessage CloneableMessage::ShallowClone() const {
   CloneableMessage clone;
   clone.encoded_message = encoded_message;
 
-  // Both |blobs| and |native_file_system_tokens| contain mojo pending remotes.
+  // Both |blobs| and |file_system_access_tokens| contain mojo pending remotes.
   // ShallowClone() follows these steps to clone each pending remote:
   //
   // (1) Temporarily bind the source pending remote in this CloneableMessage's
-  // |blobs| or |native_file_system_tokens|.  This requires a const_cast because
+  // |blobs| or |file_system_access_tokens|.  This requires a const_cast because
   // it temporarily modifies this CloneableMessage's |blobs| or
-  // |native_file_system_tokens|.
+  // |file_system_access_tokens|.
   //
   // (2) Use the bound remote to call Clone(), which creates a new remote for
   // the new clone.
   //
   // (3) Unbind the source remote to restore this CloneableMessage's |blobs| or
-  // |native_file_system_tokens| back to the original pending remote from (1).
+  // |file_system_access_tokens| back to the original pending remote from (1).
   for (const auto& blob : blobs) {
     mojom::SerializedBlobPtr& source_serialized_blob =
         const_cast<mojom::SerializedBlobPtr&>(blob);
@@ -50,21 +50,21 @@ CloneableMessage CloneableMessage::ShallowClone() const {
     source_serialized_blob->blob = source_blob.Unbind();
   }
 
-  // Clone the |native_file_system_tokens| pending remotes using the steps
+  // Clone the |file_system_access_tokens| pending remotes using the steps
   // described by the comment above.
-  std::vector<mojo::PendingRemote<mojom::NativeFileSystemTransferToken>>&
+  std::vector<mojo::PendingRemote<mojom::FileSystemAccessTransferToken>>&
       source_tokens = const_cast<std::vector<
-          mojo::PendingRemote<mojom::NativeFileSystemTransferToken>>&>(
-          native_file_system_tokens);
+          mojo::PendingRemote<mojom::FileSystemAccessTransferToken>>&>(
+          file_system_access_tokens);
 
   for (auto& token : source_tokens) {
-    mojo::Remote<mojom::NativeFileSystemTransferToken> source_token(
+    mojo::Remote<mojom::FileSystemAccessTransferToken> source_token(
         std::move(token));
 
-    mojo::PendingRemote<mojom::NativeFileSystemTransferToken> cloned_token;
+    mojo::PendingRemote<mojom::FileSystemAccessTransferToken> cloned_token;
     source_token->Clone(cloned_token.InitWithNewPipeAndPassReceiver());
 
-    clone.native_file_system_tokens.push_back(std::move(cloned_token));
+    clone.file_system_access_tokens.push_back(std::move(cloned_token));
     token = source_token.Unbind();
   }
   return clone;

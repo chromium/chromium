@@ -8108,7 +8108,7 @@ void RenderFrameHostImpl::GetFontAccessManager(
 }
 
 void RenderFrameHostImpl::GetNativeFileSystemManager(
-    mojo::PendingReceiver<blink::mojom::NativeFileSystemManager> receiver) {
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* storage_partition =
       static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition());

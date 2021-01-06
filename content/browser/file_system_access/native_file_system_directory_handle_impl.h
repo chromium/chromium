@@ -13,7 +13,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_directory_handle.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
 
 namespace content {
 // This is the browser side implementation of the
@@ -25,7 +25,7 @@ namespace content {
 // sequence.
 class CONTENT_EXPORT NativeFileSystemDirectoryHandleImpl
     : public NativeFileSystemHandleBase,
-      public blink::mojom::NativeFileSystemDirectoryHandle {
+      public blink::mojom::FileSystemAccessDirectoryHandle {
  public:
   NativeFileSystemDirectoryHandleImpl(NativeFileSystemManagerImpl* manager,
                                       const BindingContext& context,
@@ -33,7 +33,7 @@ class CONTENT_EXPORT NativeFileSystemDirectoryHandleImpl
                                       const SharedHandleState& handle_state);
   ~NativeFileSystemDirectoryHandleImpl() override;
 
-  // blink::mojom::NativeFileSystemDirectoryHandle:
+  // blink::mojom::FileSystemAccessDirectoryHandle:
   void GetPermissionStatus(bool writable,
                            GetPermissionStatusCallback callback) override;
   void RequestPermission(bool writable,
@@ -45,16 +45,16 @@ class CONTENT_EXPORT NativeFileSystemDirectoryHandleImpl
                     bool create,
                     GetDirectoryCallback callback) override;
   void GetEntries(mojo::PendingRemote<
-                  blink::mojom::NativeFileSystemDirectoryEntriesListener>
+                  blink::mojom::FileSystemAccessDirectoryEntriesListener>
                       pending_listener) override;
   void RemoveEntry(const std::string& basename,
                    bool recurse,
                    RemoveEntryCallback callback) override;
-  void Resolve(mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken>
+  void Resolve(mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
                    possible_child,
                ResolveCallback callback) override;
   void Transfer(
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken> token)
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token)
       override;
 
   // The File System Access API should not give access to files that might
@@ -81,7 +81,7 @@ class CONTENT_EXPORT NativeFileSystemDirectoryHandleImpl
                        GetDirectoryCallback callback,
                        base::File::Error result);
   void DidReadDirectory(
-      mojo::Remote<blink::mojom::NativeFileSystemDirectoryEntriesListener>*
+      mojo::Remote<blink::mojom::FileSystemAccessDirectoryEntriesListener>*
           listener,
       base::File::Error result,
       std::vector<filesystem::mojom::DirectoryEntry> file_list,
@@ -97,12 +97,12 @@ class CONTENT_EXPORT NativeFileSystemDirectoryHandleImpl
   // Calculates a FileSystemURL for a (direct) child of this directory with the
   // given basename.  Returns an error when |basename| includes invalid input
   // like "/".
-  blink::mojom::NativeFileSystemErrorPtr GetChildURL(
+  blink::mojom::FileSystemAccessErrorPtr GetChildURL(
       const std::string& basename,
       storage::FileSystemURL* result) WARN_UNUSED_RESULT;
 
-  // Helper to create a blink::mojom::NativeFileSystemEntry struct.
-  blink::mojom::NativeFileSystemEntryPtr CreateEntry(
+  // Helper to create a blink::mojom::FileSystemAccessEntry struct.
+  blink::mojom::FileSystemAccessEntryPtr CreateEntry(
       const std::string& basename,
       const storage::FileSystemURL& url,
       NativeFileSystemPermissionContext::HandleType handle_type);

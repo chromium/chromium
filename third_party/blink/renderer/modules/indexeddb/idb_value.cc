@@ -21,7 +21,7 @@ namespace blink {
 IDBValue::IDBValue(
     scoped_refptr<SharedBuffer> data,
     Vector<WebBlobInfo> blob_info,
-    Vector<mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken>>
+    Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>>
         native_file_system_tokens)
     : data_(std::move(data)),
       blob_info_(std::move(blob_info)),

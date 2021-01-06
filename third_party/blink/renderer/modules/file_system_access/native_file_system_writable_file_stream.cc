@@ -20,7 +20,7 @@ namespace blink {
 
 NativeFileSystemWritableFileStream* NativeFileSystemWritableFileStream::Create(
     ScriptState* script_state,
-    mojo::PendingRemote<mojom::blink::NativeFileSystemFileWriter>
+    mojo::PendingRemote<mojom::blink::FileSystemAccessFileWriter>
         writer_pending_remote) {
   DCHECK(writer_pending_remote);
   ScriptState::Scope scope(script_state);

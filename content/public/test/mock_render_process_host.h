@@ -176,7 +176,7 @@ class MockRenderProcessHost : public RenderProcessHost {
       override {}
   void BindNativeFileSystemManager(
       const url::Origin& origin,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemManager> receiver)
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver)
       override {}
   void BindIndexedDB(
       const url::Origin& origin,

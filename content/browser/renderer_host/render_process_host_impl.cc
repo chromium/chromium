@@ -1987,7 +1987,7 @@ void RenderProcessHostImpl::BindFileSystemManager(
 
 void RenderProcessHostImpl::BindNativeFileSystemManager(
     const url::Origin& origin,
-    mojo::PendingReceiver<blink::mojom::NativeFileSystemManager> receiver) {
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // This code path is only for workers, hence always pass in
   // MSG_ROUTING_NONE as frame ID. Frames themselves go through

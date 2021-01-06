@@ -11,7 +11,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom.h"
 
 namespace content {
 
@@ -20,16 +20,16 @@ namespace content {
 // and dropped file/directory in the browser process. The associated
 // mojo::PendingRemote<NativeFileSystemDragDropToken>s are passed to the
 // renderer process specified by `renderer_process_id` and can then be redeemed
-// for NativeFileSystemEntry objects.
+// for FileSystemAccessEntry objects.
 class CONTENT_EXPORT NativeFileSystemDragDropTokenImpl
-    : public blink::mojom::NativeFileSystemDragDropToken {
+    : public blink::mojom::FileSystemAccessDragDropToken {
  public:
   NativeFileSystemDragDropTokenImpl(
       NativeFileSystemManagerImpl* manager,
       NativeFileSystemManagerImpl::PathType path_type,
       const base::FilePath& file_path,
       int renderer_process_id,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemDragDropToken>
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessDragDropToken>
           receiver);
 
   ~NativeFileSystemDragDropTokenImpl() override;
@@ -48,10 +48,10 @@ class CONTENT_EXPORT NativeFileSystemDragDropTokenImpl
 
   const base::UnguessableToken& token() const { return token_; }
 
-  // blink::mojom::NativeFileSystemDragDropToken:
+  // blink::mojom::FileSystemAccessDragDropToken:
   void GetInternalId(GetInternalIdCallback callback) override;
 
-  void Clone(mojo::PendingReceiver<blink::mojom::NativeFileSystemDragDropToken>
+  void Clone(mojo::PendingReceiver<blink::mojom::FileSystemAccessDragDropToken>
                  receiver) override;
 
  private:
@@ -68,7 +68,7 @@ class CONTENT_EXPORT NativeFileSystemDragDropTokenImpl
   // the originally constructed instance and then additional receivers for
   // each clone. `manager_` must not remove this token until `receivers_` is
   // empty.
-  mojo::ReceiverSet<blink::mojom::NativeFileSystemDragDropToken> receivers_;
+  mojo::ReceiverSet<blink::mojom::FileSystemAccessDragDropToken> receivers_;
 };
 
 }  // namespace content

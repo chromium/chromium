@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_HANDLE_H_
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_directory_handle.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_error.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -29,7 +29,7 @@ class NativeFileSystemHandle : public ScriptWrappable,
   NativeFileSystemHandle(ExecutionContext* execution_context,
                          const String& name);
   static NativeFileSystemHandle* CreateFromMojoEntry(
-      mojom::blink::NativeFileSystemEntryPtr,
+      mojom::blink::FileSystemAccessEntryPtr,
       ExecutionContext* execution_context);
 
   virtual bool isFile() const { return false; }
@@ -46,7 +46,7 @@ class NativeFileSystemHandle : public ScriptWrappable,
 
   // Grab a handle to a transfer token. This may return an invalid PendingRemote
   // if the context is already destroyed.
-  virtual mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken>
+  virtual mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>
   Transfer() = 0;
 
   void Trace(Visitor*) const override;
@@ -57,11 +57,11 @@ class NativeFileSystemHandle : public ScriptWrappable,
       base::OnceCallback<void(mojom::blink::PermissionStatus)>) = 0;
   virtual void RequestPermissionImpl(
       bool writable,
-      base::OnceCallback<void(mojom::blink::NativeFileSystemErrorPtr,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               mojom::blink::PermissionStatus)>) = 0;
   virtual void IsSameEntryImpl(
-      mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken> other,
-      base::OnceCallback<void(mojom::blink::NativeFileSystemErrorPtr,
+      mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> other,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               bool)>) = 0;
 
   String name_;

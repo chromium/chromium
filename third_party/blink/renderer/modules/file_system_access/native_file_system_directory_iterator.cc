@@ -82,12 +82,12 @@ void NativeFileSystemDirectoryIterator::Trace(Visitor* visitor) const {
 }
 
 void NativeFileSystemDirectoryIterator::DidReadDirectory(
-    mojom::blink::NativeFileSystemErrorPtr result,
-    Vector<mojom::blink::NativeFileSystemEntryPtr> entries,
+    mojom::blink::FileSystemAccessErrorPtr result,
+    Vector<mojom::blink::FileSystemAccessEntryPtr> entries,
     bool has_more_entries) {
   if (!GetExecutionContext())
     return;
-  if (result->status != mojom::blink::NativeFileSystemStatus::kOk) {
+  if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
     error_ = std::move(result);
     if (pending_next_) {
       native_file_system_error::Reject(pending_next_, *error_);

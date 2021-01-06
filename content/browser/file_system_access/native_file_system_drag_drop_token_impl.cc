@@ -9,7 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom.h"
 
 namespace content {
 
@@ -18,7 +18,7 @@ NativeFileSystemDragDropTokenImpl::NativeFileSystemDragDropTokenImpl(
     NativeFileSystemManagerImpl::PathType path_type,
     const base::FilePath& file_path,
     int renderer_process_id,
-    mojo::PendingReceiver<blink::mojom::NativeFileSystemDragDropToken> receiver)
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessDragDropToken> receiver)
     : manager_(manager),
       path_type_(path_type),
       file_path_(file_path),
@@ -42,7 +42,7 @@ void NativeFileSystemDragDropTokenImpl::GetInternalId(
 }
 
 void NativeFileSystemDragDropTokenImpl::Clone(
-    mojo::PendingReceiver<blink::mojom::NativeFileSystemDragDropToken>
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessDragDropToken>
         clone_receiver) {
   receivers_.Add(this, std::move(clone_receiver));
 }

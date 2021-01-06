@@ -12,8 +12,8 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.CloneableMessage;
+import org.chromium.blink.mojom.FileSystemAccessTransferToken;
 import org.chromium.blink.mojom.MessagePortDescriptor;
-import org.chromium.blink.mojom.NativeFileSystemTransferToken;
 import org.chromium.blink.mojom.SerializedArrayBufferContents;
 import org.chromium.blink.mojom.SerializedBlob;
 import org.chromium.blink.mojom.TransferableMessage;
@@ -296,7 +296,7 @@ public class AppWebMessagePort implements MessagePort {
         msg.message.encodedMessage = BigBufferUtil.createBigBufferFromBytes(
                 AppWebMessagePortJni.get().encodeStringMessage(message));
         msg.message.blobs = new SerializedBlob[0];
-        msg.message.nativeFileSystemTokens = new NativeFileSystemTransferToken[0];
+        msg.message.fileSystemAccessTokens = new FileSystemAccessTransferToken[0];
         msg.message.senderOrigin = null;
         msg.arrayBufferContentsArray = new SerializedArrayBufferContents[0];
         msg.imageBitmapContentsArray = new BitmapN32[0];

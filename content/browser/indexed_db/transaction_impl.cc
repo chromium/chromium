@@ -258,9 +258,9 @@ void TransactionImpl::CreateExternalObjects(
         }
         break;
       }
-      case blink::mojom::IDBExternalObject::Tag::NATIVE_FILE_SYSTEM_TOKEN:
+      case blink::mojom::IDBExternalObject::Tag::FILE_SYSTEM_ACCESS_TOKEN:
         (*external_objects)[i] = IndexedDBExternalObject(
-            std::move(object->get_native_file_system_token()));
+            std::move(object->get_file_system_access_token()));
         break;
     }
   }

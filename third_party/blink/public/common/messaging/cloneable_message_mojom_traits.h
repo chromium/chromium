@@ -57,9 +57,9 @@ struct BLINK_COMMON_EXPORT
                    blink::CloneableMessage* out);
 
   static std::vector<
-      mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken>>&
-  native_file_system_tokens(blink::CloneableMessage& input) {
-    return input.native_file_system_tokens;
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>>&
+  file_system_access_tokens(blink::CloneableMessage& input) {
+    return input.file_system_access_tokens;
   }
 };
 

@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
 
 #include "base/time/time.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
@@ -225,16 +225,16 @@ String DataObjectItem::FileSystemId() const {
   return file_system_id_;
 }
 
-bool DataObjectItem::HasNativeFileSystemEntry() const {
+bool DataObjectItem::HasFileSystemAccessEntry() const {
   return static_cast<bool>(native_file_system_entry_);
 }
 
-mojo::PendingRemote<mojom::blink::NativeFileSystemDragDropToken>
-DataObjectItem::CloneNativeFileSystemEntryToken() const {
-  DCHECK(HasNativeFileSystemEntry());
-  mojo::Remote<mojom::blink::NativeFileSystemDragDropToken> token_cloner(
+mojo::PendingRemote<mojom::blink::FileSystemAccessDragDropToken>
+DataObjectItem::CloneFileSystemAccessEntryToken() const {
+  DCHECK(HasFileSystemAccessEntry());
+  mojo::Remote<mojom::blink::FileSystemAccessDragDropToken> token_cloner(
       std::move(native_file_system_entry_->data));
-  mojo::PendingRemote<mojom::blink::NativeFileSystemDragDropToken> token_clone;
+  mojo::PendingRemote<mojom::blink::FileSystemAccessDragDropToken> token_clone;
   token_cloner->Clone(token_clone.InitWithNewPipeAndPassReceiver());
   native_file_system_entry_->data = token_cloner.Unbind();
   return token_clone;

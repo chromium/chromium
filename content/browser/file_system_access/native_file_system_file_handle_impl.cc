@@ -19,10 +19,10 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_error.mojom.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 
-using blink::mojom::NativeFileSystemStatus;
+using blink::mojom::FileSystemAccessStatus;
 using storage::BlobDataHandle;
 using storage::BlobImpl;
 using storage::FileSystemOperation;
@@ -57,7 +57,7 @@ void NativeFileSystemFileHandleImpl::AsBlob(AsBlobCallback callback) {
 
   if (GetReadPermissionStatus() != PermissionStatus::GRANTED) {
     std::move(callback).Run(native_file_system_error::FromStatus(
-                                NativeFileSystemStatus::kPermissionDenied),
+                                FileSystemAccessStatus::kPermissionDenied),
                             base::File::Info(), nullptr);
     return;
   }
@@ -84,7 +84,7 @@ void NativeFileSystemFileHandleImpl::CreateFileWriter(
       base::BindOnce(&NativeFileSystemFileHandleImpl::CreateFileWriterImpl,
                      weak_factory_.GetWeakPtr(), keep_existing_data,
                      auto_close),
-      base::BindOnce([](blink::mojom::NativeFileSystemErrorPtr result,
+      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         CreateFileWriterCallback callback) {
         std::move(callback).Run(std::move(result), mojo::NullRemote());
       }),
@@ -92,7 +92,7 @@ void NativeFileSystemFileHandleImpl::CreateFileWriter(
 }
 
 void NativeFileSystemFileHandleImpl::IsSameEntry(
-    mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token,
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
     IsSameEntryCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -108,7 +108,7 @@ void NativeFileSystemFileHandleImpl::IsSameEntryImpl(
   if (!other) {
     std::move(callback).Run(
         native_file_system_error::FromStatus(
-            blink::mojom::NativeFileSystemStatus::kOperationFailed),
+            blink::mojom::FileSystemAccessStatus::kOperationFailed),
         false);
     return;
   }
@@ -134,7 +134,7 @@ void NativeFileSystemFileHandleImpl::IsSameEntryImpl(
 }
 
 void NativeFileSystemFileHandleImpl::Transfer(
-    mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken> token) {
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   manager()->CreateTransferToken(*this, std::move(token));
@@ -250,7 +250,7 @@ void NativeFileSystemFileHandleImpl::CreateSwapFile(
 
   if (GetWritePermissionStatus() != blink::mojom::PermissionStatus::GRANTED) {
     std::move(callback).Run(native_file_system_error::FromStatus(
-                                NativeFileSystemStatus::kPermissionDenied),
+                                FileSystemAccessStatus::kPermissionDenied),
                             mojo::NullRemote());
     return;
   }
@@ -264,7 +264,7 @@ void NativeFileSystemFileHandleImpl::CreateSwapFile(
                 << " exceeds max unique files of: " << max_swap_files_
                 << " base path: " << swap_path;
     std::move(callback).Run(native_file_system_error::FromStatus(
-                                NativeFileSystemStatus::kOperationFailed,
+                                FileSystemAccessStatus::kOperationFailed,
                                 "Failed to create swap file."),
                             mojo::NullRemote());
     return;

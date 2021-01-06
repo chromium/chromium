@@ -7,10 +7,10 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [
     "blob_storage_context.mojom",
+    "file_system_access_context.mojom",
     "indexed_db_control.mojom",
     "indexed_db_control_test.mojom",
     "local_storage_control.mojom",
-    "native_file_system_context.mojom",
     "origin_context.mojom",
     "partition.mojom",
     "service_worker_database.mojom",

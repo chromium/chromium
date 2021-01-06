@@ -122,7 +122,7 @@ IndexedDBContextImpl::IndexedDBContextImpl(
     base::Clock* clock,
     mojo::PendingRemote<storage::mojom::BlobStorageContext>
         blob_storage_context,
-    mojo::PendingRemote<storage::mojom::NativeFileSystemContext>
+    mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
         native_file_system_context,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> custom_task_runner)
@@ -155,11 +155,11 @@ IndexedDBContextImpl::IndexedDBContextImpl(
         base::BindOnce(
             [](mojo::Remote<storage::mojom::BlobStorageContext>*
                    blob_storage_context,
-               mojo::Remote<storage::mojom::NativeFileSystemContext>*
+               mojo::Remote<storage::mojom::FileSystemAccessContext>*
                    native_file_system_context,
                mojo::PendingRemote<storage::mojom::BlobStorageContext>
                    pending_blob_storage_context,
-               mojo::PendingRemote<storage::mojom::NativeFileSystemContext>
+               mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
                    pending_native_file_system_context) {
               if (pending_blob_storage_context) {
                 blob_storage_context->Bind(

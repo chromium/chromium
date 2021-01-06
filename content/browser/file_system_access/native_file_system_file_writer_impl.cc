@@ -23,9 +23,9 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_error.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 
-using blink::mojom::NativeFileSystemStatus;
+using blink::mojom::FileSystemAccessStatus;
 using storage::BlobDataHandle;
 using storage::FileSystemOperation;
 using storage::FileSystemOperationRunner;
@@ -143,7 +143,7 @@ NativeFileSystemFileWriterImpl::NativeFileSystemFileWriterImpl(
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
     const SharedHandleState& handle_state,
-    mojo::PendingReceiver<blink::mojom::NativeFileSystemFileWriter> receiver,
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
     bool has_transient_user_activation,
     bool auto_close,
     download::QuarantineConnectionCallback quarantine_connection_callback)
@@ -186,7 +186,7 @@ void NativeFileSystemFileWriterImpl::Write(
   RunWithWritePermission(
       base::BindOnce(&NativeFileSystemFileWriterImpl::WriteImpl,
                      weak_factory_.GetWeakPtr(), offset, std::move(data)),
-      base::BindOnce([](blink::mojom::NativeFileSystemErrorPtr result,
+      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         WriteCallback callback) {
         std::move(callback).Run(std::move(result),
                                 /*bytes_written=*/0);
@@ -203,7 +203,7 @@ void NativeFileSystemFileWriterImpl::WriteStream(
   RunWithWritePermission(
       base::BindOnce(&NativeFileSystemFileWriterImpl::WriteStreamImpl,
                      weak_factory_.GetWeakPtr(), offset, std::move(stream)),
-      base::BindOnce([](blink::mojom::NativeFileSystemErrorPtr result,
+      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         WriteStreamCallback callback) {
         std::move(callback).Run(std::move(result),
                                 /*bytes_written=*/0);
@@ -218,7 +218,7 @@ void NativeFileSystemFileWriterImpl::Truncate(uint64_t length,
   RunWithWritePermission(
       base::BindOnce(&NativeFileSystemFileWriterImpl::TruncateImpl,
                      weak_factory_.GetWeakPtr(), length),
-      base::BindOnce([](blink::mojom::NativeFileSystemErrorPtr result,
+      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         TruncateCallback callback) {
         std::move(callback).Run(std::move(result));
       }),
@@ -231,7 +231,7 @@ void NativeFileSystemFileWriterImpl::Close(CloseCallback callback) {
   RunWithWritePermission(
       base::BindOnce(&NativeFileSystemFileWriterImpl::CloseImpl,
                      weak_factory_.GetWeakPtr()),
-      base::BindOnce([](blink::mojom::NativeFileSystemErrorPtr result,
+      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         CloseCallback callback) {
         std::move(callback).Run(std::move(result));
       }),
@@ -244,7 +244,7 @@ void NativeFileSystemFileWriterImpl::Abort(AbortCallback callback) {
   RunWithWritePermission(
       base::BindOnce(&NativeFileSystemFileWriterImpl::AbortImpl,
                      weak_factory_.GetWeakPtr()),
-      base::BindOnce([](blink::mojom::NativeFileSystemErrorPtr result,
+      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         AbortCallback callback) {
         std::move(callback).Run(std::move(result));
       }),
@@ -294,7 +294,7 @@ class BlobReaderClient : public base::SupportsWeakPtr<BlobReaderClient>,
     MaybeCallCallbackAndDeleteThis();
   }
 
-  void WriteCompleted(blink::mojom::NativeFileSystemErrorPtr result,
+  void WriteCompleted(blink::mojom::FileSystemAccessErrorPtr result,
                       uint64_t bytes_written) {
     DCHECK(!write_result_);
     write_result_ = std::move(result);
@@ -328,7 +328,7 @@ class BlobReaderClient : public base::SupportsWeakPtr<BlobReaderClient>,
       return;
     }
     if (!write_result_.is_null() &&
-        write_result_->status != blink::mojom::NativeFileSystemStatus::kOk) {
+        write_result_->status != blink::mojom::FileSystemAccessStatus::kOk) {
       // Writing failed, report that error.
       std::move(callback_).Run(std::move(write_result_), 0);
       delete this;
@@ -348,7 +348,7 @@ class BlobReaderClient : public base::SupportsWeakPtr<BlobReaderClient>,
   mojo::Receiver<blink::mojom::BlobReaderClient> receiver_;
 
   base::Optional<int32_t> read_result_;
-  blink::mojom::NativeFileSystemErrorPtr write_result_;
+  blink::mojom::FileSystemAccessErrorPtr write_result_;
   uint64_t bytes_written_ = 0;
 };
 
@@ -356,7 +356,7 @@ class BlobReaderClient : public base::SupportsWeakPtr<BlobReaderClient>,
 
 // Do not call this method if |close_callback_| is not set.
 void NativeFileSystemFileWriterImpl::CallCloseCallbackAndMaybeDeleteThis(
-    blink::mojom::NativeFileSystemErrorPtr result) {
+    blink::mojom::FileSystemAccessErrorPtr result) {
   std::move(close_callback_).Run(std::move(result));
 
   if (!receiver_.is_bound()) {
@@ -373,8 +373,8 @@ void NativeFileSystemFileWriterImpl::OnDisconnect() {
     if (!is_closed() && auto_close_) {
       // Close the Writer. |this| is deleted via
       // CallCloseCallbackAndMaybeDeleteThis when Close finishes.
-      Close(base::BindOnce([](blink::mojom::NativeFileSystemErrorPtr result) {
-        if (result->status != blink::mojom::NativeFileSystemStatus::kOk) {
+      Close(base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result) {
+        if (result->status != blink::mojom::FileSystemAccessStatus::kOk) {
           DLOG(ERROR) << "AutoClose failed with result:"
                       << base::File::ErrorToString(result->file_error);
         }
@@ -397,7 +397,7 @@ void NativeFileSystemFileWriterImpl::WriteImpl(
   if (is_closed()) {
     std::move(callback).Run(
         native_file_system_error::FromStatus(
-            NativeFileSystemStatus::kInvalidState,
+            FileSystemAccessStatus::kInvalidState,
             "An attempt was made to write to a closed writer."),
         /*bytes_written=*/0);
     return;
@@ -417,7 +417,7 @@ void NativeFileSystemFileWriterImpl::WriteImpl(
   if (rv != MOJO_RESULT_OK) {
     std::move(callback).Run(
         native_file_system_error::FromStatus(
-            NativeFileSystemStatus::kOperationFailed,
+            FileSystemAccessStatus::kOperationFailed,
             "Internal read error: failed to create mojo data pipe."),
         /*bytes_written=*/0);
     return;
@@ -446,7 +446,7 @@ void NativeFileSystemFileWriterImpl::WriteStreamImpl(
   if (is_closed()) {
     std::move(callback).Run(
         native_file_system_error::FromStatus(
-            NativeFileSystemStatus::kInvalidState,
+            FileSystemAccessStatus::kInvalidState,
             "An attempt was made to write to a closed writer."),
         /*bytes_written=*/0);
     return;
@@ -483,7 +483,7 @@ void NativeFileSystemFileWriterImpl::TruncateImpl(uint64_t length,
 
   if (is_closed()) {
     std::move(callback).Run(native_file_system_error::FromStatus(
-        NativeFileSystemStatus::kInvalidState,
+        FileSystemAccessStatus::kInvalidState,
         "An attempt was made to write to a closed writer."));
     return;
   }
@@ -505,7 +505,7 @@ void NativeFileSystemFileWriterImpl::CloseImpl(CloseCallback callback) {
             blink::mojom::PermissionStatus::GRANTED);
   if (is_closed()) {
     std::move(callback).Run(native_file_system_error::FromStatus(
-        NativeFileSystemStatus::kInvalidState,
+        FileSystemAccessStatus::kInvalidState,
         "An attempt was made to close an already closed writer."));
     return;
   }
@@ -528,7 +528,7 @@ void NativeFileSystemFileWriterImpl::AbortImpl(AbortCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_closed()) {
     std::move(callback).Run(native_file_system_error::FromStatus(
-        NativeFileSystemStatus::kInvalidState,
+        FileSystemAccessStatus::kInvalidState,
         "An attempt was made to abort an already closed writer."));
     return;
   }
@@ -552,7 +552,7 @@ void NativeFileSystemFileWriterImpl::DoAfterWriteCheck(
     manager()->operation_runner().PostTaskWithThisObject(
         FROM_HERE, base::BindOnce(&RemoveSwapFile, swap_url()));
     CallCloseCallbackAndMaybeDeleteThis(native_file_system_error::FromStatus(
-        NativeFileSystemStatus::kOperationAborted,
+        FileSystemAccessStatus::kOperationAborted,
         "Failed to perform Safe Browsing check."));
     return;
   }
@@ -580,7 +580,7 @@ void NativeFileSystemFileWriterImpl::DidAfterWriteCheck(
     manager()->operation_runner().PostTaskWithThisObject(
         FROM_HERE, base::BindOnce(&RemoveSwapFile, swap_url()));
     CallCloseCallbackAndMaybeDeleteThis(native_file_system_error::FromStatus(
-        NativeFileSystemStatus::kOperationAborted,
+        FileSystemAccessStatus::kOperationAborted,
         "Write operation blocked by Safe Browsing."));
     return;
   }
@@ -706,7 +706,7 @@ void NativeFileSystemFileWriterImpl::DidAnnotateFile(
     // There is nothing to do except to return the error message to the
     // application.
     CallCloseCallbackAndMaybeDeleteThis(native_file_system_error::FromStatus(
-        NativeFileSystemStatus::kOperationAborted,
+        FileSystemAccessStatus::kOperationAborted,
         "Write operation aborted due to security policy."));
     return;
   }

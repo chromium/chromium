@@ -4,24 +4,24 @@
 
 module storage.mojom;
 
-import "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
 import "url/mojom/origin.mojom";
 
 
-// This interface is the primary access point to Chrome's Native File System API
+// This interface is the primary access point to Chrome's File System Access API
 // implementation. This interface lives in the browser process and is used by
 // IndexedDB in the storage service to serialize and deserialize Native File
 // System handles.
 //
 // This interface has capabilities that should NOT be accessible to a renderer.
 // For example, DeserializeHandle can give access to arbitrary paths on disk.
-interface NativeFileSystemContext {
+interface FileSystemAccessContext {
   // Serializes a handle represented by |token|. If token is not valid this
   // returns an empty array, otherwise this returns a serialization that can
   // be stored to disk by for example IndexedDB, and then later read back and
   // passed to DeserializeHandle to turn it back into a token.
   SerializeHandle(
-      pending_remote<blink.mojom.NativeFileSystemTransferToken> token)
+      pending_remote<blink.mojom.FileSystemAccessTransferToken> token)
       => (array<uint8> bits);
 
   // Deserializes a handle. |bits| should be what was returned by
@@ -32,5 +32,5 @@ interface NativeFileSystemContext {
   DeserializeHandle(
       url.mojom.Origin origin,
       array<uint8> bits,
-      pending_receiver<blink.mojom.NativeFileSystemTransferToken> token);
+      pending_receiver<blink.mojom.FileSystemAccessTransferToken> token);
 };

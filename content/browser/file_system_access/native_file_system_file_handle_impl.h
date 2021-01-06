@@ -12,7 +12,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_file_handle.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 
 namespace content {
 
@@ -25,7 +25,7 @@ namespace content {
 // sequence.
 class CONTENT_EXPORT NativeFileSystemFileHandleImpl
     : public NativeFileSystemHandleBase,
-      public blink::mojom::NativeFileSystemFileHandle {
+      public blink::mojom::FileSystemAccessFileHandle {
  public:
   NativeFileSystemFileHandleImpl(NativeFileSystemManagerImpl* manager,
                                  const BindingContext& context,
@@ -33,7 +33,7 @@ class CONTENT_EXPORT NativeFileSystemFileHandleImpl
                                  const SharedHandleState& handle_state);
   ~NativeFileSystemFileHandleImpl() override;
 
-  // blink::mojom::NativeFileSystemFileHandle:
+  // blink::mojom::FileSystemAccessFileHandle:
   void GetPermissionStatus(bool writable,
                            GetPermissionStatusCallback callback) override;
   void RequestPermission(bool writable,
@@ -43,10 +43,10 @@ class CONTENT_EXPORT NativeFileSystemFileHandleImpl
                         bool auto_close,
                         CreateFileWriterCallback callback) override;
   void IsSameEntry(
-      mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       IsSameEntryCallback callback) override;
   void Transfer(
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken> token)
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token)
       override;
 
   void set_max_swap_files_for_testing(int max) { max_swap_files_ = max; }

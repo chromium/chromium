@@ -156,9 +156,9 @@ TEST_F(NativeFileSystemHandleBaseTest, RequestWritePermission_AlreadyGranted) {
   handle.DoRequestPermission(
       /*writable=*/true,
       base::BindLambdaForTesting(
-          [&](blink::mojom::NativeFileSystemErrorPtr error,
+          [&](blink::mojom::FileSystemAccessErrorPtr error,
               PermissionStatus result) {
-            EXPECT_EQ(blink::mojom::NativeFileSystemStatus::kOk, error->status);
+            EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOk, error->status);
             EXPECT_EQ(PermissionStatus::GRANTED, result);
             loop.Quit();
           }));
@@ -198,9 +198,9 @@ TEST_F(NativeFileSystemHandleBaseTest, RequestWritePermission) {
   handle.DoRequestPermission(
       /*writable=*/true,
       base::BindLambdaForTesting(
-          [&](blink::mojom::NativeFileSystemErrorPtr error,
+          [&](blink::mojom::FileSystemAccessErrorPtr error,
               PermissionStatus result) {
-            EXPECT_EQ(blink::mojom::NativeFileSystemStatus::kOk, error->status);
+            EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOk, error->status);
             EXPECT_EQ(PermissionStatus::GRANTED, result);
             loop.Quit();
           }));

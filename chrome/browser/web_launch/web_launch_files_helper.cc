@@ -21,7 +21,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_directory_handle.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
 #include "url/origin.h"
 
 namespace web_launch {
@@ -93,7 +93,7 @@ content::NativeFileSystemEntryFactory::PathType MaybeRemapPath(
 class EntriesBuilder {
  public:
   EntriesBuilder(
-      std::vector<blink::mojom::NativeFileSystemEntryPtr>* entries_ref,
+      std::vector<blink::mojom::FileSystemAccessEntryPtr>* entries_ref,
       content::WebContents* web_contents,
       const GURL& launch_url)
       : entries_ref_(entries_ref),
@@ -125,7 +125,7 @@ class EntriesBuilder {
   }
 
  private:
-  std::vector<blink::mojom::NativeFileSystemEntryPtr>* entries_ref_;
+  std::vector<blink::mojom::FileSystemAccessEntryPtr>* entries_ref_;
   scoped_refptr<content::NativeFileSystemEntryFactory> entry_factory_;
   content::NativeFileSystemEntryFactory::BindingContext context_;
 };

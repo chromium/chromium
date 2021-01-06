@@ -9,25 +9,25 @@
 
 #include "base/files/file.h"
 #include "base/strings/string_piece.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_error.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 
 namespace content {
 namespace native_file_system_error {
 
-// Returns a NativeFileSystemError representing a successful result of an
+// Returns a FileSystemAccessError representing a successful result of an
 // operation.
-blink::mojom::NativeFileSystemErrorPtr Ok();
+blink::mojom::FileSystemAccessErrorPtr Ok();
 
-// Wraps a base::File::Error in a NativeFileSystemError, optionally with a
+// Wraps a base::File::Error in a FileSystemAccessError, optionally with a
 // custom error message.
-blink::mojom::NativeFileSystemErrorPtr FromFileError(
+blink::mojom::FileSystemAccessErrorPtr FromFileError(
     base::File::Error result,
     base::StringPiece message = "");
 
-// Wraps a NativeFileSystemStatus in a NativeFileSystemError, optionally with a
+// Wraps a FileSystemAccessStatus in a FileSystemAccessError, optionally with a
 // custom error message.
-blink::mojom::NativeFileSystemErrorPtr FromStatus(
-    blink::mojom::NativeFileSystemStatus status,
+blink::mojom::FileSystemAccessErrorPtr FromStatus(
+    blink::mojom::FileSystemAccessStatus status,
     base::StringPiece message = "");
 
 }  // namespace native_file_system_error

@@ -11,11 +11,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 
 namespace content {
 
-// This is the browser side implementation of the NativeFileSystemTransferToken
+// This is the browser side implementation of the FileSystemAccessTransferToken
 // mojom interface. These tokens are tied to a particular origin
 // and use the permission grants in their `handle_state_` member when creating
 // new handles. They are used for postMessage and IndexedDB, serialization as
@@ -24,7 +24,7 @@ namespace content {
 // Instances of this class should always be used from the sequence they were
 // created on.
 class CONTENT_EXPORT NativeFileSystemTransferTokenImpl
-    : public blink::mojom::NativeFileSystemTransferToken {
+    : public blink::mojom::FileSystemAccessTransferToken {
  public:
   NativeFileSystemTransferTokenImpl(
       const storage::FileSystemURL& url,
@@ -32,7 +32,7 @@ class CONTENT_EXPORT NativeFileSystemTransferTokenImpl
       const NativeFileSystemManagerImpl::SharedHandleState& handle_state,
       NativeFileSystemPermissionContext::HandleType handle_type,
       NativeFileSystemManagerImpl* manager,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken>
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
           receiver);
   ~NativeFileSystemTransferTokenImpl() override;
 
@@ -53,9 +53,9 @@ class CONTENT_EXPORT NativeFileSystemTransferTokenImpl
   std::unique_ptr<NativeFileSystemDirectoryHandleImpl> CreateDirectoryHandle(
       const NativeFileSystemManagerImpl::BindingContext& binding_context) const;
 
-  // blink::mojom::NativeFileSystemTransferToken:
+  // blink::mojom::FileSystemAccessTransferToken:
   void GetInternalID(GetInternalIDCallback callback) override;
-  void Clone(mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken>
+  void Clone(mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
                  clone_receiver) override;
 
  private:
@@ -72,7 +72,7 @@ class CONTENT_EXPORT NativeFileSystemTransferTokenImpl
   const storage::FileSystemURL url_;
   const url::Origin origin_;
   const NativeFileSystemManagerImpl::SharedHandleState handle_state_;
-  mojo::ReceiverSet<blink::mojom::NativeFileSystemTransferToken> receivers_;
+  mojo::ReceiverSet<blink::mojom::FileSystemAccessTransferToken> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeFileSystemTransferTokenImpl);
 };

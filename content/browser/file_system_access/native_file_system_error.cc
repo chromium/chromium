@@ -6,29 +6,29 @@
 
 namespace content {
 
-using blink::mojom::NativeFileSystemError;
-using blink::mojom::NativeFileSystemErrorPtr;
-using blink::mojom::NativeFileSystemStatus;
+using blink::mojom::FileSystemAccessError;
+using blink::mojom::FileSystemAccessErrorPtr;
+using blink::mojom::FileSystemAccessStatus;
 
 namespace native_file_system_error {
 
-NativeFileSystemErrorPtr Ok() {
-  return NativeFileSystemError::New(NativeFileSystemStatus::kOk,
+FileSystemAccessErrorPtr Ok() {
+  return FileSystemAccessError::New(FileSystemAccessStatus::kOk,
                                     base::File::FILE_OK, "");
 }
 
-NativeFileSystemErrorPtr FromFileError(base::File::Error result,
+FileSystemAccessErrorPtr FromFileError(base::File::Error result,
                                        base::StringPiece message) {
   if (result == base::File::FILE_OK)
     return Ok();
-  return NativeFileSystemError::New(NativeFileSystemStatus::kFileError, result,
+  return FileSystemAccessError::New(FileSystemAccessStatus::kFileError, result,
                                     std::string(message));
 }
 
-blink::mojom::NativeFileSystemErrorPtr FromStatus(
-    blink::mojom::NativeFileSystemStatus status,
+blink::mojom::FileSystemAccessErrorPtr FromStatus(
+    blink::mojom::FileSystemAccessStatus status,
     base::StringPiece message) {
-  return NativeFileSystemError::New(status, base::File::FILE_OK,
+  return FileSystemAccessError::New(status, base::File::FILE_OK,
                                     std::string(message));
 }
 

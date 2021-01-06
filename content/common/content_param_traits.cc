@@ -178,12 +178,12 @@ struct ParamTraits<blink::mojom::SerializedBlobPtr> {
 
 template <>
 struct ParamTraits<
-    mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken>> {
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>> {
   using param_type =
-      mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken>;
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>;
   static void Write(base::Pickle* m, const param_type& p) {
     // Move the Mojo pipe to serialize the
-    // PendingRemote<NativeFileSystemTransferToken> for a postMessage() target.
+    // PendingRemote<FileSystemAccessTransferToken> for a postMessage() target.
     WriteParam(m, const_cast<param_type&>(p).PassPipe().release());
   }
 
@@ -194,9 +194,9 @@ struct ParamTraits<
     if (!ReadParam(m, iter, &handle)) {
       return false;
     }
-    *r = mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken>(
+    *r = mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>(
         mojo::ScopedMessagePipeHandle(handle),
-        blink::mojom::NativeFileSystemTransferToken::Version_);
+        blink::mojom::FileSystemAccessTransferToken::Version_);
     return true;
   }
 };

@@ -261,7 +261,7 @@ IndexedDBDispatcherHost::mojo_blob_storage_context() {
   return indexed_db_context_->blob_storage_context();
 }
 
-storage::mojom::NativeFileSystemContext*
+storage::mojom::FileSystemAccessContext*
 IndexedDBDispatcherHost::native_file_system_context() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return indexed_db_context_->native_file_system_context();
@@ -444,9 +444,9 @@ void IndexedDBDispatcherHost::CreateAllExternalObjects(
         break;
       }
       case IndexedDBExternalObject::ObjectType::kNativeFileSystemHandle: {
-        DCHECK(mojo_object->is_native_file_system_token());
+        DCHECK(mojo_object->is_file_system_access_token());
 
-        mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken>
+        mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
             mojo_token;
 
         if (blob_info.is_native_file_system_remote_valid()) {
@@ -458,7 +458,7 @@ void IndexedDBDispatcherHost::CreateAllExternalObjects(
               origin, blob_info.native_file_system_token(),
               mojo_token.InitWithNewPipeAndPassReceiver());
         }
-        mojo_object->get_native_file_system_token() = std::move(mojo_token);
+        mojo_object->get_file_system_access_token() = std::move(mojo_token);
         break;
       }
     }

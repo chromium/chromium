@@ -11,9 +11,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-shared.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_directory_picker_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_picker_accept_type.h"
@@ -203,11 +203,11 @@ ScriptPromise ShowFilePickerImpl(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise resolver_result = resolver->Promise();
 
-  // TODO(mek): Cache mojo::Remote<mojom::blink::NativeFileSystemManager>
+  // TODO(mek): Cache mojo::Remote<mojom::blink::FileSystemAccessManager>
   // associated with an ExecutionContext, so we don't have to request a new one
   // for each operation, and can avoid code duplication between here and other
   // uses.
-  mojo::Remote<mojom::blink::NativeFileSystemManager> manager;
+  mojo::Remote<mojom::blink::FileSystemAccessManager> manager;
   window.GetBrowserInterfaceBroker().GetInterface(
       manager.BindNewPipeAndPassReceiver());
 
@@ -220,15 +220,15 @@ ScriptPromise ShowFilePickerImpl(
       accept_all,
       WTF::Bind(
           [](ScriptPromiseResolver* resolver,
-             mojo::Remote<mojom::blink::NativeFileSystemManager>,
+             mojo::Remote<mojom::blink::FileSystemAccessManager>,
              bool return_as_sequence, LocalFrame* local_frame,
-             mojom::blink::NativeFileSystemErrorPtr file_operation_result,
-             Vector<mojom::blink::NativeFileSystemEntryPtr> entries) {
+             mojom::blink::FileSystemAccessErrorPtr file_operation_result,
+             Vector<mojom::blink::FileSystemAccessEntryPtr> entries) {
             ExecutionContext* context = resolver->GetExecutionContext();
             if (!context)
               return;
             if (file_operation_result->status !=
-                mojom::blink::NativeFileSystemStatus::kOk) {
+                mojom::blink::FileSystemAccessStatus::kOk) {
               native_file_system_error::Reject(resolver,
                                                *file_operation_result);
               return;

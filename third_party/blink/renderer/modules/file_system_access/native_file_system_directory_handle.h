@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_DIRECTORY_HANDLE_H_
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_directory_handle.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
 #include "third_party/blink/renderer/modules/file_system_access/native_file_system_handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -23,7 +23,7 @@ class NativeFileSystemDirectoryHandle final : public NativeFileSystemHandle {
   NativeFileSystemDirectoryHandle(
       ExecutionContext* context,
       const String& name,
-      mojo::PendingRemote<mojom::blink::NativeFileSystemDirectoryHandle>);
+      mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>);
 
   // FileSystemDirectoryHandle IDL interface:
   NativeFileSystemDirectoryIterator* entries();
@@ -45,10 +45,10 @@ class NativeFileSystemDirectoryHandle final : public NativeFileSystemHandle {
 
   ScriptPromise resolve(ScriptState*, NativeFileSystemHandle* possible_child);
 
-  mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken> Transfer()
+  mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> Transfer()
       override;
 
-  mojom::blink::NativeFileSystemDirectoryHandle* MojoHandle() {
+  mojom::blink::FileSystemAccessDirectoryHandle* MojoHandle() {
     return mojo_ptr_.get();
   }
 
@@ -60,16 +60,16 @@ class NativeFileSystemDirectoryHandle final : public NativeFileSystemHandle {
       base::OnceCallback<void(mojom::blink::PermissionStatus)>) override;
   void RequestPermissionImpl(
       bool writable,
-      base::OnceCallback<void(mojom::blink::NativeFileSystemErrorPtr,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               mojom::blink::PermissionStatus)>) override;
   // IsSameEntry for directories is implemented in terms of resolve, as resolve
   // also can be used to figure out if two directories are the same entry.
   void IsSameEntryImpl(
-      mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken> other,
-      base::OnceCallback<void(mojom::blink::NativeFileSystemErrorPtr, bool)>)
+      mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> other,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr, bool)>)
       override;
 
-  HeapMojoRemote<mojom::blink::NativeFileSystemDirectoryHandle> mojo_ptr_;
+  HeapMojoRemote<mojom::blink::FileSystemAccessDirectoryHandle> mojo_ptr_;
 };
 
 }  // namespace blink
