@@ -26,9 +26,22 @@
 
   .title-container {
     margin: 30px auto 0 auto;
+    max-width: 490px;
     padding-inline-end: calc(var(--banner-img-width) - 10px);
     padding-inline-start: calc(var(--banner-img-width) - 10px);
     text-align: center;
+  }
+
+  #product-logo {
+    height: 32px;
+  }
+
+  .title-container h2 {
+    margin-bottom: 8px;
+  }
+
+  .title-container h3 {
+    margin-top: 8px;
   }
 
   #wrapper {
@@ -39,14 +52,16 @@
   }
 
   .profiles-container {
-    --grid-gutter: 24px;
+    --grid-gutter: 16px;
     --profile-item-height:178px;
+    --profile-item-margin: 4px;
     --profile-item-width: 162px;
     align-items: center;
     display: grid;
     grid-column-gap: var(--grid-gutter);
     grid-row-gap: var(--grid-gutter);
-    grid-template-columns: repeat(auto-fit, var(--profile-item-width));
+    grid-template-columns: repeat(auto-fit, calc(var(--profile-item-width) +
+      2 * var(--profile-item-margin)));
     justify-content: center;
     margin: auto;
     max-height: 100%;
@@ -79,6 +94,7 @@
     flex-direction: column;
     height: var(--profile-item-height);
     justify-content: center;
+    margin: var(--profile-item-margin);
     width: var(--profile-item-width);
   }
 
