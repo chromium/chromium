@@ -27,8 +27,6 @@ CGFloat CurrentScreenWidth();
 bool IsIPhoneX();
 
 // Returns true if the device is considered as a small device.
-// TODO(crbug.com/1152730): Define what is called a small device & update this
-// method.
 bool IsSmallDevice();
 
 // Returns the approximate corner radius of the current device.
