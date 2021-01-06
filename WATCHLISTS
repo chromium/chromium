@@ -2479,6 +2479,7 @@
                        'odejesush+watch@chromium.org'],
     'devtools': ['devtools-reviews@chromium.org'],
     'diagnostics_ui': ['baileyberro+diagnostics-watch@chromium.org',
+                       'gavinwill+diagnostics-watch@chromium.org',
                        'joonbug+diagnostics-watch@chromium.org',
                        'michaelcheco+diagnostics-watch@google.com',
                        'zentaro+diagnostics-watch@chromium.org'],
