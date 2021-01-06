@@ -274,18 +274,18 @@ void ToolbarActionsModel::RemovePref(const ActionId& action_id) {
 void ToolbarActionsModel::OnReady() {
   InitializeActionList();
 
-  load_error_reporter_observer_.Add(
+  load_error_reporter_observation_.Observe(
       extensions::LoadErrorReporter::GetInstance());
 
   // Wait until the extension system is ready before observing any further
   // changes so that the toolbar buttons can be shown in their stable ordering
   // taken from prefs.
-  extension_registry_observer_.Add(extension_registry_);
-  extension_action_observer_.Add(extension_action_api_);
+  extension_registry_observation_.Observe(extension_registry_);
+  extension_action_observation_.Observe(extension_action_api_);
 
   auto* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
-  extension_management_observer_.Add(management);
+  extension_management_observation_.Observe(management);
 
   actions_initialized_ = true;
   for (Observer& observer : observers_)

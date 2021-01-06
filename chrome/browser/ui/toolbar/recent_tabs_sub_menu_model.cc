@@ -180,7 +180,7 @@ RecentTabsSubMenuModel::RecentTabsSubMenuModel(
       TabRestoreServiceFactory::GetForProfile(browser_->profile());
   if (service) {
     service->LoadTabsFromLastSession();
-    tab_restore_service_observer_.Add(service);
+    tab_restore_service_observation_.Observe(service);
   }
 
   if (session_sync_service_) {

@@ -11,7 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
@@ -332,25 +332,26 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // associated with the profile. There should only be one at a time.
   bool has_active_bubble_;
 
-  ScopedObserver<extensions::ExtensionActionAPI,
-                 extensions::ExtensionActionAPI::Observer>
-      extension_action_observer_{this};
+  base::ScopedObservation<extensions::ExtensionActionAPI,
+                          extensions::ExtensionActionAPI::Observer>
+      extension_action_observation_{this};
 
   // Listen to extension load, unloaded notifications.
-  ScopedObserver<extensions::ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   // For observing change of toolbar order preference by external entity (sync).
   PrefChangeRegistrar pref_change_registrar_;
   base::RepeatingClosure pref_change_callback_;
 
-  ScopedObserver<extensions::LoadErrorReporter,
-                 extensions::LoadErrorReporter::Observer>
-      load_error_reporter_observer_{this};
+  base::ScopedObservation<extensions::LoadErrorReporter,
+                          extensions::LoadErrorReporter::Observer>
+      load_error_reporter_observation_{this};
 
-  ScopedObserver<extensions::ExtensionManagement,
-                 extensions::ExtensionManagement::Observer>
-      extension_management_observer_{this};
+  base::ScopedObservation<extensions::ExtensionManagement,
+                          extensions::ExtensionManagement::Observer>
+      extension_management_observation_{this};
 
   base::WeakPtrFactory<ToolbarActionsModel> weak_ptr_factory_{this};
 

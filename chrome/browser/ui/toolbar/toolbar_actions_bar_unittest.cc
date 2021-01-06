@@ -113,8 +113,8 @@ std::string VerifyToolbarOrderForBar(
 class ToolbarActionErrorTestObserver
     : public extensions::LoadErrorReporter::Observer {
  public:
-  ToolbarActionErrorTestObserver() : extension_error_reporter_observer_(this) {
-    extension_error_reporter_observer_.Add(
+  ToolbarActionErrorTestObserver() {
+    extension_error_reporter_observation_.Observe(
         extensions::LoadErrorReporter::GetInstance());
   }
 
@@ -132,9 +132,9 @@ class ToolbarActionErrorTestObserver
 
   base::RunLoop run_loop_;
 
-  ScopedObserver<extensions::LoadErrorReporter,
-                 extensions::LoadErrorReporter::Observer>
-      extension_error_reporter_observer_;
+  base::ScopedObservation<extensions::LoadErrorReporter,
+                          extensions::LoadErrorReporter::Observer>
+      extension_error_reporter_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ToolbarActionErrorTestObserver);
 };

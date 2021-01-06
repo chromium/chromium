@@ -83,7 +83,7 @@ AppMenuIconController::AppMenuIconController(UpgradeDetector* upgrade_detector,
   DCHECK(profile_);
   DCHECK(delegate_);
 
-  global_error_observer_.Add(
+  global_error_observation_.Observe(
       GlobalErrorServiceFactory::GetForProfile(profile_));
 
   upgrade_detector_->AddObserver(this);
