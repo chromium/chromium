@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_POWER_METRICS_PROVIDER_MAC_H_
-#define CHROME_BROWSER_METRICS_POWER_METRICS_PROVIDER_MAC_H_
+#ifndef CHROME_BROWSER_METRICS_POWER_POWER_METRICS_PROVIDER_MAC_H_
+#define CHROME_BROWSER_METRICS_POWER_POWER_METRICS_PROVIDER_MAC_H_
 
 #include "components/metrics/metrics_provider.h"
 
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "chrome/browser/metrics/power/battery_level_provider.h"
 
 // Records battery power drain in a histogram. To use, repeatedly call
 // RecordBatteryDischarge() at regular intervals. The implementation tries to
@@ -39,42 +40,6 @@
 //   };
 //
 class PowerDrainRecorder {
- private:
-  // Represents the state of the battery at a certain point in time.
-  class BatteryState {
-   public:
-    // Use this constructor to extract the actual battery information using
-    // system functions.
-    BatteryState();
-
-    // Use this constructor to control the value of all the members.
-    BatteryState(int capacity, bool on_battery, base::TimeTicks creation_time);
-
-    // Returns the battery capacity at the time of capture.
-    int capacity() const { return capacity_; }
-
-    // Returns true if the system ran on battery power at the time of capture.
-    bool on_battery() const { return on_battery_; }
-
-    // Explicitly mark the state object as on battery on not.
-    void SetIsOnBattery(bool on_battery);
-
-    // Return the time at which the object was created.
-    base::TimeTicks creation_time() const { return creation_time_; }
-
-   private:
-    // A portion of the maximal battery capacity of the system.  Units are
-    // hundredths of a percent. ie: 99.8742% capacity --> 998742.
-    int capacity_ = 0;
-
-    // For the purpose of this class not being on battery power is considered
-    // equivalent to charging.
-    bool on_battery_ = false;
-
-    // The time at which the battery state capture took place.
-    base::TimeTicks creation_time_;
-  };
-
  public:
   // |recording_interval| is the time that is supposed to elapse between calls
   // to RecordBatteryDischarge().
@@ -90,24 +55,16 @@ class PowerDrainRecorder {
 
   // Replace the function used to get BatteryState values. Use only for testing
   // to not depend on actual system information.
-  void SetGetBatteryStateCallBackForTesting(
-      base::RepeatingCallback<BatteryState()>);
+  void SetBatteryLevelProviderForTesting(
+      std::unique_ptr<BatteryLevelProvider> provider);
 
  private:
-  // Simply creates a BatteryState() object and returns it. Stand-in that can
-  // replaced in tests.
-  BatteryState GetCurrentBatteryState();
+  // Used to get the current battery state.
+  std::unique_ptr<BatteryLevelProvider> battery_level_provider_ =
+      BatteryLevelProvider::Create();
 
-  // Use this callback to get the current battery state. Override in tests to
-  // provide test values.
-  base::RepeatingCallback<BatteryState()> battery_state_callback_ =
-      base::BindRepeating(&PowerDrainRecorder::GetCurrentBatteryState,
-                          base::Unretained(this));
-
-  // Default battery state value that makes sure it will not be used towards the
-  // first discharge calculation that will happen at some point in the future.
-  BatteryState previous_battery_state_ =
-      BatteryState(0, false, base::TimeTicks{});
+  // Latest battery state provided by |battery_level_provider_|.
+  base::Optional<BatteryLevelProvider::BatteryState> battery_state_;
 
   // Time that should elapse between calls to RecordBatteryDischarge.
   const base::TimeDelta recording_interval_;
@@ -144,4 +101,4 @@ class PowerMetricsProvider : public metrics::MetricsProvider {
   scoped_refptr<Impl> impl_;
 };
 
-#endif  // CHROME_BROWSER_METRICS_POWER_METRICS_PROVIDER_MAC_H_
+#endif  // CHROME_BROWSER_METRICS_POWER_POWER_METRICS_PROVIDER_MAC_H_

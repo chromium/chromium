@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/power_metrics_provider_mac.h"
+#include "chrome/browser/metrics/power/power_metrics_provider_mac.h"
+
+#include <utility>
 
 #import <Foundation/Foundation.h>
-#include <IOKit/IOKitLib.h>
 #include <libkern/OSByteOrder.h>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
@@ -32,24 +32,6 @@ constexpr base::TimeDelta kStartupPowerMetricsCollectionInterval =
     base::TimeDelta::FromSeconds(1);
 constexpr base::TimeDelta kPostStartupPowerMetricsCollectionInterval =
     base::TimeDelta::FromSeconds(60);
-
-// Returns the value corresponding to |key| in the dictionary |description|.
-// Returns an unpopulated value if the dictionary does not contain |key|, the
-// corresponding value is nullptr or it could not be converted to SInt64.
-base::Optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
-                                        CFStringRef key) {
-  base::Optional<SInt64> value;
-
-  CFNumberRef number =
-      base::mac::GetValueFromDictionary<CFNumberRef>(description, key);
-
-  SInt64 v;
-  if (number && CFNumberGetValue(number, kCFNumberSInt64Type, &v)) {
-    value.emplace(v);
-  }
-
-  return value;
-}
 
 // This API is undocumented. It can read hardware sensors including
 // temperature, voltage, and power. A useful tool for discovering new keys is
@@ -215,100 +197,31 @@ ThermalStateUMA ThermalStateToUmaEnumValue(NSProcessInfoThermalState state) {
 
 }  // namespace
 
-PowerDrainRecorder::BatteryState::BatteryState(int capacity,
-                                               bool on_battery,
-                                               base::TimeTicks creation_time)
-    : capacity_(capacity),
-      on_battery_(on_battery),
-      creation_time_(creation_time) {}
-
-PowerDrainRecorder::BatteryState::BatteryState()
-    : on_battery_(base::PowerMonitor::IsOnBatteryPower()),
-      creation_time_(base::TimeTicks::Now()) {
-  // Retrieve the IOPMPowerSource service.
-  const base::mac::ScopedIOObject<io_service_t> service(
-      IOServiceGetMatchingService(kIOMasterPortDefault,
-                                  IOServiceMatching("IOPMPowerSource")));
-
-  // Gather a dictionary containing the power information.
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
-  kern_return_t result = IORegistryEntryCreateCFProperties(
-      service.get(), dict.InitializeInto(), 0, 0);
-
-  // Retrieving dictionary failed. Cannot proceed.
-  if (result != KERN_SUCCESS) {
-    // Mark this recording as not on battery so it does not get used in
-    // calculations.
-    on_battery_ = false;
-    return;
-  }
-
-  CFStringRef capacity_key;
-  CFStringRef max_capacity_key;
-
-  // Use the correct key depending on macOS version.
-  if (@available(macOS 10.14.0, *)) {
-    capacity_key = CFSTR("AppleRawCurrentCapacity");
-    max_capacity_key = CFSTR("AppleRawMaxCapacity");
-  } else {
-    capacity_key = CFSTR("CurrentCapacity");
-    max_capacity_key = CFSTR("RawMaxCapacity");
-  }
-
-  // Extract the information from the dictionary.
-  base::Optional<SInt64> current_capacity =
-      GetValueAsSInt64(dict, capacity_key);
-  base::Optional<SInt64> max_capacity =
-      GetValueAsSInt64(dict, max_capacity_key);
-
-  // If any of the values were not available.
-  if (!current_capacity.has_value() || !max_capacity.has_value()) {
-    // Mark this recording as not on battery so it does not get used in
-    // calculations.
-    on_battery_ = false;
-    return;
-  }
-
-  double ratio = static_cast<double>(current_capacity.value()) /
-                 static_cast<double>(max_capacity.value());
-
-  // |ratio| is a the result of dividing |current_capacity| by |max_capacity|.
-  // |current_capacity| is smaller or equal to |max_capacity| so the ratio is
-  // in range [0.00, 1.00]. The difference between two of these values is what
-  // will be stored in a histogram. This histogram will have a bucket of size
-  // 1000 so the value is multiplied by 10000 to bring it in the range of
-  // [0, 10000].
-  constexpr int kScalingFactor = 10000;
-  capacity_ = kScalingFactor * ratio;
-}
-
-void PowerDrainRecorder::BatteryState::SetIsOnBattery(bool on_battery) {
-  on_battery_ = on_battery;
-}
-
 PowerDrainRecorder::PowerDrainRecorder(base::TimeDelta recording_interval)
     : recording_interval_(recording_interval) {}
 PowerDrainRecorder::~PowerDrainRecorder() = default;
 
 void PowerDrainRecorder::RecordBatteryDischarge() {
-  BatteryState current_state = battery_state_callback_.Run();
+  base::Optional<BatteryLevelProvider::BatteryState> previous_battery_state =
+      std::exchange(battery_state_, battery_level_provider_->GetBatteryState());
 
-  bool should_record = true;
+  // Missing battery values.
+  if (!battery_state_.has_value() || !previous_battery_state.has_value())
+    return;
 
   // Not discharging.
-  if (!current_state.on_battery() || !previous_battery_state_.on_battery()) {
-    should_record = false;
-  }
+  if (!battery_state_->on_battery || !previous_battery_state->on_battery)
+    return;
 
-  if (current_state.capacity() > previous_battery_state_.capacity()) {
-    // Capacity went up since last measurement. It's suspected the computer
+  if (battery_state_->charge_level > previous_battery_state->charge_level) {
+    // Charge level went up since last measurement. It's suspected the computer
     // was charged for less than the collection interval. Consider this time
     // slice as not even "on battery".
-    should_record = false;
+    return;
   }
 
   const base::TimeDelta time_since_last_record =
-      current_state.creation_time() - previous_battery_state_.creation_time();
+      battery_state_->capture_time - previous_battery_state->capture_time;
 
   // Ratio by which the time elapsed can deviate from |recording_interval|
   // without invalidating this sample.
@@ -320,38 +233,35 @@ void PowerDrainRecorder::RecordBatteryDischarge() {
       (recording_interval_ * kTolerablePositiveDrift)) {
     // Too much time passed since the last record. Either the task took
     // too long to get executed or system sleep took place.
-    should_record = false;
+    return;
   }
 
   if (time_since_last_record <
       (recording_interval_ * kTolerableNegativeDrift)) {
     // The recording task executed too early after the previous one, possibly
     // because the previous task took too long to execute.
-    should_record = false;
+    return;
   }
 
-  if (should_record) {
-    // Use this to normalize all measurements to to recording period.
-    const double time_elapsed_ratio =
-        recording_interval_.InSeconds() / time_since_last_record.InSecondsF();
+  // |time_elapsed_ratio| is used to normalize discharge rate measurements to
+  // the expected recording period.
+  const double time_elapsed_ratio =
+      recording_interval_.InSeconds() / time_since_last_record.InSecondsF();
 
-    int discharge = time_elapsed_ratio * (previous_battery_state_.capacity() -
-                                          current_state.capacity());
-    base::UmaHistogramCounts1000("Power.Mac.BatteryDischarge", discharge);
-  }
-
-  // Update the battery state.
-  previous_battery_state_ = current_state;
+  // The charge_level is a ratio in range [0.00, 1.00]. The difference between
+  // two of these values is what will be stored in a histogram. This histogram
+  // will have a bucket of size 1000 so the value is multiplied by 10000 to
+  // bring it in the range of [0, 10000].
+  constexpr int kScalingFactor = 10000;
+  int discharge =
+      kScalingFactor * time_elapsed_ratio *
+      (previous_battery_state->charge_level - battery_state_->charge_level);
+  base::UmaHistogramCounts1000("Power.Mac.BatteryDischarge", discharge);
 }
 
-void PowerDrainRecorder::SetGetBatteryStateCallBackForTesting(
-    base::RepeatingCallback<BatteryState()> callback) {
-  battery_state_callback_ = callback;
-}
-
-// static
-PowerDrainRecorder::BatteryState PowerDrainRecorder::GetCurrentBatteryState() {
-  return PowerDrainRecorder::BatteryState{};
+void PowerDrainRecorder::SetBatteryLevelProviderForTesting(
+    std::unique_ptr<BatteryLevelProvider> provider) {
+  battery_level_provider_ = std::move(provider);
 }
 
 class PowerMetricsProvider::Impl : public base::RefCountedThreadSafe<Impl> {

@@ -183,7 +183,7 @@
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_MAC)
-#include "chrome/browser/metrics/power_metrics_provider_mac.h"
+#include "chrome/browser/metrics/power/power_metrics_provider_mac.h"
 #endif
 
 namespace {

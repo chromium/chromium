@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/power_metrics_provider_mac.h"
+#include "chrome/browser/metrics/power/power_metrics_provider_mac.h"
 
 #include <queue>
 
@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "chrome/browser/metrics/power/battery_level_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -24,18 +25,30 @@ constexpr double kTolerableNegativeDrift = 1 - kTolerableTimeElapsedRatio;
 
 class PowerMetricsProviderTest : public testing::Test {
  public:
+  class FakeBatteryLevelProvider : public BatteryLevelProvider {
+   public:
+    FakeBatteryLevelProvider(
+        std::queue<BatteryLevelProvider::BatteryState>* battery_states)
+        : battery_states_(battery_states) {}
+
+    base::Optional<BatteryState> GetBatteryState() override {
+      DCHECK(!battery_states_->empty());
+      BatteryLevelProvider::BatteryState state = battery_states_->front();
+      battery_states_->pop();
+      return state;
+    }
+
+   private:
+    std::queue<BatteryLevelProvider::BatteryState>* battery_states_;
+  };
+
   PowerMetricsProviderTest()
       : power_drain_recorder_(kMetricsCollectionInterval) {}
   void SetUp() override {
     // Setup |power_drain_recorder_| to use use the BatteryState values
     // provided by the tests instead of querying the system to build them.
-    power_drain_recorder_.SetGetBatteryStateCallBackForTesting(
-        base::BindLambdaForTesting([this]() {
-          DCHECK(!battery_states_.empty());
-          PowerDrainRecorder::BatteryState state = battery_states_.front();
-          battery_states_.pop();
-          return state;
-        }));
+    power_drain_recorder_.SetBatteryLevelProviderForTesting(
+        std::make_unique<FakeBatteryLevelProvider>(&battery_states_));
   }
 
   void TearDown() override {
@@ -51,46 +64,48 @@ class PowerMetricsProviderTest : public testing::Test {
   }
 
  protected:
+  static constexpr int kScalingFactor = 10000;
+
   PowerDrainRecorder power_drain_recorder_;
   base::HistogramTester histogram_tester_;
-  std::queue<PowerDrainRecorder::BatteryState> battery_states_;
+  std::queue<BatteryLevelProvider::BatteryState> battery_states_;
   base::TimeTicks now_;
 };
 
 TEST_F(PowerMetricsProviderTest, BatteryDischargeOnPower) {
   // Two consecutive readings on power should not record a battery discharge.
-  battery_states_.push(PowerDrainRecorder::BatteryState{1000, false, now_});
-  battery_states_.push(PowerDrainRecorder::BatteryState{
-      1000, false, now_ + base::TimeDelta::FromMinutes(1)});
+  battery_states_.push(BatteryLevelProvider::BatteryState{1.00, false, now_});
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1.000, false, now_ + base::TimeDelta::FromMinutes(1)});
 
   ConsumeBatteryStates();
   histogram_tester_.ExpectTotalCount(kHistogramName, 0);
 }
 
 TEST_F(PowerMetricsProviderTest, BatteryDischargeOnBattery) {
-  constexpr int kFirstReading = 1000;
-  constexpr int kSecondReading = 980;
+  constexpr double kFirstReading = 0.100;
+  constexpr double kSecondReading = 0.098;
 
   // Two consecutive readings on battery should record a battery discharge.
   battery_states_.push(
-      PowerDrainRecorder::BatteryState{kFirstReading, true, now_});
-  battery_states_.push(PowerDrainRecorder::BatteryState{
+      BatteryLevelProvider::BatteryState{kFirstReading, true, now_});
+  battery_states_.push(BatteryLevelProvider::BatteryState{
       kSecondReading, true, now_ + base::TimeDelta::FromMinutes(1)});
 
   ConsumeBatteryStates();
-  histogram_tester_.ExpectUniqueSample(kHistogramName,
-                                       kFirstReading - kSecondReading, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kHistogramName, (kFirstReading - kSecondReading) * kScalingFactor, 1);
 }
 
 TEST_F(PowerMetricsProviderTest, BatteryDischargeCapacityGrew) {
   // Capacity that grew between measurements means no discharge. No value should
   // be recorded.
-  constexpr int kFirstReading = 980;
-  constexpr int kSecondReading = 1000;
+  constexpr double kFirstReading = 0.098;
+  constexpr double kSecondReading = 0.100;
 
   battery_states_.push(
-      PowerDrainRecorder::BatteryState{kFirstReading, true, now_});
-  battery_states_.push(PowerDrainRecorder::BatteryState{
+      BatteryLevelProvider::BatteryState{kFirstReading, true, now_});
+  battery_states_.push(BatteryLevelProvider::BatteryState{
       kSecondReading, true, now_ + base::TimeDelta::FromMinutes(1)});
 
   ConsumeBatteryStates();
@@ -98,8 +113,8 @@ TEST_F(PowerMetricsProviderTest, BatteryDischargeCapacityGrew) {
 }
 
 TEST_F(PowerMetricsProviderTest, BatteryDischargeCaptureIsTooEarly) {
-  constexpr int kFirstReading = 1000;
-  constexpr int kSecondReading = 980;
+  constexpr double kFirstReading = 0.100;
+  constexpr double kSecondReading = 0.098;
 
   const base::TimeTicks first_capture_time =
       now_ + base::TimeDelta::FromSeconds(60);
@@ -109,18 +124,18 @@ TEST_F(PowerMetricsProviderTest, BatteryDischargeCaptureIsTooEarly) {
       base::TimeDelta::FromSeconds(1);
 
   // If it took too long to record a value no recoding takes place.
-  battery_states_.push(PowerDrainRecorder::BatteryState{kFirstReading, true,
-                                                        first_capture_time});
-  battery_states_.push(PowerDrainRecorder::BatteryState{kSecondReading, true,
-                                                        second_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{kFirstReading, true,
+                                                          first_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{kSecondReading, true,
+                                                          second_capture_time});
 
   ConsumeBatteryStates();
   histogram_tester_.ExpectTotalCount(kHistogramName, 0);
 }
 
 TEST_F(PowerMetricsProviderTest, BatteryDischargeCaptureIsEarly) {
-  constexpr int kFirstReading = 1000;
-  constexpr int kSecondReading = 980;
+  constexpr double kFirstReading = 0.100;
+  constexpr double kSecondReading = 0.098;
 
   const base::TimeTicks first_capture_time =
       now_ + base::TimeDelta::FromSeconds(60);
@@ -130,25 +145,25 @@ TEST_F(PowerMetricsProviderTest, BatteryDischargeCaptureIsEarly) {
       base::TimeDelta::FromSeconds(1);
 
   // The second recording came in just in time to not be counted as too early.
-  battery_states_.push(PowerDrainRecorder::BatteryState{kFirstReading, true,
-                                                        first_capture_time});
-  battery_states_.push(PowerDrainRecorder::BatteryState{kSecondReading, true,
-                                                        second_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{kFirstReading, true,
+                                                          first_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{kSecondReading, true,
+                                                          second_capture_time});
 
   ConsumeBatteryStates();
 
   // The discharge rate is normalized to be representative over
   // |kMetricsCollectionInterval|.
   int discharge =
-      base::ClampFloor((kFirstReading - kSecondReading) *
+      base::ClampFloor((kFirstReading - kSecondReading) * kScalingFactor *
                        (kMetricsCollectionInterval /
                         (second_capture_time - first_capture_time)));
   histogram_tester_.ExpectUniqueSample(kHistogramName, discharge, 1);
 }
 
 TEST_F(PowerMetricsProviderTest, BatteryDischargeCaptureIsTooLate) {
-  constexpr int kFirstReading = 1000;
-  constexpr int kSecondReading = 980;
+  constexpr double kFirstReading = 0.100;
+  constexpr double kSecondReading = 0.098;
 
   const base::TimeTicks first_capture_time = now_;
 
@@ -159,18 +174,18 @@ TEST_F(PowerMetricsProviderTest, BatteryDischargeCaptureIsTooLate) {
       base::TimeDelta::FromSeconds(1);
 
   // If it took too long to record a value no recoding takes place.
-  battery_states_.push(PowerDrainRecorder::BatteryState{kFirstReading, true,
-                                                        first_capture_time});
-  battery_states_.push(PowerDrainRecorder::BatteryState{kSecondReading, true,
-                                                        second_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{kFirstReading, true,
+                                                          first_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{kSecondReading, true,
+                                                          second_capture_time});
 
   ConsumeBatteryStates();
   histogram_tester_.ExpectTotalCount(kHistogramName, 0);
 }
 
 TEST_F(PowerMetricsProviderTest, BatteryDischargeCaptureIsLate) {
-  constexpr int kFirstReading = 1000;
-  constexpr int kSecondReading = 980;
+  constexpr double kFirstReading = 0.100;
+  constexpr double kSecondReading = 0.098;
 
   const base::TimeTicks first_capture_time = now_;
   const base::TimeTicks second_capture_time =
@@ -180,17 +195,17 @@ TEST_F(PowerMetricsProviderTest, BatteryDischargeCaptureIsLate) {
 
   // If it took longer to record the metric the value recorded is scaled to
   // normalize to one minute.
-  battery_states_.push(PowerDrainRecorder::BatteryState{kFirstReading, true,
-                                                        first_capture_time});
-  battery_states_.push(PowerDrainRecorder::BatteryState{kSecondReading, true,
-                                                        second_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{kFirstReading, true,
+                                                          first_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{kSecondReading, true,
+                                                          second_capture_time});
 
   ConsumeBatteryStates();
 
   // The discharge rate is normalized to be representative over
   // |kMetricsCollectionInterval|.
   int discharge =
-      base::ClampFloor((kFirstReading - kSecondReading) *
+      base::ClampFloor((kFirstReading - kSecondReading) * kScalingFactor *
                        (kMetricsCollectionInterval /
                         (second_capture_time - first_capture_time)));
   histogram_tester_.ExpectUniqueSample(kHistogramName, discharge, 1);

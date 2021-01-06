@@ -1692,7 +1692,8 @@ if (!is_android) {
     }
 
     if (is_mac) {
-      sources += [ "../browser/metrics/power_metrics_provider_mac_unittest.cc" ]
+      sources +=
+          [ "../browser/metrics/power/power_metrics_provider_mac_unittest.cc" ]
     }
 
     if (is_chromeos_ash) {
