@@ -188,6 +188,12 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
 }
 
 BrowserAccessibilityManager::~BrowserAccessibilityManager() {
+  // If the root's parent is in another accessibility tree but it wasn't
+  // previously connected, post the proper notifications on the parent.
+  BrowserAccessibility* parent = nullptr;
+  if (connected_to_parent_tree_node_)
+    parent = GetParentNodeFromParentTree();
+
   // Fire any events that need to be fired when tree nodes get deleted. For
   // example, events that fire every time "OnSubtreeWillBeDeleted" is called.
   ax_tree()->Destroy();
@@ -198,6 +204,8 @@ BrowserAccessibilityManager::~BrowserAccessibilityManager() {
   }
 
   ui::AXTreeManagerMap::GetInstance().RemoveTreeManager(ax_tree_id_);
+
+  ParentConnectionChanged(parent);
 }
 
 bool BrowserAccessibilityManager::Unserialize(
@@ -343,6 +351,17 @@ BrowserAccessibility* BrowserAccessibilityManager::GetParentNodeFromParentTree()
                                   : nullptr;
 }
 
+void BrowserAccessibilityManager::ParentConnectionChanged(
+    BrowserAccessibility* parent) {
+  if (!parent)
+    return;
+  parent->OnDataChanged();
+  parent->UpdatePlatformAttributes();
+  parent =
+      RetargetForEvents(parent, RetargetEventType::RetargetEventTypeGenerated);
+  FireGeneratedEvent(ui::AXEventGenerator::Event::CHILDREN_CHANGED, parent);
+}
+
 BrowserAccessibility* BrowserAccessibilityManager::GetPopupRoot() const {
   DCHECK(popup_root_ids_.size() <= 1);
   if (popup_root_ids_.size() == 1) {
@@ -454,11 +473,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   BrowserAccessibility* parent = GetParentNodeFromParentTree();
   if (parent) {
     if (!connected_to_parent_tree_node_) {
-      parent->OnDataChanged();
-      parent->UpdatePlatformAttributes();
-      parent = RetargetForEvents(parent,
-                                 RetargetEventType::RetargetEventTypeGenerated);
-      FireGeneratedEvent(ui::AXEventGenerator::Event::CHILDREN_CHANGED, parent);
+      ParentConnectionChanged(parent);
       connected_to_parent_tree_node_ = true;
     }
   } else {

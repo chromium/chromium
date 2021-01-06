@@ -196,6 +196,8 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   // If this tree has a parent tree, return the parent node in that tree.
   BrowserAccessibility* GetParentNodeFromParentTree() const;
 
+  void ParentConnectionChanged(BrowserAccessibility* parent);
+
   // In general, there is only a single node with the role of kRootWebArea,
   // but if a popup is opened, a second nested "root" is created in the same
   // tree as the "true" root. This will keep track of the nested root node.
