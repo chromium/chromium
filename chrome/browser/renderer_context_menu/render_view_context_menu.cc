@@ -1740,6 +1740,9 @@ void RenderViewContextMenu::AppendEditableItems() {
     menu_model_.AddItemWithStringId(
         IDC_CONTENT_CLIPBOARD_HISTORY_MENU,
         IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU);
+    menu_model_.SetIsNewFeatureAt(
+        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CLIPBOARD_HISTORY_MENU),
+        chromeos::features::IsClipboardHistoryContextMenuNudgeEnabled());
   }
 #endif
 

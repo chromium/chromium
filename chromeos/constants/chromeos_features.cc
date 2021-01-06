@@ -378,6 +378,11 @@ const base::Feature kClipboardHistoryNudgeSessionReset{
 const base::Feature kClipboardHistorySimpleRender{
     "ClipboardHistorySimpleRender", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, a blue new nudge will show on the context menu option for
+// clipboard history.
+const base::Feature kClipboardHistoryContextMenuNudge{
+    "ClipboardHistoryContextMenuNudge", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables copying an image to the system clipboard to support pasting onto
 // different surfaces
 const base::Feature kEnableFilesAppCopyImage{"EnableFilesAppCopyImage",
@@ -808,6 +813,10 @@ bool IsClipboardHistoryNudgeSessionResetEnabled() {
 bool IsClipboardHistorySimpleRenderEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistory) ||
          base::FeatureList::IsEnabled(kClipboardHistorySimpleRender);
+}
+
+bool IsClipboardHistoryContextMenuNudgeEnabled() {
+  return base::FeatureList::IsEnabled(kClipboardHistoryContextMenuNudge);
 }
 
 bool IsPhoneHubEnabled() {
