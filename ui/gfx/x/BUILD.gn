@@ -36,6 +36,7 @@ generate_library_loader("xlib_loader") {
     "XSynchronize",
     "XSetErrorHandler",
     "XFree",
+    "XPending",
   ]
 }
 

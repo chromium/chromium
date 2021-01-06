@@ -13,6 +13,7 @@ int XFlush(struct _XDisplay*);
 int XSynchronize(struct _XDisplay*, int);
 int XSetErrorHandler(int (*)(void*, void*));
 void XFree(void*);
+int XPending(struct _XDisplay*);
 }
 
 #endif  // UI_GFX_X_XLIB_H_
