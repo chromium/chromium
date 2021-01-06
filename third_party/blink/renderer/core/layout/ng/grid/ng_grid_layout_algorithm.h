@@ -21,6 +21,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
  public:
   enum class AutoPlacementType { kNotNeeded, kMajor, kMinor, kBoth };
   enum class AxisEdge { kStart, kCenter, kEnd, kBaseline };
+  enum class ItemType { kInGridFlow, kOutOfFlow };
 
   // This enum corresponds to each step used to accommodate grid items across
   // intrinsic tracks according to their min and max track sizing functions, as
@@ -72,6 +73,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
     AxisEdge inline_axis_alignment;
     AxisEdge block_axis_alignment;
+
+    ItemType item_type;
 
     bool is_inline_axis_stretched;
     bool is_block_axis_stretched;
@@ -161,19 +164,25 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   void SetSpecifiedTracks(wtf_size_t automatic_repetitions,
                           NGGridBlockTrackCollection* track_collection) const;
   // Determines the explicit column and row track starts.
-  void DetermineExplicitTrackStarts(wtf_size_t automatic_column_repetitions,
+  void DetermineExplicitTrackStarts(const Vector<GridItemData>& grid_items,
+                                    wtf_size_t automatic_column_repetitions,
                                     wtf_size_t automatic_row_repetitions,
                                     wtf_size_t* explicit_column_start,
                                     wtf_size_t* explicit_row_start,
                                     wtf_size_t* column_count,
                                     wtf_size_t* row_count) const;
-
   // For every item and track direction, computes and stores the pair of indices
   // "begin" and "end" such that the item spans every set from the respective
   // collection's |sets_| with an index in the range [begin, end).
   void CacheItemSetIndices(
       const NGGridLayoutAlgorithmTrackCollection& track_collection,
-      Vector<GridItemData>* grid_items) const;
+      Vector<GridItemData>* items) const;
+  // Helper function to resolve start and end lines of out of flow items.
+  void ResolveOutOfFlowItemGridLines(
+      const GridItemData& out_of_flow_item,
+      const NGGridLayoutAlgorithmTrackCollection& track_collection,
+      wtf_size_t* start_line,
+      wtf_size_t* end_line) const;
   // For every grid item, caches properties of the track sizing functions it
   // spans (i.e. whether an item spans intrinsic or flexible tracks).
   void CacheGridItemsTrackSpanProperties(
@@ -206,17 +215,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       NGGridSetVector* sets_to_grow_beyond_limit);
 
   // Lays out and computes inline and block offsets for grid items.
-  void PlaceGridItems(
+  void PlaceItems(
       const Vector<GridItemData>& grid_items,
-      const Vector<GridItemData>& out_of_flow_items,
-      NGGridLayoutAlgorithmTrackCollection& column_track_collection,
-      NGGridLayoutAlgorithmTrackCollection& row_track_collection,
+      const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
+      const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
+      Vector<GridItemData>* out_of_flow_items,
       LayoutUnit* intrinsic_block_size);
-
-  // Lays out |grid_item| based on the offsets and sizes provided.
-  void PlaceGridItem(const GridItemData& grid_item,
-                     LogicalOffset offset,
-                     LogicalSize size);
 
   // Gets the row or column gap of the grid.
   LayoutUnit GridGap(GridTrackSizingDirection track_direction,
@@ -230,6 +234,41 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // Tests whether the row gap is unresolvable based on its type and the
   // available size.
   bool IsRowGridGapUnresolvable(LayoutUnit available_size) const;
+
+  // Layout the |grid_items| based on the offsets provided.
+  void PlaceGridItems(const Vector<GridItemData>& grid_items,
+                      const Vector<LayoutUnit>& column_set_offsets,
+                      const Vector<LayoutUnit>& row_set_offsets,
+                      LayoutUnit intrinsic_block_size,
+                      LayoutUnit column_grid_gap,
+                      LayoutUnit row_grid_gap);
+
+  // Computes the static position, grid area and its offset of out of flow
+  // elements in the grid.
+  void PlaceOutOfFlowItems(
+      const Vector<LayoutUnit>& column_set_offsets,
+      const Vector<LayoutUnit>& row_set_offsets,
+      const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
+      const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
+      LayoutUnit intrinsic_block_size,
+      LayoutUnit column_grid_gap,
+      LayoutUnit row_grid_gap,
+      Vector<GridItemData>* out_of_flow_items);
+
+  // Helper method that computes the offset and size of an item.
+  void ComputeOffsetAndSize(
+      const GridItemData& item,
+      const Vector<LayoutUnit>& set_offsets,
+      LayoutUnit grid_gap,
+      LayoutUnit* start_offset,
+      LayoutUnit* size,
+      GridTrackSizingDirection track_direction = kForColumns,
+      const LayoutUnit intrinsic_block_size = LayoutUnit()) const;
+
+  // Determines the position of the out of flow item's container.
+  void DeterminePositionOfOutOfFlowContainer(
+      Vector<GridItemData>* out_of_flow_items,
+      const GridTrackSizingDirection track_direction) const;
 
   GridTrackSizingDirection AutoFlowDirection() const;
 
