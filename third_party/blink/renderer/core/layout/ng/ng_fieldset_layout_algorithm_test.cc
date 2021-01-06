@@ -21,10 +21,6 @@ class NGFieldsetLayoutAlgorithmTest
   NGFieldsetLayoutAlgorithmTest()
       : ScopedLayoutNGFieldsetForTest(true),
         ScopedLayoutNGBlockFragmentationForTest(true) {}
-  void SetUp() override {
-    NGBaseLayoutAlgorithmTest::SetUp();
-    style_ = ComputedStyle::Create();
-  }
 
   scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
       Element* element) {
@@ -69,8 +65,6 @@ class NGFieldsetLayoutAlgorithmTest
     auto fragment = RunBlockLayoutAlgorithm(element);
     return DumpFragmentTree(fragment.get());
   }
-
-  scoped_refptr<ComputedStyle> style_;
 };
 
 TEST_F(NGFieldsetLayoutAlgorithmTest, Empty) {

@@ -36,11 +36,6 @@ class NGGridLayoutAlgorithmTest
       : ScopedLayoutNGGridForTest(true),
         ScopedLayoutNGBlockFragmentationForTest(true) {}
 
-  void SetUp() override {
-    NGBaseLayoutAlgorithmTest::SetUp();
-    style_ = ComputedStyle::Create();
-  }
-
   void BuildGridItemsAndTrackCollections(NGGridLayoutAlgorithm& algorithm) {
     // Measure Items
     algorithm.ConstructAndAppendGridItems(&grid_items_, &out_of_flow_items_);
@@ -197,8 +192,6 @@ class NGGridLayoutAlgorithmTest
 
   NGGridLayoutAlgorithmTrackCollection algorithm_column_track_collection_;
   NGGridLayoutAlgorithmTrackCollection algorithm_row_track_collection_;
-
-  scoped_refptr<ComputedStyle> style_;
 };
 
 TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmMeasuring) {

@@ -21,11 +21,6 @@ class NGColumnLayoutAlgorithmTest
   NGColumnLayoutAlgorithmTest()
       : ScopedLayoutNGBlockFragmentationForTest(true) {}
 
-  void SetUp() override {
-    NGBaseLayoutAlgorithmTest::SetUp();
-    style_ = ComputedStyle::Create();
-  }
-
   scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
       Element* element) {
     NGBlockNode container(element->GetLayoutBox());
@@ -48,8 +43,6 @@ class NGColumnLayoutAlgorithmTest
     auto fragment = RunBlockLayoutAlgorithm(element);
     return DumpFragmentTree(fragment.get());
   }
-
-  scoped_refptr<ComputedStyle> style_;
 };
 
 TEST_F(NGColumnLayoutAlgorithmTest, EmptyMulticol) {
