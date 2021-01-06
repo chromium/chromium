@@ -13,6 +13,10 @@
 #include "base/allocator/partition_allocator/pcscan.h"
 #include "build/build_config.h"
 
+#if defined(OS_WIN)
+#include "wow64apiset.h"
+#endif
+
 namespace base {
 
 namespace {
@@ -320,10 +324,10 @@ template <bool thread_safe>
 [[noreturn]] NOINLINE void PartitionRoot<thread_safe>::OutOfMemory(
     size_t size) {
 #if !defined(ARCH_CPU_64_BITS)
-  size_t virtual_address_space_size =
+  const size_t virtual_address_space_size =
       total_size_of_super_pages.load(std::memory_order_relaxed) +
       total_size_of_direct_mapped_pages.load(std::memory_order_relaxed);
-  size_t uncommitted_size =
+  const size_t uncommitted_size =
       virtual_address_space_size -
       total_size_of_committed_pages.load(std::memory_order_relaxed);
 
@@ -333,11 +337,20 @@ template <bool thread_safe>
     internal::PartitionOutOfMemoryWithLotsOfUncommitedPages(size);
   }
 
-  constexpr size_t kReasonableVirtualSize =
 #if defined(OS_WIN)
-      // 1GiB on Windows, as the entire address space is typically 2GiB.
-      1024 * 1024 * 1024;
+  // If true then we are running on 64-bit Windows.
+  BOOL is_wow_64 = FALSE;
+  // Intentionally ignoring failures.
+  IsWow64Process(GetCurrentProcess(), &is_wow_64);
+  // 32-bit address space on Windows is typically either 2 GiB (on 32-bit
+  // Windows) or 4 GiB (on 64-bit Windows). 2.8 and 1.0 GiB are just rough
+  // guesses as to how much address space PA can consume (note that code,
+  // stacks, and other allocators will also consume address space).
+  const size_t kReasonableVirtualSize = (is_wow_64 ? 2800 : 1024) * 1024 * 1024;
+  // Make it obvious whether we are running on 64-bit Windows.
+  base::debug::Alias(&is_wow_64);
 #else
+  constexpr size_t kReasonableVirtualSize =
       // 1.5GiB elsewhere, since address space is typically 3GiB.
       (1024 + 512) * 1024 * 1024;
 #endif
