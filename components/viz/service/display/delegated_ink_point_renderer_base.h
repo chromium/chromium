@@ -66,7 +66,7 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   std::vector<DelegatedInkPoint> FilterPoints();
 
   void PredictPoints(std::vector<DelegatedInkPoint>* ink_points_to_draw);
-  void ResetPrediction();
+  void ResetPrediction() override;
 
   std::unique_ptr<DelegatedInkMetadata> metadata_;
 

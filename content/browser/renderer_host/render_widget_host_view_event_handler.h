@@ -256,7 +256,7 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
 
   // Forward the location and timestamp of the event to viz if a delegated ink
   // trail is requested.
-  void ForwardDelegatedInkPoint(ui::LocatedEvent* event);
+  void ForwardDelegatedInkPoint(ui::LocatedEvent* event, bool hovering);
 
   // Flush the remote for testing purposes.
   void FlushForTest() { delegated_ink_point_renderer_.FlushForTesting(); }
@@ -327,6 +327,13 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   // support the delegated ink trails feature.
   mojo::Remote<viz::mojom::DelegatedInkPointRenderer>
       delegated_ink_point_renderer_;
+  // Used to know if we have already told viz to reset prediction because the
+  // final point of the delegated ink trail has been sent. True when prediction
+  // has already been reset for the most recent trail, false otherwise. This
+  // flag helps make sure that we don't send more IPCs than necessary to viz to
+  // reset prediction. Sending extra IPCs wouldn't impact correctness, but can
+  // impact performance due to the IPC overhead.
+  bool ended_delegated_ink_trail_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewEventHandler);
 };

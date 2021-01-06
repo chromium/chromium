@@ -153,6 +153,8 @@ void DelegatedInkPointRendererBase::PredictPoints(
 void DelegatedInkPointRendererBase::ResetPrediction() {
   predictor_->Reset();
   metrics_handler_.Reset();
+  TRACE_EVENT_INSTANT0("viz", "Delegated ink prediction reset.",
+                       TRACE_EVENT_SCOPE_THREAD);
 }
 
 void DelegatedInkPointRendererBase::StoreDelegatedInkPoint(

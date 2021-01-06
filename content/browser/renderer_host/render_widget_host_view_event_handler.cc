@@ -364,10 +364,13 @@ void RenderWidgetHostViewEventHandler::HandleMouseWheelEvent(
 }
 
 void RenderWidgetHostViewEventHandler::ForwardDelegatedInkPoint(
-    ui::LocatedEvent* event) {
+    ui::LocatedEvent* event,
+    bool hovering) {
   const cc::RenderFrameMetadata& last_metadata =
       host_->render_frame_metadata_provider()->LastRenderFrameMetadata();
-  if (last_metadata.delegated_ink_metadata.has_value()) {
+  if (last_metadata.delegated_ink_metadata.has_value() &&
+      hovering == last_metadata.delegated_ink_metadata.value()
+                      .delegated_ink_is_hovering) {
     if (!delegated_ink_point_renderer_.is_bound()) {
       ui::Compositor* compositor = window_ && window_->layer()
                                        ? window_->layer()->GetCompositor()
@@ -402,6 +405,16 @@ void RenderWidgetHostViewEventHandler::ForwardDelegatedInkPoint(
     // DrawAndSwap() is called, allowing more points to be drawn as part of
     // the delegated ink trail, and thus reducing user perceived latency.
     delegated_ink_point_renderer_->StoreDelegatedInkPoint(delegated_ink_point);
+    ended_delegated_ink_trail_ = false;
+  } else if (delegated_ink_point_renderer_.is_bound() &&
+             !ended_delegated_ink_trail_) {
+    // Let viz know that the most recent point it received from us is probably
+    // the last point the user is inking, so it shouldn't predict anything
+    // beyond it.
+    TRACE_EVENT_INSTANT0("input", "Delegated ink trail ended",
+                         TRACE_EVENT_SCOPE_THREAD);
+    delegated_ink_point_renderer_->ResetPrediction();
+    ended_delegated_ink_trail_ = true;
   }
 }
 
@@ -448,7 +461,9 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
     bool is_selection_popup = NeedsInputGrab(popup_child_host_view_);
     if (CanRendererHandleEvent(event, mouse_locked_, is_selection_popup) &&
         !(event->flags() & ui::EF_FROM_TOUCH)) {
-      ForwardDelegatedInkPoint(event);
+      bool hovering = (event->type() ^ ui::ET_MOUSE_DRAGGED) &&
+                      (event->type() ^ ui::ET_MOUSE_PRESSED);
+      ForwardDelegatedInkPoint(event, hovering);
 
       // Confirm existing composition text on mouse press, to make sure
       // the input caret won't be moved with an ongoing composition text.
@@ -573,7 +588,7 @@ void RenderWidgetHostViewEventHandler::OnTouchEvent(ui::TouchEvent* event) {
   if (handled)
     return;
 
-  ForwardDelegatedInkPoint(event);
+  ForwardDelegatedInkPoint(event, event->hovering());
 
   if (had_no_pointer)
     delegate_->selection_controller_client()->OnTouchDown();
