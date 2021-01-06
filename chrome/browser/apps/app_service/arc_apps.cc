@@ -229,6 +229,18 @@ base::flat_map<std::string, std::string> CreateIntentExtras(
   return extras;
 }
 
+const char* GetArcIntentAction(const std::string& action) {
+  if (action == apps_util::kIntentActionView) {
+    return arc::kIntentActionView;
+  } else if (action == apps_util::kIntentActionSend) {
+    return arc::kIntentActionSend;
+  } else if (action == apps_util::kIntentActionSendMultiple) {
+    return arc::kIntentActionSendMultiple;
+  } else {
+    return arc::kIntentActionView;
+  }
+}
+
 arc::mojom::IntentInfoPtr CreateArcIntent(apps::mojom::IntentPtr intent) {
   arc::mojom::IntentInfoPtr arc_intent;
   if (!intent->url.has_value() && !intent->share_text.has_value()) {
@@ -236,15 +248,7 @@ arc::mojom::IntentInfoPtr CreateArcIntent(apps::mojom::IntentPtr intent) {
   }
   arc_intent = arc::mojom::IntentInfo::New();
   if (intent->action.has_value()) {
-    if (intent->action.value() == apps_util::kIntentActionView) {
-      arc_intent->action = arc::kIntentActionView;
-    } else if (intent->action.value() == apps_util::kIntentActionSend) {
-      arc_intent->action = arc::kIntentActionSend;
-    } else if (intent->action.value() == apps_util::kIntentActionSendMultiple) {
-      arc_intent->action = arc::kIntentActionSendMultiple;
-    } else {
-      arc_intent->action = arc::kIntentActionView;
-    }
+    arc_intent->action = GetArcIntentAction(intent->action.value());
   } else {
     arc_intent->action = arc::kIntentActionView;
   }
@@ -362,7 +366,6 @@ arc::IntentFilter CreateArcIntentFilter(
   std::vector<arc::IntentFilter::AuthorityEntry> authorities;
   std::vector<arc::IntentFilter::PatternMatcher> paths;
   std::vector<std::string> mime_types;
-  // TODO(crbug.com/853604): Add conversion for actions and mime types.
   for (auto& condition : intent_filter->conditions) {
     switch (condition->condition_type) {
       case apps::mojom::ConditionType::kScheme:
@@ -398,13 +401,19 @@ arc::IntentFilter CreateArcIntentFilter(
               condition_value->value, match_type));
         }
         break;
-      // TODO(crbug.com/1092784): Handle action and mime type.
       case apps::mojom::ConditionType::kAction:
+        for (auto& condition_value : condition->condition_values) {
+          actions.push_back(GetArcIntentAction(condition_value->value));
+        }
+        break;
       case apps::mojom::ConditionType::kMimeType:
-        NOTIMPLEMENTED();
+        for (auto& condition_value : condition->condition_values) {
+          mime_types.push_back(condition_value->value);
+        }
+        break;
     }
   }
-  // TODO(crbug.com/853604): Add support for other action and category types.
+  // TODO(crbug.com/853604): Add support for other category types.
   return arc::IntentFilter(package_name, std::move(actions),
                            std::move(authorities), std::move(paths),
                            std::move(schemes), std::move(mime_types));
