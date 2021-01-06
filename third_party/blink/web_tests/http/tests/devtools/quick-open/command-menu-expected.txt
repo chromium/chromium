@@ -7,6 +7,7 @@ Has category: Debugger
 Has category: Drawer
 Has category: Elements
 Has category: Global
+Has category: Grid
 Has category: Mobile
 Has category: Network
 Has category: Panel

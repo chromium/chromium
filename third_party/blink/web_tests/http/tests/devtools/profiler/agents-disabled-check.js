@@ -20,12 +20,7 @@
   ProtocolClient.test.dumpProtocol = null;
   for (var i = 0; i < messages.length; ++i) {
     var message = messages[i];
-    if (message.startsWith('backend'))
-      continue;
-    // Manually remove "Grid" because CSS Grid is still experimental but enabled by default
-    // see: https://crrev.com/c/2416525
-    // TODO: remove this and update test expectations once CSS Grid is non-experimental
-    if (message.includes('setShowGridOverlays')) {
+    if (message.startsWith('backend')) {
       continue;
     }
     message = message.replace(/"id":\d+,/, '"id":<number>,');
