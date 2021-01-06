@@ -715,7 +715,10 @@ void HidServiceWin::AddDeviceBlocking(
     // Create a HidCollectionInfo for |device_path| and update the relevant
     // HidDeviceInfo properties.
     auto collection = preparsed_data->CreateHidCollectionInfo();
-    platform_device_id_map.emplace_back(collection->report_ids, device_path);
+    if (collection->report_ids.empty())
+      platform_device_id_map.emplace_back(std::vector<uint8_t>{0}, device_path);
+    else
+      platform_device_id_map.emplace_back(collection->report_ids, device_path);
     collections.push_back(std::move(collection));
     max_input_report_size = std::max(
         max_input_report_size, preparsed_data->GetReportByteLength(HidP_Input));

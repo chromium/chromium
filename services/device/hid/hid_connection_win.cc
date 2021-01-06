@@ -229,10 +229,15 @@ void HidConnectionWin::OnReadInputReport(
     scoped_refptr<base::RefCountedBytes> buffer,
     PendingHidTransfer* transfer_raw,
     bool signaled) {
-  std::unique_ptr<PendingHidTransfer> transfer = UnlinkTransfer(transfer_raw);
+  if (!signaled) {
+    HID_LOG(DEBUG) << "HID read failed.";
+    return;
+  }
+
+  auto transfer = UnlinkTransfer(transfer_raw);
   DWORD bytes_transferred;
-  if (!signaled || !GetOverlappedResult(file_handle, transfer->GetOverlapped(),
-                                        &bytes_transferred, FALSE)) {
+  if (!GetOverlappedResult(file_handle, transfer->GetOverlapped(),
+                           &bytes_transferred, FALSE)) {
     HID_PLOG(DEBUG) << "HID read failed";
     return;
   }
@@ -243,15 +248,12 @@ void HidConnectionWin::OnReadInputReport(
   }
 
   uint8_t report_id = buffer->data()[0];
-  if (IsReportIdProtected(report_id, HidReportType::kInput)) {
-    ReadNextInputReportOnHandle(file_handle);
-    return;
+  if (!IsReportIdProtected(report_id, HidReportType::kInput)) {
+    // Hold a reference to |this| to prevent a callback executed by
+    // ProcessInputReport from freeing this object.
+    scoped_refptr<HidConnection> self(this);
+    ProcessInputReport(buffer, bytes_transferred);
   }
-
-  // Hold a reference to |this| to prevent a callback executed by
-  // ProcessInputReport from freeing this object.
-  scoped_refptr<HidConnection> self(this);
-  ProcessInputReport(buffer, bytes_transferred);
 
   ReadNextInputReportOnHandle(file_handle);
 }
@@ -262,31 +264,45 @@ void HidConnectionWin::OnReadFeatureComplete(
     ReadCallback callback,
     PendingHidTransfer* transfer_raw,
     bool signaled) {
-  std::unique_ptr<PendingHidTransfer> transfer = UnlinkTransfer(transfer_raw);
+  if (!signaled) {
+    HID_LOG(DEBUG) << "HID read failed.";
+    std::move(callback).Run(false, nullptr, 0);
+    return;
+  }
+
+  auto transfer = UnlinkTransfer(transfer_raw);
   DWORD bytes_transferred;
-  if (signaled && GetOverlappedResult(file_handle, transfer->GetOverlapped(),
-                                      &bytes_transferred, FALSE)) {
-    DCHECK_LE(bytes_transferred, buffer->size());
-    std::move(callback).Run(true, buffer, bytes_transferred);
-  } else {
+  if (!GetOverlappedResult(file_handle, transfer->GetOverlapped(),
+                           &bytes_transferred, FALSE)) {
     HID_PLOG(DEBUG) << "HID read failed";
     std::move(callback).Run(false, nullptr, 0);
+    return;
   }
+
+  DCHECK_LE(bytes_transferred, buffer->size());
+  std::move(callback).Run(true, buffer, bytes_transferred);
 }
 
 void HidConnectionWin::OnWriteComplete(HANDLE file_handle,
                                        WriteCallback callback,
                                        PendingHidTransfer* transfer_raw,
                                        bool signaled) {
-  std::unique_ptr<PendingHidTransfer> transfer = UnlinkTransfer(transfer_raw);
+  if (!signaled) {
+    HID_LOG(DEBUG) << "HID write failed.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  auto transfer = UnlinkTransfer(transfer_raw);
   DWORD bytes_transferred;
-  if (signaled && GetOverlappedResult(file_handle, transfer->GetOverlapped(),
-                                      &bytes_transferred, FALSE)) {
-    std::move(callback).Run(true);
-  } else {
+  if (!GetOverlappedResult(file_handle, transfer->GetOverlapped(),
+                           &bytes_transferred, FALSE)) {
     HID_PLOG(DEBUG) << "HID write failed";
     std::move(callback).Run(false);
+    return;
   }
+
+  std::move(callback).Run(true);
 }
 
 std::unique_ptr<PendingHidTransfer> HidConnectionWin::UnlinkTransfer(
