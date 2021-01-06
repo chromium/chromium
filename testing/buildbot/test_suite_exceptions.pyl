@@ -404,11 +404,6 @@
           '--additional-driver-flag=--enable-blink-features=EditingNG',
         ],
       },
-      'linux-layout-tests-fragment-item': {
-        'args': [
-          '--additional-driver-flag=--enable-blink-features=LayoutNGFragmentItem',
-        ],
-      },
       'mac10.12-blink-rel-dummy': {
         'swarming': {
           'shards': 20,

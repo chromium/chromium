@@ -463,15 +463,6 @@
       "use_goma": true
     }
   },
-  "linux-layout-tests-fragment-item": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "linux-libfuzzer-asan-rel": {
     "gn_args": {
       "dcheck_always_on": true,
