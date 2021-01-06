@@ -1221,6 +1221,8 @@ static_library("browser") {
     "policy/messaging_layer/encryption/encryption.h",
     "policy/messaging_layer/encryption/encryption_module.cc",
     "policy/messaging_layer/encryption/encryption_module.h",
+    "policy/messaging_layer/encryption/verification.cc",
+    "policy/messaging_layer/encryption/verification.h",
     "policy/messaging_layer/public/report_client.cc",
     "policy/messaging_layer/public/report_client.h",
     "policy/messaging_layer/public/report_queue.cc",

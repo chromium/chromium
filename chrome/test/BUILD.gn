@@ -3659,6 +3659,7 @@ test("unit_tests") {
     "../browser/policy/messaging_layer/encryption/encryption_unittest.cc",
     "../browser/policy/messaging_layer/encryption/test_encryption_module.cc",
     "../browser/policy/messaging_layer/encryption/test_encryption_module.h",
+    "../browser/policy/messaging_layer/encryption/verification_unittest.cc",
     "../browser/policy/messaging_layer/public/report_client_unittest.cc",
     "../browser/policy/messaging_layer/public/report_queue_configuration_unittest.cc",
     "../browser/policy/messaging_layer/public/report_queue_unittest.cc",
