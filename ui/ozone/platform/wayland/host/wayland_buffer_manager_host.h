@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_BUFFER_MANAGER_HOST_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_BUFFER_MANAGER_HOST_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 
@@ -155,6 +154,14 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
       gfx::AcceleratedWidget widget,
       std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlays) override;
 
+  // Called by WaylandWindow to start recording a frame. This helps record the
+  // number of subsurface commits needed to finish for this frame before
+  // |root_surface| can be committed.
+  // This pairs with an EndCommitFrame(). Every CommitBufferInternal() in
+  // between increases the number of needed pending commits by 1.
+  void StartFrame(WaylandSurface* root_surface);
+  void EndFrame(uint32_t buffer_id = 0u);
+
   // Called by the WaylandWindow and asks to attach a wl_buffer with a
   // |buffer_id| to a WaylandSurface.
   // Calls OnSubmission and OnPresentation on successful swap and pixels
@@ -173,13 +180,8 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
       uint32_t buffer_id,
       const gfx::Rect& damage_region,
       bool wait_for_frame_callback = true,
+      bool commit_synced_subsurface = false,
       gfx::GpuFenceHandle access_fence_handle = gfx::GpuFenceHandle());
-
-  // Does a wl_surface commit without attaching any buffers. This commit will
-  // still wait for previous wl_frame_callback. Similar to above but for
-  // commits that do not change the root_surface.
-  bool CommitWithoutBufferInternal(WaylandSurface* wayland_surface,
-                                   bool wait_for_frame_callback = true);
 
   // When a surface is hidden, the client may want to detach the buffer attached
   // to the surface to ensure Wayland does not present those contents and do not
@@ -196,9 +198,16 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
   // presentation callbacks for that surface.
   class Surface;
 
+  // This represents a frame that consists of state changes to multiple
+  // synchronized wl_surfaces that are in the same hierarchy. It defers
+  // committing the root surface until all child surfaces' states are ready.
+  struct Frame;
+
   bool CreateBuffer(const gfx::Size& size, uint32_t buffer_id);
 
   Surface* GetSurface(WaylandSurface* wayland_surface) const;
+
+  void RemovePendingFrames(WaylandSurface* root_surface, uint32_t buffer_id);
 
   // Validates data sent from GPU. If invalid, returns false and sets an error
   // message to |error_message_|.
@@ -236,6 +245,10 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
   bool DestroyAnonymousBuffer(uint32_t buffer_id);
 
   base::flat_map<WaylandSurface*, std::unique_ptr<Surface>> surfaces_;
+
+  // When StartCommitFrame() is called, a Frame is pushed to
+  // |pending_frames_|. See StartCommitFrame().
+  std::vector<std::unique_ptr<Frame>> pending_frames_;
 
   // When a WaylandWindow/WaylandSubsurface is removed, its corresponding
   // Surface may still have an un-released buffer and un-acked presentation.
