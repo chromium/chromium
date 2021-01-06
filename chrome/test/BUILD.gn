@@ -4322,6 +4322,10 @@ test("unit_tests") {
     ]
   }
 
+  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    sources += [ "../browser/ui/profile_picker_unittest.cc" ]
+  }
+
   if (enable_offline_pages) {
     sources += [
       "../browser/offline_pages/background_loader_offliner_unittest.cc",
