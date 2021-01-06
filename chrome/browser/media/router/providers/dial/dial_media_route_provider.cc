@@ -147,10 +147,10 @@ void DialMediaRouteProvider::CreateRoute(const std::string& media_source,
   // the Cast SDK to complete the launch sequence. The first messages that the
   // MRP needs to send are the RECEIVER_ACTION and NEW_SESSION.
   std::vector<mojom::RouteMessagePtr> messages;
-  messages.emplace_back(internal_message_util_.CreateReceiverActionCastMessage(
-      activity->launch_info, *sink));
-  messages.emplace_back(internal_message_util_.CreateNewSessionMessage(
-      activity->launch_info, *sink));
+  messages.push_back(internal_message_util_.CreateReceiverActionCastMessage(
+      activity->launch_info.client_id, *sink));
+  messages.push_back(internal_message_util_.CreateNewSessionMessage(
+      activity->launch_info.app_name, activity->launch_info.client_id, *sink));
   message_sender_->SendMessages(route_id, std::move(messages));
 }
 
@@ -358,14 +358,14 @@ void DialMediaRouteProvider::SendCustomDialLaunchMessage(
 
   auto message_and_seq_number =
       internal_message_util_.CreateCustomDialLaunchMessage(
-          activity->launch_info, *sink, *result.app_info);
+          activity->launch_info.client_id, *sink, *result.app_info);
   pending_dial_launches_.insert(message_and_seq_number.second);
   if (pending_dial_launches_.size() > kMaxPendingDialLaunches) {
     pending_dial_launches_.erase(pending_dial_launches_.begin());
   }
 
   std::vector<mojom::RouteMessagePtr> messages;
-  messages.emplace_back(std::move(message_and_seq_number.first));
+  messages.push_back(std::move(message_and_seq_number.first));
   message_sender_->SendMessages(route_id, std::move(messages));
 }
 
@@ -379,17 +379,22 @@ void DialMediaRouteProvider::SendDialAppInfoResponse(
 
   auto* activity = activity_manager_->GetActivity(route_id);
   auto* sink = media_sink_service_->GetSinkById(sink_id);
-  // TODO(crbug.com/1153895): If |result.app_info| is null, we may want to send
-  // an error message to the sender client.
-  if (!result.app_info || !activity || !sink) {
+  // If the activity no longer exists, there is no need to inform the sender
+  // client of the activity status.
+  if (!activity || !sink) {
     return;
   }
-  mojom::RouteMessagePtr message =
-      internal_message_util_.CreateDialAppInfoMessage(
-          activity->launch_info, *sink, *result.app_info, sequence_number,
-          DialInternalMessageType::kDialAppInfo);
+  mojom::RouteMessagePtr message;
+  if (result.app_info) {
+    message = internal_message_util_.CreateDialAppInfoMessage(
+        activity->launch_info.client_id, *sink, *result.app_info,
+        sequence_number, DialInternalMessageType::kDialAppInfo);
+  } else {
+    message = internal_message_util_.CreateDialAppInfoErrorMessage(
+        result.result_code, activity->launch_info.client_id, sequence_number);
+  }
   std::vector<mojom::RouteMessagePtr> messages;
-  messages.emplace_back(std::move(message));
+  messages.push_back(std::move(message));
   message_sender_->SendMessages(route_id, std::move(messages));
 }
 
@@ -447,9 +452,8 @@ void DialMediaRouteProvider::DoTerminateRoute(const DialActivity& activity,
       can_stop_app = activity_manager_->CanStopApp(route_id);
   if (can_stop_app.second == RouteRequestResult::OK) {
     std::vector<mojom::RouteMessagePtr> messages;
-    messages.emplace_back(
-        internal_message_util_.CreateReceiverActionStopMessage(
-            activity.launch_info, sink));
+    messages.push_back(internal_message_util_.CreateReceiverActionStopMessage(
+        activity.launch_info.client_id, sink));
     message_sender_->SendMessages(route_id, std::move(messages));
     activity_manager_->StopApp(
         route_id,

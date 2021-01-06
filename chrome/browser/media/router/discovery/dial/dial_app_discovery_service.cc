@@ -115,6 +115,8 @@ void DialAppDiscoveryService::PendingRequest::OnDialAppInfoFetchError(
     int response_code,
     const std::string& error_message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // FIXME: |response_code| uses internal codes from net/base/net_error_list.h
+  // instead of HTTP status codes, so |kNotFound| is never used.
   if (response_code == net::HTTP_NOT_FOUND ||
       response_code >= net::HTTP_INTERNAL_SERVER_ERROR ||
       response_code == net::HTTP_OK) {

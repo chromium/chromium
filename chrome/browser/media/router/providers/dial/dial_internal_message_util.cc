@@ -11,7 +11,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/media/router/providers/dial/dial_activity_manager.h"
 #include "components/media_router/browser/route_message_util.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "net/base/escape.h"
@@ -49,6 +48,8 @@ std::string DialInternalMessageTypeToString(DialInternalMessageType type) {
       return "custom_dial_launch";
     case DialInternalMessageType::kDialAppInfo:
       return "dial_app_info";
+    case DialInternalMessageType::kError:
+      return "error";
     case DialInternalMessageType::kOther:
       break;
   }
@@ -76,6 +77,9 @@ DialInternalMessageType StringToDialInternalMessageType(
   if (str_type == "dial_app_info")
     return DialInternalMessageType::kDialAppInfo;
 
+  if (str_type == "error")
+    return DialInternalMessageType::kError;
+
   return DialInternalMessageType::kOther;
 }
 
@@ -88,6 +92,22 @@ std::string DialReceiverActionToString(DialReceiverAction action) {
   }
   NOTREACHED() << "Unknown DialReceiverAction: " << static_cast<int>(action);
   return "";
+}
+
+std::string DialAppInfoErrorToString(DialAppInfoResultCode error) {
+  switch (error) {
+    case DialAppInfoResultCode::kNotFound:
+      return "not_found";
+    case DialAppInfoResultCode::kNetworkError:
+      return "network_error";
+    case DialAppInfoResultCode::kParsingError:
+      return "parsing_error";
+    case DialAppInfoResultCode::kOk:
+    case DialAppInfoResultCode::kCount:
+      NOTREACHED() << "Unexpected DialAppInfoResultCode: "
+                   << static_cast<int>(error);
+      return "";
+  }
 }
 
 }  // namespace
@@ -203,69 +223,67 @@ bool DialInternalMessageUtil::IsStopSessionMessage(
 }
 
 mojom::RouteMessagePtr DialInternalMessageUtil::CreateNewSessionMessage(
-    const DialLaunchInfo& launch_info,
+    const std::string& app_name,
+    const std::string& client_id,
     const MediaSinkInternal& sink) const {
-  base::Value message = CreateDialMessageCommon(
-      DialInternalMessageType::kNewSession,
-      CreateNewSessionBody(launch_info, sink), launch_info.client_id);
-
-  std::string str;
-  CHECK(base::JSONWriter::Write(message, &str));
-  return message_util::RouteMessageFromString(std::move(str));
+  base::Value message =
+      CreateDialMessageCommon(DialInternalMessageType::kNewSession,
+                              CreateNewSessionBody(app_name, sink), client_id);
+  return message_util::RouteMessageFromValue(std::move(message));
 }
 
 mojom::RouteMessagePtr DialInternalMessageUtil::CreateReceiverActionCastMessage(
-    const DialLaunchInfo& launch_info,
+    const std::string& client_id,
     const MediaSinkInternal& sink) const {
   base::Value message = CreateDialMessageCommon(
       DialInternalMessageType::kReceiverAction,
-      CreateReceiverActionBody(sink, DialReceiverAction::kCast),
-      launch_info.client_id);
-
-  std::string str;
-  CHECK(base::JSONWriter::Write(message, &str));
-  return message_util::RouteMessageFromString(std::move(str));
+      CreateReceiverActionBody(sink, DialReceiverAction::kCast), client_id);
+  return message_util::RouteMessageFromValue(std::move(message));
 }
 
 mojom::RouteMessagePtr DialInternalMessageUtil::CreateReceiverActionStopMessage(
-    const DialLaunchInfo& launch_info,
+    const std::string& client_id,
     const MediaSinkInternal& sink) const {
   base::Value message = CreateDialMessageCommon(
       DialInternalMessageType::kReceiverAction,
-      CreateReceiverActionBody(sink, DialReceiverAction::kStop),
-      launch_info.client_id);
-
-  std::string str;
-  CHECK(base::JSONWriter::Write(message, &str));
-  return message_util::RouteMessageFromString(std::move(str));
+      CreateReceiverActionBody(sink, DialReceiverAction::kStop), client_id);
+  return message_util::RouteMessageFromValue(std::move(message));
 }
 
 std::pair<mojom::RouteMessagePtr, int>
 DialInternalMessageUtil::CreateCustomDialLaunchMessage(
-    const DialLaunchInfo& launch_info,
+    const std::string& client_id,
     const MediaSinkInternal& sink,
     const ParsedDialAppInfo& app_info) const {
   int seq_number = GetNextDialLaunchSequenceNumber();
   // A CUSTOM_DIAL_LAUNCH message is the same as A DIAL_APP_INFO response except
   // for the message type.
-  return {CreateDialAppInfoMessage(launch_info, sink, app_info, seq_number,
+  return {CreateDialAppInfoMessage(client_id, sink, app_info, seq_number,
                                    DialInternalMessageType::kCustomDialLaunch),
           seq_number};
 }
 
 mojom::RouteMessagePtr DialInternalMessageUtil::CreateDialAppInfoMessage(
-    const DialLaunchInfo& launch_info,
+    const std::string& client_id,
     const MediaSinkInternal& sink,
     const ParsedDialAppInfo& app_info,
     int sequence_number,
     DialInternalMessageType type) const {
   base::Value message = CreateDialMessageCommon(
-      type, CreateDialAppInfoBody(sink, app_info), launch_info.client_id);
-  message.SetKey("sequenceNumber", base::Value(sequence_number));
+      type, CreateDialAppInfoBody(sink, app_info), client_id, sequence_number);
+  return message_util::RouteMessageFromValue(std::move(message));
+}
 
-  std::string str;
-  CHECK(base::JSONWriter::Write(message, &str));
-  return message_util::RouteMessageFromString(std::move(str));
+mojom::RouteMessagePtr DialInternalMessageUtil::CreateDialAppInfoErrorMessage(
+    DialAppInfoResultCode result_code,
+    const std::string& client_id,
+    int sequence_number) const {
+  base::Value body(base::Value::Type::DICTIONARY);
+  body.SetKey("code", base::Value(DialAppInfoErrorToString(result_code)));
+  base::Value message =
+      CreateDialMessageCommon(DialInternalMessageType::kError, std::move(body),
+                              client_id, sequence_number);
+  return message_util::RouteMessageFromValue(std::move(message));
 }
 
 base::Value DialInternalMessageUtil::CreateReceiver(
@@ -301,12 +319,12 @@ base::Value DialInternalMessageUtil::CreateReceiverActionBody(
 }
 
 base::Value DialInternalMessageUtil::CreateNewSessionBody(
-    const DialLaunchInfo& launch_info,
+    const std::string& app_name,
     const MediaSinkInternal& sink) const {
   base::Value message_body(base::Value::Type::DICTIONARY);
   message_body.SetKey("sessionId", base::Value(GetNextSessionId()));
   message_body.SetKey("appId", base::Value(""));
-  message_body.SetKey("displayName", base::Value(launch_info.app_name));
+  message_body.SetKey("displayName", base::Value(app_name));
   message_body.SetKey("statusText", base::Value(""));
   message_body.SetKey("appImages", base::ListValue());
   message_body.SetKey("receiver", CreateReceiver(sink));
@@ -337,12 +355,13 @@ base::Value DialInternalMessageUtil::CreateDialAppInfoBody(
 base::Value DialInternalMessageUtil::CreateDialMessageCommon(
     DialInternalMessageType type,
     base::Value body,
-    const std::string& client_id) const {
+    const std::string& client_id,
+    int sequence_number) const {
   base::Value message(base::Value::Type::DICTIONARY);
   message.SetKey("type", base::Value(DialInternalMessageTypeToString(type)));
   message.SetKey("message", std::move(body));
   message.SetKey("clientId", base::Value(client_id));
-  message.SetKey("sequenceNumber", base::Value(-1));
+  message.SetKey("sequenceNumber", base::Value(sequence_number));
   message.SetKey("timeoutMillis", base::Value(0));
   return message;
 }

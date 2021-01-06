@@ -4,13 +4,22 @@
 
 #include "components/media_router/browser/route_message_util.h"
 
+#include "base/json/json_writer.h"
 #include "base/macros.h"
+#include "base/values.h"
 
 using media_router::mojom::RouteMessage;
 using media_router::mojom::RouteMessagePtr;
 
 namespace media_router {
 namespace message_util {
+
+media_router::mojom::RouteMessagePtr RouteMessageFromValue(
+    base::Value message) {
+  std::string str;
+  CHECK(base::JSONWriter::Write(message, &str));
+  return RouteMessageFromString(std::move(str));
+}
 
 RouteMessagePtr RouteMessageFromString(std::string message) {
   auto route_message = RouteMessage::New();
