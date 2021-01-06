@@ -651,6 +651,8 @@ bool FillAV1PictureParameter(const AV1Picture& pic,
   va_pic_info_fields.disable_frame_end_update_cdf =
       !frame_header.enable_frame_end_update_cdf;
 
+  static_assert(libgav1::kSuperResScaleNumerator == 8,
+                "Invalid libgav1::kSuperResScaleNumerator value");
   CHECK_EQ(frame_header.superres_scale_denominator,
            libgav1::kSuperResScaleNumerator);
   va_pic_param.superres_scale_denominator =
