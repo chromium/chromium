@@ -73,9 +73,13 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
   manager->core()->service()->RefreshPolicy(std::move(callback));
 }
 
-void UserPolicySigninServiceBase::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  ShutdownUserCloudPolicyManager();
+void UserPolicySigninServiceBase::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    DCHECK(!identity_manager_->HasPrimaryAccount());
+    ShutdownUserCloudPolicyManager();
+  }
 }
 
 void UserPolicySigninServiceBase::Observe(

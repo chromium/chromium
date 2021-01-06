@@ -85,8 +85,8 @@ class UserPolicySigninServiceBase : public KeyedService,
       PolicyFetchCallback callback);
 
   // signin::IdentityManager::Observer implementation:
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // content::NotificationObserver implementation:
   void Observe(int type,
