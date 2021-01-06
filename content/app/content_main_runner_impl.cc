@@ -1011,11 +1011,10 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
   // Enable PCScan once we are certain that FeatureList was initialized.
   EnablePCScanForMallocPartitionsIfNeeded();
 
-  // This is only relevant for PartitionAlloc-Everywhere builds.
-  // Temporarily disabled for non-DCHECK() builds on Windows, due to possibly
-  // related crashes (crbug.com/1155905).
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    !(defined(OS_WIN) && !DCHECK_IS_ON())
+  // This is only relevant for PartitionAlloc-Everywhere builds. Temporarily
+  // disabled for non-DCHECK() builds, due to possibly related crashes
+  // (crbug.com/1155905).
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && DCHECK_IS_ON()
   base::internal::ThreadCacheRegistry::Instance().StartPeriodicPurge();
 #endif
 
