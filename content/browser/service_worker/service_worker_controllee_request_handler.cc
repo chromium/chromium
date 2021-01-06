@@ -116,14 +116,14 @@ void ServiceWorkerControlleeRequestHandler::MaybeScheduleUpdate() {
 void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
     const network::ResourceRequest& tentative_resource_request,
     BrowserContext* browser_context,
-    NavigationLoaderInterceptor::LoaderCallback loader_callback,
+    ServiceWorkerLoaderCallback callback,
     NavigationLoaderInterceptor::FallbackCallback fallback_callback) {
   // InitializeContainerHost() will update the host. This is important to do
   // before falling back to network below, so service worker APIs still work
   // even if the service worker is bypassed for request interception.
   if (!InitializeContainerHost(tentative_resource_request)) {
     // We can't do anything other than to fall back to network.
-    std::move(loader_callback).Run({});
+    std::move(callback).Run({});
     return;
   }
 
@@ -131,7 +131,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   // request interception, or if the context is gone so we have to bypass
   // anyway.
   if (skip_service_worker_ || !context_) {
-    std::move(loader_callback).Run({});
+    std::move(callback).Run({});
     return;
   }
 
@@ -145,7 +145,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   // headers between now and when the request handler passed to
   // |loader_callback_| is invoked.
   if (ShouldFallbackToLoadOfflinePage(tentative_resource_request.headers)) {
-    std::move(loader_callback).Run({});
+    std::move(callback).Run({});
     return;
   }
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -160,7 +160,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "URL",
       tentative_resource_request.url.spec());
 
-  loader_callback_ = std::move(loader_callback);
+  loader_callback_ = std::move(callback);
   fallback_callback_ = std::move(fallback_callback);
   registration_lookup_start_time_ = base::TimeTicks::Now();
   browser_context_ = browser_context;
@@ -426,9 +426,8 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "Info",
       "Forwarded to the ServiceWorker");
   std::move(loader_callback_)
-      .Run(base::MakeRefCounted<SingleRequestURLLoaderFactory>(
-          base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
-                         loader_wrapper_->get()->AsWeakPtr())));
+      .Run(base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
+                          loader_wrapper_->get()->AsWeakPtr()));
 }
 
 void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(

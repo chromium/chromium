@@ -124,7 +124,8 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   ServiceWorkerContextCore* context_core =
       handle_->context_wrapper()->context();
   if (!context_core || !browser_context) {
-    std::move(loader_callback).Run(/*handler=*/{});
+    LoaderCallbackWrapper(std::move(loader_callback),
+                          /*handler=*/{});
     return;
   }
 
@@ -197,15 +198,19 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     // ControllerServiceWorkerInfoPtr and ServiceWorkerObjectHost from the
     // subresource loader params which is created by the interceptor.
     if (inherit_container_host_only) {
-      std::move(loader_callback).Run(/*handler=*/{});
+      LoaderCallbackWrapper(std::move(loader_callback),
+                            /*handler=*/{});
       return;
     }
   }
 
-  // Start the inner interceptor. It will invoke the loader callback
-  // or fallback callback.
+  // Start the inner interceptor. We continue in
+  // LoaderCallbackWrapper() or the fallback callback is called.
   handle_->interceptor()->MaybeCreateLoader(
-      tentative_resource_request, browser_context, std::move(loader_callback),
+      tentative_resource_request, browser_context,
+      base::BindOnce(
+          &ServiceWorkerMainResourceLoaderInterceptor::LoaderCallbackWrapper,
+          GetWeakPtr(), std::move(loader_callback)),
       std::move(fallback_callback));
 }
 
@@ -254,6 +259,28 @@ ServiceWorkerMainResourceLoaderInterceptor::
   }
   params.controller_service_worker_info = std::move(controller_info);
   return base::Optional<SubresourceLoaderParams>(std::move(params));
+}
+
+void ServiceWorkerMainResourceLoaderInterceptor::LoaderCallbackWrapper(
+    LoaderCallback loader_callback,
+    SingleRequestURLLoaderFactory::RequestHandler handler) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!handler) {
+    std::move(loader_callback).Run({});
+    return;
+  }
+
+  // The inner interceptor wants to handle the request.
+  std::move(loader_callback)
+      .Run(base::MakeRefCounted<SingleRequestURLLoaderFactory>(
+          std::move(handler)));
+}
+
+base::WeakPtr<ServiceWorkerMainResourceLoaderInterceptor>
+ServiceWorkerMainResourceLoaderInterceptor::GetWeakPtr() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return weak_factory_.GetWeakPtr();
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::
