@@ -39,8 +39,6 @@ class CheckResultReceiver {
   base::WeakPtrFactory<CheckResultReceiver> weak_ptr_factory_{this};
 };
 
-const int kRenderFrameID = 1;
-
 class SubresourceRedirectRobotsRulesParserTest : public testing::Test {
  public:
   SubresourceRedirectRobotsRulesParserTest()
@@ -58,12 +56,10 @@ class SubresourceRedirectRobotsRulesParserTest : public testing::Test {
   // Verify robots rules check result is received synchronously with the
   // expected result.
   void CheckRobotsRules(const std::string& url_path_with_query,
-                        RobotsRulesParser::CheckResult expected_result,
-                        int render_frame_id = kRenderFrameID) {
+                        RobotsRulesParser::CheckResult expected_result) {
     CheckResultReceiver result_receiver;
     auto result = robots_rules_parser_.CheckRobotsRules(
-        render_frame_id, GURL(kTestOrigin + url_path_with_query),
-        result_receiver.GetCallback());
+        GURL(kTestOrigin + url_path_with_query), result_receiver.GetCallback());
     EXPECT_FALSE(result_receiver.did_receive_result());
     EXPECT_EQ(expected_result, result);
   }
@@ -71,11 +67,10 @@ class SubresourceRedirectRobotsRulesParserTest : public testing::Test {
   // Verify robots rules check result is received asynchronously, and returns
   // the receiver that can be used to check the result.
   std::unique_ptr<CheckResultReceiver> CheckRobotsRulesAsync(
-      const std::string& url_path_with_query,
-      int render_frame_id = kRenderFrameID) {
+      const std::string& url_path_with_query) {
     auto result_receiver = std::make_unique<CheckResultReceiver>();
     EXPECT_FALSE(robots_rules_parser_.CheckRobotsRules(
-        render_frame_id, GURL(kTestOrigin + url_path_with_query),
+        GURL(kTestOrigin + url_path_with_query),
         result_receiver->GetCallback()));
     return result_receiver;
   }
@@ -201,11 +196,10 @@ TEST_F(SubresourceRedirectRobotsRulesParserTest,
   auto receiver1 = std::make_unique<CheckResultReceiver>();
   auto receiver2 = std::make_unique<CheckResultReceiver>();
 
-  robots_rules_parser->CheckRobotsRules(kRenderFrameID,
-                                        GURL("https://test.com/foo.jpg"),
+  robots_rules_parser->CheckRobotsRules(GURL("https://test.com/foo.jpg"),
                                         receiver1->GetCallback());
-  robots_rules_parser->CheckRobotsRules(
-      kRenderFrameID, GURL("https://test.com/bar"), receiver2->GetCallback());
+  robots_rules_parser->CheckRobotsRules(GURL("https://test.com/bar"),
+                                        receiver2->GetCallback());
   EXPECT_FALSE(receiver1->did_receive_result());
   EXPECT_FALSE(receiver2->did_receive_result());
   VerifyTotalRobotsRulesApplyHistograms(0);
@@ -376,43 +370,6 @@ TEST_F(SubresourceRedirectRobotsRulesParserTest, TestRulesAreCaseSensitive) {
                    RobotsRulesParser::CheckResult::kDisallowed);
 
   VerifyTotalRobotsRulesApplyHistograms(6);
-}
-
-TEST_F(SubresourceRedirectRobotsRulesParserTest,
-       TestInvalidatePendingRequests) {
-  auto receiver1 = CheckRobotsRulesAsync("/allowed.jpg", 1 /*render_frame_id*/);
-  auto receiver2 =
-      CheckRobotsRulesAsync("/disallowed.jpg", 1 /*render_frame_id*/);
-  auto receiver3 = CheckRobotsRulesAsync("/allowed.jpg", 2 /*render_frame_id*/);
-  auto receiver4 =
-      CheckRobotsRulesAsync("/disallowed.jpg", 2 /*render_frame_id*/);
-
-  // Invalidate should cancel requests for that render frame ID.
-  robots_rules_parser_.InvalidatePendingRequests(1 /*render_frame_id*/);
-  EXPECT_TRUE(receiver1->did_receive_result());
-  EXPECT_TRUE(receiver2->did_receive_result());
-  EXPECT_EQ(RobotsRulesParser::CheckResult::kInvalidated,
-            receiver1->check_result());
-  EXPECT_EQ(RobotsRulesParser::CheckResult::kInvalidated,
-            receiver2->check_result());
-  EXPECT_FALSE(receiver3->did_receive_result());
-  EXPECT_FALSE(receiver4->did_receive_result());
-  VerifyTotalRobotsRulesApplyHistograms(0);
-
-  // When robots rules are retrieved, the
-  SetUpRobotsRules({{kRuleTypeAllow, "/allow*"}, {kRuleTypeDisallow, "/*"}});
-  EXPECT_TRUE(receiver3->did_receive_result());
-  EXPECT_TRUE(receiver4->did_receive_result());
-  EXPECT_EQ(RobotsRulesParser::CheckResult::kAllowed,
-            receiver3->check_result());
-  EXPECT_EQ(RobotsRulesParser::CheckResult::kDisallowed,
-            receiver4->check_result());
-  VerifyTotalRobotsRulesApplyHistograms(2);
-
-  CheckRobotsRules("/allowed.jpg", RobotsRulesParser::CheckResult::kAllowed);
-  CheckRobotsRules("/disallowed.jpg",
-                   RobotsRulesParser::CheckResult::kDisallowed);
-  VerifyTotalRobotsRulesApplyHistograms(4);
 }
 
 }  // namespace subresource_redirect

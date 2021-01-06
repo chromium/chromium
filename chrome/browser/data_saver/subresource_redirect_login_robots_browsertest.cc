@@ -14,8 +14,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
-#include "chrome/browser/login_detection/login_detection_type.h"
-#include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_redirect/https_image_compression_infobar_decider.h"
 #include "chrome/browser/ui/browser.h"
@@ -37,30 +35,6 @@ namespace subresource_redirect {
 
 const bool kRuleTypeAllow = true;
 const bool kRuleTypeDisallow = false;
-
-// TODO(rajendrant): Delete this enum after moving RedirectResult in
-// chrome/renderer/subresource_redirect/redirect_result.h out of
-// chrome/renderer.
-enum class RedirectResult {
-  kUnknown = 0,
-  kRedirectable,
-
-  // Possible reasons for ineligibility:
-  kIneligibleBlinkDisallowed,
-  kIneligibleSubframeResource,
-  kIneligibleRedirectFailed,
-
-  // Possible reasons for ineligibility due to public image hints approach:
-  kIneligibleImageHintsUnavailable,
-  kIneligibleImageHintsUnavailableButRedirectable,
-  kIneligibleImageHintsUnavailableAndMissingInHints,
-  kIneligibleMissingInImageHints,
-
-  // Possible reasons for ineligibility due to login and robots rules
-  // based approach:
-  kIneligibleRobotsDisallowed,
-  kIneligibleRobotsTimeout,
-};
 
 // Holds one allow or disallow robots rule
 struct RobotsRule {
@@ -290,12 +264,10 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
  public:
   explicit SubresourceRedirectLoginRobotsBrowserTest(
       bool enable_lite_mode = true,
-      bool enable_login_robots_compression_feature = true,
-      const std::string& logged_in_sites = "")
+      bool enable_login_robots_compression_feature = true)
       : enable_lite_mode_(enable_lite_mode),
         enable_login_robots_compression_feature_(
             enable_login_robots_compression_feature),
-        logged_in_sites_(logged_in_sites),
         https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   ~SubresourceRedirectLoginRobotsBrowserTest() override = default;
@@ -318,7 +290,7 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
         enabled_features;
     if (enable_login_robots_compression_feature_) {
-      base::FieldTrialParams params, login_detection_params;
+      base::FieldTrialParams params;
       params["enable_public_image_hints_based_compression"] = "false";
       params["enable_login_robots_based_compression"] = "true";
       params["lite_page_robots_origin"] = robots_rules_server_.GetURL();
@@ -327,11 +299,8 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
       // This rules fetch timeout is chosen such that the tests would have
       // enough time to fetch the rules without causing a timeout.
       params["robots_rules_receive_timeout"] = "1000";
-      login_detection_params["logged_in_sites"] = logged_in_sites_;
       enabled_features.emplace_back(blink::features::kSubresourceRedirect,
                                     params);
-      enabled_features.emplace_back(login_detection::kLoginDetection,
-                                    login_detection_params);
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
     InProcessBrowserTest::SetUp();
@@ -358,9 +327,6 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
  protected:
   bool enable_lite_mode_;
   bool enable_login_robots_compression_feature_;
-
-  // Logged-in sites specified from field trial.
-  const std::string logged_in_sites_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -780,133 +746,6 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
   robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
   image_compression_server_.VerifyRequestedImagePaths(
       {"/load_image/image.png"});
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SubresourceRedirectLoginRobotsBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(TestNoCompressionOnLoggedInPage)) {
-  robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
-                                      {{kRuleTypeAllow, "*"}});
-  // Trigger OAuth login by triggering OAuth start and complete.
-  ui_test_utils::NavigateToURL(browser(),
-                               GetHttpsTestURL("/simple.html?initial"));
-  histogram_tester_.ExpectUniqueSample(
-      "Login.PageLoad.DetectionType",
-      login_detection::LoginDetectionType::kNoLogin, 1);
-  ui_test_utils::NavigateToURL(
-      browser(), https_test_server_.GetURL("oauth_server.com",
-                                           "/simple.html?client_id=user"));
-  histogram_tester_.ExpectBucketCount(
-      "Login.PageLoad.DetectionType",
-      login_detection::LoginDetectionType::kNoLogin, 2);
-
-  ui_test_utils::NavigateToURL(browser(),
-                               GetHttpsTestURL("/simple.html?code=123"));
-  histogram_tester_.ExpectBucketCount(
-      "Login.PageLoad.DetectionType",
-      login_detection::LoginDetectionType::kOauthFirstTimeLoginFlow, 1);
-
-  // The next navigation will be treated as logged-in.
-  NavigateAndWaitForLoad(browser(), GetHttpsTestURL("/load_image/image.html"));
-  histogram_tester_.ExpectBucketCount(
-      "Login.PageLoad.DetectionType",
-      login_detection::LoginDetectionType::kOauthLogin, 1);
-
-  // No image compression will be triggered.
-  histogram_tester_.ExpectTotalCount(
-      "SubresourceRedirect.CompressionAttempt.ResponseCode", 0);
-  histogram_tester_.ExpectTotalCount(
-      "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
-  histogram_tester_.ExpectTotalCount(
-      "SubresourceRedirect.RobotsRulesFetcher.ResponseCode", 0);
-  histogram_tester_.ExpectTotalCount(
-      "SubresourceRedirect.RobotsRules.Browser.InMemoryCacheHit", 0);
-  histogram_tester_.ExpectTotalCount(
-      "SubresourceRedirect.ImageCompressionNotificationInfoBar", 0);
-
-  robots_rules_server_.VerifyRequestedOrigins({});
-  image_compression_server_.VerifyRequestedImagePaths({});
-}
-
-// Verify that when image load gets canceled due to subsequent page load, the
-// subresource redirect for the image is canceled as well.
-IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
-                       DISABLE_ON_WIN_MAC_CHROMEOS(TestCancelBeforeImageLoad)) {
-  robots_rules_server_.set_failure_mode(
-      RobotsRulesTestServer::FailureMode::kTimeout);
-  robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
-                                      {{kRuleTypeAllow, ""}});
-
-  ui_test_utils::NavigateToURL(browser(),
-                               GetHttpsTestURL("/load_image/image.html"));
-  FetchHistogramsFromChildProcesses();
-
-  ui_test_utils::NavigateToURL(browser(),
-                               GetHttpsTestURL("/load_image/simple.html"));
-  FetchHistogramsFromChildProcesses();
-
-  RetryForHistogramUntilCountReached(
-      &histogram_tester_,
-      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 1);
-  histogram_tester_.ExpectUniqueSample(
-      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
-      RedirectResult::kIneligibleRobotsTimeout, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "SubresourceRedirect.CompressionAttempt.ResponseCode",
-      net::HTTP_TEMPORARY_REDIRECT, 1);
-  histogram_tester_.ExpectTotalCount(
-      "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
-
-  robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
-  image_compression_server_.VerifyRequestedImagePaths({});
-}
-
-// Test class that sets up logged-in sites from field trial.
-class SubresourceRedirectLoggedInSitesBrowserTest
-    : public SubresourceRedirectLoginRobotsBrowserTest {
- public:
-  SubresourceRedirectLoggedInSitesBrowserTest()
-      : SubresourceRedirectLoginRobotsBrowserTest(
-            true /* enable_lite_mode*/,
-            true /* enable_login_robots_compression_feature */,
-            "https://loggedin.com") {}
-};
-
-// Verify that when image load gets canceled due to subsequent navigation to a
-// logged-in page, the subresource redirect for the image is disabled as well.
-IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoggedInSitesBrowserTest,
-                       DISABLE_ON_WIN_MAC_CHROMEOS(TestCancelBeforeImageLoad)) {
-  robots_rules_server_.set_failure_mode(
-      RobotsRulesTestServer::FailureMode::kTimeout);
-  robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
-                                      {{kRuleTypeAllow, ""}});
-
-  ui_test_utils::NavigateToURL(browser(),
-                               GetHttpsTestURL("/load_image/image.html"));
-  FetchHistogramsFromChildProcesses();
-
-  ui_test_utils::NavigateToURL(
-      browser(),
-      https_test_server_.GetURL("loggedin.com", "/load_image/simple.html"));
-  FetchHistogramsFromChildProcesses();
-  histogram_tester_.ExpectBucketCount(
-      "Login.PageLoad.DetectionType",
-      login_detection::LoginDetectionType::kFieldTrialLoggedInSite, 1);
-
-  RetryForHistogramUntilCountReached(
-      &histogram_tester_,
-      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 1);
-  histogram_tester_.ExpectUniqueSample(
-      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
-      RedirectResult::kIneligibleRobotsTimeout, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "SubresourceRedirect.CompressionAttempt.ResponseCode",
-      net::HTTP_TEMPORARY_REDIRECT, 1);
-  histogram_tester_.ExpectTotalCount(
-      "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
-
-  robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
-  image_compression_server_.VerifyRequestedImagePaths({});
 }
 
 }  // namespace subresource_redirect

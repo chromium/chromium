@@ -34,12 +34,8 @@ class RobotsRulesParserCache {
   // should be returned and the |callback| will be invoked when the decision was
   // made.
   base::Optional<RobotsRulesParser::CheckResult> CheckRobotsRules(
-      int routing_id,
       const GURL& url,
       RobotsRulesParser::CheckResultCallback callback);
-
-  // Invalidate and cancel the pending requests for the robots rules parser.
-  void InvalidatePendingRequests(int routing_id);
 
  private:
   // Returns a reference to the robots rules parser for the |origin| from the

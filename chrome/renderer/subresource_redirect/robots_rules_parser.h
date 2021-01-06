@@ -37,8 +37,6 @@ class RobotsRulesParser {
     kTimedout,                // Timeout in retrieving the robots rules
     kDisallowedAfterTimeout,  // Timeout got triggered already, and the resource
                               // was disallowed
-    kInvalidated,  // The result check was invalidated, before robots rules are
-                   // received or timeout triggered.
   };
 
   enum class RulesReceiveState {
@@ -75,15 +73,9 @@ class RobotsRulesParser {
   // added to |pending_check_requests_| and called when a decision can be made
   // like when rules are retrieved, or rule fetch timeout, etc.
   // The robots rules check will make use of the |url| path and query
-  // parameters.The |url| origin, ref fragment, etc are immaterial. |routing_id|
-  // is the render frame ID for which this URL is requested for.
-  base::Optional<CheckResult> CheckRobotsRules(int routing_id,
-                                               const GURL& url,
+  // parameters.The |url| origin, ref fragment, etc are immaterial.
+  base::Optional<CheckResult> CheckRobotsRules(const GURL& url,
                                                CheckResultCallback callback);
-
-  // Invalidate and cancel the pending requests that were added for
-  // |routing_id|.
-  void InvalidatePendingRequests(int routing_id);
 
  private:
   friend class SubresourceRedirectRobotsRulesParserTest;
@@ -115,10 +107,9 @@ class RobotsRulesParser {
   // Ordered list of robots rules from longest to shortest.
   std::vector<RobotsRule> robots_rules_;
 
-  // Contains the requests that are pending for robots rules to be received,
-  // keyed by routing ID. Key is the rouging ID and the value holds the URL path
-  // and the callback.
-  std::map<int, std::vector<std::pair<CheckResultCallback, std::string>>>
+  // Contains the requests that are pending for robots rules to be received.
+  // Holds the URL path and the callback.
+  std::vector<std::pair<CheckResultCallback, std::string>>
       pending_check_requests_;
 
   // To trigger the timeout for the robots rules to be received.
