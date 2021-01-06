@@ -183,18 +183,6 @@ const base::Feature kPurgeRendererMemoryWhenBackgrounded {
 #endif
 };
 
-// Enable Implicit Root Scroller. https://crbug.com/903260.
-// TODO(bokan): Temporarily disabled on desktop platforms to address issues
-// with non-overlay scrollbars. https://crbug.com/948059.
-const base::Feature kImplicitRootScroller {
-  "ImplicitRootScroller",
-#if defined(OS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
-
 // Enables toggling overwrite mode when insert key is pressed.
 // https://crbug.com/1030231.
 const base::Feature kInsertKeyToggleMode = {"InsertKeyToggleMode",

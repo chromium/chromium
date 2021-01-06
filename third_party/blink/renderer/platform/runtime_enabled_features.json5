@@ -1023,6 +1023,7 @@
     {
       name: "ImplicitRootScroller",
       settable_from_internals: true,
+      status: {"Android": "stable"},
     },
     {
       name: "ImportMaps",

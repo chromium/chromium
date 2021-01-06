@@ -1430,32 +1430,13 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 #endif  // !defined(OS_ANDROID)
 
-class CrossPlatformAccessibilityBrowserTestWithImplicitRootScrolling
-    : public CrossPlatformAccessibilityBrowserTest {
- public:
-  CrossPlatformAccessibilityBrowserTestWithImplicitRootScrolling() = default;
-  ~CrossPlatformAccessibilityBrowserTestWithImplicitRootScrolling() override =
-      default;
-
- protected:
-  void ChooseFeatures(std::vector<base::Feature>* enabled_features,
-                      std::vector<base::Feature>* disabled_features) override {
-    enabled_features->emplace_back(blink::features::kImplicitRootScroller);
-    CrossPlatformAccessibilityBrowserTest::ChooseFeatures(enabled_features,
-                                                          disabled_features);
-  }
-};
-
+// This test is checking behavior when ImplicitRootScroller is enabled which
+// applies only on Android.
 // TODO(http://crbug.com/1137425): Re-enable the test after it gets fixed on
 // Android O.
 #if defined(OS_ANDROID)
-#define MAYBE_ImplicitRootScroller DISABLED_ImplicitRootScroller
-#else
-#define MAYBE_ImplicitRootScroller ImplicitRootScroller
-#endif
-IN_PROC_BROWSER_TEST_F(
-    CrossPlatformAccessibilityBrowserTestWithImplicitRootScrolling,
-    MAYBE_ImplicitRootScroller) {
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       DISABLED_ImplicitRootScroller) {
   LoadInitialAccessibilityTreeFromHtmlFilePath(
       "/accessibility/scrolling/implicit-root-scroller.html");
 
@@ -1482,6 +1463,7 @@ IN_PROC_BROWSER_TEST_F(
   bounds = heading->GetUnclippedRootFrameBoundsRect();
   EXPECT_GT(bounds.y(), 0);
 }
+#endif  // defined(OS_ANDROID)
 
 #if defined(IS_FAST_BUILD)  // Avoid flakiness on slower debug/sanitizer builds.
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,

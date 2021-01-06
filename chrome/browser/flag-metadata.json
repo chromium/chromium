@@ -1774,11 +1774,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-implicit-root-scroller",
-    "owners": [ "bokan", "input-dev" ],
-    "expiry_milestone": 80
-  },
-  {
     "name": "enable-incognito-authentication-ios",
     "owners": [ "stkhapugin", "bling-flags@google.com" ],
     "expiry_milestone": 90

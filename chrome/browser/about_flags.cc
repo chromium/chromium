@@ -5239,10 +5239,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSwapSideVolumeButtonsForOrientation)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-implicit-root-scroller",
-     flag_descriptions::kEnableImplicitRootScrollerName,
-     flag_descriptions::kEnableImplicitRootScrollerDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kImplicitRootScroller)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-assistant-stereo-input",
