@@ -252,6 +252,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
           resize_disk_image_response) {
     resize_disk_image_response_ = resize_disk_image_response;
   }
+  void set_set_vm_id_response(
+      base::Optional<vm_tools::concierge::SetVmIdResponse> set_vm_id_response) {
+    set_vm_id_response_ = set_vm_id_response;
+  }
 
   void set_send_create_disk_image_response_delay(base::TimeDelta delay) {
     send_create_disk_image_response_delay_ = delay;
