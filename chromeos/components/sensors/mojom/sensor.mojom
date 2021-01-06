@@ -48,7 +48,10 @@ enum DeviceType {
   MAGN = 5,
   ANGL = 6,
   BARO = 7,
-  MAX = 8,
+  ACCEL_UNCALIBRATED = 8,
+  ANGLVEL_UNCALIBRATED = 9,
+  MAGN_UNCALIBRATED = 10,
+  MAX = 11,
 };
 
 enum ObserverErrorType {
