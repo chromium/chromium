@@ -7,8 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/AnnouncementNotificationManager_jni.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"          // nogncheck
+#include "chrome/browser/profiles/profile_android.h"  // nogncheck
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service_factory.h"
 
 AnnouncementNotificationDelegateAndroid::

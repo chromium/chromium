@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 source_set("lib") {
-  visibility = [ "//chrome/browser/updates:factory" ]
+  visibility = [ "//chrome/browser/updates:*" ]
 
   sources = [
     "update_notification_service_impl.cc",
@@ -12,6 +12,7 @@ source_set("lib") {
 
   deps = [
     "//base",
+    "//chrome/browser/notifications/scheduler/public",
     "//components/keyed_service/core",
     "//skia",
   ]

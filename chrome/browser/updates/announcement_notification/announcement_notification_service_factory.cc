@@ -8,9 +8,9 @@
 
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"  // nogncheck
+#include "chrome/browser/profiles/incognito_helpers.h"  // nogncheck
+#include "chrome/browser/profiles/profile.h"            // nogncheck
 #include "chrome/browser/updates/announcement_notification/announcement_notification_delegate.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service.h"
 #include "chrome/browser/updates/announcement_notification/empty_announcement_notification_service.h"

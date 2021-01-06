@@ -12,7 +12,11 @@ source_set("updates") {
     "update_notification_service_bridge.h",
   ]
 
-  deps = [ ":factory" ]
+  deps = [
+    ":factory",
+    "//base",
+    "//components/keyed_service/core",
+  ]
 }
 
 source_set("factory") {
@@ -41,6 +45,10 @@ source_set("unit_tests") {
     "update_notification_config_unittest.cc",
   ]
   deps = [
+    ":updates",
+    "//chrome/browser/notifications/scheduler/public",
+    "//chrome/browser/notifications/scheduler/test:test_support",
+    "//chrome/browser/updates/internal:lib",
     "//chrome/test:test_support",
     "//skia",
     "//testing/gmock",

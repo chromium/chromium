@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "chrome/browser/notifications/notification_handler.h"
+#include "chrome/browser/notifications/notification_handler.h"  // nogncheck
 
 class Profile;
 
