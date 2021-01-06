@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/feed_network_impl.h"
@@ -60,7 +61,7 @@ class FeedService::HistoryObserverImpl
       : feed_stream_(feed_stream), identity_manager_(identity_manager) {
     // May be null for some profiles.
     if (history_service)
-      history_service->AddObserver(this);
+      scoped_history_service_observer_.Observe(history_service);
   }
   HistoryObserverImpl(const HistoryObserverImpl&) = delete;
   HistoryObserverImpl& operator=(const HistoryObserverImpl&) = delete;
@@ -76,6 +77,9 @@ class FeedService::HistoryObserverImpl
  private:
   FeedStream* feed_stream_;
   signin::IdentityManager* identity_manager_;
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      scoped_history_service_observer_{this};
 };
 
 class FeedService::NetworkDelegateImpl : public FeedNetworkImpl::Delegate {
