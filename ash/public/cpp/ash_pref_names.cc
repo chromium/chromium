@@ -105,15 +105,18 @@ const char kAccessibilitySelectToSpeakEnabled[] =
 // A boolean pref which determines whether Switch Access is enabled.
 const char kAccessibilitySwitchAccessEnabled[] =
     "settings.a11y.switch_access.enabled";
-// A pref that stores the key code for the "select" action.
-const char kAccessibilitySwitchAccessSelectKeyCodes[] =
-    "settings.a11y.switch_access.select.key_codes";
-// A pref that stores the key code for the "next" action.
-const char kAccessibilitySwitchAccessNextKeyCodes[] =
-    "settings.a11y.switch_access.next.key_codes";
-// A pref that stores the key code for the "previous" action.
-const char kAccessibilitySwitchAccessPreviousKeyCodes[] =
-    "settings.a11y.switch_access.previous.key_codes";
+// A dictionary pref keyed on a key code mapped to a list value of device types
+// for the "select" action.
+const char kAccessibilitySwitchAccessSelectDeviceKeyCodes[] =
+    "settings.a11y.switch_access.select.device_key_codes";
+// A dictionary pref keyed on a key code mapped to a list value of device types
+// for the "next" action.
+const char kAccessibilitySwitchAccessNextDeviceKeyCodes[] =
+    "settings.a11y.switch_access.next.device_key_codes";
+// A dictionary pref keyed on a key code mapped to a list value of device types
+// for the "previous" action.
+const char kAccessibilitySwitchAccessPreviousDeviceKeyCodes[] =
+    "settings.a11y.switch_access.previous.device_key_codes";
 // A boolean pref which determines whether auto-scanning is enabled within
 // Switch Access.
 const char kAccessibilitySwitchAccessAutoScanEnabled[] =

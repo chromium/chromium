@@ -16,6 +16,7 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/accessibility_focus_ring_controller.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
+#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -28,6 +29,7 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1689,25 +1691,17 @@ void AccessibilityManager::SetCaretBoundsObserverForTest(
 }
 
 void AccessibilityManager::SetSwitchAccessKeysForTest(
-    const std::set<int>& select_keys,
-    const std::set<int>& next_keys,
-    const std::set<int>& previous_keys) {
-  ListPrefUpdate select_update(
-      profile_->GetPrefs(),
-      ash::prefs::kAccessibilitySwitchAccessSelectKeyCodes);
-  for (int key : select_keys)
-    select_update->AppendInteger(key);
-
-  ListPrefUpdate next_update(
-      profile_->GetPrefs(), ash::prefs::kAccessibilitySwitchAccessNextKeyCodes);
-  for (int key : next_keys)
-    next_update->AppendInteger(key);
-
-  ListPrefUpdate previous_update(
-      profile_->GetPrefs(),
-      ash::prefs::kAccessibilitySwitchAccessPreviousKeyCodes);
-  for (int key : previous_keys)
-    previous_update->AppendInteger(key);
+    const std::set<int>& action_keys,
+    const std::string& pref_name) {
+  DictionaryPrefUpdate pref_update(profile_->GetPrefs(), pref_name);
+  base::ListValue devices;
+  devices.Append(ash::kSwitchAccessInternalDevice);
+  devices.Append(ash::kSwitchAccessUsbDevice);
+  devices.Append(ash::kSwitchAccessBluetoothDevice);
+  for (int key : action_keys) {
+    const std::string& key_str = base::NumberToString(key);
+    pref_update->SetPath(key_str, devices.Clone());
+  }
 
   profile_->GetPrefs()->CommitPendingWrite();
 }

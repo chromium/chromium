@@ -31,9 +31,21 @@
  * @private
  */
 /* #export */ const actionToPref = {
-  select: 'settings.a11y.switch_access.select.key_codes',
-  next: 'settings.a11y.switch_access.next.key_codes',
-  previous: 'settings.a11y.switch_access.previous.key_codes'
+  select: 'settings.a11y.switch_access.select.device_key_codes',
+  next: 'settings.a11y.switch_access.next.device_key_codes',
+  previous: 'settings.a11y.switch_access.previous.device_key_codes'
+};
+
+/**
+ * Possible device types for Switch Access.
+ * @enum {string}
+ * @private
+ */
+/* #export */ const SwitchAccessDeviceType = {
+  INTERNAL: 'internal',
+  USB: 'usb',
+  BLUETOOTH: 'bluetooth',
+  UNKNOWN: 'unknown'
 };
 
 /**
@@ -45,6 +57,11 @@
   ADD_ASSIGNMENT: 'add-assignment',
   REMOVE_ASSIGNMENT: 'remove-assignment',
 };
+
+/**
+ * @typedef {!Array<!Object<string, !Array<!SwitchAccessDeviceType>>>}
+ */
+let SwitchAccessKeyAssignmentInfoList;
 
 Polymer({
   is: 'settings-switch-access-action-assignment-dialog',
@@ -76,7 +93,8 @@ Polymer({
 
     /**
      * Assignments for the current action.
-     * @private {Array<string>}
+     * @private {Array<!{key: string, devices:
+     *     !Array<!SwitchAccessDeviceType>}>}
      */
     assignments_: {
       type: Array,
@@ -95,12 +113,17 @@ Polymer({
     /**
      * A dictionary containing all Switch Access key codes (mapped from
      * actions).
-     * @private {{select: !Array<string>, next: !Array<string>, previous:
-     *     !Array<string>}}
+     * Each key code is another object, mapping a stringified key code to a list
+     * of Switch Access device types for that key code.
+     * @private {{
+     *         select: SwitchAccessKeyAssignmentInfoList,
+     *         next: SwitchAccessKeyAssignmentInfoList,
+     *         previous: SwitchAccessKeyAssignmentInfoList
+     * }}
      */
     keyCodes_: {
       type: Object,
-      value: {select: [], next: [], previous: []},
+      value: {select: {}, next: {}, previous: {}},
     },
 
     /**
@@ -219,7 +242,7 @@ Polymer({
 
     // Check for pre-existing assignments in actions other than the current one.
     for (const action of Object.values(SwitchAccessCommand)) {
-      if (!this.keyCodes_[action].includes(event.keyCode)) {
+      if (!this.keyCodes_[action][event.keyCode]) {
         continue;
       }
 
@@ -251,7 +274,12 @@ Polymer({
   handleKeyEventInWaitForConfirmation_(event) {
     if (this.currentKeyCode_ === event.keyCode) {
       // Confirmed.
-      this.keyCodes_[this.action].push(this.currentKeyCode_);
+      // TODO: resolve to specific device type once UI is hooked up;
+      // |event.device| has the Switch Access device type.
+      this.keyCodes_[this.action][this.currentKeyCode_] = [
+        SwitchAccessDeviceType.INTERNAL, SwitchAccessDeviceType.USB,
+        SwitchAccessDeviceType.BLUETOOTH
+      ];
       this.$.switchAccessActionAssignmentDialog.close();
       return;
     }
@@ -276,10 +304,8 @@ Polymer({
     }
 
     // Remove this key code.
-    const index = this.keyCodes_[this.action].indexOf(this.currentKeyCode_);
-    if (index !== -1) {
-      this.keyCodes_[this.action].splice(index, 1);
-    }
+    delete this.keyCodes_[this.action][this.currentKeyCode_];
+
     this.$.switchAccessActionAssignmentDialog.close();
   },
 
@@ -289,21 +315,12 @@ Polymer({
   },
 
   /**
-   * @param {!Object<SwitchAccessCommand, !Array<string>>} value
+   * @param {!Object<SwitchAccessCommand, !Array<!{key: string, devices:
+   *     !Array<SwitchAccessDeviceType>}>>} value
    * @private
    */
   onAssignmentsChanged_(value) {
-    switch (this.action) {
-      case SwitchAccessCommand.SELECT:
-        this.assignments_ = value.select;
-        break;
-      case SwitchAccessCommand.NEXT:
-        this.assignments_ = value.next;
-        break;
-      case SwitchAccessCommand.PREVIOUS:
-        this.assignments_ = value.previous;
-        break;
-    }
+    this.assignments_ = value[this.action];
   },
 
   /**
