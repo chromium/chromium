@@ -122,10 +122,8 @@ TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipUnknown) {
 
   std::unique_ptr<TestingProfile> user = CreateUser(no_keys);
   StatsReportingController::Get()->SetEnabled(user.get(), true);
-  // A pending value is written in case there is no owner, in which case it will
-  // be written properly when ownership is taken - but we don't read the
-  // pending value, in case there actually is an owner already.
-  EXPECT_FALSE(StatsReportingController::Get()->IsEnabled());
+  // Read from the pending value when ownership is not taken.
+  EXPECT_TRUE(StatsReportingController::Get()->IsEnabled());
   ExpectThatPendingValueIs(true);
   ExpectThatSignedStoredValueIs(false);
 
@@ -180,11 +178,22 @@ TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipTaken) {
   StatsReportingController::Get()->SetEnabled(owner.get(), true);
   EXPECT_TRUE(StatsReportingController::Get()->IsEnabled());
   EXPECT_TRUE(value_at_last_notification_);
+  ExpectThatPendingValueIs(true);
+
+  StatsReportingController::Get()->OnSignedPolicyStored(true);
+  EXPECT_TRUE(StatsReportingController::Get()->IsEnabled());
+  EXPECT_TRUE(value_at_last_notification_);
   ExpectThatPendingValueIsNotSet();
   ExpectThatSignedStoredValueIs(true);
 
   StatsReportingController::Get()->SetEnabled(owner.get(), false);
   EXPECT_FALSE(StatsReportingController::Get()->IsEnabled());
+  EXPECT_FALSE(value_at_last_notification_);
+  ExpectThatPendingValueIs(false);
+
+  StatsReportingController::Get()->OnSignedPolicyStored(true);
+  EXPECT_FALSE(StatsReportingController::Get()->IsEnabled());
+  EXPECT_FALSE(value_at_last_notification_);
   ExpectThatPendingValueIsNotSet();
   ExpectThatSignedStoredValueIs(false);
 }
@@ -221,8 +230,8 @@ TEST_F(StatsReportingControllerTest, SetBeforeOwnershipTaken) {
   // Before device is owned, setting the value means writing a pending value:
   std::unique_ptr<TestingProfile> pre_ownership_user = CreateUser(no_keys);
   StatsReportingController::Get()->SetEnabled(pre_ownership_user.get(), true);
-  EXPECT_FALSE(StatsReportingController::Get()->IsEnabled());
-  EXPECT_FALSE(value_at_last_notification_);
+  EXPECT_TRUE(StatsReportingController::Get()->IsEnabled());
+  EXPECT_TRUE(value_at_last_notification_);
   ExpectThatPendingValueIs(true);
   ExpectThatSignedStoredValueIs(false);
 
@@ -235,6 +244,11 @@ TEST_F(StatsReportingControllerTest, SetBeforeOwnershipTaken) {
   // After device is owned, the value is written to Cros settings.
   StatsReportingController::Get()->OnOwnershipTaken(
       OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(owner.get()));
+  EXPECT_TRUE(StatsReportingController::Get()->IsEnabled());
+  EXPECT_TRUE(value_at_last_notification_);
+  ExpectThatPendingValueIs(true);
+
+  StatsReportingController::Get()->OnSignedPolicyStored(true);
   EXPECT_TRUE(StatsReportingController::Get()->IsEnabled());
   EXPECT_TRUE(value_at_last_notification_);
   ExpectThatPendingValueIsNotSet();
