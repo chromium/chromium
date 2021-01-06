@@ -386,7 +386,8 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
   uint8_t* pixels = static_cast<uint8_t*>(rgb_pixels) +
                     row_bytes * chunk_start * rows_per_chunk;
 
-  if (format == PIXEL_FORMAT_ARGB) {
+  if (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_XRGB ||
+      format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR) {
     DCHECK_LE(width, static_cast<int>(row_bytes));
     const uint8_t* data = plane_meta[VideoFrame::kARGBPlane].data;
     for (size_t i = 0; i < rows; i++) {
@@ -928,8 +929,11 @@ void PaintCanvasVideoRenderer::Paint(
   // frame has an unexpected format.
   if (!video_frame.get() || video_frame->natural_size().IsEmpty() ||
       !(media::IsYuvPlanar(video_frame->format()) ||
-        video_frame->format() == media::PIXEL_FORMAT_Y16 ||
-        video_frame->format() == media::PIXEL_FORMAT_ARGB ||
+        video_frame->format() == PIXEL_FORMAT_Y16 ||
+        video_frame->format() == PIXEL_FORMAT_ARGB ||
+        video_frame->format() == PIXEL_FORMAT_XRGB ||
+        video_frame->format() == PIXEL_FORMAT_ABGR ||
+        video_frame->format() == PIXEL_FORMAT_XBGR ||
         video_frame->HasTextures())) {
     cc::PaintFlags black_with_alpha_flags;
     black_with_alpha_flags.setAlpha(flags.getAlpha());

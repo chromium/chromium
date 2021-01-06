@@ -507,6 +507,71 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
   if (!src_frame.IsMappable() || !dst_frame.IsMappable())
     return Status(StatusCode::kUnsupportedFrameFormatError);
 
+  if ((dst_frame.format() == PIXEL_FORMAT_I420 ||
+       dst_frame.format() == PIXEL_FORMAT_NV12) &&
+      (src_frame.format() == PIXEL_FORMAT_XBGR ||
+       src_frame.format() == PIXEL_FORMAT_XRGB ||
+       src_frame.format() == PIXEL_FORMAT_ABGR ||
+       src_frame.format() == PIXEL_FORMAT_ARGB)) {
+    // libyuv's RGB to YUV methods always output BT.601.
+    dst_frame.set_color_space(gfx::ColorSpace::CreateREC601());
+
+    size_t src_stride = src_frame.stride(VideoFrame::kARGBPlane);
+    const uint8_t* src_data = src_frame.visible_data(VideoFrame::kARGBPlane);
+    if (src_frame.visible_rect() != dst_frame.visible_rect()) {
+      size_t tmp_buffer_size = VideoFrame::AllocationSize(
+          src_frame.format(), dst_frame.coded_size());
+      if (tmp_buf.size() < tmp_buffer_size)
+        tmp_buf.resize(tmp_buffer_size);
+
+      size_t stride =
+          VideoFrame::RowBytes(VideoFrame::kARGBPlane, src_frame.format(),
+                               dst_frame.visible_rect().width());
+      int error = libyuv::ARGBScale(
+          src_data, src_stride, src_frame.visible_rect().width(),
+          src_frame.visible_rect().height(), tmp_buf.data(), stride,
+          dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
+          kDefaultFiltering);
+      if (error)
+        return Status(StatusCode::kInvalidArgument);
+      src_data = tmp_buf.data();
+      src_stride = stride;
+    }
+
+    if (dst_frame.format() == PIXEL_FORMAT_I420) {
+      auto convert_fn = (src_frame.format() == PIXEL_FORMAT_XBGR ||
+                         src_frame.format() == PIXEL_FORMAT_ABGR)
+                            ? libyuv::ABGRToI420
+                            : libyuv::ARGBToI420;
+      int error = convert_fn(src_data, src_stride,
+                             dst_frame.visible_data(media::VideoFrame::kYPlane),
+                             dst_frame.stride(media::VideoFrame::kYPlane),
+                             dst_frame.visible_data(media::VideoFrame::kUPlane),
+                             dst_frame.stride(media::VideoFrame::kUPlane),
+                             dst_frame.visible_data(media::VideoFrame::kVPlane),
+                             dst_frame.stride(media::VideoFrame::kVPlane),
+                             dst_frame.visible_rect().width(),
+                             dst_frame.visible_rect().height());
+      return error ? Status(StatusCode::kInvalidArgument) : Status();
+    }
+
+    auto convert_fn = (src_frame.format() == PIXEL_FORMAT_XBGR ||
+                       src_frame.format() == PIXEL_FORMAT_ABGR)
+                          ? libyuv::ABGRToNV12
+                          : libyuv::ARGBToNV12;
+    int error = convert_fn(src_data, src_stride,
+                           dst_frame.visible_data(media::VideoFrame::kYPlane),
+                           dst_frame.stride(media::VideoFrame::kYPlane),
+                           dst_frame.visible_data(media::VideoFrame::kUVPlane),
+                           dst_frame.stride(media::VideoFrame::kUVPlane),
+                           dst_frame.visible_rect().width(),
+                           dst_frame.visible_rect().height());
+    return error ? Status(StatusCode::kInvalidArgument) : Status();
+  }
+
+  // Converting between YUV formats doesn't change the color space.
+  dst_frame.set_color_space(src_frame.ColorSpace());
+
   // Both frames are I420, only scaling is required.
   if (dst_frame.format() == PIXEL_FORMAT_I420 &&
       src_frame.format() == PIXEL_FORMAT_I420) {

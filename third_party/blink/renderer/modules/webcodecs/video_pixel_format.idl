@@ -14,6 +14,12 @@ enum VideoPixelFormat {
     // 32bpp RGBA (byte-order), 1 plane.
     "ABGR",
 
+    // 32bpp BGRA (byte-order), 1 plane.
+    "ARGB",
+
+    // 24bpp RGBX (byte-order), 1 plane.
+    "XBGR",
+
     // 24bpp BGRX (byte-order), 1 plane.
     "XRGB",
 };

@@ -153,8 +153,12 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                                   "No frame provided for encoding."));
     return;
   }
-  const bool supported_format = (frame->format() == PIXEL_FORMAT_NV12) ||
-                                (frame->format() == PIXEL_FORMAT_I420);
+  const bool supported_format = frame->format() == PIXEL_FORMAT_NV12 ||
+                                frame->format() == PIXEL_FORMAT_I420 ||
+                                frame->format() == PIXEL_FORMAT_XBGR ||
+                                frame->format() == PIXEL_FORMAT_XRGB ||
+                                frame->format() == PIXEL_FORMAT_ABGR ||
+                                frame->format() == PIXEL_FORMAT_ARGB;
   if ((!frame->IsMappable() && !frame->HasGpuMemoryBuffer()) ||
       !supported_format) {
     status =
@@ -175,7 +179,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     }
   }
 
-  if (frame->format() == PIXEL_FORMAT_NV12) {
+  if (frame->format() != PIXEL_FORMAT_I420) {
     // OpenH264 can resize frame automatically, but since we're converting
     // pixel fromat anyway we can do resize as well.
     auto i420_frame = frame_pool_.CreateFrame(

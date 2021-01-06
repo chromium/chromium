@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 
@@ -66,34 +67,38 @@ bool IsValidSkColorType(SkColorType sk_color_type) {
   return false;
 }
 
+struct YUVReadbackContext {
+  gfx::Size coded_size;
+  gfx::Rect visible_rect;
+  gfx::Size natural_size;
+  base::TimeDelta timestamp;
+  scoped_refptr<media::VideoFrame> frame;
+};
+
 void OnYUVReadbackDone(
-    void* raw_frame_ptr,
+    void* raw_ctx,
     std::unique_ptr<const SkImage::AsyncReadResult> async_result) {
-  scoped_refptr<media::VideoFrame> frame(
-      static_cast<media::VideoFrame*>(raw_frame_ptr));
-  if (!async_result) {
-    LOG(ERROR) << "Failed to read yuv420 back!";
+  if (!async_result)
     return;
-  }
-  auto* data0 = static_cast<const uint8_t*>(async_result->data(0));
-  DCHECK(data0);
-  auto* data1 = static_cast<const uint8_t*>(async_result->data(1));
-  DCHECK(data1);
-  auto* data2 = static_cast<const uint8_t*>(async_result->data(2));
-  DCHECK(data2);
-  gfx::Size size = frame->coded_size();
-  libyuv::CopyPlane(data0, static_cast<int>(async_result->rowBytes(0)),
-                    frame->visible_data(media::VideoFrame::kYPlane),
-                    frame->stride(media::VideoFrame::kYPlane), size.width(),
-                    size.height());
-  libyuv::CopyPlane(data1, static_cast<int>(async_result->rowBytes(1)),
-                    frame->visible_data(media::VideoFrame::kUPlane),
-                    frame->stride(media::VideoFrame::kUPlane), size.width() / 2,
-                    size.height() / 2);
-  libyuv::CopyPlane(data2, static_cast<int>(async_result->rowBytes(2)),
-                    frame->visible_data(media::VideoFrame::kVPlane),
-                    frame->stride(media::VideoFrame::kVPlane), size.width() / 2,
-                    size.height() / 2);
+  auto* context = reinterpret_cast<YUVReadbackContext*>(raw_ctx);
+  context->frame = media::VideoFrame::WrapExternalYuvData(
+      media::PIXEL_FORMAT_I420, context->coded_size, context->visible_rect,
+      context->natural_size, static_cast<int>(async_result->rowBytes(0)),
+      static_cast<int>(async_result->rowBytes(1)),
+      static_cast<int>(async_result->rowBytes(2)),
+      // TODO(crbug.com/1161304): We should be able to wrap readonly memory in
+      // a VideoFrame without resorting to a const_cast.
+      reinterpret_cast<uint8_t*>(const_cast<void*>(async_result->data(0))),
+      reinterpret_cast<uint8_t*>(const_cast<void*>(async_result->data(1))),
+      reinterpret_cast<uint8_t*>(const_cast<void*>(async_result->data(2))),
+      context->timestamp);
+  if (!context->frame)
+    return;
+  context->frame->AddDestructionObserver(
+      ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
+          base::DoNothing::Once<
+              std::unique_ptr<const SkImage::AsyncReadResult>>(),
+          std::move(async_result))));
 }
 
 }  // namespace
@@ -127,49 +132,59 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  gfx::Size size(source->width(), source->height());
-  gfx::Rect rect(size);
-  base::TimeDelta timestamp =
-      base::TimeDelta::FromMicroseconds(init->timestamp());
+  const gfx::Size coded_size(source->width(), source->height());
+  const gfx::Rect visible_rect(coded_size);
+  const gfx::Size natural_size = coded_size;
+  const auto timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
+  const auto& paint_image = source->BitmapImage()->PaintImageForCurrentFrame();
+  const auto sk_image_info = paint_image.GetSkImageInfo();
 
-  auto sk_image_info =
-      source->BitmapImage()->PaintImageForCurrentFrame().GetSkImageInfo();
   auto sk_color_space = sk_image_info.refColorSpace();
-  if (!sk_color_space) {
+  if (!sk_color_space)
     sk_color_space = SkColorSpace::MakeSRGB();
-  }
   if (!IsValidSkColorSpace(sk_color_space)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid color space");
     return nullptr;
   }
 
-  auto frame = media::VideoFrame::CreateFrame(media::PIXEL_FORMAT_I420, size,
-                                              rect, size, timestamp);
-  if (!frame) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Frame creation failed");
-    return nullptr;
-  }
+  const bool is_texture = paint_image.IsTextureBacked();
+  const auto sk_image = paint_image.GetSkImage();
 
-  bool is_texture =
-      source->BitmapImage()->PaintImageForCurrentFrame().IsTextureBacked();
+  scoped_refptr<media::VideoFrame> frame;
+
   // Now only SkImage_Gpu implemented the readbackYUV420 method, so for
   // non-texture image, still use libyuv do the csc until SkImage_Base
   // implement asyncRescaleAndReadPixelsYUV420.
   if (is_texture) {
-    auto sk_image =
-        source->BitmapImage()->PaintImageForCurrentFrame().GetSkImage();
-    SkIRect src_rect = SkIRect::MakeWH(source->width(), source->height());
+    YUVReadbackContext result;
+    result.coded_size = coded_size;
+    result.visible_rect = visible_rect;
+    result.natural_size = natural_size;
+    result.timestamp = timestamp;
+
+    // While this function indicates it's asynchronous, the flushAndSubmit()
+    // call below ensures it completes synchronously.
+    const auto src_rect = SkIRect::MakeWH(source->width(), source->height());
     sk_image->asyncRescaleAndReadPixelsYUV420(
         kRec709_SkYUVColorSpace, sk_color_space, src_rect,
         {source->width(), source->height()}, SkImage::RescaleGamma::kSrc,
-        kHigh_SkFilterQuality, &OnYUVReadbackDone, frame.get());
+        kHigh_SkFilterQuality, &OnYUVReadbackDone, &result);
     GrDirectContext* gr_context =
         source->BitmapImage()->ContextProvider()->GetGrContext();
     DCHECK(gr_context);
     gr_context->flushAndSubmit(/*syncCpu=*/true);
+
+    if (!result.frame) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                        "YUV conversion error during readback");
+      return nullptr;
+    }
+
+    frame = std::move(result.frame);
   } else {
+    DCHECK(!sk_image->isTextureBacked());
+
     auto sk_color_type = sk_image_info.colorType();
     if (!IsValidSkColorType(sk_color_type)) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -177,47 +192,30 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       return nullptr;
     }
 
-    // TODO(jie.a.chen@intel.com): Handle data of float type.
-    // Full copy #1
-    WTF::Vector<uint8_t> pixel_data =
-        source->CopyBitmapData(source->GetBitmapSkImageInfo(), false);
-    if (pixel_data.size() <
-        media::VideoFrame::AllocationSize(media::PIXEL_FORMAT_ARGB, size)) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kBufferOverrunError,
-                                        "Image buffer is too small.");
-      return nullptr;
-    }
-
     DCHECK(sk_color_type == kRGBA_8888_SkColorType ||
            sk_color_type == kBGRA_8888_SkColorType);
-    auto libyuv_convert_to_i420 = (sk_color_type == kRGBA_8888_SkColorType)
-                                      ? libyuv::ABGRToI420
-                                      : libyuv::ARGBToI420;
 
-    // TODO(jie.a.chen@intel.com): Use GPU to do the conversion.
-    // Full copy #2
-    int error =
-        libyuv_convert_to_i420(pixel_data.data(), source->width() * 4,
-                               frame->visible_data(media::VideoFrame::kYPlane),
-                               frame->stride(media::VideoFrame::kYPlane),
-                               frame->visible_data(media::VideoFrame::kUPlane),
-                               frame->stride(media::VideoFrame::kUPlane),
-                               frame->visible_data(media::VideoFrame::kVPlane),
-                               frame->stride(media::VideoFrame::kVPlane),
-                               source->width(), source->height());
-    if (error) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                        "ARGB to YUV420 conversion error");
-      return nullptr;
-    }
-    gfx::ColorSpace gfx_color_space(*sk_color_space);
-    // 'libyuv_convert_to_i420' assumes SMPTE170M.
-    // Refer to the func below to check the actual conversion:
-    // third_party/libyuv/source/row_common.cc -- RGBToY(...)
-    gfx_color_space = gfx_color_space.GetWithMatrixAndRange(
-        gfx::ColorSpace::MatrixID::SMPTE170M,
-        gfx::ColorSpace::RangeID::LIMITED);
-    frame->set_color_space(gfx_color_space);
+    SkPixmap pm;
+    const bool peek_result = sk_image->peekPixels(&pm);
+    DCHECK(peek_result);
+
+    const auto format = sk_image->isOpaque()
+                            ? (sk_color_type == kRGBA_8888_SkColorType
+                                   ? media::PIXEL_FORMAT_XBGR
+                                   : media::PIXEL_FORMAT_XRGB)
+                            : (sk_color_type == kRGBA_8888_SkColorType
+                                   ? media::PIXEL_FORMAT_ABGR
+                                   : media::PIXEL_FORMAT_ARGB);
+
+    frame = media::VideoFrame::WrapExternalData(
+        format, coded_size, visible_rect, natural_size,
+        // TODO(crbug.com/1161304): We should be able to wrap readonly memory in
+        // a VideoFrame instead of using writable_addr() here.
+        reinterpret_cast<uint8_t*>(pm.writable_addr()), pm.computeByteSize(),
+        timestamp);
+    frame->set_color_space(gfx::ColorSpace(*sk_color_space));
+    frame->AddDestructionObserver(ConvertToBaseOnceCallback(CrossThreadBindOnce(
+        base::DoNothing::Once<sk_sp<SkImage>>(), std::move(sk_image))));
   }
   auto* result = MakeGarbageCollected<VideoFrame>(
       std::move(frame), ExecutionContext::From(script_state));
@@ -226,14 +224,28 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
 // static
 bool VideoFrame::IsSupportedPlanarFormat(media::VideoFrame* frame) {
-  // For now only I420, I420A, or NV12 in CPU or GPU memory is supported.
-  return frame && (frame->IsMappable() || frame->HasGpuMemoryBuffer()) &&
-         ((frame->format() == media::PIXEL_FORMAT_I420 &&
-           frame->layout().num_planes() == 3) ||
-          (frame->format() == media::PIXEL_FORMAT_I420A &&
-           frame->layout().num_planes() == 4) ||
-          (frame->format() == media::PIXEL_FORMAT_NV12 &&
-           frame->layout().num_planes() == 2));
+  if (!frame)
+    return false;
+
+  if (!frame->IsMappable() && !frame->HasGpuMemoryBuffer())
+    return false;
+
+  const size_t num_planes = frame->layout().num_planes();
+  switch (frame->format()) {
+    case media::PIXEL_FORMAT_I420:
+      return num_planes == 3;
+    case media::PIXEL_FORMAT_I420A:
+      return num_planes == 4;
+    case media::PIXEL_FORMAT_NV12:
+      return num_planes == 2;
+    case media::PIXEL_FORMAT_XBGR:
+    case media::PIXEL_FORMAT_XRGB:
+    case media::PIXEL_FORMAT_ABGR:
+    case media::PIXEL_FORMAT_ARGB:
+      return num_planes == 1;
+    default:
+      return false;
+  }
 }
 
 String VideoFrame::format() const {
@@ -247,7 +259,14 @@ String VideoFrame::format() const {
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI420);
     case media::PIXEL_FORMAT_NV12:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kNV12);
-
+    case media::PIXEL_FORMAT_ABGR:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kABGR);
+    case media::PIXEL_FORMAT_XBGR:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kXBGR);
+    case media::PIXEL_FORMAT_ARGB:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kARGB);
+    case media::PIXEL_FORMAT_XRGB:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kXRGB);
     default:
       NOTREACHED();
       return String();
@@ -466,28 +485,32 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
   }
 #endif  // !defined(OS_ANDROID)
 
+  const bool is_rgb = local_frame->format() == media::PIXEL_FORMAT_ARGB ||
+                      local_frame->format() == media::PIXEL_FORMAT_XRGB ||
+                      local_frame->format() == media::PIXEL_FORMAT_ABGR ||
+                      local_frame->format() == media::PIXEL_FORMAT_XBGR;
+
   if ((local_frame->IsMappable() &&
        (local_frame->format() == media::PIXEL_FORMAT_I420 ||
         local_frame->format() == media::PIXEL_FORMAT_I420A)) ||
       (local_frame->HasTextures() &&
        (local_frame->format() == media::PIXEL_FORMAT_I420 ||
         local_frame->format() == media::PIXEL_FORMAT_I420A ||
-        local_frame->format() == media::PIXEL_FORMAT_NV12 ||
-        local_frame->format() == media::PIXEL_FORMAT_ABGR ||
-        local_frame->format() == media::PIXEL_FORMAT_XRGB))) {
+        local_frame->format() == media::PIXEL_FORMAT_NV12)) ||
+      is_rgb) {
     scoped_refptr<StaticBitmapImage> image;
     gfx::ColorSpace gfx_color_space = local_frame->ColorSpace();
     gfx_color_space = gfx_color_space.GetWithMatrixAndRange(
         gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL);
     auto sk_color_space = gfx_color_space.ToSkColorSpace();
-    if (!sk_color_space) {
+    if (!sk_color_space)
       sk_color_space = SkColorSpace::MakeSRGB();
-    }
 
     const bool prefer_accelerated_image_bitmap =
         local_frame->format() != media::PIXEL_FORMAT_I420A &&
         (BitmapSourceSize().Area() > kCpuEfficientFrameSize ||
-         local_frame->HasTextures());
+         local_frame->HasTextures()) &&
+        (!is_rgb || local_frame->HasTextures());
 
     if (!prefer_accelerated_image_bitmap) {
       size_t bytes_per_row = sizeof(SkColor) * cropWidth();

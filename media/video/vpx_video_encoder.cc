@@ -251,8 +251,12 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                                   "No frame provided for encoding."));
     return;
   }
-  bool supported_format = (frame->format() == PIXEL_FORMAT_NV12) ||
-                          (frame->format() == PIXEL_FORMAT_I420);
+  bool supported_format = frame->format() == PIXEL_FORMAT_NV12 ||
+                          frame->format() == PIXEL_FORMAT_I420 ||
+                          frame->format() == PIXEL_FORMAT_XBGR ||
+                          frame->format() == PIXEL_FORMAT_XRGB ||
+                          frame->format() == PIXEL_FORMAT_ABGR ||
+                          frame->format() == PIXEL_FORMAT_ARGB;
   if ((!frame->IsMappable() && !frame->HasGpuMemoryBuffer()) ||
       !supported_format) {
     status =
@@ -273,10 +277,12 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     }
   }
 
-  if (frame->visible_rect().size() != options_.frame_size) {
+  const bool is_yuv = IsYuvPlanar(frame->format());
+  if (frame->visible_rect().size() != options_.frame_size || !is_yuv) {
     auto resized_frame = frame_pool_.CreateFrame(
-        frame->format(), options_.frame_size, gfx::Rect(options_.frame_size),
-        options_.frame_size, frame->timestamp());
+        is_yuv ? frame->format() : PIXEL_FORMAT_I420, options_.frame_size,
+        gfx::Rect(options_.frame_size), options_.frame_size,
+        frame->timestamp());
     if (resized_frame) {
       status = ConvertAndScaleFrame(*frame, *resized_frame, resize_buf_);
     } else {
