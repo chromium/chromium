@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/accessibility_controller.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -39,15 +38,8 @@ class SwitchAccessTest : public InProcessBrowserTest {
                           const std::set<int>& previous_key_codes) {
     AccessibilityManager* manager = AccessibilityManager::Get();
     manager->SetSwitchAccessEnabled(true);
-    manager->SetSwitchAccessKeysForTest(
-        select_key_codes,
-        ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes);
-    manager->SetSwitchAccessKeysForTest(
-        next_key_codes,
-        ash::prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes);
-    manager->SetSwitchAccessKeysForTest(
-        previous_key_codes,
-        ash::prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes);
+    manager->SetSwitchAccessKeysForTest(select_key_codes, next_key_codes,
+                                        previous_key_codes);
 
     EXPECT_TRUE(manager->IsSwitchAccessEnabled());
 

@@ -59,7 +59,6 @@ component("cpp") {
     "app_types.h",
     "arc_app_id_provider.cc",
     "arc_app_id_provider.h",
-    "ash_constants.cc",
     "ash_constants.h",
     "ash_features.cc",
     "ash_features.h",

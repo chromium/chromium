@@ -96,15 +96,13 @@ suite('ManageAccessibilityPageTests', function() {
   });
 
   /**
-   * @param {!Array<string>} keys New switch key assignments for select action.
+   * @param {!Array<string>} switches New switch assignments for select action.
    * @return {string} Sub-label text from the select link row.
    */
-  function getSublabelForSelectUpdates(keys) {
-    cr.webUIListenerCallback('switch-access-assignments-changed', {
-      select: keys.map(key => ({key, devices: ['internal']})),
-      next: [],
-      previous: []
-    });
+  function getSublabelForSelectUpdates(switches) {
+    cr.webUIListenerCallback(
+        'switch-access-assignments-changed',
+        {select: switches, next: [], previous: []});
 
     return page.$$('#selectLinkRow').$$('#subLabel').textContent.trim();
   }
@@ -120,7 +118,7 @@ suite('ManageAccessibilityPageTests', function() {
     // Simulate a pref change for the select action.
     cr.webUIListenerCallback(
         'switch-access-assignments-changed',
-        {select: [{key: 'a', devices: ['internal']}], next: [], previous: []});
+        {select: ['a'], next: [], previous: []});
 
     assertEquals(1, page.selectAssignments_.length);
     assertEquals('a', page.selectAssignments_[0]);

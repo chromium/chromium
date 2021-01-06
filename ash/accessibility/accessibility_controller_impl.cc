@@ -46,7 +46,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string16.h"
-#include "base/strings/string_number_conversions.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -190,9 +189,9 @@ constexpr const char* const kSwitchAccessPrefsCopiedToSignin[]{
     prefs::kAccessibilitySwitchAccessAutoScanKeyboardSpeedMs,
     prefs::kAccessibilitySwitchAccessAutoScanSpeedMs,
     prefs::kAccessibilitySwitchAccessEnabled,
-    prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes,
-    prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes,
-    prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes,
+    prefs::kAccessibilitySwitchAccessNextKeyCodes,
+    prefs::kAccessibilitySwitchAccessPreviousKeyCodes,
+    prefs::kAccessibilitySwitchAccessSelectKeyCodes,
 };
 
 // Helper function that is used to verify the validity of kFeatures and
@@ -371,11 +370,11 @@ AccessibilityPanelLayoutManager* GetLayoutManager() {
 std::string PrefKeyForSwitchAccessCommand(SwitchAccessCommand command) {
   switch (command) {
     case SwitchAccessCommand::kSelect:
-      return prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes;
+      return prefs::kAccessibilitySwitchAccessSelectKeyCodes;
     case SwitchAccessCommand::kNext:
-      return prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes;
+      return prefs::kAccessibilitySwitchAccessNextKeyCodes;
     case SwitchAccessCommand::kPrevious:
-      return prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes;
+      return prefs::kAccessibilitySwitchAccessPreviousKeyCodes;
     case SwitchAccessCommand::kNone:
       NOTREACHED();
       return "";
@@ -417,26 +416,6 @@ SwitchAccessCommandKeyCode UmaValueForKeyCode(int key_code) {
     default:
       return SwitchAccessCommandKeyCode::kUnknown;
   }
-}
-
-void MigrateSwitchAccessKeyCodePref(PrefService* prefs,
-                                    const std::string& old_pref,
-                                    const std::string& new_pref) {
-  if (!prefs->HasPrefPath(old_pref))
-    return;
-
-  base::ListValue devices;
-  devices.Append(ash::kSwitchAccessInternalDevice);
-  devices.Append(ash::kSwitchAccessUsbDevice);
-  devices.Append(ash::kSwitchAccessBluetoothDevice);
-
-  const auto old_keys = prefs->Get(old_pref)->GetList();
-  base::DictionaryValue new_keys;
-  for (const auto& key : old_keys)
-    new_keys.SetPath(base::NumberToString(key.GetInt()), devices.Clone());
-
-  prefs->Set(new_pref, std::move(new_keys));
-  prefs->ClearPref(old_pref);
 }
 
 }  // namespace
@@ -684,17 +663,17 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kAccessibilitySwitchAccessEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes,
-      base::Value(base::Value::Type::DICTIONARY),
+  registry->RegisterListPref(
+      prefs::kAccessibilitySwitchAccessSelectKeyCodes,
+      base::Value(std::vector<base::Value>()),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes,
-      base::Value(base::Value::Type::DICTIONARY),
+  registry->RegisterListPref(
+      prefs::kAccessibilitySwitchAccessNextKeyCodes,
+      base::Value(std::vector<base::Value>()),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes,
-      base::Value(base::Value::Type::DICTIONARY),
+  registry->RegisterListPref(
+      prefs::kAccessibilitySwitchAccessPreviousKeyCodes,
+      base::Value(std::vector<base::Value>()),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       prefs::kAccessibilitySwitchAccessAutoScanEnabled, false,
@@ -1354,26 +1333,6 @@ void AccessibilityControllerImpl::OnTabletModeEnded() {
 void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
   DCHECK(prefs);
 
-  // TODO(accessibility): Remove in m92 or later after deprecation; see
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=1161305
-  static const char kAccessibilitySwitchAccessSelectKeyCodes[] =
-      "settings.a11y.switch_access.select.key_codes";
-  static const char kAccessibilitySwitchAccessNextKeyCodes[] =
-      "settings.a11y.switch_access.next.key_codes";
-  static const char kAccessibilitySwitchAccessPreviousKeyCodes[] =
-      "settings.a11y.switch_access.previous.key_codes";
-
-  // Migrate old keys to the new format.
-  MigrateSwitchAccessKeyCodePref(
-      prefs, kAccessibilitySwitchAccessSelectKeyCodes,
-      prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes);
-  MigrateSwitchAccessKeyCodePref(
-      prefs, kAccessibilitySwitchAccessNextKeyCodes,
-      prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes);
-  MigrateSwitchAccessKeyCodePref(
-      prefs, kAccessibilitySwitchAccessPreviousKeyCodes,
-      prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes);
-
   active_user_prefs_ = prefs;
 
   // Watch for pref updates from webui settings and policy.
@@ -1439,17 +1398,17 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
           &AccessibilityControllerImpl::UpdateShortcutsEnabledFromPref,
           base::Unretained(this)));
   pref_change_registrar_->Add(
-      prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes,
+      prefs::kAccessibilitySwitchAccessSelectKeyCodes,
       base::BindRepeating(
           &AccessibilityControllerImpl::UpdateSwitchAccessKeyCodesFromPref,
           base::Unretained(this), SwitchAccessCommand::kSelect));
   pref_change_registrar_->Add(
-      prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes,
+      prefs::kAccessibilitySwitchAccessNextKeyCodes,
       base::BindRepeating(
           &AccessibilityControllerImpl::UpdateSwitchAccessKeyCodesFromPref,
           base::Unretained(this), SwitchAccessCommand::kNext));
   pref_change_registrar_->Add(
-      prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes,
+      prefs::kAccessibilitySwitchAccessPreviousKeyCodes,
       base::BindRepeating(
           &AccessibilityControllerImpl::UpdateSwitchAccessKeyCodesFromPref,
           base::Unretained(this), SwitchAccessCommand::kPrevious));
@@ -1707,26 +1666,12 @@ void AccessibilityControllerImpl::UpdateSwitchAccessKeyCodesFromPref(
 
   SyncSwitchAccessPrefsToSignInProfile();
 
-  if (!accessibility_event_rewriter_)
-    return;
-
   std::string pref_key = PrefKeyForSwitchAccessCommand(command);
-  const base::DictionaryValue* key_codes_pref =
-      active_user_prefs_->GetDictionary(pref_key);
-  std::map<int, std::set<std::string>> key_codes;
-  for (const auto& v : key_codes_pref->DictItems()) {
-    int key_code;
-    if (!base::StringToInt(v.first, &key_code)) {
-      NOTREACHED();
-      return;
-    }
-
-    key_codes[key_code] = std::set<std::string>();
-
-    for (const base::Value& device_type : v.second.GetList())
-      key_codes[key_code].insert(device_type.GetString());
-
-    DCHECK(!key_codes[key_code].empty());
+  const base::ListValue* key_codes_pref = active_user_prefs_->GetList(pref_key);
+  std::set<int> key_codes;
+  for (const base::Value& v : *key_codes_pref) {
+    int key_code = v.GetInt();
+    key_codes.insert(key_code);
   }
 
   std::string uma_name = UmaNameForSwitchAccessCommand(command);
@@ -1734,11 +1679,12 @@ void AccessibilityControllerImpl::UpdateSwitchAccessKeyCodesFromPref(
     SwitchAccessCommandKeyCode uma_value = UmaValueForKeyCode(0);
     base::UmaHistogramEnumeration(uma_name, uma_value);
   }
-  for (const auto& key_code : key_codes) {
-    SwitchAccessCommandKeyCode uma_value = UmaValueForKeyCode(key_code.first);
+  for (int key_code : key_codes) {
+    SwitchAccessCommandKeyCode uma_value = UmaValueForKeyCode(key_code);
     base::UmaHistogramEnumeration(uma_name, uma_value);
   }
 
+  if (accessibility_event_rewriter_)
     accessibility_event_rewriter_->SetKeyCodesForSwitchAccessCommand(key_codes,
                                                                      command);
 }

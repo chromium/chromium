@@ -349,8 +349,9 @@ class AccessibilityManager
       base::RepeatingCallback<void()> observer);
   void SetCaretBoundsObserverForTest(
       base::RepeatingCallback<void(const gfx::Rect&)> observer);
-  void SetSwitchAccessKeysForTest(const std::set<int>& action_keys,
-                                  const std::string& pref_name);
+  void SetSwitchAccessKeysForTest(const std::set<int>& select_keys,
+                                  const std::set<int>& next_keys,
+                                  const std::set<int>& previous_keys);
 
   const std::set<std::string>& GetAccessibilityCommonEnabledFeaturesForTest() {
     return accessibility_common_enabled_features_;

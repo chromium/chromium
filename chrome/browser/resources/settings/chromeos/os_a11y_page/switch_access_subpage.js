@@ -206,11 +206,9 @@ Polymer({
    * @private
    */
   onAssignmentsChanged_(value) {
-    // TODO: include |v.devices| for each key in UI.
-    this.selectAssignments_ = value[SwitchAccessCommand.SELECT].map(v => v.key);
-    this.nextAssignments_ = value[SwitchAccessCommand.NEXT].map(v => v.key);
-    this.previousAssignments_ =
-        value[SwitchAccessCommand.PREVIOUS].map(v => v.key);
+    this.selectAssignments_ = value[SwitchAccessCommand.SELECT];
+    this.nextAssignments_ = value[SwitchAccessCommand.NEXT];
+    this.previousAssignments_ = value[SwitchAccessCommand.PREVIOUS];
   },
 
   /**

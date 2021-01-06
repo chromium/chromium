@@ -41,12 +41,10 @@ ASH_PUBLIC_EXPORT extern const char kAccessibilityFloatingMenuPosition[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilityFocusHighlightEnabled[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilitySelectToSpeakEnabled[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilitySwitchAccessEnabled[];
+ASH_PUBLIC_EXPORT extern const char kAccessibilitySwitchAccessSelectKeyCodes[];
+ASH_PUBLIC_EXPORT extern const char kAccessibilitySwitchAccessNextKeyCodes[];
 ASH_PUBLIC_EXPORT extern const char
-    kAccessibilitySwitchAccessSelectDeviceKeyCodes[];
-ASH_PUBLIC_EXPORT extern const char
-    kAccessibilitySwitchAccessNextDeviceKeyCodes[];
-ASH_PUBLIC_EXPORT extern const char
-    kAccessibilitySwitchAccessPreviousDeviceKeyCodes[];
+    kAccessibilitySwitchAccessPreviousKeyCodes[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilitySwitchAccessAutoScanEnabled[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilitySwitchAccessAutoScanSpeedMs[];
 ASH_PUBLIC_EXPORT extern const char
