@@ -95,6 +95,12 @@ class ASH_EXPORT WindowCycleController {
   // to all desk unless LimitAltTabToActiveDesk flag is explicitly enabled.
   bool IsAltTabPerActiveDesk();
 
+  // Returns true while switching the alt-tab mode and Bento flag is enabled.
+  // This helps `Scroll()` and `Step()` distinguish between pressing tabs and
+  // switching mode, so they refresh |current_index_| and the highlighted
+  // window correctly.
+  bool IsSwitchingMode();
+
  private:
   // Gets a list of windows from the currently open windows, removing windows
   // with transient roots already in the list. The returned list of windows
@@ -129,6 +135,9 @@ class ASH_EXPORT WindowCycleController {
   // are shown in alt-tab.
   // TODO(crbug.com/1157105): Store per-desk mode in primary user pref.
   DesksMruType alt_tab_mode_ = DesksMruType::kAllDesks;
+
+  // Tracks whether alt-tab mode is currently switching or not.
+  bool is_switching_mode_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WindowCycleController);
 };
