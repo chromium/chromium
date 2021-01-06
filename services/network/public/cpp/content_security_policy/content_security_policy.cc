@@ -971,13 +971,15 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
             directive_name, directive.second, out->parsing_errors);
         break;
       case CSPDirectiveName::Sandbox:
-        // Note: |ParseSandboxPolicy(...).error_message| is ignored here.
-        // Blink's CSP parser is already in charge of displaying it.
+        // Note: Outside of CSP embedded enforcement,
+        // |ParseSandboxPolicy(...).error_message| isn't displayed to the user.
+        // Blink's CSP parser is already in charge of it.
         {
           auto sandbox = ParseWebSandboxPolicy(directive.second,
                                                mojom::WebSandboxFlags::kNone);
           out->sandbox = sandbox.flags;
-          out->parsing_errors.emplace_back(std::move(sandbox.error_message));
+          if (!sandbox.error_message.empty())
+            out->parsing_errors.emplace_back(std::move(sandbox.error_message));
         }
         break;
       case CSPDirectiveName::UpgradeInsecureRequests:
