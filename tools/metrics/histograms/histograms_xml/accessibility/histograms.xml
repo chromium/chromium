@@ -781,7 +781,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.Performance.WinAPIs.{API}" units="microseconds"
-    expires_after="M89">
+    expires_after="M93">
   <owner>dmazzoni@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
