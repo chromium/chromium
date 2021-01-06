@@ -30,8 +30,7 @@ external/wpt/infrastructure/expected-fail/timeout.html [ Timeout ]
 external/wpt/infrastructure/reftest/reftest_ref_timeout.html [ Timeout ]
 external/wpt/infrastructure/reftest/reftest_timeout.html [ Timeout ]
 
-# We don't support extracting fuzzy information from .ini files, which these
-# infrastructure tests rely on.
+# Fuzzy reftests are not supported.
 crbug.com/997202 external/wpt/infrastructure/reftest/legacy/reftest_fuzzy_chain_ini.html [ Failure ]
 crbug.com/997202 external/wpt/infrastructure/reftest/legacy/fuzzy-ref-2.html [ Failure ]
 crbug.com/997202 external/wpt/infrastructure/reftest/reftest_fuzzy_ini_full.html [ Failure ]
@@ -263,6 +262,11 @@ crbug.com/1106590 virtual/gpu/fast/canvas/canvas-path-non-invertible-transform.h
 
 crbug.com/974720 [ Mac10.13 ] virtual/text-antialias/firstline/capitalize-transform-2.html [ Pass Crash ]
 crbug.com/974720 [ Mac10.13 ] virtual/text-antialias/firstline/capitalize-transform.html [ Pass Crash ]
+
+# Subpixel differences due to compositing on Mac10.14+.
+crbug.com/997202 [ Mac10.14 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
+crbug.com/997202 [ Mac10.15 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
+crbug.com/997202 [ Mac11.0 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
 
 # This test depends on synchronous focus() which does not exist (anymore?).
 crbug.com/1074482 external/wpt/html/interaction/focus/the-autofocus-attribute/update-the-rendering.html [ Failure ]
@@ -5709,6 +5713,10 @@ crbug.com/1144537 external/wpt/xhr/responsexml-document-properties.htm [ Pass Fa
 
 # Sheriff 2020-11-03
 crbug.com/1145019 [ Win7 ] fast/events/updateLayoutForHitTest.html [ Failure ]
+
+# Lack of support for reftest fuzzy matching
+# Reftests have minor pixel differences due to antialiasing.
+crbug.com/997202 external/wpt/css/css-transforms/animation/transform-interpolation-rotate-slerp.html [ Failure ]
 
 # Sheriff 2020-11-04
 crbug.com/1144273 http/tests/devtools/sources/debugger-ui/continue-to-location-markers-in-top-level-function.js [ Pass Failure Timeout ]
