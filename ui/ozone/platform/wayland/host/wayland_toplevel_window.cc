@@ -9,21 +9,17 @@
 #include "base/run_loop.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/hit_test.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/shell_object_factory.h"
 #include "ui/ozone/platform/wayland/host/shell_surface_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
-#include "ui/platform_window/wm/wm_drop_handler.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(jamescook): The nogncheck is to work around false-positive failures on
@@ -40,18 +36,9 @@ WaylandToplevelWindow::WaylandToplevelWindow(PlatformWindowDelegate* delegate,
   // Set a class property key, which allows |this| to be used for interactive
   // events, e.g. move or resize.
   SetWmMoveResizeHandler(this, AsWmMoveResizeHandler());
-
-  // Set a class property key, which allows |this| to be used for drag action.
-  SetWmDragHandler(this, this);
 }
 
-WaylandToplevelWindow::~WaylandToplevelWindow() {
-  if (drag_handler_delegate_) {
-    drag_handler_delegate_->OnDragFinished(
-        DragDropTypes::DragOperation::DRAG_NONE);
-  }
-  CancelDrag();
-}
+WaylandToplevelWindow::~WaylandToplevelWindow() = default;
 
 bool WaylandToplevelWindow::CreateShellSurface() {
   ShellObjectFactory factory;
@@ -97,31 +84,6 @@ void WaylandToplevelWindow::DispatchHostWindowDragMovement(
     shell_surface_->SurfaceResize(connection(), hittest);
 
   connection()->ScheduleFlush();
-}
-
-bool WaylandToplevelWindow::StartDrag(const ui::OSExchangeData& data,
-                                      int operation,
-                                      gfx::NativeCursor cursor,
-                                      bool can_grab_pointer,
-                                      WmDragHandler::Delegate* delegate) {
-  DCHECK(!drag_handler_delegate_);
-  drag_handler_delegate_ = delegate;
-  connection()->data_drag_controller()->StartSession(data, operation);
-
-  base::RunLoop drag_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  drag_loop_quit_closure_ = drag_loop.QuitClosure();
-
-  auto alive = weak_ptr_factory_.GetWeakPtr();
-  drag_loop.Run();
-  if (!alive)
-    return false;
-  return true;
-}
-
-void WaylandToplevelWindow::CancelDrag() {
-  if (drag_loop_quit_closure_.is_null())
-    return;
-  std::move(drag_loop_quit_closure_).Run();
 }
 
 void WaylandToplevelWindow::Show(bool inactive) {
@@ -319,59 +281,6 @@ void WaylandToplevelWindow::HandleSurfaceConfigure(int32_t width,
 
   if (did_active_change)
     delegate()->OnActivationChanged(is_active_);
-}
-
-void WaylandToplevelWindow::OnDragEnter(const gfx::PointF& point,
-                                        std::unique_ptr<OSExchangeData> data,
-                                        int operation) {
-  WmDropHandler* drop_handler = GetWmDropHandler(*this);
-  if (!drop_handler)
-    return;
-
-  // Wayland sends locations in DIP so they need to be translated to
-  // physical pixels.
-  // TODO(crbug.com/1102857): get the real event modifier here.
-  drop_handler->OnDragEnter(
-      gfx::ScalePoint(point, buffer_scale(), buffer_scale()), std::move(data),
-      operation,
-      /*modifiers=*/0);
-}
-
-int WaylandToplevelWindow::OnDragMotion(const gfx::PointF& point,
-                                        int operation) {
-  WmDropHandler* drop_handler = GetWmDropHandler(*this);
-  if (!drop_handler)
-    return 0;
-
-  // Wayland sends locations in DIP so they need to be translated to
-  // physical pixels.
-  // TODO(crbug.com/1102857): get the real event modifier here.
-  return drop_handler->OnDragMotion(
-      gfx::ScalePoint(point, buffer_scale(), buffer_scale()), operation,
-      /*modifiers=*/0);
-}
-
-void WaylandToplevelWindow::OnDragDrop() {
-  WmDropHandler* drop_handler = GetWmDropHandler(*this);
-  if (!drop_handler)
-    return;
-  // TODO(crbug.com/1102857): get the real event modifier here.
-  drop_handler->OnDragDrop({}, /*modifiers=*/0);
-}
-
-void WaylandToplevelWindow::OnDragLeave() {
-  WmDropHandler* drop_handler = GetWmDropHandler(*this);
-  if (!drop_handler)
-    return;
-  drop_handler->OnDragLeave();
-}
-
-void WaylandToplevelWindow::OnDragSessionClose(uint32_t dnd_action) {
-  DCHECK(drag_handler_delegate_);
-  drag_handler_delegate_->OnDragFinished(dnd_action);
-  drag_handler_delegate_ = nullptr;
-  connection()->event_source()->ResetPointerFlags();
-  std::move(drag_loop_quit_closure_).Run();
 }
 
 bool WaylandToplevelWindow::OnInitialize(

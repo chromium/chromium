@@ -8,24 +8,32 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/ozone/events_ozone.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 #include "ui/ozone/public/mojom/wayland/wayland_overlay_config.mojom.h"
+#include "ui/platform_window/wm/wm_drag_handler.h"
+#include "ui/platform_window/wm/wm_drop_handler.h"
 
 namespace {
 
@@ -45,7 +53,10 @@ WaylandWindow::WaylandWindow(PlatformWindowDelegate* delegate,
       connection_(connection),
       wayland_overlay_delegation_enabled_(IsWaylandOverlayDelegationEnabled()),
       accelerated_widget_(
-          connection->wayland_window_manager()->AllocateAcceleratedWidget()) {}
+          connection->wayland_window_manager()->AllocateAcceleratedWidget()) {
+  // Set a class property key, which allows |this| to be used for drag action.
+  SetWmDragHandler(this, this);
+}
 
 WaylandWindow::~WaylandWindow() {
   shutting_down_ = true;
@@ -65,6 +76,12 @@ WaylandWindow::~WaylandWindow() {
 
   if (parent_window_)
     parent_window_->set_child_window(nullptr);
+
+  if (drag_handler_delegate_) {
+    drag_handler_delegate_->OnDragFinished(
+        DragDropTypes::DragOperation::DRAG_NONE);
+  }
+  CancelDrag();
 }
 
 void WaylandWindow::OnWindowLostCapture() {
@@ -122,6 +139,31 @@ void WaylandWindow::SetPointerFocus(bool focus) {
     connection_->SetCursorBitmap(bitmap_->bitmaps(), hotspot_in_dips,
                                  buffer_scale());
   }
+}
+
+bool WaylandWindow::StartDrag(const ui::OSExchangeData& data,
+                              int operation,
+                              gfx::NativeCursor cursor,
+                              bool can_grab_pointer,
+                              WmDragHandler::Delegate* delegate) {
+  DCHECK(!drag_handler_delegate_);
+  drag_handler_delegate_ = delegate;
+  connection()->data_drag_controller()->StartSession(data, operation);
+
+  base::RunLoop drag_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  drag_loop_quit_closure_ = drag_loop.QuitClosure();
+
+  auto alive = weak_ptr_factory_.GetWeakPtr();
+  drag_loop.Run();
+  if (!alive)
+    return false;
+  return true;
+}
+
+void WaylandWindow::CancelDrag() {
+  if (drag_loop_quit_closure_.is_null())
+    return;
+  std::move(drag_loop_quit_closure_).Run();
 }
 
 void WaylandWindow::Show(bool inactive) {
@@ -354,17 +396,58 @@ void WaylandWindow::OnCloseRequest() {
 
 void WaylandWindow::OnDragEnter(const gfx::PointF& point,
                                 std::unique_ptr<OSExchangeData> data,
-                                int operation) {}
+                                int operation) {
+  WmDropHandler* drop_handler = GetWmDropHandler(*this);
+  if (!drop_handler)
+    return;
 
-int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operation) {
-  return -1;
+  auto location_px = gfx::ScalePoint(TranslateLocationToRootWindow(point),
+                                     buffer_scale(), buffer_scale());
+
+  // Wayland sends locations in DIP so they need to be translated to
+  // physical pixels.
+  // TODO(crbug.com/1102857): get the real event modifier here.
+  drop_handler->OnDragEnter(location_px, std::move(data), operation,
+                            /*modifiers=*/0);
 }
 
-void WaylandWindow::OnDragDrop() {}
+int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operation) {
+  WmDropHandler* drop_handler = GetWmDropHandler(*this);
+  if (!drop_handler)
+    return 0;
 
-void WaylandWindow::OnDragLeave() {}
+  auto location_px = gfx::ScalePoint(TranslateLocationToRootWindow(point),
+                                     buffer_scale(), buffer_scale());
 
-void WaylandWindow::OnDragSessionClose(uint32_t dnd_action) {}
+  // Wayland sends locations in DIP so they need to be translated to
+  // physical pixels.
+  // TODO(crbug.com/1102857): get the real event modifier here.
+  return drop_handler->OnDragMotion(location_px, operation,
+                                    /*modifiers=*/0);
+}
+
+void WaylandWindow::OnDragDrop() {
+  WmDropHandler* drop_handler = GetWmDropHandler(*this);
+  if (!drop_handler)
+    return;
+  // TODO(crbug.com/1102857): get the real event modifier here.
+  drop_handler->OnDragDrop({}, /*modifiers=*/0);
+}
+
+void WaylandWindow::OnDragLeave() {
+  WmDropHandler* drop_handler = GetWmDropHandler(*this);
+  if (!drop_handler)
+    return;
+  drop_handler->OnDragLeave();
+}
+
+void WaylandWindow::OnDragSessionClose(uint32_t dnd_action) {
+  DCHECK(drag_handler_delegate_);
+  drag_handler_delegate_->OnDragFinished(dnd_action);
+  drag_handler_delegate_ = nullptr;
+  connection()->event_source()->ResetPointerFlags();
+  std::move(drag_loop_quit_closure_).Run();
+}
 
 void WaylandWindow::SetBoundsDip(const gfx::Rect& bounds_dip) {
   SetBounds(gfx::ScaleToRoundedRect(bounds_dip, buffer_scale()));
@@ -482,8 +565,16 @@ void WaylandWindow::UpdateCursorPositionFromEvent(
   }
 }
 
-WaylandWindow* WaylandWindow::GetTopLevelWindow() {
-  return parent_window_ ? parent_window_->GetTopLevelWindow() : this;
+gfx::PointF WaylandWindow::TranslateLocationToRootWindow(
+    const gfx::PointF& location) {
+  auto* root_window = GetRootParentWindow();
+  DCHECK(root_window);
+  if (root_window == this)
+    return location;
+
+  gfx::Vector2d offset =
+      GetBounds().origin() - root_window->GetBounds().origin();
+  return location + gfx::Vector2dF(offset);
 }
 
 WaylandWindow* WaylandWindow::GetTopMostChildWindow() {

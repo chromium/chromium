@@ -9,7 +9,6 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
-#include "ui/platform_window/wm/wm_drag_handler.h"
 #include "ui/platform_window/wm/wm_move_loop_handler.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 
@@ -19,7 +18,6 @@ class ShellSurfaceWrapper;
 
 class WaylandToplevelWindow : public WaylandWindow,
                               public WmMoveResizeHandler,
-                              public WmDragHandler,
                               public WmMoveLoopHandler,
                               public WaylandExtension {
  public:
@@ -39,14 +37,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   void DispatchHostWindowDragMovement(
       int hittest,
       const gfx::Point& pointer_location_in_px) override;
-
-  // WmDragHandler
-  bool StartDrag(const ui::OSExchangeData& data,
-                 int operation,
-                 gfx::NativeCursor cursor,
-                 bool can_grab_pointer,
-                 WmDragHandler::Delegate* delegate) override;
-  void CancelDrag() override;
 
   // PlatformWindow
   void Show(bool inactive) override;
@@ -72,13 +62,6 @@ class WaylandToplevelWindow : public WaylandWindow,
                               bool is_maximized,
                               bool is_fullscreen,
                               bool is_activated) override;
-  void OnDragEnter(const gfx::PointF& point,
-                   std::unique_ptr<OSExchangeData> data,
-                   int operation) override;
-  int OnDragMotion(const gfx::PointF& point, int operation) override;
-  void OnDragDrop() override;
-  void OnDragLeave() override;
-  void OnDragSessionClose(uint32_t dnd_action) override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   bool IsActive() const override;
 
@@ -112,8 +95,6 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // Wrappers around shell surface.
   std::unique_ptr<ShellSurfaceWrapper> shell_surface_;
-
-  WmDragHandler::Delegate* drag_handler_delegate_ = nullptr;
 
   // These bounds attributes below have suffices that indicate units used.
   // Wayland operates in DIP but the platform operates in physical pixels so
@@ -153,8 +134,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   base::Optional<gfx::Size> min_size_;
   base::Optional<gfx::Size> max_size_;
 
-  base::OnceClosure drag_loop_quit_closure_;
-
   wl::Object<zaura_surface> aura_surface_;
 
   // When use_native_frame is false, client-side decoration is set,
@@ -162,8 +141,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   // When use_native_frame is true, server-side decoration is set,
   // e.g. lacros-taskmanager.
   bool use_native_frame_ = false;
-
-  base::WeakPtrFactory<WaylandToplevelWindow> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

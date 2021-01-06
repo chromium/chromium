@@ -26,7 +26,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
-#include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_data_device.h"
@@ -154,6 +153,12 @@ class WaylandDataDragControllerTest : public WaylandTest {
     return connection_->data_device_manager()->GetDevice();
   }
 
+  MockDropHandler* drop_handler() { return drop_handler_.get(); }
+
+  MockDragHandlerDelegate* drag_handler() {
+    return drag_handler_delegate_.get();
+  }
+
   WaylandConnection* connection() { return connection_.get(); }
 
   WaylandWindow* window() { return window_.get(); }
@@ -166,6 +171,22 @@ class WaylandDataDragControllerTest : public WaylandTest {
   uint32_t NextSerial() const {
     static uint32_t serial = 0;
     return ++serial;
+  }
+
+  std::unique_ptr<WaylandWindow> CreateTestWindow(
+      PlatformWindowType type,
+      const gfx::Size& size,
+      MockPlatformWindowDelegate* delegate) {
+    DCHECK(delegate);
+    PlatformWindowInitProperties properties{gfx::Rect(size)};
+    properties.type = type;
+    EXPECT_CALL(*delegate, OnAcceleratedWidgetAvailable(_)).Times(1);
+    auto window = WaylandWindow::Create(delegate, connection_.get(),
+                                        std::move(properties));
+    SetWmDropHandler(window.get(), drop_handler_.get());
+    EXPECT_NE(gfx::kNullAcceleratedWidget, window->GetWidget());
+    Sync();
+    return window;
   }
 
   // TODO(crbug.com/1163544): Deduplicate DnD test helper code.
@@ -232,6 +253,13 @@ class WaylandDataDragControllerTest : public WaylandTest {
     ScheduleTestTask(base::BindOnce(
         [](WaylandDataDragControllerTest* self) {
           self->SendDndCancelled();
+
+          // DnD handlers expect DragLeave to be sent before DragFinished when
+          // drag sessions end up with no data transfer (cancelled). Otherwise,
+          // it might lead to issues like https://crbug.com/1109324.
+          EXPECT_CALL(*self->drop_handler(), OnDragLeave).Times(1);
+          EXPECT_CALL(*self->drag_handler(), OnDragFinished).Times(1);
+
           self->Sync();
         },
         base::Unretained(this)));
@@ -278,10 +306,9 @@ TEST_P(WaylandDataDragControllerTest, StartDrag) {
       base::BindOnce(&WaylandDataDragControllerTest::ReadDataWhenSourceIsReady,
                      base::Unretained(this)));
 
-  static_cast<WaylandToplevelWindow*>(window_.get())
-      ->StartDrag(os_exchange_data,
-                  DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE, {}, true,
-                  drag_handler_delegate_.get());
+  window_->StartDrag(os_exchange_data,
+                     DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE, {},
+                     /*can_grab_pointer=*/true, drag_handler_delegate_.get());
   Sync();
 
   EXPECT_FALSE(data_device()->drag_delegate_);
@@ -537,24 +564,12 @@ TEST_P(WaylandDataDragControllerTest, StartAndCancel) {
   const bool restored_focus = window_->has_pointer_focus();
   window_->SetPointerFocus(true);
 
-  ASSERT_EQ(PlatformWindowType::kWindow, window_->type());
+  ScheduleDragCancel();
+
   OSExchangeData os_exchange_data;
   os_exchange_data.SetString(sample_text_for_dnd());
-
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WaylandDataDragControllerTest::ScheduleDragCancel,
-                     base::Unretained(this)));
-
-  // DnD handlers expect DragLeave to be sent before DragFinished when drag
-  // sessions end up with no data transfer (cancelled). Otherwise, it might lead
-  // to issues like https://crbug.com/1109324.
-  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
-  EXPECT_CALL(*drag_handler_delegate_, OnDragFinished(_)).Times(1);
-
-  static_cast<WaylandToplevelWindow*>(window_.get())
-      ->StartDrag(os_exchange_data, DragDropTypes::DRAG_COPY, {}, true,
-                  drag_handler_delegate_.get());
+  window_->StartDrag(os_exchange_data, DragDropTypes::DRAG_COPY, {},
+                     /*can_grab_pointer=*/true, drag_handler_delegate_.get());
   Sync();
 
   window_->SetPointerFocus(restored_focus);
@@ -595,7 +610,7 @@ TEST_P(WaylandDataDragControllerTest, ForeignDragHandleAskAction) {
 
 // Regression test for https://crbug.com/1143707.
 TEST_P(WaylandDataDragControllerTest, DestroyEnteredSurface) {
-  auto* window_1 = static_cast<WaylandToplevelWindow*>(window_.get());
+  auto* window_1 = window_.get();
   const bool restored_focus = window_1->has_pointer_focus();
   window_1->SetPointerFocus(true);
   ASSERT_EQ(PlatformWindowType::kWindow, window_1->type());
@@ -605,14 +620,9 @@ TEST_P(WaylandDataDragControllerTest, DestroyEnteredSurface) {
     self->SendDndEnter(self->window(), gfx::Point(10, 10));
 
     // Init and open |target_window|.
-    PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
-    properties.type = PlatformWindowType::kWindow;
     MockPlatformWindowDelegate delegate_2;
-    EXPECT_CALL(delegate_2, OnAcceleratedWidgetAvailable(_)).Times(1);
-    auto window_2 = WaylandWindow::Create(&delegate_2, self->connection(),
-                                          std::move(properties));
-    ASSERT_NE(gfx::kNullAcceleratedWidget, window_2->GetWidget());
-    self->Sync();
+    auto window_2 = self->CreateTestWindow(PlatformWindowType::kWindow,
+                                           gfx::Size(80, 80), &delegate_2);
 
     // Leave |window_1| and enter |window_2|.
     self->SendDndLeave();
@@ -642,6 +652,60 @@ TEST_P(WaylandDataDragControllerTest, DestroyEnteredSurface) {
                       drag_handler_delegate_.get());
   Sync();
   window_1->SetPointerFocus(restored_focus);
+}
+
+// Ensures drag/drop events are properly propagated to non-toplevel windows.
+TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
+  auto* origin_window = window_.get();
+  const bool restored_focus = origin_window->has_pointer_focus();
+  origin_window->SetPointerFocus(true);
+
+  auto test = [](WaylandDataDragControllerTest* self,
+                 PlatformWindowType window_type) {
+    // Emulate server sending an dnd offer + enter events for |origin_window|.
+    self->SendDndEnter(self->window(), gfx::Point(10, 10));
+    EXPECT_CALL(*self->drop_handler(), MockOnDragEnter()).Times(1);
+    EXPECT_CALL(*self->drop_handler(), MockDragMotion(_, _, _)).Times(1);
+    self->Sync();
+
+    // Init and open |target_window|.
+    MockPlatformWindowDelegate delegate_2;
+    auto window_2 =
+        self->CreateTestWindow(window_type, gfx::Size(100, 40), &delegate_2);
+
+    // Leave |origin_window| and enter non-toplevel |window_2|.
+    self->SendDndLeave();
+    EXPECT_CALL(*self->drop_handler(), OnDragLeave).Times(1);
+
+    self->SendDndEnter(window_2.get(), {});
+    EXPECT_CALL(*self->drop_handler(), MockOnDragEnter()).Times(1);
+    EXPECT_CALL(*self->drop_handler(), MockDragMotion(_, _, _)).Times(1);
+    self->Sync();
+
+    self->SendDndLeave();
+    EXPECT_CALL(*self->drop_handler(), OnDragLeave).Times(1);
+    self->Sync();
+  };
+
+  // Post test tasks, for each non-toplevel window type, to be performed
+  // asynchronously once the dnd-related protocol objects are ready.
+  constexpr PlatformWindowType kNonToplevelWindowTypes[]{
+      PlatformWindowType::kPopup, PlatformWindowType::kMenu,
+      PlatformWindowType::kTooltip, PlatformWindowType::kBubble};
+  for (auto window_type : kNonToplevelWindowTypes)
+    ScheduleTestTask(base::BindOnce(test, base::Unretained(this), window_type));
+
+  // Post a wl_data_source::cancelled notifying the client to tear down the drag
+  // session.
+  ScheduleDragCancel();
+
+  // Request to start the drag session, which spins a nested run loop.
+  OSExchangeData os_exchange_data;
+  os_exchange_data.SetString(sample_text_for_dnd());
+  origin_window->StartDrag(os_exchange_data, DragDropTypes::DRAG_COPY, {}, true,
+                           drag_handler_delegate_.get());
+  Sync();
+  origin_window->SetPointerFocus(restored_focus);
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
