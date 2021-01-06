@@ -41,12 +41,12 @@ std::tuple<ContentSetting, bool> DecodeCommandId(int encoded_command_id) {
 PermissionMenuModel::PermissionMenuModel(Profile* profile,
                                          const GURL& url,
                                          const PageInfo::PermissionInfo& info,
-                                         const ChangeCallback& callback)
+                                         ChangeCallback callback)
     : ui::SimpleMenuModel(this),
       host_content_settings_map_(
           HostContentSettingsMapFactory::GetForProfile(profile)),
       permission_(info),
-      callback_(callback) {
+      callback_(std::move(callback)) {
   DCHECK(!callback_.is_null());
   base::string16 label;
 

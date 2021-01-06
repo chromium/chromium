@@ -147,7 +147,7 @@ BrowserCommandController::BrowserCommandController(Browser* browser)
     local_pref_registrar_.Init(local_state);
     local_pref_registrar_.Add(
         prefs::kAllowFileSelectionDialogs,
-        base::Bind(
+        base::BindRepeating(
             &BrowserCommandController::UpdateCommandsForFileSelectionDialogs,
             base::Unretained(this)));
   }
@@ -155,30 +155,33 @@ BrowserCommandController::BrowserCommandController(Browser* browser)
   profile_pref_registrar_.Init(profile()->GetPrefs());
   profile_pref_registrar_.Add(
       prefs::kDevToolsAvailability,
-      base::Bind(&BrowserCommandController::UpdateCommandsForDevTools,
-                 base::Unretained(this)));
+      base::BindRepeating(&BrowserCommandController::UpdateCommandsForDevTools,
+                          base::Unretained(this)));
   profile_pref_registrar_.Add(
       bookmarks::prefs::kEditBookmarksEnabled,
-      base::Bind(&BrowserCommandController::UpdateCommandsForBookmarkEditing,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &BrowserCommandController::UpdateCommandsForBookmarkEditing,
+          base::Unretained(this)));
   profile_pref_registrar_.Add(
       bookmarks::prefs::kShowBookmarkBar,
-      base::Bind(&BrowserCommandController::UpdateCommandsForBookmarkBar,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &BrowserCommandController::UpdateCommandsForBookmarkBar,
+          base::Unretained(this)));
   profile_pref_registrar_.Add(
       prefs::kIncognitoModeAvailability,
-      base::Bind(
+      base::BindRepeating(
           &BrowserCommandController::UpdateCommandsForIncognitoAvailability,
           base::Unretained(this)));
   profile_pref_registrar_.Add(
       prefs::kPrintingEnabled,
-      base::Bind(&BrowserCommandController::UpdatePrintingState,
-                 base::Unretained(this)));
+      base::BindRepeating(&BrowserCommandController::UpdatePrintingState,
+                          base::Unretained(this)));
 #if !defined(OS_MAC)
   profile_pref_registrar_.Add(
       prefs::kFullscreenAllowed,
-      base::Bind(&BrowserCommandController::UpdateCommandsForFullscreenMode,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &BrowserCommandController::UpdateCommandsForFullscreenMode,
+          base::Unretained(this)));
 #endif
   pref_signin_allowed_.Init(
       prefs::kSigninAllowed, profile()->GetOriginalProfile()->GetPrefs(),

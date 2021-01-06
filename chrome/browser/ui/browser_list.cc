@@ -203,9 +203,10 @@ void BrowserList::TryToCloseBrowserList(const BrowserVector& browsers_to_close,
        ++it) {
     if ((*it)->TryToCloseWindow(
             skip_beforeunload,
-            base::Bind(&BrowserList::PostTryToCloseBrowserWindow,
-                       browsers_to_close, on_close_success, on_close_aborted,
-                       profile_path, skip_beforeunload))) {
+            base::BindRepeating(&BrowserList::PostTryToCloseBrowserWindow,
+                                browsers_to_close, on_close_success,
+                                on_close_aborted, profile_path,
+                                skip_beforeunload))) {
       return;
     }
   }

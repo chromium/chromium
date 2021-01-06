@@ -19,8 +19,9 @@ class BluetoothChooserControllerTest : public testing::Test {
   BluetoothChooserControllerTest()
       : bluetooth_chooser_controller_(
             nullptr,
-            base::Bind(&BluetoothChooserControllerTest::OnBluetoothChooserEvent,
-                       base::Unretained(this))) {
+            base::BindRepeating(
+                &BluetoothChooserControllerTest::OnBluetoothChooserEvent,
+                base::Unretained(this))) {
     bluetooth_chooser_controller_.set_view(&mock_bluetooth_chooser_view_);
   }
 

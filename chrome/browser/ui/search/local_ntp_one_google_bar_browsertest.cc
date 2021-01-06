@@ -69,9 +69,9 @@ class LocalNTPOneGoogleBarSmokeTest : public InProcessBrowserTest {
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
-                base::Bind(&LocalNTPOneGoogleBarSmokeTest::
-                               OnWillCreateBrowserContextServices,
-                           base::Unretained(this)));
+                base::BindRepeating(&LocalNTPOneGoogleBarSmokeTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
   }
 
   static std::unique_ptr<KeyedService> CreateOneGoogleBarService(

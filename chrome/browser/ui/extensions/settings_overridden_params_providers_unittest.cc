@@ -27,8 +27,9 @@ class SettingsOverriddenParamsProvidersUnitTest
     // exists.
     extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()
         ->SetTestingFactoryAndUse(
-            profile(), base::Bind([](content::BrowserContext* context)
-                                      -> std::unique_ptr<KeyedService> {
+            profile(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
               return std::make_unique<
                   extensions::ExtensionWebUIOverrideRegistrar>(context);
             }));

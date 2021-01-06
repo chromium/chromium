@@ -240,10 +240,10 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
         std::make_unique<PresentationRequestCallbacks>(expected_error);
     start_presentation_context_ = std::make_unique<StartPresentationContext>(
         presentation_request_,
-        base::Bind(&PresentationRequestCallbacks::Success,
-                   base::Unretained(request_callbacks.get())),
-        base::Bind(&PresentationRequestCallbacks::Error,
-                   base::Unretained(request_callbacks.get())));
+        base::BindOnce(&PresentationRequestCallbacks::Success,
+                       base::Unretained(request_callbacks.get())),
+        base::BindOnce(&PresentationRequestCallbacks::Error,
+                       base::Unretained(request_callbacks.get())));
     StartPresentationContext* context_ptr = start_presentation_context_.get();
     ui_->set_start_presentation_context_for_test(
         std::move(start_presentation_context_));

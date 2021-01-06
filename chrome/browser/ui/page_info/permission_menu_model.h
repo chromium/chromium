@@ -18,13 +18,14 @@ class Profile;
 class PermissionMenuModel : public ui::SimpleMenuModel,
                             public ui::SimpleMenuModel::Delegate {
  public:
-  typedef base::Callback<void(const PageInfo::PermissionInfo&)> ChangeCallback;
+  typedef base::RepeatingCallback<void(const PageInfo::PermissionInfo&)>
+      ChangeCallback;
 
   // Create a new menu model for permission settings.
   PermissionMenuModel(Profile* profile,
                       const GURL& url,
                       const PageInfo::PermissionInfo& info,
-                      const ChangeCallback& callback);
+                      ChangeCallback callback);
   ~PermissionMenuModel() override;
 
   // Overridden from ui::SimpleMenuModel::Delegate:

@@ -82,12 +82,12 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
                       ExtensionRegistry* registry,
                       Profile* profile,
                       const std::string& extension_id,
-                      const base::Closure& callback)
+                      base::OnceClosure callback)
       : service_(service),
         registry_(registry),
         profile_(profile),
         extension_id_(extension_id),
-        callback_(callback) {}
+        callback_(std::move(callback)) {}
 
   ~EnableViaDialogFlow() override {}
 
@@ -105,7 +105,7 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
         registry_->GetExtensionById(extension_id_, ExtensionRegistry::ENABLED);
     if (!extension)
       return;
-    callback_.Run();
+    std::move(callback_).Run();
     delete this;
   }
 
@@ -115,7 +115,7 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
   ExtensionRegistry* registry_;
   Profile* profile_;
   std::string extension_id_;
-  base::Closure callback_;
+  base::OnceClosure callback_;
   std::unique_ptr<ExtensionEnableFlow> flow_;
 
   DISALLOW_COPY_AND_ASSIGN(EnableViaDialogFlow);
@@ -504,13 +504,12 @@ void OpenApplicationWithReenablePrompt(Profile* profile,
   if (!service->IsExtensionEnabled(extension->id()) ||
       registry->GetExtensionById(extension->id(),
                                  ExtensionRegistry::TERMINATED)) {
-    base::Callback<gfx::NativeWindow(void)> dialog_parent_window_getter;
     // TODO(pkotwicz): Figure out which window should be used as the parent for
     // the "enable application" dialog in Athena.
     (new EnableViaDialogFlow(
          service, registry, profile, extension->id(),
-         base::Bind(base::IgnoreResult(OpenEnabledApplication), profile,
-                    base::Passed(std::move(params)))))
+         base::BindOnce(base::IgnoreResult(OpenEnabledApplication), profile,
+                        base::Passed(std::move(params)))))
         ->Run();
     return;
   }

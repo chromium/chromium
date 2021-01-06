@@ -82,8 +82,9 @@ BrowserInstantController::BrowserInstantController(Browser* browser)
     search_engine_base_url_tracker_ =
         std::make_unique<SearchEngineBaseURLTracker>(
             template_url_service, std::make_unique<UIThreadSearchTermsData>(),
-            base::Bind(&BrowserInstantController::OnSearchEngineBaseURLChanged,
-                       base::Unretained(this)));
+            base::BindRepeating(
+                &BrowserInstantController::OnSearchEngineBaseURLChanged,
+                base::Unretained(this)));
   }
 }
 

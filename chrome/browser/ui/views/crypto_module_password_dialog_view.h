@@ -24,7 +24,7 @@ class CryptoModulePasswordDialogView : public views::DialogDelegateView,
   CryptoModulePasswordDialogView(const std::string& slot_name,
                                  CryptoModulePasswordReason reason,
                                  const std::string& server,
-                                 const CryptoModulePasswordCallback& callback);
+                                 CryptoModulePasswordCallback callback);
 
   ~CryptoModulePasswordDialogView() override;
 
@@ -54,7 +54,7 @@ class CryptoModulePasswordDialogView : public views::DialogDelegateView,
   views::Label* password_label_;
   views::Textfield* password_entry_;
 
-  const CryptoModulePasswordCallback callback_;
+  CryptoModulePasswordCallback callback_;
 
   DISALLOW_COPY_AND_ASSIGN(CryptoModulePasswordDialogView);
 };

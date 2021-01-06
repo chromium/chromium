@@ -94,8 +94,8 @@ class SearchEngineTabHelperBrowserTest : public InProcessBrowserTest {
         base::FilePath(),
         base::FilePath().AppendASCII("simple_open_search.xml"));
     embedded_test_server()->RegisterRequestHandler(
-        base::Bind(&SearchEngineTabHelperBrowserTest::HandleRequest,
-                   base::Unretained(this), file_url));
+        base::BindRepeating(&SearchEngineTabHelperBrowserTest::HandleRequest,
+                            base::Unretained(this), file_url));
     return embedded_test_server()->Start();
   }
 

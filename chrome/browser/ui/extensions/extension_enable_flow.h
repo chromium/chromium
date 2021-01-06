@@ -117,10 +117,6 @@ class ExtensionEnableFlow : public content::NotificationObserver,
   // exclusive with |parent_contents_| above.
   gfx::NativeWindow parent_window_ = nullptr;
 
-  // Called to acquire a parent window for the prompt. This is used for clients
-  // who only want to create a window if it is required.
-  base::Callback<gfx::NativeWindow(void)> window_getter_;
-
   std::unique_ptr<ExtensionInstallPrompt> prompt_;
   content::NotificationRegistrar registrar_;
 

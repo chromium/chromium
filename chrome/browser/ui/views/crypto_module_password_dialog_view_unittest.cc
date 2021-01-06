@@ -17,9 +17,10 @@
 using CryptoModulePasswordDialogViewTest = ChromeViewsTestBase;
 
 std::unique_ptr<CryptoModulePasswordDialogView> CreateCryptoDialog(
-    const CryptoModulePasswordCallback& callback) {
+    CryptoModulePasswordCallback callback) {
   return std::make_unique<CryptoModulePasswordDialogView>(
-      "slot", kCryptoModulePasswordCertEnrollment, "server", callback);
+      "slot", kCryptoModulePasswordCertEnrollment, "server",
+      std::move(callback));
 }
 
 TEST_F(CryptoModulePasswordDialogViewTest, AcceptUsesPassword) {

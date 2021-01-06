@@ -373,7 +373,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/supervised_user/',
   '^chrome/browser/sync_file_system/',
   '^chrome/browser/translate/',
-  '^chrome/browser/ui/',
   '^chrome/browser/web_applications/',
   '^chrome/browser/win/',
   '^chrome/test/chromedriver/server/http_handler.cc',

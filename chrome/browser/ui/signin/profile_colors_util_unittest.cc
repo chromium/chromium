@@ -96,7 +96,7 @@ class ProfileColorsUtilTest : public testing::Test {
     // Instead of providing a random number generator, return an arbitrary value
     // and capture the count of options.
     GenerateNewProfileColorWithGenerator(
-        *storage(), base::Bind(&CaptureCountAndReturnZero, &count), entry);
+        *storage(), base::BindOnce(&CaptureCountAndReturnZero, &count), entry);
     return count;
   }
 
@@ -104,7 +104,7 @@ class ProfileColorsUtilTest : public testing::Test {
     // Instead of providing a random number generator, return the nth option
     // deterministically.
     return GenerateNewProfileColorWithGenerator(
-               *storage(), base::Bind(&ReturnNth, n), entry)
+               *storage(), base::BindOnce(&ReturnNth, n), entry)
         .id;
   }
 

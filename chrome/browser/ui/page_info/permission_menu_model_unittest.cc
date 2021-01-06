@@ -17,7 +17,8 @@ class TestCallback {
   TestCallback() : current_(-1) {}
 
   PermissionMenuModel::ChangeCallback callback() {
-    return base::Bind(&TestCallback::PermissionChanged, base::Unretained(this));
+    return base::BindRepeating(&TestCallback::PermissionChanged,
+                               base::Unretained(this));
   }
   void PermissionChanged(const PageInfo::PermissionInfo& permission) {
     current_ = permission.setting;

@@ -298,18 +298,19 @@ PrefsTabHelper::PrefsTabHelper(WebContents* contents)
     ChromeZoomLevelPrefs* zoom_level_prefs =
         profile_to_track->GetZoomLevelPrefs();
 
-    base::Closure renderer_callback = base::Bind(
-        &PrefsTabHelper::UpdateRendererPreferences, base::Unretained(this));
     // Tests should not need to create a ZoomLevelPrefs.
     if (zoom_level_prefs) {
       default_zoom_level_subscription_ =
-          zoom_level_prefs->RegisterDefaultZoomLevelCallback(renderer_callback);
+          zoom_level_prefs->RegisterDefaultZoomLevelCallback(
+              base::BindRepeating(&PrefsTabHelper::UpdateRendererPreferences,
+                                  base::Unretained(this)));
     }
 
     // Unretained is safe because the registrar will be scoped to this class.
     font_change_registrar_.Register(
         FontPrefChangeNotifierFactory::GetForProfile(profile_),
-        base::Bind(&PrefsTabHelper::OnWebPrefChanged, base::Unretained(this)));
+        base::BindRepeating(&PrefsTabHelper::OnWebPrefChanged,
+                            base::Unretained(this)));
 #endif  // !defined(OS_ANDROID)
 
     PrefWatcher::Get(profile_)->RegisterHelper(this);

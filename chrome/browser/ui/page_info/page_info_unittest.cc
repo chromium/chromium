@@ -201,8 +201,8 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
     mock_ui_ = std::make_unique<MockPageInfoUI>();
     // Use this rather than gmock's ON_CALL.WillByDefault(Invoke(... because
     // gmock doesn't handle move-only types well.
-    mock_ui_->set_permission_info_callback_ =
-        base::Bind(&PageInfoTest::SetPermissionInfo, base::Unretained(this));
+    mock_ui_->set_permission_info_callback_ = base::BindRepeating(
+        &PageInfoTest::SetPermissionInfo, base::Unretained(this));
   }
 
 
@@ -259,8 +259,8 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
               incognito_web_contents_.get()));
 
       incognito_mock_ui_ = std::make_unique<MockPageInfoUI>();
-      incognito_mock_ui_->set_permission_info_callback_ =
-          base::Bind(&PageInfoTest::SetPermissionInfo, base::Unretained(this));
+      incognito_mock_ui_->set_permission_info_callback_ = base::BindRepeating(
+          &PageInfoTest::SetPermissionInfo, base::Unretained(this));
 
       auto delegate = std::make_unique<ChromePageInfoDelegate>(
           incognito_web_contents_.get());

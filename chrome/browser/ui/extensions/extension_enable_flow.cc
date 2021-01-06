@@ -154,8 +154,8 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
   ExtensionInstallPrompt::PromptType type =
       ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(profile_,
                                                                 extension);
-  prompt_->ShowDialog(base::Bind(&ExtensionEnableFlow::InstallPromptDone,
-                                 weak_ptr_factory_.GetWeakPtr()),
+  prompt_->ShowDialog(base::BindOnce(&ExtensionEnableFlow::InstallPromptDone,
+                                     weak_ptr_factory_.GetWeakPtr()),
                       extension, nullptr,
                       std::make_unique<ExtensionInstallPrompt::Prompt>(type),
                       ExtensionInstallPrompt::GetDefaultShowDialogCallback());

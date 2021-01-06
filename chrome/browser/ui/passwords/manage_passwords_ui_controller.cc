@@ -530,7 +530,7 @@ void ManagePasswordsUIController::SavePassword(const base::string16& username,
       passwords_data_.client()->GetAccountPasswordStore(),
       Profile::FromBrowserContext(web_contents()->GetBrowserContext())
           ->GetPrefs(),
-      base::Bind(
+      base::BindOnce(
           &ManagePasswordsUIController::OnTriggerPostSaveCompromisedBubble,
           weak_ptr_factory_.GetWeakPtr()));
 
