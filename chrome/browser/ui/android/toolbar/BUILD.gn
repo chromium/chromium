@@ -63,6 +63,9 @@ android_resources("java_resources") {
     "java/res/drawable-xhdpi/btn_toolbar_home.png",
     "java/res/drawable-xxhdpi/btn_toolbar_home.png",
     "java/res/drawable-xxxhdpi/btn_toolbar_home.png",
+    "java/res/layout/control_container.xml",
+    "java/res/values-sw600dp/dimens.xml",
+    "java/res/values/dimens.xml",
   ]
 
   deps = [

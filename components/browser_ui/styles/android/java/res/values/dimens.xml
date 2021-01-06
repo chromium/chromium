@@ -16,7 +16,4 @@
 
     <!-- Toolbar dimensions -->
     <dimen name="toolbar_shadow_height">8dp</dimen>
-
-    <!-- Tab Strip Dimensions -->
-    <dimen name="tab_strip_height">0dp</dimen>
 </resources>
