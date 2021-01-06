@@ -412,6 +412,27 @@ ssl_headers = [
   "src/include/openssl/tls1.h",
 ]
 
+tool_sources = [
+  "src/tool/args.cc",
+  "src/tool/ciphers.cc",
+  "src/tool/client.cc",
+  "src/tool/const.cc",
+  "src/tool/digest.cc",
+  "src/tool/fd.cc",
+  "src/tool/file.cc",
+  "src/tool/generate_ed25519.cc",
+  "src/tool/genrsa.cc",
+  "src/tool/internal.h",
+  "src/tool/pkcs12.cc",
+  "src/tool/rand.cc",
+  "src/tool/server.cc",
+  "src/tool/sign.cc",
+  "src/tool/speed.cc",
+  "src/tool/tool.cc",
+  "src/tool/transport_common.cc",
+  "src/tool/transport_common.h",
+]
+
 crypto_sources_ios_aarch64 = [
   "ios-aarch64/crypto/chacha/chacha-armv8.S",
   "ios-aarch64/crypto/fipsmodule/aesv8-armx64.S",
