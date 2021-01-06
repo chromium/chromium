@@ -494,8 +494,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
-// Test that for a locked last profile, a reopen event opens the User Manager,
-// because the profile picker does not support locked profiles yet.
+// Test that for a locked last profile, a reopen event opens the ProfilePicker.
 IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
                        LockedProfileReopenWithNoWindows) {
   signin_util::SetForceSigninForTesting(true);
@@ -522,8 +521,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, active_browser_list_->size());
-  EXPECT_TRUE(UserManager::IsShowing());
-  UserManager::Hide();
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_FALSE(UserManager::IsShowing());
+  ProfilePicker::Hide();
 }
 
 // Test that for a guest last profile, a reopen event opens the ProfilePicker.
