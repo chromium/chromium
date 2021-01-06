@@ -830,10 +830,6 @@ const base::Feature kWebGLImageChromium{"WebGLImageChromium",
 // Enable browser mediation API for federated identity interactions.
 const base::Feature kWebID{"WebID", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable experimental policy-controlled features and LAPIs
-const base::Feature kExperimentalProductivityFeatures{
-    "ExperimentalProductivityFeatures", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls which backend is used to retrieve OTP on Android. When disabled
 // we use User Consent API.
 const base::Feature kWebOtpBackendAuto{"WebOtpBackendAuto",

@@ -629,9 +629,6 @@ extern const char kExperimentalExtensionApisDescription[];
 extern const char kExperimentalFlingAnimationName[];
 extern const char kExperimentalFlingAnimationDescription[];
 
-extern const char kExperimentalProductivityFeaturesName[];
-extern const char kExperimentalProductivityFeaturesDescription[];
-
 extern const char kExperimentalWebPlatformFeaturesName[];
 extern const char kExperimentalWebPlatformFeaturesDescription[];
 

@@ -4859,10 +4859,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillRichMetadataQueriesName,
      flag_descriptions::kAutofillRichMetadataQueriesDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillRichMetadataQueries)},
-    {"enable-experimental-productivity-features",
-     flag_descriptions::kExperimentalProductivityFeaturesName,
-     flag_descriptions::kExperimentalProductivityFeaturesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kExperimentalProductivityFeatures)},
 
 #if defined(USE_AURA)
     {"touchpad-overscroll-history-navigation",

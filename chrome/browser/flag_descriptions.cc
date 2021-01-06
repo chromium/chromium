@@ -1065,12 +1065,6 @@ const char kExperimentalFlingAnimationDescription[] =
     "Enables the use of a touch fling curve that is based on the behavior of "
     "native apps on Windows.";
 
-const char kExperimentalProductivityFeaturesName[] =
-    "Experimental Productivity Features";
-const char kExperimentalProductivityFeaturesDescription[] =
-    "Enable support for experimental developer productivity features, such as "
-    "import maps and policies for avoiding slow rendering.";
-
 const char kExperimentalWebPlatformFeaturesName[] =
     "Experimental Web Platform features";
 const char kExperimentalWebPlatformFeaturesDescription[] =

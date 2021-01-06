@@ -503,10 +503,6 @@ void WebRuntimeFeatures::EnableAutomationControlled(bool enable) {
   RuntimeEnabledFeatures::SetAutomationControlledEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableExperimentalProductivityFeatures(bool enable) {
-  RuntimeEnabledFeatures::SetExperimentalProductivityFeaturesEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableDisallowDocumentAccess(bool enable) {
   RuntimeEnabledFeatures::SetDisallowDocumentAccessEnabled(enable);
 }
