@@ -183,18 +183,16 @@ class TestSubresourceFilterClient : public SubresourceFilterClient {
 
   // SubresourceFilterClient:
   void ShowNotification() override { ++disallowed_notification_count_; }
-  mojom::ActivationLevel OnPageActivationComputed(
-      content::NavigationHandle* navigation_handle,
-      mojom::ActivationLevel effective_activation_level,
-      ActivationDecision* decision) override {
-    return effective_activation_level;
-  }
   void OnAdsViolationTriggered(
       content::RenderFrameHost* rfh,
       mojom::AdsViolation triggered_violation) override {}
   const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
   GetSafeBrowsingDatabaseManager() override {
     return database_manager_;
+  }
+  subresource_filter::ProfileInteractionManager* GetProfileInteractionManager()
+      override {
+    return nullptr;
   }
   void OnReloadRequested() override {}
 

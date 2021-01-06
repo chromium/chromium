@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/subresource_filter/content/browser/profile_interaction_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
+#include "weblayer/browser/subresource_filter_profile_context_factory.h"
 
 #if defined(OS_ANDROID)
 #include "components/safe_browsing/android/remote_database_manager.h"
@@ -53,7 +55,12 @@ SubresourceFilterClientImpl::SubresourceFilterClientImpl(
 #if defined(OS_ANDROID)
       web_contents_(web_contents),
 #endif
-      database_manager_(GetDatabaseManagerFromSafeBrowsingService()) {
+      database_manager_(GetDatabaseManagerFromSafeBrowsingService()),
+      profile_interaction_manager_(
+          std::make_unique<subresource_filter::ProfileInteractionManager>(
+              web_contents,
+              SubresourceFilterProfileContextFactory::GetForBrowserContext(
+                  web_contents->GetBrowserContext()))) {
 }
 
 SubresourceFilterClientImpl::~SubresourceFilterClientImpl() = default;
@@ -87,16 +94,6 @@ void SubresourceFilterClientImpl::ShowNotification() {
 #endif
 }
 
-subresource_filter::mojom::ActivationLevel
-SubresourceFilterClientImpl::OnPageActivationComputed(
-    content::NavigationHandle* navigation_handle,
-    subresource_filter::mojom::ActivationLevel initial_activation_level,
-    subresource_filter::ActivationDecision* decision) {
-  DCHECK(navigation_handle->IsInMainFrame());
-
-  return initial_activation_level;
-}
-
 void SubresourceFilterClientImpl::OnAdsViolationTriggered(
     content::RenderFrameHost* rfh,
     subresource_filter::mojom::AdsViolation triggered_violation) {}
@@ -104,6 +101,11 @@ void SubresourceFilterClientImpl::OnAdsViolationTriggered(
 const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
 SubresourceFilterClientImpl::GetSafeBrowsingDatabaseManager() {
   return database_manager_;
+}
+
+subresource_filter::ProfileInteractionManager*
+SubresourceFilterClientImpl::GetProfileInteractionManager() {
+  return profile_interaction_manager_.get();
 }
 
 }  // namespace weblayer
