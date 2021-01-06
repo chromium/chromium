@@ -28,14 +28,14 @@ enum PreviewsTypes {
   // DEPRECATED: CLIENT_LOFI_ON = 1 << 1, Request a Lo-Fi version of the
   // resource from the client. This preview type has been deprecated and should
   // no longer be used.
-  CLIENT_LOFI_AUTO_RELOAD = 1 << 2,  // Request the original version of the
-                                     // resource after a decoding error occurred
-                                     // when attempting to use Client Lo-Fi.
-  kClientLoFiAutoReload = CLIENT_LOFI_AUTO_RELOAD,
+  // DEPRECATED: CLIENT_LOFI_AUTO_RELOAD = 1 << 2,  // Request the original
+  // version of the resource after a decoding error occurred when attempting to
+  // use Client Lo-Fi.
+  // kClientLoFiAutoReload = CLIENT_LOFI_AUTO_RELOAD,
 
-  SERVER_LITE_PAGE_ON = 1 << 3,  // Request a Lite Page version of the
-                                 // resource from the server.
-  kServiceLitePageOn = SERVER_LITE_PAGE_ON,
+  // DEPRECATED: SERVER_LITE_PAGE_ON = 1 << 3,  // Request a Lite Page version
+  // of the resource from the server.
+  // kServiceLitePageOn = SERVER_LITE_PAGE_ON,
 
   PREVIEWS_NO_TRANSFORM = 1 << 4,  // Explicitly forbid Previews
                                    // transformations.
@@ -46,16 +46,16 @@ enum PreviewsTypes {
                           // still happen if the page is heavy.
   kPreviewsOff = PREVIEWS_OFF,
 
-  NOSCRIPT_ON = 1 << 6,  // Request that script be disabled for page load.
-  kNoScriptOn = NOSCRIPT_ON,
+  // DEPRECATED: NOSCRIPT_ON = 1 << 6,  // Request that script be disabled for
+  // page load. kNoScriptOn = NOSCRIPT_ON,
 
-  RESOURCE_LOADING_HINTS_ON =
-      1 << 7,  // Request that resource loading hints be used during pageload.
-  kResourceLoadingHintsOn = RESOURCE_LOADING_HINTS_ON,
+  // DEPRECATED: RESOURCE_LOADING_HINTS_ON =
+  //    1 << 7,  // Request that resource loading hints be used during pageload.
+  // kResourceLoadingHintsOn = RESOURCE_LOADING_HINTS_ON,
 
-  OFFLINE_PAGE_ON =
-      1 << 8,  // Request that an offline page be used if one is stored.
-  kOfflinePageOn = OFFLINE_PAGE_ON,
+  // DEPRECATED: OFFLINE_PAGE_ON =
+  //    1 << 8,  // Request that an offline page be used if one is stored.
+  // kOfflinePageOn = OFFLINE_PAGE_ON,
 
   // DEPRECATED: LITE_PAGE_REDIRECT_ON = 1 << 9,  // Allow the browser to
   // redirect the resource to a Lite Page server. Support for this functionality
@@ -72,16 +72,6 @@ enum PreviewsTypes {
   PREVIEWS_STATE_LAST = SUBRESOURCE_REDIRECT_ON,
   kPreviewsStateLast = PREVIEWS_STATE_LAST
 };
-
-// Combination of all previews that are guaranteed not to provide partial
-// content.
-// const PreviewsState PARTIAL_CONTENT_SAFE_PREVIEWS = SERVER_LOFI_ON;
-// deprecated
-
-// Combination of all currently supported previews.
-const PreviewsState ALL_SUPPORTED_PREVIEWS = SERVER_LITE_PAGE_ON | NOSCRIPT_ON |
-                                             RESOURCE_LOADING_HINTS_ON |
-                                             OFFLINE_PAGE_ON;
 
 }  // namespace blink
 

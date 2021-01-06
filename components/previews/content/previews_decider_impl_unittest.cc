@@ -81,9 +81,9 @@ bool IsPreviewFieldTrialEnabled(PreviewsType type) {
     case PreviewsType::DEPRECATED_LOFI:
       return false;
     case PreviewsType::NOSCRIPT:
-      return params::IsNoScriptPreviewsEnabled();
+      return false;
     case PreviewsType::RESOURCE_LOADING_HINTS:
-      return params::IsResourceLoadingHintsEnabled();
+      return false;
     case previews::PreviewsType::DEPRECATED_LITE_PAGE_REDIRECT:
       return false;
     case PreviewsType::DEFER_ALL_SCRIPT:
@@ -456,7 +456,7 @@ class PreviewsDeciderImplTest
 TEST_F(PreviewsDeciderImplTest, AllPreviewsDisabledByFeature) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {features::kNoScriptPreviews},
+      {features::kDeferAllScriptPreviews},
       {features::kPreviews} /* disable_features */);
   InitializeUIService();
 
@@ -544,330 +544,6 @@ TEST_F(PreviewsDeciderImplTest, NoScriptFeatureDefaultBehavior) {
   EXPECT_FALSE(previews_decider_impl()->ShouldAllowPreviewAtNavigationStart(
       &user_data, &navigation_handle, false, PreviewsType::NOSCRIPT));
   histogram_tester.ExpectTotalCount("Previews.EligibilityReason.NoScript", 0);
-}
-
-TEST_F(PreviewsDeciderImplTest, NoScriptNotAllowedWithoutOptimizationHints) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kPreviews, features::kNoScriptPreviews}, {});
-  InitializeUIService(/*include_previews_opt_guide=*/false);
-
-  for (const auto& test_ect :
-       {net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN,
-        net::EFFECTIVE_CONNECTION_TYPE_2G, net::EFFECTIVE_CONNECTION_TYPE_4G}) {
-    ReportEffectiveConnectionType(test_ect);
-
-    base::HistogramTester histogram_tester;
-    PreviewsUserData user_data(kDefaultPageId);
-    content::MockNavigationHandle navigation_handle;
-    navigation_handle.set_url(GURL("https://www.google.com"));
-    EXPECT_FALSE(previews_decider_impl()->ShouldAllowPreviewAtNavigationStart(
-        &user_data, &navigation_handle, false, PreviewsType::NOSCRIPT));
-    EXPECT_EQ(test_ect, user_data.navigation_ect());
-    histogram_tester.ExpectUniqueSample(
-        "Previews.EligibilityReason.NoScript",
-        static_cast<int>(
-            PreviewsEligibilityReason::OPTIMIZATION_HINTS_NOT_AVAILABLE),
-        1);
-  }
-}
-
-TEST_F(PreviewsDeciderImplTest, NoScriptAllowedByFeatureWithAllowlist) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kPreviews, features::kNoScriptPreviews}, {});
-  InitializeUIService();
-
-  base::HistogramTester histogram_tester;
-
-  PreviewsUserData user_data(kDefaultPageId);
-  content::MockNavigationHandle navigation_handle;
-  navigation_handle.set_url(GURL("https://www.google.com"));
-  // First verify preview allowed for non-allowlisted url; they're always
-  // allowed at navigation start to enable asynchronous loading of page hints.
-  EXPECT_TRUE(previews_decider_impl()->ShouldAllowPreviewAtNavigationStart(
-      &user_data, &navigation_handle, false, PreviewsType::NOSCRIPT));
-
-  // Now verify preview allowed for allowlisted url.
-  content::MockNavigationHandle allowlisted_navigation_handle;
-  allowlisted_navigation_handle.set_url(GURL("https://www.google.com"));
-  EXPECT_TRUE(previews_decider_impl()->ShouldAllowPreviewAtNavigationStart(
-      &user_data, &navigation_handle, false, PreviewsType::NOSCRIPT));
-
-  histogram_tester.ExpectBucketCount(
-      "Previews.EligibilityReason.NoScript",
-      static_cast<int>(PreviewsEligibilityReason::ALLOWED), 2);
-}
-
-TEST_F(PreviewsDeciderImplTest, NoScriptCommitTimeAllowlistCheck) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kPreviews, features::kNoScriptPreviews}, {});
-  InitializeUIService();
-
-  // First verify not allowed for non-allowlisted url.
-  {
-    ReportEffectiveConnectionType(net::EFFECTIVE_CONNECTION_TYPE_2G);
-    base::HistogramTester histogram_tester;
-    PreviewsUserData user_data(kDefaultPageId);
-    content::MockNavigationHandle navigation_handle;
-    navigation_handle.set_url(GURL("https://www.google.com"));
-    EXPECT_FALSE(previews_decider_impl()->ShouldCommitPreview(
-        &user_data, &navigation_handle, PreviewsType::NOSCRIPT));
-
-    histogram_tester.ExpectUniqueSample(
-        "Previews.EligibilityReason.NoScript",
-        static_cast<int>(
-            PreviewsEligibilityReason::NOT_ALLOWED_BY_OPTIMIZATION_GUIDE),
-        1);
-  }
-
-  // Now verify preview for allowlisted url.
-  {
-    ReportEffectiveConnectionType(net::EFFECTIVE_CONNECTION_TYPE_2G);
-    base::HistogramTester histogram_tester;
-    PreviewsUserData user_data(kDefaultPageId);
-    content::MockNavigationHandle navigation_handle;
-    navigation_handle.set_url(GURL("https://allowlisted.example.com"));
-    EXPECT_TRUE(previews_decider_impl()->ShouldCommitPreview(
-        &user_data, &navigation_handle, PreviewsType::NOSCRIPT));
-
-    // Expect no eligibility logging.
-    histogram_tester.ExpectTotalCount("Previews.EligibilityReason.NoScript", 0);
-  }
-
-  // Verify preview not allowed for allowlisted url when network is not slow.
-  {
-    ReportEffectiveConnectionType(net::EFFECTIVE_CONNECTION_TYPE_3G);
-    base::HistogramTester histogram_tester;
-    PreviewsUserData user_data(kDefaultPageId);
-    content::MockNavigationHandle navigation_handle;
-    navigation_handle.set_url(GURL("https://allowlisted.example.com"));
-    EXPECT_FALSE(previews_decider_impl()->ShouldCommitPreview(
-        &user_data, &navigation_handle, PreviewsType::NOSCRIPT));
-
-    histogram_tester.ExpectUniqueSample(
-        "Previews.EligibilityReason.NoScript",
-        static_cast<int>(
-            PreviewsEligibilityReason::PAGE_LOAD_PREDICTION_NOT_PAINFUL),
-        1);
-  }
-
-  // Verify preview not allowed for allowlisted url for unknown network quality.
-  {
-    ReportEffectiveConnectionType(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
-    base::HistogramTester histogram_tester;
-    PreviewsUserData user_data(kDefaultPageId);
-    content::MockNavigationHandle navigation_handle;
-    navigation_handle.set_url(GURL("https://allowlisted.example.com"));
-    user_data.set_navigation_ect(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
-    EXPECT_FALSE(previews_decider_impl()->ShouldCommitPreview(
-        &user_data, &navigation_handle, PreviewsType::NOSCRIPT));
-
-    histogram_tester.ExpectUniqueSample(
-        "Previews.EligibilityReason.NoScript",
-        static_cast<int>(
-            PreviewsEligibilityReason::NETWORK_QUALITY_UNAVAILABLE),
-        1);
-  }
-
-  // Verify preview allowed for network slower than session ECT threshold when
-  // ECT is not available at navigation time.
-  {
-    ReportEffectiveConnectionType(net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
-    base::test::ScopedFeatureList nested_scoped_list;
-    nested_scoped_list.InitAndEnableFeatureWithParameters(
-        features::kSlowPageTriggering,
-        {{"session_max_ect_trigger", "Slow-2G"}});
-    base::HistogramTester histogram_tester;
-    PreviewsUserData user_data(kDefaultPageId);
-    content::MockNavigationHandle navigation_handle;
-    navigation_handle.set_url(GURL("https://allowlisted.example.com"));
-    user_data.set_navigation_ect(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
-    EXPECT_TRUE(previews_decider_impl()->ShouldCommitPreview(
-        &user_data, &navigation_handle, PreviewsType::NOSCRIPT));
-
-    histogram_tester.ExpectTotalCount("Previews.EligibilityReason.NoScript", 0);
-  }
-
-  // Verify preview not allowed when blocklist is unavailable.
-  {
-    ReportEffectiveConnectionType(net::EFFECTIVE_CONNECTION_TYPE_2G);
-    base::HistogramTester histogram_tester;
-    previews_decider_impl()->InjectTestBlocklist(nullptr /* blocklist */);
-    PreviewsUserData user_data(kDefaultPageId);
-    user_data.set_navigation_ect(net::EFFECTIVE_CONNECTION_TYPE_2G);
-    content::MockNavigationHandle navigation_handle;
-    navigation_handle.set_url(GURL("https://allowlisted.example.com"));
-    EXPECT_FALSE(previews_decider_impl()->ShouldCommitPreview(
-        &user_data, &navigation_handle, PreviewsType::NOSCRIPT));
-
-    histogram_tester.ExpectUniqueSample(
-        "Previews.EligibilityReason.NoScript",
-        static_cast<int>(PreviewsEligibilityReason::BLOCKLIST_UNAVAILABLE), 1);
-  }
-}
-
-TEST_F(PreviewsDeciderImplTest, ResourceLoadingHintsNotAllowedByDefault) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPreviews);
-  InitializeUIService();
-
-  base::HistogramTester histogram_tester;
-  PreviewsUserData user_data(kDefaultPageId);
-  content::MockNavigationHandle navigation_handle;
-  navigation_handle.set_url(GURL("https://www.google.com"));
-
-  EXPECT_FALSE(previews_decider_impl()->ShouldAllowPreviewAtNavigationStart(
-      &user_data, &navigation_handle, false,
-      PreviewsType::RESOURCE_LOADING_HINTS));
-}
-
-TEST_F(PreviewsDeciderImplTest,
-       ResourceLoadingHintsDisallowedWithoutOptimizationHints) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kPreviews, features::kResourceLoadingHints}, {});
-  InitializeUIService(/*include_previews_opt_guide=*/false);
-
-  base::HistogramTester histogram_tester;
-  PreviewsUserData user_data(kDefaultPageId);
-  content::MockNavigationHandle navigation_handle;
-  navigation_handle.set_url(GURL("https://allowlisted.example.com"));
-  EXPECT_FALSE(previews_decider_impl()->ShouldAllowPreviewAtNavigationStart(
-      &user_data, &navigation_handle, false,
-      PreviewsType::RESOURCE_LOADING_HINTS));
-  histogram_tester.ExpectUniqueSample(
-      "Previews.EligibilityReason",
-      static_cast<int>(
-          PreviewsEligibilityReason::OPTIMIZATION_HINTS_NOT_AVAILABLE),
-      1);
-  histogram_tester.ExpectUniqueSample(
-      "Previews.EligibilityReason.ResourceLoadingHints",
-      static_cast<int>(
-          PreviewsEligibilityReason::OPTIMIZATION_HINTS_NOT_AVAILABLE),
-      1);
-}
-
-TEST_F(PreviewsDeciderImplTest,
-       ResourceLoadingHintsAllowedByFeatureAndAllowlist) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kPreviews, features::kResourceLoadingHints}, {});
-  InitializeUIService();
-
-  for (const auto& test_ect : {net::EFFECTIVE_CONNECTION_TYPE_OFFLINE,
-                               net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G,
-                               net::EFFECTIVE_CONNECTION_TYPE_3G}) {
-    ReportEffectiveConnectionType(test_ect);
-
-    base::HistogramTester histogram_tester;
-    PreviewsUserData user_data(kDefaultPageId);
-    content::MockNavigationHandle navigation_handle;
-    navigation_handle.set_url(GURL("https://allowlisted.example.com"));
-
-    // Check allowlisted URL.
-    EXPECT_TRUE(previews_decider_impl()->ShouldAllowPreviewAtNavigationStart(
-        &user_data, &navigation_handle, false,
-        PreviewsType::RESOURCE_LOADING_HINTS));
-    EXPECT_EQ(test_ect, user_data.navigation_ect());
-    histogram_tester.ExpectUniqueSample(
-        "Previews.EligibilityReason.ResourceLoadingHints",
-        static_cast<int>(PreviewsEligibilityReason::ALLOWED), 1);
-  }
-}
-
-TEST_F(PreviewsDeciderImplTest,
-       ResourceLoadingHintsAllowedByFeatureWithoutKnownHints) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kPreviews, features::kResourceLoadingHints}, {});
-  InitializeUIService();
-
-  base::HistogramTester histogram_tester;
-  PreviewsUserData user_data(kDefaultPageId);
-  content::MockNavigationHandle navigation_handle;
-  navigation_handle.set_url(GURL("https://www.google.com"));
-
-  // Verify preview allowed initially for url without known hints.
-  EXPECT_TRUE(previews_decider_impl()->ShouldAllowPreviewAtNavigationStart(
-      &user_data, &navigation_handle, false,
-      PreviewsType::RESOURCE_LOADING_HINTS));
-
-  histogram_tester.ExpectBucketCount(
-      "Previews.EligibilityReason.ResourceLoadingHints",
-      static_cast<int>(PreviewsEligibilityReason::ALLOWED), 1);
-}
-
-TEST_F(PreviewsDeciderImplTest, ResourceLoadingHintsCommitTimeAllowlistCheck) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kPreviews, features::kResourceLoadingHints}, {});
-  InitializeUIService();
-
-  // First verify not allowed for non-allowlisted url.
-  {
-    ReportEffectiveConnectionType(net::EFFECTIVE_CONNECTION_TYPE_2G);
-    base::HistogramTester histogram_tester;
-    PreviewsUserData user_data(kDefaultPageId);
-    content::MockNavigationHandle navigation_handle;
-    navigation_handle.set_url(GURL("https://www.google.com"));
-    EXPECT_FALSE(previews_decider_impl()->ShouldCommitPreview(
-        &user_data, &navigation_handle, PreviewsType::RESOURCE_LOADING_HINTS));
-
-    histogram_tester.ExpectUniqueSample(
-        "Previews.EligibilityReason.ResourceLoadingHints",
-        static_cast<int>(
-            PreviewsEligibilityReason::NOT_ALLOWED_BY_OPTIMIZATION_GUIDE),
-        1);
-  }
-
-  // Now verify preview for allowlisted url.
-  {
-    ReportEffectiveConnectionType(net::EFFECTIVE_CONNECTION_TYPE_2G);
-    base::HistogramTester histogram_tester;
-    PreviewsUserData user_data(kDefaultPageId);
-    content::MockNavigationHandle navigation_handle;
-    navigation_handle.set_url(GURL("https://allowlisted.example.com"));
-    EXPECT_TRUE(previews_decider_impl()->ShouldCommitPreview(
-        &user_data, &navigation_handle, PreviewsType::RESOURCE_LOADING_HINTS));
-
-    // Expect no eligibility logging.
-    histogram_tester.ExpectTotalCount(
-        "Previews.EligibilityReason.ResourceLoadingHints", 0);
-  }
-
-  // Verify preview not allowed for allowlisted url when network is not slow.
-  {
-    ReportEffectiveConnectionType(net::EFFECTIVE_CONNECTION_TYPE_4G);
-    base::HistogramTester histogram_tester;
-    PreviewsUserData user_data(kDefaultPageId);
-    content::MockNavigationHandle navigation_handle;
-    navigation_handle.set_url(GURL("https://allowlisted.example.com"));
-    EXPECT_FALSE(previews_decider_impl()->ShouldCommitPreview(
-        &user_data, &navigation_handle, PreviewsType::RESOURCE_LOADING_HINTS));
-
-    histogram_tester.ExpectUniqueSample(
-        "Previews.EligibilityReason.ResourceLoadingHints",
-        static_cast<int>(
-            PreviewsEligibilityReason::PAGE_LOAD_PREDICTION_NOT_PAINFUL),
-        1);
-  }
-
-  // Verify preview not allowed for allowlisted url for offline network quality.
-  {
-    ReportEffectiveConnectionType(net::EFFECTIVE_CONNECTION_TYPE_OFFLINE);
-    base::HistogramTester histogram_tester;
-    PreviewsUserData user_data(kDefaultPageId);
-    content::MockNavigationHandle navigation_handle;
-    navigation_handle.set_url(GURL("https://allowlisted.example.com"));
-    EXPECT_FALSE(previews_decider_impl()->ShouldCommitPreview(
-        &user_data, &navigation_handle, PreviewsType::RESOURCE_LOADING_HINTS));
-
-    histogram_tester.ExpectUniqueSample(
-        "Previews.EligibilityReason.ResourceLoadingHints",
-        static_cast<int>(PreviewsEligibilityReason::DEVICE_OFFLINE), 1);
-  }
 }
 
 TEST_F(PreviewsDeciderImplTest, DeferAllScriptDefaultBehavior) {
@@ -1100,11 +776,11 @@ TEST_F(
     LogDecisionMadeBlocklistUnavailableAtNavigationStartForCommitTimePreview) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {features::kPreviews, features::kNoScriptPreviews}, {});
+      {features::kPreviews, features::kDeferAllScriptPreviews}, {});
 
   InitializeUIService();
   auto expected_reason = PreviewsEligibilityReason::ALLOWED;
-  auto expected_type = PreviewsType::NOSCRIPT;
+  auto expected_type = PreviewsType::DEFER_ALL_SCRIPT;
 
   previews_decider_impl()->InjectTestBlocklist(nullptr /* blocklist */);
   PreviewsUserData user_data(kDefaultPageId);
@@ -1123,7 +799,7 @@ TEST_F(
 TEST_F(PreviewsDeciderImplTest, ShouldCommitPreviewBlocklistStatuses) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {features::kPreviews, features::kNoScriptPreviews}, {});
+      {features::kPreviews, features::kDeferAllScriptPreviews}, {});
   InitializeUIService(/*include_previews_opt_guide=*/false);
   auto expected_type = PreviewsType::NOSCRIPT;
   PreviewsUserData user_data(kDefaultPageId);
@@ -1169,10 +845,10 @@ TEST_F(PreviewsDeciderImplTest, ShouldCommitPreviewBlocklistStatuses) {
 TEST_F(PreviewsDeciderImplTest, LogDecisionMadeMediaSuffixesAreExcluded) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {features::kPreviews, features::kResourceLoadingHints}, {});
+      {features::kPreviews, features::kDeferAllScriptPreviews}, {});
   InitializeUIService();
   auto expected_reason = PreviewsEligibilityReason::EXCLUDED_BY_MEDIA_SUFFIX;
-  auto expected_type = PreviewsType::RESOURCE_LOADING_HINTS;
+  auto expected_type = PreviewsType::DEFER_ALL_SCRIPT;
 
   PreviewsEligibilityReason blocklist_decisions[] = {
       PreviewsEligibilityReason::BLOCKLIST_DATA_NOT_LOADED,
@@ -1249,49 +925,6 @@ TEST_F(PreviewsDeciderImplTest, ReloadsTriggerFiveMinuteRule) {
       &user_data, &navigation_handle, PreviewsType::DEFER_ALL_SCRIPT));
 }
 
-TEST_F(PreviewsDeciderImplTest,
-       ResourceLoadingHints_LogDecisionMadeNetworkQualityNotAvailable) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kPreviews, features::kResourceLoadingHints}, {});
-  InitializeUIService();
-
-  std::unique_ptr<TestPreviewsBlockList> blocklist =
-      std::make_unique<TestPreviewsBlockList>(
-          PreviewsEligibilityReason::ALLOWED, previews_decider_impl());
-  previews_decider_impl()->InjectTestBlocklist(std::move(blocklist));
-
-  auto expected_reason = PreviewsEligibilityReason::ALLOWED;
-  auto expected_type = PreviewsType::RESOURCE_LOADING_HINTS;
-
-  std::vector<PreviewsEligibilityReason> checked_decisions = {
-      PreviewsEligibilityReason::URL_HAS_BASIC_AUTH,
-      PreviewsEligibilityReason::EXCLUDED_BY_MEDIA_SUFFIX,
-      PreviewsEligibilityReason::RELOAD_DISALLOWED,
-  };
-
-  ReportEffectiveConnectionType(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
-  PreviewsUserData user_data(kDefaultPageId);
-  content::MockNavigationHandle navigation_handle;
-  navigation_handle.set_url(GURL("https://www.google.com"));
-  previews_decider_impl()->ShouldAllowPreviewAtNavigationStart(
-      &user_data, &navigation_handle, false, expected_type);
-
-  base::RunLoop().RunUntilIdle();
-  // Testing correct log method is called.
-  EXPECT_THAT(ui_service()->decision_reasons(),
-              ::testing::Contains(expected_reason));
-  EXPECT_THAT(ui_service()->decision_types(),
-              ::testing::Contains(expected_type));
-
-  EXPECT_EQ(1UL, ui_service()->decision_passed_reasons().size());
-  auto actual_passed_reasons = ui_service()->decision_passed_reasons()[0];
-  EXPECT_EQ(checked_decisions.size(), actual_passed_reasons.size());
-  EXPECT_EQ(checked_decisions.size(), actual_passed_reasons.size());
-  for (size_t i = 0; i < actual_passed_reasons.size(); i++) {
-    EXPECT_EQ(checked_decisions[i], actual_passed_reasons[i]);
-  }
-}
 
 TEST_F(PreviewsDeciderImplTest, LogDecisionMadeReloadDisallowed) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1360,7 +993,7 @@ TEST_F(PreviewsDeciderImplTest, IgnoreBlocklistEnabledViaFlag) {
 TEST_F(PreviewsDeciderImplTest, LogDecisionMadeAllowHintPreviewWithoutECT) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {features::kPreviews, features::kNoScriptPreviews}, {});
+      {features::kPreviews, features::kDeferAllScriptPreviews}, {});
   InitializeUIService();
 
   std::unique_ptr<TestPreviewsBlockList> blocklist =
@@ -1372,7 +1005,7 @@ TEST_F(PreviewsDeciderImplTest, LogDecisionMadeAllowHintPreviewWithoutECT) {
   ReportEffectiveConnectionType(net::EFFECTIVE_CONNECTION_TYPE_2G);
 
   auto expected_reason = PreviewsEligibilityReason::ALLOWED;
-  auto expected_type = PreviewsType::NOSCRIPT;
+  auto expected_type = PreviewsType::DEFER_ALL_SCRIPT;
 
   std::vector<PreviewsEligibilityReason> checked_decisions = {
       PreviewsEligibilityReason::URL_HAS_BASIC_AUTH,

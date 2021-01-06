@@ -92,9 +92,7 @@ OfflinePageURLLoader::OfflinePageURLLoader(
     : navigation_ui_data_(navigation_ui_data),
       frame_tree_node_id_(frame_tree_node_id),
       transition_type_(tentative_resource_request.transition_type),
-      loader_callback_(std::move(callback)),
-      is_offline_preview_allowed_(tentative_resource_request.previews_state &
-                                  blink::PreviewsTypes::OFFLINE_PAGE_ON) {
+      loader_callback_(std::move(callback)) {
   // TODO(crbug.com/876527): Figure out how offline page interception should
   // interact with URLLoaderThrottles. It might be incorrect to use
   // |tentative_resource_request.headers| here, since throttles can rewrite
@@ -205,10 +203,6 @@ void OfflinePageURLLoader::SetOfflinePageNavigationUIData(
   std::unique_ptr<OfflinePageNavigationUIData> offline_page_data =
       std::make_unique<OfflinePageNavigationUIData>(is_offline_page);
   navigation_data->SetOfflinePageNavigationUIData(std::move(offline_page_data));
-}
-
-bool OfflinePageURLLoader::ShouldAllowPreview() const {
-  return is_offline_preview_allowed_;
 }
 
 int OfflinePageURLLoader::GetPageTransition() const {

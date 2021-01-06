@@ -53,17 +53,11 @@ class PreviewsUKMObserver : public page_load_metrics::PageLoadMetricsObserver {
   // The preview type that was actually committed and seen by the user.
   PreviewsType committed_preview_;
 
-  bool noscript_seen_ = false;
-  bool resource_loading_hints_seen_ = false;
   bool defer_all_script_seen_ = false;
   bool opt_out_occurred_ = false;
   bool origin_opt_out_occurred_ = false;
   bool save_data_enabled_ = false;
   bool previews_likely_ = false;
-  base::Optional<previews::PreviewsEligibilityReason>
-      noscript_eligibility_reason_;
-  base::Optional<previews::PreviewsEligibilityReason>
-      resource_loading_hints_eligibility_reason_;
   base::Optional<previews::PreviewsEligibilityReason>
       defer_all_script_eligibility_reason_;
 

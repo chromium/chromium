@@ -65,7 +65,7 @@ TEST(PreviewsUserDataTest, TestCoinFlip_HasCommittedPreviewsType) {
   std::unique_ptr<PreviewsUserData> data =
       std::make_unique<PreviewsUserData>(id);
 
-  data->SetCommittedPreviewsTypeForTesting(PreviewsType::NOSCRIPT);
+  data->SetCommittedPreviewsTypeForTesting(PreviewsType::DEFER_ALL_SCRIPT);
   data->set_coin_flip_holdback_result(CoinFlipHoldbackResult::kHoldback);
   EXPECT_FALSE(data->HasCommittedPreviewsType());
 
@@ -78,14 +78,16 @@ TEST(PreviewsUserDataTest, TestCoinFlip_CommittedPreviewsType) {
   std::unique_ptr<PreviewsUserData> data =
       std::make_unique<PreviewsUserData>(id);
 
-  data->SetCommittedPreviewsTypeForTesting(PreviewsType::NOSCRIPT);
+  data->SetCommittedPreviewsTypeForTesting(PreviewsType::DEFER_ALL_SCRIPT);
   data->set_coin_flip_holdback_result(CoinFlipHoldbackResult::kHoldback);
   EXPECT_EQ(data->CommittedPreviewsType(), PreviewsType::NONE);
-  EXPECT_EQ(data->PreHoldbackCommittedPreviewsType(), PreviewsType::NOSCRIPT);
+  EXPECT_EQ(data->PreHoldbackCommittedPreviewsType(),
+            PreviewsType::DEFER_ALL_SCRIPT);
 
   data->set_coin_flip_holdback_result(CoinFlipHoldbackResult::kAllowed);
-  EXPECT_EQ(data->CommittedPreviewsType(), PreviewsType::NOSCRIPT);
-  EXPECT_EQ(data->PreHoldbackCommittedPreviewsType(), PreviewsType::NOSCRIPT);
+  EXPECT_EQ(data->CommittedPreviewsType(), PreviewsType::DEFER_ALL_SCRIPT);
+  EXPECT_EQ(data->PreHoldbackCommittedPreviewsType(),
+            PreviewsType::DEFER_ALL_SCRIPT);
 }
 
 TEST(PreviewsUserDataTest, TestCoinFlip_AllowedPreviewsState) {
@@ -93,16 +95,17 @@ TEST(PreviewsUserDataTest, TestCoinFlip_AllowedPreviewsState) {
   std::unique_ptr<PreviewsUserData> data =
       std::make_unique<PreviewsUserData>(id);
 
-  data->set_allowed_previews_state(blink::PreviewsTypes::NOSCRIPT_ON);
+  data->set_allowed_previews_state(blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
   data->set_coin_flip_holdback_result(CoinFlipHoldbackResult::kHoldback);
   EXPECT_EQ(data->AllowedPreviewsState(), blink::PreviewsTypes::PREVIEWS_OFF);
   EXPECT_EQ(data->PreHoldbackAllowedPreviewsState(),
-            blink::PreviewsTypes::NOSCRIPT_ON);
+            blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
 
   data->set_coin_flip_holdback_result(CoinFlipHoldbackResult::kAllowed);
-  EXPECT_EQ(data->AllowedPreviewsState(), blink::PreviewsTypes::NOSCRIPT_ON);
+  EXPECT_EQ(data->AllowedPreviewsState(),
+            blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
   EXPECT_EQ(data->PreHoldbackAllowedPreviewsState(),
-            blink::PreviewsTypes::NOSCRIPT_ON);
+            blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
 }
 
 TEST(PreviewsUserDataTest, TestCoinFlip_CommittedPreviewsState) {
@@ -110,16 +113,17 @@ TEST(PreviewsUserDataTest, TestCoinFlip_CommittedPreviewsState) {
   std::unique_ptr<PreviewsUserData> data =
       std::make_unique<PreviewsUserData>(id);
 
-  data->set_committed_previews_state(blink::PreviewsTypes::NOSCRIPT_ON);
+  data->set_committed_previews_state(blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
   data->set_coin_flip_holdback_result(CoinFlipHoldbackResult::kHoldback);
   EXPECT_EQ(data->CommittedPreviewsState(), blink::PreviewsTypes::PREVIEWS_OFF);
   EXPECT_EQ(data->PreHoldbackCommittedPreviewsState(),
-            blink::PreviewsTypes::NOSCRIPT_ON);
+            blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
 
   data->set_coin_flip_holdback_result(CoinFlipHoldbackResult::kAllowed);
-  EXPECT_EQ(data->CommittedPreviewsState(), blink::PreviewsTypes::NOSCRIPT_ON);
+  EXPECT_EQ(data->CommittedPreviewsState(),
+            blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
   EXPECT_EQ(data->PreHoldbackCommittedPreviewsState(),
-            blink::PreviewsTypes::NOSCRIPT_ON);
+            blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
 }
 
 }  // namespace previews

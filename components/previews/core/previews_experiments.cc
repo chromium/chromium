@@ -21,17 +21,9 @@ namespace previews {
 
 namespace {
 
-// The group of client-side previews experiments. This controls parameters of
-// the client side blocklist.
-const char kClientSidePreviewsFieldTrial[] = "ClientSidePreviews";
-
 // Name for the version parameter of a field trial. Version changes will
 // result in older blocklist entries being removed.
 const char kVersion[] = "version";
-
-// Parameter to clarify that the preview for a UserConsistent study should
-// be enabled or not.
-const char kUserConsistentPreviewEnabled[] = "user_consistent_preview_enabled";
 
 // The threshold of EffectiveConnectionType above which previews will not be
 // served.
@@ -47,38 +39,6 @@ const char kEffectiveConnectionTypeThreshold[] =
 // See net/nqe/effective_connection_type.h for mapping from string to value.
 const char kSessionMaxECTTrigger[] = "session_max_ect_trigger";
 
-// Inflation parameters for estimating NoScript data savings.
-const char kNoScriptInflationPercent[] = "NoScriptInflationPercent";
-const char kNoScriptInflationBytes[] = "NoScriptInflationBytes";
-
-// Inflation parameters for estimating ResourceLoadingHints data savings.
-const char kResourceLoadingHintsInflationPercent[] =
-    "ResourceLoadingHintsInflationPercent";
-const char kResourceLoadingHintsInflationBytes[] =
-    "ResourceLoadingHintsInflationBytes";
-
-size_t GetParamValueAsSizeT(const std::string& trial_name,
-                            const std::string& param_name,
-                            size_t default_value) {
-  size_t value;
-  if (!base::StringToSizeT(
-          base::GetFieldTrialParamValue(trial_name, param_name), &value)) {
-    return default_value;
-  }
-  return value;
-}
-
-int GetParamValueAsInt(const std::string& trial_name,
-                       const std::string& param_name,
-                       int default_value) {
-  int value;
-  if (!base::StringToInt(base::GetFieldTrialParamValue(trial_name, param_name),
-                         &value)) {
-    return default_value;
-  }
-  return value;
-}
-
 net::EffectiveConnectionType GetParamValueAsECTByFeature(
     const base::Feature& feature,
     const std::string& param_name,
@@ -91,37 +51,7 @@ net::EffectiveConnectionType GetParamValueAsECTByFeature(
 // Returns the effective Feature for DeferAllScript (which may be the
 // UserConsistent variant).
 const base::Feature& GetDeferAllScriptPreviewsFeature() {
-  if (base::FeatureList::IsEnabled(features::kEligibleForUserConsistentStudy) &&
-      base::FeatureList::IsEnabled(
-          features::kDeferAllScriptPreviewsUserConsistentStudy)) {
-    return features::kDeferAllScriptPreviewsUserConsistentStudy;
-  }
-
   return features::kDeferAllScriptPreviews;
-}
-
-// Returns the effective Feature for ResourceLoadingHints (which may be the
-// UserConsistent variant).
-const base::Feature& GetResourceLoadingHintsFeature() {
-  if (base::FeatureList::IsEnabled(features::kEligibleForUserConsistentStudy) &&
-      base::FeatureList::IsEnabled(
-          features::kResourceLoadingHintsUserConsistentStudy)) {
-    return features::kResourceLoadingHintsUserConsistentStudy;
-  }
-
-  return features::kResourceLoadingHints;
-}
-
-// Returns the effective Feature for NoScriptPreviews (which may be the
-// UserConsistent variant).
-const base::Feature& GetNoScriptPreviewsFeature() {
-  if (base::FeatureList::IsEnabled(features::kEligibleForUserConsistentStudy) &&
-      base::FeatureList::IsEnabled(
-          features::kNoScriptPreviewsUserConsistentStudy)) {
-    return features::kNoScriptPreviewsUserConsistentStudy;
-  }
-
-  return features::kNoScriptPreviews;
 }
 
 }  // namespace
@@ -129,69 +59,46 @@ const base::Feature& GetNoScriptPreviewsFeature() {
 namespace params {
 
 size_t MaxStoredHistoryLengthForPerHostBlockList() {
-  return GetParamValueAsSizeT(kClientSidePreviewsFieldTrial,
-                              "per_host_max_stored_history_length", 4);
+  return 4;
 }
 
 size_t MaxStoredHistoryLengthForHostIndifferentBlockList() {
-  return GetParamValueAsSizeT(kClientSidePreviewsFieldTrial,
-                              "host_indifferent_max_stored_history_length", 10);
+  return 10;
 }
 
 size_t MaxInMemoryHostsInBlockList() {
-  // TODO(crbug.com/1092102): Migrate exeriment parameter name to
-  // max_hosts_in_blocklist.
-  return GetParamValueAsSizeT(kClientSidePreviewsFieldTrial,
-                              "max_hosts_in_blacklist", 100);
+  return 100;
 }
 
 int PerHostBlockListOptOutThreshold() {
-  return GetParamValueAsInt(kClientSidePreviewsFieldTrial,
-                            "per_host_opt_out_threshold", 2);
+  return 2;
 }
 
 int HostIndifferentBlockListOptOutThreshold() {
-  return GetParamValueAsInt(kClientSidePreviewsFieldTrial,
-                            "host_indifferent_opt_out_threshold", 6);
+  return 6;
 }
 
 base::TimeDelta PerHostBlockListDuration() {
-  // TODO(crbug.com/1092102): Migrate exeriment parameter name to
-  // per_host_block_list_duration_in_days.
-  return base::TimeDelta::FromDays(
-      GetParamValueAsInt(kClientSidePreviewsFieldTrial,
-                         "per_host_black_list_duration_in_days", 30));
+  return base::TimeDelta::FromDays(30);
 }
 
 base::TimeDelta HostIndifferentBlockListPerHostDuration() {
-  // TODO(crbug.com/1092102): Migrate exeriment parameter name to
-  // host_indifferent_block_list_duration_in_days/
-  return base::TimeDelta::FromDays(
-      GetParamValueAsInt(kClientSidePreviewsFieldTrial,
-                         "host_indifferent_black_list_duration_in_days", 30));
+  return base::TimeDelta::FromDays(30);
 }
 
 base::TimeDelta SingleOptOutDuration() {
-  return base::TimeDelta::FromSeconds(
-      GetParamValueAsInt(kClientSidePreviewsFieldTrial,
-                         "single_opt_out_duration_in_seconds", 60 * 5));
+  return base::TimeDelta::FromSeconds(60 * 5);
 }
 
 net::EffectiveConnectionType GetECTThresholdForPreview(
     previews::PreviewsType type) {
   switch (type) {
     case PreviewsType::NOSCRIPT:
-      return GetParamValueAsECTByFeature(features::kNoScriptPreviews,
-                                         kEffectiveConnectionTypeThreshold,
-                                         net::EFFECTIVE_CONNECTION_TYPE_2G);
-      NOTREACHED();
-      break;
+      return net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
     case PreviewsType::NONE:
     case PreviewsType::UNSPECIFIED:
     case PreviewsType::RESOURCE_LOADING_HINTS:
-      return GetParamValueAsECTByFeature(GetResourceLoadingHintsFeature(),
-                                         kEffectiveConnectionTypeThreshold,
-                                         net::EFFECTIVE_CONNECTION_TYPE_2G);
+      return net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
     case PreviewsType::DEFER_ALL_SCRIPT:
       return GetParamValueAsECTByFeature(GetDeferAllScriptPreviewsFeature(),
                                          kEffectiveConnectionTypeThreshold,
@@ -218,76 +125,14 @@ bool ArePreviewsAllowed() {
   return base::FeatureList::IsEnabled(features::kPreviews);
 }
 
-bool IsNoScriptPreviewsEnabled() {
-  if (base::FeatureList::IsEnabled(features::kEligibleForUserConsistentStudy) &&
-      base::FeatureList::IsEnabled(
-          features::kNoScriptPreviewsUserConsistentStudy)) {
-    return base::GetFieldTrialParamByFeatureAsBool(
-        features::kNoScriptPreviewsUserConsistentStudy,
-        kUserConsistentPreviewEnabled, false);
-  }
-  return base::FeatureList::IsEnabled(features::kNoScriptPreviews);
-}
-
-bool IsResourceLoadingHintsEnabled() {
-  if (base::FeatureList::IsEnabled(features::kEligibleForUserConsistentStudy) &&
-      base::FeatureList::IsEnabled(
-          features::kResourceLoadingHintsUserConsistentStudy)) {
-    return base::GetFieldTrialParamByFeatureAsBool(
-        features::kResourceLoadingHintsUserConsistentStudy,
-        kUserConsistentPreviewEnabled, false);
-  }
-  return base::FeatureList::IsEnabled(features::kResourceLoadingHints);
-}
-
 bool IsDeferAllScriptPreviewsEnabled() {
-  if (base::FeatureList::IsEnabled(features::kEligibleForUserConsistentStudy) &&
-      base::FeatureList::IsEnabled(
-          features::kDeferAllScriptPreviewsUserConsistentStudy)) {
-    return base::GetFieldTrialParamByFeatureAsBool(
-        features::kDeferAllScriptPreviewsUserConsistentStudy,
-        kUserConsistentPreviewEnabled, false);
-  }
   return base::FeatureList::IsEnabled(features::kDeferAllScriptPreviews);
 }
 
-int NoScriptPreviewsVersion() {
-  return GetFieldTrialParamByFeatureAsInt(GetNoScriptPreviewsFeature(),
-                                          kVersion, 0);
-}
-
-int ResourceLoadingHintsVersion() {
-  return GetFieldTrialParamByFeatureAsInt(GetResourceLoadingHintsFeature(),
-                                          kVersion, 0);
-}
 
 int DeferAllScriptPreviewsVersion() {
   return GetFieldTrialParamByFeatureAsInt(GetDeferAllScriptPreviewsFeature(),
                                           kVersion, 0);
-}
-
-int NoScriptPreviewsInflationPercent() {
-  // The default value was determined from lab experiment data of allowlisted
-  // URLs. It may be improved once there is enough UKM live experiment data
-  // via the field trial param.
-  return GetFieldTrialParamByFeatureAsInt(GetNoScriptPreviewsFeature(),
-                                          kNoScriptInflationPercent, 80);
-}
-
-int NoScriptPreviewsInflationBytes() {
-  return GetFieldTrialParamByFeatureAsInt(GetNoScriptPreviewsFeature(),
-                                          kNoScriptInflationBytes, 0);
-}
-
-int ResourceLoadingHintsPreviewsInflationPercent() {
-  return GetFieldTrialParamByFeatureAsInt(GetResourceLoadingHintsFeature(),
-                                          kResourceLoadingHintsInflationPercent,
-                                          20);
-}
-
-int ResourceLoadingHintsPreviewsInflationBytes() {
-  return GetFieldTrialParamByFeatureAsInt(
-      GetResourceLoadingHintsFeature(), kResourceLoadingHintsInflationBytes, 0);
 }
 
 bool ShouldOverrideNavigationCoinFlipToHoldback() {

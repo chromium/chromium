@@ -1053,8 +1053,6 @@ static_library("browser") {
     "page_load_metrics/observers/portal_page_load_metrics_observer.h",
     "page_load_metrics/observers/prefetch_proxy_page_load_metrics_observer.cc",
     "page_load_metrics/observers/prefetch_proxy_page_load_metrics_observer.h",
-    "page_load_metrics/observers/previews_page_load_metrics_observer.cc",
-    "page_load_metrics/observers/previews_page_load_metrics_observer.h",
     "page_load_metrics/observers/previews_ukm_observer.cc",
     "page_load_metrics/observers/previews_ukm_observer.h",
     "page_load_metrics/observers/protocol_page_load_metrics_observer.cc",

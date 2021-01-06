@@ -95,14 +95,6 @@ class PreviewsBlockListTest : public testing::Test {
   void TearDown() override { variations::testing::ClearAllVariationParams(); }
 
   void StartTest() {
-    if (params_.size() > 0) {
-      ASSERT_TRUE(variations::AssociateVariationParams("ClientSidePreviews",
-                                                       "Enabled", params_));
-      ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial("ClientSidePreviews",
-                                                         "Enabled"));
-      params_.clear();
-    }
-
     blocklist::BlocklistData::AllowedTypesAndVersions allowed_types;
     allowed_types[static_cast<int>(PreviewsType::DEFER_ALL_SCRIPT)] = 0;
     block_list_ = std::make_unique<TestPreviewsBlockList>(
@@ -111,49 +103,7 @@ class PreviewsBlockListTest : public testing::Test {
     passed_reasons_ = {};
   }
 
-  void SetHostHistoryParam(size_t host_history) {
-    params_["per_host_max_stored_history_length"] =
-        base::NumberToString(host_history);
-  }
 
-  void SetHostIndifferentHistoryParam(size_t host_indifferent_history) {
-    params_["host_indifferent_max_stored_history_length"] =
-        base::NumberToString(host_indifferent_history);
-  }
-
-  void SetHostThresholdParam(int per_host_threshold) {
-    params_["per_host_opt_out_threshold"] =
-        base::NumberToString(per_host_threshold);
-  }
-
-  void SetHostIndifferentThresholdParam(int host_indifferent_threshold) {
-    params_["host_indifferent_opt_out_threshold"] =
-        base::NumberToString(host_indifferent_threshold);
-  }
-
-  void SetHostDurationParam(int duration_in_days) {
-    // TODO(crbug.com/1092102): Migrate to per_host_black_list_duration_in_days
-    params_["per_host_black_list_duration_in_days"] =
-        base::NumberToString(duration_in_days);
-  }
-
-  void SetHostIndifferentDurationParam(int duration_in_days) {
-    // TODO(crbug.com/1092102): Migrate to
-    // host_indifferent_block_list_duration_in_days
-    params_["host_indifferent_black_list_duration_in_days"] =
-        base::NumberToString(duration_in_days);
-  }
-
-  void SetSingleOptOutDurationParam(int single_opt_out_duration) {
-    params_["single_opt_out_duration_in_seconds"] =
-        base::NumberToString(single_opt_out_duration);
-  }
-
-  void SetMaxHostInBlockListParam(size_t max_hosts_in_blocklist) {
-    // TODO(crbug.com/1092102): Migrate to max_hosts_in_blocklist
-    params_["max_hosts_in_blacklist"] =
-        base::NumberToString(max_hosts_in_blocklist);
-  }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -162,7 +112,6 @@ class PreviewsBlockListTest : public testing::Test {
   TestOptOutBlocklistDelegate blocklist_delegate_;
 
   base::SimpleTestClock test_clock_;
-  std::map<std::string, std::string> params_;
 
   std::unique_ptr<TestPreviewsBlockList> block_list_;
   std::vector<PreviewsEligibilityReason> passed_reasons_;
@@ -188,29 +137,22 @@ TEST_F(PreviewsBlockListTest, AddPreviewUMA) {
 }
 
 TEST_F(PreviewsBlockListTest, SessionParams) {
-  int duration_seconds = 5;
-  SetSingleOptOutDurationParam(duration_seconds);
-
   StartTest();
 
-  base::TimeDelta duration;
   size_t history = 0;
   int threshold = 0;
-
+  base::TimeDelta duration;
   EXPECT_TRUE(
       block_list_->ShouldUseSessionPolicy(&duration, &history, &threshold));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(duration_seconds), duration);
+  EXPECT_EQ(base::TimeDelta::FromSeconds(300), duration);
   EXPECT_EQ(1u, history);
   EXPECT_EQ(1, threshold);
 }
 
 TEST_F(PreviewsBlockListTest, PersistentParams) {
-  int duration_days = 5;
-  size_t expected_history = 6;
-  int expected_threshold = 4;
-  SetHostIndifferentThresholdParam(expected_threshold);
-  SetHostIndifferentHistoryParam(expected_history);
-  SetHostIndifferentDurationParam(duration_days);
+  int duration_days = 30;
+  size_t expected_history = 10;
+  int expected_threshold = 6;
 
   StartTest();
 
@@ -226,14 +168,10 @@ TEST_F(PreviewsBlockListTest, PersistentParams) {
 }
 
 TEST_F(PreviewsBlockListTest, HostParams) {
-  int duration_days = 5;
-  size_t expected_history = 6;
-  int expected_threshold = 4;
-  size_t expected_max_hosts = 11;
-  SetHostThresholdParam(expected_threshold);
-  SetHostHistoryParam(expected_history);
-  SetHostDurationParam(duration_days);
-  SetMaxHostInBlockListParam(expected_max_hosts);
+  int duration_days = 30;
+  size_t expected_history = 4;
+  int expected_threshold = 2;
+  size_t expected_max_hosts = 100;
 
   StartTest();
 

@@ -93,24 +93,10 @@ blink::PreviewsState DetermineAllowedClientPreviewsState(
   }
 
   // Check commit-time preview types first.
-  bool allow_commit_time_previews = false;
   if (previews_decider->ShouldAllowPreviewAtNavigationStart(
           previews_data, navigation_handle, is_reload,
           previews::PreviewsType::DEFER_ALL_SCRIPT)) {
     previews_state |= blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON;
-    allow_commit_time_previews = true;
-  }
-  if (previews_decider->ShouldAllowPreviewAtNavigationStart(
-          previews_data, navigation_handle, is_reload,
-          previews::PreviewsType::RESOURCE_LOADING_HINTS)) {
-    previews_state |= blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON;
-    allow_commit_time_previews = true;
-  }
-  if (previews_decider->ShouldAllowPreviewAtNavigationStart(
-          previews_data, navigation_handle, is_reload,
-          previews::PreviewsType::NOSCRIPT)) {
-    previews_state |= blink::PreviewsTypes::NOSCRIPT_ON;
-    allow_commit_time_previews = true;
   }
 
   return previews_state;
@@ -255,34 +241,6 @@ blink::PreviewsState DetermineCommittedClientPreviewsState(
         previews_state & ~blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON;
   }
 
-  if (previews_state & blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON) {
-    // Resource loading hints was chosen for the original URL but only continue
-    // with it if the committed URL has HTTPS scheme and is allowed by decider.
-    if (previews_decider &&
-        previews_decider->ShouldCommitPreview(
-            previews_data, navigation_handle,
-            previews::PreviewsType::RESOURCE_LOADING_HINTS)) {
-      return blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON;
-    }
-    // Remove RESOURCE_LOADING_HINTS_ON from |previews_state| since we decided
-    // not to commit to it.
-    previews_state =
-        previews_state & ~blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON;
-  }
-
-  if (previews_state & blink::PreviewsTypes::NOSCRIPT_ON) {
-    // NoScript was chosen for the original URL but only continue with it
-    // if the committed URL has HTTPS scheme and is allowed by decider.
-    if (previews_decider && previews_decider->ShouldCommitPreview(
-                                previews_data, navigation_handle,
-                                previews::PreviewsType::NOSCRIPT)) {
-      return blink::PreviewsTypes::NOSCRIPT_ON;
-    }
-    // Remove NOSCRIPT_ON from |previews_state| since we decided not to
-    // commit to it.
-    previews_state = previews_state & ~blink::PreviewsTypes::NOSCRIPT_ON;
-  }
-
   if (!previews_state) {
     return blink::PreviewsTypes::PREVIEWS_OFF;
   }
@@ -327,14 +285,9 @@ previews::PreviewsType GetMainFramePreviewsType(
   // The order is important here.
   if (previews_state & blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON)
     return previews::PreviewsType::DEFER_ALL_SCRIPT;
-  if (previews_state & blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON)
-    return previews::PreviewsType::RESOURCE_LOADING_HINTS;
-  if (previews_state & blink::PreviewsTypes::NOSCRIPT_ON)
-    return previews::PreviewsType::NOSCRIPT;
 
   DCHECK_EQ(blink::PreviewsTypes::PREVIEWS_UNSPECIFIED,
-            previews_state & ~blink::PreviewsTypes::CLIENT_LOFI_AUTO_RELOAD &
-                ~blink::PreviewsTypes::PREVIEWS_NO_TRANSFORM &
+            previews_state & ~blink::PreviewsTypes::PREVIEWS_NO_TRANSFORM &
                 ~blink::PreviewsTypes::PREVIEWS_OFF);
   return previews::PreviewsType::NONE;
 }

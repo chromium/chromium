@@ -92,9 +92,9 @@ class PreviewEnabledPreviewsDecider : public PreviewsDecider {
       case previews::PreviewsType::DEPRECATED_AMP_REDIRECTION:
         return false;
       case previews::PreviewsType::NOSCRIPT:
-        return params::IsNoScriptPreviewsEnabled();
+        return false;
       case previews::PreviewsType::RESOURCE_LOADING_HINTS:
-        return params::IsResourceLoadingHintsEnabled();
+        return false;
       case previews::PreviewsType::DEPRECATED_LITE_PAGE_REDIRECT:
         return false;
       case previews::PreviewsType::DEFER_ALL_SCRIPT:
@@ -158,9 +158,7 @@ TEST_F(PreviewsContentUtilTest,
   bool is_reload = false;
   bool previews_triggering_logic_already_ran = false;
   bool is_data_saver_user = true;
-  EXPECT_EQ(blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON |
-                blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON |
-                blink::PreviewsTypes::NOSCRIPT_ON,
+  EXPECT_EQ(blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
             previews::CallDetermineAllowedClientPreviewsState(
                 &user_data, GURL("http://www.google.com"), is_reload,
                 previews_triggering_logic_already_ran, is_data_saver_user,
@@ -199,33 +197,10 @@ TEST_F(PreviewsContentUtilTest,
 }
 
 TEST_F(PreviewsContentUtilTest,
-       DetermineAllowedClientPreviewsStateResourceLoadingHints) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine("Previews,ResourceLoadingHints",
-                                          std::string());
-  PreviewsUserData user_data(1);
-  bool is_reload = false;
-  bool previews_triggering_logic_already_ran = false;
-  bool is_data_saver_user = true;
-  EXPECT_LT(0,
-            blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON &
-                previews::CallDetermineAllowedClientPreviewsState(
-                    &user_data, GURL("https://www.google.com"), is_reload,
-                    previews_triggering_logic_already_ran, is_data_saver_user,
-                    enabled_previews_decider(), nullptr));
-  EXPECT_LT(0,
-            blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON &
-                previews::CallDetermineAllowedClientPreviewsState(
-                    &user_data, GURL("http://www.google.com"), is_reload,
-                    previews_triggering_logic_already_ran, is_data_saver_user,
-                    enabled_previews_decider(), nullptr));
-}
-
-TEST_F(PreviewsContentUtilTest,
        DetermineAllowedClientPreviewsStateAndPageHintPreviews) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine(
-      "Previews,ResourceLoadingHints,NoScriptPreviews", std::string());
+  scoped_feature_list.InitFromCommandLine("Previews,DeferAllScript",
+                                          std::string());
 
   PreviewsUserData user_data(1);
   bool is_reload = false;
@@ -236,16 +211,14 @@ TEST_F(PreviewsContentUtilTest,
       &user_data, GURL("https://www.google.com"), is_reload,
       previews_triggering_logic_already_ran, is_data_saver_user,
       enabled_previews_decider(), nullptr);
-  EXPECT_TRUE(ps1 & blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON);
-  EXPECT_TRUE(ps1 & blink::PreviewsTypes::NOSCRIPT_ON);
+  EXPECT_TRUE(ps1 & blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
 
   // Verify only page hint client previews enabled with known page hints.
   blink::PreviewsState ps2 = previews::CallDetermineAllowedClientPreviewsState(
       &user_data, GURL("https://www.hintcachedhost.com"), is_reload,
       previews_triggering_logic_already_ran, is_data_saver_user,
       enabled_previews_decider(), nullptr);
-  EXPECT_TRUE(ps2 & blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON);
-  EXPECT_TRUE(ps2 & blink::PreviewsTypes::NOSCRIPT_ON);
+  EXPECT_TRUE(ps2 & blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
 }
 
 TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsState) {
@@ -260,25 +233,8 @@ TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsState) {
   EXPECT_EQ(blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
             previews::DetermineCommittedClientPreviewsState(
                 &user_data, GURL("https://www.google.com"),
-                blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON |
-                    blink::PreviewsTypes::NOSCRIPT_ON |
-                    blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON,
+                blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
                 enabled_previews_decider(), nullptr));
-
-  // RESOURCE_LOADING_HINTS has precedence over NoScript.
-  EXPECT_EQ(blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON,
-            previews::DetermineCommittedClientPreviewsState(
-                &user_data, GURL("https://www.google.com"),
-                blink::PreviewsTypes::NOSCRIPT_ON |
-                    blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON,
-                enabled_previews_decider(), nullptr));
-
-  // Only NoScript:
-  EXPECT_EQ(blink::PreviewsTypes::NOSCRIPT_ON,
-            previews::DetermineCommittedClientPreviewsState(
-                &user_data, GURL("https://www.google.com"),
-                blink::PreviewsTypes::NOSCRIPT_ON, enabled_previews_decider(),
-                nullptr));
 }
 
 TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsStateForHttp) {
@@ -293,45 +249,25 @@ TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsStateForHttp) {
   EXPECT_EQ(blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
             previews::DetermineCommittedClientPreviewsState(
                 &user_data, GURL("http://www.google.com"),
-                blink::PreviewsTypes::NOSCRIPT_ON |
-                    blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON |
-                    blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
+                blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
                 enabled_previews_decider(), nullptr));
-
-  EXPECT_EQ(blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON,
-            previews::DetermineCommittedClientPreviewsState(
-                &user_data, GURL("http://www.google.com"),
-                blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON,
-                enabled_previews_decider(), nullptr));
-
-  EXPECT_EQ(blink::PreviewsTypes::NOSCRIPT_ON,
-            previews::DetermineCommittedClientPreviewsState(
-                &user_data, GURL("http://www.google.com"),
-                blink::PreviewsTypes::NOSCRIPT_ON, enabled_previews_decider(),
-                nullptr));
 }
 
 TEST_F(PreviewsContentUtilTest,
-       DetermineCommittedClientPreviewsStateNoScriptCheckIfStillAllowed) {
+       DetermineCommittedClientPreviewsStateDeferAllScriptCheckIfStillAllowed) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine("Previews", "NoScriptPreviews");
+  scoped_feature_list.InitFromCommandLine("Previews", "DeferAllScript");
   PreviewsUserData user_data(1);
   // NoScript not allowed at commit time so no previews chosen:
   EXPECT_EQ(blink::PreviewsTypes::PREVIEWS_OFF,
             previews::DetermineCommittedClientPreviewsState(
                 &user_data, GURL("https://www.google.com"),
-                blink::PreviewsTypes::NOSCRIPT_ON, enabled_previews_decider(),
-                nullptr));
+                blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
+                enabled_previews_decider(), nullptr));
 }
 
 TEST_F(PreviewsContentUtilTest, GetMainFramePreviewsType) {
   // Simple cases:
-  EXPECT_EQ(
-      previews::PreviewsType::NOSCRIPT,
-      previews::GetMainFramePreviewsType(blink::PreviewsTypes::NOSCRIPT_ON));
-  EXPECT_EQ(previews::PreviewsType::RESOURCE_LOADING_HINTS,
-            previews::GetMainFramePreviewsType(
-                blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON));
   EXPECT_EQ(previews::PreviewsType::DEFER_ALL_SCRIPT,
             previews::GetMainFramePreviewsType(
                 blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON));
@@ -345,17 +281,8 @@ TEST_F(PreviewsContentUtilTest, GetMainFramePreviewsType) {
                 blink::PreviewsTypes::PREVIEWS_NO_TRANSFORM));
 
   // Precedence cases when server preview is not available:
-  EXPECT_EQ(
-      previews::PreviewsType::NOSCRIPT,
-      previews::GetMainFramePreviewsType(blink::PreviewsTypes::NOSCRIPT_ON));
-  EXPECT_EQ(previews::PreviewsType::RESOURCE_LOADING_HINTS,
-            previews::GetMainFramePreviewsType(
-                blink::PreviewsTypes::NOSCRIPT_ON |
-                blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON));
   EXPECT_EQ(previews::PreviewsType::DEFER_ALL_SCRIPT,
             previews::GetMainFramePreviewsType(
-                blink::PreviewsTypes::NOSCRIPT_ON |
-                blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON |
                 blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON));
 }
 
@@ -435,8 +362,8 @@ TEST_F(PreviewsContentSimulatedNavigationTest, TestCoinFlipAfterCommit) {
           .set_random_coin_flip_for_navigation = true,
           .want_ukm = false,
           .want_coin_flip_result = previews::CoinFlipHoldbackResult::kNotSet,
-          .initial_state = blink::PreviewsTypes::NOSCRIPT_ON,
-          .want_returned = blink::PreviewsTypes::NOSCRIPT_ON,
+          .initial_state = blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
+          .want_returned = blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
       },
       {
           .msg = "Feature disabled, no affect, tails",
@@ -444,8 +371,8 @@ TEST_F(PreviewsContentSimulatedNavigationTest, TestCoinFlipAfterCommit) {
           .set_random_coin_flip_for_navigation = false,
           .want_ukm = false,
           .want_coin_flip_result = previews::CoinFlipHoldbackResult::kNotSet,
-          .initial_state = blink::PreviewsTypes::NOSCRIPT_ON,
-          .want_returned = blink::PreviewsTypes::NOSCRIPT_ON,
+          .initial_state = blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
+          .want_returned = blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
       },
       {
           .msg = "Holdback enabled previews",
@@ -453,7 +380,7 @@ TEST_F(PreviewsContentSimulatedNavigationTest, TestCoinFlipAfterCommit) {
           .set_random_coin_flip_for_navigation = true,
           .want_ukm = true,
           .want_coin_flip_result = previews::CoinFlipHoldbackResult::kHoldback,
-          .initial_state = blink::PreviewsTypes::NOSCRIPT_ON,
+          .initial_state = blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
           .want_returned = blink::PreviewsTypes::PREVIEWS_OFF,
       },
       {
@@ -462,8 +389,8 @@ TEST_F(PreviewsContentSimulatedNavigationTest, TestCoinFlipAfterCommit) {
           .set_random_coin_flip_for_navigation = false,
           .want_ukm = true,
           .want_coin_flip_result = previews::CoinFlipHoldbackResult::kAllowed,
-          .initial_state = blink::PreviewsTypes::NOSCRIPT_ON,
-          .want_returned = blink::PreviewsTypes::NOSCRIPT_ON,
+          .initial_state = blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
+          .want_returned = blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
       },
   };
 

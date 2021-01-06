@@ -45,14 +45,8 @@ size_t kDefaultPainfulPageLoadDecisionsCacheSize = 10;
 base::Optional<optimization_guide::proto::OptimizationType>
 ConvertPreviewsTypeToOptimizationType(PreviewsType previews_type) {
   switch (previews_type) {
-    case PreviewsType::NONE:
-      return optimization_guide::proto::OPTIMIZATION_NONE;
-    case PreviewsType::NOSCRIPT:
-      return optimization_guide::proto::NOSCRIPT;
     case PreviewsType::UNSPECIFIED:
       return optimization_guide::proto::TYPE_UNSPECIFIED;
-    case PreviewsType::RESOURCE_LOADING_HINTS:
-      return optimization_guide::proto::RESOURCE_LOADING;
     case PreviewsType::DEFER_ALL_SCRIPT:
       return optimization_guide::proto::DEFER_ALL_SCRIPT;
     default:
@@ -67,10 +61,6 @@ GetOptimizationTypesToRegister() {
   base::flat_set<optimization_guide::proto::OptimizationType>
       optimization_types;
 
-  if (params::IsNoScriptPreviewsEnabled())
-    optimization_types.insert(optimization_guide::proto::NOSCRIPT);
-  if (params::IsResourceLoadingHintsEnabled())
-    optimization_types.insert(optimization_guide::proto::RESOURCE_LOADING);
   if (params::IsDeferAllScriptPreviewsEnabled())
     optimization_types.insert(optimization_guide::proto::DEFER_ALL_SCRIPT);
 

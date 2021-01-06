@@ -178,10 +178,6 @@ class PreviewsOptimizationGuideTest : public testing::Test {
 
   GURL hint_not_loaded_url() { return GURL("https://hintnotloaded.com/123"); }
 
-  GURL resource_loading_hints_url() {
-    return GURL("https://hasresourceloadinghints.com/123");
-  }
-
  private:
   std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
 };
@@ -190,27 +186,18 @@ TEST_F(PreviewsOptimizationGuideTest,
        InitializationRegistersCorrectOptimizationTypesAndTargets) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {previews::features::kDeferAllScriptPreviews,
-       previews::features::kNoScriptPreviews,
-       previews::features::kResourceLoadingHints},
-      {});
+      {previews::features::kDeferAllScriptPreviews}, {});
 
   PreviewsOptimizationGuide guide(optimization_guide_decider());
 
   base::flat_set<optimization_guide::proto::OptimizationType>
       registered_optimization_types =
           optimization_guide_decider()->registered_optimization_types();
-  EXPECT_EQ(3u, registered_optimization_types.size());
+  EXPECT_EQ(1u, registered_optimization_types.size());
   // We expect for DEFER_ALL_SCRIPT, NOSCRIPT, and RESOURCE_LOADING to be
   // registered.
   EXPECT_TRUE(registered_optimization_types.find(
                   optimization_guide::proto::DEFER_ALL_SCRIPT) !=
-              registered_optimization_types.end());
-  EXPECT_TRUE(
-      registered_optimization_types.find(optimization_guide::proto::NOSCRIPT) !=
-      registered_optimization_types.end());
-  EXPECT_TRUE(registered_optimization_types.find(
-                  optimization_guide::proto::RESOURCE_LOADING) !=
               registered_optimization_types.end());
 
   // We expect that the PAINFUL_PAGE_LOAD optimization target is always
@@ -228,9 +215,7 @@ TEST_F(PreviewsOptimizationGuideTest,
 TEST_F(PreviewsOptimizationGuideTest, InitializationRegistersOnlyEnabledTypes) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {}, {previews::features::kDeferAllScriptPreviews,
-           previews::features::kNoScriptPreviews,
-           previews::features::kResourceLoadingHints});
+      {}, {previews::features::kDeferAllScriptPreviews});
 
   PreviewsOptimizationGuide guide(optimization_guide_decider());
 
@@ -241,12 +226,6 @@ TEST_F(PreviewsOptimizationGuideTest, InitializationRegistersOnlyEnabledTypes) {
 
   EXPECT_EQ(registered_optimization_types.find(
                 optimization_guide::proto::DEFER_ALL_SCRIPT),
-            registered_optimization_types.end());
-  EXPECT_EQ(
-      registered_optimization_types.find(optimization_guide::proto::NOSCRIPT),
-      registered_optimization_types.end());
-  EXPECT_EQ(registered_optimization_types.find(
-                optimization_guide::proto::RESOURCE_LOADING),
             registered_optimization_types.end());
 
   // We expect that the PAINFUL_PAGE_LOAD optimization target is always

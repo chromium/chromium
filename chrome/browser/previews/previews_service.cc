@@ -65,9 +65,9 @@ bool IsPreviewsTypeEnabled(previews::PreviewsType type) {
     case previews::PreviewsType::DEPRECATED_LITE_PAGE:
       return false;
     case previews::PreviewsType::NOSCRIPT:
-      return previews::params::IsNoScriptPreviewsEnabled();
+      return false;
     case previews::PreviewsType::RESOURCE_LOADING_HINTS:
-      return previews::params::IsResourceLoadingHintsEnabled();
+      return false;
     case previews::PreviewsType::DEFER_ALL_SCRIPT:
       return previews::params::IsDeferAllScriptPreviewsEnabled();
     case previews::PreviewsType::DEPRECATED_AMP_REDIRECTION:
@@ -88,9 +88,9 @@ bool IsPreviewsTypeEnabled(previews::PreviewsType type) {
 int GetPreviewsTypeVersion(previews::PreviewsType type) {
   switch (type) {
     case previews::PreviewsType::NOSCRIPT:
-      return previews::params::NoScriptPreviewsVersion();
+      return -1;
     case previews::PreviewsType::RESOURCE_LOADING_HINTS:
-      return previews::params::ResourceLoadingHintsVersion();
+      return -1;
     case previews::PreviewsType::DEFER_ALL_SCRIPT:
       return previews::params::DeferAllScriptPreviewsVersion();
     case previews::PreviewsType::NONE:

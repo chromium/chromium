@@ -53,23 +53,15 @@ namespace {
 
 // The HTML DOM ID used in Javascript.
 constexpr char kPreviewsAllowedHtmlId[] = "previews-allowed-status";
-constexpr char kResourceLoadingHintsHtmlId[] = "resource-loading-hints-status";
 constexpr char kDeferAllScriptPreviewsHtmlId[] =
     "defer-all-script-preview-status";
-constexpr char kNoScriptPreviewsHtmlId[] = "noscript-preview-status";
 
 // Descriptions for previews.
 constexpr char kPreviewsAllowedDescription[] = "Previews Allowed";
-constexpr char kResourceLoadingHintsDescription[] =
-    "ResourceLoadingHints Previews";
 constexpr char kDeferAllScriptPreviewsDescription[] = "DeferAllScript Previews";
-constexpr char kNoScriptDescription[] = "NoScript Previews";
 
 // The HTML DOM ID used in Javascript.
-constexpr char kResourceLoadingHintsFlagHtmlId[] =
-    "resource-loading-hints-flag";
 constexpr char kDeferAllScriptFlagHtmlId[] = "defer-all-script-flag";
-constexpr char kNoScriptFlagHtmlId[] = "noscript-flag";
 constexpr char kEctFlagHtmlId[] = "ect-flag";
 constexpr char kIgnorePreviewsBlocklistFlagHtmlId[] =
     "ignore-previews-blocklist";
@@ -77,11 +69,8 @@ constexpr char kDataSaverAltConfigHtmlId[] =
     "data-reduction-proxy-server-experiment";
 
 // Links to flags in chrome://flags.
-constexpr char kResourceLoadingHintsFlagLink[] =
-    "chrome://flags/#enable-resource-loading-hints";
 constexpr char kDeferAllScriptFlagLink[] =
     "chrome://flags/#enable-defer-all-script";
-constexpr char kNoScriptFlagLink[] = "chrome://flags/#enable-noscript-previews";
 constexpr char kEctFlagLink[] =
     "chrome://flags/#force-effective-connection-type";
 constexpr char kIgnorePreviewsBlocklistLink[] =
@@ -90,9 +79,7 @@ constexpr char kDataSaverAltConfigLink[] =
     "chrome://flags/#enable-data-reduction-proxy-server-experiment";
 
 // Flag features names.
-constexpr char kResourceLoadingHintsFeatureName[] = "ResourceLoadingHints";
 constexpr char kDeferAllScriptFeatureName[] = "DeferAllScriptPreviews";
-constexpr char kNoScriptFeatureName[] = "NoScriptPreviews";
 
 constexpr char kDefaultFlagValue[] = "Default";
 constexpr char kEnabledFlagValue[] = "Enabled";
@@ -321,7 +308,7 @@ TEST_F(InterventionsInternalsPageHandlerTest, GetPreviewsEnabledCount) {
   page_handler_->GetPreviewsEnabled(
       base::BindOnce(&MockGetPreviewsEnabledCallback));
 
-  constexpr size_t expected = 4;
+  constexpr size_t expected = 2;
   EXPECT_EQ(expected, passed_in_modes.size());
 }
 
@@ -347,62 +334,6 @@ TEST_F(InterventionsInternalsPageHandlerTest, PreviewsAllowedEnabled) {
   ASSERT_NE(passed_in_modes.end(), previews_allowed);
   EXPECT_EQ(kPreviewsAllowedDescription, previews_allowed->second->description);
   EXPECT_TRUE(previews_allowed->second->enabled);
-}
-
-TEST_F(InterventionsInternalsPageHandlerTest, NoScriptDisabled) {
-  // Init with kNoScript disabled.
-  scoped_feature_list_->InitWithFeatures(
-      {}, {previews::features::kNoScriptPreviews});
-
-  page_handler_->GetPreviewsEnabled(
-      base::BindOnce(&MockGetPreviewsEnabledCallback));
-  auto noscript = passed_in_modes.find(kNoScriptPreviewsHtmlId);
-  ASSERT_NE(passed_in_modes.end(), noscript);
-  EXPECT_EQ(kNoScriptDescription, noscript->second->description);
-  EXPECT_FALSE(noscript->second->enabled);
-}
-
-TEST_F(InterventionsInternalsPageHandlerTest, NoScriptEnabled) {
-  // Init with kNoScript enabled.
-  scoped_feature_list_->InitWithFeatures(
-      {previews::features::kNoScriptPreviews}, {});
-
-  page_handler_->GetPreviewsEnabled(
-      base::BindOnce(&MockGetPreviewsEnabledCallback));
-  auto noscript = passed_in_modes.find(kNoScriptPreviewsHtmlId);
-  ASSERT_NE(passed_in_modes.end(), noscript);
-  EXPECT_EQ(kNoScriptDescription, noscript->second->description);
-  EXPECT_TRUE(noscript->second->enabled);
-}
-
-TEST_F(InterventionsInternalsPageHandlerTest, ResourceLoadingHintsDisabled) {
-  // Init with kResourceLoadingHints disabled.
-  scoped_feature_list_->InitWithFeatures(
-      {}, {previews::features::kResourceLoadingHints});
-
-  page_handler_->GetPreviewsEnabled(
-      base::BindOnce(&MockGetPreviewsEnabledCallback));
-  auto resource_loading_hints =
-      passed_in_modes.find(kResourceLoadingHintsHtmlId);
-  ASSERT_NE(passed_in_modes.end(), resource_loading_hints);
-  EXPECT_EQ(kResourceLoadingHintsDescription,
-            resource_loading_hints->second->description);
-  EXPECT_FALSE(resource_loading_hints->second->enabled);
-}
-
-TEST_F(InterventionsInternalsPageHandlerTest, ResourceLoadingHintsEnabled) {
-  // Init with kResourceLoadingHints enabled.
-  scoped_feature_list_->InitWithFeatures(
-      {previews::features::kResourceLoadingHints}, {});
-
-  page_handler_->GetPreviewsEnabled(
-      base::BindOnce(&MockGetPreviewsEnabledCallback));
-  auto resource_loading_hints =
-      passed_in_modes.find(kResourceLoadingHintsHtmlId);
-  ASSERT_NE(passed_in_modes.end(), resource_loading_hints);
-  EXPECT_EQ(kResourceLoadingHintsDescription,
-            resource_loading_hints->second->description);
-  EXPECT_TRUE(resource_loading_hints->second->enabled);
 }
 
 TEST_F(InterventionsInternalsPageHandlerTest, DeferAllScriptPreviewsDisabled) {
@@ -437,7 +368,7 @@ TEST_F(InterventionsInternalsPageHandlerTest, GetFlagsCount) {
   page_handler_->GetPreviewsFlagsDetails(
       base::BindOnce(&MockGetPreviewsFlagsCallback));
 
-  constexpr size_t expected = 7;
+  constexpr size_t expected = 5;
   EXPECT_EQ(expected, passed_in_flags.size());
 }
 
@@ -514,121 +445,6 @@ TEST_F(InterventionsInternalsPageHandlerTest,
   EXPECT_EQ(kDisabledFlagValue, ignore_previews_blocklist->second->value);
   EXPECT_EQ(kIgnorePreviewsBlocklistLink,
             ignore_previews_blocklist->second->link);
-}
-
-TEST_F(InterventionsInternalsPageHandlerTest, GetFlagsNoScriptDisabledValue) {
-  page_handler_->GetPreviewsFlagsDetails(
-      base::BindOnce(&MockGetPreviewsFlagsCallback));
-  auto ignore_previews_blocklist =
-      passed_in_flags.find(kIgnorePreviewsBlocklistFlagHtmlId);
-
-  ASSERT_NE(passed_in_flags.end(), ignore_previews_blocklist);
-  EXPECT_EQ(flag_descriptions::kIgnorePreviewsBlocklistName,
-            ignore_previews_blocklist->second->description);
-  EXPECT_EQ(kDisabledFlagValue, ignore_previews_blocklist->second->value);
-  EXPECT_EQ(kIgnorePreviewsBlocklistLink,
-            ignore_previews_blocklist->second->link);
-}
-
-TEST_F(InterventionsInternalsPageHandlerTest, GetFlagsNoScriptDefaultValue) {
-  page_handler_->GetPreviewsFlagsDetails(
-      base::BindOnce(&MockGetPreviewsFlagsCallback));
-  auto noscript_flag = passed_in_flags.find(kNoScriptFlagHtmlId);
-
-  ASSERT_NE(passed_in_flags.end(), noscript_flag);
-  EXPECT_EQ(flag_descriptions::kEnableNoScriptPreviewsName,
-            noscript_flag->second->description);
-  EXPECT_EQ(kDefaultFlagValue, noscript_flag->second->value);
-  EXPECT_EQ(kNoScriptFlagLink, noscript_flag->second->link);
-}
-
-TEST_F(InterventionsInternalsPageHandlerTest, GetFlagsNoScriptEnabled) {
-  base::test::ScopedCommandLine scoped_command_line;
-  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->AppendSwitchASCII(switches::kEnableFeatures,
-                                  kNoScriptFeatureName);
-
-  page_handler_->GetPreviewsFlagsDetails(
-      base::BindOnce(&MockGetPreviewsFlagsCallback));
-  auto noscript_flag = passed_in_flags.find(kNoScriptFlagHtmlId);
-
-  ASSERT_NE(passed_in_flags.end(), noscript_flag);
-  EXPECT_EQ(flag_descriptions::kEnableNoScriptPreviewsName,
-            noscript_flag->second->description);
-  EXPECT_EQ(kEnabledFlagValue, noscript_flag->second->value);
-  EXPECT_EQ(kNoScriptFlagLink, noscript_flag->second->link);
-}
-
-TEST_F(InterventionsInternalsPageHandlerTest, GetFlagsNoScriptDisabled) {
-  base::test::ScopedCommandLine scoped_command_line;
-  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->AppendSwitchASCII(switches::kDisableFeatures,
-                                  kNoScriptFeatureName);
-
-  page_handler_->GetPreviewsFlagsDetails(
-      base::BindOnce(&MockGetPreviewsFlagsCallback));
-  auto noscript_flag = passed_in_flags.find(kNoScriptFlagHtmlId);
-
-  ASSERT_NE(passed_in_flags.end(), noscript_flag);
-  EXPECT_EQ(flag_descriptions::kEnableNoScriptPreviewsName,
-            noscript_flag->second->description);
-  EXPECT_EQ(kDisabledFlagValue, noscript_flag->second->value);
-  EXPECT_EQ(kNoScriptFlagLink, noscript_flag->second->link);
-}
-
-TEST_F(InterventionsInternalsPageHandlerTest,
-       GetFlagsResourceLoadingHintsDefaultValue) {
-  page_handler_->GetPreviewsFlagsDetails(
-      base::BindOnce(&MockGetPreviewsFlagsCallback));
-  auto resource_loading_hints_flag =
-      passed_in_flags.find(kResourceLoadingHintsFlagHtmlId);
-
-  ASSERT_NE(passed_in_flags.end(), resource_loading_hints_flag);
-  EXPECT_EQ(flag_descriptions::kEnableResourceLoadingHintsName,
-            resource_loading_hints_flag->second->description);
-  EXPECT_EQ(kDefaultFlagValue, resource_loading_hints_flag->second->value);
-  EXPECT_EQ(kResourceLoadingHintsFlagLink,
-            resource_loading_hints_flag->second->link);
-}
-
-TEST_F(InterventionsInternalsPageHandlerTest,
-       GetFlagsResourceLoadingHintsEnabled) {
-  base::test::ScopedCommandLine scoped_command_line;
-  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->AppendSwitchASCII(switches::kEnableFeatures,
-                                  kResourceLoadingHintsFeatureName);
-
-  page_handler_->GetPreviewsFlagsDetails(
-      base::BindOnce(&MockGetPreviewsFlagsCallback));
-  auto resource_loading_hints_flag =
-      passed_in_flags.find(kResourceLoadingHintsFlagHtmlId);
-
-  ASSERT_NE(passed_in_flags.end(), resource_loading_hints_flag);
-  EXPECT_EQ(flag_descriptions::kEnableResourceLoadingHintsName,
-            resource_loading_hints_flag->second->description);
-  EXPECT_EQ(kEnabledFlagValue, resource_loading_hints_flag->second->value);
-  EXPECT_EQ(kResourceLoadingHintsFlagLink,
-            resource_loading_hints_flag->second->link);
-}
-
-TEST_F(InterventionsInternalsPageHandlerTest,
-       GetFlagsResourceLoadingHintsDisabled) {
-  base::test::ScopedCommandLine scoped_command_line;
-  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->AppendSwitchASCII(switches::kDisableFeatures,
-                                  kResourceLoadingHintsFeatureName);
-
-  page_handler_->GetPreviewsFlagsDetails(
-      base::BindOnce(&MockGetPreviewsFlagsCallback));
-  auto resource_loading_hints_flag =
-      passed_in_flags.find(kResourceLoadingHintsFlagHtmlId);
-
-  ASSERT_NE(passed_in_flags.end(), resource_loading_hints_flag);
-  EXPECT_EQ(flag_descriptions::kEnableResourceLoadingHintsName,
-            resource_loading_hints_flag->second->description);
-  EXPECT_EQ(kDisabledFlagValue, resource_loading_hints_flag->second->value);
-  EXPECT_EQ(kResourceLoadingHintsFlagLink,
-            resource_loading_hints_flag->second->link);
 }
 
 TEST_F(InterventionsInternalsPageHandlerTest,

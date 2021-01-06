@@ -60,10 +60,6 @@ GURL GetOriginOrURL(const WebFrame* frame) {
   return top_origin.GetURL();
 }
 
-bool IsScriptDisabledForPreview(content::RenderFrame* render_frame) {
-  return render_frame->GetPreviewsState() & blink::PreviewsTypes::NOSCRIPT_ON;
-}
-
 bool IsFrameWithOpaqueOrigin(WebFrame* frame) {
   // Storage access is keyed off the top origin and the frame's origin.
   // It will be denied any opaque origins so have this method to return early
@@ -347,8 +343,6 @@ bool ContentSettingsAgentImpl::AllowImage(bool enabled_per_settings,
 bool ContentSettingsAgentImpl::AllowScript(bool enabled_per_settings) {
   if (!enabled_per_settings)
     return false;
-  if (IsScriptDisabledForPreview(render_frame()))
-    return false;
 
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   const auto it = cached_script_permissions_.find(frame);
@@ -375,8 +369,6 @@ bool ContentSettingsAgentImpl::AllowScriptFromSource(
     bool enabled_per_settings,
     const blink::WebURL& script_url) {
   if (!enabled_per_settings)
-    return false;
-  if (IsScriptDisabledForPreview(render_frame()))
     return false;
 
   bool allow = true;

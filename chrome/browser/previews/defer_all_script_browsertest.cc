@@ -34,6 +34,7 @@
 #include "components/optimization_guide/optimization_guide_service.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/test_hints_component_creator.h"
+#include "components/prefs/pref_service.h"
 #include "components/previews/core/previews_block_list.h"
 #include "components/previews/core/previews_features.h"
 #include "components/previews/core/previews_switches.h"
@@ -152,6 +153,15 @@ class DeferAllScriptBrowserTest : public InProcessBrowserTest {
             optimization_guide::proto::DEFER_ALL_SCRIPT,
             {hint_setup_url.host()}, page_pattern));
     LoadHintsForUrl(hint_setup_url);
+  }
+
+  void SetDataSaverEnabled(content::BrowserContext* browser_context,
+                           bool enabled) {
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+
+    data_reduction_proxy::DataReductionProxySettings::
+        SetDataSaverEnabledForTesting(profile->GetPrefs(), enabled);
+    base::RunLoop().RunUntilIdle();
   }
 
   content::WebContents* web_contents() const {
@@ -382,6 +392,48 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectTotalCount("Previews.PageEndReason.DeferAllScript", 0);
 }
 
+IN_PROC_BROWSER_TEST_F(DeferAllScriptBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(DisableDataSaver)) {
+  GURL url = https_url();
+
+  // Allow DeferAllScript for any path for the url's host.
+  SetDeferAllScriptHintWithPageWithPattern(url, "*");
+
+  base::HistogramTester histogram_tester;
+
+  // Set query to ensure that it's not treated as a reload as preview metrics
+  // are not recorded for reloads.
+  ui_test_utils::NavigateToURL(browser(), SetQuery(url, "foo"));
+  RetryForHistogramUntilCountReached(
+      &histogram_tester, "PageLoad.DocumentTiming.NavigationToLoadEventFired",
+      1);
+  EXPECT_EQ(kDeferredPageExpectedOutput, GetScriptLog(browser()));
+  histogram_tester.ExpectBucketCount(
+      "Previews.EligibilityReason.DeferAllScript",
+      static_cast<int>(previews::PreviewsEligibilityReason::COMMITTED), 1);
+
+  // Load another webpage. Previews should be triggerd.
+  ui_test_utils::NavigateToURL(browser(), SetQuery(url, "bar"));
+  RetryForHistogramUntilCountReached(
+      &histogram_tester, "PageLoad.DocumentTiming.NavigationToLoadEventFired",
+      2);
+  EXPECT_EQ(kDeferredPageExpectedOutput, GetScriptLog(browser()));
+  histogram_tester.ExpectBucketCount(
+      "Previews.EligibilityReason.DeferAllScript",
+      static_cast<int>(previews::PreviewsEligibilityReason::COMMITTED), 2);
+
+  // Load another webpage with data saver disabled. Previews should not trigger.
+  SetDataSaverEnabled(browser()->profile(), false);
+  ui_test_utils::NavigateToURL(browser(), SetQuery(url, "baz"));
+  RetryForHistogramUntilCountReached(
+      &histogram_tester, "PageLoad.DocumentTiming.NavigationToLoadEventFired",
+      3);
+  EXPECT_EQ(kNonDeferredPageExpectedOutput, GetScriptLog(browser()));
+  histogram_tester.ExpectBucketCount(
+      "Previews.EligibilityReason.DeferAllScript",
+      static_cast<int>(previews::PreviewsEligibilityReason::COMMITTED), 2);
+}
+
 class DeferAllScriptBrowserTestWithCoinFlipHoldback
     : public DeferAllScriptBrowserTest {
  public:
@@ -391,7 +443,7 @@ class DeferAllScriptBrowserTestWithCoinFlipHoldback
     feature_list_.InitWithFeaturesAndParameters(
         {{previews::features::kCoinFlipHoldback,
           {{"force_coin_flip_always_holdback", "true"}}}},
-        {previews::features::kOfflinePreviews});
+        {});
   }
 
  private:

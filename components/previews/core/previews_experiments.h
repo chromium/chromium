@@ -121,31 +121,10 @@ net::EffectiveConnectionType GetSessionMaxECTThreshold();
 bool ArePreviewsAllowed();
 
 // Whether the preview type is enabled.
-bool IsNoScriptPreviewsEnabled();
-bool IsResourceLoadingHintsEnabled();
 bool IsDeferAllScriptPreviewsEnabled();
 
 // The blocklist version for each preview type.
-int NoScriptPreviewsVersion();
-int ResourceLoadingHintsVersion();
 int DeferAllScriptPreviewsVersion();
-
-// For estimating NoScript data savings, this is the percentage factor to
-// multiple by the network bytes for inflating the original_bytes count.
-int NoScriptPreviewsInflationPercent();
-
-// For estimating NoScript data savings, this is the number of bytes to
-// for inflating the original_bytes count.
-int NoScriptPreviewsInflationBytes();
-
-// For estimating ResourceLoadingHints data savings, this is the percentage
-// factor to multiple by the network bytes for inflating the original_bytes
-// count.
-int ResourceLoadingHintsPreviewsInflationPercent();
-
-// For estimating ResourceLoadingHints data savings, this is the number of
-// bytes to for inflating the original_bytes count.
-int ResourceLoadingHintsPreviewsInflationBytes();
 
 // Forces the coin flip holdback, if enabled, to always come up "holdback".
 bool ShouldOverrideNavigationCoinFlipToHoldback();

@@ -33,26 +33,6 @@ class PreviewsServiceTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(PreviewsServiceTest, TestNoScriptPreviewsEnabledByFeature) {
-#if !defined(OS_ANDROID)
-  // For non-android, default is disabled.
-  blocklist::BlocklistData::AllowedTypesAndVersions allowed_types_and_versions =
-      PreviewsService::GetAllowedPreviews();
-  EXPECT_EQ(allowed_types_and_versions.find(
-                static_cast<int>(previews::PreviewsType::NOSCRIPT)),
-            allowed_types_and_versions.end());
-#endif  // defined(OS_ANDROID)
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      previews::features::kNoScriptPreviews);
-  blocklist::BlocklistData::AllowedTypesAndVersions
-      allowed_types_and_versions2 = PreviewsService::GetAllowedPreviews();
-  EXPECT_NE(allowed_types_and_versions2.find(
-                static_cast<int>(previews::PreviewsType::NOSCRIPT)),
-            allowed_types_and_versions2.end());
-}
-
 TEST_F(PreviewsServiceTest, TestDeferAllScriptPreviewsEnabledByFeature) {
 #if !defined(OS_ANDROID)
   // For non-android, default is disabled.

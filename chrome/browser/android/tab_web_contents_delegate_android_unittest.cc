@@ -37,30 +37,30 @@ TEST(TabWebContentsDelegateAndroidTest,
      AdjustPreviewsStateForNavigationAllowsPreviews) {
   TestTabWebContentsDelegateAndroid browser_display_delegate(
       blink::mojom::DisplayMode::kBrowser);
-  blink::PreviewsState noscript_previews_state =
-      blink::PreviewsTypes::NOSCRIPT_ON;
-  browser_display_delegate.AdjustPreviewsStateForNavigation(
-      nullptr, &noscript_previews_state);
-  EXPECT_EQ(blink::PreviewsTypes::NOSCRIPT_ON, noscript_previews_state);
+  blink::PreviewsState previews_state =
+      blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON;
+  browser_display_delegate.AdjustPreviewsStateForNavigation(nullptr,
+                                                            &previews_state);
+  EXPECT_EQ(blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON, previews_state);
 }
 
 TEST(TabWebContentsDelegateAndroidTest,
      AdjustPreviewsStateForNavigationBlocksPreviews) {
   TestTabWebContentsDelegateAndroid standalone_display_delegate(
       blink::mojom::DisplayMode::kStandalone);
-  blink::PreviewsState noscript_previews_state =
-      blink::PreviewsTypes::NOSCRIPT_ON;
+  blink::PreviewsState previews_state_standalone =
+      blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON;
   standalone_display_delegate.AdjustPreviewsStateForNavigation(
-      nullptr, &noscript_previews_state);
-  EXPECT_EQ(blink::PreviewsTypes::PREVIEWS_OFF, noscript_previews_state);
+      nullptr, &previews_state_standalone);
+  EXPECT_EQ(blink::PreviewsTypes::PREVIEWS_OFF, previews_state_standalone);
 
   TestTabWebContentsDelegateAndroid minimal_ui_display_delegate(
       blink::mojom::DisplayMode::kMinimalUi);
-  blink::PreviewsState litepage_previews_state =
-      blink::PreviewsTypes::SERVER_LITE_PAGE_ON;
+  blink::PreviewsState previews_state_minimal =
+      blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON;
   minimal_ui_display_delegate.AdjustPreviewsStateForNavigation(
-      nullptr, &litepage_previews_state);
-  EXPECT_EQ(blink::PreviewsTypes::PREVIEWS_OFF, litepage_previews_state);
+      nullptr, &previews_state_minimal);
+  EXPECT_EQ(blink::PreviewsTypes::PREVIEWS_OFF, previews_state_minimal);
 }
 
 }  // namespace android

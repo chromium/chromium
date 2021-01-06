@@ -12097,11 +12097,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
              page"/>
   <suffix name="None" label="No optimization type"/>
   <suffix name="NoScript"
-      label="Disables the fetching and execution of JavaScript"/>
+      label="Disables the fetching and execution of JavaScript">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </suffix>
   <suffix name="PerformanceHints"
       label="Provides aggregated performance information about the page"/>
   <suffix name="ResourceLoading"
-      label="Applies a set of resource loading hints to load the page"/>
+      label="Applies a set of resource loading hints to load the page">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </suffix>
   <affected-histogram name="OptimizationGuide.ApplyDecision"/>
   <affected-histogram name="OptimizationGuide.ApplyDecisionAsync"/>
   <affected-histogram name="OptimizationGuide.OptimizationFilterStatus"/>
@@ -14519,14 +14527,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </suffix>
   <suffix name="None" label="No preview was served"/>
-  <suffix name="NoScript" label="NoScript previews"/>
+  <suffix name="NoScript" label="NoScript previews">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </suffix>
   <suffix name="Offline" label="Offline previews">
     <obsolete>
       Functionality removed in M86.
     </obsolete>
   </suffix>
   <suffix name="ResourceLoadingHints"
-      label="Resource loading hints based previews"/>
+      label="Resource loading hints based previews">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </suffix>
   <affected-histogram name="Previews.EligibilityReason"/>
   <affected-histogram name="Previews.InfoBarAction"/>
   <affected-histogram name="Previews.OmniboxAction"/>

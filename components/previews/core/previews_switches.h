@@ -14,7 +14,6 @@ bool ShouldIgnorePreviewsBlocklist();
 
 extern const char kDoNotRequireLitePageRedirectInfoBar[];
 extern const char kIgnorePreviewsBlocklist[];
-extern const char kForceEnablePreviews[];
 extern const char kEnableDeferAllScriptWithoutOptimizationHints[];
 
 }  // namespace switches

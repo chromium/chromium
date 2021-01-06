@@ -5441,11 +5441,6 @@ ChromeContentBrowserClient::DetermineAllowedPreviewsWithoutHoldback(
 
   DCHECK(previews_data);
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          previews::switches::kForceEnablePreviews)) {
-    return blink::ALL_SUPPORTED_PREVIEWS;
-  }
-
   // Evaluate client-side previews.
   previews_state |= previews::DetermineAllowedClientPreviewsState(
       previews_data, previews_triggering_logic_already_ran,

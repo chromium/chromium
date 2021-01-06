@@ -2069,7 +2069,6 @@ void DocumentLoader::ReportPreviewsIntervention() const {
     return;
 
   // Verify that certain types are not on main frame requests.
-  DCHECK_NE(PreviewsTypes::kClientLoFiAutoReload, previews_state_);
   DCHECK_NE(PreviewsTypes::kSubresourceRedirectOn, previews_state_);
 
   static_assert(PreviewsTypes::kPreviewsStateLast ==

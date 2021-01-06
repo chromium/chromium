@@ -77,14 +77,6 @@ PreviewsUKMObserver::OnCommit(content::NavigationHandle* navigation_handle,
   previews_likely_ = HasEnabledPreviews(previews_state);
 
   if (previews_state && previews::GetMainFramePreviewsType(previews_state) ==
-                            previews::PreviewsType::NOSCRIPT) {
-    noscript_seen_ = true;
-  }
-  if (previews_state && previews::GetMainFramePreviewsType(previews_state) ==
-                            previews::PreviewsType::RESOURCE_LOADING_HINTS) {
-    resource_loading_hints_seen_ = true;
-  }
-  if (previews_state && previews::GetMainFramePreviewsType(previews_state) ==
                             previews::PreviewsType::DEFER_ALL_SCRIPT) {
     defer_all_script_seen_ = true;
   }
@@ -92,12 +84,6 @@ PreviewsUKMObserver::OnCommit(content::NavigationHandle* navigation_handle,
     origin_opt_out_occurred_ = true;
   }
 
-  noscript_eligibility_reason_ =
-      previews_user_data->EligibilityReasonForPreview(
-          previews::PreviewsType::NOSCRIPT);
-  resource_loading_hints_eligibility_reason_ =
-      previews_user_data->EligibilityReasonForPreview(
-          previews::PreviewsType::RESOURCE_LOADING_HINTS);
   defer_all_script_eligibility_reason_ =
       previews_user_data->EligibilityReasonForPreview(
           previews::PreviewsType::DEFER_ALL_SCRIPT);
@@ -152,17 +138,13 @@ void PreviewsUKMObserver::RecordPreviewsTypes() {
       page_load_metrics::PageEndReason::PAGE_END_REASON_COUNT);
 
   // Only record previews types when they are active.
-  if (!noscript_seen_ && !resource_loading_hints_seen_ &&
-      !defer_all_script_seen_ && !origin_opt_out_occurred_ &&
+  if (!defer_all_script_seen_ && !origin_opt_out_occurred_ &&
       !save_data_enabled_) {
     return;
   }
 
   ukm::builders::Previews builder(GetDelegate().GetPageUkmSourceId());
-  if (noscript_seen_)
-    builder.Setnoscript(1);
-  if (resource_loading_hints_seen_)
-    builder.Setresource_loading_hints(1);
+
   if (defer_all_script_seen_)
     builder.Setdefer_all_script(1);
   // 2 is set here for legacy reasons as it denotes an optout through the
@@ -176,15 +158,6 @@ void PreviewsUKMObserver::RecordPreviewsTypes() {
   if (previews_likely_)
     builder.Setpreviews_likely(1);
 
-  if (ShouldOptionalEligibilityReasonBeRecorded(noscript_eligibility_reason_)) {
-    builder.Setnoscript_eligibility_reason(
-        static_cast<int>(noscript_eligibility_reason_.value()));
-  }
-  if (ShouldOptionalEligibilityReasonBeRecorded(
-          resource_loading_hints_eligibility_reason_)) {
-    builder.Setresource_loading_hints_eligibility_reason(
-        static_cast<int>(resource_loading_hints_eligibility_reason_.value()));
-  }
   if (ShouldOptionalEligibilityReasonBeRecorded(
           defer_all_script_eligibility_reason_)) {
     builder.Setdefer_all_script_eligibility_reason(
