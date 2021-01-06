@@ -7391,6 +7391,29 @@
             ]
         }
     ],
+    "TabLoadingFrameNavigationThrottle": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "FCPMultiple": "4.0",
+                        "MinimumThrottleTimeoutMilliseconds": "2000"
+                    },
+                    "enable_features": [
+                        "TabLoadingFrameNavigationThrottle"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabRanker": [
         {
             "platforms": [
