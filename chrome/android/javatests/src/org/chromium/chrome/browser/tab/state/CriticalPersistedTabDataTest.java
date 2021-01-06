@@ -252,4 +252,20 @@ public class CriticalPersistedTabDataTest {
                 CriticalPersistedTabData.getContentStateByteArray(
                         deserialized.getWebContentsState().buffer()));
     }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testOpenerAppIdNull() {
+        Tab tab = mockTab(TAB_ID, false);
+        CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
+                "", PARENT_ID, ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION, null,
+                THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
+        byte[] serialized = criticalPersistedTabData.serialize();
+        PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
+                ShoppingPersistedTabData.class, tab.isIncognito());
+        CriticalPersistedTabData deserialized =
+                new CriticalPersistedTabData(tab, serialized, config.getStorage(), config.getId());
+        Assert.assertEquals(null, deserialized.getOpenerAppId());
+    }
 }
