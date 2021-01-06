@@ -77,7 +77,9 @@ public class AccountManagerFacadeProvider {
     @CalledByNative
     public static AccountManagerFacade getInstance() {
         AccountManagerFacade instance = sAtomicInstance.get();
-        assert instance != null : "AccountManagerFacade is not initialized!";
+        if (instance == null) {
+            throw new IllegalStateException("AccountManagerFacade is not yet initialized!");
+        }
         return instance;
     }
 }

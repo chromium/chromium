@@ -31,6 +31,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.signin.AccountManagerDelegateException;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeImpl;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.test.util.AccountHolder;
@@ -221,6 +222,12 @@ public class AccountManagerFacadeRobolectricTest {
         assertChildAccountStatus(ucaAccount, ChildAccountStatus.REGULAR_CHILD);
         assertChildAccountStatus(usmAccount, ChildAccountStatus.USM_CHILD);
         assertChildAccountStatus(bothAccount, ChildAccountStatus.REGULAR_CHILD);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    @SmallTest
+    public void testAccountManagerFacadeProviderGetNullInstance() {
+        AccountManagerFacadeProvider.getInstance();
     }
 
     private Account addTestAccount(String accountEmail, String... features) {
