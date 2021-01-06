@@ -109,8 +109,6 @@
 
 namespace {
 
-const CGFloat kAccountProfilePhotoDimension = 40.0f;
-
 NSString* const kSyncAndGoogleServicesImageName = @"sync_and_google_services";
 NSString* const kSyncAndGoogleServicesSyncErrorImageName =
     @"sync_and_google_services_sync_error";

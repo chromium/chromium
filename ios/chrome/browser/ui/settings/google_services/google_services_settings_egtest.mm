@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#import "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_app_interface.h"
@@ -45,6 +47,16 @@ using chrome_test_util::SyncSettingsConfirmButton;
 @end
 
 @implementation GoogleServicesSettingsTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  // Adds the command-line switch to enable support for the BrowserSignin
+  // policy.
+  AppLaunchConfiguration config;
+  config.additional_args.push_back(std::string("--") +
+                                   switches::kInstallBrowserSigninHandler);
+  config.relaunch_policy = NoForceRelaunchAndResetState;
+  return config;
+}
 
 // Opens the Google services settings view, and closes it.
 - (void)testOpenGoogleServicesSettings {
@@ -310,6 +322,38 @@ using chrome_test_util::SyncSettingsConfirmButton;
 
   // Test the user is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that the sign-in button can't be used when sign-in is disabled.
+- (void)testSigninDisabled {
+  // Disable browser sign-in.
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSigninAllowed];
+
+  // Open Google services settings and verify the sign-in cell shows the
+  // "sign-in disabled" text.
+  [self openGoogleServicesSettings];
+  id<GREYMatcher> signinMatcher =
+      [self cellMatcherWithTitleID:IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE
+                      detailTextID:IDS_IOS_SETTINGS_SIGNIN_DISABLED];
+  [[EarlGrey selectElementWithMatcher:signinMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Attempt to tap the sign-in cell.
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [[EarlGrey selectElementWithMatcher:signinMatcher] performAction:grey_tap()];
+
+  // Verify the sync view isn't showing.
+  id<GREYMatcher> syncTitleMatcher = grey_allOf(
+      grey_accessibilityLabel(
+          GetNSString(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE)),
+      grey_kindOfClass([UILabel class]), grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:syncTitleMatcher]
+      assertWithMatcher:grey_nil()];
+
+  // Prefs clean-up.
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSigninAllowed];
 }
 
 #pragma mark - Helpers
