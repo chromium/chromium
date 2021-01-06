@@ -89,7 +89,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.AndroidServiceInfo"
-    enum="AccessibilityAndroidServiceInfoEnum" expires_after="M89">
+    enum="AccessibilityAndroidServiceInfoEnum" expires_after="M93">
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -136,7 +136,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ChromeVox.PerformGestureType"
-    enum="ChromeVoxGestureType" expires_after="M90">
+    enum="ChromeVoxGestureType" expires_after="M93">
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -182,7 +182,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosCaretHighlight" enum="BooleanEnabled"
-    expires_after="M90">
+    expires_after="M93">
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -192,7 +192,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosChromeVoxNext" enum="BooleanEnabled"
-    expires_after="M90">
+    expires_after="M93">
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -236,7 +236,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.ToggleDictationMethod"
-    enum="CrosDictationToggleDictationMethod" expires_after="M90">
+    enum="CrosDictationToggleDictationMethod" expires_after="M93">
   <owner>anastasi@google.com</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -255,7 +255,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosFocusHighlight" enum="BooleanEnabled"
-    expires_after="M90">
+    expires_after="M93">
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -276,7 +276,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosLargeCursor" enum="BooleanEnabled"
-    expires_after="M90">
+    expires_after="M93">
   <owner>dmazzoni@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -287,7 +287,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosLargeCursorSize" units="dip"
-    expires_after="M90">
+    expires_after="M93">
   <owner>yawano@chromium.org</owner>
   <owner>lpalmaro@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -403,7 +403,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosStickyKeys" enum="BooleanEnabled"
-    expires_after="M90">
+    expires_after="M93">
   <owner>dmazzoni@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>tengs@chromium.org</owner>
@@ -448,7 +448,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels" enum="BooleanEnabled"
-    expires_after="M89">
+    expires_after="M93">
   <owner>katie@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -740,7 +740,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ManuallyEnabled" enum="BooleanEnabled"
-    expires_after="M89">
+    expires_after="M93">
   <owner>dmazzoni@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -896,7 +896,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.WinAPIs" enum="AccessibilityWinAPIEnum"
-    expires_after="M89">
+    expires_after="M93">
   <owner>dmazzoni@chromium.org</owner>
   <owner>nektar@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -904,7 +904,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.WinAPIs.GetPropertyValue"
-    enum="AccessibilityWinAPIGetPropertyValueEnum" expires_after="M89">
+    enum="AccessibilityWinAPIGetPropertyValueEnum" expires_after="M93">
   <owner>dmazzoni@chromium.org</owner>
   <owner>nektar@chromium.org</owner>
   <owner>kbabbitt@microsoft.com</owner>
@@ -915,7 +915,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.WinAudioDescription" enum="BooleanEnabled"
-    expires_after="M89">
+    expires_after="M93">
   <owner>dmazzoni@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -926,7 +926,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.WinHighContrastTheme"
-    enum="AccessibilityHighContrastColorScheme" expires_after="M89">
+    enum="AccessibilityHighContrastColorScheme" expires_after="M93">
   <owner>dmazzoni@chromium.org</owner>
   <owner>almaher@microsoft.com</owner>
   <owner>weblayoutdev@microsoft.com</owner>
@@ -1034,6 +1034,108 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Whether the third-party ZoomText screen magnifier is running. Note: prefer
     Accessibility.WinZoomText.EveryReport when querying for unique users, as it
     is logged more frequently.
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Event" enum="TextToSpeechEvent"
+    expires_after="M93">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Events fired by the text-to-speech engine when speaking an utterance.
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Utterance.FromExtensionAPI"
+    enum="TextToSpeechFromExtensionAPI" expires_after="M93">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <summary>
+    Indicates if an utterance spoken via synthesized text-to-speech was
+    triggered by the Chrome TTS extension API or the web speech API.
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Utterance.HasGender" enum="TextToSpeechHasGender"
+    expires_after="M73">
+  <obsolete>
+    Obsolete as of M73 because we decided to remove gender from the API.
+  </obsolete>
+  <owner>dmazzoni@chromium.org</owner>
+  <summary>
+    True if an utterance spoken via synthesized text-to-speech requested a
+    specific gender.
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Utterance.HasLang" enum="TextToSpeechHasLang"
+    expires_after="M93">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <summary>
+    True if an utterance spoken via synthesized text-to-speech specified a
+    language code.
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Utterance.HasPitch" enum="TextToSpeechHasPitch"
+    expires_after="M93">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <summary>
+    True if an utterance spoken via synthesized text-to-speech requested a
+    specific pitch other than the default.
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Utterance.HasRate" enum="TextToSpeechHasRate"
+    expires_after="M93">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <summary>
+    True if an utterance spoken via synthesized text-to-speech requested a
+    specific speech rate other than the default.
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Utterance.HasVoiceName"
+    enum="TextToSpeechHasVoiceName" expires_after="M93">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <summary>
+    True if an utterance spoken via synthesized text-to-speech requested a
+    specific voice by name.
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Utterance.HasVolume" enum="TextToSpeechHasVolume"
+    expires_after="M93">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <summary>
+    True if an utterance spoken via synthesized text-to-speech requested a
+    specific volume other than the default.
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Utterance.Native" enum="TextToSpeechNative"
+    expires_after="M93">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <summary>
+    True if an utterance is spoken with native speech provided by the operating
+    system, otherwise it's spoken via a Chrome extension that implements
+    text-to-speech support.
+  </summary>
+</histogram>
+
+<histogram name="TextToSpeech.Utterance.TextLength" units="bytes"
+    expires_after="M93">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <summary>
+    The length of an utterance to be spoken via synthesized text-to-speech.
   </summary>
 </histogram>
 
