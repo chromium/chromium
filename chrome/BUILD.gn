@@ -1076,22 +1076,16 @@ if (is_win) {
   assert(_framework_binary_path != "",
          "Ignore configuration-dependent unused variable warning")
 
-  if (!is_asan && !is_component_build) {
+  if (!is_component_build) {
     action("verify_chrome_framework_order") {
-      script = "//chrome/tools/build/mac/run_verify_order.py"
+      script = "//chrome/tools/build/mac/verify_order.py"
       stamp_file = "$target_out_dir/run_$target_name.stamp"
-      inputs = [
-        script,
-        "//chrome/tools/build/mac/verify_order",
-      ]
+      inputs = [ script ]
       args = [
-        "--stamp",
-        rebase_path(stamp_file, root_out_dir),
-      ]
-      args += [
-        "_ChromeMain",
-        rebase_path(_framework_binary_path, root_out_dir),
-        mac_bin_path,
+        "--stamp=" + rebase_path(stamp_file, root_out_dir),
+        "--binary=" + rebase_path(_framework_binary_path, root_out_dir),
+        "--mac-bin-path=" + mac_bin_path,
+        "--symbol-file=" + rebase_path("app/framework.order", root_build_dir),
       ]
       outputs = [ stamp_file ]
       public_deps = [ ":chrome_framework" ]
