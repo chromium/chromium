@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/checked_math.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -136,11 +137,12 @@ void SetupFakeUpdater(const base::Version& version) {
 
 void SetupFakeUpdaterVersion(int offset) {
   ASSERT_NE(offset, 0);
-  base::Version self_version = base::Version(UPDATER_VERSION_STRING);
-  std::vector<uint32_t> components = self_version.components();
-  ASSERT_FALSE(offset < 0 && components[0] <= uint32_t{abs(offset)});
-  components[0] += offset;
-  SetupFakeUpdater(base::Version(components));
+  std::vector<uint32_t> components =
+      base::Version(UPDATER_VERSION_STRING).components();
+  base::CheckedNumeric<uint32_t> new_version = components[0];
+  new_version += offset;
+  ASSERT_TRUE(new_version.AssignIfValid(&components[0]));
+  SetupFakeUpdater(base::Version(std::move(components)));
 }
 
 void SetupFakeUpdaterLowerVersion() {
