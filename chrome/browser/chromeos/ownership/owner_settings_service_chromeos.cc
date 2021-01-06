@@ -739,7 +739,7 @@ void OwnerSettingsServiceChromeOS::ReloadKeypairImpl(
 
 void OwnerSettingsServiceChromeOS::StorePendingChanges() {
   if (!HasPendingChanges() || store_settings_factory_.HasWeakPtrs() ||
-      !device_settings_service_ || user_id_.empty()) {
+      !device_settings_service_ || user_id_.empty() || !IsOwner()) {
     return;
   }
 
