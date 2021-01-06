@@ -178,6 +178,12 @@ crbug.com/1103082 [ Linux ] fast/forms/select/select-change-layout-object-crash.
 # Sheriff 2020-10-08
 crbug.com/1136690 [ Linux ] http/tests/inspector-protocol/service-worker/service-worker-fetch-async-stacks.js [ Pass Timeout ]
 
+# Sheriff 2021-01-06
+crbug.com/1163172 [ Linux ] external/wpt/css/selectors/focus-visible-003.html [ Pass Failure ]
+crbug.com/1163172 [ Linux ] external/wpt/css/selectors/focus-visible-004.html [ Pass Failure ]
+crbug.com/1163172 [ Linux ] external/wpt/css/selectors/focus-visible-015.html [ Pass Failure ]
+crbug.com/1163172 [ Linux ] external/wpt/css/selectors/focus-visible-016.html [ Pass Failure ]
+
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #
