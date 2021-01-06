@@ -7,11 +7,14 @@
 #include <memory>
 #include <utility>
 
+#include "chromeos/ui/base/window_state_type.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/app_restore_data.h"
+#include "components/full_restore/window_info.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace full_restore {
 
@@ -37,6 +40,29 @@ const char kMimeType[] = "text/plain";
 
 const char kShareText1[] = "text1";
 const char kShareText2[] = "text2";
+
+const int32_t kActivationIndex1 = 100;
+const int32_t kActivationIndex2 = 101;
+const int32_t kActivationIndex3 = 102;
+
+const int32_t kDeskId1 = 1;
+const int32_t kDeskId2 = 2;
+const int32_t kDeskId3 = 3;
+
+const gfx::Rect kRestoreBounds1(10, 20, 110, 120);
+const gfx::Rect kRestoreBounds2(30, 40, 130, 140);
+const gfx::Rect kRestoreBounds3(50, 60, 150, 160);
+
+const gfx::Rect kCurrentBounds1(11, 21, 111, 121);
+const gfx::Rect kCurrentBounds2(31, 41, 131, 141);
+const gfx::Rect kCurrentBounds3(51, 61, 151, 161);
+
+const chromeos::WindowStateType kWindowStateType1 =
+    chromeos::WindowStateType::kMaximized;
+const chromeos::WindowStateType kWindowStateType2 =
+    chromeos::WindowStateType::kInactive;
+const chromeos::WindowStateType kWindowStateType3 =
+    chromeos::WindowStateType::kFullscreen;
 
 }  // namespace
 
@@ -87,12 +113,44 @@ class RestoreDataTest : public testing::Test {
     restore_data().AddAppLaunchInfo(std::move(app_launch_info3));
   }
 
+  void ModifyWindowInfos() {
+    WindowInfo window_info1;
+    window_info1.activation_index = kActivationIndex1;
+    window_info1.desk_id = kDeskId1;
+    window_info1.restore_bounds = kRestoreBounds1;
+    window_info1.current_bounds = kCurrentBounds1;
+    window_info1.window_state_type = kWindowStateType1;
+
+    WindowInfo window_info2;
+    window_info2.activation_index = kActivationIndex2;
+    window_info2.desk_id = kDeskId2;
+    window_info2.restore_bounds = kRestoreBounds2;
+    window_info2.current_bounds = kCurrentBounds2;
+    window_info2.window_state_type = kWindowStateType2;
+
+    WindowInfo window_info3;
+    window_info3.activation_index = kActivationIndex3;
+    window_info3.desk_id = kDeskId3;
+    window_info3.restore_bounds = kRestoreBounds3;
+    window_info3.current_bounds = kCurrentBounds3;
+    window_info3.window_state_type = kWindowStateType3;
+
+    restore_data().ModifyWindowInfo(kAppId1, kId1, window_info1);
+    restore_data().ModifyWindowInfo(kAppId1, kId2, window_info2);
+    restore_data().ModifyWindowInfo(kAppId2, kId3, window_info3);
+  }
+
   void VerifyAppRestoreData(const std::unique_ptr<AppRestoreData>& data,
                             apps::mojom::LaunchContainer container,
                             WindowOpenDisposition disposition,
                             int64_t display_id,
                             std::vector<base::FilePath> file_paths,
-                            apps::mojom::IntentPtr intent) {
+                            apps::mojom::IntentPtr intent,
+                            int32_t activation_index,
+                            int32_t desk_id,
+                            const gfx::Rect& restore_bounds,
+                            const gfx::Rect& current_bounds,
+                            chromeos::WindowStateType window_state_type) {
     EXPECT_TRUE(data->container.has_value());
     EXPECT_EQ(static_cast<int>(container), data->container.value());
 
@@ -111,6 +169,21 @@ class RestoreDataTest : public testing::Test {
     EXPECT_EQ(intent->action, data->intent.value()->action);
     EXPECT_EQ(intent->mime_type, data->intent.value()->mime_type);
     EXPECT_EQ(intent->share_text, data->intent.value()->share_text);
+
+    EXPECT_TRUE(data->activation_index.has_value());
+    EXPECT_EQ(activation_index, data->activation_index.value());
+
+    EXPECT_TRUE(data->desk_id.has_value());
+    EXPECT_EQ(desk_id, data->desk_id.value());
+
+    EXPECT_TRUE(data->restore_bounds.has_value());
+    EXPECT_EQ(restore_bounds, data->restore_bounds.value());
+
+    EXPECT_TRUE(data->current_bounds.has_value());
+    EXPECT_EQ(current_bounds, data->current_bounds.value());
+
+    EXPECT_TRUE(data->window_state_type.has_value());
+    EXPECT_EQ(window_state_type, data->window_state_type.value());
   }
 
   void VerifyRestoreData(const RestoreData& restore_data) {
@@ -131,7 +204,9 @@ class RestoreDataTest : public testing::Test {
         WindowOpenDisposition::NEW_WINDOW, kDisplayId1,
         std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                     base::FilePath(kFilePath2)},
-        CreateIntent(kIntentActionSend, kMimeType, kShareText1));
+        CreateIntent(kIntentActionSend, kMimeType, kShareText1),
+        kActivationIndex1, kDeskId1, kRestoreBounds1, kCurrentBounds1,
+        kWindowStateType1);
 
     const auto app_restore_data_it2 = launch_list_it1->second.find(kId2);
     EXPECT_TRUE(app_restore_data_it2 != launch_list_it1->second.end());
@@ -140,7 +215,9 @@ class RestoreDataTest : public testing::Test {
         apps::mojom::LaunchContainer::kLaunchContainerTab,
         WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId2,
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
-        CreateIntent(kIntentActionView, kMimeType, kShareText2));
+        CreateIntent(kIntentActionView, kMimeType, kShareText2),
+        kActivationIndex2, kDeskId2, kRestoreBounds2, kCurrentBounds2,
+        kWindowStateType2);
 
     // Verify for |kAppId2|
     const auto launch_list_it2 =
@@ -154,7 +231,9 @@ class RestoreDataTest : public testing::Test {
         apps::mojom::LaunchContainer::kLaunchContainerNone,
         WindowOpenDisposition::NEW_POPUP, kDisplayId2,
         std::vector<base::FilePath>{base::FilePath(kFilePath1)},
-        CreateIntent(kIntentActionView, kMimeType, kShareText1));
+        CreateIntent(kIntentActionView, kMimeType, kShareText1),
+        kActivationIndex3, kDeskId3, kRestoreBounds3, kCurrentBounds3,
+        kWindowStateType3);
   }
 
   RestoreData& restore_data() { return restore_data_; }
@@ -179,12 +258,13 @@ TEST_F(RestoreDataTest, AddNullAppLaunchInfo) {
 
 TEST_F(RestoreDataTest, AddAppLaunchInfos) {
   AddAppLaunchInfos();
-
+  ModifyWindowInfos();
   VerifyRestoreData(restore_data());
 }
 
 TEST_F(RestoreDataTest, Convert) {
   AddAppLaunchInfos();
+  ModifyWindowInfos();
   std::unique_ptr<base::Value> value =
       std::make_unique<base::Value>(restore_data().ConvertToValue());
   std::unique_ptr<RestoreData> restore_data =

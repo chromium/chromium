@@ -30,6 +30,7 @@ component("full_restore") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
+    "//chromeos/ui/base:base",
     "//components/account_id:account_id",
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/mojom",

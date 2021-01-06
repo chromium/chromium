@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/window_info.h"
 
 namespace full_restore {
 
@@ -89,6 +90,20 @@ void RestoreData::AddAppLaunchInfo(
   const int32_t id = app_launch_info->id.value();
   app_id_to_launch_list_[app_id][id] =
       std::make_unique<AppRestoreData>(std::move(app_launch_info));
+}
+
+void RestoreData::ModifyWindowInfo(const std::string& app_id,
+                                   int32_t id,
+                                   const WindowInfo& window_info) {
+  auto it = app_id_to_launch_list_.find(app_id);
+  if (it == app_id_to_launch_list_.end())
+    return;
+
+  auto data_it = it->second.find(id);
+  if (data_it == it->second.end())
+    return;
+
+  data_it->second->ModifyWindowInfo(window_info);
 }
 
 }  // namespace full_restore

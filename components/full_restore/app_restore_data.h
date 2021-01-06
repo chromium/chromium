@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/optional.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -21,6 +22,7 @@ class Value;
 namespace full_restore {
 
 struct AppLaunchInfo;
+struct WindowInfo;
 
 // This is the struct used by RestoreData to save both app launch parameters and
 // app window information. This struct can be converted to JSON format to be
@@ -28,11 +30,12 @@ struct AppLaunchInfo;
 struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   AppRestoreData();
   explicit AppRestoreData(base::Value&& value);
-
-  ~AppRestoreData();
+  explicit AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info);
 
   AppRestoreData(const AppRestoreData&) = delete;
   AppRestoreData& operator=(const AppRestoreData&) = delete;
+
+  ~AppRestoreData();
 
   std::unique_ptr<AppRestoreData> Clone() const;
 
@@ -53,7 +56,8 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   // }
   base::Value ConvertToValue() const;
 
-  AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info);
+  // Modify the window's information based on |window_info|.
+  void ModifyWindowInfo(const WindowInfo& window_info);
 
   // App launch parameters.
   base::Optional<int32_t> event_flag;
@@ -67,9 +71,9 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   // Window's information.
   base::Optional<int32_t> activation_index;
   base::Optional<int32_t> desk_id;
-  base::Optional<gfx::Rect> restored_bounds;
+  base::Optional<gfx::Rect> restore_bounds;
   base::Optional<gfx::Rect> current_bounds;
-  base::Optional<int32_t> window_state_type;
+  base::Optional<chromeos::WindowStateType> window_state_type;
 };
 
 }  // namespace full_restore

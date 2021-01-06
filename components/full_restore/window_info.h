@@ -6,6 +6,7 @@
 #define COMPONENTS_FULL_RESTORE_WINDOW_INFO_H_
 
 #include "base/optional.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -36,7 +37,7 @@ struct COMPONENT_EXPORT(FULL_RESTORE) WindowInfo {
   base::Optional<gfx::Rect> current_bounds;
 
   // Window state, minimized, maximized, inactive, etc.
-  base::Optional<int32_t> window_state_type;
+  base::Optional<chromeos::WindowStateType> window_state_type;
 };
 
 }  // namespace full_restore

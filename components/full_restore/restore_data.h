@@ -18,6 +18,7 @@ class Value;
 namespace full_restore {
 
 struct AppLaunchInfo;
+struct WindowInfo;
 
 // This class is responsible for saving all app launch and app windows
 // information. It can be converted to JSON format to be written to the
@@ -80,6 +81,12 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
 
   // Add |app_launch_info| to |app_id_to_launch_list_|.
   void AddAppLaunchInfo(std::unique_ptr<AppLaunchInfo> app_launch_info);
+
+  // Modify the window's information based on |window_info| for the window with
+  // |id| of the app with |app_id|.
+  void ModifyWindowInfo(const std::string& app_id,
+                        int32_t id,
+                        const WindowInfo& window_info);
 
   const AppIdToLaunchList& app_id_to_launch_list() const {
     return app_id_to_launch_list_;
