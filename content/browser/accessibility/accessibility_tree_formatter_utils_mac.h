@@ -29,7 +29,15 @@ class CONTENT_EXPORT LineIndexer final {
  private:
   void Build(const gfx::NativeViewAccessible node, int* counter);
 
-  std::map<const gfx::NativeViewAccessible, std::string> map;
+  struct NodeIdentifier {
+    std::string line_index;
+    std::string DOMid;
+  };
+
+  // Map between accessible objects and their identificators which can be a line
+  // index the object is placed at in an accessible tree or its DOM id
+  // attribute.
+  std::map<const gfx::NativeViewAccessible, NodeIdentifier> map;
 };
 
 // Implements stateful id values. Can be either id or be in

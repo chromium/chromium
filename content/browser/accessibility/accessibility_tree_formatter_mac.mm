@@ -51,7 +51,7 @@ const char kRangeLenDictAttr[] = "len";
 const char kSetKeyPrefixDictAttr[] = "_setkey_";
 const char kConstValuePrefix[] = "_const_";
 const char kNULLValue[] = "_const_NULL";
-const char kFailedToParseArgsError[] = "_const_ERROR:FAILED_TO_PARSE_ARGS";
+const char kFailedToParseError[] = "_const_ERROR:FAILED_TO_PARSE";
 
 }  // namespace
 
@@ -126,14 +126,11 @@ void AccessibilityTreeFormatterMac::EvaluateScripts(
       continue;
     }
 
-    std::string result;
-    if (value.IsError()) {
-      result = kFailedToParseArgsError;
-    } else {
-      result = FormatAttributeValue(PopulateObject(*value, line_indexer));
-    }
+    base::Value result = value.IsError() ? base::Value(kFailedToParseError)
+                                         : PopulateObject(*value, line_indexer);
+
     std::string code = property_node.original_property;
-    scripts.Append(code + "=" + result);
+    scripts.Append(code + "=" + FormatAttributeValue(result));
   }
   dict->SetPath(kScriptsDictAttr, std::move(scripts));
 }
@@ -188,7 +185,7 @@ void AccessibilityTreeFormatterMac::AddProperties(
     }
     if (value.IsError()) {
       dict->SetPath(property_node.original_property,
-                    base::Value(kFailedToParseArgsError));
+                    base::Value(kFailedToParseError));
       continue;
     }
     dict->SetPath(property_node.original_property,
