@@ -60,8 +60,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
 // Minimum height of the Discover feed content to indicate that the articles
 // have loaded.
 const CGFloat kDiscoverFeedLoadedHeight = 1000;
-// Delay before the CollectionView scrolls to the saved position.
-const CGFloat kDelayBeforeScrollingToSavedOffset = 0.3;
 }
 
 NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
@@ -954,25 +952,9 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
                        self.traitCollection.preferredContentSizeCategory) +
                    collection.contentInset.bottom));
     if (collection.contentOffset.y != offset) {
-      // Since the Discover feed uses a diffable data source its not completely
-      // loaded at this time, in order to make this work we need to add a short
-      // delay before scrolling.
-      if (IsDiscoverFeedEnabled()) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                     static_cast<int64_t>(
-                                         kDelayBeforeScrollingToSavedOffset *
-                                         NSEC_PER_SEC)),
-                       dispatch_get_main_queue(), ^{
-                         collection.contentOffset = CGPointMake(0, offset);
-                         // Update the constraints in case the omnibox needs to
-                         // be moved.
-                         [self updateConstraints];
-                       });
-      } else {
         collection.contentOffset = CGPointMake(0, offset);
         // Update the constraints in case the omnibox needs to be moved.
         [self updateConstraints];
-      }
     }
   }
   _initialContentOffset = NAN;
