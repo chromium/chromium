@@ -23,4 +23,6 @@ interface PepperPluginInstanceHost {
 
 // Plugin instance specific messages. Implemented by the renderer.
 interface PepperPluginInstance {
+  // Set the volume of a plugin. |volume| should be in the [0, 1] range.
+  SetVolume(double volume);
 };

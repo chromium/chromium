@@ -244,14 +244,6 @@ IPC_MESSAGE_ROUTED2(FrameMsg_CustomContextMenuAction,
                     content::CustomContextMenuContext /* custom_context */,
                     unsigned /* action */)
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-// This message notifies that the frame that the volume of the Pepper instance
-// for |pp_instance| should be changed to |volume|.
-IPC_MESSAGE_ROUTED2(FrameMsg_SetPepperVolume,
-                    int32_t /* pp_instance */,
-                    double /* volume */)
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 // -----------------------------------------------------------------------------
 // Messages sent from the renderer to the browser.
 

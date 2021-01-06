@@ -1883,6 +1883,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   void PepperInstanceClosed(int32_t instance_id);
+  void PepperSetVolume(int32_t instance_id, double volume);
 #endif
 
  protected:

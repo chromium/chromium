@@ -497,6 +497,9 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // Delete should be called by the WebPlugin before this destructor.
   ~PepperPluginInstanceImpl() override;
 
+  // mojom::PepperPluginInstance overrides:
+  void SetVolume(double volume) override;
+
   // Class to record document load notifications and play them back once the
   // real document loader becomes available. Used only by external instances.
   class ExternalDocumentLoader : public blink::WebAssociatedURLLoaderClient {

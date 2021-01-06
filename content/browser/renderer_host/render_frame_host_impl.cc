@@ -887,6 +887,8 @@ class PepperPluginInstanceHost : public mojom::PepperPluginInstanceHost {
     frame_host_->delegate()->OnPepperStopsPlayback(frame_host_, instance_id_);
   }
 
+  void SetVolume(double volume) { remote_->SetVolume(volume); }
+
  private:
   int32_t const instance_id_;
   RenderFrameHostImpl* const frame_host_;
@@ -10235,6 +10237,13 @@ void RenderFrameHostImpl::PepperInstanceClosed(int32_t instance_id) {
   delegate()->OnPepperInstanceDeleted(this, instance_id);
   pepper_instance_map_.erase(instance_id);
 }
+
+void RenderFrameHostImpl::PepperSetVolume(int32_t instance_id, double volume) {
+  auto plugin_instance_host = pepper_instance_map_.find(instance_id);
+  DCHECK(plugin_instance_host != pepper_instance_map_.end());
+  plugin_instance_host->second->SetVolume(volume);
+}
+
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 void RenderFrameHostImpl::OnCookiesAccessed(

@@ -94,8 +94,8 @@ RenderFrameHost* PepperPlayerDelegate::render_frame_host() const {
 }
 
 void PepperPlayerDelegate::SetVolume(int player_id, double volume) {
-  render_frame_host_->Send(new FrameMsg_SetPepperVolume(
-      render_frame_host_->GetRoutingID(), pp_instance_, volume));
+  static_cast<RenderFrameHostImpl*>(render_frame_host_)
+      ->PepperSetVolume(pp_instance_, volume);
 }
 
 bool PepperPlayerDelegate::HasAudio(int player_id) const {

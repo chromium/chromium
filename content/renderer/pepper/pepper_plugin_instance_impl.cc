@@ -3175,4 +3175,8 @@ void PepperPluginInstanceImpl::HandlePepperImeCommit(
   composition_text_.clear();
 }
 
+void PepperPluginInstanceImpl::SetVolume(double volume) {
+  audio_controller().SetVolume(volume);
+}
+
 }  // namespace content

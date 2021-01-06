@@ -2179,9 +2179,6 @@ bool RenderFrameImpl::OnMessageReceived(const IPC::Message& msg) {
     IPC_MESSAGE_HANDLER(FrameMsg_ContextMenuClosed, OnContextMenuClosed)
     IPC_MESSAGE_HANDLER(FrameMsg_CustomContextMenuAction,
                         OnCustomContextMenuAction)
-#if BUILDFLAG(ENABLE_PLUGINS)
-    IPC_MESSAGE_HANDLER(FrameMsg_SetPepperVolume, OnSetPepperVolume)
-#endif
     IPC_MESSAGE_HANDLER(UnfreezableFrameMsg_Delete, OnDeleteFrame)
   IPC_END_MESSAGE_MAP()
 
@@ -6290,12 +6287,6 @@ void RenderFrameImpl::PepperFocusChanged(PepperPluginInstanceImpl* instance,
   GetLocalRootWebFrameWidget()->UpdateSelectionBounds();
 }
 
-void RenderFrameImpl::OnSetPepperVolume(int32_t pp_instance, double volume) {
-  PepperPluginInstanceImpl* instance = static_cast<PepperPluginInstanceImpl*>(
-      PepperPluginInstance::Get(pp_instance));
-  if (instance)
-    instance->audio_controller().SetVolume(volume);
-}
 #endif  // ENABLE_PLUGINS
 
 blink::WebComputedAXTree* RenderFrameImpl::GetOrCreateWebComputedAXTree() {
