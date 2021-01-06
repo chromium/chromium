@@ -51,7 +51,8 @@ class ModuleRecordResolverImplTestModulator final : public DummyModulator {
     return KURL(base_url, module_request);
   }
 
-  ModuleScript* GetFetchedModuleScript(const KURL&) override;
+  ModuleScript* GetFetchedModuleScript(const KURL&,
+                                       ModuleType module_type) override;
 
   Member<ScriptState> script_state_;
   int get_fetched_module_script_called_ = 0;
@@ -66,7 +67,8 @@ void ModuleRecordResolverImplTestModulator::Trace(Visitor* visitor) const {
 }
 
 ModuleScript* ModuleRecordResolverImplTestModulator::GetFetchedModuleScript(
-    const KURL& url) {
+    const KURL& url,
+    ModuleType module_type) {
   get_fetched_module_script_called_++;
   fetched_url_ = url;
   return module_script_.Get();

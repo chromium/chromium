@@ -22,6 +22,7 @@ class ResourceFetcher;
 class SingleModuleClient;
 enum class ModuleGraphLevel;
 enum class ModuleScriptCustomFetchType;
+enum class ModuleType;
 
 // A ModuleMap implements "module map" spec.
 // https://html.spec.whatwg.org/C/#module-map
@@ -48,7 +49,7 @@ class CORE_EXPORT ModuleMap final : public GarbageCollected<ModuleMap>,
   // Synchronously get the ModuleScript for a given URL.
   // If the URL wasn't fetched, or is currently being fetched, this returns a
   // nullptr.
-  ModuleScript* GetFetchedModuleScript(const KURL&) const;
+  ModuleScript* GetFetchedModuleScript(const KURL&, ModuleType) const;
 
   Modulator* GetModulator() { return modulator_; }
 

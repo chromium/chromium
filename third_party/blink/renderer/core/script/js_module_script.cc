@@ -82,21 +82,30 @@ JSModuleScript* JSModuleScript::Create(
     //
     // <spec step="9.2">If url is failure, then:</spec>
     String failure_reason;
-    if (script->ResolveModuleSpecifier(requested.specifier, &failure_reason)
-            .IsValid())
-      continue;
+    bool module_specifier_is_valid =
+        script->ResolveModuleSpecifier(requested.specifier, &failure_reason)
+            .IsValid();
+    ModuleType module_type = modulator->ModuleTypeFromRequest(requested);
 
-    // <spec step="9.2.1">Let error be a new TypeError exception.</spec>
-    String error_message = "Failed to resolve module specifier \"" +
-                           requested.specifier + "\". " + failure_reason;
-    v8::Local<v8::Value> error =
-        V8ThrowException::CreateTypeError(isolate, error_message);
+    if (!module_specifier_is_valid || module_type == ModuleType::kInvalid) {
+      // <spec step="9.2.1">Let error be a new TypeError exception.</spec>
+      String error_message;
+      if (!module_specifier_is_valid) {
+        error_message = "Failed to resolve module specifier \"" +
+                        requested.specifier + "\". " + failure_reason;
+      } else {
+        error_message = "\"" + requested.GetModuleTypeString() +
+                        "\" is not a valid module type.";
+      }
+      v8::Local<v8::Value> error =
+          V8ThrowException::CreateTypeError(isolate, error_message);
 
-    // <spec step="9.2.2">Set script's parse error to error.</spec>
-    script->SetParseErrorAndClearRecord(ScriptValue(isolate, error));
+      // <spec step="9.2.2">Set script's parse error to error.</spec>
+      script->SetParseErrorAndClearRecord(ScriptValue(isolate, error));
 
-    // <spec step="9.2.3">Return script.</spec>
-    return script;
+      // <spec step="9.2.3">Return script.</spec>
+      return script;
+    }
   }
 
   // <spec step="11">Return script.</spec>

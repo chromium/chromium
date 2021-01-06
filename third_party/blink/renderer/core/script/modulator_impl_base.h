@@ -71,7 +71,7 @@ class ModulatorImplBase : public Modulator {
                    ModuleGraphLevel,
                    ModuleScriptCustomFetchType,
                    SingleModuleClient*) override;
-  ModuleScript* GetFetchedModuleScript(const KURL&) override;
+  ModuleScript* GetFetchedModuleScript(const KURL&, ModuleType) override;
   bool HasValidContext() override;
   KURL ResolveModuleSpecifier(const String& module_request,
                               const KURL& base_url,
@@ -92,6 +92,8 @@ class ModulatorImplBase : public Modulator {
   ScriptValue InstantiateModule(v8::Local<v8::Module>, const KURL&) override;
   Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
       v8::Local<v8::Module>) override;
+  ModuleType ModuleTypeFromRequest(
+      const ModuleRequest& module_request) const override;
 
   // Populates |reason| and returns true if the dynamic import is disallowed on
   // the associated execution context. In that case, a caller of this function

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/script/module_record_resolver_impl.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
 
@@ -92,17 +93,19 @@ v8::Local<v8::Module> ModuleRecordResolverImpl::Resolve(
   // <spec step="5">Let url be the result of resolving a module specifier given
   // base URL and specifier.</spec>
   KURL url = referrer_module->ResolveModuleSpecifier(module_request.specifier);
+  ModuleType child_module_type =
+      modulator_->ModuleTypeFromRequest(module_request);
 
   // <spec step="6">Assert: url is never failure, because resolving a module
   // specifier must have been previously successful with these same two
   // arguments ...</spec>
   DCHECK(url.IsValid());
+  CHECK_NE(child_module_type, ModuleType::kInvalid);
 
   // <spec step="7">Let resolved module script be moduleMap[url]. (This entry
   // must exist for us to have gotten to this point.)</spec>
-  // TODO(crbug.com/1132413): Use import assertions along with URL to get
-  // resolved module script.
-  ModuleScript* module_script = modulator_->GetFetchedModuleScript(url);
+  ModuleScript* module_script =
+      modulator_->GetFetchedModuleScript(url, child_module_type);
 
   // <spec step="8">Assert: resolved module script is a module script (i.e., is
   // not null or "fetching").</spec>

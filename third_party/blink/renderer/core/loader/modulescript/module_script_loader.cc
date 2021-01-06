@@ -269,7 +269,7 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
       module_script_ = ValueWrapperSyntheticModuleScript::
           CreateCSSWrapperSyntheticModuleScript(params, modulator_);
       break;
-    case ModuleType::kJavaScript: {
+    case ModuleType::kJavaScript:
       // Step 9. "Let source text be the result of UTF-8 decoding response's
       // body." [spec text]
       // Step 10. "Let module script be the result of creating
@@ -277,7 +277,8 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
       // response's url, and options." [spec text]
       module_script_ = JSModuleScript::Create(params, modulator_, options_);
       break;
-    };
+    case ModuleType::kInvalid:
+      NOTREACHED();
   }
 
   AdvanceState(State::kFinished);

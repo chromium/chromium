@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
 
 namespace blink {
@@ -100,7 +101,7 @@ void DummyModulator::FetchDescendantsForInlineScript(
   NOTREACHED();
 }
 
-ModuleScript* DummyModulator::GetFetchedModuleScript(const KURL&) {
+ModuleScript* DummyModulator::GetFetchedModuleScript(const KURL&, ModuleType) {
   NOTREACHED();
   return nullptr;
 }
@@ -167,6 +168,11 @@ Vector<ModuleRequest> DummyModulator::ModuleRequestsFromModuleRecord(
     v8::Local<v8::Module>) {
   NOTREACHED();
   return Vector<ModuleRequest>();
+}
+
+ModuleType DummyModulator::ModuleTypeFromRequest(
+    const ModuleRequest& module_request) const {
+  return ModuleType::kJavaScript;
 }
 
 ModuleScriptFetcher* DummyModulator::CreateModuleScriptFetcher(

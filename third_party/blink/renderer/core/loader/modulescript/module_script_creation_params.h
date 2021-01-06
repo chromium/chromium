@@ -19,7 +19,7 @@
 
 namespace blink {
 
-enum class ModuleType { kJavaScript, kJSON, kCSS };
+enum class ModuleType { kInvalid, kJavaScript, kJSON, kCSS };
 
 // ModuleScriptCreationParams contains parameters for creating ModuleScript.
 class ModuleScriptCreationParams {

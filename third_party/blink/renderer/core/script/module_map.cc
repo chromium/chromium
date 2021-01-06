@@ -142,7 +142,10 @@ void ModuleMap::FetchSingleModuleScript(
     entry->AddClient(client);
 }
 
-ModuleScript* ModuleMap::GetFetchedModuleScript(const KURL& url) const {
+ModuleScript* ModuleMap::GetFetchedModuleScript(const KURL& url,
+                                                ModuleType module_type) const {
+  // TODO(crbug.com/1132413) Make module type part of cache key and use
+  // module_type in this lookup.
   MapImpl::const_iterator it = map_.find(url);
   if (it == map_.end())
     return nullptr;

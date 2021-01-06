@@ -38,6 +38,7 @@ class ModuleRecordResolver;
 class ScriptPromiseResolver;
 class ScriptState;
 class ScriptValue;
+enum class ModuleType;
 
 // A SingleModuleClient is notified when single module script node (node as in a
 // module tree graph) load is complete and its corresponding entry is created in
@@ -161,7 +162,11 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // entry.
   // Note: returns nullptr if the module map entry doesn't exist, or
   // is still "fetching".
-  virtual ModuleScript* GetFetchedModuleScript(const KURL&) = 0;
+  // ModuleType indicates the resource type of the module script, e.g.
+  // JavaScript, JSON, or CSS. This is used as part of the module map cache key
+  // alongside the URL, so both are needed to retrieve the correct module. See
+  // https://github.com/whatwg/html/pull/5883
+  virtual ModuleScript* GetFetchedModuleScript(const KURL&, ModuleType) = 0;
 
   // https://html.spec.whatwg.org/C/#resolve-a-module-specifier
   virtual KURL ResolveModuleSpecifier(const String& module_request,
@@ -194,6 +199,9 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
 
   virtual Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
       v8::Local<v8::Module>) = 0;
+
+  virtual ModuleType ModuleTypeFromRequest(
+      const ModuleRequest& module_request) const = 0;
 
   virtual ModuleScriptFetcher* CreateModuleScriptFetcher(
       ModuleScriptCustomFetchType,

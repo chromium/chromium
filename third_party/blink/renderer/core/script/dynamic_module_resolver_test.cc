@@ -58,7 +58,8 @@ class DynamicModuleResolverTestModulator final : public DummyModulator {
   // Implements Modulator:
   ScriptState* GetScriptState() final { return script_state_; }
 
-  ModuleScript* GetFetchedModuleScript(const KURL& url) final {
+  ModuleScript* GetFetchedModuleScript(const KURL& url,
+                                       ModuleType module_type) final {
     EXPECT_EQ(TestReferrerURL(), url);
     ModuleScript* module_script =
         JSModuleScript::CreateForTest(this, v8::Local<v8::Module>(), url);

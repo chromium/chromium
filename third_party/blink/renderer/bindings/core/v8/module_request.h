@@ -36,6 +36,8 @@ struct ModuleRequest {
       : specifier(specifier),
         position(position),
         import_assertions(import_assertions) {}
+
+  String GetModuleTypeString() const;
 };
 
 }  // namespace blink

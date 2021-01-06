@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS Test that no error occurs when an empty import assertion clause is provided.
+Harness: the test ran to completion.
+

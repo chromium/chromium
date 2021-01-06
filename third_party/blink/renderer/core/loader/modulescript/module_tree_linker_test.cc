@@ -139,7 +139,8 @@ class ModuleTreeLinkerTestModulator final : public DummyModulator {
     pending_clients_.Set(request.Url(), client);
   }
 
-  ModuleScript* GetFetchedModuleScript(const KURL& url) override {
+  ModuleScript* GetFetchedModuleScript(const KURL& url,
+                                       ModuleType module_type) override {
     const auto& it = module_map_.find(url);
     if (it == module_map_.end())
       return nullptr;

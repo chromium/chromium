@@ -632,6 +632,11 @@
     "args": ["--enable-blink-features=CSSModules"]
   },
   {
+    "prefix": "import-assertions",
+    "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/import-assertions"],
+    "args": ["--js-flags=--harmony-import-assertions"]
+  },
+  {
     "prefix": "import-maps-disabled",
     "bases": ["external/wpt/import-maps/not-as-classic-script.html"],
     "args": ["--disable-blink-features=ImportMaps"]

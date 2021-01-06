@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_request.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker_registry.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
@@ -388,12 +389,16 @@ void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
     // <spec step="5.1">Let url be the result of resolving a module specifier
     // given module script's base URL and requested.</spec>
     KURL url = module_script->ResolveModuleSpecifier(module_request.specifier);
+    ModuleType module_type = modulator_->ModuleTypeFromRequest(module_request);
 
     // <spec step="5.2">Assert: url is never failure, because resolving a module
     // specifier must have been previously successful with these same two
     // arguments.</spec>
     CHECK(url.IsValid()) << "ModuleScript::ResolveModuleSpecifier() impl must "
                             "return a valid url.";
+    CHECK_NE(module_type, ModuleType::kInvalid);
+    // TODO(crbug.com/1132413) Collect module types alongside URLs to include in
+    // visited_set_ and each ModuleScriptFetchRequest.
 
     // <spec step="5.3">If visited set does not contain url, then:</spec>
     if (!visited_set_.Contains(url)) {
@@ -583,6 +588,8 @@ ScriptValue ModuleTreeLinker::FindFirstParseError(
     // moduleScript's base URL and that item. ...</spec>
     KURL child_url =
         module_script->ResolveModuleSpecifier(module_request.specifier);
+    ModuleType child_module_type =
+        modulator_->ModuleTypeFromRequest(module_request);
 
     // <spec step="5.2">... (None of these will ever fail, as otherwise
     // moduleScript would have been marked as itself having a parse
@@ -590,13 +597,14 @@ ScriptValue ModuleTreeLinker::FindFirstParseError(
     CHECK(child_url.IsValid())
         << "ModuleScript::ResolveModuleSpecifier() impl must "
            "return a valid url.";
+    CHECK_NE(child_module_type, ModuleType::kInvalid);
 
     // <spec step="5.3">Let childModules be the list obtained by getting each
     // value in moduleMap whose key is given by an item of childURLs.</spec>
     //
     // <spec step="5.4">For each childModule of childModules:</spec>
     const ModuleScript* child_module =
-        modulator_->GetFetchedModuleScript(child_url);
+        modulator_->GetFetchedModuleScript(child_url, child_module_type);
 
     // <spec step="5.4.1">Assert: childModule is a module script (i.e., it is
     // not "fetching" or null); ...</spec>
