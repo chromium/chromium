@@ -247,6 +247,8 @@ struct FulfillTrustTokenIssuanceRequest {
 // because the Java bindings append the suffix "Response" when generating
 // callback names.
 struct FulfillTrustTokenIssuanceAnswer {
+  // WARNING: Since these values are committed to histograms, please do not
+  // remove or reorder entries.
   enum Status {
     kOk,
     // It wasn't possible to route the issuance operation to the specified

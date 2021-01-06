@@ -32839,6 +32839,12 @@ Called by update_feature_policy_enum.py.-->
   <int value="2" label="Failed / credentials rejected"/>
 </enum>
 
+<enum name="FulfillTrustTokenIssuanceAnswerStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="NotFound"/>
+  <int value="2" label="UnknownError"/>
+</enum>
+
 <enum name="FuseZipError">
   <int value="0" label="Success">Hardcoded in fuse-zip</int>
   <int value="11" label="Multipart ZIP">

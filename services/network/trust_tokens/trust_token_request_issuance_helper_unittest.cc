@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/no_destructor.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -694,6 +695,8 @@ class TrustTokenRequestIssuanceHelperTestWithPlatformIssuance
 
 TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
        DiversionToOsSuccess) {
+  base::HistogramTester histograms;
+
   // When an operation's diverted to the operating system and succeeds, we
   // should report kOperationSuccessfullyFulfilledLocally.
   std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
@@ -761,6 +764,11 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
   EXPECT_THAT(
       store->RetrieveMatchingTokens(issuer, std::move(match_all_keys)),
       ElementsAre(Property(&TrustToken::body, "a signed, unblinded token")));
+
+  histograms.ExpectUniqueSample(
+      "Net.TrustTokens.IssuanceHelperLocalFulfillResult",
+      mojom::FulfillTrustTokenIssuanceAnswer::Status::kOk,
+      /*expected_count=*/1);
 }
 
 TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
@@ -900,6 +908,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
 
 TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
        DivertsToAndroidOnAndroid) {
+  base::HistogramTester histograms;
+
   // Test that, when an issuer specifies that we should attempt issuance locally
   // on Android, we do so.
   std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
@@ -962,6 +972,13 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
             mojom::TrustTokenOperationStatus::kUnavailable
 #endif  // defined(OS_ANDROID)
   );
+
+#if defined(OS_ANDROID)
+  histograms.ExpectUniqueSample(
+      "Net.TrustTokens.IssuanceHelperLocalFulfillResult",
+      mojom::FulfillTrustTokenIssuanceAnswer::Status::kUnknownError,
+      /*expected_count=*/1);
+#endif  // defined(OS_ANDROID)
 }
 
 }  // namespace network

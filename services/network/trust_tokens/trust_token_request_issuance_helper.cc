@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/task/thread_pool.h"
 #include "net/base/load_flags.h"
@@ -351,6 +352,8 @@ void TrustTokenRequestIssuanceHelper::OnDoneProcessingIssuanceResponse(
 void TrustTokenRequestIssuanceHelper::DoneRequestingLocallyFulfilledIssuance(
     base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
     mojom::FulfillTrustTokenIssuanceAnswerPtr answer) {
+  base::UmaHistogramEnumeration(
+      "Net.TrustTokens.IssuanceHelperLocalFulfillResult", answer->status);
   switch (answer->status) {
     case mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound: {
       std::move(done).Run(mojom::TrustTokenOperationStatus::kUnavailable);
