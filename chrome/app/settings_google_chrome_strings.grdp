@@ -156,6 +156,9 @@
   <message name="IDS_SETTINGS_PROFILE_NAME_AND_PICTURE" desc="Label of the link that takes you to the page to edit your name and picture for your chrome profile.">
     Chrome name and picture
   </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_YOUR_CHROME_PROFILE" desc="Label of the link that takes you to the page to customize your chrome profile.">
+    Customize your Chrome profile
+  </message>
 </if>
   <message name="IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT" desc="The secondary text displayed to prompt users to enable sync for an account that is alredy present in Chrome.">
     Sync and personalize Chrome across your devices

@@ -1202,8 +1202,6 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
      IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"accountManagerSubMenuLabel", IDS_SETTINGS_ACCOUNT_MANAGER_SUBMENU_LABEL},
-#else
-    {"profileNameAndPicture", IDS_SETTINGS_PROFILE_NAME_AND_PICTURE},
 #endif
 
   // Manage profile strings:
@@ -1243,6 +1241,11 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddBoolean("profileShortcutsEnabled",
                           ProfileShortcutManager::IsFeatureEnabled());
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+  html_source->AddLocalizedString(
+      "profileNameAndPicture",
+      base::FeatureList::IsEnabled(features::kNewProfilePicker)
+          ? IDS_SETTINGS_CUSTOMIZE_YOUR_CHROME_PROFILE
+          : IDS_SETTINGS_PROFILE_NAME_AND_PICTURE);
   html_source->AddLocalizedString(
       "editPerson", base::FeatureList::IsEnabled(features::kNewProfilePicker)
                         ? IDS_SETTINGS_CUSTOMIZE_PROFILE
