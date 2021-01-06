@@ -64,6 +64,8 @@ WaylandDataDragController::WaylandDataDragController(
   DCHECK(window_manager_);
   DCHECK(data_device_manager_);
   DCHECK(data_device_);
+
+  window_manager_->AddObserver(this);
 }
 
 WaylandDataDragController::~WaylandDataDragController() = default;
@@ -183,16 +185,15 @@ void WaylandDataDragController::OnDragMotion(const gfx::PointF& location) {
 }
 
 void WaylandDataDragController::OnDragLeave() {
-  if (!window_)
-    return;
-
   if (state_ == State::kTransferring) {
     // We cannot leave until the transfer is finished.  Postponing.
     is_leave_pending_ = true;
     return;
   }
 
-  window_->OnDragLeave();
+  if (window_)
+    window_->OnDragLeave();
+
   window_ = nullptr;
   data_offer_.reset();
   is_leave_pending_ = false;
@@ -239,6 +240,11 @@ void WaylandDataDragController::OnDataSourceSend(const std::string& mime_type,
     LOG(WARNING) << "Cannot deliver data of type " << mime_type
                  << " and no text representation is available.";
   }
+}
+
+void WaylandDataDragController::OnWindowRemoved(WaylandWindow* window) {
+  if (window == window_)
+    window_ = nullptr;
 }
 
 void WaylandDataDragController::Offer(const OSExchangeData& data,

@@ -15,6 +15,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
 
 struct wl_surface;
 class SkBitmap;
@@ -56,7 +57,8 @@ class WaylandShmBuffer;
 // event stops the transfer and cancels the operation; the window will not
 // receive anything at all.
 class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
-                                  public WaylandDataSource::Delegate {
+                                  public WaylandDataSource::Delegate,
+                                  public WaylandWindowObserver {
  public:
   enum class State {
     kIdle,          // Doing nothing special
@@ -102,6 +104,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   void OnDataSourceFinish(bool completed) override;
   void OnDataSourceSend(const std::string& mime_type,
                         std::string* contents) override;
+
+  // WaylandWindowObserver:
+  void OnWindowRemoved(WaylandWindow* window) override;
 
   void Offer(const OSExchangeData& data, int operation);
   void CreateIconSurfaceIfNeeded(const OSExchangeData& data);
