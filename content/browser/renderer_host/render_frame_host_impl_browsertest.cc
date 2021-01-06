@@ -6360,4 +6360,21 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
             web_contents()->GetFaviconURLs()[0]->icon_url.path());
 }
 
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       GetCrossOriginIsolationStatus) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+  EXPECT_EQ(RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated,
+            root_frame_host()->GetCrossOriginIsolationStatus());
+
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/set-header?"
+                                "Cross-Origin-Opener-Policy: same-origin&"
+                                "Cross-Origin-Embedder-Policy: require-corp")));
+  // Status can be kIsolated or kMaybeIsolated.
+  EXPECT_NE(RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated,
+            root_frame_host()->GetCrossOriginIsolationStatus());
+}
+
 }  // namespace content

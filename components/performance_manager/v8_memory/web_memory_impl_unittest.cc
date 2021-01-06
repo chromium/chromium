@@ -45,10 +45,11 @@ class FakeSecurityChecker : public WebMeasureMemorySecurityChecker {
 
   void CheckMeasureMemoryIsAllowed(
       const FrameNode* frame_node,
-      base::OnceClosure measure_memory_closure,
+      MeasureMemoryCallback measure_memory_callback,
       mojo::ReportBadMessageCallback bad_message_callback) const override {
     if (allowed_) {
-      std::move(measure_memory_closure).Run();
+      std::move(measure_memory_callback)
+          .Run(FrameNodeImpl::FromNode(frame_node)->GetWeakPtr());
     } else {
       std::move(bad_message_callback).Run("disallowed");
     }

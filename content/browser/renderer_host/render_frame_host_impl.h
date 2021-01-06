@@ -320,6 +320,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const base::Optional<gfx::Size>& GetFrameSize() override;
   size_t GetFrameDepth() override;
   bool IsCrossProcessSubframe() override;
+  CrossOriginIsolationStatus GetCrossOriginIsolationStatus() override;
   const GURL& GetLastCommittedURL() override;
   const url::Origin& GetLastCommittedOrigin() override;
   const net::NetworkIsolationKey& GetNetworkIsolationKey() override;

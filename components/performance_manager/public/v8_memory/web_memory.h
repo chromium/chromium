@@ -8,10 +8,8 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/types/pass_key.h"
+#include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/mojom/web_memory.mojom.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
 
@@ -28,16 +26,25 @@ namespace v8_memory {
 // performance.measureMemory without them.
 class WebMeasureMemorySecurityChecker {
  public:
+  // A callback that starts the memory measurement if the security check
+  // succeeds. The FrameNode that requested the measurement is included as a
+  // WeakPtr parameter because the security check might be done on another
+  // sequence, and the frame might be destroyed before the callback is invoked
+  // on the PM sequence.
+  using MeasureMemoryCallback =
+      base::OnceCallback<void(base::WeakPtr<FrameNode>)>;
+
   virtual ~WebMeasureMemorySecurityChecker() = default;
 
   // Creates a WebMeasureMemorySecurityChecker for production use.
   static std::unique_ptr<WebMeasureMemorySecurityChecker> Create();
 
-  // Invokes |measure_memory_closure| on the PM sequence if |frame| is allowed
-  // to call WebMeasureMemory, |bad_message_callback| otherwise.
+  // Invokes |measure_memory_callback| with |frame| as a parameter on the PM
+  // sequence if |frame| is allowed to call WebMeasureMemory,
+  // |bad_message_callback| otherwise.
   virtual void CheckMeasureMemoryIsAllowed(
       const FrameNode* frame,
-      base::OnceClosure measure_memory_closure,
+      MeasureMemoryCallback measure_memory_callback,
       mojo::ReportBadMessageCallback bad_message_callback) const = 0;
 };
 
@@ -50,6 +57,8 @@ class WebMeasureMemorySecurityChecker {
 // |security_checker|. If so, measures memory usage of each frame in
 // |frame_node|'s browsing context group and invokes |result_callback| with the
 // result; if not, invokes |bad_message_callback|.
+//
+// This must be called on the PM sequence.
 void WebMeasureMemory(
     const FrameNode* frame_node,
     mojom::WebMemoryMeasurement::Mode mode,

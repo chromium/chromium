@@ -49,6 +49,7 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/contacts/contacts_manager_impl.h"
+#include "content/browser/coop_coep_cross_origin_isolated_info.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/protocol/audits.h"
@@ -1594,6 +1595,20 @@ bool RenderFrameHostImpl::IsCrossProcessSubframe() {
   if (!parent_)
     return false;
   return GetSiteInstance() != parent_->GetSiteInstance();
+}
+
+RenderFrameHost::CrossOriginIsolationStatus
+RenderFrameHostImpl::GetCrossOriginIsolationStatus() {
+  ProcessLock process_lock = GetSiteInstance()->GetProcessLock();
+  if (process_lock.is_invalid() ||
+      !process_lock.coop_coep_cross_origin_isolated_info().is_isolated()) {
+    // Cross-origin isolated frames must be hosted in cross-origin isolated
+    // processes.
+    return RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated;
+  }
+  // TODO(crbug.com/1159832): Check the document policy once it's available to
+  // find out if this frame is actually isolated.
+  return RenderFrameHost::CrossOriginIsolationStatus::kMaybeIsolated;
 }
 
 const GURL& RenderFrameHostImpl::GetLastCommittedURL() {

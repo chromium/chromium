@@ -15,7 +15,13 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/public/render_frame_host_proxy.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -84,6 +90,33 @@ WebMeasurementModeToRequestMeasurementMode(
   }
 }
 
+// Checks if the frame referenced by |rfh_proxy| is crossOriginIsolated. If so,
+// invokes |measure_memory_callback| on the PM sequences. If not, invokes
+// |bad_message_callback| instead. If the frame disappears at any point, does
+// nothing.
+void CheckIsCrossOriginIsolatedOnUISeq(
+    const RenderFrameHostProxy& rfh_proxy,
+    WebMeasureMemorySecurityChecker::MeasureMemoryCallback
+        measure_memory_callback,
+    mojo::ReportBadMessageCallback bad_message_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content::RenderFrameHost* rfh = rfh_proxy.Get();
+  if (!rfh) {
+    // Frame was deleted before the task ran.
+    return;
+  }
+  if (rfh->GetCrossOriginIsolationStatus() ==
+      content::RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated) {
+    std::move(bad_message_callback)
+        .Run("Requesting frame must be cross-origin isolated.");
+    return;
+  }
+  PerformanceManager::CallOnGraph(
+      FROM_HERE,
+      base::BindOnce(std::move(measure_memory_callback),
+                     PerformanceManager::GetFrameNodeForRenderFrameHost(rfh)));
+}
+
 }  // anonymous namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,9 +133,14 @@ WebMemoryMeasurer::WebMemoryMeasurer(
 WebMemoryMeasurer::~WebMemoryMeasurer() = default;
 
 // static
-void WebMemoryMeasurer::MeasureMemory(const FrameNode* frame_node,
-                                      mojom::WebMemoryMeasurement::Mode mode,
-                                      MeasurementCallback callback) {
+void WebMemoryMeasurer::MeasureMemory(mojom::WebMemoryMeasurement::Mode mode,
+                                      MeasurementCallback callback,
+                                      base::WeakPtr<FrameNode> frame_node) {
+  if (!frame_node) {
+    // Frame was deleted while validating it on the UI sequence.
+    return;
+  }
+
   // Can't use make_unique with a private constructor.
   auto measurer = base::WrapUnique(new WebMemoryMeasurer(
       frame_node->GetFrameToken(),
@@ -138,7 +176,7 @@ WebMeasureMemorySecurityChecker::Create() {
 
 void WebMeasureMemorySecurityCheckerImpl::CheckMeasureMemoryIsAllowed(
     const FrameNode* frame,
-    base::OnceClosure measure_memory_closure,
+    MeasureMemoryCallback measure_memory_callback,
     mojo::ReportBadMessageCallback bad_message_callback) const {
   DCHECK(frame);
   DCHECK_ON_GRAPH_SEQUENCE(frame->GetGraph());
@@ -164,10 +202,11 @@ void WebMeasureMemorySecurityCheckerImpl::CheckMeasureMemoryIsAllowed(
         .Run("performance.measureMemory called from cross-origin subframe");
     return;
   }
-  // TODO(crbug/1085129): Check crossOriginIsolated once this is available in
-  // the browser. This will need to be done on the UI sequence, and return the
-  // result to the PM sequence to run the closure.
-  std::move(measure_memory_closure).Run();
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&CheckIsCrossOriginIsolatedOnUISeq,
+                                frame->GetRenderFrameHostProxy(),
+                                std::move(measure_memory_callback),
+                                std::move(bad_message_callback)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -187,7 +226,7 @@ void WebMeasureMemory(
   // measurement.
   security_checker->CheckMeasureMemoryIsAllowed(
       frame_node,
-      base::BindOnce(&WebMemoryMeasurer::MeasureMemory, frame_node, mode,
+      base::BindOnce(&WebMemoryMeasurer::MeasureMemory, mode,
                      std::move(result_callback)),
       std::move(bad_message_callback));
 }

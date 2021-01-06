@@ -251,6 +251,61 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Returns true if the frame is out of process.
   virtual bool IsCrossProcessSubframe() = 0;
 
+  // Indicates whether this frame is in a cross-origin isolated agent cluster.
+  // See [1] and [2] for a description of what this means for web content.
+  // Specifically, an agent cluster may be cross-origin isolated if:
+  // - its top-level document has "Cross-Origin-Opener-Policy: same-origin" and
+  //   "Cross-Origin-Embedder-Policy: require-corp" HTTP headers; or,
+  // - its top-level worker script has a
+  //   "Cross-Origin-Embedder-Policy: require-corp" HTTP header.
+  //
+  // In practice this means that the frame is guaranteed to be hosted in a
+  // process that is isolated to the frame's origin. The process may also host
+  // cross-origin frames and workers only if they have opted in to being
+  // embedded with CORS or CORP headers.
+  //
+  // Certain advanced web platform APIs are gated behind this property. It will
+  // correspond to the value returned by accessing
+  // "WindowOrWorkerGlobalScope.crossOriginIsolated" in Javascript.
+  //
+  // NOTE: some of the information needed to fully determine a frame's
+  // cross-isolation status is currently not available in the browser process.
+  // Access to web platform API's must be checked in the renderer, with the
+  // CrossOriginIsolationStatus on the browser side only used as a backup to
+  // catch misbehaving renderers.
+  //
+  // [1]
+  // https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/crossOriginIsolated
+  // [2] https://w3c.github.io/webappsec-permissions-policy/
+  enum class CrossOriginIsolationStatus {
+    // The frame is in a cross-origin isolated process and agent cluster.
+    // It is allowed to call web platform API's gated behind the
+    // crossOriginIsolated property.
+    kIsolated,
+
+    // The frame is not in a cross-origin isolated agent cluster. It may be
+    // hosted in a cross-origin isolated process but it is not allowed to call
+    // web platform API's gated behind the crossOriginIsolated property.
+    kNotIsolated,
+
+    // The frame is in a cross-origin isolated process, but it's not possible
+    // to determine whether it's in a cross-origin isolated agent cluster. The
+    // browser process should not prevent it from calling web platform API's
+    // gated behind the crossOriginIsolated property because it may be allowed.
+    // TODO(clamy): Remove this status once the document policy is available on
+    // the browser side.
+    kMaybeIsolated,
+  };
+
+  // Returns whether the frame is in a cross-origin isolated agent cluster.
+  //
+  // Note that this is a property of the document so can change as the frame
+  // navigates.
+  //
+  // TODO(https://936696): Once RenderDocument ships this should be exposed as
+  // an invariant of the document host.
+  virtual CrossOriginIsolationStatus GetCrossOriginIsolationStatus() = 0;
+
   // Returns the last committed URL of the frame.
   virtual const GURL& GetLastCommittedURL() = 0;
 
