@@ -83,6 +83,15 @@ class ASH_EXPORT CaptureModeController
   // Stops an existing capture session.
   void Stop();
 
+  // Sets the user capture region. If it's non-empty and changed by the user,
+  // update |last_capture_region_update_time_|.
+  void SetUserCaptureRegion(const gfx::Rect& region, bool by_user);
+
+  // Full screen capture for each available display if no restricted
+  // content exists on that display, each capture is saved as an individual
+  // file. Note: this won't start a capture mode session.
+  void CaptureScreenshotsOfAllDisplays();
+
   // Called only while a capture session is in progress to perform the actual
   // capture depending on the current selected |source_| and |type_|, and ends
   // the capture session.
@@ -150,14 +159,15 @@ class ASH_EXPORT CaptureModeController
   // the capture session is still active when called, so they can retrieve the
   // capture parameters they need. They will end the sessions themselves.
   // They should never be called if IsCaptureAllowed() returns false.
-  void CaptureImage(const CaptureParams& capture_params);
+  void CaptureImage(const CaptureParams& capture_params,
+                    const base::FilePath& path);
   void CaptureVideo(const CaptureParams& capture_params);
 
   // Called back when an image has been captured to trigger an attempt to save
   // the image as a file. |timestamp| is the time at which the capture was
-  // triggered, and |png_bytes| is the buffer containing the captured image in a
+  // triggered, |png_bytes| is the buffer containing the captured image in a
   // PNG format.
-  void OnImageCaptured(base::Time timestamp,
+  void OnImageCaptured(const base::FilePath& path,
                        scoped_refptr<base::RefCountedMemory> png_bytes);
 
   // Called back when an attempt to save the image file has been completed, with
@@ -189,13 +199,17 @@ class ASH_EXPORT CaptureModeController
                                  base::Optional<int> button_index);
 
   // Builds a path for a file of an image screenshot, or a video screen
-  // recording, which were taken at |timestamp|.
-  base::FilePath BuildImagePath(base::Time timestamp) const;
-  base::FilePath BuildVideoPath(base::Time timestamp) const;
-  // Used by the above two functions by providing the corresponding file name
-  // |format_string| to a capture type (image or video).
-  base::FilePath BuildPath(const char* const format_string,
-                           base::Time timestamp) const;
+  // recording, builds with display index if there are
+  // multiple displays.
+  base::FilePath BuildImagePath() const;
+  base::FilePath BuildVideoPath() const;
+  base::FilePath BuildImagePathForDisplay(int display_index) const;
+  // Used by the above three functions by providing the corresponding file name
+  // |format_string| to a capture type (image or video). The returned file path
+  // excludes the file extension. The above functions are responsible for adding
+  // it.
+  base::FilePath BuildPathNoExtension(const char* const format_string,
+                                      base::Time timestamp) const;
 
   // Records the number of screenshots taken.
   void RecordAndResetScreenshotsTakenInLastDay();

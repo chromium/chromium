@@ -794,7 +794,10 @@ void HandleTakePartialScreenshot() {
 
 void HandleTakeScreenshot() {
   base::RecordAction(UserMetricsAction("Accel_Take_Screenshot"));
-  Shell::Get()->screenshot_controller()->TakeScreenshotForAllRootWindows();
+  if (!features::IsCaptureModeEnabled())
+    Shell::Get()->screenshot_controller()->TakeScreenshotForAllRootWindows();
+  else
+    CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
 }
 
 void HandleToggleSystemTrayBubbleInternal(bool focus_message_center) {
