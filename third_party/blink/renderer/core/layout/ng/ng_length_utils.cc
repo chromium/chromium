@@ -601,8 +601,11 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
       constraint_space, style, border_padding, logical_height, intrinsic_size,
       LengthResolvePhase::kLayout,
       opt_percentage_resolution_block_size_for_min_max);
-  if (UNLIKELY((extent == kIndefiniteSize || logical_height.IsAuto()) &&
-               !style.AspectRatio().IsAuto() && inline_size)) {
+  if (UNLIKELY(!style.AspectRatio().IsAuto() && inline_size &&
+               BlockLengthUnresolvable(
+                   constraint_space, logical_height,
+                   LengthResolvePhase::kLayout,
+                   opt_percentage_resolution_block_size_for_min_max))) {
     extent =
         BlockSizeFromAspectRatio(border_padding, style.LogicalAspectRatio(),
                                  style.BoxSizing(), *inline_size);
