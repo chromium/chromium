@@ -75,9 +75,6 @@ specific_include_rules = {
     "+ui/gl/buffer_format_utils.h",
   ],
   "(graphics_context|skia_utils)\.cc" : [ "+ui/base/ui_base_features.h" ],
-  "graphics_context.h": [
-    "+third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h",
-  ],
   "rw_buffer_test.cc": [
     "+base/threading/platform_thread.h",
   ],

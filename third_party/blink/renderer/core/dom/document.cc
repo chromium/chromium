@@ -5703,7 +5703,7 @@ void Document::WillChangeFrameOwnerProperties(
     int margin_height,
     mojom::blink::ScrollbarMode scrollbar_mode,
     bool is_display_none,
-    mojom::blink::ColorScheme color_scheme) {
+    ColorScheme color_scheme) {
   DCHECK(GetFrame() && GetFrame()->Owner());
   FrameOwner* owner = GetFrame()->Owner();
 

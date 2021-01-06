@@ -135,7 +135,7 @@ void CustomScrollbarTheme::PaintScrollCorner(
     const Scrollbar* vertical_scrollbar,
     const DisplayItemClient& display_item_client,
     const IntRect& corner_rect,
-    mojom::blink::ColorScheme color_scheme) {
+    ColorScheme color_scheme) {
   if (DrawingRecorder::UseCachedDrawingIfPossible(context, display_item_client,
                                                   DisplayItem::kScrollCorner))
     return;

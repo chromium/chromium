@@ -310,7 +310,7 @@ mojom::blink::ScrollBehavior RootFrameViewport::ScrollBehaviorStyle() const {
   return LayoutViewport().ScrollBehaviorStyle();
 }
 
-mojom::blink::ColorScheme RootFrameViewport::UsedColorScheme() const {
+ColorScheme RootFrameViewport::UsedColorScheme() const {
   return LayoutViewport().UsedColorScheme();
 }
 

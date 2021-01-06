@@ -14,7 +14,7 @@ void WebThemeEngineMac::Paint(cc::PaintCanvas* canvas,
                               WebThemeEngine::State state,
                               const gfx::Rect& rect,
                               const WebThemeEngine::ExtraParams* extra_params,
-                              blink::mojom::ColorScheme color_scheme) {
+                              blink::ColorScheme color_scheme) {
   if (IsScrollbarPart(part)) {
     PaintMacScrollBarParts(canvas, part, state, rect, extra_params,
                            color_scheme);
@@ -44,7 +44,7 @@ void WebThemeEngineMac::PaintMacScrollBarParts(
     WebThemeEngine::State state,
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
-    blink::mojom::ColorScheme color_scheme) {
+    blink::ColorScheme color_scheme) {
   ui::NativeTheme::ExtraParams native_theme_extra_params;
   native_theme_extra_params.scrollbar_extra.is_hovering =
       extra_params->scrollbar_extra.is_hovering;

@@ -18,7 +18,7 @@ class WebThemeEngineMac : public WebThemeEngineDefault {
              blink::WebThemeEngine::State state,
              const gfx::Rect& rect,
              const blink::WebThemeEngine::ExtraParams* extra_params,
-             blink::mojom::ColorScheme color_scheme) override;
+             blink::ColorScheme color_scheme) override;
 
   static bool IsScrollbarPart(WebThemeEngine::Part part);
   static void PaintMacScrollBarParts(
@@ -27,7 +27,7 @@ class WebThemeEngineMac : public WebThemeEngineDefault {
       WebThemeEngine::State state,
       const gfx::Rect& rect,
       const WebThemeEngine::ExtraParams* extra_params,
-      blink::mojom::ColorScheme color_scheme);
+      blink::ColorScheme color_scheme);
 };
 
 }  // namespace content

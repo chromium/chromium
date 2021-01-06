@@ -10,9 +10,9 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
+using blink::ColorScheme;
 using blink::WebScrollbarOverlayColorTheme;
 using blink::WebThemeEngine;
-using blink::mojom::ColorScheme;
 
 namespace content {
 namespace {
@@ -185,7 +185,7 @@ void WebThemeEngineDefault::Paint(
     WebThemeEngine::State state,
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
-    blink::mojom::ColorScheme color_scheme) {
+    blink::ColorScheme color_scheme) {
   ui::NativeTheme::ExtraParams native_theme_extra_params;
   GetNativeThemeExtraParams(
       part, state, extra_params, &native_theme_extra_params);

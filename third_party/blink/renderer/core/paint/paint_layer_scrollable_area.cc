@@ -1249,7 +1249,7 @@ mojom::blink::ScrollBehavior PaintLayerScrollableArea::ScrollBehaviorStyle()
   return GetLayoutBox()->StyleRef().GetScrollBehavior();
 }
 
-mojom::blink::ColorScheme PaintLayerScrollableArea::UsedColorScheme() const {
+ColorScheme PaintLayerScrollableArea::UsedColorScheme() const {
   return GetLayoutBox()->StyleRef().UsedColorScheme();
 }
 

@@ -44,7 +44,7 @@ class LayoutThemeMobile : public LayoutThemeDefault {
   }
 
   Color PlatformActiveSelectionBackgroundColor(
-      mojom::blink::ColorScheme color_scheme) const override {
+      ColorScheme color_scheme) const override {
     return LayoutThemeMobile::kDefaultActiveSelectionBackgroundColor;
   }
 

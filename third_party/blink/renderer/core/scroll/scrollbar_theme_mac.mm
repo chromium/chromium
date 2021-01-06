@@ -238,17 +238,15 @@ WebThemeEngine::ExtraParams GetPaintParams(const Scrollbar& scrollbar,
   }
 
   params.scrollbar_extra.scrollbar_theme =
-      (scrollbar.UsedColorScheme() == mojom::blink::ColorScheme::kDark)
-          ? mojom::blink::ColorScheme::kDark
-          : mojom::blink::ColorScheme::kLight;
+      (scrollbar.UsedColorScheme() == ColorScheme::kDark) ? kDark : kLight;
   params.scrollbar_extra.is_overlay = overlay;
 
   if (overlay) {
     params.scrollbar_extra.scrollbar_theme =
         (scrollbar.GetScrollbarOverlayColorTheme() ==
          kScrollbarOverlayColorThemeLight)
-            ? mojom::blink::ColorScheme::kDark
-            : mojom::blink::ColorScheme::kLight;
+            ? kDark
+            : kLight;
   }
 
   params.scrollbar_extra.is_hovering =
@@ -298,12 +296,11 @@ void ScrollbarThemeMac::PaintTrack(GraphicsContext& context,
     context.EndLayer();
 }
 
-void ScrollbarThemeMac::PaintScrollCorner(
-    GraphicsContext& context,
-    const Scrollbar* vertical_scrollbar,
-    const DisplayItemClient& item,
-    const IntRect& rect,
-    mojom::blink::ColorScheme color_scheme) {
+void ScrollbarThemeMac::PaintScrollCorner(GraphicsContext& context,
+                                          const Scrollbar* vertical_scrollbar,
+                                          const DisplayItemClient& item,
+                                          const IntRect& rect,
+                                          ColorScheme color_scheme) {
   if (!vertical_scrollbar) {
     ScrollbarTheme::PaintScrollCorner(context, vertical_scrollbar, item, rect,
                                       color_scheme);

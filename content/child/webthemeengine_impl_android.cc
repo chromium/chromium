@@ -10,6 +10,7 @@
 #include "skia/ext/platform_canvas.h"
 #include "ui/native_theme/native_theme.h"
 
+using blink::ColorScheme;
 using blink::WebThemeEngine;
 
 namespace content {
@@ -155,7 +156,7 @@ void WebThemeEngineAndroid::Paint(
     WebThemeEngine::State state,
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
-    blink::mojom::ColorScheme color_scheme) {
+    blink::ColorScheme color_scheme) {
   ui::NativeTheme::ExtraParams native_theme_extra_params;
   GetNativeThemeExtraParams(
       part, state, extra_params, &native_theme_extra_params);
