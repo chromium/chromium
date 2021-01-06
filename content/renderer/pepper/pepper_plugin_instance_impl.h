@@ -29,10 +29,13 @@
 #include "cc/paint/paint_canvas.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "content/common/content_export.h"
+#include "content/common/pepper_plugin.mojom.h"
 #include "content/public/renderer/pepper_plugin_instance.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "gin/handle.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ppapi/c/dev/pp_cursor_type_dev.h"
 #include "ppapi/c/dev/ppp_printing_dev.h"
 #include "ppapi/c/dev/ppp_text_input_dev.h"
@@ -119,7 +122,8 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
       public PepperPluginInstance,
       public ppapi::PPB_Instance_Shared,
       public cc::TextureLayerClient,
-      public RenderFrameObserver {
+      public RenderFrameObserver,
+      public mojom::PepperPluginInstance {
  public:
   // Create and return a PepperPluginInstanceImpl object which supports the most
   // recent version of PPP_Instance possible by querying the given
@@ -135,8 +139,16 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // Currently only used in tests.
   static PepperPluginInstanceImpl* GetForTesting(PP_Instance instance_id);
 
+  // Returns the associated RenderFrameImpl. Can be null (in tests) or if the
+  // frame has been destroyed.
   RenderFrameImpl* render_frame() const { return render_frame_; }
   PluginModule* module() const { return module_.get(); }
+
+  // Returns the associated mojo host channel to the browser. Can be null if
+  // `render_frame()` returns null.
+  mojom::PepperPluginInstanceHost* GetPepperPluginInstanceHost() {
+    return pepper_host_remote_.get();
+  }
 
   blink::WebPluginContainer* container() const { return container_; }
 
@@ -843,6 +855,9 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // Current text input composition text. Empty if no composition is in
   // progress.
   base::string16 composition_text_;
+
+  mojo::AssociatedRemote<mojom::PepperPluginInstanceHost> pepper_host_remote_;
+  mojo::AssociatedReceiver<mojom::PepperPluginInstance> pepper_receiver_{this};
 
   // We use a weak ptr factory for scheduling DidChangeView events so that we
   // can tell whether updates are pending and consolidate them. When there's

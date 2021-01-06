@@ -652,6 +652,15 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   GetActiveTopLevelDocumentsInBrowsingContextGroup(
       RenderFrameHostImpl* render_frame_host);
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+  virtual void OnPepperInstanceCreated(RenderFrameHostImpl* source,
+                                       int32_t pp_instance) {}
+  virtual void OnPepperStartsPlayback(RenderFrameHostImpl* source,
+                                      int32_t pp_instance) {}
+  virtual void OnPepperStopsPlayback(RenderFrameHostImpl* source,
+                                     int32_t pp_instance) {}
+#endif
+
  protected:
   virtual ~RenderFrameHostDelegate() = default;
 };

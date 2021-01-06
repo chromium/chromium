@@ -92,18 +92,20 @@ void PepperAudioController::OnPepperInstanceDeleted() {
 void PepperAudioController::NotifyPlaybackStopsOnEmpty() {
   DCHECK(instance_);
 
-  RenderFrameImpl* render_frame = instance_->render_frame();
-  if (render_frame)
-    render_frame->PepperStopsPlayback(instance_);
+  mojom::PepperPluginInstanceHost* instance_host =
+      instance_->GetPepperPluginInstanceHost();
+  if (instance_host)
+    instance_host->StopsPlayback();
 }
 
 void PepperAudioController::StartPlaybackIfFirstInstance() {
   DCHECK(instance_);
 
   if (audio_output_hosts_.empty() && ppb_audios_.empty()) {
-    RenderFrameImpl* render_frame = instance_->render_frame();
-    if (render_frame)
-      render_frame->PepperStartsPlayback(instance_);
+    mojom::PepperPluginInstanceHost* instance_host =
+        instance_->GetPepperPluginInstanceHost();
+    if (instance_host)
+      instance_host->StartsPlayback();
   }
 }
 

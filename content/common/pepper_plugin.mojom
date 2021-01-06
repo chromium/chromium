@@ -1,0 +1,26 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+// Generic Pepper messages. Implemented by the browser.
+interface PepperHost {
+  // Notification that a Pepper plugin instance is created in the DOM.
+  InstanceCreated(int32 instance_id,
+                  pending_associated_remote<PepperPluginInstance> instance,
+                  pending_associated_receiver<PepperPluginInstanceHost> host);
+};
+
+// Plugin instance specific messages. Implemented by the browser.
+interface PepperPluginInstanceHost {
+  // Notification a plugin instance has started playback.
+  StartsPlayback();
+
+  // Notification a plugin instance has stopped playback.
+  StopsPlayback();
+};
+
+// Plugin instance specific messages. Implemented by the renderer.
+interface PepperPluginInstance {
+};

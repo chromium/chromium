@@ -1146,15 +1146,9 @@ bool WebContentsImpl::OnMessageReceived(RenderFrameHostImpl* render_frame_host,
   bool handled = true;
 #if BUILDFLAG(ENABLE_PLUGINS)
   IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(WebContentsImpl, message, render_frame_host)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_PepperInstanceCreated,
-                        OnPepperInstanceCreated)
     IPC_MESSAGE_HANDLER(FrameHostMsg_PepperInstanceDeleted,
                         OnPepperInstanceDeleted)
     IPC_MESSAGE_HANDLER(FrameHostMsg_PepperPluginHung, OnPepperPluginHung)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_PepperStartsPlayback,
-                        OnPepperStartsPlayback)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_PepperStopsPlayback,
-                        OnPepperStopsPlayback)
     IPC_MESSAGE_HANDLER(FrameHostMsg_PluginCrashed, OnPluginCrashed)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()

@@ -257,11 +257,6 @@ IPC_MESSAGE_ROUTED2(FrameMsg_SetPepperVolume,
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 // Notification sent from a renderer to the browser that a Pepper plugin
-// instance is created in the DOM.
-IPC_MESSAGE_ROUTED1(FrameHostMsg_PepperInstanceCreated,
-                    int32_t /* pp_instance */)
-
-// Notification sent from a renderer to the browser that a Pepper plugin
 // instance is deleted from the DOM.
 IPC_MESSAGE_ROUTED1(FrameHostMsg_PepperInstanceDeleted,
                     int32_t /* pp_instance */)
@@ -283,16 +278,6 @@ IPC_MESSAGE_ROUTED3(FrameHostMsg_PepperPluginHung,
 IPC_MESSAGE_ROUTED2(FrameHostMsg_PluginCrashed,
                     base::FilePath /* plugin_path */,
                     base::ProcessId /* plugin_pid */)
-
-// Notification sent from a renderer to the browser that a Pepper plugin
-// instance has started playback.
-IPC_MESSAGE_ROUTED1(FrameHostMsg_PepperStartsPlayback,
-                    int32_t /* pp_instance */)
-
-// Notification sent from a renderer to the browser that a Pepper plugin
-// instance has stopped playback.
-IPC_MESSAGE_ROUTED1(FrameHostMsg_PepperStopsPlayback,
-                    int32_t /* pp_instance */)
 
 // Return information about a plugin for the given URL and MIME
 // type. If there is no matching plugin, |found| is false.

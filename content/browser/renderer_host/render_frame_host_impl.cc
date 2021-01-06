@@ -858,6 +858,42 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
 
 }  // namespace
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+class PepperPluginInstanceHost : public mojom::PepperPluginInstanceHost {
+ public:
+  PepperPluginInstanceHost(
+      int32_t instance_id,
+      RenderFrameHostImpl* frame_host,
+      mojo::PendingAssociatedRemote<mojom::PepperPluginInstance> instance,
+      mojo::PendingAssociatedReceiver<mojom::PepperPluginInstanceHost> host)
+      : instance_id_(instance_id),
+        frame_host_(frame_host),
+        receiver_(this, std::move(host)),
+        remote_(std::move(instance)) {
+    frame_host_->delegate()->OnPepperInstanceCreated(frame_host_, instance_id);
+    remote_.set_disconnect_handler(
+        base::BindOnce(&RenderFrameHostImpl::PepperInstanceClosed,
+                       base::Unretained(frame_host), instance_id_));
+  }
+  ~PepperPluginInstanceHost() override = default;
+
+  // mojom::PepperPluginInstanceHost overrides.
+  void StartsPlayback() override {
+    frame_host_->delegate()->OnPepperStartsPlayback(frame_host_, instance_id_);
+  }
+
+  void StopsPlayback() override {
+    frame_host_->delegate()->OnPepperStopsPlayback(frame_host_, instance_id_);
+  }
+
+ private:
+  int32_t const instance_id_;
+  RenderFrameHostImpl* const frame_host_;
+  mojo::AssociatedReceiver<mojom::PepperPluginInstanceHost> receiver_;
+  mojo::AssociatedRemote<mojom::PepperPluginInstance> remote_;
+};
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
+
 class RenderFrameHostImpl::DroppedInterfaceRequestLogger
     : public blink::mojom::BrowserInterfaceBroker {
  public:
@@ -6818,6 +6854,18 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
       GetProcess()->GetStoragePartition()->GetFileSystemContext(),
       ChromeBlobStorageContext::GetFor(GetProcess()->GetBrowserContext())));
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+  associated_registry_->AddInterface(base::BindRepeating(
+      [](RenderFrameHostImpl* impl,
+         mojo::PendingAssociatedReceiver<mojom::PepperHost> receiver) {
+        impl->pepper_host_receiver_.Bind(std::move(receiver));
+        impl->pepper_host_receiver_.SetFilter(
+            impl->CreateMessageFilterForAssociatedReceiver(
+                mojom::PepperHost::Name_));
+      },
+      base::Unretained(this)));
+#endif
+
   mojo::PendingRemote<mojom::FrameFactory> frame_factory;
   GetProcess()->BindReceiver(frame_factory.InitWithNewPipeAndPassReceiver());
   mojo::Remote<mojom::FrameFactory>(std::move(frame_factory))
@@ -10156,6 +10204,22 @@ void RenderFrameHostImpl::Clone(
     mojo::PendingReceiver<network::mojom::CookieAccessObserver> observer) {
   cookie_observers_.Add(this, std::move(observer));
 }
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+void RenderFrameHostImpl::InstanceCreated(
+    int32_t instance_id,
+    mojo::PendingAssociatedRemote<mojom::PepperPluginInstance> instance,
+    mojo::PendingAssociatedReceiver<mojom::PepperPluginInstanceHost> host) {
+  pepper_instance_map_.emplace(
+      instance_id,
+      std::make_unique<PepperPluginInstanceHost>(
+          instance_id, this, std::move(instance), std::move(host)));
+}
+
+void RenderFrameHostImpl::PepperInstanceClosed(int32_t instance_id) {
+  pepper_instance_map_.erase(instance_id);
+}
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 void RenderFrameHostImpl::OnCookiesAccessed(
     network::mojom::CookieAccessDetailsPtr details) {

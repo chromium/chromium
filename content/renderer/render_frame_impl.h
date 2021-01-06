@@ -109,6 +109,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "content/common/pepper_plugin.mojom.h"
+#endif
+
 namespace blink {
 namespace scheduler {
 class WebAgentGroupScheduler;
@@ -313,6 +317,8 @@ class CONTENT_EXPORT RenderFrameImpl
   bool in_frame_tree() { return in_frame_tree_; }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
+  mojom::PepperHost* GetPepperHost();
+
   // Notification that a PPAPI plugin has been created.
   void PepperPluginCreated(RendererPpapiHost* host);
 
@@ -746,7 +752,11 @@ class CONTENT_EXPORT RenderFrameImpl
     return focused_pepper_plugin_;
   }
   // Indicates that the given instance has been created.
-  void PepperInstanceCreated(PepperPluginInstanceImpl* instance);
+  void PepperInstanceCreated(
+      PepperPluginInstanceImpl* instance,
+      mojo::PendingAssociatedRemote<mojom::PepperPluginInstance> mojo_instance,
+      mojo::PendingAssociatedReceiver<mojom::PepperPluginInstanceHost>
+          mojo_host);
 
   // Indicates that the given instance is being destroyed. This is called from
   // the destructor, so it's important that the instance is not dereferenced
@@ -756,8 +766,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // Notification that the given plugin is focused or unfocused.
   void PepperFocusChanged(PepperPluginInstanceImpl* instance, bool focused);
 
-  void PepperStartsPlayback(PepperPluginInstanceImpl* instance);
-  void PepperStopsPlayback(PepperPluginInstanceImpl* instance);
   void OnSetPepperVolume(int32_t pp_instance, double volume);
 #endif  // ENABLE_PLUGINS
 
@@ -1286,6 +1294,8 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Whether or not the focus is on a PPAPI plugin
   PepperPluginInstanceImpl* focused_pepper_plugin_;
+
+  mojo::AssociatedRemote<mojom::PepperHost> pepper_host_remote_;
 #endif
 
   using AutoplayOriginAndFlags = std::pair<url::Origin, int32_t>;

@@ -771,6 +771,14 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   std::vector<RenderFrameHostImpl*>
   GetActiveTopLevelDocumentsInBrowsingContextGroup(
       RenderFrameHostImpl* render_frame_host) override;
+#if BUILDFLAG(ENABLE_PLUGINS)
+  void OnPepperInstanceCreated(RenderFrameHostImpl* source,
+                               int32_t pp_instance) override;
+  void OnPepperStartsPlayback(RenderFrameHostImpl* source,
+                              int32_t pp_instance) override;
+  void OnPepperStopsPlayback(RenderFrameHostImpl* source,
+                             int32_t pp_instance) override;
+#endif
 
   // RenderViewHostDelegate ----------------------------------------------------
   RenderViewHostDelegateView* GetDelegateView() override;
@@ -1502,16 +1510,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                           int minimum_percent,
                           int maximum_percent);
 #if BUILDFLAG(ENABLE_PLUGINS)
-  void OnPepperInstanceCreated(RenderFrameHostImpl* source,
-                               int32_t pp_instance);
   void OnPepperInstanceDeleted(RenderFrameHostImpl* source,
                                int32_t pp_instance);
   void OnPepperPluginHung(RenderFrameHostImpl* source,
                           int plugin_child_id,
                           const base::FilePath& path,
                           bool is_hung);
-  void OnPepperStartsPlayback(RenderFrameHostImpl* source, int32_t pp_instance);
-  void OnPepperStopsPlayback(RenderFrameHostImpl* source, int32_t pp_instance);
   void OnPluginCrashed(RenderFrameHostImpl* source,
                        const base::FilePath& plugin_path,
                        base::ProcessId plugin_pid);
