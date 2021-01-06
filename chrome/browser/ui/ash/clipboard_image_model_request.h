@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -85,9 +86,22 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   // fails to load after 5 seconds, OnTimeout is called.
   void Start(Params&& params);
 
-  // Stops the request and resets state. |web_view_| is still alive to
-  // enable fast restarting of the request.
-  void Stop();
+  // The different reasons a request can `Stop()`. These values are logged to
+  // UMA. Entries should not be renumbered and numeric values should never be
+  // reused. Please keep in sync with "RequestStopReason" in
+  // src/tools/metrics/histograms/enums.xml.
+  enum class RequestStopReason {
+    kFulfilled = 0,
+    kTimeout = 1,
+    kEmptyResult = 2,
+    kMultipleCopyCompletion = 3,
+    kRequestCanceled = 4,
+    kMaxValue = kRequestCanceled,
+  };
+  // Stops the request and resets state. `stop_reason` is the reason the request
+  // was `Stop()`-ed. |web_view_| is kept alive to enable fast restarting of the
+  // request.
+  void Stop(RequestStopReason stop_reason);
 
   // `Stop()`s the request and gets the params of the running request.
   Params StopAndGetParams();
@@ -153,6 +167,12 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
 
   // Timer used to abort requests which take longer than 5s to load.
   base::RepeatingTimer timeout_timer_;
+
+  // Time this object was created. Used to log object lifetime.
+  const base::TimeTicks request_creation_time_;
+
+  // Time this object started its most recent request.
+  base::TimeTicks request_start_time_;
 
   base::WeakPtrFactory<ClipboardImageModelRequest> weak_ptr_factory_{this};
 

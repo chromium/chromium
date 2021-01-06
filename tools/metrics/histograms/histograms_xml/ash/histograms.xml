@@ -445,6 +445,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.ClipboardHistory.ImageModelRequest.Lifetime" units="ms"
+    expires_after="2021-12-11">
+  <owner>newcomer@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The lifetime of the ClipboardImageModelRequest object. Logged in the dtor of
+    ClipboardImageModelRequest.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ImageModelRequest.Runtime" units="ms"
+    expires_after="2021-12-11">
+  <owner>newcomer@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The runtime of a request in a ClipboardImageModelRequest. Logged from when
+    the ClipboardImageModelRequest is Start()-ed to when it is Stop()-ed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ImageModelRequest.StopReason"
+    enum="RequestStopReason" expires_after="2021-12-11">
+  <owner>newcomer@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The reason a ClipboardImageModelRequest is stopped. Logged when a request is
+    Stop()-ed.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Ash.ContextualNudgeDismissContext"
     enum="ContextualNudgeDismissContext" expires_after="2021-12-01">
 <!-- Name completed by histogram_suffixes name="ContextualNudgesNames" -->

@@ -29,7 +29,8 @@ void ClipboardImageModelFactoryImpl::Render(const base::UnguessableToken& id,
 void ClipboardImageModelFactoryImpl::CancelRequest(
     const base::UnguessableToken& id) {
   if (request_ && request_->IsRunningRequest(id)) {
-    request_->Stop();
+    request_->Stop(
+        ClipboardImageModelRequest::RequestStopReason::kRequestCanceled);
     return;
   }
 

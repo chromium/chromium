@@ -64661,6 +64661,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Supported"/>
 </enum>
 
+<enum name="RequestStopReason">
+  <int value="0" label="Fulfilled"/>
+  <int value="1" label="Timeout"/>
+  <int value="2" label="Empty Result"/>
+  <int value="3" label="Multiple Copy Completion"/>
+  <int value="4" label="Request Canceled"/>
+</enum>
+
 <enum name="RequestStorageResult">
   <int value="0" label="Approved due to existing storage access"/>
   <int value="1" label="Approved with new grant"/>
