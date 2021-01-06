@@ -380,6 +380,8 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByEventURL(
     SessionID event_tab_id,
     int user_gesture_count_limit,
     ReferrerChain* out_referrer_chain) {
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "SafeBrowsing.NavigationObserver.IdentifyReferrerChainByEventURLTime");
   if (!event_url.is_valid())
     return INVALID_URL;
 
@@ -404,6 +406,8 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByWebContents(
     content::WebContents* web_contents,
     int user_gesture_count_limit,
     ReferrerChain* out_referrer_chain) {
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "SafeBrowsing.NavigationObserver.IdentifyReferrerChainByWebContentsTime");
   if (!web_contents)
     return INVALID_URL;
   GURL last_committed_url = web_contents->GetLastCommittedURL();
@@ -525,6 +529,8 @@ size_t SafeBrowsingNavigationObserverManager::CountOfRecentNavigationsToAppend(
 void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
     size_t recent_navigation_count,
     ReferrerChain* out_referrer_chain) {
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "SafeBrowsing.NavigationObserver.AppendRecentNavigationsTime");
   if (recent_navigation_count <= 0u)
     return;
   int current_referrer_chain_size = out_referrer_chain->size();
