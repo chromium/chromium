@@ -18,6 +18,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -87,9 +88,9 @@ public class WebApkUpdateManagerTest {
         private CallbackHelper mWaiter;
         private boolean mNeedsUpdate;
 
-        public TestWebApkUpdateManager(CallbackHelper waiter, ChromeActivity activity,
+        public TestWebApkUpdateManager(CallbackHelper waiter, ActivityTabProvider tabProvider,
                 ActivityLifecycleDispatcher lifecycleDispatcher) {
-            super(activity, lifecycleDispatcher);
+            super(tabProvider, lifecycleDispatcher);
             mWaiter = waiter;
         }
 
@@ -163,8 +164,8 @@ public class WebApkUpdateManagerTest {
      /** Checks whether a WebAPK update is needed. */
     private boolean checkUpdateNeeded(final CreationData creationData) throws Exception {
         CallbackHelper waiter = new CallbackHelper();
-        final TestWebApkUpdateManager updateManager =
-                new TestWebApkUpdateManager(waiter, mActivity, mActivity.getLifecycleDispatcher());
+        final TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(
+                waiter, mActivity.getActivityTabProvider(), mActivity.getLifecycleDispatcher());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             WebappDataStorage storage =

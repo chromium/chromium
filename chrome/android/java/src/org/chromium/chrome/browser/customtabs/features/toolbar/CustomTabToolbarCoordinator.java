@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.APP_CONTEXT;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +23,6 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -61,7 +61,7 @@ public class CustomTabToolbarCoordinator {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final CustomTabActivityTabProvider mTabProvider;
     private final CustomTabsConnection mConnection;
-    private final ChromeActivity<?> mActivity;
+    private final Activity mActivity;
     private final Context mAppContext;
     private final CustomTabActivityTabController mTabController;
     private final Lazy<BrowserControlsVisibilityManager> mBrowserControlsVisibilityManager;
@@ -82,7 +82,7 @@ public class CustomTabToolbarCoordinator {
     @Inject
     public CustomTabToolbarCoordinator(BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabActivityTabProvider tabProvider, CustomTabsConnection connection,
-            ChromeActivity<?> activity, @Named(APP_CONTEXT) Context appContext,
+            Activity activity, @Named(APP_CONTEXT) Context appContext,
             CustomTabActivityTabController tabController,
             Lazy<BrowserControlsVisibilityManager> controlsVisiblityManager,
             CustomTabActivityNavigationController navigationController,

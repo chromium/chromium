@@ -39,8 +39,8 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -152,19 +152,19 @@ public class WebApkUpdateManagerUnitTest {
         private boolean mDestroyedFetcher;
 
         public TestWebApkUpdateManager() {
-            this(buildMockActivity(), Mockito.mock(ActivityLifecycleDispatcher.class));
+            this(buildMockTabProvider(), Mockito.mock(ActivityLifecycleDispatcher.class));
         }
 
-        private static ChromeActivity buildMockActivity() {
+        private static ActivityTabProvider buildMockTabProvider() {
             Tab mockTab = Mockito.mock(Tab.class);
-            ChromeActivity mockActivity = Mockito.mock(ChromeActivity.class);
-            Mockito.when(mockActivity.getActivityTab()).thenReturn(mockTab);
-            return mockActivity;
+            ActivityTabProvider tabProvider = Mockito.mock(ActivityTabProvider.class);
+            Mockito.when(tabProvider.get()).thenReturn(mockTab);
+            return tabProvider;
         }
 
-        private TestWebApkUpdateManager(
-                ChromeActivity activity, ActivityLifecycleDispatcher activityLifecycleDispatcher) {
-            super(activity, activityLifecycleDispatcher);
+        private TestWebApkUpdateManager(ActivityTabProvider tabProvider,
+                ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            super(tabProvider, activityLifecycleDispatcher);
         }
 
         /**

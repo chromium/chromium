@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,7 +15,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
@@ -43,7 +43,7 @@ import javax.inject.Inject;
  */
 @ActivityScope
 public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destroyable {
-    private final ChromeActivity<?> mActivity;
+    private final Activity mActivity;
     private final CustomTabActivityTabProvider mTabProvider;
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -71,7 +71,7 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
     private Bitmap mLargestFavicon;
 
     @Inject
-    public CustomTabTaskDescriptionHelper(ChromeActivity<?> activity,
+    public CustomTabTaskDescriptionHelper(Activity activity,
             CustomTabActivityTabProvider tabProvider, TabObserverRegistrar tabObserverRegistrar,
             BrowserServicesIntentDataProvider intentDataProvider,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,

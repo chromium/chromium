@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
+import android.app.Activity;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
@@ -51,7 +51,7 @@ public class CustomTabToolbarColorController {
     public interface BooleanFunction { boolean get(); }
 
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
-    private final ChromeActivity<?> mActivity;
+    private final Activity mActivity;
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final CustomTabActivityTabProvider mTabProvider;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
@@ -61,7 +61,7 @@ public class CustomTabToolbarColorController {
 
     @Inject
     public CustomTabToolbarColorController(BrowserServicesIntentDataProvider intentDataProvider,
-            ChromeActivity<?> activity, CustomTabActivityTabProvider tabProvider,
+            Activity activity, CustomTabActivityTabProvider tabProvider,
             TabObserverRegistrar tabObserverRegistrar,
             TopUiThemeColorProvider topUiThemeColorProvider) {
         mIntentDataProvider = intentDataProvider;

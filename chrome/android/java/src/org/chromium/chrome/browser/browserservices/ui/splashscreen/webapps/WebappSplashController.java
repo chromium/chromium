@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browserservices.ui.splashscreen.webapps;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -16,7 +17,6 @@ import android.widget.ImageView;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.StrictModeContext;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashDelegate;
@@ -45,7 +45,7 @@ public class WebappSplashController implements SplashDelegate {
     private WebApkSplashNetworkErrorObserver mWebApkNetworkErrorObserver;
 
     @Inject
-    public WebappSplashController(SplashController splashController, ChromeActivity<?> activity,
+    public WebappSplashController(SplashController splashController, Activity activity,
             TabObserverRegistrar tabObserverRegistrar,
             BrowserServicesIntentDataProvider intentDataProvider) {
         mSplashController = splashController;

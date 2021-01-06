@@ -23,7 +23,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CloseButtonNavigator;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
@@ -114,7 +113,7 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
             CustomTabActivityTabProvider tabProvider,
             BrowserServicesIntentDataProvider intentDataProvider, CustomTabsConnection connection,
             Lazy<CustomTabObserver> customTabObserver, CloseButtonNavigator closeButtonNavigator,
-            ChromeBrowserInitializer chromeBrowserInitializer, ChromeActivity<?> activity,
+            ChromeBrowserInitializer chromeBrowserInitializer, Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Lazy<FullscreenManager> fullscreenManager) {
         mTabController = tabController;

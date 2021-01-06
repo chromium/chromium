@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
@@ -37,7 +38,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -394,14 +394,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     /**
      * Triggers the client-defined action when the user clicks a custom menu item.
-     * @param activity The {@link ChromeActivity} to use for sending the {@link PendingIntent}.
+     * @param activity The {@link Activity} to use for sending the {@link PendingIntent}.
      * @param menuIndex The index that the menu item is shown in the result of
      *                  {@link #getMenuTitles()}.
      * @param url The URL to attach as additional data to the {@link PendingIntent}.
      * @param title The title to attach as additional data to the {@link PendingIntent}.
      */
     public void clickMenuItemWithUrlAndTitle(
-            ChromeActivity activity, int menuIndex, String url, String title) {
+            Activity activity, int menuIndex, String url, String title) {
         Intent addedIntent = new Intent();
         addedIntent.setData(Uri.parse(url));
         addedIntent.putExtra(Intent.EXTRA_SUBJECT, title);

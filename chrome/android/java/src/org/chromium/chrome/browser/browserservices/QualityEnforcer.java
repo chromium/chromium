@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browserservices;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -16,7 +17,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -51,7 +51,7 @@ public class QualityEnforcer {
     @VisibleForTesting
     static final String KEY_SUCCESS = "success";
 
-    private final ChromeActivity<?> mActivity;
+    private final Activity mActivity;
     private final Verifier mVerifier;
     private final CustomTabsConnection mConnection;
     private final CustomTabsSessionToken mSessionToken;
@@ -105,8 +105,7 @@ public class QualityEnforcer {
     };
 
     @Inject
-    public QualityEnforcer(ChromeActivity<?> activity,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
+    public QualityEnforcer(Activity activity, ActivityLifecycleDispatcher lifecycleDispatcher,
             TabObserverRegistrar tabObserverRegistrar,
             BrowserServicesIntentDataProvider intentDataProvider, CustomTabsConnection connection,
             Verifier verifier, ClientPackageNameProvider clientPackageNameProvider,
