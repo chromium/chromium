@@ -160,6 +160,7 @@ void PublicImageHintsDeciderAgent::RecordMetrics(
       break;
     case RedirectResult::kIneligibleRobotsDisallowed:
     case RedirectResult::kIneligibleRobotsTimeout:
+    case RedirectResult::kIneligibleLoginDetected:
       NOTREACHED();
   }
   mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
@@ -196,6 +197,12 @@ void PublicImageHintsDeciderAgent::NotifyCompressedResourceFetchFailed(
     base::TimeDelta retry_after) {
   PublicResourceDeciderAgent::NotifyCompressedResourceFetchFailed(retry_after);
   ClearImageHints();
+}
+
+void PublicImageHintsDeciderAgent::SetLoggedInState(bool is_logged_in) {
+  // This mojo from browser process should not be called for public image hints
+  // based compression.
+  NOTIMPLEMENTED();
 }
 
 }  // namespace subresource_redirect

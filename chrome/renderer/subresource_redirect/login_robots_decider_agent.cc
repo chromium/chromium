@@ -32,6 +32,7 @@ RedirectResult ConvertToRedirectResult(
     case RobotsRulesParser::CheckResult::kAllowed:
       return RedirectResult::kRedirectable;
     case RobotsRulesParser::CheckResult::kDisallowed:
+    case RobotsRulesParser::CheckResult::kInvalidated:
       return RedirectResult::kIneligibleRobotsDisallowed;
     case RobotsRulesParser::CheckResult::kTimedout:
     case RobotsRulesParser::CheckResult::kDisallowedAfterTimeout:
@@ -39,12 +40,10 @@ RedirectResult ConvertToRedirectResult(
   }
 }
 
-// Converts the robots rules CheckResult to RedirectResult and passes to the
-// callback.
-void SendRedirectResultToCallback(
-    LoginRobotsDeciderAgent::ShouldRedirectDecisionCallback callback,
-    RobotsRulesParser::CheckResult check_result) {
-  std::move(callback).Run(ConvertToRedirectResult(check_result));
+void RecordRedirectResultMetric(RedirectResult redirect_result) {
+  LOCAL_HISTOGRAM_ENUMERATION(
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
+      redirect_result);
 }
 
 }  // namespace
@@ -65,6 +64,8 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
     ShouldRedirectDecisionCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(url.is_valid());
+  if (redirect_result_ != RedirectResult::kRedirectable)
+    return redirect_result_;
   if (!render_frame()->IsMainFrame())
     return RedirectResult::kIneligibleSubframeResource;
 
@@ -83,21 +84,51 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
 
   base::Optional<RobotsRulesParser::CheckResult> result =
       robots_rules_parser_cache.CheckRobotsRules(
-          url,
-          base::BindOnce(&SendRedirectResultToCallback, std::move(callback)));
-  if (result)
-    return ConvertToRedirectResult(*result);
+          routing_id(), url,
+          base::BindOnce(
+              &LoginRobotsDeciderAgent::OnShouldRedirectSubresourceResult,
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  if (result) {
+    RedirectResult redirect_result = ConvertToRedirectResult(*result);
+    RecordRedirectResultMetric(redirect_result);
+    return redirect_result;
+  }
 
   return base::nullopt;
+}
+
+void LoginRobotsDeciderAgent::OnShouldRedirectSubresourceResult(
+    LoginRobotsDeciderAgent::ShouldRedirectDecisionCallback callback,
+    RobotsRulesParser::CheckResult check_result) {
+  // Verify if the navigation is still allowed to redirect.
+  if (redirect_result_ != RedirectResult::kRedirectable) {
+    RecordRedirectResultMetric(redirect_result_);
+    std::move(callback).Run(redirect_result_);
+    return;
+  }
+  RedirectResult redirect_result = ConvertToRedirectResult(check_result);
+  RecordRedirectResultMetric(redirect_result);
+  std::move(callback).Run(redirect_result);
+}
+
+void LoginRobotsDeciderAgent::ReadyToCommitNavigation(
+    blink::WebDocumentLoader* document_loader) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  redirect_result_ = RedirectResult::kUnknown;
+  GetRobotsRulesParserCache().InvalidatePendingRequests(routing_id());
+}
+
+void LoginRobotsDeciderAgent::SetLoggedInState(bool is_logged_in) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  redirect_result_ = is_logged_in ? RedirectResult::kIneligibleLoginDetected
+                                  : RedirectResult::kRedirectable;
 }
 
 void LoginRobotsDeciderAgent::RecordMetricsOnLoadFinished(
     const GURL& url,
     int64_t content_length,
     RedirectResult redirect_result) {
-  LOCAL_HISTOGRAM_ENUMERATION(
-      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
-      redirect_result);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // TODO(crbug.com/1148980): Record coverage metrics
 }
 

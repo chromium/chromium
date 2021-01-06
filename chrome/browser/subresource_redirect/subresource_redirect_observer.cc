@@ -4,6 +4,9 @@
 
 #include "chrome/browser/subresource_redirect/subresource_redirect_observer.h"
 
+#include "chrome/browser/login_detection/login_detection_keyed_service.h"
+#include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
+#include "chrome/browser/login_detection/login_detection_type.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -145,13 +148,33 @@ void SubresourceRedirectObserver::DidFinishNavigation(
                                               navigation_handle)) {
     return;
   }
+  content::RenderFrameHost* render_frame_host =
+      navigation_handle->GetRenderFrameHost();
 
   // Handle login robots based compression mode.
   if (ShouldEnableLoginRobotsCheckedCompression()) {
+    auto* login_detection_keyed_service =
+        login_detection::LoginDetectionKeyedServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+    if (!login_detection_keyed_service)
+      return;
+
+    is_https_image_compression_applied_ =
+        login_detection_keyed_service->GetPersistentLoginDetection(
+            navigation_handle->GetURL()) ==
+        login_detection::LoginDetectionType::kNoLogin;
+
+    mojo::AssociatedRemote<mojom::SubresourceRedirectHintsReceiver>
+        hints_receiver;
+    render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+        &hints_receiver);
+    hints_receiver->SetLoggedInState(!is_https_image_compression_applied_);
+
+    if (!is_https_image_compression_applied_)
+      return;
+
     SubresourceRedirectDocumentHost::GetOrCreateForCurrentDocument(
         navigation_handle->GetRenderFrameHost());
-    // TODO(1149853): Handle whether page is logged-in and disable compression.
-    is_https_image_compression_applied_ = true;
     return;
   }
 
@@ -163,8 +186,6 @@ void SubresourceRedirectObserver::DidFinishNavigation(
   if (!optimization_guide_decider)
     return;
 
-  content::RenderFrameHost* render_frame_host =
-      navigation_handle->GetRenderFrameHost();
   optimization_guide_decider->CanApplyOptimizationAsync(
       navigation_handle, optimization_guide::proto::COMPRESS_PUBLIC_IMAGES,
       base::BindOnce(

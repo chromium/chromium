@@ -42,6 +42,7 @@ class PublicImageHintsDeciderAgent : public PublicResourceDeciderAgent {
   // mojom::SubresourceRedirectHintsReceiver:
   void SetCompressPublicImagesHints(
       mojom::CompressPublicImagesHintsPtr images_hints) override;
+  void SetLoggedInState(bool is_logged_in) override;
 
   // PublicResourceDeciderAgent:
   base::Optional<RedirectResult> ShouldRedirectSubresource(

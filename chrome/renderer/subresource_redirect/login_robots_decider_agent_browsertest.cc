@@ -73,6 +73,10 @@ class SubresourceRedirectLoginRobotsDeciderAgentTest
            result_receiver.redirect_result() == RedirectResult::kRedirectable;
   }
 
+  void SetLoggedInState(bool is_logged_in) {
+    login_robots_decider_agent_->SetLoggedInState(is_logged_in);
+  }
+
  protected:
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
@@ -91,6 +95,7 @@ class SubresourceRedirectLoginRobotsDeciderAgentTest
 
 TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
        TestAllowDisallowSingleOrigin) {
+  SetLoggedInState(false);
   SetUpRobotsRules("https://foo.com", {{kRuleTypeAllow, "/public"},
                                        {kRuleTypeDisallow, "/private"}});
   EXPECT_TRUE(ShouldRedirectSubresource("https://foo.com/public.jpg"));
@@ -103,6 +108,7 @@ TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
 
 TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
        TestHTTPRulesAreSeparate) {
+  SetLoggedInState(false);
   SetUpRobotsRules("https://foo.com", {{kRuleTypeAllow, "/public"},
                                        {kRuleTypeDisallow, "/private"}});
   EXPECT_FALSE(ShouldRedirectSubresource("http://foo.com/public.jpg"));
@@ -116,6 +122,7 @@ TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
 }
 
 TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest, TestURLWithArguments) {
+  SetLoggedInState(false);
   SetUpRobotsRules("https://foo.com",
                    {{kRuleTypeAllow, "/*.jpg$"},
                     {kRuleTypeDisallow, "/*.png?*arg_disallowed"},
@@ -140,6 +147,7 @@ TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest, TestURLWithArguments) {
 
 TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
        TestRulesAreCaseSensitive) {
+  SetLoggedInState(false);
   SetUpRobotsRules("https://foo.com", {{kRuleTypeAllow, "/allowed"},
                                        {kRuleTypeAllow, "/CamelCase"},
                                        {kRuleTypeAllow, "/CAPITALIZE"},
@@ -150,6 +158,15 @@ TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
   EXPECT_FALSE(ShouldRedirectSubresource("https://foo.com/Allowed.jpg"));
   EXPECT_FALSE(ShouldRedirectSubresource("https://foo.com/camelcase.jpg"));
   EXPECT_FALSE(ShouldRedirectSubresource("https://foo.com/capitalize.jpg"));
+}
+
+TEST_F(SubresourceRedirectLoginRobotsDeciderAgentTest,
+       TestDisabledWhenLoggedIn) {
+  SetLoggedInState(true);
+  SetUpRobotsRules("https://foo.com", {{kRuleTypeAllow, "/public"},
+                                       {kRuleTypeDisallow, "/private"}});
+  EXPECT_FALSE(ShouldRedirectSubresource("https://foo.com/public.jpg"));
+  EXPECT_FALSE(ShouldRedirectSubresource("https://foo.com/private.jpg"));
 }
 
 }  // namespace subresource_redirect
