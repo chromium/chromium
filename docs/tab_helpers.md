@@ -11,20 +11,20 @@ how `WebContents`es are used to build tabs in browser windows.
 What is a "tab helper"? It is a `WebContentsObserver` owned by the `WebContents`
 itself. Let's break that down.
 
-## `WebContentsObserver`
+## WebContentsObserver
 
 `WebContentsObserver` is a
-[simple interface](https://source.chromium.org/chromium/chromium/src/+/HEAD:content/public/browser/web_contents_observer.)
+[simple interface](https://source.chromium.org/chromium/chromium/src/+/HEAD:content/public/browser/web_contents_observer.h)
 that allows an object to observe events in the life of a `WebContents`. As an
 example, if we look at the `TabStripModel`, there are times when it need to
 watch out for WebContents being deleted. So it creates a
-[TabStripModel::WebContentsData](https://source.chromium.org/chromium/chromium/src/+/HEA:chrome/browser/ui/tabs/tab_strip_model.cc).
+[TabStripModel::WebContentsData](https://source.chromium.org/chromium/chromium/src/+/HEAD:chrome/browser/ui/tabs/tab_strip_model.cc).
 That object overrides `WebContentsDestroyed()`, and when a
 `WebContents` gets destroyed, the callback is called and the object
 processes the message. Note that `TabStripModel::WebContentsData` object is not owned by the
 `WebContents`. It is owned indirectly by the `TabStripModel`.
 
-## `SupportsUserData` and `WebContentsUserData`
+## SupportsUserData and WebContentsUserData
 
 There is a mechanism used in Chromium called
 [`SupportsUserData`](https://source.chromium.org/chromium/chromium/src/+/HEAD:base/supports_user_data.h)
@@ -87,7 +87,7 @@ you go. Create a tab helper, and add it (in alphabetical order, please!) to
 `AttachTabHelpers()` yourself. `AttachTabHelpers()` is only for `WebContents`
 that are in browser tabs, and all of those code paths are already written.
 
-## Reusing tab helpers with non-browser tab `WebContents`es
+## Reusing tab helpers with non-browser tab WebContentses
 
 Sometimes it's useful to re-use tab helpers for `WebContents`es that aren't
 browser tabs. For example, the Chrome Apps code wants to be able to print, and
@@ -101,7 +101,7 @@ decision about which tab helpers you need. Chances are, you don't need them all;
 you probably only need a handful. In fact, most tab helpers assume they are
 attached to browser tabs, so only add the bare minimum.
 
-## Not every `WebContents` has every tab helper
+## Not every WebContents has every tab helper
 
 The other consequence of this design is that you can't make the assumption that
 an arbitrary `WebContents` will have an arbitrary tab helper. The
