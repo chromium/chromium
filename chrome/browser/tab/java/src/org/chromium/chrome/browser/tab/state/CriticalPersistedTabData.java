@@ -225,7 +225,9 @@ public class CriticalPersistedTabData extends PersistedTabData {
                     : new GURL(mWebContentsState.getVirtualUrlFromState());
             mTitle = mWebContentsState.getDisplayTitleFromState();
             mContentStateVersion = criticalPersistedTabDataProto.getContentStateVersion();
-            mOpenerAppId = criticalPersistedTabDataProto.getOpenerAppId();
+            mOpenerAppId = TextUtils.isEmpty(criticalPersistedTabDataProto.getOpenerAppId())
+                    ? null
+                    : criticalPersistedTabDataProto.getOpenerAppId();
             mThemeColor = criticalPersistedTabDataProto.getThemeColor();
             mTabLaunchTypeAtCreation =
                     getLaunchType(criticalPersistedTabDataProto.getLaunchTypeAtCreation());
@@ -369,7 +371,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
                                     : ByteString.copyFrom(
                                             getContentStateByteArray(webContentsState.buffer())))
                     .setContentStateVersion(mContentStateVersion)
-                    .setOpenerAppId(mOpenerAppId)
+                    .setOpenerAppId(mOpenerAppId == null ? "" : mOpenerAppId)
                     .setThemeColor(mThemeColor)
                     .setLaunchTypeAtCreation(getLaunchType(mTabLaunchTypeAtCreation))
                     .build()
