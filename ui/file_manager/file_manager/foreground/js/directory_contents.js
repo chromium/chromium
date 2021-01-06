@@ -2,10 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {MetadataModel} from './metadata/metadata_model.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {FilesAppDirEntry, FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {FileListModel} from './file_list_model.m.js';
+// #import {AsyncUtil} from '../../common/js/async_util.m.js';
+// #import {constants} from './constants.m.js';
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {util} from '../../common/js/util.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// #import {metrics} from '../../common/js/metrics.m.js';
+// clang-format on
+
 /**
  * Scanner of the entries.
  */
-class ContentScanner {
+/* #export */ class ContentScanner {
   constructor() {
     this.cancelled_ = false;
   }
@@ -36,7 +51,7 @@ class ContentScanner {
 /**
  * Scanner of the entries in a directory.
  */
-class DirectoryContentScanner extends ContentScanner {
+/* #export */ class DirectoryContentScanner extends ContentScanner {
   /**
    * @param {DirectoryEntry|FilesAppDirEntry} entry The directory to be read.
    */
@@ -85,7 +100,7 @@ class DirectoryContentScanner extends ContentScanner {
 /**
  * Scanner of the entries for the search results on Drive File System.
  */
-class DriveSearchContentScanner extends ContentScanner {
+/* #export */ class DriveSearchContentScanner extends ContentScanner {
   /** @param {string} query The query string. */
   constructor(query) {
     super();
@@ -160,7 +175,7 @@ DriveSearchContentScanner.MAX_RESULTS_ = 100;
  * Scanner of the entries of the file name search on the directory tree, whose
  * root is entry.
  */
-class LocalSearchContentScanner extends ContentScanner {
+/* #export */ class LocalSearchContentScanner extends ContentScanner {
   /**
    * @param {DirectoryEntry} entry The root of the search target directory tree.
    * @param {string} query The query of the search.
@@ -189,9 +204,9 @@ class LocalSearchContentScanner extends ContentScanner {
 /**
  * Scanner of the entries for the metadata search on Drive File System.
  */
-class DriveMetadataSearchContentScanner extends ContentScanner {
+/* #export */ class DriveMetadataSearchContentScanner extends ContentScanner {
   /**
-   * @param {!DriveMetadataSearchContentScanner.SearchType} searchType The
+   * @param {!chrome.fileManagerPrivate.SearchType} searchType The
    *     option of the search.
    */
   constructor(searchType) {
@@ -232,19 +247,7 @@ class DriveMetadataSearchContentScanner extends ContentScanner {
   }
 }
 
-/**
- * The search types on the Drive File System.
- * @enum {!chrome.fileManagerPrivate.SearchType}
- */
-DriveMetadataSearchContentScanner.SearchType = {
-  SEARCH_ALL: chrome.fileManagerPrivate.SearchType.ALL,
-  SEARCH_SHARED_WITH_ME: chrome.fileManagerPrivate.SearchType.SHARED_WITH_ME,
-  SEARCH_RECENT_FILES: chrome.fileManagerPrivate.SearchType.EXCLUDE_DIRECTORIES,
-  SEARCH_OFFLINE: chrome.fileManagerPrivate.SearchType.OFFLINE,
-};
-Object.freeze(DriveMetadataSearchContentScanner.SearchType);
-
-class RecentContentScanner extends ContentScanner {
+/* #export */ class RecentContentScanner extends ContentScanner {
   /**
    * @param {string} query Search query.
    * @param {chrome.fileManagerPrivate.SourceRestriction=} opt_sourceRestriction
@@ -295,7 +298,7 @@ class RecentContentScanner extends ContentScanner {
 /**
  * Scanner of media-view volumes.
  */
-class MediaViewContentScanner extends ContentScanner {
+/* #export */ class MediaViewContentScanner extends ContentScanner {
   /**
    * @param {!DirectoryEntry} rootEntry The root entry of the media-view volume.
    */
@@ -338,7 +341,7 @@ class MediaViewContentScanner extends ContentScanner {
  * is mounted as a disk volume and hide the fake root item while the
  * disk volume exists.
  */
-class CrostiniMounter extends ContentScanner {
+/* #export */ class CrostiniMounter extends ContentScanner {
   /**
    * @override
    */
@@ -348,8 +351,7 @@ class CrostiniMounter extends ContentScanner {
         console.error(
             'mountCrostini error: ', chrome.runtime.lastError.message);
         errorCallback(util.createDOMError(
-            DirectoryModel.CROSTINI_CONNECT_ERR,
-            chrome.runtime.lastError.message));
+            constants.CROSTINI_CONNECT_ERR, chrome.runtime.lastError.message));
         return;
       }
       successCallback();
@@ -361,7 +363,7 @@ class CrostiniMounter extends ContentScanner {
  * This class manages filters and determines a file should be shown or not.
  * When filters are changed, a 'changed' event is fired.
  */
-class FileFilter extends cr.EventTarget {
+/* #export */ class FileFilter extends cr.EventTarget {
   /** @param {!VolumeManager} volumeManager */
   constructor(volumeManager) {
     super();
@@ -519,7 +521,7 @@ FileFilter.WINDOWS_HIDDEN = ['$RECYCLE.BIN'];
  * A context of DirectoryContents.
  * TODO(yoshiki): remove this. crbug.com/224869.
  */
-class FileListContext {
+/* #export */ class FileListContext {
   /**
    * @param {FileFilter} fileFilter The file-filter context.
    * @param {!MetadataModel} metadataModel
@@ -584,7 +586,7 @@ class FileListContext {
  * results.
  * TODO(hidehiko): Remove EventTarget from this.
  */
-class DirectoryContents extends cr.EventTarget {
+/* #export */ class DirectoryContents extends cr.EventTarget {
   /**
    *
    * @param {FileListContext} context The file list context.

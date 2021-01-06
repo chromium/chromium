@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+/**
  * Namespace for common constnats used in Files app.
  * @namespace
  */
@@ -97,3 +102,12 @@ constants.DEFAULT_CROSTINI_VM = 'termina';
  * @const
  */
 constants.PLUGIN_VM = 'PvmDefault';
+
+/**
+ * DOMError type for crostini connection failure.
+ * @const {string}
+ */
+constants.CROSTINI_CONNECT_ERR = 'CrostiniConnectErr';
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {constants};

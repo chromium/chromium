@@ -77,7 +77,7 @@ class EmptyFolderController {
   onScanFailed_(event) {
     this.isScanning_ = false;
     // Show alert for crostini connection error.
-    if (event.error.name == DirectoryModel.CROSTINI_CONNECT_ERR) {
+    if (event.error.name == constants.CROSTINI_CONNECT_ERR) {
       this.alertDialog_.showWithTitle(
           str('ERROR_LINUX_FILES_CONNECTION'), event.error.message);
     }

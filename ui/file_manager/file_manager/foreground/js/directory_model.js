@@ -2,6 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {EntriesChangedEvent} from '../../../externs/entries_changed_event.m.js';
+// #import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
+// #import {FilesAppDirEntry, FakeEntry, FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {FileOperationManager} from '../../../externs/background/file_operation_manager.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {MetadataModel} from './metadata/metadata_model.m.js';
+// #import {FileListSingleSelectionModel, FileListSelectionModel} from './ui/file_list_selection_model.m.js';
+// #import {FileWatcher} from './file_watcher.m.js';
+// #import {FileListModel} from './file_list_model.m.js';
+// #import {FileListContext, DirectoryContents, DirectoryContentScanner, RecentContentScanner, CrostiniMounter, DriveSearchContentScanner, LocalSearchContentScanner, MediaViewContentScanner, DriveMetadataSearchContentScanner, ContentScanner, FileFilter} from './directory_contents.m.js';
+// #import {constants} from './constants.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {util} from '../../common/js/util.m.js';
+// #import {AsyncUtil} from '../../common/js/async_util.m.js';
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {metrics} from '../../common/js/metrics.m.js';
+// clang-format on
+
 // If directory files changes too often, don't rescan directory more than once
 // per specified interval
 const SIMULTANEOUS_RESCAN_INTERVAL = 500;
@@ -11,7 +34,7 @@ const SHORT_RESCAN_INTERVAL = 100;
 /**
  * Data model of the file manager.
  */
-class DirectoryModel extends cr.EventTarget {
+/* #export */ class DirectoryModel extends cr.EventTarget {
   /**
    * @param {boolean} singleSelection True if only one file could be selected
    *                                  at the time.
@@ -770,7 +793,7 @@ class DirectoryModel extends cr.EventTarget {
       }
 
       // Do not rescan for crostini errors.
-      if (event.error.name === DirectoryModel.CROSTINI_CONNECT_ERR) {
+      if (event.error.name === constants.CROSTINI_CONNECT_ERR) {
         return;
       }
 
@@ -1403,16 +1426,13 @@ class DirectoryModel extends cr.EventTarget {
       let searchType;
       switch (locationInfo.rootType) {
         case VolumeManagerCommon.RootType.DRIVE_OFFLINE:
-          searchType =
-              DriveMetadataSearchContentScanner.SearchType.SEARCH_OFFLINE;
+          searchType = chrome.fileManagerPrivate.SearchType.OFFLINE;
           break;
         case VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME:
-          searchType = DriveMetadataSearchContentScanner.SearchType
-                           .SEARCH_SHARED_WITH_ME;
+          searchType = chrome.fileManagerPrivate.SearchType.SHARED_WITH_ME;
           break;
         case VolumeManagerCommon.RootType.DRIVE_RECENT:
-          searchType =
-              DriveMetadataSearchContentScanner.SearchType.SEARCH_RECENT_FILES;
+          searchType = chrome.fileManagerPrivate.SearchType.EXCLUDE_DIRECTORIES;
           break;
         default:
           // Unknown special search entry.
@@ -1534,9 +1554,3 @@ class DirectoryModel extends cr.EventTarget {
     }
   }
 }
-
-/**
- * DOMError type for crostini connection failure.
- * @const {string}
- */
-DirectoryModel.CROSTINI_CONNECT_ERR = 'CrostiniConnectErr';

@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertArrayEquals, assertEquals} from 'chrome://test/chai_assert.js';
+import {FileListModel} from './file_list_model.m.js';
+import {MetadataModel} from './metadata/metadata_model.m.js';
+
 const TEST_METADATA = {
   'a.txt': {
     contentMimeType: 'text/plain',
@@ -64,7 +68,7 @@ function createFakeMetadataModel(data) {
   });
 }
 
-function testIsImageDominant() {
+export function testIsImageDominant() {
   const fileListModel =
       new FileListModel(createFakeMetadataModel(TEST_METADATA));
 
@@ -92,7 +96,7 @@ function testIsImageDominant() {
   assertEquals(fileListModel.isImageDominant(), true);
 }
 
-function testSortWithFolders() {
+export function testSortWithFolders() {
   const fileListModel =
       new FileListModel(createFakeMetadataModel(TEST_METADATA));
   fileListModel.push({name: 'dirA', isDirectory: true});
@@ -124,7 +128,7 @@ function testSortWithFolders() {
       fileListModel, ['dirB', 'dirA', 'a.txt', 'b.html', 'c.jpg']);
 }
 
-function testSplice() {
+export function testSplice() {
   const fileListModel = makeSimpleFileListModel(['d', 'a', 'x', 'n']);
   fileListModel.sort('name', 'asc');
 
@@ -145,7 +149,7 @@ function testSplice() {
   assertFileListModelElementNames(fileListModel, ['a', 'b', 'd', 'p', 'x']);
 }
 
-function testSpliceWithoutSortStatus() {
+export function testSpliceWithoutSortStatus() {
   const fileListModel = makeSimpleFileListModel(['d', 'a', 'x', 'n']);
 
   fileListModel.addEventListener('splice', event => {
@@ -168,7 +172,7 @@ function testSpliceWithoutSortStatus() {
   assertFileListModelElementNames(fileListModel, ['d', 'a', 'p', 'b', 'n']);
 }
 
-function testSpliceWithoutAddingNewItems() {
+export function testSpliceWithoutAddingNewItems() {
   const fileListModel = makeSimpleFileListModel(['d', 'a', 'x', 'n']);
   fileListModel.sort('name', 'asc');
 
@@ -189,7 +193,7 @@ function testSpliceWithoutAddingNewItems() {
   assertFileListModelElementNames(fileListModel, ['a', 'd', 'x']);
 }
 
-function testSpliceWithoutDeletingItems() {
+export function testSpliceWithoutDeletingItems() {
   const fileListModel = makeSimpleFileListModel(['d', 'a', 'x', 'n']);
   fileListModel.sort('name', 'asc');
 

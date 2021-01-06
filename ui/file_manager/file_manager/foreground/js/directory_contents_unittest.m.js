@@ -2,10 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertEquals, assertFalse} from 'chrome://test/chai_assert.js';
+import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {EntryLocation} from '../../../externs/entry_location.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import {FileFilter} from './directory_contents.m.js';
+
+/**
+ * Mock chrome APIs.
+ * @type {Object}
+ */
+const mockChrome = {
+  fileManagerPrivate: {
+    SearchType: {
+      ALL: 'ALL',
+      SHARED_WITH_ME: 'SHARED_WITH_ME',
+      EXCLUDE_DIRECTORIES: 'EXCLUDE_DIRECTORIES',
+      OFFLINE: 'OFFLINE',
+    },
+  },
+};
+
+/**
+ * Initializes the test environment.
+ */
+export function setUp() {
+  // Install mock chrome APIs.
+  installMockChrome(mockChrome);
+}
+
 /**
  * Check that files are shown or hidden correctly.
  */
-function testHiddenFiles() {
+export function testHiddenFiles() {
   let volumeManagerRootType = VolumeManagerCommon.RootType.DOWNLOADS;
   // Create a fake volume manager that provides entry location info.
   const volumeManager = /** @type {!VolumeManager} */ ({

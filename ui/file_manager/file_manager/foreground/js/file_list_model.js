@@ -2,10 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {EntryLocation} from '../../../externs/entry_location.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {MetadataModel} from './metadata/metadata_model.m.js';
+// #import {FileType} from '../../common/js/file_type.m.js';
+// #import {strf, str, util} from '../../common/js/util.m.js';
+// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+// clang-format on
+
 /**
  * File list.
  */
-class FileListModel extends cr.ui.ArrayDataModel {
+/* #export */ class FileListModel extends cr.ui.ArrayDataModel {
   /** @param {!MetadataModel} metadataModel */
   constructor(metadataModel) {
     super([]);
@@ -254,8 +263,8 @@ class FileListModel extends cr.ui.ArrayDataModel {
    * @override
    */
   replaceItem(oldItem, newItem) {
-    this.onRemoveEntryFromList_(oldItem);
-    this.onAddEntryToList_(newItem);
+    this.onRemoveEntryFromList_(/** @type {?Entry} */ (oldItem));
+    this.onAddEntryToList_(/** @type {?Entry} */ (newItem));
 
     cr.ui.ArrayDataModel.prototype.replaceItem.apply(this, arguments);
   }

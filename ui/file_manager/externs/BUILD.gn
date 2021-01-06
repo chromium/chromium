@@ -26,6 +26,15 @@ js_library("background_window.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("entries_changed_event.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/externs/entries_changed_event.m.js" ]
+
+  deps = [ "//ui/file_manager/file_manager/common/js:util.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("entry_location.m") {
   sources = [ "$root_gen_dir/ui/file_manager/externs/entry_location.m.js" ]
 
@@ -122,6 +131,7 @@ js_library("volume_info_list.m") {
 js_modulizer("modulize") {
   input_files = [
     "background_window.js",
+    "entries_changed_event.js",
     "entry_location.js",
     "exif_entry.js",
     "files_app_entry_interfaces.js",
