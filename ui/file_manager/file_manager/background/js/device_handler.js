@@ -2,8 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {AsyncUtil} from '../../common/js/async_util.m.js';
+// #import {importer} from '../../common/js/importer_common.m.js';
+// #import {volumeManagerFactory} from './volume_manager_factory.m.js';
+// #import {ProgressCenterItem, ProgressItemType, ProgressItemState} from '../../common/js/progress_center_common.m.js';
+// #import {util, strf, str} from '../../common/js/util.m.js';
+// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {ProgressCenter} from '../../../externs/background/progress_center.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// clang-format on
+
 /** Handler of device event. */
-class DeviceHandler extends cr.EventTarget {
+/* #export */ class DeviceHandler extends cr.EventTarget {
   /** @param {!ProgressCenter} progressCenter */
   constructor(progressCenter) {
     super();

@@ -2,12 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {installMockChrome, MockCommandLinePrivate} from '../../../base/js/mock_chrome.m.js';
+import {assertRejected, reportPromise} from '../../../base/js/test_error_reporting.m.js';
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+
+import {VolumeInfoImpl} from './volume_info_impl.m.js';
+import {volumeManagerFactory} from './volume_manager_factory.m.js';
+import {VolumeManagerImpl} from './volume_manager_impl.m.js';
+import {volumeManagerUtil} from './volume_manager_util.m.js';
+
 let mockChrome;
 let createVolumeInfoOriginal;
 
-function setUp() {
-  window.loadTimeData.getString = id => id;
-  window.loadTimeData.data = {};
+export function setUp() {
+  loadTimeData.getString = id => id;
+  loadTimeData.data = {};
 
   // Set up mock of chrome.fileManagerPrivate APIs.
   mockChrome = {
@@ -133,7 +146,7 @@ function setUp() {
   createVolumeInfoOriginal = volumeManagerUtil.createVolumeInfo;
 }
 
-function tearDown() {
+export function tearDown() {
   volumeManagerFactory.revokeInstanceForTesting();
   // To avoid a closure warning assigning to |chrome|, tearDown() does not
   // balance the call to installMockChrome() here.
@@ -156,7 +169,7 @@ function getMockProfile() {
   };
 }
 
-function testGetVolumeInfo(callback) {
+export function testGetVolumeInfo(callback) {
   reportPromise(
       volumeManagerFactory.getInstance().then(volumeManager => {
         const entry = MockFileEntry.create(
@@ -170,7 +183,7 @@ function testGetVolumeInfo(callback) {
       callback);
 }
 
-function testGetDriveConnectionState(callback) {
+export function testGetDriveConnectionState(callback) {
   reportPromise(
       volumeManagerFactory.getInstance().then(volumeManager => {
         // Default connection state is online
@@ -195,7 +208,7 @@ function testGetDriveConnectionState(callback) {
       callback);
 }
 
-function testMountArchiveAndUnmount(callback) {
+export function testMountArchiveAndUnmount(callback) {
   const test = async () => {
     // Set states of mock fileManagerPrivate APIs.
     const mountSourcePath = '/usr/local/home/test/Downloads/foobar.zip';
@@ -246,7 +259,7 @@ function testMountArchiveAndUnmount(callback) {
   reportPromise(test(), callback);
 }
 
-function testGetCurrentProfileVolumeInfo(callback) {
+export function testGetCurrentProfileVolumeInfo(callback) {
   reportPromise(
       volumeManagerFactory.getInstance().then(volumeManager => {
         const volumeInfo = volumeManager.getCurrentProfileVolumeInfo(
@@ -260,7 +273,7 @@ function testGetCurrentProfileVolumeInfo(callback) {
       callback);
 }
 
-function testGetLocationInfo(callback) {
+export function testGetLocationInfo(callback) {
   reportPromise(
       volumeManagerFactory.getInstance().then(volumeManager => {
         const downloadEntry = MockFileEntry.create(
@@ -398,7 +411,7 @@ function testGetLocationInfo(callback) {
       callback);
 }
 
-function testWhenReady(callback) {
+export function testWhenReady(callback) {
   volumeManagerFactory.getInstance().then((volumeManager) => {
     const promiseBeforeAdd = volumeManager.whenVolumeInfoReady('volumeId');
     const volumeInfo = new VolumeInfoImpl(
@@ -432,7 +445,7 @@ function testWhenReady(callback) {
   });
 }
 
-function testDriveMountedDuringInitialization(callback) {
+export function testDriveMountedDuringInitialization(callback) {
   const test = async () => {
     const sendVolumeMetadataListPromise = new Promise(resolve => {
       chrome.fileManagerPrivate.getVolumeMetadataList = resolve;
@@ -471,7 +484,7 @@ function testDriveMountedDuringInitialization(callback) {
   reportPromise(test(), callback);
 }
 
-function testErrorPropagatedDuringInitialization(done) {
+export function testErrorPropagatedDuringInitialization(done) {
   chrome.fileManagerPrivate.getVolumeMetadataList = () => {
     throw new Error('Dummy error for test purpose');
   };
@@ -483,7 +496,7 @@ function testErrorPropagatedDuringInitialization(done) {
  * Tests that an error initializing one volume doesn't stop other volumes to be
  * initialized. crbug.com/1041340
  */
-async function testErrorInitializingVolume(done) {
+export async function testErrorInitializingVolume(done) {
   // Confirm that a Drive volume is on faked getVolumeMetadataList().
   assertTrue(
       chrome.fileManagerPrivate.volumeMetadataList_.some(volumeMetadata => {
@@ -522,7 +535,7 @@ async function testErrorInitializingVolume(done) {
  * Tests VolumeInfoImpl doesn't raise exception if null is passed for
  * filesystem. crbug.com/1041340
  */
-async function testDriveWithNullFilesystem(done) {
+export async function testDriveWithNullFilesystem(done) {
   // Get Drive volume metadata from faked getVolumeMetadataList().
   const driveVolumeMetadata =
       chrome.fileManagerPrivate.volumeMetadataList_.find(volumeMetadata => {

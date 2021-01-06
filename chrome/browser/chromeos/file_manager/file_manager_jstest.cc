@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Crostini) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DeviceHandlerTest) {
-  RunTestURL("background/js/device_handler_unittest_gen.html");
+  RunTestURL("background/js/device_handler_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryContentsTest) {
@@ -254,5 +254,5 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, UtilTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, VolumeManagerTest) {
-  RunTestURL("background/js/volume_manager_unittest_gen.html");
+  RunTestURL("background/js/volume_manager_unittest.m_gen.html");
 }

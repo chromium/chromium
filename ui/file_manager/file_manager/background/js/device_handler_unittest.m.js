@@ -1,7 +1,21 @@
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-'use strict';
+
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {installMockChrome, MockChromeStorageAPI} from '../../../base/js/mock_chrome.m.js';
+import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {VolumeInfo} from '../../../externs/volume_info.m.js';
+import {importer} from '../../common/js/importer_common.m.js';
+import {metrics} from '../../common/js/metrics.m.js';
+import {MockFileSystem} from '../../common/js/mock_entry.m.js';
+
+import {DeviceHandler} from './device_handler.m.js';
+import {MockProgressCenter} from './mock_progress_center.m.js';
+import {MockVolumeManager} from './mock_volume_manager.m.js';
 
 /** @type {!MockVolumeManager} */
 let volumeManager;
@@ -17,16 +31,16 @@ let mockChrome;
 
 /**
  * Mock metrics.
- * @type {!Object}
+ * @param {string} name
+ * @param {*} value
+ * @param {Array<*>|number=} opt_validValues
  */
-window.metrics = {
-  recordEnum: function() {},
-};
+metrics.recordEnum = function(name, value, opt_validValues) {};
 
 // Set up the test components.
-function setUp() {
+export function setUp() {
   // Set up string assets.
-  window.loadTimeData.data = {
+  loadTimeData.data = {
     DEVICE_UNSUPPORTED_MESSAGE: 'DEVICE_UNSUPPORTED: $1',
     DEVICE_UNKNOWN_MESSAGE: 'DEVICE_UNKNOWN: $1',
     MULTIPART_DEVICE_UNSUPPORTED_MESSAGE: 'MULTIPART_DEVICE_UNSUPPORTED: $1',
@@ -34,13 +48,13 @@ function setUp() {
     FORMAT_SUCCESS_MESSAGE: 'FORMAT_SUCCESS_MESSAGE: $1',
     FORMAT_FAILURE_MESSAGE: 'FORMAT_FAILURE_MESSAGE: $1',
   };
-  window.loadTimeData.getString = id => {
-    return window.loadTimeData.data_[id] || id;
+  loadTimeData.getString = id => {
+    return loadTimeData.data_[id] || id;
   };
-  window.loadTimeData.getBoolean = id => {
+  loadTimeData.getBoolean = id => {
     return id === 'ARC_USB_STORAGE_UI_ENABLED' ? true : false;
   };
-  window.loadTimeData.valueExists = id => {
+  loadTimeData.valueExists = id => {
     return id === 'ARC_USB_STORAGE_UI_ENABLED';
   };
 
@@ -57,7 +71,7 @@ function setUpInIncognitoContext() {
   mockChrome.extension.inIncognitoContext = true;
 }
 
-function testGoodDevice(callback) {
+export function testGoodDevice(callback) {
   // Turn off ARC so that the notification won't show the "OPEN SETTINGS"
   // button.
   mockChrome.fileManagerPrivate.arcEnabledPref = false;
@@ -85,7 +99,7 @@ function testGoodDevice(callback) {
       callback);
 }
 
-function testGoodDeviceWithAllowPlayStoreMessage(callback) {
+export function testGoodDeviceWithAllowPlayStoreMessage(callback) {
   // Turn on ARC so that the notification shows the "OPEN SETTINGS" button.
   mockChrome.fileManagerPrivate.arcEnabledPref = true;
   // Turn off the ARC pref so that the notification shows the "Allow Play Store
@@ -117,7 +131,7 @@ function testGoodDeviceWithAllowPlayStoreMessage(callback) {
       callback);
 }
 
-function testGoodDeviceWithPlayStoreAppsHaveAccessMessage(callback) {
+export function testGoodDeviceWithPlayStoreAppsHaveAccessMessage(callback) {
   // Turn on ARC so that the notification shows the "OPEN SETTINGS" button.
   mockChrome.fileManagerPrivate.arcEnabledPref = true;
   // Turn on the ARC pref so that the notification shows the "Play Store apps
@@ -152,7 +166,7 @@ function testGoodDeviceWithPlayStoreAppsHaveAccessMessage(callback) {
       callback);
 }
 
-function testRemovableMediaDeviceWithImportEnabled(callback) {
+export function testRemovableMediaDeviceWithImportEnabled(callback) {
   const storage = new MockChromeStorageAPI();
 
   setupFileSystem(VolumeManagerCommon.VolumeType.REMOVABLE, 'blabbity', [
@@ -182,7 +196,7 @@ function testRemovableMediaDeviceWithImportEnabled(callback) {
       callback);
 }
 
-function testMtpMediaDeviceWithImportEnabled(callback) {
+export function testMtpMediaDeviceWithImportEnabled(callback) {
   const storage = new MockChromeStorageAPI();
 
   setupFileSystem(VolumeManagerCommon.VolumeType.MTP, 'blabbity', [
@@ -212,7 +226,7 @@ function testMtpMediaDeviceWithImportEnabled(callback) {
       callback);
 }
 
-function testGoodDeviceNotNavigated() {
+export function testGoodDeviceNotNavigated() {
   mockChrome.fileManagerPrivate.onMountCompleted.dispatch({
     eventType: 'mount',
     status: 'success',
@@ -229,7 +243,7 @@ function testGoodDeviceNotNavigated() {
   assertFalse(mockChrome.notifications.resolver.settled);
 }
 
-function testGoodDeviceWithBadParent(callback) {
+export function testGoodDeviceWithBadParent(callback) {
   mockChrome.fileManagerPrivate.onMountCompleted.dispatch({
     eventType: 'mount',
     status: 'error_internal',
@@ -252,7 +266,7 @@ function testGoodDeviceWithBadParent(callback) {
       callback);
 }
 
-function testGoodDeviceWithBadParent_DuplicateMount(callback) {
+export function testGoodDeviceWithBadParent_DuplicateMount(callback) {
   mockChrome.fileManagerPrivate.onMountCompleted.dispatch({
     eventType: 'mount',
     status: 'success',
@@ -289,7 +303,7 @@ function testGoodDeviceWithBadParent_DuplicateMount(callback) {
       callback);
 }
 
-function testUnsupportedDevice(callback) {
+export function testUnsupportedDevice(callback) {
   mockChrome.fileManagerPrivate.onMountCompleted.dispatch({
     eventType: 'mount',
     status: 'error_unsupported_filesystem',
@@ -312,7 +326,7 @@ function testUnsupportedDevice(callback) {
       callback);
 }
 
-function testUnknownDevice(callback) {
+export function testUnknownDevice(callback) {
   // Emulate adding a device which has unknown filesystem.
   mockChrome.fileManagerPrivate.onMountCompleted.dispatch({
     eventType: 'mount',
@@ -337,7 +351,7 @@ function testUnknownDevice(callback) {
       callback);
 }
 
-function testUnknownReadonlyDevice(callback) {
+export function testUnknownReadonlyDevice(callback) {
   // Emulate adding a device which has unknown filesystem but is read-only.
   mockChrome.fileManagerPrivate.onMountCompleted.dispatch({
     eventType: 'mount',
@@ -362,7 +376,7 @@ function testUnknownReadonlyDevice(callback) {
       callback);
 }
 
-function testUnsupportedWithUnknownParentReplacesNotification() {
+export function testUnsupportedWithUnknownParentReplacesNotification() {
   mockChrome.fileManagerPrivate.onMountCompleted.dispatch({
     eventType: 'mount',
     status: 'error_internal',
@@ -397,7 +411,7 @@ function testUnsupportedWithUnknownParentReplacesNotification() {
       mockChrome.notifications.items['deviceFail:/device/path'].message);
 }
 
-function testMountPartialSuccess(callback) {
+export function testMountPartialSuccess(callback) {
   mockChrome.fileManagerPrivate.onMountCompleted.dispatch({
     eventType: 'mount',
     status: 'success',
@@ -441,7 +455,7 @@ function testMountPartialSuccess(callback) {
       callback);
 }
 
-function testUnknown(callback) {
+export function testUnknown(callback) {
   mockChrome.fileManagerPrivate.onMountCompleted.dispatch({
     eventType: 'mount',
     status: 'error_unknown',
@@ -464,7 +478,7 @@ function testUnknown(callback) {
       callback);
 }
 
-function testNonASCIILabel(callback) {
+export function testNonASCIILabel(callback) {
   mockChrome.fileManagerPrivate.onMountCompleted.dispatch({
     eventType: 'mount',
     status: 'error_internal',
@@ -488,7 +502,7 @@ function testNonASCIILabel(callback) {
       callback);
 }
 
-function testMulitpleFail() {
+export function testMulitpleFail() {
   // The first parent error.
   mockChrome.fileManagerPrivate.onMountCompleted.dispatch({
     eventType: 'mount',
@@ -559,7 +573,7 @@ function testMulitpleFail() {
       mockChrome.notifications.items['deviceFail:/device/path'].message);
 }
 
-function testDisabledDevice() {
+export function testDisabledDevice() {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch(
       {type: 'disabled', devicePath: '/device/path'});
   assertEquals(1, Object.keys(mockChrome.notifications.items).length);
@@ -572,7 +586,7 @@ function testDisabledDevice() {
   assertEquals(0, Object.keys(mockChrome.notifications.items).length);
 }
 
-function testFormatSucceeded() {
+export function testFormatSucceeded() {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch(
       {type: 'format_start', devicePath: '/device/path', deviceLabel: 'label'});
   assertEquals(1, progressCenter.getItemCount());
@@ -591,7 +605,7 @@ function testFormatSucceeded() {
       progressCenter.getItemById('format:/device/path').message);
 }
 
-function testFormatFailed() {
+export function testFormatFailed() {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch(
       {type: 'format_start', devicePath: '/device/path', deviceLabel: 'label'});
   assertEquals(1, progressCenter.getItemCount());
@@ -607,7 +621,7 @@ function testFormatFailed() {
       progressCenter.getItemById('format:/device/path').message);
 }
 
-function testPartitionSucceeded() {
+export function testPartitionSucceeded() {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch({
     type: 'partition_start',
     devicePath: '/device/path',
@@ -623,7 +637,7 @@ function testPartitionSucceeded() {
   assertEquals(0, progressCenter.getItemCount());
 }
 
-function testPartitionFailed() {
+export function testPartitionFailed() {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch({
     type: 'partition_start',
     devicePath: '/device/path',
@@ -642,7 +656,7 @@ function testPartitionFailed() {
       progressCenter.getItemById('partition:/device/path').message);
 }
 
-function testRenameSucceeded() {
+export function testRenameSucceeded() {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch(
       {type: 'rename_start', devicePath: '/device/path'});
   assertEquals(0, Object.keys(mockChrome.notifications.items).length);
@@ -652,7 +666,7 @@ function testRenameSucceeded() {
   assertEquals(0, Object.keys(mockChrome.notifications.items).length);
 }
 
-function testRenameFailed() {
+export function testRenameFailed() {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch(
       {type: 'rename_start', devicePath: '/device/path'});
   assertEquals(0, Object.keys(mockChrome.notifications.items).length);
@@ -665,7 +679,7 @@ function testRenameFailed() {
       mockChrome.notifications.items['renameFail:/device/path'].message);
 }
 
-function testDeviceHardUnplugged() {
+export function testDeviceHardUnplugged() {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch(
       {type: 'hard_unplugged', devicePath: '/device/path'});
   assertEquals(1, Object.keys(mockChrome.notifications.items).length);
@@ -674,7 +688,7 @@ function testDeviceHardUnplugged() {
       mockChrome.notifications.items['hardUnplugged:/device/path'].message);
 }
 
-function testNotificationClicked(callback) {
+export function testNotificationClicked(callback) {
   const devicePath = '/device/path';
   const notificationId = 'deviceNavigation:' + devicePath;
 
@@ -697,7 +711,7 @@ function testNotificationClicked(callback) {
       callback);
 }
 
-function testMiscMessagesInIncognito() {
+export function testMiscMessagesInIncognito() {
   setUpInIncognitoContext();
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch(
       {type: 'format_start', devicePath: '/device/path', deviceLabel: 'label'});
@@ -705,7 +719,7 @@ function testMiscMessagesInIncognito() {
   assertEquals(0, progressCenter.getItemCount());
 }
 
-function testMountCompleteInIncognito() {
+export function testMountCompleteInIncognito() {
   setUpInIncognitoContext();
   mockChrome.fileManagerPrivate.onMountCompleted.dispatch({
     eventType: 'mount',

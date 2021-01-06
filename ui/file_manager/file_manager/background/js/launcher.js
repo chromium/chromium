@@ -3,6 +3,14 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// #import {AppWindowWrapper} from './app_window_wrapper.m.js';
+// #import {util} from '../../common/js/util.m.js';
+
+/**
  * @type {!Object}
  */
 // eslint-disable-next-line no-var
@@ -12,7 +20,7 @@ var launcher = {};
  * Type of a Files app's instance launch.
  * @enum {number}
  */
-const LaunchType = {
+/* #export */ const LaunchType = {
   ALWAYS_CREATE: 0,
   FOCUS_ANY_OR_CREATE: 1,
   FOCUS_SAME_OR_CREATE: 2
@@ -174,3 +182,6 @@ launcher.launchFileManager = async (opt_appState, opt_id, opt_type) => {
   appWindow.rawAppWindow.focus();
   return appId;
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {launcher};
