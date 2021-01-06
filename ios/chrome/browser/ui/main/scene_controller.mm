@@ -780,9 +780,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     self.sceneState.appState.startupInformation.restoreHelper = nil;
   }
 
-  // If skipping first run and not in Safe Mode, consider showing the default
-  // browser promo.
-  if (!firstRun && !self.sceneState.appState.isInSafeMode) {
+  // If skipping first run, not in Safe Mode, and the launch is not after a
+  // crash, consider showing the default browser promo.
+  if (!firstRun && !self.sceneState.appState.isInSafeMode &&
+      !self.sceneState.appState.postCrashLaunch) {
     // Show the Default Browser promo UI if the user's past behavior fits
     // the categorization of potentially interested users or if the user is
     // signed in. Do not show if it is determined that Chrome is already the
