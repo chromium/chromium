@@ -690,16 +690,7 @@ void WindowCycleList::Step(WindowCycleController::Direction direction) {
   }
 
   const int offset = direction == WindowCycleController::FORWARD ? 1 : -1;
-  if (offset == 1 && !wm::IsActiveWindow(windows_[0]) &&
-      Shell::Get()->window_cycle_controller()->IsSwitchingMode()) {
-    // Similar to `WindowCycleList::Scroll()`, when switching to alt-tab mode,
-    // if all windows are minimized, the starting window should be the first
-    // one rather than the second. Note that during entering alt-tab mode,
-    // `SetFocusedWindow()` does nothing, so we don't need to prevent it here.
-    SetFocusedWindow(windows_[0]);
-  } else {
-    SetFocusedWindow(windows_[GetOffsettedWindowIndex(offset)]);
-  }
+  SetFocusedWindow(windows_[GetOffsettedWindowIndex(offset)]);
   Scroll(offset);
 }
 
@@ -884,17 +875,16 @@ void WindowCycleList::Scroll(int offset) {
 
   DCHECK(static_cast<size_t>(current_index_) < windows_.size());
 
-  // If alt-tab is entered or switched to the other mode, check the following
-  // special case: user is cycling forward but the MRU window is not active.
-  // This occurs when all windows are minimized. The starting window should be
-  // the first one rather than the second.
-  if ((!cycle_view_ ||
-       Shell::Get()->window_cycle_controller()->IsSwitchingMode()) &&
-      current_index_ == 0 && offset == 1 && !wm::IsActiveWindow(windows_[0])) {
-    current_index_ = -1;
+  if (!cycle_view_ && current_index_ == 0) {
+    // Special case the situation where we're cycling forward but the MRU
+    // window is not active. This occurs when all windows are minimized. The
+    // starting window should be the first one rather than the second.
+    if (offset == 1 && !wm::IsActiveWindow(windows_[0]))
+      current_index_ = -1;
   }
 
   current_index_ = GetOffsettedWindowIndex(offset);
+
   if (ShouldShowUi()) {
     if (current_index_ > 1)
       InitWindowCycleView();
