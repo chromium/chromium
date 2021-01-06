@@ -151,6 +151,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Button with a plus sign that opens a new tab, located on the right side of
 // the thumb strip, shown when the plus sign cell isn't visible.
 @property(nonatomic, weak) ThumbStripPlusSignButton* plusSignButton;
+
+// The current state of the tab grid when using the thumb strip.
+@property(nonatomic, assign) ViewRevealState currentState;
 @end
 
 @implementation TabGridViewController
@@ -501,6 +504,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - ViewRevealingAnimatee
 
 - (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
+  self.currentState = currentViewRevealState;
   self.scrollView.scrollEnabled = NO;
   switch (currentViewRevealState) {
     case ViewRevealState::Hidden: {
@@ -590,6 +594,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
+  self.currentState = viewRevealState;
   switch (viewRevealState) {
     case ViewRevealState::Hidden:
       [self.delegate tabGridViewControllerDidDismiss:self];
@@ -1413,9 +1418,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         base::UserMetricsAction("MobileTabGridOpenIncognitoTab"));
   }
   self.activePage = self.currentPage;
+  // When the tab grid is peeked, selecting an item should not close the grid.
+  BOOL closeTabGrid = self.currentState != ViewRevealState::Peeked;
   [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
                                        focusOmnibox:NO
-                                       closeTabGrid:YES];
+                                       closeTabGrid:closeTabGrid];
   gridViewController.showsSelectionUpdates = YES;
 }
 
