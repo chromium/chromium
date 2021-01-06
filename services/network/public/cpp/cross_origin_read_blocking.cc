@@ -485,10 +485,6 @@ SniffingResult CrossOriginReadBlocking::SniffForJSON(base::StringPiece data) {
       // Whitespace is ignored (outside of string literals)
       if (c == ' ' || c == '\t' || c == '\r' || c == '\n')
         continue;
-    } else {
-      // Inside string literals, control characters should result in rejection.
-      if ((c >= 0 && c < 32) || c == 127)
-        return kNo;
     }
 
     switch (state) {
