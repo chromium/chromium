@@ -1555,6 +1555,9 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 // Updates URL for navigation context and navigation item.
 - (void)didReceiveRedirectForNavigation:(web::NavigationContextImpl*)context
                                 withURL:(const GURL&)URL {
+  if (!context)
+    return;
+
   context->SetUrl(URL);
   web::NavigationItemImpl* item =
       web::GetItemWithUniqueID(self.navigationManagerImpl, context);
