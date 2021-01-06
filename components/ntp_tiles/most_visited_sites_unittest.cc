@@ -65,6 +65,7 @@ using testing::AnyNumber;
 using testing::AtLeast;
 using testing::ByMove;
 using testing::Contains;
+using testing::DoAll;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::Ge;

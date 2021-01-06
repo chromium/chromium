@@ -19,6 +19,7 @@ namespace safe_browsing {
 
 using base::TimeDelta;
 using testing::_;
+using testing::DoAll;
 using testing::Return;
 using testing::SaveArg;
 

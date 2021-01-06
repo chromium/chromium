@@ -20,6 +20,7 @@
 
 using ::testing::_;
 using ::testing::DeleteArg;
+using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
 using ::testing::NotNull;
 using ::testing::Return;

@@ -20,6 +20,8 @@
 
 namespace {
 
+using testing::DoAll;
+
 using QuietUiReason = PrefNotificationPermissionUiSelector::QuietUiReason;
 using WarningReason = PrefNotificationPermissionUiSelector::WarningReason;
 using Decision = PrefNotificationPermissionUiSelector::Decision;

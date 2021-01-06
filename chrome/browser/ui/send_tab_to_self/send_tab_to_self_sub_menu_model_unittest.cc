@@ -16,6 +16,7 @@ namespace send_tab_to_self {
 namespace {
 
 using testing::_;
+using testing::DoAll;
 using testing::Return;
 using testing::SaveArg;
 

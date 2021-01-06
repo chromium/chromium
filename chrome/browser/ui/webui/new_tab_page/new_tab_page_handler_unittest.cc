@@ -20,6 +20,8 @@
 
 namespace {
 
+using testing::DoAll;
+
 class MockInstantService : public InstantService {
  public:
   explicit MockInstantService(Profile* profile) : InstantService(profile) {}

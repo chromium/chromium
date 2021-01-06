@@ -34,6 +34,7 @@ using base::TestMockTimeTaskRunner;
 using testing::_;
 using testing::AllOf;
 using testing::Contains;
+using testing::DoAll;
 using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::Mock;

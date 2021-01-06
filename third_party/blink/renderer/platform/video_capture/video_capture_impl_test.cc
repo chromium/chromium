@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 using ::testing::_;
+using ::testing::DoAll;
 using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;

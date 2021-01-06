@@ -26,6 +26,7 @@
 
 using base::test::RunOnceClosure;
 using ::testing::_;
+using ::testing::DoAll;
 using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::SaveArg;

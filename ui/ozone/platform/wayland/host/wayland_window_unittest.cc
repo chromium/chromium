@@ -45,6 +45,7 @@
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 
 using ::testing::_;
+using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;

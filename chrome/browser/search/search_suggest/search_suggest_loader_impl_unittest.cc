@@ -26,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::DoAll;
 using testing::Eq;
 using testing::IsEmpty;
 using testing::SaveArg;

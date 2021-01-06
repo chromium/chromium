@@ -31,6 +31,7 @@ using jingle_xmpp::XmlElement;
 
 using testing::_;
 using testing::DeleteArg;
+using testing::DoAll;
 using testing::Invoke;
 using testing::NotNull;
 using testing::Return;

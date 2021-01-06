@@ -106,15 +106,16 @@ namespace {
 
 using ::base::TimeDelta;
 
+using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::DefaultValue;
+using ::testing::DoAll;
 using ::testing::InSequence;
 using ::testing::MockFunction;
 using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::StrictMock;
-using ::testing::_;
 
 // A selection of characters that have traditionally been mangled in some
 // environment or other, for testing 8-bit cleanliness.

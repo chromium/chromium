@@ -87,6 +87,7 @@ using testing::_;
 using testing::AnyOf;
 using testing::AtLeast;
 using testing::Contains;
+using testing::DoAll;
 using testing::ElementsAre;
 using testing::HasSubstr;
 using testing::Not;

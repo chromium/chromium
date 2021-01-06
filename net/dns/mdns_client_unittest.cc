@@ -37,6 +37,7 @@
 using ::testing::_;
 using ::testing::Assign;
 using ::testing::AtMost;
+using ::testing::DoAll;
 using ::testing::Exactly;
 using ::testing::IgnoreResult;
 using ::testing::Invoke;

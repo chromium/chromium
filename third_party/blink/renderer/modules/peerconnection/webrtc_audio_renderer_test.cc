@@ -34,6 +34,7 @@
 #include "third_party/webrtc/api/media_stream_interface.h"
 
 using testing::_;
+using testing::DoAll;
 using testing::InvokeWithoutArgs;
 using testing::Return;
 using testing::SaveArg;

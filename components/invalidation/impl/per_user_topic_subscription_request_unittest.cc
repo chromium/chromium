@@ -27,6 +27,7 @@ namespace syncer {
 namespace {
 
 using testing::_;
+using testing::DoAll;
 using testing::SaveArg;
 
 network::mojom::URLResponseHeadPtr CreateHeadersForTest(int responce_code) {
