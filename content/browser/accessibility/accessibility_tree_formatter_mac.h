@@ -41,10 +41,12 @@ class CONTENT_EXPORT AccessibilityTreeFormatterMac
                        base::Value* dict) const;
 
   void RecursiveBuildTree(const id node,
+                          const NSRect& root_rect,
                           const a11y::LineIndexer* line_indexer,
                           base::Value* dict) const;
 
   void AddProperties(const id node,
+                     const NSRect& root_rect,
                      const a11y::LineIndexer* line_indexer,
                      base::Value* dict) const;
 
@@ -54,7 +56,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatterMac
       const ui::AXPropertyNode& property_node,
       const a11y::LineIndexer* line_indexer) const;
 
-  base::Value PopulatePosition(const BrowserAccessibilityCocoa*) const;
+  base::Value PopulateLocalPosition(const id node,
+                                    const NSRect& root_rect) const;
   base::Value PopulatePoint(NSPoint) const;
   base::Value PopulateSize(NSSize) const;
   base::Value PopulateRect(NSRect) const;

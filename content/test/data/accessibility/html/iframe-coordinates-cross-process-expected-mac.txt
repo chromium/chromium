@@ -1,15 +1,15 @@
-AXWebArea position=(0, 0) AXSize={h: 600, w: 800}
-++AXGroup position=(0, 0) AXSize={h: 150, w: 300}
-++++AXButton position=(25, 25) AXSize={h: 50, w: 250}
-++AXGroup position=(0, 150) AXSize={h: 150, w: 300}
-++++AXButton position=(25, 175) AXSize={h: 50, w: 250}
-++AXGroup position=(0, 300) AXSize={h: 150, w: 300}
-++++AXGroup position=(0, 300) AXSize={h: 100, w: 300}
-++++++AXWebArea position=(0, 300) AXSize={h: 100, w: 300}
-++++++++AXGroup position=(0, 300) AXSize={h: 100, w: 300}
-++++++++++AXButton position=(25, 325) AXSize={h: 50, w: 250}
-++AXGroup position=(0, 450) AXSize={h: 150, w: 300}
-++++AXGroup position=(0, 450) AXSize={h: 50, w: 150}
-++++++AXWebArea position=(0, 450) AXSize={h: 50, w: 150}
-++++++++AXGroup position=(0, 450) AXSize={h: 50, w: 150}
-++++++++++AXButton position=(0, 450) AXSize={h: 25, w: 125}
+AXWebArea AXSize={h: 600, w: 800} LocalPosition={x: 0, y: 0}
+++AXGroup AXSize={h: 150, w: 300} LocalPosition={x: 0, y: 0}
+++++AXButton AXSize={h: 50, w: 250} LocalPosition={x: 25, y: 25}
+++AXGroup AXSize={h: 150, w: 300} LocalPosition={x: 0, y: 150}
+++++AXButton AXSize={h: 50, w: 250} LocalPosition={x: 25, y: 175}
+++AXGroup AXSize={h: 150, w: 300} LocalPosition={x: 0, y: 300}
+++++AXGroup AXSize={h: 100, w: 300} LocalPosition={x: 0, y: 300}
+++++++AXWebArea AXSize={h: 100, w: 300} LocalPosition={x: 0, y: 300}
+++++++++AXGroup AXSize={h: 100, w: 300} LocalPosition={x: 0, y: 300}
+++++++++++AXButton AXSize={h: 50, w: 250} LocalPosition={x: 25, y: 325}
+++AXGroup AXSize={h: 150, w: 300} LocalPosition={x: 0, y: 450}
+++++AXGroup AXSize={h: 50, w: 150} LocalPosition={x: 0, y: 450}
+++++++AXWebArea AXSize={h: 50, w: 150} LocalPosition={x: 0, y: 450}
+++++++++AXGroup AXSize={h: 50, w: 150} LocalPosition={x: 0, y: 450}
+++++++++++AXButton AXSize={h: 25, w: 125} LocalPosition={x: 0, y: 450}

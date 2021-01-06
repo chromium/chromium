@@ -30,6 +30,8 @@ using content::a11y::AttributeInvoker;
 using content::a11y::AttributeNamesOf;
 using content::a11y::AttributeValueOf;
 using content::a11y::ChildrenOf;
+using content::a11y::SizeOf;
+using content::a11y::PositionOf;
 using content::a11y::IsAXUIElement;
 using content::a11y::IsBrowserAccessibilityCocoa;
 using content::a11y::LineIndexer;
@@ -42,9 +44,7 @@ namespace content {
 
 namespace {
 
-const char kPositionDictAttr[] = "position";
-const char kXCoordDictAttr[] = "x";
-const char kYCoordDictAttr[] = "y";
+const char kLocalPositionDictAttr[] = "LocalPosition";
 const char kRangeLocDictAttr[] = "loc";
 const char kRangeLenDictAttr[] = "len";
 
@@ -109,8 +109,12 @@ base::Value AccessibilityTreeFormatterMac::BuildTree(const id root) const {
   LineIndexer line_indexer(root);
   base::Value dict(base::Value::Type::DICTIONARY);
 
+  NSPoint position = PositionOf(root);
+  NSSize size = SizeOf(root);
+  NSRect rect = NSMakeRect(position.x, position.y, size.width, size.height);
+
   EvaluateScripts(&line_indexer, &dict);
-  RecursiveBuildTree(root, &line_indexer, &dict);
+  RecursiveBuildTree(root, rect, &line_indexer, &dict);
 
   return dict;
 }
@@ -137,15 +141,16 @@ void AccessibilityTreeFormatterMac::EvaluateScripts(
 
 void AccessibilityTreeFormatterMac::RecursiveBuildTree(
     const id node,
+    const NSRect& root_rect,
     const LineIndexer* line_indexer,
     base::Value* dict) const {
-  AddProperties(node, line_indexer, dict);
+  AddProperties(node, root_rect, line_indexer, dict);
 
   NSArray* children = ChildrenOf(node);
   base::Value child_dict_list(base::Value::Type::LIST);
   for (id child in children) {
     base::Value child_dict(base::Value::Type::DICTIONARY);
-    RecursiveBuildTree(child, line_indexer, &child_dict);
+    RecursiveBuildTree(child, root_rect, line_indexer, &child_dict);
     child_dict_list.Append(std::move(child_dict));
   }
   dict->SetPath(kChildrenDictAttr, std::move(child_dict_list));
@@ -153,15 +158,11 @@ void AccessibilityTreeFormatterMac::RecursiveBuildTree(
 
 void AccessibilityTreeFormatterMac::AddProperties(
     const id node,
+    const NSRect& root_rect,
     const LineIndexer* line_indexer,
     base::Value* dict) const {
-  // Chromium tree special processing
-  if (IsBrowserAccessibilityCocoa(node)) {
-    // Position (no size since it's exposed as standard AXSize attribute)
-    BrowserAccessibilityCocoa* cocoa_node =
-        static_cast<BrowserAccessibilityCocoa*>(node);
-    dict->SetPath(kPositionDictAttr, PopulatePosition(cocoa_node));
-  }
+  // Chromium special attributes.
+  dict->SetPath(kLocalPositionDictAttr, PopulateLocalPosition(node, root_rect));
 
   // Dump all attributes if match-all filter is specified.
   if (HasMatchAllPropertyFilter()) {
@@ -193,33 +194,22 @@ void AccessibilityTreeFormatterMac::AddProperties(
   }
 }
 
-base::Value AccessibilityTreeFormatterMac::PopulatePosition(
-    const BrowserAccessibilityCocoa* cocoa_node) const {
-  BrowserAccessibility* node = [cocoa_node owner];
-  BrowserAccessibilityManager* root_manager = node->manager()->GetRootManager();
-  DCHECK(root_manager);
-
+base::Value AccessibilityTreeFormatterMac::PopulateLocalPosition(
+    const id node,
+    const NSRect& root_rect) const {
   // The NSAccessibility position of an object is in global coordinates and
   // based on the lower-left corner of the object. To make this easier and
   // less confusing, convert it to local window coordinates using the top-left
   // corner when dumping the position.
-  BrowserAccessibility* root = root_manager->GetRoot();
-  BrowserAccessibilityCocoa* cocoa_root = ToBrowserAccessibilityCocoa(root);
-  NSPoint root_position = [[cocoa_root position] pointValue];
-  NSSize root_size = [[cocoa_root size] sizeValue];
-  int root_top = -static_cast<int>(root_position.y + root_size.height);
-  int root_left = static_cast<int>(root_position.x);
+  int root_top = -static_cast<int>(root_rect.origin.y + root_rect.size.height);
+  int root_left = static_cast<int>(root_rect.origin.x);
 
-  NSPoint node_position = [[cocoa_node position] pointValue];
-  NSSize node_size = [[cocoa_node size] sizeValue];
+  NSPoint node_position = PositionOf(node);
+  NSSize node_size = SizeOf(node);
 
-  base::Value position(base::Value::Type::DICTIONARY);
-  position.SetIntPath(kXCoordDictAttr,
-                      static_cast<int>(node_position.x - root_left));
-  position.SetIntPath(
-      kYCoordDictAttr,
-      static_cast<int>(-node_position.y - node_size.height - root_top));
-  return position;
+  return PopulatePoint(NSMakePoint(
+      static_cast<int>(node_position.x - root_left),
+      static_cast<int>(-node_position.y - node_size.height - root_top)));
 }
 
 base::Value AccessibilityTreeFormatterMac::PopulateObject(
@@ -437,14 +427,6 @@ std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(
     // Children are used to generate the tree
     // itself, thus no sense to expose them on each node.
     if (item.first == kChildrenDictAttr) {
-      continue;
-    }
-    // Special case: position.
-    if (item.first == kPositionDictAttr) {
-      WriteAttribute(false,
-                     FormatCoordinates(item.second, kPositionDictAttr,
-                                       kXCoordDictAttr, kYCoordDictAttr),
-                     &line);
       continue;
     }
 
