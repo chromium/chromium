@@ -13,6 +13,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
@@ -21,6 +22,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_skia.h"
@@ -1436,9 +1438,22 @@ TEST_P(HoldingSpaceTrayTest, PlaceholderContainsFilesAppChip) {
       pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId);
   ASSERT_TRUE(files_app_chip);
 
+  // Prior to being acted upon by the user, there should be no events logged to
+  // the Files app chip histogram.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.FilesAppChip.Action.All",
+      holding_space_metrics::FilesAppChipAction::kClick, 0);
+
   // Click the chip and expect a call to open the Files app.
   EXPECT_CALL(*client(), OpenMyFiles);
   Click(files_app_chip, 0);
+
+  // After having been acted upon by the user, there should be a single click
+  // event logged to the Files app chip histogram.
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.FilesAppChip.Action.All",
+      holding_space_metrics::FilesAppChipAction::kClick, 1);
 }
 
 // User should be able to launch selected holding space items by pressing the

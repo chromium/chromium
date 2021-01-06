@@ -71,6 +71,10 @@ void RecordDownloadsAction(DownloadsAction action) {
   base::UmaHistogramEnumeration("HoldingSpace.Downloads.Action.All", action);
 }
 
+void RecordFilesAppChipAction(FilesAppChipAction action) {
+  base::UmaHistogramEnumeration("HoldingSpace.FilesAppChip.Action.All", action);
+}
+
 void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
                       ItemAction action) {
   for (const HoldingSpaceItem* item : items) {

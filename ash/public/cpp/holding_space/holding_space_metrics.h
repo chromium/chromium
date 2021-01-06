@@ -20,8 +20,8 @@ class HoldingSpaceItem;
 namespace holding_space_metrics {
 
 // Enumeration of actions that can be taken on the holding space pod in the
-// shelf. Note that these values are persisted to histograms so existing values
-// should remain unchanged and new values should be added to the end.
+// shelf. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
 enum class PodAction {
   // kClick (Deprecated) = 0,
   kShowBubble = 1,
@@ -38,8 +38,8 @@ enum class PodAction {
 ASH_PUBLIC_EXPORT void RecordPodAction(PodAction action);
 
 // Enumeration of actions that can be taken on the holding space downloads
-// button. Note that these values are persisted to histograms so existing
-// values should remain unchanged and new values should be added to the end.
+// button. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
 enum class DownloadsAction {
   kClick = 0,
   kMaxValue = kClick,
@@ -48,9 +48,20 @@ enum class DownloadsAction {
 // Records the specified `action` taken on the holding space downloads header.
 ASH_PUBLIC_EXPORT void RecordDownloadsAction(DownloadsAction action);
 
-// Enumeration of actions that can be taken on holding space items. Note that
-// these values are persisted to histograms so existing values should remain
-// unchanged and new values should be added to the end.
+// Enumeration of actions that can be taken on the holding space Files app chip.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FilesAppChipAction {
+  kClick = 0,
+  kMaxValue = kClick,
+};
+
+// Records the specified `action` taken on the holding space Files app chip.
+ASH_PUBLIC_EXPORT void RecordFilesAppChipAction(FilesAppChipAction action);
+
+// Enumeration of actions that can be taken on holding space items. These values
+// are persisted to logs. Entries should not be renumbered and numeric values
+// should never be reused.
 enum class ItemAction {
   kCopy = 0,
   kDrag = 1,

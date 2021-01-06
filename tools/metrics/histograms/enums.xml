@@ -36833,6 +36833,10 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="0" label="kClick"/>
 </enum>
 
+<enum name="HoldingSpaceFilesAppChipAction">
+  <int value="0" label="kClick"/>
+</enum>
+
 <enum name="HoldingSpaceItemAction">
   <int value="0" label="kCopy"/>
   <int value="1" label="kDrag"/>
