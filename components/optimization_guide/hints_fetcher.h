@@ -23,6 +23,7 @@
 class PrefService;
 
 namespace network {
+class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
@@ -64,14 +65,13 @@ using HintsFetchedCallback = base::OnceCallback<void(
 // Guide Service.
 //
 // This class fetches new hints from the remote Optimization Guide Service.
-// Owner must ensure that |hint_cache| remains alive for the lifetime of
-// |HintsFetcher|.
 class HintsFetcher {
  public:
   HintsFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& optimization_guide_service_url,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      network::NetworkConnectionTracker* network_connection_tracker);
   virtual ~HintsFetcher();
 
   // Requests hints from the Optimization Guide Service if a request for them is
@@ -149,6 +149,10 @@ class HintsFetcher {
 
   // A reference to the PrefService for this profile. Not owned.
   PrefService* pref_service_ = nullptr;
+
+  // Listens to changes around the network connection. Not owned. Guaranteed to
+  // outlive |this|.
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   // Holds the hosts being requested by the hints fetcher.
   std::vector<std::string> hosts_fetched_;

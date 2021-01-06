@@ -13,6 +13,7 @@
 class PrefService;
 
 namespace network {
+class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }  // namespace network
 
@@ -27,7 +28,8 @@ class HintsFetcherFactory {
   HintsFetcherFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& optimization_guide_service_url,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      network::NetworkConnectionTracker* network_connection_tracker);
   HintsFetcherFactory(const HintsFetcherFactory&) = delete;
   HintsFetcherFactory& operator=(const HintsFetcherFactory&) = delete;
   virtual ~HintsFetcherFactory();
@@ -46,6 +48,10 @@ class HintsFetcherFactory {
 
   // A reference to the PrefService for this profile. Not owned.
   PrefService* pref_service_ = nullptr;
+
+  // A reference to the object that listens for changes in network connection.
+  // Not owned. Guaranteed to outlive |this|.
+  network::NetworkConnectionTracker* network_connection_tracker_;
 };
 
 }  // namespace optimization_guide

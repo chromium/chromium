@@ -51,6 +51,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/network_service_instance.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -272,7 +273,8 @@ OptimizationGuideHintsManager::OptimizationGuideHintsManager(
               url_loader_factory,
               optimization_guide::features::
                   GetOptimizationGuideServiceGetHintsURL(),
-              pref_service)),
+              pref_service,
+              content::GetNetworkConnectionTracker())),
       external_app_packages_approved_for_fetch_(
           optimization_guide::features::
               ExternalAppPackageNamesApprovedForFetch()),

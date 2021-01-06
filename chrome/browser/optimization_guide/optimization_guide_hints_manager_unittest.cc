@@ -43,6 +43,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -187,10 +188,12 @@ class TestHintsFetcher : public optimization_guide::HintsFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       GURL optimization_guide_service_url,
       PrefService* pref_service,
+      network::NetworkConnectionTracker* network_connection_tracker,
       const std::vector<HintsFetcherEndState>& fetch_states)
       : HintsFetcher(url_loader_factory,
                      optimization_guide_service_url,
-                     pref_service),
+                     pref_service,
+                     network_connection_tracker),
         fetch_states_(fetch_states) {
     DCHECK(!fetch_states_.empty());
   }
@@ -251,16 +254,18 @@ class TestHintsFetcherFactory : public optimization_guide::HintsFetcherFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       GURL optimization_guide_service_url,
       PrefService* pref_service,
+      network::NetworkConnectionTracker* network_connection_tracker,
       std::vector<HintsFetcherEndState> fetch_states)
       : HintsFetcherFactory(url_loader_factory,
                             optimization_guide_service_url,
-                            pref_service),
+                            pref_service,
+                            network_connection_tracker),
         fetch_states_(fetch_states) {}
 
   std::unique_ptr<optimization_guide::HintsFetcher> BuildInstance() override {
-    return std::make_unique<TestHintsFetcher>(url_loader_factory_,
-                                              optimization_guide_service_url_,
-                                              pref_service_, fetch_states_);
+    return std::make_unique<TestHintsFetcher>(
+        url_loader_factory_, optimization_guide_service_url_, pref_service_,
+        network_connection_tracker_, fetch_states_);
   }
 
  private:
@@ -379,7 +384,7 @@ class OptimizationGuideHintsManagerTest
       const std::vector<HintsFetcherEndState>& fetch_states) {
     return std::make_unique<TestHintsFetcherFactory>(
         url_loader_factory_, GURL("https://hintsserver.com"), pref_service(),
-        fetch_states);
+        network::TestNetworkConnectionTracker::GetInstance(), fetch_states);
   }
 
   void MoveClockForwardBy(base::TimeDelta time_delta) {
