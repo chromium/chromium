@@ -406,7 +406,6 @@
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/media/feeds/media_feeds_service.h"
-#include "chrome/browser/media/kaleidoscope/kaleidoscope_prefs.h"
 #endif
 
 namespace {
@@ -1102,7 +1101,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if !defined(OS_ANDROID)
   media_feeds::MediaFeedsService::RegisterProfilePrefs(registry);
-  kaleidoscope::prefs::RegisterProfilePrefs(registry);
 #endif
 
   RegisterProfilePrefsForMigration(registry);

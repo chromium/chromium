@@ -1530,7 +1530,6 @@ static_library("ui") {
       "//chrome/browser:theme_properties",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/cart:mojo_bindings",
-      "//chrome/browser/media/kaleidoscope/mojom",
       "//chrome/browser/media/router",
       "//chrome/browser/profile_resetter:profile_reset_report_proto",
       "//chrome/browser/promo_browser_command:mojo_bindings",

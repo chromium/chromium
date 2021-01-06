@@ -165,7 +165,6 @@ Refer to README.md for content description and update process.
  <item id="intranet_redirect_detector" added_in_milestone="62" hash_code="21785164" type="0" content_hash_code="62025595" os_list="linux,windows" file_path="chrome/browser/intranet_redirect_detector.cc"/>
  <item id="invalidation_service" added_in_milestone="62" hash_code="72354423" type="0" deprecated="2020-01-23" content_hash_code="78425687" file_path=""/>
  <item id="javascript_report_error" added_in_milestone="87" hash_code="109607776" type="0" content_hash_code="7229012" os_list="linux" file_path="chrome/browser/error_reporting/chrome_js_error_report_processor.cc"/>
- <item id="kaleidoscope_service" added_in_milestone="87" hash_code="49759694" type="0" content_hash_code="14307563" os_list="linux,windows" file_path="chrome/browser/media/kaleidoscope/kaleidoscope_service.cc"/>
  <item id="kids_chrome_management_client_classify_url" added_in_milestone="77" hash_code="109987793" type="0" deprecated="2019-07-30" content_hash_code="112740597" file_path=""/>
  <item id="lib_address_input" added_in_milestone="62" hash_code="50816767" type="0" content_hash_code="57977576" os_list="linux,windows" file_path="third_party/libaddressinput/chromium/chrome_metadata_source.cc"/>
  <item id="litepages_robots_rules" added_in_milestone="89" hash_code="50910588" type="0" content_hash_code="72567080" os_list="linux,windows" file_path="chrome/browser/subresource_redirect/origin_robots_rules.cc"/>

@@ -5,8 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 declare_args() {
-  enable_kaleidoscope = false
-
   # Chromium Updater is a cross-platform updater for desktop clients built using
   # Chromium code and tools. Code is in //chrome/updater. The design doc is
   # located at http://bit.ly/chromium-updater. Chrome is currently installed and

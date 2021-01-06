@@ -129,8 +129,6 @@
 #include "components/feed/feed_feature_list.h"
 #else  // defined(OS_ANDROID)
 #include "chrome/browser/media/feeds/media_feeds_service.h"
-#include "chrome/browser/media/kaleidoscope/constants.h"
-#include "chrome/browser/media/kaleidoscope/kaleidoscope_ui.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
@@ -873,14 +871,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<WelcomeUI>;
 #endif
 
-#if !defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(media::kKaleidoscope)) {
-    if (url.host_piece() == kKaleidoscopeUIHost ||
-        url.host_piece() == kKaleidoscopeUIWatchHost) {
-      return &NewWebUI<KaleidoscopeUI>;
-    }
-  }
-#endif  // !defined(OS_ANDROID)
 #if BUILDFLAG(ENABLE_NACL)
   if (url.host_piece() == chrome::kChromeUINaClHost)
     return &NewWebUI<NaClUI>;

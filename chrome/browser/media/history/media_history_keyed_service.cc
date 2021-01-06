@@ -571,35 +571,4 @@ void MediaHistoryKeyedService::GetMediaFeedFetchDetails(
       std::move(callback));
 }
 
-void MediaHistoryKeyedService::SetKaleidoscopeData(
-    media::mojom::GetCollectionsResponsePtr data,
-    const std::string& gaia_id) {
-  if (auto* store = store_->GetForWrite()) {
-    store->db_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&MediaHistoryStore::SetKaleidoscopeData,
-                                  store, std::move(data), gaia_id));
-  }
-}
-
-void MediaHistoryKeyedService::GetKaleidoscopeData(
-    const std::string& gaia_id,
-    GetKaleidoscopeDataCallback callback) {
-  if (auto* store = store_->GetForWrite()) {
-    base::PostTaskAndReplyWithResult(
-        store_->GetForRead()->db_task_runner_.get(), FROM_HERE,
-        base::BindOnce(&MediaHistoryStore::GetKaleidoscopeData, store, gaia_id),
-        std::move(callback));
-  } else {
-    std::move(callback).Run(nullptr);
-  }
-}
-
-void MediaHistoryKeyedService::DeleteKaleidoscopeData() {
-  if (auto* store = store_->GetForWrite()) {
-    store->db_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MediaHistoryStore::DeleteKaleidoscopeData, store));
-  }
-}
-
 }  // namespace media_history

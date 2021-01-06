@@ -8253,13 +8253,7 @@
     ]
   },
   "MediaRecommendationsEnabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "MediaRecommendationsEnabled": false },
-        "prefs": { "kaleidoscope.enabled_by_policy": { } }
-      }
-    ]
+    "note": "This policy has been removed since Chrome 89."
   },
   "EduCoexistenceToSVersion": {
     "os": ["chromeos"],

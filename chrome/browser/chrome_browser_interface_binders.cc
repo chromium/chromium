@@ -105,10 +105,6 @@
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/media/feeds/media_feeds_store.mojom.h"
-#include "chrome/browser/media/kaleidoscope/kaleidoscope_data_provider_impl.h"
-#include "chrome/browser/media/kaleidoscope/kaleidoscope_identity_manager_impl.h"
-#include "chrome/browser/media/kaleidoscope/kaleidoscope_ui.h"
-#include "chrome/browser/media/kaleidoscope/mojom/kaleidoscope.mojom.h"
 #include "chrome/browser/payments/payment_credential_factory.h"
 #include "chrome/browser/payments/payment_request_factory.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom.h"
@@ -814,14 +810,6 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<::mojom::ResetPasswordHandler,
                                          ResetPasswordUI>(map);
 #endif
-
-#if !defined(OS_ANDROID)
-  RegisterWebUIControllerInterfaceBinder<media::mojom::KaleidoscopeDataProvider,
-                                         KaleidoscopeUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      media::mojom::KaleidoscopeIdentityManager, KaleidoscopeUI>(map);
-#endif  // !defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(features::kNearbySharing)) {

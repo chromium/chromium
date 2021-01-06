@@ -3087,6 +3087,9 @@ const char kMediaFeedsBackgroundFetching[] =
 // This pref enables checking of Media Feed items against the Safe Search API.
 const char kMediaFeedsSafeSearchEnabled[] = "media_feeds_safe_search_enabled";
 
+// This pref enables automated selection of Media Feeds to fetch.
+const char kMediaFeedsAutoSelectEnabled[] = "media_feeds_auto_select_enabled";
+
 // This pref reenables AppCache temporarily during its deprecation process.
 // In particular, this sets the AppcacheRequireOriginTrial feature to false.
 // TODO(enne): Remove this once AppCache has been removed.

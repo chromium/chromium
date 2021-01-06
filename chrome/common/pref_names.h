@@ -1078,6 +1078,7 @@ extern const char kCertificateProvisioningStateForDevice[];
 
 extern const char kMediaFeedsBackgroundFetching[];
 extern const char kMediaFeedsSafeSearchEnabled[];
+extern const char kMediaFeedsAutoSelectEnabled[];
 
 extern const char kAppCacheForceEnabled[];
 

@@ -17,7 +17,6 @@
 #include "chrome/browser/media/feeds/media_feeds_store.mojom-shared.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "chrome/browser/media/history/media_history_test_utils.h"
-#include "chrome/browser/media/kaleidoscope/kaleidoscope_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -347,8 +346,8 @@ class MediaFeedsServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SetAutomaticSelectionEnabled() {
-    profile()->GetPrefs()->SetBoolean(
-        kaleidoscope::prefs::kKaleidoscopeAutoSelectMediaFeeds, true);
+    profile()->GetPrefs()->SetBoolean(prefs::kMediaFeedsAutoSelectEnabled,
+                                      true);
   }
 
   safe_search_api::StubURLChecker* safe_search_checker() {

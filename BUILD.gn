@@ -1402,10 +1402,6 @@ if (enable_js_type_check) {
     if (is_android) {
       data_deps += [ "components/offline_pages/resources:closure_compile" ]
     }
-    if (enable_kaleidoscope) {
-      data_deps +=
-          [ "chrome/browser/media/kaleidoscope/internal:closure_compile" ]
-    }
   }
 }
 
