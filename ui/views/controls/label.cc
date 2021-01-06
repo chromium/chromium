@@ -129,8 +129,11 @@ void Label::SetTextContext(int text_context) {
   if (text_context == text_context_)
     return;
   text_context_ = text_context;
+  full_text_->SetFontList(style::GetFont(text_context_, text_style_));
+  full_text_->SetMinLineHeight(GetLineHeight());
+  ClearDisplayText();
   UpdateColorsFromTheme();
-  OnPropertyChanged(&text_context_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&text_context_, kPropertyEffectsPreferredSizeChanged);
 }
 
 int Label::GetTextStyle() const {
@@ -142,8 +145,9 @@ void Label::SetTextStyle(int style) {
     return;
 
   text_style_ = style;
-  // TODO(pkasting): Seems like potentially |full_text_|'s font list and line
-  // height should be updated here?
+  full_text_->SetFontList(style::GetFont(text_context_, text_style_));
+  full_text_->SetMinLineHeight(GetLineHeight());
+  ClearDisplayText();
   UpdateColorsFromTheme();
   OnPropertyChanged(&text_style_, kPropertyEffectsPreferredSizeChanged);
 }
