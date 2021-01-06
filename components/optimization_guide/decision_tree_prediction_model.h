@@ -11,7 +11,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/sequence_checker.h"
 #include "components/optimization_guide/prediction_model.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
@@ -89,8 +88,6 @@ class DecisionTreePredictionModel : public PredictionModel {
   bool ValidateTreeNode(const proto::DecisionTree& tree,
                         const proto::TreeNode& node,
                         int node_index) const;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(DecisionTreePredictionModel);
 };

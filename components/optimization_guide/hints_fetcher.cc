@@ -151,7 +151,7 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
         optimization_types,
     optimization_guide::proto::RequestContext request_context,
     HintsFetchedCallback hints_fetched_callback) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(optimization_types.size(), 0u);
 
   if (content::GetNetworkConnectionTracker()->IsOffline()) {
@@ -286,7 +286,7 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
 void HintsFetcher::HandleResponse(const std::string& get_hints_response_data,
                                   int net_status,
                                   int response_code) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<proto::GetHintsResponse> get_hints_response =
       std::make_unique<proto::GetHintsResponse>();
@@ -390,7 +390,7 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
 // Callback is only invoked if |active_url_loader_| is bound and still alive.
 void HintsFetcher::OnURLLoadComplete(
     std::unique_ptr<std::string> response_body) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int response_code = -1;
   if (active_url_loader_->ResponseInfo() &&
@@ -408,7 +408,7 @@ void HintsFetcher::OnURLLoadComplete(
 
 std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
     const std::vector<std::string>& hosts) const {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DictionaryPrefUpdate hosts_fetched(
       pref_service_, prefs::kHintsFetcherHostsSuccessfullyFetched);

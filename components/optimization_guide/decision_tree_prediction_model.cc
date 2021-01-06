@@ -121,8 +121,6 @@ bool DecisionTreePredictionModel::ValidateTreeNode(
 OptimizationTargetDecision DecisionTreePredictionModel::Predict(
     const base::flat_map<std::string, float>& model_features,
     double* prediction_score) {
-  SEQUENCE_CHECKER(sequence_checker_);
-
   *prediction_score = 0.0;
   // TODO(mcrouse): Add metrics to record if the model evaluation fails.
   if (!EvaluateModel(model_, model_features, prediction_score))
