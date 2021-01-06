@@ -151,12 +151,12 @@ class FakeFile(object):
 
 TEST_CONFIG = """\
 {
-  'masters': {
+  'builder_groups': {
     'chromium': {},
-    'fake_master': {
+    'fake_builder_group': {
       'fake_builder': 'rel_bot',
       'fake_debug_builder': 'debug_goma',
-      'fake_args_bot': '//build/args/bots/fake_master/fake_args_bot.gn',
+      'fake_args_bot': '//build/args/bots/fake_builder_group/fake_args_bot.gn',
       'fake_multi_phase': { 'phase_1': 'phase_1', 'phase_2': 'phase_2'},
       'fake_args_file': 'args_file_goma',
       'fake_ios_error': 'ios_error',
@@ -205,7 +205,7 @@ TEST_BAD_CONFIG = """\
     'rel_bot_1': ['rel', 'chrome_with_codecs'],
     'rel_bot_2': ['rel', 'bad_nested_config'],
   },
-  'masters': {
+  'builder_groups': {
     'chromium': {
       'a': 'rel_bot_1',
       'b': 'rel_bot_2',
@@ -229,9 +229,9 @@ TEST_BAD_CONFIG = """\
 
 TEST_ARGS_FILE_TWICE_CONFIG = """\
 {
-  'masters': {
+  'builder_groups': {
     'chromium': {},
-    'fake_master': {
+    'fake_builder_group': {
       'fake_args_file_twice': 'args_file_twice',
     },
   },
@@ -249,9 +249,9 @@ TEST_ARGS_FILE_TWICE_CONFIG = """\
 
 TEST_DUP_CONFIG = """\
 {
-  'masters': {
+  'builder_groups': {
     'chromium': {},
-    'fake_master': {
+    'fake_builder_group': {
       'fake_builder': 'some_config',
       'other_builder': 'some_other_config',
     },
@@ -270,7 +270,7 @@ TEST_DUP_CONFIG = """\
 
 TRYSERVER_CONFIG = """\
 {
-  'masters': {
+  'builder_groups': {
     'not_a_tryserver': {
       'fake_builder': 'fake_config',
     },
@@ -301,7 +301,7 @@ class UnitTest(unittest.TestCase):
         },
       }''')
     mbw.files.setdefault(
-        mbw.ToAbsPath('//build/args/bots/fake_master/fake_args_bot.gn'),
+        mbw.ToAbsPath('//build/args/bots/fake_builder_group/fake_args_bot.gn'),
         'is_debug = false\n')
     if files:
       for path, contents in files.items():
@@ -453,17 +453,17 @@ class UnitTest(unittest.TestCase):
         '--check', mbw.out)
 
     mbw = self.fake_mbw()
-    self.check(['gen', '-m', 'fake_master', '-b', 'fake_args_bot',
+    self.check(['gen', '-m', 'fake_builder_group', '-b', 'fake_args_bot',
                 '//out/Debug'],
                mbw=mbw, ret=0)
     # TODO(https://crbug.com/1093038): This assert is inappropriately failing.
     # self.assertEqual(
     #     mbw.files['/fake_src/out/Debug/args.gn'],
-    #     'import("//build/args/bots/fake_master/fake_args_bot.gn")\n')
+    #     'import("//build/args/bots/fake_builder_group/fake_args_bot.gn")\n')
 
   def test_gen_args_file_mixins(self):
     mbw = self.fake_mbw()
-    self.check(['gen', '-m', 'fake_master', '-b', 'fake_args_file',
+    self.check(['gen', '-m', 'fake_builder_group', '-b', 'fake_args_file',
                 '//out/Debug'], mbw=mbw, ret=0)
 
     self.assertEqual(
@@ -474,7 +474,7 @@ class UnitTest(unittest.TestCase):
   def test_gen_args_file_twice(self):
     mbw = self.fake_mbw()
     mbw.files[mbw.default_config] = TEST_ARGS_FILE_TWICE_CONFIG
-    self.check(['gen', '-m', 'fake_master', '-b', 'fake_args_file_twice',
+    self.check(['gen', '-m', 'fake_builder_group', '-b', 'fake_args_file_twice',
                 '//out/Debug'], mbw=mbw, ret=1)
 
   def test_gen_fails(self):
@@ -781,27 +781,27 @@ class UnitTest(unittest.TestCase):
 
   def test_multiple_phases(self):
     # Check that not passing a --phase to a multi-phase builder fails.
-    mbw = self.check(['lookup', '-m', 'fake_master', '-b', 'fake_multi_phase'],
-                     ret=1)
+    mbw = self.check(['lookup', '-m', 'fake_builder_group', '-b',
+                      'fake_multi_phase'], ret=1)
     self.assertIn('Must specify a build --phase', mbw.out)
 
     # Check that passing a --phase to a single-phase builder fails.
-    mbw = self.check(['lookup', '-m', 'fake_master', '-b', 'fake_builder',
-                      '--phase', 'phase_1'], ret=1)
+    mbw = self.check(['lookup', '-m', 'fake_builder_group', '-b',
+                      'fake_builder', '--phase', 'phase_1'], ret=1)
     self.assertIn('Must not specify a build --phase', mbw.out)
 
     # Check that passing a wrong phase key to a multi-phase builder fails.
-    mbw = self.check(['lookup', '-m', 'fake_master', '-b', 'fake_multi_phase',
-                      '--phase', 'wrong_phase'], ret=1)
+    mbw = self.check(['lookup', '-m', 'fake_builder_group', '-b',
+                      'fake_multi_phase', '--phase', 'wrong_phase'], ret=1)
     self.assertIn('Phase wrong_phase doesn\'t exist', mbw.out)
 
     # Check that passing a correct phase key to a multi-phase builder passes.
-    mbw = self.check(['lookup', '-m', 'fake_master', '-b', 'fake_multi_phase',
-                      '--phase', 'phase_1'], ret=0)
+    mbw = self.check(['lookup', '-m', 'fake_builder_group', '-b',
+                      'fake_multi_phase', '--phase', 'phase_1'], ret=0)
     self.assertIn('phase = 1', mbw.out)
 
-    mbw = self.check(['lookup', '-m', 'fake_master', '-b', 'fake_multi_phase',
-                      '--phase', 'phase_2'], ret=0)
+    mbw = self.check(['lookup', '-m', 'fake_builder_group', '-b',
+                      'fake_multi_phase', '--phase', 'phase_2'], ret=0)
     self.assertIn('phase = 2', mbw.out)
 
   def test_recursive_lookup(self):
@@ -811,7 +811,7 @@ class UnitTest(unittest.TestCase):
           'enable_antidoom_banana = true\n'
         )
     }
-    self.check(['lookup', '-m', 'fake_master', '-b', 'fake_args_file',
+    self.check(['lookup', '-m', 'fake_builder_group', '-b', 'fake_args_file',
                 '--recursive'], files=files, ret=0,
                out=('enable_antidoom_banana = true\n'
                     'enable_doom_melon = true\n'
@@ -821,7 +821,7 @@ class UnitTest(unittest.TestCase):
     mbw = self.fake_mbw()
     temp_dir = mbw.TempDir()
     self.check(['train', '--expectations-dir', temp_dir], mbw=mbw, ret=0)
-    self.assertIn(os.path.join(temp_dir, 'fake_master.json'), mbw.files)
+    self.assertIn(os.path.join(temp_dir, 'fake_builder_group.json'), mbw.files)
 
   def test_validate(self):
     mbw = self.fake_mbw()
@@ -855,7 +855,7 @@ class UnitTest(unittest.TestCase):
     temp_dir = mbw.TempDir()
     self.check(['train', '--expectations-dir', temp_dir], mbw=mbw, ret=0)
     # Remove one of the expectation files.
-    mbw.files.pop(os.path.join(temp_dir, 'fake_master.json'))
+    mbw.files.pop(os.path.join(temp_dir, 'fake_builder_group.json'))
     # Now validating should fail.
     self.check(['validate', '--expectations-dir', temp_dir], mbw=mbw, ret=1)
     self.assertIn('Expectations out of date', mbw.out)
@@ -897,11 +897,11 @@ class UnitTest(unittest.TestCase):
   def test_ios_error_config_with_ios_json(self):
     """Ensures that ios_error config finds the correct iOS JSON file for args"""
     files = {
-        '/fake_src/ios/build/bots/fake_master/fake_ios_error.json':
+        '/fake_src/ios/build/bots/fake_builder_group/fake_ios_error.json':
         ('{"gn_args": ["is_debug=true"]}\n')
     }
     mbw = self.fake_mbw(files)
-    self.check(['lookup', '-m', 'fake_master', '-b', 'fake_ios_error'],
+    self.check(['lookup', '-m', 'fake_builder_group', '-b', 'fake_ios_error'],
                mbw=mbw,
                ret=0,
                out=('\n'
@@ -917,11 +917,11 @@ class UnitTest(unittest.TestCase):
     checked.
     """
     files = {
-        '/fake_src/ios/build/bots/fake_master/fake_ios_bot.json':
+        '/fake_src/ios/build/bots/fake_builder_group/fake_ios_bot.json':
         ('{"gn_args": ["is_debug=true"]}\n')
     }
     mbw = self.fake_mbw(files)
-    self.check(['lookup', '-m', 'fake_master', '-b', 'fake_ios_bot'],
+    self.check(['lookup', '-m', 'fake_builder_group', '-b', 'fake_ios_bot'],
                mbw=mbw,
                ret=0,
                out=('\n'
@@ -937,7 +937,7 @@ class UnitTest(unittest.TestCase):
     is ios_error, but there is no iOS JSON definition for it.
     """
     mbw = self.fake_mbw()
-    self.check(['lookup', '-m', 'fake_master', '-b', 'fake_ios_error'],
+    self.check(['lookup', '-m', 'fake_builder_group', '-b', 'fake_ios_error'],
                mbw=mbw,
                ret=1)
     self.assertIn('MBErr: No iOS definition was found.', mbw.out)
@@ -949,10 +949,10 @@ class UnitTest(unittest.TestCase):
     doesn't exist at all.
     """
     mbw = self.fake_mbw()
-    self.check(['lookup', '-m', 'fake_master', '-b', 'random_bot'],
+    self.check(['lookup', '-m', 'fake_builder_group', '-b', 'random_bot'],
                mbw=mbw,
                ret=1)
-    self.assertIn('MBErr: Builder name "random_bot"  not found under masters',
+    self.assertIn('MBErr: Builder name "random_bot"  not found under groups',
                   mbw.out)
 
 

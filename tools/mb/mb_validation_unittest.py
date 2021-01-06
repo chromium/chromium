@@ -26,8 +26,8 @@ TEST_UNREFERENCED_MIXIN_CONFIG = """\
     'rel_bot_1': ['rel'],
     'rel_bot_2': ['rel'],
   },
-  'masters': {
-    'fake_master_a': {
+  'builder_groups': {
+    'fake_builder_group_a': {
       'fake_builder_a': 'rel_bot_1',
       'fake_builder_b': 'rel_bot_2',
     },
@@ -50,8 +50,8 @@ TEST_UNKNOWNMIXIN_CONFIG = """\
     'rel_bot_1': ['rel'],
     'rel_bot_2': ['rel', 'unknown_mixin'],
   },
-  'masters': {
-    'fake_master_a': {
+  'builder_groups': {
+    'fake_builder_group_a': {
       'fake_builder_a': 'rel_bot_1',
       'fake_builder_b': 'rel_bot_2',
     },
@@ -71,8 +71,8 @@ TEST_UNKNOWN_NESTED_MIXIN_CONFIG = """\
     'rel_bot_1': ['rel', 'nested_mixin'],
     'rel_bot_2': ['rel'],
   },
-  'masters': {
-    'fake_master_a': {
+  'builder_groups': {
+    'fake_builder_group_a': {
       'fake_builder_a': 'rel_bot_1',
       'fake_builder_b': 'rel_bot_2',
     },
@@ -96,14 +96,14 @@ TEST_UNKNOWN_NESTED_MIXIN_CONFIG = """\
 class UnitTest(unittest.TestCase):
   def test_GetAllConfigs(self):
     configs = ast.literal_eval(mb_unittest.TEST_CONFIG)
-    all_configs = validation.GetAllConfigs(configs['masters'])
-    self.assertEqual(all_configs['rel_bot'], 'fake_master')
-    self.assertEqual(all_configs['debug_goma'], 'fake_master')
+    all_configs = validation.GetAllConfigs(configs['builder_groups'])
+    self.assertEqual(all_configs['rel_bot'], 'fake_builder_group')
+    self.assertEqual(all_configs['debug_goma'], 'fake_builder_group')
 
   def test_CheckAllConfigsAndMixinsReferenced_ok(self):
     configs = ast.literal_eval(mb_unittest.TEST_CONFIG)
     errs = []
-    all_configs = validation.GetAllConfigs(configs['masters'])
+    all_configs = validation.GetAllConfigs(configs['builder_groups'])
     config_configs = configs['configs']
     mixins = configs['mixins']
 
@@ -115,7 +115,7 @@ class UnitTest(unittest.TestCase):
   def test_CheckAllConfigsAndMixinsReferenced_unreferenced(self):
     configs = ast.literal_eval(TEST_UNREFERENCED_MIXIN_CONFIG)
     errs = []
-    all_configs = validation.GetAllConfigs(configs['masters'])
+    all_configs = validation.GetAllConfigs(configs['builder_groups'])
     config_configs = configs['configs']
     mixins = configs['mixins']
 
@@ -127,7 +127,7 @@ class UnitTest(unittest.TestCase):
   def test_CheckAllConfigsAndMixinsReferenced_unknown(self):
     configs = ast.literal_eval(TEST_UNKNOWNMIXIN_CONFIG)
     errs = []
-    all_configs = validation.GetAllConfigs(configs['masters'])
+    all_configs = validation.GetAllConfigs(configs['builder_groups'])
     config_configs = configs['configs']
     mixins = configs['mixins']
 
@@ -140,7 +140,7 @@ class UnitTest(unittest.TestCase):
   def test_CheckAllConfigsAndMixinsReferenced_unknown_nested(self):
     configs = ast.literal_eval(TEST_UNKNOWN_NESTED_MIXIN_CONFIG)
     errs = []
-    all_configs = validation.GetAllConfigs(configs['masters'])
+    all_configs = validation.GetAllConfigs(configs['builder_groups'])
     config_configs = configs['configs']
     mixins = configs['mixins']
 
@@ -154,7 +154,7 @@ class UnitTest(unittest.TestCase):
   def test_CheckAllConfigsAndMixinsReferenced_unused(self):
     configs = ast.literal_eval(TEST_UNKNOWN_NESTED_MIXIN_CONFIG)
     errs = []
-    all_configs = validation.GetAllConfigs(configs['masters'])
+    all_configs = validation.GetAllConfigs(configs['builder_groups'])
     config_configs = configs['configs']
     mixins = configs['mixins']
 
@@ -168,11 +168,12 @@ class UnitTest(unittest.TestCase):
   def test_EnsureNoProprietaryMixins(self):
     bad_configs = ast.literal_eval(mb_unittest.TEST_BAD_CONFIG)
     errs = []
-    masters = bad_configs['masters']
+    builder_groups = bad_configs['builder_groups']
     mixins = bad_configs['mixins']
     config_configs = bad_configs['configs']
 
-    validation.EnsureNoProprietaryMixins(errs, masters, config_configs, mixins)
+    validation.EnsureNoProprietaryMixins(errs, builder_groups, config_configs,
+                                         mixins)
 
     self.assertIn(
         'Public artifact builder "a" '
@@ -186,7 +187,7 @@ class UnitTest(unittest.TestCase):
     configs = ast.literal_eval(mb_unittest.TEST_CONFIG)
     config_configs = configs['configs']
     mixins = configs['mixins']
-    grouping = configs['masters']
+    grouping = configs['builder_groups']
     errs = []
 
     validation.CheckDuplicateConfigs(errs, config_configs, mixins, grouping,
@@ -198,7 +199,7 @@ class UnitTest(unittest.TestCase):
     configs = ast.literal_eval(mb_unittest.TEST_DUP_CONFIG)
     config_configs = configs['configs']
     mixins = configs['mixins']
-    grouping = configs['masters']
+    grouping = configs['builder_groups']
     errs = []
 
     validation.CheckDuplicateConfigs(errs, config_configs, mixins, grouping,

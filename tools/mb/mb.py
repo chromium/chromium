@@ -93,7 +93,7 @@ class MetaBuildWrapper(object):
     self.args = argparse.Namespace()
     self.configs = {}
     self.public_artifact_builders = None
-    self.masters = {}
+    self.builder_groups = {}
     self.mixins = {}
     self.isolate_exe = 'isolate.exe' if self.platform.startswith(
         'win') else 'isolate'
@@ -120,7 +120,10 @@ class MetaBuildWrapper(object):
     def AddCommonOptions(subp):
       group = subp.add_mutually_exclusive_group()
       group.add_argument(
-          '-m', '--master', help='master name to look up config from')
+          '-m',  '--builder-group',
+          # TODO(crbug.com/1117773): Remove the 'master' args.
+          '--master',
+          help='builder group name to look up config from')
       subp.add_argument('-b', '--builder',
                         help='builder name to look up config from')
       subp.add_argument('-c', '--config',
@@ -435,8 +438,8 @@ class MetaBuildWrapper(object):
     for f in self.ListDir(expectations_dir):
       self.RemoveFile(os.path.join(expectations_dir, f))
     obj = self._ToJsonish()
-    for master, builder in sorted(obj.items()):
-      expectation_file = os.path.join(expectations_dir, master + '.json')
+    for builder_group, builder in sorted(obj.items()):
+      expectation_file = os.path.join(expectations_dir, builder_group + '.json')
       json_s = json.dumps(builder,
                           indent=2,
                           sort_keys=True,
@@ -751,14 +754,14 @@ class MetaBuildWrapper(object):
     """Dumps the config file into a json-friendly expanded dict.
 
     Returns:
-      A dict with master -> builder -> all GN args mapping.
+      A dict with builder group -> builder -> all GN args mapping.
     """
     self.ReadConfigFile(self.args.config_file)
     obj = {}
-    for master, builders in self.masters.items():
-      obj[master] = {}
+    for builder_group, builders in self.builder_groups.items():
+      obj[builder_group] = {}
       for builder in builders:
-        config = self.masters[master][builder]
+        config = self.builder_groups[builder_group][builder]
         if not config:
           continue
         if isinstance(config, dict):
@@ -777,7 +780,7 @@ class MetaBuildWrapper(object):
           args = {'gn_args': gn_helpers.FromGNArgs(flattened_config['gn_args'])}
           if flattened_config.get('args_file'):
             args['args_file'] = flattened_config['args_file']
-        obj[master][builder] = args
+        obj[builder_group][builder] = args
 
     return obj
 
@@ -787,7 +790,7 @@ class MetaBuildWrapper(object):
     self.ReadConfigFile(self.args.config_file)
 
     # Build a list of all of the configs referenced by builders.
-    all_configs = validation.GetAllConfigs(self.masters)
+    all_configs = validation.GetAllConfigs(self.builder_groups)
 
     # Check that every referenced args file or config actually exists.
     for config, loc in all_configs.items():
@@ -804,11 +807,11 @@ class MetaBuildWrapper(object):
                                                   self.configs, self.mixins)
 
     if self.args.config_file == self.default_config:
-      validation.EnsureNoProprietaryMixins(errs, self.masters, self.configs,
-                                           self.mixins)
+      validation.EnsureNoProprietaryMixins(errs, self.builder_groups,
+                                           self.configs, self.mixins)
 
     validation.CheckDuplicateConfigs(errs, self.configs, self.mixins,
-                                     self.masters, FlattenConfig)
+                                     self.builder_groups, FlattenConfig)
 
     if errs:
       raise MBErr(('mb config file %s has problems:\n  ' %
@@ -830,7 +833,7 @@ class MetaBuildWrapper(object):
     build_dir = self.args.path
 
     vals = DefaultVals()
-    if self.args.builder or self.args.master or self.args.config:
+    if self.args.builder or self.args.builder_group or self.args.config:
       vals = self.Lookup()
       # Re-run gn gen in order to ensure the config is consistent with the
       # build dir.
@@ -922,10 +925,10 @@ class MetaBuildWrapper(object):
     return vals
 
   def ReadIOSBotConfig(self):
-    if not self.args.master or not self.args.builder:
+    if not self.args.builder_group or not self.args.builder:
       return {}
     path = self.PathJoin(self.chromium_src_dir, 'ios', 'build', 'bots',
-                         self.args.master, self.args.builder + '.json')
+                         self.args.builder_group, self.args.builder + '.json')
     if not self.Exists(path):
       return {}
 
@@ -947,7 +950,9 @@ class MetaBuildWrapper(object):
 
     self.configs = contents['configs']
     self.mixins = contents['mixins']
-    self.masters = contents.get('masters')
+    # TODO(crbug.com/1117773): Remove 'masters' below.
+    self.builder_groups = (
+        contents.get('builder_groups') or contents.get('masters'))
     self.public_artifact_builders = contents.get('public_artifact_builders')
 
   def ReadIsolateMap(self):
@@ -974,38 +979,39 @@ class MetaBuildWrapper(object):
 
   def ConfigFromArgs(self):
     if self.args.config:
-      if self.args.master or self.args.builder:
-        raise MBErr('Can not specific both -c/--config and -m/--master or '
-                    '-b/--builder')
+      if self.args.builder_group or self.args.builder:
+        raise MBErr('Can not specific both -c/--config and --group '
+                    'or -b/--builder')
 
       return self.args.config
 
-    if not self.args.master or not self.args.builder:
+    if not self.args.builder_group or not self.args.builder:
       raise MBErr('Must specify either -c/--config or '
-                  '(-m/--master and -b/--builder)')
+                  '(--group and -b/--builder)')
 
-    if not self.args.master in self.masters:
-      raise MBErr('Master name "%s" not found in "%s"' %
-                  (self.args.master, self.args.config_file))
+    if not self.args.builder_group in self.builder_groups:
+      raise MBErr('Builder group name "%s" not found in "%s"' %
+                  (self.args.builder_group, self.args.config_file))
 
-    if not self.args.builder in self.masters[self.args.master]:
-      raise MBErr('Builder name "%s"  not found under masters[%s] in "%s"' %
-                  (self.args.builder, self.args.master, self.args.config_file))
+    if not self.args.builder in self.builder_groups[self.args.builder_group]:
+      raise MBErr('Builder name "%s"  not found under groups[%s] in "%s"' %
+                  (self.args.builder, self.args.builder_group,
+                   self.args.config_file))
 
-    config = self.masters[self.args.master][self.args.builder]
+    config = self.builder_groups[self.args.builder_group][self.args.builder]
     if isinstance(config, dict):
       if self.args.phase is None:
         raise MBErr('Must specify a build --phase for %s on %s' %
-                    (self.args.builder, self.args.master))
+                    (self.args.builder, self.args.builder_group))
       phase = str(self.args.phase)
       if phase not in config:
         raise MBErr('Phase %s doesn\'t exist for %s on %s' %
-                    (phase, self.args.builder, self.args.master))
+                    (phase, self.args.builder, self.args.builder_group))
       return config[phase]
 
     if self.args.phase is not None:
       raise MBErr('Must not specify a build --phase for %s on %s' %
-                  (self.args.builder, self.args.master))
+                  (self.args.builder, self.args.builder_group))
     return config
 
   def RunGNGen(self, vals, compute_inputs_for_analyze=False, check=True):

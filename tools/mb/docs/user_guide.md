@@ -27,7 +27,7 @@ a list of files (e.g., the list of files in a patch on a trybot):
 mb analyze -c chromium_linux_rel //out/Release input.json output.json
 ```
 
-Either the `-c/--config` flag or the `-m/--master` and `-b/--builder` flags
+Either the `-c/--config` flag or the `--builder-group` and `-b/--builder` flags
 must be specified so that `mb` can figure out which config to use.
 
 The first positional argument must be a GN-style "source-absolute" path
@@ -90,7 +90,7 @@ differences can be subtle.  We won't even go into how the `targets` and
 `build_targets` differ from each other or from `compile_targets` and
 `test_targets`.
 
-The `-b/--builder`, `-c/--config`, `-f/--config-file`, `-m/--master`,
+The `-b/--builder`, `-c/--config`, `-f/--config-file`, `--builder-group`,
 `-q/--quiet`, and `-v/--verbose` flags work as documented for `mb gen`.
 
 ### mb gen
@@ -104,7 +104,7 @@ specify a build config and a directory, then runs GN as appropriate:
 % mb gen -c linux_rel_trybot //out/Release
 ```
 
-Either the `-c/--config` flag or the `-m/--master` and `-b/--builder` flags
+Either the `-c/--config` flag or the `--builder-group` and `-b/--builder` flags
 must be specified so that `mb` can figure out which config to use. The
 `--phase` flag must also be used with builders that have multiple
 build/compile steps (and only with those builders).
@@ -144,7 +144,7 @@ swarming. See below for more information on isolates and swarming.
 Prints what command will be run by `mb gen` (like `mb gen -n` but does
 not require you to specify a path).
 
-The `-b/--builder`, `-c/--config`, `-f/--config-file`, `-m/--master`,
+The `-b/--builder`, `-c/--config`, `-f/--config-file`, `--builder-group`,
 `--phase`, `-q/--quiet`, and `-v/--verbose` flags work as documented for
 `mb gen`.
 
@@ -176,8 +176,9 @@ like one you could trigger via `git cl try` or via CQ dry runs. Basic usage is
 Your change must be uploaded to Gerrit. Local changes will not be uploaded for
 you. It uses the gerrit CL associated with your given git branch.
 
-You still have to specify the mastername (`-m`) and buildername (`-b`) arguments.
-See [trybots.py](https://cs.chromium.org/chromium/build/scripts/slave/recipe_modules/chromium_tests/trybots.py)
+You still have to specify the builder group(`--builder-group`) and buildername
+(`-b`) arguments.  See
+[trybots.py](https://cs.chromium.org/chromium/build/scripts/slave/recipe_modules/chromium_tests/trybots.py)
 for a mapping of which bots are on which tryservers, and what those bots mirror.
 Any trybot in `trybots.py` is supported; you can test your code on windows, for
 example. The tryjob will compile and run your code on windows.
@@ -236,11 +237,11 @@ listed here, and so by using the configs in this file you can avoid
 having to juggle long lists of gn args by hand.
 
 `mb_config.pyl` is structured as a file containing a single PYthon Literal
-expression: a dictionary with three main keys, `masters`, `configs` and
+expression: a dictionary with three main keys, `builder_groups`, `configs` and
 `mixins`.
 
-The `masters` key contains a nested series of dicts containing mappings
-of master -> builder -> config . This allows us to isolate the buildbot
+The `builder_groups` key contains a nested series of dicts containing mappings
+of builder_group -> builder -> config . This allows us to isolate the builder
 recipes from the actual details of the configs. The config should either
 be a single string value representing a key in the `configs` dictionary,
 or a list of strings, each of which is a key in the `configs` dictionary;

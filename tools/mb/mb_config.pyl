@@ -9,10 +9,10 @@
 # * trailing commas are allowed.
 
 {
-  # This is a map of buildbot master names -> buildbot builder names ->
-  # config names (where each config name is a key in the 'configs' dict,
-  # below). MB uses this dict to look up which config to use for a given bot.
-  'masters': {
+  # This is a map of builder group names -> builder names -> config names
+  # (where each config name is a key in the 'configs' dict, below). MB uses
+  # this dict to look up which config to use for a given bot.
+  'builder_groups': {
     'chrome': {
       'chromeos-arm-generic-beta': 'official_chromeos_arm-generic',
       'chromeos-arm-generic-ltc': 'official_chromeos_arm-generic',
@@ -682,7 +682,7 @@
       'win32-updater-builder-rel': 'updater_release_bot_x86',
     },
 
-    # TODO(crbug.com/818301): This master is going away.
+    # TODO(crbug.com/818301): This group is going away.
     'chromium.webkit': {
       'WebKit Linux Trusty ASAN': 'asan_lsan_release_bot',
       'WebKit Linux Trusty Leak': 'release_bot',
