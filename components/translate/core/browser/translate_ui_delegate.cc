@@ -14,7 +14,6 @@
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/translate/core/browser/translate_manager.h"
-#include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/variations/variations_associated_data.h"
@@ -395,6 +394,13 @@ std::string TranslateUIDelegate::GetPageHost() const {
 void TranslateUIDelegate::OnUIClosedByUser() {
   if (translate_manager_)
     translate_manager_->GetActiveTranslateMetricsLogger()->LogUIChange(false);
+}
+
+void TranslateUIDelegate::ReportUIInteraction(UIInteraction ui_interaction) {
+  if (translate_manager_) {
+    translate_manager_->GetActiveTranslateMetricsLogger()->LogUIInteraction(
+        ui_interaction);
+  }
 }
 
 }  // namespace translate

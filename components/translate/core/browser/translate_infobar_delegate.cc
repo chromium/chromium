@@ -430,6 +430,7 @@ int TranslateInfoBarDelegate::GetIconId() const {
 
 void TranslateInfoBarDelegate::InfoBarDismissed() {
   OnInfoBarClosedByUser();
+  ReportUIInteraction(UIInteraction::kCloseUIExplicitly);
 
   bool declined = false;
   bool has_observer = false;
@@ -480,6 +481,11 @@ int TranslateInfoBarDelegate::GetMaximumNumberOfAutoNever() {
 
 void TranslateInfoBarDelegate::OnInfoBarClosedByUser() {
   ui_delegate_.OnUIClosedByUser();
+}
+
+void TranslateInfoBarDelegate::ReportUIInteraction(
+    UIInteraction ui_interaction) {
+  ui_delegate_.ReportUIInteraction(ui_interaction);
 }
 
 }  // namespace translate

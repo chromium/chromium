@@ -57,6 +57,20 @@ enum class TriggerDecision {
   kMaxValue = kAutomaticTranslationByPref,
 };
 
+enum class UIInteraction {
+  kUninitialized = 0,
+  kTranslate = 1,
+  kRevert = 2,
+  kAlwaysTranslateLanguage = 3,
+  kChangeSourceLanguage = 4,
+  kChangeTargetLanguage = 5,
+  kNeverTranslateLanguage = 6,
+  kNeverTranslateSite = 7,
+  kCloseUIExplicitly = 8,
+  kCloseUILostFocus = 9,
+  kMaxValue = kCloseUILostFocus,
+};
+
 // TranslateMetricsLogger tracks and logs various UKM and UMA metrics for Chrome
 // Translate over the course of a page load.
 class TranslateMetricsLogger {
@@ -98,6 +112,9 @@ class TranslateMetricsLogger {
                                         bool is_in_users_content_language) = 0;
   virtual void LogSourceLanguage(const std::string& source_language_code) = 0;
   virtual void LogTargetLanguage(const std::string& target_language_code) = 0;
+
+  // Records the user's high level interactions with the Translate UI.
+  virtual void LogUIInteraction(UIInteraction ui_interaction) = 0;
 };
 
 }  // namespace translate

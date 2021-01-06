@@ -19,6 +19,7 @@
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
@@ -226,6 +227,9 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   // user presses the 'x' button, the user selects to never translate the site,
   // and the user selects to never translate the language.
   void OnInfoBarClosedByUser();
+
+  // Records a high level UI interaction.
+  void ReportUIInteraction(UIInteraction ui_interaction);
 
   // InfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;

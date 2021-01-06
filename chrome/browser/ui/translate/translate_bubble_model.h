@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/string16.h"
+#include "components/translate/core/browser/translate_metrics_logger_impl.h"
 #include "components/translate/core/common/translate_errors.h"
 
 // The model for the Translate bubble UX. This manages the user's manipulation
@@ -123,6 +124,10 @@ class TranslateBubbleModel {
 
   // True if the site of the current page can be blocklisted.
   virtual bool CanBlocklistSite() = 0;
+
+  // Reports a high level UI interaction to the centralzied
+  // TranslateMetricsLogger.
+  virtual void ReportUIInteraction(translate::UIInteraction ui_interaction) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_MODEL_H_

@@ -42,6 +42,7 @@ class MockTranslateMetricsLogger : public TranslateMetricsLogger {
   MOCK_METHOD2(LogInitialSourceLanguage, void(const std::string&, bool));
   MOCK_METHOD1(LogSourceLanguage, void(const std::string&));
   MOCK_METHOD1(LogTargetLanguage, void(const std::string&));
+  MOCK_METHOD1(LogUIInteraction, void(UIInteraction));
 
  private:
   base::WeakPtrFactory<MockTranslateMetricsLogger> weak_method_factory_{this};

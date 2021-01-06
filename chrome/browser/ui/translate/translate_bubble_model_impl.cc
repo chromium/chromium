@@ -151,3 +151,8 @@ bool TranslateBubbleModelImpl::IsPageTranslatedInCurrentLanguages() const {
          ui_delegate_->GetTargetLanguageCode() ==
              language_state.current_language();
 }
+
+void TranslateBubbleModelImpl::ReportUIInteraction(
+    translate::UIInteraction ui_interaction) {
+  ui_delegate_->ReportUIInteraction(ui_interaction);
+}

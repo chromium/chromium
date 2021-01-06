@@ -89,6 +89,10 @@ class MockTranslateMetricsLoggerContainer
     mock_translate_metrics_logger_->LogTargetLanguage(target_language_code);
   }
 
+  void LogUIInteraction(translate::UIInteraction ui_interaction) override {
+    mock_translate_metrics_logger_->LogUIInteraction(ui_interaction);
+  }
+
  private:
   translate::testing::MockTranslateMetricsLogger*
       mock_translate_metrics_logger_;  // Weak.

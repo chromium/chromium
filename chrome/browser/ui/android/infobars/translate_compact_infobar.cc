@@ -18,6 +18,7 @@
 #include "chrome/browser/infobars/infobar_service.h"
 #include "components/translate/content/android/translate_utils.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
+#include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_context.h"
 
@@ -96,10 +97,12 @@ void TranslateCompactInfoBar::ProcessButton(int action) {
       Java_TranslateCompactInfoBar_setAutoAlwaysTranslate(env,
                                                           GetJavaInfoBar());
     }
+    delegate->ReportUIInteraction(translate::UIInteraction::kTranslate);
   } else if (action ==
              infobars::InfoBarAndroid::ACTION_TRANSLATE_SHOW_ORIGINAL) {
     action_flags_ |= FLAG_REVERT;
     delegate->RevertWithoutClosingInfobar();
+    delegate->ReportUIInteraction(translate::UIInteraction::kRevert);
   } else {
     DCHECK_EQ(infobars::InfoBarAndroid::ACTION_NONE, action);
   }
@@ -124,11 +127,15 @@ void TranslateCompactInfoBar::ApplyStringTranslateOption(
         base::android::ConvertJavaStringToUTF8(env, value);
     if (delegate->original_language_code().compare(source_code) != 0)
       delegate->UpdateOriginalLanguage(source_code);
+    delegate->ReportUIInteraction(
+        translate::UIInteraction::kChangeSourceLanguage);
   } else if (option == translate::TranslateUtils::OPTION_TARGET_CODE) {
     std::string target_code =
         base::android::ConvertJavaStringToUTF8(env, value);
     if (delegate->target_language_code().compare(target_code) != 0)
       delegate->UpdateTargetLanguage(target_code);
+    delegate->ReportUIInteraction(
+        translate::UIInteraction::kChangeTargetLanguage);
   } else {
     DCHECK(false);
   }
@@ -145,6 +152,8 @@ void TranslateCompactInfoBar::ApplyBoolTranslateOption(
       action_flags_ |= FLAG_ALWAYS_TRANSLATE;
       delegate->ToggleAlwaysTranslate();
     }
+    delegate->ReportUIInteraction(
+        translate::UIInteraction::kAlwaysTranslateLanguage);
   } else if (option == translate::TranslateUtils::OPTION_NEVER_TRANSLATE) {
     if (value && delegate->IsTranslatableLanguageByPrefs()) {
       action_flags_ |= FLAG_NEVER_LANGUAGE;
@@ -152,6 +161,8 @@ void TranslateCompactInfoBar::ApplyBoolTranslateOption(
       RemoveSelf();
       delegate->OnInfoBarClosedByUser();
     }
+    delegate->ReportUIInteraction(
+        translate::UIInteraction::kNeverTranslateLanguage);
   } else if (option == translate::TranslateUtils::OPTION_NEVER_TRANSLATE_SITE) {
     if (value && !delegate->IsSiteOnNeverPromptList()) {
       action_flags_ |= FLAG_NEVER_SITE;
@@ -159,6 +170,8 @@ void TranslateCompactInfoBar::ApplyBoolTranslateOption(
       RemoveSelf();
       delegate->OnInfoBarClosedByUser();
     }
+    delegate->ReportUIInteraction(
+        translate::UIInteraction::kNeverTranslateSite);
   } else {
     DCHECK(false);
   }

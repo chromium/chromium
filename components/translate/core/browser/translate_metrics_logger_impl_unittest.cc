@@ -67,6 +67,14 @@ class TranslateMetricsLoggerImplTest : public ::testing::Test {
               expected_max_time_to_translate);
   }
 
+  void CheckUIInteractions(UIInteraction expected_first_ui_interaction,
+                           int expected_num_ui_interactions) {
+    EXPECT_EQ(translate_metrics_logger_->first_ui_interaction_,
+              expected_first_ui_interaction);
+    EXPECT_EQ(translate_metrics_logger_->num_ui_interactions_,
+              expected_num_ui_interactions);
+  }
+
  private:
   // Test target.
   std::unique_ptr<TranslateMetricsLoggerImpl> translate_metrics_logger_;
@@ -538,6 +546,26 @@ TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {
   translate_metrics_logger()->RecordMetrics(true);
 
   CheckMaxTimeToTranslate(base::TimeDelta::FromSeconds(400));
+}
+
+TEST_F(TranslateMetricsLoggerImplTest, LogUIInteraction) {
+  const UIInteraction kUIInteractions[] = {
+      UIInteraction::kTranslate,
+      UIInteraction::kRevert,
+      UIInteraction::kAlwaysTranslateLanguage,
+      UIInteraction::kChangeSourceLanguage,
+      UIInteraction::kChangeTargetLanguage,
+      UIInteraction::kNeverTranslateLanguage,
+      UIInteraction::kNeverTranslateSite,
+      UIInteraction::kCloseUIExplicitly,
+      UIInteraction::kCloseUILostFocus};
+  for (auto ui_interaction : kUIInteractions) {
+    translate_metrics_logger()->LogUIInteraction(ui_interaction);
+  }
+
+  translate_metrics_logger()->RecordMetrics(true);
+
+  CheckUIInteractions(kUIInteractions[0], 9);
 }
 
 }  // namespace testing

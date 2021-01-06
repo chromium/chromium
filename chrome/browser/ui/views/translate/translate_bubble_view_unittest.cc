@@ -145,6 +145,8 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
 
   void SetCanBlocklistSite(bool value) { can_blocklist_site_ = value; }
 
+  void ReportUIInteraction(translate::UIInteraction ui_interaction) override {}
+
   TranslateBubbleViewStateTransition view_state_transition_;
   translate::TranslateErrors::Type error_type_;
   int original_language_index_;

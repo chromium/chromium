@@ -244,6 +244,14 @@ void TranslateMetricsLoggerImpl::LogTargetLanguage(
   current_target_language_ = target_language_code;
 }
 
+void TranslateMetricsLoggerImpl::LogUIInteraction(
+    UIInteraction ui_interaction) {
+  if (first_ui_interaction_ == UIInteraction::kUninitialized)
+    first_ui_interaction_ = ui_interaction;
+
+  num_ui_interactions_++;
+}
+
 TranslateState TranslateMetricsLoggerImpl::ConvertToTranslateState(
     bool is_translated,
     bool is_ui_shown,

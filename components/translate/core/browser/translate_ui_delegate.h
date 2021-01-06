@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
+#include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/common/translate_errors.h"
 
 namespace translate {
@@ -140,6 +141,9 @@ class TranslateUIDelegate {
   // when: the user presses the 'x' button, the user selects to never translate
   // this site, and the user selects to never translate this language.
   void OnUIClosedByUser();
+
+  // Records a high level UI interaction.
+  void ReportUIInteraction(UIInteraction ui_interaction);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TranslateUIDelegateTest, GetPageHost);

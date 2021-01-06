@@ -55,6 +55,7 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
                                 bool is_in_users_content_languages) override {}
   void LogSourceLanguage(const std::string& source_language_code) override {}
   void LogTargetLanguage(const std::string& target_language_code) override {}
+  void LogUIInteraction(UIInteraction ui_interaction) override {}
 };
 
 class TranslateManager;
@@ -97,6 +98,7 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
                                 bool is_in_users_content_languages) override;
   void LogSourceLanguage(const std::string& source_language_code) override;
   void LogTargetLanguage(const std::string& target_language_code) override;
+  void LogUIInteraction(UIInteraction ui_interaction) override;
 
   // TODO(curranmax): Add appropriate functions for the Translate code to log
   // relevant events. https://crbug.com/1114868.
@@ -185,6 +187,11 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   // Tracks any translation errors that occur over the course of the page load.
   TranslateErrors::Type first_translate_error_type_ = TranslateErrors::NONE;
   int num_translate_errors_ = 0;
+
+  // Tracks the user's high level interaction with the Translate UI over the
+  // course of a page load.
+  UIInteraction first_ui_interaction_ = UIInteraction::kUninitialized;
+  int num_ui_interactions_ = 0;
 
   base::WeakPtrFactory<TranslateMetricsLoggerImpl> weak_method_factory_{this};
 };
