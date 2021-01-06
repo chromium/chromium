@@ -540,7 +540,7 @@ void PasswordProtectionRequest::SendRequest() {
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       password_protection_service_->url_loader_factory().get(),
       base::BindOnce(&PasswordProtectionRequest::OnURLLoaderComplete,
-                     base::Unretained(this)));
+                     GetWeakPtr()));
 }
 
 void PasswordProtectionRequest::StartTimeout() {
