@@ -348,8 +348,7 @@ public abstract class Linker {
     }
 
     /**
-     * Retrieve the base load address of the shared RELRO section.  This also enforces the creation
-     * of the shared RELRO section, which can later be retrieved with getSharedRelros().
+     * Retrieve the base load address of the library. This also enforces initializing the linker.
      *
      * @return a common, random base load address, or 0 if RELRO sharing is
      * disabled.

@@ -60,9 +60,6 @@ import javax.annotation.concurrent.GuardedBy;
 public class LibraryLoader {
     private static final String TAG = "LibraryLoader";
 
-    // Location of extracted native libraries.
-    private static final String LIBRARY_DIR = "native_libraries";
-
     // Shared preferences key for the reached code profiler.
     private static final String DEPRECATED_REACHED_CODE_PROFILER_KEY =
             "reached_code_profiler_enabled";
@@ -77,32 +74,12 @@ public class LibraryLoader {
 
     // One-way switch becomes true when the libraries are initialized (by calling
     // LibraryLoaderJni.get().libraryLoaded, which forwards to LibraryLoaded(...) in
-    // library_loader_hooks.cc).  Note that this member should remain a one-way switch, since it
+    // library_loader_hooks.cc). Note that this member should remain a one-way switch, since it
     // accessed from multiple threads without a lock.
     private volatile boolean mInitialized;
 
     // State that only transitions one-way from 0->1->2. Volatile for the same reasons as
     // mInitialized.
-    private volatile @LoadState int mLoadState;
-
-    // Guards all fields below.
-    private final Object mLock = new Object();
-
-    // Guards non-Main Dex initialization, which doesn't touch any fields guarded by mLock.
-    private final Object mNonMainDexLock = new Object();
-
-    private NativeLibraryPreloader mLibraryPreloader;
-    private boolean mLibraryPreloaderCalled;
-
-    // Whether to use the Chromium linker vs system linker.
-    private boolean mUseChromiumLinker;
-
-    // Whether to use ModernLinker, vs LegacyLinker.
-    private boolean mUseModernLinker;
-
-    // Whether the configuration has been set.
-    private boolean mConfigurationSet;
-
     @IntDef({LoadState.NOT_LOADED, LoadState.MAIN_DEX_LOADED, LoadState.LOADED})
     @Retention(RetentionPolicy.SOURCE)
     private @interface LoadState {
@@ -110,20 +87,50 @@ public class LibraryLoader {
         int MAIN_DEX_LOADED = 1;
         int LOADED = 2;
     }
+    private volatile @LoadState int mLoadState;
 
-    // Similar to |mLoaded| but is limited case of being loaded in app zygote.
+    // Whether to use the Chromium linker vs. the system linker.
+    // Avoids locking: should be initialized very early.
+    private boolean mUseChromiumLinker;
+
+    // Whether to use ModernLinker vs. LegacyLinker.
+    // Avoids locking: should be initialized very early.
+    private boolean mUseModernLinker;
+
+    // Whether the |mUseChromiumLinker| and |mUseModernLinker| configuration has been set.
+    // Avoids locking: should be initialized very early.
+    private boolean mConfigurationSet;
+
+    // The type of process the shared library is loaded in.
+    // Avoids locking: should be initialized very early.
+    private @LibraryProcessType int mLibraryProcessType;
+
+    // Makes sure non-Main Dex initialization happens only once. Does not use any class members
+    // except the volatile |mLoadState|.
+    private final Object mNonMainDexLock = new Object();
+
+    // Guards all the fields below.
+    private final Object mLock = new Object();
+
+    @GuardedBy("mLock")
+    private NativeLibraryPreloader mLibraryPreloader;
+
+    @GuardedBy("mLock")
+    private boolean mLibraryPreloaderCalled;
+
+    // Similar to |mLoadState| but is limited case of being loaded in app zygote.
     // This is exposed to clients.
+    @GuardedBy("mLock")
     private boolean mLoadedByZygote;
 
     // One-way switch becomes true when the Java command line is switched to
     // native.
+    @GuardedBy("mLock")
     private boolean mCommandLineSwitched;
-
-    // The type of process the shared library is loaded in.
-    private @LibraryProcessType int mLibraryProcessType;
 
     // The number of milliseconds it took to load all the native libraries, which
     // will be reported via UMA. Set once when the libraries are done loading.
+    @GuardedBy("mLock")
     private long mLibraryLoadTimeMs;
 
     /**
@@ -165,15 +172,15 @@ public class LibraryLoader {
      * Set native library preloader, if set, the NativeLibraryPreloader.loadLibrary will be invoked
      * before calling System.loadLibrary, this only applies when not using the chromium linker.
      *
-     * Since this function is called extremely early on in startup, locking is not required.
-     *
      * @param loader the NativeLibraryPreloader, it shall only be set once and before the
-     *               native library loaded.
+     *               native library is loaded.
      */
     public void setNativeLibraryPreloader(NativeLibraryPreloader loader) {
-        assert mLibraryPreloader == null;
-        assert mLoadState == LoadState.NOT_LOADED;
-        mLibraryPreloader = loader;
+        synchronized (mLock) {
+            assert mLibraryPreloader == null;
+            assert mLoadState == LoadState.NOT_LOADED;
+            mLibraryPreloader = loader;
+        }
     }
 
     /**
@@ -200,7 +207,7 @@ public class LibraryLoader {
     private void setLinkerImplementationIfNeededAlreadyLocked() {
         if (mConfigurationSet) return;
 
-        // Cannot use initializers for the variables below, as this makes roboelectric tests fail,
+        // Cannot use initializers for the fields below, as this makes roboelectric tests fail,
         // since they don't have a NativeLibraries class.
         mUseChromiumLinker = NativeLibraries.sUseLinker;
         mUseModernLinker = NativeLibraries.sUseModernLinker;
@@ -256,7 +263,9 @@ public class LibraryLoader {
      * Return if library is already loaded successfully by the zygote.
      */
     public boolean isLoadedByZygote() {
-        return mLoadedByZygote;
+        synchronized (mLock) {
+            return mLoadedByZygote;
+        }
     }
 
     /**
@@ -641,9 +650,11 @@ public class LibraryLoader {
 
     // Called after all native initializations are complete.
     public void onBrowserNativeInitializationComplete() {
-        if (mUseChromiumLinker) {
-            RecordHistogram.recordTimesHistogram(
-                    "ChromiumAndroidLinker.BrowserLoadTime", mLibraryLoadTimeMs);
+        synchronized (mLock) {
+            if (mUseChromiumLinker) {
+                RecordHistogram.recordTimesHistogram(
+                        "ChromiumAndroidLinker.BrowserLoadTime", mLibraryLoadTimeMs);
+            }
         }
     }
 
