@@ -11,11 +11,11 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/chromeos_export.h"
 
 namespace chromeos {
 
@@ -29,7 +29,7 @@ using ProcessOutputCallback = base::RepeatingCallback<
 
 // Observes output on |out_fd| and invokes |callback| when some output is
 // detected. It assumes UTF8 output.
-class CHROMEOS_EXPORT ProcessOutputWatcher {
+class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessOutputWatcher {
  public:
   ProcessOutputWatcher(int out_fd, const ProcessOutputCallback& callback);
   ~ProcessOutputWatcher();

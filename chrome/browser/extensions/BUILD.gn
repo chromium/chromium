@@ -1054,6 +1054,7 @@ static_library("extensions") {
       "//chromeos/login/auth",
       "//chromeos/login/login_state",
       "//chromeos/network",
+      "//chromeos/process_proxy",
       "//chromeos/services/assistant/public/cpp",
       "//chromeos/services/ime/public/mojom",
       "//chromeos/services/machine_learning/public/cpp",

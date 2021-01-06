@@ -162,7 +162,10 @@ group("gn_all") {
   }
 
   if (is_chromeos_lacros) {
-    deps += [ "//chrome/test:lacros_chrome_browsertests" ]
+    deps += [
+      "//chrome/test:lacros_chrome_browsertests",
+      "//chrome/test:lacros_chrome_unittests",
+    ]
   }
 
   if (!is_ios) {

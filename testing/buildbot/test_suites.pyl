@@ -3852,12 +3852,14 @@
         },
       },
       'lacros_chrome_browsertests': {},
+      'lacros_chrome_unittests': {},
       'ui_base_unittests': {},
       'unit_tests': {},
     },
 
     'linux_lacros_specific_gtests': {
       'lacros_chrome_browsertests': {},
+      'lacros_chrome_unittests': {},
     },
 
     'linux_ozone_common_gtests': {

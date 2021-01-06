@@ -3222,6 +3222,16 @@ if (!is_android) {
 
 if (is_chromeos_lacros) {
   # This test target is intended for lacros chrome specific tests that depend
+  # on wayland, for generic tests, please use 'unit_tests' target instead.
+  test("lacros_chrome_unittests") {
+    use_xvfb = use_xvfb_in_this_config
+    deps = [
+      "//base/test:run_all_unittests",
+      "//chromeos/process_proxy:unit_tests",
+    ]
+  }
+
+  # This test target is intended for lacros chrome specific tests that depend
   # on crosapi, for generic tests, please use 'browser_tests' target instead.
   test("lacros_chrome_browsertests") {
     use_xvfb = use_xvfb_in_this_config

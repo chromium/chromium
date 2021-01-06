@@ -74,12 +74,6 @@ component("chromeos") {
     "printing/uri_impl.h",
     "printing/usb_printer_id.cc",
     "printing/usb_printer_id.h",
-    "process_proxy/process_output_watcher.cc",
-    "process_proxy/process_output_watcher.h",
-    "process_proxy/process_proxy.cc",
-    "process_proxy/process_proxy.h",
-    "process_proxy/process_proxy_registry.cc",
-    "process_proxy/process_proxy_registry.h",
     "scanning/scanner.cc",
     "scanning/scanner.h",
   ]
@@ -174,6 +168,7 @@ test("chromeos_unittests") {
     "//chromeos/memory/userspace_swap:unit_tests",
     "//chromeos/network:test_support",
     "//chromeos/network:unit_tests",
+    "//chromeos/process_proxy:unit_tests",
     "//chromeos/services:unit_tests",
     "//chromeos/settings:unit_tests",
     "//chromeos/startup:unit_tests",
@@ -213,8 +208,6 @@ test("chromeos_unittests") {
     "printing/uri_unittest.h",
     "printing/uri_unittest_consistency.cc",
     "printing/usb_printer_id_unittest.cc",
-    "process_proxy/process_output_watcher_unittest.cc",
-    "process_proxy/process_proxy_unittest.cc",
     "test/run_all_unittests.cc",
   ]
 

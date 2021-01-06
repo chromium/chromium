@@ -16,6 +16,7 @@ component("lacros") {
     "//base",
     "//build:chromeos_buildflags",
     "//chromeos/crosapi/mojom",
+    "//chromeos/process_proxy",
     "//chromeos/startup",
     "//mojo/public/cpp/bindings",
   ]
