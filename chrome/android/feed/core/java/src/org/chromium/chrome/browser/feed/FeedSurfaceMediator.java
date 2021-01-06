@@ -47,8 +47,8 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -639,15 +639,10 @@ public class FeedSurfaceMediator
         mCoordinator.updateHeaderViews(false, null, null);
     }
 
-    // IdentityManager.Delegate interface.
+    // IdentityManager.Observer interface.
 
     @Override
-    public void onPrimaryAccountSet(CoreAccountInfo account) {
-        updateSectionHeader();
-    }
-
-    @Override
-    public void onPrimaryAccountCleared(CoreAccountInfo account) {
+    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
         updateSectionHeader();
     }
 

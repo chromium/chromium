@@ -36,10 +36,14 @@ public class PrimaryAccountChangeEvent {
     private final @Type int mEventTypeForConsentLevelNotRequired;
 
     @CalledByNative
-    public PrimaryAccountChangeEvent(
+    private PrimaryAccountChangeEvent(
             @Type int eventTypeForConsentLevelNotRequired, @Type int eventTypeForConsentLevelSync) {
         mEventTypeForConsentLevelNotRequired = eventTypeForConsentLevelNotRequired;
         mEventTypeForConsentLevelSync = eventTypeForConsentLevelSync;
+        assert mEventTypeForConsentLevelNotRequired != Type.NONE
+                || mEventTypeForConsentLevelSync
+                        != Type.NONE
+            : "PrimaryAccountChangeEvent should not be fired for no-change events";
     }
 
     /**

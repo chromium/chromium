@@ -103,9 +103,16 @@ base::android::ScopedJavaLocalRef<jobject>
 ConvertToJavaPrimaryAccountChangeEvent(
     JNIEnv* env,
     const PrimaryAccountChangeEvent& event_details) {
+  PrimaryAccountChangeEvent::Type event_type_not_required =
+      event_details.GetEventTypeFor(ConsentLevel::kNotRequired);
+  PrimaryAccountChangeEvent::Type event_type_sync =
+      event_details.GetEventTypeFor(ConsentLevel::kSync);
+  // Should not fire events if there is no change in primary accounts for any
+  // consent level.
+  DCHECK(event_type_not_required != PrimaryAccountChangeEvent::Type::kNone ||
+         event_type_sync != PrimaryAccountChangeEvent::Type::kNone);
   return Java_PrimaryAccountChangeEvent_Constructor(
-      env, jint(event_details.GetEventTypeFor(ConsentLevel::kNotRequired)),
-      jint(event_details.GetEventTypeFor(ConsentLevel::kSync)));
+      env, jint(event_type_not_required), jint(event_type_sync));
 }
 
 #endif  // defined(OS_ANDROID)

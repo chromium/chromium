@@ -17,8 +17,8 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 
 /**
  * Class for watching for changes to the Android preferences that are backed up using Android
@@ -60,18 +60,12 @@ public class ChromeBackupWatcher {
         // Update the backup if the sign-in status changes.
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
-        identityManager.addObserver(
-                new IdentityManager.Observer() {
-                    @Override
-                    public void onPrimaryAccountSet(CoreAccountInfo account) {
-                        onBackupPrefsChanged();
-                    }
-
-                    @Override
-                    public void onPrimaryAccountCleared(CoreAccountInfo account) {
-                        onBackupPrefsChanged();
-                    }
-                });
+        identityManager.addObserver(new IdentityManager.Observer() {
+            @Override
+            public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+                onBackupPrefsChanged();
+            }
+        });
     }
 
     @CalledByNative
