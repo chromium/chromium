@@ -31,8 +31,15 @@ export function parse(data) {
     bytes.push(decoded.charCodeAt(i));
   }
 
-
-  const parsed = ClientVariations.deserializeBinary(bytes);
+  let parsed = null;
+  try {
+    parsed = ClientVariations.deserializeBinary(bytes);
+  } catch (e) {
+    // Deserialization is never expected to fail in Chromium,
+    // but might fail in downstream repositories such as Edgium or
+    // if any website uses the same header name 'x-client-data'
+    parsed = ClientVariations.deserializeBinary([]);
+  }
   return {
     'variationIds': parsed.getVariationIdList(),
     'triggerVariationIds': parsed.getTriggerVariationIdList(),
