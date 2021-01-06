@@ -72,8 +72,9 @@ class AuthenticatorRequestDialogModel {
     kBlePowerOnAutomatic,
     kBlePowerOnManual,
 
-    // Touch ID.
-    kTouchIdIncognitoSpeedBump,
+    // Let the user confirm that they want to create a platform credential in an
+    // off-the-record browsing context.
+    kPlatformAuthenticatorOffTheRecordInterstitial,
 
     // Phone as a security key.
     kCableActivate,
@@ -236,17 +237,18 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at step: kUsbInsert.
   void TryUsbDevice();
 
-  // Tries to use Touch ID -- either because the request requires it or because
-  // the user told us to. May show an error for unrecognized credential, or an
-  // Incognito mode interstitial, or proceed straight to the Touch ID prompt.
+  // Tries to dispatch to the platform authenticator -- either because the
+  // request requires it or because the user told us to. May show an error for
+  // unrecognized credential, or an Incognito mode interstitial, or proceed
+  // straight to the platform authenticator prompt.
   //
   // Valid action when at all steps.
-  void StartTouchIdFlow();
+  void StartPlatformAuthenticatorFlow();
 
-  // Proceeds straight to the Touch ID prompt.
+  // Proceeds straight to the platform authenticator prompt.
   //
   // Valid action when at all steps.
-  void HideDialogAndTryTouchId();
+  void HideDialogAndDispatchToPlatformAuthenticator();
 
   // Cancels the flow as a result of the user clicking `Cancel` on the UI.
   //
@@ -308,8 +310,8 @@ class AuthenticatorRequestDialogModel {
   // credential because of insufficient storage.
   void OnAuthenticatorStorageFull();
 
-  // To be called when the user denies consent, e.g. by clicking "Cancel" on the
-  // system Touch ID prompt.
+  // To be called when the user denies consent, e.g. by canceling out of the
+  // system's platform authenticator prompt.
   void OnUserConsentDenied();
 
   // To be called when the user clicks "Cancel" in the native Windows UI.
@@ -426,9 +428,10 @@ class AuthenticatorRequestDialogModel {
     // to connect to or conduct WebAuthN request to via the WebAuthN UI.
     base::Optional<std::string> selected_authenticator_id_;
 
-    // Transport type and id of Mac TouchId and BLE authenticators are cached so
-    // that the WebAuthN request for the corresponding authenticators can be
-    // dispatched lazily after the user interacts with the UI element.
+    // Stores a list of |AuthenticatorReference| values such that a request can
+    // be dispatched dispatched after some UI interaction. This is useful for
+    // platform authenticators (and Windows) where dispatch to the authenticator
+    // immediately results in modal UI to appear.
     ObservableAuthenticatorList saved_authenticators_;
 
     // responses_ contains possible accounts to select between.

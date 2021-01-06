@@ -387,17 +387,21 @@ void GetAssertionRequestHandler::AuthenticatorAdded(
   // or not. This needs to happen before the base AuthenticatorAdded()
   // implementation runs |notify_observer_callback_| for this callback.
   if (authenticator->IsTouchIdAuthenticator()) {
-    transport_availability_info().has_recognized_mac_touch_id_credential =
+    DCHECK(!transport_availability_info()
+                .has_recognized_platform_authenticator_credential.has_value());
+    transport_availability_info()
+        .has_recognized_platform_authenticator_credential =
         static_cast<fido::mac::TouchIdAuthenticator*>(authenticator)
             ->HasCredentialForGetAssertionRequest(request_);
   }
 #endif  // defined(OS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(martinkr): Put this boolean in a ChromeOS equivalent of
-  // "has_recognized_mac_touch_id_credential".
   if (authenticator->IsChromeOSAuthenticator()) {
-    transport_availability_info().has_recognized_mac_touch_id_credential =
+    DCHECK(!transport_availability_info()
+                .has_recognized_platform_authenticator_credential.has_value());
+    transport_availability_info()
+        .has_recognized_platform_authenticator_credential =
         static_cast<ChromeOSAuthenticator*>(authenticator)
             ->HasCredentialForGetAssertionRequest(request_);
   }

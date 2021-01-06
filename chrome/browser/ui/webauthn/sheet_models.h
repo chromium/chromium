@@ -226,12 +226,12 @@ class AuthenticatorBlePowerOnAutomaticSheetModel
   bool busy_powering_on_ble_ = false;
 };
 
-class AuthenticatorTouchIdIncognitoBumpSheetModel
+class AuthenticatorOffTheRecordInterstitialSheetModel
     : public AuthenticatorSheetModelBase {
  public:
-  explicit AuthenticatorTouchIdIncognitoBumpSheetModel(
+  explicit AuthenticatorOffTheRecordInterstitialSheetModel(
       AuthenticatorRequestDialogModel* dialog_model);
-  ~AuthenticatorTouchIdIncognitoBumpSheetModel() override;
+  ~AuthenticatorOffTheRecordInterstitialSheetModel() override;
 
  private:
   // AuthenticatorSheetModelBase:

@@ -43,11 +43,12 @@ base::Optional<device::FidoTransportProtocol> SelectMostLikelyTransport(
     return base::nullopt;
   }
 
-  // Auto advance to Touch ID if the authenticator has a matching credential
+  // Auto advance to the platform authenticator if it has a matching credential
   // for the (possibly empty) allow list.
   if (base::Contains(candidate_transports,
                      device::FidoTransportProtocol::kInternal) &&
-      transport_availability.has_recognized_mac_touch_id_credential) {
+      *transport_availability
+           .has_recognized_platform_authenticator_credential) {
     return device::FidoTransportProtocol::kInternal;
   }
 
@@ -67,9 +68,10 @@ base::Optional<device::FidoTransportProtocol> SelectMostLikelyTransport(
     return base::nullopt;
   }
 
-  // Auto-advancing to Touch ID based on credential availability has been
-  // handled above. Hence, at this point it does not have a matching credential
-  // and should not be advanced to, because it would fail immediately.
+  // Auto-advancing to platform authenticator based on credential availability
+  // has been handled above. Hence, at this point it does not have a matching
+  // credential and should not be advanced to, because it would fail
+  // immediately.
   if (*last_used_transport == device::FidoTransportProtocol::kInternal) {
     return base::nullopt;
   }
@@ -183,7 +185,7 @@ void AuthenticatorRequestDialogModel::StartGuidedFlowForTransport(
       SetCurrentStep(Step::kTransportSelection);
       break;
     case AuthenticatorTransport::kInternal:
-      StartTouchIdFlow();
+      StartPlatformAuthenticatorFlow();
       break;
     case AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy:
       EnsureBleAdapterIsPoweredAndContinueWithCable();
@@ -279,43 +281,48 @@ void AuthenticatorRequestDialogModel::TryUsbDevice() {
   DCHECK_EQ(current_step(), Step::kUsbInsertAndActivate);
 }
 
-void AuthenticatorRequestDialogModel::StartTouchIdFlow() {
-  // Never try Touch ID if the request is known in advance to fail. Proceed to
-  // a special error screen instead.
+void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
+  // Never try the platform authenticator if the request is known in advance to
+  // fail. Proceed to a special error screen instead.
   if (transport_availability_.request_type ==
-          device::FidoRequestHandlerBase::RequestType::kGetAssertion &&
-      !transport_availability_.has_recognized_mac_touch_id_credential) {
-    SetCurrentStep(Step::kErrorInternalUnrecognized);
-    return;
+      device::FidoRequestHandlerBase::RequestType::kGetAssertion) {
+    DCHECK(transport_availability_
+               .has_recognized_platform_authenticator_credential);
+    if (!*transport_availability_
+              .has_recognized_platform_authenticator_credential) {
+      SetCurrentStep(Step::kErrorInternalUnrecognized);
+      return;
+    }
   }
 
   if (transport_availability_.request_type ==
           device::FidoRequestHandlerBase::RequestType::kMakeCredential &&
       transport_availability_.is_off_the_record_context) {
-    SetCurrentStep(Step::kTouchIdIncognitoSpeedBump);
+    SetCurrentStep(Step::kPlatformAuthenticatorOffTheRecordInterstitial);
     return;
   }
 
-  HideDialogAndTryTouchId();
+  HideDialogAndDispatchToPlatformAuthenticator();
 }
 
-void AuthenticatorRequestDialogModel::HideDialogAndTryTouchId() {
+void AuthenticatorRequestDialogModel::
+    HideDialogAndDispatchToPlatformAuthenticator() {
   HideDialog();
 
   auto& authenticators =
       ephemeral_state_.saved_authenticators_.authenticator_list();
-  auto touch_id_authenticator_it =
+  auto platform_authenticator_it =
       std::find_if(authenticators.begin(), authenticators.end(),
                    [](const auto& authenticator) {
                      return authenticator.transport ==
                             device::FidoTransportProtocol::kInternal;
                    });
 
-  if (touch_id_authenticator_it == authenticators.end()) {
+  if (platform_authenticator_it == authenticators.end()) {
     return;
   }
 
-  DispatchRequestAsync(&*touch_id_authenticator_it);
+  DispatchRequestAsync(&*platform_authenticator_it);
 }
 
 void AuthenticatorRequestDialogModel::Cancel() {

@@ -82,15 +82,12 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
 
   void WaitForAndExpectAvailableTransportsAre(
       base::flat_set<FidoTransportProtocol> expected_transports,
-      base::Optional<bool> has_recognized_mac_touch_id_credential =
-          base::nullopt) {
+      base::Optional<bool> has_platform_credential = base::nullopt) {
     auto result = WaitForTransportAvailabilityInfo();
     EXPECT_THAT(result.available_transports,
                 ::testing::UnorderedElementsAreArray(expected_transports));
-    if (has_recognized_mac_touch_id_credential) {
-      EXPECT_EQ(*has_recognized_mac_touch_id_credential,
-                result.has_recognized_mac_touch_id_credential);
-    }
+    EXPECT_EQ(result.has_recognized_platform_authenticator_credential,
+              has_platform_credential);
   }
 
  protected:
@@ -205,6 +202,11 @@ class FakeFidoRequestHandler : public FidoRequestHandlerBase {
   }
   ~FakeFidoRequestHandler() override = default;
 
+  void set_has_platform_credential(bool has_platform_credential) {
+    has_platform_credential_ = has_platform_credential;
+  }
+
+ private:
   void DispatchRequest(FidoAuthenticator* authenticator) override {
     // FidoRequestHandlerTest uses FakeDiscovery to inject mock devices
     // that get wrapped in a FidoDeviceAuthenticator, so we can safely cast
@@ -220,7 +222,18 @@ class FakeFidoRequestHandler : public FidoRequestHandlerBase {
                        weak_factory_.GetWeakPtr(), authenticator)));
   }
 
- private:
+  void AuthenticatorAdded(FidoDiscoveryBase* discovery,
+                          FidoAuthenticator* authenticator) override {
+    if (authenticator->AuthenticatorTransport() ==
+        FidoTransportProtocol::kInternal) {
+      transport_availability_info()
+          .has_recognized_platform_authenticator_credential =
+          has_platform_credential_;
+    }
+
+    FidoRequestHandlerBase::AuthenticatorAdded(discovery, authenticator);
+  }
+
   void HandleResponse(FidoAuthenticator* authenticator,
                       CtapDeviceResponseCode status,
                       base::Optional<std::vector<uint8_t>> response) {
@@ -246,6 +259,8 @@ class FakeFidoRequestHandler : public FidoRequestHandlerBase {
   }
 
   CompletionCallback completion_callback_;
+  bool has_platform_credential_ = false;
+
   base::WeakPtrFactory<FakeFidoRequestHandler> weak_factory_{this};
 };
 
@@ -567,12 +582,13 @@ TEST_F(FidoRequestHandlerTest, TestWithPlatformAuthenticator) {
       &fake_discovery_factory_,
       base::flat_set<FidoTransportProtocol>({FidoTransportProtocol::kInternal}),
       callback().callback());
+  request_handler->set_has_platform_credential(true);
   request_handler->set_observer(&observer);
   fake_discovery->AddDevice(std::move(device));
 
   observer.WaitForAndExpectAvailableTransportsAre(
       {FidoTransportProtocol::kInternal},
-      false /* has_recognized_mac_touch_id_credential */);
+      /*has_platform_credential=*/true);
 
   callback().WaitForCallback();
   EXPECT_TRUE(callback().status());

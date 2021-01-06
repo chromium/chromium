@@ -72,8 +72,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       model->SetCurrentStep(
           AuthenticatorRequestDialogModel::Step::kBlePowerOnManual);
     } else if (name == "touchid_incognito") {
-      model->SetCurrentStep(
-          AuthenticatorRequestDialogModel::Step::kTouchIdIncognitoSpeedBump);
+      model->SetCurrentStep(AuthenticatorRequestDialogModel::Step::
+                                kPlatformAuthenticatorOffTheRecordInterstitial);
     } else if (name == "cable_activate") {
       model->SetCurrentStep(
           AuthenticatorRequestDialogModel::Step::kCableActivate);

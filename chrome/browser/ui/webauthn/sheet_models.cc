@@ -470,28 +470,28 @@ void AuthenticatorBlePowerOnAutomaticSheetModel::OnAccept() {
   dialog_model()->PowerOnBleAdapter();
 }
 
-// AuthenticatorTouchIdIncognitoBumpSheetModel
+// AuthenticatorOffTheRecordInterstitialSheetModel
 // -----------------------------------------
 
-AuthenticatorTouchIdIncognitoBumpSheetModel::
-    AuthenticatorTouchIdIncognitoBumpSheetModel(
+AuthenticatorOffTheRecordInterstitialSheetModel::
+    AuthenticatorOffTheRecordInterstitialSheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model),
       other_transports_menu_model_(std::make_unique<OtherTransportsMenuModel>(
           dialog_model,
           AuthenticatorTransport::kInternal)) {}
 
-AuthenticatorTouchIdIncognitoBumpSheetModel::
-    ~AuthenticatorTouchIdIncognitoBumpSheetModel() = default;
+AuthenticatorOffTheRecordInterstitialSheetModel::
+    ~AuthenticatorOffTheRecordInterstitialSheetModel() = default;
 
 const gfx::VectorIcon&
-AuthenticatorTouchIdIncognitoBumpSheetModel::GetStepIllustration(
+AuthenticatorOffTheRecordInterstitialSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
   return color_scheme == ImageColorScheme::kDark ? kWebauthnPermissionDarkIcon
                                                  : kWebauthnPermissionIcon;
 }
 
-base::string16 AuthenticatorTouchIdIncognitoBumpSheetModel::GetStepTitle()
+base::string16 AuthenticatorOffTheRecordInterstitialSheetModel::GetStepTitle()
     const {
 #if defined(OS_MAC)
   return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_TOUCH_ID_INCOGNITO_BUMP_TITLE,
@@ -501,8 +501,8 @@ base::string16 AuthenticatorTouchIdIncognitoBumpSheetModel::GetStepTitle()
 #endif  // defined(OS_MAC)
 }
 
-base::string16 AuthenticatorTouchIdIncognitoBumpSheetModel::GetStepDescription()
-    const {
+base::string16
+AuthenticatorOffTheRecordInterstitialSheetModel::GetStepDescription() const {
 #if defined(OS_MAC)
   return l10n_util::GetStringUTF16(
       IDS_WEBAUTHN_TOUCH_ID_INCOGNITO_BUMP_DESCRIPTION);
@@ -512,22 +512,22 @@ base::string16 AuthenticatorTouchIdIncognitoBumpSheetModel::GetStepDescription()
 }
 
 ui::MenuModel*
-AuthenticatorTouchIdIncognitoBumpSheetModel::GetOtherTransportsMenuModel() {
+AuthenticatorOffTheRecordInterstitialSheetModel::GetOtherTransportsMenuModel() {
   return other_transports_menu_model_.get();
 }
 
-bool AuthenticatorTouchIdIncognitoBumpSheetModel::IsAcceptButtonVisible()
+bool AuthenticatorOffTheRecordInterstitialSheetModel::IsAcceptButtonVisible()
     const {
   return true;
 }
 
-bool AuthenticatorTouchIdIncognitoBumpSheetModel::IsAcceptButtonEnabled()
+bool AuthenticatorOffTheRecordInterstitialSheetModel::IsAcceptButtonEnabled()
     const {
   return true;
 }
 
 base::string16
-AuthenticatorTouchIdIncognitoBumpSheetModel::GetAcceptButtonLabel() const {
+AuthenticatorOffTheRecordInterstitialSheetModel::GetAcceptButtonLabel() const {
 #if defined(OS_MAC)
   return l10n_util::GetStringUTF16(
       IDS_WEBAUTHN_TOUCH_ID_INCOGNITO_BUMP_CONTINUE);
@@ -536,8 +536,8 @@ AuthenticatorTouchIdIncognitoBumpSheetModel::GetAcceptButtonLabel() const {
 #endif  // defined(OS_MAC)
 }
 
-void AuthenticatorTouchIdIncognitoBumpSheetModel::OnAccept() {
-  dialog_model()->HideDialogAndTryTouchId();
+void AuthenticatorOffTheRecordInterstitialSheetModel::OnAccept() {
+  dialog_model()->HideDialogAndDispatchToPlatformAuthenticator();
 }
 
 // AuthenticatorPaaskSheetModel -----------------------------------------

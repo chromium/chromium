@@ -72,7 +72,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // relying party.
     base::flat_set<FidoTransportProtocol> available_transports;
 
-    bool has_recognized_mac_touch_id_credential = false;
+    // Whether the platform authenticator has a matching credential for the
+    // request. This is only set for a GetAssertion request and if a platform
+    // authenticator has been added to the request handler. (The Windows
+    // WebAuthn API does NOT count as a platform authenticator in this case.)
+    base::Optional<bool> has_recognized_platform_authenticator_credential;
+
     bool is_ble_powered = false;
     bool can_power_on_ble_adapter = false;
 
