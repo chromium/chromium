@@ -57,12 +57,6 @@ BluetoothSocketNet::~BluetoothSocketNet() {
                             base::BindOnce(&DeactivateSocket, socket_thread_));
 }
 
-void BluetoothSocketNet::Close() {
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  socket_thread_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&BluetoothSocketNet::DoClose, this));
-}
-
 void BluetoothSocketNet::Disconnect(base::OnceClosure success_callback) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   socket_thread_->task_runner()->PostTask(
@@ -123,7 +117,7 @@ void BluetoothSocketNet::PostErrorCompletion(ErrorCompletionCallback callback,
                             base::BindOnce(std::move(callback), error));
 }
 
-void BluetoothSocketNet::DoClose() {
+void BluetoothSocketNet::DoDisconnect(base::OnceClosure callback) {
   DCHECK(socket_thread_->task_runner()->RunsTasksInCurrentSequence());
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -141,12 +135,6 @@ void BluetoothSocketNet::DoClose() {
   std::swap(write_queue_, empty);
 
   ResetData();
-}
-
-void BluetoothSocketNet::DoDisconnect(base::OnceClosure callback) {
-  DCHECK(socket_thread_->task_runner()->RunsTasksInCurrentSequence());
-
-  DoClose();
   std::move(callback).Run();
 }
 

@@ -102,10 +102,9 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, DISABLED_Connect) {
   // dispatcher. Since there is no data, this will not call its callback.
   EXPECT_CALL(*mock_socket, Receive(testing::_, testing::_, testing::_));
 
-  // The test also cleans up by calling Disconnect and Close.
+  // The test also cleans up by calling Disconnect.
   EXPECT_CALL(*mock_socket, Disconnect(testing::_))
       .WillOnce(base::test::RunOnceCallback<0>());
-  EXPECT_CALL(*mock_socket, Close());
 
   // Run the test.
   ExtensionTestMessageListener listener("ready", true);
@@ -169,11 +168,9 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, Listen) {
   // the existing server and client sockets.
   EXPECT_CALL(*mock_server_socket, Disconnect(testing::_))
       .WillOnce(base::test::RunOnceCallback<0>());
-  EXPECT_CALL(*mock_server_socket, Close());
 
   EXPECT_CALL(*mock_client_socket, Disconnect(testing::_))
       .WillOnce(base::test::RunOnceCallback<0>());
-  EXPECT_CALL(*mock_client_socket, Close());
 
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   listener.Reply("go");

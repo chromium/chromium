@@ -78,7 +78,7 @@ TEST_F(ServerSocketTest, TestOnDestroyCallsClose) {
   // When destroyed, |server_socket_| is expected to tear down its
   // BluetoothSocket.
   server_socket_.reset();
-  EXPECT_TRUE(fake_bluetooth_server_socket_->called_close());
+  EXPECT_TRUE(fake_bluetooth_server_socket_->called_disconnect());
 }
 
 TEST_F(ServerSocketTest, TestAccept_Success) {

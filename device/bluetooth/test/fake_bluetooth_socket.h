@@ -30,7 +30,6 @@ class FakeBluetoothSocket : public BluetoothSocket {
   FakeBluetoothSocket& operator=(const FakeBluetoothSocket&) = delete;
 
   // BluetoothSocket:
-  void Close() override;
   void Disconnect(base::OnceClosure success_callback) override;
   void Receive(int buffer_size,
                ReceiveCompletionCallback success_callback,
@@ -42,7 +41,6 @@ class FakeBluetoothSocket : public BluetoothSocket {
   void Accept(AcceptCompletionCallback success_callback,
               ErrorCompletionCallback error_callback) override;
 
-  bool called_close() { return called_close_; }
   bool called_disconnect() { return called_disconnect_; }
 
   bool HasReceiveArgs() { return receive_args_.get(); }
@@ -63,7 +61,6 @@ class FakeBluetoothSocket : public BluetoothSocket {
   ~FakeBluetoothSocket() override;
 
  private:
-  bool called_close_ = false;
   bool called_disconnect_ = false;
   std::unique_ptr<ReceiveArgs> receive_args_;
   std::unique_ptr<SendArgs> send_args_;

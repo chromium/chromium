@@ -398,9 +398,9 @@ void Adapter::OnConnectToService(
       mojo::CreateDataPipe(/*options=*/nullptr, &receive_pipe_producer_handle,
                            &receive_pipe_consumer_handle);
   if (result != MOJO_RESULT_OK) {
-    socket->Close();
-    OnConnectToServiceError(std::move(callback),
-                            "Failed to create receiving DataPipe.");
+    socket->Disconnect(base::BindOnce(
+        &Adapter::OnConnectToServiceError, weak_ptr_factory_.GetWeakPtr(),
+        std::move(callback), "Failed to create receiving DataPipe."));
     return;
   }
 
@@ -409,9 +409,9 @@ void Adapter::OnConnectToService(
   result = mojo::CreateDataPipe(/*options=*/nullptr, &send_pipe_producer_handle,
                                 &send_pipe_consumer_handle);
   if (result != MOJO_RESULT_OK) {
-    socket->Close();
-    OnConnectToServiceError(std::move(callback),
-                            "Failed to create sending DataPipe.");
+    socket->Disconnect(base::BindOnce(
+        &Adapter::OnConnectToServiceError, weak_ptr_factory_.GetWeakPtr(),
+        std::move(callback), "Failed to create sending DataPipe."));
     return;
   }
 

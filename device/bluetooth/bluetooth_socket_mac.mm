@@ -617,19 +617,14 @@ void BluetoothSocketMac::OnChannelOpenComplete(
   std::move(temp->success_callback).Run();
 }
 
-void BluetoothSocketMac::Close() {
+void BluetoothSocketMac::Disconnect(base::OnceClosure callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (channel_)
     ReleaseChannel();
   else if (service_record_.get())
     ReleaseListener();
-}
 
-void BluetoothSocketMac::Disconnect(base::OnceClosure callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  Close();
   std::move(callback).Run();
 }
 

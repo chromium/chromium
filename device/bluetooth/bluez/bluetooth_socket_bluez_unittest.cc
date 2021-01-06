@@ -643,7 +643,7 @@ TEST_F(BluetoothSocketBlueZTest, SocketListenTwice) {
         base::BindOnce(&BluetoothSocketBlueZTest::ErrorCallback,
                        base::Unretained(this), run_loop.QuitWhenIdleClosure()));
 
-    server_socket->Close();
+    server_socket->Disconnect(base::DoNothing());
 
     server_socket = nullptr;
     run_loop.RunUntilIdle();
@@ -679,7 +679,7 @@ TEST_F(BluetoothSocketBlueZTest, SocketListenTwice) {
         base::BindOnce(&BluetoothSocketBlueZTest::ErrorCallback,
                        base::Unretained(this), run_loop.QuitWhenIdleClosure()));
 
-    server_socket->Close();
+    server_socket->Disconnect(base::DoNothing());
 
     server_socket = nullptr;
     run_loop.RunUntilIdle();

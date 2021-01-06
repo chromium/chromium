@@ -162,7 +162,7 @@ class SocketTest : public testing::Test {
 TEST_F(SocketTest, TestOnDestroyCallsClose) {
   // When destroyed, |socket_| is expected to tear down its BluetoothSocket.
   socket_.reset();
-  EXPECT_TRUE(fake_bluetooth_socket_->called_close());
+  EXPECT_TRUE(fake_bluetooth_socket_->called_disconnect());
 }
 
 TEST_F(SocketTest, TestDisconnect) {

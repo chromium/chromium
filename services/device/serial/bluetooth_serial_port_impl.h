@@ -81,6 +81,7 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
       const std::string& error_message);
   void OnBluetoothSocketSend(int num_bytes_sent);
   void OnBluetoothSocketSendError(const std::string& error_message);
+  void OnSocketDisconnected(CloseCallback callback);
 
   mojo::Receiver<mojom::SerialPort> receiver_{this};
   mojo::Remote<mojom::SerialPortConnectionWatcher> watcher_;

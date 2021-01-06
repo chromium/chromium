@@ -76,7 +76,6 @@ class BluetoothSocketMac : public BluetoothSocket {
                         ErrorCompletionCallback error_callback);
 
   // BluetoothSocket:
-  void Close() override;
   void Disconnect(base::OnceClosure callback) override;
   void Receive(int /* buffer_size */,
                ReceiveCompletionCallback success_callback,

@@ -159,7 +159,7 @@ void BluetoothSocketBlueZ::Listen(
                   std::move(success_callback), std::move(error_callback));
 }
 
-void BluetoothSocketBlueZ::Close() {
+void BluetoothSocketBlueZ::Disconnect(base::OnceClosure callback) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   if (profile_)
@@ -175,24 +175,21 @@ void BluetoothSocketBlueZ::Close() {
   }
 
   if (!device_path_.value().empty()) {
-    BluetoothSocketNet::Close();
-  } else {
-    DoCloseListening();
-  }
-}
-
-void BluetoothSocketBlueZ::Disconnect(base::OnceClosure callback) {
-  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-
-  if (profile_)
-    UnregisterProfile();
-
-  if (!device_path_.value().empty()) {
     BluetoothSocketNet::Disconnect(std::move(callback));
-  } else {
-    DoCloseListening();
-    std::move(callback).Run();
+    return;
   }
+
+  if (accept_request_) {
+    std::move(accept_request_->error_callback)
+        .Run(net::ErrorToString(net::ERR_CONNECTION_CLOSED));
+    accept_request_.reset(nullptr);
+  }
+
+  while (connection_request_queue_.size() > 0) {
+    std::move(connection_request_queue_.front()->callback).Run(REJECTED);
+    connection_request_queue_.pop();
+  }
+  std::move(callback).Run();
 }
 
 void BluetoothSocketBlueZ::Accept(AcceptCompletionCallback success_callback,
@@ -518,21 +515,6 @@ void BluetoothSocketBlueZ::OnNewConnection(
   connection_request_queue_.pop();
 
   std::move(callback).Run(status);
-}
-
-void BluetoothSocketBlueZ::DoCloseListening() {
-  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-
-  if (accept_request_) {
-    std::move(accept_request_->error_callback)
-        .Run(net::ErrorToString(net::ERR_CONNECTION_CLOSED));
-    accept_request_.reset(nullptr);
-  }
-
-  while (connection_request_queue_.size() > 0) {
-    std::move(connection_request_queue_.front()->callback).Run(REJECTED);
-    connection_request_queue_.pop();
-  }
 }
 
 void BluetoothSocketBlueZ::UnregisterProfile() {
