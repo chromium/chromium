@@ -580,7 +580,8 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_goma": true,
+      "use_javascript_coverage": true
     }
   },
   "linux-chromium-tests-staging-builder": {

@@ -1556,6 +1556,7 @@ class MetaBuildWrapper(object):
     cfi_diag = 'use_cfi_diag=true' in vals['gn_args']
     clang_coverage = 'use_clang_coverage=true' in vals['gn_args']
     java_coverage = 'use_jacoco_coverage=true' in vals['gn_args']
+    javascript_coverage = 'use_javascript_coverage=true' in vals['gn_args']
 
     executable = isolate_map[target].get('executable', target)
     executable_suffix = isolate_map[target].get(
@@ -1603,6 +1604,9 @@ class MetaBuildWrapper(object):
           '--tsan=%d' % tsan,
           '--cfi-diag=%d' % cfi_diag,
       ]
+
+      if javascript_coverage:
+        cmdline += ['--devtools-code-coverage=${ISOLATED_OUTDIR}']
     elif test_type in ('windowed_test_launcher', 'console_test_launcher'):
       cmdline += [
           '../../testing/test_env.py',

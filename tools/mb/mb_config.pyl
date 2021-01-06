@@ -326,7 +326,7 @@
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-blink-heap-verification': 'release_bot_enable_blink_heap_verification_dcheck_always_on',
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage',
-      'linux-chromeos-js-code-coverage': 'chromeos_with_codecs_release_bot',
+      'linux-chromeos-js-code-coverage': 'chromeos_with_codecs_release_bot_javascript_coverage',
       'linux-chromium-tests-staging-builder': 'release_bot',
       'linux-code-coverage': 'clang_code_coverage',
       'linux-example-builder': 'release_bot',
@@ -1735,6 +1735,10 @@
 
     'chromeos_with_codecs_release_bot_coverage': [
       'chromeos_with_codecs', 'release_bot', 'use_clang_coverage',
+    ],
+
+    'chromeos_with_codecs_release_bot_javascript_coverage': [
+      'chromeos_with_codecs', 'release_bot', 'use_javascript_coverage',
     ],
 
     'chromeos_with_codecs_release_trybot': [
@@ -3326,6 +3330,10 @@
 
     'use_java_coverage': {
       'gn_args': 'use_jacoco_coverage=true',
+    },
+
+    'use_javascript_coverage': {
+      'gn_args': 'use_javascript_coverage=true',
     },
 
     'v8_simulate_arm': {

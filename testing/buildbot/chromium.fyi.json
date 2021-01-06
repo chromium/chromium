@@ -44831,8 +44831,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--gtest_filter=*FilesApp*",
-          "--devtools-code-coverage"
+          "--gtest_filter=*FilesApp*"
         ],
         "isolate_profile_data": true,
         "merge": {
