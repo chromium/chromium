@@ -26,8 +26,8 @@
 //   class MyClass {
 //    public:
 //     MyClass() {
-//       // It's sometimes useful to detach on construction for objects that are
-//       // constructed in one place and forever after used from another
+//       // Detaching on construction is necessary for objects that are
+//       // constructed on one sequence and forever after used from another
 //       // sequence.
 //       DETACH_FROM_SEQUENCE(my_sequence_checker_);
 //     }
