@@ -601,7 +601,7 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kWebRtcRemoteEventLogGzipped;
 #endif
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kWebShare;
 #endif
 

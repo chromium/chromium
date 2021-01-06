@@ -3427,11 +3427,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMacV2GPUSandboxDescription, kOsMac,
      FEATURE_VALUE_TYPE(features::kMacV2GPUSandbox)},
 #endif  // OS_MAC
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
     {"web-share", flag_descriptions::kWebShareName,
      flag_descriptions::kWebShareDescription, kOsWin | kOsCrOS,
      FEATURE_VALUE_TYPE(features::kWebShare)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || OS_WIN
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || OS_WIN || OS_MAC
 #if BUILDFLAG(ENABLE_VR)
     {"webxr-incubations", flag_descriptions::kWebXrIncubationsName,
      flag_descriptions::kWebXrIncubationsDescription, kOsAll,

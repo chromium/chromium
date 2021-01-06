@@ -4792,12 +4792,12 @@ const char kUserDataSnapshotDescription[] =
     "update and restoring them after a version rollback.";
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
 const char kWebShareName[] = "Web Share";
 const char kWebShareDescription[] =
     "Enables the Web Share (navigator.share) APIs on experimentally supported "
     "platforms.";
-#endif  // defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

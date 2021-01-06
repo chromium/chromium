@@ -1494,10 +1494,11 @@ void ChromeContentRendererClient::
   // Web Share is conditionally enabled here in chrome/, to avoid it being
   // made available in other clients of content/ that do not have a Web Share
   // Mojo implementation (e.g. WebView).  Web Share is shipped on Android.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
   if (base::FeatureList::IsEnabled(features::kWebShare))
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC) || \
+    defined(OS_ANDROID)
     blink::WebRuntimeFeatures::EnableWebShare(true);
 #endif
 

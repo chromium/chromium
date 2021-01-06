@@ -882,6 +882,11 @@ const base::Feature kWebRtcRemoteEventLogGzipped{
 const base::Feature kWebShare{"WebShare", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_MAC)
+// Enables Web Share (navigator.share) for macOS
+const base::Feature kWebShare{"WebShare", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enables setting time limit for Chrome and PWA's on child user device.
 // Requires |kPerAppTimeLimits| to be enabled.
 #if BUILDFLAG(IS_CHROMEOS_ASH)

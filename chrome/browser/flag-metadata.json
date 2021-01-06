@@ -4978,8 +4978,8 @@
   },
   {
     "name": "web-share",
-    "owners": [ "mhochk@microsoft.com", "ericwilligers@google.com" ],
-    "expiry_milestone": 89
+    "owners": [ "mhochk@microsoft.com", "ericwilligers@google.com", "hatalat@microsoft.com" ],
+    "expiry_milestone": 95
   },
   {
     "name": "web-view-native-context-menu",
