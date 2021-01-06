@@ -263,9 +263,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         int footerHeight = inflateFooter(footerResourceId, contentView, menuWidth);
         int headerHeight = inflateHeader(headerResourceId, contentView, menuWidth);
 
-        if (highlightedItemId != null
-                && (highlightedItemId == footerResourceId
-                        || highlightedItemId == headerResourceId)) {
+        if (highlightedItemId != null) {
             View viewToHighlight = contentView.findViewById(highlightedItemId);
             ViewHighlighter.turnOnRectangularHighlight(viewToHighlight);
         }
