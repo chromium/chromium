@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -99,26 +101,44 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
       const AppBrowserControllerBrowserTest&) = delete;
 
  protected:
-  void InstallAndLaunchMockApp() {
+  Profile* profile() {
+    if (!profile_)
+      profile_ = browser()->profile();
+    return profile_;
+  }
+
+  void InstallMockSystemWebApp() {
     test_system_web_app_installation_->WaitForAppInstall();
+  }
+
+  void LaunchMockApp() {
     app_browser_ = web_app::LaunchWebAppBrowser(
-        browser()->profile(), test_system_web_app_installation_->GetAppId());
+        profile(), test_system_web_app_installation_->GetAppId());
     tabbed_app_url_ = test_system_web_app_installation_->GetAppUrl();
     ASSERT_TRUE(content::NavigateToURL(
         app_browser_->tab_strip_model()->GetActiveWebContents(),
         tabbed_app_url_));
   }
 
-  void InstallAndLaunchMockPopup() {
-    test_system_web_app_installation_->WaitForAppInstall();
+  void LaunchMockPopup() {
     auto params = web_app::CreateSystemWebAppLaunchParams(
-        browser()->profile(), test_system_web_app_installation_->GetType(),
+        profile(), test_system_web_app_installation_->GetType(),
         display::kInvalidDisplayId);
     EXPECT_TRUE(params.has_value());
     params->disposition = WindowOpenDisposition::NEW_POPUP;
     app_browser_ = web_app::LaunchSystemWebApp(
-        browser()->profile(), test_system_web_app_installation_->GetType(),
+        profile(), test_system_web_app_installation_->GetType(),
         test_system_web_app_installation_->GetAppUrl(), std::move(*params));
+  }
+
+  void InstallAndLaunchMockApp() {
+    InstallMockSystemWebApp();
+    LaunchMockApp();
+  }
+
+  void InstallAndLaunchMockPopup() {
+    InstallMockSystemWebApp();
+    LaunchMockPopup();
   }
 
   GURL GetActiveTabURL() {
@@ -127,6 +147,7 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
         ->GetVisibleURL();
   }
 
+  Profile* profile_ = nullptr;
   Browser* app_browser_ = nullptr;
   GURL tabbed_app_url_;
 
@@ -250,6 +271,19 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
                        WhiteThemeForSystemAppPopup) {
   InstallAndLaunchMockPopup();
   EXPECT_FALSE(app_browser_->app_controller()->GetThemeColor().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, Shutdown) {
+  // Cache profile before browser() closes.
+  profile();
+  InstallMockSystemWebApp();
+
+  BrowserHandler handler(nullptr, std::string());
+  handler.Close();
+  ui_test_utils::WaitForBrowserToClose();
+
+  LaunchMockPopup();
+  EXPECT_EQ(app_browser_, nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,

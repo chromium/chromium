@@ -179,6 +179,11 @@ Browser* LaunchSystemWebApp(Profile* profile,
       return nullptr;
   }
 
+  if (Browser::GetBrowserCreationStatusForProfile(profile_for_launch) !=
+      Browser::BrowserCreationStatus::kOk) {
+    return nullptr;
+  }
+
   auto* provider = WebAppProvider::Get(profile_for_launch);
 
   if (!provider)

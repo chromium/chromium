@@ -33,9 +33,11 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/login/login_manager_test.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #endif
@@ -476,16 +478,21 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
     run_loop.Run();
   }
 
-  Browser* LaunchAppOnProfile(Profile* profile) {
+  AppId GetAppId(Profile* profile) {
     SystemWebAppManager& manager =
         web_app::WebAppProvider::Get(profile)->system_web_app_manager();
 
     base::Optional<AppId> app_id =
         manager.GetAppIdForSystemApp(installation_->GetType());
     CHECK(app_id.has_value());
+    return *app_id;
+  }
+
+  Browser* LaunchAppOnProfile(Profile* profile) {
+    AppId app_id = GetAppId(profile);
 
     auto launch_params = apps::AppLaunchParams(
-        *app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
         apps::mojom::AppLaunchSource::kSourceAppLauncher);
 
@@ -568,6 +575,55 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
       MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
           browser2->window()->GetNativeWindow(), account_id2_));
 }
+
+IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
+                       ProfileScheduledForDeletion) {
+  // Login two users.
+  LoginUser(account_id1_);
+  base::RunLoop().RunUntilIdle();
+  chromeos::UserAddingScreen::Get()->Start();
+  AddUser(account_id2_);
+  base::RunLoop().RunUntilIdle();
+
+  // Wait for System Apps to be installed on both user profiles.
+  auto* user_manager = user_manager::UserManager::Get();
+  Profile* profile1 = chromeos::ProfileHelper::Get()->GetProfileByUser(
+      user_manager->FindUser(account_id1_));
+  Profile* profile2 = chromeos::ProfileHelper::Get()->GetProfileByUser(
+      user_manager->FindUser(account_id2_));
+  WaitForSystemWebAppInstall(profile1);
+  WaitForSystemWebAppInstall(profile2);
+
+  g_browser_process->profile_manager()->ScheduleProfileForDeletion(
+      profile2->GetPath(), base::DoNothing());
+
+  {
+    auto launch_params = apps::AppLaunchParams(
+        GetAppId(profile2),
+        apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        WindowOpenDisposition::CURRENT_TAB,
+        apps::mojom::AppLaunchSource::kSourceAppLauncher);
+    content::WebContents* web_contents =
+        apps::AppServiceProxyFactory::GetForProfile(profile2)
+            ->BrowserAppLauncher()
+            ->LaunchAppWithParams(std::move(launch_params));
+    EXPECT_EQ(web_contents, nullptr);
+  }
+
+  {
+    auto launch_params = apps::AppLaunchParams(
+        GetAppId(profile1),
+        apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        WindowOpenDisposition::CURRENT_TAB,
+        apps::mojom::AppLaunchSource::kSourceAppLauncher);
+    content::WebContents* web_contents =
+        apps::AppServiceProxyFactory::GetForProfile(profile1)
+            ->BrowserAppLauncher()
+            ->LaunchAppWithParams(std::move(launch_params));
+    EXPECT_NE(web_contents, nullptr);
+  }
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The following tests are disabled in DCHECK builds. LaunchSystemWebApp DCHECKs
