@@ -388,10 +388,6 @@ class AuthenticatorRequestDialogModel {
     return ephemeral_state_.responses_;
   }
 
-  void set_incognito_mode(bool incognito_mode) {
-    incognito_mode_ = incognito_mode;
-  }
-
   bool might_create_resident_credential() const {
     return might_create_resident_credential_;
   }
@@ -484,8 +480,6 @@ class AuthenticatorRequestDialogModel {
 
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
-
-  bool incognito_mode_ = false;
 
   // offer_try_again_in_ui_ indicates whether a button to retry the request
   // should be included on the dialog sheet shown when encountering certain

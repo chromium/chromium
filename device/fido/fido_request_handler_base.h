@@ -93,6 +93,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // This allows the observer to distinguish it from other
     // authenticators.
     std::string win_native_api_authenticator_id;
+
+    // Indicates whether the request is occurring in an off-the-record
+    // BrowserContext (e.g. Chrome Incognito mode).
+    bool is_off_the_record_context = false;
   };
 
   class COMPONENT_EXPORT(DEVICE_FIDO) Observer {

@@ -268,9 +268,12 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
   if (request.is_u2f_only) {
     authenticator_attachment =
         WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM_U2F_V2;
-  } else if (request.is_incognito_mode) {
-    // Disable all platform authenticators in incognito mode. We are going to
-    // revisit this in crbug/908622.
+  } else if (request.is_off_the_record_context) {
+    // Disable all platform authenticators in off-the-record contexts.
+    //
+    // TODO(crbug.com/908622): Revisit this if the Windows WebAuthn API supports
+    // showing an equivalent dialog to what Chrome is displaying before creating
+    // a platform credential in Incognito mode.
     authenticator_attachment = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM;
   } else {
     authenticator_attachment =
@@ -378,9 +381,12 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
   if (request.is_u2f_only) {
     authenticator_attachment =
         WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM_U2F_V2;
-  } else if (request.is_incognito_mode) {
-    // Disable all platform authenticators in incognito mode. We are going to
-    // revisit this in crbug/908622.
+  } else if (request.is_off_the_record_context) {
+    // Disable all platform authenticators in off-the-record contexts.
+    //
+    // TODO(crbug.com/908622): Revisit this if the Windows WebAuthn API supports
+    // showing an equivalent dialog to what Chrome is displaying before creating
+    // a platform credential in Incognito mode.
     authenticator_attachment = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM;
   } else {
     authenticator_attachment = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_ANY;

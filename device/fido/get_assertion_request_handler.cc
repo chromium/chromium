@@ -298,6 +298,8 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
       FidoRequestHandlerBase::RequestType::kGetAssertion;
   transport_availability_info().has_empty_allow_list =
       request_.allow_list.empty();
+  transport_availability_info().is_off_the_record_context =
+      request_.is_off_the_record_context;
 
   if (request_.allow_list.empty()) {
     // Resident credential requests always involve user verification.

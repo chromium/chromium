@@ -79,10 +79,12 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   // the new credential through the "largeBlobKey" extension.
   bool large_blob_key = false;
 
-  // If true, instruct the request handler only to dispatch this request via
-  // U2F.
+  // Instructs the request handler only to dispatch this request via U2F.
   bool is_u2f_only = false;
-  bool is_incognito_mode = false;
+
+  // Indicates whether the request was created in an off-the-record
+  // BrowserContext (e.g. Chrome Incognito mode).
+  bool is_off_the_record_context = false;
 
   std::vector<PublicKeyCredentialDescriptor> exclude_list;
   base::Optional<std::vector<uint8_t>> pin_auth;

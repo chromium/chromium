@@ -291,7 +291,7 @@ void AuthenticatorRequestDialogModel::StartTouchIdFlow() {
 
   if (transport_availability_.request_type ==
           device::FidoRequestHandlerBase::RequestType::kMakeCredential &&
-      incognito_mode_) {
+      transport_availability_.is_off_the_record_context) {
     SetCurrentStep(Step::kTouchIdIncognitoSpeedBump);
     return;
   }

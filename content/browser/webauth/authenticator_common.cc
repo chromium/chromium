@@ -195,7 +195,7 @@ device::CtapGetAssertionRequest CreateCtapGetAssertionRequest(
     const std::string& client_data_json,
     const blink::mojom::PublicKeyCredentialRequestOptionsPtr& options,
     base::Optional<std::string> app_id,
-    bool is_incognito) {
+    bool is_off_the_record) {
   device::CtapGetAssertionRequest request_parameter(options->relying_party_id,
                                                     client_data_json);
 
@@ -219,7 +219,7 @@ device::CtapGetAssertionRequest CreateCtapGetAssertionRequest(
   if (options->large_blob_write) {
     request_parameter.large_blob_key = true;
   }
-  request_parameter.is_incognito_mode = is_incognito;
+  request_parameter.is_off_the_record_context = is_off_the_record;
   return request_parameter;
 }
 
@@ -984,7 +984,7 @@ void AuthenticatorCommon::MakeCredential(
   }
   make_credential_options_->large_blob_support = options->large_blob_enable;
   ctap_make_credential_request_->app_id = std::move(appid_exclude);
-  ctap_make_credential_request_->is_incognito_mode =
+  ctap_make_credential_request_->is_off_the_record_context =
       browser_context()->IsOffTheRecord();
   // On dual protocol CTAP2/U2F devices, force credential creation over U2F.
   ctap_make_credential_request_->is_u2f_only = origin_is_crypto_token_extension;

@@ -373,6 +373,8 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
 
   transport_availability_info().request_type =
       FidoRequestHandlerBase::RequestType::kMakeCredential;
+  transport_availability_info().is_off_the_record_context =
+      request_.is_off_the_record_context;
 
   Start();
 }
