@@ -24,6 +24,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/numerics/clamped_math.h"
 #include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -204,8 +205,8 @@ bool PlanCounter(LayoutObject& object,
         return true;
       }
       if (auto* olist = DynamicTo<HTMLOListElement>(*e)) {
-        value =
-            olist->StartConsideringItemCount() + (olist->IsReversed() ? 1 : -1);
+        value = base::ClampAdd(olist->StartConsideringItemCount(),
+                               olist->IsReversed() ? 1 : -1);
         type_mask = CounterNode::kResetType;
         return true;
       }
