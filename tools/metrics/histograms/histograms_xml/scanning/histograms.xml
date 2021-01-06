@@ -21,9 +21,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Scanning.NumDetectedScanners" units="scanners"
+    expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of detected scanners. Recorded each time detected
+    scanners are received.
+  </summary>
+</histogram>
+
 <histogram name="Scanning.NumPagesScanned" units="pages"
     expires_after="2021-12-04">
   <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>Records the number of pages scanned in a successful scan.</summary>
 </histogram>
@@ -31,6 +43,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Scanning.ScanAppEntryPoint" enum="ScanAppEntryPoint"
     expires_after="2021-12-04">
   <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the entry point of where the Scan App was launched from in Chrome
@@ -41,6 +54,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Scanning.ScanJobSuccessful" enum="Boolean"
     expires_after="2021-12-04">
   <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records true if the attempted scan job completed successfully and false if

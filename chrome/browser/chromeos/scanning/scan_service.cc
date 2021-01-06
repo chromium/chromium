@@ -327,6 +327,8 @@ void ScanService::Shutdown() {
 void ScanService::OnScannerNamesReceived(
     GetScannersCallback callback,
     std::vector<std::string> scanner_names) {
+  base::UmaHistogramCounts100("Scanning.NumDetectedScanners",
+                              scanner_names.size());
   scanner_names_.clear();
   scanner_names_.reserve(scanner_names.size());
   std::vector<mojo_ipc::ScannerPtr> scanners;

@@ -16,6 +16,7 @@
 #include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -264,6 +265,17 @@ TEST_F(ScanServiceTest, UniqueScannerIds) {
   EXPECT_EQ(scanners[1]->display_name,
             base::UTF8ToUTF16(kSecondTestScannerName));
   EXPECT_NE(scanners[0]->id, scanners[1]->id);
+}
+
+// Test that the number of detected scanners is recorded.
+TEST_F(ScanServiceTest, RecordNumDetectedScanners) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount("Scanning.NumDetectedScanners", 0);
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
+      {kFirstTestScannerName, kSecondTestScannerName});
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 2u);
+  histogram_tester.ExpectUniqueSample("Scanning.NumDetectedScanners", 2, 1);
 }
 
 // Test that attempting to get capabilities with a scanner ID that doesn't
