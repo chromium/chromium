@@ -147,6 +147,11 @@ message ClientPhishingRequest {
   // The visual feature match results.
   // Allow multiple results if there are more than one matched target.
   repeated VisionMatchResult vision_match = 20;
+
+  // Indicates whether the request is due to a match on the DOM features.
+  optional bool is_dom_match = 21;
+
+  // next available tag number: 22.
 }
 
 // Vision match result for one target image.

@@ -231,7 +231,9 @@ void PhishingClassifier::VisualExtractionFinished(bool success) {
   }
   float score = static_cast<float>(scorer_->ComputeScore(hashed_features));
   verdict->set_client_score(score);
-  verdict->set_is_phishing(score >= scorer_->threshold_probability());
+  bool is_dom_match = (score >= scorer_->threshold_probability());
+  verdict->set_is_phishing(is_dom_match);
+  verdict->set_is_dom_match(is_dom_match);
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   visual_matching_start_ = base::TimeTicks::Now();

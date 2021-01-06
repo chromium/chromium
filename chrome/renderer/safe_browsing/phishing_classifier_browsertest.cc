@@ -139,6 +139,7 @@ class PhishingClassifierTest : public ChromeRenderViewTest {
                                   verdict.feature_map(i).value());
     }
     is_phishing_ = verdict.is_phishing();
+    is_dom_match_ = verdict.is_dom_match();
     screenshot_digest_ = verdict.screenshot_digest();
     screenshot_phash_ = verdict.screenshot_phash();
     phash_dimension_size_ = verdict.phash_dimension_size();
@@ -174,6 +175,7 @@ class PhishingClassifierTest : public ChromeRenderViewTest {
   std::string screenshot_digest_;
   std::string screenshot_phash_;
   int phash_dimension_size_;
+  bool is_dom_match_;
 
   // A DiscardableMemoryAllocator is needed for certain Skia operations.
   base::TestDiscardableMemoryAllocator test_allocator_;
@@ -291,6 +293,25 @@ TEST_F(PhishingClassifierTest, TestSendsVisualDigest) {
   EXPECT_FALSE(screenshot_digest_.empty());
 }
 #endif
+
+TEST_F(PhishingClassifierTest, TestPhishingPagesAreDomMatches) {
+  LoadHtml(
+      GURL("http://host.net"),
+      "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
+  RunPhishingClassifier(&page_text_);
+
+  EXPECT_TRUE(is_phishing_);
+  EXPECT_TRUE(is_dom_match_);
+}
+
+TEST_F(PhishingClassifierTest, TestSafePagesAreNotDomMatches) {
+  LoadHtml(GURL("http://host.net"),
+           "<html><body><a href=\"http://safe.com/\">login</a></body></html>");
+  RunPhishingClassifier(&page_text_);
+
+  EXPECT_FALSE(is_phishing_);
+  EXPECT_FALSE(is_dom_match_);
+}
 
 // TODO(jialiul): Add test to verify that classification only starts on GET
 // method. It seems there is no easy way to simulate a HTTP POST in
