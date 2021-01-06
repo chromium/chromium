@@ -236,6 +236,24 @@ TEST_F(RebootFuchsiaTest, GetLastRebootSourceWithoutGranularReason) {
               Eq(RebootShlib::RebootSource::SW_OTHER));
 }
 
+fuchsia::feedback::LastReboot GenerateLastReboot(bool graceful,
+                                                 RebootReason reason) {
+  fuchsia::feedback::LastReboot last_reboot;
+  last_reboot.set_graceful(graceful);
+  last_reboot.set_reason(reason);
+  return last_reboot;
+}
+
+// RetrySystemUpdate must be handled separately because it does not work with
+// the RebootFuchsiaParamTest family of tests. Those tests expect
+// RebootSource::OTA to map to exactly one StateControlRebootReason, which is
+// now not the case.
+TEST_F(RebootFuchsiaTest, RebootReasonRetrySystemUpdateTranslatesFromFuchsia) {
+  SetLastReboot(GenerateLastReboot(true, RebootReason::RETRY_SYSTEM_UPDATE));
+  EXPECT_THAT(RebootUtil::GetLastRebootSource(),
+              Eq(RebootShlib::RebootSource::OTA));
+}
+
 class RebootFuchsiaParamTest : public RebootFuchsiaTest,
                                public ::testing::WithParamInterface<RebootReasonParam> {
  public:
@@ -249,12 +267,7 @@ TEST_P(RebootFuchsiaParamTest, RebootNowSendsFidlRebootReason) {
 }
 
 TEST_P(RebootFuchsiaParamTest, GetLastRebootSourceTranslatesReasonFromFuchsia) {
-  fuchsia::feedback::LastReboot last_reboot;
-  last_reboot.set_graceful(GetParam().graceful);
-  last_reboot.set_reason(GetParam().reason);
-  EXPECT_TRUE(last_reboot.has_graceful());
-  EXPECT_TRUE(last_reboot.has_reason());
-  SetLastReboot(std::move(last_reboot));
+  SetLastReboot(GenerateLastReboot(GetParam().graceful, GetParam().reason));
   EXPECT_THAT(RebootUtil::GetLastRebootSource(), Eq(GetParam().source));
 }
 

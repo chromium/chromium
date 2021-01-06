@@ -91,6 +91,9 @@ bool RebootShlib::RebootNow(RebootSource reboot_source) {
       reason = StateControlRebootReason::USER_REQUEST;
       break;
     case RebootSource::OTA:
+      // We expect OTAs to be initiated by the platform via the
+      // fuchsia.hardware.power.statecontrol/Admin FIDL service. In case
+      // non-platform code wants to initiate OTAs too, we also support it here.
       reason = StateControlRebootReason::SYSTEM_UPDATE;
       break;
     case RebootSource::OVERHEAT:
@@ -175,6 +178,7 @@ RebootShlib::RebootSource RebootUtil::GetLastRebootSource() {
     case RebootReason::USER_REQUEST:
       return RebootShlib::RebootSource::API;
     case RebootReason::SYSTEM_UPDATE:
+    case RebootReason::RETRY_SYSTEM_UPDATE:
       return RebootShlib::RebootSource::OTA;
     case RebootReason::HIGH_TEMPERATURE:
       return RebootShlib::RebootSource::OVERHEAT;
