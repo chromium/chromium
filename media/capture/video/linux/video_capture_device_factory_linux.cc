@@ -37,6 +37,11 @@ namespace media {
 
 namespace {
 
+bool CompareCaptureDevices(const VideoCaptureDeviceInfo& a,
+                           const VideoCaptureDeviceInfo& b) {
+  return a.descriptor < b.descriptor;
+}
+
 // USB VID and PID are both 4 bytes long.
 const size_t kVidPidSize = 4;
 const size_t kMaxInterfaceNameSize = 256;
@@ -233,6 +238,10 @@ void VideoCaptureDeviceFactoryLinux::GetDevicesInfo(
           fd.get(), &devices_info.back().supported_formats);
     }
   }
+
+  // This is required for some applications that rely on the stable ordering of
+  // devices.
+  std::sort(devices_info.begin(), devices_info.end(), CompareCaptureDevices);
 
   std::move(callback).Run(std::move(devices_info));
 }
