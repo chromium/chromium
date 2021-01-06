@@ -44,7 +44,13 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   void ResizeBubble(const int& width, const int& height);
   void CloseBubble();
 
+  // views::BubbleDialogDelegateView:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
+
  private:
+  class SharesheetParentWidgetObserver;
+
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
 
@@ -98,6 +104,8 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   views::Separator* expanded_view_separator_ = nullptr;
   views::View* parent_view_ = nullptr;
   SharesheetExpandButton* expand_button_ = nullptr;
+
+  std::unique_ptr<SharesheetParentWidgetObserver> parent_widget_observer_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_BUBBLE_VIEW_H_

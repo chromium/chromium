@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/i18n/rtl.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -49,6 +50,7 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace {
 
@@ -106,11 +108,33 @@ bool IsKeyboardCodeArrow(ui::KeyboardCode key_code) {
 
 }  // namespace
 
+class SharesheetBubbleView::SharesheetParentWidgetObserver
+    : public views::WidgetObserver {
+ public:
+  SharesheetParentWidgetObserver(SharesheetBubbleView* owner,
+                                 views::Widget* widget)
+      : owner_(owner) {
+    observer_.Observe(widget);
+  }
+  ~SharesheetParentWidgetObserver() override = default;
+
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& bounds) override {
+    owner_->OnWidgetBoundsChanged(widget, bounds);
+  }
+
+ private:
+  SharesheetBubbleView* owner_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observer_{this};
+};
+
 SharesheetBubbleView::SharesheetBubbleView(
     gfx::NativeWindow native_window,
     sharesheet::SharesheetServiceDelegate* delegate)
     : delegate_(delegate) {
   set_parent_window(native_window);
+  parent_widget_observer_ = std::make_unique<SharesheetParentWidgetObserver>(
+      this, views::Widget::GetWidgetForNativeWindow(native_window));
   parent_view_ =
       views::Widget::GetWidgetForNativeWindow(native_window)->GetRootView();
   UpdateAnchorPosition();
@@ -462,6 +486,11 @@ void SharesheetBubbleView::OnWidgetActivationChanged(views::Widget* widget,
     sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(action);
     CloseWidgetWithAnimateFadeOut(views::Widget::ClosedReason::kLostFocus);
   }
+}
+
+void SharesheetBubbleView::OnWidgetBoundsChanged(views::Widget* widget,
+                                                 const gfx::Rect& new_bounds) {
+  UpdateAnchorPosition();
 }
 
 void SharesheetBubbleView::CreateBubble() {
