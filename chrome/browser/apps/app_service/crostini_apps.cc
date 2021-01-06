@@ -133,7 +133,7 @@ void CrostiniApps::LoadIcon(const std::string& app_id,
                             bool allow_placeholder_icon,
                             LoadIconCallback callback) {
   registry_->LoadIcon(app_id, std::move(icon_key), icon_type, size_hint_in_dip,
-                      allow_placeholder_icon, IDR_LOGO_CROSTINI_DEFAULT_192,
+                      allow_placeholder_icon, IDR_LOGO_CROSTINI_DEFAULT,
                       std::move(callback));
 }
 

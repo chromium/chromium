@@ -210,8 +210,7 @@ class AppIconFactoryTest : public testing::Test {
                                apps::IconEffects icon_effects,
                                apps::mojom::IconValuePtr& output_icon) {
     bool is_placeholder_icon = false;
-    apps::LoadIconFromResource(icon_type, kSizeInDip,
-                               IDR_LOGO_CROSTINI_DEFAULT_192,
+    apps::LoadIconFromResource(icon_type, kSizeInDip, IDR_LOGO_CROSTINI_DEFAULT,
                                is_placeholder_icon, icon_effects,
                                base::BindOnce(
                                    [](apps::mojom::IconValuePtr* result,
@@ -227,7 +226,7 @@ class AppIconFactoryTest : public testing::Test {
   void GenerateCrostiniPenguinIcon(gfx::ImageSkia& output_image_skia) {
     output_image_skia =
         *(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_LOGO_CROSTINI_DEFAULT_192));
+            IDR_LOGO_CROSTINI_DEFAULT));
     output_image_skia = gfx::ImageSkiaOperations::CreateResizedImage(
         output_image_skia, skia::ImageOperations::RESIZE_BEST,
         gfx::Size(kSizeInDip, kSizeInDip));
@@ -238,7 +237,7 @@ class AppIconFactoryTest : public testing::Test {
   void GenerateCrostiniPenguinCompressedIcon(std::vector<uint8_t>& output) {
     base::StringPiece data =
         ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-            IDR_LOGO_CROSTINI_DEFAULT_192);
+            IDR_LOGO_CROSTINI_DEFAULT);
     output = std::vector<uint8_t>(data.begin(), data.end());
   }
 #endif

@@ -697,7 +697,7 @@ void IconLoadingPipeline::LoadIconFromResource(int icon_resource) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (icon_resource == IDR_LOGO_CROSTINI_DEFAULT_192 ||
+  if (icon_resource == IDR_LOGO_CROSTINI_DEFAULT ||
       icon_resource == IDR_APP_DEFAULT_ICON) {
     // For the Crostini penguin icon, clear the standard icon effects, and use
     // the raw icon.
