@@ -112,22 +112,4 @@ TEST(GeometryConversionsTest, PPSizeFromSize) {
   EXPECT_EQ(pp_c_size.height, 3);
 }
 
-TEST(GeometryConversionsTest, VectorFromPPPoint) {
-  gfx::Vector2d point = VectorFromPPPoint(pp::Point(-1, 2));
-  EXPECT_EQ(point, gfx::Vector2d(-1, 2));
-
-  point = VectorFromPPPoint(PP_MakePoint(2, -1));
-  EXPECT_EQ(point, gfx::Vector2d(2, -1));
-}
-
-TEST(GeometryConversionsTest, PPPointFromVector) {
-  pp::Point pp_cpp_point = PPPointFromVector(gfx::Vector2d(-1, 2));
-  EXPECT_EQ(pp_cpp_point.x(), -1);
-  EXPECT_EQ(pp_cpp_point.y(), 2);
-
-  PP_Point pp_c_point = PPPointFromVector(gfx::Vector2d(2, -1));
-  EXPECT_EQ(pp_c_point.x, 2);
-  EXPECT_EQ(pp_c_point.y, -1);
-}
-
 }  // namespace chrome_pdf

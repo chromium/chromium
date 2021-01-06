@@ -62,7 +62,8 @@ void PepperGraphics::PaintImage(const Image& image, const gfx::Rect& src_rect) {
 
 void PepperGraphics::Scroll(const gfx::Rect& clip,
                             const gfx::Vector2d& amount) {
-  pepper_graphics_.Scroll(PPRectFromRect(clip), PPPointFromVector(amount));
+  pepper_graphics_.Scroll(PPRectFromRect(clip),
+                          pp::Point(amount.x(), amount.y()));
 }
 
 void PepperGraphics::SetScale(float scale) {
@@ -74,7 +75,7 @@ void PepperGraphics::SetLayerTransform(float scale,
                                        const gfx::Point& origin,
                                        const gfx::Vector2d& translate) {
   bool result = pepper_graphics_.SetLayerTransform(
-      scale, PPPointFromPoint(origin), PPPointFromVector(translate));
+      scale, PPPointFromPoint(origin), pp::Point(translate.x(), translate.y()));
   DCHECK(result);
 }
 

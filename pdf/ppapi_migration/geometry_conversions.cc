@@ -55,12 +55,4 @@ PP_Size PPSizeFromSize(const gfx::Size& size) {
   return PP_MakeSize(size.width(), size.height());
 }
 
-gfx::Vector2d VectorFromPPPoint(const PP_Point& pp_point) {
-  return gfx::Vector2d(pp_point.x, pp_point.y);
-}
-
-PP_Point PPPointFromVector(const gfx::Vector2d& vector) {
-  return PP_MakePoint(vector.x(), vector.y());
-}
-
 }  // namespace chrome_pdf
