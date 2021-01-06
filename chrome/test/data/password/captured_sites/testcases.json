@@ -144,7 +144,7 @@
     { "scenario_dir":"sign_up_pass", "site_name":"hrblock" },
     { "scenario_dir":"sign_up_pass", "site_name":"indeed" },
     { "scenario_dir":"sign_up_pass", "site_name":"instagram" },
-    { "scenario_dir":"sign_up_pass", "site_name":"librus" },
+    { "scenario_dir":"sign_up_pass", "site_name":"librus", "disabled":true, "bug_number":1159936 },
     { "scenario_dir":"sign_up_pass", "site_name":"marriott" },
     { "scenario_dir":"sign_up_pass", "site_name":"nitro_type" },
     { "scenario_dir":"sign_up_pass", "site_name":"orange" },
