@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
@@ -237,6 +239,7 @@ new_tab_page::mojom::ImageDoodlePtr MakeImageDoodle(
     int share_button_y,
     const std::string& share_button_icon,
     const std::string& share_button_bg,
+    double share_button_opacity,
     GURL log_url,
     GURL cta_log_url) {
   auto doodle = new_tab_page::mojom::ImageDoodle::New();
@@ -256,7 +259,9 @@ new_tab_page::mojom::ImageDoodlePtr MakeImageDoodle(
     doodle->share_button->y = share_button_y;
     doodle->share_button->icon_url = GURL(base::StringPrintf(
         "data:image/png;base64,%s", share_button_icon.c_str()));
-    doodle->share_button->background_color = ParseHexColor(share_button_bg);
+    doodle->share_button->background_color =
+        SkColorSetA(ParseHexColor(share_button_bg),
+                    std::max(0.0, std::min(share_button_opacity, 1.0)) * 255.0);
   }
   if (type == search_provider_logos::LogoType::ANIMATED) {
     doodle->image_impression_log_url = cta_log_url;
@@ -1460,7 +1465,8 @@ void NewTabPageHandler::OnLogoAvailable(
         logo->metadata.width_px, logo->metadata.height_px, "#ffffff",
         logo->metadata.share_button_x, logo->metadata.share_button_y,
         logo->metadata.share_button_icon, logo->metadata.share_button_bg,
-        logo->metadata.log_url, logo->metadata.cta_log_url);
+        logo->metadata.share_button_opacity, logo->metadata.log_url,
+        logo->metadata.cta_log_url);
     if (logo->dark_encoded_image) {
       image_doodle->dark = MakeImageDoodle(
           logo->metadata.type, logo->dark_encoded_image->data(),
@@ -1470,7 +1476,8 @@ void NewTabPageHandler::OnLogoAvailable(
           logo->metadata.dark_share_button_x,
           logo->metadata.dark_share_button_y,
           logo->metadata.dark_share_button_icon,
-          logo->metadata.dark_share_button_bg, logo->metadata.dark_log_url,
+          logo->metadata.dark_share_button_bg,
+          logo->metadata.dark_share_button_opacity, logo->metadata.dark_log_url,
           logo->metadata.dark_cta_log_url);
     }
     image_doodle->on_click_url = logo->metadata.on_click_url;
