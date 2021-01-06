@@ -13,6 +13,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/views/animation/animation_delegate_views.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/window/frame_caption_button.h"
 
@@ -38,10 +39,14 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
       public FrameSizeButtonDelegate,
       public views::AnimationDelegateViews {
  public:
-  static const char kViewClassName[];
+  METADATA_HEADER(FrameCaptionButtonContainerView);
 
   // |frame| is the views::Widget that the caption buttons act on.
   explicit FrameCaptionButtonContainerView(views::Widget* frame);
+  FrameCaptionButtonContainerView(const FrameCaptionButtonContainerView&) =
+      delete;
+  FrameCaptionButtonContainerView& operator=(
+      const FrameCaptionButtonContainerView&) = delete;
   ~FrameCaptionButtonContainerView() override;
 
   // For testing.
@@ -49,6 +54,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
    public:
     explicit TestApi(FrameCaptionButtonContainerView* container_view)
         : container_view_(container_view) {}
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
 
     void EndAnimations();
 
@@ -70,8 +77,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
 
    private:
     FrameCaptionButtonContainerView* container_view_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
   // Sets the id of the vector image to paint the button for |icon|. The
@@ -107,7 +112,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
 
   // views::View:
   void Layout() override;
-  const char* GetClassName() const override;
   void ChildPreferredSizeChanged(View* child) override;
   void ChildVisibilityChanged(View* child) override;
 
@@ -166,8 +170,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   std::unique_ptr<gfx::SlideAnimation> tablet_mode_animation_;
 
   std::unique_ptr<CaptionButtonModel> model_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameCaptionButtonContainerView);
 };
 
 }  // namespace chromeos

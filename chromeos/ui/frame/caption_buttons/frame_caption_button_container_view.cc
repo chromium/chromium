@@ -27,6 +27,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"  // Accessibility names
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/frame_caption_button.h"
@@ -116,6 +117,9 @@ std::unique_ptr<views::BoxLayout> MakeBoxLayoutManager(
 class DefaultCaptionButtonModel : public CaptionButtonModel {
  public:
   explicit DefaultCaptionButtonModel(views::Widget* frame) : frame_(frame) {}
+  DefaultCaptionButtonModel(const DefaultCaptionButtonModel&) = delete;
+  DefaultCaptionButtonModel& operator=(const DefaultCaptionButtonModel&) =
+      delete;
   ~DefaultCaptionButtonModel() override {}
 
   // CaptionButtonModel:
@@ -151,14 +155,9 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
 
  private:
   views::Widget* frame_;
-  DISALLOW_COPY_AND_ASSIGN(DefaultCaptionButtonModel);
 };
 
 }  // namespace
-
-// static
-const char FrameCaptionButtonContainerView::kViewClassName[] =
-    "FrameCaptionButtonContainerView";
 
 FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
     views::Widget* frame)
@@ -319,10 +318,6 @@ void FrameCaptionButtonContainerView::Layout() {
     DCHECK_EQ(close_button_->bounds().right(), width());
   }
 #endif  // DCHECK_IS_ON()
-}
-
-const char* FrameCaptionButtonContainerView::GetClassName() const {
-  return kViewClassName;
 }
 
 void FrameCaptionButtonContainerView::ChildPreferredSizeChanged(View* child) {
@@ -539,5 +534,8 @@ void FrameCaptionButtonContainerView::ShowSnapPreview(SnapDirection snap) {
 void FrameCaptionButtonContainerView::CommitSnap(SnapDirection snap) {
   SnapController::Get()->CommitSnap(frame_->GetNativeWindow(), snap);
 }
+
+BEGIN_METADATA(FrameCaptionButtonContainerView, views::View)
+END_METADATA
 
 }  // namespace chromeos
