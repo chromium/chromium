@@ -767,9 +767,6 @@
                   '|device/bluetooth/chromeos/'\
                   '|ui/webui/resources/cr_components/chromeos/bluetooth*'
     },
-    'chromeos_calculator': {
-      'filepath': 'chrome/common/extensions/docs/examples/apps/calculator/',
-    },
     'chromeos_cellular': {
       'filepath': 'chrome/browser/resources/chromeos/cellular_setup/|'\
                   'chrome/browser/ui/webui/chromeos/cellular_setup/|'\
@@ -2394,7 +2391,6 @@
     'chromeos_attestation': ['dkrahn+watch@chromium.org'],
     'chromeos_bluetooth': ['hansberry+watch-bluetooth@chromium.org',
                            'vecore+watch-bluetooth@google.com'],
-    'chromeos_calculator': ['dharcourt@chromium.org'],
     'chromeos_cellular': ['azeemarshad+watch-cellular@chromium.org',
                           'benchan+watch-cellular@chromium.org',
                           'ejcaruso+watch-cellular@chromium.org',
