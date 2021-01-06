@@ -6,6 +6,8 @@
 """Runs Closure compiler on JavaScript files to check for errors and produce
 minified output."""
 
+from __future__ import print_function
+
 import os
 import subprocess
 
@@ -43,7 +45,7 @@ class Compiler(object):
       msg: A debug message to log.
     """
     if self._verbose:
-      print "(INFO) %s" % msg
+      print("(INFO) %s" % msg)
 
   def run_jar(self, jar, args):
     """Runs a .jar from the command line with arguments.

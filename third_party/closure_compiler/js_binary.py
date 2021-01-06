@@ -11,6 +11,8 @@ optional --flags argument which will add custom flags to the compiler.  Any
 extern files can also be passed in using the --extern flag.
 """
 
+from __future__ import print_function
+
 import argparse
 import os
 import sys
@@ -123,8 +125,8 @@ def main():
 
   returncode, errors = compiler.Compiler().run_jar(args.compiler, compiler_args)
   if returncode != 0:
-    print args.compiler, ' '.join(compiler_args)
-    print errors
+    print(args.compiler, ' '.join(compiler_args))
+    print(errors)
 
   return returncode
 
