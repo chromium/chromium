@@ -10,6 +10,48 @@
     text-align: center;
   }
 
+  #avatarContainer {
+    --edit-avatar-border: 3px;
+    --edit-avatar-size : 36px;
+  }
+
+  #customizeAvatarEllipse {
+    background-color: var(--md-background-color);
+    border-radius: 50%;
+    bottom: 0;
+    height: var(--edit-avatar-size);
+    margin: auto;
+    position: absolute;
+    right: 0;
+    width : var(--edit-avatar-size);
+    z-index: 2;
+  }
+
+  #customizeAvatarIcon {
+    --cr-icon-button-icon-size: 18px;
+    --cr-icon-button-size: calc(var(--edit-avatar-size) -
+      2 * var(--edit-avatar-border));
+    background-color: var(--md-background-color);
+    border-radius: 50%;
+    bottom: var(--edit-avatar-border);
+    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
+    box-sizing: border-box;
+    margin: auto;
+    position: absolute;
+    right: var(--edit-avatar-border);
+    z-index: 3;
+  }
+
+  :host-context([dir='rtl']) #customizeAvatarEllipse {
+    left: 0;
+    right: initial;
+  }
+
+  :host-context([dir='rtl']) #customizeAvatarIcon {
+    left: var(--edit-avatar-border);
+    right: initial;
+  }
+
   #wrapperContainer {
     display: flex;
     height: calc(max(100vh, var(--view-min-size)) -
@@ -106,6 +148,10 @@
       --cr-input-placeholder-color: rgba(var(--google-grey-200-rgb), .5);
     }
 
+    #customizeAvatarIcon {
+      border: 1px solid var(--google-grey-refresh-500);
+    }
+
     #colorPickerContainer {
       border-color: var(--google-grey-refresh-700);
     }
@@ -121,7 +167,14 @@
         on-click="onClickBack_" aria-label="$i18n{backButtonLabel}">
   </cr-icon-button>
   <h2 id="title">$i18n{localProfileCreationTitle}</h2>
-  <img class="avatar" alt="" src$="[[profileThemeInfo.themeGenericAvatar]]">
+  <div id="avatarContainer">
+    <img class="avatar" alt="" src$="[[profileThemeInfo.themeGenericAvatar]]">
+    <div id="customizeAvatarEllipse"></div>
+    <cr-icon-button id="customizeAvatarIcon"
+        iron-icon="profiles:create" on-click="onCustomizeAvatarClick_"
+        aria-label="$i18n{localProfileCreationCustomizeAvatarLabel}">
+    </cr-icon-button>
+  </div>
 </div>
 
 <div id="wrapperContainer">

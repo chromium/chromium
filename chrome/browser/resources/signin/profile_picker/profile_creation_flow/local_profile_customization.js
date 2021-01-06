@@ -184,6 +184,11 @@ Polymer({
   },
 
   /** @private */
+  onCustomizeAvatarClick_() {
+    // TODO(msalama): Open select avatar dialog.
+  },
+
+  /** @private */
   onProfileThemeInfoChange_() {
     if (this.disableSelectedThemeUpdates_) {
       return;
