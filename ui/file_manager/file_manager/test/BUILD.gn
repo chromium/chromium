@@ -4,7 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 
-action("create_test_main") {
+python2_action("create_test_main") {
   script = "//ui/file_manager/file_manager/test/scripts/create_test_main.py"
   output = "$target_gen_dir/../test.html"
   sources = [
