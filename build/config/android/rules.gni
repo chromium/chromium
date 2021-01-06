@@ -1688,6 +1688,12 @@ if (enable_java_templates) {
       enable_multidex = false
       output = invoker.output
       if (defined(proguard_enabled) && proguard_enabled) {
+        # The individual dependencies would have caught real missing deps in
+        # their respective dex steps. False positives that were suppressed at
+        # per-target dex steps are emitted here since this is using jar files
+        # rather than dex files.
+        ignore_desugar_missing_deps = true
+
         # When trying to build a stand-alone .dex, don't add in jdk_libs_dex.
         supports_jdk_library_desugaring = false
       } else {
@@ -2955,6 +2961,12 @@ if (enable_java_templates) {
           output = _final_dex_path
         }
         enable_multidex = _enable_multidex
+
+        # The individual dependencies would have caught real missing deps in
+        # their respective dex steps. False positives that were suppressed at
+        # per-target dex steps are emitted here since this may use jar files
+        # rather than dex files.
+        ignore_desugar_missing_deps = true
 
         if (_enable_main_dex_list) {
           forward_variables_from(invoker, [ "negative_main_dex_globs" ])
