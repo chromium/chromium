@@ -3705,7 +3705,8 @@ class DesksMockTimeTest : public AshTestBase {
   ~DesksMockTimeTest() override = default;
 };
 
-TEST_F(DesksMockTimeTest, DeskTraversalNonTouchpadMetrics) {
+// crbug.com/1163489
+TEST_F(DesksMockTimeTest, DISABLED_DeskTraversalNonTouchpadMetrics) {
   NewDesk();
   NewDesk();
   NewDesk();
