@@ -21,8 +21,8 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
+#include "components/language/core/browser/language_usage_metrics.h"
 #include "components/language/core/browser/pref_names.h"
-#include "components/language_usage_metrics/language_usage_metrics.h"
 #include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "components/metrics/expired_histogram_util.h"
@@ -277,10 +277,10 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 #endif  // BUILDFLAG(ENABLE_RLZ)
 
   TranslateServiceIOS::Initialize();
-  language_usage_metrics::LanguageUsageMetrics::RecordAcceptLanguages(
+  language::LanguageUsageMetrics::RecordAcceptLanguages(
       last_used_browser_state->GetPrefs()->GetString(
           language::prefs::kAcceptLanguages));
-  language_usage_metrics::LanguageUsageMetrics::RecordApplicationLanguage(
+  language::LanguageUsageMetrics::RecordApplicationLanguage(
       application_context_->GetApplicationLocale());
 
   // Request new variations seed information from server.

@@ -16,6 +16,8 @@ static_library("browser") {
     "language_model_manager.h",
     "language_prefs.cc",
     "language_prefs.h",
+    "language_usage_metrics.cc",
+    "language_usage_metrics.h",
     "locale_util.cc",
     "locale_util.h",
     "pref_names.cc",
@@ -43,6 +45,7 @@ source_set("unit_tests") {
     "fluent_language_model_unittest.cc",
     "heuristic_language_model_unittest.cc",
     "language_prefs_unittest.cc",
+    "language_usage_metrics_unittest.cc",
     "url_language_histogram_unittest.cc",
   ]
   deps = [

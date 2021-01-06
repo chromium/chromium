@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/language_usage_metrics/language_usage_metrics.h"
+#include "components/language/core/browser/language_usage_metrics.h"
 
 #include <stddef.h>
 
@@ -11,7 +11,7 @@
 #include "base/strings/string_tokenizer.h"
 #include "components/language/core/browser/url_language_histogram.h"
 
-namespace language_usage_metrics {
+namespace language {
 
 // static
 void LanguageUsageMetrics::RecordAcceptLanguages(
@@ -102,4 +102,4 @@ void LanguageUsageMetrics::ParseAcceptLanguages(
   }
 }
 
-}  // namespace language_usage_metrics
+}  // namespace language

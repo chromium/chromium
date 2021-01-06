@@ -119,9 +119,9 @@
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/google/core/common/google_util.h"
 #include "components/language/content/browser/geo_language_provider.h"
+#include "components/language/core/browser/language_usage_metrics.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_experiments.h"
-#include "components/language_usage_metrics/language_usage_metrics.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "components/metrics/call_stack_profile_params.h"
 #include "components/metrics/expired_histogram_util.h"
@@ -1541,13 +1541,13 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   browser_process_->metrics_service()->RecordBreakpadHasDebugger(
       base::debug::BeingDebugged());
 
-  language_usage_metrics::LanguageUsageMetrics::RecordAcceptLanguages(
+  language::LanguageUsageMetrics::RecordAcceptLanguages(
       profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
-  language_usage_metrics::LanguageUsageMetrics::RecordApplicationLanguage(
+  language::LanguageUsageMetrics::RecordApplicationLanguage(
       browser_process_->GetApplicationLocale());
 // On ChromeOS results in a crash. https://crbug.com/1151558
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  language_usage_metrics::LanguageUsageMetrics::RecordPageLanguages(
+  language::LanguageUsageMetrics::RecordPageLanguages(
       *UrlLanguageHistogramFactory::GetForBrowserContext(profile_));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

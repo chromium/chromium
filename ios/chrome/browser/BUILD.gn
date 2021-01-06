@@ -196,7 +196,6 @@ source_set("browser_impl") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/language/core/browser",
-    "//components/language_usage_metrics",
     "//components/metrics",
     "//components/metrics:child_call_stack_profile_builder",
     "//components/metrics_services_manager",

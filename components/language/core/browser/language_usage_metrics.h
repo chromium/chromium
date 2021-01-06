@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_LANGUAGE_USAGE_METRICS_LANGUAGE_USAGE_METRICS_H_
-#define COMPONENTS_LANGUAGE_USAGE_METRICS_LANGUAGE_USAGE_METRICS_H_
+#ifndef COMPONENTS_LANGUAGE_CORE_BROWSER_LANGUAGE_USAGE_METRICS_H_
+#define COMPONENTS_LANGUAGE_CORE_BROWSER_LANGUAGE_USAGE_METRICS_H_
 
 #include <set>
 
@@ -13,9 +13,6 @@
 
 namespace language {
 class UrlLanguageHistogram;
-}
-
-namespace language_usage_metrics {
 
 // Methods to record language usage as UMA histograms.
 class LanguageUsageMetrics {
@@ -60,6 +57,6 @@ class LanguageUsageMetrics {
   FRIEND_TEST_ALL_PREFIXES(LanguageUsageMetricsTest, ParseAcceptLanguages);
 };
 
-}  // namespace language_usage_metrics
+}  // namespace language
 
-#endif  // COMPONENTS_LANGUAGE_USAGE_METRICS_LANGUAGE_USAGE_METRICS_H_
+#endif  // COMPONENTS_LANGUAGE_CORE_BROWSER_LANGUAGE_USAGE_METRICS_H_

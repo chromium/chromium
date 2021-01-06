@@ -401,7 +401,7 @@ static_library("browser") {
     "//components/history/core/browser",
     "//components/infobars/core",
     "//components/keyed_service/core",
-    "//components/language_usage_metrics",
+    "//components/language/core/browser",
     "//components/leveldb_proto",
     "//components/os_crypt",
     "//components/policy/core/browser",

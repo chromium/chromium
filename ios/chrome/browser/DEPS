@@ -40,7 +40,6 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/keyed_service/ios",
   "+components/language",
-  "+components/language_usage_metrics",
   "+components/leveldb_proto",
   "+components/lookalikes/core",
   "+components/metrics",

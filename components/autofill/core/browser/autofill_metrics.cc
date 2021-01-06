@@ -26,7 +26,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/language_usage_metrics/language_usage_metrics.h"
+#include "components/language/core/browser/language_usage_metrics.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
@@ -2483,7 +2483,7 @@ void AutofillMetrics::LogFieldParsingTranslatedFormLanguageMetric(
     base::StringPiece locale) {
   base::UmaHistogramSparse(
       "Autofill.ParsedFieldTypesUsingTranslatedPageLanguage",
-      language_usage_metrics::LanguageUsageMetrics::ToLanguageCode(locale));
+      language::LanguageUsageMetrics::ToLanguageCode(locale));
 }
 
 // static

@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
-#include "components/language_usage_metrics/language_usage_metrics.h"
+#include "components/language/core/browser/language_usage_metrics.h"
 
 namespace translate {
 
@@ -62,18 +62,16 @@ void ReportLanguageDetectionContentLength(size_t length) {
 void ReportLocalesOnDisabledByPrefs(base::StringPiece locale) {
   base::UmaHistogramSparse(
       kTranslateLocalesOnDisabledByPrefs,
-      language_usage_metrics::LanguageUsageMetrics::ToLanguageCode(locale));
+      language::LanguageUsageMetrics::ToLanguageCode(locale));
 }
 
 void ReportUndisplayableLanguage(base::StringPiece language) {
-  int language_code =
-      language_usage_metrics::LanguageUsageMetrics::ToLanguageCode(language);
+  int language_code = language::LanguageUsageMetrics::ToLanguageCode(language);
   base::UmaHistogramSparse(kTranslateUndisplayableLanguage, language_code);
 }
 
 void ReportUnsupportedLanguageAtInitiation(base::StringPiece language) {
-  int language_code =
-      language_usage_metrics::LanguageUsageMetrics::ToLanguageCode(language);
+  int language_code = language::LanguageUsageMetrics::ToLanguageCode(language);
   base::UmaHistogramSparse(kTranslateUnsupportedLanguageAtInitiation,
                            language_code);
 }

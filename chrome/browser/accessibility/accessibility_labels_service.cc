@@ -13,9 +13,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
+#include "components/language/core/browser/language_usage_metrics.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/browser/url_language_histogram.h"
-#include "components/language_usage_metrics/language_usage_metrics.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -107,12 +107,10 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
                              const std::string& requested_language) override {
     base::UmaHistogramSparse(
         "Accessibility.ImageLabels.PageLanguage",
-        language_usage_metrics::LanguageUsageMetrics::ToLanguageCode(
-            page_language));
+        language::LanguageUsageMetrics::ToLanguageCode(page_language));
     base::UmaHistogramSparse(
         "Accessibility.ImageLabels.RequestLanguage",
-        language_usage_metrics::LanguageUsageMetrics::ToLanguageCode(
-            requested_language));
+        language::LanguageUsageMetrics::ToLanguageCode(requested_language));
   }
 
  private:

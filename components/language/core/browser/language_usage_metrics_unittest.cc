@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/language_usage_metrics/language_usage_metrics.h"
+#include "components/language/core/browser/language_usage_metrics.h"
 
 #include "base/macros.h"
 #include "base/metrics/histogram.h"
@@ -18,7 +18,7 @@ using base::SampleCountIterator;
 using base::StatisticsRecorder;
 using language::UrlLanguageHistogram;
 
-namespace language_usage_metrics {
+namespace language {
 
 namespace {
 
@@ -282,4 +282,4 @@ TEST(LanguageUsageMetricsTest, ToLanguageCode) {
   EXPECT_EQ(30840, LanguageUsageMetrics::ToLanguageCode("xx"));
 }
 
-}  // namespace language_usage_metrics
+}  // namespace language

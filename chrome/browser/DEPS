@@ -160,7 +160,6 @@ include_rules = [
   "+components/language/content/browser",
   "+components/language/core/browser",
   "+components/language/core/common",
-  "+components/language_usage_metrics",
   "+components/leveldb_proto/content",
   "+components/leveldb_proto/public",
   "+components/leveldb_proto/testing",
