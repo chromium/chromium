@@ -2496,8 +2496,11 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   if (render_frame_metadata_observer_) {
     last_draw_render_frame_metadata_ = MakeRenderFrameMetadata(frame);
-    last_draw_render_frame_metadata_->has_delegated_ink_metadata =
-        metadata.delegated_ink_metadata.get();
+    if (viz::DelegatedInkMetadata* ink_metadata =
+            metadata.delegated_ink_metadata.get()) {
+      last_draw_render_frame_metadata_->delegated_ink_metadata =
+          DelegatedInkBrowserMetadata(ink_metadata->is_hovering());
+    }
 
     // We cache the value of any new vertical scroll direction so that we can
     // accurately determine when the next change in vertical scroll direction

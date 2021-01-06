@@ -2040,7 +2040,7 @@ void SurfaceAggregator::TransformAndStoreDelegatedInkMetadata(
   parent_quad_to_root_target_transform.TransformRect(&area);
   delegated_ink_metadata_ = std::make_unique<DelegatedInkMetadata>(
       point, metadata->diameter(), metadata->color(), metadata->timestamp(),
-      area, metadata->frame_time());
+      area, metadata->frame_time(), metadata->is_hovering());
 
   TRACE_EVENT_INSTANT2(
       "viz", "SurfaceAggregator::TransformAndStoreDelegatedInkMetadata",

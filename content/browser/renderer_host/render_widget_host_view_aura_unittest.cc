@@ -6808,7 +6808,7 @@ TEST_P(DelegatedInkPointTest, EventForwardedToCompositor) {
   // initialized and the connection is made.
   {
     cc::RenderFrameMetadata metadata;
-    metadata.has_delegated_ink_metadata = true;
+    metadata.delegated_ink_metadata = cc::DelegatedInkBrowserMetadata(true);
     view_->SetRenderFrameMetadata(metadata);
   }
   viz::DelegatedInkPoint expected_point(gfx::PointF(10, 10),
@@ -6882,11 +6882,10 @@ TEST_P(DelegatedInkPointTest, EventForwardedToCompositor) {
   EXPECT_EQ(expected_point.point(), actual_point.point());
   EXPECT_EQ(expected_point.timestamp(), actual_point.timestamp());
 
-  // Finally, confirm that points aren't sent whenever the flag is changed back
-  // to false.
+  // Finally, confirm that points aren't sent whenever |delegated_ink_metadata|
+  // is not set.
   {
     cc::RenderFrameMetadata metadata;
-    metadata.has_delegated_ink_metadata = false;
     view_->SetRenderFrameMetadata(metadata);
   }
 
@@ -6925,7 +6924,7 @@ TEST_P(DelegatedInkPointTest, MojoInterfaceReboundOnDisconnect) {
   // First make sure the connection exists.
   {
     cc::RenderFrameMetadata metadata;
-    metadata.has_delegated_ink_metadata = true;
+    metadata.delegated_ink_metadata = cc::DelegatedInkBrowserMetadata(true);
     view_->SetRenderFrameMetadata(metadata);
   }
   if (GetParam() == TestEvent::kTouchEvent) {

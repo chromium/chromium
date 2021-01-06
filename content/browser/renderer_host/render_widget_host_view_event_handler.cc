@@ -367,7 +367,7 @@ void RenderWidgetHostViewEventHandler::ForwardDelegatedInkPoint(
     ui::LocatedEvent* event) {
   const cc::RenderFrameMetadata& last_metadata =
       host_->render_frame_metadata_provider()->LastRenderFrameMetadata();
-  if (last_metadata.has_delegated_ink_metadata) {
+  if (last_metadata.delegated_ink_metadata.has_value()) {
     if (!delegated_ink_point_renderer_.is_bound()) {
       ui::Compositor* compositor = window_ && window_->layer()
                                        ? window_->layer()->GetCompositor()

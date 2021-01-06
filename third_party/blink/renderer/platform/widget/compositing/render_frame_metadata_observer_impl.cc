@@ -161,7 +161,7 @@ bool RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata(
       rfm1.page_scale_factor != rfm2.page_scale_factor ||
       rfm1.external_page_scale_factor != rfm2.external_page_scale_factor ||
       rfm1.is_mobile_optimized != rfm2.is_mobile_optimized ||
-      rfm1.has_delegated_ink_metadata != rfm2.has_delegated_ink_metadata ||
+      rfm1.delegated_ink_metadata != rfm2.delegated_ink_metadata ||
       rfm1.device_scale_factor != rfm2.device_scale_factor ||
       rfm1.viewport_size_in_pixels != rfm2.viewport_size_in_pixels ||
       rfm1.top_controls_height != rfm2.top_controls_height ||

@@ -4565,7 +4565,8 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
 
     DelegatedInkMetadata metadata(ink_points_[index].point(), diameter, color,
                                   ink_points_[index].timestamp(),
-                                  presentation_area, base::TimeTicks::Now());
+                                  presentation_area, base::TimeTicks::Now(),
+                                  /*hovering*/ false);
     SendMetadata(metadata);
     return metadata;
   }

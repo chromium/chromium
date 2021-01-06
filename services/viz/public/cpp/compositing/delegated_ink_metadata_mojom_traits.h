@@ -56,6 +56,11 @@ struct StructTraits<viz::mojom::DelegatedInkMetadataDataView,
     return input->frame_time();
   }
 
+  static bool is_hovering(
+      const std::unique_ptr<viz::DelegatedInkMetadata>& input) {
+    return input->is_hovering();
+  }
+
   static bool Read(viz::mojom::DelegatedInkMetadataDataView data,
                    std::unique_ptr<viz::DelegatedInkMetadata>* out);
 };

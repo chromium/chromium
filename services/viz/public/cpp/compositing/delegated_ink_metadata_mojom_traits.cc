@@ -27,7 +27,8 @@ bool StructTraits<viz::mojom::DelegatedInkMetadataDataView,
     return false;
   }
   *out = std::make_unique<viz::DelegatedInkMetadata>(
-      point, data.diameter(), color, timestamp, presentation_area, frame_time);
+      point, data.diameter(), color, timestamp, presentation_area, frame_time,
+      data.is_hovering());
   return true;
 }
 

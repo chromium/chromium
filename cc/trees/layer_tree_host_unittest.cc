@@ -8902,9 +8902,10 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
     gfx::PointF point = gfx::PointF(135, 45);
     gfx::RectF area = gfx::RectF(173, 438);
     base::TimeTicks timestamp = base::TimeTicks::Now();
+    bool is_hovering = true;
 
-    expected_metadata_ =
-        viz::DelegatedInkMetadata(point, diameter, color, timestamp, area);
+    expected_metadata_ = viz::DelegatedInkMetadata(
+        point, diameter, color, timestamp, area, is_hovering);
     layer_tree_host()->SetDelegatedInkMetadata(
         std::make_unique<viz::DelegatedInkMetadata>(
             expected_metadata_.value()));
@@ -8926,24 +8927,29 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
     }
   }
 
-  void ExpectMetadata(bool had_delegated_ink_metadata,
+  void ExpectMetadata(base::Optional<DelegatedInkBrowserMetadata>
+                          browser_delegated_ink_metadata,
                       viz::DelegatedInkMetadata* actual_metadata) {
     if (expected_metadata_.has_value()) {
-      EXPECT_TRUE(had_delegated_ink_metadata);
+      EXPECT_TRUE(browser_delegated_ink_metadata.has_value());
       EXPECT_TRUE(actual_metadata);
+      EXPECT_TRUE(
+          browser_delegated_ink_metadata.value().delegated_ink_is_hovering);
       EXPECT_EQ(expected_metadata_->point(), actual_metadata->point());
       EXPECT_EQ(expected_metadata_->color(), actual_metadata->color());
       EXPECT_EQ(expected_metadata_->diameter(), actual_metadata->diameter());
       EXPECT_EQ(expected_metadata_->presentation_area(),
                 actual_metadata->presentation_area());
       EXPECT_EQ(expected_metadata_->timestamp(), actual_metadata->timestamp());
+      EXPECT_EQ(expected_metadata_->is_hovering(),
+                actual_metadata->is_hovering());
 
       // Record the frame time from the metadata so we can confirm that it
       // matches the LayerTreeHostImpl's frame time in DrawLayersOnThread.
       EXPECT_GT(actual_metadata->frame_time(), base::TimeTicks::Min());
       metadata_frame_time_ = actual_metadata->frame_time();
     } else {
-      EXPECT_FALSE(had_delegated_ink_metadata);
+      EXPECT_FALSE(browser_delegated_ink_metadata.has_value());
       EXPECT_FALSE(actual_metadata);
       EndTest();
     }
@@ -8955,7 +8961,7 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
       const RenderFrameMetadata& render_frame_metadata,
       viz::CompositorFrameMetadata* compositor_frame_metadata,
       bool force_send) override {
-    ExpectMetadata(render_frame_metadata.has_delegated_ink_metadata,
+    ExpectMetadata(render_frame_metadata.delegated_ink_metadata,
                    compositor_frame_metadata->delegated_ink_metadata.get());
   }
 

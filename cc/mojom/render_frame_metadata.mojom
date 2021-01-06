@@ -10,6 +10,18 @@ import "services/viz/public/mojom/compositing/selection.mojom";
 import "services/viz/public/mojom/compositing/vertical_scroll_direction.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+// Contains information to assist in making a decision about forwarding
+// pointerevents to viz for use in a delegated ink trail.
+struct DelegatedInkBrowserMetadata {
+  // Flag used to indicate the state of the hovering on the pointerevent that
+  // the delegated ink metadata was created from. If this state does not match
+  // the point under consideration to send to viz, it won't be sent. As soon
+  // as it matches again the point will be sent, regardless of if the renderer
+  // has processed the point that didn't match yet or not. It is true when
+  // hovering, false otherwise.
+  bool delegated_ink_is_hovering;
+};
+
 // See components/viz/service/quads/render_frame_metadata.h
 struct RenderFrameMetadata {
   // The background color of a CompositorFrame. It can be used for filling the
@@ -36,10 +48,12 @@ struct RenderFrameMetadata {
   // are the same).
   bool is_mobile_optimized;
 
-  // Flag used to notify the browser process to start or stop forwarding points
-  // to viz for use in a delegated ink trail. True the entire time points should
-  // be forwarded, and forwarding stops as soon as it is false again.
-  bool has_delegated_ink_metadata;
+  // Existence of this flag informs the browser process to start forwarding
+  // points to viz for use in a delegated ink trail. It contains more
+  // information to be used in making the forwarding decision. It exists the
+  // entire time points could be forwarded, and forwarding must stop as soon as
+  // it is null.
+  DelegatedInkBrowserMetadata? delegated_ink_metadata;
 
   // The device scale factor used to generate CompositorFrame.
   float device_scale_factor;

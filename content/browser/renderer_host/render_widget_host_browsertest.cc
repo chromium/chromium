@@ -889,16 +889,41 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostDelegatedInkMetadataTest,
   {
     const cc::RenderFrameMetadata& last_metadata =
         host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
-    EXPECT_TRUE(last_metadata.has_delegated_ink_metadata);
+    EXPECT_TRUE(last_metadata.delegated_ink_metadata.has_value());
+    EXPECT_TRUE(
+        last_metadata.delegated_ink_metadata.value().delegated_ink_is_hovering);
+  }
+
+  // Confirm that the state of hover changing on the next produced delegated ink
+  // metadata results in a new RenderFrameMetadata being sent, with
+  // |delegated_ink_hovering| false.
+  SimulateRoutedMouseEvent(blink::WebInputEvent::Type::kMouseMove, 20, 20,
+                           blink::WebInputEvent::kLeftButtonDown, false);
+  RunUntilInputProcessed(host());
+
+  {
+    const cc::RenderFrameMetadata& last_metadata =
+        host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
+    EXPECT_TRUE(last_metadata.delegated_ink_metadata.has_value());
+    EXPECT_FALSE(
+        last_metadata.delegated_ink_metadata.value().delegated_ink_is_hovering);
   }
 
   // Confirm that the flag is set back to false when the JS API isn't called.
   RunUntilInputProcessed(host());
-  {
-    const cc::RenderFrameMetadata& last_metadata =
-        host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
-    EXPECT_FALSE(last_metadata.has_delegated_ink_metadata);
-  }
+  const cc::RenderFrameMetadata& last_metadata =
+      host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
+  EXPECT_FALSE(last_metadata.delegated_ink_metadata.has_value());
+
+  // Finally, confirm that a change in hovering state (pointerdown to pointerup
+  // here) without a call to updateInkTrailStartPoint doesn't cause a new
+  // RenderFrameMetadata to be sent.
+  SimulateRoutedMouseEvent(blink::WebInputEvent::Type::kMouseMove, 20, 20, 0,
+                           false);
+  RunUntilInputProcessed(host());
+  EXPECT_EQ(
+      last_metadata,
+      host()->render_frame_metadata_provider()->LastRenderFrameMetadata());
 }
 
 }  // namespace content

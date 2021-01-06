@@ -133,11 +133,25 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
                   border_box_rect_absolute.Width().ToFloat(),
                   border_box_rect_absolute.Height().ToFloat());
 
+  // This is used to know if the user starts inking with the pointer down or
+  // not, so that we can stop drawing delegated ink trails as quickly as
+  // possible if the left button state changes, as presumably that indicates the
+  // the end of inking.
+  // Touch events do not need to be special cased here. When something is
+  // physically touching the screen to trigger a touch event, it is converted to
+  // a pointerevent with kLeftButtonDown, and if a stylus with hovering
+  // capabilities sent the touch event, then the resulting pointerevent will not
+  // have the kLeftButtonDown modifier. In either case, it will match the
+  // expectations of a normal mouse event, so it doesn't need to be handled
+  // separately.
+  const bool is_hovering =
+      !(evt->GetModifiers() & WebInputEvent::Modifiers::kLeftButtonDown);
+
   const double diameter_in_physical_pixels = style->diameter() * effective_zoom;
   std::unique_ptr<viz::DelegatedInkMetadata> metadata =
       std::make_unique<viz::DelegatedInkMetadata>(
           point, diameter_in_physical_pixels, color.Rgb(),
-          evt->PlatformTimeStamp(), area);
+          evt->PlatformTimeStamp(), area, is_hovering);
 
   TRACE_EVENT_INSTANT1(
       "blink", "DelegatedInkTrailPresenter::updateInkTrailStartPoint",

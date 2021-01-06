@@ -28,24 +28,28 @@ class VIZ_COMMON_EXPORT DelegatedInkMetadata {
                        double diameter,
                        SkColor color,
                        base::TimeTicks timestamp,
-                       const gfx::RectF& area)
-      : point_(pt),
-        diameter_(diameter),
-        color_(color),
-        timestamp_(timestamp),
-        presentation_area_(area) {}
-  DelegatedInkMetadata(const gfx::PointF& pt,
-                       double diameter,
-                       SkColor color,
-                       base::TimeTicks timestamp,
                        const gfx::RectF& area,
-                       base::TimeTicks frame_time)
+                       bool hovering)
       : point_(pt),
         diameter_(diameter),
         color_(color),
         timestamp_(timestamp),
         presentation_area_(area),
-        frame_time_(frame_time) {}
+        is_hovering_(hovering) {}
+  DelegatedInkMetadata(const gfx::PointF& pt,
+                       double diameter,
+                       SkColor color,
+                       base::TimeTicks timestamp,
+                       const gfx::RectF& area,
+                       base::TimeTicks frame_time,
+                       bool hovering)
+      : point_(pt),
+        diameter_(diameter),
+        color_(color),
+        timestamp_(timestamp),
+        presentation_area_(area),
+        frame_time_(frame_time),
+        is_hovering_(hovering) {}
   DelegatedInkMetadata(const DelegatedInkMetadata& other) = default;
 
   const gfx::PointF& point() const { return point_; }
@@ -54,6 +58,7 @@ class VIZ_COMMON_EXPORT DelegatedInkMetadata {
   base::TimeTicks timestamp() const { return timestamp_; }
   const gfx::RectF& presentation_area() const { return presentation_area_; }
   base::TimeTicks frame_time() const { return frame_time_; }
+  bool is_hovering() const { return is_hovering_; }
 
   void set_frame_time(base::TimeTicks frame_time) { frame_time_ = frame_time; }
 
@@ -77,6 +82,11 @@ class VIZ_COMMON_EXPORT DelegatedInkMetadata {
 
   // Frame time of the layer tree that this metadata is on.
   base::TimeTicks frame_time_;
+
+  // True if the left mouse button is up or if a stylus with hovering
+  // capabilities is hovering over the screen when updateInkTrailStartPoint is
+  // called.
+  bool is_hovering_ = false;
 };
 
 }  // namespace viz
