@@ -1227,16 +1227,6 @@ pp::VarArray OutOfProcessInstance::GetDocumentAttachments() {
   return attachments;
 }
 
-int OutOfProcessInstance::GetDocumentPixelWidth() const {
-  return static_cast<int>(
-      ceil(document_size_.width() * zoom() * device_scale()));
-}
-
-int OutOfProcessInstance::GetDocumentPixelHeight() const {
-  return static_cast<int>(
-      ceil(document_size_.height() * zoom() * device_scale()));
-}
-
 void OutOfProcessInstance::FillRect(const gfx::Rect& rect, uint32_t color) {
   DCHECK(!image_data_.is_null() || rect.IsEmpty());
   uint32_t* buffer_start = static_cast<uint32_t*>(image_data_.data());
@@ -1955,7 +1945,7 @@ void OutOfProcessInstance::HandleViewportMessage(
     DocumentLayout::Options layout_options;
     layout_options.FromValue(ValueFromVar(layout_options_var));
     // TODO(crbug.com/1013800): Eliminate need to get document size from here.
-    document_size_ = engine()->ApplyDocumentLayout(layout_options);
+    set_document_size(engine()->ApplyDocumentLayout(layout_options));
     OnGeometryChanged(zoom(), device_scale());
   }
 
@@ -2203,7 +2193,7 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
   engine()->PageOffsetUpdated(available_area_.OffsetFromOrigin());
   engine()->PluginSizeUpdated(available_area_.size());
 
-  if (document_size_.IsEmpty())
+  if (document_size().IsEmpty())
     return;
   paint_manager().InvalidateRect(gfx::Rect(SizeFromPPSize(plugin_size_)));
 
@@ -2405,11 +2395,11 @@ void OutOfProcessInstance::UserMetricsRecordAction(const std::string& action) {
 pp::FloatPoint OutOfProcessInstance::BoundScrollOffsetToDocument(
     const pp::FloatPoint& scroll_offset) {
   float max_x = std::max(
-      document_size_.width() * float{zoom()} - plugin_dip_size_.width(), 0.0f);
+      document_size().width() * float{zoom()} - plugin_dip_size_.width(), 0.0f);
   float x = base::ClampToRange(scroll_offset.x(), 0.0f, max_x);
   float min_y = -top_toolbar_height_in_viewport_coords();
   float max_y = std::max(
-      document_size_.height() * float{zoom()} - plugin_dip_size_.height(),
+      document_size().height() * float{zoom()} - plugin_dip_size_.height(),
       min_y);
   float y = base::ClampToRange(scroll_offset.y(), min_y, max_y);
   return pp::FloatPoint(x, y);

@@ -83,6 +83,14 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // background parts, and notifies the pdf engine.
   virtual void OnGeometryChanged(double old_zoom, float old_device_scale) = 0;
 
+  // Computes document width/height in device pixels, based on current zoom and
+  // device scale
+  int GetDocumentPixelWidth() const;
+  int GetDocumentPixelHeight() const;
+
+  const gfx::Size& document_size() const { return document_size_; }
+  void set_document_size(const gfx::Size& size) { document_size_ = size; }
+
   void SetBackgroundColor(uint32_t background_color) {
     background_color_ = background_color;
   }
@@ -111,6 +119,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
  private:
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};
+
+  // The size of the entire document in pixels (i.e. if each page is 800 pixels
+  // high and there are 10 pages, the height will be 8000).
+  gfx::Size document_size_;
 
   // The background color of the PDF viewer.
   uint32_t background_color_ = 0;

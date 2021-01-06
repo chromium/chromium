@@ -4,6 +4,7 @@
 
 #include "pdf/pdf_view_plugin_base.h"
 
+#include <cmath>
 #include <memory>
 #include <string>
 #include <utility>
@@ -57,6 +58,16 @@ void PdfViewPluginBase::LoadUrl(const std::string& url, bool is_print_preview) {
       base::BindOnce(is_print_preview ? &PdfViewPluginBase::DidOpenPreview
                                       : &PdfViewPluginBase::DidOpen,
                      GetWeakPtr(), std::move(loader)));
+}
+
+int PdfViewPluginBase::GetDocumentPixelWidth() const {
+  return static_cast<int>(
+      std::ceil(document_size_.width() * zoom() * device_scale()));
+}
+
+int PdfViewPluginBase::GetDocumentPixelHeight() const {
+  return static_cast<int>(
+      std::ceil(document_size_.height() * zoom() * device_scale()));
 }
 
 void PdfViewPluginBase::SetZoom(double scale) {
