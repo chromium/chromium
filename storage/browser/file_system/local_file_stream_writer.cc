@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "net/base/file_stream.h"
@@ -103,7 +105,7 @@ int LocalFileStreamWriter::InitiateOpen(base::OnceClosure main_operation) {
   DCHECK(has_pending_operation_);
   DCHECK(!stream_impl_.get());
 
-  stream_impl_.reset(new net::FileStream(task_runner_));
+  stream_impl_ = std::make_unique<net::FileStream>(task_runner_);
 
   int open_flags = 0;
   switch (open_or_create_) {

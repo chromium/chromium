@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -93,7 +94,7 @@ class QuotaBackendImplTest : public testing::Test,
  public:
   QuotaBackendImplTest()
       : file_system_usage_cache_(is_incognito()),
-        quota_manager_proxy_(new MockQuotaManagerProxy) {}
+        quota_manager_proxy_(base::MakeRefCounted<MockQuotaManagerProxy>()) {}
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());

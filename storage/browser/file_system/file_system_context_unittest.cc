@@ -8,6 +8,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -51,9 +52,9 @@ class FileSystemContextTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
 
-    storage_policy_ = new MockSpecialStoragePolicy();
+    storage_policy_ = base::MakeRefCounted<MockSpecialStoragePolicy>();
 
-    mock_quota_manager_ = new MockQuotaManager(
+    mock_quota_manager_ = base::MakeRefCounted<MockQuotaManager>(
         false /* is_incognito */, data_dir_.GetPath(),
         base::ThreadTaskRunnerHandle::Get().get(), storage_policy_.get());
   }

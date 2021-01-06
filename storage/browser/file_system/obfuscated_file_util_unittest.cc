@@ -464,17 +464,17 @@ class ObfuscatedFileUtilTest : public testing::Test,
   std::unique_ptr<UsageVerifyHelper> AllowUsageIncrease(
       int64_t requested_growth) {
     int64_t usage = sandbox_file_system_.GetCachedOriginUsage();
-    return std::unique_ptr<UsageVerifyHelper>(new UsageVerifyHelper(
-        LimitedContext(requested_growth), &sandbox_file_system_,
-        usage + requested_growth, this));
+    return std::make_unique<UsageVerifyHelper>(LimitedContext(requested_growth),
+                                               &sandbox_file_system_,
+                                               usage + requested_growth, this);
   }
 
   std::unique_ptr<UsageVerifyHelper> DisallowUsageIncrease(
       int64_t requested_growth) {
     int64_t usage = sandbox_file_system_.GetCachedOriginUsage();
-    return std::unique_ptr<UsageVerifyHelper>(
-        new UsageVerifyHelper(LimitedContext(requested_growth - 1),
-                              &sandbox_file_system_, usage, this));
+    return std::make_unique<UsageVerifyHelper>(
+        LimitedContext(requested_growth - 1), &sandbox_file_system_, usage,
+        this);
   }
 
   void FillTestDirectory(const FileSystemURL& root_url,

@@ -91,16 +91,16 @@ class SandboxFileSystemBackendTest
 
   void SetUpNewDelegate(const FileSystemOptions& options) {
     incognito_env_override_ = leveldb_chrome::NewMemEnv("FileSystem");
-    delegate_.reset(new SandboxFileSystemBackendDelegate(
+    delegate_ = std::make_unique<SandboxFileSystemBackendDelegate>(
         nullptr /* quota_manager_proxy */,
         base::ThreadTaskRunnerHandle::Get().get(), data_dir_.GetPath(),
         nullptr /* special_storage_policy */, options,
-        options.is_in_memory() ? incognito_env_override_.get() : nullptr));
+        options.is_in_memory() ? incognito_env_override_.get() : nullptr);
   }
 
   void SetUpNewBackend(const FileSystemOptions& options) {
     SetUpNewDelegate(options);
-    backend_.reset(new SandboxFileSystemBackend(delegate_.get()));
+    backend_ = std::make_unique<SandboxFileSystemBackend>(delegate_.get());
   }
 
   SandboxFileSystemBackendDelegate::OriginEnumerator* CreateOriginEnumerator()

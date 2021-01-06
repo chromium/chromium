@@ -208,8 +208,7 @@ TEST(SandboxOriginDatabaseTest, DatabaseRecoveryTest) {
       "hoge.example.com", "fuga.example.com",
   };
 
-  std::unique_ptr<SandboxOriginDatabase> database(
-      new SandboxOriginDatabase(kFSDir, nullptr));
+  auto database = std::make_unique<SandboxOriginDatabase>(kFSDir, nullptr);
   for (size_t i = 0; i < base::size(kOrigins); ++i) {
     base::FilePath path;
     EXPECT_FALSE(database->HasOriginPath(kOrigins[i]));
@@ -238,7 +237,7 @@ TEST(SandboxOriginDatabaseTest, DatabaseRecoveryTest) {
   CorruptDatabase(kDBDir, leveldb::kLogFile, -1, 1);
 
   base::FilePath path;
-  database.reset(new SandboxOriginDatabase(kFSDir, nullptr));
+  database = std::make_unique<SandboxOriginDatabase>(kFSDir, nullptr);
   std::vector<SandboxOriginDatabase::OriginRecord> origins_in_db;
   EXPECT_TRUE(database->ListAllOrigins(&origins_in_db));
 
@@ -274,8 +273,7 @@ TEST(SandboxOriginDatabaseTest, DatabaseRecoveryForMissingDBFileTest) {
     const std::string kOrigin = "foo.example.com";
     base::FilePath path;
 
-    std::unique_ptr<SandboxOriginDatabase> database(
-        new SandboxOriginDatabase(kFSDir, nullptr));
+    auto database = std::make_unique<SandboxOriginDatabase>(kFSDir, nullptr);
     EXPECT_FALSE(database->HasOriginPath(kOrigin));
     EXPECT_TRUE(database->GetPathForOrigin(kOrigin, &path));
     EXPECT_FALSE(path.empty());
@@ -285,7 +283,7 @@ TEST(SandboxOriginDatabaseTest, DatabaseRecoveryForMissingDBFileTest) {
 
     DeleteDatabaseFile(kDBDir, file_type);
 
-    database.reset(new SandboxOriginDatabase(kFSDir, nullptr));
+    database = std::make_unique<SandboxOriginDatabase>(kFSDir, nullptr);
     std::vector<SandboxOriginDatabase::OriginRecord> origins_in_db;
     EXPECT_TRUE(database->ListAllOrigins(&origins_in_db));
 

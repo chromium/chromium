@@ -819,7 +819,7 @@ ObfuscatedFileUtil::CreateFileEnumerator(FileSystemOperationContext* context,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SandboxDirectoryDatabase* db = GetDirectoryDatabase(root_url, false);
   if (!db) {
-    return base::WrapUnique(new EmptyFileEnumerator);
+    return std::make_unique<EmptyFileEnumerator>();
   }
   return std::make_unique<ObfuscatedFileEnumerator>(
       db, context, this, root_url, recursive);

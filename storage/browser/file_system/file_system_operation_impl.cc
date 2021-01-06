@@ -104,12 +104,12 @@ void FileSystemOperationImpl::Copy(
   DCHECK(SetPendingOperationType(kOperationCopy));
   DCHECK(!recursive_operation_delegate_);
 
-  recursive_operation_delegate_.reset(new CopyOrMoveOperationDelegate(
+  recursive_operation_delegate_ = std::make_unique<CopyOrMoveOperationDelegate>(
       file_system_context(), src_url, dest_url,
       CopyOrMoveOperationDelegate::OPERATION_COPY, option, error_behavior,
       progress_callback,
       base::BindOnce(&FileSystemOperationImpl::DidFinishOperation,
-                     weak_factory_.GetWeakPtr(), std::move(callback))));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
   recursive_operation_delegate_->RunRecursively();
 }
 
@@ -119,12 +119,12 @@ void FileSystemOperationImpl::Move(const FileSystemURL& src_url,
                                    StatusCallback callback) {
   DCHECK(SetPendingOperationType(kOperationMove));
   DCHECK(!recursive_operation_delegate_);
-  recursive_operation_delegate_.reset(new CopyOrMoveOperationDelegate(
+  recursive_operation_delegate_ = std::make_unique<CopyOrMoveOperationDelegate>(
       file_system_context(), src_url, dest_url,
       CopyOrMoveOperationDelegate::OPERATION_MOVE, option, ERROR_BEHAVIOR_ABORT,
       FileSystemOperation::CopyProgressCallback(),
       base::BindOnce(&FileSystemOperationImpl::DidFinishOperation,
-                     weak_factory_.GetWeakPtr(), std::move(callback))));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
   recursive_operation_delegate_->RunRecursively();
 }
 
@@ -178,10 +178,10 @@ void FileSystemOperationImpl::Remove(const FileSystemURL& url,
     return;
   }
 
-  recursive_operation_delegate_.reset(new RemoveOperationDelegate(
+  recursive_operation_delegate_ = std::make_unique<RemoveOperationDelegate>(
       file_system_context(), url,
       base::BindOnce(&FileSystemOperationImpl::DidFinishOperation,
-                     weak_factory_.GetWeakPtr(), std::move(callback))));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
   recursive_operation_delegate_->Run();
 }
 
@@ -567,10 +567,10 @@ void FileSystemOperationImpl::DidDeleteRecursively(const FileSystemURL& url,
   if (rv == base::File::FILE_ERROR_INVALID_OPERATION) {
     // Recursive removal is not supported on this platform.
     DCHECK(!recursive_operation_delegate_);
-    recursive_operation_delegate_.reset(new RemoveOperationDelegate(
+    recursive_operation_delegate_ = std::make_unique<RemoveOperationDelegate>(
         file_system_context(), url,
         base::BindOnce(&FileSystemOperationImpl::DidFinishOperation, weak_ptr_,
-                       std::move(callback))));
+                       std::move(callback)));
     recursive_operation_delegate_->RunRecursively();
     return;
   }

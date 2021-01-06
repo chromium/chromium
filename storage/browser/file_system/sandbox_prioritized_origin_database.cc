@@ -4,6 +4,8 @@
 
 #include "storage/browser/file_system/sandbox_prioritized_origin_database.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -65,8 +67,10 @@ bool SandboxPrioritizedOriginDatabase::InitializePrimaryOrigin(
   if (!primary_origin_database_ && !is_in_memory) {
     if (!MaybeLoadPrimaryOrigin() && ResetPrimaryOrigin(origin)) {
       MaybeMigrateDatabase(origin);
-      primary_origin_database_.reset(new SandboxIsolatedOriginDatabase(
-          origin, file_system_directory_, base::FilePath(kPrimaryDirectory)));
+      primary_origin_database_ =
+          std::make_unique<SandboxIsolatedOriginDatabase>(
+              origin, file_system_directory_,
+              base::FilePath(kPrimaryDirectory));
       return true;
     }
   }
@@ -151,8 +155,8 @@ bool SandboxPrioritizedOriginDatabase::MaybeLoadPrimaryOrigin() {
   std::string saved_origin;
   if (!ReadPrimaryOriginFile(primary_origin_file_, &saved_origin))
     return false;
-  primary_origin_database_.reset(new SandboxIsolatedOriginDatabase(
-      saved_origin, file_system_directory_, base::FilePath(kPrimaryDirectory)));
+  primary_origin_database_ = std::make_unique<SandboxIsolatedOriginDatabase>(
+      saved_origin, file_system_directory_, base::FilePath(kPrimaryDirectory));
   return true;
 }
 
@@ -207,8 +211,8 @@ void SandboxPrioritizedOriginDatabase::MaybeInitializeNonPrimaryDatabase(
   if (origin_database_)
     return;
 
-  origin_database_.reset(
-      new SandboxOriginDatabase(file_system_directory_, env_override_));
+  origin_database_ = std::make_unique<SandboxOriginDatabase>(
+      file_system_directory_, env_override_);
   if (!create && !base::DirectoryExists(origin_database_->GetDatabasePath())) {
     origin_database_.reset();
     return;

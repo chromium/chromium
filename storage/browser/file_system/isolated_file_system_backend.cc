@@ -38,9 +38,12 @@ IsolatedFileSystemBackend::IsolatedFileSystemBackend(
     bool use_for_type_platform_app)
     : use_for_type_native_local_(use_for_type_native_local),
       use_for_type_platform_app_(use_for_type_platform_app),
-      isolated_file_util_(new AsyncFileUtilAdapter(new LocalFileUtil())),
-      dragged_file_util_(new AsyncFileUtilAdapter(new DraggedFileUtil())),
-      transient_file_util_(new AsyncFileUtilAdapter(new TransientFileUtil())) {}
+      isolated_file_util_(
+          std::make_unique<AsyncFileUtilAdapter>(new LocalFileUtil())),
+      dragged_file_util_(
+          std::make_unique<AsyncFileUtilAdapter>(new DraggedFileUtil())),
+      transient_file_util_(
+          std::make_unique<AsyncFileUtilAdapter>(new TransientFileUtil())) {}
 
 IsolatedFileSystemBackend::~IsolatedFileSystemBackend() = default;
 

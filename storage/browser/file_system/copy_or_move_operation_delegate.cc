@@ -499,12 +499,13 @@ class StreamCopyOrMoveImpl
 
     NotifyOnStartUpdate(dest_url_);
     DCHECK(!copy_helper_);
-    copy_helper_.reset(new CopyOrMoveOperationDelegate::StreamCopyHelper(
-        std::move(reader_), std::move(writer_),
-        dest_url_.mount_option().flush_policy(), kReadBufferSize,
-        file_progress_callback_,
-        base::TimeDelta::FromMilliseconds(
-            kMinProgressCallbackInvocationSpanInMilliseconds)));
+    copy_helper_ =
+        std::make_unique<CopyOrMoveOperationDelegate::StreamCopyHelper>(
+            std::move(reader_), std::move(writer_),
+            dest_url_.mount_option().flush_policy(), kReadBufferSize,
+            file_progress_callback_,
+            base::TimeDelta::FromMilliseconds(
+                kMinProgressCallbackInvocationSpanInMilliseconds));
     copy_helper_->Run(base::BindOnce(&StreamCopyOrMoveImpl::RunAfterStreamCopy,
                                      weak_factory_.GetWeakPtr(),
                                      std::move(callback), last_modified));

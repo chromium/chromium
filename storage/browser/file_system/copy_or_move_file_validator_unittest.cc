@@ -269,8 +269,7 @@ TEST(CopyOrMoveFileValidatorTest, AcceptAll) {
   CopyOrMoveFileValidatorTestHelper helper("http://foo", kNoValidatorType,
                                            kWithValidatorType);
   helper.SetUp();
-  std::unique_ptr<CopyOrMoveFileValidatorFactory> factory(
-      new TestCopyOrMoveFileValidatorFactory(VALID));
+  auto factory = std::make_unique<TestCopyOrMoveFileValidatorFactory>(VALID);
   helper.SetMediaCopyOrMoveFileValidatorFactory(std::move(factory));
 
   helper.CopyTest(base::File::FILE_OK);
@@ -281,8 +280,8 @@ TEST(CopyOrMoveFileValidatorTest, AcceptNone) {
   CopyOrMoveFileValidatorTestHelper helper("http://foo", kNoValidatorType,
                                            kWithValidatorType);
   helper.SetUp();
-  std::unique_ptr<CopyOrMoveFileValidatorFactory> factory(
-      new TestCopyOrMoveFileValidatorFactory(PRE_WRITE_INVALID));
+  auto factory =
+      std::make_unique<TestCopyOrMoveFileValidatorFactory>(PRE_WRITE_INVALID);
   helper.SetMediaCopyOrMoveFileValidatorFactory(std::move(factory));
 
   helper.CopyTest(base::File::FILE_ERROR_SECURITY);
@@ -294,12 +293,12 @@ TEST(CopyOrMoveFileValidatorTest, OverrideValidator) {
   CopyOrMoveFileValidatorTestHelper helper("http://foo", kNoValidatorType,
                                            kWithValidatorType);
   helper.SetUp();
-  std::unique_ptr<CopyOrMoveFileValidatorFactory> reject_factory(
-      new TestCopyOrMoveFileValidatorFactory(PRE_WRITE_INVALID));
+  auto reject_factory =
+      std::make_unique<TestCopyOrMoveFileValidatorFactory>(PRE_WRITE_INVALID);
   helper.SetMediaCopyOrMoveFileValidatorFactory(std::move(reject_factory));
 
-  std::unique_ptr<CopyOrMoveFileValidatorFactory> accept_factory(
-      new TestCopyOrMoveFileValidatorFactory(VALID));
+  auto accept_factory =
+      std::make_unique<TestCopyOrMoveFileValidatorFactory>(VALID);
   helper.SetMediaCopyOrMoveFileValidatorFactory(std::move(accept_factory));
 
   helper.CopyTest(base::File::FILE_ERROR_SECURITY);
@@ -310,8 +309,8 @@ TEST(CopyOrMoveFileValidatorTest, RejectPostWrite) {
   CopyOrMoveFileValidatorTestHelper helper("http://foo", kNoValidatorType,
                                            kWithValidatorType);
   helper.SetUp();
-  std::unique_ptr<CopyOrMoveFileValidatorFactory> factory(
-      new TestCopyOrMoveFileValidatorFactory(POST_WRITE_INVALID));
+  auto factory =
+      std::make_unique<TestCopyOrMoveFileValidatorFactory>(POST_WRITE_INVALID);
   helper.SetMediaCopyOrMoveFileValidatorFactory(std::move(factory));
 
   helper.CopyTest(base::File::FILE_ERROR_SECURITY);

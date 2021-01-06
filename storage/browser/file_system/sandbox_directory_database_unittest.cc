@@ -46,7 +46,7 @@ class SandboxDirectoryDatabaseTest : public testing::Test {
     // Call CloseDatabase() to avoid having multiple database instances for
     // single directory at once.
     CloseDatabase();
-    db_.reset(new SandboxDirectoryDatabase(path(), nullptr));
+    db_ = std::make_unique<SandboxDirectoryDatabase>(path(), nullptr);
   }
 
   void CloseDatabase() { db_.reset(); }
@@ -98,7 +98,7 @@ class SandboxDirectoryDatabaseTest : public testing::Test {
     db_.reset();
     ASSERT_TRUE(base::DeletePathRecursively(path()));
     ASSERT_TRUE(base::CreateDirectory(path()));
-    db_.reset(new SandboxDirectoryDatabase(path(), nullptr));
+    db_ = std::make_unique<SandboxDirectoryDatabase>(path(), nullptr);
   }
 
   bool RepairDatabase() {
