@@ -107,6 +107,7 @@ class BuildConfigGenerator extends DefaultTask {
         // 2. Import artifacts into the local repository
         def dependencyDirectories = []
         def downloadExecutor = Executors.newCachedThreadPool()
+        def downloadTasks = []
         graph.dependencies.values().each { dependency ->
             if (excludeDependency(dependency)) {
                 return
@@ -138,13 +139,13 @@ class BuildConfigGenerator extends DefaultTask {
                             new File("${normalisedRepoPath}/${dependency.licensePath}").text)
                 } else if (!dependency.licenseUrl?.trim()?.isEmpty()) {
                     File destFile = new File("${absoluteDepDir}/LICENSE")
-                    downloadExecutor.submit {
+                    downloadTasks.add(downloadExecutor.submit {
                         downloadFile(dependency.id, dependency.licenseUrl, destFile)
                         if (destFile.text.contains("<html")) {
                             throw new RuntimeException("Found HTML in LICENSE file. Please add an "
                                     + "override to ChromiumDepGraph.groovy for ${dependency.id}.")
                         }
-                    }
+                    })
                 } else {
                     getLogger().warn("Missing license for ${dependency.id}.")
                     getLogger().warn("License Name was: ${dependency.licenseName}")
@@ -152,7 +153,10 @@ class BuildConfigGenerator extends DefaultTask {
             }
         }
         downloadExecutor.shutdown()
-        downloadExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        // Check for exceptions.
+        for (def task : downloadTasks) {
+            task.get()
+        }
 
         // 3. Generate the root level build files
         updateBuildTargetDeclaration(graph, repositoryPath, normalisedRepoPath)
