@@ -454,7 +454,7 @@ TEST_F(MetricProviderSyncSettingsTest, SplitSettingsAppSyncDisabled) {
             SerializeMessageToVector(profile.perf_data()));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.CWP.RecordTest",
-      TestMetricProvider::RecordAttemptStatus::kAppSyncDisabled, 1);
+      TestMetricProvider::RecordAttemptStatus::kOSAppSyncDisabled, 1);
 }
 
 TEST_F(MetricProviderSyncSettingsTest, UnifiedSettingsAppSyncEnabled) {
@@ -512,7 +512,7 @@ TEST_F(MetricProviderSyncSettingsTest, UnifiedSettingsAppSyncDisabled) {
             SerializeMessageToVector(profile.perf_data()));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.CWP.RecordTest",
-      TestMetricProvider::RecordAttemptStatus::kAppSyncDisabled, 1);
+      TestMetricProvider::RecordAttemptStatus::kChromeAppSyncDisabled, 1);
 }
 
 }  // namespace metrics

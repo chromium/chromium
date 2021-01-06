@@ -10022,6 +10022,21 @@ histogram as enum -->
   <int value="4" label="App sync is enabled">
     Profile data was recorded in full since App Sync is enabled.
   </int>
+  <int value="5" label="Sync service is unavailable">
+    Profile data was redacted since sync service is unavailable.
+  </int>
+  <int value="6" label="Chrome sync feature is disabled">
+    Profile data was redacted since Chrome sync feature is disabled.
+  </int>
+  <int value="7" label="Chrome App Sync is disabled">
+    Profile data was redacted since Chrome App Sync is disabled.
+  </int>
+  <int value="8" label="Chrome OS sync feature is disabled">
+    Profile data was redacted since Chrome OS sync feature is disabled.
+  </int>
+  <int value="9" label="Chrome OS App Sync is disabled">
+    Profile data was redacted since Chrome OS App Sync is disabled.
+  </int>
 </enum>
 
 <enum name="ChromeOSRecoveryReason">

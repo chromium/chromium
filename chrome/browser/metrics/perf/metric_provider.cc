@@ -53,30 +53,6 @@ void RedactCommMd5Prefixes(PerfDataProto* proto) {
   }
 }
 
-// Check if App Sync is enabled for a given user profile.
-bool IsAppSyncEnabledForUserProfile(Profile* profile) {
-  syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
-  if (!sync_service)
-    return false;
-  syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
-
-  // Chrome versions >= M78 have a feature that splits the sync settings between
-  // Chrome and ChromeOS. The App Sync toggle is moved under the ChromeOS
-  // settings. If the split sync setting is enabled, we will directly read from
-  // the OS settings. Otherwise, we read from Chrome settings. We then check if
-  // the sync feature is enabled and the App Sync toggle is on.
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
-    return sync_settings->IsOsSyncFeatureEnabled() &&
-           sync_settings->GetSelectedOsTypes().Has(
-               syncer::UserSelectableOsType::kOsApps);
-  }
-  // Read chrome settings if split sync is disabled.
-  return sync_service->IsSyncFeatureEnabled() &&
-         sync_settings->GetSelectedTypes().Has(
-             syncer::UserSelectableType::kApps);
-}
-
 }  // namespace
 
 using MetricCollector = internal::MetricCollector;
@@ -212,6 +188,35 @@ void MetricProvider::DisableRecording() {
   recording_enabled_ = false;
 }
 
+MetricProvider::RecordAttemptStatus MetricProvider::AppSyncStateForUserProfile(
+    Profile* profile) {
+  syncer::SyncService* sync_service =
+      ProfileSyncServiceFactory::GetForProfile(profile);
+  if (!sync_service)
+    return RecordAttemptStatus::kSyncServiceUnavailable;
+  syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
+
+  // Chrome versions >= M78 have a feature that splits the sync settings between
+  // Chrome and ChromeOS. The App Sync toggle is moved under the ChromeOS
+  // settings. If the split sync setting is enabled, we will directly read from
+  // the OS settings. Otherwise, we read from Chrome settings. We then check if
+  // the sync feature is enabled and the App Sync toggle is on.
+  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+    if (!sync_settings->IsOsSyncFeatureEnabled())
+      return RecordAttemptStatus::kOSSyncFeatureDisabled;
+    if (!sync_settings->GetSelectedOsTypes().Has(
+            syncer::UserSelectableOsType::kOsApps))
+      return RecordAttemptStatus::kOSAppSyncDisabled;
+    return RecordAttemptStatus::kAppSyncEnabled;
+  }
+  // Read chrome settings if split sync is disabled.
+  if (!sync_service->IsSyncFeatureEnabled())
+    return RecordAttemptStatus::kChromeSyncFeatureDisabled;
+  if (!sync_settings->GetSelectedTypes().Has(syncer::UserSelectableType::kApps))
+    return RecordAttemptStatus::kChromeAppSyncDisabled;
+  return RecordAttemptStatus::kAppSyncEnabled;
+}
+
 // Check the current state of App Sync in the settings. This is done by getting
 // all currently fully initialized profiles and reading the sync settings from
 // them.
@@ -230,8 +235,9 @@ MetricProvider::RecordAttemptStatus MetricProvider::GetAppSyncState() {
     // sync settings of user profiles.
     if (chromeos::ProfileHelper::IsSigninProfile(profile))
       continue;
-    if (!IsAppSyncEnabledForUserProfile(profile))
-      return RecordAttemptStatus::kAppSyncDisabled;
+    auto app_sync_state = AppSyncStateForUserProfile(profile);
+    if (app_sync_state != RecordAttemptStatus::kAppSyncEnabled)
+      return app_sync_state;
     user_profile_count++;
   }
 

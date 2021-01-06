@@ -20,6 +20,7 @@ class TimeDelta;
 }  // namespace base
 
 class ProfileManager;
+class Profile;
 
 namespace metrics {
 
@@ -75,7 +76,12 @@ class MetricProvider {
     kNoLoadedProfile = 2,
     kAppSyncDisabled = 3,
     kAppSyncEnabled = 4,
-    kMaxValue = kAppSyncEnabled,
+    kSyncServiceUnavailable = 5,
+    kChromeSyncFeatureDisabled = 6,
+    kChromeAppSyncDisabled = 7,
+    kOSSyncFeatureDisabled = 8,
+    kOSAppSyncDisabled = 9,
+    kMaxValue = kOSAppSyncDisabled,
   };
 
   // For testing.
@@ -88,6 +94,9 @@ class MetricProvider {
   // may be invoked on any sequence.
   static void OnProfileDone(base::WeakPtr<MetricProvider> provider,
                             std::unique_ptr<SampledProfile> sampled_profile);
+
+  // Check the state of App Sync for the given user profile.
+  RecordAttemptStatus AppSyncStateForUserProfile(Profile* profile);
 
   // Check the state of App Sync in the current session.
   RecordAttemptStatus GetAppSyncState();
