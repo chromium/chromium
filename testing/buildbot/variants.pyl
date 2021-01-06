@@ -89,43 +89,43 @@
     ],
     'identifier': 'iPad Air 2 14.0'
   },
-  'SIM_IPAD_AIR_2_14_2': {
+  'SIM_IPAD_AIR_2_14_3': {
     'args': [
       '--platform',
       'iPad Air 2',
       '--version',
-      '14.2'
+      '14.3'
     ],
-    'identifier': 'iPad Air 2 14.2'
+    'identifier': 'iPad Air 2 14.3'
   },
-  'SIM_IPAD_AIR_3RD_GEN_14_2': {
+  'SIM_IPAD_AIR_3RD_GEN_14_3': {
     'args': [
       '--platform',
       'iPad Air (3rd generation)',
       '--version',
-      '14.2'
+      '14.3'
     ],
-    'identifier': 'iPad Air (3rd generation) 14.2'
+    'identifier': 'iPad Air (3rd generation) 14.3'
   },
   # In Xcode 12, "iPad Pro (12.9-inch)" requires a generation suffix in
   # "platform" arg.
-  'SIM_IPAD_PRO_2ND_GEN_14_2': {
+  'SIM_IPAD_PRO_2ND_GEN_14_3': {
     'args': [
       '--platform',
       'iPad Pro (12.9-inch) (2nd generation)',
       '--version',
-      '14.2',
+      '14.3',
     ],
-    'identifier': 'iPad Pro (12.9-inch) (2nd generation) 14.2'
+    'identifier': 'iPad Pro (12.9-inch) (2nd generation) 14.3'
   },
-  'SIM_IPAD_6_GEN_14_2': {
+  'SIM_IPAD_6_GEN_14_3': {
     'args': [
       '--platform',
       'iPad (6th generation)',
       '--version',
-      '14.2',
+      '14.3',
     ],
-    'identifier': 'iPad (6th generation) 14.2'
+    'identifier': 'iPad (6th generation) 14.3'
   },
   'SIM_IPHONE_6S_12_4': {
     'args': [
@@ -154,14 +154,14 @@
     ],
     'identifier': 'iPhone 6s 14.0'
   },
-  'SIM_IPHONE_6S_14_2': {
+  'SIM_IPHONE_6S_14_3': {
     'args': [
       '--platform',
       'iPhone 6s',
       '--version',
-      '14.2',
+      '14.3',
     ],
-    'identifier': 'iPhone 6s 14.2'
+    'identifier': 'iPhone 6s 14.3'
   },
   'SIM_IPHONE_6S_PLUS_13_6': {
     'args': [
@@ -190,14 +190,14 @@
     ],
     'identifier': 'iPhone 6s Plus 14.0'
   },
-  'SIM_IPHONE_6S_PLUS_14_2': {
+  'SIM_IPHONE_6S_PLUS_14_3': {
     'args': [
       '--platform',
       'iPhone 6s Plus',
       '--version',
-      '14.2',
+      '14.3',
     ],
-    'identifier': 'iPhone 6s Plus 14.2'
+    'identifier': 'iPhone 6s Plus 14.3'
   },
   'SIM_IPHONE_7_13_6': {
     'args': [
@@ -226,14 +226,14 @@
     ],
     'identifier': 'iPhone 7 14.0'
   },
-  'SIM_IPHONE_7_14_2': {
+  'SIM_IPHONE_7_14_3': {
     'args': [
       '--platform',
       'iPhone 7',
       '--version',
-      '14.2',
+      '14.3',
     ],
-    'identifier': 'iPhone 7 14.2'
+    'identifier': 'iPhone 7 14.3'
   },
   'SIM_IPHONE_SE_1ST_GEN_13_6': {
     'args': [
@@ -298,14 +298,14 @@
     ],
     'identifier': 'iPhone X 14.0'
   },
-  'SIM_IPHONE_X_14_2': {
+  'SIM_IPHONE_X_14_3': {
     'args': [
       '--platform',
       'iPhone X',
       '--version',
-      '14.2',
+      '14.3',
     ],
-    'identifier': 'iPhone X 14.2'
+    'identifier': 'iPhone X 14.3'
   },
   'WEBLAYER_IMPL_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
