@@ -294,14 +294,21 @@
     $i18n{annotationsShowToggle}
   </button>
 
+  <hr>
+
   <template is="dom-if" if="[[presentationModeEnabled]]">
-    <hr>
     <button id="present-button" class="dropdown-item"
         on-click="onPresentClick_">
       <span class="check-container" aria-hidden="true"></span>
       $i18n{present}
     </button>
   </template>
+
+  <button id="properties-button" class="dropdown-item"
+      on-click="onPropertiesClick_">
+    <span class="check-container" aria-hidden="true"></span>
+    $i18n{propertiesDialogTitle}
+  </button>
 </cr-action-menu>
 
 <if expr="chromeos">

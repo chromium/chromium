@@ -19,6 +19,7 @@ js_type_check("closure_compile") {
     ":viewer-pdf-sidenav",
     ":viewer-pdf-toolbar",
     ":viewer-pdf-toolbar-new",
+    ":viewer-properties-dialog",
     ":viewer-thumbnail",
     ":viewer-thumbnail-bar",
     ":viewer-toolbar-dropdown",
@@ -154,6 +155,13 @@ js_library("viewer-pdf-toolbar-new") {
 js_library("viewer-pen-options") {
 }
 
+js_library("viewer-properties-dialog") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
+}
+
 js_library("viewer-thumbnail") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -206,6 +214,7 @@ html_to_js("web_components") {
     "viewer-pdf-sidenav.js",
     "viewer-pdf-toolbar.js",
     "viewer-pdf-toolbar-new.js",
+    "viewer-properties-dialog.js",
     "viewer-thumbnail.js",
     "viewer-thumbnail-bar.js",
     "viewer-toolbar-dropdown.js",

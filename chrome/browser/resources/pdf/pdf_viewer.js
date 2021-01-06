@@ -5,6 +5,7 @@
 import './elements/viewer-error-screen.js';
 import './elements/viewer-password-screen.js';
 import './elements/viewer-pdf-toolbar.js';
+import './elements/viewer-properties-dialog.js';
 import './elements/viewer-zoom-toolbar.js';
 import './elements/shared-vars.js';
 // <if expr="chromeos">
@@ -244,6 +245,12 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
       /** @private */
       printingEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      showPropertiesDialog_: {
         type: Boolean,
         value: false,
       },
@@ -743,6 +750,19 @@ export class PDFViewerElement extends PDFViewerBaseElement {
           // Nothing else to do here. The viewport will be updated as a result
           // of a 'resize' event callback.
         });
+  }
+
+  /** @private */
+  onPropertiesClick_() {
+    assert(this.pdfViewerUpdateEnabled_);
+    assert(!this.showPropertiesDialog_);
+    this.showPropertiesDialog_ = true;
+  }
+
+  /** @private */
+  onPropertiesDialogClose_() {
+    assert(this.showPropertiesDialog_);
+    this.showPropertiesDialog_ = false;
   }
 
   /**

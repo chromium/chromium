@@ -183,6 +183,7 @@
     on-dropdown-opened="onDropdownOpened_"
     on-fit-to-changed="onFitToChanged"
     on-present-click="onPresentClick_"
+    on-properties-click="onPropertiesClick_"
     on-annotation-mode-dialog-confirmed="onResetView_"
     on-sidenav-toggle-click="onSidenavToggleClick_"
     on-two-up-view-changed="onTwoUpViewChanged_"
@@ -222,6 +223,12 @@
 <viewer-password-screen id="password-screen"
     on-password-submitted="onPasswordSubmitted_">
 </viewer-password-screen>
+
+<template is="dom-if" if="[[showPropertiesDialog_]]" restamp>
+  <viewer-properties-dialog id="properties-dialog"
+      on-close="onPropertiesDialogClose_">
+  </viewer-properties-dialog>
+</template>
 
 <template is="dom-if" if="[[!pdfViewerUpdateEnabled_]]">
   <viewer-zoom-toolbar id="zoom-toolbar"

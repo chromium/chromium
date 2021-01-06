@@ -313,6 +313,16 @@ const tests = [
     await whenFired;
     chrome.test.succeed();
   },
+  async function testPropertiesButton() {
+    const toolbar = createToolbar();
+    const button = toolbar.shadowRoot.querySelector('#properties-button');
+    chrome.test.assertTrue(!!button);
+
+    const whenFired = eventToPromise('properties-click', toolbar);
+    button.click();
+    await whenFired;
+    chrome.test.succeed();
+  }
 ];
 
 chrome.test.runTests(tests);
