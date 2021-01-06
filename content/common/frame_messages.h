@@ -256,11 +256,6 @@ IPC_MESSAGE_ROUTED2(FrameMsg_SetPepperVolume,
 // Messages sent from the renderer to the browser.
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-// Notification sent from a renderer to the browser that a Pepper plugin
-// instance is deleted from the DOM.
-IPC_MESSAGE_ROUTED1(FrameHostMsg_PepperInstanceDeleted,
-                    int32_t /* pp_instance */)
-
 // Sent to the browser when the renderer detects it is blocked on a pepper
 // plugin message for too long. This is also sent when it becomes unhung
 // (according to the value of is_hung). The browser can give the user the

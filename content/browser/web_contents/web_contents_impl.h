@@ -774,6 +774,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 #if BUILDFLAG(ENABLE_PLUGINS)
   void OnPepperInstanceCreated(RenderFrameHostImpl* source,
                                int32_t pp_instance) override;
+  void OnPepperInstanceDeleted(RenderFrameHostImpl* source,
+                               int32_t pp_instance) override;
   void OnPepperStartsPlayback(RenderFrameHostImpl* source,
                               int32_t pp_instance) override;
   void OnPepperStopsPlayback(RenderFrameHostImpl* source,
@@ -1510,8 +1512,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                           int minimum_percent,
                           int maximum_percent);
 #if BUILDFLAG(ENABLE_PLUGINS)
-  void OnPepperInstanceDeleted(RenderFrameHostImpl* source,
-                               int32_t pp_instance);
   void OnPepperPluginHung(RenderFrameHostImpl* source,
                           int plugin_child_id,
                           const base::FilePath& path,

@@ -10217,6 +10217,7 @@ void RenderFrameHostImpl::InstanceCreated(
 }
 
 void RenderFrameHostImpl::PepperInstanceClosed(int32_t instance_id) {
+  delegate()->OnPepperInstanceDeleted(this, instance_id);
   pepper_instance_map_.erase(instance_id);
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)

@@ -6277,14 +6277,6 @@ void RenderFrameImpl::PepperInstanceDeleted(
 
   if (focused_pepper_plugin_ == instance)
     PepperFocusChanged(instance, false);
-
-  RenderFrameImpl* const render_frame = instance->render_frame();
-  if (render_frame) {
-    // TODO(crbug.com/1137580): In some cases, using the RenderFrame to send the
-    // message causes UB, so for now avoid that by calling RT::Send directly.
-    RenderThread::Get()->Send(new FrameHostMsg_PepperInstanceDeleted(
-        render_frame->GetRoutingID(), instance->pp_instance()));
-  }
 }
 
 void RenderFrameImpl::PepperFocusChanged(PepperPluginInstanceImpl* instance,
