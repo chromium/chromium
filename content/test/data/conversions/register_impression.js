@@ -46,9 +46,6 @@ function createImpressionTagWithReporting(
 function createImpressionTagWithTarget(id, url, data, destination, target) {
   let anchor = document.createElement("a");
   anchor.href = url;
-  if (target === "_blank") {
-    anchor.rel = "opener";
-  }
   anchor.setAttribute("impressiondata", data);
   anchor.setAttribute("conversiondestination", destination);
   anchor.setAttribute("target", target);

@@ -187,6 +187,11 @@ class NavigationController {
     // True for prerendering navigations.
     bool is_prerendering = false;
 
+    // Whether a navigation in a new window has the opener suppressed. False if
+    // the navigation is not in a new window. Can only be true when
+    // |is_renderer_initiated| is true.
+    bool was_opener_suppressed = false;
+
     // User agent override for this load. See comments in
     // UserAgentOverrideOption definition.
     UserAgentOverrideOption override_user_agent = UA_OVERRIDE_INHERIT;
