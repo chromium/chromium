@@ -323,4 +323,13 @@ Polymer({
   zoomValuesEqual_(zoom1, zoom2) {
     return Math.abs(zoom1 - zoom2) <= 0.001;
   },
+
+  /**
+   * @param {boolean} previousIsVisible
+   * @param {boolean} nextIsVisible
+   * @return {boolean}
+   */
+  showHr_(previousIsVisible, nextIsVisible) {
+    return previousIsVisible && nextIsVisible;
+  },
 });

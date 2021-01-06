@@ -3,7 +3,7 @@
         section="a11y" focus-config="[[focusConfig_]]">
       <div route-path="default">
 <if expr="chromeos">
-        <cr-link-row class="hr"
+        <cr-link-row
             label="$i18n{manageAccessibilityFeatures}"
             on-click="onManageSystemAccessibilityFeaturesTap_"
             sub-label="$i18n{moreFeaturesLinkDescription}" external>
@@ -11,7 +11,7 @@
 </if>
 <if expr="not chromeos">
         <template is="dom-if" if="[[captionSettingsOpensExternally_]]">
-          <cr-link-row class="hr" id="captions"
+          <cr-link-row id="captions"
               label="$i18n{captionsPreferencesTitle}"
               sub-label="$i18n{captionsPreferencesSubtitle}"
               on-click="onCaptionsClick_"
@@ -19,6 +19,7 @@
           </cr-link-row>
           <template is="dom-if" if="[[enableLiveCaption_]]">
             <settings-toggle-button
+                class="hr"
                 pref="{{prefs.accessibility.captions.live_caption_enabled}}"
                 on-change="onA11yLiveCaptionChange_"
                 label="$i18n{captionsEnableLiveCaptionTitle}"
@@ -27,7 +28,7 @@
           </template>
         </template>
         <template is="dom-if" if="[[!captionSettingsOpensExternally_]]">
-          <cr-link-row class="first" id="captions"
+          <cr-link-row id="captions"
               label="$i18n{captionsTitle}"
               on-click="onCaptionsClick_"
               role-description="$i18n{subpageArrowRoleDescription}">

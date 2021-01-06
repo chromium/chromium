@@ -22,7 +22,7 @@
     <settings-animated-pages id="pages" section="appearance"
         focus-config="[[focusConfig_]]">
       <div route-path="default">
-        <div class="settings-row continuation" id="themeRow"
+        <div class="settings-row first" id="themeRow"
             hidden="[[!pageVisibility.setTheme]]">
           <cr-link-row class="first" hidden="[[!pageVisibility.setTheme]]"
               label="$i18n{themes}" sub-label="[[themeSublabel_]]"
@@ -56,7 +56,12 @@
           </div>
 </if>
         </div>
-        <settings-toggle-button class="hr" elide-label
+        <div
+            class="hr"
+            hidden="[[!showHr_(
+                pageVisibility.setTheme, pageVisibility.homeButton)]]">
+        </div>
+        <settings-toggle-button elide-label
             hidden="[[!pageVisibility.homeButton]]"
             pref="{{prefs.browser.show_home_button}}"
             label="$i18n{showHomeButton}"
@@ -94,7 +99,12 @@
             </settings-radio-group>
           </div>
         </template>
-        <settings-toggle-button class="hr"
+        <div
+            class="hr"
+            hidden="[[!showHr_(
+                pageVisibility.homeButton, pageVisibility.bookmarksBar)]]">
+        </div>
+        <settings-toggle-button
             hidden="[[!pageVisibility.bookmarksBar]]"
             pref="{{prefs.bookmark_bar.show_on_all_tabs}}"
             label="$i18n{showBookmarksBar}">
