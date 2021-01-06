@@ -278,7 +278,7 @@
       name: "VerticalScroll",
       feature_policy_name: "vertical-scroll",
       feature_default: "EnableForAll",
-      depends_on: ["ExperimentalProductivityFeatures"],
+      depends_on: ["ExperimentalPolicies"],
     },
     {
       name: "WebShare",

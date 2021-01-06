@@ -84,7 +84,7 @@ static float ResolveHeightForRatio(float width,
 
 bool LayoutSVGImage::HasOverriddenIntrinsicSize() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::ExperimentalProductivityFeaturesEnabled())
+  if (!RuntimeEnabledFeatures::ExperimentalPoliciesEnabled())
     return false;
   auto* svg_image_element = DynamicTo<SVGImageElement>(GetElement());
   return svg_image_element && svg_image_element->IsDefaultIntrinsicSize();

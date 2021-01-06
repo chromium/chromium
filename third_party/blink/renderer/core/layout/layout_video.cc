@@ -80,7 +80,7 @@ LayoutSize LayoutVideo::CalculateIntrinsicSize(float scale) {
   HTMLVideoElement* video = VideoElement();
   DCHECK(video);
 
-  if (RuntimeEnabledFeatures::ExperimentalProductivityFeaturesEnabled()) {
+  if (RuntimeEnabledFeatures::ExperimentalPoliciesEnabled()) {
     if (video->IsDefaultIntrinsicSize()) {
       LayoutSize size = DefaultSize();
       size.Scale(scale);

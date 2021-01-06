@@ -868,7 +868,7 @@ Document::Document(const DocumentInit& initializer,
 
   is_vertical_scroll_enforced_ =
       GetFrame() && !GetFrame()->IsMainFrame() &&
-      RuntimeEnabledFeatures::ExperimentalProductivityFeaturesEnabled() &&
+      RuntimeEnabledFeatures::ExperimentalPoliciesEnabled() &&
       !dom_window_->IsFeatureEnabled(
           mojom::blink::FeaturePolicyFeature::kVerticalScroll);
 
@@ -7116,7 +7116,7 @@ HTMLLinkElement* Document::LinkCanonical() const {
 bool Document::AllowedToUseDynamicMarkUpInsertion(
     const char* api_name,
     ExceptionState& exception_state) {
-  if (!RuntimeEnabledFeatures::ExperimentalProductivityFeaturesEnabled()) {
+  if (!RuntimeEnabledFeatures::ExperimentalPoliciesEnabled()) {
     return true;
   }
   if (!GetFrame() || GetExecutionContext()->IsFeatureEnabled(

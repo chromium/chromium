@@ -330,7 +330,7 @@ bool LayoutImage::NodeAtPoint(HitTestResult& result,
 
 bool LayoutImage::HasOverriddenIntrinsicSize() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::ExperimentalProductivityFeaturesEnabled())
+  if (!RuntimeEnabledFeatures::ExperimentalPoliciesEnabled())
     return false;
   auto* image_element = DynamicTo<HTMLImageElement>(GetNode());
   return image_element && image_element->IsDefaultIntrinsicSize();

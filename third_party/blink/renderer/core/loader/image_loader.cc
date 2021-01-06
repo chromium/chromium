@@ -82,10 +82,7 @@ bool CheckForUnoptimizedImagePolicy(ExecutionContext* context,
   // Render the image as a placeholder image if the image is not sufficiently
   // well-compressed, according to the unoptimized image feature policies on
   // |document|.
-  // Note: UnoptimizedImagePolicies is currently part of DocumentPolicy.
-  // The original runtime feature UnoptimizedImagePolicies is no longer used,
-  // and are planned to be removed.
-  if (RuntimeEnabledFeatures::DocumentPolicyEnabled() &&
+  if (RuntimeEnabledFeatures::ExperimentalPoliciesEnabled() &&
       !new_image->IsAcceptableCompressionRatio(*context)) {
     return true;
   }

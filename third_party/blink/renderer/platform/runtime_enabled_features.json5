@@ -841,6 +841,11 @@
       origin_trial_feature_name: "ExperimentalJSProfiler",
       status: "experimental"
     },
+    {
+      name: "ExperimentalPolicies",
+      depends_on: ["DocumentPolicy"],
+      status: "experimental"
+    },
     // Enables a set of features intended to help improve web developer
     // productivity, by restricting the use of potentially problematic web-
     // platform behaviors, as well as adding new high-level APIs for common
@@ -2039,18 +2044,6 @@
     {
       name: "UnderlineOffsetThickness",
       status: "stable",
-    },
-    {
-      name: "UnoptimizedImagePolicies",
-      status: "experimental",
-      origin_trial_feature_name: "UnoptimizedImagePolicies",
-      implied_by: ["ExperimentalProductivityFeatures"]
-    },
-    {
-      name: "UnsizedMediaPolicy",
-      status: "experimental",
-      origin_trial_feature_name: "UnsizedMediaPolicy",
-      implied_by: ["ExperimentalProductivityFeatures"]
     },
     {
       name: "URLPattern",
