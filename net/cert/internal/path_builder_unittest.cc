@@ -1408,7 +1408,7 @@ TEST_F(PathBuilderDistrustTest, TargetIntermediateRoot) {
   // certificates should work.
   CertPathBuilder::Result result = RunPathBuilderWithDistrustedCert(nullptr);
   {
-    EXPECT_TRUE(result.HasValidPath());
+    ASSERT_TRUE(result.HasValidPath());
     // The built path should be identical the the one read from disk.
     const auto& path = *result.GetBestValidPath();
     ASSERT_EQ(test_.chain.size(), path.certs.size());
