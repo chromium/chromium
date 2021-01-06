@@ -177,7 +177,9 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug.com/1076175) Remove once launched.
        autofill::features::kAutofillUseNewSectioningMethod,
        // Remove once launched
-       autofill::features::kAutofillEnableAugmentedPhoneCountryCode},
+       autofill::features::kAutofillEnableAugmentedPhoneCountryCode,
+       // TODO(crbug.com/1157405) Remove once launched.
+       autofill::features::kAutofillEnableDependentLocalityParsing},
       // Disabled
       {autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
 }

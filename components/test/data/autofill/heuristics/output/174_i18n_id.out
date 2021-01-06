@@ -1,0 +1,14 @@
+NAME_FIRST | fn | Nama Depan: |  | fn_1-default
+NAME_LAST | ln | Nama Belakang: |  | fn_1-default
+COMPANY_NAME | cm | Nama Perusahaan: |  | fn_1-default
+ADDRESS_HOME_LINE1 | a1 | Alamat: |  | fn_1-default
+ADDRESS_HOME_STATE | st | Provinci: |  | fn_1-default
+ADDRESS_HOME_CITY | ct | Kota/Kabupaten: |  | fn_1-default
+ADDRESS_HOME_DEPENDENT_LOCALITY | dl | Kecamatan: |  | fn_1-default
+ADDRESS_HOME_ZIP | zc | Kode Pos: |  | fn_1-default
+EMAIL_ADDRESS | em | Email: |  | fn_1-default
+PHONE_HOME_WHOLE_NUMBER | ph | Nomor Telepon: |  | fn_1-default
+CREDIT_CARD_NAME_FULL | c1 | Nama di kartu: |  | credit-card-cc
+CREDIT_CARD_NUMBER | c2 | Nomor Kartu: |  | credit-card-cc
+CREDIT_CARD_EXP_MONTH | c3 | Masa Berlaku: |  | credit-card-cc
+CREDIT_CARD_EXP_4_DIGIT_YEAR | c4 | Masa Berlaku: |  | credit-card-cc
