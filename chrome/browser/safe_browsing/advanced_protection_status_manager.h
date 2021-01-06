@@ -85,8 +85,8 @@ class AdvancedProtectionStatusManager
   void UnsubscribeFromSigninEvents();
 
   // IdentityManager::Observer implementations.
-  void OnUnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 

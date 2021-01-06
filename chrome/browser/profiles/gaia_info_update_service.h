@@ -48,8 +48,8 @@ class GAIAInfoUpdateService : public KeyedService,
   void UpdateAnyAccount(const AccountInfo& info);
 
   // Overridden from signin::IdentityManager::Observer:
-  void OnUnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& unconsented_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,

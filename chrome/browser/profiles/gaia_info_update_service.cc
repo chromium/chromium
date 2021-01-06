@@ -155,12 +155,17 @@ void GAIAInfoUpdateService::Shutdown() {
   identity_manager_->RemoveObserver(this);
 }
 
-void GAIAInfoUpdateService::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& unconsented_primary_account_info) {
-  if (unconsented_primary_account_info.gaia.empty()) {
-    ClearProfileEntry();
-  } else {
-    UpdatePrimaryAccount();
+void GAIAInfoUpdateService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kNotRequired)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      UpdatePrimaryAccount();
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      ClearProfileEntry();
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
   }
 }
 

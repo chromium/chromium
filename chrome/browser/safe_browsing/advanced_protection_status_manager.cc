@@ -123,14 +123,24 @@ void AdvancedProtectionStatusManager::OnExtendedAccountInfoRemoved(
   }
 }
 
-void AdvancedProtectionStatusManager::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& account_info) {
-  // TODO(crbug.com/926204): remove IdentityManager ensures that primary account
-  // always has valid refresh token when it is set.
-  if (account_info.is_under_advanced_protection)
-    OnAdvancedProtectionEnabled();
-  else
-    OnAdvancedProtectionDisabled();
+void AdvancedProtectionStatusManager::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kNotRequired)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet: {
+      // TODO(crbug.com/926204): remove IdentityManager ensures that primary
+      // account always has valid refresh token when it is set.
+      if (event.GetCurrentState().primary_account.is_under_advanced_protection)
+        OnAdvancedProtectionEnabled();
+      else
+        OnAdvancedProtectionDisabled();
+      break;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      OnAdvancedProtectionDisabled();
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
 void AdvancedProtectionStatusManager::OnAdvancedProtectionEnabled() {
