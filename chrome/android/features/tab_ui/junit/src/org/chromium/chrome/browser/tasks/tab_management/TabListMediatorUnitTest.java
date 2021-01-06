@@ -95,6 +95,9 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -125,6 +128,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
@@ -240,6 +244,8 @@ public class TabListMediatorUnitTest {
     @Mock
     UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock
+    OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
+    @Mock
     TabListMediator.TabGridAccessibilityHelper mTabGridAccessibilityHelper;
     @Mock
     TemplateUrlService mTemplateUrlService;
@@ -278,6 +284,10 @@ public class TabListMediatorUnitTest {
         MockitoAnnotations.initMocks(this);
         mMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         mMocker.mock(EndpointFetcherJni.TEST_HOOKS, mEndpointFetcherJniMock);
+        mMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
+        // Ensure native pointer is initialized
+        doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
+        mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE);
 
         CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, false);
         TabUiFeatureUtilities.ENABLE_SEARCH_CHIP.setForTesting(true);
@@ -2578,5 +2588,20 @@ public class TabListMediatorUnitTest {
                             anyString(), anyString(), any(String[].class), anyString(), anyLong(),
                             any(Callback.class));
         }
+    }
+
+    private void mockOptimizationGuideResponse(@OptimizationGuideDecision int decision) {
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                OptimizationGuideCallback callback =
+                        (OptimizationGuideCallback) invocation.getArguments()[3];
+                callback.onOptimizationGuideDecision(decision, null);
+                return null;
+            }
+        })
+                .when(mOptimizationGuideBridgeJniMock)
+                .canApplyOptimization(
+                        anyLong(), any(GURL.class), anyInt(), any(OptimizationGuideCallback.class));
     }
 }

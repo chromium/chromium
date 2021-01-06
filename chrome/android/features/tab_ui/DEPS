@@ -1,6 +1,7 @@
 include_rules = [
  "+chrome/browser/android/lifecycle",
  "+chrome/browser/endpoint_fetcher",
+ "+chrome/browser/optimization_guide/android/java/src/org/chromium/chrome/browser/optimization_guide",
  "+chrome/browser/profiles/android/java",
  "+chrome/browser/tab/java",
  "+chrome/browser/tabmodel/android/java",
@@ -13,6 +14,5 @@ include_rules = [
  "+components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement",
  "+components/search_engines/android/java/src/org/chromium/components/search_engines",
  "+components/module_installer",
-
  "+content/public/android/java/src/org/chromium/content_public/browser",
 ]

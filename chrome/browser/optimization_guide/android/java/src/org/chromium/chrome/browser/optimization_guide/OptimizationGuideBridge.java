@@ -41,6 +41,7 @@ public class OptimizationGuideBridge {
      * Initializes the C++ side of this class, using the Optimization Guide Decider for the last
      * used Profile.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public OptimizationGuideBridge() {
         ThreadUtils.assertOnUiThread();
 
@@ -91,16 +92,27 @@ public class OptimizationGuideBridge {
      */
     public void canApplyOptimization(NavigationHandle navigationHandle,
             OptimizationType optimizationType, OptimizationGuideCallback callback) {
-        ThreadUtils.assertOnUiThread();
         assert navigationHandle.isInMainFrame();
 
+        canApplyOptimization(navigationHandle.getUrl(), optimizationType, callback);
+    }
+
+    /**
+     * @param url main frame navigation URL an optimization decision is being made for.
+     * @param optimizationType {@link OptimizationType} decision is being made for
+     * @param callback {@link OptimizationGuideCallback} optimization decision is passed in
+     */
+    public void canApplyOptimization(
+            GURL url, OptimizationType optimizationType, OptimizationGuideCallback callback) {
+        ThreadUtils.assertOnUiThread();
+
         if (mNativeOptimizationGuideBridge == 0) {
-            callback.onOptimizationGuideDecision(OptimizationGuideDecision.FALSE, null);
+            callback.onOptimizationGuideDecision(OptimizationGuideDecision.UNKNOWN, null);
             return;
         }
 
-        OptimizationGuideBridgeJni.get().canApplyOptimization(mNativeOptimizationGuideBridge,
-                navigationHandle.getUrl(), optimizationType.getNumber(), callback);
+        OptimizationGuideBridgeJni.get().canApplyOptimization(
+                mNativeOptimizationGuideBridge, url, optimizationType.getNumber(), callback);
     }
 
     @CalledByNative
@@ -123,8 +135,9 @@ public class OptimizationGuideBridge {
         return optimizationMetadata;
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init();
         void destroy(long nativeOptimizationGuideBridge);
         void registerOptimizationTypes(long nativeOptimizationGuideBridge, int[] optimizationTypes);

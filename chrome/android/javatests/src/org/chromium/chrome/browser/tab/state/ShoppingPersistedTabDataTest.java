@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.tab.state;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -31,11 +33,16 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcherJni;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointResponse;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -57,6 +64,12 @@ public class ShoppingPersistedTabDataTest {
 
     @Mock
     EndpointFetcher.Natives mEndpointFetcherJniMock;
+
+    @Mock
+    OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
+
+    // Tracks if the endpoint fetcher has been called once or not
+    private boolean mCalledOnce;
 
     private static final long PRICE_MICROS = 123456789012345L;
     private static final long UPDATED_PRICE_MICROS = 287000000L;
@@ -89,6 +102,10 @@ public class ShoppingPersistedTabDataTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mMocker.mock(EndpointFetcherJni.TEST_HOOKS, mEndpointFetcherJniMock);
+        mMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
+        // Ensure native pointer is initialized
+        doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
+        mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE);
         PersistedTabDataConfiguration.setUseTestConfig(true);
     }
 
@@ -144,6 +161,39 @@ public class ShoppingPersistedTabDataTest {
             });
         });
         acquireSemaphore(semaphore);
+    }
+
+    @SmallTest
+    @Test
+    public void testShoppingBloomFilterNotShoppingWebsite() {
+        mockEndpointResponse(ENDPOINT_RESPONSE_INITIAL);
+        mockOptimizationGuideResponse(OptimizationGuideDecision.FALSE);
+        Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
+        Semaphore semaphore = new Semaphore(0);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.from(
+                    tab, (shoppingPersistedTabData) -> { semaphore.release(); });
+        });
+        acquireSemaphore(semaphore);
+        verifyEndpointFetcherCalled(0);
+    }
+
+    @SmallTest
+    @Test
+    public void testShoppingBloomFilterShoppingWebsite() {
+        for (@OptimizationGuideDecision int decision :
+                new int[] {OptimizationGuideDecision.TRUE, OptimizationGuideDecision.UNKNOWN}) {
+            mockEndpointResponse(ENDPOINT_RESPONSE_INITIAL);
+            mockOptimizationGuideResponse(decision);
+            Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
+            Semaphore semaphore = new Semaphore(0);
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                ShoppingPersistedTabData.from(
+                        tab, (shoppingPersistedTabData) -> { semaphore.release(); });
+            });
+            acquireSemaphore(semaphore);
+            verifyEndpointFetcherCalled(1);
+        }
     }
 
     private long shoppingPriceChange(Tab tab) {
@@ -618,5 +668,20 @@ public class ShoppingPersistedTabDataTest {
             // Throw Runtime exception to make catching InterruptedException unnecessary
             throw new RuntimeException(e);
         }
+    }
+
+    private void mockOptimizationGuideResponse(@OptimizationGuideDecision int decision) {
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                OptimizationGuideCallback callback =
+                        (OptimizationGuideCallback) invocation.getArguments()[3];
+                callback.onOptimizationGuideDecision(decision, null);
+                return null;
+            }
+        })
+                .when(mOptimizationGuideBridgeJniMock)
+                .canApplyOptimization(
+                        anyLong(), any(GURL.class), anyInt(), any(OptimizationGuideCallback.class));
     }
 }

@@ -53,6 +53,8 @@ std::string GetStringNameForOptimizationType(
       return "LiteVideo";
     case proto::OptimizationType::LINK_PERFORMANCE:
       return "LinkPerformance";
+    case proto::OptimizationType::SHOPPING_PAGE_PREDICTOR:
+      return "ShoppingPagePredictor";
   }
   NOTREACHED();
   return std::string();

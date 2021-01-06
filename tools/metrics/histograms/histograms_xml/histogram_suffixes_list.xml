@@ -12115,6 +12115,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Removed in M89.
     </obsolete>
   </suffix>
+  <suffix name="ShoppingPagePredictor"
+      label="Determines if a page is shopping related or not"/>
   <affected-histogram name="OptimizationGuide.ApplyDecision"/>
   <affected-histogram name="OptimizationGuide.ApplyDecisionAsync"/>
   <affected-histogram name="OptimizationGuide.OptimizationFilterStatus"/>

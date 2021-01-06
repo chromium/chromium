@@ -20,14 +20,19 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
+import org.chromium.components.optimization_guide.OptimizationGuideDecision;
+import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.components.payments.CurrencyFormatter;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -86,6 +91,15 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     @VisibleForTesting
     protected EmptyTabObserver mUrlUpdatedObserver;
+
+    // Lazy initialization of OptimizationGuideBridgeFactory
+    private static class OptimizationGuideBridgeFactoryHolder {
+        private static final OptimizationGuideBridgeFactory sOptimizationGuideBridgeFactory;
+        static {
+            sOptimizationGuideBridgeFactory = new OptimizationGuideBridgeFactory(
+                    Arrays.asList(HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR));
+        }
+    }
 
     /**
      * A price drop for the offer {@link ShoppingPersistedTabData}
@@ -171,18 +185,24 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         -> {
                     ShoppingPersistedTabData previousShoppingPersistedTabData =
                             PersistedTabData.from(tab, USER_DATA_KEY);
-                    EndpointFetcher.fetchUsingChromeAPIKey(
-                            (endpointResponse)
-                                    -> {
-                                supplierCallback.onResult(
-                                        build(tab, endpointResponse.getResponseString(),
-                                                previousShoppingPersistedTabData));
-                            },
-                            Profile.getLastUsedRegularProfile(),
-                            String.format(ENDPOINT, tab.getUrlString()), HTTPS_METHOD, CONTENT_TYPE,
-                            EMPTY_POST_DATA, TIMEOUT_MS,
-                            new String[] {
-                                    ACCEPT_LANGUAGE_KEY, LocaleUtils.getDefaultLocaleListString()});
+                    ShoppingPersistedTabData.isShoppingPage(tab.getUrl(), (isShoppingPage) -> {
+                        if (!isShoppingPage) {
+                            supplierCallback.onResult(null);
+                            return;
+                        }
+                        EndpointFetcher.fetchUsingChromeAPIKey(
+                                (endpointResponse)
+                                        -> {
+                                    supplierCallback.onResult(
+                                            build(tab, endpointResponse.getResponseString(),
+                                                    previousShoppingPersistedTabData));
+                                },
+                                Profile.getLastUsedRegularProfile(),
+                                String.format(ENDPOINT, tab.getUrlString()), HTTPS_METHOD,
+                                CONTENT_TYPE, EMPTY_POST_DATA, TIMEOUT_MS,
+                                new String[] {ACCEPT_LANGUAGE_KEY,
+                                        LocaleUtils.getDefaultLocaleListString()});
+                    });
                 },
                 ShoppingPersistedTabData.class, callback);
     }
@@ -447,5 +467,14 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     public void destroy() {
         mTab.removeObserver(mUrlUpdatedObserver);
         super.destroy();
+    }
+
+    private static void isShoppingPage(GURL url, Callback<Boolean> callback) {
+        OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory.create()
+                .canApplyOptimization(url, HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR,
+                        (decision, metadata) -> {
+                            callback.onResult(decision == OptimizationGuideDecision.TRUE
+                                    || decision == OptimizationGuideDecision.UNKNOWN);
+                        });
     }
 }

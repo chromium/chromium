@@ -108,7 +108,7 @@ public class OptimizationGuideBridgeUnitTest {
                 .canApplyOptimization(anyLong(), anyObject(), anyInt(),
                         any(OptimizationGuideBridge.OptimizationGuideCallback.class));
         verify(mCallbackMock)
-                .onOptimizationGuideDecision(eq(OptimizationGuideDecision.FALSE), isNull());
+                .onOptimizationGuideDecision(eq(OptimizationGuideDecision.UNKNOWN), isNull());
     }
 
     @Test

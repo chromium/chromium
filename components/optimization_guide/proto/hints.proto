@@ -133,6 +133,11 @@ enum OptimizationType {
   // This optimization is used to provide aggregated performance information
   // about pages linked to from the current page.
   LINK_PERFORMANCE = 14;
+  // Detects if a page is a shopping page or not. A tradeoff has been made here
+  // where the number of shopping page predictions for non-shopping pages is
+  // increased to reduce the number of non-shopping page predictions for
+  // shopping pages.
+  SHOPPING_PAGE_PREDICTOR = 15;
 }
 
 // Presents semantics for how page load URLs should be matched.
