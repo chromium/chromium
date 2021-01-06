@@ -633,6 +633,7 @@ void Performance::AddEventTimingBuffer(PerformanceEventTiming& entry) {
 }
 
 void Performance::AddLayoutShiftBuffer(LayoutShift& entry) {
+  probe::PerformanceEntryAdded(GetExecutionContext(), &entry);
   if (layout_shift_buffer_.size() < kDefaultLayoutShiftBufferSize)
     layout_shift_buffer_.push_back(&entry);
 }

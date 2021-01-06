@@ -16,6 +16,8 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
+#include "third_party/blink/renderer/core/timing/layout_shift.h"
+#include "third_party/blink/renderer/core/timing/layout_shift_attribution.h"
 #include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 
 namespace blink {
@@ -23,29 +25,67 @@ namespace blink {
 namespace {
 
 constexpr PerformanceEntryType kSupportedTypes =
-    PerformanceEntry::EntryType::kLargestContentfulPaint;
+    PerformanceEntry::EntryType::kLargestContentfulPaint |
+    PerformanceEntry::EntryType::kLayoutShift;
+
+double ToProtocolTime(DOMHighResTimeStamp timeOrigin,
+                      DOMHighResTimeStamp time) {
+  return time ? ConvertDOMHighResTimeStampToSeconds(timeOrigin + time) : 0.0;
+}
 
 std::unique_ptr<protocol::PerformanceTimeline::LargestContentfulPaint>
-BuildEventDetails(LargestContentfulPaint* lcp, DOMHighResTimeStamp timeOrigin) {
-  const double renderTime =
-      lcp->renderTime()
-          ? ConvertDOMHighResTimeStampToSeconds(timeOrigin + lcp->renderTime())
-          : 0;
-  const double loadTime =
-      lcp->loadTime()
-          ? ConvertDOMHighResTimeStampToSeconds(timeOrigin + lcp->loadTime())
-          : 0;
+BuildEventDetails(const LargestContentfulPaint& lcp,
+                  DOMHighResTimeStamp timeOrigin) {
   auto result = protocol::PerformanceTimeline::LargestContentfulPaint::create()
-                    .setRenderTime(renderTime)
-                    .setLoadTime(loadTime)
-                    .setSize(lcp->size())
+                    .setRenderTime(ToProtocolTime(timeOrigin, lcp.renderTime()))
+                    .setLoadTime(ToProtocolTime(timeOrigin, lcp.loadTime()))
+                    .setSize(lcp.size())
                     .build();
-  if (!lcp->id().IsEmpty())
-    result->setElementId(lcp->id());
-  if (Element* element = lcp->element())
+  if (!lcp.id().IsEmpty())
+    result->setElementId(lcp.id());
+  if (Element* element = lcp.element())
     result->setNodeId(IdentifiersFactory::IntIdForNode(element));
-  if (!lcp->url().IsEmpty())
-    result->setUrl(lcp->url());
+  if (!lcp.url().IsEmpty())
+    result->setUrl(lcp.url());
+  return result;
+}
+
+std::unique_ptr<protocol::DOM::Rect> BuildRect(DOMRectReadOnly* rect) {
+  return protocol::DOM::Rect::create()
+      .setX(rect->x())
+      .setY(rect->y())
+      .setWidth(rect->width())
+      .setHeight(rect->height())
+      .build();
+}
+
+std::unique_ptr<
+    protocol::Array<protocol::PerformanceTimeline::LayoutShiftAttribution>>
+BuildLayoutShiftAttributions(const LayoutShift::AttributionList& attributions) {
+  auto result = std::make_unique<
+      protocol::Array<protocol::PerformanceTimeline::LayoutShiftAttribution>>();
+  for (const auto& attr : attributions) {
+    auto entry = protocol::PerformanceTimeline::LayoutShiftAttribution::create()
+                     .setPreviousRect(BuildRect(attr->previousRect()))
+                     .setCurrentRect(BuildRect(attr->currentRect()))
+                     .build();
+    if (Node* node = attr->rawNodeForInspector())
+      entry->setNodeId(IdentifiersFactory::IntIdForNode(node));
+    result->push_back(std::move(entry));
+  }
+  return result;
+}
+
+std::unique_ptr<protocol::PerformanceTimeline::LayoutShift> BuildEventDetails(
+    const LayoutShift& ls,
+    DOMHighResTimeStamp timeOrigin) {
+  auto result =
+      protocol::PerformanceTimeline::LayoutShift::create()
+          .setValue(ls.value())
+          .setHadRecentInput(ls.hadRecentInput())
+          .setLastInputTime(ToProtocolTime(timeOrigin, ls.lastInputTime()))
+          .setSources(BuildLayoutShiftAttributions(ls.sources()))
+          .build();
   return result;
 }
 
@@ -59,13 +99,14 @@ BuildProtocolEvent(String frame_id,
                     .setName(entry->name())
                     // TODO(caseq): entry time is clamped; consider exposing an
                     // unclamped time.
-                    .setTime(ConvertDOMHighResTimeStampToSeconds(
-                        timeOrigin + entry->startTime()))
+                    .setTime(ToProtocolTime(timeOrigin, entry->startTime()))
                     .build();
   if (entry->duration())
     result->setDuration(ConvertDOMHighResTimeStampToSeconds(entry->duration()));
   if (auto* lcp = DynamicTo<LargestContentfulPaint>(entry))
-    result->setLcpDetails(BuildEventDetails(lcp, timeOrigin));
+    result->setLcpDetails(BuildEventDetails(*lcp, timeOrigin));
+  else if (auto* ls = DynamicTo<LayoutShift>(entry))
+    result->setLayoutShiftDetails(BuildEventDetails(*ls, timeOrigin));
   return result;
 }
 

@@ -4,7 +4,7 @@ Basic test for LargestContentfulPaint support in PerformanceTimeline
         frameId : <string>
         lcpDetails : {
             elementId : text
-            loadTime : <number>
+            loadTime : 0
             nodeId : <div#text>
             renderTime : <number>
             size : 48000
@@ -19,7 +19,7 @@ Basic test for LargestContentfulPaint support in PerformanceTimeline
             elementId : image
             loadTime : <number>
             nodeId : <img#image>
-            renderTime : <number>
+            renderTime : 0
             size : 65536
             url : .../images/resources/green-256x256.jpg
         }

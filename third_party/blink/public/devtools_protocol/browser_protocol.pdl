@@ -7152,8 +7152,8 @@ experimental domain PerformanceTimeline
   # See https://github.com/WICG/LargestContentfulPaint and largest_contentful_paint.idl
   type LargestContentfulPaint extends object
     properties
-      number renderTime
-      number loadTime
+      Network.TimeSinceEpoch renderTime
+      Network.TimeSinceEpoch loadTime
       # The number of pixels being painted.
       number size
       # The id attribute of the element, if available.
@@ -7162,25 +7162,46 @@ experimental domain PerformanceTimeline
       optional string url
       optional DOM.BackendNodeId nodeId
 
+  type LayoutShiftAttribution extends object
+    properties
+      DOM.Rect previousRect
+      DOM.Rect currentRect
+      optional DOM.BackendNodeId nodeId
+
+  # See https://wicg.github.io/layout-instability/#sec-layout-shift and layout_shift.idl
+  type LayoutShift extends object
+    properties
+      # Score increment produced by this event.
+      number value
+      boolean hadRecentInput
+      Network.TimeSinceEpoch lastInputTime
+      array of LayoutShiftAttribution sources
+
   type TimelineEvent extends object
     properties
       # Identifies the frame that this event is related to. Empty for non-frame targets.
       Page.FrameId frameId
+      # The event type, as specified in https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype
+      # This determines which of the optional "details" fiedls is present.
       string type
+      # Name may be empty depending on the type.
       string name
       # Time in seconds since Epoch, monotonically increasing within document lifetime.
       Network.TimeSinceEpoch time
       # Event duration, if applicable.
       optional number duration
       optional LargestContentfulPaint lcpDetails
+      optional LayoutShift layoutShiftDetails
 
   # Previously buffered events would be reported before method returns.
-  # The specified filter overrides any previous filters, passing empty
-  # filter disables recording.
-  # Note that not all types exposed to the web platform are currently supported.
   # See also: timelineEventAdded
   command enable
     parameters
+      # The types of event to report, as specified in
+      # https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype
+      # The specified filter overrides any previous filters, passing empty
+      # filter disables recording.
+      # Note that not all types exposed to the web platform are currently supported.
       array of string eventTypes
 
   # Sent when a performance timeline event is added. See reportPerformanceTimeline method.
