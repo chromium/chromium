@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_cycle_controller.h"
+#include "ash/wm/window_cycle/window_cycle_controller.h"
 
 #include <algorithm>
 #include <memory>
@@ -27,7 +27,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "ash/wm/window_cycle_list.h"
+#include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -86,9 +86,9 @@ bool IsWindowMinimized(aura::Window* window) {
 
 }  // namespace
 
+using aura::Window;
 using aura::test::CreateTestWindowWithId;
 using aura::test::TestWindowDelegate;
-using aura::Window;
 
 class WindowCycleControllerTest : public AshTestBase {
  public:
@@ -797,8 +797,10 @@ TEST_F(WindowCycleControllerTest, MultiDisplayPositioning) {
       display::test::CreateDisplayIdListN(primary_id, 2);
 
   auto placements = {
-      display::DisplayPlacement::BOTTOM, display::DisplayPlacement::TOP,
-      display::DisplayPlacement::LEFT, display::DisplayPlacement::RIGHT,
+      display::DisplayPlacement::BOTTOM,
+      display::DisplayPlacement::TOP,
+      display::DisplayPlacement::LEFT,
+      display::DisplayPlacement::RIGHT,
   };
 
   gfx::Rect expected_bounds;
@@ -989,8 +991,8 @@ TEST_F(LimitedWindowCycleControllerTest, CycleShowsActiveDeskWindows) {
 class InteractiveWindowCycleControllerTest : public WindowCycleControllerTest {
  public:
   InteractiveWindowCycleControllerTest() = default;
-  InteractiveWindowCycleControllerTest(const InteractiveWindowCycleControllerTest&) =
-      delete;
+  InteractiveWindowCycleControllerTest(
+      const InteractiveWindowCycleControllerTest&) = delete;
   InteractiveWindowCycleControllerTest& operator=(
       const InteractiveWindowCycleControllerTest&) = delete;
   ~InteractiveWindowCycleControllerTest() override = default;

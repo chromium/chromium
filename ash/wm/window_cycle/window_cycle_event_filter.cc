@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_cycle_event_filter.h"
+#include "ash/wm/window_cycle/window_cycle_event_filter.h"
 
 #include "ash/accelerators/debug_commands.h"
 #include "ash/display/screen_ash.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
-#include "ash/wm/window_cycle_controller.h"
-#include "ash/wm/window_cycle_list.h"
+#include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_cycle/window_cycle_list.h"
 #include "base/bind.h"
 #include "ui/events/event.h"
 #include "ui/wm/core/coordinate_conversion.h"

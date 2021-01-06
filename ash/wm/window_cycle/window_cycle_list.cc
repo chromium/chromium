@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_cycle_list.h"
+#include "ash/wm/window_cycle/window_cycle_list.h"
 
 #include <map>
 #include <string>
@@ -20,8 +20,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_colors.h"
-#include "ash/wm/window_cycle_tab_slider.h"
-#include "ash/wm/window_cycle_tab_slider_button.h"
+#include "ash/wm/window_cycle/window_cycle_tab_slider.h"
+#include "ash/wm/window_cycle/window_cycle_tab_slider_button.h"
 #include "ash/wm/window_mini_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_state.h"
@@ -668,7 +668,6 @@ WindowCycleList::~WindowCycleList() {
 }
 
 void WindowCycleList::ReplaceWindows(const WindowList& windows) {
-
   RemoveAllWindows();
   windows_ = windows;
 
@@ -835,7 +834,7 @@ void WindowCycleList::InitWindowCycleView() {
   widget_rect.ClampToCenteredSize(cycle_view_->GetPreferredSize());
   params.bounds = widget_rect;
 
-  screen_observer_.Add(display::Screen::GetScreen());
+  screen_observer_.Observe(display::Screen::GetScreen());
   widget->Init(std::move(params));
   widget->Show();
   cycle_view_->FadeInLayer();

@@ -14,7 +14,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/window_cycle_controller.h"
+#include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"

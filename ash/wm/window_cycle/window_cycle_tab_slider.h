@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_WINDOW_CYCLE_TAB_SLIDER_H_
-#define ASH_WM_WINDOW_CYCLE_TAB_SLIDER_H_
+#ifndef ASH_WM_WINDOW_CYCLE_WINDOW_CYCLE_TAB_SLIDER_H_
+#define ASH_WM_WINDOW_CYCLE_WINDOW_CYCLE_TAB_SLIDER_H_
 
 #include "ash/ash_export.h"
-#include "ash/wm/window_cycle_tab_slider_button.h"
+#include "ash/wm/window_cycle/window_cycle_tab_slider_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
 namespace ash {
@@ -35,4 +35,4 @@ class ASH_EXPORT WindowCycleTabSlider : public views::View {
 
 }  // namespace ash
 
-#endif  // ASH_WM_WINDOW_CYCLE_TAB_SLIDER_H_
+#endif  // ASH_WM_WINDOW_CYCLE_WINDOW_CYCLE_TAB_SLIDER_H_

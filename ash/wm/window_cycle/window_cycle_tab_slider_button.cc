@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_cycle_tab_slider_button.h"
+#include "ash/wm/window_cycle/window_cycle_tab_slider_button.h"
 
 #include "ash/style/ash_color_provider.h"
 #include "base/strings/utf_string_conversions.h"

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_WINDOW_CYCLE_LIST_H_
-#define ASH_WM_WINDOW_CYCLE_LIST_H_
+#ifndef ASH_WM_WINDOW_CYCLE_WINDOW_CYCLE_LIST_H_
+#define ASH_WM_WINDOW_CYCLE_WINDOW_CYCLE_LIST_H_
 
 #include <memory>
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/wm/window_cycle_controller.h"
-#include "base/scoped_observer.h"
+#include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -21,7 +21,7 @@
 namespace aura {
 class ScopedWindowTargeter;
 class Window;
-}
+}  // namespace aura
 
 namespace views {
 class Widget;
@@ -78,7 +78,7 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   const WindowList& windows() const { return windows_; }
   const views::Widget* widget() const { return cycle_ui_widget_; }
 
-  // aura::WindowObserver overrides:
+  // aura::WindowObserver:
   // There is a chance a window is destroyed, for example by JS code. We need to
   // take care of that even if it is not intended for the user to close a window
   // while window cycling.
@@ -154,8 +154,8 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   views::Widget* cycle_ui_widget_ = nullptr;
 
   // The window list will dismiss if the display metrics change.
-  ScopedObserver<display::Screen, display::DisplayObserver> screen_observer_{
-      this};
+  base::ScopedObservation<display::Screen, display::DisplayObserver>
+      screen_observer_{this};
 
   // A timer to delay showing the UI. Quick Alt+Tab should not flash a UI.
   base::OneShotTimer show_ui_timer_;
@@ -167,4 +167,4 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
 }  // namespace ash
 
-#endif  // ASH_WM_WINDOW_CYCLE_LIST_H_
+#endif  // ASH_WM_WINDOW_CYCLE_WINDOW_CYCLE_LIST_H_
