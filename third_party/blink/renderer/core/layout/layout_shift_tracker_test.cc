@@ -538,10 +538,19 @@ TEST_F(LayoutShiftTrackerTest,
   EXPECT_EQ(LayoutSize(100, 100), offscreen->Size());
   EXPECT_EQ(LayoutSize(100, 1), onscreen->Size());
 
+  // Move |offscreen| (which is visible and unlocked now), for which we should
+  // report layout shift.
+  To<Element>(offscreen->GetNode())
+      ->setAttribute(html_names::kStyleAttr,
+                     "position: relative; top: 100100px");
+  UpdateAllLifecyclePhasesForTest();
+  auto score = GetLayoutShiftTracker().Score();
+  EXPECT_GT(score, 0);
+
   // Now scroll the element back off-screen.
   GetDocument().domWindow()->scrollTo(0, 0);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+  EXPECT_FLOAT_EQ(score, GetLayoutShiftTracker().Score());
   EXPECT_EQ(LayoutSize(100, 100), offscreen->Size());
   EXPECT_EQ(LayoutSize(100, 1), onscreen->Size());
 
@@ -551,7 +560,7 @@ TEST_F(LayoutShiftTrackerTest,
   offscreen = To<LayoutBox>(GetLayoutObjectByElementId("offscreen"));
   onscreen = To<LayoutBox>(GetLayoutObjectByElementId("onscreen"));
 
-  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+  EXPECT_FLOAT_EQ(score, GetLayoutShiftTracker().Score());
   EXPECT_EQ(LayoutSize(100, 1), offscreen->Size());
   EXPECT_EQ(LayoutSize(100, 100), onscreen->Size());
 }
