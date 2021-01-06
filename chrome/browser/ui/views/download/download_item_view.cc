@@ -188,12 +188,24 @@ bool UseNewWarnings() {
   return base::FeatureList::IsEnabled(safe_browsing::kUseNewDownloadWarnings);
 }
 
+int GetFilenameStyle(const views::Label& label) {
+#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+  if (UseNewWarnings())
+    return STYLE_EMPHASIZED;
+#endif
+  return label.GetTextStyle();
+}
+
 int GetFilenameStyle(const views::StyledLabel& label) {
 #if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
   if (UseNewWarnings())
     return STYLE_EMPHASIZED;
 #endif
   return label.GetDefaultTextStyle();
+}
+
+void StyleFilename(views::Label& label, size_t pos, size_t len) {
+  label.SetTextStyleRange(GetFilenameStyle(label), gfx::Range(pos, pos + len));
 }
 
 void StyleFilename(views::StyledLabel& label, size_t pos, size_t len) {
@@ -258,7 +270,7 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
   open_button_->SetCallback(base::BindRepeating(
       &DownloadItemView::OpenButtonPressed, base::Unretained(this)));
 
-  file_name_label_ = AddChildView(std::make_unique<views::StyledLabel>());
+  file_name_label_ = AddChildView(std::make_unique<views::Label>());
   file_name_label_->SetTextContext(CONTEXT_DOWNLOAD_SHELF);
   file_name_label_->GetViewAccessibility().OverrideIsIgnored(true);
   const base::string16 filename = ElidedFilename(*file_name_label_);
@@ -449,7 +461,7 @@ void DownloadItemView::OnDownloadUpdated() {
 
 void DownloadItemView::OnDownloadOpened() {
   SetEnabled(false);
-  file_name_label_->SetDefaultTextStyle(views::style::STYLE_DISABLED);
+  file_name_label_->SetTextStyle(views::style::STYLE_DISABLED);
   const base::string16 filename = ElidedFilename(*file_name_label_);
   size_t filename_offset;
   file_name_label_->SetText(l10n_util::GetStringFUTF16(
@@ -461,7 +473,7 @@ void DownloadItemView::OnDownloadOpened() {
       return;
     view->SetEnabled(true);
     auto* label = view->file_name_label_;
-    label->SetDefaultTextStyle(views::style::STYLE_PRIMARY);
+    label->SetTextStyle(views::style::STYLE_PRIMARY);
     const base::string16 filename = view->ElidedFilename(*label);
     label->SetText(filename);
     StyleFilename(*label, 0, filename.length());
@@ -630,7 +642,7 @@ void DownloadItemView::OnThemeChanged() {
   const SkColor background_color =
       GetThemeProvider()->GetColor(ThemeProperties::COLOR_DOWNLOAD_SHELF);
   SetBackground(views::CreateSolidBackground(background_color));
-  file_name_label_->SetDisplayedOnBackgroundColor(background_color);
+  file_name_label_->SetBackgroundColor(background_color);
   status_label_->SetBackgroundColor(background_color);
   warning_label_->SetDisplayedOnBackgroundColor(background_color);
   deep_scanning_label_->SetDisplayedOnBackgroundColor(background_color);
@@ -1080,6 +1092,14 @@ gfx::Size DownloadItemView::GetButtonSize() const {
   if (scan_button_->GetVisible())
     size.SetToMax(scan_button_->GetPreferredSize());
   return size;
+}
+
+base::string16 DownloadItemView::ElidedFilename(
+    const views::Label& label) const {
+  const gfx::FontList& font_list =
+      views::style::GetFont(CONTEXT_DOWNLOAD_SHELF, GetFilenameStyle(label));
+  return gfx::ElideFilename(model_->GetFileNameToReportUser(), font_list,
+                            kTextWidth);
 }
 
 base::string16 DownloadItemView::ElidedFilename(

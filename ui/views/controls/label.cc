@@ -152,6 +152,23 @@ void Label::SetTextStyle(int style) {
   OnPropertyChanged(&text_style_, kPropertyEffectsPreferredSizeChanged);
 }
 
+void Label::SetTextStyleRange(int style, const gfx::Range& range) {
+  if (style == text_style_ || !range.IsValid() || range.is_empty() ||
+      !gfx::Range(0, GetText().size()).Contains(range))
+    return;
+
+  const auto details = style::GetFontDetails(text_context_, style);
+  // This function is not prepared to handle style requests that vary by
+  // anything other than weight.
+  DCHECK_EQ(details.typeface,
+            style::GetFontDetails(text_context_, text_style_).typeface);
+  DCHECK_EQ(details.size_delta,
+            style::GetFontDetails(text_context_, text_style_).size_delta);
+  full_text_->ApplyWeight(details.weight, range);
+  ClearDisplayText();
+  PreferredSizeChanged();
+}
+
 bool Label::GetAutoColorReadabilityEnabled() const {
   return auto_color_readability_enabled_;
 }
@@ -659,17 +676,13 @@ std::unique_ptr<gfx::RenderText> Label::CreateRenderText() const {
                                                            : elide_behavior_;
 
   std::unique_ptr<gfx::RenderText> render_text =
-      gfx::RenderText::CreateRenderText();
+      full_text_->CreateInstanceOfSameStyle(GetText());
   render_text->SetHorizontalAlignment(GetHorizontalAlignment());
   render_text->SetVerticalAlignment(GetVerticalAlignment());
-  render_text->SetDirectionalityMode(full_text_->directionality_mode());
   render_text->SetElideBehavior(elide_behavior);
   render_text->SetObscured(GetObscured());
   render_text->SetMinLineHeight(GetLineHeight());
-  render_text->SetFontList(font_list());
   render_text->set_shadows(GetShadows());
-  render_text->SetCursorEnabled(false);
-  render_text->SetText(GetText());
   const bool multiline = GetMultiLine();
   render_text->SetMultiline(multiline);
   render_text->SetMaxLines(multiline ? GetMaxLines() : 0);

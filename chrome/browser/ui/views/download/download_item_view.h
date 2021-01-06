@@ -175,6 +175,7 @@ class DownloadItemView : public views::View,
 
   // Returns the file name to report to the user. It might be elided to fit into
   // the text width. |label| dictates the default text style.
+  base::string16 ElidedFilename(const views::Label& label) const;
   base::string16 ElidedFilename(const views::StyledLabel& label) const;
 
   // Returns the Y coordinate that centers |element_height| within the current
@@ -252,7 +253,7 @@ class DownloadItemView : public views::View,
   // used, so that we can detect a change in the path and reload the icon.
   base::FilePath file_path_;
 
-  views::StyledLabel* file_name_label_;
+  views::Label* file_name_label_;
   views::Label* status_label_;
   views::StyledLabel* warning_label_;
   views::StyledLabel* deep_scanning_label_;

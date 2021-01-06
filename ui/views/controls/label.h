@@ -106,6 +106,10 @@ class VIEWS_EXPORT Label : public View,
   int GetTextStyle() const;
   void SetTextStyle(int style);
 
+  // Applies |style| to a specific |range|.  This is unimplemented for styles
+  // that vary from the global text style by anything besides weight.
+  void SetTextStyleRange(int style, const gfx::Range& range);
+
   // Enables or disables auto-color-readability (enabled by default).  If this
   // is enabled, then calls to set any foreground or background color will
   // trigger an automatic mapper that uses color_utils::BlendForMinContrast()
