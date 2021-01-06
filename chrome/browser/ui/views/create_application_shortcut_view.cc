@@ -34,20 +34,22 @@ void ShowCreateChromeAppShortcutsDialog(
     gfx::NativeWindow parent_window,
     Profile* profile,
     const extensions::Extension* app,
-    const base::RepeatingCallback<void(bool)>& close_callback) {
+    base::OnceCallback<void(bool)> close_callback) {
   constrained_window::CreateBrowserModalDialogViews(
-      new CreateChromeApplicationShortcutView(profile, app, close_callback),
-      parent_window)->Show();
+      new CreateChromeApplicationShortcutView(profile, app,
+                                              std::move(close_callback)),
+      parent_window)
+      ->Show();
 }
 
 void ShowCreateChromeAppShortcutsDialog(
     gfx::NativeWindow parent_window,
     Profile* profile,
     const std::string& web_app_id,
-    const base::RepeatingCallback<void(bool)>& close_callback) {
+    base::OnceCallback<void(bool)> close_callback) {
   constrained_window::CreateBrowserModalDialogViews(
       new CreateChromeApplicationShortcutView(profile, web_app_id,
-                                              close_callback),
+                                              std::move(close_callback)),
       parent_window)
       ->Show();
 }
@@ -57,8 +59,8 @@ void ShowCreateChromeAppShortcutsDialog(
 CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     Profile* profile,
     const extensions::Extension* app,
-    const base::RepeatingCallback<void(bool)>& close_callback)
-    : CreateChromeApplicationShortcutView(profile, close_callback) {
+    base::OnceCallback<void(bool)> close_callback)
+    : CreateChromeApplicationShortcutView(profile, std::move(close_callback)) {
   // Get shortcut and icon information; needed for creating the shortcut.
   web_app::GetShortcutInfoForApp(
       app, profile,
@@ -69,8 +71,8 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
 CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     Profile* profile,
     const std::string& web_app_id,
-    const base::RepeatingCallback<void(bool)>& close_callback)
-    : CreateChromeApplicationShortcutView(profile, close_callback) {
+    base::OnceCallback<void(bool)> close_callback)
+    : CreateChromeApplicationShortcutView(profile, std::move(close_callback)) {
   web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile);
   provider->os_integration_manager().GetShortcutInfoForApp(
       web_app_id,
@@ -80,8 +82,8 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
 
 CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     Profile* profile,
-    const base::RepeatingCallback<void(bool)>& close_callback)
-    : profile_(profile), close_callback_(close_callback) {
+    base::OnceCallback<void(bool)> close_callback)
+    : profile_(profile), close_callback_(std::move(close_callback)) {
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_COMMIT));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
@@ -91,7 +93,7 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
                      base::Unretained(this)));
   auto canceled = [](CreateChromeApplicationShortcutView* dialog) {
     if (!dialog->close_callback_.is_null())
-      dialog->close_callback_.Run(false);
+      std::move(dialog->close_callback_).Run(false);
   };
   SetCancelCallback(base::BindOnce(canceled, base::Unretained(this)));
   SetCloseCallback(base::BindOnce(canceled, base::Unretained(this)));
@@ -219,7 +221,7 @@ void CreateChromeApplicationShortcutView::OnDialogAccepted() {
   DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
 
   if (!close_callback_.is_null())
-    close_callback_.Run(/*success=*/shortcut_info_ != nullptr);
+    std::move(close_callback_).Run(/*success=*/shortcut_info_ != nullptr);
 
   // Shortcut can't be created because app info hasn't been loaded.
   if (!shortcut_info_)

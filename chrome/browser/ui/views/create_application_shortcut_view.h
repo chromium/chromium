@@ -31,11 +31,11 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
   CreateChromeApplicationShortcutView(
       Profile* profile,
       const extensions::Extension* app,
-      const base::RepeatingCallback<void(bool)>& close_callback);
+      base::OnceCallback<void(bool)> close_callback);
   CreateChromeApplicationShortcutView(
       Profile* profile,
       const std::string& web_app_id,
-      const base::RepeatingCallback<void(bool)>& close_callback);
+      base::OnceCallback<void(bool)> close_callback);
   ~CreateChromeApplicationShortcutView() override;
 
   // Initialize the controls on the dialog.
@@ -48,9 +48,8 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
   base::string16 GetWindowTitle() const override;
 
  private:
-  CreateChromeApplicationShortcutView(
-      Profile* profile,
-      const base::RepeatingCallback<void(bool)>& cb);
+  CreateChromeApplicationShortcutView(Profile* profile,
+                                      base::OnceCallback<void(bool)> cb);
 
   // Creates a new check-box with the given text and checked state.
   std::unique_ptr<views::Checkbox> AddCheckbox(const base::string16& text,
@@ -66,7 +65,7 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
   // Profile in which the shortcuts will be created.
   Profile* profile_;
 
-  base::RepeatingCallback<void(bool)> close_callback_;
+  base::OnceCallback<void(bool)> close_callback_;
 
   // May be null if the platform doesn't support a particular location.
   views::Checkbox* desktop_check_box_ = nullptr;

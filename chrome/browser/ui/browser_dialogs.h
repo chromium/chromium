@@ -93,7 +93,7 @@ void ShowCreateChromeAppShortcutsDialog(
     gfx::NativeWindow parent_window,
     Profile* profile,
     const extensions::Extension* app,
-    const base::Callback<void(bool /* created */)>& close_callback);
+    base::OnceCallback<void(bool /* created */)> close_callback);
 
 // Shows the create chrome app shortcut dialog box. Same as above but for a
 // WebApp instead of an Extension. |close_callback| may be null.
@@ -101,7 +101,7 @@ void ShowCreateChromeAppShortcutsDialog(
     gfx::NativeWindow parent_window,
     Profile* profile,
     const std::string& web_app_id,
-    const base::Callback<void(bool /* created */)>& close_callback);
+    base::OnceCallback<void(bool /* created */)> close_callback);
 
 // Callback used to indicate whether a user has accepted the installation of a
 // web app. The boolean parameter is true when the user accepts the dialog. The

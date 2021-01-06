@@ -956,7 +956,7 @@ void AppLauncherHandler::HandleCreateAppShortcut(const base::ListValue* args) {
         chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
     chrome::ShowCreateChromeAppShortcutsDialog(
         browser->window()->GetNativeWindow(), browser->profile(), app_id,
-        base::BindRepeating([](bool success) {
+        base::BindOnce([](bool success) {
           base::UmaHistogramBoolean(
               "Apps.AppInfoDialog.CreateWebAppShortcutSuccess", success);
         }));
@@ -977,7 +977,7 @@ void AppLauncherHandler::HandleCreateAppShortcut(const base::ListValue* args) {
         web_ui()->GetWebContents());
   chrome::ShowCreateChromeAppShortcutsDialog(
       browser->window()->GetNativeWindow(), browser->profile(), extension,
-      base::BindRepeating([](bool success) {
+      base::BindOnce([](bool success) {
         base::UmaHistogramBoolean(
             "Apps.AppInfoDialog.CreateExtensionShortcutSuccess", success);
       }));
