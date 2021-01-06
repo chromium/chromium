@@ -63,6 +63,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/process_memory_dump.h"
+#include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
@@ -1018,6 +1019,10 @@ void CookieMonster::FilterCookiesWithOptions(
     if (cookie_ptr->IsSameParty()) {
       UMA_HISTOGRAM_BOOLEAN("Cookie.SamePartyReadIncluded.IsHTTP",
                             !options.exclude_httponly());
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          "Cookie.SamePartyReadIncluded.PartyContextSize",
+          options.full_party_context_size(),
+          1 + IsolationInfo::kPartyContextMaxSize);
     }
 
     included_cookies->push_back({*cookie_ptr, access_result});
@@ -1236,7 +1241,11 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
     if (cc->IsSameParty()) {
       UMA_HISTOGRAM_BOOLEAN("Cookie.SamePartySetIncluded.IsHTTP",
                             !options.exclude_httponly());
+      UMA_HISTOGRAM_EXACT_LINEAR("Cookie.SamePartySetIncluded.PartyContextSize",
+                                 options.full_party_context_size(),
+                                 1 + IsolationInfo::kPartyContextMaxSize);
     }
+
     // Realize that we might be setting an expired cookie, and the only point
     // was to delete the cookie which we've already done.
     if (!already_expired) {

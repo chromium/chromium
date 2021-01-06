@@ -408,6 +408,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.SamePartyReadIncluded.PartyContextSize"
+    units="registrable domains" expires_after="2022-01-05">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This histogram records, for each cookie with the SameParty attribute that is
+    read, how large the party-context was. I.e., how many distinct registrable
+    domains needed to be treated as a single party in order for the cookie to
+    &quot;work&quot;.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.SamePartySetIncluded.IsHTTP" enum="BooleanHTTPVsJS"
     expires_after="2022-01-05">
   <owner>cfredric@chromium.org</owner>
@@ -415,6 +427,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     This histogram records, for each cookie that is set with the SameParty
     attribute, whether the access was over HTTP/HTTPS (as opposed to JS).
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SamePartySetIncluded.PartyContextSize"
+    units="registrable domains" expires_after="2022-01-05">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This histogram records, for each cookie that is set with the SameParty
+    attribute, how large the party-context was. I.e., how many distinct
+    registrable domains needed to be treated as a single party in order for the
+    cookie to &quot;work&quot;.
   </summary>
 </histogram>
 
