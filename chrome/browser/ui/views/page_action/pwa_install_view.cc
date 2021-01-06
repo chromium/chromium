@@ -96,13 +96,15 @@ void PwaInstallView::UpdateImpl() {
     if (controller) {
       // Reset the iph flag when it's shown again.
       install_icon_clicked_after_iph_shown_ = false;
-      controller->MaybeShowPromoWithTextReplacements(
+      bool iph_shown = controller->MaybeShowPromoWithTextReplacements(
           feature_engagement::kIPHDesktopPwaInstallFeature,
           FeaturePromoTextReplacements::WithString(
               webapps::AppBannerManager::GetInstallableWebAppName(
                   web_contents)),
           base::BindOnce(&PwaInstallView::OnIphClosed,
                          weak_ptr_factory_.GetWeakPtr()));
+      if (iph_shown)
+        SetHighlighted(true);
     }
   }
   SetVisible(is_probably_promotable || PWAConfirmationBubbleView::IsShowing());
@@ -110,11 +112,12 @@ void PwaInstallView::UpdateImpl() {
 
 void PwaInstallView::OnIphClosed() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   // IPH is also closed when the install button is clicked. This does not
-  // count as an 'ignore'.
+  // count as an 'ignore'. The button should remain highlighted and will
+  // eventually be un-highlighted when PWAConfirmationBubbleView is closed.
   if (install_icon_clicked_after_iph_shown_)
     return;
+  SetHighlighted(false);
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)
     return;
