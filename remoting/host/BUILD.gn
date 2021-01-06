@@ -401,6 +401,7 @@ static_library("common") {
   if (is_mac) {
     sources += [
       "audio_capturer_mac.cc",
+      "audio_capturer_mac.h",
       "clipboard_mac.mm",
       "continue_window_mac.mm",
       "curtain_mode_mac.cc",

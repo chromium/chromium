@@ -2,10 +2,267 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/notreached.h"
-#include "remoting/host/audio_capturer.h"
+#include "remoting/host/audio_capturer_mac.h"
+
+#include <memory>
+
+#include "base/bind.h"
+#include "base/containers/flat_set.h"
+#include "base/logging.h"
+#include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "remoting/proto/audio.pb.h"
 
 namespace remoting {
+
+namespace {
+
+// TODO(yuweih): Determine the device's sample rate. This probably still works
+// with higher device sampling rate as AudioQueue will just downsample it.
+constexpr AudioPacket::SamplingRate kSampleRate =
+    AudioPacket::SAMPLING_RATE_44100;
+constexpr int kBytesPerChannel = 2;
+constexpr int kChannelsPerFrame = 2;  // Stereo
+constexpr int kBytesPerFrame = kBytesPerChannel * kChannelsPerFrame;
+constexpr float kBufferTimeDurationSec = 0.01f;  // 10ms
+constexpr size_t kBufferByteSize =
+    kSampleRate * kBytesPerFrame * kBufferTimeDurationSec;
+
+// Total delay: kBufferTimeDurationSec * kNumberBuffers
+constexpr int kNumberBuffers = 2;
+
+// A set to keep track of valid instances as we can't pass WeakPtr to the buffer
+// callback.
+class AudioCapturerInstanceSet {
+ public:
+  static base::Lock& GetLock();
+
+  // Note: Add() and Remove() acquire a lock while Contains() doesn't.
+  static void Add(AudioCapturerMac* instance);
+  static void Remove(AudioCapturerMac* instance);
+  static bool Contains(AudioCapturerMac* instance);
+
+ private:
+  friend class base::NoDestructor<AudioCapturerInstanceSet>;
+
+  AudioCapturerInstanceSet();
+  ~AudioCapturerInstanceSet();
+  static AudioCapturerInstanceSet* Get();
+
+  base::flat_set<AudioCapturerMac*> instance_set_;
+  base::Lock lock_;
+};
+
+// static
+base::Lock& AudioCapturerInstanceSet::GetLock() {
+  return Get()->lock_;
+}
+
+// static
+void AudioCapturerInstanceSet::Add(AudioCapturerMac* instance) {
+  base::AutoLock guard(GetLock());
+  Get()->instance_set_.insert(instance);
+}
+
+// static
+void AudioCapturerInstanceSet::Remove(AudioCapturerMac* instance) {
+  base::AutoLock guard(GetLock());
+  Get()->instance_set_.erase(instance);
+}
+
+// static
+bool AudioCapturerInstanceSet::Contains(AudioCapturerMac* instance) {
+  return Get()->instance_set_.find(instance) != Get()->instance_set_.end();
+}
+
+AudioCapturerInstanceSet::AudioCapturerInstanceSet() = default;
+
+AudioCapturerInstanceSet::~AudioCapturerInstanceSet() = default;
+
+// static
+AudioCapturerInstanceSet* AudioCapturerInstanceSet::Get() {
+  static base::NoDestructor<AudioCapturerInstanceSet> instance_set;
+  return instance_set.get();
+}
+
+}  // namespace
+
+AudioCapturerMac::AudioCapturerMac() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+
+  stream_description_.mSampleRate = kSampleRate;
+  stream_description_.mFormatID = kAudioFormatLinearPCM;
+  stream_description_.mFormatFlags =
+      kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+  stream_description_.mBytesPerPacket = kBytesPerFrame;
+  stream_description_.mFramesPerPacket = 1;
+  stream_description_.mBytesPerFrame = kBytesPerFrame;
+  stream_description_.mChannelsPerFrame = kChannelsPerFrame;
+  stream_description_.mBitsPerChannel = 8 * kBytesPerChannel;
+  stream_description_.mReserved = 0;
+
+  AudioCapturerInstanceSet::Add(this);
+}
+
+AudioCapturerMac::~AudioCapturerMac() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  AudioCapturerInstanceSet::Remove(this);
+
+  DisposeInputQueue();
+}
+
+bool AudioCapturerMac::Start(const PacketCapturedCallback& callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!callback_);
+  DCHECK(callback);
+
+  caller_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+
+  if (!StartInputQueue()) {
+    return false;
+  }
+
+  callback_ = callback;
+  return true;
+}
+
+// static
+void AudioCapturerMac::HandleInputBufferOnAQThread(
+    void* user_data,
+    AudioQueueRef aq,
+    AudioQueueBufferRef buffer,
+    const AudioTimeStamp* start_time,
+    UInt32 num_packets,
+    const AudioStreamPacketDescription* packet_descs) {
+  AudioCapturerMac* capturer = reinterpret_cast<AudioCapturerMac*>(user_data);
+
+  {
+    base::AutoLock guard(AudioCapturerInstanceSet::GetLock());
+    if (!AudioCapturerInstanceSet::Contains(capturer)) {
+      // The capturer has been destroyed.
+      return;
+    }
+    capturer->caller_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AudioCapturerMac::HandleInputBuffer,
+                       capturer->weak_factory_.GetWeakPtr(), aq, buffer));
+  }
+}
+
+void AudioCapturerMac::HandleInputBuffer(AudioQueueRef aq,
+                                         AudioQueueBufferRef buffer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!is_started_) {
+    LOG(WARNING) << "Playback has been stopped.";
+    return;
+  }
+
+  DCHECK_EQ(input_queue_, aq);
+  DCHECK(callback_);
+
+  // TODO(yuweih): Add silence detection and drop empty packets.
+
+  auto packet = std::make_unique<AudioPacket>();
+  packet->add_data(buffer->mAudioData, buffer->mAudioDataByteSize);
+  packet->set_encoding(AudioPacket::ENCODING_RAW);
+  packet->set_sampling_rate(kSampleRate);
+  packet->set_bytes_per_sample(AudioPacket::BYTES_PER_SAMPLE_2);
+  packet->set_channels(AudioPacket::CHANNELS_STEREO);
+  callback_.Run(std::move(packet));
+
+  // Recycle the buffer.
+  // Only the first 2 params are needed for recording.
+  OSStatus err = AudioQueueEnqueueBuffer(input_queue_, buffer, 0, NULL);
+  HandleError(err, "AudioQueueEnqueueBuffer");
+}
+
+bool AudioCapturerMac::StartInputQueue() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!input_queue_);
+  DCHECK(!is_started_);
+
+  // Setup input queue.
+  // This runs on AudioQueue's internal thread. For some reason if we specify
+  // inCallbackRunLoop to current thread, then the callback will never get
+  // called.
+  // TODO(yuweih): Search for the loopback device directly instead of relying on
+  // the default input device. This would allow the user to keep their
+  // microphone as the default input device.
+  OSStatus err =
+      AudioQueueNewInput(&stream_description_, &HandleInputBufferOnAQThread,
+                         /* inUserData= */ this, /* inCallbackRunLoop= */ NULL,
+                         kCFRunLoopCommonModes, 0, &input_queue_);
+
+  if (HandleError(err, "AudioQueueNewInput")) {
+    return false;
+  }
+
+  // Setup buffers.
+  for (int i = 0; i < kNumberBuffers; i++) {
+    // |buffer| will automatically be freed when |input_queue_| is released.
+    AudioQueueBufferRef buffer;
+    err = AudioQueueAllocateBuffer(input_queue_, kBufferByteSize, &buffer);
+    if (HandleError(err, "AudioQueueAllocateBuffer")) {
+      return false;
+    }
+    err = AudioQueueEnqueueBuffer(input_queue_, buffer, 0, NULL);
+    if (HandleError(err, "AudioQueueEnqueueBuffer")) {
+      return false;
+    }
+  }
+
+  // Start input queue.
+  err = AudioQueueStart(input_queue_, NULL);
+  if (HandleError(err, "AudioQueueStart")) {
+    return false;
+  }
+  is_started_ = true;
+
+  return true;
+}
+
+void AudioCapturerMac::DisposeInputQueue() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!input_queue_) {
+    return;
+  }
+
+  OSStatus err;
+
+  if (is_started_) {
+    err = AudioQueueStop(input_queue_, /* Immediate */ true);
+    if (err != noErr) {
+      LOG(DFATAL) << "Failed to call AudioQueueStop, error code: " << err;
+    }
+    is_started_ = false;
+  }
+
+  err = AudioQueueDispose(input_queue_, /* Immediate */ true);
+  if (err != noErr) {
+    LOG(DFATAL) << "Failed to call AudioQueueDispose, error code: " << err;
+  }
+  input_queue_ = nullptr;
+}
+
+bool AudioCapturerMac::HandleError(OSStatus err, const char* function_name) {
+  if (err != noErr) {
+    LOG(DFATAL) << "Failed to call " << function_name
+                << ", error code: " << err;
+    DisposeInputQueue();
+    return true;
+  }
+  return false;
+}
+
+// AudioCapturer
+
+// AudioCapturer support on Mac is still experimental.
+
+#if defined(NDEBUG)
 
 bool AudioCapturer::IsSupported() {
   return false;
@@ -15,5 +272,17 @@ std::unique_ptr<AudioCapturer> AudioCapturer::Create() {
   NOTIMPLEMENTED();
   return nullptr;
 }
+
+#else
+
+bool AudioCapturer::IsSupported() {
+  return true;
+}
+
+std::unique_ptr<AudioCapturer> AudioCapturer::Create() {
+  return std::make_unique<AudioCapturerMac>();
+}
+
+#endif
 
 }  // namespace remoting
