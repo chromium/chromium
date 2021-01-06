@@ -65,12 +65,12 @@ class FeedbackTest : public ExtensionBrowserTest {
                        const std::string& extra_diagnostics,
                        bool from_assistant = false,
                        bool include_bluetooth_logs = false) {
-    base::Closure callback = base::Bind(&StopMessageLoopCallback);
+    base::OnceClosure callback = base::BindOnce(&StopMessageLoopCallback);
     extensions::FeedbackPrivateGetStringsFunction::set_test_callback(&callback);
     InvokeFeedbackUI(flow, extra_diagnostics, from_assistant,
                      include_bluetooth_logs);
     content::RunMessageLoop();
-    extensions::FeedbackPrivateGetStringsFunction::set_test_callback(NULL);
+    extensions::FeedbackPrivateGetStringsFunction::set_test_callback(nullptr);
   }
 
   void VerifyFeedbackAppLaunch() {

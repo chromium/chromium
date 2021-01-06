@@ -81,7 +81,7 @@ class FeedbackPrivateGetStringsFunction : public ExtensionFunction {
                              FEEDBACKPRIVATE_GETSTRINGS)
 
   // Invoke this callback when this function is called - used for testing.
-  static void set_test_callback(base::Closure* const callback) {
+  static void set_test_callback(base::OnceClosure* callback) {
     test_callback_ = callback;
   }
 
@@ -92,7 +92,7 @@ class FeedbackPrivateGetStringsFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  static base::Closure* test_callback_;
+  static base::OnceClosure* test_callback_;
 };
 
 class FeedbackPrivateGetUserEmailFunction : public ExtensionFunction {
