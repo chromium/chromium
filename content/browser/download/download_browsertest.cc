@@ -690,20 +690,17 @@ class DownloadInProgressObserver : public DownloadTestObserverInProgress {
   DownloadManager* manager_;
 };
 
-class ErrorStreamCountingObserver : download::DownloadItem::Observer {
+class DownloadCountingObserver : public download::DownloadItem::Observer {
  public:
-  ErrorStreamCountingObserver() : item_(nullptr), count_(0) {}
+  DownloadCountingObserver() : item_(nullptr), count_(0) {}
 
-  ~ErrorStreamCountingObserver() override {
+  ~DownloadCountingObserver() override {
     if (item_)
       item_->RemoveObserver(this);
   }
 
   void OnDownloadUpdated(download::DownloadItem* download) override {
-    std::unique_ptr<base::HistogramSamples> samples =
-        histogram_tester_.GetHistogramSamplesSinceCreation(
-            "Download.ParallelDownload.CreationFailureReason");
-    if (samples->TotalCount() == count_ && completion_closure_)
+    if (IsCountReached(download, count_) && completion_closure_)
       std::move(completion_closure_).Run();
   }
 
@@ -712,6 +709,8 @@ class ErrorStreamCountingObserver : download::DownloadItem::Observer {
   }
 
   void WaitForFinished(download::DownloadItem* item, int count) {
+    if (IsCountReached(item, count))
+      return;
     item_ = item;
     count_ = count;
     if (item_) {
@@ -722,11 +721,33 @@ class ErrorStreamCountingObserver : download::DownloadItem::Observer {
     }
   }
 
+ protected:
+  virtual bool IsCountReached(download::DownloadItem* download, int count) = 0;
+
  private:
-  base::HistogramTester histogram_tester_;
   download::DownloadItem* item_;
   int count_;
   base::OnceClosure completion_closure_;
+};
+
+class ReceivedSlicesCountingObserver : public DownloadCountingObserver {
+ private:
+  bool IsCountReached(download::DownloadItem* download, int count) override {
+    return download->GetReceivedSlices().size() >= static_cast<size_t>(count);
+  }
+};
+
+class ErrorStreamCountingObserver : public DownloadCountingObserver {
+ private:
+  bool IsCountReached(download::DownloadItem* download, int count) override {
+    std::unique_ptr<base::HistogramSamples> samples =
+        histogram_tester_.GetHistogramSamplesSinceCreation(
+            "Download.ParallelDownload.CreationFailureReason");
+    return samples->TotalCount() == count;
+  }
+
+ private:
+  base::HistogramTester histogram_tester_;
 };
 
 // Class to wait for a WebContents to kick off a specified number of
@@ -4326,14 +4347,7 @@ IN_PROC_BROWSER_TEST_F(ParallelDownloadTest,
 
 // Verify that if the second request fails after the beginning request takes
 // over and completes its slice, download should complete.
-// Flaky on Windows and Linux.  http://crbug.com/1106059
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_MiddleSliceDelayedError DISABLED_MiddleSliceDelayedError
-#else
-#define MAYBE_MiddleSliceDelayedError MiddleSliceDelayedError
-#endif
-
-IN_PROC_BROWSER_TEST_F(ParallelDownloadTest, MAYBE_MiddleSliceDelayedError) {
+IN_PROC_BROWSER_TEST_F(ParallelDownloadTest, MiddleSliceDelayedError) {
   scoped_refptr<TestFileErrorInjector> injector(
       TestFileErrorInjector::Create(DownloadManagerForShell(shell())));
 
@@ -4365,6 +4379,12 @@ IN_PROC_BROWSER_TEST_F(ParallelDownloadTest, MAYBE_MiddleSliceDelayedError) {
 
   // Wait for the 3rd request to complete first.
   test_response_handler()->WaitUntilCompletion(1);
+  ReceivedSlicesCountingObserver obs;
+  obs.WaitForFinished(download, 2);
+  std::vector<download::DownloadItem::ReceivedSlice> received_slices =
+      download->GetReceivedSlices();
+  EXPECT_EQ(received_slices[1].offset + received_slices[1].received_bytes,
+            5097152);
   // Now resume the first request and wait for it to complete.
   request_pause_handler.Resume();
   test_response_handler()->WaitUntilCompletion(2);
@@ -4375,6 +4395,7 @@ IN_PROC_BROWSER_TEST_F(ParallelDownloadTest, MAYBE_MiddleSliceDelayedError) {
   const TestDownloadResponseHandler::CompletedRequests& completed_requests =
       test_response_handler()->completed_requests();
   EXPECT_EQ(3u, completed_requests.size());
+  WaitForCompletion(download);
   ReadAndVerifyFileContents(parameters.pattern_generator_seed, parameters.size,
                             download->GetTargetFilePath());
 }
