@@ -426,7 +426,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (UIView*)headerViewForWidth:(CGFloat)width {
-  return [self.headerProvider headerForWidth:width];
+  return [self.headerProvider
+      headerForWidth:width
+      safeAreaInsets:[self.discoverFeedDelegate safeAreaInsetsForDiscoverFeed]];
 }
 
 - (void)toggleArticlesVisibility {

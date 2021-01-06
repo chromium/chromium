@@ -78,6 +78,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/content_suggestions/identifier",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/favicon",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/ntp:ntp_internal",

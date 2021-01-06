@@ -240,7 +240,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 #pragma mark - ContentSuggestionsHeaderProvider
 
-- (UIView*)headerForWidth:(CGFloat)width {
+- (UIView*)headerForWidth:(CGFloat)width
+           safeAreaInsets:(UIEdgeInsets)safeAreaInsets {
   if (!self.headerView) {
     self.headerView =
         base::mac::ObjCCastStrict<ContentSuggestionsHeaderView>(self.view);
@@ -265,12 +266,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
     // screen new tab animation, it's safe to check the rootViewController's
     // view instead.
     // TODO(crbug.com/791784) : Remove use of rootViewController.
-    UIView* insetsView = self.headerView;
-    if (!self.headerView.window) {
-      insetsView =
-          [[UIApplication sharedApplication] keyWindow].rootViewController.view;
+    if (self.headerView.window) {
+      safeAreaInsets =
+          self.headerView.window.rootViewController.view.safeAreaInsets;
     }
-    UIEdgeInsets safeAreaInsets = insetsView.safeAreaInsets;
     width = std::max<CGFloat>(
         0, width - safeAreaInsets.left - safeAreaInsets.right);
 

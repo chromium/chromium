@@ -61,6 +61,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/theme_change_delegate.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -544,6 +546,12 @@
   self.contentSuggestionsMediator.discoverFeed =
       self.discoverFeedViewController;
   [self.alertCoordinator stop];
+}
+
+- (UIEdgeInsets)safeAreaInsetsForDiscoverFeed {
+  return [SceneStateBrowserAgent::FromBrowser(self.browser)
+              ->GetSceneState()
+              .window.rootViewController.view safeAreaInsets];
 }
 
 #pragma mark - ContentSuggestionsActionHandler
