@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/base_paths.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
+#include "base/strings/string_split.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -36,28 +41,51 @@
 
 namespace {
 
-std::vector<std::string> test_cases = {
-    "navigate_installable,assert_install_icon_shown,"
-    "assert_launch_icon_not_shown",
-    "navigate_not_installable,assert_install_icon_not_shown",
-    "navigate_installable,assert_installable,install_omnibox_or_menu,"
-    "navigate_browser_in_scope,assert_launch_icon_shown,"
-    "assert_install_icon_not_shown",
-    "navigate_installable, install_create_shortcut_tabbed, "
-    "set_open_in_window_internal, launch_internal, assert_window_created",
-    "navigate_installable_site_a, assert_install_icon_shown, "
-    "install_omnibox_or_menu, assert_window_created, launch_internal_site_a, "
-    "close_pwa, assert_no_crash",
+std::string test_case_file = "web_app_integration_browsertest_cases.csv";
+std::string platform_name =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    "navigate_installable,install_omnibox_or_menu,launch_internal,"
-    "uninstall_internal,navigate_browser_in_scope,"
-    "assert_install_icon_shown,assert_launch_icon_not_shown",
-#else
-    "navigate_installable,install_omnibox_or_menu,launch_internal,"
-    "uninstall_from_menu,navigate_browser_in_scope,"
-    "assert_install_icon_shown,assert_launch_icon_not_shown",
+    "cros";
+#elif defined(OS_LINUX)
+    "linux";
+#elif defined(OS_MAC)
+    "macos";
+#elif defined(OS_WIN)
+    "win";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-};
+
+// Returns the path of the requested file in the test data directory.
+base::FilePath GetTestFilePath(const std::string& file_name) {
+  base::FilePath file_path;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+  file_path = file_path.Append(FILE_PATH_LITERAL("chrome"));
+  file_path = file_path.Append(FILE_PATH_LITERAL("test"));
+  file_path = file_path.Append(FILE_PATH_LITERAL("data"));
+  file_path = file_path.Append(FILE_PATH_LITERAL("web_apps"));
+  return file_path.AppendASCII(file_name);
+}
+
+std::vector<std::string> ReadTestInputFile(std::string& file_name) {
+  base::FilePath file = GetTestFilePath(file_name);
+  std::string contents;
+  std::vector<std::string> test_cases;
+  if (!base::ReadFileToString(file, &contents)) {
+    LOG(ERROR) << "File not found: " << file.value();
+    return test_cases;
+  }
+
+  std::vector<std::string> file_lines = base::SplitString(
+      contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const auto& line : file_lines) {
+    std::vector<std::string> platforms_and_test = base::SplitString(
+        line, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    if (platforms_and_test[0] == "all" ||
+        platforms_and_test[0].find(platform_name) != std::string::npos) {
+      test_cases.push_back(platforms_and_test[1]);
+    }
+  }
+
+  return test_cases;
+}
 
 }  // anonymous namespace
 
@@ -368,6 +396,6 @@ IN_PROC_BROWSER_TEST_P(WebAppIntegrationBrowserTest, Default) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebAppIntegrationBrowserTest,
-                         testing::ValuesIn(test_cases));
+                         testing::ValuesIn(ReadTestInputFile(test_case_file)));
 
 }  // namespace web_app
