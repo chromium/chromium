@@ -9,30 +9,14 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/compiler_specific.h"
-#include "base/dcheck_is_on.h"
-#include "base/immediate_crash.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
 
 namespace base {
 namespace internal {
 
-namespace {
-
-[[noreturn]] NOINLINE void FreelistCorruptionDetected() {
-  IMMEDIATE_CRASH();
-}
-
-}  // namespace
-
 struct EncodedPartitionFreelistEntry;
 
-static_assert((1 << kMinBucketedOrder) >= 2 * sizeof(void*),
-              "Need enough space for two pointers in freelist entries");
-
-// Freelist entries are encoded for security reasons. See
-// //base/allocator/partition_allocator/PartitionAlloc.md and |Transform()| for
-// the rationale and mechanism, respectively.
 class PartitionFreelistEntry {
  public:
   PartitionFreelistEntry() { SetNext(nullptr); }
@@ -43,9 +27,7 @@ class PartitionFreelistEntry {
       void* ptr,
       PartitionFreelistEntry* next) {
     auto* entry = reinterpret_cast<PartitionFreelistEntry*>(ptr);
-    // ThreadCache freelists can point to entries across superpage boundaries,
-    // no check contrary to |SetNext()|.
-    entry->SetNextInternal(next);
+    entry->SetNextForThreadCache(next);
     return entry;
   }
 
@@ -60,29 +42,13 @@ class PartitionFreelistEntry {
   }
 
   ALWAYS_INLINE PartitionFreelistEntry* GetNext() const;
-  NOINLINE void CheckFreeList() const {
-    for (auto* entry = this; entry; entry = entry->GetNext()) {
-      // |GetNext()| checks freelist integrity.
-    }
-  }
 
+  // Regular freelists always point to an entry within the same super page.
   ALWAYS_INLINE void SetNext(PartitionFreelistEntry* ptr) {
-#if DCHECK_IS_ON()
-    // Regular freelists always point to an entry within the same super page.
-    if (UNLIKELY(ptr &&
-                 (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) !=
-                     (reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask))) {
-      FreelistCorruptionDetected();
-    }
-#endif
-    SetNextInternal(ptr);
-  }
-
-  // Zeroes out |this| before returning it.
-  ALWAYS_INLINE void* ClearForAllocation() {
-    next_ = nullptr;
-    inverted_next_ = 0;
-    return reinterpret_cast<void*>(this);
+    PA_DCHECK(!ptr ||
+              (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) ==
+                  (reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask));
+    next_ = Encode(ptr);
   }
 
  private:
@@ -104,21 +70,16 @@ class PartitionFreelistEntry {
     return reinterpret_cast<void*>(masked);
   }
 
-  ALWAYS_INLINE void SetNextInternal(PartitionFreelistEntry* ptr) {
+  // ThreadCache freelists can point to entries across superpage boundaries.
+  ALWAYS_INLINE void SetNextForThreadCache(PartitionFreelistEntry* ptr) {
     next_ = Encode(ptr);
-    inverted_next_ = ~reinterpret_cast<uintptr_t>(next_);
   }
 
   EncodedPartitionFreelistEntry* next_;
-  // This is intended to detect unintentional corruptions of the freelist.
-  // These can happen due to a Use-after-Free, or overflow of the previous
-  // allocation in the slot span.
-  uintptr_t inverted_next_;
 };
 
 struct EncodedPartitionFreelistEntry {
   char scrambled[sizeof(PartitionFreelistEntry*)];
-  char copy_of_scrambled[sizeof(PartitionFreelistEntry*)];
 
   EncodedPartitionFreelistEntry() = delete;
   ~EncodedPartitionFreelistEntry() = delete;
@@ -135,11 +96,6 @@ static_assert(sizeof(PartitionFreelistEntry) ==
               "Should not have padding");
 
 ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNext() const {
-  // GetNext() can be called on decommitted memory, which is full of
-  // zeroes. This is not a corruption issue, so only check integrity when we
-  // have a non-nullptr |next_| pointer.
-  if (UNLIKELY(next_ && ~reinterpret_cast<uintptr_t>(next_) != inverted_next_))
-    FreelistCorruptionDetected();
   return EncodedPartitionFreelistEntry::Decode(next_);
 }
 

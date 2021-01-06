@@ -416,10 +416,6 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
     slot_span->num_unprovisioned_slots--;
   }
 
-#if DCHECK_IS_ON()
-  slot_span->freelist_head->CheckFreeList();
-#endif
-
   return return_slot;
 }
 
@@ -632,10 +628,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     PartitionFreelistEntry* new_head = entry->GetNext();
     new_slot_span->SetFreelistHead(new_head);
     new_slot_span->num_allocated_slots++;
-
-    // We likely set *is_already_zeroed to true above, make sure that the
-    // freelist entry doesn't contain data.
-    return entry->ClearForAllocation();
+    return entry;
   }
 
   // Otherwise, we need to provision more slots by committing more pages. Build
