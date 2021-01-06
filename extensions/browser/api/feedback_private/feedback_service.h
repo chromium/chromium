@@ -39,20 +39,10 @@ class FeedbackService : public base::SupportsWeakPtr<FeedbackService> {
                             SendFeedbackCallback callback);
 
  private:
-  // Callbacks to receive blob data.
-  void AttachedFileCallback(scoped_refptr<feedback::FeedbackData> feedback_data,
-                            std::unique_ptr<std::string> data,
-                            int64_t total_blob_length);
-  void ScreenshotCallback(scoped_refptr<feedback::FeedbackData> feedback_data,
-                          std::unique_ptr<std::string> data,
-                          int64_t total_blob_length);
-
   // Checks if we have read all the blobs we need to; signals the feedback
   // data object once all the requisite data has been populated.
-  void CompleteSendFeedback(
-      scoped_refptr<feedback::FeedbackData> feedback_data);
-
-  SendFeedbackCallback send_feedback_callback_;
+  void CompleteSendFeedback(scoped_refptr<feedback::FeedbackData> feedback_data,
+                            SendFeedbackCallback callback);
 
   content::BrowserContext* browser_context_;
 
