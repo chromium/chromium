@@ -468,6 +468,23 @@ Builder].
    add a manually-triggered trybot at the same time that the CI bot is added.
    This is described in [How to add a new manually-triggered trybot].
 
+While the above instructions assume that an existing parent builder will be
+be used, a new one can be set up by performing a modified version of the steps:
+
+1. Make a [`tools/build`][tools/build] CL that adds the config for *only* the
+   new builder and land it.
+1. Make and land Chromium CL that makes the above changes in addition to the
+   following:
+    1. Add the new builder to the necessary `//infra/config` files in the same
+       way as the tester.
+    1. Add the new builder to [`src/tools/mb/mb_config.pyl`][mb_config.pyl].
+1. Make a [`tools/build`][tools/build] CL that adds the config for *only* the
+   new tester and land it.
+
+Attempting to set up the builder/tester pair without first landing the
+[`tools/build`][tools/build] CL for the new builder will result in things
+breaking as seen in [this bug][misconfigured builder bug].
+
 [How to add a new manually-triggered trybot]: https://chromium.googlesource.com/chromium/src/+/master/docs/gpu/gpu_testing_bot_details.md#How-to-add-a-new-manually_triggered-trybot
 
 [ci.star]:               https://chromium.googlesource.com/chromium/src/+/master/infra/config/subprojects/ci.star
@@ -477,6 +494,7 @@ Builder].
 [luci-scheduler.cfg]:    https://chromium.googlesource.com/chromium/src/+/master/infra/config/generated/luci-scheduler.cfg
 [luci-milo.cfg]:         https://chromium.googlesource.com/chromium/src/+/master/infra/config/generated/luci-milo.cfg
 [GPU FYI Win Builder]:   https://ci.chromium.org/p/chromium/builders/luci.chromium.ci/GPU%20FYI%20Win%20Builder
+[misconfigured builder bug]: https://bugs.chromium.org/p/chromium/issues/detail?id=1163657
 
 ### How to start running tests on a new GPU type on an existing try bot
 
