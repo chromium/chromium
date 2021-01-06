@@ -1,10 +1,10 @@
 [
     {
-        "duration": "27.0",
+        "duration": "39.0",
         "name": "rendering.desktop/css_value_type_shadow"
     },
     {
-        "duration": "31.0",
+        "duration": "26.0",
         "name": "rendering.desktop/main_30fps_impl_60fps"
     }
 ]
