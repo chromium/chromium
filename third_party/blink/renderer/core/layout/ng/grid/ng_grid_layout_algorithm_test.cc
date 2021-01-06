@@ -1583,8 +1583,13 @@ TEST_F(NGGridLayoutAlgorithmTest, AutoSizedGridWithPercentageGap) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
+  LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
+      body {
+        font: 10px/1 Ahem;
+      }
+
       #grid {
         display: grid;
         width: auto;
@@ -1691,99 +1696,76 @@ TEST_F(NGGridLayoutAlgorithmTest, ItemsSizeWithGap) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
+TEST_F(NGGridLayoutAlgorithmTest, OutOfFlowGridItems) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
+  LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
+      body {
+        font: 10px/1 Ahem;
+      }
+
       #grid {
         display: grid;
-        grid: 100px 100px 100px / 100px 100px 100px;
-        width: 300px;
-        height: auto;
-        background-color: gray;
-        padding: 5px;
-        border: 5px solid black;
+        width: 100px;
+        height: 300px;
+        grid-auto-columns: 100px;
+        grid-auto-rows: 100px;
         position: relative;
       }
 
-      .absolute {
+      .grid_item {
+        width: 100px;
+        height: 100px;
+        background-color: gray;
+      }
+
+      #cell2 {
         position: absolute;
-        width: 50px;
-        height: 50px;
+        left: 25%;
+        top: 10%;
+        width: 100px;
+        height: 100px;
+        background-color: blue;
       }
 
-      .item {
-        background-color: gainsboro;
+      #cell4 {
+        position: absolute;
+        top: 150px;
+        left: 25px;
+        width: 100%;
+        height: 35%;
+        background-color: yellow;
       }
 
-      #firstItem {
-        background: magenta;
-        grid-column-start: 2;
-        grid-column-end: 3;
-        grid-row-start: 2;
-        grid-row-end: 3;
-        align-self: center;
-        justify-self: end;
-      }
-
-      #secondItem {
-        background: cyan;
-        grid-column-start: auto;
-        grid-column-end: 2;
-        grid-row-start: 3;
-        grid-row-end: auto;
-        bottom: 30px;
-      }
-
-      #thirdItem {
-        background: yellow;
-        left: 200px;
-      }
-
-      #fourthItem {
-        background: lime;
-        grid-column-start: 5;
-        grid-column-end: 6;
-      }
     </style>
     <div id="wrapper">
       <div id="grid">
-        <div class="absolute" id="firstItem"></div>
-        <div class="absolute" id="secondItem"></div>
-        <div class="absolute" id="thirdItem"></div>
-        <div class="absolute" id="fourthItem"></div>
-        <div class="item"></div>
-        <div class="item"></div>
-        <div class="item"></div>
-        <div class="item"></div>
-        <div class="item"></div>
-        <div class="item"></div>
-        <div class="item"></div>
-        <div class="item"></div>
-        <div class="item"></div>
+        <div class="grid_item" style="background: orange;">1</div>
+        <div id="cell2">2</div>
+        <div class="grid_item" style="background: green;">3</div>
+        <div id="cell4">4</div>
+        <div class="grid_item" style="background: blueviolet;">5</div>
       </div>
     </div>
   )HTML");
   String dump = DumpFragmentTree(GetElementById("wrapper"));
 
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
-  offset:unplaced size:1000x320
-    offset:0,0 size:320x320
-      offset:10,10 size:100x100
-      offset:110,10 size:100x100
-      offset:210,10 size:100x100
-      offset:10,110 size:100x100
-      offset:110,110 size:100x100
-      offset:210,110 size:100x100
-      offset:10,210 size:100x100
-      offset:110,210 size:100x100
-      offset:210,210 size:100x100
-      offset:160,135 size:50x50
-      offset:5,235 size:50x50
-      offset:205,5 size:50x50
-      offset:5,5 size:50x50
+  offset:unplaced size:1000x300
+    offset:0,0 size:100x300
+      offset:0,0 size:100x100
+        offset:0,0 size:10x10
+      offset:0,100 size:100x100
+        offset:0,0 size:10x10
+      offset:0,200 size:100x100
+        offset:0,0 size:10x10
+      offset:25,30 size:100x100
+        offset:0,0 size:10x10
+      offset:25,150 size:100x105
+        offset:0,0 size:10x10
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }

@@ -49,8 +49,6 @@ class CORE_EXPORT NGGridTrackCollectionBase {
     wtf_size_t range_track_count_;
   };
 
-  bool IsTrackWithinBounds(wtf_size_t track_number) const;
-
   // Gets the range index for the range that contains the given track number.
   wtf_size_t RangeIndexFromTrackNumber(wtf_size_t track_number) const;
 

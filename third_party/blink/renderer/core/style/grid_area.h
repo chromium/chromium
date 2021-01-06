@@ -124,8 +124,6 @@ struct GridSpan {
 
   bool IsIndefinite() const { return type_ == kIndefinite; }
 
-  bool IsUntranslatedDefinite() const { return type_ == kUntranslatedDefinite; }
-
   void Translate(size_t offset) {
     DCHECK_EQ(type_, kUntranslatedDefinite);
 

@@ -183,7 +183,7 @@ void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
   oof_positioned_candidates_.emplace_back(
       child, NGLogicalStaticPosition{child_offset, inline_edge, block_edge},
       /* inline_container */ nullptr, needs_block_offset_adjustment,
-      /* containing_block_offset */ LogicalOffset(),
+      /*containing_block_offset */ LogicalOffset(),
       /* containing_block_fragment */ nullptr, containing_block_rect);
 }
 
