@@ -84,7 +84,7 @@ update_client::CrxInstaller::Result
 SodaEnUsComponentInstallerPolicy::OnCustomInstall(
     const base::DictionaryValue& manifest,
     const base::FilePath& install_dir) {
-  return SODAComponentInstallerPolicy::SetComponentDirectoryPermission(
+  return SodaComponentInstallerPolicy::SetComponentDirectoryPermission(
       install_dir);
 }
 

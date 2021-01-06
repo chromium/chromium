@@ -35,32 +35,32 @@ namespace {
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.
 // The component id is: icnkogojpkfjeajonkmlplionaamopkf
-constexpr uint8_t kSODAPublicKeySHA256[32] = {
+constexpr uint8_t kSodaPublicKeySHA256[32] = {
     0x82, 0xda, 0xe6, 0xe9, 0xfa, 0x59, 0x40, 0x9e, 0xda, 0xcb, 0xfb,
     0x8e, 0xd0, 0x0c, 0xef, 0xa5, 0xc0, 0x97, 0x00, 0x84, 0x1c, 0x21,
     0xa6, 0xae, 0xc8, 0x1b, 0x87, 0xfb, 0x12, 0x27, 0x28, 0xb1};
 
-static_assert(base::size(kSODAPublicKeySHA256) == crypto::kSHA256Length,
+static_assert(base::size(kSodaPublicKeySHA256) == crypto::kSHA256Length,
               "Wrong hash length");
 
-constexpr char kSODAManifestName[] = "SODA Library";
+constexpr char kSodaManifestName[] = "SODA Library";
 
 }  // namespace
 
-SODAComponentInstallerPolicy::SODAComponentInstallerPolicy(
-    OnSODAComponentReadyCallback callback)
+SodaComponentInstallerPolicy::SodaComponentInstallerPolicy(
+    OnSodaComponentReadyCallback callback)
     : on_component_ready_callback_(callback) {}
 
-SODAComponentInstallerPolicy::~SODAComponentInstallerPolicy() = default;
+SodaComponentInstallerPolicy::~SodaComponentInstallerPolicy() = default;
 
-const std::string SODAComponentInstallerPolicy::GetExtensionId() {
-  return crx_file::id_util::GenerateIdFromHash(kSODAPublicKeySHA256,
-                                               sizeof(kSODAPublicKeySHA256));
+const std::string SodaComponentInstallerPolicy::GetExtensionId() {
+  return crx_file::id_util::GenerateIdFromHash(kSodaPublicKeySHA256,
+                                               sizeof(kSodaPublicKeySHA256));
 }
 
-void SODAComponentInstallerPolicy::UpdateSODAComponentOnDemand() {
+void SodaComponentInstallerPolicy::UpdateSodaComponentOnDemand() {
   const std::string crx_id =
-      component_updater::SODAComponentInstallerPolicy::GetExtensionId();
+      component_updater::SodaComponentInstallerPolicy::GetExtensionId();
   g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
       crx_id, component_updater::OnDemandUpdater::Priority::FOREGROUND,
       base::BindOnce([](update_client::Error error) {
@@ -73,7 +73,7 @@ void SODAComponentInstallerPolicy::UpdateSODAComponentOnDemand() {
 }
 
 update_client::CrxInstaller::Result
-SODAComponentInstallerPolicy::SetComponentDirectoryPermission(
+SodaComponentInstallerPolicy::SetComponentDirectoryPermission(
     const base::FilePath& install_dir) {
 #if defined(OS_WIN)
   sandbox::Sid users_sid = sandbox::Sid(WinBuiltinUsersSid);
@@ -110,32 +110,32 @@ SODAComponentInstallerPolicy::SetComponentDirectoryPermission(
   return update_client::CrxInstaller::Result(update_client::InstallError::NONE);
 }
 
-bool SODAComponentInstallerPolicy::SupportsGroupPolicyEnabledComponentUpdates()
+bool SodaComponentInstallerPolicy::SupportsGroupPolicyEnabledComponentUpdates()
     const {
   return true;
 }
 
-bool SODAComponentInstallerPolicy::RequiresNetworkEncryption() const {
+bool SodaComponentInstallerPolicy::RequiresNetworkEncryption() const {
   return true;
 }
 
 update_client::CrxInstaller::Result
-SODAComponentInstallerPolicy::OnCustomInstall(
+SodaComponentInstallerPolicy::OnCustomInstall(
     const base::DictionaryValue& manifest,
     const base::FilePath& install_dir) {
-  return SODAComponentInstallerPolicy::SetComponentDirectoryPermission(
+  return SodaComponentInstallerPolicy::SetComponentDirectoryPermission(
       install_dir);
 }
 
-void SODAComponentInstallerPolicy::OnCustomUninstall() {}
+void SodaComponentInstallerPolicy::OnCustomUninstall() {}
 
-bool SODAComponentInstallerPolicy::VerifyInstallation(
+bool SodaComponentInstallerPolicy::VerifyInstallation(
     const base::DictionaryValue& manifest,
     const base::FilePath& install_dir) const {
   return base::PathExists(install_dir.Append(speech::kSodaBinaryRelativePath));
 }
 
-void SODAComponentInstallerPolicy::ComponentReady(
+void SodaComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     std::unique_ptr<base::DictionaryValue> manifest) {
@@ -145,29 +145,29 @@ void SODAComponentInstallerPolicy::ComponentReady(
   on_component_ready_callback_.Run(install_dir);
 }
 
-base::FilePath SODAComponentInstallerPolicy::GetRelativeInstallDir() const {
+base::FilePath SodaComponentInstallerPolicy::GetRelativeInstallDir() const {
   return base::FilePath(speech::kSodaInstallationRelativePath);
 }
 
-void SODAComponentInstallerPolicy::GetHash(std::vector<uint8_t>* hash) const {
-  hash->assign(kSODAPublicKeySHA256,
-               kSODAPublicKeySHA256 + base::size(kSODAPublicKeySHA256));
+void SodaComponentInstallerPolicy::GetHash(std::vector<uint8_t>* hash) const {
+  hash->assign(kSodaPublicKeySHA256,
+               kSodaPublicKeySHA256 + base::size(kSodaPublicKeySHA256));
 }
 
-std::string SODAComponentInstallerPolicy::GetName() const {
-  return kSODAManifestName;
+std::string SodaComponentInstallerPolicy::GetName() const {
+  return kSodaManifestName;
 }
 
 update_client::InstallerAttributes
-SODAComponentInstallerPolicy::GetInstallerAttributes() const {
+SodaComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string> SODAComponentInstallerPolicy::GetMimeTypes() const {
+std::vector<std::string> SodaComponentInstallerPolicy::GetMimeTypes() const {
   return std::vector<std::string>();
 }
 
-void UpdateSODAInstallDirPref(PrefService* prefs,
+void UpdateSodaInstallDirPref(PrefService* prefs,
                               const base::FilePath& install_dir) {
 #if !defined(OS_ANDROID)
   prefs->SetFilePath(prefs::kSodaBinaryPath,
@@ -193,13 +193,13 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
     if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
       global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
       auto installer = base::MakeRefCounted<ComponentInstaller>(
-          std::make_unique<SODAComponentInstallerPolicy>(base::BindRepeating(
+          std::make_unique<SodaComponentInstallerPolicy>(base::BindRepeating(
               [](ComponentUpdateService* cus, PrefService* global_prefs,
                  const base::FilePath& install_dir) {
                 content::GetUIThreadTaskRunner(
                     {base::TaskPriority::BEST_EFFORT})
                     ->PostTask(FROM_HERE,
-                               base::BindOnce(&UpdateSODAInstallDirPref,
+                               base::BindOnce(&UpdateSodaInstallDirPref,
                                               global_prefs, install_dir));
               },
               cus, global_prefs)));

@@ -14,26 +14,26 @@ namespace speech {
 
 // Installer of SODA (Speech On-Device API) for the Live Caption feature on
 // ChromeOS.
-class SODAInstallerImplChromeOS : public SODAInstaller {
+class SodaInstallerImplChromeOS : public SodaInstaller {
  public:
-  SODAInstallerImplChromeOS();
-  ~SODAInstallerImplChromeOS() override;
-  SODAInstallerImplChromeOS(const SODAInstallerImplChromeOS&) = delete;
-  SODAInstallerImplChromeOS& operator=(const SODAInstallerImplChromeOS&) =
+  SodaInstallerImplChromeOS();
+  ~SodaInstallerImplChromeOS() override;
+  SodaInstallerImplChromeOS(const SodaInstallerImplChromeOS&) = delete;
+  SodaInstallerImplChromeOS& operator=(const SodaInstallerImplChromeOS&) =
       delete;
 
-  // SODAInstaller:
-  void InstallSODA(PrefService* prefs) override;
+  // SodaInstaller:
+  void InstallSoda(PrefService* prefs) override;
   void InstallLanguage(PrefService* prefs) override;
-  bool IsSODARegistered() override;
+  bool IsSodaRegistered() override;
 
  private:
   // This function is the InstallCallback for DlcserviceClient::Install().
-  void OnSODAInstalled(
+  void OnSodaInstaller(
       const chromeos::DlcserviceClient::InstallResult& install_result);
 
   // This function is the ProgressCallback for DlcserviceClient::Install().
-  void OnSODAProgress(double progress);
+  void OnSodaProgress(double progress);
 };
 
 }  // namespace speech

@@ -544,12 +544,12 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
         ->live_caption_title_new_badge_;
   }
 
-  void OnSODAProgress(int progress) {
-    MediaDialogView::GetDialogViewForTesting()->OnSODAProgress(progress);
+  void OnSodaProgress(int progress) {
+    MediaDialogView::GetDialogViewForTesting()->OnSodaProgress(progress);
   }
 
-  void OnSODAInstalled() {
-    MediaDialogView::GetDialogViewForTesting()->OnSODAInstalled();
+  void OnSodaInstaller() {
+    MediaDialogView::GetDialogViewForTesting()->OnSodaInstaller();
   }
 
  protected:
@@ -952,19 +952,19 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveCaptionProgressUpdate) {
             base::UTF16ToUTF8(GetLiveCaptionTitleNewBadgeLabel()->GetText()));
 
   ClickEnableLiveCaptionOnDialog();
-  OnSODAProgress(0);
+  OnSodaProgress(0);
   EXPECT_EQ("Downloading… 0%",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
-  OnSODAProgress(12);
+  OnSodaProgress(12);
   EXPECT_EQ("Downloading… 12%",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
-  OnSODAProgress(100);
+  OnSodaProgress(100);
   EXPECT_EQ("Downloading… 100%",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
-  OnSODAInstalled();
+  OnSodaInstaller();
   EXPECT_EQ("Live Caption (English only)",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }

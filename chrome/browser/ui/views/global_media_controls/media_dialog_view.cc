@@ -76,7 +76,7 @@ views::Widget* MediaDialogView::ShowDialog(views::View* anchor_view,
 void MediaDialogView::HideDialog() {
   if (IsShowing()) {
     instance_->service_->SetDialogDelegate(nullptr);
-    speech::SODAInstaller::GetInstance()->RemoveObserver(instance_);
+    speech::SodaInstaller::GetInstance()->RemoveObserver(instance_);
     instance_->GetWidget()->Close();
   }
 
@@ -145,7 +145,7 @@ void MediaDialogView::AddedToWidget() {
       layer()->SetFillsBoundsOpaquely(false);
   }
   service_->SetDialogDelegate(this);
-  speech::SODAInstaller::GetInstance()->AddObserver(this);
+  speech::SodaInstaller::GetInstance()->AddObserver(this);
 }
 
 gfx::Size MediaDialogView::CalculatePreferredSize() const {
@@ -301,7 +301,7 @@ void MediaDialogView::WindowClosing() {
   if (instance_ == this) {
     instance_ = nullptr;
     service_->SetDialogDelegate(nullptr);
-    speech::SODAInstaller::GetInstance()->RemoveObserver(this);
+    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   }
 }
 
@@ -322,19 +322,19 @@ void MediaDialogView::ToggleLiveCaption(bool enabled) {
   }
 }
 
-void MediaDialogView::OnSODAInstalled() {
+void MediaDialogView::OnSodaInstaller() {
   live_caption_title_->SetText(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION));
 }
 
-void MediaDialogView::OnSODAError() {
+void MediaDialogView::OnSodaError() {
   ToggleLiveCaption(false);
   live_caption_title_->SetText(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION));
   // TODO(crbug.com/1055150): Show an error message as a toast.
 }
 
-void MediaDialogView::OnSODAProgress(int progress) {
+void MediaDialogView::OnSodaProgress(int progress) {
   live_caption_title_->SetText(l10n_util::GetStringFUTF16Int(
       IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_PROGRESS, progress));
 }

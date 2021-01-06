@@ -11,9 +11,9 @@
 
 namespace component_updater {
 
-class SODAComponentInstallerTest : public ::testing::Test {
+class SodaComponentInstallerTest : public ::testing::Test {
  public:
-  SODAComponentInstallerTest()
+  SodaComponentInstallerTest()
       : fake_install_dir_(FILE_PATH_LITERAL("base/install/dir/")),
         fake_version_("0.0.1") {}
 
@@ -22,12 +22,12 @@ class SODAComponentInstallerTest : public ::testing::Test {
   base::Version fake_version_;
 };
 
-TEST_F(SODAComponentInstallerTest, ComponentReady_CallsLambda) {
+TEST_F(SodaComponentInstallerTest, ComponentReady_CallsLambda) {
   base::FilePath given_path;
-  OnSODAComponentReadyCallback lambda = base::BindLambdaForTesting(
+  OnSodaComponentReadyCallback lambda = base::BindLambdaForTesting(
       [&](const base::FilePath& path) { given_path = path; });
 
-  SODAComponentInstallerPolicy policy(std::move(lambda));
+  SodaComponentInstallerPolicy policy(std::move(lambda));
 
   policy.ComponentReady(fake_version_, fake_install_dir_,
                         std::make_unique<base::DictionaryValue>());

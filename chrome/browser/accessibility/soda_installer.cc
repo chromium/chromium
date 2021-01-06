@@ -6,36 +6,36 @@
 
 namespace speech {
 
-SODAInstaller::SODAInstaller() = default;
+SodaInstaller::SodaInstaller() = default;
 
-SODAInstaller::~SODAInstaller() = default;
+SodaInstaller::~SodaInstaller() = default;
 
-void SODAInstaller::AddObserver(Observer* observer) {
+void SodaInstaller::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void SODAInstaller::RemoveObserver(Observer* observer) {
+void SodaInstaller::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SODAInstaller::NotifyOnSODAInstalled() {
+void SodaInstaller::NotifyOnSodaInstaller() {
   for (Observer& observer : observers_)
-    observer.OnSODAInstalled();
+    observer.OnSodaInstaller();
 }
 
-void SODAInstaller::NotifyOnSODAError() {
+void SodaInstaller::NotifyOnSodaError() {
   for (Observer& observer : observers_)
-    observer.OnSODAError();
+    observer.OnSodaError();
 }
 
-void SODAInstaller::NotifyOnSODAProgress(int percent) {
+void SodaInstaller::NotifyOnSodaProgress(int percent) {
   for (Observer& observer : observers_)
-    observer.OnSODAProgress(percent);
+    observer.OnSodaProgress(percent);
 }
 
-void SODAInstaller::NotifySODAInstalledForTesting() {
-  if (!IsSODARegistered())
-    NotifyOnSODAInstalled();
+void SodaInstaller::NotifySodaInstallerForTesting() {
+  if (!IsSodaRegistered())
+    NotifyOnSodaInstaller();
 }
 
 }  // namespace speech

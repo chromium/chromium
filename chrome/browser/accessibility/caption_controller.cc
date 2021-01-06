@@ -108,7 +108,7 @@ void CaptionController::OnLiveCaptionEnabledChanged() {
     // which case the UI will construct prematurely.
     // TODO(crbug.com/1160272): Check whether SODA has downloaded without
     // blocking the process.
-    if (speech::SODAInstaller::GetInstance()->IsSODARegistered()) {
+    if (speech::SodaInstaller::GetInstance()->IsSodaRegistered()) {
       UpdateUIEnabled();
     } else {
       // Register SODA component and download speech model.
@@ -116,9 +116,9 @@ void CaptionController::OnLiveCaptionEnabledChanged() {
           prefs::kSodaScheduledDeletionTime, base::Time());
       // Observe the SODA installation and call UpdateUIEnabled when it
       // completes.
-      speech::SODAInstaller::GetInstance()->AddObserver(this);
-      speech::SODAInstaller::GetInstance()->InstallSODA(profile_->GetPrefs());
-      speech::SODAInstaller::GetInstance()->InstallLanguage(
+      speech::SodaInstaller::GetInstance()->AddObserver(this);
+      speech::SodaInstaller::GetInstance()->InstallSoda(profile_->GetPrefs());
+      speech::SodaInstaller::GetInstance()->InstallLanguage(
           profile_->GetPrefs());
     }
   } else {
@@ -131,15 +131,15 @@ void CaptionController::OnLiveCaptionEnabledChanged() {
   }
 }
 
-void CaptionController::OnSODAInstalled() {
+void CaptionController::OnSodaInstaller() {
   DCHECK(enabled_);
-  speech::SODAInstaller::GetInstance()->RemoveObserver(this);
+  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   UpdateUIEnabled();
 }
 
 void CaptionController::OnLiveCaptionLanguageChanged() {
   if (enabled_)
-    speech::SODAInstaller::GetInstance()->InstallLanguage(profile_->GetPrefs());
+    speech::SodaInstaller::GetInstance()->InstallLanguage(profile_->GetPrefs());
 }
 
 bool CaptionController::IsLiveCaptionEnabled() {

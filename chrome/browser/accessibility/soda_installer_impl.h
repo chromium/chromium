@@ -22,18 +22,18 @@ namespace speech {
 
 // Installer of SODA (Speech On-Device API) for the Live Caption feature on
 // non-ChromeOS desktop versions of Chrome browser.
-class SODAInstallerImpl : public SODAInstaller,
+class SodaInstallerImpl : public SodaInstaller,
                           public component_updater::ServiceObserver {
  public:
-  SODAInstallerImpl();
-  ~SODAInstallerImpl() override;
-  SODAInstallerImpl(const SODAInstallerImpl&) = delete;
-  SODAInstallerImpl& operator=(const SODAInstallerImpl&) = delete;
+  SodaInstallerImpl();
+  ~SodaInstallerImpl() override;
+  SodaInstallerImpl(const SodaInstallerImpl&) = delete;
+  SodaInstallerImpl& operator=(const SodaInstallerImpl&) = delete;
 
-  // SODAInstaller:
-  void InstallSODA(PrefService* prefs) override;
+  // SodaInstaller:
+  void InstallSoda(PrefService* prefs) override;
   void InstallLanguage(PrefService* prefs) override;
-  bool IsSODARegistered() override;
+  bool IsSodaRegistered() override;
 
  private:
   // component_updater::ServiceObserver:

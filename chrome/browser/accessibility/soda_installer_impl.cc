@@ -51,23 +51,23 @@ int GetDownloadProgress(
 namespace speech {
 
 // static
-SODAInstaller* SODAInstaller::GetInstance() {
-  static base::NoDestructor<SODAInstallerImpl> instance;
+SodaInstaller* SodaInstaller::GetInstance() {
+  static base::NoDestructor<SodaInstallerImpl> instance;
   return instance.get();
 }
 
-SODAInstallerImpl::SODAInstallerImpl() = default;
+SodaInstallerImpl::SodaInstallerImpl() = default;
 
-SODAInstallerImpl::~SODAInstallerImpl() {
+SodaInstallerImpl::~SodaInstallerImpl() {
   component_updater_observer_.RemoveAll();
 }
 
-void SODAInstallerImpl::InstallSODA(PrefService* prefs) {
+void SodaInstallerImpl::InstallSoda(PrefService* prefs) {
   component_updater::RegisterSodaComponent(
       g_browser_process->component_updater(), prefs,
       g_browser_process->local_state(),
-      base::BindOnce(&component_updater::SODAComponentInstallerPolicy::
-                         UpdateSODAComponentOnDemand));
+      base::BindOnce(&component_updater::SodaComponentInstallerPolicy::
+                         UpdateSodaComponentOnDemand));
 
   if (!component_updater_observer_.IsObserving(
           g_browser_process->component_updater())) {
@@ -75,7 +75,7 @@ void SODAInstallerImpl::InstallSODA(PrefService* prefs) {
   }
 }
 
-void SODAInstallerImpl::InstallLanguage(PrefService* prefs) {
+void SodaInstallerImpl::InstallLanguage(PrefService* prefs) {
   component_updater::RegisterSodaLanguageComponent(
       g_browser_process->component_updater(), prefs,
       g_browser_process->local_state());
@@ -86,7 +86,7 @@ void SODAInstallerImpl::InstallLanguage(PrefService* prefs) {
   }
 }
 
-bool SODAInstallerImpl::IsSODARegistered() {
+bool SodaInstallerImpl::IsSodaRegistered() {
   if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
     return true;
   std::vector<std::string> component_ids =
@@ -94,7 +94,7 @@ bool SODAInstallerImpl::IsSODARegistered() {
   bool has_soda = false;
   bool has_language_pack = false;
   for (std::string id : component_ids) {
-    if (id == component_updater::SODAComponentInstallerPolicy::GetExtensionId())
+    if (id == component_updater::SodaComponentInstallerPolicy::GetExtensionId())
       has_soda = true;
     if (id == component_updater::SodaEnUsComponentInstallerPolicy::
                   GetExtensionId() ||
@@ -106,8 +106,8 @@ bool SODAInstallerImpl::IsSODARegistered() {
   return has_soda && has_language_pack;
 }
 
-void SODAInstallerImpl::OnEvent(Events event, const std::string& id) {
-  if (id != component_updater::SODAComponentInstallerPolicy::GetExtensionId() &&
+void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
+  if (id != component_updater::SodaComponentInstallerPolicy::GetExtensionId() &&
       id != component_updater::SodaEnUsComponentInstallerPolicy::
                 GetExtensionId() &&
       id !=
@@ -127,14 +127,14 @@ void SODAInstallerImpl::OnEvent(Events event, const std::string& id) {
       // When GetDownloadProgress returns -1, do nothing. It returns -1 when the
       // downloaded or total bytes is unknown.
       if (progress != -1) {
-        NotifyOnSODAProgress(progress);
+        NotifyOnSodaProgress(progress);
       }
     } break;
     case Events::COMPONENT_UPDATED:
-      NotifyOnSODAInstalled();
+      NotifyOnSodaInstaller();
       break;
     case Events::COMPONENT_UPDATE_ERROR:
-      NotifyOnSODAError();
+      NotifyOnSodaError();
       break;
     case Events::COMPONENT_CHECKING_FOR_UPDATES:
     case Events::COMPONENT_NOT_UPDATED:

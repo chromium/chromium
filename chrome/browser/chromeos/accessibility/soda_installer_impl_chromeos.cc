@@ -13,54 +13,54 @@
 namespace {
 
 // TODO(crbug.com/1111002): Replace this with the real SODA DLC id.
-constexpr char kSODADlcName[] = "soda";
+constexpr char kSodaDlcName[] = "soda";
 
 }  // namespace
 
 namespace speech {
 
-SODAInstaller* SODAInstaller::GetInstance() {
-  static base::NoDestructor<SODAInstallerImplChromeOS> instance;
+SodaInstaller* SodaInstaller::GetInstance() {
+  static base::NoDestructor<SodaInstallerImplChromeOS> instance;
   return instance.get();
 }
 
-SODAInstallerImplChromeOS::SODAInstallerImplChromeOS() = default;
+SodaInstallerImplChromeOS::SodaInstallerImplChromeOS() = default;
 
-SODAInstallerImplChromeOS::~SODAInstallerImplChromeOS() = default;
+SodaInstallerImplChromeOS::~SodaInstallerImplChromeOS() = default;
 
-void SODAInstallerImplChromeOS::InstallSODA(PrefService* prefs) {
+void SodaInstallerImplChromeOS::InstallSoda(PrefService* prefs) {
   if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
     return;
 
   // Install SODA DLC.
   chromeos::DlcserviceClient::Get()->Install(
-      kSODADlcName,
-      base::BindOnce(&SODAInstallerImplChromeOS::OnSODAInstalled,
+      kSodaDlcName,
+      base::BindOnce(&SodaInstallerImplChromeOS::OnSodaInstaller,
                      base::Unretained(this)),
-      base::BindRepeating(&SODAInstallerImplChromeOS::OnSODAProgress,
+      base::BindRepeating(&SodaInstallerImplChromeOS::OnSodaProgress,
                           base::Unretained(this)));
 }
 
-void SODAInstallerImplChromeOS::InstallLanguage(PrefService* prefs) {
+void SodaInstallerImplChromeOS::InstallLanguage(PrefService* prefs) {
   // TODO(crbug.com/1111002): Install SODA language.
 }
 
-bool SODAInstallerImplChromeOS::IsSODARegistered() {
+bool SodaInstallerImplChromeOS::IsSodaRegistered() {
   // TODO(crbug.com/1111002): Return whether SODA is registered.
   return !base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption);
 }
 
-void SODAInstallerImplChromeOS::OnSODAInstalled(
+void SodaInstallerImplChromeOS::OnSodaInstaller(
     const chromeos::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error == dlcservice::kErrorNone) {
-    NotifyOnSODAInstalled();
+    NotifyOnSodaInstaller();
   } else {
-    NotifyOnSODAError();
+    NotifyOnSodaError();
   }
 }
 
-void SODAInstallerImplChromeOS::OnSODAProgress(double progress) {
-  NotifyOnSODAProgress(int{100 * progress});
+void SodaInstallerImplChromeOS::OnSodaProgress(double progress) {
+  NotifyOnSodaProgress(int{100 * progress});
 }
 
 }  // namespace speech

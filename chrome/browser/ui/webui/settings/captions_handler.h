@@ -14,7 +14,7 @@ namespace settings {
 
 // Settings handler for the captions settings subpage.
 class CaptionsHandler : public SettingsPageUIHandler,
-                        public speech::SODAInstaller::Observer {
+                        public speech::SodaInstaller::Observer {
  public:
   explicit CaptionsHandler(PrefService* prefs);
   ~CaptionsHandler() override;
@@ -30,10 +30,10 @@ class CaptionsHandler : public SettingsPageUIHandler,
   void HandleCaptionsSubpageReady(const base::ListValue* args);
   void HandleOpenSystemCaptionsDialog(const base::ListValue* args);
 
-  // SODAInstaller::Observer overrides:
-  void OnSODAInstalled() override;
-  void OnSODAError() override;
-  void OnSODAProgress(int progress) override;
+  // SodaInstaller::Observer overrides:
+  void OnSodaInstaller() override;
+  void OnSodaError() override;
+  void OnSodaProgress(int progress) override;
 
   PrefService* prefs_;
 };

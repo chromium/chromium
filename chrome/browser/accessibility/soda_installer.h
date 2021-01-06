@@ -13,36 +13,36 @@ namespace speech {
 
 // Installer of SODA (Speech On-Device API). This is a singleton because there
 // is only one installation of SODA per device.
-class SODAInstaller {
+class SodaInstaller {
  public:
   // Observer of the SODA (Speech On-Device API) installation.
   class Observer : public base::CheckedObserver {
    public:
     // Called when the SODA installation has completed.
-    virtual void OnSODAInstalled() = 0;
+    virtual void OnSodaInstaller() = 0;
 
     // Called if there is an error in the SODA installation.
-    virtual void OnSODAError() = 0;
+    virtual void OnSodaError() = 0;
 
     // Called during the SODA installation. Progress is the download percentage
     // out of 100.
-    virtual void OnSODAProgress(int progress) = 0;
+    virtual void OnSodaProgress(int progress) = 0;
   };
 
-  SODAInstaller();
-  virtual ~SODAInstaller();
-  SODAInstaller(const SODAInstaller&) = delete;
-  SODAInstaller& operator=(const SODAInstaller&) = delete;
+  SodaInstaller();
+  virtual ~SodaInstaller();
+  SodaInstaller(const SodaInstaller&) = delete;
+  SodaInstaller& operator=(const SodaInstaller&) = delete;
 
-  // Implemented in the platform-specific subclass to get the SODAInstaller
+  // Implemented in the platform-specific subclass to get the SodaInstaller
   // instance.
-  static SODAInstaller* GetInstance();
+  static SodaInstaller* GetInstance();
 
   // Installs the SODA binary. Called by CaptionController when the
   // kLiveCaptionEnabled preference changes. PrefService is passed to share
   // Live Captions preferences: whether it is enabled, which language to
   // download, and what the download filepath should be.
-  virtual void InstallSODA(PrefService* prefs) = 0;
+  virtual void InstallSoda(PrefService* prefs) = 0;
 
   // Installs the user-selected SODA language model. Called by CaptionController
   // when the kLiveCaptionEnabled or kLiveCaptionLanguageCode preferences
@@ -52,7 +52,7 @@ class SODAInstaller {
   virtual void InstallLanguage(PrefService* prefs) = 0;
 
   // Returns whether or not SODA is already registered on this device.
-  virtual bool IsSODARegistered() = 0;
+  virtual bool IsSodaRegistered() = 0;
 
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);
@@ -60,18 +60,18 @@ class SODAInstaller {
   // Removes an observer from the observer list.
   void RemoveObserver(Observer* observer);
 
-  void NotifySODAInstalledForTesting();
+  void NotifySodaInstallerForTesting();
 
  protected:
   // Notifies the observers that the SODA installation has completed.
-  void NotifyOnSODAInstalled();
+  void NotifyOnSodaInstaller();
 
   // Notifies the observers that there is an error in the SODA installation.
-  void NotifyOnSODAError();
+  void NotifyOnSodaError();
 
   // Notifies the observers of the progress percentage as SODA is installed/
   // Progress is the download percentage out of 100.
-  void NotifyOnSODAProgress(int progress);
+  void NotifyOnSodaProgress(int progress);
 
   base::ObserverList<Observer> observers_;
 };

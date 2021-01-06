@@ -14,26 +14,26 @@
 namespace component_updater {
 
 // Success callback to be run after the component is downloaded.
-using OnSODAComponentReadyCallback =
+using OnSodaComponentReadyCallback =
     base::RepeatingCallback<void(const base::FilePath&)>;
 
-class SODAComponentInstallerPolicy : public ComponentInstallerPolicy {
+class SodaComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
-  explicit SODAComponentInstallerPolicy(OnSODAComponentReadyCallback callback);
-  ~SODAComponentInstallerPolicy() override;
+  explicit SodaComponentInstallerPolicy(OnSodaComponentReadyCallback callback);
+  ~SodaComponentInstallerPolicy() override;
 
-  SODAComponentInstallerPolicy(const SODAComponentInstallerPolicy&) = delete;
-  SODAComponentInstallerPolicy& operator=(const SODAComponentInstallerPolicy&) =
+  SodaComponentInstallerPolicy(const SodaComponentInstallerPolicy&) = delete;
+  SodaComponentInstallerPolicy& operator=(const SodaComponentInstallerPolicy&) =
       delete;
 
   static const std::string GetExtensionId();
-  static void UpdateSODAComponentOnDemand();
+  static void UpdateSodaComponentOnDemand();
 
   static update_client::CrxInstaller::Result SetComponentDirectoryPermission(
       const base::FilePath& install_dir);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(SODAComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(SodaComponentInstallerTest,
                            ComponentReady_CallsLambda);
 
   // The following methods override ComponentInstallerPolicy.
@@ -54,7 +54,7 @@ class SODAComponentInstallerPolicy : public ComponentInstallerPolicy {
   update_client::InstallerAttributes GetInstallerAttributes() const override;
   std::vector<std::string> GetMimeTypes() const override;
 
-  OnSODAComponentReadyCallback on_component_ready_callback_;
+  OnSodaComponentReadyCallback on_component_ready_callback_;
 };
 
 // Registers user preferences related to the Speech On-Device API (SODA)

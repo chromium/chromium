@@ -41,7 +41,7 @@ class CaptionBubbleController;
 //
 class CaptionController : public BrowserListObserver,
                           public KeyedService,
-                          public speech::SODAInstaller::Observer {
+                          public speech::SodaInstaller::Observer {
  public:
   explicit CaptionController(Profile* profile);
   ~CaptionController() override;
@@ -74,10 +74,10 @@ class CaptionController : public BrowserListObserver,
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
-  // SODAInstaller::Observer:
-  void OnSODAInstalled() override;
-  void OnSODAProgress(int progress) override {}
-  void OnSODAError() override {}
+  // SodaInstaller::Observer:
+  void OnSodaInstaller() override;
+  void OnSodaProgress(int progress) override {}
+  void OnSodaError() override {}
 
   void OnLiveCaptionEnabledChanged();
   void OnLiveCaptionLanguageChanged();
