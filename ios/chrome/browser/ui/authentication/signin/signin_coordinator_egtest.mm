@@ -8,6 +8,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -331,6 +332,29 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
 - (void)testDismissSigninFromRecentTabs {
   [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromRecentTabs
                         tapSettingsLink:NO];
+}
+
+// Tests to dismiss sign-in by opening an URL from another app.
+// Sign-in opened from: recent tabs.
+// Interrupted at: identity selection in user consent.
+- (void)testDismissIdentityPickerSigninFromRecentTabs {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [self openSigninFromView:OpenSigninMethodFromRecentTabs tapSettingsLink:NO];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kIdentityPickerViewIdentifier)]
+      performAction:grey_tap()];
+
+  // Open the URL as if it was opened from another app.
+  [ChromeEarlGrey simulateExternalAppURLOpening];
+
+  // Check if the URL was opened.
+  const GURL expectedURL("http://www.example.com/");
+  GREYAssertEqual(expectedURL, [ChromeEarlGrey webStateVisibleURL],
+                  @"Didn't open new tab with example.com.");
+
+  // Should be not signed in.
+  [SigninEarlGrey verifySignedOut];
 }
 
 // Tests to dismiss sign-in by opening an URL from another app.

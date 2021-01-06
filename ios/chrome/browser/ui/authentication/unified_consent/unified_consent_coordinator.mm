@@ -52,6 +52,11 @@
   [self.unifiedConsentMediator start];
 }
 
+- (void)stop {
+  [self.unifiedConsentViewController dismissViewControllerAnimated:YES
+                                                        completion:nil];
+}
+
 - (void)scrollToBottom {
   [self.unifiedConsentViewController scrollToBottom];
 }

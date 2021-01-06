@@ -505,10 +505,10 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   __weak UserSigninCoordinator* weakSelf = self;
   ProceduralBlock runCompletionCallback = ^{
     [weakSelf
-        runCompletionCallbackWithSigninResult:SigninCoordinatorResultInterrupted
-                                     identity:self.unifiedConsentCoordinator
-                                                  .selectedIdentity
-                   showAdvancedSettingsSignin:NO];
+        viewControllerDismissedWithResult:SigninCoordinatorResultInterrupted
+                                 identity:weakSelf.unifiedConsentCoordinator
+                                              .selectedIdentity
+                    settingsLinkWasTapped:NO];
     if (completion) {
       completion();
     }

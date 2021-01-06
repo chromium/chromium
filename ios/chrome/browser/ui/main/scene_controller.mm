@@ -807,10 +807,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
 
   // The UI should be stopped before the models they observe are stopped.
+  // |self.signinCoordinator| will be released on completion.
   [self.signinCoordinator
       interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
                completion:nil];
-  self.signinCoordinator = nil;
 
   [self.historyCoordinator stop];
   self.historyCoordinator = nil;
