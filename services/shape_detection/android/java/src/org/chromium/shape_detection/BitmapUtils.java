@@ -32,16 +32,16 @@ public class BitmapUtils {
             return null;
         }
 
-        ByteBuffer imageBuffer =
-                ByteBuffer.wrap(BigBufferUtil.getBytesFromBigBuffer(bitmapData.pixelData));
-        if (imageBuffer.capacity() <= 0) {
-            return null;
+        try (BigBufferUtil.Mapping mapping = BigBufferUtil.map(bitmapData.pixelData)) {
+            ByteBuffer imageBuffer = mapping.getBuffer();
+            if (imageBuffer.capacity() <= 0) {
+                return null;
+            }
+
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            bitmap.copyPixelsFromBuffer(imageBuffer);
+            return bitmap;
         }
-
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        bitmap.copyPixelsFromBuffer(imageBuffer);
-
-        return bitmap;
     }
 
     public static Frame convertToFrame(org.chromium.skia.mojom.BitmapN32 bitmapData) {
