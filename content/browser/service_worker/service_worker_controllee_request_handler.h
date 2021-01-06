@@ -52,12 +52,10 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // This could get called multiple times during the lifetime in redirect
   // cases. (In fallback-to-network cases we basically forward the request
   // to the request to the next request handler)
-  using ServiceWorkerLoaderCallback =
-      base::OnceCallback<void(SingleRequestURLLoaderFactory::RequestHandler)>;
   void MaybeCreateLoader(
       const network::ResourceRequest& tentative_request,
       BrowserContext* browser_context,
-      ServiceWorkerLoaderCallback callback,
+      NavigationLoaderInterceptor::LoaderCallback loader_callback,
       NavigationLoaderInterceptor::FallbackCallback fallback_callback);
 
   // Does all initialization of |container_host_| for a request.
@@ -113,7 +111,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   bool force_update_started_;
   base::TimeTicks registration_lookup_start_time_;
 
-  ServiceWorkerLoaderCallback loader_callback_;
+  NavigationLoaderInterceptor::LoaderCallback loader_callback_;
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 
   ServiceWorkerAccessedCallback service_worker_accessed_callback_;
