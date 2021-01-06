@@ -20,6 +20,10 @@ template <bool thread_safe>
 typename PartitionRoot<thread_safe>::PCScanMode PartitionOptionsToPCScanMode(
     PartitionOptions::PCScan opt) {
   using Root = PartitionRoot<thread_safe>;
+  // PCScan is currently only supported on 64-bit systems.
+  // Mark partitions non-scannable on 32-bit systems unconditionally, so that
+  // address space for quarantine bitmaps doesn't get reserved.
+#if defined(PA_HAS_64_BITS_POINTERS)
   switch (opt) {
     case PartitionOptions::PCScan::kAlwaysDisabled:
       return Root::PCScanMode::kNonScannable;
@@ -28,6 +32,9 @@ typename PartitionRoot<thread_safe>::PCScanMode PartitionOptionsToPCScanMode(
     case PartitionOptions::PCScan::kForcedEnabledForTesting:
       return Root::PCScanMode::kEnabled;
   }
+#else
+  return Root::PCScanMode::kNonScannable;
+#endif
 }
 }  // namespace
 
