@@ -16,7 +16,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -35,6 +37,7 @@ import java.io.IOException;
  * shared directory.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class MultiInstanceMigrationTest {
     private Context mAppContext;
 
@@ -52,7 +55,17 @@ public class MultiInstanceMigrationTest {
     }
 
     @After
-    public void tearDown() {}
+    public void tearDown() {
+        // Cleanup filesystem changes, shared preference changes and reset sMigrationTask
+        // between tests - otherwise changes to these in one test will interfere with the other
+        // tests.
+        // TODO(crbug.com/1086663) Don't persist changes to SharedPreferences.
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION, false);
+        FileUtils.recursivelyDeleteFile(
+                TabStateDirectory.getOrCreateBaseStateDirectory(), FileUtils.DELETE_ALL);
+        TabbedModeTabPersistencePolicy.resetMigrationTaskForTesting();
+    }
 
     private void buildPersistentStoreAndWaitForMigration() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -341,7 +354,7 @@ public class MultiInstanceMigrationTest {
             stateDirs[i] = new File(
                     TabStateDirectory.getOrCreateBaseStateDirectory(), Integer.toString(i));
             if (!stateDirs[i].exists()) {
-                Assert.assertTrue("Could not create state dir " + i, stateDirs[i].mkdir());
+                Assert.assertTrue("Could not create state dir " + i, stateDirs[i].mkdirs());
             }
         }
 
@@ -351,7 +364,7 @@ public class MultiInstanceMigrationTest {
                             Integer.toString(TabModelSelectorImpl.CUSTOM_TABS_SELECTOR_INDEX));
             if (!stateDirs[numDirsToCreate - 1].exists()) {
                 Assert.assertTrue("Could not create custom tab state dir",
-                        stateDirs[numDirsToCreate - 1].mkdir());
+                        stateDirs[numDirsToCreate - 1].mkdirs());
             }
         }
 
