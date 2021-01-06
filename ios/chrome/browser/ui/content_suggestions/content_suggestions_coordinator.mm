@@ -326,12 +326,18 @@
   [self.headerController
       didMoveToParentViewController:self.suggestionsViewController];
 
-  self.headerCollectionInteractionHandler =
-      [[ContentSuggestionsHeaderSynchronizer alloc]
-          initWithCollectionController:self.suggestionsViewController
-                      headerController:self.headerController];
-  self.NTPMediator.headerCollectionInteractionHandler =
-      self.headerCollectionInteractionHandler;
+  // TODO(crbug.com/1114792): Remove header provider and use refactored header
+  // synchronizer instead.
+  self.suggestionsViewController.headerProvider = self.headerController;
+
+  if (!IsRefactoredNTP()) {
+    self.headerCollectionInteractionHandler =
+        [[ContentSuggestionsHeaderSynchronizer alloc]
+            initWithCollectionController:self.suggestionsViewController
+                        headerController:self.headerController];
+    self.NTPMediator.headerCollectionInteractionHandler =
+        self.headerCollectionInteractionHandler;
+  }
 
   self.dragDropHandler = [[URLDragDropHandler alloc] init];
   self.dragDropHandler.dropDelegate = self;

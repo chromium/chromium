@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizing.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -31,6 +32,10 @@
 @end
 
 @implementation NewTabPageViewController
+
+// Synthesized for ContentSuggestionsCollectionControlling protocol.
+@synthesize headerSynchronizer = _headerSynchronizer;
+@synthesize scrolledToTop = _scrolledToTop;
 
 - (instancetype)initWithContentSuggestionsViewController:
     (UICollectionViewController*)contentSuggestionsViewController {
@@ -105,10 +110,64 @@
                  self.view.frame.size.width, collectionView.contentSize.height);
   self.discoverFeedWrapperViewController.feedCollectionView.contentInset =
       UIEdgeInsetsMake(collectionView.contentSize.height, 0, 0, 0);
+  self.headerSynchronizer.additionalOffset = collectionView.contentSize.height;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  self.headerSynchronizer.showing = YES;
+  // Reload data to ensure the Most Visited tiles and fake omnibox are correctly
+  // positioned, in particular during a rotation while a ViewController is
+  // presented in front of the NTP.
+  [self.headerSynchronizer
+      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
+  [self.contentSuggestionsViewController.collectionView
+          .collectionViewLayout invalidateLayout];
+  // Ensure initial fake omnibox layout.
+  [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  self.headerSynchronizer.showing = NO;
+}
+
+- (void)viewSafeAreaInsetsDidChange {
+  [super viewSafeAreaInsetsDidChange];
+
+  // Only get the bottom safe area inset.
+  UIEdgeInsets insets = UIEdgeInsetsZero;
+  insets.bottom = self.view.safeAreaInsets.bottom;
+  self.collectionView.contentInset = insets;
+
+  [self.headerSynchronizer
+      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
+  [self.headerSynchronizer updateConstraints];
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+  void (^alongsideBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
+      ^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        [self.headerSynchronizer updateFakeOmniboxOnNewWidth:size.width];
+        [self.contentSuggestionsViewController.collectionView
+                .collectionViewLayout invalidateLayout];
+      };
+  [coordinator animateAlongsideTransition:alongsideBlock completion:nil];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    [self.contentSuggestionsViewController.collectionView
+            .collectionViewLayout invalidateLayout];
+    [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
+  }
+  [self.headerSynchronizer updateConstraints];
   [self updateOverscrollActionsState];
 }
 
@@ -120,6 +179,9 @@
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
   [self.overscrollActionsController scrollViewDidScroll:scrollView];
+  [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
+  self.scrolledToTop =
+      scrollView.contentOffset.y >= [self.headerSynchronizer pinnedOffsetY];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
@@ -159,7 +221,19 @@
 }
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView*)scrollView {
+  // User has tapped the status bar to scroll to the top.
+  // Prevent scrolling back to pre-focus state, making sure we don't have
+  // two scrolling animations running at the same time.
+  [self.headerSynchronizer resetPreFocusOffset];
+  // Unfocus omnibox without scrolling back.
+  [self.headerSynchronizer unfocusOmnibox];
   return YES;
+}
+
+#pragma mark - ContentSuggestionsCollectionControlling
+
+- (UICollectionView*)collectionView {
+  return self.discoverFeedWrapperViewController.feedCollectionView;
 }
 
 #pragma mark - Private

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -67,6 +68,11 @@
 // Wheter the scene is currently in foreground.
 @property(nonatomic, assign) BOOL sceneInForeground;
 
+// Handles interactions with the content suggestions header and the fake
+// omnibox.
+@property(nonatomic, strong)
+    ContentSuggestionsHeaderSynchronizer* headerSynchronizer;
+
 @end
 
 @implementation NewTabPageCoordinator
@@ -117,6 +123,11 @@
       self.discoverFeedWrapperViewController =
           [[DiscoverFeedWrapperViewController alloc]
               initWithDiscoverFeedViewController:discoverFeedViewController];
+
+      self.headerSynchronizer = [[ContentSuggestionsHeaderSynchronizer alloc]
+          initWithCollectionController:self.ntpViewController
+                      headerController:self.contentSuggestionsCoordinator
+                                           .headerController];
 
       self.ntpViewController.discoverFeedWrapperViewController =
           self.discoverFeedWrapperViewController;

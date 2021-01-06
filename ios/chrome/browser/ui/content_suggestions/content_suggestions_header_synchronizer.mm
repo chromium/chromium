@@ -49,6 +49,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
 @synthesize shiftTileStartTime = _shiftTileStartTime;
 @synthesize tapGestureRecognizer = _tapGestureRecognizer;
 @synthesize collectionShiftingOffset = _collectionShiftingOffset;
+// Synthesized for ContentSuggestionsSynchronizing protocol.
+@synthesize additionalOffset = _additionalOffset;
 
 - (instancetype)
 initWithCollectionController:
@@ -72,6 +74,7 @@ initWithCollectionController:
     _collectionController.headerSynchronizer = self;
 
     _collectionShiftingOffset = 0;
+    _additionalOffset = 0;
   }
   return self;
 }
@@ -208,8 +211,10 @@ initWithCollectionController:
 
   if (self.shouldAnimateHeader) {
     UIEdgeInsets insets = self.collectionView.safeAreaInsets;
+    CGFloat totalOffset =
+        self.collectionView.contentOffset.y + self.additionalOffset;
     [self.headerController
-        updateFakeOmniboxForOffset:self.collectionView.contentOffset.y
+        updateFakeOmniboxForOffset:totalOffset
                        screenWidth:self.collectionView.frame.size.width
                     safeAreaInsets:insets];
   }
@@ -224,10 +229,11 @@ initWithCollectionController:
     // -viewDidLayoutSubviews.  Since self.collectionView and it's superview
     // should always have the same safeArea, this should be safe.
     UIEdgeInsets insets = self.collectionView.superview.safeAreaInsets;
-    [self.headerController
-        updateFakeOmniboxForOffset:self.collectionView.contentOffset.y
-                       screenWidth:width
-                    safeAreaInsets:insets];
+    CGFloat totalOffset =
+        self.collectionView.contentOffset.y + self.additionalOffset;
+    [self.headerController updateFakeOmniboxForOffset:totalOffset
+                                          screenWidth:width
+                                       safeAreaInsets:insets];
   } else {
     [self.headerController updateFakeOmniboxForWidth:width];
   }

@@ -7,13 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
+
 @class ContentSuggestionsViewController;
 @class DiscoverFeedWrapperViewController;
 @protocol OverscrollActionsControllerDelegate;
 
 // View controller containing all the content presented on a standard,
 // non-incognito new tab page.
-@interface NewTabPageViewController : UIViewController <UIScrollViewDelegate>
+@interface NewTabPageViewController
+    : UIViewController <ContentSuggestionsCollectionControlling,
+                        UIScrollViewDelegate>
 
 // View controller wrapping the Discover feed.
 @property(nonatomic, strong)

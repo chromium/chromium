@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_controlling.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizing.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_layout.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
@@ -626,7 +627,7 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
                                  (UICollectionViewLayout*)collectionViewLayout
     referenceSizeForHeaderInSection:(NSInteger)section {
   if ([self.collectionUpdater isHeaderSection:section]) {
-    return CGSizeMake(0, [self.headerSynchronizer headerHeight]);
+    return CGSizeMake(0, [self.headerProvider headerHeight]);
   }
   if ([self.collectionUpdater isDiscoverSection:section]) {
     return CGSizeMake(0, kDiscoverFeedFeaderHeight);

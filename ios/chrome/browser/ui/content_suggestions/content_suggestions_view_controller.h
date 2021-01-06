@@ -15,6 +15,7 @@
 @protocol ContentSuggestionsActionHandler;
 @protocol ContentSuggestionsCommands;
 @protocol ContentSuggestionsDataSource;
+@protocol ContentSuggestionsHeaderControlling;
 @protocol ContentSuggestionsHeaderSynchronizing;
 @protocol ContentSuggestionsMenuProvider;
 @protocol ContentSuggestionsMetricsRecording;
@@ -66,6 +67,12 @@ extern NSString* const
     metricsRecorder;
 // Whether or not the contents section should be hidden completely.
 @property(nonatomic, assign) BOOL contentSuggestionsEnabled;
+// Provides information about the content suggestions header. Used to get the
+// header height.
+// TODO(crbug.com/1114792): Remove this and replace its call with refactored
+// header synchronizer.
+@property(nonatomic, weak) id<ContentSuggestionsHeaderControlling>
+    headerProvider;
 // Delegate for handling actions relating to content suggestions.
 @property(nonatomic, weak) id<ContentSuggestionsActionHandler> handler;
 // Provider of menu configurations for the contentSuggestions component.
