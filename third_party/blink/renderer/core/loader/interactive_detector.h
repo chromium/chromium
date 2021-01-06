@@ -130,10 +130,9 @@ class CORE_EXPORT InteractiveDetector
 
   void SetUkmRecorderForTesting(ukm::UkmRecorder* test_ukm_recorder);
 
-  void RecordInputEventTimingUKM(const Event& event,
-                                 base::TimeTicks event_timestamp,
-                                 base::TimeTicks processing_start,
-                                 base::TimeTicks processing_end);
+  void RecordInputEventTimingUKM(base::TimeDelta input_delay,
+                                 base::TimeDelta processing_time,
+                                 base::TimeDelta time_to_next_paint);
 
   void DidObserveFirstScrollDelay(base::TimeDelta first_scroll_delay,
                                   base::TimeTicks first_scroll_timestamp);
@@ -227,10 +226,6 @@ class CORE_EXPORT InteractiveDetector
   // LongTaskObserver implementation
   void OnLongTaskDetected(base::TimeTicks start_time,
                           base::TimeTicks end_time) override;
-
-  // The duration of event handlers processing the event for the previous
-  // pointer down.
-  base::Optional<base::TimeDelta> pending_pointerdown_processing_time_;
 
   // The duration between the hardware timestamp and when we received the event
   // for the previous pointer down. Only non-zero if we've received a pointer

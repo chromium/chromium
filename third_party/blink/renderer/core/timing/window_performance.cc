@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_hidden_state.h"
@@ -397,7 +398,35 @@ void WindowPerformance::ReportEventTimings(uint64_t frame_index,
     event_frames_.pop_front();
 
     int duration_in_ms = std::round((end_time - entry->startTime()) / 8) * 8;
+    base::TimeDelta input_delay = base::TimeDelta::FromMillisecondsD(
+        entry->processingStart() - entry->startTime());
+    base::TimeDelta processing_time = base::TimeDelta::FromMillisecondsD(
+        entry->processingEnd() - entry->processingStart());
+    base::TimeDelta time_to_next_paint =
+        base::TimeDelta::FromMillisecondsD(end_time - entry->processingEnd());
+    InteractiveDetector* interactive_detector =
+        DomWindow() ? InteractiveDetector::From(*(DomWindow()->document()))
+                    : nullptr;
     entry->SetDuration(duration_in_ms);
+    if (entry->name() == "pointerdown") {
+      pending_pointer_down_input_delay_ = input_delay;
+      pending_pointer_down_processing_time_ = processing_time;
+      pending_pointer_down_time_to_next_paint_ = time_to_next_paint;
+    } else if (entry->name() == "pointerup") {
+      if (pending_pointer_down_time_to_next_paint_.has_value() &&
+          interactive_detector) {
+        interactive_detector->RecordInputEventTimingUKM(
+            pending_pointer_down_input_delay_.value(),
+            pending_pointer_down_processing_time_.value(),
+            pending_pointer_down_time_to_next_paint_.value());
+      }
+    } else if ((entry->name() == "click" || entry->name() == "keydown" ||
+                entry->name() == "mousedown") &&
+               interactive_detector) {
+      interactive_detector->RecordInputEventTimingUKM(
+          input_delay, processing_time, time_to_next_paint);
+    }
+
     if (!first_input_timing_) {
       if (entry->name() == "pointerdown") {
         first_pointer_down_event_timing_ =

@@ -116,14 +116,6 @@ void EventTiming::DidDispatchEvent(const Event& event, Document& document) {
   performance_->RegisterEventTiming(event.type(), event_timestamp_,
                                     processing_start_, processing_end,
                                     event.cancelable(), target);
-  if (should_log_event_) {
-    InteractiveDetector* interactive_detector =
-        InteractiveDetector::From(document);
-    if (interactive_detector) {
-      interactive_detector->RecordInputEventTimingUKM(
-          event, event_timestamp_, processing_start_, processing_end);
-    }
-  }
 }
 
 // static

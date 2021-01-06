@@ -5922,6 +5922,22 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="InteractiveTiming.ProcessingFinishedToNextPaint">
+    <summary>
+      Measures the time in ms from when the event handlers finish processing the
+      input event to the time when the next paint caused by the input event is
+      performed.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.is_dominant_version"/>
+        <index fields="profile.is_latest_version"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="InteractiveTiming.ProcessingTime">
     <summary>
       Measures Input Event processing time, the duration of event handlers

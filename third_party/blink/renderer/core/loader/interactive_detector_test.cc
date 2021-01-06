@@ -568,28 +568,26 @@ TEST_F(InteractiveDetectorTest, LongTaskAfterTTIDoesNothing) {
 }
 
 TEST_F(InteractiveDetectorTest, RecordInputDelayUKM) {
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(20);
+  base::TimeDelta input_delay = base::TimeDelta::FromMilliseconds(20);
   base::TimeDelta processing_time = base::TimeDelta::FromMilliseconds(10);
-  Event event;
-  event.SetTrusted(true);
-  event.SetType(event_type_names::kClick);
-  base::TimeTicks processing_start = Now() + delay;
-  base::TimeTicks event_platform_timestamp = Now();
-  base::TimeTicks processing_end = processing_start + processing_time;
+  base::TimeDelta time_to_next_paint = base::TimeDelta::FromMilliseconds(10);
 
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   GetDetector()->SetUkmRecorderForTesting(&test_ukm_recorder);
-  GetDetector()->RecordInputEventTimingUKM(event, event_platform_timestamp,
-                                           processing_start, processing_end);
+  GetDetector()->RecordInputEventTimingUKM(input_delay, processing_time,
+                                           time_to_next_paint);
   auto entries = test_ukm_recorder.GetEntriesByName(InputEvent::kEntryName);
   EXPECT_EQ(1ul, entries.size());
   auto* entry = entries[0];
   test_ukm_recorder.ExpectEntryMetric(
       entry, InputEvent::kInteractiveTiming_InputDelayName,
-      delay.InMilliseconds());
+      input_delay.InMilliseconds());
   test_ukm_recorder.ExpectEntryMetric(
       entry, InputEvent::kInteractiveTiming_ProcessingTimeName,
       processing_time.InMilliseconds());
+  test_ukm_recorder.ExpectEntryMetric(
+      entry, InputEvent::kInteractiveTiming_ProcessingFinishedToNextPaintName,
+      time_to_next_paint.InMilliseconds());
   EXPECT_EQ(
       GetDetector()->GetFirstInputProcessingTime().value().InMilliseconds(),
       processing_time.InMilliseconds());
