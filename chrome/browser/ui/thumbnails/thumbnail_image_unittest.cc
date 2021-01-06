@@ -280,3 +280,17 @@ TEST_F(ThumbnailImageTest, RequestCompressedThumbnailData) {
   image->RequestCompressedThumbnailData();
   EXPECT_EQ(count_before_request + 1, observer.new_compressed_count());
 }
+
+TEST_F(ThumbnailImageTest, ClearThumbnailWhileNotifyingObservers) {
+  auto image = base::MakeRefCounted<ThumbnailImage>(this);
+  TestThumbnailImageObserver observer;
+  observer.scoped_observer()->Add(image.get());
+
+  SkBitmap bitmap = CreateBitmap(kTestBitmapWidth, kTestBitmapHeight);
+  image->AssignSkBitmap(bitmap);
+  observer.WaitForImage();
+
+  image->RequestThumbnailImage();
+  image->ClearData();
+  observer.WaitForImage();
+}

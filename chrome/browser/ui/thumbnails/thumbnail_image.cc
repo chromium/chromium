@@ -82,12 +82,18 @@ void ThumbnailImage::AssignSkBitmap(SkBitmap bitmap) {
 }
 
 void ThumbnailImage::ClearData() {
-  // TODO(collinbaker): Update this to notify the observers that the data has
-  // changed. It may be necessary to re-engineer them to accept empty/invalid
-  // data. crbug.com/1152894
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/1163121): Update this to notify the observers that the data
+  // has changed. It may be necessary to re-engineer them to accept
+  // empty/invalid data. crbug.com/1152894
   if (!data_)
     return;
-  data_->data.clear();
+
+  // TODO(crbug.com/1163121): Cancel existing thumbnail request. If
+  // called after ConvertJPEGDataToImageSkiaAndNotifyObservers() but
+  // before observers get notified, the observers will receive the stale
+  // thumbnail.
   data_.reset();
 }
 
@@ -121,6 +127,8 @@ void ThumbnailImage::AssignJPEGData(base::TimeTicks assign_sk_bitmap_time,
 }
 
 bool ThumbnailImage::ConvertJPEGDataToImageSkiaAndNotifyObservers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!data_) {
     if (async_operation_finished_callback_)
       async_operation_finished_callback_.Run();

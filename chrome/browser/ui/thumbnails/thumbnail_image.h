@@ -132,6 +132,10 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
 
   Delegate* delegate_;
 
+  // This is a scoped_refptr to immutable data. Once set, the wrapped
+  // data must not be modified; it is referenced by other threads.
+  // |data_| itself can be changed as this does not affect references to
+  // the old data.
   CompressedThumbnailData data_;
 
   base::ObserverList<Observer> observers_;
