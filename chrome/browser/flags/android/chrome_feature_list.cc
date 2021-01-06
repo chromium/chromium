@@ -108,6 +108,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &feature_engagement::kIPHTabSwitcherButtonFeature,
     &feed::kInterestFeedContentSuggestions,
     &feed::kInterestFeedNoticeCardAutoDismiss,
+    &feed::kInterestFeedSpinnerAlwaysAnimate,
     &feed::kInterestFeedV1ClicksAndViewsConditionalUpload,
     &feed::kInterestFeedV2,
     &feed::kReportFeedUserActions,

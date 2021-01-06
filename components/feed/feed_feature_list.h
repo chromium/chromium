@@ -33,6 +33,8 @@ extern const base::Feature kInterestFeedV2ClicksAndViewsConditionalUpload;
 
 extern const base::Feature kInterestFeedNoticeCardAutoDismiss;
 
+extern const base::Feature kInterestFeedSpinnerAlwaysAnimate;
+
 std::string GetFeedReferrerUrl();
 
 }  // namespace feed

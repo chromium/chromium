@@ -49,6 +49,10 @@ const base::Feature kInterestFeedV2ClicksAndViewsConditionalUpload{
 const base::Feature kInterestFeedNoticeCardAutoDismiss{
     "InterestFeedNoticeCardAutoDismiss", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Used for A:B testing of a bug fix (crbug.com/1151391).
+const base::Feature kInterestFeedSpinnerAlwaysAnimate{
+    "InterestFeedSpinnerAlwaysAnimate", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kDefaultReferrerUrl[] =
     "https://www.googleapis.com/auth/chrome-content-suggestions";
 
