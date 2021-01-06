@@ -165,8 +165,8 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // Attempts to show the signin UI after the service auth error if this error
   // isn't transient.

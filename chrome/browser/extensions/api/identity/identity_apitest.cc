@@ -612,9 +612,11 @@ class IdentityTestWithSignin : public AsyncExtensionBrowserTest {
   }
 
  protected:
-  // Returns the account ID of the created account.
+  // Signs in (at sync consent level) and returns the account ID of the primary
+  // account.
   CoreAccountId SignIn(const std::string& email) {
     auto account_info = identity_test_env()->MakePrimaryAccountAvailable(email);
+    EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount());
     return account_info.account_id;
   }
 

@@ -691,13 +691,20 @@ bool IdentityGetAuthTokenFunction::TryRecoverFromServiceAuthError(
   return false;
 }
 
-void IdentityGetAuthTokenFunction::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
+void IdentityGetAuthTokenFunction::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSync) !=
+      signin::PrimaryAccountChangeEvent::Type::kSet)
+    return;
+
   if (account_listening_mode_ != AccountListeningMode::kListeningPrimaryAccount)
     return;
 
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("identity", "OnPrimaryAccountSet", this);
+  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("identity",
+                                      "OnPrimaryAccountChanged (set)", this);
 
+  const CoreAccountInfo& primary_account_info =
+      event_details.GetCurrentState().primary_account;
   DCHECK(token_key_.account_info.IsEmpty());
   token_key_.account_info = primary_account_info;
 
