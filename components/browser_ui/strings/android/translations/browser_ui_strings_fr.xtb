@@ -199,7 +199,7 @@
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6545864417968258051">Recherche Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}one{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}other{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}}</translation>
-<translation id="6561560012278703671">Activer l'affichage discret (permet d'empêcher les invites liées aux notifications de vous interrompre)</translation>
+<translation id="6561560012278703671">Activer l'affichage discret (empêche les notifications de vous interrompre)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Go</translation>
 <translation id="6612358246767739896">Contenu protégé</translation>
 <translation id="662080504995468778">Rester</translation>
@@ -291,7 +291,7 @@
 <translation id="8730621377337864115">OK</translation>
 <translation id="8737217482364735741">L'ensemble des données et des cookies stockés par <ph name="ORIGIN" /> seront effacés.</translation>
 <translation id="8751914237388039244">Sélectionner une image</translation>
-<translation id="8801436777607969138">Bloquer JavaScript sur un site spécifique.</translation>
+<translation id="8801436777607969138">Bloquez JavaScript sur un site spécifique.</translation>
 <translation id="8816026460808729765">Bloque l'accès aux capteurs pour certains sites</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

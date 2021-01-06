@@ -1826,7 +1826,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3016641847947582299">Componente actualizado</translation>
 <translation id="3017079585324758401">Fondo</translation>
 <translation id="3019285239893817657">Botón de página secundaria</translation>
-<translation id="3020183492814296499">Combinaciones de teclas</translation>
+<translation id="3020183492814296499">Accesos directos</translation>
 <translation id="3020990233660977256">Número de serie: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Con batería</translation>
 <translation id="3021066826692793094">Mariposa</translation>
@@ -5036,7 +5036,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6782067259631821405">PIN no válido</translation>
 <translation id="6785518634832172390">El PIN debe tener 12 dígitos o menos</translation>
 <translation id="6786747875388722282">Extensiones</translation>
-<translation id="6787839852456839824">Combinaciones de teclas</translation>
+<translation id="6787839852456839824">Accesos directos</translation>
 <translation id="6788210894632713004">Extensión descomprimida</translation>
 <translation id="6789592661892473991">División horizontal</translation>
 <translation id="6790428901817661496">Reproducir</translation>

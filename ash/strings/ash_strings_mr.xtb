@@ -19,6 +19,7 @@
 <translation id="1119348796022671382">इंटरफेस हलकेसे रंगीत करण्यासाठी थीम असलेला रंग मोड तुमच्या वॉलपेपरमधून निवडलेल्या रंगांचा वापर करते.</translation>
 <translation id="112308213915226829">शेल्फ स्वयं लपवा</translation>
 <translation id="1153356358378277386">जोडलेली डिव्हाइस</translation>
+<translation id="1165712434476988950">अपडेट लागू करण्यासाठी डिव्हाइस रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="1175572348579024023">स्क्रोल करा</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
 <translation id="118532027333893379">फुल स्क्रीन कॅप्चर करण्यासाठी कुठेही टॅप करा</translation>
@@ -118,6 +119,7 @@
 <translation id="1978498689038657292">मजकूर इनपुट</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> च्या नवीनतम अपडेटबाबत अधिक जाणून घ्या</translation>
 <translation id="1995660704900986789">बंद करा</translation>
+<translation id="1998100899771863792">सध्याचा डेस्क</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">मेसेज टाइप करा</translation>
 <translation id="2018630726571919839">मला एक विनोद सांगा</translation>
@@ -899,6 +901,7 @@
 <translation id="9089416786594320554">इनपुट पद्धती</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> डिस्प्ले काढले</translation>
 <translation id="9098969848082897657">फोन सायलंट करा</translation>
+<translation id="9099154003160514616">Lacros अपडेट उपलब्ध</translation>
 <translation id="9151726767154816831">अपडेटासाठी रीस्टार्ट करा आणि powerwash करा</translation>
 <translation id="9166331175924255663">Nearby सह शेअरिंग चा उच्च दृश्यमानता मोड टॉगल करा.</translation>
 <translation id="9168436347345867845">ते नंतर करा</translation>
@@ -909,6 +912,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> रेझोल्यूशन <ph name="RESOLUTION" /> वर बदलले. बदल ठेवण्यासाठी खात्री करा वर क्लिक करा. मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, तुमच्‍या ॲडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="9210037371811586452">एकीकृत डेस्कटॉप मोडमधून बाहेर पडत आहे</translation>
+<translation id="9211490828691860325">सर्व डेस्क</translation>
 <translation id="9211681782751733685">बॅटरी पूर्णपणे चार्ज होण्यासाठी <ph name="TIME_REMAINING" /> तास बाकी.</translation>
 <translation id="9215934040295798075">वॉलपेपर सेट करा</translation>
 <translation id="921989828232331238">तुमच्या पालकाने आज दिवसभरासाठी तुमचे डिव्हाइस लॉक केले</translation>

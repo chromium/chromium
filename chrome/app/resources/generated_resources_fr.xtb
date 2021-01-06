@@ -1323,7 +1323,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2465237718053447668"><ph name="DOMAIN" /> vous demande de vous connecter au Wi-Fi et de télécharger une mise à jour. Vous pouvez aussi la télécharger sur une connexion facturée à l'usage (susceptible d'entraîner des frais).</translation>
 <translation id="2467267713099745100">Réseau <ph name="NETWORK_TYPE" />, désactivé</translation>
 <translation id="2468178265280335214">Accélération du défilement avec le pavé tactile</translation>
-<translation id="2468205691404969808">Utilise des cookies pour mémoriser vos préférences, même si vous n'accédez pas à ces pages</translation>
+<translation id="2468205691404969808">Utiliser des cookies pour mémoriser vos préférences, même si vous n'accédez pas à ces pages</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2469259292033957819">Vous n'avez aucune imprimante enregistrée.</translation>
 <translation id="2469375675106140201">Personnaliser le correcteur orthographique</translation>
@@ -4864,7 +4864,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6556903358015358733">Thème et fond d'écran</translation>
 <translation id="6557290421156335491">Mes raccourcis</translation>
 <translation id="6560151649238390891">Suggestion ajoutée</translation>
-<translation id="6561560012278703671">Activer l'affichage discret (permet d'empêcher les invites liées aux notifications de vous interrompre)</translation>
+<translation id="6561560012278703671">Activer l'affichage discret (empêche les notifications de vous interrompre)</translation>
 <translation id="6561726789132298588">entrée</translation>
 <translation id="6562117348069327379">Stockez les journaux système dans le répertoire des téléchargements.</translation>
 <translation id="656293578423618167">Le chemin d'accès ou le nom du fichier est trop long. Veuillez le raccourcir ou changer d'emplacement.</translation>

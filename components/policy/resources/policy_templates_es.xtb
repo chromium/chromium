@@ -82,7 +82,7 @@
 <translation id="1096105751829466145">Proveedor de búsquedas predeterminadas</translation>
 <translation id="1099282607296956954">Habilitar el aislamiento de todos los sitios web</translation>
 <translation id="1117535567637097036">Los controladores de protocolo configurados a través de esta política no se utilizan al procesar los intents de Android.</translation>
-<translation id="1118093128235245168">Permitir que los sitios web pidan permiso al usuario para acceder a un dispositivo USB conectado</translation>
+<translation id="1118093128235245168">Permitir que los sitios pidan permiso al usuario para acceder a un dispositivo USB conectado</translation>
 <translation id="1122089575901325963">Si se establece esta política, se configura el controlador de diagnóstico y telemetría de <ph name="WILCO_NAME" /> (DTC), si está disponible en el dispositivo. El tamaño de la configuración no debe superar 1 MB (1.000.000 bytes) y debe estar en formato JSON. <ph name="WILCO_NAME" /> DTC es responsable de gestionarlo. El hash criptográfico comprueba la integridad de la descarga. La configuración se descarga y se almacena en caché. Se vuelve a descargar si se cambia la URL o el hash.
 
       Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo.</translation>
@@ -1356,7 +1356,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2949765875529121431">Al establecer la política, se define una lista de nombres de host que quedarán exentos de la comprobación de la política de HSTS, que podría cambiar las solicitudes de http a https. Esta política solo admite nombres de host de una sola etiqueta. Los nombres de host deben canonicalizarse, es decir, cada IDN debe convertirse a su formato de etiqueta A, y todas las letras ASCII deben ser minúsculas. Esta política solo se aplica a los nombres de host incluidos en la lista, no a sus subdominios.</translation>
 <translation id="2952347049958405264">Restricciones:</translation>
 <translation id="2957047180944828740">Especifica si se permite que los sitios web no seguros envíen peticiones a puntos finales de la red con una privacidad más estricta.</translation>
-<translation id="2957506574938329824">No permitir que los sitios web soliciten acceso a los dispositivos Bluetooth a través de la API Bluetooth web</translation>
+<translation id="2957506574938329824">No permitir que los sitios soliciten acceso a los dispositivos Bluetooth a través de la API Bluetooth web</translation>
 <translation id="2957513448235202597">Tipo de cuenta para la autenticación <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Enviar siempre los puntos de acceso Wi‑Fi al servidor mientras se detecta la zona horaria</translation>
 <translation id="2959898425599642200">Reglas de omisión de proxy</translation>
@@ -1845,7 +1845,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       ponerse en contacto con Quirks Server para descargar los archivos de configuración.
 
       Si a esta política se le asigna el valor "True" o no se le asigna ninguno, <ph name="PRODUCT_OS_NAME" /> se pondrá en contacto automáticamente con Quirks Server, descargará los archivos de configuración (si están disponibles) y los almacenará en el dispositivo.  Estos archivos pueden utilizarse, por ejemplo, para mejorar la calidad de la pantalla de los monitores conectados.</translation>
-<translation id="3524204464536655762">No permitir que los sitios web soliciten acceso a dispositivos USB a través de la API WebUSB</translation>
+<translation id="3524204464536655762">No permitir que los sitios soliciten acceso a dispositivos USB a través de la API WebUSB</translation>
 <translation id="3526752951628474302">Solo impresión en monocromo</translation>
 <translation id="3528000905991875314">Habilitar páginas de error alternativas</translation>
 <translation id="3531084733660068324">Ajustes de supervisión parental</translation>
@@ -1919,7 +1919,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="3647212518036289905">Si se define esta política, especificará qué biblioteca GSSAPI se debe usar para la autenticación HTTP. Puedes definirla como un nombre de biblioteca o una ruta completa.
 
       Si no se define esta política, <ph name="PRODUCT_NAME" /> usará un nombre de biblioteca predeterminado.</translation>
-<translation id="3652670852519271837">Permitir que los sitios web pidan al usuario que otorgue permiso de lectura a archivos y directorios a través de la API File System</translation>
+<translation id="3652670852519271837">Permitir que los sitios pidan al usuario que otorgue permiso de lectura a archivos y directorios a través de la API File System</translation>
 <translation id="3653234084868565720">Permite controlar la creación de nuevas cuentas de usuario en <ph name="PRODUCT_OS_NAME" />. Si se asigna el valor false a esta política, los usuarios que no tengan una cuenta no podrán iniciar sesión.
 
       Si se le asigna el valor true o no se configura, se permitirá crear nuevas cuentas de usuario siempre que <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> no impida que el usuario inicie sesión.</translation>
@@ -2015,7 +2015,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="3798922329287609568">Si se establece esta política, se restringe el modo de impresión por las dos caras.
 
       Si no se establece esta política o se deja en blanco, no se aplica ninguna restricción.</translation>
-<translation id="3803171355925844705">No permitir que los sitios web puedan cargar contenido mixto</translation>
+<translation id="3803171355925844705">No permitir que los sitios puedan cargar contenido mixto</translation>
 <translation id="3808945828600697669">Especificar una lista de complementos inhabilitados</translation>
 <translation id="3810642039169532482">Habilita la función de accesibilidad de dictado en la pantalla de inicio de sesión.
 
@@ -2362,7 +2362,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="4322842393287974810">Permite que la aplicación de kiosco sin retardo con inicio automático controle la versión de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4325690621216251241">Añadir un botón para cerrar sesión en la bandeja del sistema</translation>
 <translation id="4329095223358818804">Permitir que la función de Respuestas rápidas acceda al contenido seleccionado</translation>
-<translation id="4330372709562934569">Permitir que los sitios web de la lista envíen solicitudes a puntos finales más privados de la red desde contextos no seguros.</translation>
+<translation id="4330372709562934569">Permitir que los sitios de la lista envíen solicitudes a puntos finales más privados de la red desde contextos no seguros.</translation>
 <translation id="4332177773549877617">Registrar eventos de descargas de aplicaciones para Android</translation>
 <translation id="4341199399451274159">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />, se especificarán las codificaciones de caracteres admitidas por el proveedor de búsquedas. Las codificaciones son nombres de páginas de códigos, como UTF‑8, GB2312 o ISO-8859‑1. Se intentarán utilizar siguiendo el orden especificado.
 
@@ -3049,7 +3049,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="5365946944967967336">Mostrar botón de página principal en la barra de herramientas</translation>
 <translation id="5366977351895725771">Si se establece el valor "false", el usuario no podrá crear usuarios supervisados, pero seguirán estando disponibles los usuarios supervisados creados anteriormente.
 
-          Si se establece el valor "true" o no se configura la política, el usuario podrá crear y administrar usuarios supervisados.</translation>
+          Si se establece el valor "true" o no se configura la política, el usuario podrá crear y gestionar usuarios supervisados.</translation>
 <translation id="5369937289900051171">Solo impresión en color</translation>
 <translation id="5370279767682621504">Habilitar la compatibilidad con HTTP/0.9 en puertos no utilizados de forma predeterminada</translation>
 <translation id="5371152055157582429">Los usuarios pueden personalizar el fondo de la página Nueva pestaña</translation>
@@ -3179,7 +3179,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="5535973522252703021">Lista de admisión de servidores de delegación Kerberos</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Habilitar el contraste alto en la pantalla de inicio de sesión</translation>
-<translation id="555077880566103058">Permitir que todos los sitios web ejecuten automáticamente el complemento <ph name="FLASH_PLUGIN_NAME" /></translation>
+<translation id="555077880566103058">Permitir que todos los sitios ejecuten automáticamente el complemento <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="5559079916187891399">Esta política no influye en las aplicaciones para Android.</translation>
 <translation id="5560039246134246593">Permite añadir un parámetro para la obtención de la base de las variaciones en <ph name="PRODUCT_NAME" />.
 
@@ -3475,7 +3475,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
        Valores válidos: • 0 = desactivada • 1 = activada • 2 = lupa fijada activada
 
           Nota: <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" /> anula esta política si se especifica la anterior.</translation>
-<translation id="6011969832398368671">Permitir que los sitios web pidan al usuario que otorgue permiso de escritura a archivos y directorios</translation>
+<translation id="6011969832398368671">Permitir que los sitios pidan al usuario que otorgue permiso de escritura a archivos y directorios</translation>
 <translation id="6012952794649558174">Usar el comportamiento predeterminado del navegador.</translation>
 <translation id="6015281292796053435">Esta política determina si se recoge información de Navegación segura, incluido el número de advertencias de esta función y el número de clics de destino después de las advertencias.
 
@@ -3535,7 +3535,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="6111936128861357925">Permitir el juego del huevo de pascua de dinosaurio</translation>
 <translation id="6123052603197028610">No permitir que las consultas a los servidores de Google obtengan marcas de tiempo</translation>
 <translation id="6132506775968708399">Bloquear cookies de terceros</translation>
-<translation id="6133088669883929098">Permitir que todos los sitios web utilicen la generación de claves</translation>
+<translation id="6133088669883929098">Permitir que todos los sitios utilicen la generación de claves</translation>
 <translation id="6135398260575578389">Navegación segura está activa en modo mejorado. Este modo proporciona mayor seguridad, pero requiere compartir más información de navegación con Google.</translation>
 <translation id="6138636318340561140">Comprueba en tiempo real el estado de Navegación segura de las URL</translation>
 <translation id="6141402445226505817">Utilizar siempre la detección de zona horaria común</translation>
@@ -3734,7 +3734,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Esta política está obsoleta. Usa la política <ph name="USB_DETACHABLE_ALLOWLIST_POLICY_NAME" /> en su lugar.
       </translation>
 <translation id="6438972408080276697">Si se asigna el valor "true" a esta política, se enviarán a Google informes de los principales eventos de instalación de aplicaciones de Android activados por la política. Si se le asigna el valor "false", no se enviará información de ninguno de estos eventos.</translation>
-<translation id="6440051664870270040">Permitir que los sitios web abran ventanas emergentes y naveguen de forma simultánea</translation>
+<translation id="6440051664870270040">Permitir que los sitios abran ventanas emergentes y naveguen de forma simultánea</translation>
 <translation id="6447948611083700881">La función de copia de seguridad y restauración está inhabilitada</translation>
 <translation id="6449476513004303784">No permitir que los usuarios gestionen certificados</translation>
 <translation id="6453641799812499182">Permite habilitar las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" /></translation>
@@ -3992,7 +3992,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />, las solicitudes de búsqueda se enviarán mediante el método "get".</translation>
 <translation id="6757613329154374267">Copia de seguridad y restauración habilitada</translation>
 <translation id="6758659208493449452">Esta política controla si los usuarios registrados en el Programa de Protección Avanzada tienen acceso a funciones de protección adicionales. Puede que algunas de estas funciones impliquen compartir datos con Google (por ejemplo, los usuarios de Protección Avanzada podrán enviar sus descargas a Google para que realice un análisis de software malicioso). Si se asigna el valor "True" a esta política o no se le asigna ningún valor, los usuarios registrados tendrán acceso a funciones de protección adicionales. Si se le asigna el valor "False", los usuarios de Protección Avanzada solo tendrán acceso a las funciones estándar.</translation>
-<translation id="6766216162565713893">Permitir que los sitios web le pidan permiso al usuario para acceder a dispositivos Bluetooth cercanos</translation>
+<translation id="6766216162565713893">Permitir que los sitios le pidan permiso al usuario para acceder a dispositivos Bluetooth cercanos</translation>
 <translation id="6770454900105963262">Informar sobre sesiones del kiosco activas</translation>
 <translation id="6782977971207381602">Si se habilita esta política, el dispositivo podrá ejecutar máquinas virtuales en <ph name="PRODUCT_OS_NAME" />. Para poder usar <ph name="PRODUCT_CROSTINI_NAME" />, las políticas <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> y <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> deben estar habilitadas. Si se inhabilita la política, el dispositivo no podrá ejecutar máquinas virtuales. En caso de inhabilitar la política, esto se aplicará a las nuevas máquinas virtuales que se empiecen a usar, pero no a las que ya estén ejecutándose.
 
@@ -4158,7 +4158,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si no se establece, no habrá impresoras de dispositivo y se ignorarán las otras políticas <ph name="DEVICE_PRINTERS_POLICY_PATTERN" />.</translation>
 <translation id="69525503251220566">Parámetro que proporciona una función de búsqueda por imagen para el proveedor de búsquedas predeterminado</translation>
 <translation id="6953102253399571439">Habilitar de manera predeterminada la impresión con PIN</translation>
-<translation id="6956272732789158625">No permitir que los sitios web utilicen la generación de claves</translation>
+<translation id="6956272732789158625">No permitir que los sitios utilicen la generación de claves</translation>
 <translation id="6961602002757991199">Si se define esta política como una URL válida, <ph name="PRODUCT_NAME" /> descargará la lista de sitios web de esa URL y aplicará las reglas como si se hubieran configurado con la política <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Estas políticas evitarán que <ph name="PRODUCT_NAME" /> y el navegador alternativo se abran entre sí.
 
       Si no se asigna ningún valor a esta política o se le asigna una URL no válida, <ph name="PRODUCT_NAME" /> no la usará como fuente de reglas para no cambiar de navegador.
