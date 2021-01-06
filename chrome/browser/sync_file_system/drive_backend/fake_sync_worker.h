@@ -53,7 +53,7 @@ class FakeSyncWorker : public SyncWorkerInterface {
   void UninstallOrigin(const GURL& origin,
                        RemoteFileSyncService::UninstallFlag flag,
                        SyncStatusCallback callback) override;
-  void ProcessRemoteChange(const SyncFileCallback& callback) override;
+  void ProcessRemoteChange(SyncFileCallback callback) override;
   void SetRemoteChangeProcessor(RemoteChangeProcessorOnWorker*
                                     remote_change_processor_on_worker) override;
   RemoteServiceState GetCurrentState() const override;

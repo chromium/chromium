@@ -65,10 +65,9 @@ void FakeSyncWorker::UninstallOrigin(const GURL& origin,
   std::move(callback).Run(SYNC_STATUS_OK);
 }
 
-void FakeSyncWorker::ProcessRemoteChange(
-    const SyncFileCallback& callback) {
+void FakeSyncWorker::ProcessRemoteChange(SyncFileCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  callback.Run(SYNC_STATUS_OK, storage::FileSystemURL());
+  std::move(callback).Run(SYNC_STATUS_OK, storage::FileSystemURL());
 }
 
 void FakeSyncWorker::SetRemoteChangeProcessor(

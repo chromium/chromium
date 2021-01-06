@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
@@ -450,24 +451,33 @@ void SyncEngine::UninstallOrigin(const GURL& origin,
                                 flag, std::move(relayed_callback)));
 }
 
-void SyncEngine::ProcessRemoteChange(const SyncFileCallback& callback) {
+void SyncEngine::ProcessRemoteChange(SyncFileCallback callback) {
   if (GetCurrentState() == REMOTE_SERVICE_DISABLED) {
-    callback.Run(SYNC_STATUS_SYNC_DISABLED, storage::FileSystemURL());
+    std::move(callback).Run(SYNC_STATUS_SYNC_DISABLED,
+                            storage::FileSystemURL());
     return;
   }
 
-  base::Closure abort_closure =
-      base::Bind(callback, SYNC_STATUS_ABORT, storage::FileSystemURL());
+  // TODO: Callback tracker does not support OnceCallbacks. Use
+  // SplitOnceCallback when it does.
+  using AdaptedSyncFileCallback = base::RepeatingCallback<void(
+      SyncStatusCode status, const storage::FileSystemURL& url)>;
+
+  AdaptedSyncFileCallback adapted_callback =
+      base::AdaptCallbackForRepeating(std::move(callback));
+
+  base::RepeatingClosure abort_closure = base::BindRepeating(
+      adapted_callback, SYNC_STATUS_ABORT, storage::FileSystemURL());
 
   if (!sync_worker_) {
     abort_closure.Run();
     return;
   }
 
-  SyncFileCallback tracked_callback = callback_tracker_.Register(
-      abort_closure, callback);
-  SyncFileCallback relayed_callback = RelayCallbackToCurrentThread(
-      FROM_HERE, tracked_callback);
+  AdaptedSyncFileCallback tracked_callback =
+      callback_tracker_.Register(abort_closure, adapted_callback);
+  AdaptedSyncFileCallback relayed_callback =
+      RelayCallbackToCurrentThread(FROM_HERE, tracked_callback);
   worker_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SyncWorkerInterface::ProcessRemoteChange,

@@ -46,8 +46,7 @@ class MockRemoteFileSyncService : public RemoteFileSyncService {
                void(const GURL& origin,
                     UninstallFlag flag,
                     SyncStatusCallback callback));
-  MOCK_METHOD1(ProcessRemoteChange,
-               void(const SyncFileCallback& callback));
+  MOCK_METHOD1(ProcessRemoteChange, void(SyncFileCallback callback));
   MOCK_METHOD1(SetRemoteChangeProcessor,
                void(RemoteChangeProcessor* processor));
   MOCK_METHOD0(GetLocalChangeProcessor, LocalChangeProcessor*());
@@ -82,7 +81,7 @@ class MockRemoteFileSyncService : public RemoteFileSyncService {
   void DeleteOriginDirectoryStub(const GURL& origin,
                                  UninstallFlag flag,
                                  SyncStatusCallback callback);
-  void ProcessRemoteChangeStub(const SyncFileCallback& callback);
+  void ProcessRemoteChangeStub(SyncFileCallback callback);
   RemoteServiceState GetCurrentStateStub() const;
 
   // For default implementation.

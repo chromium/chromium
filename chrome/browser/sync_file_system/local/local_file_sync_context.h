@@ -115,7 +115,7 @@ class LocalFileSyncContext
   void FinalizeSnapshotSync(storage::FileSystemContext* file_system_context,
                             const storage::FileSystemURL& url,
                             SyncStatusCode sync_finish_status,
-                            const base::Closure& done_callback);
+                            base::OnceClosure done_callback);
 
   // Finalizes ExclusiveSync, which must have been started by
   // PrepareForSync with SYNC_EXCLUSIVE.

@@ -101,7 +101,7 @@ class LocalFileSyncService
   // using local_change_processor given by SetLocalChangeProcessor().
   // |processor| must have same or longer lifetime than this service.
   // It is invalid to call this method before calling SetLocalChangeProcessor().
-  void ProcessLocalChange(const SyncFileCallback& callback);
+  void ProcessLocalChange(SyncFileCallback callback);
 
   // Sets a local change processor. The value is ignored if
   // SetLocalChangeProcessorCallback() is called separately.
@@ -203,11 +203,11 @@ class LocalFileSyncService
   void DidApplyRemoteChange(SyncStatusCallback callback, SyncStatusCode status);
 
   // Callbacks for ProcessLocalChange.
-  void DidGetFileForLocalSync(const SyncFileCallback& callback,
+  void DidGetFileForLocalSync(SyncFileCallback callback,
                               SyncStatusCode status,
                               const LocalFileSyncInfo& sync_file_info,
                               storage::ScopedFile snapshot);
-  void ProcessNextChangeForURL(const SyncFileCallback& callback,
+  void ProcessNextChangeForURL(SyncFileCallback callback,
                                storage::ScopedFile snapshot,
                                const LocalFileSyncInfo& sync_file_info,
                                const FileChange& last_change,

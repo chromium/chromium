@@ -70,7 +70,7 @@ class SyncWorkerInterface {
   virtual void UninstallOrigin(const GURL& origin,
                                RemoteFileSyncService::UninstallFlag flag,
                                SyncStatusCallback callback) = 0;
-  virtual void ProcessRemoteChange(const SyncFileCallback& callback) = 0;
+  virtual void ProcessRemoteChange(SyncFileCallback callback) = 0;
   virtual void SetRemoteChangeProcessor(
       RemoteChangeProcessorOnWorker* remote_change_processor_on_worker) = 0;
   virtual RemoteServiceState GetCurrentState() const = 0;

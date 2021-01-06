@@ -83,7 +83,7 @@ class SyncWorker : public SyncWorkerInterface,
   void UninstallOrigin(const GURL& origin,
                        RemoteFileSyncService::UninstallFlag flag,
                        SyncStatusCallback callback) override;
-  void ProcessRemoteChange(const SyncFileCallback& callback) override;
+  void ProcessRemoteChange(SyncFileCallback callback) override;
   void SetRemoteChangeProcessor(RemoteChangeProcessorOnWorker*
                                     remote_change_processor_on_worker) override;
   RemoteServiceState GetCurrentState() const override;
@@ -132,7 +132,7 @@ class SyncWorker : public SyncWorkerInterface,
       const base::Closure& callback);
   void DidQueryAppStatus(const AppStatusMap* app_status);
   void DidProcessRemoteChange(RemoteToLocalSyncer* syncer,
-                              const SyncFileCallback& callback,
+                              SyncFileCallback callback,
                               SyncStatusCode status);
   void DidApplyLocalChange(LocalToRemoteSyncer* syncer,
                            SyncStatusCallback callback,

@@ -133,15 +133,16 @@ void SyncWorker::UninstallOrigin(const GURL& origin,
       SyncTaskManager::PRIORITY_HIGH, std::move(callback));
 }
 
-void SyncWorker::ProcessRemoteChange(const SyncFileCallback& callback) {
+void SyncWorker::ProcessRemoteChange(SyncFileCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   RemoteToLocalSyncer* syncer = new RemoteToLocalSyncer(context_.get());
   task_manager_->ScheduleSyncTask(
       FROM_HERE, std::unique_ptr<SyncTask>(syncer),
       SyncTaskManager::PRIORITY_MED,
-      base::Bind(&SyncWorker::DidProcessRemoteChange,
-                 weak_ptr_factory_.GetWeakPtr(), syncer, callback));
+      base::BindOnce(&SyncWorker::DidProcessRemoteChange,
+                     weak_ptr_factory_.GetWeakPtr(), syncer,
+                     std::move(callback)));
 }
 
 void SyncWorker::SetRemoteChangeProcessor(
@@ -477,14 +478,14 @@ void SyncWorker::DidQueryAppStatus(const AppStatusMap* app_status) {
 }
 
 void SyncWorker::DidProcessRemoteChange(RemoteToLocalSyncer* syncer,
-                                        const SyncFileCallback& callback,
+                                        SyncFileCallback callback,
                                         SyncStatusCode status) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   if (syncer->is_sync_root_deletion()) {
     MetadataDatabase::ClearDatabase(context_->PassMetadataDatabase());
     PostInitializeTask();
-    callback.Run(status, syncer->url());
+    std::move(callback).Run(status, syncer->url());
     return;
   }
 
@@ -505,7 +506,7 @@ void SyncWorker::DidProcessRemoteChange(RemoteToLocalSyncer* syncer,
     }
     should_check_conflict_ = true;
   }
-  callback.Run(status, syncer->url());
+  std::move(callback).Run(status, syncer->url());
 }
 
 void SyncWorker::DidApplyLocalChange(LocalToRemoteSyncer* syncer,

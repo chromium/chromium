@@ -154,15 +154,16 @@ void LocalFileSyncContext::FinalizeSnapshotSync(
     storage::FileSystemContext* file_system_context,
     const storage::FileSystemURL& url,
     SyncStatusCode sync_finish_status,
-    const base::Closure& done_callback) {
+    base::OnceClosure done_callback) {
   DCHECK(file_system_context);
   DCHECK(url.is_valid());
   if (!file_system_context->default_file_task_runner()->
           RunsTasksInCurrentSequence()) {
     file_system_context->default_file_task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&LocalFileSyncContext::FinalizeSnapshotSync,
-                                  this, base::RetainedRef(file_system_context),
-                                  url, sync_finish_status, done_callback));
+        FROM_HERE,
+        base::BindOnce(&LocalFileSyncContext::FinalizeSnapshotSync, this,
+                       base::RetainedRef(file_system_context), url,
+                       sync_finish_status, std::move(done_callback)));
     return;
   }
 
@@ -188,7 +189,7 @@ void LocalFileSyncContext::FinalizeSnapshotSync(
                      this, url));
 
   // Call the completion callback on UI thread.
-  ui_task_runner_->PostTask(FROM_HERE, done_callback);
+  ui_task_runner_->PostTask(FROM_HERE, std::move(done_callback));
 }
 
 void LocalFileSyncContext::FinalizeExclusiveSync(

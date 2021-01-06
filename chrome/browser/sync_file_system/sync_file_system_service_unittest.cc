@@ -105,13 +105,21 @@ ACTION_P(RecordState, states) {
   states->push_back(arg1);
 }
 
-ACTION_P2(MockSyncFileCallback, status, url) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(arg0, status, url));
-}
+struct PostSyncFileCallback {
+  PostSyncFileCallback(SyncStatusCode status, const storage::FileSystemURL& url)
+      : status_(status), url_(url) {}
+  void operator()(SyncFileCallback callback) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), status_, url_));
+  }
+
+ private:
+  SyncStatusCode status_;
+  storage::FileSystemURL url_;
+};
 
 ACTION(InvokeCompletionClosure) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, arg0);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(arg0));
 }
 
 class SyncFileSystemServiceTest : public testing::Test {
@@ -346,8 +354,8 @@ TEST_F(SyncFileSystemServiceTest, SimpleLocalSyncFlow) {
             FROM_HERE, base::BindOnce(std::move(callback), SYNC_STATUS_OK));
       }));
   EXPECT_CALL(*mock_remote_service(), ProcessRemoteChange(_))
-      .WillRepeatedly(MockSyncFileCallback(SYNC_STATUS_NO_CHANGE_TO_SYNC,
-                                           FileSystemURL()));
+      .WillRepeatedly(
+          PostSyncFileCallback(SYNC_STATUS_NO_CHANGE_TO_SYNC, FileSystemURL()));
 
   EXPECT_CALL(*mock_remote_service(), PromoteDemotedChanges(_))
       .WillRepeatedly(InvokeCompletionClosure());
@@ -392,8 +400,7 @@ TEST_F(SyncFileSystemServiceTest, SimpleSyncFlowWithFileBusy) {
 
     // Return with SYNC_STATUS_FILE_BUSY once.
     EXPECT_CALL(*mock_remote_service(), ProcessRemoteChange(_))
-        .WillOnce(MockSyncFileCallback(SYNC_STATUS_FILE_BUSY,
-                                       kFile));
+        .WillOnce(PostSyncFileCallback(SYNC_STATUS_FILE_BUSY, kFile));
 
     // ProcessRemoteChange should be called again when the becomes
     // not busy.

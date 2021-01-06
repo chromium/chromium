@@ -114,7 +114,7 @@ class SyncEngine
   void UninstallOrigin(const GURL& origin,
                        UninstallFlag flag,
                        SyncStatusCallback callback) override;
-  void ProcessRemoteChange(const SyncFileCallback& callback) override;
+  void ProcessRemoteChange(SyncFileCallback callback) override;
   void SetRemoteChangeProcessor(RemoteChangeProcessor* processor) override;
   LocalChangeProcessor* GetLocalChangeProcessor() override;
   RemoteServiceState GetCurrentState() const override;
