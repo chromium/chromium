@@ -202,6 +202,10 @@ WindowPerformance::CreateNavigationTimingInstance() {
   if (!DomWindow())
     return nullptr;
   DocumentLoader* document_loader = DomWindow()->document()->Loader();
+  // TODO(npm): figure out when |document_loader| can be null and add tests.
+  DCHECK(document_loader);
+  if (!document_loader)
+    return nullptr;
   ResourceTimingInfo* info = document_loader->GetNavigationTimingInfo();
   if (!info)
     return nullptr;
