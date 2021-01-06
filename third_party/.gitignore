@@ -72,6 +72,7 @@
 /eigen3/src
 /elfutils/src
 /emoji-segmenter/src
+/emoji-metadata/src
 /espresso/lib/
 /expat/src
 /eyesfree/src

@@ -904,6 +904,10 @@ deps = {
   'src/third_party/eigen3/src':
     Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '2ce2f5198929caab4b41a6ad1b9c93f67d8b9a69',
 
+  'src/third_party/emoji-metadata/src': {
+    'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '9d8e5cfe52ee763b7dd91e33e5a50250efbf7135',
+    'condition': 'checkout_chromeos',
+  },
 
   'src/third_party/espresso': {
       'packages': [
