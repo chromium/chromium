@@ -358,8 +358,7 @@ void HintBox::SetLabel(const base::string16& text, const SkColor& color) {
 
   label_font_list_ =
       ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
-          kHintBoxLabelTextSize, gfx::Font::FontStyle::NORMAL,
-          gfx::Font::Weight::NORMAL);
+          kHintBoxLabelTextSize);
 
   // Adjust size of label bounds based on text and font.
   gfx::Size size = GetSizeForString(label_text_, label_font_list_);
@@ -379,8 +378,7 @@ void HintBox::SetSubLabel(const base::string16& text, const SkColor& color) {
 
   sublabel_font_list_ =
       ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
-          kHintBoxSublabelTextSize, gfx::Font::FontStyle::NORMAL,
-          gfx::Font::Weight::NORMAL);
+          kHintBoxSublabelTextSize);
 
   // Adjust size of sublabel label bounds based on text and font.
   gfx::Size size = GetSizeForString(sublabel_text_, sublabel_font_list_);
@@ -434,8 +432,7 @@ CompletionMessageView::CompletionMessageView(const gfx::Rect& bounds,
   text_bounds_.SetRect(x_offset, 0, width() - x_offset, height());
 
   font_list_ = ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
-      kCompleteMessageTextSize, gfx::Font::FontStyle::NORMAL,
-      gfx::Font::Weight::NORMAL);
+      kCompleteMessageTextSize);
 
   // crbug/676513 moves this file to src/ash which will require an ash icon
   // file.
@@ -499,8 +496,7 @@ void TouchCalibratorView::InitViewContents() {
   // calibration setup.
   exit_label_ = AddChildView(std::make_unique<views::Label>(
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL),
-      views::Label::CustomFont{rb.GetFontListWithDelta(
-          8, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL)}));
+      views::Label::CustomFont{rb.GetFontListWithDelta(8)}));
   exit_label_->SetBounds((display_.bounds().width() - kExitLabelWidth) / 2,
                          display_.bounds().height() * 3.f / 4, kExitLabelWidth,
                          kExitLabelHeight);
@@ -541,8 +537,7 @@ void TouchCalibratorView::InitViewContents() {
   // Initialize the tap label.
   tap_label_ = touch_point_view_->AddChildView(std::make_unique<views::Label>(
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_TAP_HERE_LABEL),
-      views::Label::CustomFont{rb.GetFontListWithDelta(
-          6, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL)}));
+      views::Label::CustomFont{rb.GetFontListWithDelta(6)}));
   tap_label_->SetBounds(0, kThrobberCircleViewWidth, kTapLabelWidth,
                         kTapLabelHeight);
   tap_label_->SetEnabledColor(kTapHereLabelColor);

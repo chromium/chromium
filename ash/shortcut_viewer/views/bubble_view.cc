@@ -74,8 +74,9 @@ void BubbleView::SetText(const base::string16& text) {
     text_->SetElideBehavior(gfx::NO_ELIDE);
     constexpr int kLabelFontSizeDelta = 1;
     text_->SetFontList(
-        ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
-            kLabelFontSizeDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+        ui::ResourceBundle::GetSharedInstance().GetFontListForDetails(
+            ui::ResourceBundle::FontDetails(std::string(), kLabelFontSizeDelta,
+                                            gfx::Font::Weight::MEDIUM)));
   }
   text_->SetText(text);
 }

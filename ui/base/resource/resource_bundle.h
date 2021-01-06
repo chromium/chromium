@@ -67,6 +67,26 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     LargeFont,
   };
 
+  struct COMPONENT_EXPORT(UI_BASE) FontDetails {
+    explicit FontDetails(std::string typeface = std::string(),
+                         int size_delta = 0,
+                         gfx::Font::Weight weight = gfx::Font::Weight::NORMAL);
+    FontDetails(const FontDetails&) = default;
+    FontDetails(FontDetails&&) = default;
+    FontDetails& operator=(const FontDetails&) = default;
+    FontDetails& operator=(FontDetails&&) = default;
+    ~FontDetails() = default;
+
+    bool operator==(const FontDetails& rhs) const;
+    bool operator<(const FontDetails& rhs) const;
+
+    // If typeface is empty, we default to the platform-specific "Base" font
+    // list.
+    std::string typeface;
+    int size_delta;
+    gfx::Font::Weight weight;
+  };
+
   enum LoadResources {
     LOAD_COMMON_RESOURCES,
     DO_NOT_LOAD_COMMON_RESOURCES
@@ -293,26 +313,11 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Returns a font list derived from the platform-specific "Base" font list.
   // The result is always cached and exists for the lifetime of the process.
-  const gfx::FontList& GetFontListWithDelta(
-      int size_delta,
-      gfx::Font::FontStyle style = gfx::Font::NORMAL,
-      gfx::Font::Weight weight = gfx::Font::Weight::NORMAL);
+  const gfx::FontList& GetFontListWithDelta(int size_delta);
 
-  // Returns a font list derived from the user-specified typeface. The
-  // result is always cached and exists for the lifetime of the process.
-  // If typeface is empty, we default to the platform-specific "Base" font
-  // list.
-  const gfx::FontList& GetFontListWithTypefaceAndDelta(
-      const std::string& typeface,
-      int size_delta,
-      gfx::Font::FontStyle style = gfx::Font::NORMAL,
-      gfx::Font::Weight weight = gfx::Font::Weight::NORMAL);
-
-  // Returns the primary font from the FontList given by GetFontListWithDelta().
-  const gfx::Font& GetFontWithDelta(
-      int size_delta,
-      gfx::Font::FontStyle style = gfx::Font::NORMAL,
-      gfx::Font::Weight weight = gfx::Font::Weight::NORMAL);
+  // Returns a font list for the given set of |details|. The result is always
+  // cached and exists for the lifetime of the process.
+  const gfx::FontList& GetFontListForDetails(const FontDetails& details);
 
   // Deprecated. Returns fonts using hard-coded size deltas implied by |style|.
   const gfx::FontList& GetFontList(FontStyle style);
@@ -379,8 +384,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   class ResourceBundleImageSource;
   friend class ResourceBundleImageSource;
-
-  struct FontKey;
 
   using IdToStringMap = std::unordered_map<int, base::string16>;
 
@@ -509,7 +512,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // platform base font size, plus style, to the FontList. Cached to avoid
   // repeated GDI creation/destruction and font derivation.
   // Must be accessed only from UI thread.
-  std::map<FontKey, gfx::FontList> font_cache_;
+  std::map<FontDetails, gfx::FontList> font_cache_;
 
   base::FilePath overridden_pak_path_;
 

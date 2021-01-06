@@ -271,16 +271,18 @@ void Widget::ReparentNativeView(gfx::NativeView native_view,
 
 // static
 int Widget::GetLocalizedContentsWidth(int col_resource_id) {
-  return ui::GetLocalizedContentsWidthForFont(
-      col_resource_id, ui::ResourceBundle::GetSharedInstance().GetFontWithDelta(
-                           ui::kMessageFontSizeDelta));
+  return ui::GetLocalizedContentsWidthForFontList(
+      col_resource_id,
+      ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
+          ui::kMessageFontSizeDelta));
 }
 
 // static
 int Widget::GetLocalizedContentsHeight(int row_resource_id) {
-  return ui::GetLocalizedContentsHeightForFont(
-      row_resource_id, ui::ResourceBundle::GetSharedInstance().GetFontWithDelta(
-                           ui::kMessageFontSizeDelta));
+  return ui::GetLocalizedContentsHeightForFontList(
+      row_resource_id,
+      ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
+          ui::kMessageFontSizeDelta));
 }
 
 // static

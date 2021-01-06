@@ -224,33 +224,20 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
   DISALLOW_COPY_AND_ASSIGN(ResourceBundleImageSource);
 };
 
-struct ResourceBundle::FontKey {
-  FontKey(const std::string& typeface,
-          int in_size_delta,
-          gfx::Font::FontStyle in_style,
-          gfx::Font::Weight in_weight)
-      : typeface(typeface),
-        size_delta(in_size_delta),
-        style(in_style),
-        weight(in_weight) {}
+ResourceBundle::FontDetails::FontDetails(std::string typeface,
+                                         int size_delta,
+                                         gfx::Font::Weight weight)
+    : typeface(typeface), size_delta(size_delta), weight(weight) {}
 
-  ~FontKey() {}
+bool ResourceBundle::FontDetails::operator==(const FontDetails& rhs) const {
+  return std::tie(typeface, size_delta, weight) ==
+         std::tie(rhs.typeface, rhs.size_delta, rhs.weight);
+}
 
-  bool operator==(const FontKey& rhs) const {
-    return std::tie(typeface, size_delta, style, weight) ==
-           std::tie(rhs.typeface, rhs.size_delta, rhs.style, rhs.weight);
-  }
-
-  bool operator<(const FontKey& rhs) const {
-    return std::tie(typeface, size_delta, style, weight) <
-           std::tie(rhs.typeface, rhs.size_delta, rhs.style, rhs.weight);
-  }
-
-  std::string typeface;
-  int size_delta;
-  gfx::Font::FontStyle style;
-  gfx::Font::Weight weight;
-};
+bool ResourceBundle::FontDetails::operator<(const FontDetails& rhs) const {
+  return std::tie(typeface, size_delta, weight) <
+         std::tie(rhs.typeface, rhs.size_delta, rhs.weight);
+}
 
 // static
 std::string ResourceBundle::InitSharedInstanceWithLocale(
@@ -751,74 +738,56 @@ base::RefCountedMemory* ResourceBundle::LoadLocalizedResourceBytes(
   return LoadDataResourceBytes(resource_id);
 }
 
-const gfx::FontList& ResourceBundle::GetFontListWithDelta(
-    int size_delta,
-    gfx::Font::FontStyle style,
-    gfx::Font::Weight weight) {
-  return GetFontListWithTypefaceAndDelta(/*typeface=*/std::string(), size_delta,
-                                         style, weight);
+const gfx::FontList& ResourceBundle::GetFontListWithDelta(int size_delta) {
+  return GetFontListForDetails(FontDetails(std::string(), size_delta));
 }
 
-const gfx::FontList& ResourceBundle::GetFontListWithTypefaceAndDelta(
-    const std::string& typeface,
-    int size_delta,
-    gfx::Font::FontStyle style,
-    gfx::Font::Weight weight) {
+const gfx::FontList& ResourceBundle::GetFontListForDetails(
+    const FontDetails& details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const FontKey styled_key(typeface, size_delta, style, weight);
-
-  auto found = font_cache_.find(styled_key);
+  auto found = font_cache_.find(details);
   if (found != font_cache_.end())
     return found->second;
 
-  const FontKey base_key(typeface, 0, gfx::Font::NORMAL,
-                         gfx::Font::Weight::NORMAL);
+  const FontDetails base_details(details.typeface);
   gfx::FontList default_font_list = gfx::FontList();
   gfx::FontList base_font_list =
-      typeface.empty()
+      details.typeface.empty()
           ? default_font_list
-          : gfx::FontList({typeface}, default_font_list.GetFontStyle(),
+          : gfx::FontList({details.typeface}, default_font_list.GetFontStyle(),
                           default_font_list.GetFontSize(),
                           default_font_list.GetFontWeight());
-  font_cache_.emplace(base_key, base_font_list);
-  gfx::FontList& base = font_cache_.find(base_key)->second;
-  if (styled_key == base_key)
+  font_cache_.emplace(base_details, base_font_list);
+  gfx::FontList& base = font_cache_.find(base_details)->second;
+  if (details == base_details)
     return base;
 
   // Fonts of a given style are derived from the unstyled font of the same size.
   // Cache the unstyled font by first inserting a default-constructed font list.
   // Then, derive it for the initial insertion, or use the iterator that points
   // to the existing entry that the insertion collided with.
-  const FontKey sized_key(typeface, size_delta, gfx::Font::NORMAL,
-                          gfx::Font::Weight::NORMAL);
-  auto sized = font_cache_.emplace(sized_key, base_font_list);
+  const FontDetails sized_details(details.typeface, details.size_delta);
+  auto sized = font_cache_.emplace(sized_details, base_font_list);
   if (sized.second)
-    sized.first->second = base.DeriveWithSizeDelta(size_delta);
-  if (styled_key == sized_key) {
+    sized.first->second = base.DeriveWithSizeDelta(details.size_delta);
+  if (details == sized_details) {
     return sized.first->second;
   }
 
-  auto styled = font_cache_.emplace(styled_key, base_font_list);
+  auto styled = font_cache_.emplace(details, base_font_list);
   DCHECK(styled.second);  // Otherwise font_cache_.find(..) would have found it.
   styled.first->second = sized.first->second.Derive(
-      0, sized.first->second.GetFontStyle() | style, weight);
+      0, sized.first->second.GetFontStyle(), details.weight);
 
   return styled.first->second;
 }
 
-const gfx::Font& ResourceBundle::GetFontWithDelta(int size_delta,
-                                                  gfx::Font::FontStyle style,
-                                                  gfx::Font::Weight weight) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetFontListWithDelta(size_delta, style, weight).GetPrimaryFont();
-}
-
 const gfx::FontList& ResourceBundle::GetFontList(FontStyle legacy_style) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  gfx::Font::Weight font_weight = gfx::Font::Weight::NORMAL;
+  gfx::Font::Weight weight = gfx::Font::Weight::NORMAL;
   if (legacy_style == BoldFont || legacy_style == MediumBoldFont)
-    font_weight = gfx::Font::Weight::BOLD;
+    weight = gfx::Font::Weight::BOLD;
 
   int size_delta = 0;
   switch (legacy_style) {
@@ -837,7 +806,7 @@ const gfx::FontList& ResourceBundle::GetFontList(FontStyle legacy_style) {
       break;
   }
 
-  return GetFontListWithDelta(size_delta, gfx::Font::NORMAL, font_weight);
+  return GetFontListForDetails(FontDetails(std::string(), size_delta, weight));
 }
 
 const gfx::Font& ResourceBundle::GetFont(FontStyle style) {

@@ -111,9 +111,8 @@ const gfx::FontList& ChromeTypographyProvider::GetFont(int context,
 #endif
   }
 
-  return ui::ResourceBundle::GetSharedInstance()
-      .GetFontListWithTypefaceAndDelta(typeface, size_delta, gfx::Font::NORMAL,
-                                       font_weight);
+  return ui::ResourceBundle::GetSharedInstance().GetFontListForDetails(
+      ui::ResourceBundle::FontDetails(typeface, size_delta, font_weight));
 }
 
 SkColor ChromeTypographyProvider::GetColor(const views::View& view,

@@ -5,6 +5,7 @@
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -229,8 +230,8 @@ void Tab::OnStateChanged() {
   }
 
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  title_->SetFontList(
-      rb.GetFontListWithDelta(font_size_delta, gfx::Font::NORMAL, font_weight));
+  title_->SetFontList(rb.GetFontListForDetails(ui::ResourceBundle::FontDetails(
+      std::string(), font_size_delta, font_weight)));
 }
 
 void Tab::OnPaint(gfx::Canvas* canvas) {

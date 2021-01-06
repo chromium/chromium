@@ -75,8 +75,9 @@ void KeyboardShortcutItemListView::AddCategoryLabel(
   category_label->SetEnabledColor(kLabelColor);
   constexpr int kLabelFontSizeDelta = 1;
   category_label->SetFontList(
-      ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
-          kLabelFontSizeDelta, gfx::Font::NORMAL, gfx::Font::Weight::BOLD));
+      ui::ResourceBundle::GetSharedInstance().GetFontListForDetails(
+          ui::ResourceBundle::FontDetails(std::string(), kLabelFontSizeDelta,
+                                          gfx::Font::Weight::BOLD)));
   AddChildView(std::move(category_label));
 }
 

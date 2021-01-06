@@ -222,8 +222,9 @@ TEST_F(LayoutProviderTest, RequestFontBySize) {
   gfx::FontList title_font = rb.GetFontListWithDelta(kTitle - kBase);
   gfx::FontList body1_font = rb.GetFontListWithDelta(kBody1 - kBase);
   gfx::FontList body2_font = rb.GetFontListWithDelta(kBody2 - kBase);
-  gfx::FontList button_font = rb.GetFontListWithDelta(
-      kButton - kBase, gfx::Font::NORMAL, kButtonWeight);
+  gfx::FontList button_font =
+      rb.GetFontListForDetails(ui::ResourceBundle::FontDetails(
+          std::string(), kButton - kBase, kButtonWeight));
 
   // The following checks on leading don't need to match the spec. Instead, it
   // means Label::SetLineHeight() needs to be used to increase it. But what we

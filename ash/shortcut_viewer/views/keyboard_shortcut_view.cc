@@ -92,8 +92,7 @@ std::unique_ptr<views::View> CreateNoSearchResultView() {
   text->SetEnabledColor(kSearchIllustrationTextColor);
   constexpr int kLabelFontSizeDelta = 1;
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  text->SetFontList(rb.GetFontListWithDelta(
-      kLabelFontSizeDelta, gfx::Font::NORMAL, gfx::Font::Weight::NORMAL));
+  text->SetFontList(rb.GetFontListWithDelta(kLabelFontSizeDelta));
   illustration_view->AddChildView(std::move(text));
   return illustration_view;
 }

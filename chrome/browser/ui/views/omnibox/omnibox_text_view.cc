@@ -301,11 +301,12 @@ void OmniboxTextView::AppendText(const SuggestionAnswer::TextField& field,
 
 void OmniboxTextView::OnStyleChanged() {
   const int height_normal = render_text_->font_list().GetHeight();
+  const int size_delta =
+      render_text_->font_list().GetFontSize() - gfx::FontList().GetFontSize();
   const int height_bold =
       ui::ResourceBundle::GetSharedInstance()
-          .GetFontListWithDelta(render_text_->font_list().GetFontSize() -
-                                    gfx::FontList().GetFontSize(),
-                                gfx::Font::NORMAL, gfx::Font::Weight::BOLD)
+          .GetFontListForDetails(ui::ResourceBundle::FontDetails(
+              std::string(), size_delta, gfx::Font::Weight::BOLD))
           .GetHeight();
   font_height_ = std::max(height_normal, height_bold);
   font_height_ += kVerticalPadding;
