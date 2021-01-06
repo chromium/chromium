@@ -647,6 +647,25 @@ URLLoader::URLLoader(
 
   // Resolve elements from request_body and prepare upload data.
   if (request.request_body.get()) {
+    const auto& elements = *request.request_body->elements();
+    // TODO(crbug.com/1156550): Move this logic to the deserialization part.
+    if (elements.size() == 1 &&
+        (elements[0].type() == mojom::DataElementType::kChunkedDataPipe ||
+         elements[0].type() == mojom::DataElementType::kReadOnceStream)) {
+      const bool chunked_data_pipe_getter_is_valid =
+          elements[0].chunked_data_pipe_getter().is_valid();
+      UMA_HISTOGRAM_BOOLEAN(
+          "NetworkService.StreamingUploadDataPipeGetterValidity",
+          chunked_data_pipe_getter_is_valid);
+      if (!chunked_data_pipe_getter_is_valid) {
+        base::SequencedTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&URLLoader::NotifyCompleted, base::Unretained(this),
+                           net::ERR_INVALID_ARGUMENT));
+        return;
+      }
+    }
+
     OpenFilesForUpload(request);
     return;
   }

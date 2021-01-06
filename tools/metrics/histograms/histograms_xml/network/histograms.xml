@@ -2140,6 +2140,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.StreamingUploadDataPipeGetterValidity"
+    units="BooleanValid" expires_after="2021-03-31">
+  <owner>yhirano@chromium.org</owner>
+  <owner>yoichio@chromium.org</owner>
+  <summary>
+    It seems in some cases the ChunkedDataPipeGetter for a request body is
+    missing. This histogram counts whether the mojo::Remote is valid, for each
+    request with body of type KChunkedDataPipe or kReadOnceStream.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.TimeToFirstResponse" units="ms"
     expires_after="M82">
   <owner>cduvall@chromium.org</owner>
