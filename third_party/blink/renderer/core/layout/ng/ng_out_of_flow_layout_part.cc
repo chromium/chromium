@@ -853,7 +853,8 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
         node, container_content_size_in_candidate_writing_mode, block_estimate,
         node_dimensions, /* block_offset */ LayoutUnit(),
         /* break_token */ nullptr,
-        /* fragmentainer_constraint_space */ nullptr);
+        /* fragmentainer_constraint_space */ nullptr,
+        /* should_use_fixed_block_size */ false);
 
     // TODO(layout-dev): Handle abortions caused by block fragmentation.
     DCHECK(layout_result->Status() != NGLayoutResult::kOutOfFragmentainerSpace);
@@ -969,14 +970,18 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
     // Skip this step if we produced a fragment that can be reused when
     // estimating the block-size.
     if (!layout_result) {
-      const NGConstraintSpace* fragmentainer_constraint_space =
-          is_fragmentainer_descendant
-              ? &GetFragmentainerConstraintSpace(start_index)
-              : nullptr;
+      const NGConstraintSpace* fragmentainer_constraint_space = nullptr;
+      bool should_use_fixed_block_size = !!block_estimate;
+      if (is_fragmentainer_descendant) {
+        fragmentainer_constraint_space =
+            &GetFragmentainerConstraintSpace(start_index);
+        should_use_fixed_block_size &= !absolute_needs_child_block_size;
+      }
+
       layout_result = GenerateFragment(
           node, container_content_size_in_candidate_writing_mode,
           block_estimate, node_dimensions, offset.block_offset, break_token,
-          fragmentainer_constraint_space);
+          fragmentainer_constraint_space, should_use_fixed_block_size);
     }
 
     // TODO(layout-dev): Handle abortions caused by block fragmentation.
@@ -1041,7 +1046,8 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
     const NGLogicalOutOfFlowDimensions& node_dimensions,
     const LayoutUnit block_offset,
     const NGBlockBreakToken* break_token,
-    const NGConstraintSpace* fragmentainer_constraint_space) {
+    const NGConstraintSpace* fragmentainer_constraint_space,
+    bool should_use_fixed_block_size) {
   const auto& style = node.Style();
 
   LayoutUnit inline_size = node_dimensions.size.inline_size;
@@ -1059,7 +1065,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
   builder.SetPercentageResolutionSize(
       container_content_size_in_candidate_writing_mode);
   builder.SetIsFixedInlineSize(true);
-  if (block_estimate)
+  if (should_use_fixed_block_size)
     builder.SetIsFixedBlockSize(true);
   if (fragmentainer_constraint_space) {
     SetupSpaceBuilderForFragmentation(*fragmentainer_constraint_space, node,

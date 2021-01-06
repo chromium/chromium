@@ -127,7 +127,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       const NGLogicalOutOfFlowDimensions& node_dimensions,
       const LayoutUnit block_offset,
       const NGBlockBreakToken* break_token,
-      const NGConstraintSpace* fragmentainer_constraint_space);
+      const NGConstraintSpace* fragmentainer_constraint_space,
+      bool should_use_fixed_block_size);
   void AddOOFResultsToFragmentainer(
       const Vector<scoped_refptr<const NGLayoutResult>>& results,
       wtf_size_t index);

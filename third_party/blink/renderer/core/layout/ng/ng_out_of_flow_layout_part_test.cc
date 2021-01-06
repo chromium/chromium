@@ -1374,7 +1374,7 @@ TEST_F(NGOutOfFlowLayoutPartTest,
           column-count:2; column-fill:auto; column-gap:16px; height:40px;
         }
         .rel {
-          position: relative;
+          position:relative; height:60px; width:32px;
         }
         .abs {
           position:absolute; bottom:0; width:5px; height:auto;
@@ -1382,7 +1382,7 @@ TEST_F(NGOutOfFlowLayoutPartTest,
       </style>
       <div id="container">
         <div id="multicol">
-          <div class="rel" style="height: 60px; width: 32px;">
+          <div class="rel">
             <div class="abs">
               <div style="width: 2px; height: 10px"></div>
               <div style="width: 3px; height: 20px"></div>
