@@ -86,6 +86,14 @@ class URLSchemesRegistry final {
   }
   ~URLSchemesRegistry() = default;
 
+  // As URLSchemesRegistry is accessed from multiple threads, be very careful to
+  // ensure that
+  // - URLSchemesRegistry is initialized/modified through
+  //   GetMutableURLSchemesRegistry() before threads can be created, and
+  // - The URLSchemesRegistry members below aren't modified when accessed after
+  //   initialization.
+  //   Particularly, Strings inside them shouldn't be copied, as it modifies
+  //   reference counts of StringImpls (IsolatedCopy() should be taken instead).
   URLSchemesSet local_schemes;
   URLSchemesSet display_isolated_url_schemes;
   URLSchemesSet secure_schemes;
@@ -258,7 +266,10 @@ String SchemeRegistry::ListOfCorsEnabledURLSchemes() {
     else
       add_separator = true;
 
-    builder.Append(scheme);
+    // As |cors_enabled_schemes| can be accessed from multiple threads, we need
+    // IsolatedCopy() here before passing it to |StringBuilder| that can
+    // ref/deref Strings.
+    builder.Append(scheme.IsolatedCopy());
   }
   return builder.ToString();
 }
