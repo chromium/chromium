@@ -4080,6 +4080,8 @@ crbug.com/681468 [ Win ] virtual/scalefactor150/fast/hidpi/static/data-suggestio
 crbug.com/681468 [ Win ] virtual/scalefactor200withzoom/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure Pass Timeout ]
 crbug.com/681468 [ Win ] virtual/scalefactor200/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure Pass Timeout ]
 
+crbug.com/1157857 [ Mac10.14 ] virtual/percent-based-scrolling/max-percent-delta-cross-origin-iframes.html [ Pass Timeout ]
+
 crbug.com/683800 [ Win7 Debug ] external/wpt/selection/* [ Failure Pass ]
 
 # Importing 'fetch' tests from WPT.
@@ -5899,7 +5901,6 @@ crbug.com/1154178 external/wpt/webmessaging/broadcastchannel/basics.html [ Pass 
 # Sheriff 2020-12-11
 # Flaking on Linux Trusty
 crbug.com/1157849 [ Linux Release ] external/wpt/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Pass Timeout ]
-crbug.com/1157857 [ Mac10.14 ] virtual/compositor-threaded-percent-based-scrolling-dsf-2/virtual/percent-based-scrolling/max-percent-delta-cross-origin-iframes.html [ Pass Timeout ]
 crbug.com/1157861 http/tests/devtools/a11y-axe-core/sources/javascript-breakpoints-a11y-test.js [ Pass Failure ]
 crbug.com/1157861 http/tests/devtools/extensions/extensions-resources.js [ Pass Failure ]
 crbug.com/1157861 http/tests/devtools/console/paintworklet-console-selector.js [ Pass Failure ]
