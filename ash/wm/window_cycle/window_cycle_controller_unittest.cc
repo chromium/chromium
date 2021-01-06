@@ -1390,7 +1390,10 @@ class ModeSelectionWindowCycleControllerTest
 // shows only windows in the current desk in a current-desk mode. Switching
 // between two modes should refresh the window list, while re-entering alt-tab
 // should display the most recently selected mode.
-TEST_F(ModeSelectionWindowCycleControllerTest, CycleShowsWindowsPerMode) {
+//
+// Flaky: crbug.com/1163577
+TEST_F(ModeSelectionWindowCycleControllerTest,
+       DISABLED_CycleShowsWindowsPerMode) {
   WindowCycleController* cycle_controller =
       Shell::Get()->window_cycle_controller();
 
