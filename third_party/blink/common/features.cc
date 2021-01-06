@@ -796,6 +796,12 @@ const base::Feature kLogUnexpectedIPCPostedToBackForwardCachedDocuments{
     "LogUnexpectedIPCPostedToBackForwardCachedDocuments",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables declarative link capturing in web apps.
+// Explainer:
+// https://github.com/WICG/sw-launch/blob/master/declarative_link_capturing.md
+const base::Feature kWebAppEnableLinkCapturing{
+    "WebAppEnableLinkCapturing", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls URL handling feature in web apps. Controls parsing of "url_handlers"
 // field in web app manifests. See explainer for more information:
 // https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
