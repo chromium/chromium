@@ -53,12 +53,6 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
       gfx::HasExtension(device_queue->enabled_extensions(),
                         VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME);
 
-  // If the driver doesn't support modifier or the native_pixmap_handle doesn't
-  // have modifier, VK_IMAGE_TILING_OPTIMAL will be used.
-  DCHECK_EQ(image_tiling, VK_IMAGE_TILING_OPTIMAL);
-  if (using_modifier)
-    image_tiling = VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT;
-
   VkExternalMemoryImageCreateInfoKHR external_image_create_info = {
       .sType = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO_KHR,
       .handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
@@ -68,8 +62,11 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
       .drmFormatModifierCount = 1,
       .pDrmFormatModifiers = &native_pixmap_handle.modifier,
   };
-  if (using_modifier)
+
+  if (using_modifier) {
+    DCHECK_EQ(image_tiling, VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT);
     external_image_create_info.pNext = &modifier_info;
+  }
 
   VkImportMemoryFdInfoKHR import_memory_fd_info = {
       .sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR,

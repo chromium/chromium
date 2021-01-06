@@ -127,14 +127,6 @@ class PresenterImageX11 : public OutputPresenter::Image {
       return pixmap_;
     }
     Fence* idle_fence() const { return idle_fence_.get(); }
-    bool busy() const {
-      DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-      return busy_;
-    }
-    void set_busy(bool busy) {
-      DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-      busy_ = busy;
-    }
 
    private:
     friend base::RefCountedThreadSafe<OnX11>;
@@ -142,9 +134,9 @@ class PresenterImageX11 : public OutputPresenter::Image {
 
     gpu::VulkanDeviceQueue* const device_queue_;
     const VkFence vk_fence_;
-    x11::Pixmap pixmap_ GUARDED_BY_CONTEXT(thread_checker_){};
     std::unique_ptr<Fence> idle_fence_;
-    bool busy_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+    // |pixmap_| is created, destroyed and used on X11 thread only.
+    x11::Pixmap pixmap_ GUARDED_BY_CONTEXT(thread_checker_){};
     THREAD_CHECKER(thread_checker_);
   };
 
@@ -218,13 +210,19 @@ bool PresenterImageX11::Initialize(
   x11_task_runner_ = std::move(x11_task_runner);
 
   // OutputPresenterX11 only supports MESA vulkan driver.
-  switch (device_queue_->vk_physical_device_driver_properties().driverID) {
+  switch (auto driver_id =
+              device_queue_->vk_physical_device_driver_properties().driverID) {
     case VK_DRIVER_ID_MESA_RADV:
     case VK_DRIVER_ID_INTEL_OPEN_SOURCE_MESA:
       break;
     default:
+      DLOG(ERROR) << "Not supported driver:" << driver_id;
       return false;
   }
+
+  constexpr VkImageUsageFlags kVkImageUsageFlags =
+      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT |
+      VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
   const auto vk_format = ToVkFormat(format);
   std::unique_ptr<gpu::VulkanImage> vulkan_image;
@@ -236,20 +234,22 @@ bool PresenterImageX11::Initialize(
         .scanout = true,
     };
     vulkan_image = gpu::VulkanImage::CreateWithExternalMemory(
-        device_queue_, size, vk_format, shared_image_usage, /*flags=*/0,
-        VK_IMAGE_TILING_OPTIMAL, &create_info);
+        device_queue_, size, vk_format, kVkImageUsageFlags,
+        /*flags=*/0, VK_IMAGE_TILING_OPTIMAL, &create_info);
   } else {
     for (auto& modifiers : modifier_vectors) {
       vulkan_image = gpu::VulkanImage::CreateWithExternalMemoryAndModifiers(
-          device_queue_, size, vk_format, modifiers, shared_image_usage,
+          device_queue_, size, vk_format, modifiers, kVkImageUsageFlags,
           /*flags=*/0);
       if (vulkan_image)
         break;
     }
   }
 
-  if (!vulkan_image)
+  if (!vulkan_image) {
+    DLOG(ERROR) << "Create VulkanImage failed.";
     return false;
+  }
 
   // Destroy the |vulkan_image| when this function returns. The |vulkan_image|
   // will be imported as a SharedImage, and the original |vulkan_image| will
@@ -278,17 +278,22 @@ bool PresenterImageX11::Initialize(
     return false;
   }
 
-  if (!Image::Initialize(factory, representation_factory, mailbox, deps))
+  if (!Image::Initialize(factory, representation_factory, mailbox, deps)) {
+    DLOG(ERROR) << "Image::Initialize() failed.";
     return false;
+  }
 
   VkFenceCreateInfo create_info = {
       .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
       .flags = VK_FENCE_CREATE_SIGNALED_BIT,
   };
   VkFence vk_fence = VK_NULL_HANDLE;
-  if (vkCreateFence(device_queue_->GetVulkanDevice(), &create_info, nullptr,
-                    &vk_fence) != VK_SUCCESS)
+  auto result = vkCreateFence(device_queue_->GetVulkanDevice(), &create_info,
+                              nullptr, &vk_fence);
+  if (result != VK_SUCCESS) {
+    DLOG(ERROR) << "vkCreateFence() failed: " << result;
     return false;
+  }
 
   // The ownership of |vk_fence| is passed to OnX11 which will destroy it.
   on_x11_ = base::MakeRefCounted<OnX11>(device_queue_, vk_fence);
@@ -312,6 +317,8 @@ bool PresenterImageX11::Initialize(
       .bpp = 32,
       .modifier = vulkan_image->modifier(),
       .buffers = std::move(fds)};
+  // Post a task to X11 thread to cretae X11 pixmap, and it will be only used
+  // on X11 thread.
   x11_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&OnX11::Initialize, on_x11_, std::move(request)));
@@ -347,8 +354,8 @@ void PresenterImageX11::EndPresent() {
     return;
   auto vk_semaphores = ToVkSemaphores(end_read_semaphores_);
   end_read_semaphores_.clear();
-  // Wait on the idle_fence on GPU main, after it is released, we can reuse the
-  // image safely.
+  // Wait on the idle_fence on GPU main, after it is released, so we can reuse
+  // the image safely.
   on_x11_->idle_fence()->Wait();
   gpu::SubmitSignalVkSemaphores(device_queue_->GetVulkanQueue(), vk_semaphores);
   scoped_read_access_.reset();
@@ -392,9 +399,7 @@ class OutputPresenterX11::OnX11 : public x11::EventObserver {
   uint32_t event_id_ GUARDED_BY_CONTEXT(thread_checker_) = 0;
   uint64_t last_target_msc_ GUARDED_BY_CONTEXT(thread_checker_) = 0;
   uint64_t last_present_msc_ GUARDED_BY_CONTEXT(thread_checker_) = 0;
-  // Image in present queue.
-  base::circular_deque<scoped_refptr<PresenterImageX11::OnX11>> present_images_
-      GUARDED_BY_CONTEXT(thread_checker_);
+
   // Callbacks wait for X11 CompleteNotifyEvent
   base::circular_deque<SwapCompletionCallback> swap_completion_callbacks_
       GUARDED_BY_CONTEXT(thread_checker_);
@@ -415,7 +420,6 @@ OutputPresenterX11::OnX11::~OnX11() {
   auto* present = &connection->present();
   present->SelectInput({static_cast<x11::Present::Event>(event_id_), window_,
                         x11::Present::EventMask::NoEvent});
-
   connection->RemoveEventObserver(this);
 }
 
@@ -427,10 +431,8 @@ void OutputPresenterX11::OnX11::Initialize() {
 
   auto* present = &connection->present();
   event_id_ = connection->GenerateId<uint32_t>();
-  constexpr auto kEventMasks = x11::Present::EventMask::CompleteNotify |
-                               x11::Present::EventMask::IdleNotify;
-  present->SelectInput(
-      {static_cast<x11::Present::Event>(event_id_), window_, kEventMasks});
+  present->SelectInput({static_cast<x11::Present::Event>(event_id_), window_,
+                        x11::Present::EventMask::CompleteNotify});
 }
 
 void OutputPresenterX11::OnX11::PostSubBuffer(
@@ -439,8 +441,6 @@ void OutputPresenterX11::OnX11::PostSubBuffer(
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!image->busy());
-  image->set_busy(true);
 
   // Wait for VKFence passed before sending pixmap to Xserver to present.
   image->WaitForVkFence();
@@ -453,9 +453,6 @@ void OutputPresenterX11::OnX11::PostSubBuffer(
       .target_msc = last_target_msc_,
   });
 
-  DCHECK_LT(present_images_.size(), kNumberOfBuffers);
-  present_images_.push_back(image);
-
   swap_completion_callbacks_.push_back(std::move(completion_callback));
   presentation_callbacks_.push_back(std::move(presentation_callback));
 }
@@ -464,17 +461,16 @@ void OutputPresenterX11::OnX11::OnEvent(const x11::Event& event) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (event.window() != window_)
     return;
-  if (auto* e = event.As<x11::Present::CompleteNotifyEvent>())
+  if (auto* e = event.As<x11::Present::CompleteNotifyEvent>()) {
     OnCompleteNotifyEvent(e);
-  else if (auto* e = event.As<x11::Present::IdleNotifyEvent>())
-    OnIdleNotifyEvent(e);
+  }
 }
 
 bool OutputPresenterX11::OnX11::OnCompleteNotifyEvent(
     const x11::Present::CompleteNotifyEvent* event) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_LE(last_present_msc_, event->msc);
-  last_present_msc_ = event->msc;
+  if (event->msc > last_present_msc_)
+    last_present_msc_ = event->msc;
 
   auto timestamp =
       base::TimeTicks() + base::TimeDelta::FromMicroseconds(event->ust);
@@ -497,27 +493,6 @@ bool OutputPresenterX11::OnX11::OnCompleteNotifyEvent(
   swap_completion_callbacks_.pop_front();
   presentation_callbacks_.pop_front();
 
-  return true;
-}
-
-bool OutputPresenterX11::OnX11::OnIdleNotifyEvent(
-    const x11::Present::IdleNotifyEvent* event) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  for (auto& image : present_images_) {
-    if (image->pixmap() == event->pixmap) {
-      DCHECK(image->busy());
-      image->set_busy(false);
-      break;
-    }
-  }
-
-  // Remove idle images at the beginning of the |present_images_|.
-  while (!present_images_.empty()) {
-    auto& image = present_images_.front();
-    if (image->busy())
-      break;
-    present_images_.pop_front();
-  }
   return true;
 }
 
@@ -564,13 +539,19 @@ bool OutputPresenterX11::Initialize() {
                            ->vk_context_provider()
                            ->GetDeviceQueue();
   // OutputPresenterX11 only supports MESA vulkan driver.
-  switch (device_queue->vk_physical_device_driver_properties().driverID) {
+  auto driver_id =
+      device_queue->vk_physical_device_driver_properties().driverID;
+  switch (driver_id) {
     case VK_DRIVER_ID_MESA_RADV:
     case VK_DRIVER_ID_INTEL_OPEN_SOURCE_MESA:
       break;
     default:
+      DLOG(ERROR) << "Not supported driver: " << driver_id;
       return false;
   }
+
+  // Intel GPU needs modifier to work with the X11 present extension.
+  bool need_modifier = driver_id == VK_DRIVER_ID_INTEL_OPEN_SOURCE_MESA;
 
   auto* connection = x11::Connection::Get();
   auto* present = &connection->present();
@@ -590,9 +571,6 @@ bool OutputPresenterX11::Initialize() {
   auto geometry = connection->GetGeometry({window}).Sync();
   depth_ = geometry->depth;
 
-  const bool support_modifier =
-      gfx::HasExtension(device_queue->enabled_extensions(),
-                        VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME);
   if (auto modifiers = dri3->GetSupportedModifiers(
                                {static_cast<uint32_t>(window), depth_, 32})
                            .Sync()) {
@@ -601,14 +579,18 @@ bool OutputPresenterX11::Initialize() {
     if (!modifiers->screen_modifiers.empty())
       modifier_vectors_.push_back(std::move(modifiers->screen_modifiers));
   }
+  need_modifier |= !modifier_vectors_.empty();
 
-  // If Xserver require pixmap with modifier, but Vulkan doesn't support
+  const bool support_modifier =
+      gfx::HasExtension(device_queue->enabled_extensions(),
+                        VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME);
+
+  // If Xserver requires pixmap with modifier, but Vulkan doesn't support
   // modifier, we cannot use X11 present.
-  if (!modifier_vectors_.empty() && !support_modifier)
+  if (need_modifier && !support_modifier) {
+    DLOG(ERROR) << "Modifier is needed but not supported";
     return false;
-
-  // Without modifier, Xserver can only handle BGRA format.
-  supports_rgba_ = !modifier_vectors_.empty();
+  }
 
   x11_thread_ = std::make_unique<base::Thread>("OutputPresenterX11");
   bool result = x11_thread_->StartWithOptions(
@@ -619,7 +601,6 @@ bool OutputPresenterX11::Initialize() {
   x11_thread_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&OutputPresenterX11::OnX11::Initialize,
                                 base::Unretained(on_x11_.get())));
-
   return true;
 }
 
@@ -633,10 +614,9 @@ void OutputPresenterX11::InitializeCapabilities(
   capabilities->supports_surfaceless = true;
   // We expect origin of buffers is at top left.
   capabilities->output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
-  // TODO(https://crbug.com/1108406): only add supported formats base on
-  // platform, driver, etc.
+  // X11 only supports the BGRA format.
   capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
-      supports_rgba_ ? kRGBA_8888_SkColorType : kBGRA_8888_SkColorType;
+      kBGRA_8888_SkColorType;
   capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_8888)] =
       kBGRA_8888_SkColorType;
 }
@@ -650,7 +630,7 @@ bool OutputPresenterX11::Reshape(const gfx::Size& size,
          format == gfx::BufferFormat::BGRA_8888);
   switch (format) {
     case gfx::BufferFormat::RGBA_8888:
-      image_format_ = supports_rgba_ ? RGBA_8888 : BGRA_8888;
+      image_format_ = BGRA_8888;
       break;
     case gfx::BufferFormat::BGRA_8888:
       image_format_ = BGRA_8888;
