@@ -7,6 +7,7 @@ package org.chromium.components.signin.test;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.accounts.Account;
@@ -23,11 +24,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.metrics.UmaRecorder;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.signin.AccountManagerDelegateException;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeImpl;
@@ -39,6 +44,7 @@ import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 import org.chromium.testing.local.CustomShadowUserManager;
 
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -52,8 +58,13 @@ public class AccountManagerFacadeRobolectricTest {
     private FakeAccountManagerDelegate mDelegate;
     private AccountManagerFacade mFacade;
 
+    @Mock
+    private UmaRecorder mUmaRecorderMock;
+
     @Before
     public void setUp() {
+        initMocks(this);
+        UmaRecorderHolder.setNonNativeDelegate(mUmaRecorderMock);
         Context context = RuntimeEnvironment.application;
         UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
         mShadowUserManager = (CustomShadowUserManager) shadowOf(userManager);
@@ -85,6 +96,22 @@ public class AccountManagerFacadeRobolectricTest {
         verify(delegate, never()).registerObservers();
         AccountManagerFacade accountManagerFacade = new AccountManagerFacadeImpl(delegate);
         verify(delegate).registerObservers();
+    }
+
+    @Test
+    @SmallTest
+    public void testCountOfAccountLoggedAfterAccountsFetched() {
+        addTestAccount("test@gmail.com");
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+        CallbackHelper callbackHelper = new CallbackHelper();
+        facade.runAfterCacheIsPopulated(() -> callbackHelper.notifyCalled());
+        try {
+            callbackHelper.waitForFirst();
+        } catch (TimeoutException e) {
+            throw new RuntimeException("Timed out waiting for callback", e);
+        }
+        verify(mUmaRecorderMock)
+                .recordLinearHistogram("Signin.AndroidNumberOfDeviceAccounts", 1, 1, 50, 51);
     }
 
     @Test

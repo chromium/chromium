@@ -173,6 +173,15 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.AndroidNumberOfDeviceAccounts" units="accounts"
+    expires_after="2021-08-31">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>aliceywang@chromium.org</owner>
+  <summary>
+    The number of Android accounts present on the device. Recorded on startup.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AndroidPopulateAccountCacheWaitingTime" units="ms"
     expires_after="2021-08-16">
   <owner>bsazonov@chromium.org</owner>

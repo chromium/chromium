@@ -448,6 +448,10 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
         @Override
         protected void onPostExecute(Void v) {
+            // Records number of Android accounts present on device.
+            RecordHistogram.recordExactLinearHistogram(
+                    "Signin.AndroidNumberOfDeviceAccounts", tryGetGoogleAccounts().size(), 50);
+
             for (Runnable callback : mCallbacksWaitingForCachePopulation) {
                 callback.run();
             }
