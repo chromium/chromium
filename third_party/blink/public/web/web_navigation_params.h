@@ -57,7 +57,6 @@ namespace blink {
 
 class KURL;
 class WebDocumentLoader;
-class WebLocalFrame;
 
 // This structure holds all information collected by Blink when
 // navigation is being initiated.
@@ -92,12 +91,6 @@ struct BLINK_EXPORT WebNavigationInfo {
 
   // Whether the navigation is a result of client redirect.
   bool is_client_redirect = false;
-
-  // WebLocalFrame that initiated this navigation request. May be null for
-  // navigations that are not associated with a frame. Storing this pointer is
-  // dangerous, it should be verified by comparing against a set of known active
-  // frames before direct use.
-  WebLocalFrame* initiator_frame;
 
   // Whether the navigation initiator frame has the
   // |network::mojom::blink::WebSandboxFlags::kDownloads| bit set in its sandbox

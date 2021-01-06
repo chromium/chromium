@@ -647,16 +647,12 @@ void LocalFrameClientImpl::BeginNavigation(
   if (initiator_frame_token)
     navigation_info->initiator_frame_token = *initiator_frame_token;
   if (origin_window && origin_window->GetFrame()) {
-    navigation_info->initiator_frame =
-        origin_window->GetFrame()->Client()->GetWebFrame();
     // Many navigation paths do not pass an |initiator_frame_token|, so we need
     // to compute it here.
     if (!navigation_info->initiator_frame_token) {
       navigation_info->initiator_frame_token =
           origin_window->GetFrame()->GetFrameToken();
     }
-  } else {
-    navigation_info->initiator_frame = nullptr;
   }
   for (auto& csp_policy : initiator_csp) {
     navigation_info->initiator_csp.emplace_back(
