@@ -43,7 +43,13 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
 
 // TODO(hcarmona): Investigate converting these tests to unittests.
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, GetCountryList) {
+// TODO(crbug.com/1162474): Disabled on Mac for flakiness.
+#if defined(OS_MAC)
+#define MAYBE_GetCountryList DISABLED_GetCountryList
+#else
+#define MAYBE_GetCountryList GetCountryList
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, MAYBE_GetCountryList) {
   EXPECT_TRUE(RunAutofillSubtest("getCountryList")) << message_;
 }
 
