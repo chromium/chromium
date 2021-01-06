@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "url/gurl.h"
 
@@ -36,21 +37,23 @@ InputMethodDescriptor::InputMethodDescriptor(
 InputMethodDescriptor::InputMethodDescriptor(
     const InputMethodDescriptor& other) = default;
 
-std::string InputMethodDescriptor::GetIndicator() const {
+base::string16 InputMethodDescriptor::GetIndicator() const {
   // Return the empty string for ARC IMEs.
   if (extension_ime_util::IsArcIME(id_))
-    return std::string();
+    return base::string16();
 
   // If indicator is empty, use the first two character in its keyboard layout
   // or language code.
   if (indicator_.empty()) {
     if (extension_ime_util::IsKeyboardLayoutExtension(id_)) {
-      return base::ToUpperASCII(keyboard_layout_.substr(0, 2));
+      return base::UTF8ToUTF16(
+          base::ToUpperASCII(keyboard_layout_.substr(0, 2)));
     }
     DCHECK(language_codes_.size() > 0);
-    return base::ToUpperASCII(language_codes_[0].substr(0, 2));
+    return base::UTF8ToUTF16(
+        base::ToUpperASCII(language_codes_[0].substr(0, 2)));
   }
-  return indicator_;
+  return base::UTF8ToUTF16(indicator_);
 }
 
 InputMethodDescriptor::InputMethodDescriptor() = default;

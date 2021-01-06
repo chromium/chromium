@@ -98,60 +98,6 @@ class InputMethodUtilTest : public testing::Test {
   InputMethodDescriptors non_xkb_input_method_descriptors_;
 };
 
-TEST_F(InputMethodUtilTest, GetInputMethodShortNameTest) {
-  // Test invalid cases. Two-letter language code should be returned.
-  {
-    InputMethodDescriptor desc =
-        GetDesc("invalid-id", "", "us", {"xx"}, "", true);
-    // Upper-case string of the unknown language code, "xx", should be returned.
-    EXPECT_EQ(ASCIIToUTF16("XX"), util_.GetInputMethodShortName(desc));
-  }
-
-  // Test special cases.
-  {
-    InputMethodDescriptor desc =
-        GetDesc("xkb:us:dvorak:eng", "", "us", {"en-US"}, "DV", true);
-    EXPECT_EQ(ASCIIToUTF16("DV"), util_.GetInputMethodShortName(desc));
-  }
-  {
-    InputMethodDescriptor desc =
-        GetDesc("xkb:us:colemak:eng", "", "us", {"en-US"}, "CO", true);
-    EXPECT_EQ(ASCIIToUTF16("CO"), util_.GetInputMethodShortName(desc));
-  }
-  {
-    InputMethodDescriptor desc =
-        GetDesc("xkb:us:altgr-intl:eng", "", "us", {"en-US"}, "EXTD", true);
-    EXPECT_EQ(ASCIIToUTF16("EXTD"), util_.GetInputMethodShortName(desc));
-  }
-  {
-    InputMethodDescriptor desc =
-        GetDesc("xkb:us:intl:eng", "", "us", {"en-US"}, "INTL", true);
-    EXPECT_EQ(ASCIIToUTF16("INTL"), util_.GetInputMethodShortName(desc));
-  }
-  {
-    InputMethodDescriptor desc =
-        GetDesc("xkb:de:neo:ger", "", "de(neo)", {"de"}, "NEO", true);
-    EXPECT_EQ(ASCIIToUTF16("NEO"), util_.GetInputMethodShortName(desc));
-  }
-  {
-    InputMethodDescriptor desc =
-        GetDesc("xkb:es:cat:cat", "", "es(cat)", {"ca"}, "CAT", true);
-    EXPECT_EQ(ASCIIToUTF16("CAT"), util_.GetInputMethodShortName(desc));
-  }
-  {
-    InputMethodDescriptor desc =
-        GetDesc(pinyin_ime_id, "", "us", {"zh-CN"}, "\xe6\x8b\xbc", true);
-    EXPECT_EQ(base::UTF8ToUTF16("\xe6\x8b\xbc"),
-              util_.GetInputMethodShortName(desc));
-  }
-  {
-    InputMethodDescriptor desc =
-        GetDesc(zhuyin_ime_id, "", "us", {"zh-TW"}, "\xE6\xB3\xA8", true);
-    EXPECT_EQ(base::UTF8ToUTF16("\xE6\xB3\xA8"),
-              util_.GetInputMethodShortName(desc));
-  }
-}
-
 TEST_F(InputMethodUtilTest, GetInputMethodMediumNameTest) {
   {
     // input methods with medium name equal to short name
@@ -163,8 +109,7 @@ TEST_F(InputMethodUtilTest, GetInputMethodMediumNameTest) {
     for (const char* id : input_method_ids) {
       InputMethodDescriptor desc = GetDesc(id, "", "", {""}, "", true);
       base::string16 medium_name = util_.GetInputMethodMediumName(desc);
-      base::string16 short_name = util_.GetInputMethodShortName(desc);
-      EXPECT_EQ(medium_name, short_name);
+      EXPECT_EQ(medium_name, desc.GetIndicator());
     }
   }
   {
@@ -176,8 +121,7 @@ TEST_F(InputMethodUtilTest, GetInputMethodMediumNameTest) {
     for (const char* id : input_method_ids) {
       InputMethodDescriptor desc = GetDesc(id, "", "", {""}, "", true);
       base::string16 medium_name = util_.GetInputMethodMediumName(desc);
-      base::string16 short_name = util_.GetInputMethodShortName(desc);
-      EXPECT_NE(medium_name, short_name);
+      EXPECT_NE(medium_name, desc.GetIndicator());
     }
   }
 }

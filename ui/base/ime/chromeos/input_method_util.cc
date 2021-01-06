@@ -482,13 +482,6 @@ bool InputMethodUtil::IsKeyboardLayout(const std::string& input_method_id) {
          extension_ime_util::IsKeyboardLayoutExtension(input_method_id);
 }
 
-base::string16 InputMethodUtil::GetInputMethodShortName(
-    const InputMethodDescriptor& input_method) const {
-  // TODO(shuchen): remove this method, as the client can directly use
-  // input_method.GetIndicator().
-  return base::UTF8ToUTF16(input_method.GetIndicator());
-}
-
 base::string16 InputMethodUtil::GetInputMethodMediumName(
     const InputMethodDescriptor& input_method) const {
   // For the "Your input method has changed to..." bubble. In most cases
@@ -500,7 +493,7 @@ base::string16 InputMethodUtil::GetInputMethodMediumName(
       return delegate_->GetLocalizedString(i.resource_id);
     }
   }
-  return GetInputMethodShortName(input_method);
+  return input_method.GetIndicator();
 }
 
 base::string16 InputMethodUtil::GetInputMethodLongNameInternal(

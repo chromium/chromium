@@ -40,8 +40,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodUtil {
   std::string GetInputMethodDisplayNameFromId(
       const std::string& input_method_id) const;
 
-  base::string16 GetInputMethodShortName(
-      const InputMethodDescriptor& input_method) const;
   base::string16 GetInputMethodMediumName(
       const InputMethodDescriptor& input_method) const;
   base::string16 GetInputMethodLongNameStripped(

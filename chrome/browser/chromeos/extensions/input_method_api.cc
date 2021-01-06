@@ -184,7 +184,7 @@ InputMethodPrivateGetInputMethodsFunction::Run() {
     auto val = std::make_unique<base::DictionaryValue>();
     val->SetString("id", input_method.id());
     val->SetString("name", util->GetInputMethodLongName(input_method));
-    val->SetString("indicator", util->GetInputMethodShortName(input_method));
+    val->SetString("indicator", input_method.GetIndicator());
     output->Append(std::move(val));
   }
   return RespondNow(
