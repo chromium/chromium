@@ -283,7 +283,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.NumLiveOverscroll" units="tabs"
-    expires_after="M88">
+    expires_after="M91">
   <owner>rkgibson@google.com</owner>
   <owner>eugenebut@chromium.org</owner>
   <summary>
@@ -298,7 +298,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.NumOpenTabs" units="tabs"
-    expires_after="M88">
+    expires_after="M91">
   <owner>rkgibson@google.com</owner>
   <owner>eugenebut@chromium.org</owner>
   <summary>
