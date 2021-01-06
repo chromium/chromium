@@ -92,14 +92,20 @@ void FeaturePodIconButton::PaintButtonContents(gfx::Canvas* canvas) {
   const AshColorProvider* color_provider = AshColorProvider::Get();
   SkColor color = color_provider->GetControlsLayerColor(
       ControlsLayerType::kControlBackgroundColorInactive);
-  if (GetEnabled()) {
-    if (toggled_) {
-      color = color_provider->GetControlsLayerColor(
-          ControlsLayerType::kControlBackgroundColorActive);
-    }
-  } else {
-    color = AshColorProvider::GetDisabledColor(color);
+
+  bool should_show_button_toggled_on =
+      toggled_ && (GetEnabled() ||
+                   button_behavior_ ==
+                       DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
+  if (should_show_button_toggled_on) {
+    color = color_provider->GetControlsLayerColor(
+        ControlsLayerType::kControlBackgroundColorActive);
   }
+
+  // If the button is disabled, apply opacity filter to the color.
+  if (!GetEnabled())
+    color = AshColorProvider::GetDisabledColor(color);
+
   flags.setColor(color);
 
   flags.setStyle(cc::PaintFlags::kFill_Style);

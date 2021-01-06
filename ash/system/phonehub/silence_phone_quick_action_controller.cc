@@ -45,6 +45,9 @@ QuickActionItem* SilencePhoneQuickActionController::CreateItem() {
   item_ = new QuickActionItem(this, IDS_ASH_PHONE_HUB_SILENCE_PHONE_TITLE,
                               kPhoneHubSilencePhoneOnIcon,
                               kPhoneHubSilencePhoneOffIcon);
+  item_->icon_button()->set_button_behavior(
+      FeaturePodIconButton::DisabledButtonBehavior::
+          kCanDisplayDisabledToggleValue);
   OnDndStateChanged();
   return item_;
 }
@@ -106,7 +109,6 @@ void SilencePhoneQuickActionController::SetItemState(ActionState state) {
       sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_ON_STATE;
       break;
     case ActionState::kDisabled:
-      // TODO(1155784): Update disabled view with matching toggle-state colors.
       icon_enabled = dnd_controller_->IsDndEnabled();
       button_enabled = false;
       state_text_id = IDS_ASH_PHONE_HUB_SILENCE_BUTTON_NOT_AVAILABLE_TOOLTIP;

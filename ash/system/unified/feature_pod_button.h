@@ -23,6 +23,15 @@ class FeaturePodControllerBase;
 // A toggle button with an icon used by feature pods and in other places.
 class FeaturePodIconButton : public views::ImageButton {
  public:
+  // Used to determine how the button will behave when disabled.
+  enum class DisabledButtonBehavior {
+    // The button will display toggle button as off.
+    kNone = 0,
+
+    // The button will display on/off status of toggle.
+    kCanDisplayDisabledToggleValue = 1,
+  };
+
   FeaturePodIconButton(PressedCallback callback, bool is_togglable);
   ~FeaturePodIconButton() override;
 
@@ -31,6 +40,10 @@ class FeaturePodIconButton : public views::ImageButton {
 
   // Sets the button's icon.
   void SetVectorIcon(const gfx::VectorIcon& icon);
+
+  void set_button_behavior(DisabledButtonBehavior button_behavior) {
+    button_behavior_ = button_behavior;
+  }
 
   // views::ImageButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
@@ -54,6 +67,8 @@ class FeaturePodIconButton : public views::ImageButton {
 
   // True if the button is currently toggled.
   bool toggled_ = false;
+
+  DisabledButtonBehavior button_behavior_ = DisabledButtonBehavior::kNone;
 
   const gfx::VectorIcon* icon_ = nullptr;
 
