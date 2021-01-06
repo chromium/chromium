@@ -193,7 +193,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
 // Test is flaky (crbug.com/1097050)
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
                        DISABLED_SyncDoubleInstallation) {
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
 
@@ -202,6 +202,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   AppId app_id2 = InstallAppAsUserInitiated(GetProfile(1));
 
   EXPECT_EQ(app_id, app_id2);
+
+  ASSERT_TRUE(SetupSync());
 
   // Install a 'dummy' app & wait for installation to ensure sync has processed
   // the initial apps.
@@ -252,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
 #endif
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
                        MAYBE_SyncDoubleInstallationDifferentUserDisplayMode) {
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
 
   WebApplicationInfo info;
@@ -268,10 +270,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
 
   EXPECT_EQ(app_id, app_id2);
 
-  // Install a 'dummy' app & wait for installation to ensure sync has processed
+  ASSERT_TRUE(SetupSync());
+
+  // Install a 'dummy' apps & wait for installation to ensure sync has processed
   // the initial apps.
-  InstallDummyAppAndWaitForSync(GURL("http://www.dummy.org/"), GetProfile(0),
+  InstallDummyAppAndWaitForSync(GURL("http://www.dummy1.org/"), GetProfile(0),
                                 GetProfile(1));
+  InstallDummyAppAndWaitForSync(GURL("http://www.dummy2.org/"), GetProfile(1),
+                                GetProfile(0));
 
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 
@@ -320,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
 #endif
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
                        MAYBE_DoubleInstallWithUninstall) {
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -328,6 +334,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   AppId app_id = InstallAppAsUserInitiated(GetProfile(0));
   AppId app_id2 = InstallAppAsUserInitiated(GetProfile(1));
   EXPECT_EQ(app_id, app_id2);
+
+  ASSERT_TRUE(SetupSync());
 
   // Uninstall the app from one of the profiles.
   UninstallWebApp(GetProfile(0), app_id);

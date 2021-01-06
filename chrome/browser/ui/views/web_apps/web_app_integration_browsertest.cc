@@ -271,6 +271,11 @@ class WebAppIntegrationBrowserTest
 
     app_menu_model->ExecuteCommand(WebAppMenuModel::kUninstallAppCommandId,
                                    /*event_flags=*/0);
+    // The |app_menu_model| must be destroyed here, as the |run_loop| waits
+    // until the app is fully uninstalled, which includes closing and deleting
+    // the app_browser_.
+    app_menu_model.reset();
+    app_browser_ = nullptr;
     run_loop.Run();
   }
 

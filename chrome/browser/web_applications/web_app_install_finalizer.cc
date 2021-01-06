@@ -209,9 +209,10 @@ void WebAppInstallFinalizer::FinalizeUninstallAfterSync(
   DCHECK(!GetWebAppRegistrar().GetAppById(app_id));
 
   icon_manager_->DeleteData(
-      app_id, base::BindOnce(&WebAppInstallFinalizer::OnIconsDataDeleted,
-                             weak_ptr_factory_.GetWeakPtr(), app_id,
-                             std::move(callback)));
+      app_id,
+      base::BindOnce(
+          &WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled,
+          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
 }
 
 void WebAppInstallFinalizer::UninstallExternalWebApp(
@@ -330,9 +331,10 @@ void WebAppInstallFinalizer::OnUninstallOsHooks(
   update->DeleteApp(app_id);
 
   icon_manager_->DeleteData(
-      app_id, base::BindOnce(&WebAppInstallFinalizer::OnIconsDataDeleted,
-                             weak_ptr_factory_.GetWeakPtr(), app_id,
-                             std::move(callback)));
+      app_id,
+      base::BindOnce(
+          &WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled,
+          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
 }
 
 void WebAppInstallFinalizer::UninstallWebAppOrRemoveSource(
@@ -427,10 +429,11 @@ void WebAppInstallFinalizer::OnShortcutsMenuIconsDataWritten(
       std::move(update), std::move(commit_callback));
 }
 
-void WebAppInstallFinalizer::OnIconsDataDeleted(
+void WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled(
     const AppId& app_id,
     UninstallWebAppCallback callback,
     bool success) {
+  registrar().NotifyWebAppUninstalled(app_id);
   std::move(callback).Run(success);
 }
 

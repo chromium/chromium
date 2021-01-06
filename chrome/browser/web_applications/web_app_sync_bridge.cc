@@ -535,6 +535,9 @@ void WebAppSyncBridge::ApplySyncChangesToRegistrar(
   // still registered at this stage.
   for (const AppId& app_id : update_local_data->apps_to_delete) {
     registrar_->NotifyWebAppWillBeUninstalled(app_id);
+    // TODO(https://crbug.com/1162349): Have the
+    // InstallDelegate::UninstallWebAppsAfterSync occur after OS hooks are
+    // uninstalled.
     os_integration_manager().UninstallAllOsHooks(app_id, base::DoNothing());
   }
 
@@ -556,6 +559,8 @@ void WebAppSyncBridge::ApplySyncChangesToRegistrar(
   // locally and not needed by other sources. We need to clean up disk data
   // (icons).
   if (!apps_unregistered.empty()) {
+    // TODO(https://crbug.com/1162349): Instead of calling this now, have this
+    // call occur after OS hooks are uninstalled.
     install_delegate_->UninstallWebAppsAfterSync(std::move(apps_unregistered),
                                                  base::DoNothing());
   }

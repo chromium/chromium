@@ -76,9 +76,9 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
                                        std::unique_ptr<WebApp> web_app,
                                        bool success);
 
-  void OnIconsDataDeleted(const AppId& app_id,
-                          UninstallWebAppCallback callback,
-                          bool success);
+  void OnIconsDataDeletedAndWebAppUninstalled(const AppId& app_id,
+                                              UninstallWebAppCallback callback,
+                                              bool success);
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
                                            AppId app_id,
                                            bool success);

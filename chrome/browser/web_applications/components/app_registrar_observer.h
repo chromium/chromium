@@ -35,10 +35,17 @@ class AppRegistrarObserver : public base::CheckedObserver {
   virtual void OnWebAppsWillBeUpdatedFromSync(
       const std::vector<const WebApp*>& new_apps_state) {}
 
-  // Called before a web app is uninstalled. |app_id| is still registered in the
-  // AppRegistrar. For bookmark apps, use BookmarkAppRegistrar::FindExtension to
-  // convert this |app_id| to Extension pointer.
+  // Called before a web app is uninstalled, before the uninstallation process
+  // begins. |app_id| is still registered in the AppRegistrar, and OS hooks have
+  // not yet been uninstalled. For bookmark apps, use
+  // BookmarkAppRegistrar::FindExtension to convert this |app_id| to Extension
+  // pointer.
   virtual void OnWebAppWillBeUninstalled(const AppId& app_id) {}
+
+  // Called after a web app is uninstalled. |app_id| is no longer registered in
+  // the AppRegistrar, all OS hooks are uninstalled, and icons have been
+  // deleted.
+  virtual void OnWebAppUninstalled(const AppId& app_id) {}
 
   // For bookmark apps, use BookmarkAppRegistrar::FindExtension to convert this
   // |app_id| to Extension pointer.

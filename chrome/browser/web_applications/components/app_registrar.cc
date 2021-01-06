@@ -64,6 +64,11 @@ void AppRegistrar::NotifyWebAppsWillBeUpdatedFromSync(
     observer.OnWebAppsWillBeUpdatedFromSync(new_apps_state);
 }
 
+void AppRegistrar::NotifyWebAppUninstalled(const AppId& app_id) {
+  for (AppRegistrarObserver& observer : observers_)
+    observer.OnWebAppUninstalled(app_id);
+}
+
 void AppRegistrar::NotifyWebAppWillBeUninstalled(const AppId& app_id) {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnWebAppWillBeUninstalled(app_id);

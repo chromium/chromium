@@ -79,6 +79,11 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
   void SetWebAppInstalledWithOsHooksDelegate(
       WebAppInstalledWithOsHooksDelegate delegate);
 
+  using WebAppWillBeUninstalledDelegate =
+      base::RepeatingCallback<void(const AppId& app_id)>;
+  void SetWebAppWillBeUninstalledDelegate(
+      WebAppWillBeUninstalledDelegate delegate);
+
   using WebAppUninstalledDelegate =
       base::RepeatingCallback<void(const AppId& app_id)>;
   void SetWebAppUninstalledDelegate(WebAppUninstalledDelegate delegate);
@@ -99,6 +104,7 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
   void OnWebAppsWillBeUpdatedFromSync(
       const std::vector<const WebApp*>& new_apps_state) override;
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
+  void OnWebAppUninstalled(const AppId& app_id) override;
   void OnWebAppProfileWillBeDeleted(const AppId& app_id) override;
 
  private:
@@ -127,6 +133,7 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
   WebAppInstalledDelegate app_installed_delegate_;
   WebAppInstalledWithOsHooksDelegate app_installed_with_os_hooks_delegate_;
   WebAppWillBeUpdatedFromSyncDelegate app_will_be_updated_from_sync_delegate_;
+  WebAppWillBeUninstalledDelegate app_will_be_uninstalled_delegate_;
   WebAppUninstalledDelegate app_uninstalled_delegate_;
   WebAppProfileWillBeDeletedDelegate app_profile_will_be_deleted_delegate_;
 
