@@ -155,12 +155,18 @@ class DragImageItemView : public views::View {
   }
 
   void OnPaintBackground(gfx::Canvas* canvas) override {
+    // NOTE: The contents bounds are shrunk by a single pixel to avoid
+    // painting the background outside content bounds as might otherwise occur
+    // due to pixel rounding. Failure to do so could result in white paint
+    // artifacts.
+    gfx::Rect bounds(GetContentsBounds());
+    bounds.Inset(gfx::Insets(1));
+
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setColor(SK_ColorWHITE);
     flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
-    canvas->DrawRoundRect(GetContentsBounds(), kDragImageItemViewCornerRadius,
-                          flags);
+    canvas->DrawRoundRect(bounds, kDragImageItemViewCornerRadius, flags);
   }
 
  private:

@@ -313,12 +313,16 @@ void HoldingSpaceTrayIconPreview::OnPaintLayer(
   gfx::Canvas* canvas = recorder.canvas();
 
   // Background.
+  // NOTE: The background radius is shrunk by a single pixel to avoid being
+  // painted outside `contents_image_` bounds as might otherwise occur due to
+  // pixel rounding. Failure to do so could result in white paint artifacts.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(SK_ColorWHITE);
   canvas->DrawCircle(
       contents_bounds.CenterPoint(),
-      std::min(contents_bounds.width(), contents_bounds.height()) / 2, flags);
+      std::min(contents_bounds.width(), contents_bounds.height()) / 2 - 1,
+      flags);
 
   // Contents.
   if (!contents_image_.isNull()) {
