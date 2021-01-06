@@ -108,25 +108,21 @@ void HTMLViewSourceDocument::CreateContainingTable() {
   line_number_ = 0;
 
   // Create a checkbox to control line wrapping.
-  auto* line_wrap_div = MakeGarbageCollected<HTMLDivElement>(*this);
-  line_wrap_div->setAttribute(html_names::kClassAttr, "line-wrap-control");
+  auto* label = MakeGarbageCollected<HTMLLabelElement>(*this);
+  label->setAttribute(html_names::kClassAttr, "line-wrap-control");
   auto* checkbox =
       MakeGarbageCollected<HTMLInputElement>(*this, CreateElementFlags());
   checkbox->setAttribute(html_names::kTypeAttr, "checkbox");
-  checkbox->setAttribute(html_names::kIdAttr, "line-wrap-checkbox");
-  line_wrap_div->ParserAppendChild(checkbox);
-  auto* label = MakeGarbageCollected<HTMLLabelElement>(*this);
-  label->setAttribute(html_names::kForAttr, "line-wrap-checkbox");
+  label->ParserAppendChild(checkbox);
   label->ParserAppendChild(
       Text::Create(*this, WTF::AtomicString(Locale::DefaultLocale().QueryString(
                               IDS_VIEW_SOURCE_LINE_WRAP))));
-  line_wrap_div->ParserAppendChild(label);
   auto* tr = MakeGarbageCollected<HTMLTableRowElement>(*this);
   auto* td =
       MakeGarbageCollected<HTMLTableCellElement>(html_names::kTdTag, *this);
   td->setAttribute(html_names::kColspanAttr, "2");
   td->setAttribute(html_names::kClassAttr, "line-wrap-cell");
-  td->ParserAppendChild(line_wrap_div);
+  td->ParserAppendChild(label);
   tr->ParserAppendChild(td);
   tbody_->ParserAppendChild(tr);
 
