@@ -21,12 +21,14 @@
 
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -177,10 +179,22 @@ PositionWithAffinity HitTestResult::GetPosition() const {
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object)
     return PositionWithAffinity();
+
+  // We should never have a layout object that is within a locked subtree.
+  CHECK(!DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object));
+
+  // If the layout object is blocked by display lock, we return the beginning of
+  // the node as the position. This is because we don't paint contents of the
+  // element. Furthermore, any caret adjustments below can access layout-dirty
+  // state in the subtree of this object.
+  if (layout_object->ChildPaintBlockedByDisplayLock())
+    return PositionWithAffinity(Position(*node, 0), TextAffinity::kDefault);
+
   if (node->IsPseudoElement() && node->GetPseudoId() == kPseudoIdBefore) {
     return PositionWithAffinity(
         MostForwardCaretPosition(Position::FirstPositionInNode(*inner_node_)));
   }
+
   // TODO(crbug.com/1152696): We have to use PostLayout() here, but maybe it
   // should rather be illegal to call GetPosition() on a HitTestResult after
   // relayout?
@@ -203,6 +217,16 @@ PositionWithAffinity HitTestResult::GetPositionForInnerNodeOrImageMapImage()
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object)
     return PositionWithAffinity();
+  // We should never have a layout object that is within a locked subtree.
+  CHECK(!DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object));
+
+  // If the layout object is blocked by display lock, we return the beginning of
+  // the node as the position. This is because we don't paint contents of the
+  // element. Furthermore, any caret adjustments below can access layout-dirty
+  // state in the subtree of this object.
+  if (layout_object->ChildPaintBlockedByDisplayLock())
+    return PositionWithAffinity(Position(*node, 0), TextAffinity::kDefault);
+
   PositionWithAffinity position;
   if (box_fragment_ &&
       RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled() &&
