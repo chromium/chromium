@@ -2,6 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FilteredVolumeManager} from '../../../base/js/filtered_volume_manager.m.js';
+// #import {util} from '../../common/js/util.m.js';
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {AsyncUtil} from '../../common/js/async_util.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {metrics} from '../../common/js/metrics.m.js';
+// clang-format on
+
 /**
  * The drive mount path used in the storage. It must be '/drive'.
  * @type {string}
@@ -13,7 +22,7 @@ const STORED_DRIVE_MOUNT_PATH = '/drive';
  * object with additional methods for the folder shortcut feature.
  * This uses chrome.storage as backend. Items are always sorted by URL.
  */
-class FolderShortcutsDataModel extends cr.EventTarget {
+/* #export */ class FolderShortcutsDataModel extends cr.EventTarget {
   /**
    * @param {!FilteredVolumeManager} volumeManager Volume manager instance.
    */

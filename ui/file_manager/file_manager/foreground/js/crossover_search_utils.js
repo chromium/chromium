@@ -3,6 +3,16 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// clang-format off
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {NavigationModelItemType, NavigationListModel, NavigationModelFakeItem, NavigationModelVolumeItem} from './navigation_list_model.m.js';
+// clang-format on
+
+/**
  * Namespace for crossover search utility functions.
  * @namespace
  */
@@ -58,3 +68,6 @@ crossoverSearchUtils.findQueryMatchedDirectoryEntry =
   }
   return null;
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {crossoverSearchUtils};

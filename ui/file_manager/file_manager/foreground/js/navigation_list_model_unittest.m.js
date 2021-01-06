@@ -2,7 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+// clang-format off
+import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {MockCommandLinePrivate} from '../../../base/js/mock_chrome.m.js';
+import {reportPromise, waitUntil} from '../../../base/js/test_error_reporting.m.js';
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
+import {VolumeInfoImpl} from '../../background/js/volume_info_impl.m.js';
+import { EntryList,FakeEntryImpl} from '../../common/js/files_app_entry_types.m.js';
+import { MockFileEntry,MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {util} from '../../common/js/util.m.js';
+
+import {AndroidAppListModel} from './android_app_list_model.m.js';
+import {DirectoryModel} from './directory_model.m.js';
+import {createFakeAndroidAppListModel} from './fake_android_app_list_model.m.js';
+import {createFakeDirectoryModel} from './mock_directory_model.m.js';
+import {MockFolderShortcutDataModel} from './mock_folder_shortcut_data_model.m.js';
+import { NavigationListModel, NavigationModelAndroidAppItem,NavigationModelFakeItem, NavigationModelItemType, NavigationModelShortcutItem, NavigationModelVolumeItem, NavigationSection} from './navigation_list_model.m.js';
+// clang-format on
+
 
 /**
  * Mock Recent fake entry.
@@ -36,7 +56,7 @@ let drive;
 let hoge;
 
 // Setup the test components.
-function setUp() {
+export function setUp() {
   // Mock LoadTimeData strings.
   window.loadTimeData.data = {
     MY_FILES_ROOT_LABEL: 'My files',
@@ -68,7 +88,7 @@ function setUp() {
 /**
  * Tests model.
  */
-function testModel() {
+export function testModel() {
   const volumeManager = new MockVolumeManager();
 
   const shortcutListModel = new MockFolderShortcutDataModel(
@@ -124,7 +144,7 @@ function testModel() {
 /**
  * Tests model with no Recents, Linux files, Play files.
  */
-function testNoRecentOrLinuxFiles() {
+export function testNoRecentOrLinuxFiles() {
   const volumeManager = new MockVolumeManager();
 
   const shortcutListModel = new MockFolderShortcutDataModel(
@@ -148,7 +168,7 @@ function testNoRecentOrLinuxFiles() {
 /**
  * Tests adding and removing shortcuts.
  */
-function testAddAndRemoveShortcuts() {
+export function testAddAndRemoveShortcuts() {
   const volumeManager = new MockVolumeManager();
 
   const shortcutListModel = new MockFolderShortcutDataModel(
@@ -211,7 +231,7 @@ function testAddAndRemoveShortcuts() {
 /**
  * Tests testAddAndRemoveVolumes test with SinglePartitionFormat flag is on.
  */
-function testAddAndRemoveVolumesWhenSinglePartitionOn() {
+export function testAddAndRemoveVolumesWhenSinglePartitionOn() {
   window.loadTimeData.data_['FILES_SINGLE_PARTITION_FORMAT_ENABLED'] = true;
   testAddAndRemoveVolumes();
 }
@@ -219,7 +239,7 @@ function testAddAndRemoveVolumesWhenSinglePartitionOn() {
 /**
  * Tests adding and removing volumes.
  */
-function testAddAndRemoveVolumes() {
+export function testAddAndRemoveVolumes() {
   const volumeManager = new MockVolumeManager();
 
   const shortcutListModel = new MockFolderShortcutDataModel(
@@ -321,7 +341,7 @@ function testAddAndRemoveVolumes() {
 /**
  * Tests testOrderAndNestItems test with SinglePartitionFormat flag is on.
  */
-function testOrderAndNestItemsWhenSinglePartitionOn() {
+export function testOrderAndNestItemsWhenSinglePartitionOn() {
   window.loadTimeData.data_['FILES_SINGLE_PARTITION_FORMAT_ENABLED'] = true;
   testOrderAndNestItems();
 }
@@ -332,7 +352,7 @@ function testOrderAndNestItemsWhenSinglePartitionOn() {
  * 2. manages NavigationSection for the relevant volumes.
  * 3. keeps MTP/Archive/Removable volumes on the original order.
  */
-function testOrderAndNestItems() {
+export function testOrderAndNestItems() {
   const volumeManager = new MockVolumeManager();
 
   const shortcutListModel = new MockFolderShortcutDataModel([
@@ -502,7 +522,7 @@ function testOrderAndNestItems() {
 /**
  * Tests model with My files enabled.
  */
-function testMyFilesVolumeEnabled(callback) {
+export function testMyFilesVolumeEnabled(callback) {
   const volumeManager = new MockVolumeManager();
   // Item 1 of the volume info list should have Downloads volume type.
   assertEquals(
@@ -574,7 +594,7 @@ function testMyFilesVolumeEnabled(callback) {
  * Tests that adding a new partition to the same grouped USB will add the
  * partition to the grouping.
  */
-function testMultipleUsbPartitionsGrouping() {
+export function testMultipleUsbPartitionsGrouping() {
   const shortcutListModel = new MockFolderShortcutDataModel([]);
   const recentItem = null;
   const volumeManager = new MockVolumeManager();

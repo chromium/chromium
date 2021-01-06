@@ -889,6 +889,7 @@ js_library("volume_info_impl.m") {
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/webui/resources/js:assert.m",
   ]
+  visibility += [ "//ui/file_manager/file_manager/foreground/js:navigation_list_model_unittest.m" ]
 
   extra_deps = [ ":modulize" ]
 }

@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MultiMetadataProvider) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, NavigationListModelTest) {
-  RunTestURL("foreground/js/navigation_list_model_unittest_gen.html");
+  RunTestURL("foreground/js/navigation_list_model_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ProvidersModel) {
