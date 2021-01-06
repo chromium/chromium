@@ -397,8 +397,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
 
   void ColorPickedInEyeDropper(int r, int g, int b, int a);
 
-  // This method create a new Browser object, and passes ownership of
-  // owned_main_web_contents_ to the tab strip of the Browser.
+  // This method creates a new Browser object (if possible), and passes
+  // ownership of owned_main_web_contents_ to the tab strip of the Browser.
   void CreateDevToolsBrowser();
   BrowserWindow* GetInspectedBrowserWindow();
   void ScheduleShow(const DevToolsToggleAction& action);

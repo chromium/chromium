@@ -887,6 +887,10 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
   if (!browser_)
     CreateDevToolsBrowser();
 
+  // Ignore action if browser does not exist and could not be created.
+  if (!browser_)
+    return;
+
   RegisterModalDialogManager(browser_);
 
   if (should_show_window) {
@@ -1607,6 +1611,10 @@ void DevToolsWindow::CreateDevToolsBrowser() {
     wp_prefs->SetKey(kDevToolsApp, std::move(dev_tools_defaults));
   }
 
+  if (Browser::GetBrowserCreationStatusForProfile(profile_) !=
+      Browser::BrowserCreationStatus::kOk) {
+    return;
+  }
   browser_ =
       Browser::Create(Browser::CreateParams::CreateForDevTools(profile_));
   browser_->tab_strip_model()->AddWebContents(
