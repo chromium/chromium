@@ -33,29 +33,29 @@ import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Performs work-arounds for Android bugs which result in invalid or unreadable dex.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
-class DexFixer {
+public class DexFixer {
     private static final String TAG = "DexFixer";
     private static boolean sHasIsolatedSplits;
+
+    @WorkerThread
+    public static void fixDexInBackground() {
+        if (shouldSkipDexFix()) {
+            return;
+        }
+
+        fixDexIfNecessary(Runtime.getRuntime());
+    }
 
     static void setHasIsolatedSplits(boolean value) {
         sHasIsolatedSplits = value;
     }
 
     static void scheduleDexFix() {
-        ApplicationInfo appInfo = ContextUtils.getApplicationContext().getApplicationInfo();
-        // All bugs are fixed after Q.
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-            return;
-        }
-        // Fixes are never required for system image installs, since we can trust those to be valid
-        // and world-readable.
-        if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
-            return;
-        }
-        // Skip the workaround on local builds to avoid affecting perf bots.
-        // https://bugs.chromium.org/p/chromium/issues/detail?id=1160070
-        if (ChromeVersionInfo.isLocalBuild() && ChromeVersionInfo.isOfficialBuild()) {
+        if (shouldSkipDexFix()) {
             return;
         }
 
@@ -91,6 +91,25 @@ class DexFixer {
             }
         }
         RecordHistogram.recordEnumeratedHistogram("Android.DexFixer", reason, DexFixerReason.COUNT);
+    }
+
+    private static boolean shouldSkipDexFix() {
+        ApplicationInfo appInfo = ContextUtils.getApplicationContext().getApplicationInfo();
+        // All bugs are fixed after Q.
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            return true;
+        }
+        // Fixes are never required for system image installs, since we can trust those to be valid
+        // and world-readable.
+        if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+            return true;
+        }
+        // Skip the workaround on local builds to avoid affecting perf bots.
+        // https://bugs.chromium.org/p/chromium/issues/detail?id=1160070
+        if (ChromeVersionInfo.isLocalBuild() && ChromeVersionInfo.isOfficialBuild()) {
+            return true;
+        }
+        return false;
     }
 
     private static String odexPathFromApkPath(String apkPath) {

@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.upgrade;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantModuleEntryProvider;
+import org.chromium.chrome.browser.base.DexFixer;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 
@@ -32,16 +34,18 @@ public final class PackageReplacedBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         if (!Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction())) return;
-        updateChannelsIfNecessary();
         VrModuleProvider.maybeRequestModuleIfDaydreamReady();
         AutofillAssistantModuleEntryProvider.maybeInstallDeferred();
-    }
 
-    private void updateChannelsIfNecessary() {
-        if (!ChannelsUpdater.getInstance().shouldUpdateChannels()) return;
         final PendingResult result = goAsync();
         PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-            ChannelsUpdater.getInstance().updateChannels();
+            if (ChannelsUpdater.getInstance().shouldUpdateChannels()) {
+                ChannelsUpdater.getInstance().updateChannels();
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                DexFixer.fixDexInBackground();
+            }
             result.finish();
         });
     }
