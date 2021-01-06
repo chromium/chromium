@@ -22,6 +22,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
+#include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 #include "gin/per_isolate_data.h"
 
@@ -371,6 +372,7 @@ class V8Platform::TracingControllerImpl : public v8::TracingController {
   ~TracingControllerImpl() override = default;
 
   // TracingController implementation.
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   const uint8_t* GetCategoryGroupEnabled(const char* name) override {
     return TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(name);
   }
@@ -438,6 +440,7 @@ class V8Platform::TracingControllerImpl : public v8::TracingController {
     TRACE_EVENT_API_UPDATE_TRACE_EVENT_DURATION(category_enabled_flag, name,
                                                 traceEventHandle);
   }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   void AddTraceStateObserver(TraceStateObserver* observer) override {
     g_trace_state_dispatcher.Get().AddObserver(observer);
   }
