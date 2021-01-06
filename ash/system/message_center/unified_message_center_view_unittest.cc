@@ -522,7 +522,9 @@ TEST_F(UnifiedMessageCenterViewTest, StackingCounterMessageListScrolled) {
   EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
 }
 
-TEST_F(UnifiedMessageCenterViewTest, StackingCounterNotificationRemoval) {
+// Flaky: crbug.com/1163575
+TEST_F(UnifiedMessageCenterViewTest,
+       DISABLED_StackingCounterNotificationRemoval) {
   std::vector<std::string> ids = AddManyNotifications();
   CreateMessageCenterView();
   EXPECT_TRUE(message_center_view()->GetVisible());
