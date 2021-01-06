@@ -1,13 +1,37 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="emoji_picker.css">
-  <script type="module" src="emoji_picker.js"></script>
-</head>
-<body>
-  <h1>Emoji picker</h1>
-  <p id="welcome-message"></p>
-  <div id="emoji-picker"></div>
-</body>
-</html>
+<style>
+  .w-100 {
+    width: 100%;
+  }
+
+  .emoji-picker {
+    max-height: 343px;
+    min-height: 343px;
+    width: calc(36px * 7);
+  }
+</style>
+
+<div class="emoji-picker">
+
+  <input 
+    id="search" class="w-100" 
+    type="text" value="{{search::input}}"
+  ></input>
+
+  <div class="emoji-tabs">
+    <iron-icon icon="device:access-time"></iron-icon>
+    <iron-icon icon="image:tag-faces"></iron-icon>
+    <iron-icon icon="device:access-time"></iron-icon>
+    <iron-icon icon="device:access-time"></iron-icon>
+    <iron-icon icon="device:access-time"></iron-icon>
+    <iron-icon icon="device:access-time"></iron-icon>
+    <iron-icon icon="device:access-time"></iron-icon>
+    <iron-icon icon="device:access-time"></iron-icon>
+    <iron-icon icon="device:access-time"></iron-icon>
+  </div>
+
+  <div class="emoji-groups w-100">
+    <template is="dom-repeat" items="{{emojiData}}">
+      <emoji-group data="[[item]]"></emoji-group>
+    </template>
+  </div>
+</div>

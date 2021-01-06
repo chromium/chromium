@@ -4,18 +4,39 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+component_js_files = [
+  "emoji_picker.js",
+  "emoji_group.js",
+]
+
+polymer_deps =
+    [ "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled" ]
+
 resources_grd_file = "$target_gen_dir/resources.grd"
+components_grdp_file = "$target_gen_dir/components.grdp"
+
 generate_grd("build_grd") {
+  deps = [ ":build_grdp" ]
   grd_prefix = "emoji_picker"
   out_grd = resources_grd_file
   input_files = [
-    "emoji_picker.css",
-    "emoji_picker.html",
-    "emoji_picker.js",
+    "index.html",
+    "types.js",
+    "emoji_ordering.json",
   ]
+  grdp_files = [ components_grdp_file ]
   input_files_base_dir = rebase_path(".", "//")
+}
+
+generate_grd("build_grdp") {
+  deps = [ ":web_components" ]
+  grd_prefix = "emoji_picker"
+  out_grd = components_grdp_file
+  input_files = component_js_files
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
 }
 
 grit("resources") {
@@ -33,10 +54,30 @@ grit("resources") {
 }
 
 js_library("emoji_picker") {
-  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
+  deps = [
+           ":types",
+           ":emoji_group",
+           "//ui/webui/resources/js:load_time_data.m",
+           "//third_party/polymer/v3_0/components-chromium/iron-icon",
+         ] + polymer_deps
+}
+
+js_library("emoji_group") {
+  deps = [ ":types" ] + polymer_deps
+}
+
+js_library("types") {
 }
 
 js_type_check("closure_compile") {
-  uses_js_modules = true
-  deps = [ ":emoji_picker" ]
+  is_polymer3 = true
+  deps = [
+    ":emoji_group",
+    ":emoji_picker",
+    ":types",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = component_js_files
 }
