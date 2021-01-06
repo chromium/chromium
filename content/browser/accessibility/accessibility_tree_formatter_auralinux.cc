@@ -30,6 +30,10 @@
     return base::Value(base::Value::Type::DICTIONARY); \
   }
 
+const char kChromeTitle[] = "Google Chrome";
+const char kChromiumTitle[] = "Chromium";
+const char kFirefoxTitle[] = "Firefox";
+
 namespace content {
 
 class AccessibilityTreeFormatterAuraLinux : public ui::AXTreeFormatterBase {
@@ -95,6 +99,15 @@ AccessibilityTreeFormatterAuraLinux::~AccessibilityTreeFormatterAuraLinux() {}
 
 base::Value AccessibilityTreeFormatterAuraLinux::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
+  std::string title;
+  if (selector.types & AXTreeSelector::Chrome) {
+    title = kChromeTitle;
+  } else if (selector.types & AXTreeSelector::Chromium) {
+    title = kChromiumTitle;
+  } else if (selector.types & AXTreeSelector::Firefox) {
+    title = kFirefoxTitle;
+  }
+
   // AT-SPI2 always expects the first parameter to this call to be zero.
   AtspiAccessible* desktop = atspi_get_desktop(0);
   CHECK(desktop);
@@ -110,8 +123,11 @@ base::Value AccessibilityTreeFormatterAuraLinux::BuildTreeForSelector(
     CHECK_ATSPI_ERROR(error)
 
     char* name = atspi_accessible_get_name(child, &error);
-    if (!error && name && base::MatchPattern(name, selector.pattern)) {
-      matched_children.emplace_back(name, child);
+    if (!error && name) {
+      if ((!title.empty() && title == name) ||
+          base::MatchPattern(name, selector.pattern)) {
+        matched_children.emplace_back(name, child);
+      }
     }
 
     free(name);
