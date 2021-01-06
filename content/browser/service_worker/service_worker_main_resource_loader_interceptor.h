@@ -132,6 +132,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   const int process_id_;
   const base::Optional<DedicatedOrSharedWorkerToken> worker_token_;
 
+  base::Optional<SubresourceLoaderParams> subresource_loader_params_;
+
   base::WeakPtrFactory<ServiceWorkerMainResourceLoaderInterceptor>
       weak_factory_{this};
 

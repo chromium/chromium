@@ -18,6 +18,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_loader.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
+#include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/allow_service_worker_result.h"
@@ -171,6 +172,49 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
       base::BindOnce(
           &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
           weak_factory_.GetWeakPtr()));
+}
+
+base::Optional<SubresourceLoaderParams>
+ServiceWorkerControlleeRequestHandler::MaybeCreateSubresourceLoaderParams() {
+  // ContinueWithRegistration() for the request didn't find a matching service
+  // worker for this request, and
+  // ServiceWorkerContainerHost::SetControllerRegistration() was not called.
+  if (!container_host_ || !container_host_->controller())
+    return base::nullopt;
+
+  // Otherwise let's send the controller service worker information along
+  // with the navigation commit.
+  SubresourceLoaderParams params;
+  auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
+  controller_info->mode = container_host_->GetControllerMode();
+  // Note that |controller_info->remote_controller| is null if the controller
+  // has no fetch event handler. In that case the renderer frame won't get the
+  // controller pointer upon the navigation commit, and subresource loading will
+  // not be intercepted. (It might get intercepted later if the controller
+  // changes due to skipWaiting() so SetController is sent.)
+  mojo::Remote<blink::mojom::ControllerServiceWorker> remote =
+      container_host_->GetRemoteControllerServiceWorker();
+  if (remote.is_bound()) {
+    controller_info->remote_controller = remote.Unbind();
+  }
+
+  controller_info->client_id = container_host_->client_uuid();
+  if (container_host_->fetch_request_window_id()) {
+    controller_info->fetch_request_window_id =
+        base::make_optional(container_host_->fetch_request_window_id());
+  }
+  base::WeakPtr<ServiceWorkerObjectHost> object_host =
+      container_host_->GetOrCreateServiceWorkerObjectHost(
+          container_host_->controller());
+  if (object_host) {
+    params.controller_service_worker_object_host = object_host;
+    controller_info->object_info = object_host->CreateIncompleteObjectInfo();
+  }
+  for (const auto feature : container_host_->controller()->used_features()) {
+    controller_info->used_features.push_back(feature);
+  }
+  params.controller_service_worker_info = std::move(controller_info);
+  return base::Optional<SubresourceLoaderParams>(std::move(params));
 }
 
 bool ServiceWorkerControlleeRequestHandler::InitializeContainerHost(

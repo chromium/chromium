@@ -13,12 +13,10 @@
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
-#include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_controllee_request_handler.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
-#include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
@@ -217,54 +215,29 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
 base::Optional<SubresourceLoaderParams>
 ServiceWorkerMainResourceLoaderInterceptor::
     MaybeCreateSubresourceLoaderParams() {
-  base::WeakPtr<ServiceWorkerContainerHost> container_host =
-      handle_->container_host();
-
-  // We didn't find a matching service worker for this request, and
-  // ServiceWorkerContainerHost::SetControllerRegistration() was not called.
-  if (!container_host || !container_host->controller()) {
-    return base::nullopt;
-  }
-
-  // Otherwise let's send the controller service worker information along
-  // with the navigation commit.
-  SubresourceLoaderParams params;
-  auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
-  controller_info->mode = container_host->GetControllerMode();
-  // Note that |controller_info->remote_controller| is null if the controller
-  // has no fetch event handler. In that case the renderer frame won't get the
-  // controller pointer upon the navigation commit, and subresource loading will
-  // not be intercepted. (It might get intercepted later if the controller
-  // changes due to skipWaiting() so SetController is sent.)
-  mojo::Remote<blink::mojom::ControllerServiceWorker> remote =
-      container_host->GetRemoteControllerServiceWorker();
-  if (remote.is_bound()) {
-    controller_info->remote_controller = remote.Unbind();
-  }
-
-  controller_info->client_id = container_host->client_uuid();
-  if (container_host->fetch_request_window_id()) {
-    controller_info->fetch_request_window_id =
-        base::make_optional(container_host->fetch_request_window_id());
-  }
-  base::WeakPtr<ServiceWorkerObjectHost> object_host =
-      container_host->GetOrCreateServiceWorkerObjectHost(
-          container_host->controller());
-  if (object_host) {
-    params.controller_service_worker_object_host = object_host;
-    controller_info->object_info = object_host->CreateIncompleteObjectInfo();
-  }
-  for (const auto feature : container_host->controller()->used_features()) {
-    controller_info->used_features.push_back(feature);
-  }
-  params.controller_service_worker_info = std::move(controller_info);
-  return base::Optional<SubresourceLoaderParams>(std::move(params));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return std::move(subresource_loader_params_);
 }
 
 void ServiceWorkerMainResourceLoaderInterceptor::LoaderCallbackWrapper(
     LoaderCallback loader_callback,
     SingleRequestURLLoaderFactory::RequestHandler handler) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // For worker main script requests, |handle_| can be destroyed during
+  // interception. The initiator of this interceptor (i.e., WorkerScriptLoader)
+  // will handle the case.
+  // For navigation requests, this case should not happen because it's
+  // guaranteed that this interceptor is destroyed before |handle_|.
+  if (!handle_) {
+    std::move(loader_callback).Run({});
+    return;
+  }
+
+  if (handle_->interceptor()) {
+    subresource_loader_params_ =
+        handle_->interceptor()->MaybeCreateSubresourceLoaderParams();
+  }
 
   if (!handler) {
     std::move(loader_callback).Run({});

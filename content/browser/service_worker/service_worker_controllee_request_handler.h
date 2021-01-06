@@ -59,6 +59,10 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       BrowserContext* browser_context,
       ServiceWorkerLoaderCallback callback,
       NavigationLoaderInterceptor::FallbackCallback fallback_callback);
+  // Returns params with the ControllerServiceWorkerInfoPtr if we have found
+  // a matching controller service worker for the |request| that is given
+  // to MaybeCreateLoader(). Otherwise this returns base::nullopt.
+  base::Optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams();
 
   // Does all initialization of |container_host_| for a request.
   bool InitializeContainerHost(
