@@ -16,15 +16,26 @@ namespace login_detection {
 // Detects successful OAuth login flow based on heuristics that observe certain
 // request parameters to determine start and completion of OAuth login flow.
 //
+// OAuth Start:
 // Initially, there is a navigation to the OAuth requestor site, and that
 // triggers navigation to the OAuth provider site with certain request
-// parameters to identify the OAuth start.
+// parameters to identify the OAuth start. This start navigation could happen on
+// the same page as the initial navigation or on a new popup window using
+// window.open(), in which case DidOpenAsPopUp() is used to keep track of the
+// requestor site.
 //
-// The OAuth requestor authenticates the user and returns the authorization code
+// OAuth Completion:
+// The OAuth provider authenticates the user and returns the authorization code
 // or token to the requestor. This redirect request has certain reqest
 // parameters to identify as OAuth completion. Note that this requestor site can
 // be quite different from the OAuth requestor site seen in the initial
 // navigation.
+// OAuth completion is different in the case of popup based login flow. The
+// authorization code is sent via different means (for example postMessage()),
+// and is not easily detectable. So, closing of the popup can be used as OAuth
+// completion signal. These detections could be false positives, but are reduced
+// by allowing only navigations to the OAuth provider site, and by limiting the
+// number of navigations in the popup window.
 class OAuthLoginDetector {
  public:
   OAuthLoginDetector();
@@ -41,6 +52,14 @@ class OAuthLoginDetector {
   base::Optional<GURL> GetSuccessfulLoginFlowSite(
       const GURL& prev_navigation_url,
       const std::vector<GURL>& redirect_chain);
+
+  // Returns the OAuth requestor site when popup based login flow is detected,
+  // otherwise base::nullopt is returned.
+  base::Optional<GURL> GetPopUpLoginFlowSite() const;
+
+  // Indicates this detector is opened for a popup window, and the opener window
+  // had the |opener_navigation_url|.
+  void DidOpenAsPopUp(const GURL& opener_navigation_url);
 
  private:
   struct OAuthLoginFlowInfo {
@@ -76,6 +95,10 @@ class OAuthLoginDetector {
   // OAuth login flow. Created on the start of login flow, and destroyed when
   // the flow completes successfully or navigation limit is reached.
   base::Optional<OAuthLoginFlowInfo> login_flow_info_;
+
+  // The site that opened this detector window as a popup. base::nullopt when
+  // this detector is not opened as a popup.
+  base::Optional<GURL> popup_opener_navigation_site_;
 };
 
 }  // namespace login_detection

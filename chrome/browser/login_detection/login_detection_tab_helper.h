@@ -37,7 +37,25 @@ class LoginDetectionTabHelper
     // Successful OAuth login flow was detected.
     kOauthFirstTimeLoginFlow,
 
-    kMaxValue = kOauthFirstTimeLoginFlow
+    
+    // The user had typed password to log-in. This includes sites where user
+    // typed password manually or used Chrome password manager to fill-in.
+    kPasswordEnteredLogin,
+
+    // The site is in one of preloaded top sites where users commonly log-in.
+    kPreloadedPasswordSiteLogin,
+
+    // Treated as logged-in since as the site was retrieved from field trial as
+    // commonly logged-in.
+    kFieldTrialLoggedInSite,
+
+    // The site has credentials saved in the password manager.
+    kPasswordManagerSavedSite,
+
+    // Successful popup based OAuth login flow was detected.
+    kOauthPopUpFirstTimeLoginFlow,
+
+    kMaxValue = kOauthPopUpFirstTimeLoginFlow
   };
 
   static void MaybeCreateForWebContents(content::WebContents* web_contents);
@@ -51,12 +69,25 @@ class LoginDetectionTabHelper
 
   explicit LoginDetectionTabHelper(content::WebContents* web_contents);
 
+  // Indicates this WebContents was opened as a popup, and the opener
+  // WebContents had the |opener_navigation_url|.
+  void DidOpenAsPopUp(const GURL& opener_navigation_url);
+
   // content::WebContentsObserver.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidOpenRequestedURL(content::WebContents* new_contents,
+                           content::RenderFrameHost* source_render_frame_host,
+                           const GURL& url,
+                           const content::Referrer& referrer,
+                           WindowOpenDisposition disposition,
+                           ui::PageTransition transition,
+                           bool started_from_context_menu,
+                           bool renderer_initiated) override;
+  void WebContentsDestroyed() override;
 
   // Detects successful OAuth login flows.
-  OAuthLoginDetector oauth_login_detector_;
+  std::unique_ptr<OAuthLoginDetector> oauth_login_detector_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

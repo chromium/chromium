@@ -9,6 +9,7 @@
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -53,7 +54,8 @@ void LoginDetectionTabHelper::MaybeCreateForWebContents(
 
 LoginDetectionTabHelper::LoginDetectionTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      oauth_login_detector_(std::make_unique<OAuthLoginDetector>()) {
   DCHECK(IsLoginDetectionFeatureEnabled());
 }
 
@@ -82,7 +84,7 @@ void LoginDetectionTabHelper::DidFinishNavigation(
   // Check if OAuth login on the site happened now. This check should happen
   // first before other checks since this could be a repeated OAuth login and
   // the time of login will be updated.
-  if (auto signedin_site = oauth_login_detector_.GetSuccessfulLoginFlowSite(
+  if (auto signedin_site = oauth_login_detector_->GetSuccessfulLoginFlowSite(
           prev_navigation_url, navigation_handle->GetRedirectChain())) {
     prefs::SaveSiteToOAuthSignedInList(GetPrefs(web_contents()),
                                        *signedin_site);
@@ -101,6 +103,39 @@ void LoginDetectionTabHelper::DidFinishNavigation(
 
   RecordLoginDetectionMetrics(LoginDetectionType::kNoLogin,
                               navigation_handle->GetNextPageUkmSourceId());
+}
+
+void LoginDetectionTabHelper::DidOpenRequestedURL(
+    content::WebContents* new_contents,
+    content::RenderFrameHost* source_render_frame_host,
+    const GURL& url,
+    const content::Referrer& referrer,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    bool started_from_context_menu,
+    bool renderer_initiated) {
+  if (disposition != WindowOpenDisposition::NEW_POPUP)
+    return;
+  if (auto* new_tab_helper =
+          LoginDetectionTabHelper::FromWebContents(new_contents)) {
+    new_tab_helper->DidOpenAsPopUp(web_contents()->GetLastCommittedURL());
+  }
+}
+
+void LoginDetectionTabHelper::DidOpenAsPopUp(
+    const GURL& opener_navigation_url) {
+  oauth_login_detector_->DidOpenAsPopUp(opener_navigation_url);
+}
+
+void LoginDetectionTabHelper::WebContentsDestroyed() {
+  if (auto signedin_site = oauth_login_detector_->GetPopUpLoginFlowSite()) {
+    RecordLoginDetectionMetrics(
+        LoginDetectionType::kOauthPopUpFirstTimeLoginFlow,
+        ukm::GetSourceIdForWebContentsDocument(web_contents()));
+    prefs::SaveSiteToOAuthSignedInList(GetPrefs(web_contents()),
+                                       *signedin_site);
+  }
+  oauth_login_detector_.reset();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(LoginDetectionTabHelper)
