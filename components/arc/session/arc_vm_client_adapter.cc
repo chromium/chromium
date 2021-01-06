@@ -535,6 +535,10 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     serial_number_ = serial_number;
   }
 
+  void SetDemoModeDelegate(DemoModeDelegate* delegate) override {
+    demo_mode_delegate_ = delegate;
+  }
+
   // chromeos::ConciergeClient::Observer overrides:
   void ConciergeServiceStopped() override {
     VLOG(1) << "vm_concierge stopped";
@@ -879,6 +883,9 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   int64_t current_cid_ = kInvalidCid;
 
   FileSystemStatusRewriter file_system_status_rewriter_for_testing_;
+
+  // The delegate is owned by ArcSessionRunner.
+  DemoModeDelegate* demo_mode_delegate_ = nullptr;
 
   // For callbacks.
   base::WeakPtrFactory<ArcVmClientAdapter> weak_factory_{this};

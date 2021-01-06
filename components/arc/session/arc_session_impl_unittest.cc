@@ -86,6 +86,8 @@ class FakeArcClientAdapter : public ArcClientAdapter {
                    const std::string& hash,
                    const std::string& serial_number) override {}
 
+  void SetDemoModeDelegate(DemoModeDelegate* delegate) override {}
+
   // Notifies ArcSessionImpl of the ARC instance stop event.
   void NotifyArcInstanceStopped() {
     for (auto& observer : observer_list_)

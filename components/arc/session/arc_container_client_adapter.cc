@@ -160,6 +160,10 @@ class ArcContainerClientAdapter
     cryptohome_id_ = cryptohome_id;
   }
 
+  // ArcContainerClientAdapter gets the demo session apps path from
+  // UpgradeParams, so it does not use the DemoModeDelegate.
+  void SetDemoModeDelegate(DemoModeDelegate* delegate) override {}
+
   // chromeos::SessionManagerClient::Observer overrides:
   void ArcInstanceStopped() override {
     for (auto& observer : observer_list_)

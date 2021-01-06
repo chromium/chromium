@@ -826,6 +826,12 @@ void ArcSessionImpl::SetUserInfo(
   client_->SetUserInfo(cryptohome_id, hash, serial_number);
 }
 
+void ArcSessionImpl::SetDemoModeDelegate(
+    ArcClientAdapter::DemoModeDelegate* delegate) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  client_->SetDemoModeDelegate(delegate);
+}
+
 void ArcSessionImpl::OnConfigurationSet(bool success,
                                         size_t num_cores_disabled) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

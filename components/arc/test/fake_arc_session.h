@@ -33,6 +33,8 @@ class FakeArcSession : public ArcSession {
   void SetUserInfo(const cryptohome::Identification& cryptohome_id,
                    const std::string& hash,
                    const std::string& serial_number) override;
+  void SetDemoModeDelegate(
+      ArcClientAdapter::DemoModeDelegate* delegate) override;
 
   // To emulate unexpected stop, such as crash.
   void StopWithReason(ArcStopReason reason);

@@ -251,6 +251,11 @@ void ArcSessionRunner::SetUserInfo(
     arc_session_->SetUserInfo(cryptohome_id_, user_id_hash_, serial_number_);
 }
 
+void ArcSessionRunner::SetDemoModeDelegate(
+    std::unique_ptr<ArcClientAdapter::DemoModeDelegate> delegate) {
+  demo_mode_delegate_ = std::move(delegate);
+}
+
 void ArcSessionRunner::SetRestartDelayForTesting(
     const base::TimeDelta& restart_delay) {
   DCHECK(!arc_session_);
@@ -270,6 +275,7 @@ void ArcSessionRunner::StartArcSession() {
         !serial_number_.empty()) {
       arc_session_->SetUserInfo(cryptohome_id_, user_id_hash_, serial_number_);
     }
+    arc_session_->SetDemoModeDelegate(demo_mode_delegate_.get());
     arc_session_->AddObserver(this);
     arc_session_->StartMiniInstance();
     // Record the UMA only when |restart_after_crash_count_| is zero to avoid
