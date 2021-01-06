@@ -438,7 +438,7 @@ TEST_F(BluetoothBlocklistTest, RemoveExcludedUuids_Matching) {
 
 TEST_F(BluetoothBlocklistTest, VerifyDefaultBlocklistSize) {
   // REMINDER: ADD new blocklist items to tests below for each exclusion type.
-  EXPECT_EQ(13u, list_.size());
+  EXPECT_EQ(14u, list_.size());
 }
 
 TEST_F(BluetoothBlocklistTest, VerifyDefaultExcludeList) {
@@ -451,6 +451,7 @@ TEST_F(BluetoothBlocklistTest, VerifyDefaultExcludeList) {
       list_.IsExcluded(BluetoothUUID("f000ffc0-0451-4000-b000-000000000000")));
   EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("00060000")));
   EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("fffd")));
+  EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("fde2")));
   EXPECT_FALSE(list_.IsExcluded(BluetoothUUID("2a02")));
   EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("2a03")));
   EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("2a25")));
@@ -474,6 +475,7 @@ TEST_F(BluetoothBlocklistTest, VerifyDefaultExcludeReadList) {
       BluetoothUUID("f000ffc0-0451-4000-b000-000000000000")));
   EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("00060000")));
   EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("fffd")));
+  EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("fde2")));
   EXPECT_FALSE(list_.IsExcludedFromReads(BluetoothUUID("2a02")));
   EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("2a03")));
   EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("2a25")));
@@ -497,6 +499,7 @@ TEST_F(BluetoothBlocklistTest, VerifyDefaultExcludeWriteList) {
       BluetoothUUID("f000ffc0-0451-4000-b000-000000000000")));
   EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("00060000")));
   EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("fffd")));
+  EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("fde2")));
   EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("2a02")));
   EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("2a03")));
   EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("2a25")));
