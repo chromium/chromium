@@ -43,8 +43,8 @@ const base::Feature kPreserveScrollViewProperties{
 
 const base::Feature kScrollToTextIOS{"ScrollToTextIOS",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kIOSLegacyTLSInterstitial{
-    "IOSLegacyTLSInterstitial", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIOSLegacyTLSInterstitial{"IOSLegacyTLSInterstitial",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kWebViewNativeContextMenu{
     "WebViewNativeContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
