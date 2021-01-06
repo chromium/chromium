@@ -11085,7 +11085,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram
       name="NewTabPage.BackgroundService.Images.RequestLatency"/>
   <affected-histogram
-      name="NewTabPage.BackgroundService.NextImage.RequestLatency"/>
+      name="NewTabPage.BackgroundService.NextImage.RequestLatency">
+    <obsolete>
+      Never recorded. Marked obsolete 01/2021.
+    </obsolete>
+  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="NewTabPage_OneGoogleBar_RequestLatency" separator=".">

@@ -78,6 +78,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.BackgroundService.NextImage.RequestLatency"
     units="ms" expires_after="M90">
+  <obsolete>
+    Never recorded. Marked obsolete 01/2021.
+  </obsolete>
   <owner>ramyan@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>
