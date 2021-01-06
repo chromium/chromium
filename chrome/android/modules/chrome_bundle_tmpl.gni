@@ -22,96 +22,37 @@ template("chrome_bundle") {
   _bundle_target_name = target_name
   _package_id = 126  # == 0x7e.
   _extra_modules = []
-  _module_descs = []
+  _module_descs = invoker.module_descs
   _enable_chrome_module =
       enable_chrome_module && invoker.is_monochrome_or_trichrome
 
   # If enable_chrome_module is true, //chrome Java code and resources will be
   # split out into a chrome DFM in Monochrome and Trichrome bundles. This will
-  # additionally cause a few other changes in the structure of the APK:
-  # - All other DFMs Java code and resources will be folded into the chrome DFM.
-  # - All native code from other DFMs will be moved to the base module.
-  # - All //chrome-specific manifest definitions (e.g. activities, services)
-  #   will be moved to the chrome DFM AndroidManifest.xml.
+  # additionally move all //chrome-specific manifest definitions (e.g.
+  # activities, services) to the chrome DFM AndroidManifest.xml.
   if (_enable_chrome_module) {
     _base_target_gen_dir =
         get_label_info(invoker.base_module_target, "target_gen_dir")
     _base_name = get_label_info(invoker.base_module_target, "name")
     _split_android_manifest = "${_base_target_gen_dir}/manifest/${_base_name}/AndroidManifest_split.xml"
 
-    _java_deps = []
-    _paks = []
-    _pak_deps = []
-    foreach(_module_desc, invoker.module_descs) {
-      _supports_isolated_split =
-          defined(_module_desc.supports_isolated_split) &&
-          _module_desc.supports_isolated_split
-      _uses_chrome_split =
-          defined(_module_desc.uses_split) &&
-          _module_desc.uses_split == "chrome" && enable_chrome_child_modules
-      if (_supports_isolated_split || _uses_chrome_split) {
-        _module_descs += [ _module_desc ]
-      } else {
-        _shared_libraries = []
-        if (defined(_module_desc.native_deps) &&
-            _module_desc.native_deps != []) {
-          _arch = ""
-          _toolchain = ""
-          if (android_64bit_target_cpu) {
-            if (invoker.is_64_bit_browser) {
-              _arch = "_64"
-            } else {
-              _toolchain = "($android_secondary_abi_toolchain)"
-            }
-          }
-          _shared_libraries += [ "//chrome/android:libmonochrome${_arch}_${_module_desc.name}${_toolchain}" ]
-        }
-        _module_desc_target_name =
-            "${target_name}__${_module_desc.name}__module_desc_java"
-        module_desc_java(_module_desc_target_name) {
-          module_name = _module_desc.name
-          shared_libraries = _shared_libraries
-          if (defined(_module_desc.pak_deps)) {
-            paks = _module_desc.paks
-          }
-          if (defined(_module_desc.load_native_on_get_impl)) {
-            load_native_on_get_impl = _module_desc.load_native_on_get_impl
-          }
-        }
-        _java_deps +=
-            _module_desc.java_deps + [ ":${_module_desc_target_name}" ]
-        if (defined(_module_desc.pak_deps)) {
-          _paks += _module_desc.paks
-          _pak_deps += _module_desc.pak_deps
-        }
-      }
-    }
     chrome_module_desc = {
       name = "chrome"
       android_manifest = _split_android_manifest
       android_manifest_dep =
           "${invoker.base_module_target}__android_manifest__split"
-      java_deps = [ "//chrome/android:chrome_all_java" ] + _java_deps
+      java_deps = [ "//chrome/android:chrome_all_java" ]
       if (enable_arcore) {
         java_deps += [
           "//components/webxr/android:ar_java",
           "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
         ]
       }
-      pak_deps = _pak_deps
-      paks = _paks
       if (defined(invoker.chrome_deps)) {
         java_deps += invoker.chrome_deps
       }
-
-      # Native code for all DFMs is moved to the base module's library, and paks
-      # for DFMs will use the value of load_native_on_get_impl from the module
-      # descriptor for that DFM.
-      load_native_on_get_impl = false
     }
     _module_descs += [ chrome_module_desc ]
-  } else {
-    _module_descs = invoker.module_descs
   }
 
   _enable_isolated_splits =
