@@ -199,6 +199,24 @@ if (build_with_chromium) {
     deps += [ "//base/test:test_support" ]
   }
 
+  if (!is_ios) {
+    executable("boringssl_tool") {
+      testonly = true
+      sources = tool_sources
+
+      deps = [
+        ":boringssl",
+        "//build/win:default_exe_manifest",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [
+        ":internal_config",
+        "//build/config/compiler:no_chromium_code",
+      ]
+    }
+  }
+
   config("fuzzer_config") {
     visibility = [ ":*" ]  # Only targets in this file can depend on this.
     defines = [
