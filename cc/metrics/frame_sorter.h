@@ -8,9 +8,9 @@
 #include <stddef.h>
 
 #include <map>
-#include <vector>
 
 #include "base/callback.h"
+#include "base/containers/circular_deque.h"
 #include "base/optional.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -60,11 +60,13 @@ class CC_EXPORT FrameSorter {
  private:
   void FlushFrames();
 
+  const uint64_t kPendingFramesMaxSize = 300u;
+
   // The callback to run for each flushed frame.
   const InOrderBeginFramesCallback flush_callback_;
 
   // Frames which are started.
-  std::vector<viz::BeginFrameArgs> pending_frames_;
+  base::circular_deque<viz::BeginFrameArgs> pending_frames_;
 
   // State of each frame in terms of ack expectation.
   std::map<viz::BeginFrameId, FrameState> frame_states_;

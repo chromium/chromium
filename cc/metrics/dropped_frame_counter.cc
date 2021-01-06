@@ -49,7 +49,8 @@ void DroppedFrameCounter::ResetFrameSorter() {
 }
 
 void DroppedFrameCounter::OnBeginFrame(const viz::BeginFrameArgs& args) {
-  frame_sorter_.AddNewFrame(args);
+  if (fcp_received_)
+    frame_sorter_.AddNewFrame(args);
 }
 
 void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
@@ -59,7 +60,9 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
       ++total_smoothness_dropped_;
     ReportFrames();
   }
-  frame_sorter_.AddFrameResult(args, is_dropped);
+
+  if (fcp_received_)
+    frame_sorter_.AddFrameResult(args, is_dropped);
 }
 
 void DroppedFrameCounter::ReportFrames() {

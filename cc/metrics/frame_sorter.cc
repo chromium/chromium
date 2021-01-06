@@ -56,6 +56,14 @@ void FrameSorter::AddNewFrame(const viz::BeginFrameArgs& args) {
   if (!frame_states_.count(args.frame_id))
     pending_frames_.push_back(args);
   frame_states_[args.frame_id].OnBegin();
+
+  // Remove the oldest frame until remaining pending frames are lower that
+  // than the limit
+  while (pending_frames_.size() > kPendingFramesMaxSize) {
+    const auto& first = pending_frames_.front();
+    frame_states_.erase(first.frame_id);
+    pending_frames_.pop_front();
+  }
 }
 
 void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
@@ -82,9 +90,11 @@ void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
     return;
   }
 
-  if (pending_frames_.front().frame_id == args.frame_id) {
+  const auto& last_frame = pending_frames_.front();
+  if (last_frame.frame_id == args.frame_id) {
     FlushFrames();
-  } else {
+  } else if (last_frame.frame_id.sequence_number <=
+             args.frame_id.sequence_number) {
     // Checks if the corresponding frame to the result, exists in the
     // pending_frames list.
     DCHECK(std::binary_search(
@@ -121,7 +131,7 @@ void FrameSorter::FlushFrames() {
     ++flushed_count;
     flush_callback_.Run(first, frame_state.is_dropped());
     frame_states_.erase(first.frame_id);
-    pending_frames_.erase(pending_frames_.begin());
+    pending_frames_.pop_front();
   }
   DCHECK_GT(flushed_count, 0u);
 }
