@@ -29,6 +29,7 @@
 #import "ios/net/cookies/system_cookie_util.h"
 #include "ios/net/ios_net_buildflags.h"
 #import "net/base/mac/url_conversions.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/log/net_log.h"
@@ -474,7 +475,8 @@ void CookieStoreIOS::DeleteCookiesMatchingInfoAsync(
             bool delegate_treats_url_as_trustworthy = false;
             net::CookieAccessParams params = {
                 net::CookieAccessSemantics::UNKNOWN,
-                delegate_treats_url_as_trustworthy};
+                delegate_treats_url_as_trustworthy,
+                net::CookieSamePartyStatus::kNoSamePartyEnforcement};
             return delete_info.Matches(cc, params);
           },
           std::move(delete_info)),

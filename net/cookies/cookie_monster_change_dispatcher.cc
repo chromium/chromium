@@ -12,7 +12,9 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_change_dispatcher.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster.h"
+#include "net/cookies/cookie_util.h"
 
 namespace net {
 
@@ -64,11 +66,15 @@ void CookieMonsterChangeDispatcher::Subscription::DispatchChange(
     bool delegate_treats_url_as_trustworthy =
         cookie_access_delegate &&
         cookie_access_delegate->ShouldTreatUrlAsTrustworthy(url_);
+    CookieOptions options = CookieOptions::MakeAllInclusive();
+    CookieSamePartyStatus same_party_status =
+        cookie_util::GetSamePartyStatus(cookie, options);
     if (!cookie
              .IncludeForRequestURL(
-                 url_, CookieOptions::MakeAllInclusive(),
+                 url_, options,
                  CookieAccessParams{change.access_result.access_semantics,
-                                    delegate_treats_url_as_trustworthy})
+                                    delegate_treats_url_as_trustworthy,
+                                    same_party_status})
              .status.IsInclude()) {
       return;
     }

@@ -66,6 +66,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster_change_dispatcher.h"
 #include "net/cookies/cookie_monster_netlog_params.h"
 #include "net/cookies/cookie_util.h"
@@ -621,9 +622,13 @@ void CookieMonster::DeleteAllMatchingInfo(CookieDeletionInfo delete_info,
               delete_info.url.value());
     }
 
+    // Deletion uses all inclusive options, so it's ok to get the
+    // `CookieSamePartyStatus` wrong here.
     if (delete_info.Matches(
-            *cc, CookieAccessParams{GetAccessSemanticsForCookie(*cc),
-                                    delegate_treats_url_as_trustworthy})) {
+            *cc, CookieAccessParams{
+                     GetAccessSemanticsForCookie(*cc),
+                     delegate_treats_url_as_trustworthy,
+                     CookieSamePartyStatus::kNoSamePartyEnforcement})) {
       InternalDeleteCookie(curit, true, /*sync_to_store*/
                            DELETE_COOKIE_EXPLICIT);
       ++num_deleted;
@@ -969,8 +974,10 @@ void CookieMonster::FilterCookiesWithOptions(
     // cookie |options|.
     CookieAccessResult access_result = cookie_ptr->IncludeForRequestURL(
         url, options,
-        CookieAccessParams{GetAccessSemanticsForCookie(*cookie_ptr),
-                           delegate_treats_url_as_trustworthy});
+        CookieAccessParams{
+            GetAccessSemanticsForCookie(*cookie_ptr),
+            delegate_treats_url_as_trustworthy,
+            cookie_util::GetSamePartyStatus(*cookie_ptr, options)});
 
     if (!access_result.status.IsInclude()) {
       if (options.return_excluded_cookies())
@@ -1181,7 +1188,8 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
   CookieAccessResult access_result = cc->IsSetPermittedInContext(
       source_url, options,
       CookieAccessParams(GetAccessSemanticsForCookie(*cc),
-                         delegate_treats_url_as_trustworthy),
+                         delegate_treats_url_as_trustworthy,
+                         cookie_util::GetSamePartyStatus(*cc, options)),
       cookieable_schemes_);
 
   const std::string key(GetKey(cc->Domain()));

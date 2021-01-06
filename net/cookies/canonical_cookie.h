@@ -38,7 +38,8 @@ using CookieAccessResultList = std::vector<CookieWithAccessResult>;
 struct NET_EXPORT CookieAccessParams {
   CookieAccessParams() = delete;
   CookieAccessParams(CookieAccessSemantics access_semantics,
-                     bool delegate_treats_url_as_trustworthy);
+                     bool delegate_treats_url_as_trustworthy,
+                     CookieSamePartyStatus same_party_status);
 
   // |access_semantics| is the access mode of the cookie access check.
   CookieAccessSemantics access_semantics = CookieAccessSemantics::UNKNOWN;
@@ -46,6 +47,10 @@ struct NET_EXPORT CookieAccessParams {
   // CookieAccessDelegate has authorized access to secure cookies from URLs
   // which might not otherwise be able to do so.
   bool delegate_treats_url_as_trustworthy = false;
+  // |same_party_status| indicates whether, and how, SameParty restrictions
+  // should be enforced.
+  CookieSamePartyStatus same_party_status =
+      CookieSamePartyStatus::kNoSamePartyEnforcement;
 };
 
 class NET_EXPORT CanonicalCookie {
@@ -467,6 +472,19 @@ struct CookieWithAccessResult {
   CanonicalCookie cookie;
   CookieAccessResult access_result;
 };
+
+// Provided to allow gtest to create more helpful error messages, instead of
+// printing hex.
+inline void PrintTo(const CanonicalCookie& cc, std::ostream* os) {
+  *os << "{ name=" << cc.Name() << ", value=" << cc.Value() << " }";
+}
+inline void PrintTo(const CookieWithAccessResult& cwar, std::ostream* os) {
+  *os << "{ ";
+  PrintTo(cwar.cookie, os);
+  *os << ", ";
+  PrintTo(cwar.access_result, os);
+  *os << " }";
+}
 
 }  // namespace net
 

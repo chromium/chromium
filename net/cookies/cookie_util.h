@@ -217,6 +217,12 @@ NET_EXPORT bool IsSchemefulSameSiteEnabled();
 
 NET_EXPORT bool IsFirstPartySetsEnabled();
 
+// Get the SameParty inclusion status. If the cookie is not SameParty, returns
+// kNoSamePartyEnforcement; if the cookie is SameParty but does not have a
+// valid context, returns kEnforceSamePartyExclude.
+NET_EXPORT CookieSamePartyStatus
+GetSamePartyStatus(const CanonicalCookie& cookie, const CookieOptions& options);
+
 // Takes a callback accepting a CookieAccessResult and returns a callback
 // that accepts a bool, setting the bool to true if the CookieInclusionStatus
 // in CookieAccessResult was set to "include", else sending false.

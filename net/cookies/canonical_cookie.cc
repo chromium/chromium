@@ -58,6 +58,8 @@
 #include "base/strings/stringprintf.h"
 #include "net/base/features.h"
 #include "net/base/url_util.h"
+#include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
 #include "url/gurl.h"
@@ -259,9 +261,11 @@ void ApplySameSiteCookieWarningToStatus(
 }  // namespace
 
 CookieAccessParams::CookieAccessParams(CookieAccessSemantics access_semantics,
-                                       bool delegate_treats_url_as_trustworthy)
+                                       bool delegate_treats_url_as_trustworthy,
+                                       CookieSamePartyStatus same_party_status)
     : access_semantics(access_semantics),
-      delegate_treats_url_as_trustworthy(delegate_treats_url_as_trustworthy) {}
+      delegate_treats_url_as_trustworthy(delegate_treats_url_as_trustworthy),
+      same_party_status(same_party_status) {}
 
 CanonicalCookie::CanonicalCookie() = default;
 
@@ -761,6 +765,27 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
         CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE);
   }
 
+  switch (params.same_party_status) {
+    case CookieSamePartyStatus::kEnforceSamePartyExclude:
+      DCHECK(IsSameParty());
+      status.AddExclusionReason(
+          CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT);
+      FALLTHROUGH;
+    case CookieSamePartyStatus::kEnforceSamePartyInclude:
+      // Remove any SameSite exclusion reasons, since SameParty overrides
+      // SameSite.
+      DCHECK(!status.HasExclusionReason(
+          CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT));
+      DCHECK_NE(effective_same_site, CookieEffectiveSameSite::STRICT_MODE);
+      status.RemoveExclusionReasons({
+          CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
+          CookieInclusionStatus::EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
+      });
+      break;
+    case CookieSamePartyStatus::kNoSamePartyEnforcement:
+      break;
+  }
+
   // TODO(chlily): Apply warning if SameSite-by-default is enabled but
   // params.access_semantics is LEGACY?
   ApplySameSiteCookieWarningToStatus(SameSite(), effective_same_site,
@@ -897,6 +922,29 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
       }
       break;
     default:
+      break;
+  }
+
+  switch (params.same_party_status) {
+    case CookieSamePartyStatus::kEnforceSamePartyExclude:
+      DCHECK(IsSameParty());
+      access_result.status.AddExclusionReason(
+          CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT);
+      FALLTHROUGH;
+    case CookieSamePartyStatus::kEnforceSamePartyInclude:
+      DCHECK(IsSameParty());
+      // Remove any SameSite exclusion reasons, since SameParty overrides
+      // SameSite.
+      DCHECK(!access_result.status.HasExclusionReason(
+          CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT));
+      DCHECK_NE(access_result.effective_same_site,
+                CookieEffectiveSameSite::STRICT_MODE);
+      access_result.status.RemoveExclusionReasons({
+          CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
+          CookieInclusionStatus::EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
+      });
+      break;
+    case CookieSamePartyStatus::kNoSamePartyEnforcement:
       break;
   }
 

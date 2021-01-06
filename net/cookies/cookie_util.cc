@@ -610,6 +610,19 @@ bool IsFirstPartySetsEnabled() {
   return base::FeatureList::IsEnabled(features::kFirstPartySets);
 }
 
+CookieSamePartyStatus GetSamePartyStatus(const CanonicalCookie& cookie,
+                                         const CookieOptions& options) {
+  if (!IsFirstPartySetsEnabled() || !cookie.IsSameParty())
+    return CookieSamePartyStatus::kNoSamePartyEnforcement;
+
+  switch (options.same_party_cookie_context_type()) {
+    case CookieOptions::SamePartyCookieContextType::kCrossParty:
+      return CookieSamePartyStatus::kEnforceSamePartyExclude;
+    case CookieOptions::SamePartyCookieContextType::kSameParty:
+      return CookieSamePartyStatus::kEnforceSamePartyInclude;
+  };
+}
+
 base::OnceCallback<void(CookieAccessResult)> AdaptCookieAccessResultToBool(
     base::OnceCallback<void(bool)> callback) {
   return base::BindOnce(

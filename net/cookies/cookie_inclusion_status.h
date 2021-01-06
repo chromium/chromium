@@ -53,28 +53,30 @@ class NET_EXPORT CookieInclusionStatus {
     EXCLUDE_SAMESITE_NONE_INSECURE = 8,
     // Caller did not allow access to the cookie.
     EXCLUDE_USER_PREFERENCES = 9,
+    // The cookie specified SameParty, but was used in a cross-party context.
+    EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT = 10,
 
     // Statuses only applied when creating/setting cookies:
 
     // Cookie was malformed and could not be stored.
-    EXCLUDE_FAILURE_TO_STORE = 10,
+    EXCLUDE_FAILURE_TO_STORE = 11,
     // Attempted to set a cookie from a scheme that does not support cookies.
-    EXCLUDE_NONCOOKIEABLE_SCHEME = 11,
+    EXCLUDE_NONCOOKIEABLE_SCHEME = 12,
     // Cookie would have overwritten a Secure cookie, and was not allowed to do
     // so. (See "Leave Secure Cookies Alone":
     // https://tools.ietf.org/html/draft-west-leave-secure-cookies-alone-05 )
-    EXCLUDE_OVERWRITE_SECURE = 12,
+    EXCLUDE_OVERWRITE_SECURE = 13,
     // Cookie would have overwritten an HttpOnly cookie, and was not allowed to
     // do so.
-    EXCLUDE_OVERWRITE_HTTP_ONLY = 13,
+    EXCLUDE_OVERWRITE_HTTP_ONLY = 14,
     // Cookie was set with an invalid Domain attribute.
-    EXCLUDE_INVALID_DOMAIN = 14,
+    EXCLUDE_INVALID_DOMAIN = 15,
     // Cookie was set with an invalid __Host- or __Secure- prefix.
-    EXCLUDE_INVALID_PREFIX = 15,
+    EXCLUDE_INVALID_PREFIX = 16,
     // Cookie was set with an invalid SameParty attribute in combination with
     // other attributes. (SameParty is invalid if Secure is not present, or if
     // SameSite=Strict is present.)
-    EXCLUDE_INVALID_SAMEPARTY = 16,
+    EXCLUDE_INVALID_SAMEPARTY = 17,
 
     // This should be kept last.
     NUM_EXCLUSION_REASONS
@@ -207,6 +209,9 @@ class NET_EXPORT CookieInclusionStatus {
 
   // Remove an exclusion reason.
   void RemoveExclusionReason(ExclusionReason reason);
+
+  // Remove multiple exclusion reasons.
+  void RemoveExclusionReasons(const std::vector<ExclusionReason>& reasons);
 
   // If the cookie would have been excluded for reasons other than
   // SAMESITE_UNSPECIFIED_TREATED_AS_LAX or SAMESITE_NONE_INSECURE, don't bother

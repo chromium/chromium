@@ -66,6 +66,11 @@ void CookieInclusionStatus::RemoveExclusionReason(ExclusionReason reason) {
   exclusion_reasons_ &= ~(GetExclusionBitmask(reason));
 }
 
+void CookieInclusionStatus::RemoveExclusionReasons(
+    const std::vector<ExclusionReason>& reasons) {
+  exclusion_reasons_ = ExclusionReasonsWithout(reasons);
+}
+
 uint32_t CookieInclusionStatus::ExclusionReasonsWithout(
     const std::vector<ExclusionReason>& reasons) const {
   uint32_t mask = 0u;
@@ -217,6 +222,8 @@ std::string CookieInclusionStatus::GetDebugString() const {
     base::StrAppend(&out, {"EXCLUDE_SAMESITE_NONE_INSECURE, "});
   if (HasExclusionReason(EXCLUDE_USER_PREFERENCES))
     base::StrAppend(&out, {"EXCLUDE_USER_PREFERENCES, "});
+  if (HasExclusionReason(EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT))
+    base::StrAppend(&out, {"EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT, "});
   if (HasExclusionReason(EXCLUDE_FAILURE_TO_STORE))
     base::StrAppend(&out, {"EXCLUDE_FAILURE_TO_STORE, "});
   if (HasExclusionReason(EXCLUDE_NONCOOKIEABLE_SCHEME))

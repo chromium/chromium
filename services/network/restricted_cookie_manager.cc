@@ -133,11 +133,17 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
         cookie_store_->cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(
             url_);
 
+    // CookieChangeDispatcher doesn't check for inclusion against `options_`, so
+    // we need to double-check that.
+    net::CookieSamePartyStatus same_party_status =
+        net::cookie_util::GetSamePartyStatus(change.cookie, options_);
+
     if (!change.cookie
              .IncludeForRequestURL(
                  url_, options_,
                  net::CookieAccessParams{change.access_result.access_semantics,
-                                         delegate_treats_url_as_trustworthy})
+                                         delegate_treats_url_as_trustworthy,
+                                         same_party_status})
              .status.IsInclude()) {
       return;
     }

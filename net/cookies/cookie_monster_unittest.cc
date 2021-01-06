@@ -38,6 +38,7 @@
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster_store_test.h"  // For CookieStore mock
 #include "net/cookies/cookie_store_change_unittest.h"
 #include "net/cookies/cookie_store_test_helpers.h"
@@ -48,6 +49,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -200,6 +202,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     //    * Three levels of host cookie (w.b.a, w.c.b.a, w.d.c.b.a)
     //    * http_only cookie (w.c.b.a)
     //    * same_site cookie (w.c.b.a)
+    //    * same_party cookie (w.c.b.a)
     //    * Two secure cookies (.c.b.a, w.c.b.a)
     //    * Two domain path cookies (.c.b.a/dir1, .c.b.a/dir1/dir2)
     //    * Two host path cookies (w.c.b.a/dir1, w.c.b.a/dir1/dir2)
@@ -242,9 +245,16 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
 
     // same-site cookie
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "firstp_check", "A", url_top_level_domain_plus_2, "/", base::Time(),
+        "same_site_check", "A", url_top_level_domain_plus_2, "/", base::Time(),
         base::Time(), base::Time(), false, false, CookieSameSite::STRICT_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
+
+    // same-party cookie
+    cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
+        "same_party_check", "A", url_top_level_domain_plus_2, "/", base::Time(),
+        base::Time(), base::Time(), true /* secure */, false,
+        CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
+        true /* same_party */));
 
     // Secure cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -283,7 +293,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
                                            true /* modify_httponly */));
     }
 
-    EXPECT_EQ(14U, this->GetAllCookies(cm).size());
+    EXPECT_EQ(cookies.size(), this->GetAllCookies(cm).size());
   }
 
   Time GetFirstCookieAccessDate(CookieMonster* cm) {
@@ -1946,7 +1956,7 @@ TEST_F(CookieMonsterTest, PredicateSeesAllCookies) {
   CookieDeletionInfo delete_info(base::Time(), base::Time::Now());
   delete_info.value_for_testing = "A";
 
-  EXPECT_EQ(7u, DeleteAllMatchingInfo(cm.get(), std::move(delete_info)));
+  EXPECT_EQ(8u, DeleteAllMatchingInfo(cm.get(), std::move(delete_info)));
 
   EXPECT_EQ("dom_2=B; dom_3=C; host_3=C",
             GetCookies(cm.get(), GURL(kTopLevelDomainPlus3)));
@@ -3252,6 +3262,51 @@ TEST_F(CookieMonsterTest, SetSecureCookies) {
   ExpectLogContainsSomewhere(
       entries, 0, NetLogEventType::COOKIE_STORE_COOKIE_REJECTED_HTTPONLY,
       NetLogEventPhase::NONE);
+}
+
+TEST_F(CookieMonsterTest, SetSamePartyCookies) {
+  CookieMonster cm(nullptr, &net_log_);
+  GURL http_url("http://www.foo.com");
+  GURL http_superdomain_url("http://foo.com");
+  GURL https_url("https://www.foo.com");
+  GURL https_foo_url("https://www.foo.com/foo");
+  GURL http_foo_url("http://www.foo.com/foo");
+
+  // A non-SameParty cookie can be created from either a URL with a secure or
+  // insecure scheme.
+  EXPECT_TRUE(
+      CreateAndSetCookieReturnStatus(&cm, http_url, "A=C;").IsInclude());
+  EXPECT_TRUE(
+      CreateAndSetCookieReturnStatus(&cm, https_url, "A=B;").IsInclude());
+
+  // A SameParty cookie cannot be set without the Secure attribute.
+  EXPECT_THAT(CreateAndSetCookieReturnStatus(&cm, https_url, "A=B; SameParty"),
+              CookieInclusionStatus::MakeFromReasonsForTesting(
+                  {CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY}));
+
+  // A SameParty cookie can be set from a URL with a secure scheme.
+  EXPECT_TRUE(
+      CreateAndSetCookieReturnStatus(&cm, https_url, "A=B; Secure; SameParty")
+          .IsInclude());
+
+  // If a non-SameParty cookie is created from a URL with an secure scheme, and
+  // a SameParty cookie with the same name already exists, update the cookie.
+  EXPECT_TRUE(
+      CreateAndSetCookieReturnStatus(&cm, https_url, "A=B; Secure; SameParty")
+          .IsInclude());
+  EXPECT_TRUE(CreateAndSetCookieReturnStatus(&cm, https_url, "A=C; Secure;")
+                  .IsInclude());
+
+  DeleteAll(&cm);
+
+  // If a SameParty cookie is set on top of an existing non-SameParty cookie but
+  // with a different path, both are retained.
+  EXPECT_TRUE(
+      CreateAndSetCookieReturnStatus(&cm, https_url, "A=B; path=/foo; Secure")
+          .IsInclude());
+  EXPECT_TRUE(CreateAndSetCookieReturnStatus(&cm, https_url,
+                                             "A=C; Secure; path=/; SameParty")
+                  .IsInclude());
 }
 
 // Tests the behavior of "Leave Secure Cookies Alone" in
