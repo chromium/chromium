@@ -17,6 +17,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -134,7 +135,7 @@ void SetupFakeUpdater(const base::Version& version) {
 }
 
 void SetupFakeUpdaterVersion(int offset) {
-  ASSERT_TRUE(offset != 0);
+  ASSERT_NE(offset, 0);
   base::Version self_version = base::Version(UPDATER_VERSION_STRING);
   std::vector<uint32_t> components = self_version.components();
   ASSERT_FALSE(offset < 0 && components[0] <= uint32_t{abs(offset)});
@@ -156,7 +157,7 @@ bool Run(base::CommandLine command_line, int* exit_code) {
   base::Process process = base::LaunchProcess(command_line, {});
   if (!process.IsValid())
     return false;
-  return process.WaitForExitWithTimeout(base::TimeDelta::FromSeconds(60),
+  return process.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
                                         exit_code);
 }
 
