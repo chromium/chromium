@@ -163,5 +163,45 @@ class TestRunnerTest(unittest.TestCase):
       self.assertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
 
 
+  @parameterized.expand([
+      [True],
+      [False],
+  ])
+  def test_tast_with_vars(self, use_vm):
+    """Tests running a tast tests with runtime variables."""
+    with open(os.path.join(self._tmp_dir, 'streamed_results.jsonl'), 'w') as f:
+      json.dump(_TAST_TEST_RESULTS_JSON, f)
+
+    args = [
+        'script_name',
+        'tast',
+        '--suite-name=chrome_all_tast_tests',
+        '--board=eve',
+        '--flash',
+        '--path-to-outdir=out_eve/Release',
+        '--logs-dir=%s' % self._tmp_dir,
+        '-t=ui.ChromeLogin',
+        '--tast-var=key=value',
+        '--use-vm' if use_vm else '--device=localhost:2222',
+    ]
+    with mock.patch.object(sys, 'argv', args),\
+         mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen:
+      mock_popen.return_value.returncode = 0
+      test_runner.main()
+      expected_cmd = [
+          test_runner.CROS_RUN_TEST_PATH, '--board', 'eve', '--cache-dir',
+          test_runner.DEFAULT_CROS_CACHE, '--results-dest-dir',
+          '%s/system_logs' % self._tmp_dir, '--mount', '--deploy', '--nostrip',
+          '--flash', '--build-dir', 'out_eve/Release', '--results-dir',
+          self._tmp_dir, '--tast', 'ui.ChromeLogin', '--tast-var', 'key=value'
+      ]
+      expected_cmd.extend(['--start', '--copy-on-write']
+                          if use_vm else ['--device', 'localhost:2222'])
+      for p in test_runner.SYSTEM_LOG_LOCATIONS:
+        expected_cmd.extend(['--results-src', p])
+
+      self.assertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
+
+
 if __name__ == '__main__':
   unittest.main()

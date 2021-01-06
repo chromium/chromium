@@ -258,6 +258,7 @@ class TastTest(RemoteTest):
     super(TastTest, self).__init__(args, unknown_args)
 
     self._suite_name = args.suite_name
+    self._tast_vars = args.tast_vars
     self._tests = args.tests
     self._conditional = args.conditional
     self._should_strip = args.strip_chrome
@@ -345,6 +346,9 @@ class TastTest(RemoteTest):
       else:
         self._test_cmd.append('--tast')
         self._test_cmd.extend(self._tests)
+
+      for v in self._tast_vars or []:
+        self._test_cmd.extend(['--tast-var', v])
 
   def post_run(self, return_code):
     # If we don't need to parse the host-side Tast tool's results, fall back to
@@ -884,6 +888,12 @@ def main():
       '--strip-chrome',
       action='store_true',
       help='Strips symbols from the browser before deploying to the device.')
+  tast_test_parser.add_argument(
+      '--tast-var',
+      action='append',
+      dest='tast_vars',
+      help='Runtime variables for Tast tests, and the format are expected to '
+      'be "key=value" pairs.')
   tast_test_parser.add_argument(
       '--test',
       '-t',
