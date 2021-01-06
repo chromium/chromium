@@ -13,8 +13,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
 
@@ -47,9 +45,6 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests {@link AccountManagementFragment}.
- */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountManagementFragmentTest {
@@ -72,16 +67,9 @@ public class AccountManagementFragmentTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
-    private Profile mSpyProfile;
-
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSpyProfile = spy(Profile.getLastUsedRegularProfile());
-            when(mSpyProfile.isChild()).thenReturn(false);
-            Profile.setLastUsedProfileForTesting(mSpyProfile);
-        });
     }
 
     @Test
@@ -119,32 +107,6 @@ public class AccountManagementFragmentTest {
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
         mRenderTestRule.render(view, "account_management_fragment_signed_in_account_on_top");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @Features.DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-    public void testAccountManagementViewForChildAccountLegacy() throws Exception {
-        when(mSpyProfile.isChild()).thenReturn(true);
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        mSettingsActivityTestRule.startSettingsActivity();
-        View view = mSettingsActivityTestRule.getFragment().getView();
-        onViewWaiting(allOf(is(view), isDisplayed()));
-        mRenderTestRule.render(view, "account_management_fragment_for_child_account_legacy");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-    public void testAccountManagementViewForChildAccount() throws Exception {
-        when(mSpyProfile.isChild()).thenReturn(true);
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        mSettingsActivityTestRule.startSettingsActivity();
-        View view = mSettingsActivityTestRule.getFragment().getView();
-        onViewWaiting(allOf(is(view), isDisplayed()));
-        mRenderTestRule.render(view, "account_management_fragment_for_child_account");
     }
 
     @Test
