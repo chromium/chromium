@@ -334,7 +334,12 @@ void HoldingSpaceKeyedService::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 void HoldingSpaceKeyedService::InitializeDelegates() {
-  DCHECK(delegates_.empty());
+  // Bail out if delegates have already been initialized - delegates are
+  // shutdown on suspend, and re-initialized once suspend completes. If
+  // holding space keyed service starts observing suspend state after
+  // `SuspendImminent()` is sent out, original delegates may still be around.
+  if (!delegates_.empty())
+    return;
 
   // The `HoldingSpaceDownloadsDelegate` monitors the status of downloads.
   delegates_.push_back(std::make_unique<HoldingSpaceDownloadsDelegate>(
