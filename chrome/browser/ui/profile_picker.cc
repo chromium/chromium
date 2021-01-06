@@ -54,6 +54,9 @@ ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
 bool ProfilePicker::ShouldShowAtLaunch() {
   AvailabilityOnStartup availability_on_startup = GetAvailabilityOnStartup();
 
+  if (signin_util::IsForceSigninEnabled())
+    return false;
+
   if (!base::FeatureList::IsEnabled(features::kNewProfilePicker))
     return false;
 

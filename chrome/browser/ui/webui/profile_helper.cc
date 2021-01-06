@@ -26,6 +26,32 @@
 namespace webui {
 namespace {
 
+void ShowUserManager(const ProfileManager::CreateCallback& callback) {
+  if (!UserManager::IsShowing()) {
+    UserManager::Show(base::FilePath(),
+                      profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
+  }
+
+  g_browser_process->profile_manager()->CreateProfileAsync(
+      ProfileManager::GetSystemProfilePath(), callback, base::string16(),
+      std::string());
+}
+
+std::string GetProfileUserName(Profile* profile) {
+  ProfileAttributesEntry* entry;
+  if (!g_browser_process->profile_manager()
+           ->GetProfileAttributesStorage()
+           .GetProfileAttributesWithPath(profile->GetPath(), &entry))
+    return std::string();
+  return base::UTF16ToUTF8(entry->GetUserName());
+}
+
+void ShowUnlockDialog(const std::string& user_name,
+                      Profile* system_profile,
+                      Profile::CreateStatus status) {
+  UserManagerProfileDialog::ShowUnlockDialog(system_profile, user_name);
+}
+
 void DeleteProfileCallback(std::unique_ptr<ScopedKeepAlive> keep_alive,
                            Profile* profile) {
   OpenNewWindowForProfile(profile);
@@ -35,16 +61,17 @@ void DeleteProfileCallback(std::unique_ptr<ScopedKeepAlive> keep_alive,
 
 void OpenNewWindowForProfile(Profile* profile) {
   if (profiles::IsProfileLocked(profile->GetPath())) {
-    DCHECK(signin_util::IsForceSigninEnabled());
-    // Displays the UserManager without any sign-in dialog opened.
-    if (!UserManager::IsShowing() && !ProfilePicker::IsOpen()) {
-      UserManager::Show(base::FilePath(),
-                        profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
-    }
+    // The profile picker does not support locked profiles.
+    DCHECK(!ProfilePicker::IsOpen());
 
-    g_browser_process->profile_manager()->CreateProfileAsync(
-        ProfileManager::GetSystemProfilePath(),
-        ProfileManager::CreateCallback(), base::string16(), std::string());
+    if (signin_util::IsForceSigninEnabled()) {
+      // If force-sign-in policy is enabled, UserManager will be displayed
+      // without any sign-in dialog opened.
+      ShowUserManager(ProfileManager::CreateCallback());
+    } else {
+      ShowUserManager(
+          base::BindRepeating(&ShowUnlockDialog, GetProfileUserName(profile)));
+    }
     return;
   }
 

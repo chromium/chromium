@@ -73,7 +73,8 @@ void UserManager::Show(
     profiles::UserManagerAction user_manager_action) {
   DCHECK(profile_path_to_focus != ProfileManager::GetGuestProfilePath());
 
-  if ((user_manager_action == profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION ||
+  if (!signin_util::IsForceSigninEnabled() &&
+      (user_manager_action == profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION ||
        user_manager_action == profiles::USER_MANAGER_OPEN_CREATE_USER_PAGE) &&
       base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
     // Use the new profile picker instead.
@@ -169,10 +170,10 @@ void UserManager::AddOnUserManagerShownCallbackForTesting(
 
 // static
 base::FilePath UserManager::GetSigninProfilePath() {
-  if (g_user_manager_view)
-    return g_user_manager_view->GetSigninProfilePath();
+  if (!g_user_manager_view)
+    return base::FilePath();
 
-  return ProfilePicker::GetForceSigninProfilePath();
+  return g_user_manager_view->GetSigninProfilePath();
 }
 
 // UserManagerProfileDialog
@@ -206,54 +207,34 @@ void UserManagerProfileDialog::ShowUnlockDialogWithProfilePath(
 void UserManagerProfileDialog::ShowForceSigninDialog(
     content::BrowserContext* browser_context,
     const base::FilePath& profile_path) {
+  if (!UserManager::IsShowing())
+    return;
   GURL url = signin::GetEmbeddedPromoURL(
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT, true);
-
-  if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
-    // Use the new profile picker instead.
-    ProfilePicker::ShowDialog(browser_context, url, profile_path);
-    return;
-  }
-
-  if (!UserManager::IsShowing())
-    return;
   g_user_manager_view->ShowDialog(browser_context, url, profile_path);
 }
 
 void UserManagerProfileDialog::ShowDialogAndDisplayErrorMessage(
     content::BrowserContext* browser_context) {
-  GURL url(chrome::kChromeUISigninErrorURL);
-
-  if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
-    // Use the new profile picker instead.
-    ProfilePicker::ShowDialog(browser_context, url, base::FilePath());
-    return;
-  }
-
   if (!UserManager::IsShowing())
     return;
   // The error occurred before sign in happened, use an empty profile path
   // so that the error page will show the error message that is assoicated with
   // the system profile.
-  g_user_manager_view->ShowDialog(browser_context, url, base::FilePath());
+  g_user_manager_view->ShowDialog(
+      browser_context, GURL(chrome::kChromeUISigninErrorURL), base::FilePath());
 }
 
 // static
 void UserManagerProfileDialog::DisplayErrorMessage() {
-  ProfilePicker::DisplayErrorMessage();
-
-  if (g_user_manager_view) {
-    g_user_manager_view->DisplayErrorMessage();
-  }
+  // This method should only be called if the user manager is already showing.
+  DCHECK(g_user_manager_view);
+  g_user_manager_view->DisplayErrorMessage();
 }
 
 // static
 void UserManagerProfileDialog::HideDialog() {
-  // Hide the profile picker dialog, in case it was opened by
-  // UserManagerProfileDialog::ShowDialog*().
-  ProfilePicker::HideDialog();
-
   if (g_user_manager_view && g_user_manager_view->GetWidget()->IsVisible())
     g_user_manager_view->HideDialog();
 }

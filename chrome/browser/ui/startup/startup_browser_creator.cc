@@ -324,7 +324,8 @@ bool ShouldShowProfilePickerAtProcessLaunch(
 
 void ShowUserManager(bool is_process_startup) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
+  if (!signin_util::IsForceSigninEnabled() &&
+      base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
     ProfilePicker::Show(
         is_process_startup
             ? ProfilePicker::EntryPoint::kOnStartup
