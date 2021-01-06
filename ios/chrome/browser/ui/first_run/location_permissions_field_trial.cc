@@ -87,11 +87,10 @@ int CreateFirstRunTrial(
       default_percent = 1;
       break;
     case version_info::Channel::STABLE:
-      // Disabled on stable pending approval. https://crbug.com/1126969
-      fre_modal_enabled_percent = 0;
-      remove_fre_prompt_enabled_percent = 0;
-      disabled_percent = 0;
-      default_percent = 100;
+      fre_modal_enabled_percent = 15;
+      remove_fre_prompt_enabled_percent = 15;
+      disabled_percent = 15;
+      default_percent = 55;
       break;
   }
 
