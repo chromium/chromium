@@ -23,7 +23,7 @@
 #include "android_webview/browser/gfx/aw_picture.h"
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/browser/gfx/child_frame.h"
-#include "android_webview/browser/gfx/gpu_service_web_view.h"
+#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/java_browser_view_renderer_helper.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"

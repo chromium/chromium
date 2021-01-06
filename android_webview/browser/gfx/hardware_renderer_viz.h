@@ -44,7 +44,7 @@ class HardwareRendererViz : public HardwareRenderer {
   viz::SurfaceId surface_id_;
 
   // Used to create viz::OutputSurface and gl::GLSurface
-  OutputSurfaceProviderWebview output_surface_provider_;
+  OutputSurfaceProviderWebView output_surface_provider_;
 
   // These are accessed on the viz thread.
   std::unique_ptr<OnViz> on_viz_;

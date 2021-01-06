@@ -26,11 +26,11 @@ namespace android_webview {
 class AwVulkanContextProvider;
 
 // Effectively a data struct to pass pointers from render thread to viz thread.
-class OutputSurfaceProviderWebview {
+class OutputSurfaceProviderWebView {
  public:
-  explicit OutputSurfaceProviderWebview(
+  explicit OutputSurfaceProviderWebView(
       AwVulkanContextProvider* vulkan_context_provider);
-  ~OutputSurfaceProviderWebview();
+  ~OutputSurfaceProviderWebView();
 
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
   CreateDisplayController();

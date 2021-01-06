@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "android_webview/browser/gfx/compositor_frame_producer.h"
-#include "android_webview/browser/gfx/gpu_service_web_view.h"
+#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/hardware_renderer_single_thread.h"
 #include "android_webview/browser/gfx/hardware_renderer_viz.h"
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
-#include "android_webview/browser/gfx/task_queue_web_view.h"
+#include "android_webview/browser/gfx/task_queue_webview.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/public/browser/draw_gl.h"
 #include "base/bind.h"

@@ -6,7 +6,7 @@
 
 #include <android/native_window_jni.h>
 
-#include "android_webview/browser/gfx/gpu_service_web_view.h"
+#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/public/browser/draw_fn.h"
 #include "android_webview/test/draw_fn_impl_jni_headers/ContextManager_jni.h"
 #include "android_webview/test/shell/src/draw_fn/allocator.h"

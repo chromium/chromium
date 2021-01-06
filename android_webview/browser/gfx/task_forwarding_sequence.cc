@@ -4,7 +4,7 @@
 
 #include "android_webview/browser/gfx/task_forwarding_sequence.h"
 
-#include "android_webview/browser/gfx/task_queue_web_view.h"
+#include "android_webview/browser/gfx/task_queue_webview.h"
 #include "base/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"

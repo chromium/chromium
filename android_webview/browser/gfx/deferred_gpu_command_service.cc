@@ -4,9 +4,9 @@
 
 #include "android_webview/browser/gfx/deferred_gpu_command_service.h"
 
-#include "android_webview/browser/gfx/gpu_service_web_view.h"
+#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/task_forwarding_sequence.h"
-#include "android_webview/browser/gfx/task_queue_web_view.h"
+#include "android_webview/browser/gfx/task_queue_webview.h"
 #include "ui/gl/gl_share_group.h"
 
 namespace android_webview {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ANDROID_WEBVIEW_BROWSER_GFX_TASK_QUEUE_WEB_VIEW_H_
-#define ANDROID_WEBVIEW_BROWSER_GFX_TASK_QUEUE_WEB_VIEW_H_
+#ifndef ANDROID_WEBVIEW_BROWSER_GFX_TASK_QUEUE_WEBVIEW_H_
+#define ANDROID_WEBVIEW_BROWSER_GFX_TASK_QUEUE_WEBVIEW_H_
 
 #include "base/callback.h"
 #include "base/macros.h"
@@ -18,8 +18,9 @@ class ScopedAllowGL {
   ScopedAllowGL();
   ~ScopedAllowGL();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowGL);
+  // Disallow copy and assign.
+  ScopedAllowGL(const ScopedAllowGL&) = delete;
+  ScopedAllowGL& operator=(const ScopedAllowGL&) = delete;
 };
 
 // In WebView, there is a single task queue that runs all tasks instead of
@@ -65,4 +66,4 @@ class TaskQueueWebView {
 
 }  // namespace android_webview
 
-#endif  // ANDROID_WEBVIEW_BROWSER_GFX_TASK_QUEUE_WEB_VIEW_H_
+#endif  // ANDROID_WEBVIEW_BROWSER_GFX_TASK_QUEUE_WEBVIEW_H_

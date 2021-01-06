@@ -16,8 +16,6 @@ class AwGLSurfaceExternalStencil : public AwGLSurface {
   AwGLSurfaceExternalStencil& operator=(const AwGLSurfaceExternalStencil&) =
       delete;
 
-  void SetClipRectangle(gfx::Rect clip_rect);
-
   unsigned int GetBackingFramebufferObject() override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
   void RecalculateClipAndTransform(gfx::Size* viewport,

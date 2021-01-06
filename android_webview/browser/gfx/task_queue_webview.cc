@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/gfx/task_queue_web_view.h"
+#include "android_webview/browser/gfx/task_queue_webview.h"
 
 #include <memory>
 #include <utility>

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ANDROID_WEBVIEW_BROWSER_GFX_GPU_SERVICE_WEB_VIEW_H_
-#define ANDROID_WEBVIEW_BROWSER_GFX_GPU_SERVICE_WEB_VIEW_H_
+#ifndef ANDROID_WEBVIEW_BROWSER_GFX_GPU_SERVICE_WEBVIEW_H_
+#define ANDROID_WEBVIEW_BROWSER_GFX_GPU_SERVICE_WEBVIEW_H_
 
 #include <stddef.h>
 
@@ -31,6 +31,10 @@ class GpuServiceWebView {
   // This static function makes sure there is a single copy of this class.
   static GpuServiceWebView* GetInstance();
   ~GpuServiceWebView();
+
+  // Disallow copy and assign.
+  GpuServiceWebView(const GpuServiceWebView&) = delete;
+  GpuServiceWebView& operator=(const GpuServiceWebView&) = delete;
 
   gpu::SyncPointManager* sync_point_manager() const {
     return sync_point_manager_.get();
@@ -73,10 +77,8 @@ class GpuServiceWebView {
   gpu::GPUInfo gpu_info_;
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuFeatureInfo gpu_feature_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuServiceWebView);
 };
 
 }  // namespace android_webview
 
-#endif  // ANDROID_WEBVIEW_BROWSER_GFX_GPU_SERVICE_WEB_VIEW_H_
+#endif  // ANDROID_WEBVIEW_BROWSER_GFX_GPU_SERVICE_WEBVIEW_H_

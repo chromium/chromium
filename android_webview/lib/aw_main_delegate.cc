@@ -10,7 +10,7 @@
 #include "android_webview/browser/aw_media_url_interceptor.h"
 #include "android_webview/browser/gfx/aw_draw_fn_impl.h"
 #include "android_webview/browser/gfx/browser_view_renderer.h"
-#include "android_webview/browser/gfx/gpu_service_web_view.h"
+#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "android_webview/browser/scoped_add_feature_flags.h"
 #include "android_webview/browser/tracing/aw_trace_event_args_allowlist.h"

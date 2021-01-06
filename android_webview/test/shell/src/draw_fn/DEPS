@@ -5,7 +5,7 @@ include_rules = [
   "+android_webview/test/shell/src/draw_fn",
 
   # For initializing GL bindings
-  "+android_webview/browser/gfx/gpu_service_web_view.h",
+  "+android_webview/browser/gfx/gpu_service_webview.h",
 
   # For EGL bindings
   "+ui/gl/gl_bindings.h",

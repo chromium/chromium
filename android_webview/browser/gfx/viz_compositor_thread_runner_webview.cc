@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "android_webview/browser/gfx/task_queue_web_view.h"
+#include "android_webview/browser/gfx/task_queue_webview.h"
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/no_destructor.h"

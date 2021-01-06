@@ -19,7 +19,7 @@ class SyncPointManager;
 namespace android_webview {
 class TaskQueueWebView;
 
-// TaskForwardingsequence provides a SingleTaskSequence implementation that
+// TaskForwardingSequence provides a SingleTaskSequence implementation that
 // satisfies WebView's threading requirements. It encapsulates a
 // SyncPointOrderData, and posts tasks to the WebView's global task queue:
 // TaskQueueWebView.

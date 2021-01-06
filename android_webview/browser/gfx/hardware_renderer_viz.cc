@@ -12,13 +12,13 @@
 #include "android_webview/browser/gfx/aw_gl_surface.h"
 #include "android_webview/browser/gfx/aw_render_thread_context_provider.h"
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
-#include "android_webview/browser/gfx/gpu_service_web_view.h"
+#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "android_webview/browser/gfx/skia_output_surface_dependency_webview.h"
 #include "android_webview/browser/gfx/surfaces_instance.h"
-#include "android_webview/browser/gfx/task_queue_web_view.h"
+#include "android_webview/browser/gfx/task_queue_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "android_webview/common/aw_switches.h"
 #include "base/command_line.h"
@@ -53,7 +53,7 @@ namespace android_webview {
 
 class HardwareRendererViz::OnViz : public viz::DisplayClient {
  public:
-  OnViz(OutputSurfaceProviderWebview* output_surface_provider,
+  OnViz(OutputSurfaceProviderWebView* output_surface_provider,
         const scoped_refptr<RootFrameSink>& root_frame_sink);
   ~OnViz() override;
 
@@ -104,7 +104,7 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
 };
 
 HardwareRendererViz::OnViz::OnViz(
-    OutputSurfaceProviderWebview* output_surface_provider,
+    OutputSurfaceProviderWebView* output_surface_provider,
     const scoped_refptr<RootFrameSink>& root_frame_sink)
     : without_gpu_(root_frame_sink),
       frame_sink_id_(without_gpu_->root_frame_sink_id()),
