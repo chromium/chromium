@@ -25,7 +25,6 @@ schema_sources_ = [
   "cookies.json",
   "cryptotoken_private.idl",
   "dashboard_private.json",
-  "data_reduction_proxy.json",
   "debugger.json",
   "desktop_capture.json",
   "developer_private.idl",

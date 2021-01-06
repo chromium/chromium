@@ -414,8 +414,6 @@ namespace {
 // Deprecated 9/2019
 const char kGoogleServicesUsername[] = "google.services.username";
 const char kGoogleServicesUserAccountId[] = "google.services.user_account_id";
-const char kDataReductionProxySavingsClearedNegativeSystemClock[] =
-    "data_reduction.savings_cleared_negative_system_clock";
 const char kDataReductionNetworkProperties[] =
     "data_reduction.network_properties";
 
@@ -569,8 +567,6 @@ void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kGoogleServicesUsername, std::string());
   registry->RegisterStringPref(kGoogleServicesUserAccountId, std::string());
-  registry->RegisterInt64Pref(
-      kDataReductionProxySavingsClearedNegativeSystemClock, 0);
   registry->RegisterDictionaryPref(kDataReductionNetworkProperties);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1201,8 +1197,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 9/2019
   profile_prefs->ClearPref(kGoogleServicesUsername);
   profile_prefs->ClearPref(kGoogleServicesUserAccountId);
-  profile_prefs->ClearPref(
-      kDataReductionProxySavingsClearedNegativeSystemClock);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 10/2019.

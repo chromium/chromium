@@ -298,10 +298,6 @@
       "B44D08FD98F1523ED5837D78D0A606EA9D6206E5"  // Web Store
     ]
   }],
-  "dataReductionProxy": {
-    "dependencies": ["permission:dataReductionProxy"],
-    "contexts": ["blessed_extension"]
-  },
   "debugger": {
     "dependencies": ["permission:debugger"],
     "contexts": ["blessed_extension"]

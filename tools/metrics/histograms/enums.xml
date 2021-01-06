@@ -25238,7 +25238,7 @@ Called by update_extension_histograms.py.-->
   <int value="993" label="WEBVIEWINTERNAL_SETZOOMMODE"/>
   <int value="994" label="WEBVIEWINTERNAL_GETZOOMMODE"/>
   <int value="995" label="LAUNCHERSEARCHPROVIDER_SETSEARCHRESULTS"/>
-  <int value="996" label="DATAREDUCTIONPROXY_CLEARDATASAVINGS"/>
+  <int value="996" label="DELETED_DATAREDUCTIONPROXY_CLEARDATASAVINGS"/>
   <int value="997" label="BLUETOOTHPRIVATE_SETDISCOVERYFILTER"/>
   <int value="998" label="FILESYSTEM_GETVOLUMELIST"/>
   <int value="999" label="NETWORKINGPRIVATE_GETDEVICESTATES"/>
@@ -25338,7 +25338,7 @@ Called by update_extension_histograms.py.-->
   <int value="1087"
       label="DELETED_EASYUNLOCKPRIVATE_SETUPCONNECTIONDISCONNECT"/>
   <int value="1088" label="DELETED_EASYUNLOCKPRIVATE_SETUPCONNECTIONSEND"/>
-  <int value="1089" label="DATAREDUCTIONPROXY_GETDATAUSAGE"/>
+  <int value="1089" label="DELETED_DATAREDUCTIONPROXY_GETDATAUSAGE"/>
   <int value="1090"
       label="DELETED_EASYUNLOCKPRIVATE_SETUPCONNECTIONGETDEVICEADDRESS"/>
   <int value="1091" label="TABCAPTURE_CAPTUREOFFSCREENTAB"/>
@@ -26218,7 +26218,7 @@ Called by update_extension_permission.py.-->
   <int value="35" label="kDeleted_Copresence"/>
   <int value="36" label="kDeleted_CopresencePrivate"/>
   <int value="37" label="kCryptotokenPrivate"/>
-  <int value="38" label="kDataReductionProxy"/>
+  <int value="38" label="kDeleted_DataReductionProxy"/>
   <int value="39" label="kDiagnostics"/>
   <int value="40" label="kDeleted_Dial"/>
   <int value="41" label="kDebugger"/>

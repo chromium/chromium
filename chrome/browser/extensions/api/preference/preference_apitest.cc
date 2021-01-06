@@ -425,11 +425,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest,
   EXPECT_FALSE(loaded_incognito_test_listener.was_satisfied());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, DataReductionProxy) {
-  EXPECT_TRUE(RunExtensionTest("preference/data_reduction_proxy")) <<
-      message_;
-}
-
 // Tests the behavior of the Safe Browsing API as described in
 // crbug.com/1064722.
 IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, SafeBrowsing_SetTrue) {

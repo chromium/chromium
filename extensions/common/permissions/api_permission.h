@@ -79,7 +79,7 @@ class APIPermission {
     kDeleted_Copresence = 35,
     kDeleted_CopresencePrivate = 36,
     kCryptotokenPrivate = 37,
-    kDataReductionProxy = 38,
+    kDeleted_DataReductionProxy = 38,  // API removed.
     kDiagnostics = 39,
     kDeleted_Dial = 40,  // API removed.
     kDebugger = 41,
