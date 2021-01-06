@@ -84,6 +84,9 @@ enum class SigninInterceptionHeuristicOutcome {
   kMaxValue = kAbortInterceptionDisabled,
 };
 
+// User selection in the interception bubble.
+enum class SigninInterceptionUserChoice { kAccept, kDecline, kGuest };
+
 // User action resulting from the interception bubble.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -95,7 +98,10 @@ enum class SigninInterceptionResult {
   // Used when the bubble was not shown because it's not implemented.
   kNotDisplayed = 3,
 
-  kMaxValue = kNotDisplayed,
+  // Accepted to be opened in Guest profile.
+  kAcceptedWithGuest = 4,
+
+  kMaxValue = kAcceptedWithGuest,
 };
 
 // The ScopedDiceWebSigninInterceptionBubbleHandle closes the signin intercept

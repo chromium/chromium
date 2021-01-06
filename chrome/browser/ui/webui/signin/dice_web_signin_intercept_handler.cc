@@ -35,7 +35,7 @@ bool IsManaged(const AccountInfo& info) {
 DiceWebSigninInterceptHandler::DiceWebSigninInterceptHandler(
     const DiceWebSigninInterceptor::Delegate::BubbleParameters&
         bubble_parameters,
-    base::OnceCallback<void(bool)> callback)
+    base::OnceCallback<void(SigninInterceptionUserChoice)> callback)
     : bubble_parameters_(bubble_parameters), callback_(std::move(callback)) {
   DCHECK(callback_);
 }
@@ -100,19 +100,17 @@ const AccountInfo& DiceWebSigninInterceptHandler::intercepted_account() {
 
 void DiceWebSigninInterceptHandler::HandleAccept(const base::ListValue* args) {
   if (callback_)
-    std::move(callback_).Run(true);
+    std::move(callback_).Run(SigninInterceptionUserChoice::kAccept);
 }
 
 void DiceWebSigninInterceptHandler::HandleCancel(const base::ListValue* args) {
   if (callback_)
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(SigninInterceptionUserChoice::kDecline);
 }
 
 void DiceWebSigninInterceptHandler::HandleGuest(const base::ListValue* args) {
-  // TODO(https://crbug.com/1157764): Update the callback to have 3 states and
-  // return 'Guest' state.
   if (callback_)
-    std::move(callback_).Run(true);
+    std::move(callback_).Run(SigninInterceptionUserChoice::kGuest);
 }
 
 void DiceWebSigninInterceptHandler::HandlePageLoaded(

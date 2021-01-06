@@ -88,9 +88,9 @@ class DiceWebSigninInterceptionBubbleView
   std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> GetHandle()
       const;
 
-  // This bubble has no native buttons. The user accepts or cancels through this
-  // method, which is called by the inner web UI.
-  void OnWebUIUserChoice(bool accept);
+  // This bubble has no native buttons. The user accepts or cancels or selects
+  // Guest profile through this method, which is called by the inner web UI.
+  void OnWebUIUserChoice(SigninInterceptionUserChoice user_choice);
 
   Profile* profile_;
   bool has_accepted_ = false;

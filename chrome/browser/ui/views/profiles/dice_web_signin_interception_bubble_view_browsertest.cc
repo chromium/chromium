@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
 
   views::test::WidgetDestroyedWaiter waiter(widget);
   // Simulate clicking Cancel in the WebUI.
-  bubble->OnWebUIUserChoice(/*accept=*/false);
+  bubble->OnWebUIUserChoice(SigninInterceptionUserChoice::kDecline);
   waiter.Wait();
   ASSERT_TRUE(callback_result_.has_value());
   EXPECT_EQ(callback_result_, SigninInterceptionResult::kDeclined);
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   views::test::WidgetClosingObserver closing_observer(widget);
   EXPECT_FALSE(bubble->HasAccepted());
   // Simulate clicking Accept in the WebUI.
-  bubble->OnWebUIUserChoice(/*accept=*/true);
+  bubble->OnWebUIUserChoice(SigninInterceptionUserChoice::kAccept);
   ASSERT_TRUE(callback_result_.has_value());
   EXPECT_EQ(callback_result_, SigninInterceptionResult::kAccepted);
   EXPECT_TRUE(bubble->HasAccepted());
@@ -169,3 +169,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   histogram_tester.ExpectTotalCount("Signin.InterceptResult.Enterprise", 0);
   histogram_tester.ExpectTotalCount("Signin.InterceptResult.Switch", 0);
 }
+
+// TODO(https://crbug.com/1157764): Add Test for Bubble Guest selection when
+// functionality is supported.

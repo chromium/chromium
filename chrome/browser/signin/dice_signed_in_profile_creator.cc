@@ -134,10 +134,13 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
     CoreAccountId account_id,
     const base::string16& local_profile_name,
     base::Optional<size_t> icon_index,
+    bool use_guest_profile,
     base::OnceCallback<void(Profile*)> callback)
     : source_profile_(source_profile),
       account_id_(account_id),
       callback_(std::move(callback)) {
+  // TODO(https://crbug.com/2587062): Use |use_guest_profile| param.
+  DCHECK(!use_guest_profile || Profile::IsEphemeralGuestProfileEnabled());
   ProfileAttributesStorage& storage =
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
   if (!icon_index.has_value())

@@ -27,7 +27,7 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   DiceWebSigninInterceptHandler(
       const DiceWebSigninInterceptor::Delegate::BubbleParameters&
           bubble_parameters,
-      base::OnceCallback<void(bool)> callback);
+      base::OnceCallback<void(SigninInterceptionUserChoice)> callback);
   ~DiceWebSigninInterceptHandler() override;
 
   DiceWebSigninInterceptHandler(const DiceWebSigninInterceptHandler&) = delete;
@@ -63,7 +63,7 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
       identity_observer_{this};
   DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
 
-  base::OnceCallback<void(bool)> callback_;
+  base::OnceCallback<void(SigninInterceptionUserChoice)> callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_HANDLER_H_

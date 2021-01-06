@@ -58,7 +58,7 @@ bool DiceWebSigninInterceptUI::ShouldShowGuestOption() {
 void DiceWebSigninInterceptUI::Initialize(
     const DiceWebSigninInterceptor::Delegate::BubbleParameters&
         bubble_parameters,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(SigninInterceptionUserChoice)> callback) {
   web_ui()->AddMessageHandler(std::make_unique<DiceWebSigninInterceptHandler>(
       bubble_parameters, std::move(callback)));
 }

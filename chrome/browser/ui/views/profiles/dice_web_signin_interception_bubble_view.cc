@@ -183,14 +183,26 @@ DiceWebSigninInterceptionBubbleView::GetHandle() const {
   return std::make_unique<ScopedHandle>(weak_factory_.GetWeakPtr());
 }
 
-void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(bool accept) {
-  has_accepted_ = accept;
-  SigninInterceptionResult result = accept
-                                        ? SigninInterceptionResult::kAccepted
-                                        : SigninInterceptionResult::kDeclined;
+void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(
+    SigninInterceptionUserChoice user_choice) {
+  SigninInterceptionResult result;
+  switch (user_choice) {
+    case SigninInterceptionUserChoice::kAccept:
+      result = SigninInterceptionResult::kAccepted;
+      has_accepted_ = true;
+      break;
+    case SigninInterceptionUserChoice::kDecline:
+      result = SigninInterceptionResult::kDeclined;
+      has_accepted_ = false;
+      break;
+    case SigninInterceptionUserChoice::kGuest:
+      result = SigninInterceptionResult::kAcceptedWithGuest;
+      has_accepted_ = true;
+  }
+
   RecordInterceptionResult(bubble_parameters_, profile_, result);
   std::move(callback_).Run(result);
-  if (!accept) {
+  if (!has_accepted_) {
     // Only close the dialog when the user declined. If the user accepted the
     // dialog displays a spinner until the handle is released.
     GetWidget()->CloseWithReason(

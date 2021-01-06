@@ -19,9 +19,10 @@ class TokensLoadedCallbackRunner;
 // Extracts an account from an existing profile and moves it to a new profile.
 class DiceSignedInProfileCreator {
  public:
-  // Creates a new profile and moves the account from source_profile to the new
-  // profile. The callback is called with the new profile or nullptr in case of
-  // failure. The callback is never called synchronously.
+  // Creates a new profile or uses Guest profile if |use_guest_profile|, and
+  // moves the account from source_profile to it.
+  // The callback is called with the new profile or nullptr in case of failure.
+  // The callback is never called synchronously.
   // If |local_profile_name| is not empty, it will be set as local name for the
   // new profile.
   // If |icon_index| is nullopt, a random icon will be selected.
@@ -29,6 +30,7 @@ class DiceSignedInProfileCreator {
                              CoreAccountId account_id,
                              const base::string16& local_profile_name,
                              base::Optional<size_t> icon_index,
+                             bool use_guest_profile,
                              base::OnceCallback<void(Profile*)> callback);
 
   // Uses this version when the profile already exists at `target_profile_path`
