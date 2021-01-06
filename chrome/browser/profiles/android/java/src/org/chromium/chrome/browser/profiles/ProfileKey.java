@@ -19,8 +19,7 @@ public class ProfileKey {
 
     private ProfileKey(long nativeProfileKeyAndroid) {
         mNativeProfileKeyAndroid = nativeProfileKeyAndroid;
-        mIsOffTheRecord =
-                ProfileKeyJni.get().isOffTheRecord(mNativeProfileKeyAndroid, ProfileKey.this);
+        mIsOffTheRecord = ProfileKeyJni.get().isOffTheRecord(mNativeProfileKeyAndroid);
     }
 
     /**
@@ -32,12 +31,11 @@ public class ProfileKey {
     public static ProfileKey getLastUsedRegularProfileKey() {
         // TODO(mheikal): Assert at least reduced mode is started when https://crbug.com/973241 is
         // fixed.
-        return (ProfileKey) ProfileKeyJni.get().getLastUsedRegularProfileKey();
+        return ProfileKeyJni.get().getLastUsedRegularProfileKey();
     }
 
     public ProfileKey getOriginalKey() {
-        return (ProfileKey) ProfileKeyJni.get().getOriginalKey(
-                mNativeProfileKeyAndroid, ProfileKey.this);
+        return ProfileKeyJni.get().getOriginalKey(mNativeProfileKeyAndroid);
     }
 
     public boolean isOffTheRecord() {
@@ -61,8 +59,8 @@ public class ProfileKey {
 
     @NativeMethods
     interface Natives {
-        Object getLastUsedRegularProfileKey();
-        Object getOriginalKey(long nativeProfileKeyAndroid, ProfileKey caller);
-        boolean isOffTheRecord(long nativeProfileKeyAndroid, ProfileKey caller);
+        ProfileKey getLastUsedRegularProfileKey();
+        ProfileKey getOriginalKey(long nativeProfileKeyAndroid);
+        boolean isOffTheRecord(long nativeProfileKeyAndroid);
     }
 }

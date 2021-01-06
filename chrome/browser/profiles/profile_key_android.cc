@@ -42,6 +42,11 @@ ProfileKey* ProfileKeyAndroid::FromProfileKeyAndroid(
 }
 
 // static
+ScopedJavaLocalRef<jobject> JNI_ProfileKey_GetLastUsedRegularProfileKey(
+    JNIEnv* env) {
+  return ProfileKeyAndroid::GetLastUsedRegularProfileKey(env);
+}
+
 ScopedJavaLocalRef<jobject> ProfileKeyAndroid::GetLastUsedRegularProfileKey(
     JNIEnv* env) {
   ProfileKey* key = ::android::GetLastUsedRegularProfileKey();
@@ -59,24 +64,15 @@ ScopedJavaLocalRef<jobject> ProfileKeyAndroid::GetLastUsedRegularProfileKey(
   return ScopedJavaLocalRef<jobject>(profile_key_android->obj_);
 }
 
-ScopedJavaLocalRef<jobject> ProfileKeyAndroid::GetOriginalKey(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+ScopedJavaLocalRef<jobject> ProfileKeyAndroid::GetOriginalKey(JNIEnv* env) {
   ProfileKeyAndroid* original_key =
       key_->GetOriginalKey()->GetProfileKeyAndroid();
   DCHECK(original_key);
   return original_key->GetJavaObject();
 }
 
-jboolean ProfileKeyAndroid::IsOffTheRecord(JNIEnv* env,
-                                           const JavaParamRef<jobject>& obj) {
+jboolean ProfileKeyAndroid::IsOffTheRecord(JNIEnv* env) {
   return key_->IsOffTheRecord();
-}
-
-// static
-ScopedJavaLocalRef<jobject> JNI_ProfileKey_GetLastUsedRegularProfileKey(
-    JNIEnv* env) {
-  return ProfileKeyAndroid::GetLastUsedRegularProfileKey(env);
 }
 
 ScopedJavaLocalRef<jobject> ProfileKeyAndroid::GetJavaObject() {

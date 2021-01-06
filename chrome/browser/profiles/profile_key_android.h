@@ -26,13 +26,10 @@ class ProfileKeyAndroid {
   GetLastUsedRegularProfileKey(JNIEnv* env);
 
   // Return the original profile key.
-  base::android::ScopedJavaLocalRef<jobject> GetOriginalKey(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  base::android::ScopedJavaLocalRef<jobject> GetOriginalKey(JNIEnv* env);
 
   // Whether this profile is off the record.
-  jboolean IsOffTheRecord(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj);
+  jboolean IsOffTheRecord(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
