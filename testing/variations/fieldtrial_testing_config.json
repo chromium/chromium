@@ -3752,6 +3752,21 @@
             ]
         }
     ],
+    "IOSErrorPageRefactoring": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseJSForErrorPage"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFullPageScreenshot": [
         {
             "platforms": [
