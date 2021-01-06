@@ -4,7 +4,6 @@
 
 #include "base/json/json_reader.h"
 #include "build/build_config.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -16,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "weblayer/browser/browser_process.h"
-#include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/subresource_filter_client_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/grit/weblayer_resources.h"
@@ -294,68 +292,6 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   NavigateAndWaitForCompletion(test_url, shell());
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
-}
-
-IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
-                       ContentSettingsAllowlist_DoNotActivate) {
-  auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
-
-  GURL test_url(
-      embedded_test_server()->GetURL("/frame_with_included_script.html"));
-
-  ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ActivateSubresourceFilterInWebContentsForURL(web_contents, test_url);
-
-  NavigateAndWaitForCompletion(test_url, shell());
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
-
-  content::WebContentsConsoleObserver console_observer(web_contents);
-  console_observer.SetPattern(subresource_filter::kActivationConsoleMessage);
-
-  // Simulate explicitly allowlisting via content settings.
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext());
-  settings_map->SetContentSettingDefaultScope(
-      test_url, test_url, ContentSettingsType::ADS, CONTENT_SETTING_ALLOW);
-
-  NavigateAndWaitForCompletion(test_url, shell());
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
-
-  // No message for allowlisted url.
-  EXPECT_TRUE(console_observer.messages().empty());
-}
-
-IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
-                       ContentSettingsAllowlistGlobal_DoNotActivate) {
-  auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
-
-  GURL test_url(
-      embedded_test_server()->GetURL("/frame_with_included_script.html"));
-
-  ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ActivateSubresourceFilterInWebContentsForURL(web_contents, test_url);
-
-  NavigateAndWaitForCompletion(test_url, shell());
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
-
-  content::WebContentsConsoleObserver console_observer(web_contents);
-  console_observer.SetPattern(subresource_filter::kActivationConsoleMessage);
-
-  // Simulate globally allowing ads via content settings.
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext());
-  settings_map->SetDefaultContentSetting(ContentSettingsType::ADS,
-                                         CONTENT_SETTING_ALLOW);
-
-  NavigateAndWaitForCompletion(test_url, shell());
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
-
-  // No message for loads that are not activated.
-  EXPECT_TRUE(console_observer.messages().empty());
 }
 
 #if defined(OS_ANDROID)

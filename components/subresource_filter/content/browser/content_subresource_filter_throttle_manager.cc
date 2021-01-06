@@ -18,7 +18,6 @@
 #include "components/subresource_filter/content/browser/activation_state_computing_navigation_throttle.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/content/browser/page_load_statistics.h"
-#include "components/subresource_filter/content/browser/profile_interaction_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
 #include "components/subresource_filter/content/common/subresource_filter_messages.h"
@@ -439,7 +438,7 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
       client_->GetSafeBrowsingDatabaseManager()) {
     throttles->push_back(
         std::make_unique<SubresourceFilterSafeBrowsingActivationThrottle>(
-            navigation_handle, client_->GetProfileInteractionManager(),
+            navigation_handle, client_.get(),
             content::GetIOThreadTaskRunner({}),
             client_->GetSafeBrowsingDatabaseManager()));
   }

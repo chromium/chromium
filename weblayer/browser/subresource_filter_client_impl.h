@@ -43,13 +43,15 @@ class SubresourceFilterClientImpl
 
   // SubresourceFilterClient:
   void ShowNotification() override;
+  subresource_filter::mojom::ActivationLevel OnPageActivationComputed(
+      content::NavigationHandle* navigation_handle,
+      subresource_filter::mojom::ActivationLevel initial_activation_level,
+      subresource_filter::ActivationDecision* decision) override;
   void OnAdsViolationTriggered(
       content::RenderFrameHost* rfh,
       subresource_filter::mojom::AdsViolation triggered_violation) override;
   const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
   GetSafeBrowsingDatabaseManager() override;
-  subresource_filter::ProfileInteractionManager* GetProfileInteractionManager()
-      override;
   void OnReloadRequested() override;
 
   // Sets the SafeBrowsingDatabaseManager instance used to |database_manager|.
@@ -68,8 +70,6 @@ class SubresourceFilterClientImpl
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>
       throttle_manager_;
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
-  std::unique_ptr<subresource_filter::ProfileInteractionManager>
-      profile_interaction_manager_;
 };
 
 }  // namespace weblayer

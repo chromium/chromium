@@ -29,6 +29,7 @@
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/common/activation_scope.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -97,6 +98,18 @@ void ChromeSubresourceFilterClient::ShowNotification() {
   }
 }
 
+subresource_filter::mojom::ActivationLevel
+ChromeSubresourceFilterClient::OnPageActivationComputed(
+    content::NavigationHandle* navigation_handle,
+    subresource_filter::mojom::ActivationLevel initial_activation_level,
+    subresource_filter::ActivationDecision* decision) {
+  // TODO(crbug.com/1116095): Once SafeBrowsingActivationThrottle knows about
+  // ProfileInteractionManager, it can invoke ProfileInteractionManager directly
+  // and SubresourceFilterClient::OnPageActivationComputed() can be eliminated.
+  return profile_interaction_manager_->OnPageActivationComputed(
+      navigation_handle, initial_activation_level, decision);
+}
+
 void ChromeSubresourceFilterClient::OnAdsViolationTriggered(
     content::RenderFrameHost* rfh,
     subresource_filter::mojom::AdsViolation triggered_violation) {
@@ -114,11 +127,6 @@ ChromeSubresourceFilterClient::GetSafeBrowsingDatabaseManager() {
       g_browser_process->safe_browsing_service();
   return safe_browsing_service ? safe_browsing_service->database_manager()
                                : nullptr;
-}
-
-subresource_filter::ProfileInteractionManager*
-ChromeSubresourceFilterClient::GetProfileInteractionManager() {
-  return profile_interaction_manager_.get();
 }
 
 void ChromeSubresourceFilterClient::ShowUI(const GURL& url) {
