@@ -22,6 +22,7 @@ body {
   overflow: hidden;
   position: absolute;
   top: 0;
+  touch-action: none;
   width: 100%;
 }
 
