@@ -1286,8 +1286,6 @@ source_set("browser") {
     "renderer_host/file_utilities_host_impl.h",
     "renderer_host/form_submission_throttle.cc",
     "renderer_host/form_submission_throttle.h",
-    "renderer_host/frame_metadata_util.cc",
-    "renderer_host/frame_metadata_util.h",
     "renderer_host/frame_navigation_entry.cc",
     "renderer_host/frame_navigation_entry.h",
     "renderer_host/frame_token_message_queue.cc",
