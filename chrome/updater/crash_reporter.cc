@@ -73,6 +73,7 @@ void StartCrashReporter(const std::string& version) {
   std::vector<std::string> arguments;
   arguments.push_back(base::StrCat({"--", kCrashHandlerSwitch}));
 
+  // TODO(crbug.com/1163583): use the production front end instead of staging.
   crashpad::CrashpadClient* client = GetCrashpadClient();
   if (!client->StartHandler(handler_path, database_path,
                             /*metrics_dir=*/base::FilePath(),
