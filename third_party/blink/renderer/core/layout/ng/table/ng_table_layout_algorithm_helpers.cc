@@ -627,7 +627,7 @@ void DistributeExcessBlockSizeToRows(
       std::next(rows->begin(), start_row_index + row_count);
 
   auto RowBlockSizeDeficit = [&percentage_resolution_block_size](
-                                 NGTableTypes::Row* row) {
+                                 const NGTableTypes::Row* row) {
     if (percentage_resolution_block_size == kIndefiniteSize)
       return LayoutUnit();
     DCHECK(row->percent);
@@ -637,7 +637,7 @@ void DistributeExcessBlockSizeToRows(
   };
 
   auto IsUnconstrainedNonEmptyRow =
-      [&percentage_resolution_block_size](NGTableTypes::Row* row) {
+      [&percentage_resolution_block_size](const NGTableTypes::Row* row) {
         if (row->block_size == LayoutUnit())
           return false;
         if (row->percent && percentage_resolution_block_size == kIndefiniteSize)
@@ -646,11 +646,17 @@ void DistributeExcessBlockSizeToRows(
       };
 
   auto IsRowWithOriginatingRowspan =
-      [&start_row, &desired_block_size_is_rowspan](NGTableTypes::Row* row) {
+      [&start_row,
+       &desired_block_size_is_rowspan](const NGTableTypes::Row* row) {
         // Rowspans are treated specially only during rowspan distribution.
         return desired_block_size_is_rowspan && row != start_row &&
                row->has_rowspan_start;
       };
+
+  auto IsEmptyRow = [](const NGTableTypes::Row* row) {
+    return row->block_size == LayoutUnit() &&
+           (!row->percent || *row->percent == 0);
+  };
 
   unsigned percent_rows_with_deficit_count = 0;
   unsigned rows_with_originating_rowspan = 0;
@@ -677,10 +683,10 @@ void DistributeExcessBlockSizeToRows(
     if (IsUnconstrainedNonEmptyRow(row)) {
       unconstrained_non_empty_row_count++;
       unconstrained_non_empty_row_block_size += row->block_size;
-    } else if (row->is_constrained && row->block_size != LayoutUnit()) {
+    } else if (row->is_constrained && !IsEmptyRow(row)) {
       constrained_non_empty_row_count++;
     }
-    if (row->block_size == LayoutUnit())
+    if (IsEmptyRow(row))
       empty_row_count++;
   }
 
@@ -778,7 +784,7 @@ void DistributeExcessBlockSizeToRows(
       // - all rows are empty.
       // - non-empty rows are all constrained.
       // Different browsers disagree on when to grow empty rows.
-      NGTableTypes::Row* last_row;
+      NGTableTypes::Row* last_row = nullptr;
       LayoutUnit remaining_deficit = distributable_block_size;
       for (NGTableTypes::Row* row = start_row; row != end_row; ++row) {
         if (row->block_size != LayoutUnit())
@@ -791,6 +797,7 @@ void DistributeExcessBlockSizeToRows(
         row->block_size = delta;
         remaining_deficit -= delta;
       }
+      DCHECK(last_row);
       last_row->block_size += remaining_deficit;
       return;
     }
