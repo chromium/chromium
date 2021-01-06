@@ -18,12 +18,12 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_observer.h"
 #include "chrome/common/pref_names.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/permissions/permissions_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_metrics.h"
@@ -79,7 +79,8 @@ ContentSettingsForOneType GetContentSettingsFromBrowserContext(
     content::BrowserContext* browser_context,
     ContentSettingsType type) {
   return GetContentSettingsFromMap(
-      HostContentSettingsMapFactory::GetForProfile(browser_context), type);
+      permissions::PermissionsClient::Get()->GetSettingsMap(browser_context),
+      type);
 }
 
 // Returns the combined list of origins which either have site engagement
@@ -246,7 +247,7 @@ std::vector<mojom::SiteEngagementDetails> SiteEngagementService::GetAllDetails()
 
   return GetAllDetailsImpl(
       browsing_data::TimePeriod::ALL_TIME, clock_,
-      HostContentSettingsMapFactory::GetForProfile(browser_context_));
+      permissions::PermissionsClient::Get()->GetSettingsMap(browser_context_));
 }
 
 std::vector<mojom::SiteEngagementDetails>
@@ -257,7 +258,7 @@ SiteEngagementService::GetAllDetailsEngagedInTimePeriod(
 
   return GetAllDetailsImpl(
       time_period, clock_,
-      HostContentSettingsMapFactory::GetForProfile(browser_context_));
+      permissions::PermissionsClient::Get()->GetSettingsMap(browser_context_));
 }
 
 void SiteEngagementService::HandleNotificationInteraction(const GURL& url) {
@@ -348,7 +349,7 @@ mojom::SiteEngagementDetails SiteEngagementService::GetDetails(
 
   return GetDetailsImpl(
       clock_, url,
-      HostContentSettingsMapFactory::GetForProfile(browser_context_));
+      permissions::PermissionsClient::Get()->GetSettingsMap(browser_context_));
 }
 
 double SiteEngagementService::GetTotalEngagementPoints() const {
@@ -424,7 +425,7 @@ void SiteEngagementService::CleanupEngagementScores(
     last_engagement_time = now;
 
   HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser_context_);
+      permissions::PermissionsClient::Get()->GetSettingsMap(browser_context_);
   for (const auto& site : GetContentSettingsFromBrowserContext(
            browser_context_, ContentSettingsType::SITE_ENGAGEMENT)) {
     GURL origin(site.primary_pattern.ToString());
@@ -504,10 +505,10 @@ void SiteEngagementService::MaybeRecordMetrics() {
       FROM_HERE,
       {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(
-          &GetAllDetailsInBackground, now,
-          base::WrapRefCounted(
-              HostContentSettingsMapFactory::GetForProfile(browser_context_))),
+      base::BindOnce(&GetAllDetailsInBackground, now,
+                     base::WrapRefCounted(
+                         permissions::PermissionsClient::Get()->GetSettingsMap(
+                             browser_context_))),
       base::BindOnce(&SiteEngagementService::RecordMetrics,
                      weak_factory_.GetWeakPtr()));
 }
@@ -668,7 +669,7 @@ SiteEngagementScore SiteEngagementService::CreateEngagementScore(
   // will be initialised to the values from the original profile.
   return CreateEngagementScoreImpl(
       clock_, origin,
-      HostContentSettingsMapFactory::GetForProfile(browser_context_));
+      permissions::PermissionsClient::Get()->GetSettingsMap(browser_context_));
 }
 
 int SiteEngagementService::OriginsWithMaxDailyEngagement() const {
