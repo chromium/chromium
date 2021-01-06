@@ -327,10 +327,12 @@ void AvatarToolbarButtonDelegate::OnProfileNameChanged(
   avatar_toolbar_button_->UpdateText();
 }
 
-void AvatarToolbarButtonDelegate::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& unconsented_primary_account_info) {
-  if (unconsented_primary_account_info.IsEmpty())
+void AvatarToolbarButtonDelegate::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kNotRequired) !=
+      signin::PrimaryAccountChangeEvent::Type::kSet) {
     return;
+  }
   OnUserIdentityChanged();
 }
 

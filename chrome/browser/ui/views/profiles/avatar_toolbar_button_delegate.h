@@ -80,8 +80,8 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
 
   // IdentityManager::Observer:
   // Needed if the first sync promo account should be displayed.
-  void OnUnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& unconsented_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
   void OnRefreshTokensLoaded() override;
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,

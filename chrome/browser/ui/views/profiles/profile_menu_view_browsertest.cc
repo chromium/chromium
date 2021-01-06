@@ -96,8 +96,8 @@ class UnconsentedPrimaryAccountChecker
   }
 
   // signin::IdentityManager::Observer overrides:
-  void OnUnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& unconsented_primary_account_info) override {
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override {
     CheckExitCondition();
   }
 
