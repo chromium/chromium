@@ -238,7 +238,8 @@ TEST_F(IntegrationTest, RegisterTestApp) {
 }
 
 // TODO(crbug.com/1163524): Enable on Windows.
-TEST_F(IntegrationTest, ReportsActive) {
+// TODO(crbug.com/1163625): Failing on Mac 10.11.
+TEST_F(IntegrationTest, DISABLED_ReportsActive) {
   // A longer than usual timeout is needed for this test because the macOS
   // UpdateServiceInternal server takes at least 10 seconds to shut down after
   // Install, and RegisterApp cannot make progress until it shut downs and
