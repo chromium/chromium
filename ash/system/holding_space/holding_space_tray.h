@@ -23,6 +23,7 @@
 #include "base/timer/timer.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -47,6 +48,8 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
                                     public views::ContextMenuController,
                                     public views::WidgetObserver {
  public:
+  METADATA_HEADER(HoldingSpaceTray);
+
   explicit HoldingSpaceTray(Shelf* shelf);
   HoldingSpaceTray(const HoldingSpaceTray& other) = delete;
   HoldingSpaceTray& operator=(const HoldingSpaceTray& other) = delete;
@@ -63,7 +66,6 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   void CloseBubble() override;
   void ShowBubble(bool show_by_click) override;
   TrayBubbleView* GetBubbleView() override;
-  const char* GetClassName() const override;
   void SetVisiblePreferred(bool visible_preferred) override;
 
   void set_use_zero_previews_update_delay_for_testing(bool zero_delay) {

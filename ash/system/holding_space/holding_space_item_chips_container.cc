@@ -7,6 +7,7 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/proposed_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 namespace {
@@ -115,8 +116,7 @@ HoldingSpaceItemChipsContainer::HoldingSpaceItemChipsContainer() {
 
 HoldingSpaceItemChipsContainer::~HoldingSpaceItemChipsContainer() = default;
 
-const char* HoldingSpaceItemChipsContainer::GetClassName() const {
-  return "HoldingSpaceItemChipsContainer";
-}
+BEGIN_METADATA(HoldingSpaceItemChipsContainer, views::View)
+END_METADATA
 
 }  // namespace ash

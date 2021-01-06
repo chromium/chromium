@@ -28,6 +28,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -183,10 +184,6 @@ void HoldingSpaceTray::ShowBubble(bool show_by_click) {
 
 TrayBubbleView* HoldingSpaceTray::GetBubbleView() {
   return bubble_ ? bubble_->GetBubbleView() : nullptr;
-}
-
-const char* HoldingSpaceTray::GetClassName() const {
-  return "HoldingSpaceTray";
 }
 
 void HoldingSpaceTray::SetVisiblePreferred(bool preferred_visibility) {
@@ -421,5 +418,8 @@ void HoldingSpaceTray::UpdatePreviewsIcon() {
 bool HoldingSpaceTray::PreviewsShown() const {
   return previews_tray_icon_ && previews_tray_icon_->GetVisible();
 }
+
+BEGIN_METADATA(HoldingSpaceTray, TrayBackgroundView)
+END_METADATA
 
 }  // namespace ash
