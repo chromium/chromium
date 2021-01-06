@@ -232,7 +232,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // backing stores); the cache will be primed as needed by checking disk.
   std::set<url::Origin>* GetOriginSet();
 
-  scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
   IndexedDBDispatcherHost dispatcher_host_;
 
   // Bound and accessed on the |idb_task_runner_|.
@@ -247,20 +247,20 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   // If true, nothing (not even session-only data) should be deleted on exit.
   bool force_keep_session_state_;
-  scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
-  scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
+  const scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
+  const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
   std::unique_ptr<std::set<url::Origin>> origin_set_;
   std::map<url::Origin, int64_t> origin_size_map_;
   // The set of origins whose storage should be cleared on shutdown.
   std::set<url::Origin> origins_to_purge_on_shutdown_;
-  base::Clock* clock_;
+  base::Clock* const clock_;
 
   mojo::ReceiverSet<storage::mojom::IndexedDBControl> receivers_;
   mojo::ReceiverSet<storage::mojom::IndexedDBControlTest> test_receivers_;
   base::Optional<mojo::Receiver<storage::mojom::MockFailureInjector>>
       mock_failure_injector_;
   mojo::RemoteSet<storage::mojom::IndexedDBObserver> observers_;
-  std::unique_ptr<storage::FilesystemProxy> filesystem_proxy_;
+  const std::unique_ptr<storage::FilesystemProxy> filesystem_proxy_;
 
   DISALLOW_COPY_AND_ASSIGN(IndexedDBContextImpl);
 };

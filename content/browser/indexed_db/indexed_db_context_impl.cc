@@ -138,11 +138,11 @@ IndexedDBContextImpl::IndexedDBContextImpl(
       data_path_(data_path.empty() ? base::FilePath()
                                    : data_path.Append(kIndexedDBDirectory)),
       force_keep_session_state_(false),
-      quota_manager_proxy_(quota_manager_proxy),
+      quota_manager_proxy_(std::move(quota_manager_proxy)),
       clock_(clock),
       filesystem_proxy_(storage::CreateFilesystemProxy()) {
   IDB_TRACE("init");
-  quota_manager_proxy->RegisterClient(
+  quota_manager_proxy_->RegisterClient(
       base::MakeRefCounted<IndexedDBQuotaClient>(this),
       storage::QuotaClientType::kIndexedDatabase,
       {blink::mojom::StorageType::kTemporary});
