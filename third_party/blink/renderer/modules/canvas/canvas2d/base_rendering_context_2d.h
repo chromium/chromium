@@ -482,9 +482,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   void IdentifiabilityMaybeUpdateForStyleUnion(
       const StringOrCanvasGradientOrCanvasPattern& style);
 
-  RespectImageOrientationEnum RespectImageOrientationInternal(
-      CanvasImageSource*);
-
   bool origin_tainted_by_content_;
 
   DISALLOW_COPY_AND_ASSIGN(BaseRenderingContext2D);
