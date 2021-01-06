@@ -126,6 +126,7 @@ js_library("banners") {
     "//ui/file_manager/base/js:volume_manager_types",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:directory_model",
+    "//ui/file_manager/file_manager/foreground/js:holding_space_util",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js/cr:event_target",
   ]

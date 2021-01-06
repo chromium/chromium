@@ -130,6 +130,7 @@
 // <include src="folder_shortcuts_data_model.js">
 // <include src="sort_menu_controller.js">
 // <include src="gear_menu_controller.js">
+// <include src="holding_space_util.js">
 // <include src="import_controller.js">
 // <include src="last_modified_controller.js">
 // <include src="launch_param.js">

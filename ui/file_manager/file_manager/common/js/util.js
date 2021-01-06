@@ -1776,26 +1776,6 @@ util.isSharesheetEnabled = () => {
       loadTimeData.getBoolean('SHARESHEET_ENABLED');
 };
 
-/** @return {boolean} */
-util.isHoldingSpaceEnabled = () => {
-  return loadTimeData.valueExists('HOLDING_SPACE_ENABLED') &&
-      loadTimeData.getBoolean('HOLDING_SPACE_ENABLED');
-};
-
-/**
- * Returns the volume types for which the holding space feature is allowed.
- * @return {!Array<VolumeManagerCommon.VolumeType>}
- */
-util.getHoldingSpaceAllowedVolumeTypes = () => {
-  return [
-    VolumeManagerCommon.VolumeType.ANDROID_FILES,
-    VolumeManagerCommon.VolumeType.CROSTINI,
-    VolumeManagerCommon.VolumeType.DRIVE,
-    VolumeManagerCommon.VolumeType.DOWNLOADS,
-    VolumeManagerCommon.VolumeType.MY_FILES,
-  ];
-};
-
 util.isDriveDssPinEnabled = () => {
   return loadTimeData.valueExists('DRIVE_DSS_PIN_ENABLED') &&
       loadTimeData.getBoolean('DRIVE_DSS_PIN_ENABLED');

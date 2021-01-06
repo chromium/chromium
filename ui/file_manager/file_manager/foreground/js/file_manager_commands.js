@@ -1783,19 +1783,23 @@ CommandHandler.COMMANDS_['toggle-holding-space'] = new class extends Command {
     const entries = fileManager.selectionHandler.selection.entries;
     chrome.fileManagerPrivate.toggleAddedToHoldingSpace(
         entries, this.addsItems_);
+
+    if (this.addsItems_) {
+      HoldingSpaceUtil.maybeStoreTimeOfFirstPin();
+    }
   }
 
   /** @override */
   canExecute(event, fileManager) {
     const command = event.command;
 
-    if (!util.isHoldingSpaceEnabled()) {
+    if (!HoldingSpaceUtil.isFeatureEnabled()) {
       event.canExecute = false;
       command.setHidden(true);
       return;
     }
 
-    const allowedVolumeTypes = util.getHoldingSpaceAllowedVolumeTypes();
+    const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
     const currentVolumeInfo = fileManager.directoryModel.getCurrentVolumeInfo();
     if (!currentVolumeInfo ||
         !allowedVolumeTypes.includes(currentVolumeInfo.volumeType)) {

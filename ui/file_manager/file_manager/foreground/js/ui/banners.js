@@ -292,7 +292,7 @@ class Banners extends cr.EventTarget {
    * @private
    */
   prepareAndShowHoldingSpaceWelcomeBanner_() {
-    assert(util.isHoldingSpaceEnabled());
+    assert(HoldingSpaceUtil.isFeatureEnabled());
     this.showHoldingSpaceWelcomeBanner_(true);
 
     // Do not recreate the banner.
@@ -552,7 +552,7 @@ class Banners extends cr.EventTarget {
    * @private
    */
   closeHoldingSpaceWelcomeBanner_() {
-    assert(util.isHoldingSpaceEnabled());
+    assert(HoldingSpaceUtil.isFeatureEnabled());
     this.cleanupHoldingSpaceWelcomeBanner_();
 
     // Stop showing the welcome banner.
@@ -614,7 +614,7 @@ class Banners extends cr.EventTarget {
    * @private
    */
   async maybeShowHoldingSpaceWelcomeBanner_() {
-    if (!util.isHoldingSpaceEnabled()) {
+    if (!HoldingSpaceUtil.isFeatureEnabled()) {
       return;
     }
 
@@ -624,7 +624,7 @@ class Banners extends cr.EventTarget {
     // its banner should only be shown for those volumes. Note that the holding
     // space banner is explicitly disallowed from showing in `DRIVE` to prevent
     // the possibility of it being shown alongside the Drive banner.
-    const allowedVolumeTypes = util.getHoldingSpaceAllowedVolumeTypes();
+    const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
     const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
     if (!currentVolumeInfo ||
         !allowedVolumeTypes.includes(currentVolumeInfo.volumeType) ||
@@ -721,7 +721,7 @@ class Banners extends cr.EventTarget {
    * @private
    */
   showHoldingSpaceWelcomeBanner_(show) {
-    assert(util.isHoldingSpaceEnabled());
+    assert(HoldingSpaceUtil.isFeatureEnabled());
 
     const /** boolean */ hidden = !show;
     if (this.holdingSpaceWelcomeBanner_.hasAttribute('hidden') == hidden) {
@@ -732,6 +732,7 @@ class Banners extends cr.EventTarget {
       this.holdingSpaceWelcomeBanner_.setAttribute('hidden', '');
     } else {
       this.holdingSpaceWelcomeBanner_.removeAttribute('hidden');
+      HoldingSpaceUtil.maybeStoreTimeOfFirstWelcomeBannerShow();
     }
 
     this.requestRelayout_(200);  // Resize only after the animation is done.
@@ -894,7 +895,7 @@ class Banners extends cr.EventTarget {
    * @private
    */
   cleanupHoldingSpaceWelcomeBanner_() {
-    assert(util.isHoldingSpaceEnabled());
+    assert(HoldingSpaceUtil.isFeatureEnabled());
     this.showHoldingSpaceWelcomeBanner_(false);
   }
 

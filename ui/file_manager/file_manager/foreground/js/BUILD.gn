@@ -545,6 +545,7 @@ js_library("file_manager_commands") {
     ":file_selection",
     ":file_tasks",
     ":file_transfer_controller",
+    ":holding_space_util",
     ":naming_controller",
     ":providers_model",
     ":spinner_controller",
@@ -708,6 +709,14 @@ js_library("gear_menu_controller") {
     ":file_manager_commands",
     "ui:gear_menu",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
+  ]
+}
+
+js_library("holding_space_util") {
+  deps = [
+    "//ui/file_manager/base/js:volume_manager_types",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:load_time_data",
   ]
 }
 

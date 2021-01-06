@@ -115,8 +115,8 @@ chrome = {
     recordUserAction: (action) => {
       chrome.metricsPrivate.userActions_.push(action);
     },
-    recordValue: (metricName, value) => {
-      chrome.metricsPrivate.values_.push([metricName, value]);
+    recordValue: (metric, value) => {
+      chrome.metricsPrivate.values_.push([metric, value]);
     },
   },
 
