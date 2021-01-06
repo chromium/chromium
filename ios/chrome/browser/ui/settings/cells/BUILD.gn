@@ -22,8 +22,6 @@ source_set("cells") {
     "settings_image_detail_text_cell.mm",
     "settings_image_detail_text_item.h",
     "settings_image_detail_text_item.mm",
-    "settings_multiline_detail_item.h",
-    "settings_multiline_detail_item.mm",
     "settings_switch_cell.h",
     "settings_switch_cell.mm",
     "settings_switch_item.h",
@@ -87,7 +85,6 @@ source_set("unit_tests") {
     "search_engine_item_unittest.mm",
     "settings_check_item_unittest.mm",
     "settings_image_detail_text_item_unittest.mm",
-    "settings_multiline_detail_item_unittest.mm",
     "version_item_unittest.mm",
   ]
 

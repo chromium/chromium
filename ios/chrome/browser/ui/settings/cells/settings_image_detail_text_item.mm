@@ -29,7 +29,6 @@
   [super configureCell:cell withStyler:styler];
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
-  DCHECK(self.image);
   cell.image = self.image;
 
   if (self.detailTextColor) {
