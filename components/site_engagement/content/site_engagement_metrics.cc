@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/engagement/site_engagement_metrics.h"
+#include "components/site_engagement/content/site_engagement_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/engagement/site_engagement_score.h"
-#include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
+#include "components/site_engagement/content/engagement_type.h"
+#include "components/site_engagement/content/site_engagement_score.h"
 
 namespace site_engagement {
 
@@ -110,10 +110,9 @@ void SiteEngagementMetrics::RecordOriginsWithMaxDailyEngagement(
                            total_origins);
 }
 
-void SiteEngagementMetrics::RecordEngagement(
-    SiteEngagementService::EngagementType type) {
+void SiteEngagementMetrics::RecordEngagement(EngagementType type) {
   UMA_HISTOGRAM_ENUMERATION(kEngagementTypeHistogram, type,
-                            SiteEngagementService::ENGAGEMENT_LAST);
+                            EngagementType::kLast);
 }
 
 void SiteEngagementMetrics::RecordDaysSinceLastShortcutLaunch(int days) {

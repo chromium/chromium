@@ -51,11 +51,11 @@ class BackgroundSyncDelegateImpl
 #endif  // defined(OS_ANDROID)
 
   // SiteEngagementObserver overrides.
-  void OnEngagementEvent(content::WebContents* web_contents,
-                         const GURL& url,
-                         double score,
-                         site_engagement::SiteEngagementService::EngagementType
-                             engagement_type) override;
+  void OnEngagementEvent(
+      content::WebContents* web_contents,
+      const GURL& url,
+      double score,
+      site_engagement::EngagementType engagement_type) override;
 
  private:
   Profile* profile_;

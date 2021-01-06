@@ -20,6 +20,8 @@ class NavigationHandle;
 
 namespace site_engagement {
 
+enum class EngagementType;
+
 // Per-WebContents class to handle updating the site engagement scores for
 // origins.
 class SiteEngagementService::Helper
@@ -157,7 +159,7 @@ class SiteEngagementService::Helper
 
   // Ask the SiteEngagementService to record engagement via user input at the
   // current WebContents URL.
-  void RecordUserInput(SiteEngagementService::EngagementType type);
+  void RecordUserInput(EngagementType type);
 
   // Ask the SiteEngagementService to record engagement via media playing at the
   // current WebContents URL.

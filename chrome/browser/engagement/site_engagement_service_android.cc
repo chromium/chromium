@@ -7,8 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/engagement/android/jni_headers/SiteEngagementService_jni.h"
-#include "chrome/browser/engagement/site_engagement_score.h"
 #include "chrome/browser/profiles/profile_android.h"
+#include "components/site_engagement/content/site_engagement_score.h"
 #include "url/gurl.h"
 
 namespace site_engagement {

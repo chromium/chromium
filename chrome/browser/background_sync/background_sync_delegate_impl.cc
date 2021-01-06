@@ -119,7 +119,7 @@ void BackgroundSyncDelegateImpl::OnEngagementEvent(
     content::WebContents* web_contents,
     const GURL& url,
     double score,
-    site_engagement::SiteEngagementService::EngagementType engagement_type) {
+    site_engagement::EngagementType engagement_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (score == 0.0)

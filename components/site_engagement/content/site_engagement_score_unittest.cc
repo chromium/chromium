@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/engagement/site_engagement_score.h"
+#include "components/site_engagement/content/site_engagement_score.h"
 
 #include <utility>
 
 #include "base/macros.h"
 #include "base/test/simple_test_clock.h"
 #include "base/values.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace site_engagement {
@@ -49,12 +44,11 @@ base::Time GetReferenceTime() {
 
 }  // namespace
 
-class SiteEngagementScoreTest : public ChromeRenderViewHostTestHarness {
+class SiteEngagementScoreTest : public testing::Test {
  public:
   SiteEngagementScoreTest() : score_(&test_clock_, GURL(), nullptr) {}
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
     // Disable the first engagement bonus for tests.
     SiteEngagementScore::SetParamValuesForTesting();
   }
@@ -267,9 +261,9 @@ TEST_F(SiteEngagementScoreTest, DecaysAppliedBeforeAdd) {
       base::TimeDelta::FromHours(kLessPeriodsThanNeededToDecayMaxScore *
                                  SiteEngagementScore::GetDecayPeriodInHours()));
 
-  double decayed_score = initial_score -
-                         kLessPeriodsThanNeededToDecayMaxScore *
-                             SiteEngagementScore::GetDecayPoints();
+  double decayed_score =
+      initial_score - kLessPeriodsThanNeededToDecayMaxScore *
+                          SiteEngagementScore::GetDecayPoints();
   EXPECT_EQ(decayed_score, score_.GetTotalScore());
 
   // Now add some points.
@@ -465,10 +459,8 @@ TEST_F(SiteEngagementScoreTest, GetDetails) {
 
   GURL url("http://www.google.com/");
 
-  // Replace |score_| with one with an actual URL, and with a settings map.
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile());
-  score_ = SiteEngagementScore(&test_clock_, url, settings_map);
+  // Replace |score_| with one with an actual URL.
+  score_ = SiteEngagementScore(&test_clock_, url, nullptr);
 
   // Initially all component scores should be zero.
   mojom::SiteEngagementDetails details = score_.GetDetails();

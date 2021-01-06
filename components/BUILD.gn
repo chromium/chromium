@@ -296,6 +296,7 @@ test("components_unittests") {
       "//components/services/paint_preview_compositor:unit_tests",
       "//components/services/quarantine:unit_tests",
       "//components/services/storage:tests",
+      "//components/site_engagement/content:unit_tests",
       "//components/site_isolation:unit_tests",
       "//components/spellcheck/browser:unit_tests",
       "//components/spellcheck/renderer:unit_tests",

@@ -83,11 +83,10 @@ class AppBannerManagerDesktop
                      const GURL& validated_url) override;
 
   // SiteEngagementObserver override.
-  void OnEngagementEvent(
-      content::WebContents* web_contents,
-      const GURL& url,
-      double score,
-      site_engagement::SiteEngagementService::EngagementType type) override;
+  void OnEngagementEvent(content::WebContents* web_contents,
+                         const GURL& url,
+                         double score,
+                         site_engagement::EngagementType type) override;
 
   // web_app::AppRegistrarObserver:
   void OnWebAppInstalled(const web_app::AppId& app_id) override;

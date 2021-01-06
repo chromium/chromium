@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_SCORE_H_
-#define CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_SCORE_H_
+#ifndef COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_SCORE_H_
+#define COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_SCORE_H_
 
 #include <array>
 #include <memory>
@@ -170,9 +170,7 @@ class SiteEngagementScore {
   }
 
   // Get/set the last time this origin recorded an engagement change.
-  base::Time last_engagement_time() const {
-    return last_engagement_time_;
-  }
+  base::Time last_engagement_time() const { return last_engagement_time_; }
   void set_last_engagement_time(const base::Time& time) {
     last_engagement_time_ = time;
   }
@@ -245,4 +243,4 @@ class SiteEngagementScore {
 
 }  // namespace site_engagement
 
-#endif  // CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_SCORE_H_
+#endif  // COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_SCORE_H_

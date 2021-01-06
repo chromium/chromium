@@ -7,16 +7,17 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 
 namespace content {
 class WebContents;
 }
 
 class GURL;
-class SiteEngagementService;
 
 namespace site_engagement {
+
+class SiteEngagementService;
+enum class EngagementType;
 
 class SiteEngagementObserver {
  public:
@@ -28,7 +29,7 @@ class SiteEngagementObserver {
   virtual void OnEngagementEvent(content::WebContents* web_contents,
                                  const GURL& url,
                                  double score,
-                                 SiteEngagementService::EngagementType type) {}
+                                 EngagementType type) {}
 
  protected:
   explicit SiteEngagementObserver(SiteEngagementService* service);

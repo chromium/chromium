@@ -19,14 +19,15 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/engagement/site_engagement_metrics.h"
 #include "chrome/browser/engagement/site_engagement_observer.h"
-#include "chrome/browser/engagement/site_engagement_score.h"
 #include "chrome/common/pref_names.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
+#include "components/site_engagement/content/engagement_type.h"
+#include "components/site_engagement/content/site_engagement_metrics.h"
+#include "components/site_engagement/content/site_engagement_score.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -267,7 +268,7 @@ void SiteEngagementService::HandleNotificationInteraction(const GURL& url) {
 
   MaybeRecordMetrics();
   OnEngagementEvent(nullptr /* web_contents */, url,
-                    ENGAGEMENT_NOTIFICATION_INTERACTION);
+                    EngagementType::kNotificationInteraction);
 }
 
 bool SiteEngagementService::IsBootstrapped() const {
@@ -331,7 +332,7 @@ void SiteEngagementService::SetLastShortcutLaunchTime(
   score.set_last_shortcut_launch_time(now);
   score.Commit();
 
-  OnEngagementEvent(web_contents, url, ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH);
+  OnEngagementEvent(web_contents, url, EngagementType::kWebappShortcutLaunch);
 }
 
 double SiteEngagementService::GetScore(const GURL& url) const {
@@ -607,7 +608,7 @@ void SiteEngagementService::HandleMediaPlaying(
   MaybeRecordMetrics();
   OnEngagementEvent(
       web_contents, url,
-      is_hidden ? ENGAGEMENT_MEDIA_HIDDEN : ENGAGEMENT_MEDIA_VISIBLE);
+      is_hidden ? EngagementType::kMediaHidden : EngagementType::kMediaVisible);
 }
 
 void SiteEngagementService::HandleNavigation(content::WebContents* web_contents,
@@ -619,7 +620,7 @@ void SiteEngagementService::HandleNavigation(content::WebContents* web_contents,
   AddPoints(url, SiteEngagementScore::GetNavigationPoints());
 
   MaybeRecordMetrics();
-  OnEngagementEvent(web_contents, url, ENGAGEMENT_NAVIGATION);
+  OnEngagementEvent(web_contents, url, EngagementType::kNavigation);
 }
 
 void SiteEngagementService::HandleUserInput(content::WebContents* web_contents,

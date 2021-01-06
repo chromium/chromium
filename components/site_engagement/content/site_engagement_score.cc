@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/engagement/site_engagement_score.h"
+#include "components/site_engagement/content/site_engagement_score.h"
 
 #include <algorithm>
 #include <cmath>
@@ -13,11 +13,13 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/engagement/site_engagement_metrics.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/site_engagement/content/engagement_type.h"
+#include "components/site_engagement/content/site_engagement_metrics.h"
 #include "components/variations/variations_associated_data.h"
+#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 
 namespace site_engagement {
 
@@ -242,7 +244,7 @@ void SiteEngagementScore::AddPoints(double points) {
     // Award bonus engagement for the first engagement of the day for a site.
     points += GetFirstDailyEngagementPoints();
     SiteEngagementMetrics::RecordEngagement(
-        SiteEngagementService::ENGAGEMENT_FIRST_DAILY_ENGAGEMENT);
+        EngagementType::kFirstDailyEngagement);
   }
 
   double to_add = std::min(kMaxPoints - raw_score_,

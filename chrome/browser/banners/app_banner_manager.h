@@ -326,11 +326,10 @@ class AppBannerManager : public content::WebContentsObserver,
   void WebContentsDestroyed() override;
 
   // SiteEngagementObserver overrides.
-  void OnEngagementEvent(
-      content::WebContents* web_contents,
-      const GURL& url,
-      double score,
-      site_engagement::SiteEngagementService::EngagementType type) override;
+  void OnEngagementEvent(content::WebContents* web_contents,
+                         const GURL& url,
+                         double score,
+                         site_engagement::EngagementType type) override;
 
   // Subclass accessors for private fields which should not be changed outside
   // this class.

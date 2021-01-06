@@ -502,6 +502,7 @@ static_library("ui") {
     "//components/signin/core/browser",
     "//components/signin/public/base:signin_buildflags",
     "//components/signin/public/identity_manager",
+    "//components/site_engagement/content",
     "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/spellcheck/browser",
     "//components/ssl_errors",

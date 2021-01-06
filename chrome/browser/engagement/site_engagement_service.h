@@ -42,6 +42,7 @@ class HostContentSettingsMap;
 
 namespace site_engagement {
 
+enum class EngagementType;
 class SiteEngagementObserver;
 class SiteEngagementScore;
 
@@ -88,25 +89,6 @@ class SiteEngagementService : public KeyedService,
     // not exist.
     virtual SiteEngagementService* GetSiteEngagementService(
         content::BrowserContext* browser_context) = 0;
-  };
-
-  // This is used to back a UMA histogram, so it should be treated as
-  // append-only. Any new values should be inserted immediately prior to
-  // ENGAGEMENT_LAST and added to SiteEngagementServiceEngagementType in
-  // tools/metrics/histograms/enums.xml.
-  // TODO(calamity): Document each of these engagement types.
-  enum EngagementType {
-    ENGAGEMENT_NAVIGATION,
-    ENGAGEMENT_KEYPRESS,
-    ENGAGEMENT_MOUSE,
-    ENGAGEMENT_TOUCH_GESTURE,
-    ENGAGEMENT_SCROLL,
-    ENGAGEMENT_MEDIA_HIDDEN,
-    ENGAGEMENT_MEDIA_VISIBLE,
-    ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH,
-    ENGAGEMENT_FIRST_DAILY_ENGAGEMENT,
-    ENGAGEMENT_NOTIFICATION_INTERACTION,
-    ENGAGEMENT_LAST,
   };
 
   // WebContentsObserver that detects engagement triggering events and notifies

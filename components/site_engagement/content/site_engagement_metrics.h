@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_METRICS_H_
-#define CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_METRICS_H_
+#ifndef COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_METRICS_H_
+#define COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_METRICS_H_
 
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
+#include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "url/gurl.h"
 
 namespace site_engagement {
 
-namespace mojom {
-class SiteEngagementDetails;
-}
+enum class EngagementType;
 
 // Helper class managing the UMA histograms for the Site Engagement Service.
 class SiteEngagementMetrics {
@@ -28,7 +26,7 @@ class SiteEngagementMetrics {
       const std::vector<mojom::SiteEngagementDetails>& details);
   static void RecordOriginsWithMaxEngagement(int total_origins);
   static void RecordOriginsWithMaxDailyEngagement(int total_origins);
-  static void RecordEngagement(SiteEngagementService::EngagementType type);
+  static void RecordEngagement(EngagementType type);
   static void RecordDaysSinceLastShortcutLaunch(int days);
 
  private:
@@ -54,4 +52,4 @@ class SiteEngagementMetrics {
 
 }  // namespace site_engagement
 
-#endif  // CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_METRICS_H_
+#endif  // COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_METRICS_H_

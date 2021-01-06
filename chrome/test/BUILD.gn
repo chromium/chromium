@@ -3500,7 +3500,6 @@ test("unit_tests") {
     "../browser/endpoint_fetcher/endpoint_fetcher_unittest.cc",
     "../browser/engagement/important_sites_util_unittest.cc",
     "../browser/engagement/site_engagement_helper_unittest.cc",
-    "../browser/engagement/site_engagement_score_unittest.cc",
     "../browser/engagement/site_engagement_service_unittest.cc",
     "../browser/enterprise/util/affiliation_unittest.cc",
     "../browser/enterprise/util/managed_browser_utils_unittest.cc",

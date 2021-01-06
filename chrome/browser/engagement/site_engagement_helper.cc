@@ -13,6 +13,7 @@
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/site_engagement/content/engagement_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -124,17 +125,16 @@ void SiteEngagementService::Helper::InputTracker::DidGetUserInteraction(
   // compiler verifying that all cases are covered).
   switch (type) {
     case blink::WebInputEvent::Type::kRawKeyDown:
-      helper()->RecordUserInput(SiteEngagementService::ENGAGEMENT_KEYPRESS);
+      helper()->RecordUserInput(EngagementType::kKeypress);
       break;
     case blink::WebInputEvent::Type::kMouseDown:
-      helper()->RecordUserInput(SiteEngagementService::ENGAGEMENT_MOUSE);
+      helper()->RecordUserInput(EngagementType::kMouse);
       break;
     case blink::WebInputEvent::Type::kTouchStart:
-      helper()->RecordUserInput(
-          SiteEngagementService::ENGAGEMENT_TOUCH_GESTURE);
+      helper()->RecordUserInput(EngagementType::kTouchGesture);
       break;
     case blink::WebInputEvent::Type::kGestureScrollBegin:
-      helper()->RecordUserInput(SiteEngagementService::ENGAGEMENT_SCROLL);
+      helper()->RecordUserInput(EngagementType::kScroll);
       break;
     default:
       NOTREACHED();
@@ -197,8 +197,7 @@ SiteEngagementService::Helper::Helper(content::WebContents* web_contents)
       service_(SiteEngagementService::Get(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {}
 
-void SiteEngagementService::Helper::RecordUserInput(
-    SiteEngagementService::EngagementType type) {
+void SiteEngagementService::Helper::RecordUserInput(EngagementType type) {
   TRACE_EVENT0("SiteEngagement", "RecordUserInput");
   content::WebContents* contents = web_contents();
   if (contents)

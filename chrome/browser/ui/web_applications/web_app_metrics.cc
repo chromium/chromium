@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/site_engagement/content/engagement_type.h"
 #include "components/webapps/installable/installable_metrics.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
@@ -39,23 +40,22 @@ constexpr base::TimeDelta max_valid_session_delta_ =
 
 void RecordEngagementHistogram(
     const std::string& histogram_name,
-    site_engagement::SiteEngagementService::EngagementType engagement_type) {
-  base::UmaHistogramEnumeration(
-      histogram_name, engagement_type,
-      site_engagement::SiteEngagementService::ENGAGEMENT_LAST);
+    site_engagement::EngagementType engagement_type) {
+  base::UmaHistogramEnumeration(histogram_name, engagement_type,
+                                site_engagement::EngagementType::kLast);
 }
 
 void RecordTabOrWindowHistogram(
     const std::string& histogram_prefix,
     bool in_window,
-    site_engagement::SiteEngagementService::EngagementType engagement_type) {
+    site_engagement::EngagementType engagement_type) {
   RecordEngagementHistogram(
       histogram_prefix + (in_window ? ".InWindow" : ".InTab"), engagement_type);
 }
 
 void RecordUserInstalledHistogram(
     bool in_window,
-    site_engagement::SiteEngagementService::EngagementType engagement_type) {
+    site_engagement::EngagementType engagement_type) {
   const std::string histogram_prefix = "WebApp.Engagement.UserInstalled";
   RecordTabOrWindowHistogram(histogram_prefix, in_window, engagement_type);
 }
@@ -103,7 +103,7 @@ void WebAppMetrics::OnEngagementEvent(
     WebContents* web_contents,
     const GURL& url,
     double score,
-    site_engagement::SiteEngagementService::EngagementType engagement_type) {
+    site_engagement::EngagementType engagement_type) {
   if (!web_contents)
     return;
 

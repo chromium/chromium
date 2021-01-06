@@ -220,7 +220,7 @@ void AppBannerManagerDesktop::OnEngagementEvent(
     content::WebContents* web_contents,
     const GURL& url,
     double score,
-    site_engagement::SiteEngagementService::EngagementType type) {
+    site_engagement::EngagementType type) {
   if (gDisableTriggeringForTesting)
     return;
 
