@@ -116,6 +116,14 @@ void TouchSelectionController::OnSelectionBoundsChanged(
       start_selection_handle_.swap(end_selection_handle_);
   }
 
+  // Update |anchor_drag_to_selection_start_| for long press drag selector.
+  // Since selection can be updated with only one end at a time, if one end is
+  // equal to the previous value, the updated end is the other.
+  if (start_ == start)
+    anchor_drag_to_selection_start_ = false;
+  else if (end_ == end)
+    anchor_drag_to_selection_start_ = true;
+
   start_ = start;
   end_ = end;
   start_orientation_ = ToTouchHandleOrientation(start_.type());

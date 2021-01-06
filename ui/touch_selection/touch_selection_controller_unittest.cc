@@ -1556,6 +1556,13 @@ TEST_F(TouchSelectionControllerTest, LongpressDragSelectorUpdageDragPosition) {
   EXPECT_TRUE(controller().WillHandleTouchEvent(event.MovePoint(0, 5, 10)));
   EXPECT_TRUE(GetAndResetSelectionMoved());
   EXPECT_EQ(gfx::PointF(56.f, 15.f), GetLastDragUpdatePosition());
+
+  // Move start
+  start_rect.Offset(30, 0);
+  ChangeSelection(start_rect, visible, end_rect, visible);
+  EXPECT_TRUE(controller().WillHandleTouchEvent(event.MovePoint(0, 35, 10)));
+  EXPECT_TRUE(GetAndResetSelectionMoved());
+  EXPECT_EQ(gfx::PointF(-10.f, 5.f), GetLastDragUpdatePosition());
 }
 
 TEST_F(TouchSelectionControllerTest, NoHideActiveInsertionHandle) {
