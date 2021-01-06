@@ -18079,6 +18079,180 @@
     "gtest_tests": [
       {
         "args": [
+          "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_cardboard_skipdon_setupcomplete.json",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--remove-system-package=com.google.vr.vrcore",
+          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "chrome_public_test_vr_apk-ddready-cardboard"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "chrome_public_test_vr_apk-ddready-cardboard",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
+              "location": "bin",
+              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "device_os": "QP1A.190711.020",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "marlin",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "chrome_public_test_vr_apk",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_test_vr_apk/"
+      },
+      {
+        "args": [
+          "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_skipdon_setupcomplete.json",
+          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--git-revision=${got_revision}",
+          "--remove-system-package=com.google.vr.vrcore",
+          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "chrome_public_test_vr_apk-ddready-ddview"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "chrome_public_test_vr_apk-ddready-ddview",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
+              "location": "bin",
+              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "device_os": "QP1A.190711.020",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "marlin",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
+        },
+        "test": "chrome_public_test_vr_apk",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_test_vr_apk/"
+      },
+      {
+        "args": [
+          "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_don_setupcomplete.json",
+          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk",
+          "--annotation=Restriction=VR_DON_Enabled",
+          "--vr-don-enabled",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--remove-system-package=com.google.vr.vrcore",
+          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "chrome_public_test_vr_apk-ddready-don-enabled"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "chrome_public_test_vr_apk-ddready-don-enabled",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
+              "location": "bin",
+              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "device_os": "QP1A.190711.020",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "marlin",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_public_test_vr_apk",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_test_vr_apk/"
+      },
+      {
+        "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--remove-system-package=com.google.ar.core",

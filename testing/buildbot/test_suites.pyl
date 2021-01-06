@@ -5081,6 +5081,7 @@
     'android_10_rel_gtests': [
       'android_trichrome_smoke_tests',
       'android_ar_gtests',
+      'android_ddready_vr_gtests',
     ],
 
     # This is the same as 'android_lollipop_marshmallow_gtests'
