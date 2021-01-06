@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_ASH_CONSTANTS_H_
 
 #include "ash/public/cpp/accessibility_controller_enums.h"
+#include "ash/public/cpp/ash_public_export.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
@@ -26,6 +27,13 @@ constexpr SkColor kDefaultCursorColor = SK_ColorBLACK;
 
 // The option in the Switch Access settings for no switch assigned.
 constexpr int kSwitchAccessAssignmentNone = 0;
+
+// These device types are a subset of ui::InputDeviceType. These strings are
+// also used in Switch Access webui.
+ASH_PUBLIC_EXPORT extern const char kSwitchAccessInternalDevice[];
+ASH_PUBLIC_EXPORT extern const char kSwitchAccessUsbDevice[];
+ASH_PUBLIC_EXPORT extern const char kSwitchAccessBluetoothDevice[];
+ASH_PUBLIC_EXPORT extern const char kSwitchAccessUnknownDevice[];
 
 // The default delay before Switch Access automatically moves to the next
 // element on the page that is interesting, based on the Switch Access
