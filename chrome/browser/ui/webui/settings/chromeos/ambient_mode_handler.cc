@@ -188,8 +188,11 @@ void AmbientModeHandler::HandleSetSelectedTemperatureUnit(
   DCHECK(settings_);
   CHECK_EQ(1U, args->GetSize());
 
-  settings_->temperature_unit = ExtractTemperatureUnit(args);
-  UpdateSettings();
+  auto temperature_unit = ExtractTemperatureUnit(args);
+  if (settings_->temperature_unit != temperature_unit) {
+    settings_->temperature_unit = temperature_unit;
+    UpdateSettings();
+  }
 }
 
 void AmbientModeHandler::HandleSetSelectedAlbums(const base::ListValue* args) {

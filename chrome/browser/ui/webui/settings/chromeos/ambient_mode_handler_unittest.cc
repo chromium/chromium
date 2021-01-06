@@ -64,6 +64,13 @@ class AmbientModeHandlerTest : public testing::Test {
     handler_->settings_->topic_source = topic_source;
   }
 
+  void SetTemperatureUnit(ash::AmbientModeTemperatureUnit temperature_unit) {
+    if (!handler_->settings_)
+      handler_->settings_ = ash::AmbientSettings();
+
+    handler_->settings_->temperature_unit = temperature_unit;
+  }
+
   void RequestSettings() {
     base::ListValue args;
     handler_->HandleRequestSettings(&args);
@@ -73,6 +80,10 @@ class AmbientModeHandlerTest : public testing::Test {
     base::ListValue args;
     args.Append(static_cast<int>(topic_source));
     handler_->HandleRequestAlbums(&args);
+  }
+
+  void HandleSetSelectedTemperatureUnit(const base::ListValue* args) {
+    handler_->HandleSetSelectedTemperatureUnit(args);
   }
 
   void HandleSetSelectedAlbums(const base::ListValue* args) {
@@ -733,6 +744,41 @@ TEST_F(AmbientModeHandlerTest, TestAlbumNumbersAreRecorded) {
                                       /*count=*/1);
   histogram_tester().ExpectTotalCount("Ash.AmbientMode.SelectedNumberOfAlbums",
                                       /*count=*/1);
+}
+
+TEST_F(AmbientModeHandlerTest, TestTemperatureUnitChangeUpdatesSettings) {
+  SetTemperatureUnit(ash::AmbientModeTemperatureUnit::kCelsius);
+
+  EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+
+  base::ListValue args;
+  args.Append("fahrenheit");
+
+  HandleSetSelectedTemperatureUnit(&args);
+
+  EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+
+  ReplyUpdateSettings(/*success=*/true);
+
+  EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+}
+
+TEST_F(AmbientModeHandlerTest, TestSameTemperatureUnitSkipsUpdate) {
+  SetTemperatureUnit(ash::AmbientModeTemperatureUnit::kCelsius);
+
+  EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+
+  base::ListValue args;
+  args.Append("celsius");
+
+  HandleSetSelectedTemperatureUnit(&args);
+
+  EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
 }
 
 }  // namespace settings
