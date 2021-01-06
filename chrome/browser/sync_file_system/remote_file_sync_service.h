@@ -30,10 +30,6 @@ namespace content {
 class BrowserContext;
 }
 
-namespace storage {
-class ScopedFile;
-}
-
 namespace sync_file_system {
 
 class FileStatusObserver;
@@ -116,21 +112,13 @@ class RemoteFileSyncService {
   };
 
   // For GetOriginStatusMap.
-  typedef std::map<GURL, std::string> OriginStatusMap;
-  typedef base::Callback<void(std::unique_ptr<OriginStatusMap> status_map)>
-      StatusMapCallback;
-
-  // For GetRemoteVersions.
-  typedef base::Callback<void(SyncStatusCode status,
-                              const std::vector<Version>& versions)>
-      RemoteVersionsCallback;
-  typedef base::Callback<
-      void(SyncStatusCode status, storage::ScopedFile downloaded)>
-      DownloadVersionCallback;
+  using OriginStatusMap = std::map<GURL, std::string>;
+  using StatusMapCallback =
+      base::OnceCallback<void(std::unique_ptr<OriginStatusMap> status_map)>;
 
   // For DumpFile.
-  typedef base::Callback<void(std::unique_ptr<base::ListValue> list)>
-      ListCallback;
+  using ListCallback =
+      base::OnceCallback<void(std::unique_ptr<base::ListValue> list)>;
 
   // Creates an initialized RemoteFileSyncService for backend |version|
   // for |context|.
@@ -193,14 +181,13 @@ class RemoteFileSyncService {
 
   // Returns all origins along with an arbitrary string description of their
   // corresponding sync statuses.
-  virtual void GetOriginStatusMap(const StatusMapCallback& callback) = 0;
+  virtual void GetOriginStatusMap(StatusMapCallback callback) = 0;
 
   // Returns file metadata for |origin| to call |callback|.
-  virtual void DumpFiles(const GURL& origin,
-                         const ListCallback& callback) = 0;
+  virtual void DumpFiles(const GURL& origin, ListCallback callback) = 0;
 
   // Returns the dump of internal database.
-  virtual void DumpDatabase(const ListCallback& callback) = 0;
+  virtual void DumpDatabase(ListCallback callback) = 0;
 
   // Enables or disables the background sync.
   // Setting this to false should disable the synchronization (and make
@@ -210,7 +197,7 @@ class RemoteFileSyncService {
   // REMOTE_SERVICE_TEMPORARY_UNAVAILABLE).
   virtual void SetSyncEnabled(bool enabled) = 0;
 
-  virtual void PromoteDemotedChanges(const base::Closure& callback) = 0;
+  virtual void PromoteDemotedChanges(base::OnceClosure callback) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(RemoteFileSyncService);

@@ -43,12 +43,12 @@ MockRemoteFileSyncService::~MockRemoteFileSyncService() {
 }
 
 void MockRemoteFileSyncService::DumpFiles(const GURL& origin,
-                                          const ListCallback& callback) {
-  callback.Run(nullptr);
+                                          ListCallback callback) {
+  std::move(callback).Run(nullptr);
 }
 
-void MockRemoteFileSyncService::DumpDatabase(const ListCallback& callback) {
-  callback.Run(nullptr);
+void MockRemoteFileSyncService::DumpDatabase(ListCallback callback) {
+  std::move(callback).Run(nullptr);
 }
 
 void MockRemoteFileSyncService::SetServiceState(RemoteServiceState state) {

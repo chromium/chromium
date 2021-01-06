@@ -35,7 +35,8 @@ namespace drive_backend {
 //   }
 class CallbackTracker {
  public:
-  typedef std::map<internal::AbortHelper*, base::Closure> AbortClosureByHelper;
+  using AbortClosureByHelper =
+      std::map<internal::AbortHelper*, base::OnceClosure>;
 
   CallbackTracker();
   ~CallbackTracker();
@@ -46,12 +47,12 @@ class CallbackTracker {
   // Invocation of the wrapped callback unregisters |callback| from
   // CallbackTracker.
   template <typename T>
-  base::Callback<T> Register(const base::Closure& abort_closure,
-                             const base::Callback<T>& callback) {
+  base::OnceCallback<T> Register(base::OnceClosure abort_closure,
+                                 base::OnceCallback<T> callback) {
     internal::AbortHelper* helper = new internal::AbortHelper(this);
-    helpers_[helper] = abort_closure;
-    return base::Bind(&internal::InvokeAndInvalidateHelper<T>::Run,
-                      helper->AsWeakPtr(), callback);
+    helpers_[helper] = std::move(abort_closure);
+    return base::BindOnce(&internal::InvokeAndInvalidateHelper<T>::Run,
+                          helper->AsWeakPtr(), std::move(callback));
   }
 
   void AbortAll();

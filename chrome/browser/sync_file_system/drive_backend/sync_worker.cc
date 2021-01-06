@@ -161,7 +161,7 @@ RemoteServiceState SyncWorker::GetCurrentState() const {
 }
 
 void SyncWorker::GetOriginStatusMap(
-    const RemoteFileSyncService::StatusMapCallback& callback) {
+    RemoteFileSyncService::StatusMapCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   if (!GetMetadataDatabase())
@@ -180,7 +180,7 @@ void SyncWorker::GetOriginStatusMap(
         GetMetadataDatabase()->IsAppEnabled(app_id) ? "Enabled" : "Disabled";
   }
 
-  callback.Run(std::move(status_map));
+  std::move(callback).Run(std::move(status_map));
 }
 
 std::unique_ptr<base::ListValue> SyncWorker::DumpFiles(const GURL& origin) {
@@ -216,7 +216,7 @@ void SyncWorker::SetSyncEnabled(bool enabled) {
   }
 }
 
-void SyncWorker::PromoteDemotedChanges(const base::Closure& callback) {
+void SyncWorker::PromoteDemotedChanges(base::OnceClosure callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   MetadataDatabase* metadata_db = GetMetadataDatabase();
@@ -225,7 +225,7 @@ void SyncWorker::PromoteDemotedChanges(const base::Closure& callback) {
     for (auto& observer : observers_)
       observer.OnPendingFileListUpdated(metadata_db->CountDirtyTracker());
   }
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void SyncWorker::ApplyLocalChange(const FileChange& local_change,

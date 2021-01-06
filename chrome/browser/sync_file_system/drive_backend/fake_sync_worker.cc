@@ -81,7 +81,7 @@ RemoteServiceState FakeSyncWorker::GetCurrentState() const {
 }
 
 void FakeSyncWorker::GetOriginStatusMap(
-    const RemoteFileSyncService::StatusMapCallback& callback) {
+    RemoteFileSyncService::StatusMapCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   std::unique_ptr<RemoteFileSyncService::OriginStatusMap> status_map(
@@ -106,7 +106,7 @@ void FakeSyncWorker::GetOriginStatusMap(
       break;
     }
   }
-  callback.Run(std::move(status_map));
+  std::move(callback).Run(std::move(status_map));
 }
 
 std::unique_ptr<base::ListValue> FakeSyncWorker::DumpFiles(const GURL& origin) {
@@ -129,11 +129,11 @@ void FakeSyncWorker::SetSyncEnabled(bool enabled) {
     UpdateServiceState(REMOTE_SERVICE_DISABLED, "Disabled FakeSyncWorker.");
 }
 
-void FakeSyncWorker::PromoteDemotedChanges(const base::Closure& callback) {
+void FakeSyncWorker::PromoteDemotedChanges(base::OnceClosure callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   for (auto& observer : observers_)
     observer.OnPendingFileListUpdated(10);
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void FakeSyncWorker::ApplyLocalChange(const FileChange& local_change,

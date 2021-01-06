@@ -41,12 +41,12 @@ struct InvokeAndInvalidateHelper;
 template <typename... Args>
 struct InvokeAndInvalidateHelper<void(Args...)> {
   static void Run(const base::WeakPtr<AbortHelper>& abort_helper,
-                  const base::Callback<void(Args...)>& callback,
+                  base::OnceCallback<void(Args...)> callback,
                   Args... args) {
     std::unique_ptr<AbortHelper> deleter =
         AbortHelper::TakeOwnership(abort_helper);
     if (deleter) {
-      callback.Run(std::forward<Args>(args)...);
+      std::move(callback).Run(std::forward<Args>(args)...);
     }
   }
 };

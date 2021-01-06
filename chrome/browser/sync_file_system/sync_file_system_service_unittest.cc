@@ -118,9 +118,13 @@ struct PostSyncFileCallback {
   storage::FileSystemURL url_;
 };
 
-ACTION(InvokeCompletionClosure) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(arg0));
-}
+struct PostOnceClosureFunctor {
+  PostOnceClosureFunctor() = default;
+  void operator()(base::OnceClosure callback) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(callback));
+  }
+};
 
 class SyncFileSystemServiceTest : public testing::Test {
  protected:
@@ -358,7 +362,7 @@ TEST_F(SyncFileSystemServiceTest, SimpleLocalSyncFlow) {
           PostSyncFileCallback(SYNC_STATUS_NO_CHANGE_TO_SYNC, FileSystemURL()));
 
   EXPECT_CALL(*mock_remote_service(), PromoteDemotedChanges(_))
-      .WillRepeatedly(InvokeCompletionClosure());
+      .WillRepeatedly(PostOnceClosureFunctor());
 
   EXPECT_EQ(base::File::FILE_OK, file_system_->CreateFile(kFile));
 
@@ -409,7 +413,7 @@ TEST_F(SyncFileSystemServiceTest, SimpleSyncFlowWithFileBusy) {
   }
 
   EXPECT_CALL(*mock_remote_service(), PromoteDemotedChanges(_))
-      .WillRepeatedly(InvokeCompletionClosure());
+      .WillRepeatedly(PostOnceClosureFunctor());
 
   // We might also see an activity for local sync as we're going to make
   // a local write operation on kFile.
