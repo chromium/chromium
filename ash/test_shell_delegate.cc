@@ -78,4 +78,12 @@ TestShellDelegate::CreateNearbyShareDelegate(
   return std::make_unique<TestNearbyShareDelegate>();
 }
 
+bool TestShellDelegate::IsSessionRestoreInProgress() const {
+  return session_restore_in_progress_;
+}
+
+void TestShellDelegate::SetSessionRestoreInProgress(bool in_progress) {
+  session_restore_in_progress_ = in_progress;
+}
+
 }  // namespace ash

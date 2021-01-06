@@ -201,4 +201,10 @@ bool AutotestDesksApi::ActivateAdjacentDesksToTargetIndex(
   return true;
 }
 
+bool AutotestDesksApi::IsWindowInDesk(aura::Window* window, int desk_index) {
+  aura::Window* desk_container = DesksController::Get()->GetDeskContainer(
+      window->GetRootWindow(), desk_index);
+  return desk_container->Contains(window);
+}
+
 }  // namespace ash

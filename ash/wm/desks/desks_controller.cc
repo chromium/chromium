@@ -567,6 +567,13 @@ int DesksController::GetDeskIndex(const Desk* desk) const {
   return -1;
 }
 
+aura::Window* DesksController::GetDeskContainer(aura::Window* target_root,
+                                                int desk_index) {
+  if (desk_index < 0 || desk_index >= int{desks_.size()})
+    return nullptr;
+  return desks_[desk_index]->GetDeskContainerForRoot(target_root);
+}
+
 bool DesksController::BelongsToActiveDesk(aura::Window* window) {
   return desks_util::BelongsToActiveDesk(window);
 }
@@ -605,6 +612,14 @@ void DesksController::OnWindowActivating(ActivationReason reason,
                                          aura::Window* gaining_active,
                                          aura::Window* losing_active) {
   if (AreDesksBeingModified())
+    return;
+
+  // Browser session restore opens all restored windows, so it activates
+  // every single window and activates the parent desk. Therefore, this check
+  // prevents repetitive desk activation. Moreover, when DesksRestore is
+  // enabled, it avoid switching desk back and forth when windows are restored
+  // to different desks.
+  if (Shell::Get()->shell_delegate()->IsSessionRestoreInProgress())
     return;
 
   if (!gaining_active)
@@ -728,6 +743,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   // Keep the removed desk alive until the end of this function.
   std::unique_ptr<Desk> removed_desk = std::move(*iter);
+  removed_desk->SetDeskBeingRemoved();
   DCHECK_EQ(removed_desk.get(), desk);
   auto iter_after = desks_.erase(iter);
 

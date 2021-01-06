@@ -226,6 +226,7 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, RestoreActivation2);
   FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, RemoveUnusedRestoreWindowsTest);
   FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, Workspace);
+  FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, WorkspaceSavedOnOpened);
   FRIEND_TEST_ALL_PREFIXES(NoStartupWindowTest, DontInitSessionServiceForApps);
 
   typedef std::map<SessionID, std::pair<int, int>> IdToRange;

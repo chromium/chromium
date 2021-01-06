@@ -273,6 +273,11 @@ void SessionService::WindowOpened(Browser* browser) {
   RestoreIfNecessary(std::vector<GURL>(), browser);
   SetWindowType(browser->session_id(), browser->type());
   SetWindowAppName(browser->session_id(), browser->app_name());
+
+  // Save a browser workspace after window is created in `Browser()`.
+  // DesksRestore feature in ash requires this line to restore correctly after
+  // creating a new browser window in a particular desk.
+  SetWindowWorkspace(browser->session_id(), browser->window()->GetWorkspace());
 }
 
 void SessionService::WindowClosing(const SessionID& window_id) {

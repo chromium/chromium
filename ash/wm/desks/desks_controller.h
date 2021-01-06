@@ -171,6 +171,10 @@ class ASH_EXPORT DesksController : public DesksHelper,
 
   int GetDeskIndex(const Desk* desk) const;
 
+  // Gets the container of the desk at |desk_index| in a specific screen with a
+  // |target_root|. If desk_index is invalid, it returns nullptr.
+  aura::Window* GetDeskContainer(aura::Window* target_root, int desk_index);
+
   // DesksHelper:
   bool BelongsToActiveDesk(aura::Window* window) override;
   int GetActiveDeskIndex() const override;

@@ -1257,6 +1257,35 @@ TEST_F(SessionServiceTest, Workspace) {
   EXPECT_TRUE(found_workspace_command);
 }
 
+// Tests that the workspace is saved in the browser session during
+// `SessionService::WindowOpened(),` called in `Browser()` constructor to
+// save the current workspace to newly created browser.
+TEST_F(SessionServiceTest, WorkspaceSavedOnOpened) {
+  const std::string workspace = "xyz";
+  auto* test_browser_window =
+      static_cast<TestBrowserWindow*>(browser()->window());
+  test_browser_window->set_workspace(workspace);
+  service()->WindowOpened(browser());
+
+  sessions::CommandStorageManager* command_storage_manager =
+      service()->GetCommandStorageManagerForTest();
+  const std::vector<std::unique_ptr<sessions::SessionCommand>>&
+      pending_commands = command_storage_manager->pending_commands();
+  bool found_workspace_command = false;
+  std::unique_ptr<sessions::SessionCommand> workspace_command =
+      sessions::CreateSetWindowWorkspaceCommand(browser()->session_id(),
+                                                workspace);
+  for (const auto& command : pending_commands) {
+    if (command->id() == workspace_command->id() &&
+        command->contents_as_string_piece() ==
+            workspace_command->contents_as_string_piece()) {
+      found_workspace_command = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_workspace_command);
+}
+
 // Functions used by GetSessionsAndDestroy.
 namespace {
 

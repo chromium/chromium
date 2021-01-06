@@ -30,6 +30,9 @@ constexpr int kResizeBehaviorCanResize = 1 << 0;
 constexpr int kResizeBehaviorCanMaximize = 1 << 1;
 constexpr int kResizeBehaviorCanMinimize = 1 << 2;
 
+// A value used to represent an unassigned workspace for kWindowWorkspaceKey.
+constexpr int kUnassignedWorkspace = -1;
+
 // Alphabetical sort.
 
 // A property key to store whether accessibility focus falls back to widget or
@@ -157,6 +160,10 @@ AURA_EXPORT extern const WindowProperty<gfx::ImageSkia*>* const kWindowIconKey;
 // The corner radius of a window in DIPs. Currently only used for shadows.
 // Default is -1, meaning "unspecified". 0 Ensures corners are square.
 AURA_EXPORT extern const WindowProperty<int>* const kWindowCornerRadiusKey;
+
+// A property key to indicate a desk index of a workspace this window belongs
+// to. The default value is kUnassignedWorkspace.
+AURA_EXPORT extern const WindowProperty<int>* const kWindowWorkspaceKey;
 
 // A property key to store the z-ordering.
 AURA_EXPORT extern const WindowProperty<ui::ZOrderLevel>* const kZOrderingKey;

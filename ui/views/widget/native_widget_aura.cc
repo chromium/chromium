@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -171,6 +172,14 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
                          *params.corner_radius);
   }
   window_->SetProperty(aura::client::kShowStateKey, params.show_state);
+
+  int desk_index;
+  // Set workspace property of this window created with a specified workspace
+  // in InitParams. The desk index can be kActiveWorkspace=-1, representing
+  // an active desk.
+  if (base::StringToInt(params.workspace, &desk_index))
+    window_->SetProperty(aura::client::kWindowWorkspaceKey, desk_index);
+
   if (params.type == Widget::InitParams::TYPE_BUBBLE)
     wm::SetHideOnDeactivate(window_, true);
   window_->SetTransparent(params.opacity ==
@@ -491,7 +500,10 @@ gfx::Rect NativeWidgetAura::GetRestoredBounds() const {
 }
 
 std::string NativeWidgetAura::GetWorkspace() const {
-  return std::string();
+  int desk_index = window_->GetProperty(aura::client::kWindowWorkspaceKey);
+  return desk_index == aura::client::kUnassignedWorkspace
+             ? std::string()
+             : base::NumberToString(desk_index);
 }
 
 void NativeWidgetAura::SetBounds(const gfx::Rect& bounds) {
@@ -955,6 +967,9 @@ void NativeWidgetAura::OnWindowPropertyChanged(aura::Window* window,
                                                intptr_t old) {
   if (key == aura::client::kShowStateKey)
     delegate_->OnNativeWidgetWindowShowStateChanged();
+
+  if (key == aura::client::kWindowWorkspaceKey)
+    delegate_->OnNativeWidgetWorkspaceChanged();
 }
 
 void NativeWidgetAura::OnResizeLoopStarted(aura::Window* window) {

@@ -111,6 +111,9 @@ class ASH_EXPORT ShellDelegate {
   virtual media_session::MediaSessionService* GetMediaSessionService();
 
   virtual void OpenKeyboardShortcutHelpPage() const {}
+
+  // Returns if window browser sessions are restoring.
+  virtual bool IsSessionRestoreInProgress() const = 0;
 };
 
 }  // namespace ash
