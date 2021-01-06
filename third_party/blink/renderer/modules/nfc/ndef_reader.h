@@ -78,7 +78,7 @@ class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
   void ReadAbort();
   void ReadOnRequestCompleted(device::mojom::blink::NDEFErrorPtr error);
 
-  void WriteAbort(ScriptPromiseResolver* resolver);
+  void WriteAbort();
   void WriteOnRequestCompleted(ScriptPromiseResolver* resolver,
                                device::mojom::blink::NDEFErrorPtr error);
 
