@@ -167,7 +167,12 @@ bool NativeWindowOcclusionTrackerWin::IsWindowVisibleAndFullyOpaque(
   if (IsIconic(hwnd))
     return false;
 
-  LONG ex_styles = GetWindowLong(hwnd, GWL_EXSTYLE);
+  LONG styles = ::GetWindowLong(hwnd, GWL_STYLE);
+  // Ignore popup windows since they're transient.
+  if (styles & WS_POPUP)
+    return false;
+
+  LONG ex_styles = ::GetWindowLong(hwnd, GWL_EXSTYLE);
   // Filter out "transparent" windows, windows where the mouse clicks fall
   // through them.
   if (ex_styles & WS_EX_TRANSPARENT)
@@ -663,6 +668,10 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
   if (id_object != OBJID_WINDOW)
     return;
 
+  // We generally ignore events for poup windows, except for when the taskbar
+  // is hidden, in which case we recalculate occlusion.
+  bool calculate_occlusion = !(::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP);
+
   // Detect if either the alt tab view or the task list thumbnail is being
   // shown. If so, mark all non-hidden windows as occluded, and remember that
   // we're in the showing_thumbnails state. This lasts until we get told that
@@ -691,7 +700,9 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     if (hwnd_class_name == "MultitaskingViewFrame" ||
         hwnd_class_name == "TaskListThumbnailWnd") {
       showing_thumbnails_ = false;
-      // Let occlusion calculation fix occlusion state.
+      // Let occlusion calculation fix occlusion state, even though hwnd might
+      // be a popup window.
+      calculate_occlusion = true;
     }
   }
   // Don't continually calculate occlusion while a window is moving (unless it's
@@ -720,6 +731,9 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
       moving_window_ = 0;
     }
   }
+
+  if (!calculate_occlusion)
+    return;
 
   // ProcessEventHookCallback is called from the task_runner's PeekMessage
   // call, on the task runner's thread, but before the task_tracker thread sets

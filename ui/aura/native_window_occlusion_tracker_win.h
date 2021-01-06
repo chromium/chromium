@@ -259,8 +259,8 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
 
   // Returns true if we are interested in |hwnd| for purposes of occlusion
   // calculation. We are interested in |hwnd| if it is a window that is
-  // visible, opaque, and bounded. If we are interested in |hwnd|, stores the
-  // window rectangle in |window_rect|.
+  // visible, opaque, bounded, and not a popup or floating window. If we are
+  // interested in |hwnd|, stores the window rectangle in |window_rect|.
   static bool IsWindowVisibleAndFullyOpaque(HWND hwnd, gfx::Rect* window_rect);
 
   // Updates root windows occclusion state. If |show_all_windows| is true,

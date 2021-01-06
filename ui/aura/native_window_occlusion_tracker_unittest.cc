@@ -52,9 +52,10 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
 
   TestNativeWindow* native_win() { return native_win_.get(); }
 
-  HWND CreateNativeWindow(DWORD ex_style) {
+  HWND CreateNativeWindow(DWORD style, DWORD ex_style) {
     native_win_ = std::make_unique<TestNativeWindow>();
-    native_win_->set_window_style(WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN);
+    native_win_->set_window_style(WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN |
+                                  style);
     native_win_->set_window_ex_style(ex_style);
     gfx::Rect bounds(0, 0, 100, 100);
     native_win_->Init(nullptr, bounds);
@@ -94,7 +95,7 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
 };
 
 TEST_F(NativeWindowOcclusionTrackerTest, VisibleOpaqueWindow) {
-  HWND hwnd = CreateNativeWindow(/*ex_style=*/0);
+  HWND hwnd = CreateNativeWindow(/*style=*/0, /*ex_style=*/0);
   gfx::Rect returned_rect;
   // Normal windows should be visible.
   EXPECT_TRUE(CheckWindowVisibleAndFullyOpaque(hwnd, &returned_rect));
@@ -106,7 +107,7 @@ TEST_F(NativeWindowOcclusionTrackerTest, VisibleOpaqueWindow) {
 }
 
 TEST_F(NativeWindowOcclusionTrackerTest, MinimizedWindow) {
-  HWND hwnd = CreateNativeWindow(/*ex_style=*/0);
+  HWND hwnd = CreateNativeWindow(/*style=*/0, /*ex_style=*/0);
   gfx::Rect win_rect;
   ShowWindow(hwnd, SW_MINIMIZE);
   // Minimized windows are not considered visible.
@@ -114,21 +115,21 @@ TEST_F(NativeWindowOcclusionTrackerTest, MinimizedWindow) {
 }
 
 TEST_F(NativeWindowOcclusionTrackerTest, TransparentWindow) {
-  HWND hwnd = CreateNativeWindow(WS_EX_TRANSPARENT);
+  HWND hwnd = CreateNativeWindow(/*style=*/0, WS_EX_TRANSPARENT);
   gfx::Rect win_rect;
   // Transparent windows are not considered visible and opaque.
   EXPECT_FALSE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
 }
 
 TEST_F(NativeWindowOcclusionTrackerTest, ToolWindow) {
-  HWND hwnd = CreateNativeWindow(WS_EX_TOOLWINDOW);
+  HWND hwnd = CreateNativeWindow(/*style=*/0, WS_EX_TOOLWINDOW);
   gfx::Rect win_rect;
   // Tool windows are not considered visible and opaque.
   EXPECT_FALSE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
 }
 
 TEST_F(NativeWindowOcclusionTrackerTest, LayeredAlphaWindow) {
-  HWND hwnd = CreateNativeWindow(WS_EX_LAYERED);
+  HWND hwnd = CreateNativeWindow(/*style=*/0, WS_EX_LAYERED);
   gfx::Rect win_rect;
   BYTE alpha = 1;
   DWORD flags = LWA_ALPHA;
@@ -139,7 +140,7 @@ TEST_F(NativeWindowOcclusionTrackerTest, LayeredAlphaWindow) {
 }
 
 TEST_F(NativeWindowOcclusionTrackerTest, UpdatedLayeredAlphaWindow) {
-  HWND hwnd = CreateNativeWindow(WS_EX_LAYERED);
+  HWND hwnd = CreateNativeWindow(/*style=*/0, WS_EX_LAYERED);
   gfx::Rect win_rect;
   base::win::ScopedCreateDC hdc(::CreateCompatibleDC(nullptr));
   BLENDFUNCTION blend = {AC_SRC_OVER, 0x00, 0xFF, AC_SRC_ALPHA};
@@ -152,7 +153,7 @@ TEST_F(NativeWindowOcclusionTrackerTest, UpdatedLayeredAlphaWindow) {
 }
 
 TEST_F(NativeWindowOcclusionTrackerTest, LayeredNonAlphaWindow) {
-  HWND hwnd = CreateNativeWindow(WS_EX_LAYERED);
+  HWND hwnd = CreateNativeWindow(/*style=*/0, WS_EX_LAYERED);
   gfx::Rect win_rect;
   BYTE alpha = 1;
   DWORD flags = 0;
@@ -163,7 +164,7 @@ TEST_F(NativeWindowOcclusionTrackerTest, LayeredNonAlphaWindow) {
 }
 
 TEST_F(NativeWindowOcclusionTrackerTest, ComplexRegionWindow) {
-  HWND hwnd = CreateNativeWindow(/*ex_style=*/0);
+  HWND hwnd = CreateNativeWindow(/*style=*/0, /*ex_style=*/0);
   gfx::Rect win_rect;
   // Create a region with rounded corners, which should be a complex region.
   base::win::ScopedRegion region(CreateRoundRectRgn(1, 1, 100, 100, 5, 5));
@@ -172,11 +173,18 @@ TEST_F(NativeWindowOcclusionTrackerTest, ComplexRegionWindow) {
   EXPECT_FALSE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
 }
 
+TEST_F(NativeWindowOcclusionTrackerTest, PopupWindow) {
+  HWND hwnd = CreateNativeWindow(WS_POPUP, /*ex_style=*/0);
+  gfx::Rect win_rect;
+  // Popup Windows are not considered visible.
+  EXPECT_FALSE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
+}
+
 TEST_F(NativeWindowOcclusionTrackerTest, CloakedWindow) {
   // Cloaking is only supported in Windows 8 and above.
   if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
-  HWND hwnd = CreateNativeWindow(/*ex_style=*/0);
+  HWND hwnd = CreateNativeWindow(/*style=*/0, /*ex_style=*/0);
   gfx::Rect win_rect;
   BOOL cloak = TRUE;
   DwmSetWindowAttribute(hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
