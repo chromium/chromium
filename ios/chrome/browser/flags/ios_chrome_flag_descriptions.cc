@@ -296,6 +296,11 @@ const char kIOSLookalikeUrlNavigationSuggestionsUIDescription[] =
     "When enabled, an interstitial will be shown on navigations to lookalike "
     "URLs.";
 
+const char kIOSPersistCrashRestoreName[] = "Persist Crash Restore Infobar";
+const char kIOSPersistCrashRestoreDescription[] =
+    "When enabled, the Crash Restore Infobar will persist through navigations "
+    "instead of dismissing.";
+
 const char kLocationPermissionsPromptName[] =
     "Location Permisssions Prompt Experiment";
 const char kLocationPermissionsPromptDescription[] =

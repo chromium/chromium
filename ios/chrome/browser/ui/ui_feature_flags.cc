@@ -76,3 +76,6 @@ const base::Feature kIncognitoAuthentication{
 
 const base::Feature kLocationPermissionsPrompt{
     "LocationPermissionsPrompt", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kIOSPersistCrashRestore{"IOSPersistCrashRestore",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};

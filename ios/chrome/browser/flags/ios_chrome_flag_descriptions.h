@@ -263,6 +263,11 @@ extern const char kIOSLegacyTLSInterstitialsDescription[];
 extern const char kIOSLookalikeUrlNavigationSuggestionsUIName[];
 extern const char kIOSLookalikeUrlNavigationSuggestionsUIDescription[];
 
+// Title and description for the flag to persist the Crash Restore Infobar
+// across navigations.
+extern const char kIOSPersistCrashRestoreName[];
+extern const char kIOSPersistCrashRestoreDescription[];
+
 // Title and description for the flag to experiment with different location
 // permission user experiences.
 extern const char kLocationPermissionsPromptName[];

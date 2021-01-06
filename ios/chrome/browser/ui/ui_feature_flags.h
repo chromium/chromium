@@ -84,4 +84,8 @@ extern const base::Feature kIncognitoAuthentication;
 // Feature flag that experiments with new location permissions user experiences.
 extern const base::Feature kLocationPermissionsPrompt;
 
+// Feature flag that enables persisting the Crash Restore Infobar across
+// navigations.
+extern const base::Feature kIOSPersistCrashRestore;
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

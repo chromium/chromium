@@ -3033,6 +3033,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "ios-persist-crash-restore-infobar",
+    "owners": [ "thegreenfrog", "bling-flags@google.com" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "ios-synthetic-crash-reports",
     "owners": [ "eugenebut", "olivierrobin", "bling-flags@google.com" ],
     "expiry_milestone": 95
