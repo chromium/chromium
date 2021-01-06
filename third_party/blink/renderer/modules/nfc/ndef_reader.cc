@@ -69,8 +69,6 @@ constexpr char kNotSupportedOrPermissionDenied[] =
 
 constexpr char kChildFrameErrorMessage[] =
     "Web NFC can only be accessed in a top-level browsing context.";
-
-constexpr char kInvalidStateErrorMessage[] = "A scan() operation is ongoing.";
 }  // namespace
 
 // static
@@ -123,18 +121,10 @@ ScriptPromise NDEFReader::scan(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  if (has_pending_scan_request_) {
+  // Reject promise when there's already an ongoing scan.
+  if (scan_resolver_ || GetNfcProxy()->IsReading(this)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kInvalidStateErrorMessage);
-    return ScriptPromise();
-  }
-  has_pending_scan_request_ = true;
-
-  // https://github.com/w3c/web-nfc/issues/592
-  // reject scan promise when there's already an ongoing scan.
-  if (GetNfcProxy()->IsReading(this)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kInvalidStateErrorMessage);
+                                      "A scan() operation is ongoing.");
     return ScriptPromise();
   }
 
@@ -157,19 +147,16 @@ ScriptPromise NDEFReader::scan(ScriptState* script_state,
 void NDEFReader::ReadOnRequestPermission(const NDEFScanOptions* options,
                                          PermissionStatus status) {
   if (!scan_resolver_) {
-    has_pending_scan_request_ = false;
     return;
   }
 
   if (status != PermissionStatus::GRANTED) {
-    has_pending_scan_request_ = false;
     scan_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError, "NFC permission request denied."));
     scan_resolver_.Clear();
     return;
   }
   if (options->hasSignal() && options->signal()->aborted()) {
-    has_pending_scan_request_ = false;
     scan_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kAbortError,
         "The NFC scan operation was cancelled."));
@@ -184,7 +171,6 @@ void NDEFReader::ReadOnRequestPermission(const NDEFScanOptions* options,
 
 void NDEFReader::ReadOnRequestCompleted(
     device::mojom::blink::NDEFErrorPtr error) {
-  has_pending_scan_request_ = false;
   if (!scan_resolver_)
     return;
 
