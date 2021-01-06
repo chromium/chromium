@@ -7875,11 +7875,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="In product help new incognito tab tip."/>
   <suffix name="IPH_NewTab" label="In product help new tab."/>
   <suffix name="IPH_NewTabPageButton"
-      label="In product help new tab page button.">
-    <obsolete>
-      This feature was deprecated in M79
-    </obsolete>
-  </suffix>
+      label="In product help for new tab page button. This feature was used
+             for feature in M79- then deprecated; in M88+ this histogram was
+             reused for a different experiment. Be sure to apply filter on
+             milestone for this histogram to get the meaningful data."/>
   <suffix name="IPH_NewTabTip" label="In product help new tab tip."/>
   <suffix name="IPH_PasswordsAccountStorage"
       label="In product help for passwords account storage."/>
@@ -7899,6 +7898,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="IPH_TabGroupsYourTabsTogether"
       label="In product help for tab switcher cards with multiple tab
              thumbnails."/>
+  <suffix name="IPH_TabSwitcherButton"
+      label="In product help for tab swticher button."/>
   <suffix name="IPH_TranslateMenuButton"
       label="In product help translate menu button."/>
   <suffix name="IPH_WebUITabStrip"

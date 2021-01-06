@@ -27183,11 +27183,16 @@ should be able to be added at any place in this file.
   <suffix name="HomepageTile" label="For HomepageTile feature."/>
   <suffix name="IdentityDisc" label="For IdentityDisc feature."/>
   <suffix name="IncognitoWindow" label="For IncognitoWindow feature."/>
+  <suffix name="IPH_NewTabTip" label="In product help new tab tip."/>
   <suffix name="LongPressToolbarTip" label="For LongPressToolbar feature."/>
   <suffix name="MediaDownload" label="For MediaDownload feature."/>
   <suffix name="NewIncognitoTabTip" label="For NewIncognitoTabTip feature."/>
   <suffix name="NewTab" label="For NewTab feature."/>
-  <suffix name="NewTabPageButton" label="For NewTabPageButton feature."/>
+  <suffix name="NewTabPageButton"
+      label="For NewTabPageButton feature. This feature was used for feature
+             in M79- then deprecated; in M88+ this histogram was reused for a
+             different experiment. Be sure to apply filter on milestone for
+             this histogram to get the meaningful data."/>
   <suffix name="NewTabTip" label="For NewTabTip feature."/>
   <suffix name="PasswordsAccountStorage"
       label="For PasswordsAccountStorage feature."/>
@@ -27202,6 +27207,7 @@ should be able to be added at any place in this file.
   <suffix name="TabGroupsTapToSeeAnotherTab" label="For tab strip."/>
   <suffix name="TabGroupsYourTabsTogether"
       label="For tab switcher with tab groups."/>
+  <suffix name="TabSwitcherButton" label="For tab switcher button."/>
   <suffix name="TranslateMenuButton" label="For translate menu button."/>
   <suffix name="WebUITabStrip" label="For the WebUI tab strip."/>
   <affected-action name="InProductHelp.NotifyEvent.IPH"/>
