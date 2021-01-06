@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -38,7 +39,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Tests for {@link ScreenshotShareSheetMediator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 // clang-format off
 @Features.EnableFeatures(ChromeFeatureList.CHROME_SHARE_SCREENSHOT)
 public class ScreenshotShareSheetMediatorUnitTest {
@@ -93,6 +94,8 @@ public class ScreenshotShareSheetMediatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        ShadowRecordHistogram.reset();
+
         doNothing().when(mDeleteRunnable).run();
 
         doNothing().when(mSaveRunnable).run();
@@ -114,6 +117,10 @@ public class ScreenshotShareSheetMediatorUnitTest {
         callback.onResult(ScreenshotShareSheetViewProperties.NoArgOperation.DELETE);
 
         verify(mDeleteRunnable).run();
+        Assert.assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Sharing.ScreenshotFallback.Action",
+                        ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.DELETE));
     }
 
     @Test
@@ -123,6 +130,10 @@ public class ScreenshotShareSheetMediatorUnitTest {
         callback.onResult(ScreenshotShareSheetViewProperties.NoArgOperation.SAVE);
 
         verify(mSaveRunnable).run();
+        Assert.assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Sharing.ScreenshotFallback.Action",
+                        ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.SAVE));
     }
 
     @Test
@@ -133,6 +144,10 @@ public class ScreenshotShareSheetMediatorUnitTest {
 
         Assert.assertTrue(mMediator.generateTemporaryUriFromBitmapCalled());
         verify(mDeleteRunnable).run();
+        Assert.assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Sharing.ScreenshotFallback.Action",
+                        ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.SHARE));
     }
 
     @Test
@@ -152,6 +167,10 @@ public class ScreenshotShareSheetMediatorUnitTest {
         callback.onResult(ScreenshotShareSheetViewProperties.NoArgOperation.INSTALL);
 
         verify(mInstallRunnable).onResult(any());
+        Assert.assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Sharing.ScreenshotFallback.Action",
+                        ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.EDIT));
     }
 
     @After

@@ -67942,6 +67942,18 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="14" label="Draw tool: color changed"/>
 </enum>
 
+<enum name="SharingScreenshotFallbackAction">
+<!--
+  SharingScreenshotAction must be kept in sync with SharingScreenshotAction defined
+  in /chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/screenshot/ScreenshotShareSheetMetrics.java
+-->
+
+  <int value="0" label="Screenshot Edit"/>
+  <int value="1" label="Screenshot Shared"/>
+  <int value="2" label="Screenshot Saved"/>
+  <int value="3" label="Screenshot Deleted"/>
+</enum>
+
 <enum name="SharingSendMessageResult">
   <int value="0" label="Successful"/>
   <int value="1" label="Device is not found"/>
