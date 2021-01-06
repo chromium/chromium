@@ -41,9 +41,6 @@ const base::Feature kDisplayIdentification{"DisplayIdentification",
 const base::Feature kDockedMagnifier{"DockedMagnifier",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kDragToSnapInClamshellMode{
-    "DragToSnapInClamshellMode", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kEnhancedDeskAnimations{"EnhancedDeskAnimations",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -83,9 +80,6 @@ const base::Feature kMediaNotificationsCounter{
 
 const base::Feature kMovablePartialScreenshot{
     "MovablePartialScreenshot", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kMultiDisplayOverviewAndSplitView{
-    "MultiDisplayOverviewAndSplitView", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kNightLight{"NightLight", base::FEATURE_ENABLED_BY_DEFAULT};
 

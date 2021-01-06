@@ -608,12 +608,6 @@ class AcceleratorControllerTestWithClamshellSplitView
       const AcceleratorControllerTestWithClamshellSplitView&) = delete;
   ~AcceleratorControllerTestWithClamshellSplitView() override = default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDragToSnapInClamshellMode);
-    AcceleratorControllerTest::SetUp();
-  }
-
  protected:
   // Note: These functions assume the default display resolution 800x600.
   void EnterOverviewAndDragToSnapLeft(aura::Window* window) {
@@ -634,8 +628,6 @@ class AcceleratorControllerTestWithClamshellSplitView
         GetOverviewItemForWindow(window)->target_bounds().CenterPoint()));
     generator->DragMouseTo(destination);
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AcceleratorControllerTestWithClamshellSplitView, WindowSnapUma) {

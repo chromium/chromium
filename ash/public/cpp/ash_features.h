@@ -46,10 +46,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kDisplayIdentification;
 // https://crbug.com/709824.
 ASH_PUBLIC_EXPORT extern const base::Feature kDockedMagnifier;
 
-// Enables dragging and snapping an overview window in clamshell mode.
-// TODO(crbug.com/890029): Remove this when the feature is fully launched.
-ASH_PUBLIC_EXPORT extern const base::Feature kDragToSnapInClamshellMode;
-
 // Enables chaining of keyboard and touchpad swipe induced desk animations.
 // Enables continuous touchpad swiping to switch desks.
 // TODO(crbug.com/1111445): Remove this when the feature is fully launched.
@@ -108,10 +104,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kMediaNotificationsCounter;
 
 // Enables resizing/moving the selection region for partial screenshot.
 ASH_PUBLIC_EXPORT extern const base::Feature kMovablePartialScreenshot;
-
-// Enables multi-display support for overview and split view.
-// TODO(crbug.com/952461): Remove this when the feature is fully launched.
-ASH_PUBLIC_EXPORT extern const base::Feature kMultiDisplayOverviewAndSplitView;
 
 // Enables the Night Light feature.
 ASH_PUBLIC_EXPORT extern const base::Feature kNightLight;

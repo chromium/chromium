@@ -176,45 +176,38 @@ void TabletModeWindowManager::Shutdown() {
   base::flat_map<aura::Window*, WindowStateType> carryover_windows_in_splitview;
   const bool was_in_overview =
       Shell::Get()->overview_controller()->InOverviewSession();
-  // If clamshell split view mode is not enabled, still keep the old behavior:
-  // End overview if overview is active and restore all windows' window states
-  // to their previous window states.
-  if (!IsClamshellSplitViewModeEnabled()) {
-    Shell::Get()->overview_controller()->EndOverview();
-  } else {
-    // If clamshell split view mode is enabled, there are 4 cases when exiting
-    // tablet mode:
-    // 1) overview is active but split view is inactive: keep overview active in
-    //    clamshell mode.
-    // 2) overview and splitview are both active: keep overview and splitview
-    // both
-    //    active in clamshell mode, unless if it's single split state, splitview
-    //    and overview will both be ended.
-    // 3) overview is inactive but split view is active (two snapped windows):
-    //    split view is no longer active. But the two snapped windows will still
-    //    keep snapped in clamshell mode.
-    // 4) overview and splitview are both inactive: keep the current behavior,
-    //    i.e., restore all windows to its window state before entering tablet
-    //    mode.
 
-    // TODO(xdai): Instead of caching snapped windows and their state here, we
-    // should try to see if it can be done in the WindowState::State impl.
-    carryover_windows_in_splitview =
-        GetCarryOverWindowsInSplitView(/*clamshell_to_tablet=*/false);
+  // There are 4 cases when exiting tablet mode:
+  // 1) overview is active but split view is inactive: keep overview active in
+  //    clamshell mode.
+  // 2) overview and splitview are both active: keep overview and splitview
+  // both
+  //    active in clamshell mode, unless if it's single split state, splitview
+  //    and overview will both be ended.
+  // 3) overview is inactive but split view is active (two snapped windows):
+  //    split view is no longer active. But the two snapped windows will still
+  //    keep snapped in clamshell mode.
+  // 4) overview and splitview are both inactive: keep the current behavior,
+  //    i.e., restore all windows to its window state before entering tablet
+  //    mode.
 
-    // For case 2 and 3: End splitview mode for two snapped windows case or
-    // single split case to match the clamshell split view behavior. (there is
-    // no both snapped state or single split state in clamshell split view). The
-    // windows will still be kept snapped though.
-    if (split_view_controller->InSplitViewMode()) {
-      OverviewController* overview_controller =
-          Shell::Get()->overview_controller();
-      if (!overview_controller->InOverviewSession() ||
-          overview_controller->overview_session()->IsEmpty()) {
-        split_view_controller->EndSplitView(
-            SplitViewController::EndReason::kExitTabletMode);
-        overview_controller->EndOverview();
-      }
+  // TODO(xdai): Instead of caching snapped windows and their state here, we
+  // should try to see if it can be done in the WindowState::State impl.
+  carryover_windows_in_splitview =
+      GetCarryOverWindowsInSplitView(/*clamshell_to_tablet=*/false);
+
+  // For case 2 and 3: End splitview mode for two snapped windows case or
+  // single split case to match the clamshell split view behavior. (there is
+  // no both snapped state or single split state in clamshell split view). The
+  // windows will still be kept snapped though.
+  if (split_view_controller->InSplitViewMode()) {
+    OverviewController* overview_controller =
+        Shell::Get()->overview_controller();
+    if (!overview_controller->InOverviewSession() ||
+        overview_controller->overview_session()->IsEmpty()) {
+      split_view_controller->EndSplitView(
+          SplitViewController::EndReason::kExitTabletMode);
+      overview_controller->EndOverview();
     }
   }
 
@@ -575,14 +568,7 @@ int TabletModeWindowManager::CalculateCarryOverDividerPosition(
 }
 
 void TabletModeWindowManager::ArrangeWindowsForTabletMode() {
-  // If clamshell split view mode is not enabled, still keep the old behavior:
-  // end overview if it's active. And carry over snapped windows to
-  // splitscreen if possible.
-  if (!IsClamshellSplitViewModeEnabled())
-    Shell::Get()->overview_controller()->EndOverview();
-
-  // If clamshell splitview mode is enabled, there are 3 cases when entering
-  // tablet mode:
+  // There are 3 cases when entering tablet mode:
   // 1) overview is active but split view is inactive: keep overview active in
   //    tablet mode.
   // 2) overview and splitview are both active (splitview can only be active
@@ -645,13 +631,11 @@ void TabletModeWindowManager::ArrangeWindowsForClamshellMode(
     ForgetWindow(window, /*destroyed=*/false, was_in_overview);
   }
 
-  if (IsClamshellSplitViewModeEnabled()) {
-    // Arriving here the window state has changed to its clamshell window state.
-    // Since we need to keep the windows that were in splitview still be snapped
-    // in clamshell mode, change its window state to the corresponding snapped
-    // window state.
-    DoSplitViewTransition(windows_in_splitview, divider_position);
-  }
+  // Arriving here the window state has changed to its clamshell window state.
+  // Since we need to keep the windows that were in splitview still be snapped
+  // in clamshell mode, change its window state to the corresponding snapped
+  // window state.
+  DoSplitViewTransition(windows_in_splitview, divider_position);
 }
 
 void TabletModeWindowManager::TrackWindow(aura::Window* window,

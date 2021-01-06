@@ -392,21 +392,7 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
   }
 }
 
-bool IsClamshellSplitViewModeEnabled() {
-  return base::FeatureList::IsEnabled(features::kDragToSnapInClamshellMode);
-}
-
-bool AreMultiDisplayOverviewAndSplitViewEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kMultiDisplayOverviewAndSplitView);
-}
-
 bool ShouldAllowSplitView() {
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-      !IsClamshellSplitViewModeEnabled()) {
-    return false;
-  }
-
   // Don't allow split view if we're in pinned mode.
   if (Shell::Get()->screen_pinning_controller()->IsPinned())
     return false;

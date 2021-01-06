@@ -862,7 +862,6 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
     // active before transition, do not take screenshot if overview is active
     // in this case.
     const bool overview_remain_active =
-        IsClamshellSplitViewModeEnabled() &&
         Shell::Get()->overview_controller()->InOverviewSession();
     if (use_screenshot_for_test && top_window_on_primary_display &&
         !top_window_animating && !overview_remain_active) {

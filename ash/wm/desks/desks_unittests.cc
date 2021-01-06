@@ -321,45 +321,6 @@ class DesksTest : public AshTestBase,
   DISALLOW_COPY_AND_ASSIGN(DesksTest);
 };
 
-class DesksWithoutSplitViewTest : public AshTestBase {
- public:
-  DesksWithoutSplitViewTest() = default;
-  DesksWithoutSplitViewTest(const DesksWithoutSplitViewTest&) = delete;
-  DesksWithoutSplitViewTest& operator=(const DesksWithoutSplitViewTest&) =
-      delete;
-  ~DesksWithoutSplitViewTest() override = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kDragToSnapInClamshellMode);
-    AshTestBase::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(DesksWithoutSplitViewTest,
-       LongPressOverviewItemInClamshellModeWithOnlyOneVirtualDesk) {
-  std::unique_ptr<aura::Window> window(CreateTestWindow());
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  ASSERT_TRUE(overview_controller->StartOverview());
-  OverviewSession* overview_session = overview_controller->overview_session();
-  OverviewItem* overview_item =
-      overview_session->GetOverviewItemForWindow(window.get());
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  LongGestureTap(
-      gfx::ToRoundedPoint(overview_item->target_bounds().CenterPoint()),
-      event_generator, /*release_touch=*/false);
-  EXPECT_TRUE(overview_item->IsDragItem());
-  EXPECT_EQ(
-      OverviewWindowDragController::DragBehavior::kUndefined,
-      overview_session->window_drag_controller()->current_drag_behavior());
-  event_generator->ReleaseTouch();
-  EXPECT_FALSE(overview_item->IsDragItem());
-}
-
 TEST_F(DesksTest, DesksCreationAndRemoval) {
   TestObserver observer;
   auto* controller = DesksController::Get();
@@ -1628,17 +1589,12 @@ class DesksWithMultiDisplayOverview : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kMultiDisplayOverviewAndSplitView);
     AshTestBase::SetUp();
 
     // Start the test with two displays and two desks.
     UpdateDisplay("600x600,400x500");
     NewDesk();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DesksWithMultiDisplayOverview, DropOnSameDeskInOtherDisplay) {
@@ -2735,31 +2691,7 @@ TEST_F(DesksTest, AutohiddenShelfAnimatesAfterDeskSwitch) {
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 }
 
-class DesksWithSplitViewTest : public AshTestBase {
- public:
-  DesksWithSplitViewTest() = default;
-  ~DesksWithSplitViewTest() override = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDragToSnapInClamshellMode},
-        /*disabled_features=*/{});
-
-    AshTestBase::SetUp();
-  }
-
-  SplitViewController* split_view_controller() {
-    return SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesksWithSplitViewTest);
-};
-
-TEST_F(DesksWithSplitViewTest, SwitchToDeskWithSnappedActiveWindow) {
+TEST_F(DesksTest, SwitchToDeskWithSnappedActiveWindow) {
   auto* desks_controller = DesksController::Get();
   auto* overview_controller = Shell::Get()->overview_controller();
 
@@ -2780,17 +2712,19 @@ TEST_F(DesksWithSplitViewTest, SwitchToDeskWithSnappedActiveWindow) {
 
   // Switch to |desk_2| and then back to |desk_1|. Verify that neither split
   // view nor overview arises.
-  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  EXPECT_FALSE(split_view_controller->InSplitViewMode());
   EXPECT_FALSE(overview_controller->InOverviewSession());
   ActivateDesk(desk_2);
-  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+  EXPECT_FALSE(split_view_controller->InSplitViewMode());
   EXPECT_FALSE(overview_controller->InOverviewSession());
   ActivateDesk(desk_1);
-  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+  EXPECT_FALSE(split_view_controller->InSplitViewMode());
   EXPECT_FALSE(overview_controller->InOverviewSession());
 }
 
-TEST_F(DesksWithSplitViewTest, SuccessfulDragToDeskRemovesSplitViewIndicators) {
+TEST_F(DesksTest, SuccessfulDragToDeskRemovesSplitViewIndicators) {
   auto* controller = DesksController::Get();
   NewDesk();
   ASSERT_EQ(2u, controller->desks().size());
@@ -2840,8 +2774,7 @@ TEST_F(DesksWithSplitViewTest, SuccessfulDragToDeskRemovesSplitViewIndicators) {
                 ->current_window_dragging_state());
 }
 
-TEST_F(DesksWithSplitViewTest,
-       DragAllOverviewWindowsToOtherDesksNotEndClamshellSplitView) {
+TEST_F(DesksTest, DragAllOverviewWindowsToOtherDesksNotEndClamshellSplitView) {
   // Two virtual desks.
   NewDesk();
   ASSERT_EQ(2u, DesksController::Get()->desks().size());
@@ -2856,7 +2789,9 @@ TEST_F(DesksWithSplitViewTest,
   DragItemToPoint(overview_session->GetOverviewItemForWindow(win0.get()),
                   gfx::Point(0, 0), generator);
   ASSERT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   // Drag |win1| to the other desk.
   DragItemToPoint(overview_session->GetOverviewItemForWindow(win1.get()),
@@ -2871,7 +2806,7 @@ TEST_F(DesksWithSplitViewTest,
   // Overview should now be empty, but split view should still be active.
   ASSERT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_session->IsEmpty());
-  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_TRUE(split_view_controller->InSplitViewMode());
 }
 
 namespace {

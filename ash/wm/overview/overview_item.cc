@@ -639,7 +639,6 @@ void OverviewItem::Restack() {
 }
 
 void OverviewItem::UpdatePhantomsForDragging(bool is_touch_dragging) {
-  DCHECK(AreMultiDisplayOverviewAndSplitViewEnabled());
   DCHECK_GT(Shell::GetAllRootWindows().size(), 1u);
   if (!phantoms_for_dragging_) {
     phantoms_for_dragging_ =
@@ -654,7 +653,6 @@ void OverviewItem::UpdatePhantomsForDragging(bool is_touch_dragging) {
 }
 
 void OverviewItem::DestroyPhantomsForDragging() {
-  DCHECK(AreMultiDisplayOverviewAndSplitViewEnabled());
   phantoms_for_dragging_.reset();
 }
 

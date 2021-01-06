@@ -883,15 +883,8 @@ RootWindowController::RootWindowController(AshWindowTreeHost* ash_host)
 
 void RootWindowController::Init(RootWindowType root_window_type) {
   aura::Window* root_window = GetRootWindow();
-  // If the |ash::features::kMultiDisplayOverviewAndSplitView| feature flag is
-  // enabled, create |split_view_controller_| for every display. Otherwise,
-  // create |split_view_controller_| for the primary display only.
-  display::Screen* screen = display::Screen::GetScreen();
-  if (AreMultiDisplayOverviewAndSplitViewEnabled() ||
-      screen->GetDisplayNearestWindow(root_window).id() ==
-          screen->GetPrimaryDisplay().id()) {
-    split_view_controller_ = std::make_unique<SplitViewController>(root_window);
-  }
+  // Create |split_view_controller_| for every display.
+  split_view_controller_ = std::make_unique<SplitViewController>(root_window);
   Shell* shell = Shell::Get();
   shell->InitRootWindow(root_window);
   auto old_targeter =

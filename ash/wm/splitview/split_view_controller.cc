@@ -556,12 +556,7 @@ SplitViewController* SplitViewController::Get(const aura::Window* window) {
   DCHECK(window);
   DCHECK(window->GetRootWindow());
   DCHECK(RootWindowController::ForWindow(window));
-  DCHECK(RootWindowController::ForWindow(Shell::GetPrimaryRootWindow()));
-  return RootWindowController::ForWindow(
-             AreMultiDisplayOverviewAndSplitViewEnabled()
-                 ? window
-                 : Shell::GetPrimaryRootWindow())
-      ->split_view_controller();
+  return RootWindowController::ForWindow(window)->split_view_controller();
 }
 
 // static
@@ -591,11 +586,9 @@ SplitViewController::SplitViewController(aura::Window* root_window)
   Shell::Get()->accessibility_controller()->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
-  if (IsClamshellSplitViewModeEnabled()) {
-    split_view_type_ = Shell::Get()->tablet_mode_controller()->InTabletMode()
-                           ? SplitViewType::kTabletType
-                           : SplitViewType::kClamshellType;
-  }
+  split_view_type_ = Shell::Get()->tablet_mode_controller()->InTabletMode()
+                         ? SplitViewType::kTabletType
+                         : SplitViewType::kClamshellType;
 }
 
 SplitViewController::~SplitViewController() {
@@ -1515,25 +1508,17 @@ void SplitViewController::OnTabletModeStarted() {
 }
 
 void SplitViewController::OnTabletModeEnding() {
-  if (IsClamshellSplitViewModeEnabled()) {
-    split_view_type_ = SplitViewType::kClamshellType;
+  split_view_type_ = SplitViewType::kClamshellType;
 
-    // There is no divider in clamshell split view.
-    const bool is_divider_animating = IsDividerAnimating();
-    if (is_resizing_ || is_divider_animating) {
-      is_resizing_ = false;
-      if (is_divider_animating)
-        StopAndShoveAnimatedDivider();
-      EndResizeImpl();
-    }
-    split_view_divider_.reset();
-  } else if (InSplitViewMode()) {
-    // If clamshell splitview mode is not enabled, fall back to the old
-    // behavior: end splitview and overivew and all windows will return to its
-    // old window state before entering tablet mode.
-    EndSplitView();
-    Shell::Get()->overview_controller()->EndOverview();
+  // There is no divider in clamshell split view.
+  const bool is_divider_animating = IsDividerAnimating();
+  if (is_resizing_ || is_divider_animating) {
+    is_resizing_ = false;
+    if (is_divider_animating)
+      StopAndShoveAnimatedDivider();
+    EndResizeImpl();
   }
+  split_view_divider_.reset();
 }
 
 void SplitViewController::OnTabletModeEnded() {
