@@ -194,6 +194,13 @@ bool DumpAccessibilityTestHelper::ParsePropertyFilter(
     return true;
   }
 
+  directive = mapping->directive_prefix + "-SCRIPT:";
+  if (base::StartsWith(line, directive, base::CompareCase::SENSITIVE)) {
+    filters->emplace_back(line.substr(directive.size()),
+                          AXPropertyFilter::SCRIPT);
+    return true;
+  }
+
   directive = mapping->directive_prefix + "-DENY:";
   if (base::StartsWith(line, directive, base::CompareCase::SENSITIVE)) {
     filters->emplace_back(line.substr(directive.size()),

@@ -142,6 +142,18 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
     RunTest(html_file, "accessibility/display-locking");
   }
 
+  void RunMacTextMarkerTest(const base::FilePath::CharType* file_path) {
+    base::FilePath test_path =
+        GetTestFilePath("accessibility", "mac/textmarker");
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
+    }
+    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
+
+    RunTest(html_file, "accessibility/mac/textmarker");
+  }
+
   void RunRegressionTest(const base::FilePath::CharType* file_path) {
     base::FilePath test_path = GetTestFilePath("accessibility", "regression");
     base::FilePath test_file = test_path.Append(base::FilePath(file_path));
@@ -2582,6 +2594,22 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DeleteSelectionCrash) {
   RunHtmlTest(FILE_PATH_LITERAL("delete-selection-crash.html"));
 }
+
+#if defined(OS_MAC)
+
+//
+// NSAccessibility specific tests
+//
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AXStartTextMarker) {
+  RunMacTextMarkerTest(FILE_PATH_LITERAL("AXStartTextMarker.html"));
+}
+
+#endif
+
+//
+// DisplayLocking tests
+//
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DisplayLockingActivatable) {
   RunDisplayLockingTest(FILE_PATH_LITERAL("activatable.html"));
