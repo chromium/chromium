@@ -15,6 +15,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -112,6 +113,7 @@ void LoginView::OnLoginModelDestroying() {
   http_auth_manager_ = nullptr;
 }
 
-const char* LoginView::GetClassName() const {
-  return "LoginView";
-}
+BEGIN_METADATA(LoginView, views::View)
+ADD_READONLY_PROPERTY_METADATA(base::string16, Username)
+ADD_READONLY_PROPERTY_METADATA(base::string16, Password)
+END_METADATA

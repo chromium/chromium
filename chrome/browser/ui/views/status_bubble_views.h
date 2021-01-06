@@ -32,6 +32,8 @@ class Widget;
 // to allow users to see where hovered links point to.
 class StatusBubbleViews : public StatusBubble {
  public:
+  class StatusView;
+
   // How wide the bubble's shadow is.
   static const int kShadowThickness;
 
@@ -79,7 +81,6 @@ class StatusBubbleViews : public StatusBubble {
   void MouseMovedAt(const gfx::Point& location, bool left_content);
 
  private:
-  class StatusView;
   class StatusViewAnimation;
   class StatusViewExpander;
 

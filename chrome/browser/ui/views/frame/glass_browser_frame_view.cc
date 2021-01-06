@@ -95,14 +95,16 @@ GlassBrowserFrameView::GlassBrowserFrameView(BrowserFrame* frame,
   if (browser_view->CanShowWindowIcon()) {
     InitThrobberIcons();
 
-    window_icon_ = new TabIconView(this, views::Button::PressedCallback());
-    window_icon_->set_is_light(true);
-    window_icon_->SetID(VIEW_ID_WINDOW_ICON);
-    // Stop the icon from intercepting clicks intended for the HTSYSMENU region
-    // of the window. Even though it does nothing on click, it will still
-    // prevent us from giving the event back to Windows to handle properly.
-    window_icon_->SetCanProcessEventsWithinSubtree(false);
-    AddChildView(window_icon_);
+    AddChildView(views::Builder<TabIconView>()
+                     .CopyAddressTo(&window_icon_)
+                     .SetModel(this)
+                     .SetID(VIEW_ID_WINDOW_ICON)
+                     // Stop the icon from intercepting clicks intended for the
+                     // HTSYSMENU region of the window. Even though it does
+                     // nothing on click, it will still prevent us from giving
+                     // the event back to Windows to handle properly.
+                     .SetCanProcessEventsWithinSubtree(false)
+                     .Build());
   }
 
   web_app::AppBrowserController* controller =
@@ -368,7 +370,8 @@ void GlassBrowserFrameView::ResetWindowControls() {
 }
 
 bool GlassBrowserFrameView::ShouldTabIconViewAnimate() const {
-  DCHECK(ShouldShowWindowIcon(TitlebarType::kCustom));
+  if (!ShouldShowWindowIcon(TitlebarType::kCustom))
+    return false;
   content::WebContents* current_tab = browser_view()->GetActiveWebContents();
   return current_tab && current_tab->IsLoading();
 }

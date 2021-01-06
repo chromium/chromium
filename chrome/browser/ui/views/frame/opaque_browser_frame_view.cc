@@ -179,13 +179,14 @@ void OpaqueBrowserFrameView::InitViews() {
 
   // Initializing the TabIconView is expensive, so only do it if we need to.
   if (browser_view()->ShouldShowWindowIcon()) {
-    window_icon_ = new TabIconView(
-        this, base::BindRepeating(&OpaqueBrowserFrameView::WindowIconPressed,
-                                  base::Unretained(this)));
-    window_icon_->set_is_light(true);
-    window_icon_->SetID(VIEW_ID_WINDOW_ICON);
-    AddChildView(window_icon_);
-    window_icon_->Update();
+    AddChildView(views::Builder<TabIconView>()
+                     .CopyAddressTo(&window_icon_)
+                     .SetModel(this)
+                     .SetCallback(base::BindRepeating(
+                         &OpaqueBrowserFrameView::WindowIconPressed,
+                         base::Unretained(this)))
+                     .SetID(VIEW_ID_WINDOW_ICON)
+                     .Build());
   }
 
   web_app::AppBrowserController* controller =
