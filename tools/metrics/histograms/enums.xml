@@ -36826,11 +36826,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 
 <enum name="HoldingSpacePodAction">
   <int value="0" label="kClick (Deprecated)"/>
-  <int value="1" label="kShow"/>
-  <int value="2" label="kClose"/>
+  <int value="1" label="kShowBubble"/>
+  <int value="2" label="kCloseBubble"/>
   <int value="3" label="kShowContextMenu"/>
   <int value="4" label="kShowPreviews"/>
   <int value="5" label="kHidePreviews"/>
+  <int value="6" label="kShowPod"/>
+  <int value="7" label="kHidePod"/>
 </enum>
 
 <enum name="HomeButtonPreferenceStateType">

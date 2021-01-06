@@ -153,7 +153,7 @@ void HoldingSpaceTray::CloseBubble() {
     return;
 
   holding_space_metrics::RecordPodAction(
-      holding_space_metrics::PodAction::kClose);
+      holding_space_metrics::PodAction::kCloseBubble);
 
   widget_observer_.Reset();
 
@@ -166,7 +166,7 @@ void HoldingSpaceTray::ShowBubble(bool show_by_click) {
     return;
 
   holding_space_metrics::RecordPodAction(
-      holding_space_metrics::PodAction::kShow);
+      holding_space_metrics::PodAction::kShowBubble);
 
   DCHECK(tray_container());
 
@@ -187,6 +187,15 @@ TrayBubbleView* HoldingSpaceTray::GetBubbleView() {
 
 const char* HoldingSpaceTray::GetClassName() const {
   return "HoldingSpaceTray";
+}
+
+void HoldingSpaceTray::SetVisiblePreferred(bool preferred_visibility) {
+  if (visible_preferred() != preferred_visibility) {
+    holding_space_metrics::RecordPodAction(
+        preferred_visibility ? holding_space_metrics::PodAction::kShowPod
+                             : holding_space_metrics::PodAction::kHidePod);
+    TrayBackgroundView::SetVisiblePreferred(preferred_visibility);
+  }
 }
 
 void HoldingSpaceTray::UpdateVisibility() {

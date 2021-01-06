@@ -64,6 +64,7 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   void ShowBubble(bool show_by_click) override;
   TrayBubbleView* GetBubbleView() override;
   const char* GetClassName() const override;
+  void SetVisiblePreferred(bool visible_preferred) override;
 
   void set_use_zero_previews_update_delay_for_testing(bool zero_delay) {
     use_zero_previews_update_delay_ = zero_delay;

@@ -24,12 +24,14 @@ namespace holding_space_metrics {
 // should remain unchanged and new values should be added to the end.
 enum class PodAction {
   // kClick (Deprecated) = 0,
-  kShow = 1,
-  kClose = 2,
+  kShowBubble = 1,
+  kCloseBubble = 2,
   kShowContextMenu = 3,
   kShowPreviews = 4,
   kHidePreviews = 5,
-  kMaxValue = kHidePreviews,
+  kShowPod = 6,
+  kHidePod = 7,
+  kMaxValue = kHidePod,
 };
 
 // Records the specified `action` taken on the holding space pod in the shelf.
