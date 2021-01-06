@@ -2349,9 +2349,6 @@ extern const char kEnhancedClipboardNudgeSessionResetDescription[];
 extern const char kEnhancedClipboardSimpleRenderName[];
 extern const char kEnhancedClipboardSimpleRenderDescription[];
 
-extern const char kMultiDisplayOverviewAndSplitViewName[];
-extern const char kMultiDisplayOverviewAndSplitViewDescription[];
-
 extern const char kEnableCrOSActionRecorderName[];
 extern const char kEnableCrOSActionRecorderDescription[];
 

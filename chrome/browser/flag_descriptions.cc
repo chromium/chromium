@@ -4023,13 +4023,6 @@ const char kEnableBackgroundBlurName[] = "Enable background blur.";
 const char kEnableBackgroundBlurDescription[] =
     "Enables background blur for the Launcher, Shelf, Unified System Tray etc.";
 
-const char kDragToSnapInClamshellModeName[] = "Enable clamshell split view.";
-const char kDragToSnapInClamshellModeDescription[] =
-    "You can drag a window from clamshell overview and snap it. If you will be "
-    "using multiple displays, you should use this flag only in conjunction "
-    "with multi-display-overview-and-split-view (otherwise you are likely to "
-    "get a crash).";
-
 const char kEnhancedClipboardName[] =
     "Productivity Experiment: Enable Enhanced Clipboard";
 const char kEnhancedClipboardDescription[] =
@@ -4049,12 +4042,6 @@ const char kEnhancedClipboardSimpleRenderName[] =
     "tags";
 const char kEnhancedClipboardSimpleRenderDescription[] =
     "This will result in less HTML rendering in the Enhanced Clipboard menu.";
-
-const char kMultiDisplayOverviewAndSplitViewName[] =
-    "Enable multi-display overview and split view.";
-const char kMultiDisplayOverviewAndSplitViewDescription[] =
-    "You can drag a window from one overview grid and drop into another "
-    "overview grid.";
 
 const char kEnableCrOSActionRecorderName[] = "Enable CrOS action recorder";
 const char kEnableCrOSActionRecorderDescription[] =

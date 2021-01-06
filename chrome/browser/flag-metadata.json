@@ -1071,11 +1071,6 @@
     "expiry_milestone": 89
   },
   {
-    "name": "drag-to-snap-in-clamshell-mode",
-    "owners": [ "amusbach@chromium.org", "xdai@chromium.org" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "drive-fs-bidirectional-native-messaging",
     "owners": [ "austinct@chromium.org", "dats@chromium.org" ],
     "expiry_milestone": 90
@@ -3391,11 +3386,6 @@
     "name": "movable-partial-screenshot-region",
     "owners": [ "xiyuan", "chromeos-wmp-eng" ],
     "expiry_milestone": 90
-  },
-  {
-    "name": "multi-display-overview-and-split-view",
-    "owners": [ "amusbach@chromium.org", "xdai@chromium.org" ],
-    "expiry_milestone": 86
   },
   {
     "name": "mute-notifications-during-screen-share",

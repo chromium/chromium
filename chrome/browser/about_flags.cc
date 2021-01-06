@@ -6289,14 +6289,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"drag-to-snap-in-clamshell-mode",
-     flag_descriptions::kDragToSnapInClamshellModeName,
-     flag_descriptions::kDragToSnapInClamshellModeDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kDragToSnapInClamshellMode)},
-    {"multi-display-overview-and-split-view",
-     flag_descriptions::kMultiDisplayOverviewAndSplitViewName,
-     flag_descriptions::kMultiDisplayOverviewAndSplitViewDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kMultiDisplayOverviewAndSplitView)},
     {"enhanced_clipboard", flag_descriptions::kEnhancedClipboardName,
      flag_descriptions::kEnhancedClipboardDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kClipboardHistory)},
