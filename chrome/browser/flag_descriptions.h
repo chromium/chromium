@@ -1148,9 +1148,6 @@ extern const char kRewriteLevelDBOnDeletionDescription[];
 extern const char kRestrictGamepadAccessName[];
 extern const char kRestrictGamepadAccessDescription[];
 
-extern const char kDelayAsyncScriptExecutionName[];
-extern const char kDelayAsyncScriptExecutionDescription[];
-
 extern const char kMBIModeName[];
 extern const char kMBIModeDescription[];
 

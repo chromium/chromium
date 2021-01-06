@@ -1961,10 +1961,6 @@ const char kRestrictGamepadAccessName[] = "Restrict gamepad access";
 const char kRestrictGamepadAccessDescription[] =
     "Enables Feature Policy and Secure Context restrictions on the Gamepad API";
 
-const char kDelayAsyncScriptExecutionName[] = "Delay Async Script Execution";
-const char kDelayAsyncScriptExecutionDescription[] =
-    "The execution of async scripts will be delayed.";
-
 const char kMBIModeName[] = "MBI Scheduling Mode";
 const char kMBIModeDescription[] =
     "Enables independent agent cluster scheduling, via the "

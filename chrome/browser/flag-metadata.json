@@ -835,11 +835,6 @@
     "expiry_milestone": 89
   },
   {
-    "name": "delay-async-script-execution",
-    "owners": [ "dom", "chrome-loading@google.com" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "delay-competing-low-priority-requests",
     "owners": [ "dom", "chrome-loading@google.com" ],
     "expiry_milestone": 90

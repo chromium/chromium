@@ -520,22 +520,6 @@ const FeatureEntry::FeatureVariation kForceDarkVariations[] = {
      base::size(kForceDark_SelectiveGeneralInversion), nullptr}};
 #endif  // !OS_CHROMEOS
 
-const FeatureEntry::FeatureParam kDelayAsyncScriptExecutionFinishedParsing[] = {
-    {"delay_type", "finished_parsing"}};
-const FeatureEntry::FeatureParam
-    kDelayAsyncScriptExecutionFirstPaintOrFinishedParsing[] = {
-        {"delay_type", "first_paint_or_finished_parsing"}};
-
-const FeatureEntry::FeatureVariation
-    kDelayAsyncScriptExecutionFeatureVariations[] = {
-        {"with delay until finished parsing document",
-         kDelayAsyncScriptExecutionFinishedParsing,
-         base::size(kDelayAsyncScriptExecutionFinishedParsing), nullptr},
-        {"with delay until first paint or finished parsing document",
-         kDelayAsyncScriptExecutionFirstPaintOrFinishedParsing,
-         base::size(kDelayAsyncScriptExecutionFirstPaintOrFinishedParsing),
-         nullptr}};
-
 const FeatureEntry::FeatureParam kMBIModeLegacy[] = {{"mode", "legacy"}};
 const FeatureEntry::FeatureParam kMBIModeEnabledPerRenderProcessHost[] = {
     {"mode", "per_render_process_host"}};
@@ -4382,13 +4366,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"disable-keepalive-fetch", flag_descriptions::kDisableKeepaliveFetchName,
      flag_descriptions::kDisableKeepaliveFetchDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kDisableKeepaliveFetch)},
-
-    {"delay-async-script-execution",
-     flag_descriptions::kDelayAsyncScriptExecutionName,
-     flag_descriptions::kDelayAsyncScriptExecutionDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kDelayAsyncScriptExecution,
-                                    kDelayAsyncScriptExecutionFeatureVariations,
-                                    "DelayAsyncScriptExecution")},
 
     {"mbi-mode", flag_descriptions::kMBIModeName,
      flag_descriptions::kMBIModeDescription, kOsAll,
