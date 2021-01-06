@@ -12973,7 +12973,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="PageLoadMetricsClientsServiceWorkerSpecialApps"
     separator=".">
   <suffix name="docs" label="Custom histogram for the Google Docs page"/>
-  <suffix name="inbox" label="Custom histogram for Inbox"/>
+  <suffix name="inbox" label="Custom histogram for Inbox">
+    <obsolete>
+      Removed December 2020.
+    </obsolete>
+  </suffix>
   <suffix name="search"
       label="Custom histogram for the Google Search results page"/>
   <affected-histogram
