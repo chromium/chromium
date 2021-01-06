@@ -33,45 +33,6 @@ gfx::Font::Weight GetValueBolderThan(gfx::Font::Weight weight) {
   }
 }
 
-void GetDefaultFont(int context,
-                    int style,
-                    int* size_delta,
-                    gfx::Font::Weight* font_weight) {
-  *font_weight = gfx::Font::Weight::NORMAL;
-
-  switch (context) {
-    case style::CONTEXT_BUTTON_MD:
-      *size_delta = ui::kLabelFontSizeDelta;
-      *font_weight = TypographyProvider::MediumWeightForUI();
-      break;
-    case style::CONTEXT_DIALOG_TITLE:
-      *size_delta = ui::kTitleFontSizeDelta;
-      break;
-    case style::CONTEXT_TOUCH_MENU:
-      *size_delta = 2;
-      break;
-    default:
-      *size_delta = ui::kLabelFontSizeDelta;
-      break;
-  }
-
-  switch (style) {
-    case style::STYLE_TAB_ACTIVE:
-      *font_weight = gfx::Font::Weight::BOLD;
-      break;
-    case style::STYLE_DIALOG_BUTTON_DEFAULT:
-      // Only non-MD default buttons should "increase" in boldness.
-      if (context == style::CONTEXT_BUTTON) {
-        *font_weight = GetValueBolderThan(
-            ui::ResourceBundle::GetSharedInstance()
-                .GetFontListForDetails(ui::ResourceBundle::FontDetails(
-                    std::string(), *size_delta, *font_weight))
-                .GetFontWeight());
-      }
-      break;
-  }
-}
-
 ui::NativeTheme::ColorId GetDisabledColorId(int context) {
   switch (context) {
     case style::CONTEXT_BUTTON_MD:
@@ -130,12 +91,48 @@ ui::NativeTheme::ColorId GetColorId(int context, int style) {
 
 }  // namespace
 
+ui::ResourceBundle::FontDetails TypographyProvider::GetFontDetails(
+    int context,
+    int style) const {
+  ui::ResourceBundle::FontDetails details;
+
+  switch (context) {
+    case style::CONTEXT_BUTTON_MD:
+      details.size_delta = ui::kLabelFontSizeDelta;
+      details.weight = TypographyProvider::MediumWeightForUI();
+      break;
+    case style::CONTEXT_DIALOG_TITLE:
+      details.size_delta = ui::kTitleFontSizeDelta;
+      break;
+    case style::CONTEXT_TOUCH_MENU:
+      details.size_delta = 2;
+      break;
+    default:
+      details.size_delta = ui::kLabelFontSizeDelta;
+      break;
+  }
+
+  switch (style) {
+    case style::STYLE_TAB_ACTIVE:
+      details.weight = gfx::Font::Weight::BOLD;
+      break;
+    case style::STYLE_DIALOG_BUTTON_DEFAULT:
+      // Only non-MD default buttons should "increase" in boldness.
+      if (context == style::CONTEXT_BUTTON) {
+        details.weight =
+            GetValueBolderThan(ui::ResourceBundle::GetSharedInstance()
+                                   .GetFontListForDetails(details)
+                                   .GetFontWeight());
+      }
+      break;
+  }
+
+  return details;
+}
+
 const gfx::FontList& TypographyProvider::GetFont(int context, int style) const {
-  int size_delta;
-  gfx::Font::Weight font_weight;
-  GetDefaultFont(context, style, &size_delta, &font_weight);
   return ui::ResourceBundle::GetSharedInstance().GetFontListForDetails(
-      ui::ResourceBundle::FontDetails(std::string(), size_delta, font_weight));
+      GetFontDetails(context, style));
 }
 
 SkColor TypographyProvider::GetColor(const View& view,

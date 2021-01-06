@@ -15,7 +15,8 @@ class ChromeTypographyProvider : public views::TypographyProvider {
   ChromeTypographyProvider() = default;
 
   // TypographyProvider:
-  const gfx::FontList& GetFont(int context, int style) const override;
+  ui::ResourceBundle::FontDetails GetFontDetails(int context,
+                                                 int style) const override;
   SkColor GetColor(const views::View& view,
                    int context,
                    int style) const override;

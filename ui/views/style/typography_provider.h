@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font.h"
 #include "ui/views/views_export.h"
 
@@ -24,8 +25,12 @@ class VIEWS_EXPORT TypographyProvider {
   TypographyProvider() = default;
   virtual ~TypographyProvider() = default;
 
-  // Gets the FontList for the given |context| and |style|.
-  virtual const gfx::FontList& GetFont(int context, int style) const;
+  // Gets the FontDetails for the given |context| and |style|.
+  virtual ui::ResourceBundle::FontDetails GetFontDetails(int context,
+                                                         int style) const;
+
+  // Convenience wrapper that gets a FontList for |context| and |style|.
+  const gfx::FontList& GetFont(int context, int style) const;
 
   // Gets the color for the given |context| and |style|. |view| is the View
   // requesting the color.

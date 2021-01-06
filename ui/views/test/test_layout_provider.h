@@ -12,10 +12,6 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography_provider.h"
 
-namespace gfx {
-class FontList;
-}
-
 namespace views {
 namespace test {
 
@@ -32,8 +28,10 @@ class TestLayoutProvider : public LayoutProvider, public TypographyProvider {
   // Override the return value of GetSnappedDialogWidth().
   void SetSnappedDialogWidth(int width);
 
-  // Override the font provided by style::GetFont().
-  void SetFont(int context, int style, const gfx::FontList& font);
+  // Override the font details for a given |context| and |style|.
+  void SetFontDetails(int context,
+                      int style,
+                      const ui::ResourceBundle::FontDetails& details);
 
   // LayoutProvider:
   int GetDistanceMetric(int metric) const override;
@@ -41,11 +39,12 @@ class TestLayoutProvider : public LayoutProvider, public TypographyProvider {
   int GetSnappedDialogWidth(int min_width) const override;
 
   // TypographyProvider:
-  const gfx::FontList& GetFont(int context, int style) const override;
+  ui::ResourceBundle::FontDetails GetFontDetails(int context,
+                                                 int style) const override;
 
  private:
   std::map<int, int> distance_metrics_;
-  std::map<std::pair<int, int>, gfx::FontList> fonts_;
+  std::map<std::pair<int, int>, ui::ResourceBundle::FontDetails> details_;
   int snapped_dialog_width_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TestLayoutProvider);

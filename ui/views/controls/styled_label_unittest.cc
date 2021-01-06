@@ -346,9 +346,11 @@ TEST_F(StyledLabelTest, StyledRangeTextStyleBold) {
   InitStyledLabel(bold_text + text);
 
   // Pretend disabled text becomes bold for testing.
-  bold_provider.SetFont(
-      style::CONTEXT_LABEL, style::STYLE_DISABLED,
-      styled()->GetFontList().DeriveWithWeight(gfx::Font::Weight::BOLD));
+  auto details =
+      bold_provider.GetFontDetails(style::CONTEXT_LABEL, style::STYLE_DISABLED);
+  details.weight = gfx::Font::Weight::BOLD;
+  bold_provider.SetFontDetails(style::CONTEXT_LABEL, style::STYLE_DISABLED,
+                               details);
 
   StyledLabel::RangeStyleInfo style_info;
   style_info.text_style = style::STYLE_DISABLED;
