@@ -167,7 +167,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.ConfigurationErrors"
-    enum="SoftwareReporterConfigurationError" expires_after="2021-01-30">
+    enum="SoftwareReporterConfigurationError" expires_after="2021-07-30">
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
