@@ -1085,10 +1085,10 @@ void Internals::setMarker(Document* document,
     document->Markers().AddGrammarMarker(EphemeralRange(range));
 }
 
-unsigned Internals::markerCountForNode(Node* node,
+unsigned Internals::markerCountForNode(Text* text,
                                        const String& marker_type,
                                        ExceptionState& exception_state) {
-  DCHECK(node);
+  DCHECK(text);
   base::Optional<DocumentMarker::MarkerTypes> marker_types =
       MarkerTypesFrom(marker_type);
   if (!marker_types) {
@@ -1098,18 +1098,18 @@ unsigned Internals::markerCountForNode(Node* node,
     return 0;
   }
 
-  return node->GetDocument()
+  return text->GetDocument()
       .Markers()
-      .MarkersFor(To<Text>(*node), marker_types.value())
+      .MarkersFor(*text, marker_types.value())
       .size();
 }
 
-unsigned Internals::activeMarkerCountForNode(Node* node) {
-  DCHECK(node);
+unsigned Internals::activeMarkerCountForNode(Text* text) {
+  DCHECK(text);
 
   // Only TextMatch markers can be active.
-  DocumentMarkerVector markers = node->GetDocument().Markers().MarkersFor(
-      To<Text>(*node), DocumentMarker::MarkerTypes::TextMatch());
+  DocumentMarkerVector markers = text->GetDocument().Markers().MarkersFor(
+      *text, DocumentMarker::MarkerTypes::TextMatch());
 
   unsigned active_marker_count = 0;
   for (const auto& marker : markers) {
@@ -1120,11 +1120,11 @@ unsigned Internals::activeMarkerCountForNode(Node* node) {
   return active_marker_count;
 }
 
-DocumentMarker* Internals::MarkerAt(Node* node,
+DocumentMarker* Internals::MarkerAt(Text* text,
                                     const String& marker_type,
                                     unsigned index,
                                     ExceptionState& exception_state) {
-  DCHECK(node);
+  DCHECK(text);
   base::Optional<DocumentMarker::MarkerTypes> marker_types =
       MarkerTypesFrom(marker_type);
   if (!marker_types) {
@@ -1134,42 +1134,42 @@ DocumentMarker* Internals::MarkerAt(Node* node,
     return nullptr;
   }
 
-  DocumentMarkerVector markers = node->GetDocument().Markers().MarkersFor(
-      To<Text>(*node), marker_types.value());
+  DocumentMarkerVector markers =
+      text->GetDocument().Markers().MarkersFor(*text, marker_types.value());
   if (markers.size() <= index)
     return nullptr;
   return markers[index];
 }
 
-Range* Internals::markerRangeForNode(Node* node,
+Range* Internals::markerRangeForNode(Text* text,
                                      const String& marker_type,
                                      unsigned index,
                                      ExceptionState& exception_state) {
-  DCHECK(node);
-  DocumentMarker* marker = MarkerAt(node, marker_type, index, exception_state);
+  DCHECK(text);
+  DocumentMarker* marker = MarkerAt(text, marker_type, index, exception_state);
   if (!marker)
     return nullptr;
-  return MakeGarbageCollected<Range>(node->GetDocument(), node,
-                                     marker->StartOffset(), node,
+  return MakeGarbageCollected<Range>(text->GetDocument(), text,
+                                     marker->StartOffset(), text,
                                      marker->EndOffset());
 }
 
-String Internals::markerDescriptionForNode(Node* node,
+String Internals::markerDescriptionForNode(Text* text,
                                            const String& marker_type,
                                            unsigned index,
                                            ExceptionState& exception_state) {
-  DocumentMarker* marker = MarkerAt(node, marker_type, index, exception_state);
+  DocumentMarker* marker = MarkerAt(text, marker_type, index, exception_state);
   if (!marker || !IsSpellCheckMarker(*marker))
     return String();
   return To<SpellCheckMarker>(marker)->Description();
 }
 
 unsigned Internals::markerBackgroundColorForNode(
-    Node* node,
+    Text* text,
     const String& marker_type,
     unsigned index,
     ExceptionState& exception_state) {
-  DocumentMarker* marker = MarkerAt(node, marker_type, index, exception_state);
+  DocumentMarker* marker = MarkerAt(text, marker_type, index, exception_state);
   auto* style_marker = DynamicTo<StyleableMarker>(marker);
   if (!style_marker)
     return 0;
@@ -1177,11 +1177,11 @@ unsigned Internals::markerBackgroundColorForNode(
 }
 
 unsigned Internals::markerUnderlineColorForNode(
-    Node* node,
+    Text* text,
     const String& marker_type,
     unsigned index,
     ExceptionState& exception_state) {
-  DocumentMarker* marker = MarkerAt(node, marker_type, index, exception_state);
+  DocumentMarker* marker = MarkerAt(text, marker_type, index, exception_state);
   auto* style_marker = DynamicTo<StyleableMarker>(marker);
   if (!style_marker)
     return 0;
