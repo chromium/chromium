@@ -785,7 +785,8 @@ NativeFileSystemManagerImpl::CreateFileWriter(
   return result;
 }
 
-NativeFileSystemFileWriterImpl* NativeFileSystemManagerImpl::CreateFileWriter(
+base::WeakPtr<NativeFileSystemFileWriterImpl>
+NativeFileSystemManagerImpl::CreateFileWriter(
     const BindingContext& binding_context,
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
@@ -801,10 +802,11 @@ NativeFileSystemFileWriterImpl* NativeFileSystemManagerImpl::CreateFileWriter(
       std::move(receiver), has_transient_user_activation, auto_close,
       quarantine_connection_callback);
 
-  NativeFileSystemFileWriterImpl* writer_ptr = writer.get();
+  base::WeakPtr<NativeFileSystemFileWriterImpl> writer_weak =
+      writer->weak_ptr();
   writer_receivers_.insert(std::move(writer));
 
-  return writer_ptr;
+  return writer_weak;
 }
 
 void NativeFileSystemManagerImpl::CreateTransferToken(

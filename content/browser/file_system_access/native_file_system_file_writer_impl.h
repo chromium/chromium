@@ -54,6 +54,9 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
   ~NativeFileSystemFileWriterImpl() override;
 
   const storage::FileSystemURL& swap_url() const { return swap_url_; }
+  const base::WeakPtr<NativeFileSystemFileWriterImpl> weak_ptr() const {
+    return weak_factory_.GetWeakPtr();
+  }
 
   void Write(uint64_t offset,
              mojo::PendingRemote<blink::mojom::Blob> data,

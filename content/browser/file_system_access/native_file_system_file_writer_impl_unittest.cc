@@ -350,7 +350,7 @@ class NativeFileSystemFileWriterImplTest : public testing::Test {
           base::FilePath());
 
   mojo::PendingRemote<blink::mojom::NativeFileSystemFileWriter> remote_;
-  NativeFileSystemFileWriterImpl* handle_;
+  base::WeakPtr<NativeFileSystemFileWriterImpl> handle_;
 };
 
 class NativeFileSystemFileWriterImplWriteTest

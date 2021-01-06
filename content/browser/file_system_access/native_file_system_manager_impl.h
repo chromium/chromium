@@ -163,9 +163,9 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
                    const storage::FileSystemURL& swap_url,
                    const SharedHandleState& handle_state,
                    bool auto_close);
-  // Returns a raw pointer to a newly created NativeFileSystemFileWriterImpl.
+  // Returns a weak pointer to a newly created NativeFileSystemFileWriterImpl.
   // Useful for tests
-  NativeFileSystemFileWriterImpl* CreateFileWriter(
+  base::WeakPtr<NativeFileSystemFileWriterImpl> CreateFileWriter(
       const BindingContext& binding_context,
       const storage::FileSystemURL& url,
       const storage::FileSystemURL& swap_url,
