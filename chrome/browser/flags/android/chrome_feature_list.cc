@@ -19,6 +19,7 @@
 #include "chrome/browser/share/features.h"
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/video_tutorials/switches.h"
+#include "chrome/browser/webapps/android/features.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -198,7 +199,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kPhotoPickerVideoSupport,
     &kPhotoPickerZoom,
     &kProbabilisticCryptidRenderer,
-    &kPwaInstallUseBottomSheet,
     &kReachedCodeProfiler,
     &kReaderModeInCCT,
     &kReengagementNotification,
@@ -299,6 +299,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &switches::kSyncUseSessionsUnregisterDelay,
     &subresource_filter::kSafeBrowsingSubresourceFilter,
     &video_tutorials::features::kVideoTutorials,
+    &webapps::features::kPwaInstallUseBottomSheet,
 };
 
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
@@ -569,9 +570,6 @@ const base::Feature kPhotoPickerZoom{"PhotoPickerZoom",
 
 const base::Feature kProbabilisticCryptidRenderer{
     "ProbabilisticCryptidRenderer", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kPwaInstallUseBottomSheet{
-    "PwaInstallUseBottomSheet", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kReachedCodeProfiler{"ReachedCodeProfiler",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

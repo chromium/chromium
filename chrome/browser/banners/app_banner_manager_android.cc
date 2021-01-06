@@ -20,13 +20,14 @@
 #include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_coordinator.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_params.h"
-#include "chrome/browser/android/webapps/pwa_bottom_sheet_controller.h"
 #include "chrome/browser/banners/android/jni_headers/AppBannerInProductHelpControllerProvider_jni.h"
 #include "chrome/browser/banners/android/jni_headers/AppBannerManager_jni.h"
 #include "chrome/browser/banners/app_banner_metrics.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/infobars/infobar_service.h"
+#include "chrome/browser/webapps/android/features.h"
+#include "chrome/browser/webapps/android/pwa_bottom_sheet_controller.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -169,7 +170,8 @@ AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
       AppBannerManager::ParamsToPerformInstallableWebAppCheck();
   params.prefer_maskable_icon =
       WebappsIconUtils::DoesAndroidSupportMaskableIcons();
-  if (base::FeatureList::IsEnabled(chrome::android::kPwaInstallUseBottomSheet))
+  if (base::FeatureList::IsEnabled(
+          webapps::features::kPwaInstallUseBottomSheet))
     params.fetch_screenshots = true;
 
   return params;
@@ -509,7 +511,8 @@ void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kInstallableAmbientBadgeInfoBar))
+  if (!base::FeatureList::IsEnabled(
+          ::features::kInstallableAmbientBadgeInfoBar))
     return;
 
   // Do not show the ambient badge if it was recently dismissed.

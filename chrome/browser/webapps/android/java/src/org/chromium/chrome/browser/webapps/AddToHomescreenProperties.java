@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webapps.addtohomescreen;
+package org.chromium.chrome.browser.webapps;
 
 import android.graphics.Bitmap;
 import android.util.Pair;
@@ -14,28 +14,28 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * Contains the properties that an add-to-homescreen {@link PropertyModel} can have.
  */
-class AddToHomescreenProperties {
-    static final PropertyModel.WritableObjectPropertyKey<String> TITLE =
+public class AddToHomescreenProperties {
+    public static final PropertyModel.WritableObjectPropertyKey<String> TITLE =
             new PropertyModel.WritableObjectPropertyKey<>();
-    static final PropertyModel.WritableObjectPropertyKey<String> URL =
+    public static final PropertyModel.WritableObjectPropertyKey<String> URL =
             new PropertyModel.WritableObjectPropertyKey<>();
-    static final PropertyModel.WritableObjectPropertyKey<String> CATEGORIES =
+    public static final PropertyModel.WritableObjectPropertyKey<String> CATEGORIES =
             new PropertyModel.WritableObjectPropertyKey<>();
-    static final PropertyModel.WritableObjectPropertyKey<String> DESCRIPTION =
+    public static final PropertyModel.WritableObjectPropertyKey<String> DESCRIPTION =
             new PropertyModel.WritableObjectPropertyKey<>();
-    static final PropertyModel.WritableObjectPropertyKey<Pair<Bitmap, Boolean>> ICON =
+    public static final PropertyModel.WritableObjectPropertyKey<Pair<Bitmap, Boolean>> ICON =
             new PropertyModel.WritableObjectPropertyKey<>();
-    static final PropertyModel.WritableIntPropertyKey TYPE =
+    public static final PropertyModel.WritableIntPropertyKey TYPE =
             new PropertyModel.WritableIntPropertyKey();
-    static final PropertyModel.WritableBooleanPropertyKey CAN_SUBMIT =
+    public static final PropertyModel.WritableBooleanPropertyKey CAN_SUBMIT =
             new PropertyModel.WritableBooleanPropertyKey();
-    static final PropertyModel.WritableObjectPropertyKey<OnClickListener> CLICK_LISTENER =
+    public static final PropertyModel.WritableObjectPropertyKey<OnClickListener> CLICK_LISTENER =
             new PropertyModel.WritableObjectPropertyKey<>();
-    static final PropertyModel.WritableObjectPropertyKey<String> NATIVE_INSTALL_BUTTON_TEXT =
+    public static final PropertyModel.WritableObjectPropertyKey<String> NATIVE_INSTALL_BUTTON_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
-    static final PropertyModel.WritableFloatPropertyKey NATIVE_APP_RATING =
+    public static final PropertyModel.WritableFloatPropertyKey NATIVE_APP_RATING =
             new PropertyModel.WritableFloatPropertyKey();
 
-    static final PropertyKey[] ALL_KEYS = {TITLE, URL, CATEGORIES, DESCRIPTION, ICON, TYPE,
+    public static final PropertyKey[] ALL_KEYS = {TITLE, URL, CATEGORIES, DESCRIPTION, ICON, TYPE,
             CAN_SUBMIT, CLICK_LISTENER, NATIVE_INSTALL_BUTTON_TEXT, NATIVE_APP_RATING};
 }

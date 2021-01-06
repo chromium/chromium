@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/webapps/pwa_bottom_sheet_controller.h"
+#include "chrome/browser/webapps/android/pwa_bottom_sheet_controller.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/PwaBottomSheetControllerProvider_jni.h"
-#include "chrome/android/chrome_jni_headers/PwaBottomSheetController_jni.h"
 #include "chrome/browser/banners/app_banner_manager_android.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/webapps/android/features.h"
+#include "chrome/browser/webapps/android/jni_headers/PwaBottomSheetControllerProvider_jni.h"
+#include "chrome/browser/webapps/android/jni_headers/PwaBottomSheetController_jni.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -27,7 +27,8 @@ bool CanShowBottomSheet(content::WebContents* web_contents,
                         const base::string16& description,
                         const std::vector<base::string16>& categories,
                         const std::map<GURL, SkBitmap>& screenshots) {
-  if (!base::FeatureList::IsEnabled(chrome::android::kPwaInstallUseBottomSheet))
+  if (!base::FeatureList::IsEnabled(
+          webapps::features::kPwaInstallUseBottomSheet))
     return false;
 
   if (description.size() == 0 || categories.size() == 0 ||

@@ -12,6 +12,8 @@ import androidx.annotation.StringRes;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.banners.AppData;
+import org.chromium.chrome.browser.webapps.AddToHomescreenProperties;
+import org.chromium.chrome.browser.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.WebappsIconUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;

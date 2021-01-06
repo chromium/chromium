@@ -7,13 +7,19 @@ package org.chromium.chrome.browser.webapps.addtohomescreen;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.banners.AppBannerManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.webapps.AddToHomescreenProperties;
+import org.chromium.chrome.browser.webapps.AddToHomescreenViewDelegate;
+import org.chromium.chrome.browser.webapps.PwaBottomSheetController;
+import org.chromium.chrome.browser.webapps.PwaBottomSheetControllerProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;

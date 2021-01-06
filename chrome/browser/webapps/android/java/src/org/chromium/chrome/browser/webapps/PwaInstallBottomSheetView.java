@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webapps.addtohomescreen;
+package org.chromium.chrome.browser.webapps;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -16,8 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-
-import org.chromium.chrome.R;
 
 /**
  * The view portion of the PWA Install bottom sheet.
@@ -116,5 +114,20 @@ public class PwaInstallBottomSheetView {
     void setOnClickListener(View.OnClickListener listener) {
         mToolbarView.findViewById(R.id.button_install).setOnClickListener(listener);
         mToolbarView.findViewById(R.id.drag_handlebar).setOnClickListener(listener);
+    }
+
+    // Testing functions:
+
+    public static int getAppNameViewIdForTesting() {
+        return R.id.app_name;
+    }
+    public static int getAppOriginViewIdForTesting() {
+        return R.id.app_origin;
+    }
+    public static int getDescViewIdForTesting() {
+        return R.id.description;
+    }
+    public static int getCategoriesViewIdForTesting() {
+        return R.id.categories;
     }
 }

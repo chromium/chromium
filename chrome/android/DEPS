@@ -30,6 +30,7 @@ include_rules = [
   "+chrome/browser/util/android/java",
   "+chrome/browser/version",
   "+chrome/browser/video_tutorials",
+  "+chrome/browser/webapps/android",
   "+chrome/browser/webauthn/android",
   "+components/browser_ui/android/bottomsheet",
   "+components/browser_ui/banners/android",

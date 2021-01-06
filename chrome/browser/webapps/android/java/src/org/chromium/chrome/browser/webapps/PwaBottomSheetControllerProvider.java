@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webapps.addtohomescreen;
+package org.chromium.chrome.browser.webapps;
 
 import android.graphics.Bitmap;
 
@@ -26,7 +26,7 @@ public class PwaBottomSheetControllerProvider {
      * @param windowAndroid The window to pull the controller from.
      * @return A shared instance of a {@link PwaBottomSheetController}.
      */
-    static PwaBottomSheetController from(WindowAndroid windowAndroid) {
+    public static PwaBottomSheetController from(WindowAndroid windowAndroid) {
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 

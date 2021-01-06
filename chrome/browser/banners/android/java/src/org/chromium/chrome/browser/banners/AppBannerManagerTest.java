@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
+import org.chromium.chrome.browser.webapps.PwaInstallBottomSheetView;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -757,10 +758,14 @@ public class AppBannerManagerTest {
 
         waitUntilBottomSheetStatus(mTabbedActivityTestRule, BottomSheetController.SheetState.HALF);
 
-        TextView appName = toolbar.findViewById(R.id.app_name);
-        TextView appOrigin = toolbar.findViewById(R.id.app_origin);
-        TextView description = content.findViewById(R.id.description);
-        TextView categories = content.findViewById(R.id.categories);
+        TextView appName =
+                toolbar.findViewById(PwaInstallBottomSheetView.getAppNameViewIdForTesting());
+        TextView appOrigin =
+                toolbar.findViewById(PwaInstallBottomSheetView.getAppOriginViewIdForTesting());
+        TextView description =
+                content.findViewById(PwaInstallBottomSheetView.getDescViewIdForTesting());
+        TextView categories =
+                content.findViewById(PwaInstallBottomSheetView.getCategoriesViewIdForTesting());
 
         Assert.assertEquals("PWA Bottom Sheet", appName.getText());
         Assert.assertTrue(appOrigin.getText().toString().startsWith("http://127.0.0.1:"));

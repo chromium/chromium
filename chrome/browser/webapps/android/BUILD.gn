@@ -1,0 +1,74 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+source_set("android") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "pwa_bottom_sheet_controller.cc",
+    "pwa_bottom_sheet_controller.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/webapps/android:jni_headers",
+    "//components/url_formatter:url_formatter",
+    "//components/webapps:webapps",
+    "//content/public/browser:browser",
+    "//services/device/public/mojom",
+    "//skia",
+    "//third_party/blink/public/common:common",
+  ]
+}
+
+android_library("java") {
+  resources_package = "org.chromium.chrome.browser.webapps"
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/webapps/AddToHomescreenBottomSheetViewBinder.java",
+    "java/src/org/chromium/chrome/browser/webapps/AddToHomescreenProperties.java",
+    "java/src/org/chromium/chrome/browser/webapps/AddToHomescreenViewDelegate.java",
+    "java/src/org/chromium/chrome/browser/webapps/PwaBottomSheetController.java",
+    "java/src/org/chromium/chrome/browser/webapps/PwaBottomSheetControllerFactory.java",
+    "java/src/org/chromium/chrome/browser/webapps/PwaBottomSheetControllerProvider.java",
+    "java/src/org/chromium/chrome/browser/webapps/PwaInstallBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/webapps/PwaInstallBottomSheetView.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    ":jni_headers",
+    "//base:base_java",
+    "//base:jni_java",
+    "//components/browser_ui/android/bottomsheet:java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/webapps/PwaBottomSheetController.java",
+    "java/src/org/chromium/chrome/browser/webapps/PwaBottomSheetControllerProvider.java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/layout/pwa_install_bottom_sheet_content.xml",
+    "java/res/layout/pwa_install_bottom_sheet_toolbar.xml",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/webapk/android/libs/common:splash_resources",
+  ]
+}

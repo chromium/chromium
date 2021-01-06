@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webapps.addtohomescreen;
+package org.chromium.chrome.browser.webapps;
 
 /**
  * Used by {@link AddToHomescreenDialogView} to propagate view events to {@link
  * AddToHomescreenMediator}.
  */
-interface AddToHomescreenViewDelegate {
+public interface AddToHomescreenViewDelegate {
     /**
      * Called when the user accepts adding the item to home screen with the provided title.
      */
