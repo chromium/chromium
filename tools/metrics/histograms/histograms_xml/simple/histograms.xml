@@ -22,8 +22,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram base="true" name="SimpleCache.CacheSizeOnInit" units="KB"
-    expires_after="M85">
+    expires_after="M94">
   <owner>jkarlin@chromium.org</owner>
+  <owner>shivanisha@chromium.org</owner>
   <summary>
     The size of the cache at the time that the index has finished initializing.
   </summary>

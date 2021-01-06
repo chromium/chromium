@@ -1499,6 +1499,8 @@ void HttpCache::OnBackendCreated(int result, PendingOp* pending_op) {
     backend_factory_.reset();  // Reclaim memory.
     if (result == OK) {
       disk_cache_ = std::move(pending_op->backend);
+      UMA_HISTOGRAM_MEMORY_KB("HttpCache.MaxFileSizeOnInit",
+                              disk_cache_->MaxFileSize() / 1024);
     }
   }
 

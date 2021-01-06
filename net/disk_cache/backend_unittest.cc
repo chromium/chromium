@@ -4570,7 +4570,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheNegMaxSize) {
   InitCache();
   // We don't know what it will pick, but it's limited to what
   // disk_cache::PreferredCacheSize would return, scaled by the size experiment,
-  // which only goes as much as 2x. It definitely should not be MAX_UINT64.
+  // which only goes as much as 4x. It definitely should not be MAX_UINT64.
   EXPECT_NE(simple_cache_impl_->index()->max_size(),
             std::numeric_limits<uint64_t>::max());
 
@@ -4580,6 +4580,26 @@ TEST_F(DiskCacheBackendTest, SimpleCacheNegMaxSize) {
   ASSERT_GE(max_default_size, 0);
   EXPECT_LT(simple_cache_impl_->index()->max_size(),
             static_cast<unsigned>(max_default_size));
+
+  uint64_t max_size_without_scaling = simple_cache_impl_->index()->max_size();
+
+  // Scale to 200%. The size should be twice of |max_size_without_scaling| but
+  // since that's capped on 20% of available size, checking for the size to be
+  // between max_size_without_scaling and max_size_without_scaling*2.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    std::map<std::string, std::string> field_trial_params;
+    field_trial_params["percent_relative_size"] = "200";
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        disk_cache::kChangeDiskCacheSizeExperiment, field_trial_params);
+
+    InitCache();
+
+    uint64_t max_size_scaled = simple_cache_impl_->index()->max_size();
+
+    EXPECT_GE(max_size_scaled, max_size_without_scaling);
+    EXPECT_LE(max_size_scaled, 2 * max_size_without_scaling);
+  }
 }
 
 TEST_F(DiskCacheBackendTest, SimpleLastModified) {

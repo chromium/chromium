@@ -72,6 +72,7 @@
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
+#include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_test_util.h"
@@ -909,6 +910,66 @@ TEST_F(NetworkContextTest, DiskCache) {
   EXPECT_EQ(net::DISK_CACHE, backend->GetCacheType());
   EXPECT_EQ(network_session_configurator::ChooseCacheType(),
             GetBackendType(backend));
+}
+
+class DiskCacheSizeTest : public NetworkContextTest {
+ public:
+  DiskCacheSizeTest() = default;
+  ~DiskCacheSizeTest() override = default;
+
+  int64_t VerifyDiskCacheSize(int scale = 100) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    if (scale != 100) {
+      std::map<std::string, std::string> field_trial_params;
+      field_trial_params["percent_relative_size"] = base::NumberToString(scale);
+      scoped_feature_list.InitAndEnableFeatureWithParameters(
+          disk_cache::kChangeDiskCacheSizeExperiment, field_trial_params);
+    }
+
+    base::HistogramTester histogram_tester;
+
+    mojom::NetworkContextParamsPtr context_params = CreateContextParams();
+    context_params->http_cache_enabled = true;
+
+    base::ScopedTempDir temp_dir;
+    EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+    context_params->http_cache_path = temp_dir.GetPath();
+
+    std::unique_ptr<NetworkContext> network_context =
+        CreateContextWithParams(std::move(context_params));
+
+    net::HttpCache* cache = network_context->url_request_context()
+                                ->http_transaction_factory()
+                                ->GetCache();
+    EXPECT_TRUE(cache);
+
+    disk_cache::Backend* backend = nullptr;
+    net::TestCompletionCallback callback;
+    int rv = cache->GetBackend(&backend, callback.callback());
+    EXPECT_EQ(net::OK, callback.GetResult(rv));
+    EXPECT_TRUE(backend);
+
+    EXPECT_EQ(net::DISK_CACHE, backend->GetCacheType());
+
+    int64_t max_file_size = backend->MaxFileSize();
+    histogram_tester.ExpectTotalCount("HttpCache.MaxFileSizeOnInit", 1);
+    histogram_tester.ExpectUniqueSample("HttpCache.MaxFileSizeOnInit",
+                                        max_file_size / 1024, 1);
+
+    return max_file_size;
+  }
+};
+
+TEST_F(DiskCacheSizeTest, DiskCacheSize) {
+  int64_t max_file_size = VerifyDiskCacheSize();
+
+  // Scale to 200%. The size should be twice of |max_file_size| but
+  // since max size is capped on 20% of available size, checking for the size to
+  // be between max_file_size and max_file_size*2.
+  int64_t max_file_size_scaled = VerifyDiskCacheSize(200);
+
+  EXPECT_GE(max_file_size_scaled, max_file_size);
+  EXPECT_LE(max_file_size_scaled, 2 * max_file_size);
 }
 
 // This makes sure that network_session_configurator::ChooseCacheType is
