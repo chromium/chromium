@@ -315,6 +315,7 @@ run_jsbundler("chromevox_copied_files") {
     "chromevox/injected/api_util.js",
     "chromevox/injected/mathjax.js",
     "chromevox/injected/mathjax_external_util.js",
+    "chromevox/injected/shadydom_loader.js",
     "cvox2/background/background.html",
     "cvox2/background/earcons/control.wav",
     "cvox2/background/earcons/selection.wav",
