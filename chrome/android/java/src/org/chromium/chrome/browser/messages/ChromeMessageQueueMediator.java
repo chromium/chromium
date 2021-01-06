@@ -81,6 +81,14 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
                 mQueueController.dismissAllMessages();
             }
         }
+        @Override
+        public void willCloseTab(Tab tab, boolean animate) {
+            assert mTabModelSelector != null;
+            if (tab != mTabModelSelector.getCurrentTab()) return;
+            if (mQueueController != null) {
+                mQueueController.dismissAllMessages();
+            }
+        }
     };
 
     /**
