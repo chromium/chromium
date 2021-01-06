@@ -8060,6 +8060,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="HTTPS"/>
 </enum>
 
+<enum name="BooleanHTTPVsJS">
+  <int value="0" label="JS"/>
+  <int value="1" label="HTTP"/>
+</enum>
+
 <enum name="BooleanIgnored">
   <int value="0" label="Not ignored"/>
   <int value="1" label="Ignored"/>

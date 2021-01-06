@@ -1008,6 +1008,11 @@ void CookieMonster::FilterCookiesWithOptions(
                                           cookie_ptr->SourceScheme()));
     }
 
+    if (cookie_ptr->IsSameParty()) {
+      UMA_HISTOGRAM_BOOLEAN("Cookie.SamePartyReadIncluded.IsHTTP",
+                            !options.exclude_httponly());
+    }
+
     included_cookies->push_back({*cookie_ptr, access_result});
   }
 }
@@ -1220,6 +1225,10 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "SetCookie() key: " << key << " cc: " << cc->DebugString();
 
+    if (cc->IsSameParty()) {
+      UMA_HISTOGRAM_BOOLEAN("Cookie.SamePartySetIncluded.IsHTTP",
+                            !options.exclude_httponly());
+    }
     // Realize that we might be setting an expired cookie, and the only point
     // was to delete the cookie which we've already done.
     if (!already_expired) {
