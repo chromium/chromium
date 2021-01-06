@@ -7,8 +7,8 @@
 #include "third_party/blink/renderer/modules/gamepad/gamepad_dispatcher.h"
 
 #include "device/gamepad/public/cpp/gamepads.h"
-#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
-#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_shared_memory_reader.h"
 #include "third_party/blink/renderer/modules/gamepad/navigator_gamepad.h"
 
@@ -41,21 +41,23 @@ void GamepadDispatcher::ResetVibrationActuator(
 }
 
 GamepadDispatcher::GamepadDispatcher(ExecutionContext& context)
-    :  // See https://bit.ly/2S0zRAS for task types.
-      task_runner_(context.GetTaskRunner(TaskType::kMiscPlatformAPI)),
-      gamepad_haptics_manager_remote_(&context) {}
+    : execution_context_(&context), gamepad_haptics_manager_remote_(&context) {}
 
 GamepadDispatcher::~GamepadDispatcher() = default;
 
 void GamepadDispatcher::InitializeHaptics() {
-  if (!gamepad_haptics_manager_remote_.is_bound()) {
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+  if (!gamepad_haptics_manager_remote_.is_bound() && execution_context_) {
+    // See https://bit.ly/2S0zRAS for task types.
+    auto task_runner =
+        execution_context_->GetTaskRunner(TaskType::kMiscPlatformAPI);
+    execution_context_->GetBrowserInterfaceBroker().GetInterface(
         gamepad_haptics_manager_remote_.BindNewPipeAndPassReceiver(
-            task_runner_));
+            std::move(task_runner)));
   }
 }
 
 void GamepadDispatcher::Trace(Visitor* visitor) const {
+  visitor->Trace(execution_context_);
   visitor->Trace(reader_);
   visitor->Trace(gamepad_haptics_manager_remote_);
   PlatformEventDispatcher::Trace(visitor);

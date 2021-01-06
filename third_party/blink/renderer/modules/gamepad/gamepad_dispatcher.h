@@ -60,7 +60,7 @@ class GamepadDispatcher final : public GarbageCollected<GamepadDispatcher>,
                                              const device::Gamepad&,
                                              bool connected);
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  WeakMember<ExecutionContext> execution_context_;
   Member<GamepadSharedMemoryReader> reader_;
   HeapMojoRemote<device::mojom::blink::GamepadHapticsManager,
                  HeapMojoWrapperMode::kWithoutContextObserver>

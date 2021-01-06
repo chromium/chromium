@@ -173,7 +173,6 @@
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
-#include "device/gamepad/gamepad_haptics_manager.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gpu_switches.h"
@@ -2292,9 +2291,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING, base::MayBlock()}));
 #endif
-
-  registry->AddInterface(
-      base::BindRepeating(&device::GamepadHapticsManager::Create));
 
   AddUIThreadInterface(
       registry.get(),
