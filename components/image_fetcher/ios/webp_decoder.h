@@ -21,9 +21,7 @@ namespace webp_transcode {
 class WebpDecoder : public base::RefCountedThreadSafe<WebpDecoder> {
  public:
   // Format of the decoded image.
-  // This enum is used for UMA reporting, keep it in sync with the histogram
-  // definition.
-  enum DecodedImageFormat { JPEG = 1, PNG, TIFF, DECODED_FORMAT_COUNT };
+  enum DecodedImageFormat { JPEG = 1, PNG, TIFF };
 
   class Delegate : public base::RefCountedThreadSafe<WebpDecoder::Delegate> {
    public:

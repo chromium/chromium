@@ -18157,6 +18157,9 @@ regressions. -->
 
 <histogram name="WebP.DecodedImageFormat" enum="WebpDecodedFormat"
     expires_after="2020-12-13">
+  <obsolete>
+    No longer recorded in M89.
+  </obsolete>
   <owner>droger@chromium.org</owner>
   <summary>
     Histogram for the format of decoded WebP images on iOS, as Chrome re-encodes

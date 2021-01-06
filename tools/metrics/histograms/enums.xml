@@ -77717,6 +77717,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="WebpDecodedFormat">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <int value="1" label="JPEG"/>
   <int value="2" label="PNG"/>
   <int value="3" label="TIFF"/>

@@ -81,9 +81,6 @@ class WebpDecoderTest : public testing::Test {
       case WebpDecoder::TIFF:
         ADD_FAILURE() << "Data already decompressed";
         return nil;
-      case WebpDecoder::DECODED_FORMAT_COUNT:
-        ADD_FAILURE() << "Unknown format";
-        return nil;
     }
     size_t width = CGImageGetWidth(image);
     size_t height = CGImageGetHeight(image);
