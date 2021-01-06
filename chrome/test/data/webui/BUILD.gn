@@ -543,17 +543,30 @@ group("closure_compile") {
 js_type_check("closure_compile_local") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://interventions-internals/=../../chrome/browser/resources/interventions-internals/\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
   deps = [
     ":chai_assert",
     ":fake_chrome_event.m",
+    ":interventions_internals_test",
     ":mock_timer.m",
     ":test_browser_proxy.m",
     ":test_plural_string_proxy",
     ":test_util.m",
   ]
+}
+
+js_library("interventions_internals_test") {
+  deps = [
+    ":chai_assert",
+    ":test_browser_proxy.m",
+    "//chrome/browser/resources/interventions_internals:index",
+    "//ui/webui/resources/js:promise_resolver.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("fake_chrome_event.m") {
