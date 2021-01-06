@@ -25,7 +25,7 @@ dep_filename = args.dep_filename
 bundled_shlibs = [os.path.basename(file) for file in args.shlibs]
 distro_check = args.distro_check
 
-if os.stat(binary).st_mode & 0111 == 0:
+if os.stat(binary).st_mode & 0o111 == 0:
   print (('/usr/lib/rpm/elfdeps requires that binaries have an exectuable ' +
           'bit set, but binary "%s" does not.') % os.path.basename(binary))
   sys.exit(1)
