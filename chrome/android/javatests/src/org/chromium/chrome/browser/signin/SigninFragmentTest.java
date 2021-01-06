@@ -44,6 +44,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Matchers;
+import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.SigninFirstRunFragment;
@@ -183,6 +184,8 @@ public class SigninFragmentTest {
     @LargeTest
     @Feature("RenderTest")
     public void testSigninFragmentForcedSigninWithRegularChild() throws IOException {
+        HistogramDelta startPageHistogram =
+                new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         CoreAccountInfo accountInfo = mSyncTestRule.addTestAccount();
         CustomSigninFirstRunFragment fragment = new CustomSigninFirstRunFragment();
         Bundle bundle = new Bundle();
@@ -201,7 +204,7 @@ public class SigninFragmentTest {
                     .commit();
         });
         ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
-
+        Assert.assertEquals(1, startPageHistogram.getDelta());
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "signin_fragment_forced_signin_with_regular_child");
     }
@@ -235,6 +238,8 @@ public class SigninFragmentTest {
     @Test
     @MediumTest
     public void testSigninFragmentWithDefaultFlow() {
+        HistogramDelta settingsHistogram =
+                new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.SETTINGS);
         mSigninActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivity(
@@ -242,11 +247,14 @@ public class SigninFragmentTest {
                 });
         onView(withId(R.id.positive_button)).check(matches(withText(R.string.signin_add_account)));
         onView(withId(R.id.negative_button)).check(matches(withText(R.string.cancel)));
+        Assert.assertEquals(1, settingsHistogram.getDelta());
     }
 
     @Test
     @MediumTest
     public void testSelectNonDefaultAccountInAccountPickerDialog() {
+        HistogramDelta bookmarkHistogram = new HistogramDelta(
+                "Signin.SigninStartedAccessPoint", SigninAccessPoint.BOOKMARK_MANAGER);
         CoreAccountInfo defaultAccountInfo = mSyncTestRule.addTestAccount();
         String nonDefaultAccountName = "test.account.nondefault@gmail.com";
         mSyncTestRule.addAccount(nonDefaultAccountName);
@@ -264,6 +272,7 @@ public class SigninFragmentTest {
         // not shown anymore.
         onView(withText(defaultAccountInfo.getEmail())).check(doesNotExist());
         onView(withText(nonDefaultAccountName)).check(matches(isDisplayed()));
+        Assert.assertEquals(1, bookmarkHistogram.getDelta());
     }
 
     private ViewAction clickOnClickableSpan() {
