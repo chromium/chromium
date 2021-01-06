@@ -696,6 +696,11 @@ void DownloadItemView::UpdateMode(Mode mode) {
       UpdateAccessibleAlert(model_->GetWarningText(unelided_filename, &ignore));
       accessible_alert_timer_.Stop();
     }
+  } else if (is_mixed_content(mode_)) {
+    announce_accessible_alert_soon_ = true;
+    UpdateAccessibleAlert(l10n_util::GetStringFUTF16(
+        IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_BLOCKED_ACCESSIBLE_ALERT,
+        unelided_filename));
   } else if (mode_ == Mode::kDeepScanning) {
     UpdateAccessibleAlert(l10n_util::GetStringFUTF16(
         IDS_DEEP_SCANNING_ACCESSIBLE_ALERT, unelided_filename));

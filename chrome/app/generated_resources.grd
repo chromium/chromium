@@ -2053,6 +2053,20 @@ are declared in tools/grit/grit_rule.gni.
                desc="The title of a download notification inidcating that the file may be malicious, and the Advanced Protection Program recommends sending the file to Google. This message is for screen reader users">
         <ph name="FILE_NAME">$1<ex>file.exe</ex></ph> is being scanned.
       </message>
+      <if expr="is_macosx">
+        <then>
+          <message name="IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_BLOCKED_ACCESSIBLE_ALERT"
+                   desc="The title of a download notification inidcating that the download was delivered insecurely. This message is for screen reader users">
+            <ph name="FILE_NAME">$1<ex>file.exe</ex></ph> can't be downloaded securely.
+          </message>
+        </then>
+        <else>
+          <message name="IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_BLOCKED_ACCESSIBLE_ALERT"
+                   desc="The title of a download notification inidcating that the download was delivered insecurely. This message is for screen reader users">
+            <ph name="FILE_NAME">$1<ex>file.exe</ex></ph> can't be downloaded securely. Press Shift+F6 to cycle to the downloads bar area.
+          </message>
+        </else>
+      </if>
 
       <!-- Download Notification Labels -->
       <message name="IDS_DOWNLOAD_NOTIFICATION_COPY_TO_CLIPBOARD"
