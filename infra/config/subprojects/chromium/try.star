@@ -4,6 +4,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builders.star", "cpu", "goma", "os", "xcode")
+load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 load("//project.star", "settings")
 
@@ -83,65 +84,65 @@ luci.cq_group(
 
 # Automatically maintained consoles
 
-try_.list_view(
+consoles.list_view(
     name = "try",
     title = settings.main_list_view_title,
     branch_selector = branches.ALL_BRANCHES,
 )
 
-try_.list_view(
+consoles.list_view(
     name = "luci.chromium.try",
     branch_selector = branches.ALL_BRANCHES,
 )
 
-try_.list_view(
+consoles.list_view(
     name = "tryserver.blink",
     branch_selector = branches.STANDARD_MILESTONE,
 )
 
-try_.list_view(
+consoles.list_view(
     name = "tryserver.chromium",
     branch_selector = branches.STANDARD_MILESTONE,
 )
 
-try_.list_view(
+consoles.list_view(
     name = "tryserver.chromium.android",
     branch_selector = branches.STANDARD_MILESTONE,
 )
 
-try_.list_view(
+consoles.list_view(
     name = "tryserver.chromium.angle",
 )
 
-try_.list_view(
+consoles.list_view(
     name = "tryserver.chromium.chromiumos",
     branch_selector = branches.ALL_BRANCHES,
 )
 
-try_.list_view(
+consoles.list_view(
     name = "tryserver.chromium.codesearch",
 )
 
-try_.list_view(
+consoles.list_view(
     name = "tryserver.chromium.dawn",
     branch_selector = branches.STANDARD_MILESTONE,
 )
 
-try_.list_view(
+consoles.list_view(
     name = "tryserver.chromium.linux",
     branch_selector = branches.STANDARD_MILESTONE,
 )
 
-try_.list_view(
+consoles.list_view(
     name = "tryserver.chromium.mac",
     branch_selector = branches.STANDARD_MILESTONE,
 )
 
-try_.list_view(
+consoles.list_view(
     name = "tryserver.chromium.swangle",
 )
 
-try_.list_view(
+consoles.list_view(
     name = "tryserver.chromium.win",
     branch_selector = branches.STANDARD_MILESTONE,
 )

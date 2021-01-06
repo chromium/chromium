@@ -17,8 +17,6 @@ corresponding attribute on `defaults` that is a `lucicfg.var` that can be used
 to set the default value. Can also be accessed through `try_.defaults`.
 """
 
-load("@stdlib//internal/graph.star", "graph")
-load("@stdlib//internal/luci/common.star", "keys")
 load("./args.star", "args")
 load("./branches.star", "branches")
 load("./builders.star", "builders")
@@ -33,49 +31,10 @@ DEFAULT_EXCLUDE_REGEXPS = [
 defaults = args.defaults(
     extends = builders.defaults,
     cq_group = None,
-    list_view = args.COMPUTE,
     main_list_view = None,
     subproject_list_view = None,
     resultdb_bigquery_exports = [],
 )
-
-def _sorted_list_view_graph_key(console_name):
-    return graph.key("@chromium", "", "sorted_list_view", console_name)
-
-def _sorted_list_view_impl(ctx, *, console_name):
-    key = _sorted_list_view_graph_key(console_name)
-    graph.add_node(key)
-    graph.add_edge(keys.project(), key)
-    return graph.keyset(key)
-
-_sorted_list_view = lucicfg.rule(impl = _sorted_list_view_impl)
-
-def _sort_console_entries(ctx):
-    milo = ctx.output["luci-milo.cfg"]
-    consoles = []
-    for console in milo.consoles:
-        if not console.builders:
-            continue
-        graph_key = _sorted_list_view_graph_key(console.id)
-        node = graph.node(graph_key)
-        if node:
-            console.builders = sorted(console.builders, lambda b: b.name)
-        consoles.append(console)
-
-lucicfg.generator(_sort_console_entries)
-
-def list_view(*, name, branch_selector = branches.MAIN, **kwargs):
-    if not branches.matches(branch_selector):
-        return
-
-    luci.list_view(
-        name = name,
-        **kwargs
-    )
-
-    _sorted_list_view(
-        console_name = name,
-    )
 
 def tryjob(
         *,
@@ -131,9 +90,9 @@ def try_builder(
         information.
       cq_group - The CQ group to add the builder to. If tryjob is None, it will
         be added as includable_only.
-      list_view - A string identifying the ID of the list view to
-        add an entry to. Supports a module-level default that defaults to
-        the group of the builder, if provided.
+      list_view - A string or list of strings identifying the ID(s) of the list
+        view to add an entry to. Supports a module-level default that defaults
+        to the group of the builder, if provided.
       main_console_view - A string identifying the ID of the main list
         view to add an entry to. Supports a module-level default that
         defaults to None.
@@ -178,11 +137,25 @@ def try_builder(
         ),
     )
 
+    list_view = defaults.get_value("list_view", list_view)
+    if list_view == args.COMPUTE:
+        list_view = defaults.get_value_from_kwargs("builder_group", kwargs)
+    if type(list_view) == type(""):
+        list_view = [list_view]
+    list_view = list(list_view or [])
+    main_list_view = defaults.get_value("main_list_view", main_list_view)
+    if main_list_view:
+        list_view.append(main_list_view)
+    subproject_list_view = defaults.get_value("subproject_list_view", subproject_list_view)
+    if subproject_list_view:
+        list_view.append(subproject_list_view)
+
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
     builders.builder(
         name = name,
         branch_selector = branch_selector,
+        list_view = list_view,
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
         experiments = experiments,
         **kwargs
@@ -207,30 +180,6 @@ def try_builder(
             builder = builder,
             cq_group = cq_group,
             includable_only = True,
-        )
-
-    list_view = defaults.get_value("list_view", list_view)
-    if list_view == args.COMPUTE:
-        list_view = defaults.get_value_from_kwargs("builder_group", kwargs)
-
-    if list_view:
-        luci.list_view_entry(
-            builder = builder,
-            list_view = list_view,
-        )
-
-    main_list_view = defaults.get_value("main_list_view", main_list_view)
-    if main_list_view:
-        luci.list_view_entry(
-            builder = builder,
-            list_view = main_list_view,
-        )
-
-    subproject_list_view = defaults.get_value("subproject_list_view", subproject_list_view)
-    if subproject_list_view:
-        luci.list_view_entry(
-            builder = builder,
-            list_view = subproject_list_view,
         )
 
 def blink_builder(*, name, goma_backend = None, **kwargs):
@@ -450,9 +399,6 @@ def gpu_chromium_win_builder(*, name, os = builders.os.WINDOWS_ANY, **kwargs):
 try_ = struct(
     # Module-level defaults for try functions
     defaults = defaults,
-
-    # Functions for declaring automatically maintained list views
-    list_view = list_view,
 
     # Functions for declaring try builders
     builder = try_builder,

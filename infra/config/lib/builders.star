@@ -266,6 +266,7 @@ defaults = args.defaults(
     goma_debug = False,
     goma_enable_ats = args.COMPUTE,
     goma_jobs = None,
+    list_view = args.COMPUTE,
     os = None,
     project_trigger_overrides = None,
     pool = None,
@@ -306,6 +307,8 @@ def builder(
         pool = args.DEFAULT,
         ssd = args.DEFAULT,
         xcode = args.DEFAULT,
+        console_view_entry = None,
+        list_view = args.DEFAULT,
         project_trigger_overrides = args.DEFAULT,
         configure_kitchen = args.DEFAULT,
         goma_backend = args.DEFAULT,
@@ -381,6 +384,12 @@ def builder(
           path: <xcode.cache_path>
         }```. Also emits a 'xcode_build_version:<xcode.version>' property if the
         property is not already set.
+      * console_view_entry - A `consoles.console_view_entry` struct or a list of
+        them describing console view entries to create for the builder.
+        See `consoles.console_view_entry` for details.
+      * list_view - A string or a list of strings identifying the ID(s) of the
+        list view(s) to add an entry to. Supports a module-level default that
+        defaults to no list views.
       * project_trigger_overrides - a dict mapping the LUCI projects declared in
         recipe BotSpecs to the LUCI project to use when triggering builders. When
         this builder triggers another builder, if the BotSpec for that builder has
@@ -560,7 +569,7 @@ def builder(
         )]
         properties.setdefault("xcode_build_version", xcode.version)
 
-    return branches.builder(
+    builder = branches.builder(
         name = name,
         branch_selector = branch_selector,
         dimensions = dimensions,
@@ -574,6 +583,57 @@ def builder(
         ),
         **kwargs
     )
+
+    builder_name = "{}/{}".format(bucket, name)
+
+    if console_view_entry:
+        if type(console_view_entry) == type(struct()):
+            entries = [console_view_entry]
+        else:
+            entries = console_view_entry
+        entries_without_console_view = [
+            e
+            for e in entries
+            if e.console_view == None
+        ]
+        if len(entries_without_console_view) > 1:
+            fail("Multiple entries provided without console_view: {}"
+                .format(entries_without_console_view))
+
+        for entry in entries:
+            if not branches.matches(entry.branch_selector):
+                continue
+
+            console_view = entry.console_view
+            if console_view == None:
+                console_view = builder_group
+                if not console_view:
+                    fail("Builder does not have builder group and " +
+                         "console_view_entry does not have console view: {}".format(entry))
+
+            luci.console_view_entry(
+                builder = builder_name,
+                console_view = console_view,
+                category = entry.category,
+                short_name = entry.short_name,
+            )
+
+    list_view = defaults.get_value("list_view", list_view)
+
+    # The default for list_view is set to args.COMPUTE instead of None so that
+    # the try builder function can override the default behavior
+    if list_view == args.COMPUTE:
+        list_view = None
+    if list_view:
+        if type(list_view) == type(""):
+            list_view = [list_view]
+        for view in list_view:
+            luci.list_view_entry(
+                builder = builder_name,
+                list_view = view,
+            )
+
+    return builder
 
 def builder_name(builder, bucket = args.DEFAULT):
     bucket = defaults.get_value("bucket", bucket)
