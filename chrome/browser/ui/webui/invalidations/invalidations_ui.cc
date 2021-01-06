@@ -26,8 +26,11 @@ content::WebUIDataSource* CreateInvalidationsHTMLSource() {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types jstemplate;");
-  source->AddResourcePath("about_invalidations.js", IDR_ABOUT_INVALIDATIONS_JS);
-  source->SetDefaultResource(IDR_ABOUT_INVALIDATIONS_HTML);
+  source->AddResourcePath("about_invalidations.js",
+                          IDR_INVALIDATIONS_ABOUT_INVALIDATIONS_JS);
+  source->AddResourcePath("about_invalidations.css",
+                          IDR_INVALIDATIONS_ABOUT_INVALIDATIONS_CSS);
+  source->SetDefaultResource(IDR_INVALIDATIONS_ABOUT_INVALIDATIONS_HTML);
   return source;
 }
 

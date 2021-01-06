@@ -238,7 +238,8 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2080],
   },
-  "chrome/browser/resources/invalidations/invalidations_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/invalidations/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
     "includes": [2090],
   },
   "chrome/browser/resources/media/webrtc_logs_resources.grd": {
