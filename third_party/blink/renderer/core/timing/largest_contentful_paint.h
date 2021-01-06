@@ -51,6 +51,14 @@ class CORE_EXPORT LargestContentfulPaint final : public PerformanceEntry {
   WeakMember<Element> element_;
 };
 
+template <>
+struct DowncastTraits<LargestContentfulPaint> {
+  static bool AllowFrom(const PerformanceEntry& entry) {
+    return entry.EntryTypeEnum() ==
+           PerformanceEntry::EntryType::kLargestContentfulPaint;
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_LARGEST_CONTENTFUL_PAINT_H_

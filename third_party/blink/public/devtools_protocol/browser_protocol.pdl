@@ -7143,6 +7143,51 @@ domain Performance
       # Timestamp title.
       string title
 
+# Reporting of performance timeline events, as specified in
+# https://w3c.github.io/performance-timeline/#dom-performanceobserver.
+experimental domain PerformanceTimeline
+  depends on DOM
+  depends on Network
+
+  # See https://github.com/WICG/LargestContentfulPaint and largest_contentful_paint.idl
+  type LargestContentfulPaint extends object
+    properties
+      number renderTime
+      number loadTime
+      # The number of pixels being painted.
+      number size
+      # The id attribute of the element, if available.
+      optional string elementId
+      # The URL of the image (may be trimmed).
+      optional string url
+      optional DOM.BackendNodeId nodeId
+
+  type TimelineEvent extends object
+    properties
+      # Identifies the frame that this event is related to. Empty for non-frame targets.
+      Page.FrameId frameId
+      string type
+      string name
+      # Time in seconds since Epoch, monotonically increasing within document lifetime.
+      Network.TimeSinceEpoch time
+      # Event duration, if applicable.
+      optional number duration
+      optional LargestContentfulPaint lcpDetails
+
+  # Previously buffered events would be reported before method returns.
+  # The specified filter overrides any previous filters, passing empty
+  # filter disables recording.
+  # Note that not all types exposed to the web platform are currently supported.
+  # See also: timelineEventAdded
+  command enable
+    parameters
+      array of string eventTypes
+
+  # Sent when a performance timeline event is added. See reportPerformanceTimeline method.
+  event timelineEventAdded
+    parameters
+      TimelineEvent event
+
 # Security
 domain Security
 

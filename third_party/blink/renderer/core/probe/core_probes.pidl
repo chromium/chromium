@@ -61,6 +61,7 @@ interface CoreProbes {
   class XMLHttpRequest;
   class HTMLInputElement;
   class HTMLPortalElement;
+  class PerformanceEntry;
 
   void DidClearDocumentOfWindowObject([Keep] LocalFrame*);
   void WillInsertDOMNode([Keep] Node* parent);
@@ -189,4 +190,5 @@ interface CoreProbes {
   void GetDisabledImageTypes(ExecutionContext*, HashSet<String>* result);
   void OnContentSecurityPolicyViolation(ExecutionContext* context, const blink::ContentSecurityPolicy::ContentSecurityPolicyViolationType violationType);
   void IsCacheDisabled(ExecutionContext*, bool* is_cache_disabled);
+  void PerformanceEntryAdded([Keep] ExecutionContext*, PerformanceEntry*);
 }

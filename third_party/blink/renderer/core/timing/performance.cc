@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_controller.h"
@@ -637,6 +638,7 @@ void Performance::AddLayoutShiftBuffer(LayoutShift& entry) {
 }
 
 void Performance::AddLargestContentfulPaint(LargestContentfulPaint* entry) {
+  probe::PerformanceEntryAdded(GetExecutionContext(), entry);
   if (largest_contentful_paint_buffer_.size() <
       kDefaultLargestContenfulPaintSize) {
     largest_contentful_paint_buffer_.push_back(entry);

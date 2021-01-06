@@ -77,6 +77,8 @@ inspector_protocol_generate("protocol_sources") {
     "inspector/protocol/Page.h",
     "inspector/protocol/Performance.cpp",
     "inspector/protocol/Performance.h",
+    "inspector/protocol/PerformanceTimeline.cpp",
+    "inspector/protocol/PerformanceTimeline.h",
     "inspector/protocol/Protocol.cpp",
     "inspector/protocol/Protocol.h",
     "inspector/protocol/Runtime.h",

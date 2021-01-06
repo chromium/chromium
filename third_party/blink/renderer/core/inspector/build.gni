@@ -77,6 +77,8 @@ blink_core_sources_inspector = [
   "inspector_page_agent.h",
   "inspector_performance_agent.cc",
   "inspector_performance_agent.h",
+  "inspector_performance_timeline_agent.cc",
+  "inspector_performance_timeline_agent.h",
   "inspector_resource_container.cc",
   "inspector_resource_container.h",
   "inspector_resource_content_loader.cc",

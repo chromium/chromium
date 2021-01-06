@@ -236,6 +236,11 @@
         "DidFinishDebuggerTask",
       ]
     },
+    InspectorPerformanceTimelineAgent: {
+      probes: [
+        "PerformanceEntryAdded",
+      ]
+    },
     InspectorTraceEvents: {
       probes: [
         "CallFunction",
