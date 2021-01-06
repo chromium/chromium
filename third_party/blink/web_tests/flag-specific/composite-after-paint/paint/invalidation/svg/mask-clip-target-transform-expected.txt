@@ -6,7 +6,8 @@
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [150, 50, 100, 100],
+        [0, 0, 340, 120],
+        [80, 0, 240, 340],
         [50, 150, 100, 100]
       ]
     }

@@ -848,7 +848,7 @@ TEST_P(PaintAndRasterInvalidationTest, SVGHiddenContainer) {
                                  IntRect(155, 166, 7, 8),
                                  PaintInvalidationReason::kSVGResource},
           RasterInvalidationInfo{real_rect, real_rect->DebugName(),
-                                 IntRect(155, 166, 7, 8),
+                                 IntRect(154, 165, 9, 10),
                                  PaintInvalidationReason::kSVGResource}));
 
   GetDocument().View()->SetTracksRasterInvalidations(false);
