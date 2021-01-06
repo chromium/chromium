@@ -590,7 +590,7 @@
     'chromium.perf.fyi': {
       'android-cfi-builder-perf-fyi': 'official_goma_minimal_symbols_android_thin_lto_opt',
       'android_arm64-cfi-builder-perf-fyi': 'official_goma_minimal_symbols_android_thin_lto_opt_arm64',
-      'chromeos-kevin-builder-perf-fyi': 'chromeos_kevin',
+      'chromeos-kevin-builder-perf-fyi': 'chromeos_kevin_include_unwind_tables_official',
     },
 
     'chromium.swangle': {
