@@ -43,13 +43,6 @@ constexpr char kAndroidDataMediaPath[] = "/data/media/0/";
 
 }  // namespace
 
-// Convert an absolute path to a relative path. (e.g. /dir/file => dir/file)
-base::FilePath ToRelativePath(const base::FilePath& path) {
-  base::FilePath path_out;
-  DCHECK(base::FilePath("/").AppendRelativePath(path, &path_out));
-  return path_out;
-}
-
 // static
 bool ArcDiskQuotaBridge::convertPathForSetProjectId(
     const base::FilePath& android_path,
@@ -72,18 +65,18 @@ bool ArcDiskQuotaBridge::convertPathForSetProjectId(
     return kDownloadPath.AppendRelativePath(android_path, child_path_out);
   } else if (kExternalStoragePath.IsParent(android_path)) {
     // /storage/emulated/0/* =>
-    //     parent=/home/root/<hash>/android-data/, child=data/media/0/*
+    //     parent=/home/root/<hash>/android-data/, chile=/data/media/0/*
     *parent_path_out =
         cryptohome::SetProjectIdAllowedPathType::PATH_ANDROID_DATA;
-    *child_path_out = ToRelativePath(kDataMediaPath);
+    *child_path_out = kDataMediaPath;
     return kExternalStoragePath.AppendRelativePath(android_path,
                                                    child_path_out);
   } else if (kDataMediaPath.IsParent(android_path)) {
     // /data/media/0/* =>
-    //     parent=/home/root/<hash>/android-data/, child=data/media/0/*
+    //     parent=/home/root/<hash>/android-data/, child=/data/media/0/*
     *parent_path_out =
         cryptohome::SetProjectIdAllowedPathType::PATH_ANDROID_DATA;
-    *child_path_out = ToRelativePath(android_path);
+    *child_path_out = android_path;
     return true;
   } else {
     return false;

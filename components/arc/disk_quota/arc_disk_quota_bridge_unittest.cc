@@ -26,13 +26,13 @@ TEST(ArcDiskQuotaBridgeTest, ConvertPathForSetProjectId) {
       base::FilePath("/storage/emulated/0/Pictures/test.png"), &parent_path,
       &child_path));
   EXPECT_EQ(PathType::PATH_ANDROID_DATA, parent_path);
-  EXPECT_EQ("data/media/0/Pictures/test.png", child_path.value());
+  EXPECT_EQ("/data/media/0/Pictures/test.png", child_path.value());
 
   EXPECT_TRUE(ArcDiskQuotaBridge::convertPathForSetProjectId(
       base::FilePath("/data/media/0/Movies/test.mp4"), &parent_path,
       &child_path));
   EXPECT_EQ(PathType::PATH_ANDROID_DATA, parent_path);
-  EXPECT_EQ("data/media/0/Movies/test.mp4", child_path.value());
+  EXPECT_EQ("/data/media/0/Movies/test.mp4", child_path.value());
 
   // Unallowed path.
   EXPECT_FALSE(ArcDiskQuotaBridge::convertPathForSetProjectId(
