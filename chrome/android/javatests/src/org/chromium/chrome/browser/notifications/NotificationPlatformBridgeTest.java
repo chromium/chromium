@@ -116,7 +116,8 @@ public class NotificationPlatformBridgeTest {
                 @Override
                 public Double call() {
                     // TODO (https://crbug.com/1063807):  Add incognito mode tests.
-                    return SiteEngagementService.getForProfile(Profile.getLastUsedRegularProfile())
+                    return SiteEngagementService
+                            .getForBrowserContext(Profile.getLastUsedRegularProfile())
                             .getScore(mPermissionTestRule.getOrigin());
                 }
             });

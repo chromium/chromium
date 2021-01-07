@@ -7,7 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/engagement/android/jni_headers/SiteEngagementService_jni.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/engagement/site_engagement_service.h"
+#include "components/embedder_support/android/browser_context/browser_context_handle.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "url/gurl.h"
 
@@ -70,11 +71,11 @@ void JNI_SiteEngagementService_SetParamValuesForTesting(JNIEnv* env) {
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-JNI_SiteEngagementService_SiteEngagementServiceForProfile(
+JNI_SiteEngagementService_SiteEngagementServiceForBrowserContext(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
-  SiteEngagementService* service = SiteEngagementService::Get(profile);
+    const base::android::JavaParamRef<jobject>& jhandle) {
+  SiteEngagementService* service = SiteEngagementService::Get(
+      browser_context::BrowserContextFromJavaHandle(jhandle));
   DCHECK(service);
 
   return base::android::ScopedJavaLocalRef<jobject>(

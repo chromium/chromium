@@ -8,10 +8,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 
 /**
- * Provides access to the Site Engagement Service for a profile.
+ * Provides access to the Site Engagement Service for a browser context.
  *
  * Site engagement measures the level of engagement that a user has with an origin. This class
  * allows Java to retrieve and modify engagement scores for URLs.
@@ -22,12 +22,13 @@ public class SiteEngagementService {
     private long mNativePointer;
 
     /**
-     * Returns a SiteEngagementService for the provided profile.
+     * Returns a SiteEngagementService for the provided browser context.
      * Must be called on the UI thread.
      */
-    public static SiteEngagementService getForProfile(Profile profile) {
+    public static SiteEngagementService getForBrowserContext(BrowserContextHandle browserContext) {
         assert ThreadUtils.runningOnUiThread();
-        return SiteEngagementServiceJni.get().siteEngagementServiceForProfile(profile);
+        return SiteEngagementServiceJni.get().siteEngagementServiceForBrowserContext(
+                browserContext);
     }
 
     /**
@@ -64,7 +65,7 @@ public class SiteEngagementService {
         return new SiteEngagementService(nativePointer);
     }
 
-    /** This object may only be created via the static getForProfile method. */
+    /** This object may only be created via the static getForBrowserContext method. */
     private SiteEngagementService(long nativePointer) {
         mNativePointer = nativePointer;
     }
@@ -76,7 +77,8 @@ public class SiteEngagementService {
 
     @NativeMethods
     interface Natives {
-        SiteEngagementService siteEngagementServiceForProfile(Profile profile);
+        SiteEngagementService siteEngagementServiceForBrowserContext(
+                BrowserContextHandle browserContext);
         void setParamValuesForTesting();
         double getScore(
                 long nativeSiteEngagementServiceAndroid, SiteEngagementService caller, String url);

@@ -230,7 +230,7 @@ public final class PeriodicBackgroundSyncTest {
     private void resetEngagementForUrl(final String url, final double engagement) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // TODO (https://crbug.com/1063807):  Add incognito mode tests.
-            SiteEngagementService.getForProfile(Profile.getLastUsedRegularProfile())
+            SiteEngagementService.getForBrowserContext(Profile.getLastUsedRegularProfile())
                     .resetBaseScoreForUrl(url, engagement);
         });
     }

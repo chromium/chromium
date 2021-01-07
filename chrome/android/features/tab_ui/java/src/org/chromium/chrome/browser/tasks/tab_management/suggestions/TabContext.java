@@ -115,7 +115,7 @@ public class TabContext {
         }
 
         public double getSiteEngagementScore() {
-            return SiteEngagementService.getForProfile(Profile.getLastUsedRegularProfile())
+            return SiteEngagementService.getForBrowserContext(Profile.getLastUsedRegularProfile())
                     .getScore(visibleUrl);
         }
 
