@@ -132,10 +132,13 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
     return;
   }
 
+  if (!options.avc.produce_annexb)
+    h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>();
+
   options_ = options;
   output_cb_ = BindToCurrentLoop(std::move(output_cb));
   codec_ = std::move(codec);
-  std::move(done_cb).Run(Status());
+  std::move(done_cb).Run(OkStatus());
 }
 
 void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
@@ -233,7 +236,16 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 
   DCHECK_GT(frame_info.iFrameSizeInBytes, 0);
   size_t total_chunk_size = frame_info.iFrameSizeInBytes;
-  conversion_buffer_.resize(total_chunk_size);
+
+  result.data.reset(new uint8_t[total_chunk_size]);
+
+  auto* gather_buffer = result.data.get();
+
+  if (h264_converter_) {
+    // Copy data to a temporary buffer instead.
+    conversion_buffer_.resize(total_chunk_size);
+    gather_buffer = conversion_buffer_.data();
+  }
 
   size_t written_size = 0;
   for (int layer_idx = 0; layer_idx < frame_info.iLayerNum; ++layer_idx) {
@@ -247,16 +259,22 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
       return;
     }
 
-    memcpy(conversion_buffer_.data() + written_size, layer_info.pBsBuf,
-           layer_len);
+    memcpy(gather_buffer + written_size, layer_info.pBsBuf, layer_len);
     written_size += layer_len;
   }
   DCHECK_EQ(written_size, total_chunk_size);
 
+  if (!h264_converter_) {
+    result.size = total_chunk_size;
+
+    output_cb_.Run(std::move(result), base::Optional<CodecDescription>());
+    std::move(done_cb).Run(OkStatus());
+    return;
+  }
+
   size_t converted_output_size = 0;
   bool config_changed = false;
-  result.data.reset(new uint8_t[total_chunk_size]);
-  status = h264_converter_.ConvertChunk(
+  status = h264_converter_->ConvertChunk(
       conversion_buffer_,
       base::span<uint8_t>(result.data.get(), total_chunk_size), &config_changed,
       &converted_output_size);
@@ -265,11 +283,12 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     std::move(done_cb).Run(std::move(status).AddHere(FROM_HERE));
     return;
   }
+
   result.size = converted_output_size;
 
   base::Optional<CodecDescription> desc;
   if (config_changed) {
-    const auto& config = h264_converter_.GetCurrentConfig();
+    const auto& config = h264_converter_->GetCurrentConfig();
     desc = CodecDescription();
     if (!config.Serialize(desc.value())) {
       std::move(done_cb).Run(Status(StatusCode::kEncoderFailedEncode,
@@ -279,7 +298,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   }
 
   output_cb_.Run(std::move(result), std::move(desc));
-  std::move(done_cb).Run(Status());
+  std::move(done_cb).Run(OkStatus());
 }
 
 void OpenH264VideoEncoder::ChangeOptions(const Options& options,
@@ -316,9 +335,15 @@ void OpenH264VideoEncoder::ChangeOptions(const Options& options,
     return;
   }
 
+  if (options.avc.produce_annexb) {
+    h264_converter_.reset();
+  } else if (!h264_converter_) {
+    h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>();
+  }
+
   if (!output_cb.is_null())
     output_cb_ = BindToCurrentLoop(std::move(output_cb));
-  std::move(done_cb).Run(Status());
+  std::move(done_cb).Run(OkStatus());
 }
 
 void OpenH264VideoEncoder::Flush(StatusCB done_cb) {
@@ -329,7 +354,7 @@ void OpenH264VideoEncoder::Flush(StatusCB done_cb) {
   }
 
   // Nothing to do really.
-  std::move(done_cb).Run(Status());
+  std::move(done_cb).Run(OkStatus());
 }
 
 }  // namespace media

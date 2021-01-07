@@ -4,7 +4,6 @@
 
 // https://github.com/WICG/web-codecs
 
-
 enum VideoEncoderAccelerationPreference {
   "allow",
   "deny",
@@ -21,4 +20,6 @@ dictionary VideoEncoderConfig {
 
   required unsigned long width;
   required unsigned long height;
+
+  AvcEncoderConfig avc;
 };

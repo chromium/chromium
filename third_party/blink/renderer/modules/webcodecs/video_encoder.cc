@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_avc_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
@@ -233,6 +234,26 @@ VideoEncoder::ParsedConfig* VideoEncoder::ParseConfig(
     return nullptr;
   }
 
+  // We are done with the parsing.
+  if (!config->hasAvc())
+    return parsed;
+
+  // We should only get here with H264 codecs.
+  if (parsed->codec != media::VideoCodec::kCodecH264) {
+    exception_state.ThrowTypeError(
+        "'avcOptions' can only be used with AVC codecs");
+    return nullptr;
+  }
+
+  std::string avc_format = IDLEnumAsString(config->avc()->format()).Utf8();
+  if (avc_format == "avc") {
+    parsed->options.avc.produce_annexb = false;
+  } else if (avc_format == "annexb") {
+    parsed->options.avc.produce_annexb = true;
+  } else {
+    NOTREACHED();
+  }
+
   return parsed;
 }
 
@@ -375,7 +396,7 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
 bool VideoEncoder::CanReconfigure(ParsedConfig& original_config,
                                   ParsedConfig& new_config) {
   // Reconfigure is intended for things that don't require changing underlying
-  // codec implementatio and can be changed on the fly.
+  // codec implementation and can be changed on the fly.
   return original_config.codec == new_config.codec &&
          original_config.profile == new_config.profile &&
          original_config.level == new_config.level &&

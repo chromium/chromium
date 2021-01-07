@@ -34,6 +34,11 @@ struct MEDIA_EXPORT VideoEncoderOutput {
 
 class MEDIA_EXPORT VideoEncoder {
  public:
+  // TODO: Move this to a new file if there are more codec specific options.
+  struct MEDIA_EXPORT AvcOptions {
+    bool produce_annexb = false;
+  };
+
   struct MEDIA_EXPORT Options {
     Options();
     Options(const Options&);
@@ -44,6 +49,9 @@ class MEDIA_EXPORT VideoEncoder {
     gfx::Size frame_size;
 
     base::Optional<int> keyframe_interval = 10000;
+
+    // Only used for H264 encoding.
+    AvcOptions avc;
   };
 
   // A sequence of codec specific bytes, commonly known as extradata.

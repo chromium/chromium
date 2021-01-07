@@ -1,42 +1,5 @@
 // META: global=window,dedicatedworker
-
-async function getImageAsBitmap(width, height) {
-  const src = "pattern.png";
-
-  var size = {
-    resizeWidth: width,
-    resizeHeight: height
-  };
-
-  return fetch(src)
-      .then(response => response.blob())
-      .then(blob => createImageBitmap(blob, size));
-}
-
-async function generateBitmap(width, height, text) {
-  let img = await getImageAsBitmap(width, height);
-  let cnv = new OffscreenCanvas(width, height);
-  var ctx = cnv.getContext('2d');
-  ctx.drawImage(img, 0, 0, width, height);
-  img.close();
-  ctx.font = '30px fantasy';
-  ctx.fillText(text, 5, 40);
-  return createImageBitmap(cnv);
-}
-
-
-async function createFrame(width, height, ts) {
-  let imageBitmap = await generateBitmap(width, height, ts.toString());
-  let frame = new VideoFrame(imageBitmap, { timestamp: ts });
-  imageBitmap.close();
-  return frame;
-}
-
-function delay(time_ms) {
-  return new Promise((resolve, reject) => {
-    setTimeout(resolve, time_ms);
-  });
-};
+// META: script=/wpt_internal/webcodecs/encoder_utils.js
 
 async function change_encoding_params_test(codec, acc) {
   let original_w = 800;

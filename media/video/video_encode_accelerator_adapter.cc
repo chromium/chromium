@@ -217,8 +217,10 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
   state_ = State::kWaitingForFirstFrame;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX)
+  if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX &&
+      !options_.avc.produce_annexb) {
     h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>();
+  }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   std::move(done_cb).Run(Status());
@@ -378,9 +380,20 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
       options.framerate.value_or(VideoEncodeAccelerator::kDefaultFramerate))};
 
   accelerator_->RequestEncodingParametersChange(bitrate, framerate);
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) {
+    if (options.avc.produce_annexb) {
+      h264_converter_.reset();
+    } else if (!h264_converter_) {
+      h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>();
+    }
+  }
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
   options_ = options;
   if (!output_cb.is_null())
-    output_cb_ = BindToCurrentLoop(std::move(output_cb));
+    output_cb_ = std::move(output_cb);
   std::move(done_cb).Run(Status());
 }
 

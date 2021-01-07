@@ -119,6 +119,8 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   GpuVideoAcceleratorFactories* gpu_factories_;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  // If |h264_converter_| is null, we output in annexb format. Otherwise, we
+  // output in avc format.
   std::unique_ptr<H264AnnexBToAvcBitstreamConverter> h264_converter_;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
@@ -153,7 +155,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   InputBufferKind input_buffer_preference_ = InputBufferKind::Any;
   std::vector<uint8_t> resize_buf_;
 
-  VideoCodecProfile profile_;
+  VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   Options options_;
   OutputCB output_cb_;
 };
