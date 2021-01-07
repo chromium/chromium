@@ -79,6 +79,9 @@ class DataObserverTest : public testing::Test {
     delta_file_service_.reset();
     usage_report_service_.reset();
     bookmark_model_.reset();
+    // As this code does not call HistoryService::Init(), HistoryService
+    // doesn't call HistoryServiceBeingDeleted().
+    data_observer_->HistoryServiceBeingDeleted(history_service_.get());
     history_service_.reset();
     data_observer_.reset();
   }

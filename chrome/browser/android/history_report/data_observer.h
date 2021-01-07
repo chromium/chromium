@@ -9,8 +9,11 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
@@ -76,11 +79,18 @@ class DataObserver : public bookmarks::BookmarkModelObserver,
                       const history::URLRows& changed_urls) override;
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
+  void HistoryServiceBeingDeleted(
+      history::HistoryService* history_service) override;
 
  private:
   void DeleteBookmarks(const std::set<GURL>& removed_urls);
 
-  bookmarks::BookmarkModel* bookmark_model_;
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
+      scoped_bookmark_model_observer_{this};
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      scoped_history_service_observer_{this};
   base::RepeatingCallback<void(void)> data_changed_callback_;
   base::RepeatingCallback<void(void)> data_cleared_callback_;
   base::RepeatingCallback<void(void)> stop_reporting_callback_;
