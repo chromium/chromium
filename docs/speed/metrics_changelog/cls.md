@@ -3,13 +3,13 @@
 This is a list of changes to [Cumulative Layout Shift](https://web.dev/cls).
 
 * Chrome 89
-  * Metric definition improvement: [Ignore layout shift when visibility:hidden becomes visible](2020_12_cls.md)
   * Metric definition improvement: [Ignore layout shift under opacity:0](2020_12_cls.md)
   * Metric definition improvement: [Clip layout shift rect by visual viewport](2020_12_cls.md)
 * Chrome 88
   * Metric definition improvement: [Cumulative layout shift properly detects shifts of fixed position elements](2020_11_cls.md)
   * Metric definition improvement: [Cumulative layout shift properly detects shifts of descendents of a sticky element](2020_11_cls.md)
   * Metric definition improvement: [no penalty for content-visibility: auto content](2020_11_cls.md)
+  * Metric definition improvement: [Ignore layout shift when visibility:hidden becomes visible](2020_11_cls.md)
 * Chrome 87
   * Metric definition improvement: [Fix problem in Cumulative Layout shift calculation of impact region](2020_10_cls_2.md)
   * Metric definition improvement: [Cumulative Layout Shift properly handles clipping of elements styled contain:paint](2020_10_cls_2.md)
