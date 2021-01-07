@@ -11,9 +11,11 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/display_features.h"
 #include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/test/action_logger_util.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
@@ -218,6 +220,12 @@ class DisplayConfiguratorTest : public testing::Test {
   void SetUp() override {
     log_ = std::make_unique<ActionLogger>();
 
+    // TODO(crbug.com/1161556): |kEnableHardwareMirrorMode| is disabled by
+    // default. We enable it here to maintain test coverage for hardware mirror
+    // mode until it is permanently removed.
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kEnableHardwareMirrorMode);
+
     // Force system compositor mode to simulate on-device configurator behavior.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         chromeos::switches::kForceSystemCompositorMode);
@@ -330,6 +338,7 @@ class DisplayConfiguratorTest : public testing::Test {
   TestNativeDisplayDelegate* native_display_delegate_;  // not owned
   DisplayConfigurator::TestApi test_api_{&configurator_};
   ConfigurationWaiter config_waiter_{&test_api_};
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   static constexpr size_t kNumOutputs = 3;
   std::unique_ptr<DisplaySnapshot> outputs_[kNumOutputs];
@@ -823,12 +832,27 @@ TEST_F(DisplayConfiguratorTest, InvalidMultipleDisplayStates) {
   EXPECT_EQ(2, observer_.num_failures());
 }
 
-TEST_F(DisplayConfiguratorTest, GetMultipleDisplayStateForMirroredDisplays) {
+TEST_F(DisplayConfiguratorTest, GetMultipleDisplayStateForHWMirroredDisplays) {
   UpdateOutputs(2, false);
   Init(false);
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
   configurator_.ForceInitialConfigure();
   EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR, configurator_.display_state());
+  EXPECT_FALSE(mirroring_controller_.SoftwareMirroringEnabled());
+}
+
+TEST_F(DisplayConfiguratorTest, GetMultipleDisplayStateForSWMirroredDisplays) {
+  // Disable hardware mirroring.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kEnableHardwareMirrorMode);
+  UpdateOutputs(2, false);
+  Init(false);
+  state_controller_.set_state(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
+  configurator_.ForceInitialConfigure();
+  EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED,
+            configurator_.display_state());
+  EXPECT_TRUE(mirroring_controller_.SoftwareMirroringEnabled());
 }
 
 TEST_F(DisplayConfiguratorTest, UpdateCachedOutputsEvenAfterFailure) {
