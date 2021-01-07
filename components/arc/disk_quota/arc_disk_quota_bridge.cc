@@ -57,27 +57,29 @@ bool ArcDiskQuotaBridge::convertPathForSetProjectId(
     return false;
   }
 
+  *child_path_out = base::FilePath();
   if (kDownloadPath.IsParent(android_path)) {
     // /storage/emulated/0/Download/* =>
     //     parent=/home/user/<hash>/Downloads/, child=*
     *parent_path_out = cryptohome::SetProjectIdAllowedPathType::PATH_DOWNLOADS;
-    *child_path_out = base::FilePath();
     return kDownloadPath.AppendRelativePath(android_path, child_path_out);
   } else if (kExternalStoragePath.IsParent(android_path)) {
     // /storage/emulated/0/* =>
-    //     parent=/home/root/<hash>/android-data/, chile=/data/media/0/*
+    //     parent=/home/root/<hash>/android-data/, child=data/media/0/*
     *parent_path_out =
         cryptohome::SetProjectIdAllowedPathType::PATH_ANDROID_DATA;
-    *child_path_out = kDataMediaPath;
-    return kExternalStoragePath.AppendRelativePath(android_path,
+    // child_path should be relative to the root.
+    return base::FilePath("/").AppendRelativePath(kDataMediaPath,
+                                                  child_path_out) &&
+           kExternalStoragePath.AppendRelativePath(android_path,
                                                    child_path_out);
   } else if (kDataMediaPath.IsParent(android_path)) {
     // /data/media/0/* =>
-    //     parent=/home/root/<hash>/android-data/, child=/data/media/0/*
+    //     parent=/home/root/<hash>/android-data/, child=data/media/0/*
     *parent_path_out =
         cryptohome::SetProjectIdAllowedPathType::PATH_ANDROID_DATA;
-    *child_path_out = android_path;
-    return true;
+    // child_path should be relative to the root.
+    return base::FilePath("/").AppendRelativePath(android_path, child_path_out);
   } else {
     return false;
   }
