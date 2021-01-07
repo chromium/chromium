@@ -204,6 +204,10 @@
         <iron-icon icon="os-settings:apps"></iron-icon>
         $i18n{appsPageTitle}
       </a>
+      <a href="/crostini" hidden="[[!showCrostini]]" class="item">
+        <iron-icon icon="os-settings:developer-tags"></iron-icon>
+        $i18n{crostiniPageTitle}
+      </a>
       <a href="/onstartup" hidden="[[!showStartup]]" class="item">
         <iron-icon icon="os-settings:startup"></iron-icon>
         $i18n{onStartupPageTitle}
@@ -239,10 +243,6 @@
           <a href="/osPrinting" class="item">
             <iron-icon icon="os-settings:print"></iron-icon>
             $i18n{printingPageTitle}
-          </a>
-          <a href="/crostini" hidden="[[!showCrostini]]" class="item">
-            <iron-icon icon="os-settings:developer-tags"></iron-icon>
-            $i18n{crostiniPageTitle}
           </a>
           <a href="/osAccessibility" class="item">
             <iron-icon icon="os-settings:accessibility"></iron-icon>
