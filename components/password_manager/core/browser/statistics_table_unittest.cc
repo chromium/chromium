@@ -47,8 +47,8 @@ class StatisticsTableTest : public testing::Test {
   void ReloadDatabase() {
     base::FilePath file = temp_dir_.GetPath().AppendASCII("TestDatabase");
     db_ = std::make_unique<StatisticsTable>();
-    connection_ = std::make_unique<sql::Database>();
-    connection_->set_exclusive_locking();
+    connection_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
+        .exclusive_locking = true, .page_size = 4096, .cache_size = 500});
     ASSERT_TRUE(connection_->Open(file));
     db_->Init(connection_.get());
     ASSERT_TRUE(db_->CreateTableIfNecessary());

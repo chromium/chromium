@@ -33,8 +33,8 @@ class FieldInfoTableTest : public testing::Test {
   void ReloadDatabase() {
     base::FilePath file = temp_dir_.GetPath().AppendASCII("TestDatabase");
     field_info_table_ = std::make_unique<FieldInfoTable>();
-    db_ = std::make_unique<sql::Database>();
-    db_->set_exclusive_locking();
+    db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
+        .exclusive_locking = true, .page_size = 4096, .cache_size = 500});
     ASSERT_TRUE(db_->Open(file));
     field_info_table_->Init(db_.get());
     ASSERT_TRUE(field_info_table_->CreateTableIfNecessary());
