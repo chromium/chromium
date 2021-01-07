@@ -9,9 +9,11 @@
 
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"  // TODO(crbug.com/866218): Remove this include.
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {
@@ -28,6 +30,10 @@ Statement::Statement(scoped_refptr<Database::StatementRef> ref)
     : ref_(std::move(ref)) {}
 
 Statement::~Statement() {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // !defined(OS_ANDROID)
+
   // Free the resources associated with this statement. We assume there's only
   // one statement active for a given sqlite3_stmt at any time, so this won't
   // mess with anything.
@@ -35,16 +41,28 @@ Statement::~Statement() {
 }
 
 void Statement::Assign(scoped_refptr<Database::StatementRef> ref) {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // !defined(OS_ANDROID)
+
   Reset(true);
   ref_ = std::move(ref);
 }
 
 void Statement::Clear() {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // !defined(OS_ANDROID)
+
   Assign(base::MakeRefCounted<Database::StatementRef>(nullptr, nullptr, false));
   succeeded_ = false;
 }
 
 bool Statement::CheckValid() const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // !defined(OS_ANDROID)
+
   // Allow operations to fail silently if a statement was invalidated
   // because the database was closed by an error handler.
   DLOG_IF(FATAL, !ref_->was_valid())
@@ -53,6 +71,10 @@ bool Statement::CheckValid() const {
 }
 
 int Statement::StepInternal() {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   if (!CheckValid())
     return SQLITE_ERROR;
 
@@ -65,15 +87,27 @@ int Statement::StepInternal() {
 }
 
 bool Statement::Run() {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   DCHECK(!stepped_);
   return StepInternal() == SQLITE_DONE;
 }
 
 bool Statement::Step() {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   return StepInternal() == SQLITE_ROW;
 }
 
 void Statement::Reset(bool clear_bound_vars) {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   base::Optional<base::ScopedBlockingCall> scoped_blocking_call;
   ref_->InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
   if (is_valid()) {
@@ -97,38 +131,61 @@ void Statement::Reset(bool clear_bound_vars) {
 }
 
 bool Statement::Succeeded() const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   return is_valid() && succeeded_;
 }
 
 bool Statement::BindNull(int col) {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
   DCHECK(!stepped_);
 
   return is_valid() && CheckOk(sqlite3_bind_null(ref_->stmt(), col + 1));
 }
 
 bool Statement::BindBool(int col, bool val) {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   return BindInt(col, val ? 1 : 0);
 }
 
 bool Statement::BindInt(int col, int val) {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
   DCHECK(!stepped_);
 
   return is_valid() && CheckOk(sqlite3_bind_int(ref_->stmt(), col + 1, val));
 }
 
 bool Statement::BindInt64(int col, int64_t val) {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
   DCHECK(!stepped_);
 
   return is_valid() && CheckOk(sqlite3_bind_int64(ref_->stmt(), col + 1, val));
 }
 
 bool Statement::BindDouble(int col, double val) {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
   DCHECK(!stepped_);
 
   return is_valid() && CheckOk(sqlite3_bind_double(ref_->stmt(), col + 1, val));
 }
 
 bool Statement::BindCString(int col, const char* val) {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
   DCHECK(!stepped_);
 
   return is_valid() && CheckOk(sqlite3_bind_text(ref_->stmt(), col + 1, val, -1,
@@ -136,6 +193,9 @@ bool Statement::BindCString(int col, const char* val) {
 }
 
 bool Statement::BindString(int col, const std::string& val) {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
   DCHECK(!stepped_);
 
   return is_valid() &&
@@ -145,10 +205,17 @@ bool Statement::BindString(int col, const std::string& val) {
 }
 
 bool Statement::BindString16(int col, base::StringPiece16 value) {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   return BindString(col, base::UTF16ToUTF8(value));
 }
 
 bool Statement::BindBlob(int col, const void* val, int val_len) {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
   DCHECK(!stepped_);
 
   return is_valid() && CheckOk(sqlite3_bind_blob(ref_->stmt(), col + 1, val,
@@ -156,6 +223,10 @@ bool Statement::BindBlob(int col, const void* val, int val_len) {
 }
 
 int Statement::ColumnCount() const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   if (!is_valid())
     return 0;
   return sqlite3_column_count(ref_->stmt());
@@ -174,32 +245,56 @@ static_assert(static_cast<int>(ColumnType::kNull) == SQLITE_NULL,
               "NULL mismatch");
 
 ColumnType Statement::GetColumnType(int col) const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   return static_cast<enum ColumnType>(sqlite3_column_type(ref_->stmt(), col));
 }
 
 bool Statement::ColumnBool(int col) const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   return static_cast<bool>(ColumnInt(col));
 }
 
 int Statement::ColumnInt(int col) const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   if (!CheckValid())
     return 0;
   return sqlite3_column_int(ref_->stmt(), col);
 }
 
 int64_t Statement::ColumnInt64(int col) const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   if (!CheckValid())
     return 0;
   return sqlite3_column_int64(ref_->stmt(), col);
 }
 
 double Statement::ColumnDouble(int col) const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   if (!CheckValid())
     return 0;
   return sqlite3_column_double(ref_->stmt(), col);
 }
 
 std::string Statement::ColumnString(int col) const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   if (!CheckValid())
     return std::string();
 
@@ -214,6 +309,10 @@ std::string Statement::ColumnString(int col) const {
 }
 
 base::string16 Statement::ColumnString16(int col) const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   if (!CheckValid())
     return base::string16();
 
@@ -222,12 +321,20 @@ base::string16 Statement::ColumnString16(int col) const {
 }
 
 int Statement::ColumnByteLength(int col) const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   if (!CheckValid())
     return 0;
   return sqlite3_column_bytes(ref_->stmt(), col);
 }
 
 const void* Statement::ColumnBlob(int col) const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   if (!CheckValid())
     return nullptr;
 
@@ -235,6 +342,10 @@ const void* Statement::ColumnBlob(int col) const {
 }
 
 bool Statement::ColumnBlobAsString(int col, std::string* blob) const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   if (!CheckValid())
     return false;
 
@@ -249,6 +360,10 @@ bool Statement::ColumnBlobAsString(int col, std::string* blob) const {
 }
 
 bool Statement::ColumnBlobAsString16(int col, base::string16* val) const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   if (!CheckValid())
     return false;
 
@@ -262,6 +377,10 @@ bool Statement::ColumnBlobAsString16(int col, base::string16* val) const {
 }
 
 bool Statement::ColumnBlobAsVector(int col, std::vector<char>* val) const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   val->clear();
 
   if (!CheckValid())
@@ -279,14 +398,26 @@ bool Statement::ColumnBlobAsVector(int col, std::vector<char>* val) const {
 bool Statement::ColumnBlobAsVector(
     int col,
     std::vector<unsigned char>* val) const {
-  return ColumnBlobAsVector(col, reinterpret_cast< std::vector<char>* >(val));
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
+  return ColumnBlobAsVector(col, reinterpret_cast<std::vector<char>*>(val));
 }
 
 const char* Statement::GetSQLStatement() {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   return sqlite3_sql(ref_->stmt());
 }
 
 bool Statement::CheckOk(int err) const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   // Binding to a non-existent variable is evidence of a serious error.
   // TODO(gbillock,shess): make this invalidate the statement so it
   // can't wreak havoc.
@@ -295,6 +426,10 @@ bool Statement::CheckOk(int err) const {
 }
 
 int Statement::CheckError(int err) {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
   // Please don't add DCHECKs here, OnSqliteError() already has them.
   succeeded_ = (err == SQLITE_OK || err == SQLITE_ROW || err == SQLITE_DONE);
   if (!succeeded_ && ref_.get() && ref_->database())

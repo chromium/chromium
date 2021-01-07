@@ -6,6 +6,7 @@
 #define SQL_STATEMENT_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
+#include "build/build_config.h"  // TODO(crbug.com/866218): Remove this include.
 #include "sql/database.h"
 
 namespace sql {
@@ -29,6 +31,11 @@ enum class ColumnType {
   kNull = 5,
 };
 
+// Compiles and executes SQL statements.
+//
+// This class is not thread-safe. An instance must be accessed from a single
+// sequence. This is enforced in DCHECK-enabled builds.
+//
 // Normal usage:
 //   sql::Statement s(connection_.GetUniqueStatement(...));
 //   s.BindInt(0, a);
@@ -66,7 +73,13 @@ class COMPONENT_EXPORT(SQL) Statement {
   // default value. This is because the statement can become invalid in the
   // middle of executing a command if there is a serious error and the database
   // has to be reset.
-  bool is_valid() const { return ref_->is_valid(); }
+  bool is_valid() const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // !defined(OS_ANDROID)
+
+    return ref_->is_valid();
+  }
 
   // Running -------------------------------------------------------------------
 
@@ -194,6 +207,8 @@ class COMPONENT_EXPORT(SQL) Statement {
 
   // See Succeeded() for what this holds.
   bool succeeded_ = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(Statement);
 };
