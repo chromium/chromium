@@ -33,6 +33,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SigninReason;
 import org.chromium.components.signin.metrics.SignoutDelete;
@@ -471,14 +472,43 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
     }
 
     /**
-     * Implements {@link IdentityManager.Observer}: take action when primary account is set.
-     * Simply verify that the request is ongoing (mSignInState != null), as only SigninManager
-     * should update IdentityManager. This is triggered by the call to
-     * IdentityMutator.setPrimaryAccount
+     * Implements {@link IdentityManager.Observer}
      */
     @Override
-    public void onPrimaryAccountSet(CoreAccountInfo account) {
-        assert mSignInState != null;
+    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+        switch (eventDetails.getEventTypeFor(ConsentLevel.NOT_REQUIRED)) {
+            case PrimaryAccountChangeEvent.Type.SET:
+                // Simply verify that the request is ongoing (mSignInState != null), as only
+                // SigninManager should update IdentityManager. This is triggered by the call to
+                // IdentityMutator.setPrimaryAccount
+                assert mSignInState != null;
+                break;
+            case PrimaryAccountChangeEvent.Type.CLEARED:
+                if (mSignOutState == null) {
+                    // mSignOutState can only be null when the sign out is triggered by
+                    // native (since otherwise SigninManager.signOut would have created
+                    // it). As sign out from native can only happen from policy code,
+                    // the account is managed and the user data must be wiped.
+                    mSignOutState = new SignOutState(null, true);
+                }
+
+                Log.d(TAG,
+                        "On native signout, wipe user data: " + mSignOutState.mShouldWipeUserData);
+
+                // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that
+                //                                  uses the sync account before the native is
+                //                                  loaded.
+                SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(null);
+
+                if (mSignOutState.mSignOutCallback != null) {
+                    mSignOutState.mSignOutCallback.preWipeData();
+                }
+                disableSyncAndWipeData(mSignOutState.mShouldWipeUserData, this::finishSignOut);
+                mAccountTrackerService.invalidateAccountSeedStatus(true);
+                break;
+            case PrimaryAccountChangeEvent.Type.NONE:
+                break;
+        }
     }
 
     /**
@@ -538,7 +568,7 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
         Log.d(TAG, "Signing out, management domain: " + managementDomain);
 
         // User data will be wiped in disableSyncAndWipeData(), called from
-        // onPrimaryAccountcleared().
+        // onPrimaryAccountChanged().
         mIdentityMutator.clearPrimaryAccount(signoutSource,
                 // Always use IGNORE_METRIC for the profile deletion argument. Chrome
                 // Android has just a single-profile which is never deleted upon
@@ -583,27 +613,6 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
 
         Log.d(TAG, "Signin flow aborted.");
         notifySignInAllowedChanged();
-    }
-
-    @Override
-    public void onPrimaryAccountCleared(CoreAccountInfo account) {
-        if (mSignOutState == null) {
-            // mSignOutState can only be null when the sign out is triggered by
-            // native (since otherwise SigninManager.signOut would have created
-            // it). As sign out from native can only happen from policy code,
-            // the account is managed and the user data must be wiped.
-            mSignOutState = new SignOutState(null, true);
-        }
-
-        Log.d(TAG, "On native signout, wipe user data: " + mSignOutState.mShouldWipeUserData);
-
-        // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that uses
-        //                                  the sync account before the native is loaded.
-        SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(null);
-
-        if (mSignOutState.mSignOutCallback != null) mSignOutState.mSignOutCallback.preWipeData();
-        disableSyncAndWipeData(mSignOutState.mShouldWipeUserData, this::finishSignOut);
-        mAccountTrackerService.invalidateAccountSeedStatus(true);
     }
 
     @VisibleForTesting

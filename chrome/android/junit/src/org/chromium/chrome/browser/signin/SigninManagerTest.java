@@ -42,6 +42,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -167,7 +168,8 @@ public class SigninManagerTest {
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
 
         // Simulate native callback to trigger clearing of account data.
-        mIdentityManager.onPrimaryAccountCleared(ACCOUNT_INFO);
+        mIdentityManager.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(
+                PrimaryAccountChangeEvent.Type.CLEARED, PrimaryAccountChangeEvent.Type.NONE));
 
         // Sign-out should only clear the profile when the user is managed.
         verify(mNativeMock, times(1)).wipeProfileData(anyLong(), any());
@@ -188,7 +190,8 @@ public class SigninManagerTest {
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
 
         // Simulate native callback to trigger clearing of account data.
-        mIdentityManager.onPrimaryAccountCleared(ACCOUNT_INFO);
+        mIdentityManager.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(
+                PrimaryAccountChangeEvent.Type.CLEARED, PrimaryAccountChangeEvent.Type.NONE));
 
         // Sign-out should only clear the service worker cache when the user is not managed.
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
@@ -209,7 +212,8 @@ public class SigninManagerTest {
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
 
         // Simulate native callback to trigger clearing of account data.
-        mIdentityManager.onPrimaryAccountCleared(ACCOUNT_INFO);
+        mIdentityManager.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(
+                PrimaryAccountChangeEvent.Type.CLEARED, PrimaryAccountChangeEvent.Type.NONE));
 
         // Sign-out should only clear the service worker cache when the user is not managed.
         verify(mNativeMock, times(1)).wipeProfileData(anyLong(), any());
@@ -220,7 +224,8 @@ public class SigninManagerTest {
     public void signOutFromNative() {
         createSigninManager();
         // Simulate native initiating the sign-out.
-        mIdentityManager.onPrimaryAccountCleared(ACCOUNT_INFO);
+        mIdentityManager.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(
+                PrimaryAccountChangeEvent.Type.CLEARED, PrimaryAccountChangeEvent.Type.NONE));
 
         // Sign-out should only clear the profile when the user is managed.
         verify(mNativeMock, times(1)).wipeProfileData(anyLong(), any());
@@ -308,7 +313,8 @@ public class SigninManagerTest {
     @Test
     public void callbackNotifiedOnSignout() {
         doAnswer(invocation -> {
-            mIdentityManager.onPrimaryAccountCleared(ACCOUNT_INFO);
+            mIdentityManager.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(
+                    PrimaryAccountChangeEvent.Type.CLEARED, PrimaryAccountChangeEvent.Type.NONE));
             return null;
         })
                 .when(mIdentityMutator)

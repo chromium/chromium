@@ -114,7 +114,8 @@ public class IdentityManager {
      * or sync consent granted/revoked in C++.
      */
     @CalledByNative
-    private void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+    @VisibleForTesting
+    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
         for (Observer observer : mObservers) {
             observer.onPrimaryAccountChanged(eventDetails);
         }

@@ -5,6 +5,7 @@
 package org.chromium.components.signin.identitymanager;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 
@@ -36,7 +37,8 @@ public class PrimaryAccountChangeEvent {
     private final @Type int mEventTypeForConsentLevelNotRequired;
 
     @CalledByNative
-    private PrimaryAccountChangeEvent(
+    @VisibleForTesting
+    public PrimaryAccountChangeEvent(
             @Type int eventTypeForConsentLevelNotRequired, @Type int eventTypeForConsentLevelSync) {
         mEventTypeForConsentLevelNotRequired = eventTypeForConsentLevelNotRequired;
         mEventTypeForConsentLevelSync = eventTypeForConsentLevelSync;
