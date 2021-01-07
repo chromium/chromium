@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -24,12 +25,14 @@ class COMPONENT_EXPORT(ASSISTANT_UI) MicView
       public AssistantControllerObserver,
       public AssistantInteractionModelObserver {
  public:
+  METADATA_HEADER(MicView);
+
   MicView(AssistantButtonListener* listener,
           AssistantButtonId button_id);
+  MicView(const MicView&) = delete;
+  MicView& operator=(const MicView&) = delete;
   ~MicView() override;
 
-  // AssistantButton:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
 
@@ -57,8 +60,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) MicView
 
   ScopedObserver<AssistantController, AssistantControllerObserver>
       assistant_controller_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MicView);
 };
 
 }  // namespace ash

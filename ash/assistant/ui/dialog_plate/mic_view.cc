@@ -13,6 +13,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -39,10 +40,6 @@ MicView::MicView(AssistantButtonListener* listener, AssistantButtonId button_id)
 MicView::~MicView() {
   if (AssistantInteractionController::Get())
     AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
-}
-
-const char* MicView::GetClassName() const {
-  return "MicView";
 }
 
 gfx::Size MicView::CalculatePreferredSize() const {
@@ -126,5 +123,8 @@ void MicView::UpdateState(bool animate) {
   }
   logo_view_->SetState(mic_state, animate);
 }
+
+BEGIN_METADATA(MicView, AssistantButton)
+END_METADATA
 
 }  // namespace ash
