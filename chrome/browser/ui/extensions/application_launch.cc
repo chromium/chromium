@@ -37,14 +37,12 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/url_constants.h"
@@ -332,15 +330,6 @@ WebContents* OpenEnabledApplication(Profile* profile,
                             params.container);
 
   GURL url = UrlForExtension(extension, profile, params);
-
-  // System Web Apps go through their own launch path.
-  base::Optional<web_app::SystemAppType> system_app_type =
-      web_app::GetSystemWebAppTypeForAppId(profile, extension->id());
-  if (system_app_type) {
-    Browser* browser = web_app::LaunchSystemWebApp(profile, *system_app_type,
-                                                   url, std::move(params));
-    return browser->tab_strip_model()->GetActiveWebContents();
-  }
 
   // Record v1 app launch. Platform app launch is recorded when dispatching
   // the onLaunched event.
