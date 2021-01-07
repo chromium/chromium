@@ -14,26 +14,59 @@
     android:paddingStart="12dp"
     android:paddingBottom="12dp" >
 
-    <org.chromium.components.browser_ui.widget.async_image.AsyncImageView
-        android:id="@+id/thumbnail"
+    <RelativeLayout
+        android:id="@+id/thumbnail_wrapper"
         android:layout_width="80dp"
         android:layout_height="58dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginTop="12dp"
-        android:importantForAccessibility="no"
-        app:unavailableSrc="@color/image_loading_color"
-        app:waitingSrc="@color/image_loading_color"
-        app:roundedfillColor="@color/modern_grey_300"
-        app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
-        app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
-        app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
-        app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius" />
+        android:layout_marginTop="12dp" >
+
+        <org.chromium.components.browser_ui.widget.async_image.AsyncImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            app:unavailableSrc="@color/image_loading_color"
+            app:waitingSrc="@color/image_loading_color"
+            app:roundedfillColor="@color/modern_grey_300" />
+
+        <ImageView
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_alignParentStart="true"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/corner_top_start"/>
+
+        <ImageView
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/corner_bottom_start"/>
+
+        <ImageView
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_alignParentEnd="true"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/corner_top_end"/>
+
+        <ImageView
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/corner_bottom_end"/>
+
+    </RelativeLayout>
 
     <TextView
       android:id="@+id/video_length"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_alignBottom="@id/thumbnail"
+      android:layout_alignBottom="@id/thumbnail_wrapper"
       android:layout_marginStart="6dp"
       android:layout_marginBottom="6dp"
       android:paddingStart="4dp"
@@ -45,7 +78,7 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/thumbnail"
+        android:layout_toEndOf="@id/thumbnail_wrapper"
         android:layout_toStartOf="@id/close_button"
         android:layout_centerVertical="true"
         android:layout_marginStart="12dp"
