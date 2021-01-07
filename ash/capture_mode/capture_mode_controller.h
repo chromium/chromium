@@ -83,10 +83,6 @@ class ASH_EXPORT CaptureModeController
   // Stops an existing capture session.
   void Stop();
 
-  // Sets the user capture region. If it's non-empty and changed by the user,
-  // update |last_capture_region_update_time_|.
-  void SetUserCaptureRegion(const gfx::Rect& region, bool by_user);
-
   // Full screen capture for each available display if no restricted
   // content exists on that display, each capture is saved as an individual
   // file. Note: this won't start a capture mode session.
