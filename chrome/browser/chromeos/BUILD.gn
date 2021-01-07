@@ -3777,6 +3777,7 @@ source_set("unit_tests") {
     "policy/device_local_account_policy_service_unittest.cc",
     "policy/device_policy_decoder_chromeos_unittest.cc",
     "policy/dlp/data_transfer_dlp_controller_unittest.cc",
+    "policy/dlp/dlp_clipboard_notification_helper_unittest.cc",
     "policy/dlp/dlp_content_manager_unittest.cc",
     "policy/dlp/dlp_content_tab_helper_unittest.cc",
     "policy/dlp/dlp_rules_manager_impl_unittest.cc",

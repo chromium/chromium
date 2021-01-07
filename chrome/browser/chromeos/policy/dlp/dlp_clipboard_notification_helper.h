@@ -33,9 +33,9 @@ class DlpClipboardNotificationHelper : public views::WidgetObserver {
                           const ui::DataTransferEndpoint* const data_dst);
 
  private:
-  void ShowClipboardBlockBubble(const base::string16& text);
-  void ShowClipboardBlockToast(const std::string& id,
-                               const base::string16& text);
+  virtual void ShowClipboardBlockBubble(const base::string16& text);
+  virtual void ShowClipboardBlockToast(const std::string& id,
+                                       const base::string16& text);
 
   // views::WidgetObserver
   void OnWidgetClosing(views::Widget* widget) override;
