@@ -214,7 +214,6 @@ source_set("unittests") {
       "discovery/dial/safe_dial_app_info_parser_unittest.cc",
       "discovery/dial/safe_dial_device_description_parser_unittest.cc",
       "discovery/discovery_network_list_unittest.cc",
-      "discovery/discovery_network_monitor_metric_observer_unittest.cc",
       "discovery/discovery_network_monitor_unittest.cc",
       "discovery/mdns/cast_media_sink_service_impl_unittest.cc",
       "discovery/mdns/cast_media_sink_service_unittest.cc",

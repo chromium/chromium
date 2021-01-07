@@ -4762,6 +4762,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MediaRouter.NetworkMonitor.ConnectionType"
     enum="DiscoveryNetworkMonitorConnectionType" expires_after="2021-06-06">
+  <obsolete>
+    Unused after 2021-01-06.
+  </obsolete>
   <owner>btolsch@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4773,6 +4776,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MediaRouter.NetworkMonitor.NetworkChangeEventDelta" units="ms"
     expires_after="2021-02-01">
+  <obsolete>
+    Unused after 2021-01-06.
+  </obsolete>
   <owner>btolsch@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
