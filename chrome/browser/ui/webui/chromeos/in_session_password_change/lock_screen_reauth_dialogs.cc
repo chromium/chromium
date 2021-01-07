@@ -8,6 +8,8 @@
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/confirm_password_change_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -68,7 +70,8 @@ void LockScreenStartReauthDialog::Show() {
     return;
   }
   g_dialog = new LockScreenStartReauthDialog();
-  g_dialog->ShowSystemDialog();
+  g_dialog->ShowSystemDialogForBrowserContext(
+      ProfileHelper::GetLockScreenIncognitoProfile());
 }
 
 void LockScreenStartReauthDialog::Dismiss() {

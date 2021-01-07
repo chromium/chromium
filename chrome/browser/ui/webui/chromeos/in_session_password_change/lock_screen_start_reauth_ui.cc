@@ -21,7 +21,7 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile);
+      user_manager::UserManager::Get()->GetActiveUser();
   std::string email;
   if (user) {
     email = user->GetDisplayEmail();
