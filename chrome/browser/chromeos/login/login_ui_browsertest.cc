@@ -397,9 +397,7 @@ class UserManagementDisclosureChildTest
 // having logged a child account into a session and having locked the screen.
 IN_PROC_BROWSER_TEST_F(UserManagementDisclosureChildTest,
                        PRE_EnterpriseIconVisibleChildUser) {
-  logged_in_user_mixin_.LogInUser(false /*issue_any_scope_token*/,
-                                  true /*wait_for_active_session*/,
-                                  true /*request_policy_update*/);
+  logged_in_user_mixin_.LogInUser();
   ScreenLockerTester screen_locker_tester;
   screen_locker_tester.Lock();
   EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedIconShown(

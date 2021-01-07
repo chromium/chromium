@@ -37,7 +37,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 using content::NavigationController;
@@ -198,8 +197,6 @@ void SupervisedUserNavigationThrottleTest::SetUp() {
 
 void SupervisedUserNavigationThrottleTest::SetUpOnMainThread() {
   MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-  // Resolve everything to localhost.
-  host_resolver()->AddIPLiteralRule("*", "127.0.0.1", "localhost");
 
   ASSERT_TRUE(embedded_test_server()->Started());
 

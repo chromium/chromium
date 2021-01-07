@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -59,16 +58,12 @@ class UserCloudPolicyManagerTest
     MixinBasedInProcessBrowserTest::TearDown();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(chromeos::switches::kOobeSkipPostLogin);
-    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
-  }
-
   // Sets up fake GAIA for specified user login, and requests login for the user
   // (using LoggedInUserMixin).
   void StartUserLogIn(bool wait_for_active_session) {
     logged_in_user_mixin_.LogInUser(true /*issue_any_scope_token*/,
-                                    wait_for_active_session);
+                                    wait_for_active_session,
+                                    /*request_policy_update=*/false);
   }
 
  protected:

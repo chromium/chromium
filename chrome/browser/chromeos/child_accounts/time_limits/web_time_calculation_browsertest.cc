@@ -40,7 +40,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -101,12 +100,7 @@ void WebTimeCalculationBrowserTest::SetUpOnMainThread() {
 
   ASSERT_TRUE(embedded_test_server()->Started());
 
-  // Resolve everything to localhost.
-  host_resolver()->AddIPLiteralRule("*", "127.0.0.1", "localhost");
-
-  logged_in_user_mixin_.LogInUser(false /*issue_any_scope_token*/,
-                                  true /*wait_for_active_session*/,
-                                  true /*request_policy_update*/);
+  logged_in_user_mixin_.LogInUser();
   profile_ = browser()->profile();
 
   // During tests, AppService doesn't notify AppActivityRegistry that chrome app

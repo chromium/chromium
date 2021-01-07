@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_LOGGED_IN_USER_MIXIN_H_
 #define CHROME_BROWSER_SUPERVISED_USER_LOGGED_IN_USER_MIXIN_H_
 
-#include "base/macros.h"
 #include "base/optional.h"
 #include "chrome/browser/chromeos/login/test/embedded_test_server_mixin.h"
 #include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
@@ -60,15 +59,13 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
   // that can be passed into this constructor.
   // |test_base|: just pass in a pointer to the browser test class.
   // |should_launch_browser| determines whether a browser instance is launched
-  // after successful login. Call SelectFirstBrowser() afterwards to ensure
-  // calls to browser() don't return nullptr. LogInUser() already calls
-  // SelectFirstBrowser() for convenience.
+  // after successful login.
   // |account_id| is the desired test account id for logging in. The default
   // test account already works for the majority of test cases, unless an
   // enterprise account is needed for setting up policy.
-  // |include_initial_user| determines whether the TestUserInfo should be passed
-  // to the initial users list of the LoginManagerMixin. Excluding the initial
-  // user causes the OOBE GAIA screen to show on start-up.
+  // |include_initial_user| if true, then the user already exists on the login
+  // screen. Otherwise, the user is newly added to the device and the OOBE Gaia
+  // screen will show on start-up.
   // |use_local_policy_server| determines if the LocalPolicyTestServerMixin
   // should be passed into the UserPolicyMixin.
   LoggedInUserMixin(InProcessBrowserTestMixinHost* mixin_host,
@@ -78,7 +75,10 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
                     bool should_launch_browser = true,
                     base::Optional<AccountId> account_id = base::nullopt,
                     bool include_initial_user = true,
+                    // TODO(crbug/1112885): Remove this parameter.
                     bool use_local_policy_server = true);
+  LoggedInUserMixin(const LoggedInUserMixin&) = delete;
+  LoggedInUserMixin& operator=(const LoggedInUserMixin&) = delete;
   ~LoggedInUserMixin() override;
 
   // InProcessBrowserTestMixin:
@@ -93,7 +93,7 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
   // * If |request_policy_update|, UserPolicyMixin will set up user policy.
   void LogInUser(bool issue_any_scope_token = false,
                  bool wait_for_active_session = true,
-                 bool request_policy_update = false);
+                 bool request_policy_update = true);
 
   LoginManagerMixin* GetLoginManagerMixin() { return &login_manager_; }
 
@@ -123,8 +123,6 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
   FakeGaiaMixin fake_gaia_;
 
   InProcessBrowserTest* test_base_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggedInUserMixin);
 };
 
 }  // namespace chromeos

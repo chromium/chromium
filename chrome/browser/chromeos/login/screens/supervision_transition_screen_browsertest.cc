@@ -79,8 +79,7 @@ class SupervisionTransitionScreenTest
     // WaitForActiveSession() otherwise.
     logged_in_user_mixin_.LogInUser(
         false /*issue_any_scope_token*/,
-        content::IsPreTest() /*wait_for_active_session*/,
-        true /*request_policy_update*/);
+        content::IsPreTest() /*wait_for_active_session*/);
   }
 
   // The tests simulate user type changes between regular and child user.

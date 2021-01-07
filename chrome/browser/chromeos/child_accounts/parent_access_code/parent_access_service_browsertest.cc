@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/logged_in_user_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -89,18 +88,11 @@ class ParentAccessServiceTest : public MixinBasedInProcessBrowserTest {
             logged_in_user_mixin_.GetAccountId())) {}
   ~ParentAccessServiceTest() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kOobeSkipPostLogin);
-  }
-
   void SetUpOnMainThread() override {
     ASSERT_NO_FATAL_FAILURE(GetTestAccessCodeValues(&test_values_));
     ParentAccessService::Get().AddObserver(test_observer_.get());
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-    logged_in_user_mixin_.LogInUser(false /*issue_any_scope_token*/,
-                                    true /*wait_for_active_session*/,
-                                    true /*request_policy_update*/);
+    logged_in_user_mixin_.LogInUser();
   }
 
   void TearDownOnMainThread() override {

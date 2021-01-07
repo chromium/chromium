@@ -24,7 +24,6 @@
 #include "chrome/browser/supervised_user/logged_in_user_mixin.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/notification_service.h"
@@ -66,12 +65,6 @@ class ScreenTimeControllerTest : public MixinBasedInProcessBrowserTest {
   ~ScreenTimeControllerTest() override = default;
 
   // MixinBasedInProcessBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kOobeSkipPostLogin);
-  }
-
-  // MixinBasedInProcessBrowserTest:
   void SetUpInProcessBrowserTestFixture() override {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     // A basic starting policy.
@@ -87,9 +80,7 @@ class ScreenTimeControllerTest : public MixinBasedInProcessBrowserTest {
  protected:
   void LogInChildAndSetupClockWithTime(const char* time) {
     SetupTaskRunnerWithTime(utils::TimeFromString(time));
-    logged_in_user_mixin_.LogInUser(false /*issue_any_scope_token*/,
-                                    true /*wait_for_active_session*/,
-                                    true /*request_policy_update*/);
+    logged_in_user_mixin_.LogInUser();
     MockClockForActiveUser();
   }
 

@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/auth/user_context.h"
@@ -49,7 +50,9 @@ LoggedInUserMixin::LoggedInUserMixin(
                 AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                                FakeGaiaMixin::kFakeUserGaiaId)),
             ConvertUserType(type)),
-      login_manager_(mixin_host, GetInitialUsers(user_, include_initial_user)),
+      login_manager_(mixin_host,
+                     GetInitialUsers(user_, include_initial_user),
+                     &fake_gaia_),
       local_policy_server_(mixin_host),
       user_policy_(mixin_host,
                    user_.account_id,
@@ -72,6 +75,8 @@ void LoggedInUserMixin::SetUpOnMainThread() {
   // account.google.com requests would never reach fake GAIA server without
   // this.
   test_base_->host_resolver()->AddRule("*", "127.0.0.1");
+  // Ensures logging in doesn't hang on the post login Gaia screens.
+  WizardController::SkipPostLoginScreensForTesting();
 }
 
 void LoggedInUserMixin::LogInUser(bool issue_any_scope_token,
@@ -89,17 +94,14 @@ void LoggedInUserMixin::LogInUser(bool issue_any_scope_token,
                                      FakeGaiaMixin::kFakeRefreshToken);
   }
   if (request_policy_update) {
-    // Set up policy, which prevents the call to LoginAndWaitForActiveSession()
-    // below from hanging indefinitely in some test scenarios.
+    // Child users require user policy, set up an empty one so the user can get
+    // through login.
     GetUserPolicyMixin()->RequestPolicyUpdate();
   }
   if (wait_for_active_session) {
     login_manager_.LoginAndWaitForActiveSession(user_context);
-    // Set the private |browser_| member in InProcessBrowserTest.
-    // Otherwise calls to InProcessBrowserTest::browser() returns null and leads
-    // to segmentation faults.
-    // Note: |browser_| is only non-null if should_launch_browser was set to
-    // true in the constructor.
+    // If should_launch_browser was set to true, then ensures
+    // InProcessBrowserTest::browser() doesn't return nullptr.
     test_base_->SelectFirstBrowser();
   } else {
     login_manager_.AttemptLoginUsingAuthenticator(

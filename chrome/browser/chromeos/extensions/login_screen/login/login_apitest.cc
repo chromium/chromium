@@ -401,11 +401,7 @@ class LoginApitestWithEnterpriseUser : public LoginApitest {
 
   ~LoginApitestWithEnterpriseUser() override = default;
 
-  void LoginUser() {
-    logged_in_user_mixin_.LogInUser(/*issue_any_scope_token=*/false,
-                                    /*wait_for_active_session=*/true,
-                                    /*request_policy_update=*/true);
-  }
+  void LoginUser() { logged_in_user_mixin_.LogInUser(); }
 
   void SetUpInSessionExtension() override {
     AccountId account_id = logged_in_user_mixin_.GetAccountId();
