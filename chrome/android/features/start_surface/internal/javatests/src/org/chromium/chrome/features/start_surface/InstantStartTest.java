@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
@@ -27,6 +29,7 @@ import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
@@ -1051,6 +1054,46 @@ public class InstantStartTest {
                              .findViewById(R.id.tab_switcher_title)
                              .getVisibility(),
                 View.GONE);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+            "force-fieldtrials=Study/Group",
+            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+    @ParameterAnnotations.UseMethodParameter(FeedParams.class)
+    public void renderSingleAsHomepage_Landscape(boolean isFeedV2) throws IOException {
+        // clang-format on
+        setFeedVersion(isFeedV2);
+
+        createTabStateFile(new int[] {0, 1, 2});
+
+        startMainActivityFromLauncher();
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+
+        // Initializes native.
+        startAndWaitNativeInitialization();
+        onViewWaiting(
+                allOf(withId(org.chromium.chrome.start_surface.R.id.feed_stream_recycler_view),
+                        isDisplayed()));
+
+        mActivityTestRule.getActivity().setRequestedOrientation(
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    mActivityTestRule.getActivity().getResources().getConfiguration().orientation,
+                    is(ORIENTATION_LANDSCAPE));
+        });
+        View surface =
+                mActivityTestRule.getActivity().findViewById(R.id.primary_tasks_surface_view);
+        mRenderTestRule.render(
+                surface, "singlePane_landscape" + (isFeedV2 ? "_FeedV2" : "_FeedV1"));
     }
 
     /**

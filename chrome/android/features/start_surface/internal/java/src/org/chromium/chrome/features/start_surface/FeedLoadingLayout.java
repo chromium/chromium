@@ -17,9 +17,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.start_surface.R;
-import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 
@@ -41,18 +41,20 @@ public class FeedLoadingLayout extends LinearLayout {
     private final Resources mResources;
     private long mLayoutInflationCompleteMs;
     private int mScreenWidthDp;
-    private int mPaddingPx;
     private boolean mIsFirstCardDense;
+    private UiConfig mUiConfig;
 
     public FeedLoadingLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
         mResources = mContext.getResources();
+        mScreenWidthDp = mResources.getConfiguration().screenWidthDp;
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mUiConfig = new UiConfig(this);
         setPlaceholders();
         mLayoutInflationCompleteMs = SystemClock.elapsedRealtime();
     }
@@ -60,7 +62,7 @@ public class FeedLoadingLayout extends LinearLayout {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        setPlaceholders();
+        mUiConfig.updateDisplayStyle();
     }
 
     /**
@@ -97,7 +99,10 @@ public class FeedLoadingLayout extends LinearLayout {
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.setMargins(0, 0, 0, dpToPx(CARD_MARGIN_DP));
+        int contentPadding = FeedFeatures.cachedIsV2Enabled() ? mResources.getDimensionPixelSize(
+                                     R.dimen.content_suggestions_card_modern_padding_v2)
+                                                              : 0;
+        lp.setMargins(contentPadding, 0, contentPadding, dpToPx(CARD_MARGIN_DP));
 
         // Set the First placeholder container - an image-right card.
         // If it's in landscape mode, the placeholder should always show in dense mode. Otherwise,
@@ -148,8 +153,8 @@ public class FeedLoadingLayout extends LinearLayout {
     }
 
     private LayerDrawable getLargeImageDrawable() {
-        GradientDrawable[] placeholder = getRectangles(
-                1, dpToPx(mScreenWidthDp) - mPaddingPx * 2, dpToPx(LARGE_IMAGE_HEIGHT_DP));
+        GradientDrawable[] placeholder =
+                getRectangles(1, dpToPx(mScreenWidthDp), dpToPx(LARGE_IMAGE_HEIGHT_DP));
         return new LayerDrawable(placeholder);
     }
 
@@ -157,7 +162,7 @@ public class FeedLoadingLayout extends LinearLayout {
         int top = dpToPx(CARD_TOP_PADDING_DP);
         int left = top / 2;
         int height = dpToPx(TEXT_PLACEHOLDER_HEIGHT_DP);
-        int width = dpToPx(mScreenWidthDp) - mPaddingPx * 2;
+        int width = dpToPx(mScreenWidthDp);
         int contentHeight = dpToPx(TEXT_CONTENT_HEIGHT_DP);
 
         LinearLayout.LayoutParams textPlaceholderLp = isSmallCard
@@ -166,9 +171,7 @@ public class FeedLoadingLayout extends LinearLayout {
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         LayerDrawable layerDrawable = isSmallCard
-                ? getSmallTextDrawable(top,
-                        width - dpToPx(IMAGE_PLACEHOLDER_SIZE_DP) - dpToPx(CARD_TOP_PADDING_DP),
-                        height, contentHeight)
+                ? getSmallTextDrawable(top, width, height, contentHeight)
                 : getLargeTextDrawable(top, left, width, height, contentHeight + 2 * top);
 
         ImageView textPlaceholder = new ImageView(mContext);
@@ -213,6 +216,8 @@ public class FeedLoadingLayout extends LinearLayout {
         for (int i = 0; i < num; i++) {
             placeholders[i] = new GradientDrawable();
             placeholders[i].setShape(GradientDrawable.RECTANGLE);
+            // The width here is not deterministic to what the rectangle looks like. It may be also
+            // affected by layer inset left and right bound and the container padding.
             placeholders[i].setSize(width, height);
             placeholders[i].setCornerRadius(radius);
             placeholders[i].setColor(mResources.getColor(R.color.feed_placeholder_color));
@@ -227,39 +232,17 @@ public class FeedLoadingLayout extends LinearLayout {
 
     /**
      * Make the padding of placeholder consistent with that of native articles recyclerview which
-     * is resized by {@link ViewResizer} in {@link FeedLoadingCoordinator}
+     * is resized by {@link ViewResizer} in {@link FeedSurfaceCoordinator}
      */
     private void setPadding() {
         int defaultPadding = mResources.getDimensionPixelSize(FeedFeatures.cachedIsV2Enabled()
                         ? R.dimen.content_suggestions_card_modern_margin_v2
                         : R.dimen.content_suggestions_card_modern_margin);
-        UiConfig uiConfig = new UiConfig(this);
-        // mUiConfig.getContext().getResources() is used here instead of mView.getResources()
-        // because lemon compression, somehow, causes the resources to return a different
-        // configuration.
-        Resources resources = uiConfig.getContext().getResources();
-        mScreenWidthDp = resources.getConfiguration().screenWidthDp;
-
-        if (uiConfig.getCurrentDisplayStyle().horizontal == HorizontalDisplayStyle.WIDE) {
-            mPaddingPx = computePadding();
-        } else {
-            mPaddingPx = defaultPadding;
-        }
-        mPaddingPx += FeedFeatures.cachedIsV2Enabled() ? mResources.getDimensionPixelSize(
-                              R.dimen.content_suggestions_card_modern_padding_v2)
-                                                       : 0;
-        setPaddingRelative(mPaddingPx, 0, mPaddingPx, 0);
-    }
-
-    private int computePadding() {
         int widePadding = mResources.getDimensionPixelSize(FeedFeatures.cachedIsV2Enabled()
                         ? R.dimen.ntp_wide_card_lateral_margins_v2
                         : R.dimen.ntp_wide_card_lateral_margins);
-        int padding =
-                dpToPx((int) ((mScreenWidthDp - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2.f));
-        padding = Math.max(widePadding, padding);
 
-        return padding;
+        ViewResizer.createAndAttach(this, mUiConfig, defaultPadding, widePadding);
     }
 
     long getLayoutInflationCompleteMs() {
