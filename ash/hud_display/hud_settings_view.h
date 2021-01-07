@@ -15,12 +15,13 @@ namespace ash {
 namespace hud_display {
 
 class HUDCheckboxHandler;
+class HUDDisplayView;
 
 class HUDSettingsView : public views::View {
  public:
   METADATA_HEADER(HUDSettingsView);
 
-  HUDSettingsView();
+  explicit HUDSettingsView(HUDDisplayView* hud_display);
   ~HUDSettingsView() override;
 
   HUDSettingsView(const HUDSettingsView&) = delete;

@@ -25,6 +25,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -43,6 +44,9 @@ constexpr int kHUDViewDefaultHeight =
     kHUDGraphsInset + kDefaultHUDGraphHeight + kHUDInset;
 
 views::Widget* g_hud_widget = nullptr;
+
+// True if HUD should be initialized as overlay.
+bool g_hud_overlay_mode = true;
 
 // ClientView that return HTNOWHERE by default. A child view can receive event
 // by setting kHitTestComponentKey property to HTCLIENT.
@@ -124,6 +128,8 @@ void HUDDisplayView::Toggle() {
                 kHUDViewDefaultHeight + 2 * kGridLineWidth);
   auto* widget = CreateViewTreeHostWidget(std::move(params));
   widget->GetLayer()->SetName("HUDDisplayView");
+  static_cast<ViewTreeHostRootView*>(widget->GetRootView())
+      ->SetIsOverlayCandidate(g_hud_overlay_mode);
   widget->Show();
 
   g_hud_widget = widget;
@@ -174,7 +180,7 @@ HUDDisplayView::HUDDisplayView() {
   data->SetLayoutManager(std::make_unique<views::FillLayout>());
   graphs_container_ =
       data->AddChildView(std::make_unique<GraphsContainerView>());
-  settings_view_ = data->AddChildView(std::make_unique<HUDSettingsView>());
+  settings_view_ = data->AddChildView(std::make_unique<HUDSettingsView>(this));
   settings_view_->SetVisible(false);
 
   // CPU display is active by default.
@@ -189,6 +195,17 @@ HUDDisplayView::~HUDDisplayView() {
 void HUDDisplayView::OnSettingsToggle() {
   settings_view_->ToggleVisibility();
   graphs_container_->SetVisible(!settings_view_->GetVisible());
+}
+
+bool HUDDisplayView::IsOverlay() {
+  return static_cast<ViewTreeHostRootView*>(GetWidget()->GetRootView())
+      ->GetIsOverlayCandidate();
+}
+
+void HUDDisplayView::ToggleOverlay() {
+  g_hud_overlay_mode = !g_hud_overlay_mode;
+  static_cast<ViewTreeHostRootView*>(GetWidget()->GetRootView())
+      ->SetIsOverlayCandidate(g_hud_overlay_mode);
 }
 
 int HUDDisplayView::NonClientHitTest(const gfx::Point& point) {

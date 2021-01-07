@@ -366,6 +366,14 @@ void ViewTreeHostRootView::SchedulePaintInRect(const gfx::Rect& rect) {
   }
 }
 
+bool ViewTreeHostRootView::GetIsOverlayCandidate() {
+  return is_overlay_candidate_;
+}
+
+void ViewTreeHostRootView::SetIsOverlayCandidate(bool is_overlay_candidate) {
+  is_overlay_candidate_ = is_overlay_candidate;
+}
+
 void ViewTreeHostRootView::UpdateSurface(const gfx::Rect& damage_rect,
                                          std::unique_ptr<Resource> resource) {
   damage_rect_.Union(damage_rect);
@@ -435,7 +443,7 @@ void ViewTreeHostRootView::SubmitCompositorFrame() {
   transferable_resource.size = buffer_size_;
   transferable_resource.mailbox_holder = gpu::MailboxHolder(
       resource->mailbox, resource->sync_token, GL_TEXTURE_2D);
-  transferable_resource.is_overlay_candidate = true;
+  transferable_resource.is_overlay_candidate = is_overlay_candidate_;
 
   gfx::Transform buffer_to_target_transform;
   bool rv = rotate_transform_.GetInverse(&buffer_to_target_transform);

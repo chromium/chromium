@@ -41,6 +41,9 @@ class ViewTreeHostRootView : public views::internal::RootView {
 
   void SchedulePaintInRect(const gfx::Rect& rect);
 
+  bool GetIsOverlayCandidate();
+  void SetIsOverlayCandidate(bool is_overlay_candidate);
+
  private:
   struct Resource;
   class LayerTreeViewTreeFrameSinkHolder;
@@ -70,6 +73,9 @@ class ViewTreeHostRootView : public views::internal::RootView {
 
   gfx::Rect damaged_paint_rect_;
   bool pending_paint_ = false;
+
+  // overlay candidate in submitted frame data.
+  bool is_overlay_candidate_ = true;
 
   // The resource to be submitted.
   std::unique_ptr<Resource> pending_resource_;

@@ -43,6 +43,12 @@ class HUDDisplayView : public views::View {
   // Callback from SettingsButton.
   void OnSettingsToggle();
 
+  // Returns true if HUD is in overlay mode.
+  bool IsOverlay();
+
+  // Changes HUD overlay flag.
+  void ToggleOverlay();
+
  private:
   HUDHeaderView* header_view_ = nullptr;             // not owned
   GraphsContainerView* graphs_container_ = nullptr;  // not owned
