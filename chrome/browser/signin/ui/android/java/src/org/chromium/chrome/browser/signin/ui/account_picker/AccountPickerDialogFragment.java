@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.ui.account_picker;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -16,8 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator;
+import org.chromium.chrome.browser.signin.ui.R;
 
 /**
  * This class implements dialog-based account picker that is used by SigninFragmentBase. This
@@ -27,7 +26,6 @@ import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordin
  * 2. Implement {@link AccountPickerCoordinator.Listener} interface to get selection result.
  */
 public class AccountPickerDialogFragment extends DialogFragment {
-
     private static final String ARGUMENT_SELECTED_ACCOUNT_NAME =
             "AccountPickerDialogFragment.SelectedAccountName";
     private AccountPickerCoordinator mCoordinator;
@@ -72,7 +70,7 @@ public class AccountPickerDialogFragment extends DialogFragment {
      * Updates the selected account.
      * @param selectedAccountName The name of the account that should be marked as selected.
      */
-    void updateSelectedAccount(String selectedAccountName) {
+    public void updateSelectedAccount(String selectedAccountName) {
         mCoordinator.setSelectedAccountName(selectedAccountName);
     }
 }

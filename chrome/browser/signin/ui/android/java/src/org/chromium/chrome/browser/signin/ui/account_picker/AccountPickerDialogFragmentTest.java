@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.ui.account_picker;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -16,6 +16,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.support.test.InstrumentationRegistry;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -30,11 +31,11 @@ import org.mockito.Spy;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -50,13 +51,21 @@ import java.io.IOException;
 
 /**
  * Render tests for {@link AccountPickerDialogFragment}.
- * TODO(https://crbug.com/1032488):
- * Use FragmentScenario to test this fragment once we start using fragment from androidx.
+ * TODO(crbug/1032488): Use FragmentScenario to test this fragment once the library is available.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
 public class AccountPickerDialogFragmentTest extends DummyUiActivityTestCase {
+    private static class DummyAccountPickerTargetFragment
+            extends Fragment implements AccountPickerCoordinator.Listener {
+        @Override
+        public void onAccountSelected(String accountName, boolean isDefaultAccount) {}
+
+        @Override
+        public void addAccount() {}
+    }
+
     @Rule
     public final Features.JUnitProcessor mProcessor = new Features.JUnitProcessor();
 
@@ -78,7 +87,7 @@ public class AccountPickerDialogFragmentTest extends DummyUiActivityTestCase {
     private IdentityManager mIdentityManagerMock;
 
     @Spy
-    private DummyAccountPickerTargetFragment mTargetFragment =
+    private final DummyAccountPickerTargetFragment mTargetFragment =
             new DummyAccountPickerTargetFragment();
 
     private final String mFullName1 = "Test Account1";

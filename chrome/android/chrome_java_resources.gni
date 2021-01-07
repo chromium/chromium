@@ -732,7 +732,6 @@ chrome_java_resources = [
   "java/res/layout/account_picker_bottom_sheet_continue_button.xml",
   "java/res/layout/account_picker_bottom_sheet_header.xml",
   "java/res/layout/account_picker_bottom_sheet_view.xml",
-  "java/res/layout/account_picker_dialog_body.xml",
   "java/res/layout/account_picker_state_auth_error.xml",
   "java/res/layout/account_picker_state_collapsed.xml",
   "java/res/layout/account_picker_state_expanded.xml",

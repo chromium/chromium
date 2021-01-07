@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachineDelegate
 import org.chromium.chrome.browser.signin.ui.ConsentTextTracker;
 import org.chromium.chrome.browser.signin.ui.SigninView;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDialogFragment;
 import org.chromium.chrome.browser.sync.SyncUserDataWiper;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.signin.AccountManagerDelegateException;

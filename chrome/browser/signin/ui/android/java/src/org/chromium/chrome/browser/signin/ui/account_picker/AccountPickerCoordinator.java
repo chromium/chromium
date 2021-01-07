@@ -57,6 +57,7 @@ public class AccountPickerCoordinator {
      *                 account.
      * @param selectedAccountName The name of the account that should be marked as selected.
      * @param showIncognitoRow whether to show the incognito row in the account picker.
+     * TODO(crbug/1155123): Change this method to package private after modularization.
      */
     public AccountPickerCoordinator(RecyclerView view, Listener listener,
             @Nullable String selectedAccountName, boolean showIncognitoRow) {
@@ -89,6 +90,7 @@ public class AccountPickerCoordinator {
 
     /**
      * Destroys the resources used by the coordinator.
+     * TODO(crbug/1155123): Change this method to package private after modularization.
      */
     public void destroy() {
         mMediator.destroy();
@@ -98,7 +100,7 @@ public class AccountPickerCoordinator {
      * Sets the selected account name. The UI should be updated in this call.
      * @param selectedAccountName The name of the account that should be marked as selected.
      */
-    public void setSelectedAccountName(String selectedAccountName) {
+    void setSelectedAccountName(String selectedAccountName) {
         mMediator.setSelectedAccountName(selectedAccountName);
     }
 }
