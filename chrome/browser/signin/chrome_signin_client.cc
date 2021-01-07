@@ -56,7 +56,6 @@
 #endif
 
 #if !defined(OS_ANDROID)
-#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile_window.h"
 #endif
 
