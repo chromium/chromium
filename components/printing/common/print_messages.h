@@ -127,15 +127,6 @@ IPC_STRUCT_TRAITS_BEGIN(printing::PageRange)
 IPC_STRUCT_TRAITS_END()
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-IPC_STRUCT_TRAITS_BEGIN(printing::mojom::RequestPrintPreviewParams)
-  IPC_STRUCT_TRAITS_MEMBER(is_from_arc)
-  IPC_STRUCT_TRAITS_MEMBER(is_modifiable)
-  IPC_STRUCT_TRAITS_MEMBER(is_pdf)
-  IPC_STRUCT_TRAITS_MEMBER(webnode_only)
-  IPC_STRUCT_TRAITS_MEMBER(has_selection)
-  IPC_STRUCT_TRAITS_MEMBER(selection_only)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(printing::mojom::PreviewIds)
   IPC_STRUCT_TRAITS_MEMBER(request_id)
   IPC_STRUCT_TRAITS_MEMBER(ui_id)
@@ -259,10 +250,6 @@ IPC_SYNC_MESSAGE_ROUTED1_1(PrintHostMsg_ScriptedPrint,
                            /* settings chosen by the user*/)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-// Asks the browser to do print preview.
-IPC_MESSAGE_ROUTED1(PrintHostMsg_RequestPrintPreview,
-                    printing::mojom::RequestPrintPreviewParams /* params */)
-
 // Notify the browser the about the to-be-rendered print preview document.
 IPC_MESSAGE_ROUTED2(PrintHostMsg_DidStartPreview,
                     printing::mojom::DidStartPreviewParams /* params */,

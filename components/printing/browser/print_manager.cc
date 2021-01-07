@@ -94,6 +94,9 @@ void PrintManager::PrintingFailed(int32_t cookie) {
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintManager::ShowScriptedPrintPreview(bool source_is_modifiable) {}
+
+void PrintManager::RequestPrintPreview(
+    mojom::RequestPrintPreviewParamsPtr params) {}
 #endif
 
 bool PrintManager::IsPrintRenderFrameConnected(content::RenderFrameHost* rfh) {

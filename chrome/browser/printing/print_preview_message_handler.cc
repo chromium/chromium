@@ -99,22 +99,6 @@ PrintPreviewUI* PrintPreviewMessageHandler::GetPrintPreviewUI(
   return (id && *id == preview_ui_id) ? preview_ui : nullptr;
 }
 
-void PrintPreviewMessageHandler::OnRequestPrintPreview(
-    content::RenderFrameHost* render_frame_host,
-    const mojom::RequestPrintPreviewParams& params) {
-  PrintViewManager* print_view_manager =
-      PrintViewManager::FromWebContents(web_contents());
-  if (print_view_manager->RejectPrintPreviewRequestIfRestricted(
-          render_frame_host)) {
-    return;
-  }
-  if (params.webnode_only) {
-    print_view_manager->PrintPreviewForWebNode(render_frame_host);
-  }
-  PrintPreviewDialogController::PrintPreview(web_contents());
-  PrintPreviewUI::SetInitialParams(GetPrintPreviewDialog(), params);
-}
-
 void PrintPreviewMessageHandler::OnDidStartPreview(
     const mojom::DidStartPreviewParams& params,
     const mojom::PreviewIds& ids) {
@@ -496,8 +480,6 @@ bool PrintPreviewMessageHandler::OnMessageReceived(
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(PrintPreviewMessageHandler, message,
                                    render_frame_host)
-    IPC_MESSAGE_HANDLER(PrintHostMsg_RequestPrintPreview,
-                        OnRequestPrintPreview)
     IPC_MESSAGE_HANDLER(PrintHostMsg_DidPrepareDocumentForPreview,
                         OnDidPrepareForDocumentToPdf)
     IPC_MESSAGE_HANDLER(PrintHostMsg_DidPreviewPage, OnDidPreviewPage)

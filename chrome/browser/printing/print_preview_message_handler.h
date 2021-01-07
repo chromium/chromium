@@ -57,8 +57,6 @@ class PrintPreviewMessageHandler
   PrintPreviewUI* GetPrintPreviewUI(int preview_ui_id);
 
   // Message handlers.
-  void OnRequestPrintPreview(content::RenderFrameHost* render_frame_host,
-                             const mojom::RequestPrintPreviewParams& params);
   void OnDidGetDefaultPageLayout(
       const mojom::PageSizeMargins& page_layout_in_points,
       const gfx::Rect& printable_area_in_points,

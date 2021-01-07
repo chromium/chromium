@@ -2404,11 +2404,11 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
   if (delegate_->ShouldGenerateTaggedPDF())
     snapshotter_ = render_frame()->CreateAXTreeSnapshotter();
 
-  mojom::RequestPrintPreviewParams params;
-  params.is_from_arc = is_from_arc;
-  params.is_modifiable = is_modifiable;
-  params.is_pdf = is_pdf;
-  params.has_selection = has_selection;
+  auto params = mojom::RequestPrintPreviewParams::New();
+  params->is_from_arc = is_from_arc;
+  params->is_modifiable = is_modifiable;
+  params->is_pdf = is_pdf;
+  params->has_selection = has_selection;
   switch (type) {
     case PRINT_PREVIEW_SCRIPTED: {
       // Shows scripted print preview in two stages.
@@ -2456,7 +2456,7 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
     case PRINT_PREVIEW_USER_INITIATED_SELECTION: {
       DCHECK(has_selection);
       DCHECK(!print_preview_context_.IsPlugin());
-      params.selection_only = has_selection;
+      params->selection_only = has_selection;
       break;
     }
     case PRINT_PREVIEW_USER_INITIATED_CONTEXT_NODE: {
@@ -2467,7 +2467,7 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
         return;
       }
 
-      params.webnode_only = true;
+      params->webnode_only = true;
       break;
     }
     default: {
@@ -2480,7 +2480,7 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
     base::UmaHistogramEnumeration("Arc.PrintPreview.PreviewEvent",
                                   PREVIEW_EVENT_INITIATED, PREVIEW_EVENT_MAX);
   }
-  Send(new PrintHostMsg_RequestPrintPreview(routing_id(), params));
+  GetPrintManagerHost()->RequestPrintPreview(std::move(params));
 }
 
 bool PrintRenderFrameHelper::CheckForCancel() {

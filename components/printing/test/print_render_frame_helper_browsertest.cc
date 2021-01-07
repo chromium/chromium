@@ -333,6 +333,8 @@ class TestPrintManagerHost
   void DidShowPrintDialog() override {}
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void ShowScriptedPrintPreview(bool source_is_modifiable) override {}
+  void RequestPrintPreview(
+      mojom::RequestPrintPreviewParamsPtr params) override {}
 #endif
 
   bool IsPrinted() { return is_printed_; }

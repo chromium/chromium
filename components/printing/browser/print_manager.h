@@ -62,6 +62,7 @@ class PrintManager : public content::WebContentsObserver,
   void PrintingFailed(int32_t cookie) override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void ShowScriptedPrintPreview(bool source_is_modifiable) override;
+  void RequestPrintPreview(mojom::RequestPrintPreviewParamsPtr params) override;
 #endif
 
  protected:

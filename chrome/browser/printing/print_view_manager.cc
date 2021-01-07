@@ -36,6 +36,8 @@
 
 using content::BrowserThread;
 
+namespace printing {
+
 namespace {
 
 // Keeps track of pending scripted print preview closures.
@@ -58,9 +60,16 @@ void EnableInternalPDFPluginForContents(int render_process_id,
       render_process_id, render_frame_id, info->ToWebPluginInfo());
 }
 
-}  // namespace
+content::WebContents* GetPrintPreviewDialog(
+    content::WebContents* web_contents) {
+  PrintPreviewDialogController* dialog_controller =
+      PrintPreviewDialogController::GetInstance();
+  if (!dialog_controller)
+    return nullptr;
+  return dialog_controller->GetPrintPreviewForContents(web_contents);
+}
 
-namespace printing {
+}  // namespace
 
 struct PrintViewManager::FrameDispatchHelper {
   PrintViewManager* manager;
@@ -324,6 +333,22 @@ void PrintViewManager::ShowScriptedPrintPreview(bool source_is_modifiable) {
   params.is_modifiable = source_is_modifiable;
   PrintPreviewUI::SetInitialParams(
       dialog_controller->GetPrintPreviewForContents(web_contents()), params);
+}
+
+void PrintViewManager::RequestPrintPreview(
+    mojom::RequestPrintPreviewParamsPtr params) {
+  content::RenderFrameHost* render_frame_host =
+      print_manager_host_receivers_.GetCurrentTargetFrame();
+
+  if (RejectPrintPreviewRequestIfRestricted(render_frame_host))
+    return;
+
+  if (params->webnode_only) {
+    PrintPreviewForWebNode(render_frame_host);
+  }
+  PrintPreviewDialogController::PrintPreview(web_contents());
+  PrintPreviewUI::SetInitialParams(GetPrintPreviewDialog(web_contents()),
+                                   *params);
 }
 
 void PrintViewManager::OnScriptedPrintPreviewReply(IPC::Message* reply_msg) {
