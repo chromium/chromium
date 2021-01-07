@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "mojo/core/embedder/embedder.h"
@@ -33,6 +34,9 @@
 using testing::_;
 
 namespace {
+
+using MockTerminateGpuCallback =
+    base::MockCallback<base::OnceCallback<void(std::string)>>;
 
 // Copied from ui/ozone/test/mock_platform_window_delegate.h to avoid
 // dependency from the whole library (it causes link problems).
@@ -70,6 +74,7 @@ struct Environment {
   }
 
   base::test::TaskEnvironment task_environment;
+  MockTerminateGpuCallback callback_;
 };
 
 }  // namespace
@@ -145,6 +150,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   EXPECT_CALL(*server.zwp_linux_dmabuf_v1(), CreateParams(_, _, _));
   auto* manager_host = connection->buffer_manager_host();
+  manager_host->SetTerminateGpuCallback(env.callback_.Get());
   manager_host->CreateDmabufBasedBuffer(
       mojo::PlatformHandle(std::move(fd)), buffer_size, strides, offsets,
       modifiers, kFormat, kPlaneCount, kBufferId);
