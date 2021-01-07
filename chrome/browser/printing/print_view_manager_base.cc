@@ -66,6 +66,10 @@
 #include "chrome/browser/printing/print_view_manager.h"
 #endif
 
+#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/win/conflicts/module_database.h"
+#endif
+
 namespace printing {
 
 namespace {
