@@ -68476,6 +68476,18 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Not displayed"/>
 </enum>
 
+<enum name="SigninInterceptSessionStartupResult">
+  <int value="0" label="Nothing to do (Reconcilor)"/>
+  <int value="1" label="Nothing to do (Multilogin)"/>
+  <int value="2" label="Success (reconcilor)"/>
+  <int value="3" label="Success (multilogin)"/>
+  <int value="4" label="Success (other)"/>
+  <int value="5" label="Timeout (multilogin)"/>
+  <int value="6" label="Timeout (reconcilor)"/>
+  <int value="7" label="Transient error (multilogin)"/>
+  <int value="8" label="Persistent error (multilogin)"/>
+</enum>
+
 <enum name="SigninInvalidGaiaCredentialsReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Credentials rejected by server"/>
