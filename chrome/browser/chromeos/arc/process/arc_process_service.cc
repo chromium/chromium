@@ -306,6 +306,8 @@ ArcProcessService::ArcProcessService(content::BrowserContext* context,
 
 ArcProcessService::~ArcProcessService() {
   arc_bridge_service_->process()->RemoveObserver(this);
+  if (is_observing_process_snapshot_)
+    ProcessSnapshotServer::Get()->RemoveObserver(this);
 }
 
 // static
@@ -327,6 +329,7 @@ ArcProcessService* ArcProcessService::Get() {
 
 void ArcProcessService::RequestAppProcessList(
     RequestProcessListCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   HandleRequest(
       base::BindOnce(&ArcProcessService::ContinueAppProcessListRequest,
                      base::Unretained(this), std::move(callback)));
@@ -334,6 +337,7 @@ void ArcProcessService::RequestAppProcessList(
 
 void ArcProcessService::RequestSystemProcessList(
     RequestProcessListCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   HandleRequest(
       base::BindOnce(&ArcProcessService::ContinueSystemProcessListRequest,
                      base::Unretained(this), std::move(callback)));
@@ -341,12 +345,14 @@ void ArcProcessService::RequestSystemProcessList(
 
 void ArcProcessService::RequestAppMemoryInfo(
     RequestMemoryInfoCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   HandleRequest(base::BindOnce(&ArcProcessService::ContinueAppMemoryInfoRequest,
                                base::Unretained(this), std::move(callback)));
 }
 
 void ArcProcessService::RequestSystemMemoryInfo(
     RequestMemoryInfoCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   HandleRequest(
       base::BindOnce(&ArcProcessService::ContinueSystemMemoryInfoRequest,
                      base::Unretained(this), std::move(callback)));
@@ -354,6 +360,7 @@ void ArcProcessService::RequestSystemMemoryInfo(
 
 void ArcProcessService::OnProcessSnapshotRefreshed(
     const base::ProcessIterator::ProcessEntries& snapshot) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   cached_process_snapshot_ = snapshot;
   last_process_snapshot_time_ = base::Time::Now();
 
@@ -464,6 +471,7 @@ void ArcProcessService::HandleRequest(base::OnceClosure request) {
 
 void ArcProcessService::ContinueAppProcessListRequest(
     RequestProcessListCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Since several services call this class to get information about the ARC
   // process list, it can produce a lot of logspam when the board is ARC-ready
   // but the user has not opted into ARC. This redundant check avoids that
@@ -487,6 +495,7 @@ void ArcProcessService::ContinueAppProcessListRequest(
 
 void ArcProcessService::ContinueSystemProcessListRequest(
     RequestProcessListCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
       base::BindOnce(&GetArcSystemProcessList, cached_process_snapshot_),
@@ -497,6 +506,7 @@ void ArcProcessService::ContinueSystemProcessListRequest(
 
 void ArcProcessService::ContinueAppMemoryInfoRequest(
     RequestMemoryInfoCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!connection_ready_) {
     std::move(callback).Run({});
     return;
@@ -518,6 +528,7 @@ void ArcProcessService::ContinueAppMemoryInfoRequest(
 
 void ArcProcessService::ContinueSystemMemoryInfoRequest(
     RequestMemoryInfoCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!connection_ready_) {
     std::move(callback).Run({});
     return;
