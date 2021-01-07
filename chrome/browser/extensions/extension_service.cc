@@ -957,10 +957,11 @@ void ExtensionService::DisableUserExtensionsExcept(
       to_disable.push_back(extension);
   }
 
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile());
   for (const auto& extension : to_disable) {
     if (extension->was_installed_by_default() &&
-        extension_urls::IsWebstoreUpdateUrl(
-            ManifestURL::GetUpdateURL(extension.get())))
+        extension_management->UpdatesFromWebstore(*extension))
       continue;
     const std::string& id = extension->id();
     if (!base::Contains(except_ids, id))
@@ -1561,9 +1562,11 @@ void ExtensionService::OnExtensionInstalled(
 
       pending_extension_manager()->Remove(id);
 
+      ExtensionManagement* management =
+          ExtensionManagementFactory::GetForBrowserContext(profile());
       LOG(WARNING) << "ShouldAllowInstall() returned false for " << id
                    << " of type " << extension->GetType() << " and update URL "
-                   << ManifestURL::GetUpdateURL(extension).spec()
+                   << management->GetEffectiveUpdateURL(*extension).spec()
                    << "; not installing";
 
       // Delete the extension directory since we're not going to

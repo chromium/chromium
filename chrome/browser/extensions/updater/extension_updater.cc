@@ -23,6 +23,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/module/module.h"
 #include "chrome/browser/extensions/crx_installer.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
@@ -314,7 +315,9 @@ bool ExtensionUpdater::AddExtensionToDownloader(
     const Extension& extension,
     int request_id,
     ManifestFetchData::FetchPriority fetch_priority) {
-  GURL update_url = ManifestURL::GetUpdateURL(&extension);
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile_);
+  GURL update_url = extension_management->GetEffectiveUpdateURL(extension);
   // Skip extensions with empty update URLs converted from user
   // scripts.
   if (extension.converted_from_user_script() && update_url.is_empty()) {
@@ -646,7 +649,10 @@ bool ExtensionUpdater::CanUseUpdateService(
   // Furthermore, we can only update extensions that were installed from the
   // default webstore or extensions with empty update URLs not converted from
   // user scripts.
-  const GURL& update_url = ManifestURL::GetUpdateURL(extension);
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile_);
+  const GURL& update_url =
+      extension_management->GetEffectiveUpdateURL(*extension);
   if (update_url.is_empty())
     return !extension->converted_from_user_script();
   return extension_urls::IsWebstoreUpdateUrl(update_url);

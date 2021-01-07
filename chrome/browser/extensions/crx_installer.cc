@@ -456,7 +456,9 @@ base::Optional<CrxInstallError> CrxInstaller::AllowInstall(
       // For apps with a gallery update URL, require that they be installed
       // from the gallery.
       // TODO(erikkay) Apply this rule for paid extensions and themes as well.
-      if (ManifestURL::UpdatesFromGallery(extension)) {
+      ExtensionManagement* extension_management =
+          ExtensionManagementFactory::GetForBrowserContext(profile_);
+      if (extension_management->UpdatesFromWebstore(*extension)) {
         return CrxInstallError(
             CrxInstallErrorType::OTHER,
             CrxInstallErrorDetail::NOT_INSTALLED_FROM_GALLERY,
@@ -867,9 +869,15 @@ void CrxInstaller::InitializeCreationFlagsForUpdate(const Extension* extension,
   // its auto-update URL is from the webstore, treat it as a webstore install.
   // Note that we ignore some older extensions with blank auto-update URLs
   // because we are mostly concerned with restrictions on NaCl extensions,
-  // which are newer.
-  if (extension->from_webstore() || ManifestURL::UpdatesFromGallery(extension))
+  // which are newer. We need to check whether the update URL is from webstore
+  // or not from |ExtensionManagement| because the extension update URL might be
+  // overriden by policy.
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile_);
+  if (extension->from_webstore() ||
+      extension_management->UpdatesFromWebstore(*extension)) {
     creation_flags_ |= Extension::FROM_WEBSTORE;
+  }
 
   // Bookmark apps being updated is kind of a contradiction, but that's because
   // we mark the default apps as bookmark apps, and they're hosted in the web

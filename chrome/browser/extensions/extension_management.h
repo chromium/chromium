@@ -130,6 +130,13 @@ class ExtensionManagement : public KeyedService {
   // overridden by policy.
   bool IsUpdateUrlOverridden(const ExtensionId& id) const;
 
+  // Get the effective update URL for the extension. Normally this URL comes
+  // from the extension manifest, but may be overridden by policies.
+  GURL GetEffectiveUpdateURL(const Extension& extension) const;
+
+  // Returns true if this extension's update URL is from webstore.
+  bool UpdatesFromWebstore(const Extension& extension) const;
+
   // Returns if an extension with id |id| is explicitly allowed by enterprise
   // policy or not.
   bool IsInstallationExplicitlyAllowed(const ExtensionId& id) const;

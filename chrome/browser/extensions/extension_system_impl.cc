@@ -83,10 +83,13 @@ namespace {
 
 // Helper to serve as an UninstallPingSender::Filter callback.
 UninstallPingSender::FilterResult ShouldSendUninstallPing(
+    Profile* profile,
     const Extension* extension,
     UninstallReason reason) {
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile);
   if (extension && (extension->from_webstore() ||
-                    ManifestURL::UpdatesFromGallery(extension))) {
+                    extension_management->UpdatesFromWebstore(*extension))) {
     return UninstallPingSender::SEND_PING;
   }
   return UninstallPingSender::DO_NOT_SEND_PING;
@@ -220,7 +223,7 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
 
   uninstall_ping_sender_ = std::make_unique<UninstallPingSender>(
       ExtensionRegistry::Get(profile_),
-      base::BindRepeating(&ShouldSendUninstallPing));
+      base::Bind(&ShouldSendUninstallPing, profile_));
 
   // These services must be registered before the ExtensionService tries to
   // load any extensions.

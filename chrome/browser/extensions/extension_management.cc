@@ -37,6 +37,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/url_pattern.h"
@@ -174,6 +175,36 @@ bool ExtensionManagement::IsUpdateUrlOverridden(const ExtensionId& id) const {
   if (it == settings_by_id_.end())
     return false;
   return it->second->override_update_url;
+}
+
+GURL ExtensionManagement::GetEffectiveUpdateURL(
+    const Extension& extension) const {
+  if (IsUpdateUrlOverridden(extension.id())) {
+    DCHECK(!extension.was_installed_by_default())
+        << "Update URL should not be overridden for default-installed "
+           "extensions!";
+    auto iter_id = settings_by_id_.find(extension.id());
+    const GURL update_url(iter_id->second->update_url);
+    // It's important that we never override a non-webstore update URL to be
+    // the webstore URL. Otherwise, a policy may inadvertently cause
+    // non-webstore extensions to be treated as from-webstore (including content
+    // verification, report abuse options, etc).
+    DCHECK(!extension_urls::IsWebstoreUpdateUrl(update_url))
+        << "Update URL cannot be overridden to be the webstore URL!";
+    return update_url;
+  }
+  return ManifestURL::GetUpdateURL(&extension);
+}
+
+bool ExtensionManagement::UpdatesFromWebstore(
+    const Extension& extension) const {
+  const bool is_webstore_url = extension_urls::IsWebstoreUpdateUrl(
+      GURL(GetEffectiveUpdateURL(extension)));
+  if (is_webstore_url) {
+    DCHECK(!IsUpdateUrlOverridden(extension.id()))
+        << "An extension's update URL cannot be overridden to the webstore.";
+  }
+  return is_webstore_url;
 }
 
 bool ExtensionManagement::IsInstallationExplicitlyAllowed(

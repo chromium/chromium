@@ -512,6 +512,8 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
         new std::string(l10n_util::GetStringUTF8(blocklist_text)));
   }
 
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(browser_context_);
   Profile* profile = Profile::FromBrowserContext(browser_context_);
 
   // ControlledInfo.
@@ -627,12 +629,12 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
 
   // Location.
   if (extension.location() == Manifest::INTERNAL &&
-      ManifestURL::UpdatesFromGallery(&extension)) {
+      extension_management->UpdatesFromWebstore(extension)) {
     info->location = developer::LOCATION_FROM_STORE;
   } else if (Manifest::IsUnpackedLocation(extension.location())) {
     info->location = developer::LOCATION_UNPACKED;
   } else if (Manifest::IsExternalLocation(extension.location()) &&
-             ManifestURL::UpdatesFromGallery(&extension)) {
+             extension_management->UpdatesFromWebstore(extension)) {
     info->location = developer::LOCATION_THIRD_PARTY;
   } else {
     info->location = developer::LOCATION_UNKNOWN;
@@ -710,7 +712,8 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
 
   info->type = GetExtensionType(extension.manifest()->type());
 
-  info->update_url = ManifestURL::GetUpdateURL(&extension).spec();
+  info->update_url =
+      extension_management->GetEffectiveUpdateURL(extension).spec();
 
   info->user_may_modify =
       management_policy->UserMayModifySettings(&extension, nullptr);
