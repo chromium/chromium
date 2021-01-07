@@ -4,37 +4,11 @@
 
 import("//extensions/buildflags/buildflags.gni")
 import("//tools/json_schema_compiler/json_features.gni")
-import("//tools/json_schema_compiler/json_schema_api.gni")
 
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
 # TODO(devlin): Enforce visibility restrictions on more of these targets?
-
-schema_sources = [ "identity.idl" ]
-root_namespace = "extensions::shell::api::%(namespace)s"
-
-function_registration("generated_api_registration") {
-  sources = schema_sources
-  impl_dir = "//extensions/shell/browser/api"
-  bundle_name = "Shell"
-
-  deps = [ "//extensions/common" ]
-
-  visibility = [ ":api" ]
-}
-
-generated_json_strings("generated_api_json_strings") {
-  sources = schema_sources
-  bundle_name = "Shell"
-  visibility = [ ":api" ]
-}
-
-generated_types("generated_api_types") {
-  sources = schema_sources
-
-  visibility = [ ":api" ]
-}
 
 json_features("shell_api_features") {
   feature_type = "APIFeature"
@@ -43,14 +17,6 @@ json_features("shell_api_features") {
 }
 
 # Public Targets
-
-group("api") {
-  public_deps = [
-    ":generated_api_json_strings",
-    ":generated_api_registration",
-    ":generated_api_types",
-  ]
-}
 
 group("extensions_features") {
   public_deps = [
