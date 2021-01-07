@@ -74,7 +74,7 @@ gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilitiesInternal(
 #endif
 #elif defined(OS_MAC)
   capabilities.supported_profiles =
-      VTVideoDecodeAccelerator::GetSupportedProfiles();
+      VTVideoDecodeAccelerator::GetSupportedProfiles(workarounds);
 #endif
 
   return GpuVideoAcceleratorUtil::ConvertMediaToGpuDecodeCapabilities(
@@ -232,7 +232,8 @@ GpuVideoDecodeAcceleratorFactory::CreateVTVDA(
     const gpu::GpuPreferences& gpu_preferences,
     MediaLog* media_log) const {
   std::unique_ptr<VideoDecodeAccelerator> decoder;
-  decoder.reset(new VTVideoDecodeAccelerator(gl_client_, media_log));
+  decoder.reset(
+      new VTVideoDecodeAccelerator(gl_client_, workarounds, media_log));
   return decoder;
 }
 #endif
