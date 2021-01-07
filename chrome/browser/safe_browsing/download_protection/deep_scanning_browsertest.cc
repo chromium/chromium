@@ -118,9 +118,10 @@ class DownloadDeepScanningBrowserTest
   void SetUpReporting() {
     SetOnSecurityEventReporting(browser()->profile()->GetPrefs(), true);
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
+    client_->SetDMToken("dm_token");
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
         browser()->profile())
-        ->SetCloudPolicyClientForTesting(client_.get());
+        ->SetBrowserCloudPolicyClientForTesting(client_.get());
     identity_test_environment_ =
         std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_environment_->MakePrimaryAccountAvailable(kUserName);

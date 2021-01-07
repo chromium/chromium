@@ -82,8 +82,10 @@ class FakeAuthorizedSafeBrowsingPrivateEventRouter
 
  private:
   void ReportRealtimeEvent(const std::string& name,
+                           enterprise_connectors::ReportingSettings settings,
                            EventBuilder event_builder) override {
-    ReportRealtimeEventCallback(name, std::move(event_builder), true);
+    ReportRealtimeEventCallback(name, std::move(settings),
+                                std::move(event_builder), true);
   }
 };
 
@@ -96,8 +98,10 @@ class FakeUnauthorizedSafeBrowsingPrivateEventRouter
 
  private:
   void ReportRealtimeEvent(const std::string& name,
+                           enterprise_connectors::ReportingSettings settings,
                            EventBuilder event_builder) override {
-    ReportRealtimeEventCallback(name, std::move(event_builder), false);
+    ReportRealtimeEventCallback(name, std::move(settings),
+                                std::move(event_builder), false);
   }
 };
 
@@ -237,8 +241,9 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
 
     // Set a mock cloud policy client in the router.
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
+    client_->SetDMToken("fake-token");
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->SetCloudPolicyClientForTesting(client_.get());
+        ->SetBrowserCloudPolicyClientForTesting(client_.get());
   }
 
   void SetUpRouters(bool realtime_reporting_enable = true,
@@ -995,7 +1000,7 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
   }
 
   bool should_init() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     return is_feature_flag_enabled_;
 #else
     return is_feature_flag_enabled_ && is_manageable_;
@@ -1031,12 +1036,10 @@ TEST_P(SafeBrowsingIsRealtimeReportingEnabledTest, CheckRealtimeReport) {
       api::safe_browsing_private::OnPolicySpecifiedPasswordChanged::kEventName);
   event_router_->AddEventObserver(&event_observer);
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
   bool should_report =
       is_feature_flag_enabled_ && is_policy_enabled_ && is_authorized_;
-#else
-  bool should_report = is_feature_flag_enabled_ && is_manageable_ &&
-                       is_policy_enabled_ && is_authorized_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  should_report &= is_manageable_;
 #endif
 
   if (should_report) {

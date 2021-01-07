@@ -38,6 +38,7 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -70,6 +71,7 @@ const char kUserPolicyClientDescription[] = "a user";
 const char kChromeBrowserCloudManagementClientDescription[] =
     "a machine-level user";
 #endif
+const char kProfilePolicyClientDescription[] = "a profile-level user";
 
 void AddAnalysisConnectorVerdictToEvent(
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
@@ -100,6 +102,11 @@ std::string MalwareRuleToThreatType(const std::string& rule_name) {
   } else {
     return "UNKNOWN";
   }
+}
+
+bool IsClientValid(const std::string& dm_token,
+                   policy::CloudPolicyClient* client) {
+  return client && client->dm_token() == dm_token;
 }
 
 }  // namespace
@@ -170,8 +177,10 @@ SafeBrowsingPrivateEventRouter::SafeBrowsingPrivateEventRouter(
 }
 
 SafeBrowsingPrivateEventRouter::~SafeBrowsingPrivateEventRouter() {
-  if (client_)
-    client_->RemoveObserver(this);
+  if (browser_client_)
+    browser_client_->RemoveObserver(this);
+  if (profile_client_)
+    profile_client_->RemoveObserver(this);
 }
 
 void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
@@ -197,11 +206,12 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
     event_router_->BroadcastEvent(std::move(extension_event));
   }
 
-  if (!IsRealtimeReportingEnabled())
+  auto settings = GetReportingSettings();
+  if (!settings.has_value())
     return;
 
   ReportRealtimeEvent(
-      kKeyPasswordReuseEvent,
+      kKeyPasswordReuseEvent, std::move(settings.value()),
       base::BindOnce(
           [](const std::string& url, const std::string& user_name,
              const bool is_phishing_url, const std::string& profile_user_name) {
@@ -232,10 +242,11 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
     event_router_->BroadcastEvent(std::move(extension_event));
   }
 
-  if (!IsRealtimeReportingEnabled())
+  auto settings = GetReportingSettings();
+  if (!settings.has_value())
     return;
 
-  ReportRealtimeEvent(kKeyPasswordChangedEvent,
+  ReportRealtimeEvent(kKeyPasswordChangedEvent, std::move(settings.value()),
                       base::BindOnce(
                           [](const std::string& user_name,
                              const std::string& profile_user_name) {
@@ -274,11 +285,12 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
     event_router_->BroadcastEvent(std::move(extension_event));
   }
 
-  if (!IsRealtimeReportingEnabled())
+  auto settings = GetReportingSettings();
+  if (!settings.has_value())
     return;
 
   ReportRealtimeEvent(
-      kKeyDangerousDownloadEvent,
+      kKeyDangerousDownloadEvent, std::move(settings.value()),
       base::BindOnce(
           [](const std::string& url, const std::string& file_name,
              const std::string& download_digest_sha256,
@@ -332,7 +344,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
     event_router_->BroadcastEvent(std::move(extension_event));
   }
 
-  if (!IsRealtimeReportingEnabled())
+  auto settings = GetReportingSettings();
+  if (!settings.has_value())
     return;
 
   PrefService* prefs = Profile::FromBrowserContext(context_)->GetPrefs();
@@ -341,7 +354,7 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
           ? safe_browsing::EventResult::BLOCKED
           : safe_browsing::EventResult::WARNED;
   ReportRealtimeEvent(
-      kKeyInterstitialEvent,
+      kKeyInterstitialEvent, std::move(settings.value()),
       base::BindOnce(
           [](const std::string& url, const std::string& reason,
              int net_error_code, const std::string& user_name,
@@ -388,11 +401,12 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
     event_router_->BroadcastEvent(std::move(extension_event));
   }
 
-  if (!IsRealtimeReportingEnabled())
+  auto settings = GetReportingSettings();
+  if (!settings.has_value())
     return;
 
   ReportRealtimeEvent(
-      kKeyInterstitialEvent,
+      kKeyInterstitialEvent, std::move(settings.value()),
       base::BindOnce(
           [](const std::string& url, const std::string& reason,
              int net_error_code, const std::string& user_name) {
@@ -421,9 +435,6 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
-  if (!IsRealtimeReportingEnabled())
-    return;
-
   if (result.tag() == "malware") {
     DCHECK_EQ(1, result.triggered_rules().size());
     OnDangerousDeepScanningResult(
@@ -449,11 +460,12 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
     const std::string& malware_family,
     const std::string& malware_category,
     const std::string& evidence_locker_filepath) {
-  if (!IsRealtimeReportingEnabled())
+  auto settings = GetReportingSettings();
+  if (!settings.has_value())
     return;
 
   ReportRealtimeEvent(
-      kKeyDangerousDownloadEvent,
+      kKeyDangerousDownloadEvent, std::move(settings.value()),
       base::BindOnce(
           [](const std::string& url, const std::string& file_name,
              const std::string& download_digest_sha256,
@@ -509,11 +521,12 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
-  if (!IsRealtimeReportingEnabled())
+  auto settings = GetReportingSettings();
+  if (!settings.has_value())
     return;
 
   ReportRealtimeEvent(
-      kKeySensitiveDataEvent,
+      kKeySensitiveDataEvent, std::move(settings.value()),
       base::BindOnce(
           [](const enterprise_connectors::ContentAnalysisResponse::Result&
                  result,
@@ -565,11 +578,12 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
     safe_browsing::DeepScanAccessPoint access_point,
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size) {
-  if (!IsRealtimeReportingEnabled())
+  auto settings = GetReportingSettings();
+  if (!settings.has_value())
     return;
 
   ReportRealtimeEvent(
-      kKeySensitiveDataEvent,
+      kKeySensitiveDataEvent, std::move(settings.value()),
       base::BindOnce(
           [](const enterprise_connectors::ContentAnalysisResponse::Result&
                  result,
@@ -621,11 +635,12 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
     const std::string& reason,
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
-  if (!IsRealtimeReportingEnabled())
+  auto settings = GetReportingSettings();
+  if (!settings.has_value())
     return;
 
   ReportRealtimeEvent(
-      kKeyUnscannedFileEvent,
+      kKeyUnscannedFileEvent, std::move(settings.value()),
       base::BindOnce(
           [](const std::string& url, const std::string& file_name,
              const std::string& download_digest_sha256,
@@ -670,11 +685,12 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const std::string& mime_type,
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
-  if (!IsRealtimeReportingEnabled())
+  auto settings = GetReportingSettings();
+  if (!settings.has_value())
     return;
 
   ReportRealtimeEvent(
-      kKeyDangerousDownloadEvent,
+      kKeyDangerousDownloadEvent, std::move(settings.value()),
       base::BindOnce(
           [](const std::string& url, const std::string& file_name,
              const std::string& download_digest_sha256,
@@ -713,11 +729,12 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     const std::string& threat_type,
     const std::string& mime_type,
     const int64_t content_size) {
-  if (!IsRealtimeReportingEnabled())
+  auto settings = GetReportingSettings();
+  if (!settings.has_value())
     return;
 
   ReportRealtimeEvent(
-      kKeyDangerousDownloadEvent,
+      kKeyDangerousDownloadEvent, std::move(settings.value()),
       base::BindOnce(
           [](const std::string& url, const std::string& file_name,
              const std::string& download_digest_sha256,
@@ -759,15 +776,20 @@ bool SafeBrowsingPrivateEventRouter::ShouldInitRealtimeReportingClient() {
 
   if (!IsRealtimeReportingAvailable()) {
     DVLOG(1) << "Safe browsing real-time event reporting is only available for "
-                "managed browsers or devices.";
+                "managed browsers, devices or users.";
     return false;
   }
   return true;
 }
 
-void SafeBrowsingPrivateEventRouter::SetCloudPolicyClientForTesting(
+void SafeBrowsingPrivateEventRouter::SetBrowserCloudPolicyClientForTesting(
     policy::CloudPolicyClient* client) {
-  client_ = client;
+  browser_client_ = client;
+}
+
+void SafeBrowsingPrivateEventRouter::SetProfileCloudPolicyClientForTesting(
+    policy::CloudPolicyClient* client) {
+  profile_client_ = client;
 }
 
 void SafeBrowsingPrivateEventRouter::SetBinaryUploadServiceForTesting(
@@ -780,9 +802,13 @@ void SafeBrowsingPrivateEventRouter::SetIdentityManagerForTesting(
   identity_manager_ = identity_manager;
 }
 
-void SafeBrowsingPrivateEventRouter::InitRealtimeReportingClient() {
-  // If already initialized, do nothing.
-  if (client_) {
+void SafeBrowsingPrivateEventRouter::InitRealtimeReportingClient(
+    const enterprise_connectors::ReportingSettings& settings) {
+  // If the corresponding client is already initialized, do nothing.
+  if ((settings.per_profile &&
+       IsClientValid(settings.dm_token, profile_client_)) ||
+      (!settings.per_profile &&
+       IsClientValid(settings.dm_token, browser_client_))) {
     DVLOG(2) << "Safe browsing real-time event reporting already initialized.";
     return;
   }
@@ -798,23 +824,47 @@ void SafeBrowsingPrivateEventRouter::InitRealtimeReportingClient() {
     return;
   }
 
+  policy::CloudPolicyClient* client = nullptr;
+  std::string policy_client_desc;
+#if defined(OS_CHROMEOS)
+  auto desc_and_client = InitBrowserReportingClient(settings.dm_token);
+#else
+  auto desc_and_client = settings.per_profile
+                             ? InitProfileReportingClient(settings.dm_token)
+                             : InitBrowserReportingClient(settings.dm_token);
+#endif
+  if (!desc_and_client.second)
+    return;
+  policy_client_desc = std::move(desc_and_client.first);
+  client = std::move(desc_and_client.second);
+
+  OnCloudPolicyClientAvailable(policy_client_desc, client);
+}
+
+std::pair<std::string, policy::CloudPolicyClient*>
+SafeBrowsingPrivateEventRouter::InitBrowserReportingClient(
+    const std::string& dm_token) {
   // |device_management_service| may be null in tests. If there is no device
   // management service don't enable the real-time reporting API since the
   // router won't be able to create the reporting server client below.
   policy::DeviceManagementService* device_management_service =
       g_browser_process->browser_policy_connector()
           ->device_management_service();
+  std::string policy_client_desc;
+#if defined(OS_CHROMEOS)
+  policy_client_desc = kPolicyClientDescription;
+#else
+  policy_client_desc = kChromeBrowserCloudManagementClientDescription;
+#endif
   if (!device_management_service) {
     DVLOG(2) << "Safe browsing real-time event requires a device management "
                 "service.";
-    return;
+    return {policy_client_desc, nullptr};
   }
 
   policy::CloudPolicyClient* client = nullptr;
-  std::string policy_client_desc;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy_client_desc = kPolicyClientDescription;
+#if defined(OS_CHROMEOS)
   auto* user = GetChromeOSUser();
   if (user) {
     auto* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
@@ -835,35 +885,16 @@ void SafeBrowsingPrivateEventRouter::InitRealtimeReportingClient() {
     LOG(ERROR) << "Could not determine who the user is.";
   }
 #else
-  policy_client_desc = kChromeBrowserCloudManagementClientDescription;
-  // Make sure we have a DM token to proceed.  During the lifetime of a running
-  // chrome browser, this can only change from empty to non-empty.  There are
-  // no cases where chrome starts with a dm token and then it goes away.
-  // When chrome starts without a dm token and determines that one is needed,
-  // browser startup is blocked until it is retrieved or an error occurs.  In
-  // the latter case, chrome won't try to retrieve it again until the next
-  // restart.
-  //
-  // Therefore, it is OK to retrieve the dm token once here on initialization
-  // of the router to determine if real-time reporting can be enabled or not.
-  auto settings =
-      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-          context_)
-          ->GetReportingSettings(
-              enterprise_connectors::ReportingConnector::SECURITY_EVENT);
   std::string client_id =
       policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
-
-  if (!settings.has_value() || settings.value().dm_token.empty())
-    return;
 
   // Make sure DeviceManagementService has been initialized.
   device_management_service->ScheduleInitialization(0);
 
-  private_client_ = std::make_unique<policy::CloudPolicyClient>(
+  browser_private_client_ = std::make_unique<policy::CloudPolicyClient>(
       device_management_service, g_browser_process->shared_url_loader_factory(),
       policy::CloudPolicyClient::DeviceDMTokenCallback());
-  client = private_client_.get();
+  client = browser_private_client_.get();
 
   // TODO(crbug.com/1069049): when we decide to add the extra URL parameters to
   // the uploaded reports, do the following:
@@ -872,39 +903,73 @@ void SafeBrowsingPrivateEventRouter::InitRealtimeReportingClient() {
 
   if (!client->is_registered()) {
     client->SetupRegistration(
-        settings.value().dm_token, client_id,
+        dm_token, client_id,
         /*user_affiliation_ids=*/std::vector<std::string>());
   }
 #endif
 
-  OnCloudPolicyClientAvailable(policy_client_desc, client);
+  return {policy_client_desc, client};
 }
+
+#if !defined(OS_CHROMEOS)
+std::pair<std::string, policy::CloudPolicyClient*>
+SafeBrowsingPrivateEventRouter::InitProfileReportingClient(
+    const std::string& dm_token) {
+  policy::UserCloudPolicyManager* policy_manager =
+      Profile::FromBrowserContext(context_)->GetUserCloudPolicyManager();
+  if (!policy_manager || !policy_manager->core() ||
+      !policy_manager->core()->client()) {
+    return {kProfilePolicyClientDescription, nullptr};
+  }
+
+  profile_private_client_ = std::make_unique<policy::CloudPolicyClient>(
+      policy_manager->core()->client()->service(),
+      g_browser_process->shared_url_loader_factory(),
+      policy::CloudPolicyClient::DeviceDMTokenCallback());
+  policy::CloudPolicyClient* client = profile_private_client_.get();
+
+  // TODO(crbug.com/1069049): when we decide to add the extra URL parameters to
+  // the uploaded reports, do the following:
+  //     client->add_connector_url_params(base::FeatureList::IsEnabled(
+  //        enterprise_connectors::kEnterpriseConnectorsEnabled));
+
+  client->SetupRegistration(dm_token,
+                            policy_manager->core()->client()->client_id(),
+                            /*user_affiliation_ids*/ {});
+
+  return {kProfilePolicyClientDescription, client};
+}
+#endif  // !defined(OS_CHROMEOS)
 
 void SafeBrowsingPrivateEventRouter::OnCloudPolicyClientAvailable(
     const std::string& policy_client_desc,
     policy::CloudPolicyClient* client) {
-  client_ = client;
-  if (client_ == nullptr) {
+  if (policy_client_desc == kProfilePolicyClientDescription)
+    profile_client_ = client;
+  else
+    browser_client_ = client;
+
+  if (client == nullptr) {
     LOG(ERROR) << "Could not obtain " << policy_client_desc
                << " for safe browsing real-time event reporting.";
     return;
   }
 
-  client_->AddObserver(this);
+  client->AddObserver(this);
 
   VLOG(1) << "Ready for safe browsing real-time event reporting.";
 }
 
-bool SafeBrowsingPrivateEventRouter::IsRealtimeReportingEnabled() {
-  auto settings =
-      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-          context_)
-          ->GetReportingSettings(
-              enterprise_connectors::ReportingConnector::SECURITY_EVENT);
-  return settings.has_value();
+base::Optional<enterprise_connectors::ReportingSettings>
+SafeBrowsingPrivateEventRouter::GetReportingSettings() {
+  return enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+             context_)
+      ->GetReportingSettings(
+          enterprise_connectors::ReportingConnector::SECURITY_EVENT);
 }
 
 void SafeBrowsingPrivateEventRouter::IfAuthorized(
+    const std::string& dm_token,
     base::OnceCallback<void(bool)> cont) {
   if (!binary_upload_service_ && g_browser_process) {
     binary_upload_service_ =
@@ -912,30 +977,30 @@ void SafeBrowsingPrivateEventRouter::IfAuthorized(
             Profile::FromBrowserContext(context_));
   }
 
-  auto settings =
-      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-          context_)
-          ->GetReportingSettings(
-              enterprise_connectors::ReportingConnector::SECURITY_EVENT);
-
   // TODO(crbug/1069049): Use reporting URL.
-  if (binary_upload_service_ && settings.has_value())
+  if (binary_upload_service_)
     binary_upload_service_->IsAuthorized(
-        GURL(), std::move(cont), settings.value().dm_token,
+        GURL(), std::move(cont), dm_token,
         enterprise_connectors::AnalysisConnector::
             ANALYSIS_CONNECTOR_UNSPECIFIED);
 }
 
 void SafeBrowsingPrivateEventRouter::ReportRealtimeEvent(
     const std::string& name,
+    enterprise_connectors::ReportingSettings settings,
     EventBuilder event_builder) {
-  IfAuthorized(base::BindOnce(
-      &SafeBrowsingPrivateEventRouter::ReportRealtimeEventCallback,
-      weak_ptr_factory_.GetWeakPtr(), name, std::move(event_builder)));
+  // Copy the DM token since |settings| is about to move.
+  std::string dm_token = settings.dm_token;
+  IfAuthorized(dm_token,
+               base::BindOnce(
+                   &SafeBrowsingPrivateEventRouter::ReportRealtimeEventCallback,
+                   weak_ptr_factory_.GetWeakPtr(), name, std::move(settings),
+                   std::move(event_builder)));
 }
 
 void SafeBrowsingPrivateEventRouter::ReportRealtimeEventCallback(
     const std::string& name,
+    enterprise_connectors::ReportingSettings settings,
     EventBuilder event_builder,
     bool authorized) {
   // Ignore the event if we know we can't report it.
@@ -945,9 +1010,11 @@ void SafeBrowsingPrivateEventRouter::ReportRealtimeEventCallback(
   }
 
   // Make sure real-time reporting is initialized.
-  InitRealtimeReportingClient();
-  if (!client_)
+  InitRealtimeReportingClient(settings);
+  if ((settings.per_profile && !profile_client_) ||
+      (!settings.per_profile && !browser_client_)) {
     return;
+  }
 
   // Format the current time (UTC) in RFC3339 format.
   base::Time::Exploded now_exploded;
@@ -973,7 +1040,8 @@ void SafeBrowsingPrivateEventRouter::ReportRealtimeEventCallback(
   base::Value event_list(base::Value::Type::LIST);
   event_list.Append(std::move(wrapper));
 
-  client_->UploadSecurityEventReport(
+  auto* client = settings.per_profile ? profile_client_ : browser_client_;
+  client->UploadSecurityEventReport(
       context_,
       policy::RealtimeReportingJobConfiguration::BuildReport(
           std::move(event_list),
@@ -1008,9 +1076,9 @@ bool SafeBrowsingPrivateEventRouter::IsRealtimeReportingAvailable() {
   auto* user = GetChromeOSUser();
   return user && user->IsAffiliated();
 #else
-  return g_browser_process->browser_policy_connector()
-      ->chrome_browser_cloud_management_controller()
-      ->IsEnabled();
+  // The management status is determined by the settings returned by
+  // ConnectorsService.
+  return true;
 #endif
 }
 

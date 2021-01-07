@@ -431,7 +431,7 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
             profile_,
             base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter));
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->SetCloudPolicyClientForTesting(client_.get());
+        ->SetBrowserCloudPolicyClientForTesting(client_.get());
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->SetBinaryUploadServiceForTesting(
             download_protection_service_.GetFakeBinaryUploadService());
@@ -448,7 +448,7 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
 
   void TearDown() override {
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->SetCloudPolicyClientForTesting(nullptr);
+        ->SetBrowserCloudPolicyClientForTesting(nullptr);
     DeepScanningRequestTest::TearDown();
   }
 

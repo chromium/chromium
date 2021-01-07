@@ -217,9 +217,10 @@ class ContentAnalysisDelegateBrowserTest
                                                true);
 
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
+    client_->SetDMToken(kDmToken);
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
         browser()->profile())
-        ->SetCloudPolicyClientForTesting(client_.get());
+        ->SetBrowserCloudPolicyClientForTesting(client_.get());
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
         browser()->profile())
         ->SetBinaryUploadServiceForTesting(FakeBinaryUploadServiceStorage());
