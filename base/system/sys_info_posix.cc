@@ -211,6 +211,7 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
 }
 #endif
 
+#if !defined(OS_MAC)
 // static
 std::string SysInfo::OperatingSystemArchitecture() {
   struct utsname info;
@@ -228,6 +229,7 @@ std::string SysInfo::OperatingSystemArchitecture() {
   }
   return arch;
 }
+#endif  // !defined(OS_MAC)
 
 // static
 size_t SysInfo::VMAllocationGranularity() {

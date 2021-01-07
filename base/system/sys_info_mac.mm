@@ -64,6 +64,17 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
 }
 
 // static
+std::string SysInfo::OperatingSystemArchitecture() {
+  switch (mac::GetCPUType()) {
+    case mac::CPUType::kIntel:
+      return "x86_64";
+    case mac::CPUType::kTranslatedIntel:
+    case mac::CPUType::kArm:
+      return "arm64";
+  }
+}
+
+// static
 int64_t SysInfo::AmountOfPhysicalMemoryImpl() {
   struct host_basic_info hostinfo;
   mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
