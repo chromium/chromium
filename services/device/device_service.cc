@@ -223,15 +223,12 @@ void DeviceService::BindBatteryMonitor(
 #endif
 }
 
+#if defined(OS_ANDROID)
 void DeviceService::BindNFCProvider(
     mojo::PendingReceiver<mojom::NFCProvider> receiver) {
-#if defined(OS_ANDROID)
   GetJavaInterfaceProvider()->GetInterface(std::move(receiver));
-#else
-  LOG(ERROR) << "NFC is only supported on Android";
-  NOTREACHED();
-#endif
 }
+#endif
 
 void DeviceService::BindVibrationManager(
     mojo::PendingReceiver<mojom::VibrationManager> receiver) {

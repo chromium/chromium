@@ -24,7 +24,6 @@
 #include "services/device/public/mojom/geolocation_config.mojom.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
-#include "services/device/public/mojom/nfc_provider.mojom.h"
 #include "services/device/public/mojom/power_monitor.mojom.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
@@ -42,6 +41,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/scoped_java_ref.h"
+#include "services/device/public/mojom/nfc_provider.mojom.h"
 #else
 #include "services/device/public/mojom/hid.mojom.h"
 #endif
@@ -156,8 +156,12 @@ class DeviceService : public mojom::DeviceService {
 
   void BindBatteryMonitor(
       mojo::PendingReceiver<mojom::BatteryMonitor> receiver) override;
+
+#if defined(OS_ANDROID)
   void BindNFCProvider(
       mojo::PendingReceiver<mojom::NFCProvider> receiver) override;
+#endif
+
   void BindVibrationManager(
       mojo::PendingReceiver<mojom::VibrationManager> receiver) override;
 
