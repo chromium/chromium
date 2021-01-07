@@ -331,6 +331,8 @@ crbug.com/968791 crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filte
 crbug.com/968791 crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-003.html [ Failure ]
 crbug.com/968791 virtual/scalefactor200/external/wpt/css/filter-effects/filters-test-brightness-003.html [ Failure ]
 
+crbug.com/916825 external/wpt/css/filter-effects/filter-subregion-01.html [ Failure ]
+
 # ==== Regressions introduced by BlinkGenPropertyTrees =====
 # Reflection / mask ordering issue
 crbug.com/767318 compositing/reflections/nested-reflection-mask-change.html [ Failure ]
@@ -2771,7 +2773,6 @@ crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-013.html [ Failu
 crbug.com/626703 external/wpt/css/css-text/white-space/white-space-intrinsic-size-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-transform/text-transform-copy-paste-001-manual.html [ Skip ]
 crbug.com/626703 external/wpt/html/webappapis/animation-frames/cancel-handle-manual.html [ Skip ]
-crbug.com/626703 external/wpt/css/filter-effects/filter-subregion-01.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-space-collapse-preserve-breaks-001.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-space-collapse-discard-001.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-space-trim-trim-inner-001.xht [ Failure ]
