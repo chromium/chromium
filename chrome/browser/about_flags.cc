@@ -6890,7 +6890,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChangePasswordAffiliationInfoName,
      flag_descriptions::kChangePasswordAffiliationInfoDescription, kOsAll,
      FEATURE_VALUE_TYPE(
-         password_manager::features::kUseOfHashAffiliationFetcher)},
+         password_manager::features::kChangePasswordAffiliationInfo)},
 
     {"use-of-hash-affiliation-fetcher",
      flag_descriptions::kUseOfHashAffiliationFetcherName,
