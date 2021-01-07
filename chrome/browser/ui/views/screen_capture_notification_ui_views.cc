@@ -244,7 +244,7 @@ ScreenCaptureNotificationUIViews::CreateNonClientFrameView(
       ui::NativeTheme::kColorId_DialogBackground);
   frame->SetBubbleBorder(std::unique_ptr<views::BubbleBorder>(
       new views::BubbleBorder(views::BubbleBorder::NONE,
-                              views::BubbleBorder::SMALL_SHADOW, color)));
+                              views::BubbleBorder::STANDARD_SHADOW, color)));
   return frame;
 }
 

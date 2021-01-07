@@ -262,7 +262,7 @@ void SigninViewControllerDelegateViews::DisplayModal() {
       if (should_show_close_button_) {
         GetBubbleFrameView()->SetBubbleBorder(
             std::make_unique<views::BubbleBorder>(
-                views::BubbleBorder::NONE, views::BubbleBorder::SMALL_SHADOW,
+                views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
                 SK_ColorWHITE));
       }
       constrained_window::ShowModalDialog(

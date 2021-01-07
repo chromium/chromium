@@ -40,7 +40,7 @@ class CandidateWindowBorder : public views::BubbleBorder {
  public:
   CandidateWindowBorder()
       : views::BubbleBorder(views::BubbleBorder::TOP_CENTER,
-                            views::BubbleBorder::BIG_SHADOW,
+                            views::BubbleBorder::STANDARD_SHADOW,
                             gfx::kPlaceholderColor),
         offset_(0) {
     set_use_theme_background_color(true);

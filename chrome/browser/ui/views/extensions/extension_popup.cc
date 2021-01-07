@@ -219,7 +219,7 @@ ExtensionPopup::ExtensionPopup(
     ShowAction show_action)
     : BubbleDialogDelegateView(anchor_view,
                                arrow,
-                               views::BubbleBorder::SMALL_SHADOW),
+                               views::BubbleBorder::STANDARD_SHADOW),
       host_(std::move(host)),
       show_action_(show_action) {
   SetButtons(ui::DIALOG_BUTTON_NONE);

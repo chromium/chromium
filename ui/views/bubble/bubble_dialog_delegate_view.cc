@@ -116,7 +116,7 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
   bubble_params.layer_type = bubble->GetLayerType();
 
   // Use a window default shadow if the bubble doesn't provides its own.
-  if (bubble->GetShadow() == BubbleBorder::NO_ASSETS)
+  if (bubble->GetShadow() == BubbleBorder::NO_SHADOW)
     bubble_params.shadow_type = Widget::InitParams::ShadowType::kDefault;
   else if (CustomShadowsSupported())
     bubble_params.shadow_type = Widget::InitParams::ShadowType::kNone;
@@ -493,9 +493,9 @@ void BubbleDialogDelegate::OnBubbleWidgetPaintAsActiveChanged() {
 }
 
 BubbleBorder::Shadow BubbleDialogDelegate::GetShadow() const {
-  if (CustomShadowsSupported() || shadow_ == BubbleBorder::NO_ASSETS)
+  if (CustomShadowsSupported() || shadow_ == BubbleBorder::NO_SHADOW)
     return shadow_;
-  return BubbleBorder::NO_SHADOW;
+  return BubbleBorder::NO_SHADOW_LEGACY;
 }
 
 View* BubbleDialogDelegate::GetAnchorView() const {

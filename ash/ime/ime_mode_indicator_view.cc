@@ -52,7 +52,7 @@ ImeModeIndicatorView::ImeModeIndicatorView(const gfx::Rect& cursor_bounds,
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetCanActivate(false);
   set_accept_events(false);
-  set_shadow(views::BubbleBorder::BIG_SHADOW);
+  set_shadow(views::BubbleBorder::STANDARD_SHADOW);
   SetArrow(views::BubbleBorder::TOP_CENTER);
 }
 

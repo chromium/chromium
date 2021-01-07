@@ -444,7 +444,8 @@ void FindBarView::OnThemeChanged() {
                       ui::NativeTheme::kColorId_TextfieldDefaultBackground),
                   0xFF);
   auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::NONE, views::BubbleBorder::SMALL_SHADOW, bg_color);
+      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
+      bg_color);
 
   border->SetCornerRadius(
       base::FeatureList::IsEnabled(

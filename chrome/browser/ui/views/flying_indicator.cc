@@ -56,7 +56,7 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
   std::unique_ptr<views::BubbleDialogDelegateView> bubble_view =
       std::make_unique<views::BubbleDialogDelegateView>(
           target, views::BubbleBorder::Arrow::FLOAT,
-          views::BubbleBorder::Shadow::SMALL_SHADOW);
+          views::BubbleBorder::Shadow::STANDARD_SHADOW);
 
   const ui::ThemeProvider* theme_provider = target_->GetThemeProvider();
   const SkColor foreground_color =

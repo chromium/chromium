@@ -55,7 +55,7 @@ ToastDialogView::ToastDialogView(const base::string16& app_name,
   set_title_margins(
       gfx::Insets(kDialogTitleMarginTopDp, kDialogTitleMarginStartDp,
                   kDialogTitleMarginBottomDp, kDialogTitleMarginEndDp));
-  set_shadow(views::BubbleBorder::SMALL_SHADOW);
+  set_shadow(views::BubbleBorder::STANDARD_SHADOW);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto* label = new views::Label(l10n_util::GetStringFUTF16(

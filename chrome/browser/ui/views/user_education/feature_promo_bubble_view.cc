@@ -130,7 +130,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
     base::RepeatingClosure dismiss_callback)
     : BubbleDialogDelegateView(params.anchor_view,
                                params.arrow,
-                               views::BubbleBorder::SMALL_SHADOW),
+                               views::BubbleBorder::STANDARD_SHADOW),
       focusable_(params.focusable),
       persist_on_blur_(params.persist_on_blur),
       snoozable_(params.snoozable),

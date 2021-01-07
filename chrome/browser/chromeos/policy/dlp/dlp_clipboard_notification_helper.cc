@@ -170,7 +170,7 @@ class ClipboardBubbleView : public views::View {
     border_->SetPaintToLayer();
     border_->layer()->SetFillsBoundsOpaquely(false);
     auto shadow_border = std::make_unique<views::BubbleBorder>(
-        views::BubbleBorder::FLOAT, views::BubbleBorder::SMALL_SHADOW,
+        views::BubbleBorder::FLOAT, views::BubbleBorder::STANDARD_SHADOW,
         SK_ColorTRANSPARENT);
     shadow_border->SetCornerRadius(kBubbleCornerRadius);
     shadow_border->set_background_color(SK_ColorTRANSPARENT);

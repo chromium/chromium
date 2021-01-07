@@ -95,25 +95,23 @@ void BubbleExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kHorizontal, gfx::Insets(), 10));
 
+  no_shadow_legacy_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
+                          &no_shadow_legacy_, BubbleBorder::NO_SHADOW_LEGACY,
+                          false),
+      ASCIIToUTF16("No Shadow Legacy")));
+  standard_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
+                          &standard_shadow_, BubbleBorder::STANDARD_SHADOW,
+                          false),
+      ASCIIToUTF16("Standard Shadow")));
   no_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
       base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
                           &no_shadow_, BubbleBorder::NO_SHADOW, false),
       ASCIIToUTF16("No Shadow")));
-  big_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
-      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
-                          &big_shadow_, BubbleBorder::BIG_SHADOW, false),
-      ASCIIToUTF16("Big Shadow")));
-  small_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
-      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
-                          &small_shadow_, BubbleBorder::SMALL_SHADOW, false),
-      ASCIIToUTF16("Small Shadow")));
-  no_assets_ = container->AddChildView(std::make_unique<LabelButton>(
-      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
-                          &no_assets_, BubbleBorder::NO_ASSETS, false),
-      ASCIIToUTF16("No Assets")));
   persistent_ = container->AddChildView(std::make_unique<LabelButton>(
       base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
-                          &persistent_, BubbleBorder::NO_SHADOW, true),
+                          &persistent_, BubbleBorder::NO_SHADOW_LEGACY, true),
       ASCIIToUTF16("Persistent")));
 }
 

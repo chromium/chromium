@@ -141,7 +141,7 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
 
 SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
   std::unique_ptr<views::BubbleBorder> bubble_border(new views::BubbleBorder(
-      views::BubbleBorder::NONE, views::BubbleBorder::NO_ASSETS,
+      views::BubbleBorder::NONE, views::BubbleBorder::NO_SHADOW,
       kSubtleNotificationBackgroundColor));
   SetBackground(std::make_unique<views::BubbleBackground>(bubble_border.get()));
   SetBorder(std::move(bubble_border));

@@ -232,7 +232,7 @@ int BubbleFrameView::NonClientHitTest(const gfx::Point& point) {
   // dialog and allow events to pass through the shadows.
   gfx::RRectF round_contents_bounds(gfx::RectF(GetContentsBounds()),
                                     bubble_border_->corner_radius());
-  if (bubble_border_->shadow() != BubbleBorder::NO_ASSETS)
+  if (bubble_border_->shadow() != BubbleBorder::NO_SHADOW)
     round_contents_bounds.Outset(BubbleBorder::kBorderThicknessDip);
   gfx::RectF rectf_point(point.x(), point.y(), 1, 1);
   if (!round_contents_bounds.Contains(rectf_point))
@@ -250,20 +250,20 @@ int BubbleFrameView::NonClientHitTest(const gfx::Point& point) {
 
 void BubbleFrameView::GetWindowMask(const gfx::Size& size,
                                     SkPath* window_mask) {
-  if (bubble_border_->shadow() != BubbleBorder::SMALL_SHADOW &&
-      bubble_border_->shadow() != BubbleBorder::NO_ASSETS)
+  if (bubble_border_->shadow() != BubbleBorder::STANDARD_SHADOW &&
+      bubble_border_->shadow() != BubbleBorder::NO_SHADOW)
     return;
 
   // We don't return a mask for windows with arrows unless they use
-  // BubbleBorder::NO_ASSETS.
-  if (bubble_border_->shadow() != BubbleBorder::NO_ASSETS &&
+  // BubbleBorder::NO_SHADOW.
+  if (bubble_border_->shadow() != BubbleBorder::NO_SHADOW &&
       bubble_border_->arrow() != BubbleBorder::NONE &&
       bubble_border_->arrow() != BubbleBorder::FLOAT)
     return;
 
   // Use a window mask roughly matching the border in the image assets.
   const int kBorderStrokeSize =
-      bubble_border_->shadow() == BubbleBorder::NO_ASSETS ? 0 : 1;
+      bubble_border_->shadow() == BubbleBorder::NO_SHADOW ? 0 : 1;
   const SkScalar kCornerRadius = SkIntToScalar(bubble_border_->corner_radius());
   const gfx::Insets border_insets = bubble_border_->GetInsets();
   SkRect rect = {
@@ -273,7 +273,7 @@ void BubbleFrameView::GetWindowMask(const gfx::Size& size,
       SkIntToScalar(size.height() - border_insets.bottom() +
                     kBorderStrokeSize)};
 
-  if (bubble_border_->shadow() == BubbleBorder::NO_ASSETS) {
+  if (bubble_border_->shadow() == BubbleBorder::NO_SHADOW) {
     window_mask->addRoundRect(rect, kCornerRadius, kCornerRadius);
   } else {
     static const int kBottomBorderShadowSize = 2;

@@ -277,7 +277,7 @@ CaptionBubble::CaptionBubble(views::View* anchor,
                              base::OnceClosure destroyed_callback)
     : BubbleDialogDelegateView(anchor,
                                views::BubbleBorder::FLOAT,
-                               views::BubbleBorder::Shadow::NO_ASSETS),
+                               views::BubbleBorder::Shadow::NO_SHADOW),
       destroyed_callback_(std::move(destroyed_callback)),
       ratio_in_parent_x_(kDefaultRatioInParentX),
       ratio_in_parent_y_(kDefaultRatioInParentY),

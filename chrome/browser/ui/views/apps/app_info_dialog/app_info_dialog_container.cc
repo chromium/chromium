@@ -40,11 +40,11 @@ namespace {
 
 #if defined(OS_MAC)
 const ui::ModalType kModalType = ui::MODAL_TYPE_CHILD;
-const views::BubbleBorder::Shadow kShadowType = views::BubbleBorder::NO_ASSETS;
+const views::BubbleBorder::Shadow kShadowType = views::BubbleBorder::NO_SHADOW;
 #else
 const ui::ModalType kModalType = ui::MODAL_TYPE_WINDOW;
 const views::BubbleBorder::Shadow kShadowType =
-    views::BubbleBorder::SMALL_SHADOW;
+    views::BubbleBorder::STANDARD_SHADOW;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
