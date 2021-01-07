@@ -2,18 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var AutomationEvent = chrome.automation.AutomationEvent;
-var EventType = chrome.automation.EventType;
-var RoleType = chrome.automation.RoleType;
+import {InputHandler} from './input_handler.js';
+import {MetricsUtils} from './metrics_utils.js';
+import {NodeUtils} from './node_utils.js';
+import {ParagraphUtils} from './paragraph_utils.js';
+import {PrefsManager} from './prefs_manager.js';
+import {SelectToSpeakConstants} from './select_to_speak_constants.js';
+import {SentenceUtils} from './sentence_utils.js';
+import {WordUtils} from './word_utils.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+const AutomationEvent = chrome.automation.AutomationEvent;
+const EventType = chrome.automation.EventType;
+const RoleType = chrome.automation.RoleType;
 const AccessibilityFeature = chrome.accessibilityPrivate.AccessibilityFeature;
 const SelectToSpeakPanelAction =
     chrome.accessibilityPrivate.SelectToSpeakPanelAction;
 const FocusRingStackingOrder =
     chrome.accessibilityPrivate.FocusRingStackingOrder;
+const SelectToSpeakState = chrome.accessibilityPrivate.SelectToSpeakState;
 
 // This must be the same as in ash/system/accessibility/select_to_speak_tray.cc:
 // ash::kSelectToSpeakTrayClassName.
-const SELECT_TO_SPEAK_TRAY_CLASS_NAME =
+export const SELECT_TO_SPEAK_TRAY_CLASS_NAME =
     'tray/TrayBackgroundView/SelectToSpeakTray';
 
 // This must match the name of view class that implements the menu view:
@@ -56,7 +67,7 @@ const SPEECH_RATE_KEY = 'settings.tts.speech_rate';
  * @return {?AutomationNode} The root node of the GSuite app, or null if none is
  *     found.
  */
-function getGSuiteAppRoot(node) {
+export function getGSuiteAppRoot(node) {
   while (node !== undefined && node.root !== undefined) {
     if (node.root.url !== undefined && GSUITE_APP_REGEXP.exec(node.root.url)) {
       return node.root;
@@ -66,7 +77,7 @@ function getGSuiteAppRoot(node) {
   return null;
 }
 
-class SelectToSpeak {
+export class SelectToSpeak {
   constructor() {
     /**
      * The current state of the SelectToSpeak extension, from
@@ -331,8 +342,9 @@ class SelectToSpeak {
         return;
       }
       if (this.shouldShowNavigationControls_() && nodes.length > 0 &&
-          (rect.width <= SelectToSpeak.PARAGRAPH_SELECTION_MAX_SIZE ||
-           rect.height <= SelectToSpeak.PARAGRAPH_SELECTION_MAX_SIZE)) {
+          (rect.width <= SelectToSpeakConstants.PARAGRAPH_SELECTION_MAX_SIZE ||
+           rect.height <=
+               SelectToSpeakConstants.PARAGRAPH_SELECTION_MAX_SIZE)) {
         // If this is a single click (zero sized selection) on a text node, then
         // expand to entire paragraph.
         nodes = NodeUtils.getAllNodesInParagraph(nodes[0]);
@@ -1653,7 +1665,7 @@ class SelectToSpeak {
     }
     this.intervalRef_ = setInterval(
         this.testCurrentNode_.bind(this),
-        SelectToSpeak.NODE_STATE_TEST_INTERVAL_MS);
+        SelectToSpeakConstants.NODE_STATE_TEST_INTERVAL_MS);
   }
 
   /**
@@ -2067,30 +2079,3 @@ class SelectToSpeak {
     this.inputHandler_.onMouseUp_(event);
   }
 }
-
-/** @const {number} */
-SelectToSpeak.SEARCH_KEY_CODE = KeyCode.SEARCH;
-
-/** @const {number} */
-SelectToSpeak.CONTROL_KEY_CODE = KeyCode.CONTROL;
-
-/** @const {number} */
-SelectToSpeak.READ_SELECTION_KEY_CODE = KeyCode.S;
-
-/**
- * How often (in ms) to check that the currently spoken node is
- * still valid and in the same position. Decreasing this will make
- * STS seem more reactive to page changes but decreasing it too much
- * could cause performance issues.
- * @const {number}
- */
-SelectToSpeak.NODE_STATE_TEST_INTERVAL_MS = 500;
-
-/**
- * Max size in pixels for a region selection to be considered a paragraph
- * selection vs a selection of specific nodes. Generally paragraph
- * selection is a single click (size 0), though allow for a little
- * jitter.
- * @const {number}
- */
-SelectToSpeak.PARAGRAPH_SELECTION_MAX_SIZE = 5;

@@ -16,6 +16,20 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
     chrome.tts = this.mockTts;
   }
 
+  /** @override */
+  setUp() {
+    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
+    (async function() {
+      let module = await import('/select_to_speak/select_to_speak_main.js');
+      window.selectToSpeak = module.selectToSpeak;
+
+      module = await import('/select_to_speak/select_to_speak_constants.js');
+      window.SelectToSpeakConstants = module.SelectToSpeakConstants;
+
+      runTest();
+    })();
+  }
+
   /**
    * Function to load a simple webpage, select some of the single text
    * node, and trigger Select-to-Speak to read that partial node. Tests

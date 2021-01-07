@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SelectToSpeakConstants} from './select_to_speak_constants.js';
+
 const SelectToSpeakState = chrome.accessibilityPrivate.SelectToSpeakState;
 
 /**
@@ -29,7 +31,7 @@ let SelectToSpeakCallbacks;
 /**
  * Class to handle user-input, from mouse, keyboard, and copy-paste events.
  */
-class InputHandler {
+export class InputHandler {
   /**
    * @param {SelectToSpeakCallbacks} callbacks
    */
@@ -233,7 +235,7 @@ class InputHandler {
     }
     this.onMouseMove_(evt);
     this.trackingMouse_ = false;
-    if (!this.keysCurrentlyDown_.has(SelectToSpeak.SEARCH_KEY_CODE)) {
+    if (!this.keysCurrentlyDown_.has(SelectToSpeakConstants.SEARCH_KEY_CODE)) {
       // This is only needed to cancel something started with the search key.
       this.didTrackMouse_ = false;
     }
@@ -257,11 +259,11 @@ class InputHandler {
     this.keysCurrentlyDown_.add(evt.keyCode);
     this.keysPressedTogether_.add(evt.keyCode);
     if (this.keysPressedTogether_.size === 1 &&
-        evt.keyCode === SelectToSpeak.SEARCH_KEY_CODE) {
+        evt.keyCode === SelectToSpeakConstants.SEARCH_KEY_CODE) {
       this.isSearchKeyDown_ = true;
     } else if (
         this.keysCurrentlyDown_.size === 2 &&
-        evt.keyCode === SelectToSpeak.READ_SELECTION_KEY_CODE &&
+        evt.keyCode === SelectToSpeakConstants.READ_SELECTION_KEY_CODE &&
         !this.trackingMouse_) {
       // Only go into selection mode if we aren't already tracking the mouse.
       this.isSelectionKeyDown_ = true;
@@ -276,14 +278,15 @@ class InputHandler {
    * @param {!Event} evt
    */
   onKeyUp_(evt) {
-    if (evt.keyCode === SelectToSpeak.READ_SELECTION_KEY_CODE) {
+    if (evt.keyCode === SelectToSpeakConstants.READ_SELECTION_KEY_CODE) {
       if (this.isSelectionKeyDown_ && this.keysPressedTogether_.size === 2 &&
           this.keysPressedTogether_.has(evt.keyCode) &&
-          this.keysPressedTogether_.has(SelectToSpeak.SEARCH_KEY_CODE)) {
+          this.keysPressedTogether_.has(
+              SelectToSpeakConstants.SEARCH_KEY_CODE)) {
         this.callbacks_.onKeystrokeSelection();
       }
       this.isSelectionKeyDown_ = false;
-    } else if (evt.keyCode === SelectToSpeak.SEARCH_KEY_CODE) {
+    } else if (evt.keyCode === SelectToSpeakConstants.SEARCH_KEY_CODE) {
       this.isSearchKeyDown_ = false;
 
       // If we were in the middle of tracking the mouse, cancel it.
@@ -296,8 +299,8 @@ class InputHandler {
     // Stop speech when the user taps and releases Control or Search
     // without using the mouse or pressing any other keys along the way.
     if (!this.didTrackMouse_ &&
-        (evt.keyCode === SelectToSpeak.SEARCH_KEY_CODE ||
-         evt.keyCode === SelectToSpeak.CONTROL_KEY_CODE) &&
+        (evt.keyCode === SelectToSpeakConstants.SEARCH_KEY_CODE ||
+         evt.keyCode === SelectToSpeakConstants.CONTROL_KEY_CODE) &&
         this.keysPressedTogether_.has(evt.keyCode) &&
         this.keysPressedTogether_.size === 1) {
       this.trackingMouse_ = false;

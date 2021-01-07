@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ParagraphUtils} from './paragraph_utils.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+const RoleType = chrome.automation.RoleType;
+
 // Utilities for automation nodes in Select-to-Speak.
 
-class NodeUtils {
+export class NodeUtils {
   constructor() {}
 
   /**

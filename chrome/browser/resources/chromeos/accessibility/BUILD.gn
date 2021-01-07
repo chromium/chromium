@@ -147,11 +147,6 @@ js2gtest("misc_unit_tests_js") {
   sources = [
     "braille_ime/braille_ime_unittest.js",
     "common/rect_util_unittest.js",
-    "select_to_speak/node_utils_unittest.js",
-    "select_to_speak/paragraph_utils_unittest.js",
-    "select_to_speak/select_to_speak_unittest.js",
-    "select_to_speak/sentence_utils_unittest.js",
-    "select_to_speak/word_utils_unittest.js",
   ]
   gen_include_files = [ "common/closure_shim.js" ]
   extra_js_files = [
@@ -163,7 +158,6 @@ js2gtest("misc_unit_tests_js") {
     "common/tree_walker.js",
     "select_to_speak/paragraph_utils.js",
     "select_to_speak/select_to_speak.js",
-    "select_to_speak/test_support.js",
     "select_to_speak/word_utils.js",
     "select_to_speak/node_utils.js",
     "select_to_speak/sentence_utils.js",

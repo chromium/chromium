@@ -26,6 +26,7 @@ run_jsbundler("select_to_speak_copied_files") {
   mode = "copy"
   dest_dir = select_to_speak_out_dir
   sources = [
+    "background.html",
     "checked.png",
     "earcons/null_selection.ogg",
     "input_handler.js",
@@ -37,6 +38,7 @@ run_jsbundler("select_to_speak_copied_files") {
     "prefs_manager.js",
     "select_to_speak-2x.svg",
     "select_to_speak.js",
+    "select_to_speak_constants.js",
     "select_to_speak_main.js",
     "select_to_speak_options.js",
     "sentence_utils.js",
@@ -81,6 +83,15 @@ js2gtest("select_to_speak_extjs_tests") {
     "select_to_speak_navigation_control_test.js",
     "select_to_speak_prefs_test.js",
   ]
+
+  # These are unit tests run under an extension environment to get ES6 module support.
+  sources += [
+    "node_utils_unittest.js",
+    "paragraph_utils_unittest.js",
+    "select_to_speak_unittest.js",
+    "sentence_utils_unittest.js",
+    "word_utils_unittest.js",
+  ]
   gen_include_files = [
     "../common/testing/callback_helper.js",
     "../common/testing/e2e_test_base.js",
@@ -113,6 +124,7 @@ js_type_check("closure_compile") {
     ":paragraph_utils",
     ":prefs_manager",
     ":select_to_speak",
+    ":select_to_speak_constants",
     ":select_to_speak_options",
     ":sentence_utils",
     ":word_utils",
@@ -196,4 +208,7 @@ js_library("prefs_manager") {
 js_library("metrics_utils") {
   deps = [ ":prefs_manager" ]
   externs_list = [ "$externs_path/metrics_private.js" ]
+}
+
+js_library("select_to_speak_constants") {
 }

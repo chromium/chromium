@@ -8,6 +8,17 @@ GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
  * Browser tests for select-to-speak's feature to filter out overflow text.
  */
 SelectToSpeakParagraphOverflowTest = class extends SelectToSpeakE2ETest {
+  /** @override */
+  setUp() {
+    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
+    (async function() {
+      const module = await import('/select_to_speak/paragraph_utils.js');
+      window.ParagraphUtils = module.ParagraphUtils;
+
+      runTest();
+    })();
+  }
+
   generateHorizentalOverflowText(text) {
     return (
         '<div style="width: 50px; overflow: hidden">' +

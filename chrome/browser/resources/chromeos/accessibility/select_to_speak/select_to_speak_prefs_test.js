@@ -31,8 +31,23 @@ SelectToSpeakPrefsTest = class extends SelectToSpeakE2ETest {
         return msgid;
       }
     };
+  }
 
-    this.resetStorage();
+  /** @override */
+  setUp() {
+    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
+
+    (async () => {
+      let module = await import('/select_to_speak/select_to_speak_main.js');
+      window.selectToSpeak = module.selectToSpeak;
+
+      module = await import('/select_to_speak/select_to_speak_constants.js');
+      window.SelectToSpeakConstants = module.SelectToSpeakConstants;
+
+      this.resetStorage();
+
+      runTest();
+    })();
   }
 
   resetStorage() {

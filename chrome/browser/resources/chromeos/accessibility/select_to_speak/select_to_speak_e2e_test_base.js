@@ -67,13 +67,14 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
     assertFalse(this.mockTts.currentlySpeaking());
     assertEquals(this.mockTts.pendingUtterances().length, 0);
     selectToSpeak.fireMockKeyDownEvent(
-        {keyCode: SelectToSpeak.SEARCH_KEY_CODE});
+        {keyCode: SelectToSpeakConstants.SEARCH_KEY_CODE});
     selectToSpeak.fireMockKeyDownEvent(
-        {keyCode: SelectToSpeak.READ_SELECTION_KEY_CODE});
+        {keyCode: SelectToSpeakConstants.READ_SELECTION_KEY_CODE});
     assertTrue(selectToSpeak.inputHandler_.isSelectionKeyDown_);
     selectToSpeak.fireMockKeyUpEvent(
-        {keyCode: SelectToSpeak.READ_SELECTION_KEY_CODE});
-    selectToSpeak.fireMockKeyUpEvent({keyCode: SelectToSpeak.SEARCH_KEY_CODE});
+        {keyCode: SelectToSpeakConstants.READ_SELECTION_KEY_CODE});
+    selectToSpeak.fireMockKeyUpEvent(
+        {keyCode: SelectToSpeakConstants.SEARCH_KEY_CODE});
   }
 
   /**
@@ -83,10 +84,11 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
    */
   triggerReadMouseSelectedText(downEvent, upEvent) {
     selectToSpeak.fireMockKeyDownEvent(
-        {keyCode: SelectToSpeak.SEARCH_KEY_CODE});
+        {keyCode: SelectToSpeakConstants.SEARCH_KEY_CODE});
     selectToSpeak.fireMockMouseDownEvent(downEvent);
     selectToSpeak.fireMockMouseUpEvent(upEvent);
-    selectToSpeak.fireMockKeyUpEvent({keyCode: SelectToSpeak.SEARCH_KEY_CODE});
+    selectToSpeak.fireMockKeyUpEvent(
+        {keyCode: SelectToSpeakConstants.SEARCH_KEY_CODE});
   }
 
   /**

@@ -5,7 +5,7 @@
 /**
  * Manages getting and storing user preferences.
  */
-class PrefsManager {
+export class PrefsManager {
   constructor() {
     /** @private {?string} */
     this.voiceNameFromPrefs_ = null;

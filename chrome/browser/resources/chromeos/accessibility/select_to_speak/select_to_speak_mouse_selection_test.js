@@ -16,11 +16,33 @@ SelectToSpeakMouseSelectionTest = class extends SelectToSpeakE2ETest {
     chrome.tts = this.mockTts;
   }
 
+  /** @override */
+  setUp() {
+    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
+
+    window.EventType = chrome.automation.EventType;
+    window.SelectToSpeakState = chrome.accessibilityPrivate.SelectToSpeakState;
+
+    (async function() {
+      let module = await import('/select_to_speak/select_to_speak_main.js');
+      window.selectToSpeak = module.selectToSpeak;
+
+      module = await import('/select_to_speak/select_to_speak.js');
+      window.SELECT_TO_SPEAK_TRAY_CLASS_NAME =
+          module.SELECT_TO_SPEAK_TRAY_CLASS_NAME;
+
+      module = await import('/select_to_speak/select_to_speak_constants.js');
+      window.SelectToSpeakConstants = module.SelectToSpeakConstants;
+
+      runTest();
+    })();
+  }
+
   tapTrayButton(desktop, callback) {
     const button = desktop.find({
-      roleType: 'button',
       attributes: {className: SELECT_TO_SPEAK_TRAY_CLASS_NAME}
     });
+
     callback = this.newCallback(callback);
     selectToSpeak.onStateChangeRequestedCallbackForTest_ =
         this.newCallback(() => {
@@ -231,7 +253,6 @@ TEST_F(
         this.tapTrayButton(desktop, () => {
           assertEquals(selectToSpeak.state_, SelectToSpeakState.SELECTING);
           const button = desktop.find({
-            roleType: 'button',
             attributes: {className: SELECT_TO_SPEAK_TRAY_CLASS_NAME}
           });
 

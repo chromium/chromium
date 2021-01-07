@@ -2,75 +2,80 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
+
 /**
  * Test fixture for node_utils.js.
  */
-SelectToSpeakNodeUtilsUnitTest = class extends testing.Test {};
+SelectToSpeakNodeUtilsUnitTest = class extends SelectToSpeakE2ETest {
+  /** @override */
+  setUp() {
+    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
+    (async function() {
+      let module = await import('/select_to_speak/node_utils.js');
+      window.NodeUtils = module.NodeUtils;
 
-/** @override */
-SelectToSpeakNodeUtilsUnitTest.prototype.extraLibraries = [
-  'test_support.js',
-  'paragraph_utils.js',
-  'node_utils.js',
-  'word_utils.js',
-  '../common/closure_shim.js',
-  '../common/constants.js',
-  '../common/automation_predicate.js',
-  '../common/automation_util.js',
-  '../common/rect_util.js',
-  '../common/tree_walker.js',
-];
+      module = await import('/select_to_speak/paragraph_utils.js');
+      window.ParagraphUtils = module.ParagraphUtils;
 
+      module = await import('/select_to_speak/word_utils.js');
+      window.WordUtils = module.WordUtils;
 
-TEST_F('SelectToSpeakNodeUtilsUnitTest', 'GetNodeVisibilityState', function() {
-  const nodeWithoutRoot1 = {root: null};
-  const nodeWithoutRoot2 = {root: null, state: {invisible: true}};
-  assertEquals(
-      NodeUtils.getNodeState(nodeWithoutRoot1),
-      NodeUtils.NodeState.NODE_STATE_INVALID);
-  assertEquals(
-      NodeUtils.getNodeState(nodeWithoutRoot2),
-      NodeUtils.NodeState.NODE_STATE_INVALID);
+      runTest();
+    })();
+  }
+};
 
-  const invisibleNode1 = {
-    root: {},
-    parent: {role: ''},
-    state: {invisible: true}
-  };
-  // Currently nodes aren't actually marked 'invisible', so we need to navigate
-  // up their tree.
-  const invisibleNode2 = {
-    root: {},
-    parent: {role: 'window', state: {invisible: true}},
-    state: {}
-  };
-  const invisibleNode3 = {root: {}, parent: invisibleNode2, state: {}};
-  const invisibleNode4 = {root: {}, parent: invisibleNode3, state: {}};
-  assertEquals(
-      NodeUtils.getNodeState(invisibleNode1),
-      NodeUtils.NodeState.NODE_STATE_INVISIBLE);
-  assertEquals(
-      NodeUtils.getNodeState(invisibleNode2),
-      NodeUtils.NodeState.NODE_STATE_INVISIBLE);
-  assertEquals(
-      NodeUtils.getNodeState(invisibleNode3),
-      NodeUtils.NodeState.NODE_STATE_INVISIBLE);
+SYNC_TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest', 'GetNodeVisibilityState', function() {
+      const nodeWithoutRoot1 = {root: null};
+      const nodeWithoutRoot2 = {root: null, state: {invisible: true}};
+      assertEquals(
+          NodeUtils.getNodeState(nodeWithoutRoot1),
+          NodeUtils.NodeState.NODE_STATE_INVALID);
+      assertEquals(
+          NodeUtils.getNodeState(nodeWithoutRoot2),
+          NodeUtils.NodeState.NODE_STATE_INVALID);
 
-  const normalNode1 = {
-    root: {},
-    parent: {role: 'window', state: {}},
-    state: {}
-  };
-  const normalNode2 = {root: {}, parent: {normalNode1}, state: {}};
-  assertEquals(
-      NodeUtils.getNodeState(normalNode1),
-      NodeUtils.NodeState.NODE_STATE_NORMAL);
-  assertEquals(
-      NodeUtils.getNodeState(normalNode2),
-      NodeUtils.NodeState.NODE_STATE_NORMAL);
-});
+      const invisibleNode1 = {
+        root: {},
+        parent: {role: ''},
+        state: {invisible: true}
+      };
+      // Currently nodes aren't actually marked 'invisible', so we need to
+      // navigate up their tree.
+      const invisibleNode2 = {
+        root: {},
+        parent: {role: 'window', state: {invisible: true}},
+        state: {}
+      };
+      const invisibleNode3 = {root: {}, parent: invisibleNode2, state: {}};
+      const invisibleNode4 = {root: {}, parent: invisibleNode3, state: {}};
+      assertEquals(
+          NodeUtils.getNodeState(invisibleNode1),
+          NodeUtils.NodeState.NODE_STATE_INVISIBLE);
+      assertEquals(
+          NodeUtils.getNodeState(invisibleNode2),
+          NodeUtils.NodeState.NODE_STATE_INVISIBLE);
+      assertEquals(
+          NodeUtils.getNodeState(invisibleNode3),
+          NodeUtils.NodeState.NODE_STATE_INVISIBLE);
 
-TEST_F(
+      const normalNode1 = {
+        root: {},
+        parent: {role: 'window', state: {}},
+        state: {}
+      };
+      const normalNode2 = {root: {}, parent: {normalNode1}, state: {}};
+      assertEquals(
+          NodeUtils.getNodeState(normalNode1),
+          NodeUtils.NodeState.NODE_STATE_NORMAL);
+      assertEquals(
+          NodeUtils.getNodeState(normalNode2),
+          NodeUtils.NodeState.NODE_STATE_NORMAL);
+    });
+
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'GetNodeVisibilityStateWithRootWebArea',
     function() {
       // Currently nodes aren't actually marked 'invisible', so we need to
@@ -121,7 +126,7 @@ TEST_F(
           NodeUtils.NodeState.NODE_STATE_NORMAL);
     });
 
-TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
+SYNC_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
   const rect = {left: 0, top: 0, width: 100, height: 100};
   const rootNode = {
     root: {},
@@ -255,7 +260,7 @@ TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
   assertEquals(container2, result[0]);
 });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'findAllMatchingWithInputs', function() {
       const rect = {left: 0, top: 0, width: 100, height: 100};
       const rootNode = {
@@ -281,7 +286,7 @@ TEST_F(
       assertEquals(checkbox, result[0]);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getDeepEquivalentForSelectionDeprecatedNoChildren', function() {
       const node = {name: 'Hello, world', children: []};
@@ -294,7 +299,7 @@ TEST_F(
       assertEquals(6, result.offset);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getDeepEquivalentForSelectionDeprecatedSimpleChildren', function() {
       const child1 =
@@ -330,7 +335,7 @@ TEST_F(
       assertEquals(3, result.offset);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getDeepEquivalentForSelectionDeprecatedComplexChildren', function() {
       const child1 =
@@ -403,7 +408,7 @@ TEST_F(
       assertEquals(0, result.offset);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'sortSvgNodesByReadingOrder', function() {
       const svgRootNode = {role: 'svgRoot'};
       const gNode1 = {
@@ -442,7 +447,7 @@ TEST_F(
       assertEquals(nodes[2].name, 'three');
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'sortNodesByReadingOrderMultipleSVGs',
     function() {
       const textNode1 = {role: 'staticText', name: 'Text Node 1'};
@@ -490,7 +495,7 @@ TEST_F(
       assertEquals(nodes[6].name, 'Text Node 3');
     });
 
-TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getNextParagraph', function() {
+SYNC_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getNextParagraph', function() {
   const root = createMockNode({role: 'rootWebArea'});
   const paragraph1 =
       createMockNode({role: 'paragraph', display: 'block', parent: root, root});
@@ -551,7 +556,7 @@ TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getNextParagraph', function() {
   assertEquals(result.length, 0);
 });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'getNextParagraphContainedWithinRoot',
     function() {
       const desktop = createMockNode({role: 'desktop'});
@@ -584,7 +589,7 @@ TEST_F(
       assertEquals(result.length, 0);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'getNextParagraphThroughIframe',
     function() {
       const desktop = createMockNode({role: 'desktop'});
@@ -623,7 +628,7 @@ TEST_F(
       assertEquals(result[0], text3);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'getNextParagraphNonBlockNodes',
     function() {
       /**
@@ -663,7 +668,7 @@ TEST_F(
       assertEquals(result[0], text2);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'getNextParagraphNestedBlocks',
     function() {
       const root = createMockNode({role: 'rootWebArea'});
@@ -695,142 +700,146 @@ TEST_F(
       assertEquals(result[0], text1);
     });
 
-TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getNextParagraphAndroid', function() {
-  const root = createMockNode({role: 'application'});
-  const container1 =
-      createMockNode({role: 'genericContainer', parent: root, root});
-  const text1 = createMockNode(
-      {role: 'staticText', parent: container1, root, name: 'Line 1'});
-  const text2 = createMockNode(
-      {role: 'staticText', parent: container1, root, name: 'Line 2'});
-  const container2 =
-      createMockNode({role: 'genericContainer', parent: root, root});
-  const text3 = createMockNode(
-      {role: 'staticText', parent: container2, root, name: 'Line 3'});
+SYNC_TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest', 'getNextParagraphAndroid', function() {
+      const root = createMockNode({role: 'application'});
+      const container1 =
+          createMockNode({role: 'genericContainer', parent: root, root});
+      const text1 = createMockNode(
+          {role: 'staticText', parent: container1, root, name: 'Line 1'});
+      const text2 = createMockNode(
+          {role: 'staticText', parent: container1, root, name: 'Line 2'});
+      const container2 =
+          createMockNode({role: 'genericContainer', parent: root, root});
+      const text3 = createMockNode(
+          {role: 'staticText', parent: container2, root, name: 'Line 3'});
 
-  // Without paragraphs, navigate node to node.
-  let result = NodeUtils.getNextParagraph(text1, constants.Dir.FORWARD);
-  assertEquals(result.length, 1);
-  assertEquals(result[0], text2);
+      // Without paragraphs, navigate node to node.
+      let result = NodeUtils.getNextParagraph(text1, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text2);
 
-  result = NodeUtils.getNextParagraph(text2, constants.Dir.FORWARD);
-  assertEquals(result.length, 1);
-  assertEquals(result[0], text3);
+      result = NodeUtils.getNextParagraph(text2, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text3);
 
-  result = NodeUtils.getNextParagraph(container1, constants.Dir.FORWARD);
-  assertEquals(result.length, 1);
-  assertEquals(result[0], text3);
+      result = NodeUtils.getNextParagraph(container1, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text3);
 
-  result = NodeUtils.getNextParagraph(text3, constants.Dir.FORWARD);
-  assertEquals(result.length, 0);
+      result = NodeUtils.getNextParagraph(text3, constants.Dir.FORWARD);
+      assertEquals(result.length, 0);
 
-  result = NodeUtils.getNextParagraph(container2, constants.Dir.FORWARD);
-  assertEquals(result.length, 0);
+      result = NodeUtils.getNextParagraph(container2, constants.Dir.FORWARD);
+      assertEquals(result.length, 0);
 
-  result = NodeUtils.getNextParagraph(text3, constants.Dir.BACKWARD);
-  assertEquals(result.length, 1);
-  assertEquals(result[0], text2);
+      result = NodeUtils.getNextParagraph(text3, constants.Dir.BACKWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text2);
 
-  result = NodeUtils.getNextParagraph(container2, constants.Dir.BACKWARD);
-  assertEquals(result.length, 1);
-  assertEquals(result[0], text2);
+      result = NodeUtils.getNextParagraph(container2, constants.Dir.BACKWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text2);
 
-  result = NodeUtils.getNextParagraph(text2, constants.Dir.BACKWARD);
-  assertEquals(result.length, 1);
-  assertEquals(result[0], text1);
+      result = NodeUtils.getNextParagraph(text2, constants.Dir.BACKWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text1);
 
-  result = NodeUtils.getNextParagraph(text1, constants.Dir.BACKWARD);
-  assertEquals(result.length, 0);
+      result = NodeUtils.getNextParagraph(text1, constants.Dir.BACKWARD);
+      assertEquals(result.length, 0);
 
-  result = NodeUtils.getNextParagraph(container1, constants.Dir.BACKWARD);
-  assertEquals(result.length, 0);
-});
+      result = NodeUtils.getNextParagraph(container1, constants.Dir.BACKWARD);
+      assertEquals(result.length, 0);
+    });
 
-TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getNextNodesInParagraph', function() {
-  const root = createMockNode({role: 'rootWebArea'});
-  createMockNode({role: 'paragraph', display: 'block', parent: root, root});
-  const paragraph2 =
+SYNC_TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest', 'getNextNodesInParagraph', function() {
+      const root = createMockNode({role: 'rootWebArea'});
       createMockNode({role: 'paragraph', display: 'block', parent: root, root});
-  const text1 = createMockNode(
-      {role: 'staticText', parent: paragraph2, root, name: 'Line 1'});
-  const text2 = createMockNode(
-      {role: 'staticText', parent: paragraph2, root, name: 'Line 2'});
-  const text3 = createMockNode(
-      {role: 'staticText', parent: paragraph2, root, name: 'Line 3'});
-  createMockNode({role: 'paragraph', display: 'block', parent: root, root});
-
-  let result = NodeUtils.getNextNodesInParagraph(text2, constants.Dir.FORWARD);
-  assertEquals(result.length, 1);
-  assertEquals(result[0], text3);
-
-  result = NodeUtils.getNextNodesInParagraph(text1, constants.Dir.FORWARD);
-  assertEquals(result.length, 2);
-  assertEquals(result[0], text2);
-  assertEquals(result[1], text3);
-
-  result = NodeUtils.getNextNodesInParagraph(text3, constants.Dir.FORWARD);
-  assertEquals(result.length, 0);
-
-  result = NodeUtils.getNextNodesInParagraph(text3, constants.Dir.BACKWARD);
-  assertEquals(result.length, 2);
-  assertEquals(result[0], text1);
-  assertEquals(result[1], text2);
-
-  result = NodeUtils.getNextNodesInParagraph(text2, constants.Dir.BACKWARD);
-  assertEquals(result.length, 1);
-  assertEquals(result[0], text1);
-
-  result = NodeUtils.getNextNodesInParagraph(text1, constants.Dir.BACKWARD);
-  assertEquals(result.length, 0);
-});
-
-TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getAllNodesInParagraph', function() {
-  const root = createMockNode({role: 'rootWebArea'});
-  const paragraph1 =
+      const paragraph2 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text1 = createMockNode(
+          {role: 'staticText', parent: paragraph2, root, name: 'Line 1'});
+      const text2 = createMockNode(
+          {role: 'staticText', parent: paragraph2, root, name: 'Line 2'});
+      const text3 = createMockNode(
+          {role: 'staticText', parent: paragraph2, root, name: 'Line 3'});
       createMockNode({role: 'paragraph', display: 'block', parent: root, root});
-  const text1 = createMockNode(
-      {role: 'staticText', parent: paragraph1, root, name: 'Line 1'});
-  const text2 = createMockNode(
-      {role: 'staticText', parent: paragraph1, root, name: 'Line 2'});
-  const paragraph2 =
-      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
-  const text3 = createMockNode(
-      {role: 'staticText', parent: paragraph2, root, name: 'Line 3'});
-  const text4 = createMockNode(
-      {role: 'staticText', parent: paragraph2, root, name: 'Line 4'});
-  const text5 = createMockNode(
-      {role: 'staticText', parent: paragraph2, root, name: 'Line 5'});
 
-  let result = NodeUtils.getAllNodesInParagraph(text1);
-  assertEquals(result.length, 2);
-  assertEquals(result[0], text1);
-  assertEquals(result[1], text2);
+      let result =
+          NodeUtils.getNextNodesInParagraph(text2, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text3);
 
-  result = NodeUtils.getAllNodesInParagraph(text2);
-  assertEquals(result.length, 2);
-  assertEquals(result[0], text1);
-  assertEquals(result[1], text2);
+      result = NodeUtils.getNextNodesInParagraph(text1, constants.Dir.FORWARD);
+      assertEquals(result.length, 2);
+      assertEquals(result[0], text2);
+      assertEquals(result[1], text3);
 
-  result = NodeUtils.getAllNodesInParagraph(text3);
-  assertEquals(result.length, 3);
-  assertEquals(result[0], text3);
-  assertEquals(result[1], text4);
-  assertEquals(result[2], text5);
+      result = NodeUtils.getNextNodesInParagraph(text3, constants.Dir.FORWARD);
+      assertEquals(result.length, 0);
 
-  result = NodeUtils.getAllNodesInParagraph(text4);
-  assertEquals(result.length, 3);
-  assertEquals(result[0], text3);
-  assertEquals(result[1], text4);
-  assertEquals(result[2], text5);
+      result = NodeUtils.getNextNodesInParagraph(text3, constants.Dir.BACKWARD);
+      assertEquals(result.length, 2);
+      assertEquals(result[0], text1);
+      assertEquals(result[1], text2);
 
-  result = NodeUtils.getAllNodesInParagraph(text5);
-  assertEquals(result.length, 3);
-  assertEquals(result[0], text3);
-  assertEquals(result[1], text4);
-  assertEquals(result[2], text5);
-});
+      result = NodeUtils.getNextNodesInParagraph(text2, constants.Dir.BACKWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text1);
 
-TEST_F(
+      result = NodeUtils.getNextNodesInParagraph(text1, constants.Dir.BACKWARD);
+      assertEquals(result.length, 0);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest', 'getAllNodesInParagraph', function() {
+      const root = createMockNode({role: 'rootWebArea'});
+      const paragraph1 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text1 = createMockNode(
+          {role: 'staticText', parent: paragraph1, root, name: 'Line 1'});
+      const text2 = createMockNode(
+          {role: 'staticText', parent: paragraph1, root, name: 'Line 2'});
+      const paragraph2 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text3 = createMockNode(
+          {role: 'staticText', parent: paragraph2, root, name: 'Line 3'});
+      const text4 = createMockNode(
+          {role: 'staticText', parent: paragraph2, root, name: 'Line 4'});
+      const text5 = createMockNode(
+          {role: 'staticText', parent: paragraph2, root, name: 'Line 5'});
+
+      let result = NodeUtils.getAllNodesInParagraph(text1);
+      assertEquals(result.length, 2);
+      assertEquals(result[0], text1);
+      assertEquals(result[1], text2);
+
+      result = NodeUtils.getAllNodesInParagraph(text2);
+      assertEquals(result.length, 2);
+      assertEquals(result[0], text1);
+      assertEquals(result[1], text2);
+
+      result = NodeUtils.getAllNodesInParagraph(text3);
+      assertEquals(result.length, 3);
+      assertEquals(result[0], text3);
+      assertEquals(result[1], text4);
+      assertEquals(result[2], text5);
+
+      result = NodeUtils.getAllNodesInParagraph(text4);
+      assertEquals(result.length, 3);
+      assertEquals(result[0], text3);
+      assertEquals(result[1], text4);
+      assertEquals(result[2], text5);
+
+      result = NodeUtils.getAllNodesInParagraph(text5);
+      assertEquals(result.length, 3);
+      assertEquals(result[0], text3);
+      assertEquals(result[1], text4);
+      assertEquals(result[2], text5);
+    });
+
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getNextNodesInParagraphFromNodeGroup_forward', function() {
       // The nodeGroup has four inline text nodes and one static text node.
@@ -868,7 +877,7 @@ TEST_F(
       assertEquals(result.nodes.length, 0);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getNextNodesInParagraphFromNodeGroup_backward', function() {
       // The nodeGroup has four inline text nodes and one static text node.
@@ -909,7 +918,7 @@ TEST_F(
       assertEquals(result.nodes.length, 0);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getNextNodesInParagraphFromNodeGroup_forwardWithEmptyTail', function() {
       // The nodeGroup consists of three inline text nodes: "Hello", "world ",
@@ -935,7 +944,7 @@ TEST_F(
       assertEquals(result.nodes[0].name, 'world ');
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getNextNodesInParagraphFromNodeGroup_backwardWithEmptyHeads', function() {
       // The nodeGroup consists of three inline text nodes: " ", " Hello",
@@ -961,7 +970,7 @@ TEST_F(
       assertEquals(result.nodes[0].name, ' Hello');
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getNextNodesInParagraphFromNodeGroup_forwardFromPartialParagraph',
     function() {
@@ -982,7 +991,7 @@ TEST_F(
       assertEquals(result.offset, 0);
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getNextNodesInParagraphFromNodeGroup_backwardFromPartialParagraph',
     function() {
