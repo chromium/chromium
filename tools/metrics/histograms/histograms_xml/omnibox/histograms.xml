@@ -996,6 +996,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Omnibox.UserTextCleared" enum="OmniboxUserTextCleared"
     expires_after="M85">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>kenjibaheux@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>

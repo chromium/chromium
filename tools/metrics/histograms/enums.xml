@@ -54993,6 +54993,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="OmniboxUserTextCleared">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <int value="0" label="cleared by editing"/>
   <int value="1" label="cleared with escape"/>
 </enum>

@@ -61,28 +61,8 @@ using metrics::OmniboxEventProto;
 
 namespace {
 
-// Histogram name which counts the number of times that the user text is
-// cleared.  IME users are sometimes in the situation that IME was
-// unintentionally turned on and failed to input latin alphabets (ASCII
-// characters) or the opposite case.  In that case, users may delete all
-// the text and the user text gets cleared.  We'd like to measure how often
-// this scenario happens.
-//
-// Note that since we don't currently correlate "text cleared" events with
-// IME usage, this also captures many other cases where users clear the text;
-// though it explicitly doesn't log deleting all the permanent text as
-// the first action of an editing sequence (see comments in
-// OnAfterPossibleChange()).
-const char kOmniboxUserTextClearedHistogram[] = "Omnibox.UserTextCleared";
-
 const char kOmniboxFocusResultedInNavigation[] =
     "Omnibox.FocusResultedInNavigation";
-
-enum UserTextClearedType {
-  OMNIBOX_USER_TEXT_CLEARED_BY_EDITING = 0,
-  OMNIBOX_USER_TEXT_CLEARED_WITH_ESCAPE = 1,
-  OMNIBOX_USER_TEXT_CLEARED_NUM_OF_ITEMS,
-};
 
 // Histogram name which counts the number of times the user enters
 // keyword hint mode and via what method.  The possible values are listed
@@ -1222,12 +1202,6 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
     view_->Update();
   }
 
-  if (!user_text_.empty()) {
-    UMA_HISTOGRAM_ENUMERATION(kOmniboxUserTextClearedHistogram,
-                              OMNIBOX_USER_TEXT_CLEARED_WITH_ESCAPE,
-                              OMNIBOX_USER_TEXT_CLEARED_NUM_OF_ITEMS);
-  }
-
   // Unconditionally revert/select all.  This ensures any popup, whether due to
   // normal editing or ZeroSuggest, is closed, and the full text is selected.
   // This in turn allows the user to use escape to quickly select all the text
@@ -1490,16 +1464,6 @@ bool OmniboxEditModel::OnAfterPossibleChange(
   InternalSetUserText(*state_changes.new_text);
   has_temporary_text_ = false;
   just_deleted_text_ = state_changes.just_deleted_text;
-
-  if (user_input_in_progress_ && user_text_.empty()) {
-    // Log cases where the user started editing and then subsequently cleared
-    // all the text.  Note that this explicitly doesn't catch cases like
-    // "hit ctrl-l to select whole edit contents, then hit backspace", because
-    // in such cases, |user_input_in_progress| won't be true here.
-    UMA_HISTOGRAM_ENUMERATION(kOmniboxUserTextClearedHistogram,
-                              OMNIBOX_USER_TEXT_CLEARED_BY_EDITING,
-                              OMNIBOX_USER_TEXT_CLEARED_NUM_OF_ITEMS);
-  }
 
   const bool no_selection =
       state_changes.new_sel_start == state_changes.new_sel_end;
