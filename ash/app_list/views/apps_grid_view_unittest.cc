@@ -203,7 +203,8 @@ class AppsGridViewTest : public views::ViewsTestBase,
     delegate_->SetIsTabletModeEnabled(create_as_tablet_mode_);
     app_list_view_ = new AppListView(delegate_.get());
     app_list_view_->InitView(parent);
-    app_list_view_->Show(false /*is_side_shelf*/);
+    app_list_view_->Show(AppListViewState::kFullscreenAllApps,
+                         false /*is_side_shelf*/);
     contents_view_ = app_list_view_->app_list_main_view()->contents_view();
     apps_grid_view_ = contents_view_->apps_container_view()->apps_grid_view();
     app_list_view_->GetWidget()->Show();
@@ -219,8 +220,6 @@ class AppsGridViewTest : public views::ViewsTestBase,
     }
     // Needed to update suggestions from |model_|.
     suggestions_container_->Update();
-    app_list_view_->SetState(ash::AppListViewState::kFullscreenAllApps);
-    app_list_view_->Layout();
 
     test_api_ = std::make_unique<AppsGridViewTestApi>(apps_grid_view_);
     ash::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(

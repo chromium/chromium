@@ -20,6 +20,7 @@ namespace ash {
 class AppListPresenterImpl;
 class AppListView;
 class AppListViewDelegate;
+enum class AppListViewState;
 
 // Delegate of the app list presenter which allows customizing its behavior.
 // The design of this interface was heavily influenced by the needs of Ash's
@@ -33,7 +34,8 @@ class APP_LIST_EXPORT AppListPresenterDelegate {
 
   // Called to initialize the layout of the app list.
   virtual void Init(AppListView* view, int64_t display_id) = 0;
-  virtual void ShowForDisplay(int64_t display_id) = 0;
+  virtual void ShowForDisplay(AppListViewState preferred_state,
+                              int64_t display_id) = 0;
 
   // Called when app list is closing.
   virtual void OnClosing() = 0;

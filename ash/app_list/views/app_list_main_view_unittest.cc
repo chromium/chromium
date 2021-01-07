@@ -45,9 +45,9 @@ class AppListMainViewTest : public views::ViewsTestBase {
     delegate_ = std::make_unique<AppListTestViewDelegate>();
     app_list_view_ = new AppListView(delegate_.get());
     app_list_view_->InitView(GetContext());
-    app_list_view_->Show(/*is_side_shelf=*/false);
+    app_list_view_->Show(AppListViewState::kFullscreenAllApps,
+                         /*is_side_shelf=*/false);
     EXPECT_TRUE(app_list_view_->GetWidget()->IsVisible());
-    app_list_view_->SetState(ash::AppListViewState::kFullscreenAllApps);
   }
 
   void TearDown() override {

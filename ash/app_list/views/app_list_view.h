@@ -44,7 +44,7 @@ class AppListConfig;
 class AppListMainView;
 class AppListModel;
 class AppsGridView;
-class BoundsAnimationObserver;
+class StateTransitionNotifier;
 class PaginationModel;
 class SearchBoxView;
 class SearchModel;
@@ -150,7 +150,10 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   void InitChildWidget();
 
   // Sets the state of all child views to be re-shown, then shows the view.
-  void Show(bool is_side_shelf);
+  // |preferred_state| - The initial app list view state. It may be overridden
+  // depending on device state. For example, peeking state is not supported in
+  // tablet mode, or for side shelf.
+  void Show(AppListViewState preferred_state, bool is_side_shelf);
 
   // If |drag_and_drop_host| is not nullptr it will be called upon drag and drop
   // operations outside the application list. This has to be called after
@@ -315,9 +318,6 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
 
-  // Called when state transition animation is completed.
-  void OnStateTransitionAnimationCompleted();
-
   void OnTabletModeAnimationTransitionNotified(
       TabletModeAnimationTransition animation_transition);
 
@@ -325,7 +325,7 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   void EndDragFromShelf(AppListViewState app_list_state);
 
   // Moves the AppListView off screen and calls a layout if needed.
-  void OnBoundsAnimationCompleted();
+  void OnBoundsAnimationCompleted(AppListViewState target_state);
 
   // Returns the expected tile bounds in screen coordinates the provided app
   // grid item ID , if the item is in the first apps grid page. Otherwise, it
@@ -563,7 +563,7 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   base::TimeTicks animation_end_timestamp_;
 
   // An observer to notify AppListView of bounds animation completion.
-  std::unique_ptr<BoundsAnimationObserver> bounds_animation_observer_;
+  std::unique_ptr<StateTransitionNotifier> state_transition_notifier_;
 
   // Metric reporter for state change animations.
   const std::unique_ptr<StateAnimationMetricsReporter>

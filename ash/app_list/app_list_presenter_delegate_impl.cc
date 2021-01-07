@@ -104,7 +104,9 @@ void AppListPresenterDelegateImpl::Init(AppListView* view, int64_t display_id) {
       shelf->shelf_widget()->GetDragAndDropHostForAppList());
 }
 
-void AppListPresenterDelegateImpl::ShowForDisplay(int64_t display_id) {
+void AppListPresenterDelegateImpl::ShowForDisplay(
+    AppListViewState preferred_state,
+    int64_t display_id) {
   is_visible_ = true;
 
   controller_->UpdateLauncherContainer(display_id);
@@ -122,7 +124,7 @@ void AppListPresenterDelegateImpl::ShowForDisplay(int64_t display_id) {
 
   view_->SetShelfHasRoundedCorners(
       IsShelfBackgroundTypeWithRoundedCorners(shelf->GetBackgroundType()));
-  view_->Show(IsSideShelf(shelf));
+  view_->Show(preferred_state, IsSideShelf(shelf));
 
   SnapAppListBoundsToDisplayEdge();
 

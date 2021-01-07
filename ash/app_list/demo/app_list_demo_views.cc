@@ -52,7 +52,7 @@ AppListView* DemoAppListViewDelegate::InitView(
 
   view_ = new AppListView(this);
   view_->InitView(container);
-  view_->Show(false /*is_side_shelf*/);
+  view_->Show(AppListViewState::kPeeking, false /*is_side_shelf*/);
 
   // Populate some apps.
   GetTestModel()->PopulateApps(kInitialItems);

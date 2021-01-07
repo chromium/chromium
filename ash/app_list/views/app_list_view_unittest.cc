@@ -179,7 +179,9 @@ class AppListViewTest : public views::ViewsTestBase,
   }
 
  protected:
-  void Show(bool is_side_shelf = false) { view_->Show(is_side_shelf); }
+  void Show(bool is_side_shelf = false) {
+    view_->Show(AppListViewState::kPeeking, is_side_shelf);
+  }
 
   void Initialize(bool is_tablet_mode) {
     delegate_ = std::make_unique<AppListTestViewDelegate>();
@@ -485,7 +487,9 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     view_->SetState(state);
   }
 
-  void Show(bool is_side_shelf = false) { view_->Show(is_side_shelf); }
+  void Show(bool is_side_shelf = false) {
+    view_->Show(AppListViewState::kPeeking, is_side_shelf);
+  }
 
   AppsGridViewTestApi* test_api() { return test_api_.get(); }
 

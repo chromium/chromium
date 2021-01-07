@@ -26,6 +26,7 @@ class AppListControllerImpl;
 class AppListPresenterImpl;
 class AppListView;
 class AppListViewDelegate;
+enum class AppListViewState;
 
 // Responsible for laying out the app list UI as well as updating the Shelf
 // launch icon as the state of the app list changes. Listens to shell events
@@ -42,7 +43,8 @@ class ASH_EXPORT AppListPresenterDelegateImpl : public AppListPresenterDelegate,
   // AppListPresenterDelegate:
   void SetPresenter(AppListPresenterImpl* presenter) override;
   void Init(AppListView* view, int64_t display_id) override;
-  void ShowForDisplay(int64_t display_id) override;
+  void ShowForDisplay(AppListViewState preferred_state,
+                      int64_t display_id) override;
   void OnClosing() override;
   void OnClosed() override;
   bool IsTabletMode() const override;

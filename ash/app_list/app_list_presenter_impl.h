@@ -58,7 +58,9 @@ class APP_LIST_EXPORT AppListPresenterImpl
   // Show the app list window on the display with the given id. If
   // |event_time_stamp| is not 0, it means |Show()| was triggered by one of the
   // AppListShowSources: kSearchKey, kShelfButton, or kSwipeFromShelf.
-  void Show(int64_t display_id, base::TimeTicks event_time_stamp);
+  void Show(AppListViewState preferred_state,
+            int64_t display_id,
+            base::TimeTicks event_time_stamp);
 
   // Hide the open app list window. This may leave the view open but hidden.
   // If |event_time_stamp| is not 0, it means |Dismiss()| was triggered by

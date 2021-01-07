@@ -303,20 +303,8 @@ class PopulatedAppListTest : public AshTestBase,
   void CreateAndOpenAppList() {
     app_list_view_ = new AppListView(app_list_test_delegate_.get());
     app_list_view_->InitView(GetContext());
-    app_list_view_->Show(false /*is_side_shelf*/);
-  }
-
-  void ShowAppListInAppsFullScreen() {
-    // Press the ExpandArrowView and check that the AppListView is in
-    // fullscreen.
-    gfx::Point click_point = app_list_view_->app_list_main_view()
-                                 ->contents_view()
-                                 ->expand_arrow_view()
-                                 ->GetBoundsInScreen()
-                                 .CenterPoint();
-    GetEventGenerator()->GestureTapAt(click_point);
-    EXPECT_EQ(AppListViewState::kFullscreenAllApps,
-              app_list_view_->app_list_state());
+    app_list_view_->Show(AppListViewState::kFullscreenAllApps,
+                         false /*is_side_shelf*/);
   }
 
   void InitializeAppsGrid() {
@@ -803,7 +791,6 @@ TEST_F(AppListPresenterDelegateTest,
 TEST_F(PopulatedAppListTest, MouseDragAppsGridViewHandledByAppList) {
   InitializeAppsGrid();
   app_list_test_model_->PopulateApps(2);
-  ShowAppListInAppsFullScreen();
 
   // Calculate the drag start/end points.
   gfx::Point drag_start_point = apps_grid_view_->GetBoundsInScreen().origin();
@@ -830,7 +817,6 @@ TEST_F(PopulatedAppListTest,
   InitializeAppsGrid();
   app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
   EXPECT_EQ(2, apps_grid_view_->pagination_model()->total_pages());
-  ShowAppListInAppsFullScreen();
 
   // Calculate the drag start/end points. |drag_start_point| is between the
   // first and the second AppListItem. Because in this test case, we want
@@ -862,7 +848,6 @@ TEST_F(PopulatedAppListTest,
 TEST_F(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
   InitializeAppsGrid();
   app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
-  ShowAppListInAppsFullScreen();
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -899,7 +884,6 @@ TEST_F(PopulatedAppListTest,
   InitializeAppsGrid();
   const int kItemCount = 5;
   app_list_test_model_->PopulateApps(kItemCount);
-  ShowAppListInAppsFullScreen();
 
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -948,7 +932,6 @@ TEST_F(PopulatedAppListTest, ScreenRotationDuringAppsGridItemDrag) {
 
   InitializeAppsGrid();
   app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
-  ShowAppListInAppsFullScreen();
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -992,7 +975,6 @@ TEST_F(PopulatedAppListTest,
 
   InitializeAppsGrid();
   app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
-  ShowAppListInAppsFullScreen();
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -1038,7 +1020,6 @@ TEST_F(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
   AppListFolderItem* folder =
       app_list_test_model_->CreateAndPopulateFolderWithApps(3);
   app_list_test_model_->PopulateApps(10);
-  ShowAppListInAppsFullScreen();
 
   // Tap the folder item to show it.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -1091,7 +1072,6 @@ TEST_F(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
   AppListFolderItem* folder =
       app_list_test_model_->CreateAndPopulateFolderWithApps(3);
   app_list_test_model_->PopulateApps(10);
-  ShowAppListInAppsFullScreen();
 
   // Tap the folder item to show it.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -1148,7 +1128,6 @@ TEST_F(PopulatedAppListTest, AppsGridItemReparentToFolderDrag) {
   AppListFolderItem* folder =
       app_list_test_model_->CreateAndPopulateFolderWithApps(3);
   app_list_test_model_->PopulateApps(10);
-  ShowAppListInAppsFullScreen();
 
   // Tap the folder item to show it.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -1195,7 +1174,6 @@ TEST_F(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   InitializeAppsGrid();
   const int kItemCount = 5;
   app_list_test_model_->PopulateApps(kItemCount);
-  ShowAppListInAppsFullScreen();
 
   // Dragging the item with index 4.
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(4);
@@ -1302,7 +1280,6 @@ TEST_F(PopulatedAppListTest, FolderItemDroppedRemovesBlankPage) {
   InitializeAppsGrid();
   app_list_test_model_->CreateAndPopulateFolderWithApps(3);
   app_list_test_model_->PopulateApps(2);
-  ShowAppListInAppsFullScreen();
   ASSERT_EQ(1, apps_grid_view_->pagination_model()->total_pages());
 
   // Tap the folder item to show its contents.

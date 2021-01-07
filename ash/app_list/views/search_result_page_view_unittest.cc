@@ -40,7 +40,7 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
     delegate_ = std::make_unique<AppListTestViewDelegate>();
     app_list_view_ = new AppListView(delegate_.get());
     app_list_view_->InitView(GetContext());
-    app_list_view_->Show(false /*is_side_shelf*/);
+    app_list_view_->Show(AppListViewState::kPeeking, false /*is_side_shelf*/);
 
     ContentsView* contents_view =
         app_list_view_->app_list_main_view()->contents_view();

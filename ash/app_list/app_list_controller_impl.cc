@@ -453,7 +453,8 @@ void AppListControllerImpl::GetAppInfoDialogBounds(
 }
 
 void AppListControllerImpl::ShowAppList() {
-  presenter_.Show(GetDisplayIdToShowAppListOn(), base::TimeTicks());
+  presenter_.Show(AppListViewState::kPeeking, GetDisplayIdToShowAppListOn(),
+                  base::TimeTicks());
 }
 
 aura::Window* AppListControllerImpl::GetWindow() {
@@ -594,7 +595,7 @@ void AppListControllerImpl::Show(int64_t display_id,
   if (show_source.has_value())
     LogAppListShowSource(show_source.value());
 
-  presenter_.Show(display_id, event_time_stamp);
+  presenter_.Show(AppListViewState::kPeeking, display_id, event_time_stamp);
 
   // AppListControllerImpl::Show is called in ash at the first time of showing
   // app list view. So check whether the expand arrow view should be visible.
