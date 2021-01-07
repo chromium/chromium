@@ -41,6 +41,20 @@ if (is_android) {
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
 template("test") {
+  # RTS
+  if (rts_exclude_file != "" && defined(invoker.sources) &&
+      invoker.sources != []) {
+    # Normalize paths
+    abs_paths = get_path_info(invoker.sources, "abspath")
+
+    # Filter
+    filtered_sources = filter_exclude(abs_paths, rts_exclusions)
+
+    # Do the replacement
+    invoker.sources = []
+    invoker.sources = filtered_sources
+  }
+
   testonly = true
   if (!is_ios) {
     assert(!defined(invoker.is_xctest) || !invoker.is_xctest,

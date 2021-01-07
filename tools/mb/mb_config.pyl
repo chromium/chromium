@@ -994,6 +994,7 @@
       'linux-perfetto-rel': 'perfetto_release_trybot',
       'linux-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-rel-builderful': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
+      'linux-rts': 'release_trybot_rts',
       'linux-trusty-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange',
       'linux-viz-rel': 'release_trybot',
       'linux-warmed': 'release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
@@ -2592,6 +2593,10 @@
       'no_goma',
     ],
 
+    'release_trybot_rts': [
+      'release_bot', 'rts_bot',
+    ],
+
     'tsan_disable_nacl_debug_bot': [
       'tsan', 'disable_nacl', 'debug_bot',
     ],
@@ -3236,6 +3241,10 @@
 
     'resource_whitelisting': {
       'gn_args': 'enable_resource_allowlist_generation=true',
+    },
+
+    'rts_bot': {
+      'gn_args': 'rts_exclude_file="//testing/rts_exclude_file.txt"',
     },
 
     'shared': {
