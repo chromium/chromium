@@ -121,3 +121,6 @@
 
 # crbug.com/1159805
 -org.chromium.chrome.browser.customtabs.DetachedResourceRequestTest.testRepeatedIntents
+
+# crbug.com/1163913
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTriggerScriptIntegrationTest.dontShowOnboardingIfAcceptedInDifferentTab
