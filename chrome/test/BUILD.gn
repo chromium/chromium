@@ -442,6 +442,8 @@ static_library("test_support") {
     sources += [
       "../browser/extensions/browsertest_util.cc",
       "../browser/extensions/browsertest_util.h",
+      "../browser/extensions/extension_apitest.cc",
+      "../browser/extensions/extension_apitest.h",
       "../browser/extensions/extension_browsertest.cc",
       "../browser/extensions/extension_browsertest.h",
       "../browser/extensions/permissions_test_util.cc",
@@ -2034,8 +2036,6 @@ if (!is_android) {
         "../browser/extensions/events_apitest.cc",
         "../browser/extensions/execute_script_apitest.cc",
         "../browser/extensions/extension_action_runner_browsertest.cc",
-        "../browser/extensions/extension_apitest.cc",
-        "../browser/extensions/extension_apitest.h",
         "../browser/extensions/extension_bindings_apitest.cc",
         "../browser/extensions/extension_bookmarklet_browsertest.cc",
         "../browser/extensions/extension_browsertest_browsertest.cc",

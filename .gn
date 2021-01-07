@@ -81,7 +81,6 @@ no_check_targets = [
   "//chrome/services/ipp_parser:*",  # 1 error
   "//chrome/services/removable_storage_writer:*",  # 1 error
   "//chrome/services/util_win:*",  # 1 error
-  "//chrome/test/media_router:*",  # 5 errors
   "//chrome/test:*",  # 2682 errors
 
   "//clank/third_party/gvr_shim:*",  # 1 error
