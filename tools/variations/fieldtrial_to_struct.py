@@ -35,6 +35,7 @@ _platforms = [
     'android_weblayer',
     'android_webview',
     'chromeos',
+    'chromeos_lacros',
     'fuchsia',
     'ios',
     'linux',
