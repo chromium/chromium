@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
 #include <vector>
 
 #include "base/optional.h"
@@ -32,8 +33,11 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/test/test_network_context.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "url/gurl.h"
 #include "url/url_canon_ip.h"
+
+using testing::StartsWith;
 
 namespace content {
 
@@ -62,6 +66,11 @@ class MockHostResolver : public network::mojom::HostResolver {
   MockHostResolver(const MockHostResolver&) = delete;
   MockHostResolver& operator=(const MockHostResolver&) = delete;
 
+  static std::map<std::string, std::string>& known_hosts() {
+    static base::NoDestructor<std::map<std::string, std::string>> hosts;
+    return *hosts;
+  }
+
   void ResolveHost(const ::net::HostPortPair& host_port_pair,
                    const ::net::NetworkIsolationKey& network_isolation_key,
                    network::mojom::ResolveHostParametersPtr optional_parameters,
@@ -70,7 +79,11 @@ class MockHostResolver : public network::mojom::HostResolver {
     mojo::Remote<network::mojom::ResolveHostClient> response_client(
         std::move(pending_response_client));
 
-    const std::string host = host_port_pair.host();
+    std::string host = host_port_pair.host();
+    auto iter = known_hosts().find(host);
+    if (iter != known_hosts().end())
+      host = iter->second;
+
     net::IPAddress remote_address;
     // TODO(crbug.com/1141241): Replace if/else with AssignFromIPLiteral.
     if (host.find(':') != std::string::npos) {
@@ -129,19 +142,20 @@ class MockNetworkContext : public network::TestNetworkContext {
       mojo::PendingReceiver<network::mojom::TCPConnectedSocket> socket,
       mojo::PendingRemote<network::mojom::SocketObserver> observer,
       CreateTCPConnectedSocketCallback callback) override {
-    history_.push_back(RecordedCall{
-        DirectSocketsServiceImpl::ProtocolType::kTcp,
-        remote_addr_list[0].address().ToString(), remote_addr_list[0].port(),
-        tcp_connected_socket_options->send_buffer_size,
-        tcp_connected_socket_options->receive_buffer_size,
-        tcp_connected_socket_options->no_delay});
+    const net::IPEndPoint& peer_addr = remote_addr_list.front();
+    history_.push_back(
+        RecordedCall{DirectSocketsServiceImpl::ProtocolType::kTcp,
+                     peer_addr.address().ToString(), peer_addr.port(),
+                     tcp_connected_socket_options->send_buffer_size,
+                     tcp_connected_socket_options->receive_buffer_size,
+                     tcp_connected_socket_options->no_delay});
 
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
     DCHECK_EQ(MOJO_RESULT_OK,
               mojo::CreateDataPipe(nullptr, &producer, &consumer));
-    std::move(callback).Run(result_, base::nullopt, base::nullopt,
-                            std::move(consumer), std::move(producer));
+    std::move(callback).Run(result_, local_addr, peer_addr, std::move(consumer),
+                            std::move(producer));
   }
 
   void CreateHostResolver(
@@ -232,7 +246,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_Success) {
   const std::string script = base::StringPrintf(
       "openTcp({remoteAddress: '127.0.0.1', remotePort: %d})", listening_port);
 
-  EXPECT_EQ("openTcp succeeded", EvalJs(shell(), script));
+  EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+              StartsWith("openTcp succeeded"));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_Success_Global) {
@@ -242,7 +257,27 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_Success_Global) {
   const std::string script = base::StringPrintf(
       "openTcp({remoteAddress: '127.0.0.1', remotePort: %d})", listening_port);
 
-  EXPECT_EQ("openTcp succeeded", EvalJs(shell(), script));
+  EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+              StartsWith("openTcp succeeded"));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_Success_Hostname) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+  const char kExampleHostname[] = "mail.example.com";
+  const char kExampleAddress[] = "98.76.54.32";
+  MockHostResolver::known_hosts()[kExampleHostname] = kExampleAddress;
+
+  MockNetworkContext mock_network_context(net::OK);
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+  const std::string expected_result = base::StringPrintf(
+      "openTcp succeeded: {remoteAddress: \"%s\", remotePort: 993}",
+      kExampleAddress);
+
+  const std::string script = base::StringPrintf(
+      "openTcp({remoteAddress: '%s', remotePort: 993})", kExampleHostname);
+
+  EXPECT_EQ(expected_result, EvalJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_CannotEvadeCors) {
@@ -297,7 +332,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_OptionsTwo) {
 
   MockNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
-  const std::string expected_result = "openTcp succeeded";
 
   const std::string script =
       R"(
@@ -309,7 +343,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_OptionsTwo) {
             noDelay: true
           })
         )";
-  EXPECT_EQ(expected_result, EvalJs(shell(), script));
+  EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+              StartsWith("openTcp succeeded"));
 
   DCHECK_EQ(1U, mock_network_context.history().size());
   const RecordedCall& call = mock_network_context.history()[0];

@@ -8,7 +8,9 @@
     async function openTcp(options) {
       try {
         let tcpSocket = await navigator.openTCPSocket(options);
-        return 'openTcp succeeded';
+        return ('openTcp succeeded: ' +
+                '{remoteAddress: "' + tcpSocket.remoteAddress +
+                '", remotePort: ' + tcpSocket.remotePort + '}');
       } catch(error) {
         return ('openTcp failed: ' + error);
       }
