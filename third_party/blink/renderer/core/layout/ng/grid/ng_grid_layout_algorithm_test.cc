@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
+
 namespace {
 #define EXPECT_RANGE(expected_start, expected_count, iterator)              \
   EXPECT_EQ(expected_count, iterator.RepeatCount());                        \
@@ -27,6 +29,7 @@ namespace {
   EXPECT_EQ(area.rows.StartLine(), expected_row_start);                    \
   EXPECT_EQ(area.rows.EndLine(), expected_row_end);
 }  // namespace
+
 class NGGridLayoutAlgorithmTest
     : public NGBaseLayoutAlgorithmTest,
       private ScopedLayoutNGGridForTest,
@@ -36,13 +39,20 @@ class NGGridLayoutAlgorithmTest
       : ScopedLayoutNGGridForTest(true),
         ScopedLayoutNGBlockFragmentationForTest(true) {}
 
-  void BuildGridItemsAndTrackCollections(NGGridLayoutAlgorithm& algorithm) {
-    // Measure Items
+  void SetUp() override { NGBaseLayoutAlgorithmTest::SetUp(); }
+
+  void BuildGridItemsAndTrackCollections(
+      const NGGridLayoutAlgorithm& algorithm) {
+    // Measure items.
     algorithm.ConstructAndAppendGridItems(&grid_items_, &out_of_flow_items_);
+
+    NGGridPlacement grid_placement(
+        algorithm.Style(), algorithm.ComputeAutomaticRepetitions(kForColumns),
+        algorithm.ComputeAutomaticRepetitions(kForRows));
 
     algorithm.BuildAlgorithmTrackCollections(
         &grid_items_, &algorithm_column_track_collection_,
-        &algorithm_row_track_collection_);
+        &algorithm_row_track_collection_, &grid_placement);
 
     // Cache set indices.
     algorithm.CacheItemSetIndices(algorithm_column_track_collection_,
@@ -187,6 +197,7 @@ class NGGridLayoutAlgorithmTest
 
     return fragment->DumpFragmentTree(flags);
   }
+
   Vector<NGGridLayoutAlgorithm::GridItemData> grid_items_;
   Vector<NGGridLayoutAlgorithm::GridItemData> out_of_flow_items_;
 

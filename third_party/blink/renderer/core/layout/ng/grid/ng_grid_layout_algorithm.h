@@ -14,6 +14,8 @@
 
 namespace blink {
 
+class NGGridPlacement;
+
 class CORE_EXPORT NGGridLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
                                NGBoxFragmentBuilder,
@@ -141,6 +143,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       GridTrackSizingDirection track_direction,
       GridItemContributionType contribution_type) const;
 
+  wtf_size_t ComputeAutomaticRepetitions(
+      GridTrackSizingDirection track_direction) const;
+
   void ConstructAndAppendGridItems(
       Vector<GridItemData>* grid_items,
       Vector<GridItemData>* out_of_flow_items = nullptr) const;
@@ -150,23 +155,22 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   void BuildBlockTrackCollections(
       Vector<GridItemData>* grid_items,
       NGGridBlockTrackCollection* column_track_collection,
-      NGGridBlockTrackCollection* row_track_collection) const;
+      NGGridBlockTrackCollection* row_track_collection,
+      NGGridPlacement* grid_placement) const;
 
   void BuildAlgorithmTrackCollections(
       Vector<GridItemData>* grid_items,
       NGGridLayoutAlgorithmTrackCollection* column_track_collection,
-      NGGridLayoutAlgorithmTrackCollection* row_track_collection) const;
+      NGGridLayoutAlgorithmTrackCollection* row_track_collection,
+      NGGridPlacement* grid_placement) const;
 
   // Sets specified track lists on |track_collection|.
-  void SetSpecifiedTracks(wtf_size_t automatic_repetitions,
+  void SetSpecifiedTracks(wtf_size_t auto_repetitions,
                           NGGridBlockTrackCollection* track_collection) const;
-  // Determines the explicit column and row track starts.
-  void DetermineExplicitTrackStarts(wtf_size_t automatic_column_repetitions,
-                                    wtf_size_t automatic_row_repetitions,
-                                    wtf_size_t* explicit_column_start,
-                                    wtf_size_t* explicit_row_start,
-                                    wtf_size_t* column_count,
-                                    wtf_size_t* row_count) const;
+  // Ensure coverage in block collection after grid items have been placed.
+  void EnsureTrackCoverageForGridItems(
+      const Vector<GridItemData>& grid_items,
+      NGGridBlockTrackCollection* track_collection) const;
 
   // For every item and track direction, computes and stores the pair of indices
   // "begin" and "end" such that the item spans every set from the respective
@@ -193,6 +197,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       NGGridLayoutAlgorithmTrackCollection* track_collection,
       Vector<GridItemData>* grid_items,
       Vector<wtf_size_t>* reordered_item_indices) const;
+
   void IncreaseTrackSizesToAccommodateGridItems(
       ReorderedGridItems::Iterator group_begin,
       ReorderedGridItems::Iterator group_end,
@@ -230,8 +235,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // Tests whether the row gap is unresolvable based on its type and the
   // available size.
   bool IsRowGridGapUnresolvable(LayoutUnit available_size) const;
-
-  GridTrackSizingDirection AutoFlowDirection() const;
 
   LogicalSize border_box_size_;
   LogicalSize child_percentage_size_;

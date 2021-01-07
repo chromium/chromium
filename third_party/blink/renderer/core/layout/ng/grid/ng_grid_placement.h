@@ -19,84 +19,78 @@ class CORE_EXPORT NGGridPlacement {
 
  public:
   enum class PackingBehavior { kSparse, kDense };
-  explicit NGGridPlacement(const wtf_size_t row_auto_repeat,
-                           const wtf_size_t column_auto_repeat,
-                           const wtf_size_t row_explicit_start,
-                           const wtf_size_t column_explicit_start,
-                           const PackingBehavior packing_behavior,
-                           const GridTrackSizingDirection major_direction,
-                           const ComputedStyle& grid_style,
-                           wtf_size_t minor_max_end_line,
-                           NGGridBlockTrackCollection* row_collection,
-                           NGGridBlockTrackCollection* column_collection,
-                           Vector<NGGridLayoutAlgorithm::GridItemData>* items);
-  void RunAutoPlacementAlgorithm();
+
+  using GridItemData = NGGridLayoutAlgorithm::GridItemData;
+  using AutoPlacementType = NGGridLayoutAlgorithm::AutoPlacementType;
+
+  NGGridPlacement(const ComputedStyle& grid_style,
+                  const wtf_size_t column_auto_repetitions,
+                  const wtf_size_t row_auto_repetitions);
+
+  void RunAutoPlacementAlgorithm(Vector<GridItemData>* grid_items);
+  wtf_size_t AutoRepetitions(GridTrackSizingDirection track_direction) const;
 
  private:
-  // Place non auto-positioned items and determine what items need auto
-  // placement, if any do, this returns true.
-  bool PlaceNonAutoGridItems();
-  // Place items that have a definite position on the major axis but need auto
-  // placement on the minor axis.
-  void PlaceGridItemsLockedToMajorAxis();
-  // Place item that has a definite position on the minor axis but need auto
-  // placement on the major axis.
-  void PlaceAutoMajorAxisGridItem(
-      NGGridLayoutAlgorithm::GridItemData* item_data);
-  // Place items that need automatic placement on both the major and minor axis.
-  void PlaceAutoBothAxisGridItem(
-      NGGridLayoutAlgorithm::GridItemData* item_data);
-  // Places a grid item if it has a definite position in the given direction,
-  // returns true if item was able to be positioned, false if item needs auto
-  // positioning in the given direction.
-  bool PlaceGridItem(
-      GridTrackSizingDirection grid_direction,
-      NGGridLayoutAlgorithm::NGGridLayoutAlgorithm::GridItemData* item_data);
+  struct AutoPlacementCursor {
+    wtf_size_t major_position{0};
+    wtf_size_t minor_position{0};
+  };
 
-  void UpdatePlacementAndEnsureTrackCoverage(
-      GridSpan span,
-      GridTrackSizingDirection track_direction,
-      NGGridLayoutAlgorithm::NGGridLayoutAlgorithm::GridItemData* item_data);
+  // Compute the track start offset from the grid items positioned at negative
+  // indices.
+  wtf_size_t DetermineTrackStartOffset(
+      const Vector<GridItemData>& grid_items,
+      GridTrackSizingDirection track_direction) const;
+
+  // Place non auto-positioned elements from |grid_items|; returns true if any
+  // item needs to resolve an automatic position. Otherwise, false.
+  bool PlaceNonAutoGridItems(Vector<GridItemData>* grid_items);
+  // Place elements from |grid_items| that have a definite position on the major
+  // axis but need auto-placement on the minor axis.
+  void PlaceGridItemsLockedToMajorAxis(Vector<GridItemData>* grid_items);
+  // Place an item that has a definite position on the minor axis but need
+  // auto-placement on the major axis.
+  void PlaceAutoMajorAxisGridItem(GridItemData* grid_item,
+                                  AutoPlacementCursor* placement_cursor,
+                                  const Vector<GridItemData>& grid_items);
+  // Place an item that needs auto-placement on both the major and minor axis.
+  void PlaceAutoBothAxisGridItem(GridItemData* grid_item,
+                                 AutoPlacementCursor* placement_cursor,
+                                 const Vector<GridItemData>& grid_items);
+
+  // Places a grid item; returns true if it has a definite position in the given
+  // direction, false if the item needs auto-placement.
+  bool PlaceGridItem(GridItemData* grid_item,
+                     GridTrackSizingDirection track_direction) const;
 
   // Returns true if the given placement would overlap with a placed item.
   bool DoesItemOverlap(wtf_size_t major_start,
                        wtf_size_t major_end,
                        wtf_size_t minor_start,
-                       wtf_size_t minor_end) const;
+                       wtf_size_t minor_end,
+                       const Vector<GridItemData>& grid_items) const;
 
-  wtf_size_t AutoRepeat(GridTrackSizingDirection direction);
-  wtf_size_t ExplicitStart(GridTrackSizingDirection direction);
-  NGGridBlockTrackCollection& BlockCollection(
-      GridTrackSizingDirection direction);
+  wtf_size_t StartOffset(GridTrackSizingDirection track_direction) const;
+  wtf_size_t AutoRepeatTrackCount(
+      GridTrackSizingDirection track_direction) const;
+  bool HasSparsePacking() const;
 
-  const wtf_size_t row_auto_repeat_;
-  const wtf_size_t column_auto_repeat_;
-  const wtf_size_t row_explicit_start_;
-  const wtf_size_t column_explicit_start_;
+  // Used to resolve positions using |GridPositionsResolver|.
+  const ComputedStyle& grid_style_;
+
   const PackingBehavior packing_behavior_;
   const GridTrackSizingDirection major_direction_;
   const GridTrackSizingDirection minor_direction_;
-  // Used to resolve positions using GridPositionsResolver.
-  const ComputedStyle& grid_style_;
+  const wtf_size_t column_auto_repeat_track_count_;
+  const wtf_size_t row_auto_repeat_track_count_;
+  const wtf_size_t column_auto_repetitions_;
+  const wtf_size_t row_auto_repetitions_;
 
-  // Keeps track of the biggest minor end line among items with an explicit
-  // major line.
-  wtf_size_t minor_max_end_line_ = 0;
-
-  NGGridBlockTrackCollection* row_collection_;
-  NGGridBlockTrackCollection* column_collection_;
-  Vector<NGGridLayoutAlgorithm::GridItemData>* items_;
-
-  wtf_size_t starting_minor_line_ = 0;
-  wtf_size_t ending_minor_line_ = 0;
-  wtf_size_t placement_cursor_major;
-  wtf_size_t placement_cursor_minor;
-  // Subset of |items_| containing items that have a definite position on the
-  // major axis.
-  Vector<NGGridLayoutAlgorithm::GridItemData*> items_locked_to_major_axis_;
-  // Subset of |items_| containing items that do not have a definite position on
-  // the major axis.
-  Vector<NGGridLayoutAlgorithm::GridItemData*> items_not_locked_to_major_axis_;
+  wtf_size_t minor_max_end_line_;
+  wtf_size_t column_start_offset_;
+  wtf_size_t row_start_offset_;
 };
+
 }  // namespace blink
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_PLACEMENT_H_

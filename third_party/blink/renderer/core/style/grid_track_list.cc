@@ -82,6 +82,10 @@ wtf_size_t NGGridTrackList::TotalTrackCount() const {
   return total_track_count_;
 }
 
+wtf_size_t NGGridTrackList::AutoRepeatSize() const {
+  return HasAutoRepeater() ? repeaters_[auto_repeater_index_].repeat_size : 0;
+}
+
 bool NGGridTrackList::AddRepeater(
     const Vector<GridTrackSize>& repeater_track_sizes,
     wtf_size_t repeat_count) {
