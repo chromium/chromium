@@ -449,7 +449,7 @@ class SessionRestoreImpl : public BrowserListObserver {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       DCHECK(browser->window()->IsVisible() ||
              browser->window()->IsMinimized() ||
-             ash::features::IsDesksRestoreEnabled());
+             ash::features::IsBentoEnabled());
 #else
       DCHECK(browser->window()->IsVisible() ||
              browser->window()->IsMinimized());
@@ -796,14 +796,14 @@ void SessionRestore::RestoreSessionAfterCrash(Browser* browser) {
   auto* profile = browser->profile();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // DesksRestore restores a window to the right desk, so we should not
+  // Bento restores a window to the right desk, so we should not
   // reuse any browser window. Otherwise, the conflict of the parent desk
   // arises because tabs created in this |browser| should remain in the
   // current active desk, but the first restored window should be restored
   // to its saved parent desk before a crash. This also avoids users'
   // confusion of the current window disappearing from the current desk
   // after pressing a restore button.
-  if (ash::features::IsDesksRestoreEnabled())
+  if (ash::features::IsBentoEnabled())
     browser = nullptr;
 #endif
 

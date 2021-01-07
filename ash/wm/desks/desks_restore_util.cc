@@ -46,7 +46,7 @@ bool IsValidDeskIndex(int desk_index) {
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   constexpr int kDefaultActiveDeskIndex = 0;
   registry->RegisterListPref(prefs::kDesksNamesList);
-  if (features::IsDesksRestoreEnabled()) {
+  if (features::IsBentoEnabled()) {
     registry->RegisterIntegerPref(prefs::kDesksActiveDesk,
                                   kDefaultActiveDeskIndex);
   }
@@ -91,7 +91,7 @@ void RestorePrimaryUserDesks() {
   }
 
   // Restore an active desk for the primary user.
-  if (features::IsDesksRestoreEnabled()) {
+  if (features::IsBentoEnabled()) {
     const int active_desk_index =
         primary_user_prefs->GetInteger(prefs::kDesksActiveDesk);
 
@@ -131,7 +131,7 @@ void UpdatePrimaryUserDesksPrefs() {
 }
 
 void UpdatePrimaryUserActiveDeskPrefs(int active_desk_index) {
-  DCHECK(features::IsDesksRestoreEnabled());
+  DCHECK(features::IsBentoEnabled());
   DCHECK(Shell::Get()->session_controller()->IsUserPrimary());
   DCHECK(IsValidDeskIndex(active_desk_index));
   if (g_pause_desks_prefs_updates)

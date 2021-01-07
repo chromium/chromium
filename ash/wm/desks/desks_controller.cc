@@ -616,7 +616,7 @@ void DesksController::OnWindowActivating(ActivationReason reason,
 
   // Browser session restore opens all restored windows, so it activates
   // every single window and activates the parent desk. Therefore, this check
-  // prevents repetitive desk activation. Moreover, when DesksRestore is
+  // prevents repetitive desk activation. Moreover, when Bento desks restore is
   // enabled, it avoid switching desk back and forth when windows are restored
   // to different desks.
   if (Shell::Get()->shell_delegate()->IsSessionRestoreInProgress())
@@ -720,7 +720,7 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
     observer.OnDeskActivationChanged(active_desk_, old_active);
 
   // Only update active desk prefs when a primary user switches a desk.
-  if (features::IsDesksRestoreEnabled() &&
+  if (features::IsBentoEnabled() &&
       shell->session_controller()->IsUserPrimary()) {
     desks_restore_util::UpdatePrimaryUserActiveDeskPrefs(
         GetDeskIndex(active_desk_));

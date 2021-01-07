@@ -275,8 +275,8 @@ void SessionService::WindowOpened(Browser* browser) {
   SetWindowAppName(browser->session_id(), browser->app_name());
 
   // Save a browser workspace after window is created in `Browser()`.
-  // DesksRestore feature in ash requires this line to restore correctly after
-  // creating a new browser window in a particular desk.
+  // Bento desks restore feature in ash requires this line to restore correctly
+  // after creating a new browser window in a particular desk.
   SetWindowWorkspace(browser->session_id(), browser->window()->GetWorkspace());
 }
 

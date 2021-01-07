@@ -2832,7 +2832,7 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
   // AshTestBase:
   void SetUp() override {
     if (GetParam())
-      scoped_feature_list_.InitAndEnableFeature(features::kDesksRestore);
+      scoped_feature_list_.InitAndEnableFeature(features::kBento);
     NoSessionAshTestBase::SetUp();
 
     TestSessionControllerClient* session_controller =
@@ -2871,7 +2871,7 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
                                  bool teleported) override {}
   void OnTransitionUserShelfToNewAccount() override {}
 
-  bool IsDesksRestoreEnabled() const { return GetParam(); }
+  bool IsBentoEnabled() const { return GetParam(); }
 
   AccountId GetUser1AccountId() const {
     return AccountId::FromUserEmail(kUser1Email);
@@ -3089,7 +3089,7 @@ TEST_P(DesksRestoreMultiUserTest, DesksRestoredFromPrimaryUserPrefsOnly) {
   InitPrefsWithDesksRestoreData(user_1_prefs());
 
   // Set the primary user1's active desk prefs to kUser1StoredActiveDesk.
-  if (IsDesksRestoreEnabled())
+  if (IsBentoEnabled())
     user_1_prefs()->SetInteger(prefs::kDesksActiveDesk, kUser1StoredActiveDesk);
 
   SimulateUserLogin(GetUser1AccountId());
@@ -3110,7 +3110,7 @@ TEST_P(DesksRestoreMultiUserTest, DesksRestoredFromPrimaryUserPrefsOnly) {
   };
 
   verify_desks("Before switching users");
-  if (IsDesksRestoreEnabled()) {
+  if (IsBentoEnabled()) {
     // The primary user1 should restore the saved active desk from its pref.
     EXPECT_EQ(desks[kUser1StoredActiveDesk]->container_id(),
               desks_util::GetActiveDeskContainerId());
@@ -3120,7 +3120,7 @@ TEST_P(DesksRestoreMultiUserTest, DesksRestoredFromPrimaryUserPrefsOnly) {
   // the time when the first user signs in.
   SwitchActiveUser(GetUser2AccountId());
   verify_desks("After switching users");
-  if (IsDesksRestoreEnabled()) {
+  if (IsBentoEnabled()) {
     // The secondary user2 should start with a default active desk.
     EXPECT_EQ(desks[kDefaultActiveDesk]->container_id(),
               desks_util::GetActiveDeskContainerId());

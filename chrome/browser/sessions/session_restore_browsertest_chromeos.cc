@@ -47,7 +47,7 @@ const char* test_app_name2 = "TestApp2";
 }  // namespace
 
 // SessionRestoreTestChromeOS with boolean test param for testing with
-// DesksRestore feature enabled and disabled.
+// Bento, which contains desks restore feature, enabled and disabled.
 class SessionRestoreTestChromeOS : public InProcessBrowserTest,
                                    public ::testing::WithParamInterface<bool> {
  public:
@@ -56,7 +56,7 @@ class SessionRestoreTestChromeOS : public InProcessBrowserTest,
  protected:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     if (GetParam())
-      scoped_feature_list_.InitAndEnableFeature(ash::features::kDesksRestore);
+      scoped_feature_list_.InitAndEnableFeature(ash::features::kBento);
     base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
     InProcessBrowserTest::SetUpDefaultCommandLine(&default_command_line);
 
@@ -92,7 +92,7 @@ class SessionRestoreTestChromeOS : public InProcessBrowserTest,
         browser()->profile(), SessionStartupPref(SessionStartupPref::LAST));
   }
 
-  bool IsDesksRestoreEnabled() const { return GetParam(); }
+  bool IsBentoEnabled() const { return GetParam(); }
 
   Profile* profile() { return browser()->profile(); }
 
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTestChromeOS,
   Browser* browser_desk1 =
       CreateBrowserWithParams(Browser::CreateParams(profile(), true));
   browser_desk1->SetWindowUserTitle("1");
-  if (IsDesksRestoreEnabled()) {
+  if (IsBentoEnabled()) {
     browser_desk1->window()->GetNativeWindow()->SetProperty(
         aura::client::kWindowWorkspaceKey, 1);
   }
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTestChromeOS,
   // specified with params.initial_workspace.
   Browser::CreateParams browser_desk2_params =
       Browser::CreateParams(profile(), true);
-  if (IsDesksRestoreEnabled())
+  if (IsBentoEnabled())
     browser_desk2_params.initial_workspace = "2";
   Browser* browser_desk2 = CreateBrowserWithParams(browser_desk2_params);
   browser_desk2->SetWindowUserTitle("2");
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTestChromeOS,
   for (int i = 0; i < 3; i++) {
     auto* browser = browser_list->get(i);
     int desk_index = 0;
-    if (IsDesksRestoreEnabled()) {
+    if (IsBentoEnabled()) {
       ASSERT_TRUE(base::StringToInt(browser->initial_workspace(), &desk_index));
       // Verify that browser i_th with title i, has initial_workspace equals
       // to desk i_th.
@@ -183,11 +183,11 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTestChromeOS,
     }
 
     // Check that a browser window is restored to the right desk, desk i_th
-    // if DesksRestore is enabled. Otherwiser it should restores to the default
-    // first desk.
+    // if Bento desks restore is enabled. Otherwiser it should restores to the
+    // default first desk.
     ASSERT_TRUE(ash::AutotestDesksApi().IsWindowInDesk(
         browser->window()->GetNativeWindow(),
-        IsDesksRestoreEnabled() ? desk_index : 0));
+        IsBentoEnabled() ? desk_index : 0));
     int workspace = browser->window()->GetNativeWindow()->GetProperty(
         aura::client::kWindowWorkspaceKey);
     ASSERT_EQ(desk_index,

@@ -58,7 +58,7 @@ aura::Window* AlwaysOnTopController::GetContainer(aura::Window* window) const {
     // active desks' container.
     int window_workspace =
         window->GetProperty(aura::client::kWindowWorkspaceKey);
-    if (features::IsDesksRestoreEnabled() &&
+    if (features::IsBentoEnabled() &&
         window_workspace != aura::client::kUnassignedWorkspace) {
       auto* desk_container =
           DesksController::Get()->GetDeskContainer(root, window_workspace);
