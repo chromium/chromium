@@ -47,8 +47,8 @@ export class PDFMetrics {
     if (!chrome.metricsPrivate) {
       return;
     }
-    if (!PDFMetrics.actionsMetric_) {
-      PDFMetrics.actionsMetric_ = {
+    if (!actionsMetric) {
+      actionsMetric = {
         'metricName': 'PDF.Actions',
         'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
         'min': 1,
@@ -56,28 +56,27 @@ export class PDFMetrics {
         'buckets': UserAction.NUMBER_OF_ACTIONS + 1
       };
     }
-    chrome.metricsPrivate.recordValue(PDFMetrics.actionsMetric_, action);
-    if (PDFMetrics.firstMap_.has(action)) {
-      const firstAction = PDFMetrics.firstMap_.get(action);
-      if (!PDFMetrics.firstActionRecorded_.has(firstAction)) {
-        chrome.metricsPrivate.recordValue(
-            PDFMetrics.actionsMetric_, firstAction);
-        PDFMetrics.firstActionRecorded_.add(firstAction);
+    chrome.metricsPrivate.recordValue(actionsMetric, action);
+    if (firstMap.has(action)) {
+      const firstAction = firstMap.get(action);
+      if (!firstActionRecorded.has(firstAction)) {
+        chrome.metricsPrivate.recordValue(actionsMetric, firstAction);
+        firstActionRecorded.add(firstAction);
       }
     }
   }
 
   static resetForTesting() {
-    PDFMetrics.firstActionRecorded_.clear();
-    PDFMetrics.actionsMetric_ = null;
+    firstActionRecorded.clear();
+    actionsMetric = null;
   }
 }
 
-/** @private {?chrome.metricsPrivate.MetricType} */
-PDFMetrics.actionsMetric_ = null;
+/** @type {?chrome.metricsPrivate.MetricType} */
+let actionsMetric = null;
 
-/** @private {Set} */
-PDFMetrics.firstActionRecorded_ = new Set();
+/** @type {!Set<!UserAction>} */
+const firstActionRecorded = new Set();
 
 // Keep in sync with enums.xml.
 // Do not change the numeric values or reuse them since these numbers are
@@ -218,8 +217,8 @@ export const UserAction = {
 
 // Map from UserAction to the 'FIRST' action. These metrics are recorded
 // by PDFMetrics.log the first time each corresponding action occurs.
-/** @private Map<number, number> */
-PDFMetrics.firstMap_ = new Map([
+/** @type {!Map<!UserAction, !UserAction>} */
+const firstMap = new Map([
   [
     UserAction.ROTATE,
     UserAction.ROTATE_FIRST,
