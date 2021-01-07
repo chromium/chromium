@@ -215,14 +215,11 @@ export function getDefaultFacing() {
 export async function scalePicture(blob, isVideo, width, height = undefined) {
   const element = isVideo ? dom.create('video', HTMLVideoElement) :
                             dom.create('img', HTMLImageElement);
-  if (isVideo) {
-    element.preload = 'auto';
-  }
   try {
-    await new Promise((resolve, reject) => {
-      element.addEventListener(isVideo ? 'canplay' : 'load', resolve);
-      element.addEventListener('error', () => {
-        if (isVideo) {
+    let requestFrameTimeout = false;
+    if (isVideo) {
+      await new Promise((resolve, reject) => {
+        element.addEventListener('error', () => {
           let msg = 'Failed to load video';
           /**
            * https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/error
@@ -233,12 +230,42 @@ export async function scalePicture(blob, isVideo, width, height = undefined) {
             msg += `: ${err.message}`;
           }
           reject(new Error(msg));
-        } else {
-          reject(new Error('Failed to load image'));
-        }
+        });
+        /**
+         * For resolving https://goo.gl/LdLk22 asynchronous play-pause problem.
+         * @type {!Promise}
+         */
+        let playing = Promise.resolve();
+        Promise
+            .race([
+              new Promise(
+                  (resolve) =>
+                      element.requestVideoFrameCallback(() => resolve(false))),
+              // The |requestVideoFrameCallback| may not be triggerred when
+              // playing malformatted video. Set 300ms timeout here to prevent
+              // UI be blocked forever.
+              new Promise((resolve) => setTimeout(() => resolve(true), 300)),
+            ])
+            .then((isTimeout) => {
+              requestFrameTimeout = isTimeout;
+              return playing;
+            })
+            .then(() => {
+              element.pause();
+              resolve();
+            });
+        element.preload = 'auto';
+        element.src = URL.createObjectURL(blob);
+        playing = assertInstanceof(element.play(), Promise);
       });
-      element.src = URL.createObjectURL(blob);
-    });
+    } else {
+      await new Promise((resolve, reject) => {
+        element.addEventListener(
+            'error', () => reject(new Error('Failed to load image')));
+        element.addEventListener('load', resolve);
+        element.src = URL.createObjectURL(blob);
+      });
+    }
     if (height === undefined) {
       const ratio = isVideo ? element.videoHeight / element.videoWidth :
                               element.height / element.width;
@@ -252,9 +279,16 @@ export async function scalePicture(blob, isVideo, width, height = undefined) {
      */
     const data = ctx.getImageData(0, 0, width, height).data;
     if (data.every((byte) => byte === 0)) {
+      let msg =
+          `The ${isVideo ? 'video' : 'photo'} thumbnail content is broken.`;
+      if (requestFrameTimeout) {
+        msg += ' ; while requestVideoFrameCallback is timeout.';
+      }
       reportError(
-          ErrorType.BROKEN_THUMBNAIL, ErrorLevel.ERROR,
-          new Error('The thumbnail content is broken.'));
+          ErrorType.BROKEN_THUMBNAIL,
+          ErrorLevel.ERROR,
+          new Error(msg),
+      );
       // Do not throw an error here. A black thumbnail is still better than no
       // thumbnail to let user open the corresponding picutre in gallery.
     }
