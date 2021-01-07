@@ -63,6 +63,7 @@
   X("compositor")                                                        \
   X("content")                                                           \
   X("content_capture")                                                   \
+  X("device")                                                            \
   X("devtools")                                                          \
   X("devtools.timeline")                                                 \
   X("devtools.timeline.async")                                           \
