@@ -193,6 +193,13 @@ public final class NavigationImpl extends INavigation.Stub {
         return NavigationImplJni.get().isServedFromBackForwardCache(mNativeNavigationImpl);
     }
 
+    @Override
+    public void disableNetworkErrorAutoReload() {
+        if (!NavigationImplJni.get().disableNetworkErrorAutoReload(mNativeNavigationImpl)) {
+            throw new IllegalStateException();
+        }
+    }
+
     public void setIntentLaunched() {
         mIntentLaunched = true;
     }
@@ -255,5 +262,6 @@ public final class NavigationImpl extends INavigation.Stub {
         boolean isPageInitiated(long nativeNavigationImpl);
         boolean isReload(long nativeNavigationImpl);
         boolean isServedFromBackForwardCache(long nativeNavigationImpl);
+        boolean disableNetworkErrorAutoReload(long nativeNavigationImpl);
     }
 }

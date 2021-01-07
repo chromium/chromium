@@ -94,6 +94,13 @@ jboolean NavigationImpl::SetUserAgentString(
   return true;
 }
 
+jboolean NavigationImpl::DisableNetworkErrorAutoReload(JNIEnv* env) {
+  if (!safe_to_disable_network_error_auto_reload_)
+    return false;
+  DisableNetworkErrorAutoReload();
+  return true;
+}
+
 void NavigationImpl::SetResponse(
     std::unique_ptr<embedder_support::WebResourceResponse> response) {
   response_ = std::move(response);
@@ -216,6 +223,11 @@ void NavigationImpl::SetUserAgentString(const std::string& value) {
       /* override_in_new_tabs */ false);
   navigation_handle_->SetIsOverridingUserAgent(!value.empty());
   set_user_agent_string_called_ = true;
+}
+
+void NavigationImpl::DisableNetworkErrorAutoReload() {
+  DCHECK(safe_to_disable_network_error_auto_reload_);
+  disable_network_error_auto_reload_ = true;
 }
 
 #if defined(OS_ANDROID)

@@ -255,6 +255,28 @@ public class Navigation extends IClientNavigation.Stub {
     }
 
     /**
+     * Disables auto-reload for this navigation if the network is down and comes back later.
+     * Auto-reload is enabled by default. This method may only be called from
+     * {@link NavigationCallback.onNavigationStarted}.
+     *
+     * @throws IllegalStateException If not called during start.
+     *
+     * @since 89
+     */
+    public void disableNetworkErrorAutoReload() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.shouldPerformVersionChecks()
+                && WebLayer.getSupportedMajorVersionInternal() < 89) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            mNavigationImpl.disableNetworkErrorAutoReload();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
      * Sets the user-agent string that applies to the current navigation. This user-agent is not
      * sticky, it applies to this navigation only (and any redirects or resources that are loaded).
      * This method may only be called from {@link NavigationCallback.onNavigationStarted}.

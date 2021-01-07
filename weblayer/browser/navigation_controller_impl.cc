@@ -302,11 +302,6 @@ void NavigationControllerImpl::Navigate(
       std::make_unique<content::NavigationController::LoadURLParams>(url);
   load_params->should_replace_current_entry =
       params.should_replace_current_entry;
-  if (params.disable_network_error_auto_reload) {
-    auto data = std::make_unique<NavigationUIDataImpl>();
-    data->set_disable_network_error_auto_reload(true);
-    load_params->navigation_ui_data = std::move(data);
-  }
   if (params.enable_auto_play)
     load_params->was_activated = content::mojom::WasActivatedOption::kYes;
 
@@ -396,6 +391,7 @@ void NavigationControllerImpl::DidStartNavigation(
   base::AutoReset<NavigationImpl*> auto_reset(&navigation_starting_,
                                               navigation);
   navigation->set_safe_to_set_request_headers(true);
+  navigation->set_safe_to_disable_network_error_auto_reload(true);
 
 #if defined(OS_ANDROID)
   // Desktop mode and per-navigation UA use the same mechanism and so don't
@@ -434,6 +430,7 @@ void NavigationControllerImpl::DidStartNavigation(
     observer.NavigationStarted(navigation);
   navigation->set_safe_to_set_user_agent(false);
   navigation->set_safe_to_set_request_headers(false);
+  navigation->set_safe_to_disable_network_error_auto_reload(false);
 }
 
 void NavigationControllerImpl::DidRedirectNavigation(

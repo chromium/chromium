@@ -119,6 +119,11 @@ class Navigation {
   // SetRequestHeader().
   virtual void SetUserAgentString(const std::string& value) = 0;
 
+  // Disables auto-reload for this navigation if the network is down and comes
+  // back later. Auto-reload is enabled by default. This function may only be
+  // called from NavigationObserver::NavigationStarted().
+  virtual void DisableNetworkErrorAutoReload() = 0;
+
   // Whether the navigation was initiated by the page. Examples of
   // page-initiated navigations include:
   //  * <a> link click
