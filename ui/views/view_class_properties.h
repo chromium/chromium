@@ -58,6 +58,12 @@ VIEWS_EXPORT extern const ui::ClassProperty<FlexSpecification*>* const
 VIEWS_EXPORT extern const ui::ClassProperty<LayoutAlignment*>* const
     kCrossAxisAlignmentKey;
 
+// Property indicating whether a view should be ignored by a layout. Supported
+// by View::DefaultFillLayout.
+// TODO(kylixrd): Revisit using for FillLayout.
+VIEWS_EXPORT extern const ui::ClassProperty<bool>* const
+    kViewIgnoredByLayoutKey;
+
 }  // namespace views
 
 // Declaring the template specialization here to make sure that the

@@ -91,7 +91,7 @@ class VIEWS_EXPORT LayoutManager {
 
  protected:
   // Sets the visibility of a view without triggering ViewVisibilitySet().
-  // During Layout(), use this method instead of View::SetVisibility().
+  // During Layout(), use this method instead of View::SetVisible().
   void SetViewVisibility(View* view, bool visible);
 
   // Gets the child views of the specified view in paint order (reverse
