@@ -1122,10 +1122,9 @@ bool NavigationSimulatorImpl::SimulateBrowserInitiatedStart() {
       StopLoading();
       state_ = FAILED;
       return false;
-    } else if (web_contents_->GetMainFrame()
-                   ->same_document_navigation_request() &&
-               web_contents_->GetMainFrame()
-                       ->same_document_navigation_request() == request_) {
+    } else if (request_ &&
+               web_contents_->GetMainFrame()->GetSameDocumentNavigationRequest(
+                   request_->commit_params().navigation_token)) {
       CHECK(request_->IsSameDocument());
       same_document_ = true;
       return true;

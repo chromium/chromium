@@ -721,11 +721,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHost is ready to be deleted (LifecycleState::kReadyToBeDeleted).
   bool IsPendingDeletion();
 
-  // A NavigationRequest for a pending same-document navigation in this frame,
-  // if any. This is cleared when the navigation commits.
-  NavigationRequest* same_document_navigation_request() {
-    return same_document_navigation_request_.get();
-  }
+  // Returns a pending same-document navigation request in this frame that has
+  // the navigation_token |token|, if any.
+  NavigationRequest* GetSameDocumentNavigationRequest(
+      const base::UnguessableToken& token);
 
   // Resets the NavigationRequests stored in this RenderFrameHost.
   void ResetNavigationRequests();
@@ -2466,9 +2465,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Called by the renderer process when it is done processing a same-document
   // commit request.
-  void OnSameDocumentCommitProcessed(int64_t navigation_id,
-                                     bool should_replace_current_entry,
-                                     blink::mojom::CommitResult result);
+  void OnSameDocumentCommitProcessed(
+      const base::UnguessableToken& navigation_token,
+      bool should_replace_current_entry,
+      blink::mojom::CommitResult result);
 
   // Creates a TracedValue object containing the details of a committed
   // navigation, so it can be logged with the tracing system.
@@ -2869,9 +2869,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::map<NavigationRequest*, std::unique_ptr<NavigationRequest>>
       navigation_requests_;
 
-  // Holds a same-document NavigationRequest while waiting for the navigation it
-  // is tracking to commit.
-  std::unique_ptr<NavigationRequest> same_document_navigation_request_;
+  // Holds same-document NavigationRequests while waiting for the navigations
+  // to commit.
+  // TODO(https://crbug.com/1133115): Use the NavigationRequest as key once
+  // NavigationRequests are bound to same-document DidCommit callbacks,
+  // similar to |navigation_requests_| above.
+  base::flat_map<base::UnguessableToken, std::unique_ptr<NavigationRequest>>
+      same_document_navigation_requests_;
 
   // The associated WebUIImpl and its type. They will be set if the current
   // document is from WebUI source. Otherwise they will be null and

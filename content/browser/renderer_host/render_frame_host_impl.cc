@@ -3195,14 +3195,18 @@ void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
 
   // Check if the navigation matches a stored same-document NavigationRequest.
   // In that case it is browser-initiated.
+  auto request_entry =
+      same_document_navigation_requests_.find(params->navigation_token);
   bool is_browser_initiated =
-      same_document_navigation_request_ &&
-      (same_document_navigation_request_->commit_params().navigation_token ==
-       params->navigation_token);
-  if (!DidCommitNavigationInternal(
-          is_browser_initiated ? std::move(same_document_navigation_request_)
-                               : nullptr,
-          std::move(params), std::move(same_document_params))) {
+      (request_entry != same_document_navigation_requests_.end());
+  std::unique_ptr<NavigationRequest> request =
+      is_browser_initiated ? std::move(request_entry->second) : nullptr;
+  same_document_navigation_requests_.erase(params->navigation_token);
+  if (!MaybeInterceptCommitCallback(request.get(), &params, nullptr)) {
+    return;
+  }
+  if (!DidCommitNavigationInternal(std::move(request), std::move(params),
+                                   std::move(same_document_params))) {
     return;
   }
 
@@ -3232,16 +3236,24 @@ GlobalFrameRoutingId RenderFrameHostImpl::GetGlobalFrameRoutingId() {
 
 bool RenderFrameHostImpl::HasPendingCommitNavigation() const {
   return HasPendingCommitForCrossDocumentNavigation() ||
-         same_document_navigation_request_;
+         !same_document_navigation_requests_.empty();
 }
 
 bool RenderFrameHostImpl::HasPendingCommitForCrossDocumentNavigation() const {
   return !navigation_requests_.empty();
 }
 
+NavigationRequest* RenderFrameHostImpl::GetSameDocumentNavigationRequest(
+    const base::UnguessableToken& token) {
+  auto request = same_document_navigation_requests_.find(token);
+  return (request == same_document_navigation_requests_.end())
+             ? nullptr
+             : request->second.get();
+}
+
 void RenderFrameHostImpl::ResetNavigationRequests() {
-  same_document_navigation_request_.reset();
   navigation_requests_.clear();
+  same_document_navigation_requests_.clear();
 }
 
 void RenderFrameHostImpl::SetNavigationRequest(
@@ -3249,7 +3261,9 @@ void RenderFrameHostImpl::SetNavigationRequest(
   DCHECK(navigation_request);
   if (NavigationTypeUtils::IsSameDocument(
           navigation_request->common_params().navigation_type)) {
-    same_document_navigation_request_ = std::move(navigation_request);
+    same_document_navigation_requests_[navigation_request->commit_params()
+                                           .navigation_token] =
+        std::move(navigation_request);
     return;
   }
   navigation_requests_[navigation_request.get()] =
@@ -3926,7 +3940,7 @@ bool RenderFrameHostImpl::HasCommittingNavigationRequestForOrigin(
     }
   }
 
-  // Note: this function excludes |same_document_navigation_request_|, which
+  // Note: this function excludes |same_document_navigation_requests_|, which
   // should be ok since these cannot change the origin.
   return false;
 }
@@ -6554,14 +6568,15 @@ void RenderFrameHostImpl::CommitNavigation(
 
   if (is_same_document) {
     DCHECK_EQ(frame_tree_node()->current_frame_host(), this);
-    DCHECK(same_document_navigation_request_);
+    const base::UnguessableToken& navigation_token =
+        commit_params->navigation_token;
+    DCHECK(GetSameDocumentNavigationRequest(navigation_token));
     bool should_replace_current_entry =
         common_params->should_replace_current_entry;
     GetNavigationControl()->CommitSameDocumentNavigation(
         std::move(common_params), std::move(commit_params),
         base::BindOnce(&RenderFrameHostImpl::OnSameDocumentCommitProcessed,
-                       base::Unretained(this),
-                       same_document_navigation_request_->GetNavigationId(),
+                       base::Unretained(this), navigation_token,
                        should_replace_current_entry));
   } else {
     // Pass the controller service worker info if we have one.
@@ -8691,7 +8706,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   if (navigation_request &&
       navigation_request->common_params().url != params->url &&
       is_same_document_navigation) {
-    same_document_navigation_request_ = std::move(navigation_request);
+    same_document_navigation_requests_[navigation_request->commit_params()
+                                           .navigation_token] =
+        std::move(navigation_request);
   }
 
   // Set is loading to true now if it has not been set yet. This happens for
@@ -8989,13 +9006,15 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 }
 
 void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
-    int64_t navigation_id,
+    const base::UnguessableToken& navigation_token,
     bool should_replace_current_entry,
     blink::mojom::CommitResult result) {
-  // If the NavigationRequest was deleted, another navigation commit started to
-  // be processed. Let the latest commit go through and stop doing anything.
-  if (!same_document_navigation_request_ ||
-      same_document_navigation_request_->GetNavigationId() != navigation_id) {
+  auto request = same_document_navigation_requests_.find(navigation_token);
+  if (request == same_document_navigation_requests_.end()) {
+    // OnSameDocumentCommitProcessed will be called after DidCommitNavigation on
+    // successfull same-document commits, so |request| should already be deleted
+    // by the time we got here.
+    DCHECK_EQ(result, blink::mojom::CommitResult::Ok);
     return;
   }
 
@@ -9003,11 +9022,14 @@ void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
     // The navigation could not be committed as a same-document navigation.
     // Restart the navigation cross-document.
     frame_tree_node_->navigator().RestartNavigationAsCrossDocument(
-        std::move(same_document_navigation_request_));
+        std::move(request->second));
+    return;
   }
 
-  if (result == blink::mojom::CommitResult::Aborted)
-    same_document_navigation_request_.reset();
+  DCHECK_EQ(result, blink::mojom::CommitResult::Aborted);
+  // Note: if the commit was successful, the NavigationRequest is moved in
+  // DidCommitSameDocumentNavigation.
+  same_document_navigation_requests_.erase(navigation_token);
 }
 
 std::unique_ptr<base::trace_event::TracedValue>

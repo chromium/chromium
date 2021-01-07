@@ -1152,6 +1152,11 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
     return is_same_documents_[0];
   }
 
+  bool is_renderer_initiated() {
+    EXPECT_EQ(1U, is_renderer_initiateds_.size());
+    return is_renderer_initiateds_[0];
+  }
+
   bool did_replace_entry() {
     EXPECT_EQ(1U, did_replace_entries_.size());
     return did_replace_entries_[0];
@@ -1169,11 +1174,11 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
 
  private:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
-    if (!navigation_handle->HasCommitted())
+    if (!navigation_handle->HasCommitted() ||
+        navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_ ||
+        navigations_remaining_ == 0) {
       return;
-
-    if (navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_)
-      return;
+    }
 
     --navigations_remaining_;
     transitions_.push_back(navigation_handle->GetPageTransition());
@@ -1182,6 +1187,7 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
         NavigationRequest::From(navigation_handle)->navigation_type());
     is_same_documents_.push_back(navigation_handle->IsSameDocument());
     did_replace_entries_.push_back(navigation_handle->DidReplaceEntry());
+    is_renderer_initiateds_.push_back(navigation_handle->IsRendererInitiated());
     if (!navigations_remaining_ &&
         (!web_contents()->IsLoading() || !wait_for_load_))
       message_loop_runner_->Quit();
@@ -1206,6 +1212,7 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
   std::vector<NavigationType> navigation_types_;
   std::vector<bool> is_same_documents_;
   std::vector<bool> did_replace_entries_;
+  std::vector<bool> is_renderer_initiateds_;
 
   // The MessageLoopRunner used to spin the message loop.
   scoped_refptr<MessageLoopRunner> message_loop_runner_;
@@ -10219,6 +10226,68 @@ IN_PROC_BROWSER_TEST_P(
   // access its contentDocument.
   EXPECT_EQ(false, EvalJs(shell()->web_contents()->GetMainFrame(),
                           "!!(iframe.contentDocument)"));
+}
+
+// Starts a navigation to |url_to_start_| just before the DidCommitNavigation
+// call for |url_to_intercept_| gets processed.
+class NavigationStarterBeforeDidCommitNavigation
+    : public DidCommitNavigationInterceptor {
+ public:
+  NavigationStarterBeforeDidCommitNavigation(WebContentsImpl* web_contents,
+                                             Shell* shell,
+                                             const GURL& url_to_intercept,
+                                             const GURL& url_to_start)
+      : DidCommitNavigationInterceptor(web_contents),
+        shell_(shell),
+        url_to_intercept_(url_to_intercept),
+        url_to_start_(url_to_start) {}
+  ~NavigationStarterBeforeDidCommitNavigation() override = default;
+
+ private:
+  // DidCommitNavigationInterceptor:
+  bool WillProcessDidCommitNavigation(
+      RenderFrameHost* render_frame_host,
+      NavigationRequest* navigation_request,
+      mojom::DidCommitProvisionalLoadParamsPtr* params,
+      mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
+      override {
+    if ((**params).url == url_to_intercept_) {
+      shell_->LoadURL(url_to_start_);
+    }
+    return true;
+  }
+
+  Shell* shell_;
+  const GURL& url_to_intercept_;
+  const GURL& url_to_start_;
+};
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       MultipleSameDocumentNavigations) {
+  GURL url1(embedded_test_server()->GetURL("/title1.html"));
+  GURL url2(embedded_test_server()->GetURL("/title1.html#foo"));
+  GURL url3(embedded_test_server()->GetURL("/title1.html#bar"));
+  // Navigate to a page.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  // Do a same-document navigation to |url2|, and start a same-document
+  // navigation to |url3| before the DidCommitNavigation message from the |url2|
+  // navigation gets processed, causing the NavigationRequest stored for |url2|
+  // to be replaced by the NavigationRequest for |url3| if we only allow saving
+  // one NavigationRequest for same-document navigations at a time. This will
+  // result in the re-creation of the NavigationRequest for |url2|, which might
+  // get some important attributes wrong.
+  NavigationStarterBeforeDidCommitNavigation url3_navigation_starter(
+      contents(), shell(), url2, url3);
+  TestNavigationObserver navigations_observer(shell()->web_contents(), 2);
+  FrameNavigateParamsCapturer url2_capturer(contents()->GetFrameTree()->root());
+  shell()->LoadURL(url2);
+  url2_capturer.Wait();
+  // The navigation to |url2| must be correctly recognized as a
+  // browser-initiated same-document navigation.
+  EXPECT_FALSE(url2_capturer.is_renderer_initiated());
+  EXPECT_TRUE(url2_capturer.is_same_document());
+  navigations_observer.Wait();
+  EXPECT_EQ(url3, contents()->GetLastCommittedURL());
 }
 
 using NavigationControllerHistoryInterventionBrowserTest =
