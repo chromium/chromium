@@ -166,9 +166,10 @@ void RemoveAllInfoBars() {
   }
 }
 
-void ClearPresentedState() {
-  [GetForegroundActiveSceneController() dismissModalDialogsWithCompletion:nil
-                                                           dismissOmnibox:YES];
+void ClearPresentedState(ProceduralBlock completion) {
+  [GetForegroundActiveSceneController()
+      dismissModalDialogsWithCompletion:completion
+                         dismissOmnibox:YES];
 }
 
 void SetBooleanLocalStatePref(const char* pref_name, bool value) {
