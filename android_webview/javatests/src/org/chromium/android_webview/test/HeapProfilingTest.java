@@ -6,8 +6,6 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 
-import android.os.Build.VERSION_CODES;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -17,7 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.heap_profiling.multi_process.HeapProfilingTestShim;
 
 /**
@@ -34,13 +32,11 @@ public class HeapProfilingTest {
 
     @Test
     @MediumTest
-    // clang-format off
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.M,
-        message = "http://crbug.com/1163744")
+    @DisabledTest(message = "https://crbug.com/1163744")
     @CommandLineFlags.Add({"memlog=browser", "memlog-stack-mode=native-include-thread-names",
             "memlog-sampling-rate=1"})
-    public void testModeBrowser() {
-        // clang-format on
+    public void
+    testModeBrowser() {
         HeapProfilingTestShim shim = new HeapProfilingTestShim();
         Assert.assertTrue(
                 shim.runTestForMode("browser", false, "native-include-thread-names", false, false));
