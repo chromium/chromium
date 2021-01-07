@@ -805,7 +805,7 @@ static_library("ui") {
       "//chrome/android:jni_headers",
       "//chrome/android/features/dev_ui:buildflags",
       "//chrome/browser/image_decoder",
-      "//chrome/browser/resources/webapks:webapks_ui_resources",
+      "//chrome/browser/resources/webapks:webapks_resources",
       "//components/autofill_assistant/browser",
       "//components/autofill_assistant/browser:proto",
       "//components/browser_ui/client_certificate/android",

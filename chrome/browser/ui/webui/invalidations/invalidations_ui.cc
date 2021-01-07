@@ -8,8 +8,10 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/invalidations/invalidations_message_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/invalidations_resources.h"
+#include "chrome/grit/invalidations_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -26,10 +28,9 @@ content::WebUIDataSource* CreateInvalidationsHTMLSource() {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types jstemplate;");
-  source->AddResourcePath("about_invalidations.js",
-                          IDR_INVALIDATIONS_ABOUT_INVALIDATIONS_JS);
-  source->AddResourcePath("about_invalidations.css",
-                          IDR_INVALIDATIONS_ABOUT_INVALIDATIONS_CSS);
+  webui::AddResourcePathsBulk(
+      source,
+      base::make_span(kInvalidationsResources, kInvalidationsResourcesSize));
   source->SetDefaultResource(IDR_INVALIDATIONS_ABOUT_INVALIDATIONS_HTML);
   return source;
 }

@@ -283,8 +283,8 @@ repack("dev_ui_paks") {
   ]
 
   if (is_android) {
-    sources += [ "$root_gen_dir/chrome/webapks_ui_resources.pak" ]
-    deps += [ "//chrome/browser/resources/webapks:webapks_ui_resources" ]
+    sources += [ "$root_gen_dir/chrome/webapks_resources.pak" ]
+    deps += [ "//chrome/browser/resources/webapks:webapks_resources" ]
   }
 }
 

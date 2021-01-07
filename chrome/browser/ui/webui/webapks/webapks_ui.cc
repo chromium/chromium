@@ -9,8 +9,10 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webapks/webapks_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/webapks_ui_resources.h"
+#include "chrome/grit/webapks_resources.h"
+#include "chrome/grit/webapks_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -22,9 +24,10 @@ WebUIDataSource* CreateWebApksUIDataSource() {
   WebUIDataSource* html_source =
       WebUIDataSource::Create(chrome::kChromeUIWebApksHost);
   html_source->UseStringsJs();
-  html_source->AddResourcePath("webapks.js", IDR_WEBAPKS_UI_JS);
-  html_source->AddResourcePath("about_webapks.css", IDR_WEBAPKS_UI_CSS);
-  html_source->SetDefaultResource(IDR_WEBAPKS_UI_HTML);
+
+  webui::AddResourcePathsBulk(
+      html_source, base::make_span(kWebapksResources, kWebapksResourcesSize));
+  html_source->SetDefaultResource(IDR_WEBAPKS_ABOUT_WEBAPKS_HTML);
 
   return html_source;
 }

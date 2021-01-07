@@ -263,7 +263,8 @@
     "META": {"sizes": {"includes": [20]}},
     "includes": [2200],
   },
-  "chrome/browser/resources/webapks/webapks_ui_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/webapks/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
     "includes": [2220],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/webui_js_error/webui_js_error_resources.grd": {
