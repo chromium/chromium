@@ -1138,7 +1138,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ExtensionCacheCount" units="units"
-    expires_after="2021-01-31">
+    expires_after="2021-05-30">
   <owner>burunduk@chromium.org</owner>
   <owner>snijhara@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -1149,7 +1149,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ExtensionCacheSize" units="MB"
-    expires_after="2021-01-31">
+    expires_after="2021-05-30">
   <owner>burunduk@chromium.org</owner>
   <owner>snijhara@google.com</owner>
   <owner>managed-devices@google.com</owner>
