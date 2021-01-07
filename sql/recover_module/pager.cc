@@ -50,8 +50,9 @@ int DatabasePageReader::ReadPage(int page_id) {
   DCHECK_GE(page_size_, kMinUsablePageSize);
   DCHECK_LE(page_size_, kMaxPageSize);
 
-  const int64_t read_offset = (page_id - 1) * page_size + page_offset;
-  static_assert((kMaxPageId - 1) * static_cast<int64_t>(kMaxPageSize) +
+  const int64_t read_offset =
+      static_cast<int64_t>(page_id - 1) * page_size + page_offset;
+  static_assert(static_cast<int64_t>(kMaxPageId - 1) * kMaxPageSize +
                         kDatabaseHeaderSize <=
                     std::numeric_limits<int64_t>::max(),
                 "The |read_offset| computation above may overflow");

@@ -45,7 +45,7 @@ class DatabasePageReader {
   // after the database header.
   static constexpr int kMinUsablePageSize = kMinPageSize - kDatabaseHeaderSize;
 
-  // Maximum number of pages in a SQLite database.
+  // Largest valid page ID in a SQLite database.
   //
   // This is the maximum value of SQLITE_MAX_PAGE_COUNT plus 1, because page IDs
   // start at 1. The numerical value, which is the same as
