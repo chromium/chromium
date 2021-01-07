@@ -153,13 +153,18 @@ class FeedService::IdentityManagerObserverImpl
   ~IdentityManagerObserverImpl() override {
     identity_manager_->RemoveObserver(this);
   }
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override {
-    feed_stream_->OnSignedIn();
-  }
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override {
-    feed_stream_->OnSignedOut();
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override {
+    switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+      case signin::PrimaryAccountChangeEvent::Type::kSet:
+        feed_stream_->OnSignedIn();
+        return;
+      case signin::PrimaryAccountChangeEvent::Type::kCleared:
+        feed_stream_->OnSignedOut();
+        return;
+      case signin::PrimaryAccountChangeEvent::Type::kNone:
+        return;
+    }
   }
 
  private:
