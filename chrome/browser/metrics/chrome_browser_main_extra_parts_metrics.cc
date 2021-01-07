@@ -7,6 +7,7 @@
 #include <cmath>
 #include <string>
 
+#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -547,18 +548,29 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 
 #endif  // defined(OS_WIN)
 
-  // Records whether or not PartitionAlloc is used as the default allocator,
-  // plus whether or not PCScan is enabled.
+  // Records whether or not PartitionAlloc is used as the default allocator.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "PartitionAllocEverywhereAndPCScan",
+      "PartitionAllocEverywhere",
 #if BUILDFLAG(USE_PARTITION_ALLOC_EVERYWHERE)
-      base::features::IsPartitionAllocPCScanBrowserOnlyEnabled()
-          ? "EnabledWithPCScan"
-          : "EnabledWithoutPCScan"
+      "Enabled"
 #else
       "Disabled"
 #endif
   );
+
+#if defined(OS_WIN) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // Records whether or not BackupRefPtr and/or PCScan is enabled.
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      "BackupRefPtrAndPCScan",
+#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+      "BackupRefPtrEnabled"
+#else
+      base::features::IsPartitionAllocPCScanBrowserOnlyEnabled()
+          ? "PCScanEnabled"
+          : "Disabled"
+#endif
+  );
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {

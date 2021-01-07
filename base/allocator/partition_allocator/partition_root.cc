@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/partition_root.h"
 
+#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -27,7 +28,7 @@ typename PartitionRoot<thread_safe>::PCScanMode PartitionOptionsToPCScanMode(
   // PCScan is currently only supported on 64-bit systems.
   // Mark partitions non-scannable on 32-bit systems unconditionally, so that
   // address space for quarantine bitmaps doesn't get reserved.
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if defined(PA_HAS_64_BITS_POINTERS) && !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
   switch (opt) {
     case PartitionOptions::PCScan::kAlwaysDisabled:
       return Root::PCScanMode::kNonScannable;

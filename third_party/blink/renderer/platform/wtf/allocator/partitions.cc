@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
+#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
@@ -102,6 +103,7 @@ bool Partitions::InitializeOnce() {
   buffer_root_ = buffer_allocator->root();
   layout_root_ = layout_allocator->root();
 
+#if !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
   if (base::features::IsPartitionAllocPCScanEnabled() ||
       base::FeatureList::IsEnabled(kPCScanBlinkPartitions)) {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -109,6 +111,7 @@ bool Partitions::InitializeOnce() {
 #endif
     buffer_root_->EnablePCScan();
   }
+#endif
 
   initialized_ = true;
   return initialized_;

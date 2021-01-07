@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
@@ -64,7 +65,7 @@ ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {
 }
 
 ALWAYS_INLINE bool IsPartitionAllocPCScanEnabled() {
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if defined(PA_HAS_64_BITS_POINTERS) && !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
   return FeatureList::IsEnabled(kPartitionAllocPCScan);
 #else  // PA_HAS_64_BITS_POINTERS
   return false;
@@ -73,7 +74,7 @@ ALWAYS_INLINE bool IsPartitionAllocPCScanEnabled() {
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 ALWAYS_INLINE bool IsPartitionAllocPCScanBrowserOnlyEnabled() {
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if defined(PA_HAS_64_BITS_POINTERS) && !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
   return FeatureList::IsEnabled(kPartitionAllocPCScanBrowserOnly);
 #else  // PA_HAS_64_BITS_POINTERS
   return false;
