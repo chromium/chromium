@@ -63,8 +63,7 @@ AS,UM	-1416-17042	Pacific/Pago_Pago	Samoa, Midway
 AT	+4813+01620	Europe/Vienna
 AU	-3133+15905	Australia/Lord_Howe	Lord Howe Island
 AU	-5430+15857	Antarctica/Macquarie	Macquarie Island
-AU	-4253+14719	Australia/Hobart	Tasmania (most areas)
-AU	-3956+14352	Australia/Currie	Tasmania (King Island)
+AU	-4253+14719	Australia/Hobart	Tasmania
 AU	-3749+14458	Australia/Melbourne	Victoria
 AU	-3352+15113	Australia/Sydney	New South Wales (most areas)
 AU	-3157+14127	Australia/Broken_Hill	New South Wales (Yancowinna)
@@ -127,9 +126,9 @@ CA	+682059-1334300	America/Inuvik	Mountain - NT (west)
 CA	+4906-11631	America/Creston	MST - BC (Creston)
 CA	+5946-12014	America/Dawson_Creek	MST - BC (Dawson Cr, Ft St John)
 CA	+5848-12242	America/Fort_Nelson	MST - BC (Ft Nelson)
+CA	+6043-13503	America/Whitehorse	MST - Yukon (east)
+CA	+6404-13925	America/Dawson	MST - Yukon (west)
 CA	+4916-12307	America/Vancouver	Pacific - BC (most areas)
-CA	+6043-13503	America/Whitehorse	Pacific - Yukon (east)
-CA	+6404-13925	America/Dawson	Pacific - Yukon (west)
 CC	-1210+09655	Indian/Cocos
 CH,DE,LI	+4723+00832	Europe/Zurich	Swiss time
 CI,BF,GM,GN,ML,MR,SH,SL,SN,TG	+0519-00402	Africa/Abidjan
@@ -292,8 +291,8 @@ RU	+554521+0373704	Europe/Moscow	MSK+00 - Moscow area
 # Mention RU and UA alphabetically.  See "territorial claims" above.
 RU,UA	+4457+03406	Europe/Simferopol	Crimea
 RU	+5836+04939	Europe/Kirov	MSK+00 - Kirov
+RU	+4844+04425	Europe/Volgograd	MSK+00 - Volgograd
 RU	+4621+04803	Europe/Astrakhan	MSK+01 - Astrakhan
-RU	+4844+04425	Europe/Volgograd	MSK+01 - Volgograd
 RU	+5134+04602	Europe/Saratov	MSK+01 - Saratov
 RU	+5420+04824	Europe/Ulyanovsk	MSK+01 - Ulyanovsk
 RU	+5312+05009	Europe/Samara	MSK+01 - Samara, Udmurtia

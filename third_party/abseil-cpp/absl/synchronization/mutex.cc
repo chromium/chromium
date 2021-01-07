@@ -124,35 +124,44 @@ void RegisterSymbolizer(bool (*fn)(const void *pc, char *out, int out_size)) {
   symbolizer.Store(fn);
 }
 
+namespace {
+// Represents the strategy for spin and yield.
+// See the comment in GetMutexGlobals() for more information.
+enum DelayMode { AGGRESSIVE, GENTLE };
+
 struct ABSL_CACHELINE_ALIGNED MutexGlobals {
   absl::once_flag once;
-  int num_cpus = 0;
   int spinloop_iterations = 0;
+  int32_t mutex_sleep_limit[2] = {};
 };
 
-static const MutexGlobals& GetMutexGlobals() {
+const MutexGlobals &GetMutexGlobals() {
   ABSL_CONST_INIT static MutexGlobals data;
   absl::base_internal::LowLevelCallOnce(&data.once, [&]() {
-    data.num_cpus = absl::base_internal::NumCPUs();
-    data.spinloop_iterations = data.num_cpus > 1 ? 1500 : 0;
+    const int num_cpus = absl::base_internal::NumCPUs();
+    data.spinloop_iterations = num_cpus > 1 ? 1500 : 0;
+    // If this a uniprocessor, only yield/sleep.  Otherwise, if the mode is
+    // aggressive then spin many times before yielding.  If the mode is
+    // gentle then spin only a few times before yielding.  Aggressive spinning
+    // is used to ensure that an Unlock() call, which must get the spin lock
+    // for any thread to make progress gets it without undue delay.
+    if (num_cpus > 1) {
+      data.mutex_sleep_limit[AGGRESSIVE] = 5000;
+      data.mutex_sleep_limit[GENTLE] = 250;
+    } else {
+      data.mutex_sleep_limit[AGGRESSIVE] = 0;
+      data.mutex_sleep_limit[GENTLE] = 0;
+    }
   });
   return data;
 }
-
-// Spinlock delay on iteration c.  Returns new c.
-namespace {
-  enum DelayMode { AGGRESSIVE, GENTLE };
-};
+}  // namespace
 
 namespace synchronization_internal {
+// Returns the Mutex delay on iteration `c` depending on the given `mode`.
+// The returned value should be used as `c` for the next call to `MutexDelay`.
 int MutexDelay(int32_t c, int mode) {
-  // If this a uniprocessor, only yield/sleep.  Otherwise, if the mode is
-  // aggressive then spin many times before yielding.  If the mode is
-  // gentle then spin only a few times before yielding.  Aggressive spinning is
-  // used to ensure that an Unlock() call, which  must get the spin lock for
-  // any thread to make progress gets it without undue delay.
-  const int32_t limit =
-      GetMutexGlobals().num_cpus > 1 ? (mode == AGGRESSIVE ? 5000 : 250) : 0;
+  const int32_t limit = GetMutexGlobals().mutex_sleep_limit[mode];
   if (c < limit) {
     // Spin.
     c++;

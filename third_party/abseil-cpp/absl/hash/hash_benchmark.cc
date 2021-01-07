@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <string>
+#include <type_traits>
 #include <typeindex>
+#include <utility>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "absl/hash/hash.h"
 #include "absl/random/random.h"
 #include "absl/strings/cord.h"
 #include "absl/strings/cord_test_helpers.h"
+#include "absl/strings/string_view.h"
 #include "benchmark/benchmark.h"
 
 namespace {

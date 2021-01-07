@@ -191,6 +191,7 @@ cc_library(
     ],
     hdrs = [
         "internal/flag.h",
+        "internal/sequence_lock.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
@@ -474,6 +475,25 @@ cc_test(
         ":usage_internal",
         "//absl/memory",
         "//absl/strings",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "sequence_lock_test",
+    size = "small",
+    timeout = "moderate",
+    srcs = [
+        "internal/sequence_lock_test.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    shard_count = 32,
+    deps = [
+        ":flag_internal",
+        "//absl/base",
+        "//absl/container:fixed_array",
+        "//absl/time",
         "@com_google_googletest//:gtest_main",
     ],
 )

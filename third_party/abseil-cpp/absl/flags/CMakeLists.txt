@@ -176,6 +176,7 @@ absl_cc_library(
     "internal/flag.cc"
   HDRS
     "internal/flag.h"
+    "internal/sequence_lock.h"
   COPTS
     ${ABSL_DEFAULT_COPTS}
   LINKOPTS
@@ -413,6 +414,20 @@ absl_cc_test(
     absl::flags_usage
     absl::memory
     absl::strings
+    gmock_main
+)
+
+absl_cc_test(
+  NAME
+    flags_sequence_lock_test
+  SRCS
+    "internal/sequence_lock_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::base
+    absl::flags_internal
+    absl::time
     gmock_main
 )
 
