@@ -344,6 +344,17 @@ if (window.testRunner) {
         start(test, requestAnimationFrame, measureFrameTimeOnce);
     }
 
+    PerfTestRunner.measureInnerRAFTime = function (test) {
+        PerfTestRunner.unit = "ms";
+        PerfTestRunner.bufferedLog = true;
+        test.warmUpCount = test.warmUpCount || 5;
+        test.iterationCount = test.iterationCount || 10;
+        // Force gc before starting the test to avoid the measured time from
+        // being affected by gc performance. See crbug.com/667811#c16.
+        PerfTestRunner.gc();
+        start(test, requestAnimationFrame, measureTimeOnce);
+    }
+
     var lastFrameTime = -1;
     function measureFrameTimeOnce() {
         if (lastFrameTime != -1)

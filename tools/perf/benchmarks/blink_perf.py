@@ -681,3 +681,70 @@ class BlinkPerfWebAudio(_BlinkPerfBenchmark):
   @classmethod
   def Name(cls):
     return 'blink_perf.webaudio'
+
+
+@benchmark.Info(
+    emails=['kbr@chromium.org', 'enga@chromium.org', 'webgl-team@google.com'],
+    component='Blink>WebGL',
+    documentation_url='https://bit.ly/blink-perf-benchmarks')
+class BlinkPerfWebGL(_BlinkPerfBenchmark):
+  SUBDIR = 'webgl'
+  SUPPORTED_PLATFORMS = [story.expectations.ALL]
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_blink_perf.webgl'
+
+
+@benchmark.Info(emails=[
+    'kbr@chromium.org', 'enga@chromium.org', 'mslekova@chromium.org',
+    'webgl-team@google.com'
+],
+                component='Blink>WebGL',
+                documentation_url='https://bit.ly/blink-perf-benchmarks')
+class BlinkPerfWebGLFastCall(_BlinkPerfBenchmark):
+  SUBDIR = 'webgl'
+  SUPPORTED_PLATFORMS = [story.expectations.ALL]
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_blink_perf.webgl_fast_call'
+
+  def SetExtraBrowserOptions(self, options):
+    options.AppendExtraBrowserArgs(['--enable-unsafe-fast-js-calls'])
+
+
+@benchmark.Info(emails=[
+    'enga@chromium.org', 'cwallez@chromium.org', 'webgpu-developers@google.com'
+],
+                component='Blink>WebGPU',
+                documentation_url='https://bit.ly/blink-perf-benchmarks')
+class BlinkPerfWebGPU(_BlinkPerfBenchmark):
+  SUBDIR = 'webgpu'
+  SUPPORTED_PLATFORMS = [story.expectations.WIN_10, story.expectations.ALL_MAC]
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_blink_perf.webgpu'
+
+  def SetExtraBrowserOptions(self, options):
+    options.AppendExtraBrowserArgs(['--enable-unsafe-webgpu'])
+
+
+@benchmark.Info(emails=[
+    'enga@chromium.org', 'cwallez@chromium.org', 'mslekova@chromium.org',
+    'webgpu-developers@google.com'
+],
+                component='Blink>WebGPU',
+                documentation_url='https://bit.ly/blink-perf-benchmarks')
+class BlinkPerfWebGPUFastCall(_BlinkPerfBenchmark):
+  SUBDIR = 'webgpu'
+  SUPPORTED_PLATFORMS = [story.expectations.WIN_10, story.expectations.ALL_MAC]
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_blink_perf.webgpu_fast_call'
+
+  def SetExtraBrowserOptions(self, options):
+    options.AppendExtraBrowserArgs(
+        ['--enable-unsafe-webgpu', '--enable-unsafe-fast-js-calls'])
