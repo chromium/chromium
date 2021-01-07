@@ -5336,6 +5336,16 @@
         ],
         'os_type': 'android',
       },
+      'linux-ubsan-vptr': {
+        'mixins': [
+          'linux-xenial',
+        ],
+        'test_suites': {
+          # no "_and_gl":gl_unittests doesn't pass yet,
+          # https://crbug.com/815183
+          'gtest_tests': 'chromium_linux_gtests',
+        },
+      },
       'win-asan': {
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',

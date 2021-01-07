@@ -5332,6 +5332,18 @@ ci.memory_builder(
 )
 
 ci.memory_builder(
+    name = "linux-ubsan-vptr",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|ubsan",
+        short_name = "vpt",
+    ),
+    builderless = 1,
+    cores = 32,
+    main_console_view = "main",
+    tree_closing = False,
+)
+
+ci.memory_builder(
     name = "win-asan",
     console_view_entry = consoles.console_view_entry(
         category = "win",

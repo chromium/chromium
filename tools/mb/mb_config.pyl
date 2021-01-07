@@ -562,6 +562,7 @@
       'WebKit Linux Leak': 'release_bot_blink',
       'WebKit Linux MSAN': 'msan_release_bot_blink',
       'android-asan': 'android_clang_asan_release_bot',
+      'linux-ubsan-vptr': 'ubsan_vptr_release_bot',
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release',
     },
 

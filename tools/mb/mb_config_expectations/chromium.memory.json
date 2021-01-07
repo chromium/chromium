@@ -134,6 +134,15 @@
       "use_goma": true
     }
   },
+  "linux-ubsan-vptr": {
+    "gn_args": {
+      "is_component_build": false,
+      "is_debug": false,
+      "is_ubsan_no_recover": true,
+      "is_ubsan_vptr": true,
+      "use_goma": true
+    }
+  },
   "win-asan": {
     "gn_args": {
       "enable_ipc_fuzzer": true,
