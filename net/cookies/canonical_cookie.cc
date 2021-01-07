@@ -771,17 +771,31 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
       status.AddExclusionReason(
           CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT);
       FALLTHROUGH;
-    case CookieSamePartyStatus::kEnforceSamePartyInclude:
+    case CookieSamePartyStatus::kEnforceSamePartyInclude: {
       // Remove any SameSite exclusion reasons, since SameParty overrides
       // SameSite.
       DCHECK(!status.HasExclusionReason(
           CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT));
       DCHECK_NE(effective_same_site, CookieEffectiveSameSite::STRICT_MODE);
-      status.RemoveExclusionReasons({
-          CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
-          CookieInclusionStatus::EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
-      });
+      bool included_by_samesite =
+          !status.HasExclusionReason(
+              CookieInclusionStatus::EXCLUDE_SAMESITE_LAX) &&
+          !status.HasExclusionReason(
+              CookieInclusionStatus::
+                  EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX);
+      if (!included_by_samesite) {
+        status.RemoveExclusionReasons({
+            CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
+            CookieInclusionStatus::EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
+        });
+      }
+      if (status.IsInclude()) {
+        UMA_HISTOGRAM_BOOLEAN(
+            "Cookie.SamePartyReadIncluded.InclusionUnderSameSite",
+            included_by_samesite);
+      }
       break;
+    }
     case CookieSamePartyStatus::kNoSamePartyEnforcement:
       break;
   }
@@ -931,7 +945,7 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
       access_result.status.AddExclusionReason(
           CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT);
       FALLTHROUGH;
-    case CookieSamePartyStatus::kEnforceSamePartyInclude:
+    case CookieSamePartyStatus::kEnforceSamePartyInclude: {
       DCHECK(IsSameParty());
       // Remove any SameSite exclusion reasons, since SameParty overrides
       // SameSite.
@@ -939,11 +953,25 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
           CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT));
       DCHECK_NE(access_result.effective_same_site,
                 CookieEffectiveSameSite::STRICT_MODE);
-      access_result.status.RemoveExclusionReasons({
-          CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
-          CookieInclusionStatus::EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
-      });
+      bool included_by_samesite =
+          !access_result.status.HasExclusionReason(
+              CookieInclusionStatus::EXCLUDE_SAMESITE_LAX) &&
+          !access_result.status.HasExclusionReason(
+              CookieInclusionStatus::
+                  EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX);
+      if (!included_by_samesite) {
+        access_result.status.RemoveExclusionReasons({
+            CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
+            CookieInclusionStatus::EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
+        });
+      }
+      if (access_result.status.IsInclude()) {
+        UMA_HISTOGRAM_BOOLEAN(
+            "Cookie.SamePartySetIncluded.InclusionUnderSameSite",
+            included_by_samesite);
+      }
       break;
+    }
     case CookieSamePartyStatus::kNoSamePartyEnforcement:
       break;
   }
