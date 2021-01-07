@@ -887,7 +887,7 @@ void TextFinder::Scroll(std::unique_ptr<AsyncScrollContext> context) {
   // Likewise, if the target scroll element is display locked, then we shouldn't
   // scroll to it.
   Element* beforematch_element = GetBeforematchElement(*context->range);
-  if (context->range->collapsed() ||
+  if (context->range->collapsed() || !context->range->IsConnected() ||
       (beforematch_element &&
        DisplayLockUtilities::NearestHiddenMatchableInclusiveAncestor(
            *beforematch_element))) {
@@ -899,7 +899,7 @@ void TextFinder::Scroll(std::unique_ptr<AsyncScrollContext> context) {
     // We also need to re-assign to active_match_ here in order to make sure the
     // search starts from context->range. active_match_ may have been unassigned
     // during the async steps.
-    active_match_ = context->range;
+    active_match_ = context->range->IsConnected() ? context->range : nullptr;
     FindInternal(context->identifier, context->search_text, context->options,
                  context->wrap_within_frame, /*active_now=*/nullptr,
                  context->first_match, context->wrapped_around);

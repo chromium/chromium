@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+.hidden {
+  content-visibility: hidden-matchable;
+}
+</style>
+
+<div class="hidden"></div>
+
+<script>
+async_test(t => {
+  const host = document.createElement('div');
+  document.body.appendChild(host);
+  const root = host.attachShadow({mode: 'closed'});
+  const match = document.createElement('div');
+  match.textContent = 'match';
+  root.appendChild(match);
+  match.classList.add('hidden');
+  match.addEventListener('beforematch', () => {
+    match.classList.remove('hidden');
+    host.remove();
+  });
+
+  testRunner.findString('match', ['Async']);
+
+  requestAnimationFrame(t.step_func(() => {
+    requestAnimationFrame(t.step_func_done());
+  }));
+}, `Disconnecting a match in shadowdom shouldn't crash the renderer.`);
+</script>
