@@ -132,9 +132,8 @@ class LocalFileSyncService
                                     SyncFileMetadataCallback callback);
 
   // RemoteChangeProcessor overrides.
-  void PrepareForProcessRemoteChange(
-      const storage::FileSystemURL& url,
-      const PrepareChangeCallback& callback) override;
+  void PrepareForProcessRemoteChange(const storage::FileSystemURL& url,
+                                     PrepareChangeCallback callback) override;
   void ApplyRemoteChange(const FileChange& change,
                          const base::FilePath& local_path,
                          const storage::FileSystemURL& url,
@@ -196,7 +195,7 @@ class LocalFileSyncService
   void DidInitializeForRemoteSync(
       const storage::FileSystemURL& url,
       storage::FileSystemContext* file_system_context,
-      const PrepareChangeCallback& callback,
+      PrepareChangeCallback callback,
       SyncStatusCode status);
 
   // Callback for ApplyRemoteChange.

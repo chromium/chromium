@@ -42,9 +42,8 @@ class FakeRemoteChangeProcessor : public RemoteChangeProcessor {
   ~FakeRemoteChangeProcessor() override;
 
   // RemoteChangeProcessor overrides.
-  void PrepareForProcessRemoteChange(
-      const storage::FileSystemURL& url,
-      const PrepareChangeCallback& callback) override;
+  void PrepareForProcessRemoteChange(const storage::FileSystemURL& url,
+                                     PrepareChangeCallback callback) override;
   void ApplyRemoteChange(const FileChange& change,
                          const base::FilePath& local_path,
                          const storage::FileSystemURL& url,

@@ -34,10 +34,10 @@ class RemoteChangeProcessor {
   // URL in the local filesystem. If the target URL does not exist it is
   // set to SYNC_FILE_TYPE_UNKNOWN.
   // |changes| indicates a set of pending changes for the target URL.
-  typedef base::Callback<void(
-      SyncStatusCode status,
-      const SyncFileMetadata& metadata,
-      const FileChangeList& changes)> PrepareChangeCallback;
+  using PrepareChangeCallback =
+      base::OnceCallback<void(SyncStatusCode status,
+                              const SyncFileMetadata& metadata,
+                              const FileChangeList& changes)>;
 
   RemoteChangeProcessor() {}
   virtual ~RemoteChangeProcessor() {}
@@ -49,7 +49,7 @@ class RemoteChangeProcessor {
   // which is supposed to be done by LocalChangeProcessor)
   virtual void PrepareForProcessRemoteChange(
       const storage::FileSystemURL& url,
-      const PrepareChangeCallback& callback) = 0;
+      PrepareChangeCallback callback) = 0;
 
   // This is called to apply the remote |change|. If the change type is
   // ADD_OR_UPDATE for a file, |local_path| needs to point to a

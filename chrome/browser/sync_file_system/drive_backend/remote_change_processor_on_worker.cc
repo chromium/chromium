@@ -32,7 +32,7 @@ RemoteChangeProcessorOnWorker::~RemoteChangeProcessorOnWorker() {
 
 void RemoteChangeProcessorOnWorker::PrepareForProcessRemoteChange(
     const storage::FileSystemURL& url,
-    const PrepareChangeCallback& callback) {
+    PrepareChangeCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   ui_task_runner_->PostTask(
@@ -41,7 +41,7 @@ void RemoteChangeProcessorOnWorker::PrepareForProcessRemoteChange(
           &RemoteChangeProcessorWrapper::PrepareForProcessRemoteChange,
           wrapper_, url,
           RelayCallbackToTaskRunner(worker_task_runner_.get(), FROM_HERE,
-                                    callback)));
+                                    std::move(callback))));
 }
 
 void RemoteChangeProcessorOnWorker::ApplyRemoteChange(

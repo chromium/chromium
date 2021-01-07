@@ -17,9 +17,10 @@ RemoteChangeProcessorWrapper::RemoteChangeProcessorWrapper(
 
 void RemoteChangeProcessorWrapper::PrepareForProcessRemoteChange(
     const storage::FileSystemURL& url,
-    const RemoteChangeProcessor::PrepareChangeCallback& callback) {
+    RemoteChangeProcessor::PrepareChangeCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  remote_change_processor_->PrepareForProcessRemoteChange(url, callback);
+  remote_change_processor_->PrepareForProcessRemoteChange(url,
+                                                          std::move(callback));
 }
 
 void RemoteChangeProcessorWrapper::ApplyRemoteChange(

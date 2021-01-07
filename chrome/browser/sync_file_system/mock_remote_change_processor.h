@@ -30,7 +30,7 @@ class MockRemoteChangeProcessor : public RemoteChangeProcessor {
   // RemoteChangeProcessor overrides.
   MOCK_METHOD2(PrepareForProcessRemoteChange,
                void(const storage::FileSystemURL& url,
-                    const PrepareChangeCallback& callback));
+                    PrepareChangeCallback callback));
   MOCK_METHOD4(ApplyRemoteChange,
                void(const FileChange& change,
                     const base::FilePath& local_path,

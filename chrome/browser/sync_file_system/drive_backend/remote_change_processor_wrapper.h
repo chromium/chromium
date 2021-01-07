@@ -25,7 +25,7 @@ class RemoteChangeProcessorWrapper
 
   void PrepareForProcessRemoteChange(
       const storage::FileSystemURL& url,
-      const RemoteChangeProcessor::PrepareChangeCallback& callback);
+      RemoteChangeProcessor::PrepareChangeCallback callback);
 
   void ApplyRemoteChange(const FileChange& change,
                          const base::FilePath& local_path,
