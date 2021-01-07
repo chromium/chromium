@@ -10,7 +10,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
@@ -166,6 +166,9 @@ class ChromeBrowserProvider : public bookmarks::BaseBookmarkModelObserver,
                                   const base::string16& term) override;
   void OnKeywordSearchTermDeleted(history::HistoryService* history_service,
                                   history::URLID url_id) override;
+  void HistoryServiceBeingDeleted(
+      history::HistoryService* history_service) override;
+
   bool GetJavaProviderOrDeleteSelf(
       base::android::ScopedJavaLocalRef<jobject>* out_ref,
       JNIEnv* env);
@@ -186,8 +189,9 @@ class ChromeBrowserProvider : public bookmarks::BaseBookmarkModelObserver,
 
   base::CancelableTaskTracker cancelable_task_tracker_;
 
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_service_observer_{this};
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      scoped_history_service_observer_{this};
 
   bool handling_extensive_changes_;
 

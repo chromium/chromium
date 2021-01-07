@@ -814,8 +814,10 @@ ChromeBrowserProvider::ChromeBrowserProvider(JNIEnv* env, jobject obj)
 
   // Register as observer for service we are interested.
   bookmark_model_->AddObserver(this);
-  history_service_observer_.Add(HistoryServiceFactory::GetForProfile(
-      profile_, ServiceAccessType::EXPLICIT_ACCESS));
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  if (history_service)
+    scoped_history_service_observer_.Observe(history_service);
   TemplateURLService* template_service =
         TemplateURLServiceFactory::GetForProfile(profile_);
   if (!template_service->loaded())
@@ -824,7 +826,7 @@ ChromeBrowserProvider::ChromeBrowserProvider(JNIEnv* env, jobject obj)
 
 ChromeBrowserProvider::~ChromeBrowserProvider() {
   bookmark_model_->RemoveObserver(this);
-  history_service_observer_.RemoveAll();
+  scoped_history_service_observer_.Reset();
 }
 
 // ------------- Provider public APIs ------------- //
@@ -1190,6 +1192,11 @@ void ChromeBrowserProvider::OnKeywordSearchTermUpdated(
 void ChromeBrowserProvider::OnKeywordSearchTermDeleted(
     history::HistoryService* history_service,
     history::URLID url_id) {
+}
+
+void ChromeBrowserProvider::HistoryServiceBeingDeleted(
+    history::HistoryService* history_service) {
+  scoped_history_service_observer_.Reset();
 }
 
 bool ChromeBrowserProvider::GetJavaProviderOrDeleteSelf(
