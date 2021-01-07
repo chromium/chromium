@@ -66,10 +66,16 @@
         [[getOnOffString_(prefs.nearby_sharing.enabled.value,
             '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
       </div>
-      <settings-toggle-button id="featureToggleButton" aria-describedby="onOff"
-          pref="{{prefs.nearby_sharing.enabled}}"
-          deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]">
-      </settings-toggle-button>
+
+      <!-- Use a template to work around visual glitch where the toggle flips
+          on when the page first loads. -->
+      <template is="dom-if" if="[[prefs]]" restamp>
+        <settings-toggle-button id="featureToggleButton"
+            aria-describedby="onOff"
+            pref="{{prefs.nearby_sharing.enabled}}"
+            deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]">
+        </settings-toggle-button>
+      </template>
     </div>
     <div class="settings-box two-line">
       <div class="start"
