@@ -147,7 +147,6 @@ public abstract class NavigationCallback {
      * Called after each navigation to indicate that the old page is no longer
      * being rendered. Note this is not ordered with respect to onFirstContentfulPaint.
      * @param newNavigationUri Uri of the new navigation.
-     * @since 85
      */
     public void onOldPageNoLongerRendered(@NonNull Uri newNavigationUri) {}
 }

@@ -27,7 +27,6 @@ import org.chromium.components.webrtc.MediaCaptureNotificationUtil.MediaType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.weblayer_private.IntentUtils;
 import org.chromium.weblayer_private.TabImpl;
-import org.chromium.weblayer_private.WebLayerFactoryImpl;
 import org.chromium.weblayer_private.WebLayerImpl;
 import org.chromium.weblayer_private.WebLayerNotificationChannels;
 import org.chromium.weblayer_private.WebLayerNotificationWrapperBuilder;
@@ -45,8 +44,6 @@ import java.util.Set;
 @JNINamespace("weblayer")
 public class MediaStreamManager {
     private static final String WEBRTC_PREFIX = "org.chromium.weblayer.webrtc";
-    private static final String EXTRA_TAB_ID = WEBRTC_PREFIX + ".TAB_ID";
-    private static final String ACTIVATE_TAB_INTENT = WEBRTC_PREFIX + ".ACTIVATE_TAB";
     private static final String AV_STREAM_TAG = WEBRTC_PREFIX + ".avstream";
 
     /**
@@ -68,32 +65,6 @@ public class MediaStreamManager {
 
     // Pointer to the native MediaStreamManager.
     private long mNative;
-
-    /**
-     * @return a string that prefixes all intents that can be handled by {@link forwardIntent}.
-     * @Deprecated in M85+, this class does not handle intents. Remove in M88.
-     */
-    public static String getIntentPrefix() {
-        return WEBRTC_PREFIX;
-    }
-
-    /**
-     * Handles an intent coming from a media streaming notification.
-     * @param intent the intent which was previously posted via {@link update}.
-     * @Deprecated in M85+, this class does not handle intents. Remove in M88.
-     */
-    public static void forwardIntent(Intent intent) {
-        assert intent.getAction().equals(ACTIVATE_TAB_INTENT);
-        int tabId = intent.getIntExtra(EXTRA_TAB_ID, -1);
-        TabImpl tab = TabImpl.getTabById(tabId);
-        if (tab == null) return;
-
-        try {
-            tab.getClient().bringTabToFront();
-        } catch (RemoteException e) {
-            throw new AndroidRuntimeException(e);
-        }
-    }
 
     /**
      * To be called when WebLayer is started. Clears notifications that may have persisted from
@@ -208,23 +179,13 @@ public class MediaStreamManager {
      */
     @CalledByNative
     private void update(boolean audio, boolean video) {
-        // The notification intent is not handled in the client prior to M84.
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 84) return;
-
         if (!audio && !video) {
             cancelNotification();
             return;
         }
 
         Context appContext = ContextUtils.getApplicationContext();
-        Intent intent = null;
-        if (WebLayerFactoryImpl.getClientMajorVersion() >= 85) {
-            intent = IntentUtils.createBringTabToFrontIntent(mNotificationId);
-        } else {
-            intent = WebLayerImpl.createIntent();
-            intent.putExtra(EXTRA_TAB_ID, mNotificationId);
-            intent.setAction(ACTIVATE_TAB_INTENT);
-        }
+        Intent intent = IntentUtils.createBringTabToFrontIntent(mNotificationId);
         PendingIntentProvider contentIntent =
                 PendingIntentProvider.getBroadcast(appContext, mNotificationId, intent, 0);
 

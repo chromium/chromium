@@ -16,7 +16,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.test.InstrumentationRegistry;
 import android.webkit.WebResourceResponse;
 
 import androidx.fragment.app.Fragment;
@@ -24,7 +23,6 @@ import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,7 +43,6 @@ import org.chromium.weblayer.NavigationState;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TabCallback;
 import org.chromium.weblayer.TabListCallback;
-import org.chromium.weblayer.WebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
 import java.io.ByteArrayInputStream;
@@ -85,8 +82,6 @@ public class NavigationTest {
     private static final String INTENT_TO_CHROME_URL =
             "intent://play.google.com/store/apps/details?id=com.facebook.katana/#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end";
 
-    private static boolean sShouldTrackPageInitiated;
-
     // An IntentInterceptor that simply drops intents to ensure that intent launches don't interfere
     // with running of tests.
     private class IntentInterceptor implements InstrumentationActivity.IntentInterceptor {
@@ -115,10 +110,8 @@ public class NavigationTest {
                 mLoadError = navigation.getLoadError();
                 mNavigationState = navigation.getState();
                 mIsKnownProtocol = navigation.isKnownProtocol();
+                mIsPageInitiatedNavigation = navigation.isPageInitiated();
                 mIsServedFromBackForwardCache = navigation.isServedFromBackForwardCache();
-                if (sShouldTrackPageInitiated) {
-                    mIsPageInitiatedNavigation = navigation.isPageInitiated();
-                }
                 notifyCalled();
             }
 
@@ -165,7 +158,6 @@ public class NavigationTest {
             }
 
             public boolean isPageInitiated() {
-                assert sShouldTrackPageInitiated;
                 return mIsPageInitiatedNavigation;
             }
         }
@@ -319,16 +311,6 @@ public class NavigationTest {
 
     private final Callback mCallback = new Callback();
 
-    @Before
-    public void setUp() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sShouldTrackPageInitiated =
-                    WebLayer.getSupportedMajorVersion(
-                            InstrumentationRegistry.getTargetContext().getApplicationContext())
-                    >= 86;
-        });
-    }
-
     @Test
     @SmallTest
     public void testNavigationEvents() throws Exception {
@@ -350,7 +332,6 @@ public class NavigationTest {
         assertEquals(mCallback.onCompletedCallback.getHttpStatusCode(), 200);
     }
 
-    @MinWebLayerVersion(85)
     @Test
     @SmallTest
     public void testOldPageNoLongerRendered() throws Exception {
@@ -887,7 +868,6 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(84)
     public void testSetUserAgentString() throws Exception {
         TestWebServer testServer = TestWebServer.start();
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
@@ -969,7 +949,6 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(85)
     public void testSkippedNavigationEntry() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
         setNavigationCallback(activity);
@@ -996,7 +975,6 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(85)
     public void testIndexOutOfBounds() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
         runOnUiThreadBlocking(() -> {
@@ -1022,7 +1000,6 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(86)
     public void testPageInitiated() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
         setNavigationCallback(activity);
@@ -1036,7 +1013,6 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(86)
     public void testPageInitiatedFromClient() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
         setNavigationCallback(activity);
@@ -1052,7 +1028,6 @@ public class NavigationTest {
     // This is a regression test for https://crbug.com/1121388.
     @Test
     @SmallTest
-    @MinWebLayerVersion(85)
     public void testDestroyTabWithModalDialog() throws Exception {
         // Load a page with a form.
         InstrumentationActivity activity =
@@ -1105,7 +1080,6 @@ public class NavigationTest {
      */
     @Test
     @SmallTest
-    @MinWebLayerVersion(86)
     public void testDestroyTabInNavigationFailed() throws Throwable {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
         CallbackHelper callbackHelper = new CallbackHelper();
@@ -1155,7 +1129,6 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
     public void testWebResponse() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
         // The code asserts that when InputStreams are used that the stock URL bar is not visible.
@@ -1168,7 +1141,6 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
     public void testWebResponseMimeSniff() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
         TestThreadUtils.runOnUiThreadBlocking(() -> { activity.getBrowser().setTopView(null); });
@@ -1180,7 +1152,6 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
     public void testWebResponseNoCacheControl() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
         TestThreadUtils.runOnUiThreadBlocking(() -> { activity.getBrowser().setTopView(null); });
@@ -1198,7 +1169,6 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
     public void testWebResponseCached() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
         TestThreadUtils.runOnUiThreadBlocking(() -> { activity.getBrowser().setTopView(null); });
@@ -1218,7 +1188,6 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
     public void testWebResponseCachedWithSniffedMimeType() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
         TestThreadUtils.runOnUiThreadBlocking(() -> { activity.getBrowser().setTopView(null); });
@@ -1238,7 +1207,6 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
     public void testWebResponseNoStore() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
         TestThreadUtils.runOnUiThreadBlocking(() -> { activity.getBrowser().setTopView(null); });
@@ -1256,7 +1224,6 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
     public void testWebResponseExpired() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
         TestThreadUtils.runOnUiThreadBlocking(() -> { activity.getBrowser().setTopView(null); });

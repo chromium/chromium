@@ -30,7 +30,6 @@ public class ScrollOffsetCallbackTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
     public void testBasic() throws Throwable {
         final String url = mActivityTestRule.getTestDataURL("tall_page.html");
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(url);

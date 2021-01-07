@@ -9,8 +9,6 @@ import androidx.annotation.NonNull;
 /**
  * Receives messages from a JavaScript object that was created by calling {@link
  * Tab#registerWebMessageCallback().
- *
- * @since 85
  */
 public abstract class WebMessageCallback {
     /**

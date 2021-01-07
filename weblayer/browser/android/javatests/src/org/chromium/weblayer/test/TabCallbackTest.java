@@ -111,7 +111,6 @@ public class TabCallbackTest {
         return params[0];
     }
 
-    // Requires implementation M82.
     @Test
     @SmallTest
     public void testShowContextMenu() throws TimeoutException {
@@ -121,7 +120,6 @@ public class TabCallbackTest {
         Assert.assertEquals("anchor text", params.linkText);
     }
 
-    // Requires implementation M82.
     @Test
     @SmallTest
     public void testShowContextMenuImg() throws TimeoutException {
@@ -345,7 +343,6 @@ public class TabCallbackTest {
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(titles[0], Matchers.is("foobar")));
     }
 
-    @MinWebLayerVersion(85)
     @Test
     @SmallTest
     public void testOnBackgroundColorChanged() throws TimeoutException {
@@ -374,7 +371,6 @@ public class TabCallbackTest {
         Assert.assertEquals(0xffff0000, (int) backgroundColors[0]);
     }
 
-    @MinWebLayerVersion(85)
     @Test
     @SmallTest
     public void testScrollNotificationDirectionChange() throws TimeoutException {

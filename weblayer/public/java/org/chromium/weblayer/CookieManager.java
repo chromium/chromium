@@ -20,8 +20,6 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
 /**
  * Manages cookies for a WebLayer profile.
- *
- * @since 83
  */
 public class CookieManager {
     private final ICookieManager mImpl;

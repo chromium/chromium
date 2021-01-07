@@ -41,7 +41,6 @@ interface IBrowser {
                                       in boolean onlyExpandControlsAtPageTop,
                                       in boolean animate) = 12;
 
-  // Added in 87.
   boolean isRestoringPreviousState() = 14;
 
   // Added in 88.

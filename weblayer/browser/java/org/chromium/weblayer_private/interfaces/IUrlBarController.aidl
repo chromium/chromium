@@ -8,10 +8,8 @@ import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 
 interface IUrlBarController {
 
-  // Deprecated in 84, use createUrlBarView with three arguments.
-  IObjectWrapper /* View */ deprecatedCreateUrlBarView(in Bundle options) = 0;
+  // ID 0 was deprecatedCreateUrlBarView and was removed in M89.
 
-  // Since 86
   IObjectWrapper /* View */ createUrlBarView(
       in Bundle options,
       in IObjectWrapper /* View.OnClickListener */ textClickListener,

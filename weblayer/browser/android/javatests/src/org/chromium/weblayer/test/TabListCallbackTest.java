@@ -16,7 +16,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TabListCallback;
-import org.chromium.weblayer.WebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
 import java.util.ArrayList;
@@ -186,12 +185,9 @@ public class TabListCallbackTest {
             browser.registerTabListCallback(new TabListCallback() {
                 @Override
                 public void onTabRemoved(Tab tab) {
-                    if (WebLayer.getSupportedMajorVersion(mActivity) >= 87) {
-                        // |tab| should not be destroyed at this point. getGuid() is a good proxy
-                        // for verifying the tab hasn't been destroyed. Prior to 87 the tab was
-                        // destroyed at this point.
-                        tab.getGuid();
-                    }
+                    // |tab| should not be destroyed at this point. getGuid() is a good proxy
+                    // for verifying the tab hasn't been destroyed.
+                    tab.getGuid();
                     callbackHelper.notifyCalled();
                 }
             });

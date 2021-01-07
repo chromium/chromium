@@ -16,8 +16,6 @@ import java.io.File;
 
 /**
  * Contains information about a single download that's in progress.
- *
- * @since 81
  */
 public class Download extends IClientDownload.Stub {
     private final IDownload mDownloadImpl;
@@ -130,15 +128,10 @@ public class Download extends IClientDownload.Stub {
 
     /**
      * Returns the file name for the download that should be displayed to the user.
-     *
-     * @since 86
      */
     @NonNull
     public File getFileNameToReportToUser() {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 86) {
-            throw new UnsupportedOperationException();
-        }
         try {
             return new File(mDownloadImpl.getFileNameToReportToUser());
         } catch (RemoteException e) {

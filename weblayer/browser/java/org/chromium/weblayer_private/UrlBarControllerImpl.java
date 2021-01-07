@@ -90,13 +90,6 @@ public class UrlBarControllerImpl extends IUrlBarController.Stub {
     }
 
     @Override
-    @Deprecated
-    public IObjectWrapper /* View */ deprecatedCreateUrlBarView(Bundle options) {
-        return createUrlBarView(
-                options, /* OnLongClickListener */ null, /* OnLongClickListener */ null);
-    }
-
-    @Override
     public IObjectWrapper /* View */ createUrlBarView(Bundle options,
             @Nullable IObjectWrapper /* OnLongClickListener */ clickListener,
             @Nullable IObjectWrapper /* OnLongClickListener */ longClickListener) {

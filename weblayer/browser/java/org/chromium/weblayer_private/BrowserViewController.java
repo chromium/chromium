@@ -303,8 +303,6 @@ public final class BrowserViewController
     }
 
     private void onDialogVisibilityChanged(boolean showing) {
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 82) return;
-
         if (mModalDialogManager.getCurrentType() == ModalDialogType.TAB) {
             // This shouldn't be called when |mTab| is null and the modal dialog type is TAB. OTOH,
             // when an app-modal is displayed for a javascript dialog, this method can be called

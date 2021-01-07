@@ -14,8 +14,6 @@ import org.chromium.weblayer_private.interfaces.IWebMessageReplyProxy;
 /**
  * Used to post a message to a page. WebMessageReplyProxy is created when a page posts a message to
  * the JavaScript object that was created by way of {@link Tab#registerWebMessageCallback}.
- *
- * @since 85
  */
 public class WebMessageReplyProxy {
     private final IWebMessageReplyProxy mIReplyProxy;

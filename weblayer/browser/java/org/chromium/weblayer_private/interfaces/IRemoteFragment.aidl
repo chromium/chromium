@@ -11,8 +11,7 @@ interface IRemoteFragment {
   void handleOnCreate(in IObjectWrapper savedInstanceState) = 0;
   void handleOnAttach(in IObjectWrapper context) = 1;
   void handleOnActivityCreated(in IObjectWrapper savedInstanceState) = 2;
-  // Deprecated in 84, use handleOnCreateView(ViewGroup, Bundle) instead.
-  IObjectWrapper deprecatedHandleOnCreateView() = 3;
+  // ID 3 was deprecatedHandleOnCreateView and was removed in M89.
   void handleOnStart() = 4;
   void handleOnResume() = 5;
   void handleOnPause() = 6;
@@ -28,7 +27,6 @@ interface IRemoteFragment {
   void handleOnRequestPermissionsResult(int requestCode,
                                         in String[] permissions,
                                         in int[] grantResults) = 13;
-  // Since 84
   IObjectWrapper /* View */ handleOnCreateView(in IObjectWrapper /* ViewGroup */ container,
                                                in IObjectWrapper /* Bundle */ savedInstanceState) = 14;
 }

@@ -11,8 +11,6 @@ interface IBrowserClient {
   void onActiveTabChanged(in int activeTabId) = 0;
   void onTabAdded(in ITab tab) = 1;
   void onTabRemoved(in int tabId) = 2;
-
-  // Added in 87.
   IRemoteFragment createMediaRouteDialogFragment() = 3;
   void onRestoreCompleted() = 5;
 

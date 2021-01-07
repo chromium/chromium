@@ -35,7 +35,6 @@ public class FullscreenSizeTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(86)
     public void testOsk() {
         // For this test to function, it *cannot* use {@link TestFullscreenCallback}, as that
         // overrides the fullscreen handling in {@link InstrumentationActivity}.

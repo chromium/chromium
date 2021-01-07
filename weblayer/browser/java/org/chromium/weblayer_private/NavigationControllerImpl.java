@@ -248,7 +248,6 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
 
     @CalledByNative
     private void onOldPageNoLongerRendered(String uri) throws RemoteException {
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 85) return;
         mNavigationControllerClient.onOldPageNoLongerRendered(uri);
     }
 

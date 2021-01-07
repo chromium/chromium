@@ -284,14 +284,9 @@ public class InstrumentationActivity extends FragmentActivity {
                 getIntent().getBooleanExtra(EXTRA_ONLY_EXPAND_CONTROLS_AT_TOP, false);
         final int minTopViewHeight = getIntent().getIntExtra(EXTRA_TOP_VIEW_MIN_HEIGHT, -1);
 
-        if (onlyExpandControlsAtTop || minTopViewHeight != -1) {
-            // This was added in 86.
-            mBrowser.setTopView(mTopContentsContainer, Math.max(0, minTopViewHeight),
-                    onlyExpandControlsAtTop,
-                    /* animate */ false);
-        } else {
-            mBrowser.setTopView(mTopContentsContainer);
-        }
+        mBrowser.setTopView(mTopContentsContainer, Math.max(0, minTopViewHeight),
+                onlyExpandControlsAtTop,
+                /* animate */ false);
 
         mRendererCrashListener = new TabCallback() {
             @Override

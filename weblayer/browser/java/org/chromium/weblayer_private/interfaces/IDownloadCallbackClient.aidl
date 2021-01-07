@@ -20,6 +20,5 @@ interface IDownloadCallbackClient {
   void downloadProgressChanged(IClientDownload download) = 4;
   void downloadCompleted(IClientDownload download) = 5;
   void downloadFailed(IClientDownload download) = 6;
-  // Removed in 87.
-  // Intent createIntent() = 7;
+  // ID 7 was createIntent and was removed in M87.
 }

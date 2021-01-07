@@ -97,10 +97,6 @@ public class ContactsPickerAdapter extends PickerAdapter {
 
     @Nullable
     private IUserIdentityCallbackClient getUserIdentityCallback() {
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 87) {
-            return null;
-        }
-
         return BrowserImpl.fromWindowAndroid(mWindowAndroid)
                 .getProfile()
                 .getUserIdentityCallbackClient();

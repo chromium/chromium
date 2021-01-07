@@ -215,7 +215,6 @@ public class BrowserFragmentLifecycleTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(85)
     public void restoresTabData() throws Throwable {
         Bundle extras = new Bundle();
         extras.putString(InstrumentationActivity.EXTRA_PERSISTENCE_ID, "x");
@@ -227,7 +226,6 @@ public class BrowserFragmentLifecycleTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(85)
     public void restoreTabDataAfterRecreate() throws Throwable {
         Map<String, String> initialData = new HashMap<>();
         initialData.put("foo", "bar");
@@ -255,7 +253,6 @@ public class BrowserFragmentLifecycleTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(85)
     public void getAndRemoveBrowserPersistenceIds() throws Throwable {
         // Creates a browser with the persistence id 'x'.
         final String persistenceId = "x";
@@ -387,7 +384,6 @@ public class BrowserFragmentLifecycleTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
     public void twoFragmentsDifferentIncognitoProfiles() throws Throwable {
         // This test creates two browsers with different profile names and persistence ids.
         final String persistenceId1 = "x";
@@ -467,7 +463,6 @@ public class BrowserFragmentLifecycleTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
     public void twoFragmentsSameIncognitoProfile() throws Throwable {
         // This test creates two browsers with the same profile, but different persistence ids.
         final String persistenceId1 = "x";

@@ -8,8 +8,6 @@ import androidx.annotation.NonNull;
 
 /**
  * Used when sending and receiving messages to a page.
- *
- * @since 85
  */
 public class WebMessage {
     private final String mContents;

@@ -27,7 +27,6 @@ public abstract class TabCallback {
 
     /**
      * Triggered when a context menu should be displayed.
-     * Added in M82.
      */
     public void showContextMenu(@NonNull ContextMenuParams params) {}
 
@@ -36,8 +35,6 @@ public abstract class TabCallback {
      * due to the dismissal of a modal overlay (dialog/bubble/popup).
      *
      * @param isTabModalShowing true when a dialog is blocking interaction with the web contents.
-     *
-     * @since 82
      */
     public void onTabModalStateChanged(boolean isTabModalShowing) {}
 
@@ -45,7 +42,6 @@ public abstract class TabCallback {
      * Called when the title of this tab changes. Note before the page sets a title, the title may
      * be a portion of the Uri.
      * @param title New title of this tab.
-     * @since 83
      */
     public void onTitleUpdated(@NonNull String title) {}
 
@@ -61,7 +57,6 @@ public abstract class TabCallback {
      * This is mostly useful for filling in gaps around the web page during resize, but it will
      * not necessarily match the full background of the page.
      * @param color The new ARGB color of the page background.
-     * @since 85
      */
     public void onBackgroundColorChanged(int color) {}
 
@@ -74,7 +69,6 @@ public abstract class TabCallback {
      * @param currentScrollRatio value in [0, 1] indicating the current scroll ratio. For example
      *                           a web page that is 200 pixels, has a viewport of height 50 pixels
      *                           and a scroll offset of 50 pixels will have a ratio of 0.5.
-     * @since 85
      */
     public void onScrollNotification(
             @ScrollNotificationType int notificationType, float currentScrollRatio) {}

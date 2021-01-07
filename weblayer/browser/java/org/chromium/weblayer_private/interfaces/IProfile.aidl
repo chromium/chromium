@@ -21,30 +21,23 @@ interface IProfile {
 
   void setDownloadDirectory(String directory) = 3;
 
-  // Added in Version 82.
   void destroyAndDeleteDataFromDisk(in IObjectWrapper completionCallback) = 4;
 
-  // Added in Version 83.
   void setDownloadCallbackClient(IDownloadCallbackClient client) = 5;
 
-  // Added in Version 83.
   ICookieManager getCookieManager() = 6;
 
-  // Added in Version 84.
   void setBooleanSetting(int type, boolean value) = 7;
   boolean getBooleanSetting(int type) = 8;
 
-  // Added in Version 85.
   void getBrowserPersistenceIds(in IObjectWrapper resultCallback) = 9;
   void removeBrowserPersistenceStorage(in String[] ids,
                                        in IObjectWrapper resultCallback) = 10;
   void prepareForPossibleCrossOriginNavigation() = 11;
 
-  // Added in Version 86.
   void getCachedFaviconForPageUri(in String uri,
                                   in IObjectWrapper resultCallback) = 12;
 
-  // Added in Version 87.
   void setUserIdentityCallbackClient(IUserIdentityCallbackClient client) = 13;
   IPrerenderController getPrerenderController() = 15;
   boolean isIncognito() = 16;

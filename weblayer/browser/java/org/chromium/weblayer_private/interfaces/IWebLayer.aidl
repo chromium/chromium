@@ -70,16 +70,12 @@ interface IWebLayer {
   // Forwards broadcast from a notification to the implementation.
   void onReceivedBroadcast(in IObjectWrapper appContext, in Intent intent) = 11;
 
-  // Added in Version 82.
   void enumerateAllProfileNames(in IObjectWrapper valueCallback) = 12;
 
-  // Added in Version 83.
   void setClient(in IWebLayerClient client) = 13;
 
-  // Added in Version 84.
   String getUserAgentString() = 14;
 
-  // Added in Version 84.
   void registerExternalExperimentIDs(in String trialName, in int[] experimentIds) = 15;
 
   // Creates the WebLayer counterpart to a SiteSettingsFragment - a SiteSettingsFragmentImpl
@@ -88,20 +84,16 @@ interface IWebLayer {
   // WebLayer can call methods on Fragment.
   // @param fragmentArgs Bundle of arguments with which the Fragment was created on the client side
   // (see Fragment#setArguments).
-  // Added in Version 84.
   ISiteSettingsFragment createSiteSettingsFragmentImpl(
       in IRemoteFragmentClient remoteFragmentClient,
       in IObjectWrapper fragmentArgs) = 16;
 
-  // Added in Version 85.
   void onMediaSessionServiceStarted(in IObjectWrapper sessionService, in Intent intent) = 17;
   void onMediaSessionServiceDestroyed() = 18;
 
-  // Added in Version 86.
   IBinder initializeImageDecoder(in IObjectWrapper appContext,
                                  in IObjectWrapper remoteContext) = 19;
 
-  // Added in Version 87.
   IObjectWrapper getApplicationContext() = 20;
   IMediaRouteDialogFragment createMediaRouteDialogFragmentImpl(
       in IRemoteFragmentClient remoteFragmentClient) = 21;

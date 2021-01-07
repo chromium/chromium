@@ -9,8 +9,6 @@ import android.webkit.ValueCallback;
 /**
  * Used along with {@link MediaCaptureController} to control and observe Media Capture and Streams
  * usage.
- *
- * @since 84
  */
 public abstract class MediaCaptureCallback {
     /**

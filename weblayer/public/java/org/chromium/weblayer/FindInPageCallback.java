@@ -6,8 +6,6 @@ package org.chromium.weblayer;
 
 /**
  * Informed of find in page results.
- *
- * @since 81
  */
 public abstract class FindInPageCallback {
     /**

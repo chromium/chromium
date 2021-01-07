@@ -132,8 +132,6 @@ public class Navigation extends IClientNavigation.Stub {
      * status is determined for a navigation when processing final (post redirect) HTTP response
      * headers. This means the only time the embedder can know if it's a download is in
      * NavigationCallback.onNavigationFailed.
-     *
-     * @since 84
      */
     public boolean isDownload() {
         ThreadCheck.ensureOnUiThread();
@@ -216,8 +214,6 @@ public class Navigation extends IClientNavigation.Stub {
     /**
      * Whether this navigation was stopped before it could complete because
      * NavigationController.stop() was called.
-     *
-     * @since 84
      */
     public boolean wasStopCalled() {
         ThreadCheck.ensureOnUiThread();
@@ -248,8 +244,6 @@ public class Navigation extends IClientNavigation.Stub {
      *
      * @throws IllegalArgumentException If supplied invalid values.
      * @throws IllegalStateException If not called during start or a redirect.
-     *
-     * @since 83
      */
     public void setRequestHeader(@NonNull String name, @NonNull String value) {
         ThreadCheck.ensureOnUiThread();
@@ -275,8 +269,6 @@ public class Navigation extends IClientNavigation.Stub {
      * @throws IllegalArgumentException If supplied an invalid value.
      * @throws IllegalStateException If not called during start or if {@link
      *         Tab.setDesktopUserAgent} was called with a value of true.
-     *
-     * @since 84
      */
     public void setUserAgentString(@NonNull String value) {
         ThreadCheck.ensureOnUiThread();
@@ -299,14 +291,9 @@ public class Navigation extends IClientNavigation.Stub {
      *  window.history.forward() or window.history.back().
      *
      * @return Whether the navigation was initiated by the page.
-     *
-     * @since 86
      */
     public boolean isPageInitiated() {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 86) {
-            throw new UnsupportedOperationException();
-        }
         try {
             return mNavigationImpl.isPageInitiated();
         } catch (RemoteException e) {
@@ -319,14 +306,9 @@ public class Navigation extends IClientNavigation.Stub {
      * * embedder-specified through NavigationController::Reload
      * * page-initiated reloads, e.g. location.reload()
      * * reloads when the network interface is reconnected
-     *
-     * @since 86
      */
     public boolean isReload() {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 86) {
-            throw new UnsupportedOperationException();
-        }
         try {
             return mNavigationImpl.isReload();
         } catch (RemoteException e) {

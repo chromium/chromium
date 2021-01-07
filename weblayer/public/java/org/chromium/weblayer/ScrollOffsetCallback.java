@@ -14,8 +14,6 @@ package org.chromium.weblayer;
  * Because of WebLayer's multi-process architecture, this function can not be used to reliably
  * synchronize the painting of other Views with WebLayer's Views. It's entirely possible one will
  * render before or after the other.
- *
- * @since 87
  */
 public abstract class ScrollOffsetCallback {
     /**

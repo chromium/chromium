@@ -44,7 +44,6 @@ public final class TabCallbackProxy {
 
     @CalledByNative
     private void onTitleUpdated(String title) throws RemoteException {
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 83) return;
         mClient.onTitleUpdated(ObjectWrapper.wrap(title));
     }
 

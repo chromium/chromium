@@ -158,15 +158,6 @@ int BrowserMainPartsImpl::PreCreateThreads() {
 
   crash_reporter::InitializeCrashKeys();
 
-  // MediaSession was implemented in M85, and requires both implementation and
-  // client libraries to be at least that new. The version check has to be in
-  // the browser process, but the command line flag is automatically propagated
-  // to renderers.
-  if (WebLayerFactoryImplAndroid::GetClientMajorVersion() < 85) {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kDisableMediaSessionAPI);
-  }
-
   // WebLayer initializes the MetricsService once consent is determined.
   // Determining consent is async and potentially slow. VariationsIdsProvider
   // is responsible for updating the X-Client-Data header. To ensure the header

@@ -14,8 +14,6 @@ import androidx.annotation.NonNull;
  *
  * If this callback is implemented and set on {@link Profile}, the information is used to better
  * organize contact details in the navigator.contacts UI.
- *
- * @since 87
  */
 public abstract class UserIdentityCallback {
     /**
@@ -41,7 +39,6 @@ public abstract class UserIdentityCallback {
      * @param avatarLoadedCallback to be called with the avatar when it is available (synchronously
      *         or asynchronously). Until such time that it's called, WebLayer will fall back to a
      *         monogram based on {@link getFullName()}, e.g. encircled "JD" for "Jill Doe".
-     * @since 87
      */
     public void getAvatar(int desiredSize, @NonNull ValueCallback<Bitmap> avatarLoadedCallback) {}
 }

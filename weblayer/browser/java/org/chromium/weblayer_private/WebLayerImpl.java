@@ -412,8 +412,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
 
         if (intent.getAction().startsWith(DownloadImpl.getIntentPrefix())) {
             DownloadImpl.forwardIntent(context, intent, mProfileManager);
-        } else if (intent.getAction().startsWith(MediaStreamManager.getIntentPrefix())) {
-            MediaStreamManager.forwardIntent(intent);
         }
     }
 

@@ -98,13 +98,6 @@ public class Browser {
         for (TabListCallback callback : mTabListCallbacks) {
             callback.onWillDestroyBrowserAndAllTabs();
         }
-
-        // See comment in Tab$TabClientImpl.onTabDestroyed for details on this.
-        if (WebLayer.getSupportedMajorVersionInternal() >= 87) return;
-
-        for (Tab tab : getTabs()) {
-            Tab.unregisterTab(tab);
-        }
     }
 
     // Called after the browser was destroyed.
@@ -231,14 +224,9 @@ public class Browser {
      * Returns true if this Browser is in the process of restoring the previous state.
      *
      * @param True if restoring previous state.
-     *
-     * @since 87
      */
     public boolean isRestoringPreviousState() {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
-            throw new UnsupportedOperationException();
-        }
         throwIfDestroyed();
         try {
             return mImpl.isRestoringPreviousState();
@@ -251,14 +239,9 @@ public class Browser {
      * Adds a BrowserRestoreCallback.
      *
      * @param callback The BrowserRestoreCallback.
-     *
-     * @since 87
      */
     public void registerBrowserRestoreCallback(@NonNull BrowserRestoreCallback callback) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
-            throw new UnsupportedOperationException();
-        }
         throwIfDestroyed();
         mBrowserRestoreCallbacks.addObserver(callback);
     }
@@ -267,14 +250,9 @@ public class Browser {
      * Removes a BrowserRestoreCallback.
      *
      * @param callback The BrowserRestoreCallback.
-     *
-     * @since 87
      */
     public void unregisterBrowserRestoreCallback(@NonNull BrowserRestoreCallback callback) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
-            throw new UnsupportedOperationException();
-        }
         throwIfDestroyed();
         mBrowserRestoreCallbacks.removeObserver(callback);
     }
@@ -310,16 +288,11 @@ public class Browser {
      *        contexts where the URL should be visible to the user.
      * @param animate Whether or not any height/visibility changes that result from this call
      *        should be animated.
-     *
-     * @since 86
      */
     public void setTopView(@Nullable View view, int minHeight, boolean onlyExpandControlsAtPageTop,
             boolean animate) {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 86) {
-            throw new UnsupportedOperationException();
-        }
         try {
             mImpl.setTopViewAndScrollingBehavior(
                     ObjectWrapper.wrap(view), minHeight, onlyExpandControlsAtPageTop, animate);
@@ -332,8 +305,6 @@ public class Browser {
      * Sets the View shown at the bottom of the browser. A value of null removes the view.
      *
      * @param view The new bottom-view.
-     *
-     * @since 84
      */
     public void setBottomView(@Nullable View view) {
         ThreadCheck.ensureOnUiThread();
@@ -397,15 +368,10 @@ public class Browser {
     /**
      * Creates a new tab attached to this browser. This will call {@link TabListCallback#onTabAdded}
      * with the new tab.
-     *
-     * @since 85
      */
     public @NonNull Tab createTab() {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 85) {
-            throw new UnsupportedOperationException();
-        }
         try {
             ITab iTab = mImpl.createTab();
             Tab tab = Tab.getTabById(iTab.getId());
@@ -483,7 +449,6 @@ public class Browser {
 
     /**
      * Returns the UrlBarController.
-     * @since 82
      */
     @NonNull
     public UrlBarController getUrlBarController() {
@@ -535,7 +500,6 @@ public class Browser {
             for (TabListCallback callback : mTabListCallbacks) {
                 callback.onTabRemoved(tab);
             }
-            tab.onRemovedFromBrowser();
         }
 
         @Override

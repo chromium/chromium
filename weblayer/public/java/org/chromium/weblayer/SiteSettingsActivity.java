@@ -24,7 +24,6 @@ public class SiteSettingsActivity extends SettingsActivity {
 
     /**
      * @deprecated Use SettingsActivity#createIntentForSiteSettingsCategoryList instead
-     * @since 87
      */
     @Deprecated
     public static Intent createIntentForCategoryList(

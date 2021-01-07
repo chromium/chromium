@@ -36,7 +36,6 @@ public class PageInfoTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(84)
     public void testPageInfoLaunches() {
         Bundle extras = new Bundle();
         extras.putBoolean(InstrumentationActivity.EXTRA_URLBAR_TEXT_CLICKABLE, false);
@@ -64,7 +63,6 @@ public class PageInfoTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(86)
     public void testSingleTappableContainer() {
         Bundle extras = new Bundle();
         extras.putBoolean(InstrumentationActivity.EXTRA_URLBAR_TEXT_CLICKABLE, true);

@@ -28,7 +28,6 @@ import java.util.Arrays;
 /**
  * Verifies WebMessage related APIs.
  */
-@MinWebLayerVersion(85)
 @RunWith(WebLayerJUnit4ClassRunner.class)
 public class WebMessageTest {
     @Rule

@@ -57,7 +57,6 @@ public final class ProfileImpl
     private IUserIdentityCallbackClient mUserIdentityCallbackClient;
     private List<Intent> mDownloadNotificationIntents = new ArrayList<>();
 
-    // This was added in 87, and is null in any version before that.
     private IProfileClient mClient;
 
     // If non-null, indicates when no browsers reference this Profile the Profile is destroyed. The

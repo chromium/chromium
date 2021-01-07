@@ -52,7 +52,6 @@ public class TabPrivateTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
     public void testAutoReloadOnBackgroundCrash() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
         activity.setIgnoreRendererCrashes();

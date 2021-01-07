@@ -149,7 +149,6 @@ public class ErrorPageCallbackTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(86)
     public void testOverrideErrorPage() throws Throwable {
         mCallback.mErrorPage = new ErrorPage("<html><head><title>test error</title>");
         TestThreadUtils.runOnUiThreadBlocking(

@@ -55,40 +55,23 @@ public class NavigationController {
      *
      * @throws IllegalStateException if params.getResponse() is not null but a URLBarController
      *         View is attached to a Window.
-     *
-     * @since 83
      */
     public void navigate(@NonNull Uri uri, @Nullable NavigateParams params) {
         ThreadCheck.ensureOnUiThread();
         try {
-            int version = WebLayer.getSupportedMajorVersionInternal();
-            if (params == null || version < 86) {
-                mNavigationController.navigate(
-                        uri.toString(), params == null ? null : params.toInterfaceParams());
-            } else {
-                if (version == 86) {
-                    if (params.getResponse() != null) {
-                        throw new UnsupportedOperationException();
-                    }
-                    mNavigationController.navigate2(uri.toString(),
-                            params == null ? false : params.getShouldReplaceCurrentEntry(),
-                            params == null ? false : params.isIntentProcessingDisabled(),
-                            params == null ? false : params.isNetworkErrorAutoReloadDisabled(),
-                            params == null ? false : params.isAutoPlayEnabled());
-                } else {
-                    INavigateParams iparams = mNavigationController.createNavigateParams();
-                    if (params.getShouldReplaceCurrentEntry()) iparams.replaceCurrentEntry();
-                    if (params.isIntentProcessingDisabled()) iparams.disableIntentProcessing();
-                    if (params.isNetworkErrorAutoReloadDisabled()) {
-                        iparams.disableNetworkErrorAutoReload();
-                    }
-                    if (params.isAutoPlayEnabled()) iparams.enableAutoPlay();
-                    if (params.getResponse() != null) {
-                        iparams.setResponse(ObjectWrapper.wrap(params.getResponse()));
-                    }
-                    mNavigationController.navigate3(uri.toString(), iparams);
+            INavigateParams iparams = mNavigationController.createNavigateParams();
+            if (params != null) {
+                if (params.getShouldReplaceCurrentEntry()) iparams.replaceCurrentEntry();
+                if (params.isIntentProcessingDisabled()) iparams.disableIntentProcessing();
+                if (params.isNetworkErrorAutoReloadDisabled()) {
+                    iparams.disableNetworkErrorAutoReload();
+                }
+                if (params.isAutoPlayEnabled()) iparams.enableAutoPlay();
+                if (params.getResponse() != null) {
+                    iparams.setResponse(ObjectWrapper.wrap(params.getResponse()));
                 }
             }
+            mNavigationController.navigate3(uri.toString(), iparams);
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
@@ -168,8 +151,6 @@ public class NavigationController {
      * @throws IndexOutOfBoundsException If index is not between 0 and {@link
      *         getNavigationListCurrentIndex}.
      * @throws IndexOutOfBoundsException
-     *
-     * @since 81
      */
     public void goToIndex(int index) throws IndexOutOfBoundsException {
         ThreadCheck.ensureOnUiThread();
@@ -256,7 +237,6 @@ public class NavigationController {
      *
      * @throws IndexOutOfBoundsException If index is not between 0 and {@link
      *         getNavigationListCurrentIndex}.
-     * @since 81
      */
     @NonNull
     public String getNavigationEntryTitle(int index) throws IndexOutOfBoundsException {
@@ -276,13 +256,9 @@ public class NavigationController {
      *
      * @throws IndexOutOfBoundsException If index is not between 0 and {@link
      *         getNavigationListCurrentIndex}.
-     * @since 85
      */
     public boolean isNavigationEntrySkippable(int index) throws IndexOutOfBoundsException {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 85) {
-            throw new UnsupportedOperationException();
-        }
         checkNavigationIndex(index);
         try {
             return mNavigationController.isNavigationEntrySkippable(index);

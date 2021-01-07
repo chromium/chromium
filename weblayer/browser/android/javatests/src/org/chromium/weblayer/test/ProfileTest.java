@@ -91,7 +91,6 @@ public class ProfileTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
     public void testDestroyAndDeleteDataFromDiskSoonWhenInUse() throws Exception {
         WebLayer weblayer = mActivityTestRule.getWebLayer();
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
@@ -263,7 +262,6 @@ public class ProfileTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(87)
     public void testMultipleIncognitoProfiles() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
 

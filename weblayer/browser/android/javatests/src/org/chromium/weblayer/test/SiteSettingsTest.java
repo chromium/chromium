@@ -46,7 +46,6 @@ public class SiteSettingsTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(84)
     public void testSiteSettingsLaunches() throws InterruptedException {
         mSettingsTestRule.launchActivity(
                 SiteSettingsActivity.createIntentForSiteSettingsCategoryList(
@@ -57,7 +56,6 @@ public class SiteSettingsTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(84)
     public void testAllSitesLaunches() throws InterruptedException {
         mSettingsTestRule.launchActivity(
                 SiteSettingsActivity.createIntentForSiteSettingsCategoryList(
@@ -71,7 +69,6 @@ public class SiteSettingsTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(84)
     public void testJavascriptExceptionPopupLaunches() throws InterruptedException {
         mSettingsTestRule.launchActivity(
                 SiteSettingsActivity.createIntentForSiteSettingsCategoryList(
@@ -85,7 +82,6 @@ public class SiteSettingsTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(84)
     public void testSingleSiteSoundPopupLaunches() throws InterruptedException {
         mSettingsTestRule.launchActivity(SettingsTestUtils.createIntentForSiteSettingsSingleWebsite(
                 mSettingsTestRule.getContext(), PROFILE_NAME, /*isIncognito=*/false, GOOGLE_URL));
@@ -97,7 +93,6 @@ public class SiteSettingsTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(84)
     public void testSingleSiteClearPopupLaunches() throws InterruptedException {
         mSettingsTestRule.launchActivity(SettingsTestUtils.createIntentForSiteSettingsSingleWebsite(
                 mSettingsTestRule.getContext(), PROFILE_NAME, /*isIncognito=*/false, GOOGLE_URL));
@@ -110,7 +105,6 @@ public class SiteSettingsTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(84)
     public void testSingleSiteLocationAccess() throws InterruptedException {
         try {
             Intents.init();

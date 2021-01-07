@@ -79,11 +79,6 @@ public final class DownloadCallbackProxy {
 
     private void continueAllowDownload(String url, String requestMethod, String requestInitiator,
             long callbackId) throws RemoteException {
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 81) {
-            DownloadCallbackProxyJni.get().allowDownload(callbackId, true);
-            return;
-        }
-
         if (mClient == null) {
             DownloadCallbackProxyJni.get().allowDownload(callbackId, true);
             return;
