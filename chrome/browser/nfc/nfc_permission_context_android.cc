@@ -57,7 +57,6 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
     return;
   }
 
-  // TODO(crbug.com/1034607): Close prompt when there is a navigation in a tab
   nfc_system_level_setting_->PromptToEnableNfcSystemLevelSetting(
       web_contents,
       base::BindOnce(
