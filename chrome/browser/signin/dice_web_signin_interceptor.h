@@ -205,12 +205,14 @@ class DiceWebSigninInterceptor : public KeyedService,
   // `intercepted_contents` may be null if the tab was already closed.
   // The intercepted web contents belong to the source profile (which is not the
   // profile attached to this service).
+  // `show_customization_bubble` indicates whether the customization bubble
+  // should be shown after the browser is opened.
   void CreateBrowserAfterSigninInterception(
       CoreAccountId account_id,
       content::WebContents* intercepted_contents,
       std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
           bubble_handle,
-      bool is_new_profile);
+      bool show_customization_bubble);
 
   // Returns the outcome of the interception heuristic.
   // If the outcome is kInterceptProfileSwitch, the target profile is returned
@@ -281,7 +283,7 @@ class DiceWebSigninInterceptor : public KeyedService,
 
   // Called when the new browser is created after interception. Passed as
   // callback to `session_startup_helper_`.
-  void OnNewBrowserCreated(bool is_new_profile);
+  void OnNewBrowserCreated(bool show_customization_bubble);
 
   // Returns a 8-bit hash of the email that can be persisted.
   static std::string GetPersistentEmailHash(const std::string& email);
