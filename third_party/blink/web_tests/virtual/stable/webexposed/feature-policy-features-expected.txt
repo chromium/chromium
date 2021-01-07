@@ -34,7 +34,6 @@ payment
 picture-in-picture
 publickey-credentials-get
 screen-wake-lock
-serial
 sync-xhr
 usb
 xr-spatial-tracking

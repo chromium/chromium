@@ -4564,7 +4564,6 @@ interface Navigator
     getter product
     getter productSub
     getter scheduling
-    getter serial
     getter serviceWorker
     getter storage
     getter usb
@@ -6965,29 +6964,6 @@ interface SensorErrorEvent : Event
     attribute @@toStringTag
     getter error
     method constructor
-interface Serial : EventTarget
-    attribute @@toStringTag
-    getter onconnect
-    getter ondisconnect
-    method constructor
-    method getPorts
-    method requestPort
-    setter onconnect
-    setter ondisconnect
-interface SerialPort : EventTarget
-    attribute @@toStringTag
-    getter onconnect
-    getter ondisconnect
-    getter readable
-    getter writable
-    method close
-    method constructor
-    method getInfo
-    method getSignals
-    method open
-    method setSignals
-    setter onconnect
-    setter ondisconnect
 interface ServiceWorker : EventTarget
     attribute @@toStringTag
     getter onerror

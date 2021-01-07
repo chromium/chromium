@@ -40,8 +40,6 @@ PASS window.cached_navigator_mediaSession.metadata is null
 PASS window.cached_navigator_mediaSession.playbackState is 'none'
 PASS window.cached_navigator_presentation.defaultRequest is null
 PASS window.cached_navigator_presentation.receiver is null
-PASS window.cached_navigator_serial.onconnect is null
-PASS window.cached_navigator_serial.ondisconnect is null
 PASS window.cached_navigator_serviceWorker.controller is null
 PASS window.cached_navigator_serviceWorker.oncontrollerchange is null
 PASS window.cached_navigator_serviceWorker.onmessage is null

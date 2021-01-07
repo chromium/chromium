@@ -1831,7 +1831,8 @@
     },
     {
       name: "Serial",
-      status: {"Android": "", "default": "stable"},
+      origin_trial_feature_name: "Serial",
+      status: {"Android": "", "default": "experimental"},
     },
     {
       name: "ServiceWorkerClientLifecycleState",

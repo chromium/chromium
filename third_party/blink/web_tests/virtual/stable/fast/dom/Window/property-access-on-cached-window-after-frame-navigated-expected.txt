@@ -46,8 +46,6 @@ PASS oldChildWindow.navigator.presentation.defaultRequest is newChildWindow.navi
 PASS oldChildWindow.navigator.presentation.receiver is newChildWindow.navigator.presentation.receiver
 PASS oldChildWindow.navigator.product is newChildWindow.navigator.product
 PASS oldChildWindow.navigator.productSub is newChildWindow.navigator.productSub
-PASS oldChildWindow.navigator.serial.onconnect is newChildWindow.navigator.serial.onconnect
-PASS oldChildWindow.navigator.serial.ondisconnect is newChildWindow.navigator.serial.ondisconnect
 PASS oldChildWindow.navigator.serviceWorker.controller is newChildWindow.navigator.serviceWorker.controller
 PASS oldChildWindow.navigator.serviceWorker.oncontrollerchange is newChildWindow.navigator.serviceWorker.oncontrollerchange
 PASS oldChildWindow.navigator.serviceWorker.onmessage is newChildWindow.navigator.serviceWorker.onmessage
