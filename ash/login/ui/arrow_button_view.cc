@@ -19,6 +19,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 namespace {
@@ -104,10 +105,6 @@ void ArrowButtonView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->SetNameExplicitlyEmpty();
 }
 
-const char* ArrowButtonView::GetClassName() const {
-  return "ArrowButtonView";
-}
-
 void ArrowButtonView::SetBackgroundColor(SkColor color) {
   background_color_ = color;
   SchedulePaint();
@@ -148,5 +145,8 @@ void ArrowButtonView::LoadingAnimationDelegate::AnimationProgressed(
     const gfx::Animation* /*animation*/) {
   owner_->SchedulePaint();
 }
+
+BEGIN_METADATA(ArrowButtonView, LoginButton)
+END_METADATA
 
 }  // namespace ash

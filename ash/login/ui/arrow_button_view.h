@@ -10,6 +10,7 @@
 #include "ash/login/ui/login_button.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace gfx {
 class MultiAnimation;
@@ -22,13 +23,16 @@ namespace ash {
 // view.
 class ArrowButtonView : public LoginButton {
  public:
+  METADATA_HEADER(ArrowButtonView);
+
   ArrowButtonView(PressedCallback callback, int size);
+  ArrowButtonView(const ArrowButtonView&) = delete;
+  ArrowButtonView& operator=(const ArrowButtonView&) = delete;
   ~ArrowButtonView() override;
 
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  const char* GetClassName() const override;
 
   // Set background color of the button.
   void SetBackgroundColor(SkColor color);
@@ -59,8 +63,6 @@ class ArrowButtonView : public LoginButton {
   SkColor background_color_;
   LoadingAnimationDelegate loading_animation_delegate_{this};
   std::unique_ptr<gfx::MultiAnimation> loading_animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArrowButtonView);
 };
 
 }  // namespace ash
