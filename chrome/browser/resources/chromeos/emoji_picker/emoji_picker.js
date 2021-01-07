@@ -4,6 +4,7 @@
 
 import './strings.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './icons.js';
 import './emoji_group.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

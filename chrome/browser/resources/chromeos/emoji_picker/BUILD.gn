@@ -10,6 +10,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 component_js_files = [
   "emoji_picker.js",
   "emoji_group.js",
+  "icons.js",
 ]
 
 polymer_deps =
@@ -56,6 +57,7 @@ grit("resources") {
 js_library("emoji_picker") {
   deps = [
            ":types",
+           ":icons",
            ":emoji_group",
            "//ui/webui/resources/js:load_time_data.m",
            "//third_party/polymer/v3_0/components-chromium/iron-icon",
@@ -66,6 +68,11 @@ js_library("emoji_group") {
   deps = [ ":types" ] + polymer_deps
 }
 
+js_library("icons") {
+  deps = [ "//third_party/polymer/v3_0/components-chromium/iron-iconset-svg" ] +
+         polymer_deps
+}
+
 js_library("types") {
 }
 
@@ -74,6 +81,7 @@ js_type_check("closure_compile") {
   deps = [
     ":emoji_group",
     ":emoji_picker",
+    ":icons",
     ":types",
   ]
 }
