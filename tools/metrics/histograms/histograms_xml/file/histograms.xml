@@ -364,8 +364,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.MediaImport.Cancelled" enum="BooleanCanceled"
-    expires_after="M88">
-  <owner>slangley@chromium.org</owner>
+    expires_after="M93">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Chrome OS Files App: Whether the media import (Photos/Video) from external
     media was cancelled.
@@ -373,8 +374,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.MediaImport.Duplicates" units="count"
-    expires_after="M88">
-  <owner>slangley@chromium.org</owner>
+    expires_after="M93">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Chrome OS Files App: Count of duplicate media (Photos/Videos) files that
     were skipped during a single upload session.
@@ -382,16 +384,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.MediaImport.ErrorCount" units="count"
-    expires_after="M88">
-  <owner>slangley@chromium.org</owner>
+    expires_after="M93">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Chrome OS Files App: Number of errors that occured during an upload session.
   </summary>
 </histogram>
 
 <histogram name="FileBrowser.MediaImport.ImportCount" units="count"
-    expires_after="M88">
-  <owner>slangley@chromium.org</owner>
+    expires_after="M93">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Chrome OS Files App: Count of individual media (Photos/Videos) uploaded from
     a single upload session.
@@ -399,8 +403,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.MediaImport.ImportMB" units="MBytes"
-    expires_after="M88">
-  <owner>slangley@chromium.org</owner>
+    expires_after="M93">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Chrome OS Files App: Size of the media (Photos/Videos) uploaded from a
     single upload session.
@@ -408,8 +413,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.MediaImport.Started" enum="BooleanAttempted"
-    expires_after="M88">
-  <owner>slangley@chromium.org</owner>
+    expires_after="M93">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Chrome OS Files App: Whether the media import (Photos/Video) from external
     media was started.
