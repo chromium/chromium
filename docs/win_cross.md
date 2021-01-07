@@ -86,18 +86,11 @@ Add `target_os = "win"` to your args.gn.  Then just build, e.g.
 **Warning:** This is unsupported and known to not work at times.
 ***
 
-For now, one needs to use the rbe backend, not the borg backend
-(default for Googlers).
-Use cloud backend instead.
+This should be supported by the default (rbe) backend. However, there may be
+issues with arbitrary toolchain support on Linux. This can be disabled via:
 
 ```shell
-    goma_auth.py login
-
-    # GOMA_* are needed for Googlers only
-    export GOMA_SERVER_HOST=goma.chromium.org
-    export GOMA_RPC_EXTRA_PARAMS=?rbe
-
-    goma_ctl.py ensure_start
+GOMA_ARBITRARY_TOOLCHAIN_SUPPORT=false goma_ctl restart
 ```
 
 
