@@ -979,8 +979,7 @@ void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
 
 void NearbySharingServiceImpl::OnDeviceNameChanged(
     const std::string& device_name) {
-  NS_LOG(VERBOSE) << __func__ << ": Nearby sharing device name changed to "
-                  << device_name;
+  NS_LOG(VERBOSE) << __func__ << ": Nearby sharing device name changed";
   // TODO(vecore): handle device name change
 }
 
@@ -1689,8 +1688,9 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
                   << ": StartAdvertising requested over Nearby Connections: "
                   << " power level: " << PowerLevelToString(power_level)
                   << " visibility: " << settings_.GetVisibility()
-                  << " data usage: " << data_usage << " device name: "
-                  << device_name.value_or("** no device name **");
+                  << " data usage: " << data_usage
+                  << " advertise device name?: "
+                  << (device_name.has_value() ? "yes" : "no");
 
   ScheduleRotateBackgroundAdvertisementTimer();
 }
@@ -1920,7 +1920,7 @@ void NearbySharingServiceImpl::ReceivePayloads(
 NearbySharingService::StatusCodes NearbySharingServiceImpl::SendPayloads(
     const ShareTarget& share_target) {
   NS_LOG(VERBOSE) << __func__ << ": Preparing to send payloads to "
-                  << share_target.device_name;
+                  << share_target.id;
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
   if (!info || !info->connection()) {
     NS_LOG(WARNING) << "Failed to send payload due to missing connection.";
@@ -2027,7 +2027,7 @@ void NearbySharingServiceImpl::OnPayloadPathsRegistered(
 
     NS_LOG(VERBOSE) << __func__
                     << ": Accepted incoming files from share target - "
-                    << share_target.device_name;
+                    << share_target.id;
   }
 
   WriteResponse(*connection, sharing::nearby::ConnectionResponseFrame::ACCEPT);
@@ -2047,7 +2047,7 @@ void NearbySharingServiceImpl::OnPayloadPathsRegistered(
     NS_LOG(WARNING) << __func__
                     << ": Failed to initiate bandwidth upgrade. No endpoint_id "
                        "found for target - "
-                    << share_target.device_name;
+                    << share_target.id;
     std::move(status_codes_callback).Run(StatusCodes::kOutOfOrderApiCall);
     return;
   }
@@ -2069,7 +2069,7 @@ void NearbySharingServiceImpl::OnOutgoingConnection(
   if (!success) {
     NS_LOG(WARNING) << __func__
                     << ": Failed to initate connection to share target "
-                    << share_target.device_name;
+                    << share_target.id;
     if (info && info->transfer_update_callback()) {
       info->transfer_update_callback()->OnTransferUpdate(
           share_target, TransferMetadataBuilder()
@@ -2105,12 +2105,12 @@ void NearbySharingServiceImpl::SendIntroduction(
   // IDs in our our introduction frame so that they know what to expect if they
   // accept.
   NS_LOG(VERBOSE) << __func__ << ": Preparing to send introduction to "
-                  << share_target.device_name;
+                  << share_target.id;
 
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
   if (!info || !info->connection()) {
     NS_LOG(WARNING) << __func__ << ": No NearbyConnection tied to "
-                    << share_target.device_name;
+                    << share_target.id;
     return;
   }
   NearbyConnection* connection = info->connection();
@@ -2131,8 +2131,7 @@ void NearbySharingServiceImpl::SendIntroduction(
 
   // Build the introduction.
   auto introduction = std::make_unique<sharing::nearby::IntroductionFrame>();
-  NS_LOG(VERBOSE) << __func__ << ": Sending attachments to "
-                  << share_target.device_name;
+  NS_LOG(VERBOSE) << __func__ << ": Sending attachments to " << share_target.id;
 
   // Write introduction of file payloads.
   for (const auto& file : share_target.file_attachments) {
@@ -2536,7 +2535,7 @@ void NearbySharingServiceImpl::CloseConnection(
   NearbyConnection* connection = GetConnection(share_target);
   if (!connection) {
     NS_LOG(WARNING) << __func__ << ": Invalid connection for target - "
-                    << share_target.device_name;
+                    << share_target.id;
     return;
   }
   connection->Close();
@@ -2570,7 +2569,7 @@ void NearbySharingServiceImpl::OnIncomingDecryptedCertificate(
   }
 
   NS_LOG(VERBOSE) << __func__ << "Received incoming connection from "
-                  << share_target->device_name;
+                  << share_target->id;
 
   ShareTargetInfo* share_target_info = GetShareTargetInfo(*share_target);
   DCHECK(share_target_info);
@@ -2644,14 +2643,14 @@ void NearbySharingServiceImpl::OnIncomingConnectionKeyVerificationDone(
   switch (result) {
     case PairedKeyVerificationRunner::PairedKeyVerificationResult::kFail:
       NS_LOG(VERBOSE) << __func__ << ": Paired key handshake failed for target "
-                      << share_target.device_name << ". Disconnecting.";
+                      << share_target.id << ". Disconnecting.";
       info->connection()->Close();
       return;
 
     case PairedKeyVerificationRunner::PairedKeyVerificationResult::kSuccess:
       NS_LOG(VERBOSE) << __func__
                       << ": Paired key handshake succeeded for target - "
-                      << share_target.device_name;
+                      << share_target.id;
       nearby_connections_manager_->UpgradeBandwidth(*info->endpoint_id());
       ReceiveIntroduction(share_target, /*four_digit_token=*/base::nullopt);
       break;
@@ -2660,7 +2659,7 @@ void NearbySharingServiceImpl::OnIncomingConnectionKeyVerificationDone(
       NS_LOG(VERBOSE) << __func__
                       << ": Unable to verify paired key encryption when "
                          "receiving connection from target - "
-                      << share_target.device_name;
+                      << share_target.id;
       if (advertising_power_level_ == PowerLevel::kHighPower)
         nearby_connections_manager_->UpgradeBandwidth(*info->endpoint_id());
 
@@ -2673,7 +2672,7 @@ void NearbySharingServiceImpl::OnIncomingConnectionKeyVerificationDone(
     case PairedKeyVerificationRunner::PairedKeyVerificationResult::kUnknown:
       NS_LOG(VERBOSE) << __func__
                       << ": Unknown PairedKeyVerificationResult for target "
-                      << share_target.device_name << ". Disconnecting.";
+                      << share_target.id << ". Disconnecting.";
       info->connection()->Close();
       break;
   }
@@ -2701,7 +2700,7 @@ void NearbySharingServiceImpl::OnOutgoingConnectionKeyVerificationDone(
   switch (result) {
     case PairedKeyVerificationRunner::PairedKeyVerificationResult::kFail:
       NS_LOG(VERBOSE) << __func__ << ": Paired key handshake failed for target "
-                      << share_target.device_name << ". Disconnecting.";
+                      << share_target.id << ". Disconnecting.";
       info->transfer_update_callback()->OnTransferUpdate(
           share_target, TransferMetadataBuilder()
                             .set_status(TransferMetadata::Status::kFailed)
@@ -2712,7 +2711,7 @@ void NearbySharingServiceImpl::OnOutgoingConnectionKeyVerificationDone(
     case PairedKeyVerificationRunner::PairedKeyVerificationResult::kSuccess:
       NS_LOG(VERBOSE) << __func__
                       << ": Paired key handshake succeeded for target - "
-                      << share_target.device_name;
+                      << share_target.id;
       SendIntroduction(share_target, /*four_digit_token=*/base::nullopt);
       SendPayloads(share_target);
       return;
@@ -2721,7 +2720,7 @@ void NearbySharingServiceImpl::OnOutgoingConnectionKeyVerificationDone(
       NS_LOG(VERBOSE) << __func__
                       << ": Unable to verify paired key encryption when "
                          "initating connection to target - "
-                      << share_target.device_name;
+                      << share_target.id;
 
       if (four_digit_token)
         info->set_token(*four_digit_token);
@@ -2730,7 +2729,7 @@ void NearbySharingServiceImpl::OnOutgoingConnectionKeyVerificationDone(
         NS_LOG(VERBOSE) << __func__
                         << ": Sender-side verification is disabled. Skipping "
                            "token comparison with "
-                        << share_target.device_name;
+                        << share_target.id;
         SendIntroduction(share_target, /*four_digit_token=*/base::nullopt);
         SendPayloads(share_target);
       } else {
@@ -2741,7 +2740,7 @@ void NearbySharingServiceImpl::OnOutgoingConnectionKeyVerificationDone(
     case PairedKeyVerificationRunner::PairedKeyVerificationResult::kUnknown:
       NS_LOG(VERBOSE) << __func__
                       << ": Unknown PairedKeyVerificationResult for target "
-                      << share_target.device_name << ". Disconnecting.";
+                      << share_target.id << ". Disconnecting.";
       info->connection()->Close();
       break;
   }
@@ -2766,7 +2765,7 @@ void NearbySharingServiceImpl::ReceiveIntroduction(
     ShareTarget share_target,
     base::Optional<std::string> four_digit_token) {
   NS_LOG(INFO) << __func__ << ": Receiving introduction from "
-               << share_target.device_name;
+               << share_target.id;
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
   DCHECK(info && info->connection());
 
@@ -2857,7 +2856,7 @@ void NearbySharingServiceImpl::OnReceivedIntroduction(
     NS_LOG(VERBOSE) << __func__
                     << ": We don't support the attachments sent by the sender. "
                        "We have informed "
-                    << share_target.device_name;
+                    << share_target.id;
     return;
   }
 
@@ -2885,7 +2884,7 @@ void NearbySharingServiceImpl::OnReceivedIntroduction(
 void NearbySharingServiceImpl::ReceiveConnectionResponse(
     ShareTarget share_target) {
   NS_LOG(VERBOSE) << __func__ << ": Receiving response frame from "
-                  << share_target.device_name;
+                  << share_target.id;
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
   DCHECK(info && info->connection());
 
@@ -3033,14 +3032,14 @@ void NearbySharingServiceImpl::OnStorageCheckCompleted(
     Fail(share_target, TransferMetadata::Status::kNotEnoughSpace);
     NS_LOG(WARNING) << __func__
                     << ": Not enough space on the receiver. We have informed "
-                    << share_target.device_name;
+                    << share_target.id;
     return;
   }
 
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
   if (!info || !info->connection()) {
     NS_LOG(WARNING) << __func__ << ": Invalid connection for share target - "
-                    << share_target.device_name;
+                    << share_target.id;
     return;
   }
   NearbyConnection* connection = info->connection();
@@ -3071,7 +3070,7 @@ void NearbySharingServiceImpl::OnStorageCheckCompleted(
     connection->Close();
     NS_LOG(VERBOSE) << __func__
                     << ": IncomingShareTarget not found, disconnecting "
-                    << share_target.device_name;
+                    << share_target.id;
     return;
   }
 
@@ -3174,7 +3173,7 @@ void NearbySharingServiceImpl::OnIncomingMutualAcceptanceTimeout(
   NS_LOG(VERBOSE)
       << __func__
       << ": Incoming mutual acceptance timed out, closing connection for "
-      << share_target.device_name;
+      << share_target.id;
 
   Fail(share_target, TransferMetadata::Status::kTimedOut);
 }
@@ -3186,7 +3185,7 @@ void NearbySharingServiceImpl::OnOutgoingMutualAcceptanceTimeout(
   NS_LOG(VERBOSE)
       << __func__
       << ": Outgoing mutual acceptance timed out, closing connection for "
-      << share_target.device_name;
+      << share_target.id;
 
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
   if (!info)
@@ -3296,7 +3295,7 @@ bool NearbySharingServiceImpl::OnIncomingPayloadsComplete(
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
   if (!info || !info->connection()) {
     NS_LOG(VERBOSE) << __func__ << ": Connection not found for target - "
-                    << share_target.device_name;
+                    << share_target.id;
 
     return false;
   }
@@ -3389,7 +3388,7 @@ void NearbySharingServiceImpl::Disconnect(const ShareTarget& share_target,
     NS_LOG(WARNING)
         << __func__
         << ": Failed to disconnect. No share target info found for target - "
-        << share_target.device_name;
+        << share_target.id;
     return;
   }
 
@@ -3398,7 +3397,7 @@ void NearbySharingServiceImpl::Disconnect(const ShareTarget& share_target,
     NS_LOG(WARNING)
         << __func__
         << ": Failed to disconnect. No endpoint id found for share target - "
-        << share_target.device_name;
+        << share_target.id;
     return;
   }
 
@@ -3561,7 +3560,7 @@ base::Optional<int64_t> NearbySharingServiceImpl::GetAttachmentPayloadId(
 void NearbySharingServiceImpl::UnregisterShareTarget(
     const ShareTarget& share_target) {
   NS_LOG(VERBOSE) << __func__ << ": Unregistering share target - "
-                  << share_target.device_name;
+                  << share_target.id;
 
   // For metrics.
   cancelled_share_target_ids_.erase(share_target.id);
@@ -3590,8 +3589,8 @@ void NearbySharingServiceImpl::UnregisterShareTarget(
     // share_target/endpoint_id for next time.
     ClearOutgoingShareTargetInfoMap();
 
-    NS_LOG(VERBOSE) << __func__ << ": Unregister share target: "
-                    << share_target.device_name;
+    NS_LOG(VERBOSE) << __func__
+                    << ": Unregister share target: " << share_target.id;
   }
   mutual_acceptance_timeout_alarm_.Cancel();
 }

@@ -123,7 +123,7 @@ void PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame(
     NS_LOG(VERBOSE) << __func__
                     << ": we are only allowing connections with contacts. "
                        "Rejecting connection from unknown ShareTarget - "
-                    << share_target_.device_name;
+                    << share_target_.id;
     std::move(callback_).Run(PairedKeyVerificationResult::kFail);
     return;
   }
