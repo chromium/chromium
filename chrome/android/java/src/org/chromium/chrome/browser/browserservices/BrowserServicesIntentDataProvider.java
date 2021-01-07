@@ -539,13 +539,4 @@ public abstract class BrowserServicesIntentDataProvider {
     public boolean shouldHideIncognitoIconOnToolbarInCct() {
         return false;
     }
-
-    /**
-     * @return Whether the cct-client-data header should be added. Note that a return value of true
-     *         does not necessarily mean the header will be added. There are aditional checks in
-     *         {@link setClientDataHeaderForNewTab()}. This is applicable only to cct.
-     */
-    public boolean shouldAddCctClientDataHeader() {
-        return false;
-    }
 }

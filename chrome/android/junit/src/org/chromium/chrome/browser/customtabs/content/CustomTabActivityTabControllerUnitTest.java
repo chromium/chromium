@@ -187,8 +187,9 @@ public class CustomTabActivityTabControllerUnitTest {
         assertNull(env.tabProvider.getTab());
     }
 
+    // Some websites replace the tab with a new one.
     @Test
-    public void doesNotSetCctClientDataHeaderWhenIncognito() {
+    public void doesNotSetHeaderWhenIncognito() {
         doAnswer((mock) -> {
             fail("setClientDataHeaderForNewTab() should not be called for incognito tabs");
             return null;
@@ -196,38 +197,9 @@ public class CustomTabActivityTabControllerUnitTest {
                 .when(env.connection)
                 .setClientDataHeaderForNewTab(any(), any());
         env.isIncognito = true;
-        when(env.intentDataProvider.shouldAddCctClientDataHeader()).thenReturn(true);
         mTabController.onPreInflationStartup();
         mTabController.finishNativeInitialization();
         Tab tab = env.prepareTab();
         assertTrue(tab.isIncognito());
-    }
-
-    @Test
-    public void doesNotSetCctClientDataHeaderWithoutExtra() {
-        doAnswer((mock) -> {
-            fail("setClientDataHeaderForNewTab() should not be called without extra");
-            return null;
-        })
-                .when(env.connection)
-                .setClientDataHeaderForNewTab(any(), any());
-        mTabController.onPreInflationStartup();
-        mTabController.finishNativeInitialization();
-    }
-
-    @Test
-    public void setsCctClientDataHeaderWithExtra() {
-        final boolean[] wasSetClientDataHeaderForNewTabCalled = new boolean[1];
-        doAnswer((mock) -> {
-            wasSetClientDataHeaderForNewTabCalled[0] = true;
-            return null;
-        })
-                .when(env.connection)
-                .setClientDataHeaderForNewTab(any(), any());
-        when(env.intentDataProvider.shouldAddCctClientDataHeader()).thenReturn(true);
-        mTabController.onPreInflationStartup();
-        mTabController.finishNativeInitialization();
-        Tab tab = env.prepareTab();
-        assertTrue(wasSetClientDataHeaderForNewTabCalled[0]);
     }
 }

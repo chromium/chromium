@@ -100,13 +100,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             ANIMATION_BUNDLE_PREFIX + "animExitRes";
 
     /**
-     * See {@link BrowserServicesIntentDataProvider#shouldAddCctClientDataHeader} for details on
-     * this.
-     */
-    public static final String EXTRA_ADD_CCT_CLIENT_DATA_HEADER =
-            "org.chromium.chrome.browser.customtabs.ADD_CCT_CLIENT_DATA_HEADER";
-
-    /**
      * Extra that indicates whether or not the Custom Tab is being launched by an Intent fired by
      * Chrome itself.
      */
@@ -914,10 +907,5 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (!GSAState.isGsaPackageName(clientPackageName)) return true;
         return !IntentUtils.safeGetBooleanExtra(
                 mIntent, EXTRA_HIDE_OPEN_IN_CHROME_MENU_ITEM, false);
-    }
-
-    @Override
-    public boolean shouldAddCctClientDataHeader() {
-        return IntentUtils.safeGetBooleanExtra(mIntent, EXTRA_ADD_CCT_CLIENT_DATA_HEADER, false);
     }
 }
