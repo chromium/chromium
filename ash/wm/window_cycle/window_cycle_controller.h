@@ -90,9 +90,14 @@ class ASH_EXPORT WindowCycleController {
   // Sets alt-tab mode to all desks (default) or active desk.
   void SetAltTabMode(DesksMruType alt_tab_mode_);
 
-  // Checks if alt-tab should be per active desk. If Bento is enabled, alt-tab
-  // mode depends on users' alt_tab_mode_ selection. Otherwise, it'll default
-  // to all desk unless LimitAltTabToActiveDesk flag is explicitly enabled.
+  // Checks if switching between alt-tab mode via the tab slider is allowed.
+  // Returns true if Bento flag is enabled and users have multiple desks.
+  bool IsInteractiveAltTabModeAllowed();
+
+  // Checks if alt-tab should be per active desk. If
+  // `IsInteractiveAltTabModeAllowed()`, alt-tab mode depends on users'
+  // |alt_tab_mode_| selection. Otherwise, it'll default to all desk unless
+  // LimitAltTabToActiveDesk flag is explicitly enabled.
   bool IsAltTabPerActiveDesk();
 
   // Returns true while switching the alt-tab mode and Bento flag is enabled.

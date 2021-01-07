@@ -173,8 +173,7 @@ WindowCycleController::WindowList WindowCycleController::CreateWindowList() {
 }
 
 void WindowCycleController::SetAltTabMode(DesksMruType alt_tab_mode) {
-  DCHECK(features::IsBentoEnabled());
-  if (alt_tab_mode_ == alt_tab_mode)
+  if (!IsInteractiveAltTabModeAllowed() || alt_tab_mode_ == alt_tab_mode)
     return;
   alt_tab_mode_ = alt_tab_mode;
   MaybeResetCycleList();
@@ -192,9 +191,15 @@ bool WindowCycleController::IsSwitchingMode() {
   return features::IsBentoEnabled() && is_switching_mode_;
 }
 
+bool WindowCycleController::IsInteractiveAltTabModeAllowed() {
+  return features::IsBentoEnabled() &&
+         Shell::Get()->desks_controller()->GetNumberOfDesks() > 1;
+}
+
 bool WindowCycleController::IsAltTabPerActiveDesk() {
-  return features::IsBentoEnabled() ? alt_tab_mode_ == kActiveDesk
-                                    : features::IsAltTabLimitedToActiveDesk();
+  return IsInteractiveAltTabModeAllowed()
+             ? alt_tab_mode_ == kActiveDesk
+             : features::IsAltTabLimitedToActiveDesk();
 }
 
 void WindowCycleController::SaveCurrentActiveDeskAndWindow(

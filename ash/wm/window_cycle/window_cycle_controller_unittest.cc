@@ -1386,6 +1386,63 @@ class ModeSelectionWindowCycleControllerTest
   ui::test::EventGenerator* generator_;
 };
 
+// Tests that if user uses only one desk, the tab slider and no recent items
+// are not shown. Moreover, `SetAltTabMode()` should not change the windows
+// list.
+TEST_F(ModeSelectionWindowCycleControllerTest, SingleDeskHidesInteractiveMode) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+
+  // Create two windows in the current desk.
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(1u, desks_controller->desks().size());
+
+  // Alt-tab should contain windows from all desks without any the tab slider
+  // and no-recent-items view.
+  cycle_controller->StartCycling();
+  EXPECT_TRUE(!GetWindowCycleNoRecentItemsLabel());
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  auto cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(2u, cycle_windows.size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  const gfx::Rect alttab_bounds_without_tab_slider =
+      GetWindowCycleListWidget()->GetWindowBoundsInScreen();
+  cycle_controller->CompleteCycling();
+
+  // Create an empty desk_2 and start alt-tab to enter the all-desks mode.
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  const Desk* desk_2 = desks_controller->desks()[1].get();
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  cycle_controller->StartCycling();
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(2u, cycle_windows.size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+
+  // Expect mode-switching buttons and no-recent-item label to exist.
+  EXPECT_FALSE(!GetWindowCycleNoRecentItemsLabel());
+  auto tab_slider_buttons = GetWindowCycleTabSliderViews();
+  EXPECT_EQ(2u, tab_slider_buttons.size());
+  const gfx::Rect alttab_bounds_with_tab_slider =
+      GetWindowCycleListWidget()->GetWindowBoundsInScreen();
+  const int window_cycle_list_y =
+      GetWindowCycleItemViews()[0]->GetBoundsInScreen().y();
+  const gfx::Rect tab_slider_button_bound =
+      tab_slider_buttons[0]->GetBoundsInScreen();
+  // Expect that alt-tab views height is larger due to the tab slider insertion
+  // and expect that window cycle list is placed below the tab slider.
+  EXPECT_LT(alttab_bounds_without_tab_slider.height(),
+            alttab_bounds_with_tab_slider.height());
+  EXPECT_LT(tab_slider_button_bound.y() + tab_slider_button_bound.height(),
+            window_cycle_list_y);
+
+  DeskSwitchAnimationWaiter waiter;
+  cycle_controller->CompleteCycling();
+  waiter.Wait();
+}
+
 // Tests that alt-tab shows all windows in an all-desk mode by default and
 // shows only windows in the current desk in a current-desk mode. Switching
 // between two modes should refresh the window list, while re-entering alt-tab

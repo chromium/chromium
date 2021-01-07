@@ -279,7 +279,9 @@ class WindowCycleView : public views::WidgetDelegateView,
     layer->SetBackdropFilterQuality(kBackgroundBlurQuality);
     layer->SetName("WindowCycleView");
 
-    if (features::IsBentoEnabled()) {
+    if (Shell::Get()
+            ->window_cycle_controller()
+            ->IsInteractiveAltTabModeAllowed()) {
       tab_slider_container_ =
           AddChildView(std::make_unique<WindowCycleTabSlider>());
 
@@ -312,7 +314,9 @@ class WindowCycleView : public views::WidgetDelegateView,
     views::BoxLayout* layout =
         mirror_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal,
-            gfx::Insets(features::IsBentoEnabled()
+            gfx::Insets(Shell::Get()
+                                ->window_cycle_controller()
+                                ->IsInteractiveAltTabModeAllowed()
                             ? kMirrorContainerVerticalPaddingDp
                             : kInsideBorderVerticalPaddingDp,
                         kInsideBorderHorizontalPaddingDp,
@@ -347,14 +351,13 @@ class WindowCycleView : public views::WidgetDelegateView,
 
   void UpdateWindows(const WindowCycleList::WindowList& windows) {
     const bool no_windows = windows.empty();
-    if (features::IsBentoEnabled()) {
+    if (Shell::Get()
+            ->window_cycle_controller()
+            ->IsInteractiveAltTabModeAllowed()) {
       no_recent_items_label_->SetVisible(no_windows);
     }
     if (no_windows)
       return;
-
-    if (features::IsBentoEnabled())
-      no_recent_items_label_->SetVisible(false);
     for (auto* window : windows) {
       auto* view = mirror_container_->AddChildView(
           std::make_unique<WindowCycleItemView>(window));
@@ -449,7 +452,9 @@ class WindowCycleView : public views::WidgetDelegateView,
   // views::WidgetDelegateView:
   gfx::Size CalculatePreferredSize() const override {
     gfx::Size size = mirror_container_->GetPreferredSize();
-    if (features::IsBentoEnabled()) {
+    if (Shell::Get()
+            ->window_cycle_controller()
+            ->IsInteractiveAltTabModeAllowed()) {
       size.Enlarge(0, tab_slider_container_->GetPreferredSize().height() +
                           kTabSliderContainerVerticalPaddingDp);
     }
@@ -496,7 +501,9 @@ class WindowCycleView : public views::WidgetDelegateView,
     container_bounds.set_x(x_offset);
 
     // Layout a tab slider if Bento is enabled.
-    if (features::IsBentoEnabled()) {
+    if (Shell::Get()
+            ->window_cycle_controller()
+            ->IsInteractiveAltTabModeAllowed()) {
       // Layout the tab slider.
       const gfx::Size tab_slider_size =
           tab_slider_container_->GetPreferredSize();
