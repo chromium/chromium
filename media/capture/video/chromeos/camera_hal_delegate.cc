@@ -533,8 +533,8 @@ void CameraHalDelegate::OnGotNumberOfCamerasOnIpcThread(int32_t num_cameras) {
   // Per camera HAL v3 specification SetCallbacks() should be called after the
   // first time GetNumberOfCameras() is called, and before other CameraModule
   // functions are called.
-  camera_module_->SetCallbacks(
-      camera_module_callbacks_.BindNewPipeAndPassRemote(),
+  camera_module_->SetCallbacksAssociated(
+      camera_module_callbacks_.BindNewEndpointAndPassRemote(),
       base::BindOnce(&CameraHalDelegate::OnSetCallbacksOnIpcThread, this));
 
   camera_module_->GetVendorTagOps(

@@ -354,7 +354,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
         .Times(1)
         .WillOnce(
             Invoke(this, &CameraDeviceDelegateTest::GetNumberOfFakeCameras));
-    EXPECT_CALL(mock_camera_module_, DoSetCallbacks(_, _)).Times(1);
+    EXPECT_CALL(mock_camera_module_, DoSetCallbacksAssociated(_, _)).Times(1);
     EXPECT_CALL(mock_camera_module_, DoGetVendorTagOps(_, _))
         .Times(1)
         .WillOnce(Invoke(this, &CameraDeviceDelegateTest::GetFakeVendorTagOps));
