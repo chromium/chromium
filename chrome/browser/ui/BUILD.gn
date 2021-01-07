@@ -3094,6 +3094,13 @@ static_library("ui") {
       "cocoa/rosetta_required_infobar_delegate.mm",
       "cocoa/scoped_menu_bar_lock.h",
       "cocoa/scoped_menu_bar_lock.mm",
+      "cocoa/screentime/fake_webpage_controller.h",
+      "cocoa/screentime/fake_webpage_controller.mm",
+      "cocoa/screentime/tab_helper.h",
+      "cocoa/screentime/tab_helper.mm",
+      "cocoa/screentime/webpage_controller.h",
+      "cocoa/screentime/webpage_controller_impl.h",
+      "cocoa/screentime/webpage_controller_impl.mm",
       "cocoa/share_menu_controller.h",
       "cocoa/share_menu_controller.mm",
       "cocoa/simple_message_box_cocoa.h",
@@ -3161,6 +3168,7 @@ static_library("ui") {
       "Carbon.framework",
       "Quartz.framework",
     ]
+    weak_frameworks = [ "ScreenTime.framework" ]
 
     if (enable_chromium_updater) {
       deps += [
