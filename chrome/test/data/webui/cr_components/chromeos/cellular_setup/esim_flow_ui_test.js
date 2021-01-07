@@ -36,6 +36,11 @@ suite('CrComponentsEsimFlowUiTest', function() {
     Polymer.dom.flush();
   });
 
+  function assertSelectedPage(pageName, page) {
+    assertTrue(eSimPage.selectedESimPageName_ === pageName);
+    assertTrue(eSimPage.selectedESimPageName_ === page.id);
+  }
+
   test('No eSIM profile flow invalid activation code', async function() {
     eSimManagerRemote.addEuiccForTest(0);
     const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
@@ -52,18 +57,14 @@ suite('CrComponentsEsimFlowUiTest', function() {
     assertTrue(!!finalPage);
 
     // Loading page should be showing.
-    assertTrue(
-        eSimPage.selectedESimPageName_ ===
-            cellular_setup.ESimPageName.PROFILE_LOADING &&
-        eSimPage.selectedESimPageName_ === profileLoadingPage.id);
+    assertSelectedPage(
+        cellular_setup.ESimPageName.PROFILE_LOADING, profileLoadingPage);
 
     await flushAsync();
 
     // Should now be at the activation code page.
-    assertTrue(
-        eSimPage.selectedESimPageName_ ===
-            cellular_setup.ESimPageName.ACTIVATION_CODE &&
-        eSimPage.selectedESimPageName_ === activationCodePage.id);
+    assertSelectedPage(
+        cellular_setup.ESimPageName.ACTIVATION_CODE, activationCodePage);
     // Insert an activation code.
     activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE';
 
@@ -77,10 +78,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
     await flushAsync();
 
     // Install should fail and still be at activation code page.
-    assertTrue(
-        eSimPage.selectedESimPageName_ ===
-            cellular_setup.ESimPageName.ACTIVATION_CODE &&
-        eSimPage.selectedESimPageName_ === activationCodePage.id);
+    assertSelectedPage(
+        cellular_setup.ESimPageName.ACTIVATION_CODE, activationCodePage);
     assertTrue(activationCodePage.$$('#scanSuccessContainer').hidden);
     assertFalse(activationCodePage.$$('#scanFailureContainer').hidden);
   });
@@ -97,18 +96,14 @@ suite('CrComponentsEsimFlowUiTest', function() {
     assertTrue(!!finalPage);
 
     // Loading page should be showing.
-    assertTrue(
-        eSimPage.selectedESimPageName_ ===
-            cellular_setup.ESimPageName.PROFILE_LOADING &&
-        eSimPage.selectedESimPageName_ === profileLoadingPage.id);
+    assertSelectedPage(
+        cellular_setup.ESimPageName.PROFILE_LOADING, profileLoadingPage);
 
     await flushAsync();
 
     // Should now be at the activation code page.
-    assertTrue(
-        eSimPage.selectedESimPageName_ ===
-            cellular_setup.ESimPageName.ACTIVATION_CODE &&
-        eSimPage.selectedESimPageName_ === activationCodePage.id);
+    assertSelectedPage(
+        cellular_setup.ESimPageName.ACTIVATION_CODE, activationCodePage);
     // Insert an activation code.
     activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE';
 
@@ -122,9 +117,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
     await flushAsync();
 
     // Should go to final page.
-    assertTrue(
-        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL &&
-        eSimPage.selectedESimPageName_ === finalPage.id);
+    assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
   });
 
   test('Single eSIM profile flow successful install', async function() {
@@ -137,17 +130,13 @@ suite('CrComponentsEsimFlowUiTest', function() {
     assertTrue(!!finalPage);
 
     // Loading page should be showing.
-    assertTrue(
-        eSimPage.selectedESimPageName_ ===
-            cellular_setup.ESimPageName.PROFILE_LOADING &&
-        eSimPage.selectedESimPageName_ === profileLoadingPage.id);
+    assertSelectedPage(
+        cellular_setup.ESimPageName.PROFILE_LOADING, profileLoadingPage);
 
     await flushAsync();
 
     // Should go directly to final page.
-    assertTrue(
-        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL &&
-        eSimPage.selectedESimPageName_ === finalPage.id);
+    assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
     assertFalse(!!finalPage.$$('.error'));
   });
 
@@ -165,18 +154,39 @@ suite('CrComponentsEsimFlowUiTest', function() {
     assertTrue(!!finalPage);
 
     // Loading page should be showing.
-    assertTrue(
-        eSimPage.selectedESimPageName_ ===
-            cellular_setup.ESimPageName.PROFILE_LOADING &&
-        eSimPage.selectedESimPageName_ === profileLoadingPage.id);
+    assertSelectedPage(
+        cellular_setup.ESimPageName.PROFILE_LOADING, profileLoadingPage);
 
     await flushAsync();
 
     // Should go directly to final page.
-    assertTrue(
-        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL &&
-        eSimPage.selectedESimPageName_ === finalPage.id);
+    assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
     assertTrue(!!finalPage.$$('.error'));
+  });
+
+  test('Single eSIM profile flow confirmation code required', async function() {
+    eSimManagerRemote.addEuiccForTest(1);
+    const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
+    const profileList = await availableEuiccs.euiccs[0].getProfileList();
+    profileList.profiles[0].setProfileInstallResultForTest(
+        chromeos.cellularSetup.mojom.ProfileInstallResult
+            .kErrorNeedsConfirmationCode);
+
+    const profileLoadingPage = eSimPage.$$('#profileLoadingPage');
+    const confirmationCodePage = eSimPage.$$('#confirmationCodePage');
+
+    assertTrue(!!profileLoadingPage);
+    assertTrue(!!confirmationCodePage);
+
+    // Loading page should be showing.
+    assertSelectedPage(
+        cellular_setup.ESimPageName.PROFILE_LOADING, profileLoadingPage);
+
+    await flushAsync();
+
+    // Confirmation code page should be showing.
+    assertSelectedPage(
+        cellular_setup.ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
   });
 
   test('Multiple eSIM profiles skip discovery flow', async function() {
@@ -193,18 +203,14 @@ suite('CrComponentsEsimFlowUiTest', function() {
     assertTrue(!!finalPage);
 
     // Loading page should be showing.
-    assertTrue(
-        eSimPage.selectedESimPageName_ ===
-            cellular_setup.ESimPageName.PROFILE_LOADING &&
-        eSimPage.selectedESimPageName_ === profileLoadingPage.id);
+    assertSelectedPage(
+        cellular_setup.ESimPageName.PROFILE_LOADING, profileLoadingPage);
 
     await flushAsync();
 
     // Should go to profile discovery page.
-    assertTrue(
-        eSimPage.selectedESimPageName_ ===
-            cellular_setup.ESimPageName.PROFILE_DISCOVERY &&
-        eSimPage.selectedESimPageName_ === profileDiscoveryPage.id);
+    assertSelectedPage(
+        cellular_setup.ESimPageName.PROFILE_DISCOVERY, profileDiscoveryPage);
 
     // Simulate pressing 'Skip'.
     assertTrue(
@@ -214,10 +220,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
     Polymer.dom.flush();
 
     // Should now be at the activation code page.
-    assertTrue(
-        eSimPage.selectedESimPageName_ ===
-            cellular_setup.ESimPageName.ACTIVATION_CODE &&
-        eSimPage.selectedESimPageName_ === activationCodePage.id);
+    assertSelectedPage(
+        cellular_setup.ESimPageName.ACTIVATION_CODE, activationCodePage);
 
     // Insert an activation code.
     activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE';
@@ -230,9 +234,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
     await flushAsync();
 
     // Should now be at the final page.
-    assertTrue(
-        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL &&
-        eSimPage.selectedESimPageName_ === finalPage.id);
+    assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
   });
 
   test('Multiple eSIM profiles select flow', async function() {
@@ -249,18 +251,14 @@ suite('CrComponentsEsimFlowUiTest', function() {
     assertTrue(!!finalPage);
 
     // Loading page should be showing.
-    assertTrue(
-        eSimPage.selectedESimPageName_ ===
-            cellular_setup.ESimPageName.PROFILE_LOADING &&
-        eSimPage.selectedESimPageName_ === profileLoadingPage.id);
+    assertSelectedPage(
+        cellular_setup.ESimPageName.PROFILE_LOADING, profileLoadingPage);
 
     await flushAsync();
 
     // Should go to profile discovery page.
-    assertTrue(
-        eSimPage.selectedESimPageName_ ===
-            cellular_setup.ESimPageName.PROFILE_DISCOVERY &&
-        eSimPage.selectedESimPageName_ === profileDiscoveryPage.id);
+    assertSelectedPage(
+        cellular_setup.ESimPageName.PROFILE_DISCOVERY, profileDiscoveryPage);
 
     // Select the first profile on the list.
     const profileList = profileDiscoveryPage.$$('#profileList');
@@ -280,9 +278,59 @@ suite('CrComponentsEsimFlowUiTest', function() {
     await flushAsync();
 
     // Should now be at the final page.
-    assertTrue(
-        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL &&
-        eSimPage.selectedESimPageName_ === finalPage.id);
+    assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
     assertFalse(!!finalPage.$$('.error'));
   });
+
+  test(
+      'Multiple eSIM profiles select flow confirmation code required',
+      async function() {
+        eSimManagerRemote.addEuiccForTest(2);
+        const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
+        const profileList = await availableEuiccs.euiccs[0].getProfileList();
+        profileList.profiles[0].setProfileInstallResultForTest(
+            chromeos.cellularSetup.mojom.ProfileInstallResult
+                .kErrorNeedsConfirmationCode);
+
+        const profileLoadingPage = eSimPage.$$('#profileLoadingPage');
+        const profileDiscoveryPage = eSimPage.$$('#profileDiscoveryPage');
+        const confirmationCodePage = eSimPage.$$('#confirmationCodePage');
+
+        assertTrue(!!profileLoadingPage);
+        assertTrue(!!profileDiscoveryPage);
+        assertTrue(!!confirmationCodePage);
+
+        // Loading page should be showing.
+        assertSelectedPage(
+            cellular_setup.ESimPageName.PROFILE_LOADING, profileLoadingPage);
+
+        await flushAsync();
+
+        // Should go to profile discovery page.
+        assertSelectedPage(
+            cellular_setup.ESimPageName.PROFILE_DISCOVERY,
+            profileDiscoveryPage);
+
+        // Select the first profile on the list.
+        const profileListUI = profileDiscoveryPage.$$('#profileList');
+        profileListUI.selectItem(profileListUI.items[0]);
+        Polymer.dom.flush();
+
+        // The 'Next' button should now be enabled.
+        assertTrue(
+            eSimPage.buttonState.next ===
+            cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+        assertTrue(
+            eSimPage.buttonState.skipDiscovery ===
+            cellularSetup.ButtonState.HIDDEN);
+
+        // Simulate pressing 'Next'.
+        eSimPage.navigateForward();
+        await flushAsync();
+
+        // Confirmation code page should be showing.
+        assertSelectedPage(
+            cellular_setup.ESimPageName.CONFIRMATION_CODE,
+            confirmationCodePage);
+      });
 });

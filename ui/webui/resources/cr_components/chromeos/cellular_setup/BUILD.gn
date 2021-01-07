@@ -17,6 +17,7 @@ js_type_check("closure_compile") {
     ":cellular_setup",
     ":cellular_setup_delegate",
     ":cellular_types",
+    ":confirmation_code_page",
     ":esim_manager_listener_behavior",
     ":esim_manager_utils",
     ":final_page",
@@ -81,6 +82,10 @@ js_library("activation_code_page") {
   ]
 }
 
+js_library("confirmation_code_page") {
+  deps = [ "//ui/webui/resources/js:i18n_behavior" ]
+}
+
 js_library("profile_discovery_list_page") {
   deps = [
     "//third_party/polymer/v1_0/components-chromium/iron-list:iron-list-extracted",
@@ -111,6 +116,7 @@ js_library("esim_flow_ui") {
   deps = [
     ":activation_code_page",
     ":cellular_setup_delegate",
+    ":confirmation_code_page",
     ":esim_manager_utils",
     ":mojo_interface_provider",
     ":profile_discovery_list_item",
@@ -182,6 +188,7 @@ js_type_check("closure_compile_module") {
     ":cellular_setup.m",
     ":cellular_setup_delegate.m",
     ":cellular_types.m",
+    ":confirmation_code_page.m",
     ":esim_flow_ui.m",
     ":esim_manager_listener_behavior.m",
     ":esim_manager_utils.m",
@@ -226,6 +233,12 @@ js_library("activation_code_page.m") {
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":activation_code_page_module" ]
+}
+
+js_library("confirmation_code_page.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/confirmation_code_page.m.js" ]
+  deps = [ "//ui/webui/resources/js:i18n_behavior.m" ]
+  extra_deps = [ ":confirmation_code_page_module" ]
 }
 
 js_library("profile_discovery_list_item.m") {
@@ -350,6 +363,7 @@ js_library("esim_flow_ui.m") {
     ":activation_code_page.m",
     ":cellular_setup_delegate.m",
     ":cellular_types.m",
+    ":confirmation_code_page.m",
     ":esim_manager_utils.m",
     ":final_page.m",
     ":mojo_interface_provider.m",
@@ -394,6 +408,7 @@ group("polymer3_elements") {
     ":button_bar_module",
     ":cellular_setup_icons_module",
     ":cellular_setup_module",
+    ":confirmation_code_page_module",
     ":esim_flow_ui_module",
     ":final_page_module",
     ":modulize",
@@ -433,6 +448,14 @@ polymer_modulizer("activation_code_page") {
 polymer_modulizer("button_bar") {
   js_file = "button_bar.js"
   html_file = "button_bar.html"
+  html_type = "dom-module"
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  auto_imports = cr_components_chromeos_auto_imports
+}
+
+polymer_modulizer("confirmation_code_page") {
+  js_file = "confirmation_code_page.js"
+  html_file = "confirmation_code_page.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
   auto_imports = cr_components_chromeos_auto_imports

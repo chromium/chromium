@@ -8,6 +8,7 @@ cr.define('cellular_setup', function() {
     PROFILE_LOADING: 'profileLoadingPage',
     PROFILE_DISCOVERY: 'profileDiscoveryPage',
     ACTIVATION_CODE: 'activationCodePage',
+    CONFIRMATION_CODE: 'confirmationCodePage',
     FINAL: 'finalPage',
   };
 
@@ -15,6 +16,7 @@ cr.define('cellular_setup', function() {
   /* #export */ const ESimUiState = {
     PROFILE_SEARCH: 'profile-search',
     ACTIVATION_CODE_ENTRY: 'activation-code-entry',
+    CONFIRMATION_CODE_ENTRY: 'confirmation-code-entry',
     PROFILE_SELECTION: 'profile-selection',
     SETUP_FINISH: 'setup-finish',
   };
@@ -73,7 +75,7 @@ cr.define('cellular_setup', function() {
       },
 
       /**
-       * Profile selected in profileDiscoveryPage to be installed.
+       * Profile selected to be installed.
        * @type {?chromeos.cellularSetup.mojom.ESimProfileRemote}
        * @private
        */
@@ -141,9 +143,10 @@ cr.define('cellular_setup', function() {
                 this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
                 break;
               case 1:
+                this.selectedProfile_ = profiles[0];
                 // Assume installing the profile doesn't require a confirmation
                 // code, send an empty string.
-                profiles[0].installProfile('').then(
+                this.selectedProfile_.installProfile('').then(
                     this.handleProfileInstallResponse_.bind(this));
                 break;
               default:
@@ -159,8 +162,6 @@ cr.define('cellular_setup', function() {
      *     response
      */
     handleProfileInstallResponse_(response) {
-      // TODO(crbug.com/1093185) Handle
-      // confirmation code if needed.
       this.showError_ = response.result !==
           chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess;
       if (response.result ===
@@ -168,6 +169,11 @@ cr.define('cellular_setup', function() {
           response.result ===
               chromeos.cellularSetup.mojom.ProfileInstallResult.kFailure) {
         this.state_ = ESimUiState.SETUP_FINISH;
+      } else if (
+          response.result ===
+          chromeos.cellularSetup.mojom.ProfileInstallResult
+              .kErrorNeedsConfirmationCode) {
+        this.state_ = ESimUiState.CONFIRMATION_CODE_ENTRY;
       }
     },
 
@@ -179,6 +185,9 @@ cr.define('cellular_setup', function() {
           break;
         case ESimUiState.ACTIVATION_CODE_ENTRY:
           this.selectedESimPageName_ = ESimPageName.ACTIVATION_CODE;
+          break;
+        case ESimUiState.CONFIRMATION_CODE_ENTRY:
+          this.selectedESimPageName_ = ESimPageName.CONFIRMATION_CODE;
           break;
         case ESimUiState.PROFILE_SELECTION:
           this.selectedESimPageName_ = ESimPageName.PROFILE_DISCOVERY;
@@ -207,6 +216,19 @@ cr.define('cellular_setup', function() {
             next: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
             tryAgain: cellularSetup.ButtonState.HIDDEN,
             skipDiscovery: cellularSetup.ButtonState.HIDDEN,
+          };
+          break;
+        case ESimUiState.CONFIRMATION_CODE_ENTRY:
+          buttonState = {
+            backward: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
+            cancel: this.delegate.shouldShowCancelButton() ?
+                cellularSetup.ButtonState.SHOWN_AND_ENABLED :
+                cellularSetup.ButtonState.HIDDEN,
+            done: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
+            next: cellularSetup.ButtonState.HIDDEN,
+            tryAgain: cellularSetup.ButtonState.HIDDEN,
+            skipDiscovery: cellularSetup.ButtonState.HIDDEN,
+            // TODO(crbug.com/1093185) Add a "Confirm" button state.
           };
           break;
         case ESimUiState.PROFILE_SELECTION:
