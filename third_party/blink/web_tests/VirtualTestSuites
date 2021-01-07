@@ -171,6 +171,7 @@
               "external/wpt/domparsing",
               "external/wpt/html/syntax/parsing",
               "external/wpt/html/the-xhtml-syntax",
+              "external/wpt/preload",
               "external/wpt/signed-exchange",
               "scrollingcoordinator"],
     "args": ["--enable-blink-features=ForceSynchronousHTMLParsing"]

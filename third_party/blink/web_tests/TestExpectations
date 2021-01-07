@@ -85,8 +85,7 @@ crbug.com/887140 virtual/hdr/video-canvas-alpha.html [ Failure ]
 external/wpt/css/compositing/root-element-background-transparency.html [ Failure ]
 
 # ====== Synchronous, budgeted HTML parser tests from here ======
-
-### virtual/synchronous_html_parser/http/tests/preload/
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/preload/modulepreload.html [ Failure Pass ]
 # An extra line ("linear_memory_inspector") appears in the output in some cases.
 crbug.com/901056 http/tests/devtools/modules-load-source.js [ Failure Pass ]
 # Extra line info appears in the output in some cases.

@@ -67,6 +67,13 @@ class HTMLResourcePreloader;
 class HTMLTreeBuilder;
 class HTMLDocumentParserState;
 
+enum ParserPrefetchPolicy {
+  // Indicates that prefetches/preloads should happen for this document type.
+  kAllowPrefetching,
+  // Indicates that prefetches are forbidden for this document type.
+  kDisallowPrefetching
+};
+
 // TODO(https://crbug.com/1049898): These are only exposed to make it possible
 // to delete an expired histogram. The test should be rewritten to test at a
 // different level, so it won't have to make assertions about internal state.
@@ -78,10 +85,13 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   USING_PRE_FINALIZER(HTMLDocumentParser, Dispose);
 
  public:
-  HTMLDocumentParser(HTMLDocument&, ParserSynchronizationPolicy);
+  HTMLDocumentParser(HTMLDocument&,
+                     ParserSynchronizationPolicy,
+                     ParserPrefetchPolicy prefetch_policy = kAllowPrefetching);
   HTMLDocumentParser(DocumentFragment*,
                      Element* context_element,
-                     ParserContentPolicy);
+                     ParserContentPolicy,
+                     ParserPrefetchPolicy prefetch_policy = kAllowPrefetching);
   ~HTMLDocumentParser() override;
   void Trace(Visitor*) const override;
 
@@ -156,7 +166,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
  private:
   HTMLDocumentParser(Document&,
                      ParserContentPolicy,
-                     ParserSynchronizationPolicy);
+                     ParserSynchronizationPolicy,
+                     ParserPrefetchPolicy);
 
   // DocumentParser
   void Detach() final;

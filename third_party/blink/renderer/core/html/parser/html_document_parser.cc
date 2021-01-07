@@ -298,8 +298,12 @@ class ScopedYieldTimer {
 };
 
 HTMLDocumentParser::HTMLDocumentParser(HTMLDocument& document,
-                                       ParserSynchronizationPolicy sync_policy)
-    : HTMLDocumentParser(document, kAllowScriptingContent, sync_policy) {
+                                       ParserSynchronizationPolicy sync_policy,
+                                       ParserPrefetchPolicy prefetch_policy)
+    : HTMLDocumentParser(document,
+                         kAllowScriptingContent,
+                         sync_policy,
+                         prefetch_policy) {
   script_runner_ =
       HTMLParserScriptRunner::Create(ReentryPermit(), &document, this);
 
@@ -314,10 +318,12 @@ HTMLDocumentParser::HTMLDocumentParser(HTMLDocument& document,
 HTMLDocumentParser::HTMLDocumentParser(
     DocumentFragment* fragment,
     Element* context_element,
-    ParserContentPolicy parser_content_policy)
+    ParserContentPolicy parser_content_policy,
+    ParserPrefetchPolicy parser_prefetch_policy)
     : HTMLDocumentParser(fragment->GetDocument(),
                          parser_content_policy,
-                         kForceSynchronousParsing) {
+                         kForceSynchronousParsing,
+                         parser_prefetch_policy) {
   // Allow declarative shadow DOM for the fragment parser only if explicitly
   // enabled.
   bool include_shadow_roots =
@@ -346,7 +352,8 @@ int GetMaxTokenizationBudget() {
 
 HTMLDocumentParser::HTMLDocumentParser(Document& document,
                                        ParserContentPolicy content_policy,
-                                       ParserSynchronizationPolicy sync_policy)
+                                       ParserSynchronizationPolicy sync_policy,
+                                       ParserPrefetchPolicy prefetch_policy)
     : ScriptableDocumentParser(document, content_policy),
       options_(&document),
       reentry_permit_(HTMLParserReentryPermit::Create()),
@@ -415,7 +422,8 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
       !document.IsPrefetchOnly())
     return;
 
-  preloader_ = MakeGarbageCollected<HTMLResourcePreloader>(document);
+  if (prefetch_policy == kAllowPrefetching)
+    preloader_ = MakeGarbageCollected<HTMLResourcePreloader>(document);
 }
 
 HTMLDocumentParser::~HTMLDocumentParser() = default;
@@ -1221,7 +1229,7 @@ void HTMLDocumentParser::Append(const String& input_source) {
 
   const SegmentedString source(input_source);
 
-  if (!preload_scanner_ && GetDocument()->Url().IsValid() &&
+  if (!preload_scanner_ && preloader_ && GetDocument()->Url().IsValid() &&
       (!task_runner_state_->IsSynchronous() ||
        GetDocument()->IsPrefetchOnly() || IsPaused())) {
     // If we're operating with synchronous, budgeted foreground HTML parsing
@@ -1246,16 +1254,14 @@ void HTMLDocumentParser::Append(const String& input_source) {
     // Return after the preload scanner, do not actually parse the document.
     return;
   }
-  if (preload_scanner_) {
-      preload_scanner_->AppendToEnd(source);
-      if (preloader_) {
-        if (!task_runner_state_->IsSynchronous() || IsPaused()) {
-          // Should scan and preload if the parser's paused and operating
-          // synchronously, or if the parser's operating in an asynchronous
-          // mode.
-          ScanAndPreload(preload_scanner_.get());
-        }
-      }
+  if (preload_scanner_ && preloader_) {
+    preload_scanner_->AppendToEnd(source);
+    if (!task_runner_state_->IsSynchronous() || IsPaused()) {
+      // Should scan and preload if the parser's paused and operating
+      // synchronously, or if the parser's operating in an asynchronous
+      // mode.
+      ScanAndPreload(preload_scanner_.get());
+    }
   }
 
   input_.AppendToEnd(source);
