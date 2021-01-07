@@ -64,15 +64,15 @@ net::NetworkTrafficAnnotationTag GetProxyConfigTrafficAnnotationTag() {
   return traffic_annotation;
 }
 
+void SetCryptConfigOnce(const base::FilePath& user_data_path) {
+  static bool done_once = false;
+  if (done_once)
+    return;
+  done_once = true;
+
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-::network::mojom::CryptConfigPtr BuildCryptConfigOnce(
-    const base::FilePath& user_data_path) {
-  static bool done_once = false;
-  if (done_once)
-    return nullptr;
-  done_once = true;
   ::network::mojom::CryptConfigPtr config =
       ::network::mojom::CryptConfig::New();
   config->store = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -80,9 +80,17 @@ net::NetworkTrafficAnnotationTag GetProxyConfigTrafficAnnotationTag() {
   config->product_name = kProductName;
   config->should_use_preference = false;
   config->user_data_path = user_data_path;
-  return config;
-}
+  content::GetNetworkService()->SetCryptConfig(std::move(config));
+#elif defined(OS_WIN) && defined(HEADLESS_USE_PREFS)
+  // The OSCrypt keys are process bound, so if network service is out of
+  // process, send it the required key if it is available.
+  if (content::IsOutOfProcessNetworkService() &&
+      OSCrypt::IsEncryptionAvailable()) {
+    content::GetNetworkService()->SetEncryptionKey(
+        OSCrypt::GetRawEncryptionKey());
+  }
 #endif
+}
 
 }  // namespace
 
@@ -227,21 +235,8 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
           base::ThreadTaskRunnerHandle::Get());
     }
   }
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto crypt_config = BuildCryptConfigOnce(user_data_path_);
-  if (crypt_config)
-    content::GetNetworkService()->SetCryptConfig(std::move(crypt_config));
-#elif defined(OS_WIN) && defined(HEADLESS_USE_PREFS)
-  // The OSCrypt keys are process bound, so if network service is out of
-  // process, send it the required key if it is available.
-  if (content::IsOutOfProcessNetworkService() &&
-      OSCrypt::IsEncryptionAvailable()) {
-    content::GetNetworkService()->SetEncryptionKey(
-        OSCrypt::GetRawEncryptionKey());
-  }
-#endif
+
+  SetCryptConfigOnce(user_data_path_);
 }
 
 HeadlessRequestContextManager::~HeadlessRequestContextManager() {

@@ -236,10 +236,8 @@ bool OSCrypt::Init(PrefService* local_state) {
 void OSCrypt::SetRawEncryptionKey(const std::string& raw_key) {
   DCHECK(!g_use_mock_key) << "Mock key in use.";
   DCHECK(!raw_key.empty()) << "Bad key.";
-  if (raw_key != GetEncryptionKeyFactory()) {
-    DCHECK(GetEncryptionKeyFactory().empty()) << "Key already set.";
-    GetEncryptionKeyFactory().assign(raw_key);
-  }
+  DCHECK(GetEncryptionKeyFactory().empty()) << "Key already set.";
+  GetEncryptionKeyFactory().assign(raw_key);
 }
 
 // static
