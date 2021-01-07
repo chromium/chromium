@@ -572,28 +572,4 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         Espresso.pressBack();
         waitUntilViewMatchesCondition(withText("Hello world"), isCompletelyDisplayed());
     }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
-    public void proactiveHelpConditions() {
-        Assert.assertTrue(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
-
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, false);
-
-        Assert.assertFalse(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
-
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, true);
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_PROACTIVE_HELP, false);
-
-        Assert.assertFalse(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
-
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_PROACTIVE_HELP, true);
-
-        Assert.assertTrue(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
-    }
 }

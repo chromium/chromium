@@ -31,7 +31,11 @@ public class AutofillAssistantPreferencesUtil {
         return isProactiveHelpSwitchOn() && isAutofillAssistantSwitchOn();
     }
 
-    /** Checks whether the proactive help switch preference in settings is on. */
+    /**
+     * Checks whether the proactive help switch preference in settings is on.
+     * Warning: even if the switch is on, it can appear disabled if the Autofill Assistant switch is
+     * off. Use {@link #isProactiveHelpOn()} to determine whether to trigger proactive help.
+     */
     private static boolean isProactiveHelpSwitchOn() {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)) {
             return false;
