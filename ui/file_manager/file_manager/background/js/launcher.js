@@ -36,7 +36,7 @@ const FILES_ID_PREFIX = 'files#';
  * Value of the next file manager window ID.
  * @type {number}
  */
-let nextFileManagerWindowID = 0;
+/* #export */ let nextFileManagerWindowID = 0;
 
 /**
  * File manager window create options.
@@ -60,7 +60,8 @@ const FILE_MANAGER_WINDOW_CREATE_OPTIONS = {
  * Regexp matching a file manager window ID.
  * @const {!RegExp}
  */
-const FILES_ID_PATTERN = new RegExp('^' + FILES_ID_PREFIX + '(\\d*)$');
+/* #export */ const FILES_ID_PATTERN =
+    new RegExp('^' + FILES_ID_PREFIX + '(\\d*)$');
 
 /**
  * Promise to serialize asynchronous calls.

@@ -24,6 +24,22 @@ js_library("file_browser_background_full") {
   ]
 }
 
+js_library("file_browser_background_full.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/externs/background/file_browser_background_full.m.js" ]
+  deps = [
+    ":background_base.m",
+    ":crostini.m",
+    ":drive_sync_handler.m",
+    ":file_operation_manager.m",
+    ":import_history.m",
+    ":media_import_handler.m",
+    ":media_scanner.m",
+    ":progress_center.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("background_base.m") {
   sources = [
     "$root_gen_dir/ui/file_manager/externs/background/background_base.m.js",
@@ -124,6 +140,7 @@ js_library("task_queue.m") {
 
 js_modulizer("modulize") {
   input_files = [
+    "file_browser_background_full.js",
     "background_base.js",
     "crostini.js",
     "drive_sync_handler.js",

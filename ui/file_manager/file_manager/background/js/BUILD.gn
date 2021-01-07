@@ -74,6 +74,7 @@ js_type_check("closure_compile_jsmodules") {
   deps = [
     ":app_window_wrapper.m",
     ":app_windows.m",
+    ":background.m",
     ":background_base.m",
     ":crostini.m",
     ":device_handler.m",
@@ -222,6 +223,47 @@ js_library("background") {
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
   ]
+}
+
+js_library("background.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/background/js/background.m.js",
+  ]
+  deps = [
+    ":background_base.m",
+    ":crostini.m",
+    ":device_handler.m",
+    ":drive_sync_handler.m",
+    ":duplicate_finder.m",
+    ":file_operation_handler.m",
+    ":file_operation_manager.m",
+    ":file_operation_util.m",
+    ":import_history.m",
+    ":launcher.m",
+    ":launcher_search.m",
+    ":media_import_handler.m",
+    ":media_scanner.m",
+    ":mount_metrics.m",
+    ":progress_center.m",
+    ":volume_manager_factory.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_info.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/externs/background:crostini.m",
+    "//ui/file_manager/externs/background:drive_sync_handler.m",
+    "//ui/file_manager/externs/background:duplicate_finder.m",
+    "//ui/file_manager/externs/background:file_browser_background_full.m",
+    "//ui/file_manager/externs/background:file_operation_manager.m",
+    "//ui/file_manager/externs/background:import_history.m",
+    "//ui/file_manager/externs/background:media_import_handler.m",
+    "//ui/file_manager/externs/background:media_scanner.m",
+    "//ui/file_manager/externs/background:progress_center.m",
+    "//ui/file_manager/file_manager/common/js:importer_common.m",
+    "//ui/file_manager/file_manager/common/js:metrics.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("background_base") {
@@ -1237,6 +1279,7 @@ js_modulizer("modulize") {
     "device_handler.js",
     "launcher.js",
     "launcher_search.js",
+    "background.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites
