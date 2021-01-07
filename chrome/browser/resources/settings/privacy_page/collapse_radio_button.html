@@ -45,8 +45,6 @@
 
       #labelWrapper {
         --cr-radio-button-label-spacing: 0;
-        padding-bottom: 6px;
-        padding-top: 6px;
       }
 
       #radioCollapse {
@@ -73,7 +71,7 @@
       <div id="borderWrapper">
         <iron-icon id="buttonIcon"
             icon="[[icon]]" hidden$="[[!icon]]"></iron-icon>
-        <div id="labelWrapper">
+        <div id="labelWrapper" class="cr-padded-text">
           <div id="label" aria-hidden="true">
             [[label]]
             <slot name="label"></slot>
