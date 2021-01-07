@@ -710,16 +710,20 @@ void SyncEngine::OnConnectionChanged(network::mojom::ConnectionType type) {
   }
 }
 
-void SyncEngine::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  Initialize();
-}
-
-void SyncEngine::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  Reset();
-  UpdateServiceState(REMOTE_SERVICE_AUTHENTICATION_REQUIRED,
-                     "User signed out.");
+void SyncEngine::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      Initialize();
+      return;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      Reset();
+      UpdateServiceState(REMOTE_SERVICE_AUTHENTICATION_REQUIRED,
+                         "User signed out.");
+      return;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      return;
+  }
 }
 
 SyncEngine::SyncEngine(

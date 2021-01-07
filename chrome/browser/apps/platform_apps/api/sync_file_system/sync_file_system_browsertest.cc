@@ -29,6 +29,8 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 
+using signin::PrimaryAccountChangeEvent;
+
 namespace sync_file_system {
 
 namespace {
@@ -125,11 +127,6 @@ class SyncFileSystemTest : public extensions::PlatformAppBrowserTest,
 
   void SignIn() {
     identity_test_env_->SetPrimaryAccount(kEmail);
-
-    // It's necessary to invoke this method manually as the observer callback is
-    // not triggered on ChromeOS.
-    sync_engine()->OnPrimaryAccountSet(
-        identity_test_env_->identity_manager()->GetPrimaryAccountInfo());
   }
 
   void SetSyncEnabled(bool enabled) {
@@ -184,8 +181,11 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemTest, AuthorizationTest) {
   // service.  Wait for the completion and resume the app.
   WaitUntilIdle();
 
-  sync_engine()->OnPrimaryAccountCleared(
-      identity_manager()->GetPrimaryAccountInfo());
+  sync_engine()->OnPrimaryAccountChanged(
+      PrimaryAccountChangeEvent(PrimaryAccountChangeEvent::State(
+                                    identity_manager()->GetPrimaryAccountInfo(),
+                                    signin::ConsentLevel::kSync),
+                                PrimaryAccountChangeEvent::State()));
   foo_created.Reply("resume");
 
   ASSERT_TRUE(bar_created.WaitUntilSatisfied());
@@ -198,8 +198,11 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemTest, AuthorizationTest) {
   EXPECT_EQ(REMOTE_SERVICE_AUTHENTICATION_REQUIRED,
             sync_engine()->GetCurrentState());
 
-  sync_engine()->OnPrimaryAccountSet(
-      identity_manager()->GetPrimaryAccountInfo());
+  sync_engine()->OnPrimaryAccountChanged(
+      PrimaryAccountChangeEvent(PrimaryAccountChangeEvent::State(),
+                                PrimaryAccountChangeEvent::State(
+                                    identity_manager()->GetPrimaryAccountInfo(),
+                                    signin::ConsentLevel::kSync)));
   WaitUntilIdle();
 
   bar_created.Reply("resume");

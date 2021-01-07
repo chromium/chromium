@@ -145,10 +145,8 @@ class SyncEngine
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   // IdentityManager::Observer overrides.
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
  private:
   class WorkerObserver;
