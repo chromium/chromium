@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <body>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="../resources/testdriver.js"></script>
-<script src="../resources/testdriver-vendor.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/services/device/public/mojom/hid.mojom.js"></script>
-<script src="file:///gen/third_party/blink/public/mojom/hid/hid.mojom.js"></script>
-<script src="resources/hid-test-utils.js"></script>
-<script>
+<script type="module">
+import '/resources/testharness.js';
+import '/resources/testharnessreport.js';
+
+import {hid_test, trustedClick} from './resources/hid-test-utils.js';
+import {GENERIC_DESKTOP_GAME_PAD, HID_COLLECTION_TYPE_APPLICATION, HidBusType, HidCollectionInfo, HidReportDescription, HidReportItem, HidUsageAndPage, PAGE_BUTTON, PAGE_GENERIC_DESKTOP} from '/gen/services/device/public/mojom/hid.mojom.m.js';
 
 const kTestVendorId = 0x1234;
 const kTestProductId = 0xabcd;
@@ -23,15 +20,15 @@ const kTestDeviceNode = 'test-device-node';
 // gamepad-like device with one input report. The input report has a single
 // 8-bit field with a button usage.
 function createDeviceWithInputReport(fake) {
-  const nullUsage = new device.mojom.HidUsageAndPage();
-  const buttonUsage = new device.mojom.HidUsageAndPage();
-  buttonUsage.usagePage = device.mojom.PAGE_BUTTON;
+  const nullUsage = new HidUsageAndPage();
+  const buttonUsage = new HidUsageAndPage();
+  buttonUsage.usagePage = PAGE_BUTTON;
   buttonUsage.usage = kButtonPrimary;
-  const gamePadUsage = new device.mojom.HidUsageAndPage();
-  gamePadUsage.usagePage = device.mojom.PAGE_GENERIC_DESKTOP;
-  gamePadUsage.usage = device.mojom.GENERIC_DESKTOP_GAME_PAD;
+  const gamePadUsage = new HidUsageAndPage();
+  gamePadUsage.usagePage = PAGE_GENERIC_DESKTOP;
+  gamePadUsage.usage = GENERIC_DESKTOP_GAME_PAD;
 
-  const reportItem = new device.mojom.HidReportItem();
+  const reportItem = new HidReportItem();
   reportItem.isRange = false;
   reportItem.isConstant = false;  // Data.
   reportItem.isVariable = true;  // Variable.
@@ -58,14 +55,14 @@ function createDeviceWithInputReport(fake) {
   reportItem.reportSize = 8;  // 1 byte.
   reportItem.reportCount = 1;
 
-  const report = new device.mojom.HidReportDescription();
+  const report = new HidReportDescription();
   report.reportId = kTestReportId;
   report.items = [reportItem];
 
-  const collection = new device.mojom.HidCollectionInfo();
+  const collection = new HidCollectionInfo();
   collection.usage = gamePadUsage;
   collection.reportIds = [kTestReportId];
-  collection.collectionType = device.mojom.HID_COLLECTION_TYPE_APP_APPLICATION;
+  collection.collectionType = HID_COLLECTION_TYPE_APPLICATION;
   collection.inputReports = [report];
   collection.outputReports = [];
   collection.featureReports = [];
@@ -75,7 +72,7 @@ function createDeviceWithInputReport(fake) {
   // The device guid will be set by fake.addDevice().
   deviceInfo.productName = kTestProductName;
   deviceInfo.serialNumber = kTestSerialNumber;
-  deviceInfo.busType = device.mojom.HidBusType.HID_BUS_TYPE_USB;
+  deviceInfo.busType = HidBusType.HID_BUS_TYPE_USB;
   deviceInfo.reportDescriptor = [];
   deviceInfo.collections = [collection];
   deviceInfo.hasReportId = true;
@@ -106,10 +103,8 @@ hid_test(async (t, fake) => {
   assert_equals(d.collections.length, 1, 'device.collections.length');
 
   const c = d.collections[0];
-  assert_equals(c.usagePage, device.mojom.PAGE_GENERIC_DESKTOP,
-                'collection.usagePage');
-  assert_equals(c.usage, device.mojom.GENERIC_DESKTOP_GAME_PAD,
-                'collection.usage');
+  assert_equals(c.usagePage, PAGE_GENERIC_DESKTOP, 'collection.usagePage');
+  assert_equals(c.usage, GENERIC_DESKTOP_GAME_PAD, 'collection.usage');
   assert_equals(c.children.length, 0, 'collection.children.length');
   assert_equals(c.inputReports.length, 1, 'collection.inputReports.length');
   assert_equals(c.outputReports.length, 0, 'collection.outputReports.length');

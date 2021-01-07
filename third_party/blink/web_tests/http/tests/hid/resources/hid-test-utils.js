@@ -1,5 +1,13 @@
+import '/resources/testdriver.js';
+import '/resources/testdriver-vendor.js';
+import '/resources/testharness.js';
+import '/resources/testharnessreport.js';
+
+import {HidConnection, HidConnectionReceiver, HidDeviceInfo, HidManagerClientRemote} from '/gen/services/device/public/mojom/hid.mojom.m.js';
+import {HidService, HidServiceReceiver} from '/gen/third_party/blink/public/mojom/hid/hid.mojom.m.js';
+
 // Compare two DataViews byte-by-byte.
-function compareDataViews(actual, expected) {
+export function compareDataViews(actual, expected) {
   assert_true(actual instanceof DataView, 'actual is DataView');
   assert_true(expected instanceof DataView, 'expected is DataView');
   assert_equals(actual.byteLength, expected.byteLength, 'lengths equal');
@@ -10,8 +18,8 @@ function compareDataViews(actual, expected) {
 }
 
 // Returns a Promise that resolves once |device| receives an input report.
-function oninputreport(device) {
-  assert_true(device instanceof HIDDevice)
+export function oninputreport(device) {
+  assert_true(device instanceof HIDDevice);
   return new Promise(resolve => { device.oninputreport = resolve; });
 }
 
@@ -21,15 +29,14 @@ function oninputreport(device) {
 class FakeHidConnection {
   constructor(client) {
     this.client_ = client;
+    this.receiver_ = new HidConnectionReceiver(this);
     this.expectedWrites_ = [];
     this.expectedGetFeatureReports_ = [];
     this.expectedSendFeatureReports_ = [];
   }
 
-  bind(request) {
-    assert_equals(this.binding, undefined);
-    this.binding = new mojo.Binding(device.mojom.HidConnection, this, request);
-    this.binding.setConnectionErrorHandler(() => { this.binding = undefined; });
+  bindNewPipeAndPassRemote() {
+    return this.receiver_.$.bindNewPipeAndPassRemote();
   }
 
   // Simulate an input report sent from the device to the host. The connection
@@ -46,8 +53,8 @@ class FakeHidConnection {
   // parameters of the next write call must match |reportId| and |buffer|.
   queueExpectedWrite(success, reportId, reportData) {
     this.expectedWrites_.push({
-      params: { reportId: reportId, data: reportData },
-      result: { success: success },
+      params: {reportId, data: reportData},
+      result: {success},
     });
   }
 
@@ -56,8 +63,8 @@ class FakeHidConnection {
   // The parameter of the next getFeatureReport call must match |reportId|.
   queueExpectedGetFeatureReport(success, reportId, reportData) {
     this.expectedGetFeatureReports_.push({
-      params: { reportId: reportId, },
-      result: { success: success, buffer: reportData },
+      params: {reportId},
+      result: {success, buffer: reportData},
     });
   }
 
@@ -67,8 +74,8 @@ class FakeHidConnection {
   // |buffer|.
   queueExpectedSendFeatureReport(success, reportId, reportData) {
     this.expectedSendFeatureReports_.push({
-      params: { reportId: reportId, data: reportData },
-      result: { success: success },
+      params: {reportId, data: reportData},
+      result: {success},
     });
   }
 
@@ -78,6 +85,8 @@ class FakeHidConnection {
     assert_equals(this.expectedGetFeatureReports_.length, 0);
     assert_equals(this.expectedSendFeatureReports_.length, 0);
   }
+
+  read() {}
 
   // Implementation of HidConnection::Write. Causes an assertion failure if
   // there are no expected write operations, or if the parameters do not match
@@ -133,10 +142,9 @@ class FakeHidConnection {
 // granted permission.
 class FakeHidService {
   constructor() {
-    this.interceptor_ =
-        new MojoInterfaceInterceptor(blink.mojom.HidService.name);
+    this.interceptor_ = new MojoInterfaceInterceptor(HidService.$interfaceName);
     this.interceptor_.oninterfacerequest = e => this.bind(e.handle);
-    this.bindingSet_ = new mojo.BindingSet(blink.mojom.HidService);
+    this.receiver_ = new HidServiceReceiver(this);
     this.nextGuidValue_ = 0;
     this.reset();
   }
@@ -159,7 +167,7 @@ class FakeHidService {
   // Creates and returns a HidDeviceInfo with the specified device IDs.
   makeDevice(vendorId, productId) {
     let guidValue = ++this.nextGuidValue_;
-    let info = new device.mojom.HidDeviceInfo();
+    let info = new HidDeviceInfo();
     info.guid = 'guid-' + guidValue.toString();
     info.physicalDeviceId = 'physical-device-id-' + guidValue.toString();
     info.vendorId = vendorId;
@@ -214,11 +222,11 @@ class FakeHidService {
   }
 
   bind(handle) {
-    this.bindingSet_.addBinding(this, handle);
+    this.receiver_.$.bindHandle(handle);
   }
 
   registerClient(client) {
-    this.client_ = new device.mojom.HidManagerClientAssociatedPtr(client);
+    this.client_ = client;
   }
 
   // Returns an array of connected devices. Normally this would only include
@@ -229,30 +237,28 @@ class FakeHidService {
     this.devices_.forEach((value) => {
       devices = devices.concat(value);
     });
-    return { devices: devices };
+    return {devices};
   }
 
   // Simulates a device chooser prompt, returning |selectedDevices_| as the
   // simulated selection. |filters| is ignored.
   async requestDevice(filters) {
-    return { devices: this.selectedDevices_ };
+    return {devices: this.selectedDevices_};
   }
 
   // Returns a fake connection to the device with the specified GUID. If
   // |connectionClient| is not null, its onInputReport method will be called
   // when input reports are received.
   async connect(guid, connectionClient) {
-    let fakeConnection = new FakeHidConnection(connectionClient);
-    let connectionPtr = new device.mojom.HidConnectionPtr();
-    fakeConnection.bind(mojo.makeRequest(connectionPtr));
+    const fakeConnection = new FakeHidConnection(connectionClient);
     this.fakeConnections_.set(guid, fakeConnection);
-    return { connection: connectionPtr };
+    return {connection: fakeConnection.bindNewPipeAndPassRemote()};
   }
 }
 
 let fakeHidService = new FakeHidService();
 
-function hid_test(func, name, properties) {
+export function hid_test(func, name, properties) {
   promise_test(async (test) => {
     fakeHidService.start();
     try {
@@ -264,7 +270,7 @@ function hid_test(func, name, properties) {
   }, name, properties);
 }
 
-function trustedClick() {
+export function trustedClick() {
   return new Promise(resolve => {
     let button = document.createElement('button');
     button.textContent = 'click to continue test';

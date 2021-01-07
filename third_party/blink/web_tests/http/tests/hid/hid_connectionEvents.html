@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/services/device/public/mojom/hid.mojom.js"></script>
-<script src="file:///gen/third_party/blink/public/mojom/hid/hid.mojom.js"></script>
-<script src="resources/hid-test-utils.js"></script>
-<script>
+<script type="module">
+import '/resources/testharness.js';
+import '/resources/testharnessreport.js';
+
+import {hid_test} from './resources/hid-test-utils.js';
 
 const kTestVendorId = 0x1234;
 const kTestProductId = 0xabcd;
