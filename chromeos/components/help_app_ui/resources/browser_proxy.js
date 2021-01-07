@@ -102,7 +102,7 @@ guestMessagePipe.registerHandler(
           locale: searchable_item.locale,
         };
       });
-      indexRemote.addOrUpdate(data_to_send);
+      return indexRemote.addOrUpdate(data_to_send);
     });
 
 guestMessagePipe.registerHandler(Message.CLEAR_SEARCH_INDEX, async () => {
