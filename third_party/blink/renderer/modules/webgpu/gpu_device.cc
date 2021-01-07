@@ -141,6 +141,12 @@ void GPUDevice::OnUncapturedError(WGPUErrorType errorType,
 }
 
 void GPUDevice::OnDeviceLostError(const char* message) {
+  // This function is called by a callback created by BindDawnCallback.
+  // Release the unique_ptr holding it since BindDawnCallback is self-deleting.
+  // This is stored as a unique_ptr because the lost callback may never be
+  // called.
+  lost_callback_.release();
+
   AddConsoleWarning(message);
 
   if (lost_property_->GetState() == LostProperty::kPending) {

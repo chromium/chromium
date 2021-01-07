@@ -146,6 +146,10 @@ class GPUDevice final : public EventTargetWithInlineData,
   std::unique_ptr<
       DawnCallback<base::RepeatingCallback<void(WGPUErrorType, const char*)>>>
       error_callback_;
+  // lost_callback_ is stored as a unique_ptr since it may never be called.
+  // We need to be sure to free it on deletion of the device.
+  // Inside OnDeviceLostError we'll release the unique_ptr to avoid a double
+  // free.
   std::unique_ptr<DawnCallback<base::OnceCallback<void(const char*)>>>
       lost_callback_;
 
