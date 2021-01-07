@@ -492,13 +492,20 @@ TabRestoreServiceImpl::PersistenceDelegate::PersistenceDelegate(
       command_storage_manager_(std::make_unique<CommandStorageManager>(
           CommandStorageManager::kTabRestore,
           client_->GetPathToSaveTo(),
-          this)),
+          this,
+          /* use_marker */ true)),
       tab_restore_service_helper_(nullptr),
       entries_to_write_(0),
       entries_written_(0),
-      load_state_(NOT_LOADED) {}
+      load_state_(NOT_LOADED) {
+  // A pending_reset must be scheduled for the first write, otherwise the
+  // commands are dropped.
+  // TODO(https://crbug.com/648266): If use_marker is true, pending_reset should
+  // be the default. Make pending_reset the default and remove this.
+  command_storage_manager_->set_pending_reset(true);
+}
 
-TabRestoreServiceImpl::PersistenceDelegate::~PersistenceDelegate() {}
+TabRestoreServiceImpl::PersistenceDelegate::~PersistenceDelegate() = default;
 
 bool TabRestoreServiceImpl::PersistenceDelegate::ShouldUseDelayedSave() {
   return true;
@@ -509,7 +516,8 @@ void TabRestoreServiceImpl::PersistenceDelegate::OnWillSaveCommands() {
   int to_write_count =
       std::min(entries_to_write_, static_cast<int>(entries.size()));
   entries_to_write_ = 0;
-  if (entries_written_ + to_write_count > kEntriesPerReset) {
+  if (entries_written_ + to_write_count > kEntriesPerReset ||
+      command_storage_manager_->pending_reset()) {
     to_write_count = entries.size();
     command_storage_manager_->set_pending_reset(true);
   }
@@ -543,8 +551,8 @@ void TabRestoreServiceImpl::PersistenceDelegate::OnWillSaveCommands() {
 
 void TabRestoreServiceImpl::PersistenceDelegate::
     OnErrorWritingSessionCommands() {
-  // TODO(sky): make this use marker.
-  NOTIMPLEMENTED();
+  command_storage_manager_->set_pending_reset(true);
+  command_storage_manager_->StartSaveTimer();
 }
 
 void TabRestoreServiceImpl::PersistenceDelegate::OnClearEntries() {
