@@ -57,8 +57,8 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
     void initViewImpl(Callback<Boolean> callback) {
         // If there's a tab, cover it with an overlay.
         AssistantOverlayModel overlayModel = new AssistantOverlayModel();
-        mOverlayCoordinator = new AssistantOverlayCoordinator(
-                mContext, mBrowserControls, mCompositorViewHolder, mScrimCoordinator, overlayModel);
+        mOverlayCoordinator = new AssistantOverlayCoordinator(getContext(), mBrowserControls,
+                mCompositorViewHolder, mScrimCoordinator, overlayModel);
         overlayModel.set(AssistantOverlayModel.STATE, AssistantOverlayState.FULL);
 
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
@@ -96,7 +96,7 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
             mContent = (AssistantBottomSheetContent) currentSheetContent;
             mContent.setDelegate(() -> delegate);
         } else {
-            mContent = new AssistantBottomSheetContent(mContext, () -> delegate);
+            mContent = new AssistantBottomSheetContent(getContext(), () -> delegate);
         }
     }
 

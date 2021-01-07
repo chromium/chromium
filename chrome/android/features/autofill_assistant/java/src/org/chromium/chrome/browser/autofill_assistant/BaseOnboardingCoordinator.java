@@ -64,7 +64,7 @@ abstract class BaseOnboardingCoordinator {
     private WebContentsObserver mWebContentsObserver;
     private boolean mOnboardingShown;
 
-    final Context mContext;
+    private final Context mContext;
     boolean mAnimate = true;
     @Nullable
     ScrollView mView;
@@ -131,8 +131,12 @@ abstract class BaseOnboardingCoordinator {
     }
 
     abstract void hide();
+
     // TODO(b/175598484): Move transferControls to bottom sheet subclass
-    abstract AssistantOverlayCoordinator transferControls();
+    @Nullable
+    AssistantOverlayCoordinator transferControls() {
+        return null;
+    }
 
     /** Destroy web contents observer. */
     void destroy() {
@@ -189,6 +193,10 @@ abstract class BaseOnboardingCoordinator {
 
         callback.onResult(accept);
         hide();
+    }
+
+    Context getContext() {
+        return mContext;
     }
 
     @CalledByNative

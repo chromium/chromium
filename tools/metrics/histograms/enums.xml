@@ -4614,6 +4614,7 @@ others/histograms.xml -->
   <int value="24" label="User navigation in RUNNING state"/>
   <int value="25" label="The UI was closed unexpectedly"/>
   <int value="26" label="User navigated during onboarding"/>
+  <int value="27" label="User dismissed the onboarding dialog"/>
 </enum>
 
 <enum name="AutofillAssistantFeatureModuleInstallation">
