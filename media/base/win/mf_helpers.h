@@ -62,6 +62,7 @@ class MF_INITIALIZER_EXPORT MediaBufferScopedPointer {
 
   uint8_t* get() { return buffer_; }
   DWORD current_length() const { return current_length_; }
+  DWORD max_length() const { return max_length_; }
 
  private:
   Microsoft::WRL::ComPtr<IMFMediaBuffer> media_buffer_;

@@ -1265,6 +1265,8 @@ std::string VideoFrame::AsHumanReadableString() const {
   s << ConfigToString(format(), storage_type_, coded_size(), visible_rect_,
                       natural_size_)
     << " timestamp:" << timestamp_.InMicroseconds();
+  if (HasTextures())
+    s << " textures: " << NumTextures();
   return s.str();
 }
 

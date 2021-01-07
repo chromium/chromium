@@ -1004,6 +1004,10 @@ _CONFIG = [
         'allowed': [
             'gpu::kNullSurfaceHandle',
             'gpu::SHARED_IMAGE_.+',
+            'gpu::raster::RasterInterface',
+            'gpu::Mailbox',
+            'gpu::MailboxHolder',
+            "viz::RasterContextProvider",
             'media::.+',
             'libyuv::.+',
         ]

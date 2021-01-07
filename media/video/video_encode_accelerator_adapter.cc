@@ -329,7 +329,9 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
     result = PrepareCpuFrame(options_.frame_size, frame);
 
   if (result.has_error()) {
-    std::move(done_cb).Run(std::move(result.error()).AddHere());
+    auto status = result.error();
+    status.WithData("frame", frame->AsHumanReadableString());
+    std::move(done_cb).Run(std::move(status).AddHere());
     return;
   }
 

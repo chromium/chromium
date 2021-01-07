@@ -5,6 +5,8 @@ include_rules = [
     "+components/viz/common/resources/single_release_callback.h",
 
     "+gpu/command_buffer/client/shared_image_interface.h",
+    "+gpu/command_buffer/client/raster_interface.h",
+    "+gpu/GLES2/gl2extchromium.h",
 
     "+media/base",
     "+media/filters",

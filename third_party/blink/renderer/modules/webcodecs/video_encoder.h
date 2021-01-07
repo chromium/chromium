@@ -13,6 +13,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_encoder.h"
+#include "media/base/video_frame_pool.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_codec_state.h"
@@ -146,6 +147,8 @@ class MODULES_EXPORT VideoEncoder final
       const ParsedConfig& config,
       media::GpuVideoAcceleratorFactories* gpu_factories);
   bool CanReconfigure(ParsedConfig& original_config, ParsedConfig& new_config);
+  scoped_refptr<media::VideoFrame> ReadbackTextureBackedFrameToMemory(
+      scoped_refptr<media::VideoFrame> txt_frame);
 
   std::unique_ptr<CodecLogger> logger_;
 
@@ -168,6 +171,7 @@ class MODULES_EXPORT VideoEncoder final
   // kEncode. This flag stops processing of new requests in the requests_ queue
   // till the current requests are finished.
   bool stall_request_processing_ = false;
+  media::VideoFramePool readback_frame_pool_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
