@@ -246,8 +246,11 @@ class ShelfAppButton::AppStatusIndicatorView
     gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
     cc::PaintFlags flags;
     // Active and running indicators look a little different in the new UI.
-    flags.setColor(DeprecatedGetAppStateIndicatorColor(
-        active_, kIndicatorColorActive, kInicatorColorRunning));
+    flags.setColor(DeprecatedGetContentLayerColor(
+        active_ ? AshColorProvider::ContentLayerType::kAppStateIndicatorColor
+                : AshColorProvider::ContentLayerType::
+                      kAppStateIndicatorColorInactive,
+        active_ ? kIndicatorColorActive : kIndicatorColorRunning));
     flags.setAntiAlias(true);
     flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
     flags.setStrokeJoin(cc::PaintFlags::Join::kRound_Join);

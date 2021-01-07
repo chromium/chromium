@@ -194,7 +194,8 @@ class LoginShelfButton : public views::LabelButton {
         text_resource_id_(text_resource_id),
         icon_(icon) {
     SetAccessibleName(GetText());
-    AshColorProvider::Get()->DecoratePillButton(this, &icon);
+    AshColorProvider* color_provider = AshColorProvider::Get();
+    color_provider->DecoratePillButton(this, &icon);
 
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetInstallFocusRingOnFocus(true);
@@ -204,10 +205,10 @@ class LoginShelfButton : public views::LabelButton {
     SetFocusPainter(nullptr);
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
-    SetInkDropBaseColor(
-        DeprecatedGetInkDropBaseColor(kDefaultShelfInkDropColor));
-    SetInkDropVisibleOpacity(
-        DeprecatedGetInkDropOpacity(kDefaultShelfInkDropOpacity));
+    AshColorProvider::RippleAttributes ripple_attributes =
+        color_provider->GetRippleAttributes();
+    SetInkDropBaseColor(ripple_attributes.base_color);
+    SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
 
     // Layer rendering is required when the shelf background is visible, which
     // happens when the wallpaper is not blurred.
@@ -315,10 +316,11 @@ class KioskAppsButton : public views::MenuButton,
     SetFocusPainter(nullptr);
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
-    SetInkDropBaseColor(
-        DeprecatedGetInkDropBaseColor(kDefaultShelfInkDropColor));
-    SetInkDropVisibleOpacity(
-        DeprecatedGetInkDropOpacity(kDefaultShelfInkDropOpacity));
+
+    const AshColorProvider::RippleAttributes ripple_attributes =
+        AshColorProvider::Get()->GetRippleAttributes();
+    SetInkDropBaseColor(ripple_attributes.base_color);
+    SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
 
     // Layer rendering is required when the shelf background is visible, which
     // happens when the wallpaper is not blurred.

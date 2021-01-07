@@ -27,15 +27,6 @@ AppListColorProviderImpl::AppListColorProviderImpl()
 
 AppListColorProviderImpl::~AppListColorProviderImpl() = default;
 
-SkColor AppListColorProviderImpl::GetExpandArrowInkDropBaseColor() const {
-  return DeprecatedGetInkDropBaseColor(
-      /*default_color*/ SkColorSetARGB(0x14, 0xFF, 0xFF, 0xFF));
-}
-
-float AppListColorProviderImpl::GetExpandArrowInkDropOpacity() const {
-  return DeprecatedGetInkDropOpacity(/*default_opacity*/ 1.0f);
-}
-
 SkColor AppListColorProviderImpl::GetExpandArrowIconBaseColor() const {
   return DeprecatedGetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColor,
@@ -104,11 +95,6 @@ SkColor AppListColorProviderImpl::GetSuggestionChipTextColor() const {
       /*default_color*/ gfx::kGoogleGrey100);
 }
 
-SkColor AppListColorProviderImpl::GetSuggestionChipInkDropColor() const {
-  return DeprecatedGetInkDropRippleColor(
-      /*default_color*/ SkColorSetA(gfx::kGoogleGrey100, 0x0F));
-}
-
 SkColor AppListColorProviderImpl::GetAppListItemTextColor(
     bool is_in_folder) const {
   if (is_in_folder && !features::IsDarkLightModeEnabled())
@@ -124,22 +110,6 @@ SkColor AppListColorProviderImpl::GetPageSwitcherButtonColor(
       AshColorProvider::ContentLayerType::kButtonIconColor,
       is_root_app_grid_page_switcher ? SkColorSetARGB(255, 232, 234, 237)
                                      : SkColorSetA(SK_ColorBLACK, 138));
-}
-
-SkColor AppListColorProviderImpl::GetPageSwitcherInkDropBaseColor(
-    bool is_root_app_grid_page_switcher) const {
-  return DeprecatedGetInkDropRippleColor(
-      is_root_app_grid_page_switcher
-          ? SkColorSetA(SkColorSetRGB(241, 243, 244), 15)
-          : SkColorSetA(SkColorSetARGB(255, 95, 99, 104), 8));
-}
-
-SkColor AppListColorProviderImpl::GetPageSwitcherInkDropHighlightColor(
-    bool is_root_app_grid_page_switcher) const {
-  return DeprecatedGetInkDropHighlightColor(
-      is_root_app_grid_page_switcher
-          ? SkColorSetA(SkColorSetRGB(241, 243, 244), 20)
-          : SkColorSetA(SkColorSetARGB(255, 95, 99, 104), 24));
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxIconColor(
@@ -172,14 +142,6 @@ SkColor AppListColorProviderImpl::GetFolderHintTextColor() const {
       /*default_color*/ gfx::kGoogleGrey600);
 }
 
-SkColor AppListColorProviderImpl::GetFolderNameBackgroundColor(
-    bool active) const {
-  if (!active)
-    return SK_ColorTRANSPARENT;
-
-  return DeprecatedGetInkDropRippleColor(/*default_color*/ gfx::kGoogleGrey100);
-}
-
 SkColor AppListColorProviderImpl::GetFolderNameBorderColor(bool active) const {
   if (!active)
     return SK_ColorTRANSPARENT;
@@ -205,16 +167,6 @@ SkColor AppListColorProviderImpl::GetSeparatorColor() const {
       /*default_color*/ SkColorSetA(gfx::kGoogleGrey900, 0x24));
 }
 
-SkColor AppListColorProviderImpl::GetSearchResultViewInkDropColor() const {
-  return DeprecatedGetInkDropRippleColor(
-      SkColorSetA(gfx::kGoogleGrey900, 0x14));
-}
-
-SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor() const {
-  return DeprecatedGetInkDropHighlightColor(
-      SkColorSetA(gfx::kGoogleGrey900, 0x12));
-}
-
 SkColor AppListColorProviderImpl::GetFocusRingColor() const {
   return DeprecatedGetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorActive,
@@ -233,15 +185,23 @@ SkColor AppListColorProviderImpl::GetPrimaryIconColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary, default_color);
 }
 
-SkColor AppListColorProviderImpl::GetContextMenuHighlightColor(
-    bool is_in_folder) const {
-  return DeprecatedGetInkDropRippleColor(
-      is_in_folder ? SkColorSetA(gfx::kGoogleGrey900, 21)
-                   : SkColorSetA(SK_ColorWHITE, 41));
-}
-
 float AppListColorProviderImpl::GetFolderBackgrounBlurSigma() const {
   return static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault);
+}
+
+SkColor AppListColorProviderImpl::GetRippleAttributesBaseColor(
+    SkColor bg_color) const {
+  return ash_color_provider_->GetRippleAttributes(bg_color).base_color;
+}
+
+float AppListColorProviderImpl::GetRippleAttributesInkDropOpacity(
+    SkColor bg_color) const {
+  return ash_color_provider_->GetRippleAttributes(bg_color).inkdrop_opacity;
+}
+
+float AppListColorProviderImpl::GetRippleAttributesHighlightOpacity(
+    SkColor bg_color) const {
+  return ash_color_provider_->GetRippleAttributes(bg_color).highlight_opacity;
 }
 
 }  // namespace ash

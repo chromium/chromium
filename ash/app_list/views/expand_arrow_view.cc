@@ -280,11 +280,12 @@ std::unique_ptr<views::InkDrop> ExpandArrowView::CreateInkDrop() {
 
 std::unique_ptr<views::InkDropRipple> ExpandArrowView::CreateInkDropRipple()
     const {
+  const AppListColorProvider* color_provider = AppListColorProvider::Get();
   return std::make_unique<views::FloodFillInkDropRipple>(
       size(), GetLocalBounds().InsetsFrom(GetCircleBounds()),
       GetInkDropCenterBasedOnLastEvent(),
-      AppListColorProvider::Get()->GetExpandArrowInkDropBaseColor(),
-      AppListColorProvider::Get()->GetExpandArrowInkDropOpacity());
+      color_provider->GetRippleAttributesBaseColor(),
+      color_provider->GetRippleAttributesInkDropOpacity());
 }
 
 void ExpandArrowView::AnimationProgressed(const gfx::Animation* animation) {

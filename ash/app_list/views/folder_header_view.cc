@@ -32,6 +32,19 @@
 
 namespace ash {
 
+namespace {
+
+SkColor GetFolderBackgroundColor(bool is_active) {
+  if (!is_active)
+    return SK_ColorTRANSPARENT;
+
+  const AppListColorProvider* color_provider = AppListColorProvider::Get();
+  return SkColorSetA(color_provider->GetRippleAttributesBaseColor(),
+                     color_provider->GetRippleAttributesInkDropOpacity() * 255);
+}
+
+}  // namespace
+
 class FolderHeaderView::FolderNameView : public views::Textfield,
                                          public views::ViewTargeterDelegate {
  public:
@@ -59,11 +72,11 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     Textfield::OnThemeChanged();
 
     const bool is_active = has_mouse_already_entered_ || HasFocus();
-    AppListColorProvider* color_provider = AppListColorProvider::Get();
     SetBackground(views::CreateRoundedRectBackground(
-        color_provider->GetFolderNameBackgroundColor(is_active),
+        GetFolderBackgroundColor(is_active),
         AppListConfig::instance().folder_name_border_radius()));
 
+    AppListColorProvider* color_provider = AppListColorProvider::Get();
     const SkColor text_color =
         color_provider->GetFolderTitleTextColor(gfx::kGoogleGrey700);
     SetTextColor(text_color);
@@ -195,8 +208,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
 
  private:
   void UpdateBackgroundColor(bool is_active) {
-    background()->SetNativeControlColor(
-        AppListColorProvider::Get()->GetFolderNameBackgroundColor(is_active));
+    background()->SetNativeControlColor(GetFolderBackgroundColor(is_active));
     SchedulePaint();
   }
 

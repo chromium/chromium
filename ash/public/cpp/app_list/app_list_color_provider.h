@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_palette.h"
 
 namespace ash {
 
@@ -21,8 +22,6 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   // Returns the singleton instance.
   static AppListColorProvider* Get();
 
-  virtual SkColor GetExpandArrowInkDropBaseColor() const = 0;
-  virtual float GetExpandArrowInkDropOpacity() const = 0;
   virtual SkColor GetExpandArrowIconBaseColor() const = 0;
   virtual SkColor GetExpandArrowIconBackgroundColor() const = 0;
   virtual SkColor GetAppListBackgroundColor(bool is_tablet_mode) const = 0;
@@ -33,12 +32,7 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetSuggestionChipBackgroundColor() const = 0;
   virtual SkColor GetSuggestionChipTextColor() const = 0;
   virtual SkColor GetAppListItemTextColor(bool is_in_folder) const = 0;
-  virtual SkColor GetSuggestionChipInkDropColor() const = 0;
   virtual SkColor GetPageSwitcherButtonColor(
-      bool is_root_app_grid_page_switcher) const = 0;
-  virtual SkColor GetPageSwitcherInkDropBaseColor(
-      bool is_root_app_grid_page_switcher) const = 0;
-  virtual SkColor GetPageSwitcherInkDropHighlightColor(
       bool is_root_app_grid_page_switcher) const = 0;
   virtual SkColor GetSearchBoxIconColor(SkColor default_color) const = 0;
   virtual SkColor GetSearchBoxCardBackgroundColor() const = 0;
@@ -46,18 +40,20 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetFolderBubbleColor() const = 0;
   virtual SkColor GetFolderTitleTextColor(SkColor default_color) const = 0;
   virtual SkColor GetFolderHintTextColor() const = 0;
-  virtual SkColor GetFolderNameBackgroundColor(bool active) const = 0;
   virtual SkColor GetFolderNameBorderColor(bool active) const = 0;
   virtual SkColor GetFolderNameSelectionColor() const = 0;
   virtual SkColor GetContentsBackgroundColor() const = 0;
   virtual SkColor GetSeparatorColor() const = 0;
-  virtual SkColor GetSearchResultViewHighlightColor() const = 0;
-  virtual SkColor GetSearchResultViewInkDropColor() const = 0;
   virtual SkColor GetFocusRingColor() const = 0;
   virtual SkColor GetFolderItemFocusRingColor() const = 0;
   virtual SkColor GetPrimaryIconColor(SkColor default_color) const = 0;
-  virtual SkColor GetContextMenuHighlightColor(bool is_in_folder) const = 0;
   virtual float GetFolderBackgrounBlurSigma() const = 0;
+  virtual SkColor GetRippleAttributesBaseColor(
+      SkColor bg_color = gfx::kPlaceholderColor) const = 0;
+  virtual float GetRippleAttributesInkDropOpacity(
+      SkColor bg_color = gfx::kPlaceholderColor) const = 0;
+  virtual float GetRippleAttributesHighlightOpacity(
+      SkColor bg_color = gfx::kPlaceholderColor) const = 0;
 
  protected:
   AppListColorProvider();

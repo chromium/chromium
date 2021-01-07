@@ -478,7 +478,9 @@ AppListFolderView::AppListFolderView(AppsContainerView* container_view,
   page_switcher_ =
       contents_container_->AddChildView(std::make_unique<PageSwitcher>(
           items_grid_view_->pagination_model(), false /* vertical */,
-          contents_view_->app_list_view()->is_tablet_mode()));
+          contents_view_->app_list_view()->is_tablet_mode(),
+          AppListColorProvider::Get()->GetFolderBackgroundColor(
+              items_grid_view_->GetAppListConfig().folder_background_color())));
   view_model_->Add(page_switcher_, kIndexPageSwitcher);
 
   model_->AddObserver(this);

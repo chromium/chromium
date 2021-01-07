@@ -161,10 +161,13 @@ SearchResultSuggestionChipView::CreateInkDropRipple() const {
   const int ripple_radius = width() / 2;
   gfx::Rect bounds(center.x() - ripple_radius, center.y() - ripple_radius,
                    2 * ripple_radius, 2 * ripple_radius);
+  const AppListColorProvider* color_provider = AppListColorProvider::Get();
+  const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
   return std::make_unique<views::FloodFillInkDropRipple>(
       size(), GetLocalBounds().InsetsFrom(bounds),
       GetInkDropCenterBasedOnLastEvent(),
-      AppListColorProvider::Get()->GetSuggestionChipInkDropColor(), 1.0f);
+      color_provider->GetRippleAttributesBaseColor(bg_color),
+      color_provider->GetRippleAttributesInkDropOpacity(bg_color));
 }
 
 std::unique_ptr<ui::Layer> SearchResultSuggestionChipView::RecreateLayer() {

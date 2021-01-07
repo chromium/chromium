@@ -8,14 +8,6 @@
 
 namespace ash {
 
-SkColor TestAppListColorProvider::GetExpandArrowInkDropBaseColor() const {
-  return SK_ColorWHITE;
-}
-
-float TestAppListColorProvider::GetExpandArrowInkDropOpacity() const {
-  return 1.0f;
-}
-
 SkColor TestAppListColorProvider::GetExpandArrowIconBaseColor() const {
   return gfx::kGoogleGrey200;
 }
@@ -56,10 +48,6 @@ SkColor TestAppListColorProvider::GetSuggestionChipTextColor() const {
   return gfx::kGoogleGrey200;
 }
 
-SkColor TestAppListColorProvider::GetSuggestionChipInkDropColor() const {
-  return SkColorSetA(gfx::kGoogleGrey100, 0x0F);
-}
-
 SkColor TestAppListColorProvider::GetAppListItemTextColor(
     bool is_in_folder) const {
   return gfx::kGoogleGrey200;
@@ -79,16 +67,6 @@ SkColor TestAppListColorProvider::GetPageSwitcherButtonColor(
   return gfx::kGoogleGrey700;
 }
 
-SkColor TestAppListColorProvider::GetPageSwitcherInkDropBaseColor(
-    bool is_root_app_grid_page_switcher) const {
-  return SkColorSetA(SK_ColorBLACK, 0x0F);
-}
-
-SkColor TestAppListColorProvider::GetPageSwitcherInkDropHighlightColor(
-    bool is_root_app_grid_page_switcher) const {
-  return SkColorSetA(SK_ColorBLACK, 0x0F);
-}
-
 SkColor TestAppListColorProvider::GetSearchBoxIconColor(
     SkColor default_color) const {
   return gfx::kGoogleGrey200;
@@ -101,14 +79,6 @@ SkColor TestAppListColorProvider::GetFolderTitleTextColor(
 
 SkColor TestAppListColorProvider::GetFolderHintTextColor() const {
   return gfx::kGoogleGrey500;
-}
-
-SkColor TestAppListColorProvider::GetFolderNameBackgroundColor(
-    bool active) const {
-  if (!active)
-    return SK_ColorTRANSPARENT;
-
-  return SkColorSetA(SK_ColorBLACK, 0x0F);
 }
 
 SkColor TestAppListColorProvider::GetFolderNameBorderColor(bool active) const {
@@ -130,14 +100,6 @@ SkColor TestAppListColorProvider::GetSeparatorColor() const {
   return SkColorSetA(SK_ColorWHITE, 0x24);
 }
 
-SkColor TestAppListColorProvider::GetSearchResultViewHighlightColor() const {
-  return SkColorSetA(SK_ColorWHITE, 0x12);
-}
-
-SkColor TestAppListColorProvider::GetSearchResultViewInkDropColor() const {
-  return SkColorSetA(SK_ColorWHITE, 0x17);
-}
-
 SkColor TestAppListColorProvider::GetFocusRingColor() const {
   return gfx::kGoogleBlue300;
 }
@@ -151,14 +113,23 @@ SkColor TestAppListColorProvider::GetPrimaryIconColor(
   return default_color;
 }
 
-SkColor TestAppListColorProvider::GetContextMenuHighlightColor(
-    bool is_in_folder) const {
-  return is_in_folder ? SkColorSetA(gfx::kGoogleGrey900, 21)
-                      : SkColorSetA(SK_ColorWHITE, 41);
-}
-
 float TestAppListColorProvider::GetFolderBackgrounBlurSigma() const {
   return 30.0f;
+}
+
+SkColor TestAppListColorProvider::GetRippleAttributesBaseColor(
+    SkColor bg_color) const {
+  return SK_ColorWHITE;
+}
+
+float TestAppListColorProvider::GetRippleAttributesInkDropOpacity(
+    SkColor bg_color) const {
+  return 0.08f;
+}
+
+float TestAppListColorProvider::GetRippleAttributesHighlightOpacity(
+    SkColor bg_color) const {
+  return 0.08f;
 }
 
 }  // namespace ash

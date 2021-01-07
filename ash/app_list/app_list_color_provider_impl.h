@@ -16,8 +16,6 @@ class AppListColorProviderImpl : public AppListColorProvider {
   AppListColorProviderImpl();
   ~AppListColorProviderImpl() override;
   // AppListColorProvider:
-  SkColor GetExpandArrowInkDropBaseColor() const override;
-  float GetExpandArrowInkDropOpacity() const override;
   SkColor GetExpandArrowIconBaseColor() const override;
   SkColor GetExpandArrowIconBackgroundColor() const override;
   SkColor GetAppListBackgroundColor(bool is_tablet_mode) const override;
@@ -26,13 +24,8 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetSearchBoxTextColor(SkColor default_color) const override;
   SkColor GetSuggestionChipBackgroundColor() const override;
   SkColor GetSuggestionChipTextColor() const override;
-  SkColor GetSuggestionChipInkDropColor() const override;
   SkColor GetAppListItemTextColor(bool is_in_folder) const override;
   SkColor GetPageSwitcherButtonColor(
-      bool is_root_app_grid_page_switcher) const override;
-  SkColor GetPageSwitcherInkDropBaseColor(
-      bool is_root_app_grid_page_switcher) const override;
-  SkColor GetPageSwitcherInkDropHighlightColor(
       bool is_root_app_grid_page_switcher) const override;
   SkColor GetSearchBoxIconColor(SkColor default_color) const override;
   SkColor GetSearchBoxCardBackgroundColor() const override;
@@ -40,18 +33,20 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetFolderBubbleColor() const override;
   SkColor GetFolderTitleTextColor(SkColor default_color) const override;
   SkColor GetFolderHintTextColor() const override;
-  SkColor GetFolderNameBackgroundColor(bool active) const override;
   SkColor GetFolderNameBorderColor(bool active) const override;
   SkColor GetFolderNameSelectionColor() const override;
   SkColor GetContentsBackgroundColor() const override;
   SkColor GetSeparatorColor() const override;
-  SkColor GetSearchResultViewHighlightColor() const override;
-  SkColor GetSearchResultViewInkDropColor() const override;
   SkColor GetFocusRingColor() const override;
   SkColor GetFolderItemFocusRingColor() const override;
   SkColor GetPrimaryIconColor(SkColor default_color) const override;
-  SkColor GetContextMenuHighlightColor(bool is_in_folder) const override;
   float GetFolderBackgrounBlurSigma() const override;
+  SkColor GetRippleAttributesBaseColor(
+      SkColor bg_color = gfx::kPlaceholderColor) const override;
+  float GetRippleAttributesInkDropOpacity(
+      SkColor bg_color = gfx::kPlaceholderColor) const override;
+  float GetRippleAttributesHighlightOpacity(
+      SkColor bg_color = gfx::kPlaceholderColor) const override;
 
  private:
   // Unowned.

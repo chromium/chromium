@@ -687,9 +687,15 @@ void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
       flags.setStyle(cc::PaintFlags::kStroke_Style);
       flags.setStrokeWidth(kFocusRingWidth);
     } else {
-      // If a context menu is open, we should instead use a grey selection.
-      flags.setColor(AppListColorProvider::Get()->GetContextMenuHighlightColor(
-          apps_grid_view_->is_in_folder()));
+      const AppListColorProvider* color_provider = AppListColorProvider::Get();
+      const SkColor bg_color = apps_grid_view_->is_in_folder()
+                                   ? color_provider->GetFolderBackgroundColor(
+                                         apps_grid_view_->GetAppListConfig()
+                                             .folder_background_color())
+                                   : gfx::kPlaceholderColor;
+      flags.setColor(SkColorSetA(
+          color_provider->GetRippleAttributesBaseColor(bg_color),
+          color_provider->GetRippleAttributesHighlightOpacity(bg_color) * 255));
       flags.setStyle(cc::PaintFlags::kFill_Style);
     }
     gfx::Rect selection_highlight_bounds = GetContentsBounds();

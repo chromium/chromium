@@ -25,13 +25,7 @@ SkColor DeprecatedGetControlsLayerColor(
     SkColor default_color);
 SkColor DeprecatedGetContentLayerColor(AshColorProvider::ContentLayerType type,
                                        SkColor default_color);
-SkColor DeprecatedGetInkDropBaseColor(SkColor default_color);
-SkColor DeprecatedGetInkDropRippleColor(SkColor default_color);
-SkColor DeprecatedGetInkDropHighlightColor(SkColor default_color);
-float DeprecatedGetInkDropOpacity(float default_opacity);
-SkColor DeprecatedGetAppStateIndicatorColor(bool active,
-                                            SkColor active_color,
-                                            SkColor default_color);
+
 }  // namespace ash
 
 #endif  // ASH_STYLE_DEFAULT_COLORS_H_

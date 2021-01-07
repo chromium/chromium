@@ -99,11 +99,13 @@ int PrivacyInfoView::GetHeightForWidth(int width) const {
 
 void PrivacyInfoView::OnPaintBackground(gfx::Canvas* canvas) {
   if (selected_action_ == Action::kCloseButton) {
+    const AppListColorProvider* color_provider = AppListColorProvider::Get();
+    const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setColor(SkColorSetA(
-        AppListColorProvider::Get()->GetSearchResultViewHighlightColor(),
-        0x14));
+        color_provider->GetRippleAttributesBaseColor(bg_color),
+        color_provider->GetRippleAttributesHighlightOpacity(bg_color) * 255));
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawCircle(close_button_->bounds().CenterPoint(),
                        close_button_->width() / 2, flags);
