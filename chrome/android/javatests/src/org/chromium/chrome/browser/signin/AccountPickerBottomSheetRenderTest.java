@@ -177,9 +177,7 @@ public class AccountPickerBottomSheetRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testTryAgainButtonOnSignInGeneralErrorSheet(boolean nightModeEnabled)
             throws IOException {
-        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountEmail());
+        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         // Throws a connection error during the sign-in action
         doAnswer(invocation -> {
             Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
@@ -199,9 +197,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninGeneralErrorView(boolean nightModeEnabled) throws IOException {
-        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountEmail());
+        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         // Throws a connection error during the sign-in action
         doAnswer(invocation -> {
             Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
@@ -221,9 +217,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninAuthErrorView(boolean nightModeEnabled) throws IOException {
-        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountEmail());
+        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         // Throws an authentication error during the sign-in action
         doAnswer(invocation -> {
             Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
@@ -245,9 +239,7 @@ public class AccountPickerBottomSheetRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninAgainButtonOnSigninAuthErrorSheet(boolean nightModeEnabled)
             throws IOException {
-        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountEmail());
+        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         // Throws an auth error during the sign-in action
         doAnswer(invocation -> {
             Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);

@@ -48,7 +48,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.MetricsUtils;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -162,9 +161,9 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testCollapsedSheetWithAccount() {
-        MetricsUtils.HistogramDelta accountConsistencyHistogram = new HistogramDelta(
+        HistogramDelta accountConsistencyHistogram = new HistogramDelta(
                 "Signin.AccountConsistencyPromoAction", AccountConsistencyPromoAction.SHOWN);
-        MetricsUtils.HistogramDelta shownCountHistogram =
+        HistogramDelta shownCountHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction.Shown.Count", mShowCount);
         buildAndShowCollapsedBottomSheet();
         checkCollapsedAccountList(PROFILE_DATA1);
@@ -178,7 +177,7 @@ public class AccountPickerBottomSheetTest {
         final int max = 100;
         SharedPreferencesManager.getInstance().writeInt(
                 ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT, max + 5);
-        MetricsUtils.HistogramDelta shownCountHistogram =
+        HistogramDelta shownCountHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction.Shown.Count", max);
         buildAndShowCollapsedBottomSheet();
         checkCollapsedAccountList(PROFILE_DATA1);
@@ -235,7 +234,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testDismissCollapsedSheet() {
-        MetricsUtils.HistogramDelta accountConsistencyHistogram =
+        HistogramDelta accountConsistencyHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.DISMISSED_BACK);
         buildAndShowCollapsedBottomSheet();
@@ -253,7 +252,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testDismissCollapsedSheetWithDismissButton() {
-        MetricsUtils.HistogramDelta accountConsistencyHistogram =
+        HistogramDelta accountConsistencyHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.DISMISSED_BUTTON);
         buildAndShowCollapsedBottomSheet();
@@ -375,10 +374,10 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testSignInDefaultAccountOnCollapsedSheet() {
-        MetricsUtils.HistogramDelta accountConsistencyHistogram =
+        HistogramDelta accountConsistencyHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT);
-        MetricsUtils.HistogramDelta signedInCountHistogram = new HistogramDelta(
+        HistogramDelta signedInCountHistogram = new HistogramDelta(
                 "Signin.AccountConsistencyPromoAction.SignedIn.Count", mShowCount);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndCheckSignInInProgressSheet();
@@ -389,10 +388,10 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testSignInAnotherAccount() {
-        MetricsUtils.HistogramDelta accountConsistencyHistogram =
+        HistogramDelta accountConsistencyHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
-        MetricsUtils.HistogramDelta signedInCountHistogram = new HistogramDelta(
+        HistogramDelta signedInCountHistogram = new HistogramDelta(
                 "Signin.AccountConsistencyPromoAction.SignedIn.Count", mShowCount);
         buildAndShowExpandedBottomSheet();
         onView(withText(PROFILE_DATA2.getAccountEmail())).perform(click());
@@ -406,16 +405,16 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testSigninWithAddedAccount() {
-        MetricsUtils.HistogramDelta addAccountHistogram =
+        HistogramDelta addAccountHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED);
-        MetricsUtils.HistogramDelta signedInWithAddedAccountHistogram =
+        HistogramDelta signedInWithAddedAccountHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT);
-        MetricsUtils.HistogramDelta signedInWithNonDefaultAccountHistogram =
+        HistogramDelta signedInWithNonDefaultAccountHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
-        MetricsUtils.HistogramDelta signedInCountHistogram = new HistogramDelta(
+        HistogramDelta signedInCountHistogram = new HistogramDelta(
                 "Signin.AccountConsistencyPromoAction.SignedIn.Count", mShowCount);
         buildAndShowExpandedBottomSheet();
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
@@ -436,7 +435,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testSignInGeneralError() {
-        MetricsUtils.HistogramDelta accountConsistencyHistogram =
+        HistogramDelta accountConsistencyHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN);
         // Throws a connection error during the sign-in action
@@ -467,7 +466,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testSignInAuthError() {
-        MetricsUtils.HistogramDelta accountConsistencyHistogram =
+        HistogramDelta accountConsistencyHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.AUTH_ERROR_SHOWN);
         CoreAccountInfo coreAccountInfo =
@@ -549,10 +548,10 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testAddAccountOnExpandedSheet() {
-        MetricsUtils.HistogramDelta addAccountStartedHistogram =
+        HistogramDelta addAccountStartedHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED);
-        MetricsUtils.HistogramDelta addAccountCompletedHistogram =
+        HistogramDelta addAccountCompletedHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED);
         buildAndShowExpandedBottomSheet();
@@ -605,7 +604,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testContinueButtonOnIncognitoInterstitial() {
-        MetricsUtils.HistogramDelta accountConsistencyHistogram =
+        HistogramDelta accountConsistencyHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.STARTED_INCOGNITO_SESSION);
         buildAndShowExpandedBottomSheet();
