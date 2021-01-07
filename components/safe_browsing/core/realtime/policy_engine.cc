@@ -92,26 +92,30 @@ bool RealTimePolicyEngine::CanPerformFullURLLookupWithToken(
     return false;
   }
 
+  // Safe browsing token fetches are usually disabled if the feature is not
+  // enabled via Finch. The only exception is for users who have explicitly
+  // enabled enhanced protection, for whom the Finch feature is not relevant.
+  if (!base::FeatureList::IsEnabled(kRealTimeUrlLookupEnabledWithToken) &&
+      !IsUserEpOptedIn(pref_service)) {
+    return false;
+  }
+
+  // If the user has explicitly enabled enhanced protection and the primary
+  // account is available, no further conditions are needed.
   if (IsUserEpOptedIn(pref_service) &&
       IsPrimaryAccountSignedIn(identity_manager)) {
     return true;
   }
 
-  if (!base::FeatureList::IsEnabled(kRealTimeUrlLookupEnabledWithToken)) {
-    return false;
-  }
-
-  // |sync_service| can be null in Incognito, and also be set to null by a
-  // cmdline param.
-  if (!sync_service) {
-    return false;
-  }
-
-  // Full URL lookup with token is enabled when the user is syncing their
-  // browsing history without a custom passphrase.
-  return syncer::GetUploadToGoogleState(
-             sync_service, syncer::ModelType::HISTORY_DELETE_DIRECTIVES) ==
-             syncer::UploadState::ACTIVE &&
+  // Otherwise, check the status of sync: Safe browsing token fetches are
+  // enabled when the user is syncing their browsing history without a custom
+  // passphrase.
+  // NOTE: |sync_service| can be null in Incognito, and can also be set to null
+  // by a cmdline param.
+  return sync_service &&
+         (syncer::GetUploadToGoogleState(
+              sync_service, syncer::ModelType::HISTORY_DELETE_DIRECTIVES) ==
+          syncer::UploadState::ACTIVE) &&
          !sync_service->GetUserSettings()->IsUsingSecondaryPassphrase();
 }
 

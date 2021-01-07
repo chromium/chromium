@@ -179,24 +179,26 @@ TEST_F(RealTimePolicyEngineTest,
       identity_test_env->identity_manager();
   syncer::TestSyncService sync_service;
 
-  // Enhanced protection is on but user is not signed in.
-  pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-  EXPECT_FALSE(CanPerformFullURLLookupWithToken(
-      /* is_off_the_record */ false, &sync_service, identity_manager));
-
-  // User is signed in.
-  identity_test_env->MakeUnconsentedPrimaryAccountAvailable("test@example.com");
-  EXPECT_TRUE(CanPerformFullURLLookupWithToken(
-      /* is_off_the_record */ false, &sync_service, identity_manager));
-
-  // Sync and history sync is disabled but enhanced protection is enabled.
+  // For the purposes of this test, disable sync.
   sync_service.SetDisableReasons(
       {syncer::SyncService::DISABLE_REASON_USER_CHOICE});
   sync_service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
   sync_service.GetUserSettings()->SetSelectedTypes(
       /* sync_everything */ false, {});
+
+  // Enhanced protection is on but the user is not signed in: it should not be
+  // possible to perform URL lookups with tokens.
+  pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  EXPECT_FALSE(CanPerformFullURLLookupWithToken(
+      /* is_off_the_record */ false, &sync_service, identity_manager));
+
+  // Enhanced protection is on and the user is signed in: it should be possible
+  // to perform URL lookups with tokens (even though the
+  // kRealTimeLookupEnabledWithToken feature and sync/history sync are
+  // disabled).
+  identity_test_env->MakeUnconsentedPrimaryAccountAvailable("test@example.com");
   EXPECT_TRUE(CanPerformFullURLLookupWithToken(
-      /*is_off_the_record=*/false, &sync_service, identity_manager));
+      /* is_off_the_record */ false, &sync_service, identity_manager));
 }
 
 TEST_F(RealTimePolicyEngineTest, TestCanPerformEnterpriseFullURLLookup) {
