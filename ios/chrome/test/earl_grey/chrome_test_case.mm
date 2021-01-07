@@ -244,17 +244,17 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
   NSUUID* uuid = [NSUUID UUID];
   // Removes all the UI elements.
   [ChromeTestCaseAppInterface
-      removeInfoBarsAndPresentedStateWithCallbackUUID:uuid];
+      removeInfoBarsAndPresentedStateWithCompletionUUID:uuid];
   ConditionBlock condition = ^{
-    return [ChromeTestCaseAppInterface isCallbackInvokedWithUUID:uuid];
+    return [ChromeTestCaseAppInterface isCompletionInvokedWithUUID:uuid];
   };
   NSString* errorMessage =
       @"+[ChromeTestCaseAppInterface "
-      @"removeInfoBarsAndPresentedStateWithCallbackUUID:] callback failed";
+      @"removeInfoBarsAndPresentedStateWithCompletionUUID:] completion failed";
   // Waits until the UI elements are removed.
-  bool callbackInvoked = base::test::ios::WaitUntilConditionOrTimeout(
+  bool completionInvoked = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, condition);
-  GREYAssertTrue(callbackInvoked, errorMessage);
+  GREYAssertTrue(completionInvoked, errorMessage);
 }
 
 + (void)closeAllTabs {

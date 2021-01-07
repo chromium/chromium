@@ -19,14 +19,15 @@
 + (void)resetAuthentication;
 
 // Removes all infobars and clears any presented state.
-// See +[ChromeTestCaseAppInterface isCallbackInvokedWithUUID:] to know when
+// See +[ChromeTestCaseAppInterface isCompletionInvokedWithUUID:] to know when
 // all views are dismissed.
-+ (void)removeInfoBarsAndPresentedStateWithCallbackUUID:(NSUUID*)callbackUUID;
++ (void)removeInfoBarsAndPresentedStateWithCompletionUUID:
+    (NSUUID*)completionUUID;
 
-// Returns YES if the callback related to |callbackUUID| has been invoked. Once
-// this method returns YES, |callbackUUID| is dropped, and a second call will
-// return NO.
-+ (BOOL)isCallbackInvokedWithUUID:(NSUUID*)callbackUUID;
+// Returns YES if the completion related to |completionUUID| has been invoked.
+// Once this method returns YES, |completionUUID| is dropped, and a second call
+// will return NO.
++ (BOOL)isCompletionInvokedWithUUID:(NSUUID*)completionUUID;
 
 @end
 

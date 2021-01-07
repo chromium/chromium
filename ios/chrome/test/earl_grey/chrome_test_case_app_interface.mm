@@ -14,10 +14,9 @@
 
 namespace {
 
-// Stores the callback UUIDs when the callback is invoked. The UUIDs can be
-// checked with +[ChromeTestCaseAppInterface isCallbackInvokedWithUUID:].
-NSMutableSet* invokedCallbackUUID = nil;
-
+// Stores the completion UUIDs when the completion is invoked. The UUIDs can be
+// checked with +[ChromeTestCaseAppInterface isCompletionInvokedWithUUID:].
+NSMutableSet* invokedCompletionUUID = nil;
 }
 
 @implementation ChromeTestCaseAppInterface
@@ -35,28 +34,29 @@ NSMutableSet* invokedCallbackUUID = nil;
   chrome_test_util::ResetMockAuthentication();
 }
 
-+ (void)removeInfoBarsAndPresentedStateWithCallbackUUID:(NSUUID*)callbackUUID {
++ (void)removeInfoBarsAndPresentedStateWithCompletionUUID:
+    (NSUUID*)completionUUID {
   chrome_test_util::RemoveAllInfoBars();
   chrome_test_util::ClearPresentedState(^() {
-    if (callbackUUID)
-      [self callbackInvokedWithUUID:callbackUUID];
+    if (completionUUID)
+      [self completionInvokedWithUUID:completionUUID];
   });
 }
 
-+ (BOOL)isCallbackInvokedWithUUID:(NSUUID*)callbackUUID {
-  if (![invokedCallbackUUID containsObject:callbackUUID])
++ (BOOL)isCompletionInvokedWithUUID:(NSUUID*)completionUUID {
+  if (![invokedCompletionUUID containsObject:completionUUID])
     return NO;
-  [invokedCallbackUUID removeObject:callbackUUID];
+  [invokedCompletionUUID removeObject:completionUUID];
   return YES;
 }
 
 #pragma mark - Private
 
-+ (void)callbackInvokedWithUUID:(NSUUID*)callbackUUID {
-  if (!invokedCallbackUUID)
-    invokedCallbackUUID = [NSMutableSet set];
-  DCHECK(![invokedCallbackUUID containsObject:callbackUUID]);
-  [invokedCallbackUUID addObject:callbackUUID];
++ (void)completionInvokedWithUUID:(NSUUID*)completionUUID {
+  if (!invokedCompletionUUID)
+    invokedCompletionUUID = [NSMutableSet set];
+  DCHECK(![invokedCompletionUUID containsObject:completionUUID]);
+  [invokedCompletionUUID addObject:completionUUID];
 }
 
 @end
