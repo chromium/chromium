@@ -449,13 +449,12 @@ void FrameSequenceTracker::ReportFramePresented(
   uint32_t impl_frames_ontime = 0;
   uint32_t main_frames_ontime = 0;
 
-  const auto& vsync_interval =
+  const auto vsync_interval =
       (feedback.interval.is_zero() ? viz::BeginFrameArgs::DefaultInterval()
-                                   : feedback.interval) *
-      1.5;
+                                   : feedback.interval);
   DCHECK(!vsync_interval.is_zero()) << TRACKER_DCHECK_MSG;
   base::TimeTicks safe_deadline_for_frame =
-      last_frame_presentation_timestamp_ + vsync_interval;
+      last_frame_presentation_timestamp_ + vsync_interval * 1.5;
 
   const bool was_presented = !feedback.failed();
   if (was_presented && submitted_frame_since_last_presentation) {
@@ -478,7 +477,7 @@ void FrameSequenceTracker::ReportFramePresented(
     }
 
     metrics()->ComputeJank(FrameSequenceMetrics::ThreadType::kCompositor,
-                           frame_token, feedback.timestamp, feedback.interval);
+                           frame_token, feedback.timestamp, vsync_interval);
   }
 
   if (was_presented) {
@@ -500,8 +499,7 @@ void FrameSequenceTracker::ReportFramePresented(
       }
 
       metrics()->ComputeJank(FrameSequenceMetrics::ThreadType::kMain,
-                             frame_token, feedback.timestamp,
-                             feedback.interval);
+                             frame_token, feedback.timestamp, vsync_interval);
     }
     if (main_frames_.size() < size_before_erase) {
       if (!last_frame_presentation_timestamp_.is_null() &&
