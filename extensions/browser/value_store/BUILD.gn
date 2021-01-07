@@ -17,6 +17,8 @@ source_set("value_store") {
     "leveldb_scoped_database.h",
     "leveldb_value_store.cc",
     "leveldb_value_store.h",
+    "settings_namespace.cc",
+    "settings_namespace.h",
     "value_store.cc",
     "value_store.h",
     "value_store_change.cc",
@@ -30,6 +32,7 @@ source_set("value_store") {
 
   deps = [
     "//base",
+    "//content/public/browser",
     "//extensions/common",
     "//third_party/leveldatabase",
   ]

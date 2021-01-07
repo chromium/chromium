@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/storage/settings_namespace.h"
+#include "extensions/browser/value_store/settings_namespace.h"
 
 #include "base/notreached.h"
 

@@ -14,9 +14,12 @@
 #include "base/values.h"
 #include "extensions/browser/value_store/value_store.h"
 
+namespace base {
+class SequencedTaskRunner;
+}
+
 namespace extensions {
 class ValueStoreFactory;
-}  // namespace extensions
 
 // A frontend for a LeveldbValueStore, for use on the UI thread.
 class ValueStoreFrontend {
@@ -28,7 +31,8 @@ class ValueStoreFrontend {
 
   ValueStoreFrontend(
       const scoped_refptr<extensions::ValueStoreFactory>& store_factory,
-      BackendType backend_type);
+      BackendType backend_type,
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner);
   ~ValueStoreFrontend();
 
   // Retrieves a value from the database asynchronously, passing a copy to
@@ -48,7 +52,11 @@ class ValueStoreFrontend {
   // on the FILE thread.
   scoped_refptr<Backend> backend_;
 
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
   DISALLOW_COPY_AND_ASSIGN(ValueStoreFrontend);
 };
+
+}  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_FRONTEND_H_

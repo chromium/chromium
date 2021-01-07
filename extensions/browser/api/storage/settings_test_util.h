@@ -12,9 +12,9 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/test/base/testing_profile.h"
-#include "extensions/browser/api/storage/settings_namespace.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/mock_extension_system.h"
+#include "extensions/browser/value_store/settings_namespace.h"
 #include "extensions/browser/value_store/value_store_factory.h"
 #include "extensions/common/extension.h"
 

@@ -14,7 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/clipboard/clipboard_api.h"
 #include "extensions/browser/api/declarative_content/content_rules_registry.h"
-#include "extensions/browser/api/storage/settings_namespace.h"
+#include "extensions/browser/value_store/settings_namespace.h"
 #include "extensions/common/api/clipboard.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
