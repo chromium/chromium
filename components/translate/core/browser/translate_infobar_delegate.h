@@ -248,7 +248,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
       bool triggered_from_menu);
 
  private:
-  friend class TranslationInfoBarTest;
+  friend class TranslateInfoBarDelegateTest;
   typedef std::pair<std::string, base::string16> LanguageNamePair;
 
   bool is_off_the_record_;

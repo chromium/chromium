@@ -136,6 +136,10 @@ source_set("unit_tests") {
     "//services/network/public/cpp:cpp",
     "//ui/base",
   ]
+
+  if (is_ios || is_android) {
+    sources += [ "translate_infobar_delegate_unittest.cc" ]
+  }
 }
 
 source_set("test_support") {
