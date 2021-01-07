@@ -213,6 +213,36 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializeAfterFirstFrame) {
   EXPECT_EQ(outputs_count, 1);
 }
 
+TEST_F(VideoEncodeAcceleratorAdapterTest, FlushDuringInitialize) {
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  int outputs_count = 0;
+  auto pixel_format = PIXEL_FORMAT_I420;
+  VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput, base::Optional<VideoEncoder::CodecDescription>) {
+        outputs_count++;
+      });
+
+  vea()->SetEncodingCallback(base::BindLambdaForTesting(
+      [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
+        EXPECT_EQ(keyframe, true);
+        EXPECT_EQ(frame->format(), pixel_format);
+        EXPECT_EQ(frame->coded_size(), options.frame_size);
+        return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
+      }));
+  adapter()->Initialize(profile_, options, std::move(output_cb),
+                        ValidatingStatusCB());
+
+  auto frame = CreateGreenFrame(options.frame_size, pixel_format,
+                                base::TimeDelta::FromMilliseconds(1));
+  adapter()->Encode(frame, true, ValidatingStatusCB());
+  adapter()->Flush(base::BindLambdaForTesting([&](Status s) {
+    EXPECT_TRUE(s.is_ok());
+    EXPECT_EQ(outputs_count, 1);
+  }));
+  RunUntilIdle();
+}
+
 TEST_F(VideoEncodeAcceleratorAdapterTest, InitializationError) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(640, 480);
