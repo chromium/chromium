@@ -336,6 +336,11 @@ const char kOmniboxLocalHistoryZeroSuggestDescription[] =
     "Configures the omnibox zero-prefix suggestion to use local search "
     "history.";
 
+const char kOmniboxNewImplementationName[] =
+    "Use experimental omnibox textfield";
+const char kOmniboxNewImplementationDescription[] =
+    "Uses a textfield implementation that doesn't use UILabels internally";
+
 const char kRefactoredNTPName[] = "Enables refactored new tab page";
 const char kRefactoredNTPDescription[] =
     "When enabled, the new tab page is replaced with the refactored version, "

@@ -292,6 +292,11 @@ extern const char kOmniboxOnFocusSuggestionsDescription[];
 extern const char kOmniboxLocalHistoryZeroSuggestName[];
 extern const char kOmniboxLocalHistoryZeroSuggestDescription[];
 
+// Title and description for the flag to swap Omnibox Textfield implementation
+// to a new experimental one.
+extern const char kOmniboxNewImplementationName[];
+extern const char kOmniboxNewImplementationDescription[];
+
 // Title and description for the flag that enables the refactored new tab page.
 extern const char kRefactoredNTPName[];
 extern const char kRefactoredNTPDescription[];

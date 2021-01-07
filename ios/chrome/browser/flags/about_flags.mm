@@ -595,6 +595,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kUseOfHashAffiliationFetcher)},
+    {"omnibox-new-textfield-implementation",
+     flag_descriptions::kOmniboxNewImplementationName,
+     flag_descriptions::kOmniboxNewImplementationDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSNewOmniboxImplementation)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

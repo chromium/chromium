@@ -71,6 +71,9 @@ extern const base::Feature kDefaultBrowserFullscreenPromoExperiment;
 // Feature flag that enable Shared Highlighting color change in iOS.
 extern const base::Feature kIOSSharedHighlightingColorChange;
 
+// Feature flag that swaps the omnibox textfield implementation.
+extern const base::Feature kIOSNewOmniboxImplementation;
+
 // Feature flag that enables persisting the Crash Restore Infobar across
 // navigations.
 extern const base::Feature kIOSPersistCrashRestore;
