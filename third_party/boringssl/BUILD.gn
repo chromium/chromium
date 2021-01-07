@@ -96,7 +96,9 @@ if (is_win && !is_msan && current_cpu != "arm64") {
     } else if (current_cpu == "arm64") {
       if (is_linux || is_chromeos || is_android) {
         sources += crypto_sources_linux_aarch64
-      } else if (is_ios) {
+      } else if (is_apple) {
+        # TODO(davidben): Rename all the file lists, etc., upstream from mac
+        # and ios to apple.
         sources += crypto_sources_ios_aarch64
       } else {
         public_configs = [ ":no_asm_config" ]
