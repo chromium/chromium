@@ -27,6 +27,7 @@ encrypted-media
 fullscreen
 geolocation
 gyroscope
+hid
 magnetometer
 microphone
 midi
