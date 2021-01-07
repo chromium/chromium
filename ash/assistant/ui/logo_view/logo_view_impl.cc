@@ -16,6 +16,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -44,10 +45,6 @@ LogoViewImpl::LogoViewImpl()
 
 LogoViewImpl::~LogoViewImpl() {
   state_animator_.StopAnimator();
-}
-
-const char* LogoViewImpl::GetClassName() const {
-  return "LogoViewImpl";
 }
 
 void LogoViewImpl::SetState(LogoView::State state, bool animate) {
@@ -223,5 +220,8 @@ void LogoViewImpl::VisibilityChanged(views::View* starting_from,
   else
     state_animator_.StopAnimator();
 }
+
+BEGIN_METADATA(LogoViewImpl, LogoView)
+END_METADATA
 
 }  // namespace ash
