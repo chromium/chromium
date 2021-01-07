@@ -15,6 +15,10 @@ namespace chromeos {
 namespace multidevice_setup {
 
 // static
+constexpr base::TimeDelta
+    EligibleHostDevicesProviderImpl::kInactiveDeviceThresholdInDays;
+
+// static
 EligibleHostDevicesProviderImpl::Factory*
     EligibleHostDevicesProviderImpl::Factory::test_factory_ = nullptr;
 
@@ -118,6 +122,35 @@ void EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus(
     id_to_activity_status_map.insert({device_activity_status_ptr->device_id,
                                       std::move(device_activity_status_ptr)});
   }
+
+  // Remove inactive devices. A device is inactive if it has a
+  // last_activity_time before some defined threshold.
+  base::Time now = base::Time::Now();
+  eligible_active_devices_from_last_sync_.erase(
+      std::remove_if(
+          eligible_active_devices_from_last_sync_.begin(),
+          eligible_active_devices_from_last_sync_.end(),
+          [&id_to_activity_status_map,
+           &now](const multidevice::DeviceWithConnectivityStatus& device) {
+            auto it = id_to_activity_status_map.find(
+                device.remote_device.instance_id());
+
+            if (it == id_to_activity_status_map.end()) {
+              return false;
+            }
+
+            base::Time last_activity_time =
+                std::get<1>(*it)->last_activity_time;
+
+            // Do not filter out devices whose last activity time was not set by
+            // the server.
+            if (last_activity_time == base::Time()) {
+              return false;
+            }
+
+            return now - last_activity_time > kInactiveDeviceThresholdInDays;
+          }),
+      eligible_active_devices_from_last_sync_.end());
 
   // Sort the list preferring online devices, then last activity time, then
   // last update time.
