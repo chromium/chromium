@@ -2078,12 +2078,19 @@ class StartupBrowserCreatorPickerTestBase : public InProcessBrowserTest {
     // later in the startup process and so we need to have at least 2 fake
     // profiles.
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(
-        profile_manager->GetProfile(profile_manager->user_data_dir().Append(
-            FILE_PATH_LITERAL("New Profile 1"))));
-    ASSERT_TRUE(
-        profile_manager->GetProfile(profile_manager->user_data_dir().Append(
-            FILE_PATH_LITERAL("New Profile 2"))));
+    std::vector<base::FilePath> profile_paths = {
+        profile_manager->user_data_dir().Append(
+            FILE_PATH_LITERAL("New Profile 1")),
+        profile_manager->user_data_dir().Append(
+            FILE_PATH_LITERAL("New Profile 2"))};
+    for (const auto& profile_path : profile_paths) {
+      ASSERT_TRUE(profile_manager->GetProfile(profile_path));
+      // Mark newly created profiles as active.
+      ProfileAttributesEntry* entry = nullptr;
+      ASSERT_TRUE(profile_manager->GetProfileAttributesStorage()
+                      .GetProfileAttributesWithPath(profile_path, &entry));
+      entry->SetActiveTimeToNow();
+    }
   }
 
  private:

@@ -44,6 +44,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/google_chrome_strings.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -322,6 +323,9 @@ void ProfilePickerView::Init(ProfilePicker::EntryPoint entry_point,
              CreateURLForEntryPoint(entry_point), /*show_toolbar=*/false);
   GetWidget()->Show();
   state_ = kReady;
+
+  PrefService* prefs = g_browser_process->local_state();
+  prefs->SetBoolean(prefs::kBrowserProfilePickerShown, true);
 
   if (entry_point == ProfilePicker::EntryPoint::kOnStartup) {
     DCHECK(!creation_time_on_startup_.is_null());
