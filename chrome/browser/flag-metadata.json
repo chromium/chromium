@@ -4369,6 +4369,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "send-tab-to-self-when-signed-in",
+    "owners": ["victorvianna@google.com", "mastiz@chromium.org"],
+    "expiry_milestone": 92
+  },
+  {
     "name": "send-uma-cellular",
     "owners": [ "thegreenfrog", "bling-flags@google.com" ],
     "expiry_milestone": 80

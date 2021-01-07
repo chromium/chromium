@@ -2047,6 +2047,11 @@ const char kSecurePaymentConfirmationDebugDescription[] =
     "secure payment confirmation in PaymentRequest API must use user verifying "
     "platform authenticators.";
 
+const char kSendTabToSelfWhenSignedInName[] = "Send tab to self when signed-in";
+const char kSendTabToSelfWhenSignedInDescription[] =
+    "Makes the tab sharing feature also available for users who have \"only\" "
+    "signed-in to their Google Account (as opposed to having enabled Sync).";
+
 const char kSidePanelName[] = "Side panel";
 const char kSidePanelDescription[] = "Host some content in a side panel.";
 

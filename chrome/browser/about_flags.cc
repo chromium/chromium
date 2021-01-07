@@ -6952,6 +6952,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kActionableContentSettingsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(browser_ui::kActionableContentSettings)},
 #endif
+
+    {"send-tab-to-self-when-signed-in",
+     flag_descriptions::kSendTabToSelfWhenSignedInName,
+     flag_descriptions::kSendTabToSelfWhenSignedInDescription, kOsAll,
+     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfWhenSignedIn)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
