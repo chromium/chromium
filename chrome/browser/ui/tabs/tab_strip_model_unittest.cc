@@ -447,7 +447,7 @@ class TabStripModelTest : public testing::Test {
       ASSERT_TRUE(base::StringToInt(sel, &value));
       selection_model.AddIndexToSelection(value);
     }
-    selection_model.set_active(selection_model.selected_indices()[0]);
+    selection_model.set_active(*selection_model.selected_indices().begin());
     model->SetSelectionFromModel(selection_model);
   }
 

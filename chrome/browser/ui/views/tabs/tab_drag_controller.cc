@@ -1667,9 +1667,9 @@ void TabDragController::RestoreInitialSelection() {
   // The anchor/active may have been among the tabs that were dragged out. Force
   // the anchor/active to be valid.
   if (selection_model.anchor() == ui::ListSelectionModel::kUnselectedIndex)
-    selection_model.set_anchor(selection_model.selected_indices()[0]);
+    selection_model.set_anchor(*selection_model.selected_indices().begin());
   if (selection_model.active() == ui::ListSelectionModel::kUnselectedIndex)
-    selection_model.set_active(selection_model.selected_indices()[0]);
+    selection_model.set_active(*selection_model.selected_indices().begin());
   source_context_->GetTabStripModel()->SetSelectionFromModel(selection_model);
 }
 
@@ -2169,7 +2169,7 @@ void TabDragController::UpdateGroupForDraggedTabs() {
 
   // Removing a tab from a group could change the index of the selected tabs.
   // Store this to move the tab back to the proper position.
-  const int to_index = selected[0];
+  const int to_index = *selected.begin();
 
   // All selected tabs should all be in the same group unless it is the initial
   // move.

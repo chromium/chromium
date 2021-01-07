@@ -24,10 +24,14 @@ static std::string StateAsString(const ListSelectionModel& model) {
                        " selection=";
   const ListSelectionModel::SelectedIndices& selection(
       model.selected_indices());
-  for (size_t i = 0; i < selection.size(); ++i) {
-    if (i != 0)
+  bool first = true;
+  for (int index : selection) {
+    if (first) {
+      first = false;
+    } else {
       result += " ";
-    result += base::NumberToString(selection[i]);
+    }
+    result += base::NumberToString(index);
   }
   return result;
 }

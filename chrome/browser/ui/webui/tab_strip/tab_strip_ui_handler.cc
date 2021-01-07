@@ -283,7 +283,9 @@ void TabStripUIHandler::OnTabStripModelChanged(
                                              ->GetTabGroup(tab_group_id.value())
                                              ->ListTabs();
 
-        const auto& selected_tabs = selection.new_model.selected_indices();
+        const ui::ListSelectionModel::SelectedIndices& sel =
+            selection.new_model.selected_indices();
+        const auto& selected_tabs = std::vector<int>(sel.begin(), sel.end());
         const bool all_tabs_in_group =
             IsSortedAndContiguous(base::make_span(selected_tabs)) &&
             selected_tabs.front() == static_cast<int>(tabs_in_group.start()) &&

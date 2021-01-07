@@ -267,7 +267,9 @@ void TableView::SetSelectionAll(bool select) {
 }
 
 int TableView::GetFirstSelectedRow() const {
-  return selection_model_.empty() ? -1 : selection_model_.selected_indices()[0];
+  return selection_model_.empty()
+             ? -1
+             : *selection_model_.selected_indices().begin();
 }
 
 void TableView::SetColumnVisibility(int id, bool is_visible) {

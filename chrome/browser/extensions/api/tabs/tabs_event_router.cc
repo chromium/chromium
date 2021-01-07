@@ -453,8 +453,7 @@ void TabsEventRouter::DispatchTabSelectionChanged(
       tab_strip_model->selection_model().selected_indices();
   std::unique_ptr<base::ListValue> all_tabs(new base::ListValue);
 
-  for (size_t i = 0; i < new_selection.size(); ++i) {
-    int index = new_selection[i];
+  for (int index : new_selection) {
     WebContents* contents = tab_strip_model->GetWebContentsAt(index);
     if (!contents)
       break;

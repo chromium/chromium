@@ -469,7 +469,8 @@ std::unique_ptr<content::WebContents> TabStripModel::DetachWebContentsImpl(
       if (!selection_model_.empty()) {
         // The active tab was removed, but there is still something selected.
         // Move the active and anchor to the first selected index.
-        selection_model_.set_active(selection_model_.selected_indices()[0]);
+        selection_model_.set_active(
+            *selection_model_.selected_indices().begin());
         selection_model_.set_anchor(selection_model_.active());
       } else {
         DCHECK(next_selected_index.has_value());
@@ -626,12 +627,12 @@ void TabStripModel::MoveSelectedTabsTo(int index) {
 
   int total_pinned_count = IndexOfFirstNonPinnedTab();
   int selected_pinned_count = 0;
-  int selected_count =
-      static_cast<int>(selection_model_.selected_indices().size());
-  for (int i = 0; i < selected_count &&
-                  IsTabPinned(selection_model_.selected_indices()[i]);
-       ++i) {
-    selected_pinned_count++;
+  const ui::ListSelectionModel::SelectedIndices& selected_indices =
+      selection_model_.selected_indices();
+  int selected_count = static_cast<int>(selected_indices.size());
+  for (auto selection : selected_indices) {
+    if (IsTabPinned(selection))
+      selected_pinned_count++;
   }
 
   // To maintain that all pinned tabs occur before non-pinned tabs we move them
@@ -886,7 +887,7 @@ void TabStripModel::ToggleSelectionAt(int index) {
     new_model.set_anchor(index);
     if (new_model.active() == index ||
         new_model.active() == ui::ListSelectionModel::kUnselectedIndex)
-      new_model.set_active(new_model.selected_indices()[0]);
+      new_model.set_active(*new_model.selected_indices().begin());
   } else {
     new_model.AddIndexToSelection(index);
     new_model.set_anchor(index);
@@ -1015,8 +1016,10 @@ void TabStripModel::AddWebContents(
 void TabStripModel::CloseSelectedTabs() {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
+  const ui::ListSelectionModel::SelectedIndices& sel =
+      selection_model_.selected_indices();
   InternalCloseTabs(
-      GetWebContentsesByIndices(selection_model_.selected_indices()),
+      GetWebContentsesByIndices(std::vector<int>(sel.begin(), sel.end())),
       CLOSE_CREATE_HISTORICAL_TAB | CLOSE_USER_GESTURE);
 }
 
@@ -1616,7 +1619,9 @@ int TabStripModel::ConstrainInsertionIndex(int index, bool pinned_tab) {
 std::vector<int> TabStripModel::GetIndicesForCommand(int index) const {
   if (!IsTabSelected(index))
     return {index};
-  return selection_model_.selected_indices();
+  const ui::ListSelectionModel::SelectedIndices& sel =
+      selection_model_.selected_indices();
+  return std::vector<int>(sel.begin(), sel.end());
 }
 
 std::vector<int> TabStripModel::GetIndicesClosedByCommand(
@@ -1628,7 +1633,7 @@ std::vector<int> TabStripModel::GetIndicesClosedByCommand(
   int last_unclosed_tab = -1;
   if (id == CommandCloseTabsToRight) {
     last_unclosed_tab =
-        is_selected ? selection_model_.selected_indices().back() : index;
+        is_selected ? *selection_model_.selected_indices().rbegin() : index;
   }
 
   // NOTE: callers expect the vector to be sorted in descending order.
@@ -1969,29 +1974,33 @@ void TabStripModel::MoveSelectedTabsToImpl(int index,
          start + length <= selection_model_.selected_indices().size());
   size_t end = start + length;
   int count_before_index = 0;
-  for (size_t i = start; i < end && selection_model_.selected_indices()[i] <
-                                        index + count_before_index;
-       ++i) {
-    count_before_index++;
+  const ui::ListSelectionModel::SelectedIndices& sel =
+      selection_model_.selected_indices();
+  auto indices = std::vector<int>(sel.begin(), sel.end());
+
+  for (size_t i = start; i < end; ++i) {
+    if (indices[i] < index + count_before_index)
+      count_before_index++;
   }
 
   // First move those before index. Any tabs before index end up moving in the
   // selection model so we use start each time through.
   int target_index = index + count_before_index;
   size_t tab_index = start;
-  while (tab_index < end &&
-         selection_model_.selected_indices()[start] < index) {
-    MoveWebContentsAtImpl(selection_model_.selected_indices()[start],
-                          target_index - 1, false);
+  while (tab_index < end && indices[start] < index) {
+    MoveWebContentsAtImpl(indices[start], target_index - 1, false);
+    // It is necessary to re-populate selected indices because
+    // MoveWebContetsAtImpl mutates selection_model_.
+    const auto& new_sel = selection_model_.selected_indices();
+    indices = std::vector<int>(new_sel.begin(), new_sel.end());
     tab_index++;
   }
 
   // Then move those after the index. These don't result in reordering the
-  // selection.
+  // selection, therefore there is no need to repopulate indices.
   while (tab_index < end) {
-    if (selection_model_.selected_indices()[tab_index] != target_index) {
-      MoveWebContentsAtImpl(selection_model_.selected_indices()[tab_index],
-                            target_index, false);
+    if (indices[tab_index] != target_index) {
+      MoveWebContentsAtImpl(indices[tab_index], target_index, false);
     }
     tab_index++;
     target_index++;
