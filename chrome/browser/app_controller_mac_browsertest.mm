@@ -202,7 +202,7 @@ class AppControllerPlatformAppBrowserTest
 // Test that if only a platform app window is open and no browser windows are
 // open then a reopen event does nothing.
 IN_PROC_BROWSER_TEST_F(AppControllerPlatformAppBrowserTest,
-                       PlatformAppReopenWithWindows) {
+                       DISABLED_PlatformAppReopenWithWindows) {
   AppController* ac = base::mac::ObjCCast<AppController>(
       [[NSApplication sharedApplication] delegate]);
   ASSERT_TRUE(ac);
