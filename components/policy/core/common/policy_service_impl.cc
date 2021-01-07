@@ -143,8 +143,8 @@ void RemapRenamedPolicies(PolicyMap* policies) {
     if (old_policy &&
         (!new_policy || old_policy->has_higher_priority_than(*new_policy))) {
       PolicyMap::Entry policy_entry = old_policy->DeepCopy();
-      policy_entry.AddError(IDS_POLICY_MIGRATED_NEW_POLICY,
-                            {base::UTF8ToUTF16(policy_pair.first)});
+      policy_entry.AddWarning(IDS_POLICY_MIGRATED_NEW_POLICY,
+                              {base::UTF8ToUTF16(policy_pair.first)});
       old_policy->AddError(IDS_POLICY_MIGRATED_OLD_POLICY,
                            {base::UTF8ToUTF16(policy_pair.second)});
       policies->Set(policy_pair.second, std::move(policy_entry));
