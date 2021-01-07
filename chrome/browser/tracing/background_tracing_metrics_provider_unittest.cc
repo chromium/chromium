@@ -5,6 +5,7 @@
 #include "chrome/browser/tracing/background_tracing_metrics_provider.h"
 
 #include "base/bind.h"
+#include "components/tracing/common/trace_startup_config.h"
 #include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -25,7 +26,8 @@ class BackgroundTracingMetricsProviderTest : public testing::Test {
     base::DictionaryValue dict;
 
     dict.SetString("mode", "REACTIVE_TRACING_MODE");
-    dict.SetString("category", "BENCHMARK");
+    dict.SetString("custom_categories",
+                   tracing::TraceStartupConfig::kDefaultStartupCategories);
 
     std::unique_ptr<base::ListValue> rules_list(new base::ListValue());
     {

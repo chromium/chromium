@@ -99,6 +99,9 @@ class TRACING_EXPORT TraceStartupConfig {
     kProto,
   };
 
+  // Exposed for testing.
+  static const char kDefaultStartupCategories[];
+
   static TraceStartupConfig* GetInstance();
 
   // Default minimum startup trace config with enough events to debug issues.

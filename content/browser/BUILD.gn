@@ -1724,8 +1724,6 @@ source_set("browser") {
     "storage_partition_impl_map.h",
     "theme_helper.cc",
     "theme_helper.h",
-    "tracing/background_memory_tracing_observer.cc",
-    "tracing/background_memory_tracing_observer.h",
     "tracing/background_startup_tracing_observer.cc",
     "tracing/background_startup_tracing_observer.h",
     "tracing/background_tracing_active_scenario.cc",

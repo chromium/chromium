@@ -38,21 +38,7 @@ const char kEnabledDataSourcesKey[] = "enabled_data_sources";
 const char kConfigCategoryKey[] = "category";
 const char kConfigCustomCategoriesKey[] = "custom_categories";
 const char kConfigTraceConfigKey[] = "trace_config";
-const char kConfigCategoryBenchmark[] = "BENCHMARK";
-const char kConfigCategoryBenchmarkDeep[] = "BENCHMARK_DEEP";
-const char kConfigCategoryBenchmarkGPU[] = "BENCHMARK_GPU";
-const char kConfigCategoryBenchmarkIPC[] = "BENCHMARK_IPC";
 const char kConfigCategoryBenchmarkStartup[] = "BENCHMARK_STARTUP";
-const char kConfigCategoryBenchmarkBlinkGC[] = "BENCHMARK_BLINK_GC";
-const char kConfigCategoryBenchmarkMemoryHeavy[] = "BENCHMARK_MEMORY_HEAVY";
-const char kConfigCategoryBenchmarkMemoryLight[] = "BENCHMARK_MEMORY_LIGHT";
-const char kConfigCategoryBenchmarkExecutionMetric[] =
-    "BENCHMARK_EXECUTION_METRIC";
-const char kConfigCategoryBenchmarkNavigation[] = "BENCHMARK_NAVIGATION";
-const char kConfigCategoryBenchmarkRenderers[] = "BENCHMARK_RENDERERS";
-const char kConfigCategoryBenchmarkServiceworker[] = "BENCHMARK_SERVICEWORKER";
-const char kConfigCategoryBenchmarkPower[] = "BENCHMARK_POWER";
-const char kConfigCategoryBlinkStyle[] = "BLINK_STYLE";
 const char kConfigCategoryCustom[] = "CUSTOM";
 const char kConfigCustomConfig[] = "CUSTOM_CONFIG";
 
@@ -69,7 +55,7 @@ const char kConfigInterningResetIntervalMs[] = "interning_reset_interval_ms";
 BackgroundTracingConfigImpl::BackgroundTracingConfigImpl(
     TracingMode tracing_mode)
     : BackgroundTracingConfig(tracing_mode),
-      category_preset_(BackgroundTracingConfigImpl::BENCHMARK) {}
+      category_preset_(BackgroundTracingConfigImpl::BENCHMARK_STARTUP) {}
 
 BackgroundTracingConfigImpl::~BackgroundTracingConfigImpl() {}
 
@@ -77,116 +63,24 @@ BackgroundTracingConfigImpl::~BackgroundTracingConfigImpl() {}
 std::string BackgroundTracingConfigImpl::CategoryPresetToString(
     BackgroundTracingConfigImpl::CategoryPreset category_preset) {
   switch (category_preset) {
-    case BackgroundTracingConfigImpl::BENCHMARK:
-      return kConfigCategoryBenchmark;
-    case BackgroundTracingConfigImpl::BENCHMARK_DEEP:
-      return kConfigCategoryBenchmarkDeep;
-    case BackgroundTracingConfigImpl::BENCHMARK_GPU:
-      return kConfigCategoryBenchmarkGPU;
-    case BackgroundTracingConfigImpl::BENCHMARK_IPC:
-      return kConfigCategoryBenchmarkIPC;
     case BackgroundTracingConfigImpl::BENCHMARK_STARTUP:
       return kConfigCategoryBenchmarkStartup;
-    case BackgroundTracingConfigImpl::BENCHMARK_BLINK_GC:
-      return kConfigCategoryBenchmarkBlinkGC;
-    case BackgroundTracingConfigImpl::BENCHMARK_MEMORY_HEAVY:
-      return kConfigCategoryBenchmarkMemoryHeavy;
-    case BackgroundTracingConfigImpl::BENCHMARK_MEMORY_LIGHT:
-      return kConfigCategoryBenchmarkMemoryLight;
-    case BackgroundTracingConfigImpl::BENCHMARK_EXECUTION_METRIC:
-      return kConfigCategoryBenchmarkExecutionMetric;
-    case BackgroundTracingConfigImpl::BENCHMARK_NAVIGATION:
-      return kConfigCategoryBenchmarkNavigation;
-    case BackgroundTracingConfigImpl::BENCHMARK_RENDERERS:
-      return kConfigCategoryBenchmarkRenderers;
-    case BackgroundTracingConfigImpl::BENCHMARK_SERVICEWORKER:
-      return kConfigCategoryBenchmarkServiceworker;
-    case BackgroundTracingConfigImpl::BENCHMARK_POWER:
-      return kConfigCategoryBenchmarkPower;
-    case BackgroundTracingConfigImpl::BLINK_STYLE:
-      return kConfigCategoryBlinkStyle;
     case BackgroundTracingConfigImpl::CUSTOM_CATEGORY_PRESET:
       return kConfigCategoryCustom;
     case BackgroundTracingConfigImpl::CUSTOM_TRACE_CONFIG:
       return kConfigCustomConfig;
     case BackgroundTracingConfigImpl::CATEGORY_PRESET_UNSET:
       NOTREACHED();
+      return "";
   }
-  NOTREACHED();
-  return "";
 }
 
 // static
 bool BackgroundTracingConfigImpl::StringToCategoryPreset(
     const std::string& category_preset_string,
     BackgroundTracingConfigImpl::CategoryPreset* category_preset) {
-  if (category_preset_string == kConfigCategoryBenchmark) {
-    *category_preset = BackgroundTracingConfigImpl::BENCHMARK;
-    return true;
-  }
-
-  if (category_preset_string == kConfigCategoryBenchmarkDeep) {
-    *category_preset = BackgroundTracingConfigImpl::BENCHMARK_DEEP;
-    return true;
-  }
-
-  if (category_preset_string == kConfigCategoryBenchmarkGPU) {
-    *category_preset = BackgroundTracingConfigImpl::BENCHMARK_GPU;
-    return true;
-  }
-
-  if (category_preset_string == kConfigCategoryBenchmarkIPC) {
-    *category_preset = BackgroundTracingConfigImpl::BENCHMARK_IPC;
-    return true;
-  }
-
   if (category_preset_string == kConfigCategoryBenchmarkStartup) {
     *category_preset = BackgroundTracingConfigImpl::BENCHMARK_STARTUP;
-    return true;
-  }
-
-  if (category_preset_string == kConfigCategoryBenchmarkBlinkGC) {
-    *category_preset = BackgroundTracingConfigImpl::BENCHMARK_BLINK_GC;
-    return true;
-  }
-
-  if (category_preset_string == kConfigCategoryBenchmarkMemoryHeavy) {
-    *category_preset = BackgroundTracingConfigImpl::BENCHMARK_MEMORY_HEAVY;
-    return true;
-  }
-
-  if (category_preset_string == kConfigCategoryBenchmarkMemoryLight) {
-    *category_preset = BackgroundTracingConfigImpl::BENCHMARK_MEMORY_LIGHT;
-    return true;
-  }
-
-  if (category_preset_string == kConfigCategoryBenchmarkExecutionMetric) {
-    *category_preset = BackgroundTracingConfigImpl::BENCHMARK_EXECUTION_METRIC;
-    return true;
-  }
-
-  if (category_preset_string == kConfigCategoryBenchmarkNavigation) {
-    *category_preset = BackgroundTracingConfigImpl::BENCHMARK_NAVIGATION;
-    return true;
-  }
-
-  if (category_preset_string == kConfigCategoryBenchmarkRenderers) {
-    *category_preset = BackgroundTracingConfigImpl::BENCHMARK_RENDERERS;
-    return true;
-  }
-
-  if (category_preset_string == kConfigCategoryBenchmarkServiceworker) {
-    *category_preset = BackgroundTracingConfigImpl::BENCHMARK_SERVICEWORKER;
-    return true;
-  }
-
-  if (category_preset_string == kConfigCategoryBenchmarkPower) {
-    *category_preset = BackgroundTracingConfigImpl::BENCHMARK_POWER;
-    return true;
-  }
-
-  if (category_preset_string == kConfigCategoryBlinkStyle) {
-    *category_preset = BackgroundTracingConfigImpl::BLINK_STYLE;
     return true;
   }
 
@@ -480,92 +374,16 @@ TraceConfig BackgroundTracingConfigImpl::GetConfigForCategoryPreset(
     BackgroundTracingConfigImpl::CategoryPreset preset,
     base::trace_event::TraceRecordMode record_mode) {
   switch (preset) {
-    case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK:
-      return TraceConfig("benchmark,toplevel", record_mode);
-    case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_DEEP:
-      return TraceConfig(
-          "*,disabled-by-default-benchmark.detailed,"
-          "disabled-by-default-v8.cpu_profile,"
-          "disabled-by-default-v8.runtime_stats",
-          record_mode);
-    case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_GPU:
-      return TraceConfig(
-          "benchmark,toplevel,gpu,base,mojom,ipc,"
-          "disabled-by-default-system_stats,disabled-by-default-cpu_profiler",
-          record_mode);
-    case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_IPC:
-      return TraceConfig("benchmark,toplevel,ipc", record_mode);
     case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_STARTUP: {
       auto config =
           tracing::TraceStartupConfig::GetDefaultBrowserStartupConfig();
       config.SetTraceRecordMode(record_mode);
       return config;
     }
-    case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_BLINK_GC:
-      return TraceConfig("blink_gc,disabled-by-default-blink_gc", record_mode);
-    case BackgroundTracingConfigImpl::CategoryPreset::
-        BENCHMARK_EXECUTION_METRIC:
-      return TraceConfig("blink.console,v8", record_mode);
-    case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_NAVIGATION: {
-      auto config = TraceConfig(
-          "benchmark,toplevel,ipc,base,browser,navigation,omnibox,ui,shutdown,"
-          "safe_browsing,Java,EarlyJava,loading,startup,mojom,renderer_host,"
-          "disabled-by-default-system_stats,disabled-by-default-cpu_profiler,"
-          "dwrite,fonts,ServiceWorker,passwords,disabled-by-default-file,sql,"
-          "disabled-by-default-user_action_samples",
-          record_mode);
-      // Filter only browser process events.
-      base::trace_event::TraceConfig::ProcessFilterConfig process_config(
-          {base::GetCurrentProcId()});
-      config.SetProcessFilterConfig(process_config);
-      return config;
-    }
-    case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_RENDERERS:
-      return TraceConfig(
-          "benchmark,toplevel,ipc,base,ui,v8,renderer,blink,blink_gc,mojom,"
-          "latency,latencyInfo,renderer_host,cc,memory,dwrite,fonts,browser,"
-          "ServiceWorker,disabled-by-default-v8.gc,disabled-by-default-file,"
-          "disabled-by-default-blink_gc,disabled-by-default-lifecycles,"
-          "disabled-by-default-renderer.scheduler,"
-          "disabled-by-default-system_stats,disabled-by-default-cpu_profiler,"
-          "passwords,sql,disabled-by-default-user_action_samples",
-          record_mode);
-    case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_SERVICEWORKER:
-      return TraceConfig(
-          "benchmark,toplevel,ipc,base,ServiceWorker,CacheStorage,Blob,"
-          "IndexedDB,loading,mojom,navigation,renderer,blink,blink_gc,blink."
-          "user_timing,blink.worker,fonts,startup,disabled-by-default-cpu_"
-          "profiler,disabled-by-default-network",
-          record_mode);
-    case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_POWER:
-      return TraceConfig(
-          "benchmark,toplevel,ipc,base,audio,compositor,gpu,media,memory,midi,"
-          "native,omnibox,renderer,skia,task_scheduler,ui,v8,views,webaudio,"
-          "disabled-by-default-cpu_profiler,disabled-by-default-user_action_"
-          "samples",
-          record_mode);
-    case BackgroundTracingConfigImpl::CategoryPreset::BLINK_STYLE:
-      return TraceConfig("blink_style", record_mode);
-
-    case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_MEMORY_HEAVY:
-      return TraceConfig("-*,disabled-by-default-memory-infra", record_mode);
-    case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_MEMORY_LIGHT: {
-      // On memory light mode, the periodic memory dumps are disabled.
-      base::trace_event::TraceConfig::MemoryDumpConfig memory_config;
-      memory_config.allowed_dump_modes =
-          std::set<base::trace_event::MemoryDumpLevelOfDetail>(
-              {base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND});
-      TraceConfig config("-*,disabled-by-default-memory-infra", record_mode);
-      config.ResetMemoryDumpConfig(memory_config);
-      return config;
-    }
-    case BackgroundTracingConfigImpl::CategoryPreset::CATEGORY_PRESET_UNSET:
-    case BackgroundTracingConfigImpl::CategoryPreset::CUSTOM_CATEGORY_PRESET:
-    case BackgroundTracingConfigImpl::CategoryPreset::CUSTOM_TRACE_CONFIG:
+    default:
       NOTREACHED();
+      return TraceConfig();
   }
-  NOTREACHED();
-  return TraceConfig();
 }
 
 BackgroundTracingRule* BackgroundTracingConfigImpl::AddRule(

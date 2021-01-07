@@ -37,16 +37,6 @@ const size_t kTraceConfigFileSizeLimit = 64 * 1024;
 #if defined(OS_ANDROID)
 const base::FilePath::CharType kAndroidTraceConfigFile[] =
     FILE_PATH_LITERAL("/data/local/chrome-trace-config.json");
-
-const char kDefaultStartupCategories[] =
-    "startup,browser,toplevel,toplevel.flow,ipc,EarlyJava,cc,Java,navigation,"
-    "loading,gpu,disabled-by-default-cpu_profiler,download_service,"
-    "disabled-by-default-histogram_samples,"
-    "disabled-by-default-user_action_samples,-*";
-#else
-const char kDefaultStartupCategories[] =
-    "benchmark,toplevel,startup,disabled-by-default-file,toplevel.flow,"
-    "download_service,-*";
 #endif
 
 // String parameters that can be used to parse the trace config file content.
@@ -56,6 +46,18 @@ const char kResultFileParam[] = "result_file";
 const char kResultDirectoryParam[] = "result_directory";
 
 }  // namespace
+
+// static
+const char TraceStartupConfig::kDefaultStartupCategories[] =
+#if defined(OS_ANDROID)
+    "startup,browser,toplevel,toplevel.flow,ipc,EarlyJava,cc,Java,navigation,"
+    "loading,gpu,disabled-by-default-cpu_profiler,download_service,"
+    "disabled-by-default-histogram_samples,"
+    "disabled-by-default-user_action_samples,-*";
+#else
+    "benchmark,toplevel,startup,disabled-by-default-file,toplevel.flow,"
+    "download_service,-*";
+#endif
 
 // static
 TraceStartupConfig* TraceStartupConfig::GetInstance() {

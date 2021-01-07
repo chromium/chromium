@@ -40,7 +40,7 @@ const char kValidTracingConfig[] = R"(
     "scenario_name": "BrowserProcess",
     "configs": [
       {
-        "category": "BENCHMARK_NAVIGATION",
+        "custom_categories": "base,toplevel",
         "rule": "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE",
         "histogram_name": "Omnibox.CharTypedToRepaintLatency.ToPaint",
         "histogram_lower_value": 1
