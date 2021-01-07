@@ -127,6 +127,7 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/common/js/file_type.m.js",
     "file_manager/common/js/files_app_entry_types.m.js",
     "file_manager/common/js/lru_cache.m.js",
+    "file_manager/common/js/metrics.m.js",
     "file_manager/common/js/metrics_base.m.js",
 
     # Externs:

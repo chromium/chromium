@@ -8,8 +8,9 @@
  */
 
 // clang-format off
-// #import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import * as wrappedUtil from '../../common/js/util.m.js'; const {util} = wrappedUtil;
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {util} from '../../common/js/util.m.js';
+// #import {metrics} from '../../common/js/metrics.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // clang-format on
 
@@ -102,6 +103,7 @@ test.util.registerRemoteTestUtils = () => {
         window.VolumeManagerCommon = VolumeManagerCommon;
         window.util = util;
         window.assert = assert;
+        window.metrics = metrics;
 
         // Asynchronously load the testing functions.
         const script = document.createElement('script');
