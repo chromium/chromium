@@ -103,7 +103,7 @@
 #include "components/history/core/browser/top_sites.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/offline_pages/buildflags/buildflags.h"
-#include "components/optimization_guide/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/performance_manager/public/decorators/tab_properties_decorator.h"
 #include "components/performance_manager/public/performance_manager.h"

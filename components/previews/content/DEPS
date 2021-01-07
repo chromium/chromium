@@ -5,6 +5,7 @@ include_rules = [
   "+components/keyed_service",
   "+components/prefs",
   "+components/optimization_guide",
+  "+components/optimization_guide/content",
   "+components/previews/core",
   "+components/variations",
   "+content/public/browser",

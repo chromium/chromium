@@ -39,7 +39,7 @@
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/offline_pages/buildflags/buildflags.h"
-#include "components/optimization_guide/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

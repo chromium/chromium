@@ -29,19 +29,18 @@
 #include "chrome/browser/optimization_guide/prediction/prediction_model_fetcher.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_file.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/optimization_guide/optimization_guide_constants.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
-#include "components/optimization_guide/optimization_guide_enums.h"
-#include "components/optimization_guide/optimization_guide_features.h"
-#include "components/optimization_guide/optimization_guide_prefs.h"
-#include "components/optimization_guide/optimization_guide_store.h"
-#include "components/optimization_guide/optimization_guide_switches.h"
-#include "components/optimization_guide/optimization_guide_test_util.h"
-#include "components/optimization_guide/optimization_guide_util.h"
-#include "components/optimization_guide/prediction_model.h"
+#include "components/optimization_guide/content/optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_store.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/core/prediction_model.h"
+#include "components/optimization_guide/core/store_update_data.h"
+#include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/optimization_guide/store_update_data.h"
-#include "components/optimization_guide/top_host_provider.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -1178,8 +1177,15 @@ void PredictionManager::OverrideTargetDecisionForTesting(
           : threshold - 1.0;  // Value is less than |threshold| to get |kFalse|
 
   std::unique_ptr<proto::PredictionModel> prediction_model =
-      GetSingleLeafDecisionTreePredictionModel(threshold, weight,
-                                               leaf_value / weight);
+      std::make_unique<proto::PredictionModel>();
+  prediction_model->mutable_model()->mutable_threshold()->set_value(threshold);
+  proto::DecisionTree* decision_tree =
+      prediction_model->mutable_model()->mutable_decision_tree();
+  decision_tree->set_weight(weight);
+  proto::TreeNode* tree_node = decision_tree->add_nodes();
+  tree_node->mutable_node_id()->set_value(0);
+  tree_node->mutable_leaf()->mutable_vector()->add_value()->set_double_value(
+      leaf_value);
 
   proto::ModelInfo* model_info = prediction_model->mutable_model_info();
 

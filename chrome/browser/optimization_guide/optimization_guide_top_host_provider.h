@@ -13,7 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/values.h"
-#include "components/optimization_guide/top_host_provider.h"
+#include "components/optimization_guide/core/top_host_provider.h"
 
 class PrefService;
 

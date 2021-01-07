@@ -1,5 +1,4 @@
 include_rules = [
   "+components/optimization_guide",
-  "+components/optimization_guide/proto",
   "+third_party/tflite",
 ]

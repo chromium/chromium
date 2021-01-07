@@ -30,7 +30,7 @@
 #include "chrome/test/base/testing_browser_process_platform_part.h"
 #include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "components/network_time/network_time_tracker.h"
-#include "components/optimization_guide/optimization_guide_service.h"
+#include "components/optimization_guide/core/optimization_guide_service.h"
 #include "components/permissions/permissions_client.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"

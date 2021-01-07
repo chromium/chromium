@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
+#include "components/optimization_guide/content/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 

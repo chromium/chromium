@@ -24,13 +24,13 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/optimization_guide/optimization_guide_constants.h"
-#include "components/optimization_guide/optimization_guide_features.h"
-#include "components/optimization_guide/optimization_guide_store.h"
-#include "components/optimization_guide/optimization_guide_switches.h"
-#include "components/optimization_guide/optimization_guide_test_util.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_store.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_test_util.h"
+#include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/optimization_guide/store_update_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/previews/core/previews_features.h"
 #include "components/variations/hashing.h"
@@ -78,8 +78,9 @@ void RetryForHistogramUntilCountReached(
 std::unique_ptr<optimization_guide::proto::PredictionModel>
 GetValidDecisionTreePredictionModel() {
   std::unique_ptr<optimization_guide::proto::PredictionModel> prediction_model =
-      GetMinimalDecisionTreePredictionModel(/* threshold= */ 5.0,
-                                            /* weight= */ 2.0);
+      optimization_guide::GetMinimalDecisionTreePredictionModel(
+          /* threshold= */ 5.0,
+          /* weight= */ 2.0);
 
   optimization_guide::proto::DecisionTree* decision_tree_model =
       prediction_model->mutable_model()->mutable_decision_tree();

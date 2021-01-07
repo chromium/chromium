@@ -38,9 +38,7 @@
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_item.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
-#include "components/optimization_guide/optimization_guide_prefs.h"
-#include "components/optimization_guide/proto_database_provider_test_base.h"
-#include "components/optimization_guide/test_optimization_guide_decider.h"
+#include "components/optimization_guide/content/test_optimization_guide_decider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/previews/content/previews_ui_service.h"
 #include "components/previews/content/previews_user_data.h"
@@ -369,8 +367,7 @@ class TestOptOutStore : public blocklist::OptOutStore {
   void ClearBlockList(base::Time begin_time, base::Time end_time) override {}
 };
 
-class PreviewsDeciderImplTest
-    : public optimization_guide::ProtoDatabaseProviderTestBase {
+class PreviewsDeciderImplTest : public testing::Test {
  public:
   PreviewsDeciderImplTest() : previews_decider_impl_(nullptr) {
     clock_.SetNow(base::Time::Now());
@@ -389,11 +386,9 @@ class PreviewsDeciderImplTest
     // Enable DataSaver for checks with PreviewsOptimizationGuide.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         data_reduction_proxy::switches::kEnableDataReductionProxy);
-    ProtoDatabaseProviderTestBase::SetUp();
   }
 
   void TearDown() override {
-    ProtoDatabaseProviderTestBase::TearDown();
     ui_service_.reset();
   }
 
@@ -408,7 +403,6 @@ class PreviewsDeciderImplTest
         std::make_unique<TestPreviewsDeciderImpl>(&clock_);
     previews_decider_impl_ = previews_decider_impl.get();
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    optimization_guide::prefs::RegisterProfilePrefs(pref_service_->registry());
     std::unique_ptr<TestPreviewsOptimizationGuide> previews_opt_guide =
         std::make_unique<TestPreviewsOptimizationGuide>(
             &optimization_guide_decider_, &network_quality_tracker_);

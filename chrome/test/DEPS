@@ -39,6 +39,7 @@ include_rules = [
   "+components/offline_pages/core",
   "+components/omnibox/browser",
   "+components/optimization_guide",
+  "+components/optimization_guide/content",
   "+components/os_crypt",
   "+components/permissions",
   "+components/policy",

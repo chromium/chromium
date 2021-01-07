@@ -9,7 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
-#include "components/optimization_guide/hints_processing_util.h"
+#include "components/optimization_guide/core/hints_processing_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/nqe/effective_connection_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

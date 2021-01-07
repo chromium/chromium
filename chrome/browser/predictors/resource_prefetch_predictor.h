@@ -28,7 +28,7 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
+#include "components/optimization_guide/content/optimization_guide_decider.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"

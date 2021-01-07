@@ -4,6 +4,9 @@
 
 #include "chrome/services/machine_learning/public/cpp/test_support/machine_learning_test_utils.h"
 
+#include "components/optimization_guide/core/optimization_guide_test_util.h"
+#include "components/optimization_guide/proto/models.pb.h"
+
 namespace machine_learning {
 namespace testing {
 
@@ -12,12 +15,12 @@ GetModelProtoForPredictionResult(mojom::DecisionTreePredictionResult decision) {
   std::unique_ptr<optimization_guide::proto::PredictionModel> model;
   switch (decision) {
     case mojom::DecisionTreePredictionResult::kTrue:
-      model = GetSingleLeafDecisionTreePredictionModel(
+      model = optimization_guide::GetSingleLeafDecisionTreePredictionModel(
           kModelThreshold, kModelWeight,
           (kModelThreshold + kModelValueDiff) / kModelWeight);
       break;
     case mojom::DecisionTreePredictionResult::kFalse:
-      model = GetSingleLeafDecisionTreePredictionModel(
+      model = optimization_guide::GetSingleLeafDecisionTreePredictionModel(
           kModelThreshold, kModelWeight,
           (kModelThreshold - kModelValueDiff) / kModelWeight);
       break;

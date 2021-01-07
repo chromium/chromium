@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/optimization_guide/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/delay_async_script_execution_metadata.pb.h"
 #include "components/optimization_guide/proto/delay_competing_low_priority_requests_metadata.pb.h"
 #include "components/ukm/test_ukm_recorder.h"

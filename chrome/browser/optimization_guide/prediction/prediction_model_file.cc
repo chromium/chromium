@@ -5,7 +5,7 @@
 #include "chrome/browser/optimization_guide/prediction/prediction_model_file.h"
 
 #include "base/memory/ptr_util.h"
-#include "components/optimization_guide/optimization_guide_util.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {

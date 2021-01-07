@@ -22,10 +22,10 @@
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
-#include "components/optimization_guide/hints_component_info.h"
-#include "components/optimization_guide/hints_fetcher.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
-#include "components/optimization_guide/optimization_guide_service_observer.h"
+#include "components/optimization_guide/content/optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints_component_info.h"
+#include "components/optimization_guide/core/hints_fetcher.h"
+#include "components/optimization_guide/core/optimization_guide_service_observer.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "net/nqe/effective_connection_type.h"
@@ -73,6 +73,11 @@ class OptimizationGuideHintsManager
 
   // Unhooks the observer to |optimization_guide_service_|.
   void Shutdown();
+
+  // Returns the OptimizationGuideDecision from |optimization_type_decision|.
+  static optimization_guide::OptimizationGuideDecision
+  GetOptimizationGuideDecisionFromOptimizationTypeDecision(
+      optimization_guide::OptimizationTypeDecision optimization_type_decision);
 
   // optimization_guide::OptimizationGuideServiceObserver implementation:
   void OnHintsComponentAvailable(

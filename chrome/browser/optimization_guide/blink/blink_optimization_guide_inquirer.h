@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_BLINK_BLINK_OPTIMIZATION_GUIDE_INQUIRER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
+#include "components/optimization_guide/content/optimization_guide_decider.h"
 #include "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom.h"
 
 namespace content {

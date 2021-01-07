@@ -1,0 +1,40 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+# TODO(crbug/1154790): Make this into a static_library when the rest of
+# optimization guide is migrated and this has at least one cc file.
+source_set("content") {
+  sources = [ "optimization_guide_decider.h" ]
+
+  deps = [
+    "//base",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//content/public/browser",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test_optimization_guide_decider.cc",
+    "test_optimization_guide_decider.h",
+  ]
+  deps = [
+    ":content",
+    "//content/public/browser",
+    "//testing/gtest",
+  ]
+}
+
+if (is_android) {
+  java_cpp_enum("optimization_guide_generated_enums") {
+    sources = [ "optimization_guide_decider.h" ]
+    visibility = [ "//chrome/browser/optimization_guide/android:*" ]
+  }
+}

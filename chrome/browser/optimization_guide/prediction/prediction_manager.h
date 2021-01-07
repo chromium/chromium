@@ -20,7 +20,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_session_statistic.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
-#include "components/optimization_guide/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "url/origin.h"

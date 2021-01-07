@@ -29,24 +29,24 @@
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/google/core/common/google_util.h"
-#include "components/optimization_guide/bloom_filter.h"
-#include "components/optimization_guide/hint_cache.h"
-#include "components/optimization_guide/hints_component_util.h"
-#include "components/optimization_guide/hints_fetcher_factory.h"
-#include "components/optimization_guide/hints_processing_util.h"
-#include "components/optimization_guide/optimization_filter.h"
-#include "components/optimization_guide/optimization_guide_constants.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
-#include "components/optimization_guide/optimization_guide_enums.h"
-#include "components/optimization_guide/optimization_guide_features.h"
-#include "components/optimization_guide/optimization_guide_prefs.h"
-#include "components/optimization_guide/optimization_guide_service.h"
-#include "components/optimization_guide/optimization_guide_store.h"
-#include "components/optimization_guide/optimization_guide_switches.h"
-#include "components/optimization_guide/optimization_guide_util.h"
-#include "components/optimization_guide/optimization_metadata.h"
+#include "components/optimization_guide/content/optimization_guide_decider.h"
+#include "components/optimization_guide/core/bloom_filter.h"
+#include "components/optimization_guide/core/hint_cache.h"
+#include "components/optimization_guide/core/hints_component_util.h"
+#include "components/optimization_guide/core/hints_fetcher_factory.h"
+#include "components/optimization_guide/core/hints_processing_util.h"
+#include "components/optimization_guide/core/optimization_filter.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_service.h"
+#include "components/optimization_guide/core/optimization_guide_store.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/core/optimization_metadata.h"
+#include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/optimization_guide/top_host_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
@@ -314,6 +314,34 @@ void OptimizationGuideHintsManager::Shutdown() {
   // Try to cancel all tasks if we've been shutdown so it doesn't call back to
   // us.
   hints_component_processing_task_tracker_.TryCancelAll();
+}
+
+// static
+optimization_guide::OptimizationGuideDecision OptimizationGuideHintsManager::
+    GetOptimizationGuideDecisionFromOptimizationTypeDecision(
+        optimization_guide::OptimizationTypeDecision
+            optimization_type_decision) {
+  switch (optimization_type_decision) {
+    case optimization_guide::OptimizationTypeDecision::
+        kAllowedByOptimizationFilter:
+    case optimization_guide::OptimizationTypeDecision::kAllowedByHint:
+      return optimization_guide::OptimizationGuideDecision::kTrue;
+    case optimization_guide::OptimizationTypeDecision::kUnknown:
+    case optimization_guide::OptimizationTypeDecision::
+        kHadOptimizationFilterButNotLoadedInTime:
+    case optimization_guide::OptimizationTypeDecision::
+        kHadHintButNotLoadedInTime:
+    case optimization_guide::OptimizationTypeDecision::
+        kHintFetchStartedButNotAvailableInTime:
+    case optimization_guide::OptimizationTypeDecision::kDeciderNotInitialized:
+      return optimization_guide::OptimizationGuideDecision::kUnknown;
+    case optimization_guide::OptimizationTypeDecision::kNotAllowedByHint:
+    case optimization_guide::OptimizationTypeDecision::kNoMatchingPageHint:
+    case optimization_guide::OptimizationTypeDecision::kNoHintAvailable:
+    case optimization_guide::OptimizationTypeDecision::
+        kNotAllowedByOptimizationFilter:
+      return optimization_guide::OptimizationGuideDecision::kFalse;
+  }
 }
 
 void OptimizationGuideHintsManager::OnHintsComponentAvailable(
@@ -1000,7 +1028,7 @@ void OptimizationGuideHintsManager::CanApplyOptimizationAsync(
   optimization_guide::OptimizationTypeDecision type_decision =
       CanApplyOptimization(navigation_url, navigation_id, optimization_type,
                            &metadata);
-  optimization_guide::OptimizationGuideDecision decision = optimization_guide::
+  optimization_guide::OptimizationGuideDecision decision =
       GetOptimizationGuideDecisionFromOptimizationTypeDecision(type_decision);
   // It's possible that a hint that applies to |navigation_url| will come in
   // later, so only run the callback if we are sure we can apply the decision.
@@ -1193,9 +1221,8 @@ void OptimizationGuideHintsManager::OnReadyToInvokeRegisteredCallbacks(
           CanApplyOptimization(navigation_url, navigation_id, opt_type,
                                &metadata);
       optimization_guide::OptimizationGuideDecision decision =
-          optimization_guide::
-              GetOptimizationGuideDecisionFromOptimizationTypeDecision(
-                  type_decision);
+          GetOptimizationGuideDecisionFromOptimizationTypeDecision(
+              type_decision);
       base::UmaHistogramEnumeration(
           "OptimizationGuide.ApplyDecisionAsync." +
               optimization_guide::GetStringNameForOptimizationType(opt_type),

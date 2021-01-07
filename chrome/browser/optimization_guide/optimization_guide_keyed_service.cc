@@ -22,16 +22,15 @@
 #include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
-#include "components/optimization_guide/command_line_top_host_provider.h"
-#include "components/optimization_guide/hints_processing_util.h"
-#include "components/optimization_guide/optimization_guide_constants.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
-#include "components/optimization_guide/optimization_guide_features.h"
-#include "components/optimization_guide/optimization_guide_service.h"
-#include "components/optimization_guide/optimization_guide_store.h"
-#include "components/optimization_guide/optimization_guide_util.h"
+#include "components/optimization_guide/core/command_line_top_host_provider.h"
+#include "components/optimization_guide/core/hints_processing_util.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_service.h"
+#include "components/optimization_guide/core/optimization_guide_store.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/optimization_guide/top_host_provider.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -275,8 +274,9 @@ OptimizationGuideKeyedService::CanApplyOptimization(
           optimization_guide::GetStringNameForOptimizationType(
               optimization_type),
       optimization_type_decision);
-  return GetOptimizationGuideDecisionFromOptimizationTypeDecision(
-      optimization_type_decision);
+  return OptimizationGuideHintsManager::
+      GetOptimizationGuideDecisionFromOptimizationTypeDecision(
+          optimization_type_decision);
 }
 
 void OptimizationGuideKeyedService::CanApplyOptimizationAsync(
@@ -285,13 +285,6 @@ void OptimizationGuideKeyedService::CanApplyOptimizationAsync(
     optimization_guide::OptimizationGuideDecisionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(navigation_handle->IsInMainFrame());
-
-  if (!hints_manager_) {
-    std::move(callback).Run(
-        optimization_guide::OptimizationGuideDecision::kUnknown,
-        /*metadata=*/{});
-    return;
-  }
 
   hints_manager_->CanApplyOptimizationAsync(
       navigation_handle->GetURL(), navigation_handle->GetNavigationId(),
@@ -302,9 +295,6 @@ void OptimizationGuideKeyedService::AddHintForTesting(
     const GURL& url,
     optimization_guide::proto::OptimizationType optimization_type,
     const base::Optional<optimization_guide::OptimizationMetadata>& metadata) {
-  if (!hints_manager_)
-    return;
-
   hints_manager_->AddHintForTesting(url, optimization_type, metadata);
 }
 

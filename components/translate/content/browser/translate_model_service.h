@@ -13,8 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/optional.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/optimization_target_model_observer.h"
-
+#include "components/optimization_guide/core/optimization_target_model_observer.h"
 
 namespace optimization_guide {
 class OptimizationGuideDecider;

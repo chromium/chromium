@@ -199,6 +199,7 @@ include_rules = [
   "+components/omnibox/browser",
   "+components/onc",
   "+components/open_from_clipboard",
+  "+components/optimization_guide/content",
   "+components/optimization_guide",
   "+components/os_crypt",
   "+components/ownership",

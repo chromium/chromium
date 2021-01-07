@@ -10,7 +10,7 @@
 #include "chrome/browser/subresource_redirect/origin_robots_rules_cache.h"
 #include "chrome/browser/subresource_redirect/subresource_redirect_util.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
-#include "components/optimization_guide/proto/performance_hints_metadata.pb.h"
+#include "components/optimization_guide/proto/public_image_metadata.pb.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"

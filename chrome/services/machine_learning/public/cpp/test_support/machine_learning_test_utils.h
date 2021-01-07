@@ -8,8 +8,12 @@
 #include <memory>
 
 #include "chrome/services/machine_learning/public/mojom/decision_tree.mojom.h"
-#include "components/optimization_guide/optimization_guide_test_util.h"
-#include "components/optimization_guide/proto/models.pb.h"
+
+namespace optimization_guide {
+namespace proto {
+class PredictionModel;
+}  // namespace proto
+}  // namespace optimization_guide
 
 namespace machine_learning {
 namespace testing {

@@ -15,7 +15,7 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/performance_hints/rewrite_handler.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
+#include "components/optimization_guide/content/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/performance_hints_metadata.pb.h"
 #include "content/public/browser/web_contents_observer.h"

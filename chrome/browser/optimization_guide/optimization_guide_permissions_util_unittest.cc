@@ -12,7 +12,7 @@
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
-#include "components/optimization_guide/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/previews/core/previews_switches.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/unified_consent/unified_consent_service.h"

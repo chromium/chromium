@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "components/optimization_guide/hints_processing_util.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
+#include "components/optimization_guide/content/optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/previews/content/previews_user_data.h"
