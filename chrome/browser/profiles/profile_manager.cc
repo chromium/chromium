@@ -524,18 +524,8 @@ Profile* ProfileManager::GetProfile(const base::FilePath& profile_dir) {
 }
 
 size_t ProfileManager::GetNumberOfProfiles() {
-  ProfileAttributesStorage& storage = GetProfileAttributesStorage();
-  int offset = 0;
-  // Ephemeral Guest profile is registered in profile attributes storage,
-  // because if Chrome crashes we need the registry to find and delete it.
-  // But it should not be counted as a regular profile.
-  if (!guest_profile_path_.empty()) {
-    ProfileAttributesEntry* entry;
-    if (storage.GetProfileAttributesWithPath(guest_profile_path_, &entry))
-      offset = 1;
-  }
-
-  return storage.GetNumberOfProfiles() - offset;
+  return GetProfileAttributesStorage().GetNumberOfProfiles(
+      /*include_guest_profile=*/false);
 }
 
 bool ProfileManager::LoadProfile(const std::string& profile_name,

@@ -21,7 +21,8 @@ class Image;
 // ProfileAttributesStorage and avoid using the Get*AtIndex family of functions.
 class ProfileInfoInterface {
  public:
-  virtual size_t GetNumberOfProfiles() const = 0;
+  virtual size_t GetNumberOfProfiles(
+      bool include_guest_profile = false) const = 0;
 
   virtual size_t GetIndexOfProfileWithPath(
       const base::FilePath& profile_path) const = 0;

@@ -263,7 +263,19 @@ void ProfileInfoCache::DeleteProfileFromCache(
   }
 }
 
-size_t ProfileInfoCache::GetNumberOfProfiles() const {
+size_t ProfileInfoCache::GetNumberOfProfiles(bool include_guest_profile) const {
+// Ephemeral Guest profile is registered in profile attributes storage,
+// because if Chrome crashes we need the registry to find and delete it.
+// But it should not be counted as a regular profile.
+#if !defined(OS_ANDROID)
+  if (!include_guest_profile) {
+    for (auto& profile : profile_attributes_entries_) {
+      if (profile.second && profile.second->IsGuest())
+        return keys_.size() - 1;
+    }
+  }
+#endif
+
   return keys_.size();
 }
 
@@ -508,7 +520,7 @@ void ProfileInfoCache::RegisterPrefs(PrefRegistrySimple* registry) {
 
 const base::DictionaryValue* ProfileInfoCache::GetInfoForProfileAtIndex(
     size_t index) const {
-  DCHECK_LT(index, GetNumberOfProfiles());
+  DCHECK_LT(index, GetNumberOfProfiles(true));
   const base::DictionaryValue* cache =
       prefs_->GetDictionary(prefs::kProfileInfoCache);
   const base::DictionaryValue* info = nullptr;
@@ -628,7 +640,7 @@ void ProfileInfoCache::AddProfile(const base::FilePath& profile_path,
 }
 
 void ProfileInfoCache::RemoveProfileByAccountId(const AccountId& account_id) {
-  for (size_t i = 0; i < GetNumberOfProfiles(); i++) {
+  for (size_t i = 0; i < GetNumberOfProfiles(true); i++) {
     std::string account_id_key;
     std::string gaia_id;
     std::string user_name;

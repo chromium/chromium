@@ -70,7 +70,7 @@ class ProfileInfoCache : public ProfileInfoInterface,
   void DeleteProfileFromCache(const base::FilePath& profile_path);
 
   // ProfileInfoInterface:
-  size_t GetNumberOfProfiles() const override;
+  size_t GetNumberOfProfiles(bool include_guest_profile = false) const override;
   // Don't cache this value and reuse, because resorting the menu could cause
   // the item being referred to to change out from under you.
   // Deprecated. Prefer using the ProfileAttributesStorage interface instead of

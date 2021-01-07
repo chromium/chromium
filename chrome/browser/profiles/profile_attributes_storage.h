@@ -84,7 +84,8 @@ class ProfileAttributesStorage
       const base::FilePath& path, ProfileAttributesEntry** entry) = 0;
 
   // Returns the count of known profiles.
-  virtual size_t GetNumberOfProfiles() const = 0;
+  virtual size_t GetNumberOfProfiles(
+      bool include_guest_profile = false) const = 0;
 
   // Returns a unique name that can be assigned to a newly created profile.
   base::string16 ChooseNameForNewProfile(size_t icon_index) const;
