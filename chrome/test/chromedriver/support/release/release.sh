@@ -59,7 +59,7 @@ unzip $src/chromedriver_mac64.zip
 unzip $src/chromedriver_mac64_m1.zip -d chromedriver_mac64_m1/
 unzip $src/chromedriver_win32.zip
 
-strip chromedriver_linux64/chromedriver
+strip -p chromedriver_linux64/chromedriver
 
 zip -j $tgt/chromedriver_linux64.zip chromedriver_linux64/chromedriver
 zip -j $tgt/chromedriver_mac64.zip chromedriver_mac64/chromedriver
