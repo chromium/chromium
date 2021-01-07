@@ -58,6 +58,12 @@ PendingAppInstallTask::~PendingAppInstallTask() = default;
 
 void PendingAppInstallTask::Install(content::WebContents* web_contents,
                                     ResultCallback result_callback) {
+  if (install_options_.only_use_app_info_factory) {
+    DCHECK(install_options_.app_info_factory);
+    InstallFromInfo(std::move(result_callback));
+    return;
+  }
+
   url_loader_->PrepareForLoad(
       web_contents, base::BindOnce(&PendingAppInstallTask::OnWebContentsReady,
                                    weak_ptr_factory_.GetWeakPtr(), web_contents,

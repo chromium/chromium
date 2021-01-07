@@ -1005,6 +1005,96 @@ TEST_F(PendingAppInstallTaskTest, FailedWebContentsDestroyed) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(PendingAppInstallTaskTest, InstallWithWebAppInfo_Succeeds) {
+  ExternalInstallOptions options(WebAppUrl(), DisplayMode::kStandalone,
+                                 ExternalInstallSource::kSystemInstalled);
+  options.only_use_app_info_factory = true;
+  options.app_info_factory = base::BindLambdaForTesting([]() {
+    auto info = std::make_unique<WebApplicationInfo>();
+    info->start_url = WebAppUrl();
+    info->scope = WebAppUrl().GetWithoutFilename();
+    info->title = base::UTF8ToUTF16("Foo Web App");
+    return info;
+  });
+
+  PendingAppInstallTask task(
+      profile(), /*url_loader=*/nullptr, registrar(), os_integration_manager(),
+      ui_manager(), finalizer(), install_manager(), std::move(options));
+
+  finalizer()->SetNextFinalizeInstallResult(
+      WebAppUrl(), InstallResultCode::kSuccessNewInstall);
+
+  base::RunLoop run_loop;
+  task.Install(
+      /*web_contents=*/nullptr,
+      base::BindLambdaForTesting([&](base::Optional<AppId> app_id,
+                                     PendingAppManager::InstallResult result) {
+        base::Optional<AppId> id =
+            ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+                .LookupAppId(WebAppUrl());
+        EXPECT_EQ(InstallResultCode::kSuccessOfflineOnlyInstall, result.code);
+        EXPECT_TRUE(app_id.has_value());
+
+        EXPECT_FALSE(IsPlaceholderApp(profile(), WebAppUrl()));
+
+        EXPECT_EQ(app_id.value(), id.value());
+
+        // Installing with an App Info doesn't call into OS Integration Manager.
+        // This might be an issue for default apps.
+        EXPECT_FALSE(
+            os_integration_manager()->get_last_install_options().has_value());
+
+        EXPECT_EQ(0u, finalizer()->num_reparent_tab_calls());
+
+        EXPECT_TRUE(web_app_info().open_as_window);
+        EXPECT_EQ(webapps::WebappInstallSource::SYSTEM_DEFAULT,
+                  finalize_options().install_source);
+
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(PendingAppInstallTaskTest, InstallWithWebAppInfo_Fails) {
+  ExternalInstallOptions options(WebAppUrl(), DisplayMode::kStandalone,
+                                 ExternalInstallSource::kSystemInstalled);
+  options.only_use_app_info_factory = true;
+  options.app_info_factory = base::BindLambdaForTesting([]() {
+    auto info = std::make_unique<WebApplicationInfo>();
+    info->start_url = WebAppUrl();
+    info->scope = WebAppUrl().GetWithoutFilename();
+    info->title = base::UTF8ToUTF16("Foo Web App");
+    return info;
+  });
+
+  PendingAppInstallTask task(
+      profile(), /*url_loader=*/nullptr, registrar(), os_integration_manager(),
+      ui_manager(), finalizer(), install_manager(), std::move(options));
+
+  finalizer()->SetNextFinalizeInstallResult(
+      WebAppUrl(), InstallResultCode::kWriteDataFailed);
+
+  base::RunLoop run_loop;
+
+  task.Install(
+      web_contents(),
+      base::BindLambdaForTesting([&](base::Optional<AppId> app_id,
+                                     PendingAppManager::InstallResult result) {
+        base::Optional<AppId> id =
+            ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+                .LookupAppId(WebAppUrl());
+
+        EXPECT_EQ(InstallResultCode::kWriteDataFailed, result.code);
+        EXPECT_FALSE(app_id.has_value());
+
+        EXPECT_FALSE(id.has_value());
+
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+}
+
 TEST_F(PendingAppInstallTaskWithRunOnOsLoginTest,
        WebAppOrShortcutFromContents_RunOnOsLogin) {
   ExternalInstallOptions install_options(
