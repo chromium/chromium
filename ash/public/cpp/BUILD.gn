@@ -269,6 +269,8 @@ component("cpp") {
     "shell_window_ids.h",
     "shutdown_controller.cc",
     "shutdown_controller.h",
+    "style/color_provider.cc",
+    "style/color_provider.h",
     "stylus_utils.cc",
     "stylus_utils.h",
     "system_tray.cc",

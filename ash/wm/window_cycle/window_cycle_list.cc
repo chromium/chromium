@@ -19,7 +19,6 @@
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_colors.h"
 #include "ash/wm/window_cycle/window_cycle_tab_slider.h"
 #include "ash/wm/window_cycle/window_cycle_tab_slider_button.h"
 #include "ash/wm/window_mini_view.h"

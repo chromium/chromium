@@ -16,7 +16,6 @@
 #include "ash/shelf/shelf_background_animator_observer.h"
 #include "ash/shell.h"
 #include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ui/gfx/animation/slide_animation.h"
