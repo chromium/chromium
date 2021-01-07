@@ -8,6 +8,4 @@
  * scripts that define the metrics namespace).
  */
 
-// #import {metrics} from '../../common/js/metrics.m.js';
-
 metrics.startInterval('Load.BackgroundScript');

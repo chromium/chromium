@@ -2,14 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {background} from './background.m.js';
-// #import {test} from './test_util_base.m.js';
-// #import {launcher} from './launcher.m.js';
-// #import {util} from '../../common/js/util.m.js';
-// #import {ProgressCenterItem} from '../../common/js/progress_center_common.m.js';
-// clang-format on
-
 /**
  * Opens the main Files app's window and waits until it is ready.
  *
