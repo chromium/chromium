@@ -150,7 +150,7 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
  protected:
   TreeScope(ContainerNode&, Document&);
-  TreeScope(Document&);
+  explicit TreeScope(Document&);
   virtual ~TreeScope();
 
   void ResetTreeScope();
