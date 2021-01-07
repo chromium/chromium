@@ -252,10 +252,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.BookmarkAppLaunchContainer"
-    enum="AppLaunchContainer" expires_after="2021-01-31">
+    enum="AppLaunchContainer" expires_after="2021-07-31">
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
-  <summary>Records the container used for a bookmark app launch.</summary>
+  <owner>phillis@chromium.org</owner>
+  <summary>
+    Records the container used for a bookmark app launch, when the app is
+    launched (eg. via UI surfaces or intents). Not recorded when the web app is
+    navigated to via URL.
+  </summary>
 </histogram>
 
 <histogram name="Extensions.BookmarkAppLaunchSource" enum="AppLaunchSource"
@@ -2071,17 +2076,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.HostedAppLaunchContainer" enum="AppLaunchContainer"
-    expires_after="2021-04-04">
+    expires_after="2021-07-31">
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
-    Records the container used for a hosted app launch. The definition of
-    'launch' for the purposes of this histogram is different to that used for
-    the launch type histograms. This definition is less inclusive, for example
-    it does not include navigations to the hosted app due to normal browsing,
-    which the other definition does include. This definition could be thought of
-    more as explicit launches via a launch surface such as the app launcher,
-    chrome://apps, or a shortcut.
+    Records the container used for a hosted app launch, when the app is
+    launched. The definition of 'launch' for the purposes of this histogram is
+    different to that used for the launch type histograms. This definition is
+    less inclusive, for example it does not include navigations to the hosted
+    app due to normal browsing, which the other definition does include. This
+    definition could be thought of more as explicit launches via a launch
+    surface such as the app launcher, chrome://apps, or a shortcut.
   </summary>
 </histogram>
 
