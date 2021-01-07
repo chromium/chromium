@@ -87,3 +87,6 @@
 # crbug.com/1146477
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyMonth
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyMonthAndYear
+
+# crbug.com/1131717
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantKeyboardIntegrationTest.keyboardDoesNotShowOnElementClickInIFrame
