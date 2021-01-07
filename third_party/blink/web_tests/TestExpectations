@@ -30,7 +30,8 @@ external/wpt/infrastructure/expected-fail/timeout.html [ Timeout ]
 external/wpt/infrastructure/reftest/reftest_ref_timeout.html [ Timeout ]
 external/wpt/infrastructure/reftest/reftest_timeout.html [ Timeout ]
 
-# Fuzzy reftests are not supported.
+# We don't support extracting fuzzy information from .ini files, which these
+# WPT infrastructure tests rely on.
 crbug.com/997202 external/wpt/infrastructure/reftest/legacy/reftest_fuzzy_chain_ini.html [ Failure ]
 crbug.com/997202 external/wpt/infrastructure/reftest/legacy/fuzzy-ref-2.html [ Failure ]
 crbug.com/997202 external/wpt/infrastructure/reftest/reftest_fuzzy_ini_full.html [ Failure ]
@@ -5791,10 +5792,6 @@ crbug.com/1144537 external/wpt/xhr/responsexml-document-properties.htm [ Pass Fa
 
 # Sheriff 2020-11-03
 crbug.com/1145019 [ Win7 ] fast/events/updateLayoutForHitTest.html [ Failure ]
-
-# Lack of support for reftest fuzzy matching
-# Reftests have minor pixel differences due to antialiasing.
-crbug.com/997202 external/wpt/css/css-transforms/animation/transform-interpolation-rotate-slerp.html [ Failure ]
 
 # Sheriff 2020-11-04
 crbug.com/1144273 http/tests/devtools/sources/debugger-ui/continue-to-location-markers-in-top-level-function.js [ Pass Failure Timeout ]
