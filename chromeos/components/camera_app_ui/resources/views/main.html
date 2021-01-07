@@ -23,7 +23,7 @@
     <script src="/js/mojo/camera_app_helper.mojom-lite.js"></script>
     <script type="module" src="/js/init.js"></script>
   </head>
-  <body class="sound mirror mic _3x3 view-splash">
+  <body class="sound mirror mic grid-3x3 view-splash">
     <div id="view-camera">
       <div id="preview-box">
         <div id="preview-viewport">
@@ -279,17 +279,19 @@
         </div>
         <label class="menu-item circle">
           <input id="grid-3x3" class="icon" type="radio" tabindex="0"
-                 name="gridtype" data-state="_3x3" data-key="toggle3x3" checked>
+                 name="gridtype" data-state="grid-3x3" data-key="toggle3x3"
+                 checked>
           <span i18n-content="label_grid_3x3" i18n-aria="aria_grid_3x3"></span>
         </label>
         <label class="menu-item circle">
           <input id="grid-4x4" class="icon" type="radio" tabindex="0"
-                 name="gridtype" data-state="_4x4" data-key="toggle4x4">
+                 name="gridtype" data-state="grid-4x4" data-key="toggle4x4">
           <span i18n-content="label_grid_4x4" i18n-aria="aria_grid_4x4"></span>
         </label>
         <label class="menu-item circle">
           <input id="grid-golden" class="icon" type="radio" tabindex="0"
-                 name="gridtype" data-state="golden" data-key="toggleGolden">
+                 name="gridtype" data-state="grid-golden"
+                 data-key="toggleGolden">
           <span i18n-content="label_grid_golden"></span>
         </label>
       </div>
@@ -302,13 +304,13 @@
         </div>
         <label class="menu-item circle">
           <input id="timer-3s" class="icon" type="radio" tabindex="0"
-                 name="timerdur" data-state="_3sec" data-key="toggle3sec"
+                 name="timerdur" data-state="timer-3s" data-key="toggle3sec"
                  checked>
           <span i18n-content="label_timer_3s"></span>
         </label>
         <label class="menu-item circle">
           <input id="timer-10s" class="icon" type="radio" tabindex="0"
-                 name="timerdur" data-state="_10sec" data-key="toggle10sec">
+                 name="timerdur" data-state="timer-10s" data-key="toggle10sec">
           <span i18n-content="label_timer_10s"></span>
         </label>
       </div>

@@ -289,7 +289,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
     }
     this.toggleFps_.checked = prefFps === 60;
     SUPPORTED_CONSTANT_FPS.forEach(
-        (fps) => state.set(state.assertState(`_${fps}fps`), fps === prefFps));
+        (fps) => state.set(state.assertState(`fps-${fps}`), fps === prefFps));
     this.prefFpses_[deviceId] = this.prefFpses_[deviceId] || {};
     this.prefFpses_[deviceId][resolution] = prefFps;
     this.saveFpsPreference_();

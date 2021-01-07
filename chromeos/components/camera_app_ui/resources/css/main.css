@@ -653,11 +653,11 @@ body.max-wnd #options-group {
   margin: var(--option-item-vpadding) 0;
 }
 
-body._3sec #toggle-timer:checked {
+body.timer-3s #toggle-timer:checked {
   background-image: url(/images/camera_button_timer_on_3s.svg);
 }
 
-body._10sec #toggle-timer:checked {
+body.timer-10s #toggle-timer:checked {
   background-image: url(/images/camera_button_timer_on_10s.svg);
 }
 
@@ -704,11 +704,11 @@ body:not(.video) #toggle-fps {
   display: none;
 }
 
-body._30fps #toggle-fps {
+body.fps-30 #toggle-fps {
   background-image: url(/images/camera_button_fps_30.svg);
 }
 
-body._60fps #toggle-fps {
+body.fps-60 #toggle-fps {
   background-image: url(/images/camera_button_fps_60.svg);
 }
 
@@ -955,7 +955,7 @@ body:not(.expert) #settings-expert {
   transform: translateY(-50%);
 }
 
-body._4x4 #preview-grid-horizontal::before {
+body.grid-4x4 #preview-grid-horizontal::before {
   border-bottom: 1px solid white;
   content: '';
   height: 0;
@@ -965,20 +965,20 @@ body._4x4 #preview-grid-horizontal::before {
   top: 0;
 }
 
-body.grid._3x3 #preview-grid-horizontal,
-body.view-grid-settings._3x3 #preview-grid-horizontal {
+body.grid-3x3 #preview-grid-horizontal,
+body.view-grid-settings.grid-3x3 #preview-grid-horizontal {
   height: 33.333%;
 }
 
-body.grid.golden #preview-grid-horizontal,
-body.view-grid-settings.golden #preview-grid-horizontal {
+body.grid.grid-golden #preview-grid-horizontal,
+body.view-grid-settings.grid-golden #preview-grid-horizontal {
   height: 23.607%;
 }
 
-body.grid._4x4 #preview-grid-horizontal,
-body.grid._4x4 #preview-grid-horizontal::before,
-body.view-grid-settings._4x4 #preview-grid-horizontal,
-body.view-grid-settings._4x4 #preview-grid-horizontal::before {
+body.grid.grid-4x4 #preview-grid-horizontal,
+body.grid.grid-4x4 #preview-grid-horizontal::before,
+body.view-grid-settings.grid-4x4 #preview-grid-horizontal,
+body.view-grid-settings.grid-4x4 #preview-grid-horizontal::before {
   height: 50%;
 }
 
@@ -993,7 +993,7 @@ body.view-grid-settings._4x4 #preview-grid-horizontal::before {
   width: 100%;
 }
 
-body._4x4 #preview-grid-vertical::before {
+body.grid-4x4 #preview-grid-vertical::before {
   border-right: 1px solid white;  /* csschecker-disable-line left-right */
   bottom: 0;
   content: '';
@@ -1003,20 +1003,20 @@ body._4x4 #preview-grid-vertical::before {
   width: 0;
 }
 
-body.grid._3x3 #preview-grid-vertical,
-body.view-grid-settings._3x3 #preview-grid-vertical {
+body.grid.grid-3x3 #preview-grid-vertical,
+body.view-grid-settings.grid-3x3 #preview-grid-vertical {
   width: 33.333%;
 }
 
-body.grid.golden #preview-grid-vertical,
-body.view-grid-settings.golden #preview-grid-vertical {
+body.grid.grid-golden #preview-grid-vertical,
+body.view-grid-settings.grid-golden #preview-grid-vertical {
   width: 23.607%;
 }
 
-body.grid._4x4 #preview-grid-vertical,
-body.grid._4x4 #preview-grid-vertical::before,
-body.view-grid-settings._4x4 #preview-grid-vertical,
-body.view-grid-settings._4x4 #preview-grid-vertical::before {
+body.grid.grid-4x4 #preview-grid-vertical,
+body.grid.grid-4x4 #preview-grid-vertical::before,
+body.view-grid-settings.grid-4x4 #preview-grid-vertical,
+body.view-grid-settings.grid-4x4 #preview-grid-vertical::before {
   width: 50%;
 }
 
@@ -1343,11 +1343,11 @@ body:not(.has-front-camera):not(.has-back-camera) #builtin-video-header {
   display: none;
 }
 
-body._3x3 .description span[i18n-content=label_grid_3x3],
-body._4x4 .description span[i18n-content=label_grid_4x4],
-body.golden .description span[i18n-content=label_grid_golden],
-body._3sec .description span[i18n-content=label_timer_3s],
-body._10sec .description span[i18n-content=label_timer_10s],
+body.grid-3x3 .description span[i18n-content=label_grid_3x3],
+body.grid-4x4 .description span[i18n-content=label_grid_4x4],
+body.grid-golden .description span[i18n-content=label_grid_golden],
+body.timer-3s .description span[i18n-content=label_timer_3s],
+body.timer-10s .description span[i18n-content=label_timer_10s],
 .menu-item.resol-item .description span {
   display: inline;
 }
