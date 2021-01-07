@@ -177,7 +177,7 @@ v8::ExtensionConfiguration ScriptController::ExtensionsFor(
 }
 
 void ScriptController::UpdateDocument() {
-  window_proxy_manager_->UpdateDocument();
+  window_proxy_manager_->MainWorldProxyMaybeUninitialized()->UpdateDocument();
 }
 
 void ScriptController::ExecuteJavaScriptURL(

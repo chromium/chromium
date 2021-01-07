@@ -169,8 +169,8 @@ void LocalWindowProxy::Initialize() {
 
   scoped_refptr<const SecurityOrigin> origin;
   if (world_->IsMainWorld()) {
-    // This also updates the ActivityLogger for the main world.
-    UpdateDocumentForMainWorld();
+    // ActivityLogger for main world is updated within updateDocumentInternal().
+    UpdateDocumentInternal();
     origin = GetFrame()->DomWindow()->GetSecurityOrigin();
   } else {
     UpdateActivityLogger();
@@ -433,6 +433,7 @@ void LocalWindowProxy::SetSecurityToken(const SecurityOrigin* origin) {
 }
 
 void LocalWindowProxy::UpdateDocument() {
+  DCHECK(world_->IsMainWorld());
   // For an uninitialized main window proxy, there's nothing we need
   // to update. The update is done when the window proxy gets initialized later.
   if (lifecycle_ == Lifecycle::kContextIsUninitialized)
@@ -448,14 +449,10 @@ void LocalWindowProxy::UpdateDocument() {
     return;
   }
 
-  if (!world_->IsMainWorld())
-    return;
-
-  UpdateDocumentForMainWorld();
+  UpdateDocumentInternal();
 }
 
-void LocalWindowProxy::UpdateDocumentForMainWorld() {
-  DCHECK(world_->IsMainWorld());
+void LocalWindowProxy::UpdateDocumentInternal() {
   UpdateActivityLogger();
   UpdateDocumentProperty();
   UpdateSecurityOrigin(GetFrame()->DomWindow()->GetSecurityOrigin());

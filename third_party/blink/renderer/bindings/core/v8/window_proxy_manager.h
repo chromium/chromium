@@ -93,8 +93,6 @@ class LocalWindowProxyManager
     return static_cast<LocalWindowProxy*>(window_proxy_.Get());
   }
 
-  void UpdateDocument();
-
   // Sets the given security origin to the main world's context.  Also updates
   // the security origin of the context for each isolated world.
   void UpdateSecurityOrigin(const SecurityOrigin*);

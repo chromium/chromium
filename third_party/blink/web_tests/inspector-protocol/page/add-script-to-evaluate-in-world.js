@@ -6,13 +6,9 @@
 
   const scriptIds = [];
   dp.Runtime.onConsoleAPICalled(msg => testRunner.log(msg.params.args[0].value));
-  let logContextCreationCallback = msg => {
+  dp.Runtime.onExecutionContextCreated(msg => {
     if (msg.params.context.name.includes('world'))
       testRunner.log(msg.params.context.name);
-  };
-  dp.Runtime.onExecutionContextCreated(msg => {
-    if (logContextCreationCallback)
-      logContextCreationCallback(msg);
   });
 
   testRunner.log('Adding scripts');
@@ -31,7 +27,6 @@
       testRunner.log('Failed script removal');
   }
 
-  logContextCreationCallback = null;
   await session.navigate('../resources/blank.html');
 
   testRunner.completeTest();

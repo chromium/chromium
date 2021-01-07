@@ -92,10 +92,9 @@ class LocalWindowProxy final : public WindowProxy {
 
   // Triggers updates of objects that are associated with a Document:
   // - the activity logger
-  // - the document DOM wrapper (performance optimization for accessing
-  //   window.document in the main world)
+  // - the document DOM wrapper
   // - the security origin
-  void UpdateDocumentForMainWorld();
+  void UpdateDocumentInternal();
 
   // The JavaScript wrapper for the document object is cached on the global
   // object for fast access. UpdateDocumentProperty sets the wrapper
