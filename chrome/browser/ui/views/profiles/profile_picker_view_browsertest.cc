@@ -202,7 +202,7 @@ class TestTabDialogs : public TabDialogs {
 class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
  public:
   ProfilePickerCreationFlowBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kProfilesUIRevamp);
+    feature_list_.InitAndEnableFeature(features::kSignInProfileCreation);
   }
 
   void SetUpInProcessBrowserTestFixture() override {

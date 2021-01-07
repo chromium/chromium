@@ -5051,10 +5051,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kNewProfilePicker)},
 
-    {"enable-profiles-ui-revamp", flag_descriptions::kProfilesUIRevampName,
-     flag_descriptions::kProfilesUIRevampDescription,
+    {"enable-sign-in-profile-creation",
+     flag_descriptions::kSignInProfileCreationName,
+     flag_descriptions::kSignInProfileCreationDescription,
      kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(features::kProfilesUIRevamp)},
+     FEATURE_VALUE_TYPE(features::kSignInProfileCreation)},
 #endif
 
     {"destroy-profile-on-browser-close",

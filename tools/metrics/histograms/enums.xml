@@ -42755,6 +42755,7 @@ from previous Chrome versions.
   <int value="-1546351452" label="CrossOriginIsolated:enabled"/>
   <int value="-1546029755" label="OverrideTranslateTriggerInIndia:enabled"/>
   <int value="-1545595496" label="RendererSideResourceScheduler:enabled"/>
+  <int value="-1545384766" label="SignInProfileCreation:disabled"/>
   <int value="-1544248549" label="ArcUseAuthEndpoint:enabled"/>
   <int value="-1543316040"
       label="DisplayPersistenceToggleInPermissionPrompts:disabled"/>
@@ -45060,6 +45061,7 @@ from previous Chrome versions.
   <int value="628570445" label="AndroidAutofillAccessibility:enabled"/>
   <int value="629549626" label="ContextualSearchMlTapSuppression:enabled"/>
   <int value="630244477" label="ServiceWorkerPaymentApps:enabled"/>
+  <int value="630308195" label="SignInProfileCreation:enabled"/>
   <int value="630776247" label="USBGuard:disabled"/>
   <int value="630947363" label="touch-events"/>
   <int value="632340413" label="network-settings-config"/>

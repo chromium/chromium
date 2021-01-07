@@ -855,8 +855,8 @@ extern const char kNewCanvas2DAPIDescription[];
 extern const char kNewProfilePickerName[];
 extern const char kNewProfilePickerDescription[];
 
-extern const char kProfilesUIRevampName[];
-extern const char kProfilesUIRevampDescription[];
+extern const char kSignInProfileCreationName[];
+extern const char kSignInProfileCreationDescription[];
 
 extern const char kDestroyProfileOnBrowserCloseName[];
 extern const char kDestroyProfileOnBrowserCloseDescription[];

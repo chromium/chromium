@@ -97,7 +97,7 @@ var ProfileTypeChoiceTest = class extends SigninBrowserTest {
   get featureList() {
     return {
       enabled: [
-        'features::kProfilesUIRevamp',
+        'features::kSignInProfileCreation',
         'features::kNewProfilePicker',
       ]
     };
@@ -125,7 +125,7 @@ var LocalProfileCustomizationTest = class extends SigninBrowserTest {
   get featureList() {
     return {
       enabled: [
-        'features::kProfilesUIRevamp',
+        'features::kNewProfilePicker',
       ]
     };
   }
@@ -151,7 +151,7 @@ var ProfilePickerAppTest = class extends SigninBrowserTest {
   get featureList() {
     return {
       enabled: [
-        'features::kProfilesUIRevamp',
+        'features::kSignInProfileCreation',
         'features::kNewProfilePicker',
       ]
     };
@@ -178,7 +178,7 @@ var ProfilePickerMainViewTest = class extends SigninBrowserTest {
   get featureList() {
     return {
       enabled: [
-        'features::kProfilesUIRevamp',
+        'features::kSignInProfileCreation',
         'features::kNewProfilePicker',
       ]
     };

@@ -65,9 +65,9 @@ const base::Feature kSidePanel{"SidePanel", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kSyncConfirmationUpdatedText{
     "SyncConfirmationUpdatedText", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Revamp of profiles. https://crbug.com/1108289
-const base::Feature kProfilesUIRevamp{"ProfilesUIRevamp",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+// Sign-in functionality in the profile creation flow. https://crbug.com/1126913
+const base::Feature kSignInProfileCreation{"SignInProfileCreation",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Automatically create groups for users based on domain.
 // https://crbug.com/1128703

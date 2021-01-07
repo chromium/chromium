@@ -2093,11 +2093,6 @@
     "expiry_milestone": 80
   },
   {
-    "name": "enable-profiles-ui-revamp",
-    "owners": [ "droger", "my-chrome-everywhere@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-quic",
     "owners": [ "//net/quic/OWNERS" ],
     // This flag is used by network administrators to debug
@@ -2183,6 +2178,11 @@
     "owners": [ "kolos" ],
     // Used for debugging and QA by the autofill team for the indefinite future.
     "expiry_milestone": -1
+  },
+  {
+    "name": "enable-sign-in-profile-creation",
+    "owners": [ "jkrcal", "my-chrome-everywhere@google.com" ],
+    "expiry_milestone": 91
   },
   {
     "name": "enable-site-isolation-for-password-sites",
