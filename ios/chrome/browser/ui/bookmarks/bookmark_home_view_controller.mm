@@ -2489,7 +2489,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (URLInfo*)tableView:(UITableView*)tableView
     URLInfoAtIndexPath:(NSIndexPath*)indexPath {
   const bookmarks::BookmarkNode* node = [self nodeAtIndexPath:indexPath];
-  if (node->is_folder()) {
+  if (!node || node->is_folder()) {
     return nil;
   }
   return [[URLInfo alloc]
