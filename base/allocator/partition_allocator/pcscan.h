@@ -47,6 +47,7 @@ class BASE_EXPORT PCScan final {
   enum class InvocationMode {
     kBlocking,
     kNonBlocking,
+    kForcedBlocking,
   };
 
   static PCScan& Instance() {
@@ -66,8 +67,6 @@ class BASE_EXPORT PCScan final {
 
   ALWAYS_INLINE void MoveToQuarantine(void* ptr, SlotSpan* slot_span);
 
-  // Performs scanning unconditionally.
-  void PerformScan(InvocationMode invocation_mode);
   // Performs scanning only if a certain quarantine threshold was reached.
   void PerformScanIfNeeded(InvocationMode invocation_mode);
 
@@ -141,6 +140,9 @@ class BASE_EXPORT PCScan final {
   };
 
   constexpr PCScan() = default;
+
+  // Performs scanning unconditionally.
+  void PerformScan(InvocationMode invocation_mode);
 
   static PCScan instance_ PA_CONSTINIT;
 

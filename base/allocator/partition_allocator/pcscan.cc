@@ -556,14 +556,18 @@ void PCScan<thread_safe>::PerformScan(InvocationMode invocation_mode) {
   if (LIKELY(invocation_mode == InvocationMode::kNonBlocking)) {
     PCScanThread::Instance().PostTask(std::move(task));
   } else {
-    PA_DCHECK(InvocationMode::kBlocking == invocation_mode);
+    PA_DCHECK(InvocationMode::kBlocking == invocation_mode ||
+              InvocationMode::kForcedBlocking == invocation_mode);
     std::move(*task).RunOnce();
   }
 }
 
 template <bool thread_safe>
 void PCScan<thread_safe>::PerformScanIfNeeded(InvocationMode invocation_mode) {
-  if (quarantine_data_.MinimumScanningThresholdReached())
+  if (!roots_.size())
+    return;
+  if (invocation_mode == InvocationMode::kForcedBlocking ||
+      quarantine_data_.MinimumScanningThresholdReached())
     PerformScan(invocation_mode);
 }
 
