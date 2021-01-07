@@ -826,11 +826,18 @@ PositionWithAffinity LayoutText::PositionForPoint(
     // See All/LayoutViewHitTestTest.HitTestHorizontal/* and
     // All/LayoutViewHitTestTest.HitTestVerticalRL/*
     NGInlineCursor cursor;
+    const LayoutBlockFlow* containing_block_flow = ContainingNGBlockFlow();
+    PhysicalOffset point_in_contents = point;
+    if (containing_block_flow->IsScrollContainer()) {
+      point_in_contents += PhysicalOffset(
+          containing_block_flow->PixelSnappedScrolledContentOffset());
+    }
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
       if (!EnclosingIntRect(cursor.Current().RectInContainerFragment())
-               .Contains(FlooredIntPoint(point)))
+               .Contains(FlooredIntPoint(point_in_contents)))
         continue;
-      if (auto position_with_affinity = cursor.PositionForPointInChild(point)) {
+      if (auto position_with_affinity =
+              cursor.PositionForPointInChild(point_in_contents)) {
         // Note: Due by Bidi adjustment, |position| isn't relative to this.
         const Position& position = position_with_affinity.GetPosition();
         DCHECK(position.IsOffsetInAnchor()) << position;
@@ -841,7 +848,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
       }
     }
     // Try for leading and trailing spaces between lines.
-    return ContainingNGBlockFlow()->PositionForPoint(point);
+    return containing_block_flow->PositionForPoint(point);
   }
 
   DCHECK(CanUseInlineBox(*this));

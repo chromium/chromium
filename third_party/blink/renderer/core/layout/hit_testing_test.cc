@@ -173,4 +173,41 @@ TEST_F(HitTestingTest, LegacyInputElementInFragmentTraversal) {
   EXPECT_FALSE(hit_result.BoxFragment());
 }
 
+TEST_F(HitTestingTest, ScrolledInline) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+      margin: 0;
+      font-size: 50px;
+      line-height: 1;
+    }
+    #scroller {
+      width: 400px;
+      height: 5em;
+      overflow: scroll;
+      white-space: pre;
+    }
+    </style>
+    <div id="scroller">line1
+line2
+line3
+line4
+line5
+line6
+line7
+line8
+line9</div>
+  )HTML");
+
+  // Scroll #scroller by 2 lines. "line3" should be at the top.
+  Element* scroller = GetElementById("scroller");
+  scroller->setScrollTop(100);
+
+  const auto& text = *To<Text>(GetElementById("scroller")->firstChild());
+
+  // Expect to hit test position 12 (beginning of line3).
+  EXPECT_EQ(PositionWithAffinity(Position(text, 12)),
+            HitTest(PhysicalOffset(5, 5)));
+}
+
 }  // namespace blink
