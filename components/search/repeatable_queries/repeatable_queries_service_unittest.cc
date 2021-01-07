@@ -159,10 +159,8 @@ class TestRepeatableQueriesService : public RepeatableQueriesService {
     RepeatableQueriesService::FlushForTesting(std::move(flushed));
   }
 
-  GURL GetQueryDestinationURL(const base::string16& query,
-                              const TemplateURL* search_provider) {
-    return RepeatableQueriesService::GetQueryDestinationURL(query,
-                                                            search_provider);
+  GURL GetQueryDestinationURL(const base::string16& query) {
+    return RepeatableQueriesService::GetQueryDestinationURL(query);
   }
 
   GURL GetQueryDeletionURL(const std::string& deletion_url) {
@@ -254,8 +252,7 @@ class RepeatableQueriesServiceTest : public ::testing::Test,
   void SignOut() { identity_env_->SetCookieAccounts({}); }
 
   GURL GetQueryDestinationURL(const std::string& query) {
-    return service_->GetQueryDestinationURL(base::ASCIIToUTF16(query),
-                                            default_search_provider());
+    return service_->GetQueryDestinationURL(base::ASCIIToUTF16(query));
   }
 
   void RefreshAndMaybeWaitForService() {
