@@ -469,7 +469,7 @@ public final class ChromePreferenceKeys {
      * details.
      */
     public static final String ISOLATED_SPLITS_DEX_COMPILE_VERSION =
-            "Chrome.IsolatedSplits.DexCompileVersion";
+            "Chrome.IsolatedSplits.VersionCode";
 
     /**
      * When the user is shown a badge that the current Android OS version is unsupported, and they
