@@ -9,6 +9,7 @@
 #include "gpu/command_buffer/service/shared_image_backing_gl_common.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_fence.h"
+#include "ui/gl/gl_image_memory.h"
 
 namespace gpu {
 
@@ -143,6 +144,23 @@ class SharedImageRepresentationOverlayImpl
   scoped_refptr<gl::GLImage> gl_image_;
 };
 
+class SharedImageRepresentationMemoryImpl
+    : public SharedImageRepresentationMemory {
+ public:
+  SharedImageRepresentationMemoryImpl(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<gl::GLImageMemory> image_memory);
+  ~SharedImageRepresentationMemoryImpl() override;
+
+ protected:
+  SkPixmap BeginReadAccess() override;
+
+ private:
+  scoped_refptr<gl::GLImageMemory> image_memory_;
+};
+
 // Implementation of SharedImageBacking that creates a GL Texture that is backed
 // by a GLImage and stores it as a gles2::Texture. Can be used with the legacy
 // mailbox implementation.
@@ -200,6 +218,9 @@ class GPU_GLES2_EXPORT SharedImageBackingGLImage
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
+  std::unique_ptr<SharedImageRepresentationMemory> ProduceMemory(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker) override;
   std::unique_ptr<SharedImageRepresentationGLTexture>
   ProduceRGBEmulationGLTexture(SharedImageManager* manager,
                                MemoryTypeTracker* tracker) override;

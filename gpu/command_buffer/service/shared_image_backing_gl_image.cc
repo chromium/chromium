@@ -532,6 +532,37 @@ SharedImageBackingGLImage::ProduceSkia(
       cached_promise_texture_, tracker);
 }
 
+SharedImageRepresentationMemoryImpl::SharedImageRepresentationMemoryImpl(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    scoped_refptr<gl::GLImageMemory> image_memory)
+    : SharedImageRepresentationMemory(manager, backing, tracker),
+      image_memory_(std::move(image_memory)) {}
+
+SharedImageRepresentationMemoryImpl::~SharedImageRepresentationMemoryImpl() =
+    default;
+
+SkPixmap SharedImageRepresentationMemoryImpl::BeginReadAccess() {
+  SkImageInfo info = SkImageInfo::Make(
+      backing()->size().width(), backing()->size().height(),
+      viz::ResourceFormatToClosestSkColorType(true, backing()->format()),
+      backing()->alpha_type(), backing()->color_space().ToSkColorSpace());
+  return SkPixmap(info, image_memory_->memory(), image_memory_->stride());
+}
+
+std::unique_ptr<SharedImageRepresentationMemory>
+SharedImageBackingGLImage::ProduceMemory(SharedImageManager* manager,
+                                         MemoryTypeTracker* tracker) {
+  gl::GLImageMemory* image_memory =
+      gl::GLImageMemory::FromGLImage(image_.get());
+  if (!image_memory)
+    return nullptr;
+
+  return std::make_unique<SharedImageRepresentationMemoryImpl>(
+      manager, this, tracker, base::WrapRefCounted(image_memory));
+}
+
 std::unique_ptr<SharedImageRepresentationGLTexture>
 SharedImageBackingGLImage::ProduceRGBEmulationGLTexture(
     SharedImageManager* manager,

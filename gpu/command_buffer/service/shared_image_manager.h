@@ -68,6 +68,9 @@ class GPU_GLES2_EXPORT SharedImageManager {
       const Mailbox& mailbox,
       MemoryTypeTracker* ref,
       VaapiDependenciesFactory* dep_factory);
+  std::unique_ptr<SharedImageRepresentationMemory> ProduceMemory(
+      const Mailbox& mailbox,
+      MemoryTypeTracker* ref);
 
   // Called by SharedImageRepresentation in the destructor.
   void OnRepresentationDestroyed(const Mailbox& mailbox,

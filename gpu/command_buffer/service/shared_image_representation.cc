@@ -361,4 +361,20 @@ SharedImageRepresentationVaapi::BeginScopedWriteAccess() {
       base::PassKey<SharedImageRepresentationVaapi>(), this);
 }
 
+SharedImageRepresentationMemory::ScopedReadAccess::ScopedReadAccess(
+    base::PassKey<SharedImageRepresentationMemory> pass_key,
+    SharedImageRepresentationMemory* representation,
+    SkPixmap pixmap)
+    : ScopedAccessBase(representation), pixmap_(pixmap) {}
+
+SharedImageRepresentationMemory::ScopedReadAccess::~ScopedReadAccess() =
+    default;
+
+std::unique_ptr<SharedImageRepresentationMemory::ScopedReadAccess>
+SharedImageRepresentationMemory::BeginScopedReadAccess() {
+  return std::make_unique<ScopedReadAccess>(
+      base::PassKey<SharedImageRepresentationMemory>(), this,
+      BeginReadAccess());
+}
+
 }  // namespace gpu

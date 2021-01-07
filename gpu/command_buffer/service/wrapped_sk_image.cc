@@ -138,11 +138,19 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
 
   sk_sp<SkPromiseImageTexture> promise_texture() { return promise_texture_; }
 
+  const SharedMemoryRegionWrapper& shared_memory_wrapper() {
+    return shared_memory_wrapper_;
+  }
+
  protected:
   std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
+
+  std::unique_ptr<SharedImageRepresentationMemory> ProduceMemory(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker) override;
 
  private:
   friend class gpu::raster::WrappedSkImageFactory;
@@ -299,14 +307,14 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   DISALLOW_COPY_AND_ASSIGN(WrappedSkImage);
 };
 
-class WrappedSkImageRepresentation : public SharedImageRepresentationSkia {
+class WrappedSkImageRepresentationSkia : public SharedImageRepresentationSkia {
  public:
-  WrappedSkImageRepresentation(SharedImageManager* manager,
-                               SharedImageBacking* backing,
-                               MemoryTypeTracker* tracker)
+  WrappedSkImageRepresentationSkia(SharedImageManager* manager,
+                                   SharedImageBacking* backing,
+                                   MemoryTypeTracker* tracker)
       : SharedImageRepresentationSkia(manager, backing, tracker) {}
 
-  ~WrappedSkImageRepresentation() override { DCHECK(!write_surface_); }
+  ~WrappedSkImageRepresentationSkia() override { DCHECK(!write_surface_); }
 
   sk_sp<SkSurface> BeginWriteAccess(
       int final_msaa_count,
@@ -362,6 +370,29 @@ class WrappedSkImageRepresentation : public SharedImageRepresentationSkia {
   }
 
   SkSurface* write_surface_ = nullptr;
+};
+
+class WrappedSkImageRepresentationMemory
+    : public SharedImageRepresentationMemory {
+ public:
+  WrappedSkImageRepresentationMemory(SharedImageManager* manager,
+                                     SharedImageBacking* backing,
+                                     MemoryTypeTracker* tracker)
+      : SharedImageRepresentationMemory(manager, backing, tracker) {}
+
+ protected:
+  SkPixmap BeginReadAccess() override {
+    SkImageInfo info = MakeSkImageInfo(wrapped_sk_image()->size(),
+                                       wrapped_sk_image()->format());
+    return SkPixmap(info,
+                    wrapped_sk_image()->shared_memory_wrapper().GetMemory(),
+                    wrapped_sk_image()->shared_memory_wrapper().GetStride());
+  }
+
+ private:
+  WrappedSkImage* wrapped_sk_image() {
+    return static_cast<WrappedSkImage*>(backing());
+  }
 };
 
 }  // namespace
@@ -462,7 +493,18 @@ std::unique_ptr<SharedImageRepresentationSkia> WrappedSkImage::ProduceSkia(
     return nullptr;
 
   DCHECK_EQ(context_state_, context_state.get());
-  return std::make_unique<WrappedSkImageRepresentation>(manager, this, tracker);
+  return std::make_unique<WrappedSkImageRepresentationSkia>(manager, this,
+                                                            tracker);
+}
+
+std::unique_ptr<SharedImageRepresentationMemory> WrappedSkImage::ProduceMemory(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
+  if (!shared_memory_wrapper_.IsValid())
+    return nullptr;
+
+  return std::make_unique<WrappedSkImageRepresentationMemory>(manager, this,
+                                                              tracker);
 }
 
 }  // namespace raster

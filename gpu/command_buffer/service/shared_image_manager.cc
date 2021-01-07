@@ -297,6 +297,24 @@ SharedImageManager::ProduceVASurface(const Mailbox& mailbox,
   return representation;
 }
 
+std::unique_ptr<SharedImageRepresentationMemory>
+SharedImageManager::ProduceMemory(const Mailbox& mailbox,
+                                  MemoryTypeTracker* tracker) {
+  CALLED_ON_VALID_THREAD();
+
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR) << "SharedImageManager::Producememory: Trying to Produce a "
+                  "Memory representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  // This is expected to fail based on the SharedImageBacking type, so don't log
+  // error here. Caller is expected to handle nullptr.
+  return (*found)->ProduceMemory(this, tracker);
+}
+
 void SharedImageManager::OnRepresentationDestroyed(
     const Mailbox& mailbox,
     SharedImageRepresentation* representation) {

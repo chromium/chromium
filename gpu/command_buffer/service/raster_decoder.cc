@@ -572,6 +572,20 @@ class RasterDecoderImpl final : public RasterDecoder,
                                     GLboolean unpack_flip_y,
                                     const Mailbox& source_mailbox,
                                     const Mailbox& dest_mailbox);
+  bool TryCopySubTextureINTERNALMemory(
+      GLint xoffset,
+      GLint yoffset,
+      GLint x,
+      GLint y,
+      GLsizei width,
+      GLsizei height,
+      gfx::Rect dest_cleared_rect,
+      GLboolean unpack_flip_y,
+      const Mailbox& source_mailbox,
+      SharedImageRepresentationSkia* dest_shared_image,
+      SharedImageRepresentationSkia::ScopedWriteAccess* dest_scoped_access,
+      const std::vector<GrBackendSemaphore>& begin_semaphores,
+      std::vector<GrBackendSemaphore>& end_semaphores);
   void DoWritePixelsINTERNAL(GLint x_offset,
                              GLint y_offset,
                              GLuint src_width,
@@ -2258,21 +2272,10 @@ void RasterDecoderImpl::DoCopySubTextureINTERNALSkia(
     const Mailbox& dest_mailbox) {
   DCHECK(source_mailbox != dest_mailbox);
 
-  // Use Skia to copy texture if raster's gr_context() is not using GL.
-  auto source_shared_image = shared_image_representation_factory_.ProduceSkia(
-      source_mailbox, shared_context_state_);
   auto dest_shared_image = shared_image_representation_factory_.ProduceSkia(
       dest_mailbox, shared_context_state_);
-  if (!source_shared_image || !dest_shared_image) {
+  if (!dest_shared_image) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTexture", "unknown mailbox");
-    return;
-  }
-
-  gfx::Size source_size = source_shared_image->size();
-  gfx::Rect source_rect(x, y, width, height);
-  if (!gfx::Rect(source_size).Contains(source_rect)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTexture",
-                       "source texture bad dimensions.");
     return;
   }
 
@@ -2312,12 +2315,31 @@ void RasterDecoderImpl::DoCopySubTextureINTERNALSkia(
     return;
   }
 
-  // With OneCopyRasterBufferProvider, source_shared_image->BeginReadAccess()
-  // will copy pixels from SHM GMB to the texture in |source_shared_image|,
-  // and then use drawImageRect() to draw that texure to the target
-  // |dest_shared_image|. We can save one copy by drawing the SHM GMB to the
-  // target |dest_shared_image| directly.
-  // TODO(penghuang): get rid of the one extra copy. https://crbug.com/984045
+  // Attempt to upload directly from CPU shared memory to destination texture.
+  if (TryCopySubTextureINTERNALMemory(
+          xoffset, yoffset, x, y, width, height, new_cleared_rect,
+          unpack_flip_y, source_mailbox, dest_shared_image.get(),
+          dest_scoped_access.get(), begin_semaphores, end_semaphores)) {
+    return;
+  }
+
+  // Fall back to GPU->GPU copy if src image is not CPU-backed.
+  auto source_shared_image = shared_image_representation_factory_.ProduceSkia(
+      source_mailbox, shared_context_state_);
+  if (!source_shared_image) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTexture",
+                       "unknown source image mailbox.");
+    return;
+  }
+
+  gfx::Size source_size = source_shared_image->size();
+  gfx::Rect source_rect(x, y, width, height);
+  if (!gfx::Rect(source_size).Contains(source_rect)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTexture",
+                       "source texture bad dimensions.");
+    return;
+  }
+
   std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
       source_scoped_access = source_shared_image->BeginScopedReadAccess(
           &begin_semaphores, &end_semaphores);
@@ -2356,6 +2378,59 @@ void RasterDecoderImpl::DoCopySubTextureINTERNALSkia(
   if (!dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(new_cleared_rect);
   }
+}
+
+bool RasterDecoderImpl::TryCopySubTextureINTERNALMemory(
+    GLint xoffset,
+    GLint yoffset,
+    GLint x,
+    GLint y,
+    GLsizei width,
+    GLsizei height,
+    gfx::Rect dest_cleared_rect,
+    GLboolean unpack_flip_y,
+    const Mailbox& source_mailbox,
+    SharedImageRepresentationSkia* dest_shared_image,
+    SharedImageRepresentationSkia::ScopedWriteAccess* dest_scoped_access,
+    const std::vector<GrBackendSemaphore>& begin_semaphores,
+    std::vector<GrBackendSemaphore>& end_semaphores) {
+  if (unpack_flip_y || x != 0 || y != 0)
+    return false;
+
+  auto source_shared_image =
+      shared_image_representation_factory_.ProduceMemory(source_mailbox);
+  if (!source_shared_image)
+    return false;
+
+  gfx::Size source_size = source_shared_image->size();
+  gfx::Rect source_rect(x, y, width, height);
+  if (!gfx::Rect(source_size).Contains(source_rect))
+    return false;
+
+  auto scoped_read_access = source_shared_image->BeginScopedReadAccess();
+  if (!scoped_read_access)
+    return false;
+
+  SkPixmap pm = scoped_read_access->pixmap();
+  if (pm.width() != source_rect.width() || pm.height() != source_rect.height())
+    return false;
+
+  if (!begin_semaphores.empty()) {
+    bool result = dest_scoped_access->surface()->wait(
+        begin_semaphores.size(), begin_semaphores.data(),
+        /*deleteSemaphoresAfterWait=*/false);
+    DCHECK(result);
+  }
+
+  dest_scoped_access->surface()->writePixels(pm, xoffset, yoffset);
+
+  FlushAndSubmitIfNecessary(dest_scoped_access->surface(),
+                            std::move(end_semaphores));
+  if (!dest_shared_image->IsCleared()) {
+    dest_shared_image->SetClearedRect(dest_cleared_rect);
+  }
+
+  return true;
 }
 
 void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,

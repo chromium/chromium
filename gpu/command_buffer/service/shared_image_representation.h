@@ -463,6 +463,34 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
   virtual gl::GLImage* GetGLImage() = 0;
 };
 
+class GPU_GLES2_EXPORT SharedImageRepresentationMemory
+    : public SharedImageRepresentation {
+ public:
+  class GPU_GLES2_EXPORT ScopedReadAccess
+      : public ScopedAccessBase<SharedImageRepresentationMemory> {
+   public:
+    ScopedReadAccess(base::PassKey<SharedImageRepresentationMemory> pass_key,
+                     SharedImageRepresentationMemory* representation,
+                     SkPixmap pixmap);
+    ~ScopedReadAccess();
+
+    SkPixmap pixmap() { return pixmap_; }
+
+   private:
+    SkPixmap pixmap_;
+  };
+
+  SharedImageRepresentationMemory(SharedImageManager* manager,
+                                  SharedImageBacking* backing,
+                                  MemoryTypeTracker* tracker)
+      : SharedImageRepresentation(manager, backing, tracker) {}
+
+  std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess();
+
+ protected:
+  virtual SkPixmap BeginReadAccess() = 0;
+};
+
 // An interface that allows a SharedImageBacking to hold a reference to VA-API
 // surface without depending on //media/gpu/vaapi targets.
 class VaapiDependencies {
