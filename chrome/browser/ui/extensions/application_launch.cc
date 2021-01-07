@@ -21,8 +21,6 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/platform_apps/platform_app_launch.h"
-#include "chrome/browser/banners/app_banner_settings_helper.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -37,13 +35,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
-#include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/web_contents.h"
@@ -137,12 +130,6 @@ bool IsAllowedToOverrideURL(const extensions::Extension* extension,
   if (override_url.GetOrigin() == extension->url())
     return true;
 
-  if (extension->from_bookmark() &&
-      extensions::AppLaunchInfo::GetFullLaunchURL(extension).GetOrigin() ==
-          override_url.GetOrigin()) {
-    return true;
-  }
-
   return false;
 }
 
@@ -159,13 +146,6 @@ GURL UrlForExtension(const extensions::Extension* extension,
   if (!params.override_url.is_empty()) {
     DCHECK(IsAllowedToOverrideURL(extension, params.override_url));
     url = params.override_url;
-  } else if (extension->from_bookmark()) {
-    web_app::OsIntegrationManager& os_integration_manager =
-        web_app::WebAppProviderBase::GetProviderBase(profile)
-            ->os_integration_manager();
-    url = os_integration_manager
-              .GetMatchingFileHandlerURL(params.app_id, params.launch_files)
-              .value_or(extensions::AppLaunchInfo::GetFullLaunchURL(extension));
   } else {
     url = extensions::AppLaunchInfo::GetFullLaunchURL(extension);
   }
@@ -273,13 +253,6 @@ WebContents* OpenApplicationTab(Profile* profile,
     contents = params.navigated_or_inserted_contents;
   }
 
-  if (extension->from_bookmark()) {
-    web_app::WebAppTabHelperBase* tab_helper =
-        web_app::WebAppTabHelperBase::FromWebContents(contents);
-    DCHECK(tab_helper);
-    tab_helper->SetAppId(extension->id());
-  }
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // In ash, LAUNCH_FULLSCREEN launches in the OpenApplicationWindow function
   // i.e. it should not reach here.
@@ -354,34 +327,6 @@ WebContents* OpenEnabledApplication(Profile* profile,
       break;
   }
 
-  if (extension->from_bookmark()) {
-    if (web_app::WebAppProviderBase::GetProviderBase(profile)
-            ->os_integration_manager()
-            .IsFileHandlingAPIAvailable(extension->id())) {
-      web_launch::WebLaunchFilesHelper::SetLaunchPaths(tab, url,
-                                                       params.launch_files);
-    }
-
-    UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchSource",
-                              params.source);
-    UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchContainer",
-                              params.container);
-
-    // Record the launch time in the site engagement service. A recent bookmark
-    // app launch will provide an engagement boost to the origin.
-    site_engagement::SiteEngagementService* service =
-        site_engagement::SiteEngagementService::Get(profile);
-    service->SetLastShortcutLaunchTime(tab, url);
-
-    // Refresh the app banner added to homescreen event. The user may have
-    // cleared their browsing data since installing the app, which removes the
-    // event and will potentially permit a banner to be shown for the site.
-    webapps::AppBannerSettingsHelper::RecordBannerEvent(
-        tab, url, url.spec(),
-        webapps::AppBannerSettingsHelper::
-            APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
-        base::Time::Now());
-  }
   return tab;
 }
 
@@ -451,21 +396,12 @@ WebContents* NavigateApplicationWindow(Browser* browser,
 
   WebContents* const web_contents = nav_params.navigated_or_inserted_contents;
 
-  if (extension && !extension->from_bookmark()) {
+  if (extension) {
     DCHECK(extension->is_app());
     extensions::TabHelper::FromWebContents(web_contents)
         ->SetExtensionApp(extension);
   }
   web_app::SetAppPrefsForWebContents(web_contents);
-
-  // TODO(https://crbug.com/1032443):
-  // Eventually move this to browser_navigator.cc: CreateTargetContents().
-  if (extension && extension->from_bookmark()) {
-    web_app::WebAppTabHelperBase* tab_helper =
-        web_app::WebAppTabHelperBase::FromWebContents(web_contents);
-    DCHECK(tab_helper);
-    tab_helper->SetAppId(extension->id());
-  }
 
   return web_contents;
 }
@@ -538,13 +474,6 @@ void LaunchAppWithCallback(
   apps::mojom::LaunchContainer container;
   if (apps::OpenExtensionApplicationWindow(profile, app_id, command_line,
                                            current_directory)) {
-    const extensions::Extension* extension =
-        extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
-            app_id);
-    // TODO(crbug.com/1061843): Remove this when BMO launches.
-    if (extension && extension->from_bookmark())
-      web_app::RecordAppWindowLaunch(profile, app_id);
-
     container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
   } else if (apps::OpenExtensionApplicationTab(profile, app_id)) {
     container = apps::mojom::LaunchContainer::kLaunchContainerTab;
