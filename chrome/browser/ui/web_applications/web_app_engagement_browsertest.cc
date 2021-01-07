@@ -116,13 +116,13 @@ void ExpectTotalCounts(const base::HistogramTester& tester,
 void ExpectLaunchCounts(const base::HistogramTester& tester,
                         base::HistogramBase::Count windowLaunches,
                         base::HistogramBase::Count tabLaunches) {
-  tester.ExpectBucketCount("Extensions.HostedAppLaunchContainer",
+  tester.ExpectBucketCount("Extensions.BookmarkAppLaunchContainer",
                            apps::mojom::LaunchContainer::kLaunchContainerWindow,
                            windowLaunches);
-  tester.ExpectBucketCount("Extensions.HostedAppLaunchContainer",
+  tester.ExpectBucketCount("Extensions.BookmarkAppLaunchContainer",
                            apps::mojom::LaunchContainer::kLaunchContainerTab,
                            tabLaunches);
-  tester.ExpectTotalCount("Extensions.HostedAppLaunchContainer",
+  tester.ExpectTotalCount("Extensions.BookmarkAppLaunchContainer",
                           windowLaunches + tabLaunches);
 
   if (tabLaunches > 0) {

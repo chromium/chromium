@@ -236,9 +236,6 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
   browser->window()->Show();
 
   // TODO(crbug.com/1014328): Populate WebApp metrics instead of Extensions.
-
-  UMA_HISTOGRAM_ENUMERATION("Extensions.HostedAppLaunchContainer",
-                            params.container);
   if (params.container == apps::mojom::LaunchContainer::kLaunchContainerTab) {
     UMA_HISTOGRAM_ENUMERATION("Extensions.AppTabLaunchType",
                               extensions::LAUNCH_TYPE_REGULAR, 100);
