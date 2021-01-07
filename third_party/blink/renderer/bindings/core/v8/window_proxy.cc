@@ -50,6 +50,7 @@ WindowProxy::~WindowProxy() {
 
 void WindowProxy::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
+  visitor->Trace(global_proxy_);
 }
 
 WindowProxy::WindowProxy(v8::Isolate* isolate,
