@@ -15,8 +15,10 @@
 
 namespace {
 // Height of the view that is revealed. The thumb strip has a height equal to a
-// small grid cell + edge insets (top and bottm) from thumb strip layout.
-const CGFloat kThumbStripHeight = 168.0f + 22.0f + 22.0f;
+// small grid cell + edge insets (top and bottom) from thumb strip layout.
+const CGFloat kThumbStripHeight =
+    kGridCellSizeSmall.height +
+    2 * kGridLayoutLineSpacingCompactCompactLimitedWidth;
 }  // namespace
 
 @interface ThumbStripCoordinator ()
