@@ -205,9 +205,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   // Returns if the control buttons should be shown.
   bool ShouldShowControlButtons() const;
 
-  // Sets the border if |is_nested_| is true.
-  void SetNestedBorderIfNecessary();
-
   // Updates the background painter using the themed background color and radii.
   void UpdateBackgroundPainter();
 
