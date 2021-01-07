@@ -1831,26 +1831,7 @@ TemplateURL* TemplateURLService::Add(std::unique_ptr<TemplateURL> template_url,
     template_url->data_.id = ++next_id_;
   }
 
-  bool force_reset_keyword = false;
-  if (template_url->safe_for_autoreplace() &&
-      base::EndsWith(template_url->keyword(), base::ASCIIToUTF16("_"))) {
-    // In the past, when we added new engines with a duplicate keyword as an
-    // existing engine, we uniquified it by adding underscores to the end.
-    // This was a problem, because it caused an increasing proliferation of
-    // entries like "example.com_" and "example.com__" in the database.
-    //
-    // For engines that are safe_for_autoreplace(), the only way they could have
-    // keywords ending with underscores is if we uniquified it. Now we detect
-    // these cases, and reverse it by resetting the keyword.
-    //
-    // This migration will be complete once the below-logged UMA goes to zero.
-    force_reset_keyword = true;
-    LogSearchTemplateURLEvent(
-        MIGRATE_SAFE_FOR_AUTOREPLACE_RESET_UNDERSCORE_KEYWORD);
-  }
-
-  template_url->ResetKeywordIfNecessary(search_terms_data(),
-                                        force_reset_keyword);
+  template_url->ResetKeywordIfNecessary(search_terms_data(), false);
 
   // Early exit if the newly added TemplateURL was a replaceable duplicate.
   // No need to inform either Sync or flag on the model-mutated in that case.
