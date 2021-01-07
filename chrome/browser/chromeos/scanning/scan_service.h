@@ -100,6 +100,9 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // LorgnetteScannerManager::CancelScan().
   void OnCancelCompleted(bool success);
 
+  // Called once the task runner finishes saving a PDF file.
+  void OnPdfSaved(const bool success);
+
   // Called once the task runner finishes saving a page of a scan.
   void OnPageSaved(const base::FilePath& saved_file_path);
 

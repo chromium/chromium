@@ -407,13 +407,12 @@ void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
 }
 
 void ScanService::OnScanCompleted(bool success) {
-  if (!scanned_images_.empty()) {
+  if (success && !scanned_images_.empty()) {
     base::PostTaskAndReplyWithResult(
         task_runner_.get(), FROM_HERE,
         base::BindOnce(&SaveAsPdf, scanned_images_, last_scanned_file_path_),
-        base::BindOnce(&ScanService::OnAllPagesSaved,
+        base::BindOnce(&ScanService::OnPdfSaved,
                        weak_ptr_factory_.GetWeakPtr()));
-    return;
   }
 
   // Post a task to the task runner to ensure all the pages have been saved
@@ -429,6 +428,10 @@ void ScanService::OnCancelCompleted(bool success) {
   if (success)
     ClearScanState();
   scan_job_observer_->OnCancelComplete(success);
+}
+
+void ScanService::OnPdfSaved(const bool success) {
+  save_failed_ = !success;
 }
 
 void ScanService::OnPageSaved(const base::FilePath& saved_file_path) {
