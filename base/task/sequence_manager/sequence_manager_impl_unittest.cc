@@ -2508,6 +2508,8 @@ class CancelableTask {
     run_times->push_back(clock_->NowTicks());
   }
 
+  void FailTask() { FAIL(); }
+
   const TickClock* clock_;
   WeakPtrFactory<CancelableTask> weak_factory_{this};
 };
@@ -2544,6 +2546,20 @@ TEST_P(SequenceManagerTest, TaskQueueObserver_SweepCanceledDelayedTasks) {
 
   // Sweeping away canceled delayed tasks should trigger a notification.
   EXPECT_CALL(observer, OnQueueNextWakeUpChanged(start_time + delay2)).Times(1);
+  sequence_manager()->ReclaimMemory();
+}
+
+TEST_P(SequenceManagerTest, TaskQueueObserver_SweepLastTaskInQueue) {
+  auto queue = CreateTaskQueue();
+  CancelableTask task(mock_tick_clock());
+  queue->task_runner()->PostDelayedTask(
+      FROM_HERE,
+      BindOnce(&CancelableTask::FailTask, task.weak_factory_.GetWeakPtr()),
+      base::TimeDelta::FromSeconds(1));
+
+  // Make sure sweeping away the last task in the queue doesn't end up accessing
+  // invalid iterators.
+  task.weak_factory_.InvalidateWeakPtrs();
   sequence_manager()->ReclaimMemory();
 }
 
