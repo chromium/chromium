@@ -61,7 +61,7 @@ views::Widget* PlatformVerificationDialog::ShowDialog(
 
   // TODO(xhwang): We should only show the name if the request is from the
   // extension's true frame. See http://crbug.com/455821
-  std::string origin = extension ? extension->name() : requesting_origin.spec();
+  std::string origin = extension ? extension->name() : requesting_origin.host();
 
   PlatformVerificationDialog* dialog = new PlatformVerificationDialog(
       web_contents, base::UTF8ToUTF16(origin), std::move(callback));
