@@ -8205,6 +8205,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </suffix>
   <suffix name="FeedJournalDatabase"
       label="Database for Feed journal storage."/>
+  <suffix name="FeedKeyValueDatabase"
+      label="Database for key value cache used in feed rendering."/>
   <suffix name="FeedStorageDatabase" label="Databases for Feed Storage.">
     <obsolete>
       Deprecated since 08/18.

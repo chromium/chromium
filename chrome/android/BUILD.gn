@@ -3230,6 +3230,7 @@ generate_jni("chrome_jni_headers") {
     # Files under a feature's public/ dir are included in chrome_java's source
     # files, so include these files in chrome_jni_headers.
     "feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedImageFetchClient.java",
+    "feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedPersistentKeyValueCache.java",
     "feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedServiceBridge.java",
     "feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedStreamSurface.java",
     "java/src/org/chromium/chrome/browser/AfterStartupTaskUtils.java",

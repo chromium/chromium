@@ -23,6 +23,7 @@ class DataOperation;
 }  // namespace feedstore
 
 namespace feed {
+class PersistentKeyValueStore;
 
 // This is the public access point for interacting with the Feed stream
 // contents.
@@ -92,6 +93,8 @@ class FeedStreamApi {
   // with an empty response body and status_code=net::Error::ERR_ABORTED. If
   // |id| doesn't match an active fetch, nothing happens.
   virtual void CancelImageFetch(ImageFetchId id) = 0;
+
+  virtual PersistentKeyValueStore* GetPersistentKeyValueStore() = 0;
 
   // Apply |operations| to the stream model. Does nothing if the model is not
   // yet loaded.

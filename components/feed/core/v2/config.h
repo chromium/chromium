@@ -44,6 +44,14 @@ struct Config {
   base::TimeDelta session_id_max_age = base::TimeDelta::FromDays(30);
   // Maximum number of images prefetched per refresh.
   int max_prefetch_image_requests_per_refresh = 50;
+
+  // Configuration for `PersistentKeyValueStore`.
+
+  // Maximum total database size before items are evicted.
+  int64_t persistent_kv_store_maximum_size_before_eviction = 1000000;
+  // Eviction task is performed after this many bytes are written.
+  int persistent_kv_store_cleanup_interval_in_written_bytes = 1000000;
+
   // Set of optional capabilities included in requests. See
   // CreateFeedQueryRequest() for required capabilities.
   base::flat_set<feedwire::Capability> experimental_capabilities = {
