@@ -584,6 +584,12 @@ class URLLoaderTest : public testing::Test {
       network_context_client->set_ignore_last_upload_file(
           ignore_last_upload_file_);
     }
+    if (ignore_certificate_errors_) {
+      if (!network_context_client) {
+        network_context_client = std::make_unique<TestNetworkContextClient>();
+      }
+      network_context_client->set_ignore_certificate_errors(true);
+    }
 
     base::RunLoop delete_run_loop;
     mojo::Remote<mojom::URLLoader> loader;
@@ -765,6 +771,10 @@ class URLLoaderTest : public testing::Test {
     DCHECK(!ran_);
     send_ssl_for_cert_error_ = true;
   }
+  void set_ignore_certificate_errors() {
+    DCHECK(!ran_);
+    ignore_certificate_errors_ = true;
+  }
   void set_expect_redirect() {
     DCHECK(!ran_);
     expect_redirect_ = true;
@@ -900,6 +910,7 @@ class URLLoaderTest : public testing::Test {
   bool sniff_ = false;
   bool send_ssl_with_response_ = false;
   bool send_ssl_for_cert_error_ = false;
+  bool ignore_certificate_errors_ = false;
   bool expect_redirect_ = false;
   mojom::ClientSecurityStatePtr factory_client_security_state_;
   mojom::ClientSecurityStatePtr request_client_security_state_;
@@ -2336,14 +2347,15 @@ TEST_F(URLLoaderTest, UploadReadOnceStream) {
   tester.ExpectTotalCount(histogram_notallowh1, 0);
 }
 
-// Tests that SSLInfo is not attached to OnComplete messages when there is no
-// certificate error.
+// Tests that SSLInfo is not attached to OnComplete messages or the
+// URLResponseHead when there is no certificate error.
 TEST_F(URLLoaderTest, NoSSLInfoWithoutCertificateError) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   ASSERT_TRUE(https_server.Start());
   set_send_ssl_for_cert_error();
   EXPECT_EQ(net::OK, Load(https_server.GetURL("/")));
   EXPECT_FALSE(client()->completion_status().ssl_info.has_value());
+  EXPECT_FALSE(client()->response_head()->ssl_info.has_value());
 }
 
 // Tests that SSLInfo is not attached to OnComplete messages when the
@@ -2357,7 +2369,7 @@ TEST_F(URLLoaderTest, NoSSLInfoOnComplete) {
 }
 
 // Tests that SSLInfo is attached to OnComplete messages when the corresponding
-// option is set.
+// option is set and the certificate error causes the load to fail.
 TEST_F(URLLoaderTest, SSLInfoOnComplete) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
@@ -2368,6 +2380,72 @@ TEST_F(URLLoaderTest, SSLInfoOnComplete) {
   EXPECT_TRUE(client()->completion_status().ssl_info.value().cert);
   EXPECT_EQ(net::CERT_STATUS_DATE_INVALID,
             client()->completion_status().ssl_info.value().cert_status);
+}
+
+// Tests that SSLInfo is attached to OnComplete messages and the URLResponseHead
+// when the corresponding option is set and the certificate error doesn't cause
+// the load to fail.
+TEST_F(URLLoaderTest, SSLInfoOnResponseWithCertificateError) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
+  ASSERT_TRUE(https_server.Start());
+  set_send_ssl_for_cert_error();
+  set_ignore_certificate_errors();
+  EXPECT_EQ(net::OK, Load(https_server.GetURL("/")));
+  ASSERT_TRUE(client()->completion_status().ssl_info.has_value());
+  EXPECT_TRUE(client()->completion_status().ssl_info.value().cert);
+  EXPECT_EQ(net::CERT_STATUS_DATE_INVALID,
+            client()->completion_status().ssl_info.value().cert_status);
+  ASSERT_TRUE(client()->response_head()->ssl_info.has_value());
+  EXPECT_TRUE(client()->response_head()->ssl_info.value().cert);
+  EXPECT_EQ(net::CERT_STATUS_DATE_INVALID,
+            client()->response_head()->ssl_info.value().cert_status);
+}
+
+// Tests that SSLInfo is attached to the URLResponseHead on redirects when the
+// corresponding option is set and the certificate error doesn't cause the load
+// to fail.
+TEST_F(URLLoaderTest, SSLInfoOnRedirectWithCertificateError) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  TestURLLoaderClient client;
+  ResourceRequest request = CreateResourceRequest(
+      "GET", https_server.GetURL("/server-redirect?http://foo.test"));
+
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  mojom::URLLoaderFactoryParams params;
+  params.process_id = mojom::kBrowserProcessId;
+  params.is_corb_enabled = false;
+  auto network_context_client = std::make_unique<TestNetworkContextClient>();
+  network_context_client->set_ignore_certificate_errors(true);
+  url_loader = std::make_unique<URLLoader>(
+      context(), nullptr /* network_service_client */,
+      network_context_client.get(),
+      DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(),
+      mojom::kURLLoadOptionSendSSLInfoWithResponse |
+          mojom::kURLLoadOptionSendSSLInfoForCertificateError,
+      request, client.CreateRemote(),
+      /*reponse_body_use_tracker=*/base::nullopt, TRAFFIC_ANNOTATION_FOR_TESTS,
+      &params,
+      /*coep_reporter=*/nullptr, 0 /* request_id */,
+      0 /* keepalive_request_size */, resource_scheduler_client(), nullptr,
+      nullptr /* network_usage_accumulator */, nullptr /* header_client */,
+      nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
+      nullptr /* origin_access_list */,
+      mojo::NullRemote() /* cookie_observer */);
+
+  client.RunUntilRedirectReceived();
+  ASSERT_TRUE(client.response_head()->ssl_info.has_value());
+  EXPECT_TRUE(client.response_head()->ssl_info.value().cert);
+  EXPECT_EQ(net::CERT_STATUS_DATE_INVALID,
+            client.response_head()->ssl_info.value().cert_status);
 }
 
 // Make sure the client can modify headers during a redirect.

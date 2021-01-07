@@ -52,4 +52,15 @@ void TestNetworkContextClient::OnFileUploadRequested(
   std::move(callback).Run(net::OK, std::move(files));
 }
 
+void TestNetworkContextClient::OnSSLCertificateError(
+    int32_t process_id,
+    int32_t routing_id,
+    const GURL& url,
+    int net_error,
+    const net::SSLInfo& ssl_info,
+    bool fatal,
+    OnSSLCertificateErrorCallback response) {
+  std::move(response).Run(ignore_certificate_errors_ ? net::OK : net_error);
+}
+
 }  // namespace network

@@ -1232,13 +1232,6 @@ void DocumentLoader::StartLoadingInternal() {
       PreloadHelper::kDoNotLoadResources, PreloadHelper::kLoadAll,
       nullptr /* viewport_description */, nullptr /* alternate_resource_info */,
       nullptr /* recursive_prefetch_token */);
-  if (!frame_->IsMainFrame() && response_.HasMajorCertificateErrors()) {
-    MixedContentChecker::HandleCertificateError(
-        response_, mojom::blink::RequestContextType::HYPERLINK,
-        MixedContentChecker::DecideCheckModeForPlugin(
-            GetFrame()->GetSettings()),
-        GetContentSecurityNotifier());
-  }
   GetFrameLoader().Progress().IncrementProgress(main_resource_identifier_,
                                                 response_);
   probe::DidReceiveResourceResponse(probe::ToCoreProbeSink(GetFrame()),

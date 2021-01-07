@@ -671,6 +671,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool ShouldAllowRunningInsecureContent(bool allowed_per_prefs,
                                          const url::Origin& origin,
                                          const GURL& resource_url) override;
+  void RecordActiveContentWithCertificateErrors(
+      RenderFrameHostImpl* render_frame_host) override;
   void ViewSource(RenderFrameHostImpl* frame) override;
   void PrintCrossProcessSubframe(const gfx::Rect& rect,
                                  int document_cookie,

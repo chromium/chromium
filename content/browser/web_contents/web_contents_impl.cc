@@ -5487,6 +5487,35 @@ bool WebContentsImpl::ShouldAllowRunningInsecureContent(
   return allowed_per_prefs;
 }
 
+void WebContentsImpl::RecordActiveContentWithCertificateErrors(
+    RenderFrameHostImpl* render_frame_host) {
+  OPTIONAL_TRACE_EVENT1(
+      "content", "WebContentsImpl::RecordActiveContentWithCertificateErrors",
+      "render_frame_host", base::trace_event::ToTracedValue(render_frame_host));
+  // For RenderFrameHosts that are inactive and going to be discarded, we can
+  // disregard this message; there's no need to update the UI if the UI will
+  // never be shown again.
+  //
+  // We still process this message for speculative RenderFrameHosts. This can
+  // happen when a subframe's main resource has a certificate error. The
+  // origin for the last committed navigation entry will get marked as having
+  // run insecure content and that will carry over to the navigation entry for
+  // the speculative RFH when it commits.
+  //
+  // Generally our approach for active content with certificate errors follows
+  // our approach for mixed content (DidRunInsecureContent): when a page loads
+  // active insecure content, such as a script or iframe, the top-level origin
+  // gets marked as insecure and that applies to any navigation entry using the
+  // same renderer process with that same top-level origin.
+  if (render_frame_host->lifecycle_state() !=
+          RenderFrameHostImpl::LifecycleState::kSpeculative &&
+      render_frame_host->IsInactiveAndDisallowReactivation()) {
+    return;
+  }
+  controller_.ssl_manager()->DidRunContentWithCertErrors(
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL());
+}
+
 void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ViewSource",
                         "render_frame_host",
@@ -5688,25 +5717,7 @@ void WebContentsImpl::OnDidDisplayContentWithCertificateErrors() {
 
 void WebContentsImpl::OnDidRunContentWithCertificateErrors(
     RenderFrameHostImpl* source) {
-  OPTIONAL_TRACE_EVENT1(
-      "content", "WebContentsImpl::OnDidRunContentWithCertificateErrors",
-      "render_frame_host", base::trace_event::ToTracedValue(source));
-  // For RenderFrameHosts that are inactive and going to be discarded, we can
-  // disregard this message; there's no need to update the UI if the UI will
-  // never be shown again.
-  //
-  // We still process this message for speculative RenderFrameHosts. This can
-  // happen when a subframe's main resource has a certificate error. The
-  // currently committed navigation entry will get marked as having run insecure
-  // content and that will carry over to the navigation entry for the
-  // speculative RFH when it commits.
-  if (source->lifecycle_state() !=
-          RenderFrameHostImpl::LifecycleState::kSpeculative &&
-      source->IsInactiveAndDisallowReactivation()) {
-    return;
-  }
-  controller_.ssl_manager()->DidRunContentWithCertErrors(
-      source->GetMainFrame()->GetLastCommittedOrigin().GetURL());
+  RecordActiveContentWithCertificateErrors(source);
 }
 
 void WebContentsImpl::DOMContentLoaded(RenderFrameHost* render_frame_host) {

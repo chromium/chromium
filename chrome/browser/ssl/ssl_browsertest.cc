@@ -1117,8 +1117,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrokenHTTPSWithActiveInsecureContent) {
 
 // Tests that when a subframe commits a main resource with a certificate error,
 // the navigation entry is marked as insecure.
-// Flaky. See https://crbug.com/1106370.
-IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreCertErrors, DISABLED_SubframeHasCertError) {
+IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreCertErrors, SubframeHasCertError) {
   ASSERT_TRUE(https_server_mismatched_.Start());
   // Load a page with a data: favicon URL to suppress a favicon request. A
   // favicon request can cause the navigation entry to get marked as having run

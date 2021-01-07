@@ -304,8 +304,12 @@ uint32_t NavigationURLLoaderImpl::GetURLLoaderOptions(bool is_main_frame) {
     // SSLInfo is not needed on subframe responses because users can inspect
     // only the certificate for the main frame when using the info bubble.
     options |= network::mojom::kURLLoadOptionSendSSLInfoWithResponse;
-    options |= network::mojom::kURLLoadOptionSendSSLInfoForCertificateError;
   }
+
+  // When there's a certificate error for a frame load (regardless of whether
+  // the error caused the connection to fail), SSLInfo is useful for adjusting
+  // security UI accordingly.
+  options |= network::mojom::kURLLoadOptionSendSSLInfoForCertificateError;
 
   return options;
 }

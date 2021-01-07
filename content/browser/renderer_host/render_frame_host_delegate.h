@@ -436,6 +436,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                                                  const url::Origin& origin,
                                                  const GURL& resource_url);
 
+  // Notifies that content with certificate errors will be committed in a
+  // subframe.
+  virtual void RecordActiveContentWithCertificateErrors(
+      RenderFrameHostImpl* render_frame_host) {}
+
   // Opens a new view-source tab for the last committed document in |frame|.
   virtual void ViewSource(RenderFrameHostImpl* frame) {}
 

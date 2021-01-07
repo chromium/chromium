@@ -108,16 +108,16 @@ NavigationThrottle::ThrottleCheckResult
 MixedContentNavigationThrottle::WillRedirectRequest() {
   // Upon redirects the same checks are to be executed as for requests.
   bool should_block = ShouldBlockNavigation(true);
-  return should_block ? CANCEL : PROCEED;
+  if (!should_block) {
+    MaybeHandleCertificateError();
+    return PROCEED;
+  }
+  return CANCEL;
 }
 
 NavigationThrottle::ThrottleCheckResult
 MixedContentNavigationThrottle::WillProcessResponse() {
-  // TODO(carlosk): At this point we are about to process the request response.
-  // So if we ever need to, here/now it is a good moment to check for the final
-  // attained security level of the connection. For instance, does it use an
-  // outdated protocol? The implementation should be based off
-  // MixedContentChecker::handleCertificateError. See https://crbug.com/576270.
+  MaybeHandleCertificateError();
   return PROCEED;
 }
 
@@ -347,6 +347,27 @@ void MixedContentNavigationThrottle::ReportBasicMixedContentFeatures(
       return;
   }
   mixed_content_features_.insert(feature);
+}
+
+void MixedContentNavigationThrottle::MaybeHandleCertificateError() {
+  // Main frame certificate errors are handled separately in SSLManager.
+  if (navigation_handle()->IsInMainFrame()) {
+    return;
+  }
+
+  // If there was no SSL info, then it was not an HTTPS resource load, and we
+  // can ignore it.
+  if (!navigation_handle()->GetSSLInfo()) {
+    return;
+  }
+
+  if (!net::IsCertStatusError(navigation_handle()->GetSSLInfo()->cert_status)) {
+    return;
+  }
+
+  NavigationRequest* request = NavigationRequest::From(navigation_handle());
+  RenderFrameHostImpl* rfh = request->frame_tree_node()->current_frame_host();
+  rfh->delegate()->RecordActiveContentWithCertificateErrors(rfh);
 }
 
 // static

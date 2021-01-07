@@ -88,7 +88,7 @@ constexpr size_t kBlockedBodyAllocationSize = 1;
 // content/browser/loader/resource_loader.cc
 void PopulateResourceResponse(net::URLRequest* request,
                               bool is_load_timing_enabled,
-                              bool include_ssl_info,
+                              int32_t options,
                               network::mojom::URLResponseHead* response) {
   response->request_time = request->request_time();
   response->response_time = request->response_time();
@@ -135,8 +135,11 @@ void PopulateResourceResponse(net::URLRequest* request,
         ssl_version == net::SSLVersion::SSL_CONNECTION_VERSION_TLS1 ||
         ssl_version == net::SSLVersion::SSL_CONNECTION_VERSION_TLS1_1;
 
-    if (include_ssl_info)
+    if ((options & mojom::kURLLoadOptionSendSSLInfoWithResponse) ||
+        (net::IsCertStatusError(request->ssl_info().cert_status) &&
+         (options & mojom::kURLLoadOptionSendSSLInfoForCertificateError))) {
       response->ssl_info = request->ssl_info();
+    }
   }
 
   response->request_start = request->creation_time();
@@ -1118,9 +1121,8 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   *defer_redirect = true;
 
   auto response = network::mojom::URLResponseHead::New();
-  PopulateResourceResponse(
-      url_request_.get(), is_load_timing_enabled_,
-      options_ & mojom::kURLLoadOptionSendSSLInfoWithResponse, response.get());
+  PopulateResourceResponse(url_request_.get(), is_load_timing_enabled_,
+                           options_, response.get());
   if (report_raw_headers_) {
     response->raw_request_response_info = BuildRawRequestResponseInfo(
         *url_request_, raw_request_headers_, raw_response_headers_.get());
@@ -1284,9 +1286,8 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
   }
 
   response_ = network::mojom::URLResponseHead::New();
-  PopulateResourceResponse(
-      url_request_.get(), is_load_timing_enabled_,
-      options_ & mojom::kURLLoadOptionSendSSLInfoWithResponse, response_.get());
+  PopulateResourceResponse(url_request_.get(), is_load_timing_enabled_,
+                           options_, response_.get());
   if (report_raw_headers_) {
     response_->raw_request_response_info = BuildRawRequestResponseInfo(
         *url_request_, raw_request_headers_, raw_response_headers_.get());

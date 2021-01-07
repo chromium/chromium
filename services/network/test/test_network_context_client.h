@@ -29,6 +29,9 @@ class TestNetworkContextClient : public network::mojom::NetworkContextClient {
   void set_ignore_last_upload_file(bool ignore_last_upload_file) {
     ignore_last_upload_file_ = ignore_last_upload_file;
   }
+  void set_ignore_certificate_errors(bool ignore_certificate_errors) {
+    ignore_certificate_errors_ = ignore_certificate_errors;
+  }
 
   void OnAuthRequired(const base::Optional<base::UnguessableToken>& window_id,
                       int32_t process_id,
@@ -54,7 +57,7 @@ class TestNetworkContextClient : public network::mojom::NetworkContextClient {
                              int net_error,
                              const net::SSLInfo& ssl_info,
                              bool fatal,
-                             OnSSLCertificateErrorCallback response) override {}
+                             OnSSLCertificateErrorCallback response) override;
   void OnFileUploadRequested(int32_t process_id,
                              bool async,
                              const std::vector<base::FilePath>& file_paths,
@@ -92,6 +95,7 @@ class TestNetworkContextClient : public network::mojom::NetworkContextClient {
   mojo::Receiver<mojom::NetworkContextClient> receiver_;
   bool upload_files_invalid_ = false;
   bool ignore_last_upload_file_ = false;
+  bool ignore_certificate_errors_ = false;
 };
 
 }  // namespace network
