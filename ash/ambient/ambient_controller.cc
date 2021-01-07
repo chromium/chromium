@@ -657,6 +657,9 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
   params.delegate = widget_delegate;
   params.visible_on_all_workspaces = true;
 
+  // Do not change the video wake lock.
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+
   auto widget = std::make_unique<views::Widget>();
   widget->Init(std::move(params));
   widget->SetContentsView(std::move(container_view));
