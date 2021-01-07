@@ -410,17 +410,7 @@
 
 namespace {
 
-// Deprecated 9/2019
-const char kGoogleServicesUsername[] = "google.services.username";
-const char kGoogleServicesUserAccountId[] = "google.services.user_account_id";
-const char kDataReductionNetworkProperties[] =
-    "data_reduction.network_properties";
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 10/2019
-const char kDisplayRotationAcceleratorDialogHasBeenAccepted[] =
-    "settings.a11y.display_rotation_accelerator_dialog_has_been_accepted";
-
 // Deprecated 12/2020
 const char kLocalSearchServiceSyncMetricsDailySample[] =
     "local_search_service_sync.metrics.daily_sample";
@@ -430,10 +420,6 @@ const char kLocalSearchServiceSyncMetricsHelpAppCount[] =
     "local_search_service_sync.metrics.help_app_count";
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 11/2019
-const char kBlacklistedCredentialsNormalized[] =
-    "profile.blacklisted_credentials_normalized";
 
 // Deprecated 1/2020
 #if defined(OS_MAC)
@@ -448,6 +434,10 @@ const char kGCMChannelLastCheckTime[] = "gcm.check_time";
 const char kInvalidatorClientId[] = "invalidator.client_id";
 const char kInvalidatorInvalidationState[] = "invalidator.invalidation_state";
 const char kInvalidatorSavedInvalidations[] = "invalidator.saved_invalidations";
+
+// Deprecated 3/2020
+const char kDataReductionNetworkProperties[] =
+    "data_reduction.network_properties";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 4/2020
@@ -564,17 +554,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 // Register prefs used only for migration (clearing or moving to a new key).
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(kGoogleServicesUsername, std::string());
-  registry->RegisterStringPref(kGoogleServicesUserAccountId, std::string());
   registry->RegisterDictionaryPref(kDataReductionNetworkProperties);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterBooleanPref(
-      kDisplayRotationAcceleratorDialogHasBeenAccepted, false);
   registry->RegisterDictionaryPref(kSupervisedUserAllowlists);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  registry->RegisterBooleanPref(kBlacklistedCredentialsNormalized, false);
 
   registry->RegisterBooleanPref(kGCMChannelStatus, true);
   registry->RegisterIntegerPref(kGCMChannelPollIntervalSeconds, 0);
@@ -1191,18 +1175,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 7/2019. Keep at least until 7/2021 as a missing migration would
   // disable sync.
   syncer::MigrateSyncSuppressedPref(profile_prefs);
-
-  // Added 9/2019
-  profile_prefs->ClearPref(kGoogleServicesUsername);
-  profile_prefs->ClearPref(kGoogleServicesUserAccountId);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 10/2019.
-  profile_prefs->ClearPref(kDisplayRotationAcceleratorDialogHasBeenAccepted);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 11/2019.
-  profile_prefs->ClearPref(kBlacklistedCredentialsNormalized);
 
   // Added 1/2020.
   profile_prefs->ClearPref(kGCMChannelStatus);
