@@ -10,7 +10,13 @@
 #include "base/observer_list.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
+namespace display {
+class Display;
+}  // namespace display
+
 namespace ash {
+
+class Shelf;
 
 // Model class that stores UnifiedSystemTray's UI specific variables. Owned by
 // UnifiedSystemTray status area button. Not to be confused with UI agnostic
@@ -36,6 +42,19 @@ class ASH_EXPORT UnifiedSystemTrayModel {
     NOTIFICATION_ID,
   };
 
+  // Enumeration of possible sizes of the system tray button. Larger screen will
+  // have larger tray button with additional information.
+  enum class SystemTrayButtonSize {
+    // Display wifi, battery, notification counter icons and time.
+    kSmall = 0,
+    // Display those in small unified system tray, plus important notification
+    // icons.
+    kMedium = 1,
+    // Display those in medium unified system tray, plus the current date.
+    kLarge = 2,
+    kMaxValue = kLarge,
+  };
+
   class Observer {
    public:
     virtual ~Observer() {}
@@ -43,9 +62,11 @@ class ASH_EXPORT UnifiedSystemTrayModel {
     // |by_user| is true when brightness is changed by user action.
     virtual void OnDisplayBrightnessChanged(bool by_user) {}
     virtual void OnKeyboardBrightnessChanged(bool by_user) {}
+    virtual void OnSystemTrayButtonSizeChanged(
+        SystemTrayButtonSize system_tray_size) {}
   };
 
-  explicit UnifiedSystemTrayModel(views::View* owner_view);
+  explicit UnifiedSystemTrayModel(Shelf* shelf);
   ~UnifiedSystemTrayModel();
 
   void AddObserver(Observer* observer);
@@ -78,6 +99,9 @@ class ASH_EXPORT UnifiedSystemTrayModel {
   // NOTIFICATION_ID.
   void SetTargetNotification(const std::string& notification_id);
 
+  // Get the size of the system tray depends on the size of the display screen.
+  SystemTrayButtonSize GetSystemTrayButtonSize() const;
+
   float display_brightness() const { return display_brightness_; }
   float keyboard_brightness() const { return keyboard_brightness_; }
 
@@ -102,8 +126,15 @@ class ASH_EXPORT UnifiedSystemTrayModel {
  private:
   class DBusObserver;
 
+  // Keeps track all the sources that can change the size of system tray button.
+  class SizeObserver;
+
   void DisplayBrightnessChanged(float brightness, bool by_user);
   void KeyboardBrightnessChanged(float brightness, bool by_user);
+  void SystemTrayButtonSizeChanged(SystemTrayButtonSize system_tray_size);
+
+  // Get the display that owns the tray.
+  const display::Display GetDisplay() const;
 
   // Target mode which is used to decide the scroll position of the message
   // center on opening. See the comment in |NotificationTargetMode|.
@@ -128,7 +159,11 @@ class ASH_EXPORT UnifiedSystemTrayModel {
   // <notification ID, if notification is manually expanded>
   std::map<std::string, bool> notification_changes_;
 
+  Shelf* const shelf_;
+
   std::unique_ptr<DBusObserver> dbus_observer_;
+
+  std::unique_ptr<SizeObserver> size_observer_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

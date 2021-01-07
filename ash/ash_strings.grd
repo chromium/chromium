@@ -933,6 +933,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_DATE" desc="The date displayed on ash system bubble, Depending on launguage, please choose the best separator(eg ',') between abbreviated weekday and date">
         <ph name="short_weekday">$1<ex>Fri</ex></ph>, <ph name="date">$2<ex>Aug 31, 2012</ex></ph>
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_DATE_TIME" desc="The time displayed on ash system tray, Depending on launguage, please choose the best separator(eg ',') between abbreviated date and time">
+        <ph name="date">$1<ex>Aug 31</ex></ph>, <ph name="time">$2<ex>03:00</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_REBOOT" desc="The accessible text for the reboot button.">
         Restart
       </message>

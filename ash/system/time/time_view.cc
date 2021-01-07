@@ -54,6 +54,12 @@ const int kVerticalClockMinutesTopOffset = -2;
 // when the shelf is vertically aligned.
 const int kClockLeadingPadding = 8;
 
+base::string16 FormatDate(const base::Time& time) {
+  // Use 'short' month format (e.g., "Oct") followed by non-padded day of
+  // month (e.g., "2", "10").
+  return base::TimeFormatWithPattern(time, "LLLd");
+}
+
 }  // namespace
 
 TimeView::TimeView(ClockLayout clock_layout, ClockModel* model)
@@ -110,6 +116,14 @@ void TimeView::SetTextShadowValues(const gfx::ShadowValues& shadows) {
 
   vertical_label_hours_->SetShadows(shadows);
   vertical_label_minutes_->SetShadows(shadows);
+}
+
+void TimeView::SetShowDateWhenHorizontal(bool show_date_when_horizontal) {
+  if (show_date_when_horizontal_ == show_date_when_horizontal)
+    return;
+  show_date_when_horizontal_ = show_date_when_horizontal;
+  UpdateText();
+  PreferredSizeChanged();
 }
 
 void TimeView::OnDateFormatChanged() {
@@ -189,7 +203,11 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
 
   base::string16 current_time = base::TimeFormatTimeOfDayWithHourClockType(
       now, model_->hour_clock_type(), base::kDropAmPm);
-  horizontal_label_->SetText(current_time);
+  base::string16 current_date_time = l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_DATE_TIME, FormatDate(now), current_time);
+
+  horizontal_label_->SetText(show_date_when_horizontal_ ? current_date_time
+                                                        : current_time);
   horizontal_label_->SetTooltipText(base::TimeFormatFriendlyDate(now));
   horizontal_label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                                               true);
