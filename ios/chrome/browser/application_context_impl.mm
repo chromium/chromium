@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
@@ -109,6 +110,17 @@ void BindNetworkChangeManagerReceiver(
     network::NetworkChangeManager* network_change_manager,
     mojo::PendingReceiver<network::mojom::NetworkChangeManager> receiver) {
   network_change_manager->AddReceiver(std::move(receiver));
+}
+
+// Used to enable the workaround for a local state not persisting sometimes.
+NSString* const kLastSessionExitedCleanly = @"LastSessionExitedCleanly";
+
+// Set both local_state and user defaults kLastSessionExitedCleanly to |clean|.
+void SetLastSessionExitedCleanly(PrefService* local_state, bool clean) {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setBool:clean forKey:kLastSessionExitedCleanly];
+  [defaults synchronize];
+  local_state->SetBoolean(prefs::kLastSessionExitedCleanly, clean);
 }
 
 }  // namespace
@@ -233,7 +245,7 @@ void ApplicationContextImpl::OnAppEnterForeground() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   PrefService* local_state = GetLocalState();
-  local_state->SetBoolean(prefs::kLastSessionExitedCleanly, false);
+  SetLastSessionExitedCleanly(local_state, false);
 
   // Tell the metrics services that the application resumes.
   metrics::MetricsService* metrics_service = GetMetricsService();
@@ -267,7 +279,7 @@ void ApplicationContextImpl::OnAppEnterBackground() {
   }
 
   PrefService* local_state = GetLocalState();
-  local_state->SetBoolean(prefs::kLastSessionExitedCleanly, true);
+  SetLastSessionExitedCleanly(local_state, true);
 
   // Tell the metrics services they were cleanly shutdown.
   metrics::MetricsService* metrics_service = GetMetricsService();
@@ -520,6 +532,37 @@ void ApplicationContextImpl::CreateLocalState() {
     was_last_shutdown_clean_ =
         local_state_->GetBoolean(prefs::kLastSessionExitedCleanly);
   }
+
+  // The logic below mirrors clean_exit_beacon.  For historical reasons ios/
+  // does not use this beacon directly.  This code should be merged with clean
+  // exit beacon (as long as the user default workaround can also go into the
+  // clean exit beacon).
+
+  // An enumeration of all possible permutations of the the beacon state in the
+  // registry and in Local State.
+  enum {
+    DIRTY_DIRTY,
+    DIRTY_CLEAN,
+    CLEAN_DIRTY,
+    CLEAN_CLEAN,
+    MISSING_DIRTY,
+    MISSING_CLEAN,
+    NUM_CONSISTENCY_ENUMS
+  } consistency = DIRTY_DIRTY;
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  if ([defaults objectForKey:kLastSessionExitedCleanly] != nil) {
+    bool user_defaults_was_last_shutdown_clean_ =
+        [defaults boolForKey:kLastSessionExitedCleanly];
+    if (user_defaults_was_last_shutdown_clean_) {
+      consistency = was_last_shutdown_clean_ ? CLEAN_CLEAN : CLEAN_DIRTY;
+    } else {
+      consistency = was_last_shutdown_clean_ ? DIRTY_CLEAN : DIRTY_DIRTY;
+    }
+  } else {
+    consistency = was_last_shutdown_clean_ ? MISSING_CLEAN : MISSING_DIRTY;
+  }
+  base::UmaHistogramEnumeration("UMA.CleanExitBeaconConsistency", consistency,
+                                NUM_CONSISTENCY_ENUMS);
 }
 
 void ApplicationContextImpl::CreateGCMDriver() {
