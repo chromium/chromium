@@ -39,6 +39,14 @@ source_set("api") {
     "//base",
     "//content/public/browser",
     "//content/public/common",
+    "//extensions/common",
+    "//ipc",
+  ]
+
+  # TODO(crbug/1158984): remove these deps. The core API system should not
+  # include specific API implementations; these should instead be moved to
+  # api_implementations below (and only included in the final Chrome target).
+  public_deps += [
     "//extensions/browser/api/activity_log",
     "//extensions/browser/api/alarms",
     "//extensions/browser/api/app_current_window_internal",
@@ -75,7 +83,6 @@ source_set("api") {
     "//extensions/browser/api/sockets_tcp",
     "//extensions/browser/api/sockets_tcp_server",
     "//extensions/browser/api/sockets_udp",
-    "//extensions/browser/api/storage",
     "//extensions/browser/api/system_cpu",
     "//extensions/browser/api/system_display",
     "//extensions/browser/api/system_info",
@@ -86,8 +93,6 @@ source_set("api") {
     "//extensions/browser/api/usb",
     "//extensions/browser/api/virtual_keyboard_private",
     "//extensions/browser/api/web_request",
-    "//extensions/common",
-    "//ipc",
   ]
 
   deps = [
@@ -150,6 +155,58 @@ source_set("api") {
       "//chromeos/services/media_perception/public/mojom:mojom_js_data_deps",
     ]
   }
+}
+
+group("api_implementations") {
+  public_deps = [
+    "//extensions/browser/api/activity_log",
+    "//extensions/browser/api/alarms",
+    "//extensions/browser/api/app_current_window_internal",
+    "//extensions/browser/api/app_runtime",
+    "//extensions/browser/api/app_window",
+    "//extensions/browser/api/audio",
+    "//extensions/browser/api/automation_internal",
+    "//extensions/browser/api/bluetooth",
+    "//extensions/browser/api/bluetooth_low_energy",
+    "//extensions/browser/api/bluetooth_socket",
+    "//extensions/browser/api/cast_channel",
+    "//extensions/browser/api/declarative",
+    "//extensions/browser/api/declarative_content",
+    "//extensions/browser/api/declarative_net_request",
+    "//extensions/browser/api/declarative_webrequest",
+    "//extensions/browser/api/display_source",
+    "//extensions/browser/api/dns",
+    "//extensions/browser/api/feedback_private",
+    "//extensions/browser/api/file_handlers",
+    "//extensions/browser/api/file_system",
+    "//extensions/browser/api/hid",
+    "//extensions/browser/api/idle",
+    "//extensions/browser/api/management",
+    "//extensions/browser/api/messaging",
+    "//extensions/browser/api/metrics_private",
+    "//extensions/browser/api/mime_handler_private",
+    "//extensions/browser/api/networking_private",
+    "//extensions/browser/api/power",
+    "//extensions/browser/api/printer_provider",
+    "//extensions/browser/api/printer_provider_internal",
+    "//extensions/browser/api/runtime",
+    "//extensions/browser/api/serial",
+    "//extensions/browser/api/socket",
+    "//extensions/browser/api/sockets_tcp",
+    "//extensions/browser/api/sockets_tcp_server",
+    "//extensions/browser/api/sockets_udp",
+    "//extensions/browser/api/storage",
+    "//extensions/browser/api/system_cpu",
+    "//extensions/browser/api/system_display",
+    "//extensions/browser/api/system_info",
+    "//extensions/browser/api/system_memory",
+    "//extensions/browser/api/system_network",
+    "//extensions/browser/api/system_storage",
+    "//extensions/browser/api/test",
+    "//extensions/browser/api/usb",
+    "//extensions/browser/api/virtual_keyboard_private",
+    "//extensions/browser/api/web_request",
+  ]
 }
 
 function_registration("api_registration") {

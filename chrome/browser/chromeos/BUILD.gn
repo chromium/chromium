@@ -319,6 +319,7 @@ source_set("chromeos") {
     "//components/user_manager",
     "//components/user_prefs:user_prefs",
     "//components/vector_icons",
+    "//extensions/browser/api:api_implementations",
     "//media/capture/video/chromeos/public:public",
 
     # This depends directly on the variations target, rather than just

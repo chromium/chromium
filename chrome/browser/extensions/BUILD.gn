@@ -877,6 +877,7 @@ static_library("extensions") {
     "//extensions:extensions_resources",
     "//extensions/browser",
     "//extensions/browser:core_api_provider",
+    "//extensions/browser/api:api_implementations",
     "//extensions/buildflags",
     "//extensions/common",
     "//extensions/common/api",

@@ -36,6 +36,7 @@ source_set("browser_context_keyed_service_factories") {
     "//build:chromeos_buildflags",
     "//extensions/browser:browser_sources",
     "//extensions/browser/api",
+    "//extensions/browser/api:api_implementations",
   ]
 }
 

@@ -4218,7 +4218,10 @@ static_library("browser") {
       ]
     }
     if (enable_extensions) {
-      deps += [ "//extensions/browser" ]
+      deps += [
+        "//extensions/browser",
+        "//extensions/browser/api:api_implementations",
+      ]
     }
 
     if (is_posix || is_fuchsia) {

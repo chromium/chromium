@@ -154,6 +154,7 @@ static_library("test_support") {
     "//content/test:test_support",
     "//extensions/browser",
     "//extensions/browser:test_support",
+    "//extensions/browser/api/storage",
     "//extensions/common",
     "//extensions/common:core_api_provider",
     "//extensions/common/api",

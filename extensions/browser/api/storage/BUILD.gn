@@ -26,7 +26,11 @@ source_set("storage") {
     "weak_unlimited_settings_storage.h",
   ]
 
-  deps = [ "//extensions/common/api" ]
+  deps = [
+    "//extensions/browser/api",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }
