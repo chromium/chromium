@@ -124,6 +124,7 @@ void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
     if (ShouldAutoCreateGroupForNavigation(nav_params)) {
       nav_params->group =
           model->AddToNewGroup({source_index, source_index + 1});
+      model->OpenTabGroupEditor(nav_params->group.value());
     }
   }
 }

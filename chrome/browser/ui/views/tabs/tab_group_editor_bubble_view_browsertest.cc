@@ -25,6 +25,7 @@ class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     tab_groups::TabGroupId group =
         browser()->tab_strip_model()->AddToNewGroup({0});
+    browser()->tab_strip_model()->OpenTabGroupEditor(group);
 
     BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
     TabGroupHeader* header = browser_view->tabstrip()->group_header(group);

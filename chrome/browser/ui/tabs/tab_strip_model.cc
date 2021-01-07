@@ -1058,7 +1058,6 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
   const tab_groups::TabGroupId new_group =
       tab_groups::TabGroupId::GenerateNew();
   AddToNewGroupImpl(indices, new_group);
-  OpenTabGroupEditor(new_group);
   return new_group;
 }
 
@@ -1387,10 +1386,12 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     case CommandToggleGrouped: {
       std::vector<int> indices = GetIndicesForCommand(context_index);
       bool group = WillContextMenuGroup(context_index);
-      if (group)
-        AddToNewGroup(indices);
-      else
+      if (group) {
+        tab_groups::TabGroupId new_group = AddToNewGroup(indices);
+        OpenTabGroupEditor(new_group);
+      } else {
         RemoveFromGroup(indices);
+      }
 
       break;
     }
@@ -1424,7 +1425,9 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     case CommandAddToNewGroup: {
       base::RecordAction(UserMetricsAction("TabContextMenu_AddToNewGroup"));
 
-      AddToNewGroup(GetIndicesForCommand(context_index));
+      tab_groups::TabGroupId new_group =
+          AddToNewGroup(GetIndicesForCommand(context_index));
+      OpenTabGroupEditor(new_group);
       break;
     }
 
