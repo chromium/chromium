@@ -453,7 +453,6 @@ static_library("common") {
       "ppapi_utils.cc",
       "ppapi_utils.h",
     ]
-    public_deps += [ "//third_party/adobe/flash:flapper_version_h" ]
   }
   if (enable_plugins && enable_extensions) {
     sources += [

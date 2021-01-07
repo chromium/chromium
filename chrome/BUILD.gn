@@ -305,13 +305,6 @@ if (!is_android && !is_mac) {
     # The step's output are needed at runtime, so we also need a data_dep.
     data_deps += [ ":packed_resources" ]
 
-    # Only ChromeOS has precompiled Flash that needs to get copied to the output
-    # directory. On other platforms, Flash is either component-updated only or
-    # not supported at all.
-    if (is_chromeos_ash) {
-      deps += [ "//third_party/adobe/flash:flapper_binaries" ]
-    }
-
     # ChromeOS by design is safe to have rpath=$ORIGIN. This simplifies shared
     # library usage.
     if (is_chromeos_ash && !is_component_build) {

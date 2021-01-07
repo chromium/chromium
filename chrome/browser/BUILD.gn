@@ -6061,7 +6061,6 @@ static_library("browser") {
       "//ppapi/host",
       "//ppapi/proxy:ipc",
       "//services/device/public/mojom",
-      "//third_party/adobe/flash:flapper_version_h",
     ]
     if (is_chromeos_ash) {
       deps += [ "//chromeos/cryptohome" ]
