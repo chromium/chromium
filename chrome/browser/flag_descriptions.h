@@ -870,6 +870,9 @@ extern const char kNewTabstripAnimationDescription[];
 extern const char kNotificationIndicatorName[];
 extern const char kNotificationIndicatorDescription[];
 
+extern const char kNotificationSchedulerName[];
+extern const char kNotificationSchedulerDescription[];
+
 extern const char kNotificationSchedulerDebugOptionName[];
 extern const char kNotificationSchedulerDebugOptionDescription[];
 extern const char kNotificationSchedulerImmediateBackgroundTaskDescription[];
@@ -1779,6 +1782,9 @@ extern const char kReaderModeHeuristicsAlwaysOn[];
 
 extern const char kReaderModeInCCTName[];
 extern const char kReaderModeInCCTDescription[];
+
+extern const char kReadLaterReminderNotificationName[];
+extern const char kReadLaterReminderNotificationDescription[];
 
 extern const char kRecoverFromNeverSaveAndroidName[];
 extern const char kRecoverFromNeverSaveAndroidDescription[];

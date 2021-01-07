@@ -1457,6 +1457,10 @@ const char kNotificationIndicatorDescription[] =
     "Enable notification indicators, which appear on shelf app icons and "
     "launcher apps when a notification is active.";
 
+const char kNotificationSchedulerName[] = "Notification scheduler";
+const char kNotificationSchedulerDescription[] =
+    "Enable notification scheduler feature.";
+
 const char kNotificationSchedulerDebugOptionName[] =
     "Notification scheduler debug options";
 const char kNotificationSchedulerDebugOptionDescription[] =
@@ -3073,6 +3077,11 @@ const char kReaderModeHeuristicsAlwaysOn[] = "Always";
 const char kReaderModeInCCTName[] = "Reader Mode in CCT";
 const char kReaderModeInCCTDescription[] =
     "Open Reader Mode in Chrome Custom Tabs.";
+
+const char kReadLaterReminderNotificationName[] =
+    "Read later reminder notification";
+const char kReadLaterReminderNotificationDescription[] =
+    "Enables read later weekly reminder notification.";
 
 const char kRecoverFromNeverSaveAndroidName[] =
     "UI to recover from never save passwords on Android";

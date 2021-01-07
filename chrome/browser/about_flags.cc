@@ -4411,6 +4411,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadLaterDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(reading_list::switches::kReadLater)},
 
+#ifdef OS_ANDROID
+    {"read-later-reminder-notification",
+     flag_descriptions::kReadLaterReminderNotificationName,
+     flag_descriptions::kReadLaterReminderNotificationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         reading_list::switches::kReadLaterReminderNotification)},
+#endif
+
     {"tab-groups-auto-create", flag_descriptions::kTabGroupsAutoCreateName,
      flag_descriptions::kTabGroupsAutoCreateDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupsAutoCreate)},
@@ -5831,6 +5839,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAssistantRoutinesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::assistant::features::kAssistantRoutines)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    {"notification-scheduler", flag_descriptions::kNotificationSchedulerName,
+     flag_descriptions::kNotificationSchedulerDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(notifications::features::kNotificationScheduleService)},
 
     {"notification-scheduler-debug-options",
      flag_descriptions::kNotificationSchedulerDebugOptionName,
