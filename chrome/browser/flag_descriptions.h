@@ -2383,9 +2383,6 @@ extern const char kEnableNeuralStylusPalmRejectionDescription[];
 extern const char kEnableNewShortcutMappingName[];
 extern const char kEnableNewShortcutMappingDescription[];
 
-extern const char kEnableOnDeviceAssistantName[];
-extern const char kEnableOnDeviceAssistantDescription[];
-
 extern const char kEnablePalmOnMaxTouchMajorName[];
 extern const char kEnablePalmOnMaxTouchMajorDescription[];
 

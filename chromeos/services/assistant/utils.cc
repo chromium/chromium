@@ -143,11 +143,6 @@ std::string CreateLibAssistantConfig(
 
   config.SetKey("audio_input", std::move(audio_input));
 
-  if (features::IsOnDeviceAssistantEnabled()) {
-    config.SetStringPath("internal.base_oda_resources_dir",
-                         GetBaseAssistantDir().AsUTF8Unsafe());
-  }
-
   if (features::IsLibAssistantBetaBackendEnabled())
     config.SetStringPath("internal.backend_type", "BETA_DOGFOOD");
 
