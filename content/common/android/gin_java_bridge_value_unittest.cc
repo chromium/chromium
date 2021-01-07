@@ -76,6 +76,18 @@ TEST_F(GinJavaBridgeValueTest, BasicValues) {
   EXPECT_EQ(42, native_object_id);
 
   EXPECT_FALSE(undefined_value->GetAsNonFinite(&native_float));
+
+  std::unique_ptr<base::Value> in_uint32(GinJavaBridgeValue::CreateUInt32Value(
+      std::numeric_limits<uint32_t>::max()));
+  ASSERT_TRUE(in_uint32.get());
+  EXPECT_TRUE(GinJavaBridgeValue::ContainsGinJavaBridgeValue(in_uint32.get()));
+  std::unique_ptr<const GinJavaBridgeValue> uint32_value(
+      GinJavaBridgeValue::FromValue(in_uint32.get()));
+  ASSERT_TRUE(uint32_value.get());
+  EXPECT_TRUE(uint32_value->IsType(GinJavaBridgeValue::TYPE_UINT32));
+  uint32_t out_uint32_value;
+  EXPECT_TRUE(uint32_value->GetAsUInt32(&out_uint32_value));
+  EXPECT_EQ(std::numeric_limits<uint32_t>::max(), out_uint32_value);
 }
 
 TEST_F(GinJavaBridgeValueTest, BrokenValues) {

@@ -745,6 +745,38 @@ public class JavaBridgeArrayCoercionTest {
         Assert.assertNull(mTestObject.waitForCustomTypeArray());
     }
 
+    // Test passing a typed Int8Array to a method which takes a Java array.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    public void testPassInt8ArrayWithNagativeValue(boolean useMojo) throws Throwable {
+        mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(1);");
+        mActivityTestRule.executeJavaScript("int8_array = new Int8Array(buffer);");
+        mActivityTestRule.executeJavaScript("int8_array[0] = -1;");
+
+        mActivityTestRule.executeJavaScript("testObject.setByteArray(int8_array);");
+        Assert.assertEquals(-1, mTestObject.waitForByteArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setCharArray(int8_array);");
+        Assert.assertEquals(65535, mTestObject.waitForCharArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setShortArray(int8_array);");
+        Assert.assertEquals(-1, mTestObject.waitForShortArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setIntArray(int8_array);");
+        Assert.assertEquals(-1, mTestObject.waitForIntArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setLongArray(int8_array);");
+        Assert.assertEquals(-1L, mTestObject.waitForLongArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setFloatArray(int8_array);");
+        Assert.assertEquals(-1.0f, mTestObject.waitForFloatArray()[0], ASSERTION_DELTA);
+
+        mActivityTestRule.executeJavaScript("testObject.setDoubleArray(int8_array);");
+        Assert.assertEquals(-1.0, mTestObject.waitForDoubleArray()[0], ASSERTION_DELTA);
+    }
+
     // Test passing a typed Uint8Array to a method which takes a Java array.
     @Test
     @SmallTest
@@ -787,6 +819,37 @@ public class JavaBridgeArrayCoercionTest {
 
         mActivityTestRule.executeJavaScript("testObject.setCustomTypeArray(uint8_array);");
         Assert.assertNull(mTestObject.waitForCustomTypeArray());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    public void testPassUint8ArrayWithMaxValue(boolean useMojo) throws Throwable {
+        mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(1);");
+        mActivityTestRule.executeJavaScript("uint8_array = new Uint8Array(buffer);");
+        mActivityTestRule.executeJavaScript("uint8_array[0] = 255;");
+
+        mActivityTestRule.executeJavaScript("testObject.setByteArray(uint8_array);");
+        Assert.assertEquals(-1, mTestObject.waitForByteArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setCharArray(uint8_array);");
+        Assert.assertEquals(255, mTestObject.waitForCharArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setShortArray(uint8_array);");
+        Assert.assertEquals(255, mTestObject.waitForShortArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setIntArray(uint8_array);");
+        Assert.assertEquals(255, mTestObject.waitForIntArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setLongArray(uint8_array);");
+        Assert.assertEquals(255L, mTestObject.waitForLongArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setFloatArray(uint8_array);");
+        Assert.assertEquals(255.0f, mTestObject.waitForFloatArray()[0], ASSERTION_DELTA);
+
+        mActivityTestRule.executeJavaScript("testObject.setDoubleArray(uint8_array);");
+        Assert.assertEquals(255.0, mTestObject.waitForDoubleArray()[0], ASSERTION_DELTA);
     }
 
     // Test passing a typed Int16Array to a method which takes a Java array.
@@ -877,6 +940,41 @@ public class JavaBridgeArrayCoercionTest {
         Assert.assertNull(mTestObject.waitForCustomTypeArray());
     }
 
+    // Test passing a typed Uint16Array of max values to a method which takes a Java array.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    public void testPassUint16ArrayWithMaxValue(boolean useMojo) throws Throwable {
+        mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(2);");
+        mActivityTestRule.executeJavaScript("uint16_array = new Uint16Array(buffer);");
+        mActivityTestRule.executeJavaScript("uint16_array[0] = 65535;");
+
+        mActivityTestRule.executeJavaScript("testObject.setBooleanArray(uint16_array);");
+        Assert.assertFalse(mTestObject.waitForBooleanArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setByteArray(uint16_array);");
+        Assert.assertEquals(-1, mTestObject.waitForByteArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setCharArray(uint16_array);");
+        Assert.assertEquals(65535, mTestObject.waitForCharArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setShortArray(uint16_array);");
+        Assert.assertEquals(-1, mTestObject.waitForShortArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setIntArray(uint16_array);");
+        Assert.assertEquals(65535, mTestObject.waitForIntArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setLongArray(uint16_array);");
+        Assert.assertEquals(65535L, mTestObject.waitForLongArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setFloatArray(uint16_array);");
+        Assert.assertEquals(65535.0f, mTestObject.waitForFloatArray()[0], ASSERTION_DELTA);
+
+        mActivityTestRule.executeJavaScript("testObject.setDoubleArray(uint16_array);");
+        Assert.assertEquals(65535.0, mTestObject.waitForDoubleArray()[0], ASSERTION_DELTA);
+    }
+
     // Test passing a typed Int32Array to a method which takes a Java array.
     @Test
     @SmallTest
@@ -963,6 +1061,42 @@ public class JavaBridgeArrayCoercionTest {
 
         mActivityTestRule.executeJavaScript("testObject.setCustomTypeArray(uint32_array);");
         Assert.assertNull(mTestObject.waitForCustomTypeArray());
+    }
+
+    // Test passing a typed Uint32Array of max values to a method which takes a Java array.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    public void testPassUint32ArrayWithMaxValue(boolean useMojo) throws Throwable {
+        mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(4);");
+        mActivityTestRule.executeJavaScript("uint32_array = new Uint32Array(buffer);");
+        mActivityTestRule.executeJavaScript("uint32_array[0] = 4294967295;");
+
+        mActivityTestRule.executeJavaScript("testObject.setBooleanArray(uint32_array);");
+        Assert.assertFalse(mTestObject.waitForBooleanArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setByteArray(uint32_array);");
+        Assert.assertEquals(-1, mTestObject.waitForByteArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setCharArray(uint32_array);");
+        Assert.assertEquals(65535, mTestObject.waitForCharArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setShortArray(uint32_array);");
+        Assert.assertEquals(-1, mTestObject.waitForShortArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setIntArray(uint32_array);");
+        Assert.assertEquals(-1, mTestObject.waitForIntArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setLongArray(uint32_array);");
+        Assert.assertEquals(4294967295L, mTestObject.waitForLongArray()[0]);
+
+        mActivityTestRule.executeJavaScript("testObject.setFloatArray(uint32_array);");
+        Assert.assertEquals((new Long(4294967295L)).floatValue(),
+                mTestObject.waitForFloatArray()[0], ASSERTION_DELTA);
+
+        mActivityTestRule.executeJavaScript("testObject.setDoubleArray(uint32_array);");
+        Assert.assertEquals(4294967295.0, mTestObject.waitForDoubleArray()[0], ASSERTION_DELTA);
     }
 
     // Test passing a typed Float32Array to a method which takes a Java array.

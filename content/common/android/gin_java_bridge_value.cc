@@ -56,6 +56,14 @@ std::unique_ptr<base::Value> GinJavaBridgeValue::CreateObjectIDValue(
 }
 
 // static
+std::unique_ptr<base::Value> GinJavaBridgeValue::CreateUInt32Value(
+    uint32_t in_value) {
+  GinJavaBridgeValue gin_value(TYPE_UINT32);
+  gin_value.pickle_.WriteUInt32(in_value);
+  return gin_value.SerializeToBinaryValue();
+}
+
+// static
 bool GinJavaBridgeValue::ContainsGinJavaBridgeValue(const base::Value* value) {
   if (!value->is_blob())
     return false;
@@ -101,6 +109,15 @@ bool GinJavaBridgeValue::GetAsObjectID(int32_t* out_object_id) const {
   if (GetType() == TYPE_OBJECT_ID) {
     base::PickleIterator iter(pickle_);
     return iter.ReadInt(out_object_id);
+  } else {
+    return false;
+  }
+}
+
+bool GinJavaBridgeValue::GetAsUInt32(uint32_t* out_value) const {
+  if (GetType() == TYPE_UINT32) {
+    base::PickleIterator iter(pickle_);
+    return iter.ReadUInt32(out_value);
   } else {
     return false;
   }
