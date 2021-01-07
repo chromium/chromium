@@ -59,9 +59,6 @@ ScopedStyleResolver* ScopedStyleResolver::Parent() const {
 }
 
 void ScopedStyleResolver::AddKeyframeRules(const RuleSet& rule_set) {
-  if (RuntimeEnabledFeatures::CSSKeyframesMemoryReductionEnabled())
-    return;
-
   const HeapVector<Member<StyleRuleKeyframes>> keyframes_rules =
       rule_set.KeyframesRules();
   for (auto rule : keyframes_rules)
@@ -148,42 +145,8 @@ void ScopedStyleResolver::ResetStyle() {
   needs_append_all_sheets_ = false;
 }
 
-const ActiveStyleSheetVector& ScopedStyleResolver::ActiveStyleSheets() {
-  StyleSheetCollection* collection =
-      GetTreeScope().GetDocument().GetStyleEngine().StyleSheetCollectionFor(
-          *scope_);
-  DCHECK(collection);
-  return collection->ActiveStyleSheets();
-}
-
-// static
-StyleRuleKeyframes*
-ScopedStyleResolver::KeyframeStylesForAnimationFromActiveSheets(
-    const AtomicString& name,
-    const ActiveStyleSheetVector& sheets) {
-  // We prefer non-vendor-prefixed over vendor-prefixed rules.
-  StyleRuleKeyframes* vendor_prefixed_result = nullptr;
-  for (auto sheet = sheets.rbegin(); sheet != sheets.rend(); ++sheet) {
-    RuleSet* rule_set = sheet->second;
-    if (!rule_set)
-      continue;
-    if (StyleRuleKeyframes* rule = rule_set->KeyframeStylesForAnimation(name)) {
-      if (!rule->IsVendorPrefixed())
-        return rule;
-      if (!vendor_prefixed_result)
-        vendor_prefixed_result = rule;
-    }
-  }
-  return vendor_prefixed_result;
-}
-
 StyleRuleKeyframes* ScopedStyleResolver::KeyframeStylesForAnimation(
     const AtomicString& animation_name) {
-  if (RuntimeEnabledFeatures::CSSKeyframesMemoryReductionEnabled()) {
-    return KeyframeStylesForAnimationFromActiveSheets(animation_name,
-                                                      ActiveStyleSheets());
-  }
-
   if (keyframes_rule_map_.IsEmpty())
     return nullptr;
 
@@ -195,7 +158,6 @@ StyleRuleKeyframes* ScopedStyleResolver::KeyframeStylesForAnimation(
 }
 
 void ScopedStyleResolver::AddKeyframeStyle(StyleRuleKeyframes* rule) {
-  DCHECK(!RuntimeEnabledFeatures::CSSKeyframesMemoryReductionEnabled());
   AtomicString name = rule->GetName();
 
   if (rule->IsVendorPrefixed()) {

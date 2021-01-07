@@ -57,9 +57,6 @@ class CORE_EXPORT ScopedStyleResolver final
   const TreeScope& GetTreeScope() const { return *scope_; }
   ScopedStyleResolver* Parent() const;
 
-  static StyleRuleKeyframes* KeyframeStylesForAnimationFromActiveSheets(
-      const AtomicString& name,
-      const ActiveStyleSheetVector& sheets);
   StyleRuleKeyframes* KeyframeStylesForAnimation(
       const AtomicString& animation_name);
 
@@ -93,8 +90,6 @@ class CORE_EXPORT ScopedStyleResolver final
   void AddFontFaceRules(const RuleSet&);
   void AddKeyframeRules(const RuleSet&);
   void AddKeyframeStyle(StyleRuleKeyframes*);
-
-  const ActiveStyleSheetVector& ActiveStyleSheets();
 
   CounterStyleMap& EnsureCounterStyleMap();
 

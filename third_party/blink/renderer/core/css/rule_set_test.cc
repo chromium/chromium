@@ -331,63 +331,6 @@ TEST(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData) {
   EXPECT_EQ(1u, rule_set->RuleCount());
 }
 
-TEST(RuleSetTest, KeyframesRulesBasic) {
-  ScopedCSSKeyframesMemoryReductionForTest enabled_scope(true);
-
-  css_test_helpers::TestStyleSheet sheet;
-  sheet.AddCSSRules("@keyframes foo { from {top: 0;} to {top: 100px;} }");
-  sheet.AddCSSRules("@keyframes bar { from {top: 100px;} to {top: 0;} }");
-
-  RuleSet& rule_set = sheet.GetRuleSet();
-
-  StyleRuleKeyframes* foo = rule_set.KeyframeStylesForAnimation("foo");
-  EXPECT_TRUE(foo);
-  EXPECT_EQ("foo", foo->GetName());
-
-  StyleRuleKeyframes* bar = rule_set.KeyframeStylesForAnimation("bar");
-  EXPECT_TRUE(bar);
-  EXPECT_EQ("bar", bar->GetName());
-
-  StyleRuleKeyframes* nonexist =
-      rule_set.KeyframeStylesForAnimation("nonexist");
-  EXPECT_FALSE(nonexist);
-}
-
-TEST(RuleSetTest, KeyframesRulesOverriding) {
-  ScopedCSSKeyframesMemoryReductionForTest enabled_scope(true);
-
-  // Among multiple @keyframes rules with the same name, the last one wins.
-  css_test_helpers::TestStyleSheet sheet;
-  sheet.AddCSSRules("@keyframes foo { from1 {top: 0;} to1 {top: 100px;} }");
-  sheet.AddCSSRules("@keyframes foo { from2 {top: 100px;} to2 {top: 0;} }");
-
-  RuleSet& rule_set = sheet.GetRuleSet();
-
-  StyleRuleKeyframes* rule = rule_set.KeyframeStylesForAnimation("foo");
-  EXPECT_TRUE(rule);
-  EXPECT_EQ("foo", rule->GetName());
-
-  CSSKeyframesRule* css_rule = To<CSSKeyframesRule>(sheet.CssRules()->item(1));
-  EXPECT_EQ(rule, css_rule->Keyframes());
-}
-
-TEST(RuleSetTest, KeyframesRulesVendorPrefixed) {
-  ScopedCSSKeyframesMemoryReductionForTest enabled_scope(true);
-
-  // Non-vendor-prefixed keyframes rules win against vendor-prefixed ones.
-  css_test_helpers::TestStyleSheet sheet;
-  sheet.AddCSSRules("@keyframes foo { from1 {top: 0;} to1 {top: 100px;} }");
-  sheet.AddCSSRules(
-      "@-webkit-keyframes foo { from2 {top: 100px;} to2 {top: 0;} }");
-
-  RuleSet& rule_set = sheet.GetRuleSet();
-
-  StyleRuleKeyframes* rule = rule_set.KeyframeStylesForAnimation("foo");
-  EXPECT_TRUE(rule);
-  EXPECT_EQ("foo", rule->GetName());
-  EXPECT_FALSE(rule->IsVendorPrefixed());
-}
-
 TEST(RuleSetTest, UACounterStyleRules) {
   ScopedCSSAtRuleCounterStyleForTest enabled_scope(true);
 
