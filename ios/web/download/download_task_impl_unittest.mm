@@ -541,15 +541,16 @@ TEST_F(DownloadTaskImplTest, FailureInTheMiddle) {
 TEST_F(DownloadTaskImplTest, Cookie) {
   GURL cookie_url(kUrl);
   base::Time now = base::Time::Now();
-  net::CanonicalCookie expected_cookie(
-      "name", "value", cookie_url.host(), cookie_url.path(),
-      /*creation=*/now,
-      /*expire_date=*/now + base::TimeDelta::FromHours(2),
-      /*last_access=*/now,
-      /*secure=*/false,
-      /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
-      net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
-  cookie_store_.SetAllCookies({expected_cookie});
+  std::unique_ptr<net::CanonicalCookie> expected_cookie =
+      net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "name", "value", cookie_url.host(), cookie_url.path(),
+          /*creation=*/now,
+          /*expire_date=*/now + base::TimeDelta::FromHours(2),
+          /*last_access=*/now,
+          /*secure=*/false,
+          /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
+          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
+  cookie_store_.SetAllCookies({*expected_cookie});
 
   // Start the download and make sure that all cookie from BrowserState were
   // picked up.

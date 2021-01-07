@@ -43,8 +43,8 @@ void TestPersistentCookieStore::RunLoadedCallback() {
                                    base::nullopt /* server_time */));
   cookies.push_back(std::move(cookie));
 
-  std::unique_ptr<net::CanonicalCookie> bad_canonical_cookie(
-      std::make_unique<net::CanonicalCookie>(
+  std::unique_ptr<net::CanonicalCookie> bad_canonical_cookie =
+      net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "name", "\x81r\xe4\xbd\xa0\xe5\xa5\xbd", "domain", "/path/",
           base::Time(),  // creation
           base::Time(),  // expires
@@ -52,7 +52,7 @@ void TestPersistentCookieStore::RunLoadedCallback() {
           false,         // secure
           false,         // httponly
           net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-          false /* same_party */));
+          false /* same_party */);
   cookies.push_back(std::move(bad_canonical_cookie));
   std::move(loaded_callback_).Run(std::move(cookies));
 }
