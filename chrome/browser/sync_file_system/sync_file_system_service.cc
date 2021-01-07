@@ -114,7 +114,7 @@ std::string SyncFileStatusToString(SyncFileStatus sync_file_status) {
 void DidGetFileSyncStatusForDump(
     base::ListValue* files,
     size_t* num_results,
-    const SyncFileSystemService::DumpFilesCallback& callback,
+    base::RepeatingCallback<void(const base::ListValue&)> callback,
     base::DictionaryValue* file,
     SyncStatusCode sync_status_code,
     SyncFileStatus sync_file_status) {
@@ -129,7 +129,10 @@ void DidGetFileSyncStatusForDump(
   if (++*num_results < files->GetSize())
     return;
 
-  callback.Run(*files);
+  // |callback| is backed by a DumpFilesCallback, which should only be called
+  // once. Move |callback| here to force repeated calls to crash instead of
+  // silently failing.
+  std::move(callback).Run(*files);
 }
 
 // We need this indirection because WeakPtr can only be bound to methods
@@ -300,13 +303,13 @@ void SyncFileSystemService::InitializeForApp(
 
 void SyncFileSystemService::GetExtensionStatusMap(
     ExtensionStatusMapCallback callback) {
-  remote_service_->GetOriginStatusMap(base::AdaptCallbackForRepeating(
+  remote_service_->GetOriginStatusMap(
       base::BindOnce(&SyncFileSystemService::DidGetExtensionStatusMap,
-                     AsWeakPtr(), std::move(callback))));
+                     AsWeakPtr(), std::move(callback)));
 }
 
 void SyncFileSystemService::DumpFiles(const GURL& origin,
-                                      const DumpFilesCallback& callback) {
+                                      DumpFilesCallback callback) {
   DCHECK(!origin.is_empty());
 
   content::StoragePartition* storage_partition =
@@ -315,14 +318,14 @@ void SyncFileSystemService::DumpFiles(const GURL& origin,
       storage_partition->GetFileSystemContext();
   local_service_->MaybeInitializeFileSystemContext(
       origin, file_system_context,
-      base::Bind(&SyncFileSystemService::DidInitializeFileSystemForDump,
-                 AsWeakPtr(), origin, callback));
+      base::BindOnce(&SyncFileSystemService::DidInitializeFileSystemForDump,
+                     AsWeakPtr(), origin, std::move(callback)));
 }
 
-void SyncFileSystemService::DumpDatabase(const DumpFilesCallback& callback) {
+void SyncFileSystemService::DumpDatabase(DumpFilesCallback callback) {
   remote_service_->DumpDatabase(
-      base::Bind(&SyncFileSystemService::DidDumpDatabase,
-                 AsWeakPtr(), callback));
+      base::BindOnce(&SyncFileSystemService::DidDumpDatabase, AsWeakPtr(),
+                     std::move(callback)));
 }
 
 void SyncFileSystemService::GetFileSyncStatus(const FileSystemURL& url,
@@ -538,47 +541,40 @@ void SyncFileSystemService::DidRegisterOrigin(const GURL& app_origin,
 
 void SyncFileSystemService::DidInitializeFileSystemForDump(
     const GURL& origin,
-    const DumpFilesCallback& callback,
+    DumpFilesCallback callback,
     SyncStatusCode status) {
   DCHECK(!origin.is_empty());
 
-  if (status != SYNC_STATUS_OK) {
-    callback.Run(base::ListValue());
-    return;
-  }
-
-  if (!remote_service_) {
-    callback.Run(base::ListValue());
+  if (status != SYNC_STATUS_OK || !remote_service_) {
+    std::move(callback).Run(base::ListValue());
     return;
   }
 
   remote_service_->DumpFiles(
-      origin,
-      base::Bind(
-          &SyncFileSystemService::DidDumpFiles,
-          AsWeakPtr(),
-          origin,
-          callback));
+      origin, base::BindOnce(&SyncFileSystemService::DidDumpFiles, AsWeakPtr(),
+                             origin, std::move(callback)));
 }
 
 void SyncFileSystemService::DidDumpFiles(
     const GURL& origin,
-    const DumpFilesCallback& callback,
+    DumpFilesCallback callback,
     std::unique_ptr<base::ListValue> dump_files) {
   if (!dump_files || !dump_files->GetSize() ||
       !local_service_ || !remote_service_) {
-    callback.Run(base::ListValue());
+    std::move(callback).Run(base::ListValue());
     return;
   }
 
   base::ListValue* files = dump_files.get();
-  base::Callback<void(base::DictionaryValue*,
-                      SyncStatusCode,
-                      SyncFileStatus)> completion_callback =
-      base::Bind(&DidGetFileSyncStatusForDump,
-                 base::Owned(dump_files.release()),
-                 base::Owned(new size_t(0)),
-                 callback);
+
+  using AccumulateFileSyncStatusCallback = base::RepeatingCallback<void(
+      base::DictionaryValue*, SyncStatusCode, SyncFileStatus)>;
+
+  // |accumulate_callback| should only call |callback| once.
+  AccumulateFileSyncStatusCallback accumulate_callback = base::BindRepeating(
+      &DidGetFileSyncStatusForDump, base::Owned(dump_files.release()),
+      base::Owned(new size_t(0)),
+      base::AdaptCallbackForRepeating(std::move(callback)));
 
   // After all metadata loaded, sync status can be added to each entry.
   for (size_t i = 0; i < files->GetSize(); ++i) {
@@ -587,30 +583,30 @@ void SyncFileSystemService::DidDumpFiles(
     if (!files->GetDictionary(i, &file) ||
         !file->GetString("path", &path_string)) {
       NOTREACHED();
-      completion_callback.Run(
-          nullptr, SYNC_FILE_ERROR_FAILED, SYNC_FILE_STATUS_UNKNOWN);
+      accumulate_callback.Run(nullptr, SYNC_FILE_ERROR_FAILED,
+                              SYNC_FILE_STATUS_UNKNOWN);
       continue;
     }
 
     base::FilePath file_path = base::FilePath::FromUTF8Unsafe(path_string);
     FileSystemURL url = CreateSyncableFileSystemURL(origin, file_path);
-    GetFileSyncStatus(url, base::Bind(completion_callback, file));
+    GetFileSyncStatus(url, base::BindOnce(accumulate_callback, file));
   }
 }
 
 void SyncFileSystemService::DidDumpDatabase(
-    const DumpFilesCallback& callback,
+    DumpFilesCallback callback,
     std::unique_ptr<base::ListValue> list) {
   if (!list)
-    list = base::WrapUnique(new base::ListValue);
-  callback.Run(*list);
+    list = std::make_unique<base::ListValue>();
+  std::move(callback).Run(*list);
 }
 
 void SyncFileSystemService::DidGetExtensionStatusMap(
     ExtensionStatusMapCallback callback,
     std::unique_ptr<RemoteFileSyncService::OriginStatusMap> status_map) {
   if (!status_map)
-    status_map = base::WrapUnique(new RemoteFileSyncService::OriginStatusMap);
+    status_map = std::make_unique<RemoteFileSyncService::OriginStatusMap>();
   std::move(callback).Run(*status_map);
 }
 

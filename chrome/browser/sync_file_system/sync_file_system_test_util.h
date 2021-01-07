@@ -52,23 +52,22 @@ void ReceiveResult2(bool* done,
 template <typename R>
 void AssignAndQuit(base::RunLoop* run_loop, R* result_out, R result);
 
-template <typename R> base::Callback<void(R)>
-AssignAndQuitCallback(base::RunLoop* run_loop, R* result);
+template <typename R>
+base::OnceCallback<void(R)> AssignAndQuitCallback(base::RunLoop* run_loop,
+                                                  R* result);
 
 template <typename Arg>
-base::Callback<void(typename TypeTraits<Arg>::ParamType)>
+base::OnceCallback<void(typename TypeTraits<Arg>::ParamType)>
 CreateResultReceiver(Arg* arg_out);
 
 template <typename Arg1, typename Arg2>
-base::Callback<void(typename TypeTraits<Arg1>::ParamType,
-                    typename TypeTraits<Arg2>::ParamType)>
-CreateResultReceiver(Arg1* arg1_out,
-                     Arg2* arg2_out) {
-  typedef typename TypeTraits<Arg1>::ParamType Param1;
-  typedef typename TypeTraits<Arg2>::ParamType Param2;
-  return base::Bind(&ReceiveResult2<Arg1, Arg2, Param1, Param2>,
-                    base::Owned(new bool(false)),
-                    arg1_out, arg2_out);
+base::OnceCallback<void(typename TypeTraits<Arg1>::ParamType,
+                        typename TypeTraits<Arg2>::ParamType)>
+CreateResultReceiver(Arg1* arg1_out, Arg2* arg2_out) {
+  using Param1 = typename TypeTraits<Arg1>::ParamType;
+  using Param2 = typename TypeTraits<Arg2>::ParamType;
+  return base::BindOnce(&ReceiveResult2<Arg1, Arg2, Param1, Param2>,
+                        base::Owned(new bool(false)), arg1_out, arg2_out);
 }
 
 }  // namespace sync_file_system

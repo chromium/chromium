@@ -51,10 +51,9 @@ class SyncFileSystemService
       public extensions::ExtensionRegistryObserver,
       public base::SupportsWeakPtr<SyncFileSystemService> {
  public:
-  typedef base::Callback<void(const base::ListValue&)> DumpFilesCallback;
-  typedef base::OnceCallback<void(
-      const RemoteFileSyncService::OriginStatusMap&)>
-      ExtensionStatusMapCallback;
+  using DumpFilesCallback = base::OnceCallback<void(const base::ListValue&)>;
+  using ExtensionStatusMapCallback =
+      base::OnceCallback<void(const RemoteFileSyncService::OriginStatusMap&)>;
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -64,8 +63,8 @@ class SyncFileSystemService
                         SyncStatusCallback callback);
 
   void GetExtensionStatusMap(ExtensionStatusMapCallback callback);
-  void DumpFiles(const GURL& origin, const DumpFilesCallback& callback);
-  void DumpDatabase(const DumpFilesCallback& callback);
+  void DumpFiles(const GURL& origin, DumpFilesCallback callback);
+  void DumpDatabase(DumpFilesCallback callback);
 
   // Returns the file |url|'s sync status.
   void GetFileSyncStatus(const storage::FileSystemURL& url,
@@ -111,13 +110,13 @@ class SyncFileSystemService
                          SyncStatusCode status);
 
   void DidInitializeFileSystemForDump(const GURL& app_origin,
-                                      const DumpFilesCallback& callback,
+                                      DumpFilesCallback callback,
                                       SyncStatusCode status);
   void DidDumpFiles(const GURL& app_origin,
-                    const DumpFilesCallback& callback,
+                    DumpFilesCallback callback,
                     std::unique_ptr<base::ListValue> files);
 
-  void DidDumpDatabase(const DumpFilesCallback& callback,
+  void DidDumpDatabase(DumpFilesCallback callback,
                        std::unique_ptr<base::ListValue> list);
 
   void DidGetExtensionStatusMap(

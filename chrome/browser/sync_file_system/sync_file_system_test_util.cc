@@ -29,9 +29,10 @@ void AssignAndQuit(base::RunLoop* run_loop, R* result_out, R result) {
   run_loop->Quit();
 }
 
-template <typename R> base::Callback<void(R)>
-AssignAndQuitCallback(base::RunLoop* run_loop, R* result) {
-  return base::Bind(&AssignAndQuit<R>, run_loop, base::Unretained(result));
+template <typename R>
+base::OnceCallback<void(R)> AssignAndQuitCallback(base::RunLoop* run_loop,
+                                                  R* result) {
+  return base::BindOnce(&AssignAndQuit<R>, run_loop, base::Unretained(result));
 }
 
 template <typename Arg, typename Param>
@@ -42,19 +43,20 @@ void ReceiveResult1(bool* done, Arg* arg_out, Param arg) {
 }
 
 template <typename Arg>
-base::Callback<void(typename TypeTraits<Arg>::ParamType)>
+base::OnceCallback<void(typename TypeTraits<Arg>::ParamType)>
 CreateResultReceiver(Arg* arg_out) {
-  typedef typename TypeTraits<Arg>::ParamType Param;
-  return base::Bind(&ReceiveResult1<Arg, Param>,
-                    base::Owned(new bool(false)), arg_out);
+  using Param = typename TypeTraits<Arg>::ParamType;
+  return base::BindOnce(&ReceiveResult1<Arg, Param>,
+                        base::Owned(new bool(false)), arg_out);
 }
 
 // Instantiate versions we know callers will need.
-template base::Callback<void(SyncStatusCode)>
-AssignAndQuitCallback(base::RunLoop*, SyncStatusCode*);
+template base::OnceCallback<void(SyncStatusCode)> AssignAndQuitCallback(
+    base::RunLoop*,
+    SyncStatusCode*);
 
 #define INSTANTIATE_RECEIVER(type) \
-  template base::Callback<void(type)> CreateResultReceiver(type*)
+  template base::OnceCallback<void(type)> CreateResultReceiver(type*)
 INSTANTIATE_RECEIVER(SyncStatusCode);
 INSTANTIATE_RECEIVER(google_apis::DriveApiErrorCode);
 INSTANTIATE_RECEIVER(std::unique_ptr<RemoteFileSyncService::OriginStatusMap>);
