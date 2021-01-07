@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
   // {
   //   "odknhmnlageboeamepcngndbggdpaobj":    // app_id
   //     {
-  //       "403":                             // id
+  //       "403":                             // window_id
   //         {
   //           "container": 0,
   //           "disposition": 1,
@@ -64,14 +64,14 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
   //     },
   //   "pjibgclleladliembfgfagdaldikeohf":    // app_id
   //     {
-  //       "413":                             // id
+  //       "413":                             // window_id
   //         {
   //           "container": 0,
   //           "disposition": 3,
   //           "display_id": "22000000",
   //           ...
   //         },
-  //       "415":                             // id
+  //       "415":                             // window_id
   //         {
   //           ...
   //         },
@@ -83,10 +83,13 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
   void AddAppLaunchInfo(std::unique_ptr<AppLaunchInfo> app_launch_info);
 
   // Modify the window's information based on |window_info| for the window with
-  // |id| of the app with |app_id|.
+  // |window_id| of the app with |app_id|.
   void ModifyWindowInfo(const std::string& app_id,
-                        int32_t id,
+                        int32_t window_id,
                         const WindowInfo& window_info);
+
+  // Remove a AppRestoreData with |window_id| for |app_id|.
+  void RemoveAppRestoreData(const std::string& app_id, int window_id);
 
   const AppIdToLaunchList& app_id_to_launch_list() const {
     return app_id_to_launch_list_;

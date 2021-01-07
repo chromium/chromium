@@ -17,6 +17,7 @@
 #include "components/full_restore/window_info.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
 
 namespace full_restore {
@@ -34,9 +35,47 @@ FullRestoreSaveHandler* FullRestoreSaveHandler::GetInstance() {
   return full_restore_save_handler.get();
 }
 
-FullRestoreSaveHandler::FullRestoreSaveHandler() = default;
+FullRestoreSaveHandler::FullRestoreSaveHandler() {
+  aura::Env::GetInstance()->AddObserver(this);
+}
 
-FullRestoreSaveHandler::~FullRestoreSaveHandler() = default;
+FullRestoreSaveHandler::~FullRestoreSaveHandler() {
+  aura::Env::GetInstance()->RemoveObserver(this);
+}
+
+void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
+  // TODO(crbug.com/1146900): Handle ARC app windows.
+
+  int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
+
+  if (!SessionID::IsValidValue(window_id))
+    return;
+
+  observed_windows_.AddObservation(window);
+}
+
+void FullRestoreSaveHandler::OnWindowDestroying(aura::Window* window) {
+  // TODO(crbug.com/1146900): Handle ARC app windows.
+
+  DCHECK(observed_windows_.IsObservingSource(window));
+  observed_windows_.RemoveObservation(window);
+
+  int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
+  DCHECK(SessionID::IsValidValue(window_id));
+
+  auto it = window_id_to_app_restore_info_.find(window_id);
+  if (it == window_id_to_app_restore_info_.end())
+    return;
+
+  profile_path_to_restore_data_[it->second.first].RemoveAppRestoreData(
+      it->second.second, window_id);
+
+  pending_save_profile_paths_.insert(it->second.first);
+
+  window_id_to_app_restore_info_.erase(it);
+
+  MaybeStartSaveTimer();
+}
 
 void FullRestoreSaveHandler::SaveAppLaunchInfo(
     const base::FilePath& profile_path,
@@ -44,12 +83,12 @@ void FullRestoreSaveHandler::SaveAppLaunchInfo(
   if (!app_launch_info)
     return;
 
-  if (!app_launch_info->id.has_value()) {
+  if (!app_launch_info->window_id.has_value()) {
     // TODO(crbug.com/1146900): Handle ARC app windows.
     return;
   }
 
-  window_id_to_app_restore_info_[app_launch_info->id.value()] =
+  window_id_to_app_restore_info_[app_launch_info->window_id.value()] =
       std::make_pair(profile_path, app_launch_info->app_id);
 
   // Each user should have one full restore file saving the restore data in the

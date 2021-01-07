@@ -9,14 +9,14 @@
 namespace full_restore {
 
 AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
-                             int32_t session_id,
+                             int32_t window_id,
                              apps::mojom::LaunchContainer container,
                              WindowOpenDisposition disposition,
                              int64_t display_id,
                              std::vector<base::FilePath> launch_files,
                              apps::mojom::IntentPtr intent)
     : app_id(app_id),
-      id(session_id),
+      window_id(window_id),
       container(static_cast<int32_t>(container)),
       disposition(static_cast<int32_t>(disposition)),
       display_id(display_id),
@@ -24,7 +24,7 @@ AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
       intent(std::move(intent)) {}
 
 AppLaunchInfo::AppLaunchInfo(const std::string& app_id, int32_t session_id)
-    : app_id(app_id), id(session_id) {}
+    : app_id(app_id), window_id(session_id) {}
 
 AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
                              apps::mojom::LaunchContainer container,

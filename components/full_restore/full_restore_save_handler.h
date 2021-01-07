@@ -12,7 +12,11 @@
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
+#include "ui/aura/env_observer.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 
 namespace base {
 class FilePath;
@@ -32,15 +36,23 @@ struct WindowInfo;
 // background task runner) for the actual writing. To minimize IO,
 // FullRestoreSaveHandler starts a timer that invokes restore data saving at a
 // later time.
-class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler {
+class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
+    : public aura::EnvObserver,
+      public aura::WindowObserver {
  public:
   static FullRestoreSaveHandler* GetInstance();
 
   FullRestoreSaveHandler();
-  virtual ~FullRestoreSaveHandler();
+  ~FullRestoreSaveHandler() override;
 
   FullRestoreSaveHandler(const FullRestoreSaveHandler&) = delete;
   FullRestoreSaveHandler& operator=(const FullRestoreSaveHandler&) = delete;
+
+  // aura::EnvObserver:
+  void OnWindowInitialized(aura::Window* window) override;
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
 
   // Save |app_launch_info| to the full restore file in |profile_path|.
   void SaveAppLaunchInfo(const base::FilePath& profile_path,
@@ -88,6 +100,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler {
 
   // Records whether the saving process is running for a full restore file.
   std::set<base::FilePath> save_running_;
+
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      observed_windows_{this};
 
   base::WeakPtrFactory<FullRestoreSaveHandler> weak_factory_{this};
 };

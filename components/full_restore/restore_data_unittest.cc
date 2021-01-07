@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/app_restore_data.h"
@@ -23,9 +24,9 @@ namespace {
 const char kAppId1[] = "aaa";
 const char kAppId2[] = "bbb";
 
-const int32_t kId1 = 100;
-const int32_t kId2 = 200;
-const int32_t kId3 = 300;
+const int32_t kWindowId1 = 100;
+const int32_t kWindowId2 = 200;
+const int32_t kWindowId3 = 300;
 
 const int64_t kDisplayId1 = 22000000;
 const int64_t kDisplayId2 = 11000000;
@@ -88,7 +89,8 @@ class RestoreDataTest : public testing::Test {
   void AddAppLaunchInfos() {
     std::unique_ptr<AppLaunchInfo> app_launch_info1 =
         std::make_unique<AppLaunchInfo>(
-            kAppId1, kId1, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+            kAppId1, kWindowId1,
+            apps::mojom::LaunchContainer::kLaunchContainerWindow,
             WindowOpenDisposition::NEW_WINDOW, kDisplayId1,
             std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                         base::FilePath(kFilePath2)},
@@ -96,14 +98,16 @@ class RestoreDataTest : public testing::Test {
 
     std::unique_ptr<AppLaunchInfo> app_launch_info2 =
         std::make_unique<AppLaunchInfo>(
-            kAppId1, kId2, apps::mojom::LaunchContainer::kLaunchContainerTab,
+            kAppId1, kWindowId2,
+            apps::mojom::LaunchContainer::kLaunchContainerTab,
             WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId2,
             std::vector<base::FilePath>{base::FilePath(kFilePath2)},
             CreateIntent(kIntentActionView, kMimeType, kShareText2));
 
     std::unique_ptr<AppLaunchInfo> app_launch_info3 =
         std::make_unique<AppLaunchInfo>(
-            kAppId2, kId3, apps::mojom::LaunchContainer::kLaunchContainerNone,
+            kAppId2, kWindowId3,
+            apps::mojom::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_POPUP, kDisplayId2,
             std::vector<base::FilePath>{base::FilePath(kFilePath1)},
             CreateIntent(kIntentActionView, kMimeType, kShareText1));
@@ -135,9 +139,9 @@ class RestoreDataTest : public testing::Test {
     window_info3.current_bounds = kCurrentBounds3;
     window_info3.window_state_type = kWindowStateType3;
 
-    restore_data().ModifyWindowInfo(kAppId1, kId1, window_info1);
-    restore_data().ModifyWindowInfo(kAppId1, kId2, window_info2);
-    restore_data().ModifyWindowInfo(kAppId2, kId3, window_info3);
+    restore_data().ModifyWindowInfo(kAppId1, kWindowId1, window_info1);
+    restore_data().ModifyWindowInfo(kAppId1, kWindowId2, window_info2);
+    restore_data().ModifyWindowInfo(kAppId2, kWindowId3, window_info3);
   }
 
   void VerifyAppRestoreData(const std::unique_ptr<AppRestoreData>& data,
@@ -189,13 +193,13 @@ class RestoreDataTest : public testing::Test {
   void VerifyRestoreData(const RestoreData& restore_data) {
     EXPECT_EQ(2u, app_id_to_launch_list(restore_data).size());
 
-    // Verify for |kAppId1|
+    // Verify for |kAppId1|.
     const auto launch_list_it1 =
         app_id_to_launch_list(restore_data).find(kAppId1);
     EXPECT_TRUE(launch_list_it1 != app_id_to_launch_list(restore_data).end());
     EXPECT_EQ(2u, launch_list_it1->second.size());
 
-    const auto app_restore_data_it1 = launch_list_it1->second.find(kId1);
+    const auto app_restore_data_it1 = launch_list_it1->second.find(kWindowId1);
     EXPECT_TRUE(app_restore_data_it1 != launch_list_it1->second.end());
 
     VerifyAppRestoreData(
@@ -208,7 +212,7 @@ class RestoreDataTest : public testing::Test {
         kActivationIndex1, kDeskId1, kRestoreBounds1, kCurrentBounds1,
         kWindowStateType1);
 
-    const auto app_restore_data_it2 = launch_list_it1->second.find(kId2);
+    const auto app_restore_data_it2 = launch_list_it1->second.find(kWindowId2);
     EXPECT_TRUE(app_restore_data_it2 != launch_list_it1->second.end());
     VerifyAppRestoreData(
         app_restore_data_it2->second,
@@ -219,13 +223,13 @@ class RestoreDataTest : public testing::Test {
         kActivationIndex2, kDeskId2, kRestoreBounds2, kCurrentBounds2,
         kWindowStateType2);
 
-    // Verify for |kAppId2|
+    // Verify for |kAppId2|.
     const auto launch_list_it2 =
         app_id_to_launch_list(restore_data).find(kAppId2);
     EXPECT_TRUE(launch_list_it2 != app_id_to_launch_list(restore_data).end());
     EXPECT_EQ(1u, launch_list_it2->second.size());
 
-    EXPECT_EQ(kId3, launch_list_it2->second.begin()->first);
+    EXPECT_EQ(kWindowId3, launch_list_it2->second.begin()->first);
     VerifyAppRestoreData(
         launch_list_it2->second.begin()->second,
         apps::mojom::LaunchContainer::kLaunchContainerNone,
@@ -260,6 +264,52 @@ TEST_F(RestoreDataTest, AddAppLaunchInfos) {
   AddAppLaunchInfos();
   ModifyWindowInfos();
   VerifyRestoreData(restore_data());
+}
+
+TEST_F(RestoreDataTest, RemoveAppRestoreData) {
+  AddAppLaunchInfos();
+  ModifyWindowInfos();
+  VerifyRestoreData(restore_data());
+
+  // Remove kAppId1's kId1.
+  restore_data().RemoveAppRestoreData(kAppId1, kWindowId1);
+
+  EXPECT_EQ(2u, app_id_to_launch_list().size());
+
+  // Verify for |kAppId1|.
+  auto launch_list_it1 = app_id_to_launch_list().find(kAppId1);
+  EXPECT_TRUE(launch_list_it1 != app_id_to_launch_list().end());
+  EXPECT_EQ(1u, launch_list_it1->second.size());
+
+  EXPECT_FALSE(base::Contains(launch_list_it1->second, kWindowId1));
+  EXPECT_TRUE(base::Contains(launch_list_it1->second, kWindowId2));
+
+  // Verify for |kAppId2|.
+  auto launch_list_it2 = app_id_to_launch_list().find(kAppId2);
+  EXPECT_TRUE(launch_list_it2 != app_id_to_launch_list().end());
+  EXPECT_EQ(1u, launch_list_it2->second.size());
+
+  EXPECT_TRUE(base::Contains(launch_list_it2->second, kWindowId3));
+
+  // Remove kAppId1's kId2.
+  restore_data().RemoveAppRestoreData(kAppId1, kWindowId2);
+
+  EXPECT_EQ(1u, app_id_to_launch_list().size());
+
+  // Verify for |kAppId1|.
+  EXPECT_FALSE(base::Contains(app_id_to_launch_list(), kAppId1));
+
+  // Verify for |kAppId2|.
+  launch_list_it2 = app_id_to_launch_list().find(kAppId2);
+  EXPECT_TRUE(launch_list_it2 != app_id_to_launch_list().end());
+  EXPECT_EQ(1u, launch_list_it2->second.size());
+
+  EXPECT_TRUE(base::Contains(launch_list_it2->second, kWindowId3));
+
+  // Remove kAppId2's kId3.
+  restore_data().RemoveAppRestoreData(kAppId2, kWindowId3);
+
+  EXPECT_EQ(0u, app_id_to_launch_list().size());
 }
 
 TEST_F(RestoreDataTest, Convert) {

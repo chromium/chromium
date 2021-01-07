@@ -20,14 +20,14 @@ namespace full_restore {
 // app launch information.
 struct COMPONENT_EXPORT(FULL_RESTORE) AppLaunchInfo {
   AppLaunchInfo(const std::string& app_id,
-                int32_t session_id,
+                int32_t window_id,
                 apps::mojom::LaunchContainer container,
                 WindowOpenDisposition disposition,
                 int64_t display_id,
                 std::vector<base::FilePath> launch_files,
                 apps::mojom::IntentPtr intent);
 
-  AppLaunchInfo(const std::string& app_id, int32_t session_id);
+  AppLaunchInfo(const std::string& app_id, int32_t window_id);
 
   AppLaunchInfo(const std::string& app_id,
                 apps::mojom::LaunchContainer container,
@@ -51,7 +51,7 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppLaunchInfo {
   ~AppLaunchInfo();
 
   std::string app_id;
-  base::Optional<int32_t> id;
+  base::Optional<int32_t> window_id;
   base::Optional<int32_t> event_flag;
   base::Optional<int32_t> container;
   base::Optional<int32_t> disposition;
