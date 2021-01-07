@@ -12,6 +12,7 @@
 #include "components/exo/wm_helper_chromeos.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface_manager.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/compositor/test/in_process_context_factory.h"
@@ -19,6 +20,29 @@
 
 namespace exo {
 namespace test {
+namespace {
+
+class TestPropertyResolver : public WMHelper::AppPropertyResolver {
+ public:
+  TestPropertyResolver() = default;
+  TestPropertyResolver(const TestPropertyResolver& other) = delete;
+  TestPropertyResolver& operator=(const TestPropertyResolver& other) = delete;
+  ~TestPropertyResolver() override = default;
+
+  // AppPropertyResolver:
+  void PopulateProperties(
+      const std::string& app_id,
+      const std::string& startup_id,
+      bool for_creation,
+      ui::PropertyHandler& out_properties_container) override {
+    LOG(ERROR) << "AppId=" << app_id;
+    if (app_id == "arc")
+      out_properties_container.SetProperty(aura::client::kAppType,
+                                           (int)ash::AppType::ARC_APP);
+  }
+};
+
+}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // ExoTestBase, public:
@@ -40,6 +64,8 @@ ExoTestBase::~ExoTestBase() = default;
 void ExoTestBase::SetUp() {
   AshTestBase::SetUp();
   wm_helper_ = std::make_unique<WMHelperChromeOS>();
+  wm_helper_->RegisterAppPropertyResolver(
+      base::WrapUnique(new TestPropertyResolver()));
 }
 
 void ExoTestBase::TearDown() {

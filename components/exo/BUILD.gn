@@ -359,6 +359,10 @@ test("exo_unittests") {
     deps += [ "//components/exo/wayland:unit_tests" ]
   }
 
+  if (is_chromeos) {
+    deps += [ "//components/exo/server:unit_tests" ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "../../ash/test/ash_test_suite.cc",

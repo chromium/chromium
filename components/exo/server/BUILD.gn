@@ -21,3 +21,16 @@ source_set("server") {
     "//skia",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "arc_overlay_manager_unittest.cc" ]
+  deps = [
+    "//ash/public/cpp",
+    "//ash/public/cpp/external_arc",
+    "//components/exo",
+    "//components/exo:test_support",
+    "//testing/gtest",
+    "//ui/aura",
+  ]
+}

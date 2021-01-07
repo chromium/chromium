@@ -203,6 +203,7 @@ static_library("arc_base_utils") {
     "//ash/public/cpp",
     "//base",
     "//chromeos/constants",
+    "//chromeos/dbus:concierge_proto",
     "//chromeos/dbus:dbus",
     "//chromeos/dbus/session_manager",
     "//chromeos/dbus/upstart:upstart",

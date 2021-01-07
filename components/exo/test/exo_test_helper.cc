@@ -169,7 +169,7 @@ ExoTestHelper::CreateClientControlledShellSurface(
       surface, container,
       WMHelper::GetInstance()->GetDefaultDeviceScaleFactor(),
       default_scale_cancellation);
-
+  shell_surface->SetApplicationId("arc");
   shell_surface->set_state_changed_callback(base::BindRepeating(
       &HandleWindowStateRequest, base::Unretained(shell_surface.get())));
 

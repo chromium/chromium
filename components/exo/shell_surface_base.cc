@@ -917,9 +917,11 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
       startup_id_ ? *startup_id_ : std::string(),
       /*for_creation=*/true, params.init_properties_container);
 
+  SetShellApplicationId(&params.init_properties_container, application_id_);
+  SetShellMainSurface(&params.init_properties_container, root_surface());
+  SetShellStartupId(&params.init_properties_container, startup_id_);
+
   bool activatable = activatable_;
-  if (container_ == ash::kShellWindowId_SystemModalContainer)
-    activatable &= HasHitTestRegion();
 
   // ShellSurfaces in system modal container are only activatable if input
   // region is non-empty. See OnCommitSurface() for more details.
@@ -942,9 +944,6 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   window->SetEventTargetingPolicy(
       aura::EventTargetingPolicy::kTargetAndDescendants);
   InstallCustomWindowTargeter();
-  SetShellApplicationId(window, application_id_);
-  SetShellStartupId(window, startup_id_);
-  SetShellMainSurface(window, root_surface());
 
   // Start tracking changes to window bounds and window state.
   window->AddObserver(this);
@@ -966,7 +965,6 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
         ui::Accelerator(entry.keycode, entry.modifiers),
         ui::AcceleratorManager::kNormalPriority, this);
   }
-
   // Show widget next time Commit() is called.
   if (show_state != ui::SHOW_STATE_MINIMIZED)
     pending_show_widget_ = true;
