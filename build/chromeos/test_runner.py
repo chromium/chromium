@@ -89,6 +89,8 @@ class RemoteTest(object):
 
     self._retries = 0
     self._timeout = None
+    self._test_launcher_shard_index = args.test_launcher_shard_index
+    self._test_launcher_total_shards = args.test_launcher_total_shards
 
     # The location on disk of a shell script that can be optionally used to
     # invoke the test on the device. If it's not set, we assume self._test_cmd
@@ -337,6 +339,10 @@ class TastTest(RemoteTest):
             '--results-dir',
             self._logs_dir,
         ]
+      self._test_cmd += [
+          '--tast-total-shards=%d' % self._test_launcher_total_shards,
+          '--tast-shard-index=%d' % self._test_launcher_shard_index,
+      ]
       if self._conditional:
         # Don't use pipes.quote() here. Something funky happens with the arg
         # as it gets passed down from cros_run_test to tast. (Tast picks up the
@@ -478,9 +484,6 @@ class GTestTest(RemoteTest):
     self._test_exe = args.test_exe
     self._runtime_deps_path = args.runtime_deps_path
     self._vpython_dir = args.vpython_dir
-
-    self._test_launcher_shard_index = args.test_launcher_shard_index
-    self._test_launcher_total_shards = args.test_launcher_total_shards
 
     self._on_device_script = None
     self._env_vars = args.env_var
@@ -773,6 +776,17 @@ def add_common_args(*parsers):
         dest='logs_dir',
         help='Will copy everything under /var/log/ from the device after the '
         'test into the specified dir.')
+    # Shard args are parsed here since we might also specify them via env vars.
+    parser.add_argument(
+        '--test-launcher-shard-index',
+        type=int,
+        default=os.environ.get('GTEST_SHARD_INDEX', 0),
+        help='Index of the external shard to run.')
+    parser.add_argument(
+        '--test-launcher-total-shards',
+        type=int,
+        default=os.environ.get('GTEST_TOTAL_SHARDS', 1),
+        help='Total number of external shards.')
     parser.add_argument(
         '--flash',
         action='store_true',
@@ -828,17 +842,6 @@ def main():
       type=str,
       help='When set, will pass the same option down to the test and retrieve '
       'its result file at the specified location.')
-  # Shard args are parsed here since we might also specify them via env vars.
-  gtest_parser.add_argument(
-      '--test-launcher-shard-index',
-      type=int,
-      default=os.environ.get('GTEST_SHARD_INDEX', 0),
-      help='Index of the external shard to run.')
-  gtest_parser.add_argument(
-      '--test-launcher-total-shards',
-      type=int,
-      default=os.environ.get('GTEST_TOTAL_SHARDS', 1),
-      help='Total number of external shards.')
   gtest_parser.add_argument(
       '--stop-ui',
       action='store_true',

@@ -34,6 +34,35 @@ class TestRunnerTest(unittest.TestCase):
         test_runner.result_sink, 'TryInitClient', return_value=None)
     self.mock_rdb.start()
 
+    self.common_tast_args = [
+        'script_name',
+        'tast',
+        '--suite-name=chrome_all_tast_tests',
+        '--board=eve',
+        '--flash',
+        '--path-to-outdir=out_eve/Release',
+        '--logs-dir=%s' % self._tmp_dir,
+    ]
+    self.common_tast_expectations = [
+        test_runner.CROS_RUN_TEST_PATH,
+        '--board',
+        'eve',
+        '--cache-dir',
+        test_runner.DEFAULT_CROS_CACHE,
+        '--results-dest-dir',
+        '%s/system_logs' % self._tmp_dir,
+        '--mount',
+        '--deploy',
+        '--nostrip',
+        '--flash',
+        '--build-dir',
+        'out_eve/Release',
+        '--results-dir',
+        self._tmp_dir,
+        '--tast-total-shards=1',
+        '--tast-shard-index=0',
+    ]
+
   def tearDown(self):
     shutil.rmtree(self._tmp_dir, ignore_errors=True)
     self.mock_rdb.stop()
@@ -92,14 +121,7 @@ class TestRunnerTest(unittest.TestCase):
     with open(os.path.join(self._tmp_dir, 'streamed_results.jsonl'), 'w') as f:
       json.dump(_TAST_TEST_RESULTS_JSON, f)
 
-    args = [
-        'script_name',
-        'tast',
-        '--suite-name=chrome_all_tast_tests',
-        '--board=eve',
-        '--flash',
-        '--path-to-outdir=out_eve/Release',
-        '--logs-dir=%s' % self._tmp_dir,
+    args = self.common_tast_args + [
         '-t=ui.ChromeLogin',
         '--use-vm' if use_vm else '--device=localhost:2222',
     ]
@@ -108,12 +130,8 @@ class TestRunnerTest(unittest.TestCase):
       mock_popen.return_value.returncode = 0
 
       test_runner.main()
-      expected_cmd = [
-          test_runner.CROS_RUN_TEST_PATH, '--board', 'eve', '--cache-dir',
-          test_runner.DEFAULT_CROS_CACHE, '--results-dest-dir',
-          '%s/system_logs' % self._tmp_dir, '--mount', '--deploy', '--nostrip',
-          '--flash', '--build-dir', 'out_eve/Release', '--results-dir',
-          self._tmp_dir, '--tast', 'ui.ChromeLogin'
+      expected_cmd = self.common_tast_expectations + [
+          '--tast', 'ui.ChromeLogin'
       ]
       expected_cmd.extend(['--start', '--copy-on-write']
                           if use_vm else ['--device', 'localhost:2222'])
@@ -131,14 +149,7 @@ class TestRunnerTest(unittest.TestCase):
     with open(os.path.join(self._tmp_dir, 'streamed_results.jsonl'), 'w') as f:
       json.dump(_TAST_TEST_RESULTS_JSON, f)
 
-    args = [
-        'script_name',
-        'tast',
-        '--suite-name=chrome_all_tast_tests',
-        '--board=eve',
-        '--flash',
-        '--path-to-outdir=out_eve/Release',
-        '--logs-dir=%s' % self._tmp_dir,
+    args = self.common_tast_args + [
         '--attr-expr=( "group:mainline" && "dep:chrome" && !informational)',
         '--use-vm' if use_vm else '--device=localhost:2222',
     ]
@@ -147,13 +158,8 @@ class TestRunnerTest(unittest.TestCase):
       mock_popen.return_value.returncode = 0
 
       test_runner.main()
-      expected_cmd = [
-          test_runner.CROS_RUN_TEST_PATH, '--board', 'eve', '--cache-dir',
-          test_runner.DEFAULT_CROS_CACHE, '--results-dest-dir',
-          '%s/system_logs' % self._tmp_dir, '--mount', '--deploy', '--nostrip',
-          '--flash', '--build-dir', 'out_eve/Release', '--results-dir',
-          self._tmp_dir,
-          '--tast=( "group:mainline" && "dep:chrome" && !informational)'
+      expected_cmd = self.common_tast_expectations + [
+          '--tast=( "group:mainline" && "dep:chrome" && !informational)',
       ]
       expected_cmd.extend(['--start', '--copy-on-write']
                           if use_vm else ['--device', 'localhost:2222'])
@@ -172,14 +178,7 @@ class TestRunnerTest(unittest.TestCase):
     with open(os.path.join(self._tmp_dir, 'streamed_results.jsonl'), 'w') as f:
       json.dump(_TAST_TEST_RESULTS_JSON, f)
 
-    args = [
-        'script_name',
-        'tast',
-        '--suite-name=chrome_all_tast_tests',
-        '--board=eve',
-        '--flash',
-        '--path-to-outdir=out_eve/Release',
-        '--logs-dir=%s' % self._tmp_dir,
+    args = self.common_tast_args + [
         '-t=ui.ChromeLogin',
         '--tast-var=key=value',
         '--use-vm' if use_vm else '--device=localhost:2222',
@@ -188,12 +187,8 @@ class TestRunnerTest(unittest.TestCase):
          mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen:
       mock_popen.return_value.returncode = 0
       test_runner.main()
-      expected_cmd = [
-          test_runner.CROS_RUN_TEST_PATH, '--board', 'eve', '--cache-dir',
-          test_runner.DEFAULT_CROS_CACHE, '--results-dest-dir',
-          '%s/system_logs' % self._tmp_dir, '--mount', '--deploy', '--nostrip',
-          '--flash', '--build-dir', 'out_eve/Release', '--results-dir',
-          self._tmp_dir, '--tast', 'ui.ChromeLogin', '--tast-var', 'key=value'
+      expected_cmd = self.common_tast_expectations + [
+          '--tast', 'ui.ChromeLogin', '--tast-var', 'key=value'
       ]
       expected_cmd.extend(['--start', '--copy-on-write']
                           if use_vm else ['--device', 'localhost:2222'])
