@@ -391,7 +391,7 @@ void PowerButtonController::OnGetSwitchStates(
 }
 
 void PowerButtonController::OnAccelerometerUpdated(
-    scoped_refptr<const AccelerometerUpdate> update) {
+    const AccelerometerUpdate& update) {
   DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAshEnableTabletMode));
 

@@ -25,7 +25,6 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/ref_counted.h"
 #include "base/numerics/math_constants.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -842,18 +841,18 @@ TEST_F(DisplayPrefsTest, DontSaveTabletModeControllerRotations) {
                                         display::Display::RotationSource::USER);
 
   // Open up 270 degrees to trigger tablet mode
-  scoped_refptr<AccelerometerUpdate> update(new AccelerometerUpdate());
-  update->Set(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD, 0.0f, 0.0f,
-              -base::kMeanGravityFloat);
-  update->Set(ACCELEROMETER_SOURCE_SCREEN, 0.0f, base::kMeanGravityFloat, 0.0f);
+  AccelerometerUpdate update;
+  update.Set(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD, 0.0f, 0.0f,
+             -base::kMeanGravityFloat);
+  update.Set(ACCELEROMETER_SOURCE_SCREEN, 0.0f, base::kMeanGravityFloat, 0.0f);
   TabletModeController* controller = Shell::Get()->tablet_mode_controller();
   controller->OnAccelerometerUpdated(update);
   EXPECT_TRUE(controller->InTabletMode());
 
   // Trigger 90 degree rotation
-  update->Set(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD, base::kMeanGravityFloat,
-              0.0f, 0.0f);
-  update->Set(ACCELEROMETER_SOURCE_SCREEN, base::kMeanGravityFloat, 0.0f, 0.0f);
+  update.Set(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD, base::kMeanGravityFloat,
+             0.0f, 0.0f);
+  update.Set(ACCELEROMETER_SOURCE_SCREEN, base::kMeanGravityFloat, 0.0f, 0.0f);
   controller->OnAccelerometerUpdated(update);
   shell->screen_orientation_controller()->OnAccelerometerUpdated(update);
   EXPECT_EQ(display::Display::ROTATE_90, GetCurrentInternalDisplayRotation());
@@ -990,10 +989,10 @@ TEST_F(DisplayPrefsTest, LoadRotationNoLogin) {
   EXPECT_EQ(display::Display::ROTATE_0, before_tablet_mode_rotation);
 
   // Open up 270 degrees to trigger tablet mode
-  scoped_refptr<AccelerometerUpdate> update(new AccelerometerUpdate());
-  update->Set(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD, 0.0f, 0.0f,
-              -base::kMeanGravityFloat);
-  update->Set(ACCELEROMETER_SOURCE_SCREEN, 0.0f, base::kMeanGravityFloat, 0.0f);
+  AccelerometerUpdate update;
+  update.Set(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD, 0.0f, 0.0f,
+             -base::kMeanGravityFloat);
+  update.Set(ACCELEROMETER_SOURCE_SCREEN, 0.0f, base::kMeanGravityFloat, 0.0f);
   TabletModeController* tablet_mode_controller =
       Shell::Get()->tablet_mode_controller();
   tablet_mode_controller->OnAccelerometerUpdated(update);

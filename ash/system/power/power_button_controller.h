@@ -138,8 +138,7 @@ class ASH_EXPORT PowerButtonController
   // TODO(minch): Remove this if/when all applicable devices expose a tablet
   // mode switch: https://crbug.com/798646.
   // AccelerometerReader::Observer:
-  void OnAccelerometerUpdated(
-      scoped_refptr<const AccelerometerUpdate> update) override;
+  void OnAccelerometerUpdated(const AccelerometerUpdate& update) override;
 
   // BacklightsForcedOffSetter::Observer:
   void OnBacklightsForcedOffChanged(bool forced_off) override;

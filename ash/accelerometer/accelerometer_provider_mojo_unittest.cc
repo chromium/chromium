@@ -32,25 +32,21 @@ constexpr int64_t kFakeSampleData[] = {1, 2, 3};
 
 class FakeObserver : public AccelerometerReader::Observer {
  public:
-  void OnAccelerometerUpdated(
-      scoped_refptr<const AccelerometerUpdate> update) override {
-    if (!update.get())
-      return;
-
+  void OnAccelerometerUpdated(const AccelerometerUpdate& update) override {
     for (uint32_t index = 0; index < ACCELEROMETER_SOURCE_COUNT; ++index) {
       auto source = static_cast<AccelerometerSource>(index);
-      if (!update->has(source))
+      if (!update.has(source))
         continue;
 
-      EXPECT_EQ(update->get(source).x, kFakeSampleData[0] * kFakeScaleValue);
-      EXPECT_EQ(update->get(source).y, kFakeSampleData[1] * kFakeScaleValue);
-      EXPECT_EQ(update->get(source).z, kFakeSampleData[2] * kFakeScaleValue);
+      EXPECT_EQ(update.get(source).x, kFakeSampleData[0] * kFakeScaleValue);
+      EXPECT_EQ(update.get(source).y, kFakeSampleData[1] * kFakeScaleValue);
+      EXPECT_EQ(update.get(source).z, kFakeSampleData[2] * kFakeScaleValue);
     }
 
     update_ = update;
   }
 
-  scoped_refptr<const AccelerometerUpdate> update_;
+  AccelerometerUpdate update_;
 };
 
 class AccelerometerProviderMojoTest : public ::testing::Test {
@@ -147,11 +143,8 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesOfOneAccel) {
 
   EXPECT_EQ(provider_->GetInitializationStateForTesting(), State::SUCCESS);
 
-  EXPECT_TRUE(observer_.update_.get());
-  EXPECT_TRUE(observer_.update_->has(ACCELEROMETER_SOURCE_SCREEN));
-  EXPECT_FALSE(observer_.update_->has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
-
-  observer_.update_.reset();
+  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
 }
 
 TEST_F(AccelerometerProviderMojoTest, GetSamplesWithNoLidAngle) {
@@ -168,11 +161,10 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesWithNoLidAngle) {
 
   EXPECT_EQ(provider_->GetInitializationStateForTesting(), State::SUCCESS);
 
-  EXPECT_TRUE(observer_.update_.get());
-  EXPECT_TRUE(observer_.update_->has(ACCELEROMETER_SOURCE_SCREEN));
-  EXPECT_TRUE(observer_.update_->has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
 
-  observer_.update_.reset();
+  observer_.update_.Reset();
 
   // Simulate a disconnection of the accelerometer's mojo channel in IIO
   // Service.
@@ -202,22 +194,20 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesWithLidAngle) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(provider_->GetInitializationStateForTesting(), State::SUCCESS);
-  EXPECT_TRUE(observer_.update_.get());
-  EXPECT_TRUE(observer_.update_->has(ACCELEROMETER_SOURCE_SCREEN));
-  EXPECT_FALSE(observer_.update_->has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
 
-  observer_.update_.reset();
+  observer_.update_.Reset();
 
   provider_->TriggerRead();
 
   // Wait until samples are received.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(observer_.update_.get());
-  EXPECT_TRUE(observer_.update_->has(ACCELEROMETER_SOURCE_SCREEN));
-  EXPECT_FALSE(observer_.update_->has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
 
-  observer_.update_.reset();
+  observer_.update_.Reset();
 
   // Simulate a disconnection of IIO Service.
   sensor_hal_server_->GetSensorService()->OnServiceDisconnect();
@@ -232,9 +222,8 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesWithLidAngle) {
   // Wait until samples are received.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(observer_.update_.get());
-  EXPECT_TRUE(observer_.update_->has(ACCELEROMETER_SOURCE_SCREEN));
-  EXPECT_FALSE(observer_.update_->has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
 }
 
 }  // namespace

@@ -29,8 +29,7 @@ constexpr base::TimeDelta kDelayReconnect =
 
 }  // namespace
 
-AccelerometerProviderMojo::AccelerometerProviderMojo()
-    : update_(new AccelerometerUpdate()) {}
+AccelerometerProviderMojo::AccelerometerProviderMojo() = default;
 
 void AccelerometerProviderMojo::PrepareAndInitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -507,12 +506,12 @@ void AccelerometerProviderMojo::OnSampleUpdatedCallback(
   if (!emit_events_)
     return;
 
-  update_->Set(accelerometers_[iio_device_id].location.value(), sample[0],
-               sample[1], sample[2]);
+  update_.Set(accelerometers_[iio_device_id].location.value(), sample[0],
+              sample[1], sample[2]);
 
   if (need_two_accelerometers &&
-      (!update_->has(ACCELEROMETER_SOURCE_SCREEN) ||
-       !update_->has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD))) {
+      (!update_.has(ACCELEROMETER_SOURCE_SCREEN) ||
+       !update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD))) {
     // Wait for the other accel to be updated.
     return;
   }
@@ -520,7 +519,7 @@ void AccelerometerProviderMojo::OnSampleUpdatedCallback(
   for (auto& observer : observers_)
     observer.OnAccelerometerUpdated(update_);
 
-  update_ = new AccelerometerUpdate();
+  update_.Reset();
 
   one_time_read_ = false;
   if (accelerometer_read_on_)

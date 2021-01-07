@@ -628,7 +628,7 @@ void TabletModeController::OnChromeTerminating() {
 }
 
 void TabletModeController::OnAccelerometerUpdated(
-    scoped_refptr<const AccelerometerUpdate> update) {
+    const AccelerometerUpdate& update) {
   if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::UNKNOWN) {
     ec_lid_angle_driver_status_ =
         AccelerometerReader::GetInstance()->GetECLidAngleDriverStatus();
@@ -649,8 +649,8 @@ void TabletModeController::OnAccelerometerUpdated(
   }
 
   have_seen_accelerometer_data_ = true;
-  can_detect_lid_angle_ = update->has(ACCELEROMETER_SOURCE_SCREEN) &&
-                          update->has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
+  can_detect_lid_angle_ = update.has(ACCELEROMETER_SOURCE_SCREEN) &&
+                          update.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
   if (!can_detect_lid_angle_) {
     if (record_lid_angle_timer_.IsRunning())
       record_lid_angle_timer_.Stop();
@@ -665,9 +665,9 @@ void TabletModeController::OnAccelerometerUpdated(
 
   // Whether or not we enter tablet mode affects whether we handle screen
   // rotation, so determine whether to enter tablet mode first.
-  if (update->IsReadingStable(ACCELEROMETER_SOURCE_SCREEN) &&
-      update->IsReadingStable(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD) &&
-      IsAngleBetweenAccelerometerReadingsStable(*update)) {
+  if (update.IsReadingStable(ACCELEROMETER_SOURCE_SCREEN) &&
+      update.IsReadingStable(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD) &&
+      IsAngleBetweenAccelerometerReadingsStable(update)) {
     // update.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD)
     // Ignore the reading if it appears unstable. The reading is considered
     // unstable if it deviates too much from gravity and/or the magnitude of the
@@ -899,11 +899,11 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
 }
 
 void TabletModeController::HandleHingeRotation(
-    scoped_refptr<const AccelerometerUpdate> update) {
+    const AccelerometerUpdate& update) {
   static const gfx::Vector3dF hinge_vector(1.0f, 0.0f, 0.0f);
   gfx::Vector3dF base_reading =
-      update->GetVector(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
-  gfx::Vector3dF lid_reading = update->GetVector(ACCELEROMETER_SOURCE_SCREEN);
+      update.GetVector(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
+  gfx::Vector3dF lid_reading = update.GetVector(ACCELEROMETER_SOURCE_SCREEN);
 
   // As the hinge approaches a vertical angle, the base and lid accelerometers
   // approach the same values making any angle calculations highly inaccurate.

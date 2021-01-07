@@ -16,7 +16,6 @@
 #include "ash/accelerometer/accelerometer_samples_observer.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -164,7 +163,7 @@ class ASH_EXPORT AccelerometerProviderMojo
   base::ObserverList<AccelerometerReader::Observer>::Unchecked observers_;
 
   // The last seen accelerometer data.
-  scoped_refptr<AccelerometerUpdate> update_;
+  AccelerometerUpdate update_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

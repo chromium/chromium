@@ -147,8 +147,7 @@ class ASH_EXPORT TabletModeController
   void OnChromeTerminating() override;
 
   // AccelerometerReader::Observer:
-  void OnAccelerometerUpdated(
-      scoped_refptr<const AccelerometerUpdate> update) override;
+  void OnAccelerometerUpdated(const AccelerometerUpdate& update) override;
 
   // chromeos::PowerManagerClient::Observer:
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
@@ -251,7 +250,7 @@ class ASH_EXPORT TabletModeController
 
   // If EC cannot handle lid angle calc, browser detects hinge rotation from
   // base and lid accelerometers and automatically start / stop tablet mode.
-  void HandleHingeRotation(scoped_refptr<const AccelerometerUpdate> update);
+  void HandleHingeRotation(const AccelerometerUpdate& update);
 
   void OnGetSwitchStates(
       base::Optional<chromeos::PowerManagerClient::SwitchStates> result);

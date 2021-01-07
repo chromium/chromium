@@ -604,7 +604,7 @@ void AccelerometerFileReader::ReadSample() {
   }
 
   // Read resulting sample from /dev/cros-ec-accel.
-  scoped_refptr<AccelerometerUpdate> update = new AccelerometerUpdate();
+  AccelerometerUpdate update;
   for (auto reading_data : configuration_.reading_data) {
     int reading_size = reading_data.sources.size() * kSizeOfReading;
     DCHECK_GT(reading_size, 0);
@@ -628,13 +628,13 @@ void AccelerometerFileReader::ReadSample() {
     for (AccelerometerSource source : reading_data.sources) {
       DCHECK(configuration_.has[source]);
       int16_t* values = reinterpret_cast<int16_t*>(reading);
-      update->Set(source,
-                  values[configuration_.index[source][0]] *
-                      configuration_.scale[source][0],
-                  values[configuration_.index[source][1]] *
-                      configuration_.scale[source][1],
-                  values[configuration_.index[source][2]] *
-                      configuration_.scale[source][2]);
+      update.Set(source,
+                 values[configuration_.index[source][0]] *
+                     configuration_.scale[source][0],
+                 values[configuration_.index[source][1]] *
+                     configuration_.scale[source][1],
+                 values[configuration_.index[source][2]] *
+                     configuration_.scale[source][2]);
     }
   }
 
@@ -645,9 +645,8 @@ void AccelerometerFileReader::ReadSample() {
 }
 
 void AccelerometerFileReader::NotifyObserversWithUpdate(
-    scoped_refptr<AccelerometerUpdate> update) {
+    const AccelerometerUpdate& update) {
   DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(update);
 
   if (!emit_events_)
     return;

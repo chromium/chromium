@@ -39,8 +39,7 @@ class ASH_EXPORT AccelerometerReader {
   // An interface to receive data from the AccelerometerReader.
   class Observer {
    public:
-    virtual void OnAccelerometerUpdated(
-        scoped_refptr<const AccelerometerUpdate> update) = 0;
+    virtual void OnAccelerometerUpdated(const AccelerometerUpdate& update) = 0;
 
    protected:
     virtual ~Observer() {}

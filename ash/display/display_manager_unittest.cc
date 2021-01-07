@@ -3548,21 +3548,18 @@ class DisplayManagerOrientationTest : public DisplayManagerTest {
 
   void SetUp() override {
     DisplayManagerTest::SetUp();
-    portrait_primary->Set(ACCELEROMETER_SOURCE_SCREEN, -base::kMeanGravityFloat,
-                          0.f, 0.f);
-    portrait_secondary->Set(ACCELEROMETER_SOURCE_SCREEN,
-                            base::kMeanGravityFloat, 0.f, 0.f);
-    landscape_primary->Set(ACCELEROMETER_SOURCE_SCREEN, 0,
-                           -base::kMeanGravityFloat, 0.f);
+    portrait_primary.Set(ACCELEROMETER_SOURCE_SCREEN, -base::kMeanGravityFloat,
+                         0.f, 0.f);
+    portrait_secondary.Set(ACCELEROMETER_SOURCE_SCREEN, base::kMeanGravityFloat,
+                           0.f, 0.f);
+    landscape_primary.Set(ACCELEROMETER_SOURCE_SCREEN, 0,
+                          -base::kMeanGravityFloat, 0.f);
   }
 
  protected:
-  scoped_refptr<AccelerometerUpdate> portrait_primary =
-      new AccelerometerUpdate();
-  scoped_refptr<AccelerometerUpdate> portrait_secondary =
-      new AccelerometerUpdate();
-  scoped_refptr<AccelerometerUpdate> landscape_primary =
-      new AccelerometerUpdate();
+  AccelerometerUpdate portrait_primary;
+  AccelerometerUpdate portrait_secondary;
+  AccelerometerUpdate landscape_primary;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DisplayManagerOrientationTest);

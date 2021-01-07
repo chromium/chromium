@@ -393,18 +393,18 @@ void ScreenOrientationController::OnWindowVisibilityChanged(
 }
 
 void ScreenOrientationController::OnAccelerometerUpdated(
-    scoped_refptr<const AccelerometerUpdate> update) {
+    const AccelerometerUpdate& update) {
   if (!IsAutoRotationAllowed())
     return;
 
   if (rotation_locked_ && !CanRotateInLockedState())
     return;
-  if (!update->has(ACCELEROMETER_SOURCE_SCREEN))
+  if (!update.has(ACCELEROMETER_SOURCE_SCREEN))
     return;
   // Ignore the reading if it appears unstable. The reading is considered
   // unstable if it deviates too much from gravity
-  if (update->IsReadingStable(ACCELEROMETER_SOURCE_SCREEN))
-    HandleScreenRotation(update->get(ACCELEROMETER_SOURCE_SCREEN));
+  if (update.IsReadingStable(ACCELEROMETER_SOURCE_SCREEN))
+    HandleScreenRotation(update.get(ACCELEROMETER_SOURCE_SCREEN));
 }
 
 void ScreenOrientationController::OnDisplayConfigurationChanged() {

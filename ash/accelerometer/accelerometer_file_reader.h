@@ -133,7 +133,7 @@ class AccelerometerFileReader : public AccelerometerProviderInterface,
   // Attempts to read the accelerometer data in |task_runner_|. Upon a success,
   // converts the raw reading to an AccelerometerUpdate and notifies observers.
   void ReadSample();
-  void NotifyObserversWithUpdate(scoped_refptr<AccelerometerUpdate> update);
+  void NotifyObserversWithUpdate(const AccelerometerUpdate& update);
 
   bool emit_events_ = true;
 
