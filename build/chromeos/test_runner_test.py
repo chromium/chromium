@@ -34,7 +34,12 @@ class TestRunnerTest(unittest.TestCase):
         test_runner.result_sink, 'TryInitClient', return_value=None)
     self.mock_rdb.start()
 
-    self.common_tast_args = [
+  def tearDown(self):
+    shutil.rmtree(self._tmp_dir, ignore_errors=True)
+    self.mock_rdb.stop()
+
+  def get_common_tast_args(self, use_vm):
+    return [
         'script_name',
         'tast',
         '--suite-name=chrome_all_tast_tests',
@@ -42,8 +47,11 @@ class TestRunnerTest(unittest.TestCase):
         '--flash',
         '--path-to-outdir=out_eve/Release',
         '--logs-dir=%s' % self._tmp_dir,
+        '--use-vm' if use_vm else '--device=localhost:2222',
     ]
-    self.common_tast_expectations = [
+
+  def get_common_tast_expectations(self, use_vm, is_lacros=False):
+    expectation = [
         test_runner.CROS_RUN_TEST_PATH,
         '--board',
         'eve',
@@ -51,9 +59,6 @@ class TestRunnerTest(unittest.TestCase):
         test_runner.DEFAULT_CROS_CACHE,
         '--results-dest-dir',
         '%s/system_logs' % self._tmp_dir,
-        '--mount',
-        '--deploy',
-        '--nostrip',
         '--flash',
         '--build-dir',
         'out_eve/Release',
@@ -62,10 +67,18 @@ class TestRunnerTest(unittest.TestCase):
         '--tast-total-shards=1',
         '--tast-shard-index=0',
     ]
+    expectation.extend(['--start', '--copy-on-write']
+                       if use_vm else ['--device', 'localhost:2222'])
+    for p in test_runner.SYSTEM_LOG_LOCATIONS:
+      expectation.extend(['--results-src', p])
 
-  def tearDown(self):
-    shutil.rmtree(self._tmp_dir, ignore_errors=True)
-    self.mock_rdb.stop()
+    if not is_lacros:
+      expectation += [
+          '--mount',
+          '--deploy',
+          '--nostrip',
+      ]
+    return expectation
 
   @parameterized.expand([
       [True],
@@ -121,22 +134,17 @@ class TestRunnerTest(unittest.TestCase):
     with open(os.path.join(self._tmp_dir, 'streamed_results.jsonl'), 'w') as f:
       json.dump(_TAST_TEST_RESULTS_JSON, f)
 
-    args = self.common_tast_args + [
+    args = self.get_common_tast_args(use_vm) + [
         '-t=ui.ChromeLogin',
-        '--use-vm' if use_vm else '--device=localhost:2222',
     ]
     with mock.patch.object(sys, 'argv', args),\
          mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen:
       mock_popen.return_value.returncode = 0
 
       test_runner.main()
-      expected_cmd = self.common_tast_expectations + [
+      expected_cmd = self.get_common_tast_expectations(use_vm) + [
           '--tast', 'ui.ChromeLogin'
       ]
-      expected_cmd.extend(['--start', '--copy-on-write']
-                          if use_vm else ['--device', 'localhost:2222'])
-      for p in test_runner.SYSTEM_LOG_LOCATIONS:
-        expected_cmd.extend(['--results-src', p])
 
       self.assertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
 
@@ -149,25 +157,47 @@ class TestRunnerTest(unittest.TestCase):
     with open(os.path.join(self._tmp_dir, 'streamed_results.jsonl'), 'w') as f:
       json.dump(_TAST_TEST_RESULTS_JSON, f)
 
-    args = self.common_tast_args + [
+    args = self.get_common_tast_args(use_vm) + [
         '--attr-expr=( "group:mainline" && "dep:chrome" && !informational)',
-        '--use-vm' if use_vm else '--device=localhost:2222',
     ]
     with mock.patch.object(sys, 'argv', args),\
          mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen:
       mock_popen.return_value.returncode = 0
 
       test_runner.main()
-      expected_cmd = self.common_tast_expectations + [
+      expected_cmd = self.get_common_tast_expectations(use_vm) + [
           '--tast=( "group:mainline" && "dep:chrome" && !informational)',
       ]
-      expected_cmd.extend(['--start', '--copy-on-write']
-                          if use_vm else ['--device', 'localhost:2222'])
-      for p in test_runner.SYSTEM_LOG_LOCATIONS:
-        expected_cmd.extend(['--results-src', p])
 
       self.assertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
 
+  @parameterized.expand([
+      [True],
+      [False],
+  ])
+  def test_tast_lacros(self, use_vm):
+    """Tests running a tast tests for Lacros."""
+    with open(os.path.join(self._tmp_dir, 'streamed_results.jsonl'), 'w') as f:
+      json.dump(_TAST_TEST_RESULTS_JSON, f)
+
+    args = self.get_common_tast_args(use_vm) + [
+        '-t=lacros.Basic',
+        '--deploy-lacros',
+    ]
+
+    with mock.patch.object(sys, 'argv', args),\
+         mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen:
+      mock_popen.return_value.returncode = 0
+
+      test_runner.main()
+      expected_cmd = self.get_common_tast_expectations(
+          use_vm, is_lacros=True) + [
+              '--tast',
+              'lacros.Basic',
+              '--deploy-lacros',
+          ]
+
+      self.assertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
 
   @parameterized.expand([
       [True],
@@ -178,22 +208,17 @@ class TestRunnerTest(unittest.TestCase):
     with open(os.path.join(self._tmp_dir, 'streamed_results.jsonl'), 'w') as f:
       json.dump(_TAST_TEST_RESULTS_JSON, f)
 
-    args = self.common_tast_args + [
+    args = self.get_common_tast_args(use_vm) + [
         '-t=ui.ChromeLogin',
         '--tast-var=key=value',
-        '--use-vm' if use_vm else '--device=localhost:2222',
     ]
     with mock.patch.object(sys, 'argv', args),\
          mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen:
       mock_popen.return_value.returncode = 0
       test_runner.main()
-      expected_cmd = self.common_tast_expectations + [
+      expected_cmd = self.get_common_tast_expectations(use_vm) + [
           '--tast', 'ui.ChromeLogin', '--tast-var', 'key=value'
       ]
-      expected_cmd.extend(['--start', '--copy-on-write']
-                          if use_vm else ['--device', 'localhost:2222'])
-      for p in test_runner.SYSTEM_LOG_LOCATIONS:
-        expected_cmd.extend(['--results-src', p])
 
       self.assertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
 

@@ -264,6 +264,13 @@ class TastTest(RemoteTest):
     self._tests = args.tests
     self._conditional = args.conditional
     self._should_strip = args.strip_chrome
+    self._deploy_lacros = args.deploy_lacros
+
+    if self._deploy_lacros and self._should_strip:
+      raise TestFormatError(
+          '--strip-chrome is only applicable to ash-chrome because '
+          'lacros-chrome deployment uses --nostrip by default, so it cannot '
+          'be specificed with --deploy-lacros.')
 
     if not self._llvm_profile_var and not self._logs_dir:
       # The host-side Tast bin returns 0 when tests fail, so we need to capture
@@ -290,11 +297,12 @@ class TastTest(RemoteTest):
           if not arg.startswith('--gtest_repeat')
       ]
 
+    # Lacros deployment mounts itself by default.
+    self._test_cmd.extend(
+        ['--deploy-lacros'] if self._deploy_lacros else ['--deploy', '--mount'])
     self._test_cmd += [
-        '--deploy',
-        '--mount',
         '--build-dir',
-        os.path.relpath(self._path_to_outdir, CHROMIUM_SRC_PATH),
+        os.path.relpath(self._path_to_outdir, CHROMIUM_SRC_PATH)
     ] + self._additional_args
 
     # Coverage tests require some special pre-test setup, so use an
@@ -329,10 +337,6 @@ class TastTest(RemoteTest):
           './' + os.path.relpath(self._on_device_script, self._path_to_outdir)
       ]
     else:
-      # Mounting the browser gives it enough disk space to not need stripping,
-      # but only for browsers not instrumented with code coverage.
-      if not self._should_strip:
-        self._test_cmd.append('--nostrip')
       # Capture tast's results in the logs dir as well.
       if self._logs_dir:
         self._test_cmd += [
@@ -355,6 +359,12 @@ class TastTest(RemoteTest):
 
       for v in self._tast_vars or []:
         self._test_cmd.extend(['--tast-var', v])
+
+      # Mounting ash-chrome gives it enough disk space to not need stripping,
+      # but only for one not instrumented with code coverage.
+      # Lacros uses --nostrip by default, so there is no need to specify.
+      if not self._deploy_lacros and not self._should_strip:
+        self._test_cmd.append('--nostrip')
 
   def post_run(self, return_code):
     # If we don't need to parse the host-side Tast tool's results, fall back to
@@ -705,7 +715,7 @@ def host_cmd(args, cmd_args):
   if args.deploy_chrome:
     cros_run_test_cmd += [
         '--deploy',
-        # Mounting the browser gives it enough disk space to not need stripping.
+        # Mounting ash-chrome gives it enough disk space to not need stripping.
         '--mount',
         '--nostrip',
         '--build-dir',
@@ -822,8 +832,9 @@ def main():
   host_cmd_parser.add_argument(
       '--deploy-chrome',
       action='store_true',
-      help='Will deploy a locally built Chrome binary to the device before '
+      help='Will deploy a locally built ash-chrome binary to the device before '
       'running the host-cmd.')
+
   # GTest args.
   # TODO(bpastene): Rename 'vm-test' arg to 'gtest'.
   gtest_parser = subparsers.add_parser(
@@ -890,7 +901,11 @@ def main():
   tast_test_parser.add_argument(
       '--strip-chrome',
       action='store_true',
-      help='Strips symbols from the browser before deploying to the device.')
+      help='Strips symbols from ash-chrome before deploying to the device.')
+  tast_test_parser.add_argument(
+      '--deploy-lacros',
+      action='store_true',
+      help='Deploy a lacros-chrome instead of ash-chrome.')
   tast_test_parser.add_argument(
       '--tast-var',
       action='append',
