@@ -18,6 +18,8 @@ var RemoveTreeChangeObserver =
 var GetFocusNative = nativeAutomationInternal.GetFocus;
 var GetAccessibilityFocusNative =
     nativeAutomationInternal.GetAccessibilityFocus;
+var SetDesktopID =
+    nativeAutomationInternal.SetDesktopID;
 
 /**
  * A namespace to export utility functions to other files in automation.
@@ -102,10 +104,12 @@ automationUtil.tabIDToAutomationNode = {};
         if (bindingUtil.hasLastError()) {
           AutomationRootNode.destroy(treeId);
           desktopId = undefined;
+          SetDesktopID('');
           callback();
           return;
         }
         desktopId = treeId;
+        SetDesktopID(desktopId);
         desktopTree = AutomationRootNode.getOrCreate(desktopId);
         callback(desktopTree);
 
@@ -118,10 +122,7 @@ automationUtil.tabIDToAutomationNode = {};
   });
 
   apiFunctions.setHandleRequest('getFocus', function(callback) {
-    if (desktopId === undefined)
-      return;
-
-    var focusedNodeInfo = GetFocusNative(desktopId);
+    var focusedNodeInfo = GetFocusNative();
     if (!focusedNodeInfo) {
       callback(null);
       return;

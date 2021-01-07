@@ -675,6 +675,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
   ROUTE_FUNCTION(GetState);
   ROUTE_FUNCTION(CreateAutomationPosition);
   ROUTE_FUNCTION(GetAccessibilityFocus);
+  ROUTE_FUNCTION(SetDesktopID);
 #undef ROUTE_FUNCTION
 
   // Bindings that take a Tree ID and return a property of the tree.
@@ -1913,26 +1914,33 @@ bool AutomationInternalCustomBindings::GetFocusInternal(
 
 void AutomationInternalCustomBindings::GetFocus(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
-  if (args.Length() != 1 || !args[0]->IsString()) {
+  if (args.Length() != 0) {
     ThrowInvalidArgumentsException(this);
     return;
   }
 
-  ui::AXTreeID tree_id = ui::AXTreeID::FromString(
-      *v8::String::Utf8Value(args.GetIsolate(), args[0]));
-  AutomationAXTreeWrapper* tree_wrapper =
-      GetAutomationAXTreeWrapperFromTreeID(tree_id);
-  if (!tree_wrapper)
+  AutomationAXTreeWrapper* desktop_tree =
+      GetAutomationAXTreeWrapperFromTreeID(desktop_tree_id_);
+  AutomationAXTreeWrapper* focused_wrapper = nullptr;
+  ui::AXNode* focused_node = nullptr;
+  if (desktop_tree &&
+      !GetFocusInternal(desktop_tree, &focused_wrapper, &focused_node))
     return;
 
-  AutomationAXTreeWrapper* focused_tree_wrapper = nullptr;
-  ui::AXNode* focused_node = nullptr;
-  if (!GetFocusInternal(tree_wrapper, &focused_tree_wrapper, &focused_node))
-    return;
+  if (!desktop_tree) {
+    focused_wrapper = GetAutomationAXTreeWrapperFromTreeID(focus_tree_id_);
+    if (!focused_wrapper)
+      return;
+
+    focused_node = focused_wrapper->GetNodeFromTree(
+        focused_wrapper->GetTreeID(), focus_id_);
+    if (!focused_node)
+      return;
+  }
 
   args.GetReturnValue().Set(
       gin::DataObjectBuilder(GetIsolate())
-          .Set("treeId", focused_tree_wrapper->GetTreeID().ToString())
+          .Set("treeId", focused_wrapper->GetTreeID().ToString())
           .Set("nodeId", focused_node->id())
           .Build());
 }
@@ -1953,6 +1961,17 @@ void AutomationInternalCustomBindings::GetAccessibilityFocus(
           .Set("treeId", accessibility_focused_tree_id_.ToString())
           .Set("nodeId", node->id())
           .Build());
+}
+
+void AutomationInternalCustomBindings::SetDesktopID(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.Length() != 1 || !args[0]->IsString()) {
+    ThrowInvalidArgumentsException(this);
+    return;
+  }
+
+  desktop_tree_id_ = ui::AXTreeID::FromString(
+      *v8::String::Utf8Value(args.GetIsolate(), args[0]));
 }
 
 void AutomationInternalCustomBindings::GetHtmlAttributes(
@@ -2522,31 +2541,42 @@ void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
   bool lost_old_focus = old_node == nullptr;
 
   // Determine whether there's a focus or blur event and take its event from.
+  // Also, save the raw event target (tree + node).
   ax::mojom::EventFrom event_from = ax::mojom::EventFrom::kNone;
-  bool event_bundle_has_focus_or_blur;
+  ui::AXNodeData::AXID raw_focus_target_id = ui::AXNodeData::kInvalidAXID;
+  bool event_bundle_has_focus_or_blur = false;
   for (const auto& event : event_bundle.events) {
-    if (event.event_type == ax::mojom::Event::kBlur ||
-        event.event_type == ax::mojom::Event::kFocus) {
+    bool is_blur = event.event_type == ax::mojom::Event::kBlur;
+    bool is_focus = event.event_type == ax::mojom::Event::kFocus;
+    if (is_blur || is_focus) {
       event_from = event.event_from;
       event_bundle_has_focus_or_blur = true;
-      break;
     }
+
+    if (is_focus)
+      raw_focus_target_id = event.id;
   }
 
   bool is_from_desktop = tree->IsDesktopTree();
   if (!event_bundle_has_focus_or_blur && !lost_old_focus && !is_from_desktop)
     return;
 
-  // Get the root-most tree.
-  AutomationAXTreeWrapper* root_tree = tree;
-  while ((tree = AutomationAXTreeWrapper::GetParentOfTreeId(
-              root_tree->GetTreeID())))
-    root_tree = tree;
-
+  AutomationAXTreeWrapper* desktop_tree =
+      GetAutomationAXTreeWrapperFromTreeID(desktop_tree_id_);
   ui::AXNode* new_node = nullptr;
   AutomationAXTreeWrapper* new_wrapper = nullptr;
-  if (!GetFocusInternal(root_tree, &new_wrapper, &new_node))
+  if (desktop_tree && !GetFocusInternal(desktop_tree, &new_wrapper, &new_node))
     return;
+
+  if (!desktop_tree) {
+    // Can occur if the extension does not have desktop permission,
+    // chrome.automation.getDesktop has yet to be called, or if this platform
+    // does not support Aura.
+    new_wrapper = tree;
+    new_node = tree->tree()->GetFromId(raw_focus_target_id);
+    if (!new_node)
+      return;
+  }
 
   if (new_wrapper == old_wrapper && new_node == old_node)
     return;
