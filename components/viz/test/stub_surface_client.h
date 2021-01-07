@@ -27,7 +27,7 @@ class StubSurfaceClient : public SurfaceClient {
       const std::vector<ReturnedResource>& resources) override {}
   void ReceiveFromChild(
       const std::vector<TransferableResource>& resources) override {}
-  std::vector<std::unique_ptr<CopyOutputRequest>> TakeCopyOutputRequests(
+  std::vector<PendingCopyOutputRequest> TakeCopyOutputRequests(
       const LocalSurfaceId& latest_surface_id) override;
   void OnFrameTokenChanged(uint32_t frame_token) override {}
   void OnSurfaceProcessed(Surface* surface) override {}

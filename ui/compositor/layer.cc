@@ -459,6 +459,14 @@ LayerAnimator* Layer::GetAnimator() {
   return animator_.get();
 }
 
+void Layer::SetSubtreeCaptureId(viz::SubtreeCaptureId subtree_id) {
+  cc_layer_->SetSubtreeCaptureId(subtree_id);
+}
+
+viz::SubtreeCaptureId Layer::GetSubtreeCaptureId() const {
+  return cc_layer_->subtree_capture_id();
+}
+
 void Layer::SetTransform(const gfx::Transform& transform) {
   GetAnimator()->SetTransform(transform);
 }
@@ -781,6 +789,7 @@ bool Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
   new_layer->SetBackgroundColor(cc_layer_->background_color());
   new_layer->SetSafeOpaqueBackgroundColor(
       cc_layer_->SafeOpaqueBackgroundColor());
+  new_layer->SetSubtreeCaptureId(cc_layer_->subtree_capture_id());
   new_layer->SetCacheRenderSurface(cc_layer_->cache_render_surface());
   new_layer->SetTrilinearFiltering(cc_layer_->trilinear_filtering());
   new_layer->SetRoundedCorner(cc_layer_->corner_radii());

@@ -1481,6 +1481,25 @@ TEST_F(CaptureModeTest, CaptureModeEntryPointHistograms) {
       kTabletHistogram, CaptureModeEntryType::kAccelTakePartialScreenshot, 2);
 }
 
+TEST_F(CaptureModeTest, WindowRecordingCaptureId) {
+  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToCenterOf(window.get());
+  auto* controller = CaptureModeController::Get();
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  // The window should have a valid capture ID.
+  EXPECT_TRUE(window->subtree_capture_id().is_valid());
+
+  // Once recording ends, the window should no longer be marked as capturable.
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+  EXPECT_FALSE(controller->is_recording_in_progress());
+  EXPECT_FALSE(window->subtree_capture_id().is_valid());
+}
+
 TEST_F(CaptureModeTest, ClosingWindowBeingRecorded) {
   auto window = CreateTestWindow(gfx::Rect(200, 200));
   StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
@@ -1490,6 +1509,9 @@ TEST_F(CaptureModeTest, ClosingWindowBeingRecorded) {
   auto* controller = CaptureModeController::Get();
   controller->StartVideoRecordingImmediatelyForTesting();
   EXPECT_TRUE(controller->is_recording_in_progress());
+
+  // The window should have a valid capture ID.
+  EXPECT_TRUE(window->subtree_capture_id().is_valid());
 
   // Closing the window being recorded should end video recording.
   base::HistogramTester histogram_tester;
@@ -1939,6 +1961,7 @@ TEST_F(CaptureModeTest, ScreenshotConfigurationHistogram) {
 // mode when capturing a window. Regression test for https://crbug.com/1152938.
 TEST_F(CaptureModeTest, TabletTouchCaptureLabelWidgetWindowMode) {
   TabletModeControllerTestApi tablet_mode_controller_test_api;
+  tablet_mode_controller_test_api.DetachAllMice();
   tablet_mode_controller_test_api.EnterTabletMode();
 
   // Enter capture window mode.

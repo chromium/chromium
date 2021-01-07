@@ -12,10 +12,9 @@ StubSurfaceClient::StubSurfaceClient() = default;
 
 StubSurfaceClient::~StubSurfaceClient() = default;
 
-std::vector<std::unique_ptr<CopyOutputRequest>>
-StubSurfaceClient::TakeCopyOutputRequests(
+std::vector<PendingCopyOutputRequest> StubSurfaceClient::TakeCopyOutputRequests(
     const LocalSurfaceId& latest_surface_id) {
-  return std::vector<std::unique_ptr<CopyOutputRequest>>();
+  return std::vector<PendingCopyOutputRequest>();
 }
 
 }  // namespace viz

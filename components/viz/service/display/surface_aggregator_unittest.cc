@@ -32,11 +32,13 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/test/compositor_frame_helpers.h"
@@ -917,8 +919,8 @@ class TestVizClient {
   CopyOutputRequest* RequestCopyOfOutput() {
     auto copy_request = CopyOutputRequest::CreateStubForTesting();
     auto* copy_request_ptr = copy_request.get();
-    root_sink_->RequestCopyOfOutput(local_surface_id(),
-                                    std::move(copy_request));
+    root_sink_->RequestCopyOfOutput(PendingCopyOutputRequest{
+        local_surface_id(), SubtreeCaptureId(), std::move(copy_request)});
     return copy_request_ptr;
   }
 
@@ -1590,8 +1592,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, CopyRequest) {
                         embedded_local_surface_id, device_scale_factor);
   auto copy_request = CopyOutputRequest::CreateStubForTesting();
   auto* copy_request_ptr = copy_request.get();
-  embedded_support->RequestCopyOfOutput(embedded_local_surface_id,
-                                        std::move(copy_request));
+  embedded_support->RequestCopyOfOutput(
+      {embedded_local_surface_id, SubtreeCaptureId(), std::move(copy_request)});
 
   std::vector<Quad> root_quads = {
       Quad::SolidColorQuad(SK_ColorWHITE, gfx::Rect(5, 5)),
@@ -1743,8 +1745,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, UnreferencedSurface) {
                         embedded_local_surface_id, device_scale_factor);
   auto copy_request(CopyOutputRequest::CreateStubForTesting());
   auto* copy_request_ptr = copy_request.get();
-  embedded_support->RequestCopyOfOutput(embedded_local_surface_id,
-                                        std::move(copy_request));
+  embedded_support->RequestCopyOfOutput(
+      {embedded_local_surface_id, SubtreeCaptureId(), std::move(copy_request)});
 
   ParentLocalSurfaceIdAllocator parent_allocator;
   parent_allocator.GenerateId();
@@ -8862,8 +8864,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // Now add a CopyOutputRequest on the child surface, so that the delegated
   // ink metadata does get populated on the aggregated frame.
   auto copy_request = CopyOutputRequest::CreateStubForTesting();
-  child_sink_->RequestCopyOfOutput(child_local_surface_id,
-                                   std::move(copy_request));
+  child_sink_->RequestCopyOfOutput(
+      {child_local_surface_id, SubtreeCaptureId(), std::move(copy_request)});
 
   aggregated_frame = AggregateFrame(root_surface_id);
 

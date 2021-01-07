@@ -157,8 +157,17 @@ bool RenderSurfaceImpl::HasCopyRequest() const {
   return OwningEffectNode()->has_copy_request;
 }
 
+viz::SubtreeCaptureId RenderSurfaceImpl::SubtreeCaptureId() const {
+  return OwningEffectNode()->subtree_capture_id;
+}
+
 bool RenderSurfaceImpl::ShouldCacheRenderSurface() const {
   return OwningEffectNode()->cache_render_surface;
+}
+
+bool RenderSurfaceImpl::CopyOfOutputRequired() const {
+  return HasCopyRequest() || ShouldCacheRenderSurface() ||
+         SubtreeCaptureId().is_valid();
 }
 
 int RenderSurfaceImpl::TransformTreeIndex() const {
@@ -210,7 +219,7 @@ gfx::Rect RenderSurfaceImpl::CalculateExpandedClipForFilters(
 }
 
 gfx::Rect RenderSurfaceImpl::CalculateClippedAccumulatedContentRect() {
-  if (ShouldCacheRenderSurface() || HasCopyRequest() || !is_clipped())
+  if (CopyOfOutputRequired() || !is_clipped())
     return accumulated_content_rect();
 
   if (accumulated_content_rect().IsEmpty())
@@ -377,6 +386,7 @@ RenderSurfaceImpl::CreateRenderPass() {
   pass->backdrop_filters = BackdropFilters();
   pass->backdrop_filter_bounds = BackdropFilterBounds();
   pass->generate_mipmap = TrilinearFiltering();
+  pass->subtree_capture_id = SubtreeCaptureId();
   pass->cache_render_pass = ShouldCacheRenderSurface();
   pass->has_damage_from_contributing_content =
       HasDamageFromeContributingContent();

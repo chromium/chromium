@@ -180,17 +180,13 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordFullscreen) {
   FinishVideoRecordingTest(&test_api);
 }
 
-// This test is currently disabled since it will always fail on the bots for
-// now, since audio is not captured on the bots, and currently window recording
-// captures no video frames, so the resulting video file will always be empty.
-// TODO(crbug.com/1143930): Re-enable this once window capture is working.
-IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, DISABLED_RecordWindow) {
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordWindow) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForWindow(/*for_video=*/true);
   auto* generator = GetEventGenerator();
   // Move the mouse cursor above the browser window to select it for window
-  // capture.
-  generator->MoveMouseTo(GetBrowserWindow()->GetBoundsInScreen().CenterPoint());
+  // capture (make sure it doesn't hover over the capture bar).
+  generator->MoveMouseTo(GetBrowserWindow()->GetBoundsInScreen().top_center());
   FinishVideoRecordingTest(&test_api);
 }
 

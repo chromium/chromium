@@ -88,6 +88,10 @@ viz::FrameSinkId TestImageTransportFactory::AllocateFrameSinkId() {
   return frame_sink_id_allocator_.NextFrameSinkId();
 }
 
+viz::SubtreeCaptureId TestImageTransportFactory::AllocateSubtreeCaptureId() {
+  return subtree_capture_id_allocator_.NextSubtreeCaptureId();
+}
+
 viz::HostFrameSinkManager*
 TestImageTransportFactory::GetHostFrameSinkManager() {
   return &host_frame_sink_manager_;

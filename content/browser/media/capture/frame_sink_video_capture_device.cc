@@ -17,6 +17,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -120,7 +121,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
                                       constraints.fixed_aspect_ratio);
 
   if (target_.is_valid()) {
-    capturer_->ChangeTarget(target_);
+    capturer_->ChangeTarget(target_, viz::SubtreeCaptureId());
   }
 
 #if !defined(OS_ANDROID)
@@ -300,11 +301,10 @@ void FrameSinkVideoCaptureDevice::OnTargetChanged(
 
   target_ = frame_sink_id;
   if (capturer_) {
-    if (target_.is_valid()) {
-      capturer_->ChangeTarget(target_);
-    } else {
-      capturer_->ChangeTarget(base::nullopt);
-    }
+    capturer_->ChangeTarget(target_.is_valid()
+                                ? base::make_optional<viz::FrameSinkId>(target_)
+                                : base::nullopt,
+                            viz::SubtreeCaptureId());
   }
 }
 

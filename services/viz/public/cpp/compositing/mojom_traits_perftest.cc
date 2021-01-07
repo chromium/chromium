@@ -10,6 +10,7 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "gpu/ipc/common/mailbox_holder_mojom_traits.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
@@ -208,8 +209,8 @@ class VizSerializationPerfTest : public testing::Test {
     auto pass_in = CompositorRenderPass::Create();
     pass_in->SetAll(root_id, arbitrary_rect1, arbitrary_rect2,
                     arbitrary_matrix1, arbitrary_filters2, arbitrary_filters1,
-                    arbitrary_rrectf1, arbitrary_bool1, arbitrary_bool1,
-                    arbitrary_bool1, arbitrary_bool1);
+                    arbitrary_rrectf1, SubtreeCaptureId(), arbitrary_bool1,
+                    arbitrary_bool1, arbitrary_bool1, arbitrary_bool1);
 
     // Texture quads
     for (uint32_t i = 0; i < 10; ++i) {

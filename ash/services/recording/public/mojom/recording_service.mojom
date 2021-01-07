@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/big_string.mojom";
 import "services/audio/public/mojom/stream_factory.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Defines the interface for the recording service client (e.g. ash), which
@@ -30,7 +31,7 @@ interface RecordingServiceClient {
 
 // Defines the interface of the recording service which is implemented by
 // |recording::RecordingService| and runs in its own utility process. It is
-// launched by the process on which the |RecordingServiceClient| resides, and is
+// launched by the Ash on which the |RecordingServiceClient| resides, and is
 // used to perform audio/video recording of the whole screen, a partial region
 // of it, or an individual window. The service captures, encodes, and muxes the
 // audio and video frames, and sends the WebM muxed video chunks to the client.
@@ -55,7 +56,14 @@ interface RecordingService {
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size video_size);
 
-  // Starts a recording of a window which has the given |frame_sink_id|.
+  // Starts a recording of a window. If this window has a valid |frame_sink_id|,
+  // and submits its own compositor frames independently, then
+  // |subtree_capture_id| can be default-constructed and won't be used.
+  // Otherwise, for windows that don't submit compositor frames (e.g. non-root
+  // windows), the given |frame_sink_id| must be of the root window they're
+  // descendant from, and they must be made capturable by tagging the with a
+  // valid |subtree_capture_id| before calling this (see
+  // aura::Window::MakeWindowCapturable()).
   // |initial_video_size| and |max_video_size| specify a range of acceptable
   // capture resolutions in DIPs. The resolution of the output will adapt
   // dynamically as the window being recorded gets resized by the end user (e.g.
@@ -68,6 +76,7 @@ interface RecordingService {
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
       pending_remote<audio.mojom.StreamFactory>? audio_stream_factory,
       viz.mojom.FrameSinkId frame_sink_id,
+      viz.mojom.SubtreeCaptureId subtree_capture_id,
       gfx.mojom.Size initial_video_size,
       gfx.mojom.Size max_video_size);
 

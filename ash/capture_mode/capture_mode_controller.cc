@@ -425,7 +425,6 @@ void CaptureModeController::OnMuxerOutput(const std::string& chunk) {
 
 void CaptureModeController::OnRecordingEnded(bool success) {
   delegate_->StopObservingRestrictedContent();
-  window_frame_sink_.reset();
 
   // If |success| is false, then recording has been force-terminated due to a
   // failure on the service side, or a disconnection to it. We need to terminate
@@ -579,12 +578,9 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
         audio_stream_factory.InitWithNewPipeAndPassReceiver());
   }
 
-  auto frame_sink_id = capture_params.window->GetFrameSinkId();
-  if (!frame_sink_id.is_valid()) {
-    window_frame_sink_ = capture_params.window->CreateLayerTreeFrameSink();
-    frame_sink_id = capture_params.window->GetFrameSinkId();
-    DCHECK(frame_sink_id.is_valid());
-  }
+  const auto frame_sink_id =
+      capture_params.window->GetRootWindow()->GetFrameSinkId();
+
   const auto bounds = capture_params.bounds;
   switch (source_) {
     case CaptureModeSource::kFullscreen:
@@ -594,11 +590,18 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
       break;
 
     case CaptureModeSource::kWindow:
-      // TODO(crbug.com/1143930): Window recording doesn't produce any frames at
-      // the moment.
+      // Non-root window are not capturable by the |FrameSinkVideoCapturer|
+      // unless its layer tree is identified by a |viz::SubtreeCaptureId|.
+      // The |VideoRecordingWatcher| that we create while recording is in
+      // progress creates a request to mark that window as capturable.
+      // See https://crbug.com/1143930 for more details.
+      DCHECK(!capture_params.window->IsRootWindow());
+      DCHECK(capture_params.window->subtree_capture_id().is_valid());
+
       recording_service_remote_->RecordWindow(
           std::move(client), std::move(video_capturer),
-          std::move(audio_stream_factory), frame_sink_id, bounds.size(),
+          std::move(audio_stream_factory), frame_sink_id,
+          capture_params.window->subtree_capture_id(), bounds.size(),
           capture_params.window->GetRootWindow()
               ->GetBoundsInRootWindow()
               .size());

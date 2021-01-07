@@ -53,6 +53,7 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
+      const viz::SubtreeCaptureId& subtree_capture_id,
       const gfx::Size& initial_video_size,
       const gfx::Size& max_video_size) override;
   void RecordRegion(

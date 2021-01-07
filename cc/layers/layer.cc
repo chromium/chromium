@@ -1003,6 +1003,22 @@ void Layer::SetDidScrollCallback(
   EnsureLayerTreeInputs().did_scroll_callback = std::move(callback);
 }
 
+void Layer::SetSubtreeCaptureId(viz::SubtreeCaptureId subtree_id) {
+  DCHECK(IsPropertyChangeAllowed());
+
+  auto& inputs = EnsureLayerTreeInputs();
+  if (inputs.subtree_capture_id == subtree_id)
+    return;
+
+  DCHECK(!inputs.subtree_capture_id.is_valid() || !subtree_id.is_valid())
+      << "Not allowed to change from a valid ID to another valid ID, as it may "
+         "already be in use.";
+
+  inputs.subtree_capture_id = subtree_id;
+  SetPropertyTreesNeedRebuild();
+  SetNeedsCommit();
+}
+
 void Layer::SetScrollable(const gfx::Size& bounds) {
   DCHECK(IsPropertyChangeAllowed());
   auto& inputs = EnsureLayerTreeInputs();

@@ -25,6 +25,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
+#include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/surfaces/surface_client.h"
 #include "components/viz/service/surfaces/surface_dependency_deadline.h"
 #include "components/viz/service/viz_service_export.h"
@@ -311,7 +312,15 @@ class VIZ_SERVICE_EXPORT Surface final {
       CompositorFrame* frame,
       std::vector<ui::LatencyInfo>* latency_info);
 
-  void RequestCopyOfOutput(std::unique_ptr<CopyOutputRequest> copy_request);
+  // Places the copy-of-output request on the render pass defined by
+  // |PendingCopyOutputRequest::subtree_capture_id| if such a render pass
+  // exists, otherwise the request will be ignored.
+  void RequestCopyOfOutput(
+      PendingCopyOutputRequest pending_copy_output_request);
+
+  // Always placed the given |copy_request| on the root render pass.
+  void RequestCopyOfOutputOnRootRenderPass(
+      std::unique_ptr<CopyOutputRequest> copy_request);
 
   const SurfaceInfo surface_info_;
   SurfaceId previous_frame_surface_id_;

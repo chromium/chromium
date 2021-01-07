@@ -5,6 +5,7 @@
 #ifndef ASH_CAPTURE_MODE_VIDEO_RECORDING_WATCHER_H_
 #define ASH_CAPTURE_MODE_VIDEO_RECORDING_WATCHER_H_
 
+#include "ui/aura/scoped_window_capture_request.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
@@ -34,6 +35,10 @@ class VideoRecordingWatcher : public aura::WindowObserver {
  private:
   CaptureModeController* const controller_;
   aura::Window* const window_being_recorded_;
+
+  // If |window_being_recorded_| is not a root window, we must make a request to
+  // make it capturable by the |FrameSinkVideoCapturer|.
+  aura::ScopedWindowCaptureRequest non_root_window_capture_request_;
 };
 
 }  // namespace ash

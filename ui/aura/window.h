@@ -26,9 +26,11 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/scoped_surface_id_allocator.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/host_frame_sink_client.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/client/window_types.h"
+#include "ui/aura/scoped_window_capture_request.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/class_property.h"
 #include "ui/compositor/layer_animator.h"
@@ -233,6 +235,28 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
     return occluded_region_in_root_;
   }
 
+  // Makes this *non-root* window individually capturable by the
+  // |FrameSinkVideoCapturer| by tagging its layer with a unique
+  // |viz::SubtreeCaptureId| which will force the layer tree root at this
+  // window's layer to a render surface that draws into a render pass that is
+  // identifiable by the capturer using that ID.
+  //
+  // Note that this should only be called for non-root windows. Root windows are
+  // already capturable by the capturer as they're identifiable by their
+  // |viz::FrameSinkId| and thei associated root render pass, so there's no need
+  // to call this.
+  //
+  // This returns a scoped object associated with this request to make the
+  // window capturable, since multiple capturers can capture the same window at
+  // the same time. Once all requests are destroyed, this window will no longer
+  // be individually capturable, and its layer won't be tagged with a valid
+  // |viz::SubtreeCaptureId|.
+  // See https://crbug.com/1143930 for more details.
+  ScopedWindowCaptureRequest MakeWindowCapturable() WARN_UNUSED_RESULT;
+  const viz::SubtreeCaptureId& subtree_capture_id() const {
+    return subtree_capture_id_;
+  }
+
   // Returns the window's bounds in root window's coordinates.
   gfx::Rect GetBoundsInRootWindow() const;
 
@@ -400,8 +424,10 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
                                   float new_device_scale_factor) override;
   void UpdateVisualState() override;
 
-  // Overridden from ui::LayerOwner:
+  // ui::LayerOwner:
+  std::unique_ptr<ui::Layer> ReleaseLayer() override;
   std::unique_ptr<ui::Layer> RecreateLayer() override;
+  void SetLayer(std::unique_ptr<ui::Layer> layer) override;
 
 #if DCHECK_IS_ON()
   // These methods are useful when debugging.
@@ -508,6 +534,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   friend class HitTestDataProviderAura;
   friend class LayoutManager;
   friend class PropertyConverter;
+  friend class ScopedWindowCaptureRequest;
   friend class ScopedWindowEventTargetingBlocker;
   friend class WindowTargeter;
   friend class test::WindowTestApi;
@@ -628,6 +655,14 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   const viz::LocalSurfaceId& GetCurrentLocalSurfaceId() const;
   bool IsEmbeddingExternalContent() const;
 
+  // Called by the constructor of ScopedWindowCaptureRequest to add a request to
+  // make this non-root window capturable by the FrameSinkVideoCapturer.
+  void OnScopedWindowCaptureRequestAdded();
+
+  // Called by the destructor of ScopedWindowCaptureRequest to remove a request
+  // to make this non-root window capturable by the FrameSinkVideoCapturer.
+  void OnScopedWindowCaptureRequestRemoved();
+
   // Bounds of this window relative to the parent. This is cached as the bounds
   // of the Layer and Window are not necessarily the same. In particular bounds
   // of the Layer are relative to the first ancestor with a Layer, where as this
@@ -687,6 +722,22 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   int event_targeting_blocker_count_ = 0;
 
   base::ReentrantObserverList<WindowObserver, true> observers_;
+
+  // Video capturing support ---------------------------------------------------
+
+  // A non-root window must be marked with a viz::SubtreeCaptureId so that it
+  // can be captured by a FrameSinkVideoCapturer. Multiple clients can request
+  // to capture the same window at the same time. This is the number of those
+  // requests, which once it goes to zero, we well clear the
+  // viz::SubtreeCaptureId from the layer associated with this window.
+  int number_of_capture_requests_ = 0;
+
+  // The ID allocated for the layer tree rooted at this window's layer, so that
+  // it can be uniquely identified by the FrameSinkVideoCapturer. This can only
+  // be set for non-root windows. Root windows can be captured normally by the
+  // capturer using their frame sink ID, since those root windows are already
+  // associated with a root compositor render pass.
+  viz::SubtreeCaptureId subtree_capture_id_;
 
   // Embedding support ---------------------------------------------------------
 

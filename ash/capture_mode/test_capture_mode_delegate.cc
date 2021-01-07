@@ -41,6 +41,7 @@ class FakeRecordingService : public recording::mojom::RecordingService {
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
+      const viz::SubtreeCaptureId& subtree_capture_id,
       const gfx::Size& initial_window_size,
       const gfx::Size& max_window_size) override {
     remote_client_.Bind(std::move(client));

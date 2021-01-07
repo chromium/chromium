@@ -640,19 +640,20 @@ void SetSurfaceDrawTransform(const PropertyTrees* property_trees,
 gfx::Rect LayerVisibleRect(PropertyTrees* property_trees, LayerImpl* layer) {
   const EffectNode* effect_node =
       property_trees->effect_tree.Node(layer->effect_tree_index());
-  int effect_ancestor_with_cache_render_surface =
-      effect_node->closest_ancestor_with_cached_render_surface_id;
-  int effect_ancestor_with_copy_request =
-      effect_node->closest_ancestor_with_copy_request_id;
   int lower_effect_closest_ancestor =
-      std::max(effect_ancestor_with_cache_render_surface,
-               effect_ancestor_with_copy_request);
-  bool non_root_copy_request_or_cache_render_surface =
+      effect_node->closest_ancestor_with_cached_render_surface_id;
+  lower_effect_closest_ancestor =
+      std::max(lower_effect_closest_ancestor,
+               effect_node->closest_ancestor_with_copy_request_id);
+  lower_effect_closest_ancestor =
+      std::max(lower_effect_closest_ancestor,
+               effect_node->closest_ancestor_being_captured_id);
+  const bool non_root_with_render_surface =
       lower_effect_closest_ancestor > EffectTree::kContentsRootNodeId;
   gfx::Rect layer_content_rect = gfx::Rect(layer->bounds());
 
   gfx::RectF accumulated_clip_in_root_space;
-  if (non_root_copy_request_or_cache_render_surface) {
+  if (non_root_with_render_surface) {
     bool include_expanding_clips = true;
     ConditionalClip accumulated_clip = ComputeAccumulatedClip(
         property_trees, include_expanding_clips, layer->clip_tree_index(),
@@ -668,7 +669,7 @@ gfx::Rect LayerVisibleRect(PropertyTrees* property_trees, LayerImpl* layer) {
   }
 
   const EffectNode* root_effect_node =
-      non_root_copy_request_or_cache_render_surface
+      non_root_with_render_surface
           ? property_trees->effect_tree.Node(lower_effect_closest_ancestor)
           : property_trees->effect_tree.Node(EffectTree::kContentsRootNodeId);
   ConditionalClip accumulated_clip_in_layer_space =
@@ -890,8 +891,7 @@ void AddSurfaceToRenderSurfaceList(RenderSurfaceImpl* render_surface,
   // TODO(senorblanco): make this smarter for the SkImageFilter case (check for
   // pixel-moving filters)
   const FilterOperations& filters = render_surface->Filters();
-  bool is_occlusion_immune = render_surface->HasCopyRequest() ||
-                             render_surface->ShouldCacheRenderSurface() ||
+  bool is_occlusion_immune = render_surface->CopyOfOutputRequired() ||
                              filters.HasReferenceFilter() ||
                              filters.HasFilterThatMovesPixels();
   if (is_occlusion_immune) {
@@ -1225,9 +1225,11 @@ bool CC_EXPORT LayerShouldBeSkippedForDrawPropertiesComputation(
   if (effect_node->HasRenderSurface() && effect_node->subtree_has_copy_request)
     return false;
 
-  // Skip if the node's subtree is hidden and no need to cache.
-  if (effect_node->subtree_hidden && !effect_node->cache_render_surface)
+  // Skip if the node's subtree is hidden and no need to cache, or capture.
+  if (effect_node->subtree_hidden && !effect_node->cache_render_surface &&
+      !effect_node->subtree_capture_id.is_valid()) {
     return true;
+  }
 
   // If the layer transform is not invertible, it should be skipped. In case the
   // transform is animating and singular, we should not skip it.

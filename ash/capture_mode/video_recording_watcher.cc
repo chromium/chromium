@@ -22,6 +22,11 @@ VideoRecordingWatcher::VideoRecordingWatcher(
   DCHECK(window_being_recorded_);
   DCHECK(controller_->is_recording_in_progress());
 
+  if (!window_being_recorded_->IsRootWindow()) {
+    non_root_window_capture_request_ =
+        window_being_recorded_->MakeWindowCapturable();
+  }
+
   window_being_recorded_->AddObserver(this);
 }
 

@@ -39,6 +39,7 @@ struct DataForRecursion {
   int scroll_tree_parent;
   int closest_ancestor_with_cached_render_surface;
   int closest_ancestor_with_copy_request;
+  int closest_ancestor_being_captured;
   SkColor safe_opaque_background_color;
   bool animation_axis_aligned_since_render_target;
   bool not_axis_aligned_since_last_clip;
@@ -389,6 +390,9 @@ RenderSurfaceReason ComputeRenderSurfaceReason(const MutatorHost& mutator_host,
   if (layer->mirror_count())
     return RenderSurfaceReason::kMirrored;
 
+  if (layer->subtree_capture_id().is_valid())
+    return RenderSurfaceReason::kSubtreeIsBeingCaptured;
+
   return RenderSurfaceReason::kNone;
 }
 
@@ -455,6 +459,7 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   node->stable_id = layer->id();
   node->opacity = layer->opacity();
   node->blend_mode = layer->blend_mode();
+  node->subtree_capture_id = layer->subtree_capture_id();
   node->cache_render_surface = layer->cache_render_surface();
   node->has_copy_request = layer->HasCopyRequest();
   node->filters = layer->filters();
@@ -484,6 +489,10 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
       layer->HasCopyRequest()
           ? node_id
           : data_from_ancestor.closest_ancestor_with_copy_request;
+  node->closest_ancestor_being_captured_id =
+      layer->subtree_capture_id().is_valid()
+          ? node_id
+          : data_from_ancestor.closest_ancestor_being_captured;
 
   if (layer->HasRoundedCorner()) {
     // This is currently in the local space of the layer and hence in an invalid
@@ -518,6 +527,8 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
       node->closest_ancestor_with_cached_render_surface_id;
   data_for_children->closest_ancestor_with_copy_request =
       node->closest_ancestor_with_copy_request_id;
+  data_for_children->closest_ancestor_being_captured =
+      node->closest_ancestor_being_captured_id;
   data_for_children->effect_tree_parent = node_id;
   layer->SetEffectTreeIndex(node_id);
 
@@ -716,6 +727,8 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
   data_for_recursion.closest_ancestor_with_cached_render_surface =
       EffectTree::kInvalidNodeId;
   data_for_recursion.closest_ancestor_with_copy_request =
+      EffectTree::kInvalidNodeId;
+  data_for_recursion.closest_ancestor_being_captured =
       EffectTree::kInvalidNodeId;
   data_for_recursion.compound_transform_since_render_target = gfx::Transform();
   data_for_recursion.animation_axis_aligned_since_render_target = true;

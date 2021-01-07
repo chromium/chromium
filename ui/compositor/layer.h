@@ -23,6 +23,7 @@
 #include "cc/layers/surface_layer.h"
 #include "cc/layers/texture_layer_client.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer_animation_delegate.h"
@@ -168,6 +169,23 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // Returns the layer's animator. Creates a default animator of one has not
   // been set. Will not return NULL.
   LayerAnimator* GetAnimator();
+
+  // Sets the given |subtree_id| on the cc::Layer associated with this, so that
+  // the layer subtree rooted here can be uniquely identified by a
+  // FrameSinkVideoCapturer. The existence of a valid SubtreeCaptureId on this
+  // layer will force it to be drawn into a separate CompositorRenderPass.
+  // Setting a non-valid (i.e. default-constructed SubtreeCaptureId) will clear
+  // this property.
+  // It is not allowed to change this ID from a valid ID to another valid ID,
+  // since a client might already using the existing valid ID to make this layer
+  // subtree identifiable by a capturer.
+  //
+  // Note that this is useful when it's desired to video record a layer subtree
+  // of a non-root layer using a FrameSinkVideoCapturer, since non-root layers
+  // are usually not drawn into their own CompositorRenderPass, while the ui
+  // compositor's root layer always is.
+  void SetSubtreeCaptureId(viz::SubtreeCaptureId subtree_id);
+  viz::SubtreeCaptureId GetSubtreeCaptureId() const;
 
   // The transform, relative to the parent.
   void SetTransform(const gfx::Transform& transform);

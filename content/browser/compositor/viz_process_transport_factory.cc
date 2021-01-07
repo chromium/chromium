@@ -281,6 +281,10 @@ viz::FrameSinkId VizProcessTransportFactory::AllocateFrameSinkId() {
   return frame_sink_id_allocator_.NextFrameSinkId();
 }
 
+viz::SubtreeCaptureId VizProcessTransportFactory::AllocateSubtreeCaptureId() {
+  return subtree_capture_id_allocator_.NextSubtreeCaptureId();
+}
+
 viz::HostFrameSinkManager*
 VizProcessTransportFactory::GetHostFrameSinkManager() {
   return host_frame_sink_manager_;

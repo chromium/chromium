@@ -15,7 +15,7 @@
 #include "base/stl_util.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -28,6 +28,26 @@
 #include "ui/gfx/swap_result.h"
 
 namespace viz {
+
+namespace {
+
+// Adds the given |request| to the requests of the given |render_pass|, removing
+// any duplicate requests made by the same source.
+void RequestCopyOfOutputOnRenderPass(std::unique_ptr<CopyOutputRequest> request,
+                                     CompositorRenderPass& render_pass) {
+  if (request->has_source()) {
+    const base::UnguessableToken& source = request->source();
+    // Remove existing CopyOutputRequests made on the Surface by the same
+    // source.
+    base::EraseIf(render_pass.copy_requests,
+                  [&source](const std::unique_ptr<CopyOutputRequest>& x) {
+                    return x->has_source() && x->source() == source;
+                  });
+  }
+  render_pass.copy_requests.push_back(std::move(request));
+}
+
+}  // namespace
 
 Surface::PresentationHelper::PresentationHelper(
     base::WeakPtr<SurfaceClient> surface_client,
@@ -262,25 +282,40 @@ Surface::QueueFrameResult Surface::QueueFrame(
 }
 
 void Surface::RequestCopyOfOutput(
-    std::unique_ptr<CopyOutputRequest> copy_request) {
+    PendingCopyOutputRequest pending_copy_output_request) {
   TRACE_EVENT1("viz", "Surface::RequestCopyOfOutput", "has_active_frame_data",
                !!active_frame_data_);
+
+  if (!pending_copy_output_request.subtree_capture_id.is_valid()) {
+    RequestCopyOfOutputOnRootRenderPass(
+        std::move(pending_copy_output_request.copy_output_request));
+    return;
+  }
+
+  if (!active_frame_data_)
+    return;
+
+  for (auto& render_pass : active_frame_data_->frame.render_pass_list) {
+    if (render_pass->subtree_capture_id ==
+        pending_copy_output_request.subtree_capture_id) {
+      RequestCopyOfOutputOnRenderPass(
+          std::move(pending_copy_output_request.copy_output_request),
+          *render_pass);
+      return;
+    }
+  }
+}
+
+void Surface::RequestCopyOfOutputOnRootRenderPass(
+    std::unique_ptr<CopyOutputRequest> copy_request) {
+  TRACE_EVENT1("viz", "Surface::RequestCopyOfOutputOnRootRenderPass",
+               "has_active_frame_data", !!active_frame_data_);
   if (!active_frame_data_)
     return;  // |copy_request| auto-sends empty result on out-of-scope.
 
-  std::vector<std::unique_ptr<CopyOutputRequest>>& copy_requests =
-      active_frame_data_->frame.render_pass_list.back()->copy_requests;
-
-  if (copy_request->has_source()) {
-    const base::UnguessableToken& source = copy_request->source();
-    // Remove existing CopyOutputRequests made on the Surface by the same
-    // source.
-    base::EraseIf(copy_requests,
-                  [&source](const std::unique_ptr<CopyOutputRequest>& x) {
-                    return x->has_source() && x->source() == source;
-                  });
-  }
-  copy_requests.push_back(std::move(copy_request));
+  RequestCopyOfOutputOnRenderPass(
+      std::move(copy_request),
+      *active_frame_data_->frame.render_pass_list.back());
 }
 
 void Surface::OnActivationDependencyResolved(
@@ -425,7 +460,7 @@ void Surface::ActivateFrame(FrameData frame_data) {
   RecomputeActiveReferencedSurfaces();
 
   for (auto& copy_request : old_copy_requests)
-    RequestCopyOfOutput(std::move(copy_request));
+    RequestCopyOfOutputOnRootRenderPass(std::move(copy_request));
 
   UnrefFrameResourcesAndRunCallbacks(std::move(previous_frame_data));
 
@@ -557,10 +592,10 @@ void Surface::TakeCopyOutputRequests(Surface::CopyRequestsMap* copy_requests) {
 void Surface::TakeCopyOutputRequestsFromClient() {
   if (!surface_client_)
     return;
-  for (std::unique_ptr<CopyOutputRequest>& request :
+  for (PendingCopyOutputRequest& request_params :
        surface_client_->TakeCopyOutputRequests(
            surface_id().local_surface_id())) {
-    RequestCopyOfOutput(std::move(request));
+    RequestCopyOfOutput(std::move(request_params));
   }
 }
 

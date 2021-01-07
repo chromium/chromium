@@ -226,15 +226,18 @@ void FrameSinkVideoCapturerImpl::SetAutoThrottlingEnabled(bool enabled) {
 }
 
 void FrameSinkVideoCapturerImpl::ChangeTarget(
-    const base::Optional<FrameSinkId>& frame_sink_id) {
+    const base::Optional<FrameSinkId>& frame_sink_id,
+    const SubtreeCaptureId& subtree_capture_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (frame_sink_id) {
     requested_target_ = *frame_sink_id;
+    request_subtree_id_ = subtree_capture_id;
     SetResolvedTarget(
         frame_sink_manager_->FindCapturableFrameSink(requested_target_));
   } else {
     requested_target_ = FrameSinkId();
+    request_subtree_id_ = SubtreeCaptureId();
     SetResolvedTarget(nullptr);
   }
 }
@@ -660,7 +663,8 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
         request->scale_to().ToString().c_str(), utilization));
   }
 
-  resolved_target_->RequestCopyOfOutput(LocalSurfaceId(), std::move(request));
+  resolved_target_->RequestCopyOfOutput(
+      {LocalSurfaceId(), request_subtree_id_, std::move(request)});
 }
 
 void FrameSinkVideoCapturerImpl::DidCopyFrame(

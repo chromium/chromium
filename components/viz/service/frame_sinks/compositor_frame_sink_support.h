@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_COMPOSITOR_FRAME_SINK_SUPPORT_H_
 
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/callback.h"
@@ -127,7 +128,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
       const std::vector<TransferableResource>& resources) override;
   // Takes the CopyOutputRequests that were requested for a surface with at
   // most |local_surface_id|.
-  std::vector<std::unique_ptr<CopyOutputRequest>> TakeCopyOutputRequests(
+  std::vector<PendingCopyOutputRequest> TakeCopyOutputRequests(
       const LocalSurfaceId& local_surface_id) override;
   void OnFrameTokenChanged(uint32_t frame_token) override;
   void OnSurfaceProcessed(Surface* surface) override;
@@ -179,8 +180,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   void AttachCaptureClient(CapturableFrameSink::Client* client) override;
   void DetachCaptureClient(CapturableFrameSink::Client* client) override;
   gfx::Size GetActiveFrameSize() override;
-  void RequestCopyOfOutput(const LocalSurfaceId& local_surface_id,
-                           std::unique_ptr<CopyOutputRequest> request) override;
+  void RequestCopyOfOutput(
+      PendingCopyOutputRequest pending_copy_output_request) override;
   const CompositorFrameMetadata* GetLastActivatedFrameMetadata() override;
 
   HitTestAggregator* GetHitTestAggregator();
@@ -197,8 +198,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // string.
   static const char* GetSubmitResultAsString(SubmitResult result);
 
-  const std::vector<
-      std::pair<LocalSurfaceId, std::unique_ptr<CopyOutputRequest>>>&
+  const std::vector<PendingCopyOutputRequest>&
   copy_output_requests_for_testing() const {
     return copy_output_requests_;
   }
@@ -313,13 +313,13 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // These are the CopyOutputRequests made on the frame sink (as opposed to
   // being included as a part of a CompositorFrame). They stay here until a
   // Surface with a LocalSurfaceId which is at least the stored LocalSurfaceId
-  // takes them. For example, if we store a pair of LocalSurfaceId stored_id and
-  // a CopyOutputRequest, then a surface with LocalSurfaceId >= stored_id will
-  // take it, but a surface with LocalSurfaceId < stored_id will not. Note that
-  // if stored_id is default initialized, then the next surface will take it
-  // regardless of its LocalSurfaceId.
-  std::vector<std::pair<LocalSurfaceId, std::unique_ptr<CopyOutputRequest>>>
-      copy_output_requests_;
+  // takes them. For example, for a stored PendingCopyOutputRequest, a surface
+  // with LocalSurfaceId >= PendingCopyOutputRequest::local_surface_id will take
+  // it, but a surface with LocalSurfaceId <
+  // PendingCopyOutputRequest::local_surface_id will not. Note that if the
+  // PendingCopyOutputRequest::local_surface_id is default initialized, then the
+  // next surface will take it regardless of its LocalSurfaceId.
+  std::vector<PendingCopyOutputRequest> copy_output_requests_;
 
   mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback
       compositor_frame_callback_;

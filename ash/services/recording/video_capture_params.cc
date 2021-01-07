@@ -7,6 +7,7 @@
 #include "ash/services/recording/recording_service_constants.h"
 #include "base/check.h"
 #include "base/time/time.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "media/base/video_types.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "ui/gfx/geometry/rect.h"
@@ -23,7 +24,8 @@ class FullscreenCaptureParams : public VideoCaptureParams {
  public:
   FullscreenCaptureParams(viz::FrameSinkId frame_sink_id,
                           const gfx::Size& video_size)
-      : VideoCaptureParams(frame_sink_id), video_size_(video_size) {}
+      : VideoCaptureParams(frame_sink_id, viz::SubtreeCaptureId()),
+        video_size_(video_size) {}
   FullscreenCaptureParams(const FullscreenCaptureParams&) = delete;
   FullscreenCaptureParams& operator=(const FullscreenCaptureParams&) = delete;
   ~FullscreenCaptureParams() override = default;
@@ -49,9 +51,10 @@ class FullscreenCaptureParams : public VideoCaptureParams {
 class WindowCaptureParams : public VideoCaptureParams {
  public:
   WindowCaptureParams(viz::FrameSinkId frame_sink_id,
+                      viz::SubtreeCaptureId subtree_capture_id,
                       const gfx::Size& initial_video_size,
                       const gfx::Size& max_video_size)
-      : VideoCaptureParams(frame_sink_id),
+      : VideoCaptureParams(frame_sink_id, subtree_capture_id),
         initial_video_size_(initial_video_size),
         max_video_size_(max_video_size) {}
   WindowCaptureParams(const WindowCaptureParams&) = delete;
@@ -82,7 +85,7 @@ class RegionCaptureParams : public VideoCaptureParams {
   RegionCaptureParams(viz::FrameSinkId frame_sink_id,
                       const gfx::Size& full_capture_size,
                       const gfx::Rect& crop_region)
-      : VideoCaptureParams(frame_sink_id),
+      : VideoCaptureParams(frame_sink_id, viz::SubtreeCaptureId()),
         full_capture_size_(full_capture_size),
         crop_region_(crop_region) {}
   RegionCaptureParams(const RegionCaptureParams&) = delete;
@@ -125,10 +128,11 @@ VideoCaptureParams::CreateForFullscreenCapture(viz::FrameSinkId frame_sink_id,
 // static
 std::unique_ptr<VideoCaptureParams> VideoCaptureParams::CreateForWindowCapture(
     viz::FrameSinkId frame_sink_id,
+    viz::SubtreeCaptureId subtree_capture_id,
     const gfx::Size& initial_video_size,
     const gfx::Size& max_video_size) {
   return std::make_unique<WindowCaptureParams>(
-      frame_sink_id, initial_video_size, max_video_size);
+      frame_sink_id, subtree_capture_id, initial_video_size, max_video_size);
 }
 
 // static
@@ -149,7 +153,7 @@ void VideoCaptureParams::InitializeVideoCapturer(
   // TODO(afakhry): Discuss with //media/ team the implications of color space
   // conversions.
   capturer->SetFormat(media::PIXEL_FORMAT_I420, kColorSpace);
-  capturer->ChangeTarget(frame_sink_id_);
+  capturer->ChangeTarget(frame_sink_id_, subtree_capture_id_);
 }
 
 gfx::Rect VideoCaptureParams::GetVideoFrameVisibleRect(
@@ -157,8 +161,9 @@ gfx::Rect VideoCaptureParams::GetVideoFrameVisibleRect(
   return original_frame_visible_rect;
 }
 
-VideoCaptureParams::VideoCaptureParams(viz::FrameSinkId frame_sink_id)
-    : frame_sink_id_(frame_sink_id) {
+VideoCaptureParams::VideoCaptureParams(viz::FrameSinkId frame_sink_id,
+                                       viz::SubtreeCaptureId subtree_capture_id)
+    : frame_sink_id_(frame_sink_id), subtree_capture_id_(subtree_capture_id) {
   DCHECK(frame_sink_id_.is_valid());
 }
 

@@ -88,6 +88,7 @@ void CompositorRenderPass::SetAll(
     const cc::FilterOperations& filters,
     const cc::FilterOperations& backdrop_filters,
     const base::Optional<gfx::RRectF>& backdrop_filter_bounds,
+    SubtreeCaptureId subtree_capture_id,
     bool has_transparent_background,
     bool cache_render_pass,
     bool has_damage_from_contributing_content,
@@ -101,6 +102,7 @@ void CompositorRenderPass::SetAll(
   this->filters = filters;
   this->backdrop_filters = backdrop_filters;
   this->backdrop_filter_bounds = backdrop_filter_bounds;
+  this->subtree_capture_id = subtree_capture_id;
   this->has_transparent_background = has_transparent_background;
   this->cache_render_pass = cache_render_pass;
   this->has_damage_from_contributing_content =
@@ -222,8 +224,9 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPass::DeepCopy() const {
                                                 quad_list.size());
   copy_pass->SetAll(id, output_rect, damage_rect, transform_to_root_target,
                     filters, backdrop_filters, backdrop_filter_bounds,
-                    has_transparent_background, cache_render_pass,
-                    has_damage_from_contributing_content, generate_mipmap);
+                    subtree_capture_id, has_transparent_background,
+                    cache_render_pass, has_damage_from_contributing_content,
+                    generate_mipmap);
 
   if (shared_quad_state_list.empty()) {
     DCHECK(quad_list.empty());

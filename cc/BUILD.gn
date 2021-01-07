@@ -767,6 +767,7 @@ cc_test("cc_unittests") {
     "trees/layer_tree_host_pixeltest_tiles.cc",
     "trees/layer_tree_host_unittest.cc",
     "trees/layer_tree_host_unittest_animation.cc",
+    "trees/layer_tree_host_unittest_capture.cc",
     "trees/layer_tree_host_unittest_capture_content.cc",
     "trees/layer_tree_host_unittest_checkerimaging.cc",
     "trees/layer_tree_host_unittest_context.cc",

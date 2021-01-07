@@ -4,15 +4,17 @@
 
 #include <utility>
 
-#include "components/viz/service/surfaces/surface.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "cc/test/scheduler_test_common.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/surfaces/pending_copy_output_request.h"
+#include "components/viz/service/surfaces/surface.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_external_begin_frame_source.h"
@@ -100,12 +102,12 @@ TEST(SurfaceTest, CopyRequestLifetime) {
 
   bool copy_called = false;
   base::RunLoop copy_runloop;
-  support->RequestCopyOfOutput(
-      local_surface_id,
+  support->RequestCopyOfOutput(PendingCopyOutputRequest{
+      local_surface_id, SubtreeCaptureId(),
       std::make_unique<CopyOutputRequest>(
           CopyOutputRequest::ResultFormat::RGBA_BITMAP,
           base::BindOnce(&TestCopyResultCallback, &copy_called,
-                         copy_runloop.QuitClosure())));
+                         copy_runloop.QuitClosure()))});
   surface->TakeCopyOutputRequestsFromClient();
   EXPECT_TRUE(surface_manager->GetSurfaceForId(surface_id));
   EXPECT_FALSE(copy_called);

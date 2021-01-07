@@ -32,6 +32,7 @@ mojom("mojom") {
     "compositing/returned_resource.mojom",
     "compositing/selection.mojom",
     "compositing/shared_quad_state.mojom",
+    "compositing/subtree_capture_id.mojom",
     "compositing/surface_id.mojom",
     "compositing/surface_info.mojom",
     "compositing/surface_range.mojom",
@@ -105,6 +106,16 @@ mojom("mojom") {
         "//components/viz/common",
         "//gpu/command_buffer/common",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.SubtreeCaptureId"
+          cpp = "::viz::SubtreeCaptureId"
+        },
+      ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/subtree_capture_id_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
     },
     {
       types = [

@@ -18,6 +18,7 @@
 #include "cc/trees/property_tree.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/shared_quad_state.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/mask_filter_info.h"
@@ -174,7 +175,14 @@ class CC_EXPORT RenderSurfaceImpl {
 
   bool HasCopyRequest() const;
 
+  viz::SubtreeCaptureId SubtreeCaptureId() const;
+
   bool ShouldCacheRenderSurface() const;
+
+  // Returns true if it's required to copy the output of this surface (i.e. when
+  // it has copy requests, should be cached, or has a valid subtree capture ID),
+  // and should be e.g. immune from occlusion, etc. Returns false otherise.
+  bool CopyOfOutputRequired() const;
 
   void ResetPropertyChangedFlags();
   bool SurfacePropertyChanged() const;

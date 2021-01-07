@@ -256,16 +256,17 @@ void CompositorFrameSinkSupport::ReceiveFromChild(
   surface_resource_holder_.ReceiveFromChild(resources);
 }
 
-std::vector<std::unique_ptr<CopyOutputRequest>>
+std::vector<PendingCopyOutputRequest>
 CompositorFrameSinkSupport::TakeCopyOutputRequests(
     const LocalSurfaceId& latest_local_id) {
-  std::vector<std::unique_ptr<CopyOutputRequest>> results;
+  std::vector<PendingCopyOutputRequest> results;
   for (auto it = copy_output_requests_.begin();
        it != copy_output_requests_.end();) {
     // Requests with a non-valid local id should be satisfied as soon as
     // possible.
-    if (!it->first.is_valid() || it->first <= latest_local_id) {
-      results.push_back(std::move(it->second));
+    if (!it->local_surface_id.is_valid() ||
+        it->local_surface_id <= latest_local_id) {
+      results.push_back(std::move(*it));
       it = copy_output_requests_.erase(it);
     } else {
       ++it;
@@ -765,10 +766,8 @@ gfx::Size CompositorFrameSinkSupport::GetActiveFrameSize() {
 }
 
 void CompositorFrameSinkSupport::RequestCopyOfOutput(
-    const LocalSurfaceId& local_surface_id,
-    std::unique_ptr<CopyOutputRequest> copy_request) {
-  copy_output_requests_.push_back(
-      std::make_pair(local_surface_id, std::move(copy_request)));
+    PendingCopyOutputRequest pending_copy_output_request) {
+  copy_output_requests_.push_back(std::move(pending_copy_output_request));
   if (last_activated_surface_id_.is_valid()) {
     BeginFrameAck ack;
     ack.has_damage = true;

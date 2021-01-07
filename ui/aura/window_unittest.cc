@@ -6,6 +6,7 @@
 
 #include <limits.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,6 +25,7 @@
 #include "ui/aura/client/visibility_client.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/layout_manager.h"
+#include "ui/aura/scoped_window_capture_request.h"
 #include "ui/aura/scoped_window_event_targeting_blocker.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/aura_test_utils.h"
@@ -366,6 +368,92 @@ TEST_F(WindowTest, ContainsPoint) {
   EXPECT_TRUE(w->ContainsPoint(gfx::Point(4, 4)));
   EXPECT_FALSE(w->ContainsPoint(gfx::Point(5, 5)));
   EXPECT_FALSE(w->ContainsPoint(gfx::Point(10, 10)));
+}
+
+TEST_F(WindowTest, MakeWindowCapturable) {
+  std::unique_ptr<Window> w1(CreateTestWindowWithId(1, root_window()));
+  // Initailly the window is not capturable.
+  EXPECT_FALSE(w1->subtree_capture_id().is_valid());
+
+  // Creating requests makes the window capturable as long as those requests
+  // remain alive.
+  ScopedWindowCaptureRequest request1 = w1->MakeWindowCapturable();
+  EXPECT_TRUE(w1->subtree_capture_id().is_valid());
+  EXPECT_EQ(request1.GetCaptureId(), w1->subtree_capture_id());
+  EXPECT_EQ(request1.GetCaptureId(), w1->layer()->GetSubtreeCaptureId());
+
+  // A new request does not affect the subtree capture ID.
+  const viz::SubtreeCaptureId current_id = w1->subtree_capture_id();
+  ScopedWindowCaptureRequest request2 = w1->MakeWindowCapturable();
+  EXPECT_EQ(current_id, w1->subtree_capture_id());
+  EXPECT_EQ(request1.GetCaptureId(), request2.GetCaptureId());
+
+  // Create a new request, then move an existing request into it. This should
+  // invalidate the moved-from request.
+  ScopedWindowCaptureRequest request3 = w1->MakeWindowCapturable();
+  EXPECT_EQ(current_id, request3.GetCaptureId());
+  request3 = std::move(request2);
+  EXPECT_FALSE(request2.window());
+  EXPECT_FALSE(request2.GetCaptureId().is_valid());
+  EXPECT_TRUE(w1->subtree_capture_id().is_valid());
+
+  // Destroying |request2| does nothing.
+  auto consume_request = [](ScopedWindowCaptureRequest request) {};
+  consume_request(std::move(request2));
+  EXPECT_TRUE(w1->subtree_capture_id().is_valid());
+  EXPECT_EQ(current_id, w1->subtree_capture_id());
+
+  // Destroying |request1| won't affect the window, it will remain capturable,
+  // since |request3| is still alive.
+  consume_request(std::move(request1));
+  EXPECT_FALSE(request1.window());
+  EXPECT_FALSE(request1.GetCaptureId().is_valid());
+  EXPECT_TRUE(w1->subtree_capture_id().is_valid());
+  EXPECT_EQ(current_id, w1->subtree_capture_id());
+
+  // Once all requests are destroyed, the window no longer has a valid capture
+  // ID.
+  consume_request(std::move(request3));
+  EXPECT_FALSE(w1->subtree_capture_id().is_valid());
+  EXPECT_FALSE(w1->layer()->GetSubtreeCaptureId().is_valid());
+}
+
+TEST_F(WindowTest, LayerReleasingAndSettingOfCapturableWindow) {
+  std::unique_ptr<Window> w1(CreateTestWindowWithId(1, root_window()));
+  EXPECT_FALSE(w1->subtree_capture_id().is_valid());
+  ScopedWindowCaptureRequest request = w1->MakeWindowCapturable();
+  EXPECT_TRUE(w1->layer()->GetSubtreeCaptureId().is_valid());
+
+  // Releasing the capturable window's layer (i.e. it's no longer associated
+  // with the window) will clear its capture ID. However, the window remains
+  // marked as capturable with a valid SubtreeCaptureId even though it has no
+  // layer.
+  std::unique_ptr<ui::Layer> taken_layer = w1->ReleaseLayer();
+  EXPECT_FALSE(w1->layer());
+  EXPECT_FALSE(taken_layer->GetSubtreeCaptureId().is_valid());
+  EXPECT_TRUE(w1->subtree_capture_id().is_valid());
+
+  // Setting a new layer on the window will set the layer's capture ID.
+  auto new_layer = std::make_unique<ui::Layer>();
+  taken_layer->parent()->Add(new_layer.get());
+  w1->Reset(std::move(new_layer));
+  EXPECT_TRUE(w1->layer()->GetSubtreeCaptureId().is_valid());
+  EXPECT_EQ(request.GetCaptureId(), w1->layer()->GetSubtreeCaptureId());
+}
+
+TEST_F(WindowTest, RecreateLayerOfCapturableWindow) {
+  std::unique_ptr<Window> w1(CreateTestWindowWithId(1, root_window()));
+  EXPECT_FALSE(w1->subtree_capture_id().is_valid());
+  ScopedWindowCaptureRequest request = w1->MakeWindowCapturable();
+  EXPECT_TRUE(w1->layer()->GetSubtreeCaptureId().is_valid());
+
+  // Recreating the layer of a capturable window will preserve the capture ID
+  // on the newly recreated window, and clears it from the old layer.
+  const viz::SubtreeCaptureId current_id = w1->subtree_capture_id();
+  std::unique_ptr<ui::Layer> old_layer = w1->RecreateLayer();
+  EXPECT_FALSE(old_layer->GetSubtreeCaptureId().is_valid());
+  EXPECT_EQ(current_id, w1->subtree_capture_id());
+  EXPECT_EQ(current_id, w1->layer()->GetSubtreeCaptureId());
 }
 
 TEST_F(WindowTest, ConvertPointToWindow) {

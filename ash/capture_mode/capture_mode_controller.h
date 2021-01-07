@@ -33,10 +33,6 @@ class Time;
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace cc {
-class LayerTreeFrameSink;
-}  // namespace cc
-
 namespace ash {
 
 class CaptureModeSession;
@@ -282,12 +278,6 @@ class ASH_EXPORT CaptureModeController
 
   // If set, it will be called when either an image or video file is saved.
   base::OnceCallback<void(const base::FilePath&)> on_file_saved_callback_;
-
-  // Recording non-root windows require sending their FrameSinkIds to the
-  // recording service. Those windows won't have a valid ID unless we create
-  // LayerTreeFrameSinks for them. This remains alive while the window is being
-  // recorded.
-  std::unique_ptr<cc::LayerTreeFrameSink> window_frame_sink_;
 
   // Timers used to schedule recording of the number of screenshots taken.
   base::RepeatingTimer num_screenshots_taken_in_last_day_scheduler_;

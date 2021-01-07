@@ -17,6 +17,7 @@
 #include "components/viz/common/resources/resource_settings.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/test/begin_frame_args_test.h"
@@ -704,6 +705,7 @@ TEST_F(StructTraitsTest, RenderPass) {
   backdrop_filters.Append(cc::FilterOperation::CreateSaturateFilter(2.f));
   base::Optional<gfx::RRectF> backdrop_filter_bounds(
       {10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8});
+  SubtreeCaptureId subtree_capture_id{22u};
   const bool has_transparent_background = true;
   const bool cache_render_pass = true;
   const bool has_damage_from_contributing_content = true;
@@ -711,8 +713,9 @@ TEST_F(StructTraitsTest, RenderPass) {
   auto input = CompositorRenderPass::Create();
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
                 filters, backdrop_filters, backdrop_filter_bounds,
-                has_transparent_background, cache_render_pass,
-                has_damage_from_contributing_content, generate_mipmap);
+                subtree_capture_id, has_transparent_background,
+                cache_render_pass, has_damage_from_contributing_content,
+                generate_mipmap);
   input->copy_requests.push_back(CopyOutputRequest::CreateStubForTesting());
   const gfx::Rect copy_output_area(24, 42, 75, 57);
   input->copy_requests.back()->set_area(copy_output_area);
@@ -778,6 +781,7 @@ TEST_F(StructTraitsTest, RenderPass) {
   EXPECT_EQ(filters, output->filters);
   EXPECT_EQ(backdrop_filters, output->backdrop_filters);
   EXPECT_EQ(backdrop_filter_bounds, output->backdrop_filter_bounds);
+  EXPECT_EQ(subtree_capture_id, output->subtree_capture_id);
   EXPECT_EQ(cache_render_pass, output->cache_render_pass);
   EXPECT_EQ(has_damage_from_contributing_content,
             output->has_damage_from_contributing_content);
@@ -849,6 +853,7 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   const gfx::Transform transform_to_root =
       gfx::Transform(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
   const base::Optional<gfx::RRectF> backdrop_filter_bounds;
+  SubtreeCaptureId subtree_capture_id;
   const bool has_transparent_background = true;
   const bool cache_render_pass = false;
   const bool has_damage_from_contributing_content = false;
@@ -856,9 +861,9 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   auto input = CompositorRenderPass::Create();
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
                 cc::FilterOperations(), cc::FilterOperations(),
-                backdrop_filter_bounds, has_transparent_background,
-                cache_render_pass, has_damage_from_contributing_content,
-                generate_mipmap);
+                backdrop_filter_bounds, subtree_capture_id,
+                has_transparent_background, cache_render_pass,
+                has_damage_from_contributing_content, generate_mipmap);
 
   // Unlike the previous test, don't add any quads to the list; we need to
   // verify that the serialization code can deal with that.
@@ -874,6 +879,8 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   EXPECT_EQ(damage_rect, output->damage_rect);
   EXPECT_EQ(transform_to_root, output->transform_to_root_target);
   EXPECT_EQ(backdrop_filter_bounds, output->backdrop_filter_bounds);
+  EXPECT_EQ(subtree_capture_id, output->subtree_capture_id);
+  EXPECT_FALSE(output->subtree_capture_id.is_valid());
   EXPECT_EQ(has_transparent_background, output->has_transparent_background);
 }
 

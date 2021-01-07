@@ -14,6 +14,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
@@ -793,6 +794,60 @@ void CopyRequestTestCallback(bool* called,
   std::move(finished).Run();
 }
 
+TEST_F(CompositorFrameSinkSupportTest, CopyRequestOnSubtree) {
+  const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
+
+  constexpr SubtreeCaptureId kSubtreeId1(22);
+  constexpr SubtreeCaptureId kSubtreeId2(44);
+
+  {
+    auto frame = CompositorFrameBuilder()
+                     .AddDefaultRenderPass()
+                     .AddDefaultRenderPass()
+                     .SetReferencedSurfaces({SurfaceRange(surface_id)})
+                     .Build();
+    frame.render_pass_list.front()->subtree_capture_id = kSubtreeId1;
+    support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
+    EXPECT_EQ(surface_observer_.last_created_surface_id().local_surface_id(),
+              local_surface_id_);
+  }
+
+  // Requesting copy of output of a render pass identifiable by a valid
+  // SubtreeCaptureId.
+  bool called1 = false;
+  base::RunLoop called1_run_loop;
+  auto request = std::make_unique<CopyOutputRequest>(
+      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      base::BindOnce(&CopyRequestTestCallback, &called1,
+                     called1_run_loop.QuitClosure()));
+  support_->RequestCopyOfOutput(
+      {local_surface_id_, kSubtreeId1, std::move(request)});
+  GetSurfaceForId(surface_id)->TakeCopyOutputRequestsFromClient();
+  EXPECT_FALSE(called1);
+
+  // Requesting copy of output using a SubtreeCaptureId that has no associated
+  // render pass. The callback will be called immediately.
+  bool called2 = false;
+  base::RunLoop called2_run_loop;
+  request = std::make_unique<CopyOutputRequest>(
+      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      base::BindOnce(&CopyRequestTestCallback, &called2,
+                     called2_run_loop.QuitClosure()));
+  support_->RequestCopyOfOutput(
+      {local_surface_id_, kSubtreeId2, std::move(request)});
+  GetSurfaceForId(surface_id)->TakeCopyOutputRequestsFromClient();
+  called2_run_loop.Run();
+  EXPECT_FALSE(called1);
+  EXPECT_TRUE(called2);
+
+  support_->EvictSurface(local_surface_id_);
+  ExpireAllTemporaryReferences();
+  local_surface_id_ = LocalSurfaceId();
+  manager_.surface_manager()->GarbageCollectSurfaces();
+  called1_run_loop.Run();
+  EXPECT_TRUE(called1);
+}
+
 TEST_F(CompositorFrameSinkSupportTest, DuplicateCopyRequest) {
   const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
 
@@ -814,7 +869,8 @@ TEST_F(CompositorFrameSinkSupportTest, DuplicateCopyRequest) {
                      called1_run_loop.QuitClosure()));
   request->set_source(kArbitrarySourceId1);
 
-  support_->RequestCopyOfOutput(local_surface_id_, std::move(request));
+  support_->RequestCopyOfOutput(
+      {local_surface_id_, SubtreeCaptureId(), std::move(request)});
   GetSurfaceForId(surface_id)->TakeCopyOutputRequestsFromClient();
   EXPECT_FALSE(called1);
 
@@ -826,7 +882,8 @@ TEST_F(CompositorFrameSinkSupportTest, DuplicateCopyRequest) {
                      called2_run_loop.QuitClosure()));
   request->set_source(kArbitrarySourceId2);
 
-  support_->RequestCopyOfOutput(local_surface_id_, std::move(request));
+  support_->RequestCopyOfOutput(
+      {local_surface_id_, SubtreeCaptureId(), std::move(request)});
   GetSurfaceForId(surface_id)->TakeCopyOutputRequestsFromClient();
   // Callbacks have different sources so neither should be called.
   EXPECT_FALSE(called1);
@@ -840,7 +897,8 @@ TEST_F(CompositorFrameSinkSupportTest, DuplicateCopyRequest) {
                      called3_run_loop.QuitClosure()));
   request->set_source(kArbitrarySourceId1);
 
-  support_->RequestCopyOfOutput(local_surface_id_, std::move(request));
+  support_->RequestCopyOfOutput(
+      {local_surface_id_, SubtreeCaptureId(), std::move(request)});
   GetSurfaceForId(surface_id)->TakeCopyOutputRequestsFromClient();
   // Two callbacks are from source1, so the first should be called.
   called1_run_loop.Run();
@@ -1065,7 +1123,8 @@ TEST_F(CompositorFrameSinkSupportTest,
   auto request = std::make_unique<CopyOutputRequest>(
       CopyOutputRequest::ResultFormat::RGBA_BITMAP,
       base::BindOnce(StubResultCallback));
-  support_->RequestCopyOfOutput(local_surface_id1, std::move(request));
+  support_->RequestCopyOfOutput(
+      {local_surface_id1, SubtreeCaptureId(), std::move(request)});
 
   // First surface takes CopyOutputRequests from its client. Now only the first
   // surface should report having CopyOutputRequests.
@@ -1107,7 +1166,8 @@ TEST_F(CompositorFrameSinkSupportTest,
   auto request = std::make_unique<CopyOutputRequest>(
       CopyOutputRequest::ResultFormat::RGBA_BITMAP,
       base::BindOnce(StubResultCallback));
-  support_->RequestCopyOfOutput(local_surface_id2, std::move(request));
+  support_->RequestCopyOfOutput(
+      {local_surface_id2, SubtreeCaptureId(), std::move(request)});
 
   // The first surface doesn't have copy output requests, because it can't
   // satisfy the request that the client has.
@@ -1148,7 +1208,8 @@ TEST_F(CompositorFrameSinkSupportTest,
   auto request = std::make_unique<CopyOutputRequest>(
       CopyOutputRequest::ResultFormat::RGBA_BITMAP,
       base::BindOnce(StubResultCallback));
-  support_->RequestCopyOfOutput(local_surface_id1, std::move(request));
+  support_->RequestCopyOfOutput(
+      {local_surface_id1, SubtreeCaptureId(), std::move(request)});
 
   // Create the second surface.
   support_->SubmitCompositorFrame(local_surface_id2,

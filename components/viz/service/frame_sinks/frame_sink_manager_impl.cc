@@ -7,15 +7,19 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/display_embedder/output_surface_provider.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/video_capture/capturable_frame_sink.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.h"
+#include "components/viz/service/surfaces/pending_copy_output_request.h"
 
 namespace viz {
 
@@ -300,8 +304,8 @@ void FrameSinkManagerImpl::RequestCopyOfOutput(
     // |request| will send an empty result when it goes out of scope.
     return;
   }
-  it->second->RequestCopyOfOutput(surface_id.local_surface_id(),
-                                  std::move(request));
+  it->second->RequestCopyOfOutput(PendingCopyOutputRequest{
+      surface_id.local_surface_id(), SubtreeCaptureId(), std::move(request)});
 }
 
 void FrameSinkManagerImpl::SetHitTestAsyncQueriedDebugRegions(

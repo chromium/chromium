@@ -729,20 +729,24 @@ void EffectTree::UpdateIsDrawn(EffectNode* node, EffectNode* parent_node) {
   // Exceptions:
   // 1) Nodes that contribute to copy requests, whether hidden or not, must be
   //    drawn.
-  // 2) Nodes that have a backdrop filter.
-  // 3) Nodes with animating screen space opacity on main thread or pending tree
+  // 2) Nodes that have a valid SubtreeCaptureId, must be drawn so that they can
+  //    be captured by the FrameSinkVideoCapturer.
+  // 3) Nodes that have a backdrop filter.
+  // 4) Nodes with animating screen space opacity on main thread or pending tree
   //    are drawn if their parent is drawn irrespective of their opacity.
-  if (node->has_copy_request || node->cache_render_surface)
+  if (node->has_copy_request || node->cache_render_surface ||
+      node->subtree_capture_id.is_valid()) {
     node->is_drawn = true;
-  else if (EffectiveOpacity(node) == 0.f &&
-           (!node->has_potential_opacity_animation ||
-            property_trees()->is_active) &&
-           node->backdrop_filters.IsEmpty())
+  } else if (EffectiveOpacity(node) == 0.f &&
+             (!node->has_potential_opacity_animation ||
+              property_trees()->is_active) &&
+             node->backdrop_filters.IsEmpty()) {
     node->is_drawn = false;
-  else if (parent_node)
+  } else if (parent_node) {
     node->is_drawn = parent_node->is_drawn;
-  else
+  } else {
     node->is_drawn = true;
+  }
 }
 
 void EffectTree::UpdateEffectChanged(EffectNode* node,
@@ -789,7 +793,8 @@ void EffectTree::UpdateHasMaskingChild(EffectNode* node,
 
 void EffectTree::UpdateOnlyDrawsVisibleContent(EffectNode* node,
                                                EffectNode* parent_node) {
-  node->only_draws_visible_content = !node->has_copy_request;
+  node->only_draws_visible_content =
+      !node->has_copy_request && !node->subtree_capture_id.is_valid();
   if (parent_node)
     node->only_draws_visible_content &= parent_node->only_draws_visible_content;
   if (!node->backdrop_filters.IsEmpty()) {

@@ -96,6 +96,7 @@ void RecordingService::RecordWindow(
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
     mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
     const viz::FrameSinkId& frame_sink_id,
+    const viz::SubtreeCaptureId& subtree_capture_id,
     const gfx::Size& initial_video_size,
     const gfx::Size& max_video_size) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
@@ -105,7 +106,8 @@ void RecordingService::RecordWindow(
   StartNewRecording(std::move(client), std::move(video_capturer),
                     std::move(audio_stream_factory),
                     VideoCaptureParams::CreateForWindowCapture(
-                        frame_sink_id, initial_video_size, max_video_size));
+                        frame_sink_id, subtree_capture_id, initial_video_size,
+                        max_video_size));
 }
 
 void RecordingService::RecordRegion(

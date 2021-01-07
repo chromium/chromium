@@ -29,6 +29,7 @@
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/delegated_ink_point_renderer_skia.h"
 #include "components/viz/service/display/direct_renderer.h"
@@ -734,8 +735,8 @@ TEST_F(DisplayTest, BackdropFilterTest) {
       bd_pass->SetAll(render_pass_id_generator.GenerateNextId(),
                       sub_surface_rect, no_damage, gfx::Transform(),
                       cc::FilterOperations(), backdrop_filters,
-                      gfx::RRectF(gfx::RectF(sub_surface_rect), 0), false,
-                      false, false, false);
+                      gfx::RRectF(gfx::RectF(sub_surface_rect), 0),
+                      SubtreeCaptureId(), false, false, false, false);
       pass_list.push_back(std::move(bd_pass));
 
       CompositorFrame frame = CompositorFrameBuilder()
