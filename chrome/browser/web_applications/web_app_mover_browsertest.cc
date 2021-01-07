@@ -30,7 +30,7 @@ class WebAppMoverBrowsertest : public InProcessBrowserTest {
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     // Since the port is a part of the start_url, this needs to stay consistent
     // between the tests below.
-    CHECK(https_server_.Start(44221));
+    CHECK(https_server_.Start(16247));
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kMoveWebApp,
           {{features::kMoveWebAppUninstallStartUrlPrefix.name,
