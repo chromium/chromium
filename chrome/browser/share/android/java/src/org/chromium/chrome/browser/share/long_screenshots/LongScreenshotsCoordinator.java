@@ -6,20 +6,19 @@ package org.chromium.chrome.browser.share.long_screenshots;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.Rect;
 
+import org.chromium.base.Callback;
+import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 
 /**
  * Handles the long screenshot action in the Sharing Hub and launches the screenshot editor.
  */
-public class LongScreenshotsCoordinator
-        extends ScreenshotCoordinator implements LongScreenshotsTabService.CaptureProcessor {
+public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
     private LongScreenshotsTabService mLongScreenshotsTabService;
 
     private static final String DIR_NAME = "long_screenshots_dir";
@@ -39,8 +38,7 @@ public class LongScreenshotsCoordinator
             ImageEditorModuleProvider imageEditorModuleProvider) {
         super(activity, tab, chromeOptionShareCallback, sheetController, imageEditorModuleProvider);
 
-        mLongScreenshotsTabService = LongScreenshotsTabServiceFactory.getServiceInstance();
-        mLongScreenshotsTabService.setCaptureProcessor(this);
+        PaintPreviewCompositorUtils.warmupCompositor();
     }
 
     /**
@@ -49,31 +47,14 @@ public class LongScreenshotsCoordinator
      */
     @Override
     public void captureScreenshot() {
-        // TODO(tgupta): Provide the correct bounds.
-        mLongScreenshotsTabService.captureTab(mTab, new Rect(0, 0, 1000, 1000));
-    }
+        EntryManager entryManager = new EntryManager(mActivity, mTab);
 
-    /**
-     * Called after the bitmap has been composited and can be shown to the user.
-     * @param result Bitmap to display in the dialog.
-     */
-    public void onBitmapResult(Bitmap result) {
-        mScreenshot = result;
-        launchSharesheet();
-    }
-
-    /**
-     * Pass the proto response from the LongScreenshotsTabService to the compositor. Called from
-     * the tabService.
-     *
-     * @response PaintPreview response with the address of the stored screenshot
-     * @status Status of the capturing
-     */
-    @Override
-    public void processCapturedTab(PaintPreviewProto response, int status) {
-        // TODO(tgupta): Process a non success status
-        new LongScreenshotsCompositor(mTab, mActivity,
-                LongScreenshotsTabServiceFactory.getServiceInstance(), DIR_NAME, response,
-                this::onBitmapResult);
+        entryManager.generateInitialBitmap(new Callback<Bitmap>() {
+            @Override
+            public void onResult(Bitmap result) {
+                mScreenshot = result;
+                launchSharesheet();
+            }
+        });
     }
 }
