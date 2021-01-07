@@ -47,7 +47,8 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
   void LogAutofillAssistantDeferredTriggerDecision() override {}
   void LogInitialState() override {}
   void LogTranslationStarted() override {}
-  void LogTranslationFinished(TranslateErrors::Type error_type) override {}
+  void LogTranslationFinished(bool was_successful,
+                              TranslateErrors::Type error_type) override {}
   void LogReversion() override {}
   void LogUIChange(bool is_ui_shown) override {}
   void LogOmniboxIconChange(bool is_omnibox_icon_shown) override {}
@@ -90,7 +91,8 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   void LogAutofillAssistantDeferredTriggerDecision() override;
   void LogInitialState() override;
   void LogTranslationStarted() override;
-  void LogTranslationFinished(TranslateErrors::Type error_type) override;
+  void LogTranslationFinished(bool was_successful,
+                              TranslateErrors::Type error_type) override;
   void LogReversion() override;
   void LogUIChange(bool is_ui_shown) override;
   void LogOmniboxIconChange(bool is_omnibox_icon_shown) override;

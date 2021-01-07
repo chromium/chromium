@@ -169,9 +169,12 @@ void TranslateMetricsLoggerImpl::LogTranslationStarted() {
 }
 
 void TranslateMetricsLoggerImpl::LogTranslationFinished(
+    bool was_successful,
     TranslateErrors::Type error_type) {
-  // The translation succeeded if and only if there were no translation errors.
-  if (error_type == TranslateErrors::NONE) {
+  // Note that a translation can fail (i.e. was_successful is false) and have an
+  // error type of NONE in some cases. One case where this happens is when a
+  // translation is interrupted midway through.
+  if (was_successful) {
     UpdateTimeTranslated(previous_state_is_translated_, is_foreground_);
     num_translations_++;
 
@@ -188,9 +191,11 @@ void TranslateMetricsLoggerImpl::LogTranslationFinished(
     // Update the initial state if it was dependent on this translation..
     if (is_initial_state_dependent_on_in_progress_translation_)
       initial_state_is_translated_ = previous_state_is_translated_;
+  }
 
-    // Check if this was the first error, and then increment the number of
-    // errors for this page load.
+  // If there was some error, checks if this was the first error, and increments
+  // the error count.
+  if (error_type != TranslateErrors::NONE) {
     if (first_translate_error_type_ == TranslateErrors::NONE)
       first_translate_error_type_ = error_type;
     num_translate_errors_++;

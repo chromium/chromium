@@ -97,7 +97,8 @@ TEST_F(TranslateMetricsLoggerImplTest, MultipleRecordMetrics) {
   translate_metrics_logger()->LogInitialState();
   translate_metrics_logger()->LogUIChange(true);
   translate_metrics_logger()->LogTranslationStarted();
-  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
+  translate_metrics_logger()->LogTranslationFinished(true,
+                                                     TranslateErrors::NONE);
   translate_metrics_logger()->LogReversion();
 
   // Simulate |RecordMetrics| being called multiple times.
@@ -173,7 +174,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
   translate_metrics_logger()->LogInitialState();
 
   translate_metrics_logger()->LogTranslationStarted();
-  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
+  translate_metrics_logger()->LogTranslationFinished(true,
+                                                     TranslateErrors::NONE);
 
   translate_metrics_logger()->RecordMetrics(true);
 
@@ -186,7 +188,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
   translate_metrics_logger()->LogInitialState();
 
   translate_metrics_logger()->LogTranslationStarted();
-  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NETWORK);
+  translate_metrics_logger()->LogTranslationFinished(false,
+                                                     TranslateErrors::NETWORK);
 
   translate_metrics_logger()->RecordMetrics(true);
 
@@ -212,9 +215,11 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
   translate_metrics_logger()->LogInitialState();
 
   translate_metrics_logger()->LogTranslationStarted();
-  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
+  translate_metrics_logger()->LogTranslationFinished(true,
+                                                     TranslateErrors::NONE);
   translate_metrics_logger()->LogTranslationStarted();
-  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NETWORK);
+  translate_metrics_logger()->LogTranslationFinished(false,
+                                                     TranslateErrors::NETWORK);
 
   translate_metrics_logger()->RecordMetrics(true);
 
@@ -229,7 +234,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
   ResetTest();
   translate_metrics_logger()->LogTranslationStarted();
   translate_metrics_logger()->LogInitialState();
-  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
+  translate_metrics_logger()->LogTranslationFinished(true,
+                                                     TranslateErrors::NONE);
 
   translate_metrics_logger()->RecordMetrics(true);
 
@@ -241,7 +247,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
   ResetTest();
   translate_metrics_logger()->LogTranslationStarted();
   translate_metrics_logger()->LogInitialState();
-  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NETWORK);
+  translate_metrics_logger()->LogTranslationFinished(false,
+                                                     TranslateErrors::NETWORK);
 
   translate_metrics_logger()->RecordMetrics(true);
 
@@ -269,7 +276,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
 
   for (int i = 0; i < num_translations_and_reversions; i++) {
     translate_metrics_logger()->LogTranslationStarted();
-    translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
+    translate_metrics_logger()->LogTranslationFinished(true,
+                                                       TranslateErrors::NONE);
     translate_metrics_logger()->LogReversion();
   }
 
@@ -298,7 +306,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslateErrors) {
   // Simulates the translations with the predefined errors.
   for (auto translate_error_type : kTranslateErrorTypes) {
     translate_metrics_logger()->LogTranslationStarted();
-    translate_metrics_logger()->LogTranslationFinished(translate_error_type);
+    translate_metrics_logger()->LogTranslationFinished(
+        translate_error_type == TranslateErrors::NONE, translate_error_type);
   }
 
   translate_metrics_logger()->RecordMetrics(true);
@@ -322,7 +331,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslateState) {
   translate_metrics_logger()->LogInitialState();
 
   translate_metrics_logger()->LogTranslationStarted();
-  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
+  translate_metrics_logger()->LogTranslationFinished(true,
+                                                     TranslateErrors::NONE);
   translate_metrics_logger()->LogUIChange(true);
   translate_metrics_logger()->LogOmniboxIconChange(true);
 
@@ -339,7 +349,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslateState) {
   translate_metrics_logger()->LogUIChange(true);
   translate_metrics_logger()->LogOmniboxIconChange(true);
   translate_metrics_logger()->LogInitialState();
-  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
+  translate_metrics_logger()->LogTranslationFinished(true,
+                                                     TranslateErrors::NONE);
 
   translate_metrics_logger()->LogReversion();
   translate_metrics_logger()->LogUIChange(false);
@@ -374,7 +385,8 @@ TEST_F(TranslateMetricsLoggerImplTest, TrackTimeTranslatedAndNotTranslated) {
 
   // Translate the page (while still in the background).
   translate_metrics_logger()->LogTranslationStarted();
-  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
+  translate_metrics_logger()->LogTranslationFinished(true,
+                                                     TranslateErrors::NONE);
 
   test_clock.Advance(delay3);
 
@@ -413,7 +425,8 @@ TEST_F(TranslateMetricsLoggerImplTest,
   test_clock.Advance(delay2);
 
   // Translation finally finishes.
-  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
+  translate_metrics_logger()->LogTranslationFinished(true,
+                                                     TranslateErrors::NONE);
 
   test_clock.Advance(delay3);
 
@@ -492,7 +505,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {
 
   translate_metrics_logger()->LogTranslationStarted();
   test_clock.Advance(default_delay);
-  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
+  translate_metrics_logger()->LogTranslationFinished(true,
+                                                     TranslateErrors::NONE);
 
   translate_metrics_logger()->RecordMetrics(true);
 
@@ -505,7 +519,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {
 
   translate_metrics_logger()->LogTranslationStarted();
   test_clock.Advance(default_delay);
-  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NETWORK);
+  translate_metrics_logger()->LogTranslationFinished(false,
+                                                     TranslateErrors::NETWORK);
 
   translate_metrics_logger()->RecordMetrics(true);
 
@@ -540,6 +555,7 @@ TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {
     translate_metrics_logger()->LogTranslationStarted();
     test_clock.Advance(test.time_to_translate);
     translate_metrics_logger()->LogTranslationFinished(
+        test.translate_error_type == TranslateErrors::NONE,
         test.translate_error_type);
   }
 

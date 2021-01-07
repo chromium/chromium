@@ -101,7 +101,8 @@ class TranslateMetricsLogger {
   // Tracks the state of Translate over the course of the page load.
   virtual void LogInitialState() = 0;
   virtual void LogTranslationStarted() = 0;
-  virtual void LogTranslationFinished(TranslateErrors::Type error_type) = 0;
+  virtual void LogTranslationFinished(bool was_successful,
+                                      TranslateErrors::Type error_type) = 0;
   virtual void LogReversion() = 0;
   virtual void LogUIChange(bool is_ui_shown) = 0;
   virtual void LogOmniboxIconChange(bool is_omnibox_icon_show) = 0;
