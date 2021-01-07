@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_ANDROID_HISTORY_HISTORY_DELETION_BRIDGE_H_
 
 #include "base/macros.h"
+#include "base/scoped_observation.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 
 namespace history {
 class HistoryService;
 }  // namespace history
-
-class Profile;
 
 // Native counterpart of HistoryDeletionBridge.java. Receives history deletion
 // events that originate in native code and forwards them to Java.
@@ -24,6 +24,8 @@ class HistoryDeletionBridge : public history::HistoryServiceObserver {
   // history::HistoryServiceObserver.
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
+  void HistoryServiceBeingDeleted(
+      history::HistoryService* history_service) override;
 
   // Sanitize the DeletionInfo of empty/invalid urls before passing to java.
   // Fix for empty java strings being passed to the content capture service
@@ -37,7 +39,9 @@ class HistoryDeletionBridge : public history::HistoryServiceObserver {
   // Reference to the Java half of this bridge. Always valid.
   base::android::ScopedJavaGlobalRef<jobject> jobj_;
 
-  Profile* profile_;
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      scoped_history_service_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HistoryDeletionBridge);
 };

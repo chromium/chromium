@@ -36,22 +36,16 @@ history::DeletionInfo HistoryDeletionBridge::SanitizeDeletionInfo(
 }
 
 HistoryDeletionBridge::HistoryDeletionBridge(const JavaRef<jobject>& jobj)
-    : jobj_(ScopedJavaGlobalRef<jobject>(jobj)),
-      profile_(ProfileManager::GetLastUsedProfile()->GetOriginalProfile()) {
+    : jobj_(ScopedJavaGlobalRef<jobject>(jobj)) {
+  Profile* profile = ProfileManager::GetLastUsedProfile()->GetOriginalProfile();
   history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile_,
+      HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::IMPLICIT_ACCESS);
   if (history_service)
-    history_service->AddObserver(this);
+    scoped_history_service_observer_.Observe(history_service);
 }
 
-HistoryDeletionBridge::~HistoryDeletionBridge() {
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile_,
-                                           ServiceAccessType::IMPLICIT_ACCESS);
-  if (history_service)
-    history_service->RemoveObserver(this);
-}
+HistoryDeletionBridge::~HistoryDeletionBridge() = default;
 
 void HistoryDeletionBridge::OnURLsDeleted(
     history::HistoryService* history_service,
@@ -61,4 +55,9 @@ void HistoryDeletionBridge::OnURLsDeleted(
   history::DeletionInfo sanitized_info = SanitizeDeletionInfo(deletion_info);
   Java_HistoryDeletionBridge_onURLsDeleted(
       env, jobj_, CreateHistoryDeletionInfo(env, &sanitized_info));
+}
+
+void HistoryDeletionBridge::HistoryServiceBeingDeleted(
+    history::HistoryService* history_service) {
+  scoped_history_service_observer_.Reset();
 }
