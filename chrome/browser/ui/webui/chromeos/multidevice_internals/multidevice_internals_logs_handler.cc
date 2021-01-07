@@ -39,7 +39,7 @@ base::Value LogMessageToDictionary(
 
 }  // namespace
 
-MultideviceLogsHandler::MultideviceLogsHandler() : observer_(this) {}
+MultideviceLogsHandler::MultideviceLogsHandler() {}
 
 MultideviceLogsHandler::~MultideviceLogsHandler() = default;
 
@@ -51,11 +51,11 @@ void MultideviceLogsHandler::RegisterMessages() {
 }
 
 void MultideviceLogsHandler::OnJavascriptAllowed() {
-  observer_.Add(multidevice::LogBuffer::GetInstance());
+  observation_.Observe(multidevice::LogBuffer::GetInstance());
 }
 
 void MultideviceLogsHandler::OnJavascriptDisallowed() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void MultideviceLogsHandler::HandleGetLogMessages(const base::ListValue* args) {

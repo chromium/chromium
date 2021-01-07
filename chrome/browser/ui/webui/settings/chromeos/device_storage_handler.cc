@@ -65,7 +65,6 @@ StorageHandler::StorageHandler(Profile* profile,
       other_users_size_calculator_(),
       profile_(profile),
       source_name_(html_source->GetSource()),
-      arc_observer_(this),
       special_volume_path_pattern_("[a-z]+://.*") {
   // TODO(khorimoto): Set kAndroidEnabled within DeviceSection, and
   // updates this value accordingly (see OnArcPlayStoreEnabledChanged()).
@@ -103,7 +102,7 @@ void StorageHandler::RegisterMessages() {
 
 void StorageHandler::OnJavascriptAllowed() {
   if (base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature))
-    arc_observer_.Add(arc::ArcSessionManager::Get());
+    arc_observation_.Observe(arc::ArcSessionManager::Get());
 
   // Start observing mount/unmount events to update the connected device list.
   DiskMountManager::GetInstance()->AddObserver(this);
@@ -121,8 +120,10 @@ void StorageHandler::OnJavascriptDisallowed() {
   // Ensure that pending callbacks do not complete and cause JS to be evaluated.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  if (base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature))
-    arc_observer_.Remove(arc::ArcSessionManager::Get());
+  if (base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature)) {
+    DCHECK(arc_observation_.IsObservingSource(arc::ArcSessionManager::Get()));
+    arc_observation_.Reset();
+  }
 
   StopObservingEvents();
 }

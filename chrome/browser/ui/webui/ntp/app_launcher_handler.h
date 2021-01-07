@@ -11,7 +11,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
@@ -224,8 +224,8 @@ class AppLauncherHandler
   // features::kDesktopPWAsWithoutExtensions is enabled.
   web_app::WebAppProvider* const web_app_provider_;
 
-  ScopedObserver<web_app::AppRegistrar, web_app::AppRegistrarObserver>
-      web_apps_observer_{this};
+  base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
+      web_apps_observation_{this};
 
   // We monitor changes to the extension system so that we can reload the apps
   // when necessary.

@@ -94,7 +94,7 @@ void DiceTurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
         callback) {
   DCHECK(callback);
   sync_confirmation_callback_ = std::move(callback);
-  scoped_login_ui_service_observer_.Add(
+  scoped_login_ui_service_observation_.Observe(
       LoginUIServiceFactory::GetForProfile(profile_));
   browser_ = EnsureBrowser(browser_, profile_);
   browser_->signin_view_controller()->ShowModalSyncConfirmationDialog();

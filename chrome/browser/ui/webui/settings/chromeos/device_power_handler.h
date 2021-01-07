@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -158,8 +158,8 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   // Used to watch power management prefs for changes so the UI can be notified.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  ScopedObserver<PowerManagerClient, PowerManagerClient::Observer>
-      power_manager_client_observer_{this};
+  base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 
   // Last lid state received from powerd.
   PowerManagerClient::LidState lid_state_ = PowerManagerClient::LidState::OPEN;

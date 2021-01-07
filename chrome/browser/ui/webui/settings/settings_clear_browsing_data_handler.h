@@ -11,7 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -115,8 +115,8 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
 
   // SyncService to observe sync state changes.
   syncer::SyncService* sync_service_;
-  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_service_observer_;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
 
   // Whether we should show a dialog informing the user about other forms of
   // history stored in their account after the history deletion is finished.

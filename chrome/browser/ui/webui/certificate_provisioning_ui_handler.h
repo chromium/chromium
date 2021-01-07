@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_scheduler.h"
@@ -109,7 +109,8 @@ class CertificateProvisioningUiHandler
 
   // Keeps track of the CertProvisioningSchedulers that this UI handler
   // observes.
-  ScopedObserver<CertProvisioningScheduler, CertProvisioningSchedulerObserver>
+  base::ScopedMultiSourceObservation<CertProvisioningScheduler,
+                                     CertProvisioningSchedulerObserver>
       observed_schedulers_{this};
 
   base::WeakPtrFactory<CertificateProvisioningUiHandler> weak_ptr_factory_{

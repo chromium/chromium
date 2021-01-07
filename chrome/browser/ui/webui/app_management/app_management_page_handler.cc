@@ -101,7 +101,7 @@ AppManagementPageHandler::AppManagementPageHandler(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (arc::IsArcAllowedForProfile(profile_)) {
-    arc_app_list_prefs_observer_.Add(ArcAppListPrefs::Get(profile_));
+    arc_app_list_prefs_observation_.Observe(ArcAppListPrefs::Get(profile_));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

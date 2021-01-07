@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
@@ -229,8 +229,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   base::TimeTicks background_images_request_start_time_;
   std::vector<GetOneGoogleBarPartsCallback> one_google_bar_parts_callbacks_;
   OneGoogleBarService* one_google_bar_service_;
-  ScopedObserver<OneGoogleBarService, OneGoogleBarServiceObserver>
-      one_google_bar_service_observer_{this};
+  base::ScopedObservation<OneGoogleBarService, OneGoogleBarServiceObserver>
+      one_google_bar_service_observation_{this};
   base::Optional<base::TimeTicks> one_google_bar_load_start_time_;
   Profile* profile_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
@@ -247,8 +247,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       loader_map_;
   std::vector<GetPromoCallback> promo_callbacks_;
   PromoService* promo_service_;
-  ScopedObserver<PromoService, PromoServiceObserver> promo_service_observer_{
-      this};
+  base::ScopedObservation<PromoService, PromoServiceObserver>
+      promo_service_observation_{this};
   base::Optional<base::TimeTicks> promo_load_start_time_;
 
   // These are located at the end of the list of member variables to ensure the

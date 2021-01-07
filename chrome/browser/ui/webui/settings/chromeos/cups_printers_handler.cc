@@ -269,8 +269,8 @@ CupsPrintersHandler::CupsPrintersHandler(
       ppd_provider_(ppd_provider),
       printer_configurer_(std::move(printer_configurer)),
       printers_manager_(printers_manager),
-      endpoint_resolver_(std::make_unique<local_discovery::EndpointResolver>()),
-      printers_manager_observer_(this) {}
+      endpoint_resolver_(
+          std::make_unique<local_discovery::EndpointResolver>()) {}
 
 // static
 std::unique_ptr<CupsPrintersHandler> CupsPrintersHandler::CreateForTesting(
@@ -367,13 +367,12 @@ void CupsPrintersHandler::RegisterMessages() {
 }
 
 void CupsPrintersHandler::OnJavascriptAllowed() {
-  if (!printers_manager_observer_.IsObservingSources()) {
-    printers_manager_observer_.Add(printers_manager_);
-  }
+  DCHECK(!printers_manager_observation_.IsObserving());
+  printers_manager_observation_.Observe(printers_manager_);
 }
 
 void CupsPrintersHandler::OnJavascriptDisallowed() {
-  printers_manager_observer_.RemoveAll();
+  printers_manager_observation_.Reset();
 }
 
 void CupsPrintersHandler::SetWebUIForTest(content::WebUI* web_ui) {

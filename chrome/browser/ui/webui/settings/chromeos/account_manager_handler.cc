@@ -175,10 +175,7 @@ class AccountBuilder {
 AccountManagerUIHandler::AccountManagerUIHandler(
     AccountManager* account_manager,
     signin::IdentityManager* identity_manager)
-    : account_manager_(account_manager),
-      identity_manager_(identity_manager),
-      account_manager_observer_(this),
-      identity_manager_observer_(this) {
+    : account_manager_(account_manager), identity_manager_(identity_manager) {
   DCHECK(account_manager_);
   DCHECK(identity_manager_);
 }
@@ -407,13 +404,13 @@ void AccountManagerUIHandler::HandleShowWelcomeDialogIfRequired(
 }
 
 void AccountManagerUIHandler::OnJavascriptAllowed() {
-  account_manager_observer_.Add(account_manager_);
-  identity_manager_observer_.Add(identity_manager_);
+  account_manager_observation_.Observe(account_manager_);
+  identity_manager_observation_.Observe(identity_manager_);
 }
 
 void AccountManagerUIHandler::OnJavascriptDisallowed() {
-  account_manager_observer_.RemoveAll();
-  identity_manager_observer_.RemoveAll();
+  account_manager_observation_.Reset();
+  identity_manager_observation_.Reset();
 }
 
 // |AccountManager::Observer| overrides. Note: We need to listen on

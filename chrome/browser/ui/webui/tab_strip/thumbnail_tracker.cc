@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -22,7 +22,7 @@ class ThumbnailTracker::ContentsData : public content::WebContentsObserver,
       : content::WebContentsObserver(contents), parent_(parent) {
     thumbnail_ = parent_->thumbnail_getter_.Run(contents);
     if (thumbnail_)
-      observer_.Add(thumbnail_.get());
+      observation_.Observe(thumbnail_.get());
   }
 
   void RequestThumbnail() {
@@ -35,7 +35,8 @@ class ThumbnailTracker::ContentsData : public content::WebContentsObserver,
     // We must un-observe each ThumbnailImage when the WebContents it came from
     // closes.
     if (thumbnail_) {
-      observer_.Remove(thumbnail_.get());
+      DCHECK(observation_.IsObservingSource(thumbnail_.get()));
+      observation_.Reset();
       thumbnail_.reset();
     }
 
@@ -52,7 +53,8 @@ class ThumbnailTracker::ContentsData : public content::WebContentsObserver,
  private:
   ThumbnailTracker* parent_;
   scoped_refptr<ThumbnailImage> thumbnail_;
-  ScopedObserver<ThumbnailImage, ThumbnailImage::Observer> observer_{this};
+  base::ScopedObservation<ThumbnailImage, ThumbnailImage::Observer>
+      observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ContentsData);
 };

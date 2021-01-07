@@ -17,10 +17,7 @@
 namespace chromeos {
 namespace settings {
 
-AndroidAppsHandler::AndroidAppsHandler(Profile* profile)
-    : arc_prefs_observer_(this),
-      arc_session_manager_observer_(this),
-      profile_(profile) {}
+AndroidAppsHandler::AndroidAppsHandler(Profile* profile) : profile_(profile) {}
 
 AndroidAppsHandler::~AndroidAppsHandler() {}
 
@@ -43,15 +40,15 @@ void AndroidAppsHandler::RegisterMessages() {
 void AndroidAppsHandler::OnJavascriptAllowed() {
   ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
   if (arc_prefs) {
-    arc_prefs_observer_.Add(arc_prefs);
+    arc_prefs_observation_.Observe(arc_prefs);
     // arc::ArcSessionManager is associated with primary profile.
-    arc_session_manager_observer_.Add(arc::ArcSessionManager::Get());
+    arc_session_manager_observation_.Observe(arc::ArcSessionManager::Get());
   }
 }
 
 void AndroidAppsHandler::OnJavascriptDisallowed() {
-  arc_prefs_observer_.RemoveAll();
-  arc_session_manager_observer_.RemoveAll();
+  arc_prefs_observation_.Reset();
+  arc_session_manager_observation_.Reset();
 }
 
 void AndroidAppsHandler::OnAppRegistered(

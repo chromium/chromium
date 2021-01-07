@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -59,8 +59,9 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   std::string GetBodyTitle();
   std::string GetBodyText();
 
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_observer_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_observation_{this};
   DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
 
   base::OnceCallback<void(SigninInterceptionUserChoice)> callback_;

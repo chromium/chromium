@@ -63,11 +63,11 @@ void DiceWebSigninInterceptHandler::RegisterMessages() {
 void DiceWebSigninInterceptHandler::OnJavascriptAllowed() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
-  identity_observer_.Add(identity_manager);
+  identity_observation_.Observe(identity_manager);
 }
 
 void DiceWebSigninInterceptHandler::OnJavascriptDisallowed() {
-  identity_observer_.RemoveAll();
+  identity_observation_.Reset();
 }
 
 void DiceWebSigninInterceptHandler::OnExtendedAccountInfoUpdated(

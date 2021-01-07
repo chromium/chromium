@@ -159,10 +159,10 @@ SupervisedUserInternalsMessageHandler::GetSupervisedUserService() {
 void SupervisedUserInternalsMessageHandler::HandleRegisterForEvents(
     const base::ListValue* args) {
   DCHECK(args->empty());
-  if (scoped_observer_.IsObservingSources())
+  if (scoped_observation_.IsObserving())
     return;
 
-  scoped_observer_.Add(GetSupervisedUserService()->GetURLFilter());
+  scoped_observation_.Observe(GetSupervisedUserService()->GetURLFilter());
 }
 
 void SupervisedUserInternalsMessageHandler::HandleGetBasicInfo(

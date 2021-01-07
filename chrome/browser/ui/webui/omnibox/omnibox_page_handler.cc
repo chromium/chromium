@@ -200,10 +200,9 @@ struct TypeConverter<mojom::AutocompleteResultsForProviderPtr,
 OmniboxPageHandler::OmniboxPageHandler(
     Profile* profile,
     mojo::PendingReceiver<mojom::OmniboxPageHandler> receiver)
-    : profile_(profile),
-      receiver_(this, std::move(receiver)),
-      observer_(this) {
-  observer_.Add(OmniboxControllerEmitter::GetForBrowserContext(profile_));
+    : profile_(profile), receiver_(this, std::move(receiver)) {
+  observation_.Observe(
+      OmniboxControllerEmitter::GetForBrowserContext(profile_));
   ResetController();
 }
 

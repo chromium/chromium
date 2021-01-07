@@ -162,7 +162,7 @@ void PowerHandler::RegisterMessages() {
 
 void PowerHandler::OnJavascriptAllowed() {
   PowerManagerClient* power_manager_client = PowerManagerClient::Get();
-  power_manager_client_observer_.Add(power_manager_client);
+  power_manager_client_observation_.Observe(power_manager_client);
   power_manager_client->GetSwitchStates(base::BindOnce(
       &PowerHandler::OnGotSwitchStates, weak_ptr_factory_.GetWeakPtr()));
 
@@ -187,7 +187,7 @@ void PowerHandler::OnJavascriptAllowed() {
 }
 
 void PowerHandler::OnJavascriptDisallowed() {
-  power_manager_client_observer_.RemoveAll();
+  power_manager_client_observation_.Reset();
   pref_change_registrar_.reset();
 }
 

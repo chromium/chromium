@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/webui/settings/chromeos/calculator/size_calculator.h"
@@ -125,8 +126,9 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
 
   Profile* const profile_;
   const std::string source_name_;
-  ScopedObserver<arc::ArcSessionManager, arc::ArcSessionManagerObserver>
-      arc_observer_;
+  base::ScopedObservation<arc::ArcSessionManager,
+                          arc::ArcSessionManagerObserver>
+      arc_observation_{this};
   const re2::RE2 special_volume_path_pattern_;
 
   base::WeakPtrFactory<StorageHandler> weak_ptr_factory_{this};

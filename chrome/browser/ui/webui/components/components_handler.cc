@@ -34,11 +34,11 @@ void ComponentsHandler::RegisterMessages() {
 }
 
 void ComponentsHandler::OnJavascriptAllowed() {
-  observer_.Add(component_updater_);
+  observation_.Observe(component_updater_);
 }
 
 void ComponentsHandler::OnJavascriptDisallowed() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void ComponentsHandler::HandleRequestComponentsData(

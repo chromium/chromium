@@ -58,22 +58,25 @@ void ProfileInfoHandler::RegisterMessages() {
 }
 
 void ProfileInfoHandler::OnJavascriptAllowed() {
-  profile_observer_.Add(
+  profile_observation_.Observe(
       &g_browser_process->profile_manager()->GetProfileAttributesStorage());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_manager_observer_.Add(user_manager::UserManager::Get());
+  user_manager_observation_.Observe(user_manager::UserManager::Get());
 #endif
 }
 
 void ProfileInfoHandler::OnJavascriptDisallowed() {
   callback_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  profile_observer_.Remove(
-      &g_browser_process->profile_manager()->GetProfileAttributesStorage());
+  DCHECK(profile_observation_.IsObservingSource(
+      &g_browser_process->profile_manager()->GetProfileAttributesStorage()));
+  profile_observation_.Reset();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_manager_observer_.Remove(user_manager::UserManager::Get());
+  DCHECK(user_manager_observation_.IsObservingSource(
+      user_manager::UserManager::Get()));
+  user_manager_observation_.Reset();
 #endif
 }
 

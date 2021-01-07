@@ -70,11 +70,7 @@ MultideviceHandler::MultideviceHandler(
       multidevice_setup_client_(multidevice_setup_client),
       notification_access_manager_(notification_access_manager),
       android_sms_pairing_state_tracker_(android_sms_pairing_state_tracker),
-      android_sms_app_manager_(android_sms_app_manager),
-      multidevice_setup_observer_(this),
-      android_sms_pairing_state_tracker_observer_(this),
-      android_sms_app_manager_observer_(this),
-      notification_access_manager_observer_(this) {
+      android_sms_app_manager_(android_sms_app_manager) {
   pref_change_registrar_.Init(prefs_);
 }
 
@@ -133,18 +129,19 @@ void MultideviceHandler::RegisterMessages() {
 
 void MultideviceHandler::OnJavascriptAllowed() {
   if (multidevice_setup_client_)
-    multidevice_setup_observer_.Add(multidevice_setup_client_);
+    multidevice_setup_observation_.Observe(multidevice_setup_client_);
 
   if (notification_access_manager_)
-    notification_access_manager_observer_.Add(notification_access_manager_);
+    notification_access_manager_observation_.Observe(
+        notification_access_manager_);
 
   if (android_sms_pairing_state_tracker_) {
-    android_sms_pairing_state_tracker_observer_.Add(
+    android_sms_pairing_state_tracker_observation_.Observe(
         android_sms_pairing_state_tracker_);
   }
 
   if (android_sms_app_manager_)
-    android_sms_app_manager_observer_.Add(android_sms_app_manager_);
+    android_sms_app_manager_observation_.Observe(android_sms_app_manager_);
 
   pref_change_registrar_.Add(
       proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
@@ -161,21 +158,30 @@ void MultideviceHandler::OnJavascriptAllowed() {
 void MultideviceHandler::OnJavascriptDisallowed() {
   pref_change_registrar_.RemoveAll();
 
-  if (multidevice_setup_client_)
-    multidevice_setup_observer_.Remove(multidevice_setup_client_);
+  if (multidevice_setup_client_) {
+    DCHECK(multidevice_setup_observation_.IsObservingSource(
+        multidevice_setup_client_));
+    multidevice_setup_observation_.Reset();
+  }
 
   if (notification_access_manager_) {
-    notification_access_manager_observer_.Remove(notification_access_manager_);
+    DCHECK(notification_access_manager_observation_.IsObservingSource(
+        notification_access_manager_));
+    notification_access_manager_observation_.Reset();
     notification_access_operation_.reset();
   }
 
   if (android_sms_pairing_state_tracker_) {
-    android_sms_pairing_state_tracker_observer_.Remove(
-        android_sms_pairing_state_tracker_);
+    DCHECK(android_sms_pairing_state_tracker_observation_.IsObservingSource(
+        android_sms_pairing_state_tracker_));
+    android_sms_pairing_state_tracker_observation_.Reset();
   }
 
-  if (android_sms_app_manager_)
-    android_sms_app_manager_observer_.Remove(android_sms_app_manager_);
+  if (android_sms_app_manager_) {
+    DCHECK(android_sms_app_manager_observation_.IsObservingSource(
+        android_sms_app_manager_));
+    android_sms_app_manager_observation_.Reset();
+  }
 
   // Ensure that pending callbacks do not complete and cause JS to be evaluated.
   callback_weak_ptr_factory_.InvalidateWeakPtrs();

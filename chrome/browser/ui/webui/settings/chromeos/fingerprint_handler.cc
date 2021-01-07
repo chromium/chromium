@@ -105,13 +105,13 @@ void FingerprintHandler::RegisterMessages() {
 void FingerprintHandler::OnJavascriptAllowed() {
   // SessionManager may not exist in some tests.
   if (SessionManager::Get())
-    session_observer_.Add(SessionManager::Get());
+    session_observation_.Observe(SessionManager::Get());
 
   fp_service_->AddFingerprintObserver(receiver_.BindNewPipeAndPassRemote());
 }
 
 void FingerprintHandler::OnJavascriptDisallowed() {
-  session_observer_.RemoveAll();
+  session_observation_.Reset();
   receiver_.reset();
 }
 

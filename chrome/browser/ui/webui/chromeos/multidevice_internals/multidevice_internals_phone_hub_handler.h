@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_INTERNALS_MULTIDEVICE_INTERNALS_PHONE_HUB_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_INTERNALS_MULTIDEVICE_INTERNALS_PHONE_HUB_HANDLER_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chromeos/components/phonehub/do_not_disturb_controller.h"
 #include "chromeos/components/phonehub/find_my_device_controller.h"
 #include "chromeos/components/phonehub/notification_manager.h"
@@ -79,21 +79,21 @@ class MultidevicePhoneHubHandler
   void RemoveObservers();
 
   std::unique_ptr<phonehub::FakePhoneHubManager> fake_phone_hub_manager_;
-  ScopedObserver<phonehub::NotificationManager,
-                 phonehub::NotificationManager::Observer>
-      notification_manager_observer_{this};
-  ScopedObserver<phonehub::DoNotDisturbController,
-                 phonehub::DoNotDisturbController::Observer>
-      do_not_disturb_controller_observer_{this};
-  ScopedObserver<phonehub::FindMyDeviceController,
-                 phonehub::FindMyDeviceController::Observer>
-      find_my_device_controller_oberserver_{this};
-  ScopedObserver<phonehub::TetherController,
-                 phonehub::TetherController::Observer>
-      tether_controller_observer_{this};
-  ScopedObserver<phonehub::OnboardingUiTracker,
-                 phonehub::OnboardingUiTracker::Observer>
-      onboarding_ui_tracker_observer_{this};
+  base::ScopedObservation<phonehub::NotificationManager,
+                          phonehub::NotificationManager::Observer>
+      notification_manager_observation_{this};
+  base::ScopedObservation<phonehub::DoNotDisturbController,
+                          phonehub::DoNotDisturbController::Observer>
+      do_not_disturb_controller_observation_{this};
+  base::ScopedObservation<phonehub::FindMyDeviceController,
+                          phonehub::FindMyDeviceController::Observer>
+      find_my_device_controller_observation_{this};
+  base::ScopedObservation<phonehub::TetherController,
+                          phonehub::TetherController::Observer>
+      tether_controller_observation_{this};
+  base::ScopedObservation<phonehub::OnboardingUiTracker,
+                          phonehub::OnboardingUiTracker::Observer>
+      onboarding_ui_tracker_observation_{this};
 };
 
 }  // namespace multidevice

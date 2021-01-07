@@ -65,7 +65,7 @@ bool IsTimezoneAutomaticDetectionUserEditable() {
 
 }  // namespace
 
-DateTimeHandler::DateTimeHandler() : scoped_observer_(this) {}
+DateTimeHandler::DateTimeHandler() {}
 
 DateTimeHandler::~DateTimeHandler() = default;
 
@@ -89,7 +89,7 @@ void DateTimeHandler::RegisterMessages() {
 
 void DateTimeHandler::OnJavascriptAllowed() {
   SystemClockClient* system_clock_client = SystemClockClient::Get();
-  scoped_observer_.Add(system_clock_client);
+  scoped_observation_.Observe(system_clock_client);
   SystemClockCanSetTimeChanged(system_clock_client->CanSetTime());
 
   // The system time zone policy disables auto-detection entirely. (However,
@@ -111,7 +111,7 @@ void DateTimeHandler::OnJavascriptAllowed() {
 }
 
 void DateTimeHandler::OnJavascriptDisallowed() {
-  scoped_observer_.RemoveAll();
+  scoped_observation_.Reset();
   system_timezone_policy_subscription_ = {};
   local_state_pref_change_registrar_.RemoveAll();
 }

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/chromeos/usb/cros_usb_detector.h"
@@ -57,11 +57,11 @@ class PluginVmHandler : public ::settings::SettingsPageUIHandler,
                                    const std::string& failure_reason);
 
   Profile* profile_;
-  ScopedObserver<CrosUsbDetector,
-                 CrosUsbDeviceObserver,
-                 &CrosUsbDetector::AddUsbDeviceObserver,
-                 &CrosUsbDetector::RemoveUsbDeviceObserver>
-      cros_usb_device_observer_{this};
+  base::ScopedObservation<CrosUsbDetector,
+                          CrosUsbDeviceObserver,
+                          &CrosUsbDetector::AddUsbDeviceObserver,
+                          &CrosUsbDetector::RemoveUsbDeviceObserver>
+      cros_usb_device_observation_{this};
   // weak_ptr_factory_ should always be last member.
   base::WeakPtrFactory<PluginVmHandler> weak_ptr_factory_{this};
 

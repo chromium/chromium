@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_DEVICE_KEYBOARD_HANDLER_H_
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
@@ -68,8 +68,8 @@ class KeyboardHandler
   // Sends the UI a message about whether hardware keyboard are attached.
   void UpdateKeyboards();
 
-  ScopedObserver<ui::DeviceDataManager, ui::InputDeviceEventObserver> observer_{
-      this};
+  base::ScopedObservation<ui::DeviceDataManager, ui::InputDeviceEventObserver>
+      observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(KeyboardHandler);
 };

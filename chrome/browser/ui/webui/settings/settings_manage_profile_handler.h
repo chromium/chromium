@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
@@ -91,8 +91,9 @@ class ManageProfileHandler : public settings::SettingsPageUIHandler,
   Profile* profile_;
 
   // Used to observe profile avatar updates.
-  ScopedObserver<ProfileAttributesStorage, ProfileAttributesStorage::Observer>
-      observer_{this};
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      observation_{this};
 
   // For generating weak pointers to itself for callbacks.
   base::WeakPtrFactory<ManageProfileHandler> weak_factory_{this};

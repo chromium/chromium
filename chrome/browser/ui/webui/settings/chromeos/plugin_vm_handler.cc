@@ -76,12 +76,12 @@ void PluginVmHandler::RegisterMessages() {
 
 void PluginVmHandler::OnJavascriptAllowed() {
   if (auto* detector = chromeos::CrosUsbDetector::Get()) {
-    cros_usb_device_observer_.Add(detector);
+    cros_usb_device_observation_.Observe(detector);
   }
 }
 
 void PluginVmHandler::OnJavascriptDisallowed() {
-  cros_usb_device_observer_.RemoveAll();
+  cros_usb_device_observation_.Reset();
 }
 
 void PluginVmHandler::HandleGetPluginVmSharedPathsDisplayText(

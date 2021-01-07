@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_app_manager.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -137,18 +137,19 @@ class MultideviceHandler
       android_sms_pairing_state_tracker_;
   android_sms::AndroidSmsAppManager* android_sms_app_manager_;
 
-  ScopedObserver<multidevice_setup::MultiDeviceSetupClient,
-                 multidevice_setup::MultiDeviceSetupClient::Observer>
-      multidevice_setup_observer_;
-  ScopedObserver<multidevice_setup::AndroidSmsPairingStateTracker,
-                 multidevice_setup::AndroidSmsPairingStateTracker::Observer>
-      android_sms_pairing_state_tracker_observer_;
-  ScopedObserver<android_sms::AndroidSmsAppManager,
-                 android_sms::AndroidSmsAppManager::Observer>
-      android_sms_app_manager_observer_;
-  ScopedObserver<phonehub::NotificationAccessManager,
-                 phonehub::NotificationAccessManager::Observer>
-      notification_access_manager_observer_;
+  base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
+                          multidevice_setup::MultiDeviceSetupClient::Observer>
+      multidevice_setup_observation_{this};
+  base::ScopedObservation<
+      multidevice_setup::AndroidSmsPairingStateTracker,
+      multidevice_setup::AndroidSmsPairingStateTracker::Observer>
+      android_sms_pairing_state_tracker_observation_{this};
+  base::ScopedObservation<android_sms::AndroidSmsAppManager,
+                          android_sms::AndroidSmsAppManager::Observer>
+      android_sms_app_manager_observation_{this};
+  base::ScopedObservation<phonehub::NotificationAccessManager,
+                          phonehub::NotificationAccessManager::Observer>
+      notification_access_manager_observation_{this};
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
   base::WeakPtrFactory<MultideviceHandler> callback_weak_ptr_factory_{this};

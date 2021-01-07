@@ -82,11 +82,11 @@ void KeyboardHandler::RegisterMessages() {
 }
 
 void KeyboardHandler::OnJavascriptAllowed() {
-  observer_.Add(ui::DeviceDataManager::GetInstance());
+  observation_.Observe(ui::DeviceDataManager::GetInstance());
 }
 
 void KeyboardHandler::OnJavascriptDisallowed() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void KeyboardHandler::OnInputDeviceConfigurationChanged(

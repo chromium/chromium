@@ -178,7 +178,7 @@ NTPResourceCache::NTPResourceCache(Profile* profile)
   profile_pref_change_registrar_.Add(prefs::kHideWebStoreIcon, callback);
   profile_pref_change_registrar_.Add(prefs::kCookieControlsMode, callback);
 
-  theme_observer_.Add(ui::NativeTheme::GetInstanceForNativeUi());
+  theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 
   policy_change_registrar_ = std::make_unique<policy::PolicyChangeRegistrar>(
       profile->GetProfilePolicyConnector()->policy_service(),

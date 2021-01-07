@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_service.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_service_observer.h"
 #include "content/public/browser/url_data_source.h"
@@ -79,8 +79,8 @@ class UntrustedSource : public content::URLDataSource,
   std::vector<content::URLDataSource::GotDataCallback>
       one_google_bar_callbacks_;
   OneGoogleBarService* one_google_bar_service_;
-  ScopedObserver<OneGoogleBarService, OneGoogleBarServiceObserver>
-      one_google_bar_service_observer_{this};
+  base::ScopedObservation<OneGoogleBarService, OneGoogleBarServiceObserver>
+      one_google_bar_service_observation_{this};
   base::Optional<base::TimeTicks> one_google_bar_load_start_time_;
   Profile* profile_;
 };

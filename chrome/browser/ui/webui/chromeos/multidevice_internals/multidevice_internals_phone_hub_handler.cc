@@ -205,51 +205,24 @@ void MultidevicePhoneHubHandler::OnJavascriptDisallowed() {
 }
 
 void MultidevicePhoneHubHandler::AddObservers() {
-  notification_manager_observer_.Add(
+  notification_manager_observation_.Observe(
       fake_phone_hub_manager_->fake_notification_manager());
-  do_not_disturb_controller_observer_.Add(
+  do_not_disturb_controller_observation_.Observe(
       fake_phone_hub_manager_->fake_do_not_disturb_controller());
-  find_my_device_controller_oberserver_.Add(
+  find_my_device_controller_observation_.Observe(
       fake_phone_hub_manager_->fake_find_my_device_controller());
-  tether_controller_observer_.Add(
+  tether_controller_observation_.Observe(
       fake_phone_hub_manager_->fake_tether_controller());
-  onboarding_ui_tracker_observer_.Add(
+  onboarding_ui_tracker_observation_.Observe(
       fake_phone_hub_manager_->fake_onboarding_ui_tracker());
 }
 
 void MultidevicePhoneHubHandler::RemoveObservers() {
-  phonehub::FakeNotificationManager* fake_notification_manager =
-      fake_phone_hub_manager_->fake_notification_manager();
-  if (notification_manager_observer_.IsObserving(fake_notification_manager)) {
-    notification_manager_observer_.Remove(fake_notification_manager);
-  }
-
-  phonehub::FakeDoNotDisturbController* fake_do_not_disturb_controller =
-      fake_phone_hub_manager_->fake_do_not_disturb_controller();
-  if (do_not_disturb_controller_observer_.IsObserving(
-          fake_do_not_disturb_controller)) {
-    do_not_disturb_controller_observer_.Remove(fake_do_not_disturb_controller);
-  }
-
-  phonehub::FakeFindMyDeviceController* fake_find_my_device_controller =
-      fake_phone_hub_manager_->fake_find_my_device_controller();
-  if (find_my_device_controller_oberserver_.IsObserving(
-          fake_find_my_device_controller)) {
-    find_my_device_controller_oberserver_.Remove(
-        fake_find_my_device_controller);
-  }
-
-  phonehub::FakeTetherController* fake_tether_controller =
-      fake_phone_hub_manager_->fake_tether_controller();
-  if (tether_controller_observer_.IsObserving(fake_tether_controller)) {
-    tether_controller_observer_.Remove(fake_tether_controller);
-  }
-
-  phonehub::OnboardingUiTracker* fake_onboarding_ui_tracker =
-      fake_phone_hub_manager_->fake_onboarding_ui_tracker();
-  if (onboarding_ui_tracker_observer_.IsObserving(fake_onboarding_ui_tracker)) {
-    onboarding_ui_tracker_observer_.Remove(fake_onboarding_ui_tracker);
-  }
+  notification_manager_observation_.Reset();
+  do_not_disturb_controller_observation_.Reset();
+  find_my_device_controller_observation_.Reset();
+  tether_controller_observation_.Reset();
+  onboarding_ui_tracker_observation_.Reset();
 }
 
 void MultidevicePhoneHubHandler::OnNotificationsRemoved(

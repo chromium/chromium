@@ -96,14 +96,14 @@ void NearbyInternalsHttpHandler::OnJavascriptAllowed() {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (service_) {
-    observer_.Add(service_->GetHttpNotifier());
+    observation_.Observe(service_->GetHttpNotifier());
   } else {
     NS_LOG(ERROR) << "No NearbyShareService instance to call.";
   }
 }
 
 void NearbyInternalsHttpHandler::OnJavascriptDisallowed() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void NearbyInternalsHttpHandler::InitializeContents(

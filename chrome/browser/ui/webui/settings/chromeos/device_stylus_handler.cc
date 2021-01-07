@@ -60,13 +60,13 @@ void StylusHandler::RegisterMessages() {
 }
 
 void StylusHandler::OnJavascriptAllowed() {
-  note_observer_.Add(NoteTakingHelper::Get());
-  input_observer_.Add(ui::DeviceDataManager::GetInstance());
+  note_observation_.Observe(NoteTakingHelper::Get());
+  input_observation_.Observe(ui::DeviceDataManager::GetInstance());
 }
 
 void StylusHandler::OnJavascriptDisallowed() {
-  note_observer_.RemoveAll();
-  input_observer_.RemoveAll();
+  note_observation_.Reset();
+  input_observation_.Reset();
 }
 
 void StylusHandler::OnAvailableNoteTakingAppsUpdated() {

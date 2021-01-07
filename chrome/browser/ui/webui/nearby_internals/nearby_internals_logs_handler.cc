@@ -31,7 +31,7 @@ base::Value LogMessageToDictionary(const LogBuffer::LogMessage& log_message) {
 }
 }  // namespace
 
-NearbyInternalsLogsHandler::NearbyInternalsLogsHandler() : observer_(this) {}
+NearbyInternalsLogsHandler::NearbyInternalsLogsHandler() {}
 
 NearbyInternalsLogsHandler::~NearbyInternalsLogsHandler() = default;
 
@@ -43,11 +43,11 @@ void NearbyInternalsLogsHandler::RegisterMessages() {
 }
 
 void NearbyInternalsLogsHandler::OnJavascriptAllowed() {
-  observer_.Add(LogBuffer::GetInstance());
+  observation_.Observe(LogBuffer::GetInstance());
 }
 
 void NearbyInternalsLogsHandler::OnJavascriptDisallowed() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void NearbyInternalsLogsHandler::HandleGetLogMessages(

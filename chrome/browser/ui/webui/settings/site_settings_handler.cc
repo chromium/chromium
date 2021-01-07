@@ -539,15 +539,15 @@ void SiteSettingsHandler::OnJavascriptAllowed() {
 }
 
 void SiteSettingsHandler::OnJavascriptDisallowed() {
-  observer_.RemoveAll();
-  chooser_observer_.RemoveAll();
+  observations_.RemoveAllObservations();
+  chooser_observations_.RemoveAllObservations();
   host_zoom_map_subscription_ = {};
   pref_change_registrar_->Remove(prefs::kBlockAutoplayEnabled);
   pref_change_registrar_->Remove(prefs::kCookieControlsMode);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   pref_change_registrar_->Remove(prefs::kEnableDRM);
 #endif
-  observed_profiles_.RemoveAll();
+  observed_profiles_.RemoveAllObservations();
 }
 
 void SiteSettingsHandler::OnGetUsageInfo() {
@@ -1436,58 +1436,58 @@ void SiteSettingsHandler::EnsureCookiesTreeModelCreated() {
 
 void SiteSettingsHandler::ObserveSourcesForProfile(Profile* profile) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile);
-  if (!observer_.IsObserving(map))
-    observer_.Add(map);
+  if (!observations_.IsObservingSource(map))
+    observations_.AddObservation(map);
 
   auto* usb_context = UsbChooserContextFactory::GetForProfile(profile);
-  if (!chooser_observer_.IsObserving(usb_context))
-    chooser_observer_.Add(usb_context);
+  if (!chooser_observations_.IsObservingSource(usb_context))
+    chooser_observations_.AddObservation(usb_context);
 
   auto* serial_context = SerialChooserContextFactory::GetForProfile(profile);
-  if (!chooser_observer_.IsObserving(serial_context))
-    chooser_observer_.Add(serial_context);
+  if (!chooser_observations_.IsObservingSource(serial_context))
+    chooser_observations_.AddObservation(serial_context);
 
   auto* hid_context = HidChooserContextFactory::GetForProfile(profile);
-  if (!chooser_observer_.IsObserving(hid_context))
-    chooser_observer_.Add(hid_context);
+  if (!chooser_observations_.IsObservingSource(hid_context))
+    chooser_observations_.AddObservation(hid_context);
 
   if (base::FeatureList::IsEnabled(
           features::kWebBluetoothNewPermissionsBackend)) {
     auto* bluetooth_context =
         BluetoothChooserContextFactory::GetForProfile(profile);
-    if (!chooser_observer_.IsObserving(bluetooth_context))
-      chooser_observer_.Add(bluetooth_context);
+    if (!chooser_observations_.IsObservingSource(bluetooth_context))
+      chooser_observations_.AddObservation(bluetooth_context);
   }
 
-  observed_profiles_.Add(profile);
+  observed_profiles_.AddObservation(profile);
 }
 
 void SiteSettingsHandler::StopObservingSourcesForProfile(Profile* profile) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile);
-  if (observer_.IsObserving(map))
-    observer_.Remove(map);
+  if (observations_.IsObservingSource(map))
+    observations_.RemoveObservation(map);
 
   auto* usb_context = UsbChooserContextFactory::GetForProfile(profile);
-  if (chooser_observer_.IsObserving(usb_context))
-    chooser_observer_.Remove(usb_context);
+  if (chooser_observations_.IsObservingSource(usb_context))
+    chooser_observations_.RemoveObservation(usb_context);
 
   auto* serial_context = SerialChooserContextFactory::GetForProfile(profile);
-  if (chooser_observer_.IsObserving(serial_context))
-    chooser_observer_.Remove(serial_context);
+  if (chooser_observations_.IsObservingSource(serial_context))
+    chooser_observations_.RemoveObservation(serial_context);
 
   auto* hid_context = HidChooserContextFactory::GetForProfile(profile);
-  if (chooser_observer_.IsObserving(hid_context))
-    chooser_observer_.Remove(hid_context);
+  if (chooser_observations_.IsObservingSource(hid_context))
+    chooser_observations_.RemoveObservation(hid_context);
 
   if (base::FeatureList::IsEnabled(
           features::kWebBluetoothNewPermissionsBackend)) {
     auto* bluetooth_context =
         BluetoothChooserContextFactory::GetForProfile(profile);
-    if (chooser_observer_.IsObserving(bluetooth_context))
-      chooser_observer_.Remove(bluetooth_context);
+    if (chooser_observations_.IsObservingSource(bluetooth_context))
+      chooser_observations_.RemoveObservation(bluetooth_context);
   }
 
-  observed_profiles_.Remove(profile);
+  observed_profiles_.RemoveObservation(profile);
 }
 
 void SiteSettingsHandler::TreeNodesAdded(ui::TreeModel* model,

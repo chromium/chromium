@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
 #include "chrome/browser/chromeos/printing/printer_event_tracker.h"
@@ -264,8 +264,8 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   std::unique_ptr<ServerPrintersFetcher> server_printers_fetcher_;
 
-  ScopedObserver<CupsPrintersManager, CupsPrintersManager::Observer>
-      printers_manager_observer_;
+  base::ScopedObservation<CupsPrintersManager, CupsPrintersManager::Observer>
+      printers_manager_observation_{this};
 
   base::WeakPtrFactory<CupsPrintersHandler> weak_factory_{this};
 

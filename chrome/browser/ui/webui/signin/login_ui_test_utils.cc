@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -442,9 +442,10 @@ bool SignInWithUI(Browser* browser,
   return false;
 #else
   SignInObserver signin_observer;
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      scoped_signin_observer(&signin_observer);
-  scoped_signin_observer.Add(
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      scoped_signin_observation(&signin_observer);
+  scoped_signin_observation.Observe(
       IdentityManagerFactory::GetForProfile(browser->profile()));
 
   signin_metrics::AccessPoint access_point =
@@ -467,9 +468,9 @@ bool DismissSyncConfirmationDialog(Browser* browser,
                                    base::TimeDelta timeout,
                                    SyncConfirmationDialogAction action) {
   SyncConfirmationClosedObserver confirmation_closed_observer;
-  ScopedObserver<LoginUIService, LoginUIService::Observer>
-      scoped_confirmation_closed_observer(&confirmation_closed_observer);
-  scoped_confirmation_closed_observer.Add(
+  base::ScopedObservation<LoginUIService, LoginUIService::Observer>
+      scoped_confirmation_closed_observation(&confirmation_closed_observer);
+  scoped_confirmation_closed_observation.Observe(
       LoginUIServiceFactory::GetForProfile(browser->profile()));
 
   const base::Time expire_time = base::Time::Now() + timeout;

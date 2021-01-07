@@ -105,9 +105,9 @@ void QueryTilesInternalsUIMessageHandler::OnTileDataAvailable(
 }
 
 void QueryTilesInternalsUIMessageHandler::OnJavascriptAllowed() {
-  logger_observer_.Add(tile_service_->GetLogger());
+  logger_observation_.Observe(tile_service_->GetLogger());
 }
 
 void QueryTilesInternalsUIMessageHandler::OnJavascriptDisallowed() {
-  logger_observer_.RemoveAll();
+  logger_observation_.Reset();
 }

@@ -332,20 +332,20 @@ void PeopleHandler::OnJavascriptAllowed() {
   signin::IdentityManager* identity_manager(
       IdentityManagerFactory::GetInstance()->GetForProfile(profile_));
   if (identity_manager)
-    identity_manager_observer_.Add(identity_manager);
+    identity_manager_observation_.Observe(identity_manager);
 
   // This is intentionally not using GetSyncService(), to go around the
   // Profile::IsSyncAllowed() check.
   syncer::SyncService* sync_service =
       ProfileSyncServiceFactory::GetForProfile(profile_);
   if (sync_service)
-    sync_service_observer_.Add(sync_service);
+    sync_service_observation_.Observe(sync_service);
 }
 
 void PeopleHandler::OnJavascriptDisallowed() {
   profile_pref_registrar_.RemoveAll();
-  identity_manager_observer_.RemoveAll();
-  sync_service_observer_.RemoveAll();
+  identity_manager_observation_.Reset();
+  sync_service_observation_.Reset();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

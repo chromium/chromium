@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_THEME_HANDLER_H_
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -54,8 +54,8 @@ class ThemeHandler : public content::WebUIMessageHandler,
 
   content::NotificationRegistrar registrar_;
 
-  ScopedObserver<ui::NativeTheme, ui::NativeThemeObserver> theme_observer_{
-      this};
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      theme_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ThemeHandler);
 };

@@ -48,11 +48,11 @@ ProtocolHandlersHandler::ProtocolHandlersHandler() = default;
 ProtocolHandlersHandler::~ProtocolHandlersHandler() = default;
 
 void ProtocolHandlersHandler::OnJavascriptAllowed() {
-  registry_observer_.Add(GetProtocolHandlerRegistry());
+  registry_observation_.Observe(GetProtocolHandlerRegistry());
 }
 
 void ProtocolHandlersHandler::OnJavascriptDisallowed() {
-  registry_observer_.RemoveAll();
+  registry_observation_.Reset();
 }
 
 void ProtocolHandlersHandler::RegisterMessages() {

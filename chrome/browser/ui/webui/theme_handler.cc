@@ -40,12 +40,12 @@ void ThemeHandler::OnJavascriptAllowed() {
                  content::Source<ThemeService>(
                      ThemeServiceFactory::GetForProfile(GetProfile())));
   // Or native theme change.
-  theme_observer_.Add(ui::NativeTheme::GetInstanceForNativeUi());
+  theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 }
 
 void ThemeHandler::OnJavascriptDisallowed() {
   registrar_.RemoveAll();
-  theme_observer_.RemoveAll();
+  theme_observation_.Reset();
 }
 
 void ThemeHandler::Observe(int type,

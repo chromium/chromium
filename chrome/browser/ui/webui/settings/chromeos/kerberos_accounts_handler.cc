@@ -394,11 +394,11 @@ void KerberosAccountsHandler::HandleSetAsActiveKerberosAccount(
 }
 
 void KerberosAccountsHandler::OnJavascriptAllowed() {
-  credentials_manager_observer_.Add(kerberos_credentials_manager_);
+  credentials_manager_observation_.Observe(kerberos_credentials_manager_);
 }
 
 void KerberosAccountsHandler::OnJavascriptDisallowed() {
-  credentials_manager_observer_.RemoveAll();
+  credentials_manager_observation_.Reset();
 }
 
 void KerberosAccountsHandler::OnAccountsChanged() {

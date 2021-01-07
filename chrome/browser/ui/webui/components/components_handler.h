@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/update_client/update_client.h"
@@ -53,9 +53,9 @@ class ComponentsHandler : public content::WebUIMessageHandler,
   // Weak pointer; injected for testing.
   component_updater::ComponentUpdateService* const component_updater_;
 
-  ScopedObserver<component_updater::ComponentUpdateService,
-                 component_updater::ComponentUpdateService::Observer>
-      observer_{this};
+  base::ScopedObservation<component_updater::ComponentUpdateService,
+                          component_updater::ComponentUpdateService::Observer>
+      observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_COMPONENTS_COMPONENTS_HANDLER_H_

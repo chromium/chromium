@@ -69,15 +69,17 @@ void OobeDisplayChooser::MaybeMoveToTouchDisplay() {
   if (device_data_manager->AreDeviceListsComplete() &&
       device_data_manager->AreTouchscreenTargetDisplaysValid()) {
     MoveToTouchDisplay();
-  } else if (!scoped_observer_.IsObserving(device_data_manager)) {
-    scoped_observer_.Add(device_data_manager);
+  } else if (!scoped_observation_.IsObserving()) {
+    scoped_observation_.Observe(device_data_manager);
+  } else {
+    DCHECK(scoped_observation_.IsObservingSource(device_data_manager));
   }
 }
 
 void OobeDisplayChooser::MoveToTouchDisplay() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  scoped_observer_.RemoveAll();
+  scoped_observation_.Reset();
 
   const ui::DeviceDataManager* device_data_manager =
       ui::DeviceDataManager::GetInstance();

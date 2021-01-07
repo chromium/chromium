@@ -582,7 +582,7 @@ void AppLauncherHandler::OnWebAppWillBeUninstalled(
 }
 
 void AppLauncherHandler::OnAppRegistrarDestroyed() {
-  web_apps_observer_.RemoveAll();
+  web_apps_observation_.Reset();
 }
 
 void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
@@ -711,7 +711,7 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
     registrar_.Add(this, chrome::NOTIFICATION_APP_LAUNCHER_REORDERED,
                    content::Source<AppSorting>(
                        ExtensionSystem::Get(profile)->app_sorting()));
-    web_apps_observer_.Add(&web_app_provider_->registrar());
+    web_apps_observation_.Observe(&web_app_provider_->registrar());
   }
 
   has_loaded_apps_ = true;

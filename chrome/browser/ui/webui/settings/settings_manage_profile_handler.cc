@@ -86,12 +86,12 @@ void ManageProfileHandler::RegisterMessages() {
 }
 
 void ManageProfileHandler::OnJavascriptAllowed() {
-  observer_.Add(
+  observation_.Observe(
       &g_browser_process->profile_manager()->GetProfileAttributesStorage());
 }
 
 void ManageProfileHandler::OnJavascriptDisallowed() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void ManageProfileHandler::OnProfileHighResAvatarLoaded(

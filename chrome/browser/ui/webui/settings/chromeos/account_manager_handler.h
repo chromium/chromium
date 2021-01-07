@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_id/account_id.h"
@@ -104,13 +104,14 @@ class AccountManagerUIHandler : public ::settings::SettingsPageUIHandler,
 
   // An observer for |AccountManager|. Automatically deregisters when |this| is
   // destructed.
-  ScopedObserver<AccountManager, AccountManager::Observer>
-      account_manager_observer_;
+  base::ScopedObservation<AccountManager, AccountManager::Observer>
+      account_manager_observation_{this};
 
   // An observer for |signin::IdentityManager|. Automatically deregisters when
   // |this| is destructed.
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   base::WeakPtrFactory<AccountManagerUIHandler> weak_factory_{this};
 

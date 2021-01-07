@@ -16,7 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -139,9 +139,9 @@ class NetExportMessageHandler
   // Cached pointer to SystemNetworkContextManager's NetExportFileWriter.
   net_log::NetExportFileWriter* file_writer_;
 
-  ScopedObserver<net_log::NetExportFileWriter,
-                 net_log::NetExportFileWriter::StateObserver>
-      state_observer_manager_;
+  base::ScopedObservation<net_log::NetExportFileWriter,
+                          net_log::NetExportFileWriter::StateObserver>
+      state_observation_manager_{this};
 
   // The capture mode and file size bound that the user chose in the UI when
   // logging started is cached here and is read after a file path is chosen in
@@ -159,8 +159,7 @@ class NetExportMessageHandler
 
 NetExportMessageHandler::NetExportMessageHandler()
     : file_writer_(g_browser_process->system_network_context_manager()
-                       ->GetNetExportFileWriter()),
-      state_observer_manager_(this) {
+                       ->GetNetExportFileWriter()) {
   file_writer_->Initialize();
 }
 
@@ -204,8 +203,8 @@ void NetExportMessageHandler::RegisterMessages() {
 void NetExportMessageHandler::OnEnableNotifyUIWithState(
     const base::ListValue* list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!state_observer_manager_.IsObservingSources()) {
-    state_observer_manager_.Add(file_writer_);
+  if (!state_observation_manager_.IsObserving()) {
+    state_observation_manager_.Observe(file_writer_);
   }
   NotifyUIWithState(file_writer_->GetState());
 }

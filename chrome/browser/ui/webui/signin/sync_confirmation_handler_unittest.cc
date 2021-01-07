@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/values.h"
@@ -75,8 +75,7 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
       : did_user_explicitly_interact_(false),
         on_sync_confirmation_ui_closed_called_(false),
         sync_confirmation_ui_closed_result_(LoginUIService::ABORT_SYNC),
-        web_ui_(new content::TestWebUI),
-        login_ui_service_observer_(this) {}
+        web_ui_(new content::TestWebUI) {}
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -94,12 +93,12 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     account_info_ =
         identity_test_env()->MakePrimaryAccountAvailable("foo@example.com");
-    login_ui_service_observer_.Add(
+    login_ui_service_observation_.Observe(
         LoginUIServiceFactory::GetForProfile(profile()));
   }
 
   void TearDown() override {
-    login_ui_service_observer_.RemoveAll();
+    login_ui_service_observation_.Reset();
     sync_confirmation_ui_.reset();
     web_ui_.reset();
     identity_test_env_adaptor_.reset();
@@ -200,8 +199,8 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
   TestingSyncConfirmationHandler* handler_;  // Not owned.
   base::UserActionTester user_action_tester_;
   std::unordered_map<std::string, int> string_to_grd_id_map_;
-  ScopedObserver<LoginUIService, LoginUIService::Observer>
-      login_ui_service_observer_;
+  base::ScopedObservation<LoginUIService, LoginUIService::Observer>
+      login_ui_service_observation_{this};
   base::HistogramTester histogram_tester_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;

@@ -169,9 +169,9 @@ CertificateProvisioningUiHandler::CertificateProvisioningUiHandler(
                                 ? scheduler_for_device
                                 : nullptr) {
   if (scheduler_for_user_)
-    observed_schedulers_.Add(scheduler_for_user_);
+    observed_schedulers_.AddObservation(scheduler_for_user_);
   if (scheduler_for_device_)
-    observed_schedulers_.Add(scheduler_for_device_);
+    observed_schedulers_.AddObservation(scheduler_for_device_);
 }
 
 CertificateProvisioningUiHandler::~CertificateProvisioningUiHandler() = default;

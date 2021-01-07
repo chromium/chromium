@@ -77,7 +77,6 @@ ClearBrowsingDataHandler::ClearBrowsingDataHandler(content::WebUI* webui,
                                                    Profile* profile)
     : profile_(profile),
       sync_service_(ProfileSyncServiceFactory::GetForProfile(profile_)),
-      sync_service_observer_(this),
       show_history_deletion_dialog_(false) {}
 
 ClearBrowsingDataHandler::~ClearBrowsingDataHandler() {
@@ -102,7 +101,7 @@ void ClearBrowsingDataHandler::RegisterMessages() {
 
 void ClearBrowsingDataHandler::OnJavascriptAllowed() {
   if (sync_service_)
-    sync_service_observer_.Add(sync_service_);
+    sync_service_observation_.Observe(sync_service_);
 
   DCHECK(counters_.empty());
   for (const std::string& pref : kCounterPrefsBasic) {
@@ -127,7 +126,7 @@ void ClearBrowsingDataHandler::OnJavascriptAllowed() {
 }
 
 void ClearBrowsingDataHandler::OnJavascriptDisallowed() {
-  sync_service_observer_.RemoveAll();
+  sync_service_observation_.Reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
   counters_.clear();
   period_.reset();

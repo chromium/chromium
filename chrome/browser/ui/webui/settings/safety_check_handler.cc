@@ -400,11 +400,11 @@ void SafetyCheckHandler::CheckPasswords() {
   // registered. This takes care of an edge case when safety check starts twice
   // on the same page. Normally this should not happen, but if it does, the
   // browser should not crash.
-  observed_leak_check_.RemoveAll();
-  observed_leak_check_.Add(leak_service_);
+  observed_leak_check_.Reset();
+  observed_leak_check_.Observe(leak_service_);
   // Start observing the InsecureCredentialsManager.
-  observed_insecure_credentials_manager_.RemoveAll();
-  observed_insecure_credentials_manager_.Add(insecure_credentials_manager_);
+  observed_insecure_credentials_manager_.Reset();
+  observed_insecure_credentials_manager_.Observe(insecure_credentials_manager_);
   passwords_delegate_->StartPasswordCheck(base::BindOnce(
       &SafetyCheckHandler::OnStateChanged, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -888,7 +888,7 @@ void SafetyCheckHandler::UpdatePasswordsResultOnCheckIdle() {
     // need to wait for InsecureCredentialsManager callbacks any longer, since
     // there should be none for the current password check.
     if (!compromised_passwords_exist_) {
-      observed_insecure_credentials_manager_.RemoveAll();
+      observed_insecure_credentials_manager_.Reset();
     }
     passwords_delegate_->GetSavedPasswordsList(
         base::BindOnce(&SafetyCheckHandler::DetermineIfNoPasswordsOrSafe,
@@ -942,7 +942,7 @@ void SafetyCheckHandler::OnStateChanged(
     case BulkLeakCheckService::State::kIdle:
     case BulkLeakCheckService::State::kCanceled: {
       UpdatePasswordsResultOnCheckIdle();
-      observed_leak_check_.RemoveAll();
+      observed_leak_check_.Reset();
       return;
     }
     case BulkLeakCheckService::State::kRunning:
@@ -975,8 +975,8 @@ void SafetyCheckHandler::OnStateChanged(
 
   // Stop observing the leak service and credentials manager in all non-idle
   // states.
-  observed_leak_check_.RemoveAll();
-  observed_insecure_credentials_manager_.RemoveAll();
+  observed_leak_check_.Reset();
+  observed_insecure_credentials_manager_.Reset();
 }
 
 void SafetyCheckHandler::OnCredentialDone(
@@ -1011,7 +1011,7 @@ void SafetyCheckHandler::OnCompromisedCredentialsChanged(
   }
   UpdatePasswordsResultOnCheckIdle();
   // Stop observing the manager to avoid dynamically updating the result.
-  observed_insecure_credentials_manager_.RemoveAll();
+  observed_insecure_credentials_manager_.Reset();
 }
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1060,7 +1060,7 @@ void SafetyCheckHandler::OnJavascriptDisallowed() {
   // case when the page is reloaded while the password check is in progress and
   // another safety check is started. Otherwise |observed_leak_check_|
   // automatically calls RemoveAll() on destruction.
-  observed_leak_check_.RemoveAll();
+  observed_leak_check_.Reset();
   // Destroy the version updater to prevent getting a callback and firing a
   // WebUI event, which would cause a crash.
   version_updater_.reset();

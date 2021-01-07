@@ -121,13 +121,18 @@ void ChangePictureHandler::RegisterMessages() {
 }
 
 void ChangePictureHandler::OnJavascriptAllowed() {
-  user_manager_observer_.Add(user_manager::UserManager::Get());
-  camera_observer_.Add(CameraPresenceNotifier::GetInstance());
+  user_manager_observation_.Observe(user_manager::UserManager::Get());
+  camera_observation_.Observe(CameraPresenceNotifier::GetInstance());
 }
 
 void ChangePictureHandler::OnJavascriptDisallowed() {
-  user_manager_observer_.Remove(user_manager::UserManager::Get());
-  camera_observer_.Remove(CameraPresenceNotifier::GetInstance());
+  DCHECK(user_manager_observation_.IsObservingSource(
+      user_manager::UserManager::Get()));
+  user_manager_observation_.Reset();
+
+  DCHECK(camera_observation_.IsObservingSource(
+      CameraPresenceNotifier::GetInstance()));
+  camera_observation_.Reset();
 }
 
 void ChangePictureHandler::SendDefaultImages() {

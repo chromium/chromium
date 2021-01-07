@@ -14,7 +14,7 @@
 #include "base/build_time.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/chromeos/set_time_dialog.h"
@@ -69,13 +69,13 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
   }
 
   void OnJavascriptAllowed() override {
-    clock_observer_.Add(SystemClockClient::Get());
-    timezone_observer_.Add(system::TimezoneSettings::GetInstance());
+    clock_observation_.Observe(SystemClockClient::Get());
+    timezone_observation_.Observe(system::TimezoneSettings::GetInstance());
   }
 
   void OnJavascriptDisallowed() override {
-    clock_observer_.RemoveAll();
-    timezone_observer_.RemoveAll();
+    clock_observation_.Reset();
+    timezone_observation_.Reset();
   }
 
  private:
@@ -157,10 +157,11 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
       FireWebUIListener("validation-complete");
   }
 
-  ScopedObserver<SystemClockClient, SystemClockClient::Observer>
-      clock_observer_{this};
-  ScopedObserver<system::TimezoneSettings, system::TimezoneSettings::Observer>
-      timezone_observer_{this};
+  base::ScopedObservation<SystemClockClient, SystemClockClient::Observer>
+      clock_observation_{this};
+  base::ScopedObservation<system::TimezoneSettings,
+                          system::TimezoneSettings::Observer>
+      timezone_observation_{this};
   base::WeakPtrFactory<SetTimeMessageHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SetTimeMessageHandler);

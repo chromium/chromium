@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -56,10 +56,11 @@ class AndroidAppsHandler : public ::settings::SettingsPageUIHandler,
   void ShowAndroidManageAppLinks(const base::ListValue* args);
   int64_t GetDisplayIdForCurrentProfile();
 
-  ScopedObserver<ArcAppListPrefs, ArcAppListPrefs::Observer>
-      arc_prefs_observer_;
-  ScopedObserver<arc::ArcSessionManager, arc::ArcSessionManagerObserver>
-      arc_session_manager_observer_;
+  base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
+      arc_prefs_observation_{this};
+  base::ScopedObservation<arc::ArcSessionManager,
+                          arc::ArcSessionManagerObserver>
+      arc_session_manager_observation_{this};
   Profile* profile_;  // unowned
   base::WeakPtrFactory<AndroidAppsHandler> weak_ptr_factory_{this};
 
