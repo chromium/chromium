@@ -13,6 +13,8 @@
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/ime/ime_controller_impl.h"
@@ -24,6 +26,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/capture_mode_test_api.h"
 #include "ash/public/cpp/ime_info.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -55,6 +58,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1892,8 +1896,6 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
   //  when a modal window is open
   //
   // Screenshot
-  // TODO(sammiequon): Add some basic tests once capture mode is more fleshed
-  // out.
   if (!features::IsCaptureModeEnabled()) {
     TestScreenshotDelegate* delegate = GetScreenshotDelegate();
     delegate->set_can_take_screenshot(false);
@@ -1914,7 +1916,36 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
     EXPECT_TRUE(ProcessInController(ui::Accelerator(
         ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)));
     EXPECT_EQ(2, delegate->handle_take_screenshot_count());
+  } else {
+    auto* controller = CaptureModeController::Get();
+
+    // Control + shift + F5 opens capture mode to take a region screenshot.
+    EXPECT_TRUE(ProcessInController(ui::Accelerator(
+        ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)));
+    EXPECT_TRUE(controller->IsActive());
+    EXPECT_EQ(CaptureModeSource::kRegion, controller->source());
+    controller->Stop();
+
+    // Control + alt + F5 opens capture mode to take a window screenshot.
+    EXPECT_TRUE(ProcessInController(ui::Accelerator(
+        ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN)));
+    EXPECT_TRUE(controller->IsActive());
+    EXPECT_EQ(CaptureModeSource::kWindow, controller->source());
+    controller->Stop();
+
+    // Control + F5 takes a screenshot of all displays without opening capture
+    // mode. The loop will timeout if a screenshot was not successfully taken
+    // and saved.
+    EXPECT_TRUE(ProcessInController(
+        ui::Accelerator(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN)));
+    EXPECT_FALSE(controller->IsActive());
+    base::RunLoop run_loop;
+    CaptureModeTestApi().SetOnCaptureFileSavedCallback(
+        base::BindLambdaForTesting(
+            [&run_loop](const base::FilePath& path) { run_loop.Quit(); }));
+    run_loop.Run();
   }
+
   // Brightness
   const ui::Accelerator brightness_down(ui::VKEY_BRIGHTNESS_DOWN, ui::EF_NONE);
   const ui::Accelerator brightness_up(ui::VKEY_BRIGHTNESS_UP, ui::EF_NONE);
