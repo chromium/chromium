@@ -8,17 +8,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.IntDef;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Allows user to pick an account and sign in. Started from Settings and various sign-in promos.
@@ -26,12 +21,6 @@ import java.lang.annotation.RetentionPolicy;
 // TODO(https://crbug.com/820491): extend AsyncInitializationActivity.
 public class SigninActivity extends ChromeBaseAppCompatActivity {
     private static final String ARGUMENT_FRAGMENT_ARGS = "SigninActivity.FragmentArgs";
-
-    @IntDef({SigninAccessPoint.SETTINGS, SigninAccessPoint.BOOKMARK_MANAGER,
-            SigninAccessPoint.RECENT_TABS, SigninAccessPoint.SIGNIN_PROMO,
-            SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, SigninAccessPoint.AUTOFILL_DROPDOWN})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface AccessPoint {}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

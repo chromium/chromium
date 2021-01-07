@@ -6,10 +6,21 @@ package org.chromium.chrome.browser.signin.ui;
 
 import android.content.Context;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** Allows for launching {@link SigninActivity} in modularized code. */
 public interface SigninActivityLauncher {
+    @IntDef({SigninAccessPoint.SETTINGS, SigninAccessPoint.BOOKMARK_MANAGER,
+            SigninAccessPoint.RECENT_TABS, SigninAccessPoint.SIGNIN_PROMO,
+            SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, SigninAccessPoint.AUTOFILL_DROPDOWN})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface AccessPoint {}
+
     /**
      * Launches the SigninActivity with default sign-in flow from personalized sign-in promo.
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.

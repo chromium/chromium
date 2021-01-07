@@ -10,6 +10,7 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/consent_auditor/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//components/browser_ui/settings/android:java",
@@ -38,6 +39,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/ui/PersonalizedSigninPromoView.java",
     "java/src/org/chromium/chrome/browser/signin/ui/SignOutDialogFragment.java",
     "java/src/org/chromium/chrome/browser/signin/ui/SigninActivityLauncher.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/SigninPromoController.java",
     "java/src/org/chromium/chrome/browser/signin/ui/SigninScrollView.java",
     "java/src/org/chromium/chrome/browser/signin/ui/SigninView.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerCoordinator.java",
@@ -53,6 +55,11 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable-hdpi/chrome_sync_logo.png",
+    "java/res/drawable-mdpi/chrome_sync_logo.png",
+    "java/res/drawable-xhdpi/chrome_sync_logo.png",
+    "java/res/drawable-xxhdpi/chrome_sync_logo.png",
+    "java/res/drawable-xxxhdpi/chrome_sync_logo.png",
     "java/res/layout/account_picker_incognito_row.xml",
     "java/res/layout/account_picker_new_account_row.xml",
     "java/res/layout/account_picker_new_account_row_legacy.xml",
@@ -68,6 +75,7 @@ android_resources("java_resources") {
     "java/res/layout/signin_progress_bar_dialog.xml",
     "java/res/layout/signin_view.xml",
     "java/res/layout/signout_wipe_storage_dialog.xml",
+    "java/res/values/dimens.xml",
   ]
   deps = [
     "//chrome/browser/signin/services/android:java_resources",

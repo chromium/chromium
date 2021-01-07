@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Signin promo dimensions -->
+    <dimen name="signin_promo_account_image_size">48dp</dimen>
+    <dimen name="signin_promo_cold_state_image_size">24dp</dimen>
+</resources>
