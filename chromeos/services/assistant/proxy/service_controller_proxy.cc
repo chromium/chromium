@@ -212,7 +212,6 @@ void ServiceControllerProxy::OnStateChanged(ServiceState new_state) {
 
   switch (new_state) {
     case ServiceState::kStarted:
-      DCHECK_EQ(state_, State::kStarting);
       FinishCreatingAssistant();
       break;
     case ServiceState::kRunning:
@@ -237,6 +236,16 @@ ServiceControllerProxy::assistant_manager_internal() {
 }
 
 void ServiceControllerProxy::FinishCreatingAssistant() {
+  if (state_ == State::kStopped) {
+    // We can come here if the system went into shutdown while the mojom
+    // service was busy starting Libassistant.
+    // This means the |AssistantManager| could be destroyed at any second,
+    // so we simply clean up and bail out.
+    on_start_done_callback_.reset();
+    pending_display_connection_ = nullptr;
+    return;
+  }
+
   DCHECK(on_start_done_callback_.has_value());
   DCHECK_NE(pending_display_connection_, nullptr);
 
