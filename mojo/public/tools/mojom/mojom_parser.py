@@ -15,6 +15,7 @@ import codecs
 import errno
 import json
 import logging
+import multiprocessing
 import os
 import os.path
 import sys
@@ -24,6 +25,10 @@ from mojom.generate import module
 from mojom.generate import translate
 from mojom.parse import parser
 from mojom.parse import conditional_features
+
+
+# Disable this for easier debugging.
+ENABLE_MULTIPROCESSING = True
 
 
 def _ResolveRelativeImportPath(path, roots):
@@ -157,6 +162,56 @@ def _CollectAllowedImportsFromBuildMetadata(build_metadata_filename):
   return allowed_imports
 
 
+# multiprocessing helper.
+def _ParseAstHelper(args):
+  mojom_abspath, enabled_features = args
+  with codecs.open(mojom_abspath, encoding='utf-8') as f:
+    ast = parser.Parse(f.read(), mojom_abspath)
+    conditional_features.RemoveDisabledDefinitions(ast, enabled_features)
+    return mojom_abspath, ast
+
+
+# multiprocessing helper.
+def _SerializeHelper(args):
+  mojom_abspath, mojom_path = args
+  module_path = os.path.join(_SerializeHelper.output_root_path,
+                             _GetModuleFilename(mojom_path))
+  module_dir = os.path.dirname(module_path)
+  if not os.path.exists(module_dir):
+    try:
+      # Python 2 doesn't support exist_ok on makedirs(), so we just ignore
+      # that failure if it happens. It's possible during build due to races
+      # among build steps with module outputs in the same directory.
+      os.makedirs(module_dir)
+    except OSError as e:
+      if e.errno != errno.EEXIST:
+        raise
+  with open(module_path, 'wb') as f:
+    _SerializeHelper.loaded_modules[mojom_abspath].Dump(f)
+
+
+def _Shard(target_func, args, processes=None):
+  args = list(args)
+  if processes is None:
+    processes = multiprocessing.cpu_count()
+  # Seems optimal to have each process perform at least 2 tasks.
+  processes = min(processes, len(args) // 2)
+  # Don't spin up processes unless there is enough work to merit doing so.
+  if not ENABLE_MULTIPROCESSING or processes < 2:
+    for result in map(target_func, args):
+      yield result
+    return
+
+  pool = multiprocessing.Pool(processes=processes)
+  try:
+    for result in pool.imap_unordered(target_func, args):
+      yield result
+  finally:
+    pool.close()
+    pool.join()  # Needed on Windows to avoid WindowsError during terminate.
+    pool.terminate()
+
+
 def _ParseMojoms(mojom_files,
                  input_root_paths,
                  output_root_path,
@@ -194,14 +249,14 @@ def _ParseMojoms(mojom_files,
   mojom_files_to_parse = dict((os.path.normcase(abs_path),
                                _RebaseAbsolutePath(abs_path, input_root_paths))
                               for abs_path in mojom_files)
-  logging.info('Parsing %d .mojom into ASTs', len(mojom_files_to_parse))
   abs_paths = dict(
       (path, abs_path) for abs_path, path in mojom_files_to_parse.items())
-  for mojom_abspath in mojom_files_to_parse:
-    with codecs.open(mojom_abspath, encoding='utf-8') as f:
-      ast = parser.Parse(''.join(f.readlines()), mojom_abspath)
-      conditional_features.RemoveDisabledDefinitions(ast, enabled_features)
-      loaded_mojom_asts[mojom_abspath] = ast
+
+  logging.info('Parsing %d .mojom into ASTs', len(mojom_files_to_parse))
+  map_args = ((mojom_abspath, enabled_features)
+              for mojom_abspath in mojom_files_to_parse)
+  for mojom_abspath, ast in _Shard(_ParseAstHelper, map_args):
+    loaded_mojom_asts[mojom_abspath] = ast
 
   logging.info('Processing dependencies')
   for mojom_abspath, ast in loaded_mojom_asts.items():
@@ -249,21 +304,18 @@ def _ParseMojoms(mojom_files,
 
   # Now we have fully translated modules for every input and every transitive
   # dependency. We can dump the modules to disk for other tools to use.
-  logging.info('Serializeing %d modules', len(mojom_files_to_parse))
-  for mojom_abspath, mojom_path in mojom_files_to_parse.items():
-    module_path = os.path.join(output_root_path, _GetModuleFilename(mojom_path))
-    module_dir = os.path.dirname(module_path)
-    if not os.path.exists(module_dir):
-      try:
-        # Python 2 doesn't support exist_ok on makedirs(), so we just ignore
-        # that failure if it happens. It's possible during build due to races
-        # among build steps with module outputs in the same directory.
-        os.makedirs(module_dir)
-      except OSError as e:
-        if e.errno != errno.EEXIST:
-          raise
-    with open(module_path, 'wb') as f:
-      loaded_modules[mojom_abspath].Dump(f)
+  logging.info('Serializing %d modules', len(mojom_files_to_parse))
+
+  # Windows does not use fork() for multiprocessing, so we'd need to pass
+  # loaded_module via IPC rather than via globals. Doing so is slower than not
+  # using multiprocessing.
+  _SerializeHelper.loaded_modules = loaded_modules
+  _SerializeHelper.output_root_path = output_root_path
+  # Doesn't seem to help past 4. Perhaps IO bound here?
+  processes = 0 if sys.platform == 'win32' else 4
+  map_args = mojom_files_to_parse.items()
+  for _ in _Shard(_SerializeHelper, map_args, processes=processes):
+    pass
 
 
 def Run(command_line):
