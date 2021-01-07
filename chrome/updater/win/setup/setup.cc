@@ -31,6 +31,8 @@
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/constants.h"
 #include "chrome/updater/win/setup/setup_util.h"

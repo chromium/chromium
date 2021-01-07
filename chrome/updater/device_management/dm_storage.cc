@@ -15,7 +15,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_policy_manager.h"
-#include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 

@@ -10,7 +10,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_impl.h"
-#include "chrome/updater/updater_version.h"
 #include "url/gurl.h"
 
 #include "base/logging.h"

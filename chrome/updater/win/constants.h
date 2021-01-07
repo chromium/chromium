@@ -8,7 +8,7 @@
 #include <windows.h>
 
 #include "base/strings/string16.h"
-#include "chrome/updater/updater_version.h"
+#include "chrome/updater/updater_branding.h"
 
 namespace updater {
 

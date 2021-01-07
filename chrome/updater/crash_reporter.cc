@@ -18,7 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/updater_version.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/handler/handler_main.h"
@@ -77,7 +77,7 @@ void StartCrashReporter(const std::string& version) {
   crashpad::CrashpadClient* client = GetCrashpadClient();
   if (!client->StartHandler(handler_path, database_path,
                             /*metrics_dir=*/base::FilePath(),
-                            kCrashStagingUploadURL, annotations, arguments,
+                            CRASH_STAGING_UPLOAD_URL, annotations, arguments,
                             /*restartable=*/true,
                             /*asynchronous_start=*/false)) {
     LOG(DFATAL) << "Failed to start handler.";

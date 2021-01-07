@@ -23,7 +23,7 @@
 #include "chrome/updater/test/integration_tests.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
-#include "chrome/updater/updater_version.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

@@ -11,7 +11,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "chrome/updater/prefs_impl.h"
-#include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"

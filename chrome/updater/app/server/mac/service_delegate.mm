@@ -25,7 +25,6 @@
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
-#include "chrome/updater/updater_version.h"
 
 @interface CRUUpdateServiceXPCImpl : NSObject <CRUUpdateServicing>
 

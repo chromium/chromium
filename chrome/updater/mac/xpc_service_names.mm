@@ -8,6 +8,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
 
 namespace updater {

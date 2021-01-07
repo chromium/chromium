@@ -25,3 +25,9 @@ if (is_chrome_branded) {
   mac_updater_bundle_identifier = "org.chromium.ChromiumUpdater"
   mac_browser_bundle_identifier = "org.chromium.Chromium"
 }
+
+# Chrome and Chromium share the same endpoints for now.
+update_check_url = "https://update.googleapis.com/service/update2/json"
+crash_upload_url = "https://clients2.google.com/cr/report"
+crash_staging_upload_url = "https://clients2.google.com/cr/staging_report"
+device_management_server_url = "https://m.google.com/devicemanagement/data/api"

@@ -29,7 +29,7 @@
 #include "chrome/updater/crash_reporter.h"
 #import "chrome/updater/mac/util.h"
 #import "chrome/updater/mac/xpc_service_names.h"
-#include "chrome/updater/updater_version.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util.h"
 #include "components/crash/core/common/crash_key.h"
 

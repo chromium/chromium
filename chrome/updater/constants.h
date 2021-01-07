@@ -113,18 +113,6 @@ extern const char kAppIdSwitch[];
 // Specifies the version of the application that the updater needs to register.
 extern const char kAppVersionSwitch[];
 
-// URLs.
-//
-// Omaha server end point.
-extern const char kUpdaterJSONDefaultUrl[];
-
-// The URL where crash reports are uploaded.
-extern const char kCrashUploadURL[];
-extern const char kCrashStagingUploadURL[];
-
-// DM server end point.
-extern const char kDeviceManagementServerURL[];
-
 // File system paths.
 //
 // The directory name where CRX apps get installed. This is provided for demo

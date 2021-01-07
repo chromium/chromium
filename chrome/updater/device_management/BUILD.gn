@@ -25,6 +25,7 @@ source_set("device_management") {
   deps = [
     "//base",
     "//chrome/updater:base",
+    "//chrome/updater:branding_header",
     "//chrome/updater:version_header",
     "//chrome/updater/protos:omaha_proto",
     "//components/update_client",

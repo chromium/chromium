@@ -12,7 +12,7 @@
 #include "base/mac/scoped_mach_port.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "chrome/updater/updater_version.h"
+#include "chrome/updater/updater_branding.h"
 
 namespace {
 

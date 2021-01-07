@@ -10,7 +10,6 @@
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
-#include "chrome/updater/updater_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

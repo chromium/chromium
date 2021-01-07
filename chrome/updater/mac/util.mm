@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/version.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 

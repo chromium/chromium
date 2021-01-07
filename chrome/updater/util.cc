@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
 #include "url/gurl.h"
 

@@ -14,6 +14,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_storage.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -61,7 +62,7 @@ class DefaultConfigurator : public DMClient::Configurator {
   ~DefaultConfigurator() override = default;
 
   std::string GetDMServerUrl() const override {
-    return kDeviceManagementServerURL;
+    return DEVICE_MANAGEMENT_SERVER_URL;
   }
 
   std::string GetAgentParameter() const override {

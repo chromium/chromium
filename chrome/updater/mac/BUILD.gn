@@ -74,6 +74,7 @@ source_set("xpc_names") {
 
   deps = [
     "//base",
+    "//chrome/updater:branding_header",
     "//chrome/updater:version_header",
   ]
 
@@ -89,6 +90,7 @@ source_set("util") {
   deps = [
     "//base",
     "//chrome/updater:base",
+    "//chrome/updater:branding_header",
     "//chrome/updater:version_header",
   ]
 
@@ -108,6 +110,7 @@ source_set("updater_setup_sources") {
     "//base",
     "//chrome/common/mac:launchd",
     "//chrome/updater:base",
+    "//chrome/updater:branding_header",
     "//chrome/updater:version_header",
     "//components/crash/core/common:crash_key_lib",
     "//mojo/public/cpp/platform",

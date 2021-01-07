@@ -69,7 +69,7 @@ source_set("constants") {
 
   deps = [
     "//base",
-    "//chrome/updater:version_header",
+    "//chrome/updater:branding_header",
   ]
 }
 
@@ -128,6 +128,7 @@ source_set("lib") {
     "//base",
     "//chrome/installer/util:with_no_strings",
     "//chrome/updater:base",
+    "//chrome/updater:branding_header",
     "//chrome/updater:version_header",
     "//chrome/updater/app/server/win:updater_idl_idl",
     "//chrome/updater/app/server/win:updater_internal_idl_idl",
@@ -243,7 +244,7 @@ test("updater_unittests") {
     ":lib",
     "//base",
     "//base/test:test_support",
-    "//chrome/updater:version_header",
+    "//chrome/updater:branding_header",
     "//chrome/updater/win/test:test_executables",
     "//chrome/updater/win/test:test_strings",
     "//testing/gtest",

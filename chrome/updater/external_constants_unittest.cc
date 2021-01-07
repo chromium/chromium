@@ -8,6 +8,7 @@
 
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/updater_branding.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -18,7 +19,7 @@ TEST_F(DevOverrideTest, TestDefaults) {
   EXPECT_TRUE(consts->UseCUP());
   std::vector<GURL> urls = consts->UpdateURL();
   ASSERT_EQ(urls.size(), 1ul);
-  EXPECT_EQ(urls[0], GURL(kUpdaterJSONDefaultUrl));
+  EXPECT_EQ(urls[0], GURL(UPDATE_CHECK_URL));
   EXPECT_TRUE(urls[0].is_valid());
 }
 

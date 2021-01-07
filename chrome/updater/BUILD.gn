@@ -64,6 +64,7 @@ if (is_win || is_mac) {
     ]
 
     deps = [
+      ":branding_header",
       ":version_header",
       "//base",
       "//components/crash/core/common:crash_key_lib",
@@ -176,6 +177,7 @@ if (is_win || is_mac) {
 
     deps = [
       ":base",
+      ":branding_header",
       ":version_header",
       "//base",
       "//base:i18n",
@@ -227,6 +229,11 @@ if (is_win || is_mac) {
   process_version("version_header") {
     sources = [ "//chrome/VERSION" ]
 
+    template_file = "updater_version.h.in"
+    output = "$target_gen_dir/updater_version.h"
+  }
+
+  process_version("branding_header") {
     extra_args = [
       "-e",
       "COMPANY_FULLNAME=\"$updater_company_full_name\"",
@@ -242,10 +249,18 @@ if (is_win || is_mac) {
       "BROWSER_NAME=\"$browser_name\"",
       "-e",
       "MAC_BROWSER_BUNDLE_IDENTIFIER=\"$mac_browser_bundle_identifier\"",
+      "-e",
+      "UPDATE_CHECK_URL=\"$update_check_url\"",
+      "-e",
+      "CRASH_UPLOAD_URL=\"$crash_upload_url\"",
+      "-e",
+      "CRASH_STAGING_UPLOAD_URL=\"$crash_staging_upload_url\"",
+      "-e",
+      "DEVICE_MANAGEMENT_SERVER_URL=\"$device_management_server_url\"",
     ]
 
-    template_file = "updater_version.h.in"
-    output = "$target_gen_dir/updater_version.h"
+    template_file = "updater_branding.h.in"
+    output = "$target_gen_dir/updater_branding.h"
   }
 
   source_set("updater_tests_support") {
@@ -275,7 +290,7 @@ if (is_win || is_mac) {
     ]
 
     deps = [
-      ":version_header",
+      ":branding_header",
       "//base",
       "//components/update_client",
     ]
@@ -324,6 +339,7 @@ if (is_win || is_mac) {
 
     deps = [
       ":base",
+      ":branding_header",
       ":lib",
       ":updater",
       ":updater_tests_support",
@@ -393,7 +409,7 @@ if (is_win || is_mac) {
     }
   }
 
-  process_version("version_header_py") {
+  process_version("branding_header_py") {
     process_only = true
 
     sources = [ "//chrome/VERSION" ]
@@ -414,6 +430,15 @@ if (is_win || is_mac) {
       "-e",
       "MAC_BROWSER_BUNDLE_IDENTIFIER=\"$mac_browser_bundle_identifier\"",
     ]
+
+    template_file = "test/integration_tests/updater/branding_info.py.in"
+    output = "$target_gen_dir/branding_info.py"
+  }
+
+  process_version("version_header_py") {
+    process_only = true
+
+    sources = [ "//chrome/VERSION" ]
 
     template_file = "test/integration_tests/updater/version_info.py.in"
     output = "$target_gen_dir/version_info.py"
@@ -436,21 +461,23 @@ if (is_win || is_mac) {
       "//chrome/updater/run_updater_tests.py",
       "//chrome/updater/test/",
       "//third_party/catapult/third_party/typ/",
+      "$target_gen_dir/branding_info.py",
       "$target_gen_dir/version_info.py",
     ]
 
+    data_deps = [
+      ":branding_header_py",
+      ":version_header_py",
+    ]
+
     if (is_win) {
-      data_deps = [
-        ":version_header_py",
+      data_deps += [
         "//chrome/updater/win:updater",
         "//chrome/updater/win/installer",
       ]
     }
     if (is_mac) {
-      data_deps = [
-        ":version_header_py",
-        "//chrome/updater/mac:updater_bundle",
-      ]
+      data_deps += [ "//chrome/updater/mac:updater_bundle" ]
     }
   }
 }

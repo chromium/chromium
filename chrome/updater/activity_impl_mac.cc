@@ -8,7 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "chrome/updater/updater_version.h"
+#include "chrome/updater/updater_branding.h"
 
 namespace updater {
 namespace {

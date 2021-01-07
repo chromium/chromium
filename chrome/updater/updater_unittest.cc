@@ -9,7 +9,7 @@
 #include "base/process/process.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/updater/updater_version.h"
+#include "chrome/updater/updater_branding.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_WIN)
