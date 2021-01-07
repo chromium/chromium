@@ -38,7 +38,7 @@ class ModernLinker extends Linker {
 
         String libFilePath = System.mapLibraryName(library);
         boolean loadNoRelro = !isFixedAddressPermitted;
-        boolean provideRelro = isFixedAddressPermitted && mInBrowserProcess;
+        boolean provideRelro = isFixedAddressPermitted && mRelroProducer;
         long loadAddress = isFixedAddressPermitted ? mBaseLoadAddress : 0;
 
         if (loadNoRelro) {
@@ -60,7 +60,7 @@ class ModernLinker extends Linker {
                 libInfo.mRelroFd = -1;
             }
             mLibInfo = libInfo;
-            Log.d(TAG, "Successfully spawned RELRO: mLoadAddress=%d, mLoadSize=%d",
+            Log.d(TAG, "Successfully spawned RELRO: mLoadAddress=0x%x, mLoadSize=%d",
                     mLibInfo.mLoadAddress, mLibInfo.mLoadSize);
             // Next state is still to provide relro (even if we don't have any), as child processes
             // would wait for them.
@@ -69,7 +69,7 @@ class ModernLinker extends Linker {
             // Running in a child process, also with a fixed load address that is suitable for
             // shared RELRO.
             waitForSharedRelrosLocked();
-            Log.d(TAG, "Received mLibInfo: mLoadAddress=%d, mLoadSize=%d", mLibInfo.mLoadAddress,
+            Log.d(TAG, "Received mLibInfo: mLoadAddress=0x%x, mLoadSize=%d", mLibInfo.mLoadAddress,
                     mLibInfo.mLoadSize);
             // Two LibInfo objects are used: |mLibInfo| that brings the RELRO FD, and a temporary
             // LibInfo to load the library. Before replacing the library's RELRO with the one from

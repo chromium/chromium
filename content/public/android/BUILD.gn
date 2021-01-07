@@ -137,7 +137,6 @@ android_library("content_java") {
   ]
 
   sources = [
-    "java/src/org/chromium/content/app/ChromiumLinkerParams.java",
     "java/src/org/chromium/content/app/ContentChildProcessService.java",
     "java/src/org/chromium/content/app/ContentChildProcessServiceDelegate.java",
     "java/src/org/chromium/content/app/ContentMain.java",

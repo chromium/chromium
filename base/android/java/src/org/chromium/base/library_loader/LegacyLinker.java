@@ -37,7 +37,7 @@ class LegacyLinker extends Linker {
         ensureInitializedLocked();
         assert mState == State.INITIALIZED; // Only one successful call.
 
-        boolean provideRelro = mInBrowserProcess;
+        boolean produceRelro = mRelroProducer;
         long loadAddress = isFixedAddressPermitted ? mBaseLoadAddress : 0;
 
         String libFilePath = System.mapLibraryName(library);
@@ -50,7 +50,7 @@ class LegacyLinker extends Linker {
         }
         libInfo.mLibFilePath = libFilePath;
 
-        if (provideRelro) {
+        if (produceRelro) {
             if (!nativeCreateSharedRelro(sharedRelRoName, mBaseLoadAddress, libInfo)) {
                 Log.w(TAG, "Could not create shared RELRO for %s at %x", libFilePath,
                         mBaseLoadAddress);
@@ -67,6 +67,7 @@ class LegacyLinker extends Linker {
             useSharedRelrosLocked(mLibInfo);
             mState = State.DONE_PROVIDE_RELRO;
         } else {
+            // Consume RELRO.
             waitForSharedRelrosLocked();
             assert libFilePath.equals(mLibInfo.mLibFilePath);
             useSharedRelrosLocked(mLibInfo);

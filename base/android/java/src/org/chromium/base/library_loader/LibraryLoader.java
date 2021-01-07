@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.system.Os;
 
@@ -40,6 +41,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * This class provides functionality to load and register the native libraries.
@@ -101,13 +103,16 @@ public class LibraryLoader {
     // Avoids locking: should be initialized very early.
     private boolean mConfigurationSet;
 
-    // The type of process the shared library is loaded in.
+    // The type of process the shared library is loaded in. Gets passed to native after loading.
     // Avoids locking: should be initialized very early.
     private @LibraryProcessType int mLibraryProcessType;
 
     // Makes sure non-Main Dex initialization happens only once. Does not use any class members
     // except the volatile |mLoadState|.
     private final Object mNonMainDexLock = new Object();
+
+    // Mediates all communication between Linker instances in different processes.
+    private final MultiProcessMediator mMessageHandler = new MultiProcessMediator();
 
     // Guards all the fields below.
     private final Object mLock = new Object();
@@ -128,10 +133,117 @@ public class LibraryLoader {
     @GuardedBy("mLock")
     private boolean mCommandLineSwitched;
 
-    // The number of milliseconds it took to load all the native libraries, which
-    // will be reported via UMA. Set once when the libraries are done loading.
+    // The number of milliseconds it took to load all the native libraries, which will be reported
+    // via UMA. Set once when the libraries are done loading.
     @GuardedBy("mLock")
     private long mLibraryLoadTimeMs;
+
+    /**
+     * Inner class encapsulating points of communication between instances of LibraryLoader in
+     * different processes.
+     *
+     * Usage:
+     *
+     * - For a {@link LibraryLoader} requiring the knowledge of the load address before
+     *   initialization, {@link #takeLoadAddressFromBundle(Bundle)} should be called first. It is
+     *   done very early after establishing a Binder connection.
+     *
+     * - To initialize the object, one of {@link #ensureInitializedInMainProcess()} and
+     *   {@link #initInChildProcess()} must be called. Subsequent calls to initialization are
+     *   ignored.
+     *
+     * - Later  {@link #putLoadAddressToBundle(Bundle)} and
+     *   {@link #takeLoadAddressFromBundle(Bundle)} should be called for passing the RELRO
+     *   information between library loaders.
+     *
+     * Internally the {@LibraryLoader} may ignore these messages because it can fall back to not
+     * sharing RELRO.
+     */
+    @ThreadSafe
+    public class MultiProcessMediator {
+        @GuardedBy("mLock")
+        private long mLoadAddress;
+
+        // Used only for asserts, and only ever switched from false to true.
+        private volatile boolean mInitDone;
+
+        /**
+         * Extracts the load address as provided by another process.
+         * @param bundle The Bundle to extract from.
+         */
+        public void takeLoadAddressFromBundle(Bundle bundle) {
+            // Currently clients call this method strictly before any other method can get executed
+            // on a different thread. Hence, synchronization is not required, but verification of
+            // correctness is still non-trivial, and over-synchronization is cheap compared to
+            // library loading.
+            synchronized (mLock) {
+                mLoadAddress = Linker.extractLoadAddressFromBundle(bundle);
+            }
+        }
+
+        /**
+         * Initializes the Browser process side of communication, the one that coordinates creation
+         * of other processes. Can be called more than once, subsequent calls are ignored.
+         */
+        public void ensureInitializedInMainProcess() {
+            if (mInitDone) return;
+            if (useChromiumLinker()) {
+                Linker.getInstance().initAsRelroProducer();
+            }
+            mInitDone = true;
+        }
+
+        /**
+         * Serializes the load address for communication, if any was determined during
+         * initialization. Must be called after the library has been loaded in this process.
+         * @param bundle Bundle to put the address to.
+         */
+        public void putLoadAddressToBundle(Bundle bundle) {
+            assert mInitDone;
+            if (useChromiumLinker()) {
+                Linker.getInstance().putLoadAddressToBundle(bundle);
+            }
+        }
+
+        /**
+         * Initializes in processes other than "Main".
+         */
+        public void initInChildProcess() {
+            if (useChromiumLinker()) {
+                synchronized (mLock) {
+                    Linker.getInstance().initAsRelroConsumer(mLoadAddress);
+                }
+            }
+            mInitDone = true;
+        }
+
+        /**
+         * Optionally extracts RELRO and saves it for replacing the RELRO section in this process.
+         * Can be invoked before initialization.
+         * @param bundle Where to deserialize from.
+         */
+        public void takeSharedRelrosFromBundle(Bundle bundle) {
+            if (useChromiumLinker() && !isLoadedByZygote()) {
+                Linker.getInstance().takeSharedRelrosFromBundle(bundle);
+            }
+        }
+
+        /**
+         * Optionally puts the RELRO section information so that it can be memory-mapped in another
+         * process reading the bundle.
+         * @param bundle Where to serialize.
+         */
+        public void putSharedRelrosToBundle(Bundle bundle) {
+            assert mInitDone;
+            if (useChromiumLinker()) {
+                Linker.getInstance().putSharedRelrosToBundle(bundle);
+            }
+        }
+    }
+
+    public final MultiProcessMediator getMediator() {
+        return mMessageHandler;
+    }
 
     /**
      * Call this method to determine if the chromium project must load the library
@@ -189,8 +301,9 @@ public class LibraryLoader {
      * Must be called before loading the library. Since this function is called extremely early on
      * in startup, locking is not required.
      *
-     * @param useChromiumLinker Whether to use the chromium linker.
-     * @param useModernLinker Whether to use ModernLinker.
+     * @param useChromiumLinker Whether to use a chromium linker.
+     * @param useModernLinker Given that one of the Chromium linkers is used, whether to use
+     *                        ModernLinker instea of the LegacyLinker.
      */
     public void setLinkerImplementation(boolean useChromiumLinker, boolean useModernLinker) {
         assert !mInitialized;
@@ -234,7 +347,7 @@ public class LibraryLoader {
         return result;
     }
 
-    public boolean useChromiumLinker() {
+    private boolean useChromiumLinker() {
         return mUseChromiumLinker && !forceSystemLinker();
     }
 
@@ -329,7 +442,7 @@ public class LibraryLoader {
     }
 
     /**
-     * Checks if library is fully loaded and initialized.
+     * Checks whether the native library is fully loaded and initialized.
      */
     public boolean isInitialized() {
         return mInitialized && mLoadState == LoadState.LOADED;
@@ -372,9 +485,9 @@ public class LibraryLoader {
     }
 
     /**
-     * Initializes the library here and now: must be called on the thread that the
+     * Initializes the native library: must be called on the thread that the
      * native will call its "main" thread. The library must have previously been
-     * loaded with loadNow.
+     * loaded with one of the loadNow*() variants.
      */
     public void initialize() {
         synchronized (mLock) {

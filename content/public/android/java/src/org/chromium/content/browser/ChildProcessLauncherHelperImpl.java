@@ -28,14 +28,13 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.library_loader.Linker;
+import org.chromium.base.library_loader.LibraryLoader.MultiProcessMediator;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.ChildProcessConstants;
 import org.chromium.base.process_launcher.ChildProcessLauncher;
 import org.chromium.base.process_launcher.FileDescriptorInfo;
 import org.chromium.base.task.PostTask;
-import org.chromium.content.app.ChromiumLinkerParams;
 import org.chromium.content.app.SandboxedProcessService;
 import org.chromium.content.common.ContentSwitchUtils;
 import org.chromium.content_public.browser.ChildProcessImportance;
@@ -146,10 +145,8 @@ public final class ChildProcessLauncherHelperImpl {
                             ContentChildProcessConstants.EXTRA_CPU_COUNT, CpuFeatures.getCount());
                     connectionBundle.putLong(
                             ContentChildProcessConstants.EXTRA_CPU_FEATURES, CpuFeatures.getMask());
-                    if (LibraryLoader.getInstance().useChromiumLinker()) {
-                        connectionBundle.putBundle(Linker.EXTRA_LINKER_SHARED_RELROS,
-                                Linker.getInstance().getSharedRelros());
-                    }
+                    LibraryLoader.getInstance().getMediator().putSharedRelrosToBundle(
+                            connectionBundle);
                 }
 
                 @Override
@@ -638,36 +635,13 @@ public final class ChildProcessLauncherHelperImpl {
         }
     }
 
-    private static boolean sLinkerInitialized;
-    private static long sLinkerLoadAddress;
-    private static void initLinker() {
-        assert LauncherThread.runningOnLauncherThread();
-        if (sLinkerInitialized) return;
-        if (LibraryLoader.getInstance().useChromiumLinker()) {
-            sLinkerLoadAddress = Linker.getInstance().getBaseLoadAddress();
-            if (sLinkerLoadAddress == 0) {
-                Log.i(TAG, "Shared RELRO support disabled!");
-            }
-        }
-        sLinkerInitialized = true;
-    }
-
-    private static ChromiumLinkerParams getLinkerParamsForNewConnection() {
-        assert LauncherThread.runningOnLauncherThread();
-
-        initLinker();
-        assert sLinkerInitialized;
-        if (sLinkerLoadAddress == 0) return null;
-
-        return new ChromiumLinkerParams(sLinkerLoadAddress);
-    }
-
     private static Bundle populateServiceBundle(Bundle bundle) {
         ChildProcessCreationParamsImpl.addIntentExtras(bundle);
         bundle.putBoolean(ChildProcessConstants.EXTRA_BIND_TO_CALLER,
                 ChildProcessCreationParamsImpl.getBindToCallerCheck());
-        ChromiumLinkerParams linkerParams = getLinkerParamsForNewConnection();
-        if (linkerParams != null) linkerParams.populateBundle(bundle);
+        MultiProcessMediator m = LibraryLoader.getInstance().getMediator();
+        m.ensureInitializedInMainProcess();
+        m.putLoadAddressToBundle(bundle);
         return bundle;
     }
 
