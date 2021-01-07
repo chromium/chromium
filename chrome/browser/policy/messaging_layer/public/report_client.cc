@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
@@ -507,12 +508,30 @@ ReportingClient* ReportingClient::GetInstance() {
 void ReportingClient::CreateReportQueue(
     std::unique_ptr<ReportQueueConfiguration> config,
     CreateReportQueueCallback create_cb) {
+  if (!IsEncryptedReportingPipelineEnabled()) {
+    Status not_enabled = Status(
+        error::FAILED_PRECONDITION,
+        "The Encrypted Reporting Pipeline is not enabled. Please enable it on "
+        "the command line using --enable-features=EncryptedReportingPipeline");
+    VLOG(1) << not_enabled;
+    std::move(create_cb).Run(not_enabled);
+    return;
+  }
   auto* instance = GetInstance();
   instance->create_request_queue_->Push(
       CreateReportQueueRequest(std::move(config), std::move(create_cb)),
       base::BindOnce(&ReportingClient::OnPushComplete,
                      base::Unretained(instance)));
 }
+
+// static
+bool ReportingClient::IsEncryptedReportingPipelineEnabled() {
+  return base::FeatureList::IsEnabled(kEncryptedReportingPipeline);
+}
+
+// static
+const base::Feature ReportingClient::kEncryptedReportingPipeline{
+    "EncryptedReportingPipeline", base::FEATURE_DISABLED_BY_DEFAULT};
 
 void ReportingClient::OnPushComplete() {
   init_state_tracker_->GetInitState(

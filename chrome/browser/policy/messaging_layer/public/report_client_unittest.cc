@@ -7,6 +7,7 @@
 #include "base/memory/singleton.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
@@ -94,6 +95,9 @@ class ReportClientTest : public testing::Test {
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
     test_reporting_ =
         std::make_unique<ReportingClient::TestEnvironment>(client_.get());
+
+    scoped_feature_list_.InitAndEnableFeature(
+        ReportingClient::kEncryptedReportingPipeline);
   }
 
   void TearDown() override {
@@ -115,6 +119,9 @@ class ReportClientTest : public testing::Test {
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
       base::BindRepeating([]() { return Status::StatusOK(); });
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that a ReportQueue can be created using the ReportingClient.

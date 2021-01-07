@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/queue.h"
+#include "base/feature_list.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
@@ -23,6 +24,9 @@ namespace reporting {
 
 // ReportingClient acts a single point for creating |reporting::ReportQueue|s.
 // It ensures that all ReportQueues are created with the same storage settings.
+//
+// In order to utilize the ReportingClient the EncryptedReportingPipeline
+// feature must be turned on using --enable-features=EncryptedReportingPipeline.
 //
 // Example Usage:
 // void SendMessage(google::protobuf::ImportantMessage important_message,
@@ -210,6 +214,9 @@ class ReportingClient {
   static void CreateReportQueue(
       std::unique_ptr<ReportQueueConfiguration> config,
       CreateReportQueueCallback create_cb);
+
+  static bool IsEncryptedReportingPipelineEnabled();
+  static const base::Feature kEncryptedReportingPipeline;
 
  private:
   class Uploader;
