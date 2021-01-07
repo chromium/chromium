@@ -2703,9 +2703,6 @@ const char kForceBrowserSignin[] = "profile.force_browser_signin";
 const char kBrowserProfilePickerAvailabilityOnStartup[] =
     "profile.picker_availability_on_startup";
 
-// Whether the profile picker has been shown at least once.
-const char kBrowserProfilePickerShown[] = "profile.picker_shown";
-
 // Whether to show the profile picker on startup or not.
 const char kBrowserShowProfilePickerOnStartup[] =
     "profile.show_picker_on_startup";

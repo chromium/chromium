@@ -4,14 +4,11 @@
 
 #include "chrome/browser/ui/profile_picker.h"
 
-#include <algorithm>
 #include <string>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -21,16 +18,6 @@
 #include "components/prefs/pref_service.h"
 
 namespace {
-
-constexpr base::TimeDelta kActiveTimeThreshold = base::TimeDelta::FromDays(28);
-
-// Returns a pref value indicating whether the profile picker has been shown to
-// the user before.
-bool ProfilePickerShown() {
-  PrefService* prefs = g_browser_process->local_state();
-  DCHECK(prefs);
-  return prefs->GetBoolean(prefs::kBrowserProfilePickerShown);
-}
 
 ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
   int availability_on_startup = g_browser_process->local_state()->GetInteger(
@@ -63,26 +50,11 @@ bool ProfilePicker::ShouldShowAtLaunch() {
   if (availability_on_startup == AvailabilityOnStartup::kForced)
     return true;
 
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-
-  size_t number_of_profiles = profile_manager->GetNumberOfProfiles();
+  size_t number_of_profiles = g_browser_process->profile_manager()
+                                  ->GetProfileAttributesStorage()
+                                  .GetNumberOfProfiles();
   // Need to consider 0 profiles as this is what happens in some browser-tests.
   if (number_of_profiles <= 1)
-    return false;
-
-  std::vector<ProfileAttributesEntry*> profile_attributes =
-      profile_manager->GetProfileAttributesStorage().GetAllProfilesAttributes();
-  int number_of_active_profiles =
-      std::count_if(profile_attributes.begin(), profile_attributes.end(),
-                    [](ProfileAttributesEntry* entry) {
-                      return (base::Time::Now() - entry->GetActiveTime() <
-                              kActiveTimeThreshold) &&
-                             !entry->IsGuest();
-                    });
-  // Don't show the profile picker at launch if the user has less than two
-  // active profiles. However, if the user has already seen the profile picker
-  // before, respect user's preference.
-  if (number_of_active_profiles < 2 && !ProfilePickerShown())
     return false;
 
   bool pref_enabled = g_browser_process->local_state()->GetBoolean(

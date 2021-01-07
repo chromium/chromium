@@ -83,7 +83,6 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kBrowserProfilePickerAvailabilityOnStartup,
       static_cast<int>(ProfilePicker::AvailabilityOnStartup::kEnabled));
-  registry->RegisterBooleanPref(prefs::kBrowserProfilePickerShown, false);
 }
 
 void SetLastUsedProfile(const std::string& profile_dir) {
