@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DOM_DISTILLER_IOS_DISTILLER_PAGE_IOS_H_
 #define COMPONENTS_DOM_DISTILLER_IOS_DISTILLER_PAGE_IOS_H_
 
-#include <objc/objc.h>
 #include <memory>
 #include <string>
 
@@ -52,7 +51,7 @@ class DistillerPageIOS : public DistillerPage, public web::WebStateObserver {
 
  private:
   // Called once the |script_| has been evaluated on the page.
-  void HandleJavaScriptResult(id result);
+  void HandleJavaScriptResult(const base::Value* result);
 
   // web::WebStateObserver implementation.
   void PageLoaded(

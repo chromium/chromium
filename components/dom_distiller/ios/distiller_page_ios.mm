@@ -13,12 +13,9 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/string_split.h"
-#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "ios/web/public/browser_state.h"
-#import "ios/web/public/deprecated/crw_js_injection_manager.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state.h"
@@ -40,11 +37,13 @@ namespace {
 
 int const kMaximumParsingRecursionDepth = 6;
 
-// Converts result of WKWebView script evaluation to base::Value, parsing
-// |wk_result| up to a depth of |max_depth|.
-base::Value ValueResultFromScriptResult(id wk_result, int max_depth) {
+// Returns a clone of |value| where double values are converted to integers if
+// the numbers has no fraction. |value| is only processed up to |max_depth|.
+base::Value ConvertedResultFromScriptResult(const base::Value* value,
+                                            int max_depth) {
   base::Value result;
-  if (!wk_result) {
+  if (!value || value->is_none()) {
+    DCHECK_EQ(result.type(), base::Value::Type::NONE);
     return result;
   }
 
@@ -53,52 +52,48 @@ base::Value ValueResultFromScriptResult(id wk_result, int max_depth) {
     return result;
   }
 
-  CFTypeID result_type = CFGetTypeID(reinterpret_cast<CFTypeRef>(wk_result));
-  if (result_type == CFStringGetTypeID()) {
-    result = base::Value(base::SysNSStringToUTF8(wk_result));
+  if (value->is_string()) {
+    result = base::Value(value->GetString());
     DCHECK_EQ(result.type(), base::Value::Type::STRING);
-  } else if (result_type == CFNumberGetTypeID()) {
+  } else if (value->is_double()) {
     // Different implementation is here.
-    if ([wk_result intValue] != [wk_result doubleValue]) {
-      result = base::Value([wk_result doubleValue]);
-      DCHECK_EQ(result.type(), base::Value::Type::DOUBLE);
-    } else {
-      result = base::Value([wk_result intValue]);
+    double double_value = value->GetDouble();
+    int int_value = round(double_value);
+    if (double_value == int_value) {
+      result = base::Value(int_value);
       DCHECK_EQ(result.type(), base::Value::Type::INTEGER);
+    } else {
+      result = base::Value(double_value);
+      DCHECK_EQ(result.type(), base::Value::Type::DOUBLE);
     }
     // End of different implementation.
-  } else if (result_type == CFBooleanGetTypeID()) {
-    result = base::Value(static_cast<bool>([wk_result boolValue]));
+  } else if (value->is_bool()) {
+    result = base::Value(value);
     DCHECK_EQ(result.type(), base::Value::Type::BOOLEAN);
-  } else if (result_type == CFNullGetTypeID()) {
-    DCHECK_EQ(result.type(), base::Value::Type::NONE);
-  } else if (result_type == CFDictionaryGetTypeID()) {
+  } else if (value->is_dict()) {
     base::Value dictionary(base::Value::Type::DICTIONARY);
-    for (id key in wk_result) {
-      NSString* obj_c_string = base::mac::ObjCCast<NSString>(key);
-      base::Value value =
-          ValueResultFromScriptResult(wk_result[obj_c_string], max_depth - 1);
+    for (const auto kv : value->DictItems()) {
+      base::Value item_value =
+          ConvertedResultFromScriptResult(&kv.second, max_depth - 1);
 
-      if (value.type() == base::Value::Type::NONE) {
+      if (item_value.type() == base::Value::Type::NONE) {
         return result;
       }
-
-      std::string combined_path = base::SysNSStringToUTF8(obj_c_string);
-      std::vector<base::StringPiece> path = base::SplitStringPiece(
-          combined_path, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-      dictionary.SetPath(path, std::move(value));
+      dictionary.SetPath(kv.first, std::move(item_value));
     }
     result = std::move(dictionary);
     DCHECK_EQ(result.type(), base::Value::Type::DICTIONARY);
-  } else if (result_type == CFArrayGetTypeID()) {
+
+  } else if (value->is_list()) {
     std::vector<base::Value> list;
-    for (id list_item in wk_result) {
-      base::Value value = ValueResultFromScriptResult(list_item, max_depth - 1);
-      if (value.type() == base::Value::Type::NONE) {
+    for (const base::Value& list_item : value->GetList()) {
+      base::Value converted_item =
+          ConvertedResultFromScriptResult(&list_item, max_depth - 1);
+      if (converted_item.type() == base::Value::Type::NONE) {
         return result;
       }
 
-      list.push_back(std::move(value));
+      list.push_back(std::move(converted_item));
     }
     result = base::Value(list);
     DCHECK_EQ(result.type(), base::Value::Type::LIST);
@@ -214,19 +209,14 @@ void DistillerPageIOS::OnLoadURLDone(
   }
   // Inject the script.
   base::WeakPtr<DistillerPageIOS> weak_this = weak_ptr_factory_.GetWeakPtr();
-  [[web_state_->GetJSInjectionReceiver()
-      instanceOfClass:[CRWJSInjectionManager class]]
-      executeJavaScript:base::SysUTF8ToNSString(script_)
-      completionHandler:^(id result, NSError* error) {
-        DistillerPageIOS* distiller_page = weak_this.get();
-        if (distiller_page)
-          distiller_page->HandleJavaScriptResult(result);
-      }];
+  web_state_->ExecuteJavaScript(
+      base::UTF8ToUTF16(script_),
+      base::BindOnce(&DistillerPageIOS::HandleJavaScriptResult, weak_this));
 }
 
-void DistillerPageIOS::HandleJavaScriptResult(id result) {
+void DistillerPageIOS::HandleJavaScriptResult(const base::Value* result) {
   base::Value result_as_value =
-      ValueResultFromScriptResult(result, kMaximumParsingRecursionDepth);
+      ConvertedResultFromScriptResult(result, kMaximumParsingRecursionDepth);
 
   OnDistillationDone(url_, &result_as_value);
 }
