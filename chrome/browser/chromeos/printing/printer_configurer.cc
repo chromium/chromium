@@ -103,17 +103,6 @@ PrinterSetupResult PrinterSetupResultFromDbusErrorCode(
   }
 }
 
-// Records whether a |printer| contains a valid PpdReference defined as having
-// either autoconf or a ppd reference set.
-void RecordValidPpdReference(const Printer& printer) {
-  const auto& ppd_ref = printer.ppd_reference();
-  // A PpdReference is valid if exactly one field is set in PpdReference.
-  int refs = ppd_ref.autoconf ? 1 : 0;
-  refs += !ppd_ref.user_supplied_ppd_url.empty() ? 1 : 0;
-  refs += !ppd_ref.effective_make_and_model.empty() ? 1 : 0;
-  base::UmaHistogramBoolean("Printing.CUPS.ValidPpdReference", refs == 1);
-}
-
 // Configures printers by downloading PPDs then adding them to CUPS through
 // debugd.  This class must be used on the UI thread.
 class PrinterConfigurerImpl : public PrinterConfigurer {
@@ -129,8 +118,6 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     DCHECK(!printer.id().empty());
     DCHECK(printer.HasUri());
     PRINTER_LOG(USER) << printer.make_and_model() << " Printer setup requested";
-    // Record if autoconf and a PPD are set.  crbug.com/814374.
-    RecordValidPpdReference(printer);
 
     if (!printer.IsIppEverywhere()) {
       PRINTER_LOG(DEBUG) << printer.make_and_model() << " Lookup PPD";

@@ -350,6 +350,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.ValidPpdReference" enum="BooleanSuccess"
     expires_after="2020-08-01">
+  <obsolete>
+    Data no longer needed. Bug is resolved. 2020-12.
+  </obsolete>
   <owner>skau@chromium.org</owner>
   <owner>luum@chromium.org</owner>
   <summary>
