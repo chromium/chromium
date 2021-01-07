@@ -187,14 +187,9 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
 
 }  // namespace
 
-// Flaky on ChromeOS and Lacros (https://crbug.com/1033009)
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_GuestDevToolsReloadsEmbedder DISABLED_GuestDevToolsReloadsEmbedder
-#else
-#define MAYBE_GuestDevToolsReloadsEmbedder GuestDevToolsReloadsEmbedder
-#endif
+// Flaky (https://crbug.com/1033009)
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
-                       MAYBE_GuestDevToolsReloadsEmbedder) {
+                       DISABLED_GuestDevToolsReloadsEmbedder) {
   GURL data_url("data:application/pdf,foo");
   ui_test_utils::NavigateToURL(browser(), data_url);
   auto* embedder_web_contents =
