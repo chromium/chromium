@@ -5695,10 +5695,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 }
 
 // Test for https://crbug.com/515302. Perform two navigations, A1 -> B2 -> A3,
-// and drop the FrameHostMsg_Unload_ACK from the A1 -> B2 navigation, so that
-// the second B2 -> A3 navigation is initiated before the first page receives
-// the FrameHostMsg_Unload_ACK. Ensure that this doesn't crash and that the
-// RVH(A1) is not reused in that case.
+// and drop the mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame from the A1
+// -> B2 navigation, so that the second B2 -> A3 navigation is initiated before
+// the first page receives the
+// mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame. Ensure that this
+// doesn't crash and that the RVH(A1) is not reused in that case.
 #if defined(OS_MAC)
 #define MAYBE_RenderViewHostIsNotReusedAfterDelayedUnloadACK \
   DISABLED_RenderViewHostIsNotReusedAfterDelayedUnloadACK
@@ -5719,11 +5720,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   SiteInstanceImpl* site_instance = rfh->GetSiteInstance();
   RenderFrameDeletedObserver deleted_observer(rfh);
 
-  // Install a BrowserMessageFilter to drop FrameHostMsg_Unload_ACK messages in
-  // A's process.
-  auto filter = base::MakeRefCounted<DropMessageFilter>(
-      FrameMsgStart, FrameHostMsg_Unload_ACK::ID);
-  rfh->GetProcess()->AddFilter(filter.get());
+  // Install a BrowserMessageFilter to drop
+  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame messages in A's
+  // process.
+  auto unload_ack_filter = base::BindRepeating([] { return true; });
+  rfh->SetUnloadACKCallbackForTesting(unload_ack_filter);
   rfh->DisableUnloadTimerForTesting();
 
   // Navigate to B.  This must wait for DidCommitProvisionalLoad and not
@@ -5737,8 +5738,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // The previous RFH should be either:
   // 1) In the BackForwardCache, if back-forward cache is enabled.
-  // 2) Pending deletion otherwise, since the FrameHostMsg_Unload_ACK for A->B
-  // is dropped.
+  // 2) Pending deletion otherwise, since the
+  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame for A->B is dropped.
   EXPECT_THAT(
       rfh->lifecycle_state(),
       testing::AnyOf(
@@ -5747,8 +5748,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
           testing::Eq(
               RenderFrameHostImpl::LifecycleState::kInBackForwardCache)));
 
-  // Without the FrameHostMsg_Unload_ACK and timer, the process A will never
-  // shutdown. Simulate the process being killed now.
+  // Without the mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame and timer,
+  // the process A will never shutdown. Simulate the process being killed now.
   content::RenderProcessHostWatcher crash_observer(
       rvh->GetProcess(),
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
@@ -9454,9 +9455,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Disable the unload ACK and the unload timer.
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
       shell()->web_contents()->GetMainFrame());
-  auto filter = base::MakeRefCounted<DropMessageFilter>(
-      FrameMsgStart, FrameHostMsg_Unload_ACK::ID);
-  rfh->GetProcess()->AddFilter(filter.get());
+  auto unload_ack_filter = base::BindRepeating([] { return true; });
+  rfh->SetUnloadACKCallbackForTesting(unload_ack_filter);
   rfh->DisableUnloadTimerForTesting();
 
   // Open a popup on a.com to keep the process alive.
@@ -11905,8 +11905,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // The previous RFH should be either:
   // 1) In the BackForwardCache, or
-  // 2) Pending deletion, waiting for the FrameHostMsg_Unload_ACK.
-  // As a result, it must still be alive.
+  // 2) Pending deletion, waiting for the
+  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame. As a result, it must
+  // still be alive.
   ASSERT_TRUE(rfh->IsRenderFrameLive());
   EXPECT_THAT(
       rfh->lifecycle_state(),
@@ -12520,9 +12521,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, SizeAvailableAfterCommit) {
   EXPECT_GT(height, 0);
 }
 
-// Test that a late FrameHostMsg_Unload_ACK won't incorrectly mark
-// RenderViewHost as inactive if it's already been reused and switched to active
-// by another navigation.  See https://crbug.com/823567.
+// Test that a late mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame won't
+// incorrectly mark RenderViewHost as inactive if it's already been reused and
+// switched to active by another navigation.  See https://crbug.com/823567.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        RenderViewHostStaysActiveWithLateUnloadACK) {
   EXPECT_TRUE(NavigateToURL(
@@ -12537,9 +12538,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderViewHostImpl* rvh = rfh->render_view_host();
 
   // Disable the unload ACK and the unload timer.
-  auto filter = base::MakeRefCounted<DropMessageFilter>(
-      FrameMsgStart, FrameHostMsg_Unload_ACK::ID);
-  rfh->GetProcess()->AddFilter(filter.get());
+  auto unload_ack_filter = base::BindRepeating([] { return true; });
+  rfh->SetUnloadACKCallbackForTesting(unload_ack_filter);
   rfh->DisableUnloadTimerForTesting();
 
   // Navigate popup to b.com.  Because there's an opener, the RVH for a.com
@@ -12566,7 +12566,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   popup_contents->GetController().GoBack();
 
   // Pretend that the original RFH in a.com now finishes running its unload
-  // handler and sends the FrameHostMsg_Unload_ACK.
+  // handler and sends the mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame.
   rfh->OnUnloaded();
 
   // Wait for the new a.com navigation to finish.
@@ -12943,9 +12943,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(start_url, rfh->GetLastCommittedURL());
 
   // Disable the unload ACK and the unload timer.
-  auto filter = base::MakeRefCounted<DropMessageFilter>(
-      FrameMsgStart, FrameHostMsg_Unload_ACK::ID);
-  rfh->GetProcess()->AddFilter(filter.get());
+  auto unload_ack_filter = base::BindRepeating([] { return true; });
+  rfh->SetUnloadACKCallbackForTesting(unload_ack_filter);
   rfh->DisableUnloadTimerForTesting();
 
   // Open a popup on a.com to keep the process alive.

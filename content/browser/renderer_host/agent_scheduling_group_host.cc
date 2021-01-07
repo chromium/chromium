@@ -12,6 +12,7 @@
 #include "base/supports_user_data.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host_factory.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
@@ -347,6 +348,16 @@ AgentSchedulingGroupHostFactory* AgentSchedulingGroupHost::
     get_agent_scheduling_group_host_factory_for_testing() {
   DCHECK(g_agent_scheduling_group_host_factory_);
   return g_agent_scheduling_group_host_factory_;
+}
+
+void AgentSchedulingGroupHost::DidUnloadRenderFrame(
+    const base::UnguessableToken& frame_token) {
+  // |frame_host| could be null if we decided to remove the RenderFrameHostImpl
+  // because the Unload request took too long.
+  if (auto* frame_host =
+          RenderFrameHostImpl::FromFrameToken(process_.GetID(), frame_token)) {
+    frame_host->OnUnloadACK();
+  }
 }
 
 void AgentSchedulingGroupHost::GetRoute(

@@ -2652,7 +2652,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       root->render_manager()->GetRenderFrameProxyHost(web_ui_site_instance));
 
   // The previous RFH should still be pending deletion, as we wait for either
-  // the FrameHostMsg_Unload_ACK or a timeout.
+  // the mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame or a timeout.
   ASSERT_TRUE(rfh->IsRenderFrameLive());
   ASSERT_TRUE(rfh->IsPendingDeletion());
 
@@ -3400,7 +3400,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_TRUE(root->render_manager()->GetRenderFrameProxyHost(site_instance_a));
 
   // The previous RFH should still be pending deletion, as we wait for either
-  // the FrameHostMsg_Unload_ACK or a timeout.
+  // the mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame or a timeout.
   ASSERT_TRUE(rfh_a->IsRenderFrameLive());
   ASSERT_TRUE(rfh_a->IsPendingDeletion());
 
@@ -8191,7 +8191,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 
   // Set up an unload handler which never finishes to force |rfh| to stay
   // around in pending delete state and never receive the
-  // FrameHostMsg_Unload_ACK.
+  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame.
   EXPECT_TRUE(
       ExecuteScript(rfh, "window.onunload = function(e) { while(1); };\n"));
   rfh->DisableUnloadTimerForTesting();
@@ -8222,7 +8222,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
   rfh->GetProcess()->Shutdown(0);
   crash_observer.Wait();
 
-  // The process kill should simulate a FrameHostMsg_Unload_ACK and trigger
+  // The process kill should simulate a
+  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame and trigger
   // destruction of the pending delete RFH.
   rfh_observer.WaitUntilDeleted();
 

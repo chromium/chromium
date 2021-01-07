@@ -1233,10 +1233,11 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   //    associated RenderView will clean up the resources associated with the
   //    main RenderFrame.
   // 2. The RenderFrame can be unloaded. In this case, the browser sends a
-  //    UnfreezableFrameMsg_Unload for the RenderFrame to replace itself with a
-  //    RenderFrameProxy and release its associated resources.
-  //    |lifecycle_state_| is advanced to LifeCycleState::kRunningUnloadHandlers
-  //    to track that this IPC is in flight.
+  //    mojom::FrameNavigationControl::UnloadFrame message for the RenderFrame
+  //    to replace itself with a RenderFrameProxy and release its associated
+  //    resources. |lifecycle_state_| is advanced to
+  //    LifeCycleState::kRunningUnloadHandlers to track that this IPC is in
+  //    flight.
   // 3. The RenderFrame can be detached, as part of removing a subtree (due to
   //    navigation, unload, or DOM mutation). In this case, the browser sends
   //    a UnfreezableFrameMsg_Delete for the RenderFrame to detach itself and
@@ -1944,7 +1945,6 @@ bool RenderFrameHostImpl::OnMessageReceived(const IPC::Message& msg) {
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(RenderFrameHostImpl, msg)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_Unload_ACK, OnUnloadACK)
     IPC_MESSAGE_HANDLER(FrameHostMsg_ContextMenu, OnContextMenu)
   IPC_END_MESSAGE_MAP()
 
@@ -3294,10 +3294,10 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   if (proxy) {
     SetLifecycleState(LifecycleState::kRunningUnloadHandlers);
     if (IsRenderFrameLive()) {
-      Send(new UnfreezableFrameMsg_Unload(
-          routing_id_, proxy->GetRoutingID(), is_loading,
+      GetNavigationControl()->Unload(
+          proxy->GetRoutingID(), is_loading,
           proxy->frame_tree_node()->current_replication_state(),
-          proxy->GetFrameToken()));
+          proxy->GetFrameToken());
       // Remember that a RenderFrameProxy was created as part of processing the
       // Unload message above.
       proxy->SetRenderFrameProxyCreated(true);
@@ -3309,7 +3309,7 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
 
     // The unload handlers already ran for this document during the
     // local<->local swap. Hence, there is no need to send
-    // UnfreezableFrameMsg_Unload here. It can be marked at completed.
+    // mojo::FrameNavigationControl::Unload here. It can be marked at completed.
     SetLifecycleState(LifecycleState::kReadyToBeDeleted);
   }
 
@@ -3323,6 +3323,12 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   // dead branches now. This is a performance optimization.
   PendingDeletionCheckCompletedOnSubtree();
   // |this| is potentially deleted. Do not add code after this.
+}
+
+void RenderFrameHostImpl::SwapOuterDelegateFrame(RenderFrameProxyHost* proxy) {
+  GetNavigationControl()->Unload(proxy->GetRoutingID(), /*is_loading=*/false,
+                                 frame_tree_node()->current_replication_state(),
+                                 proxy->GetFrameToken());
 }
 
 void RenderFrameHostImpl::DetachFromProxy() {
@@ -3495,6 +3501,11 @@ bool RenderFrameHostImpl::BeforeUnloadTimedOut() const {
 }
 
 void RenderFrameHostImpl::OnUnloadACK() {
+  // Give the tests a chance to override this sequence.
+  if (unload_ack_callback_ && unload_ack_callback_.Run()) {
+    return;
+  }
+
   if (frame_tree_node_->render_manager()->is_attaching_inner_delegate()) {
     // This RFH was unloaded while attaching an inner delegate. The RFH
     // will stay around but it will no longer be associated with a RenderFrame.
@@ -4388,6 +4399,13 @@ void RenderFrameHostImpl::SetCreateNewPopupCallbackForTesting(
   // This DCHECK aims to avoid unexpected replacement of a callback.
   DCHECK(!create_new_popup_widget_callback_ || !callback);
   create_new_popup_widget_callback_ = callback;
+}
+
+void RenderFrameHostImpl::SetUnloadACKCallbackForTesting(
+    const UnloadACKCallbackForTesting& callback) {
+  // This DCHECK aims to avoid unexpected replacement of a callback.
+  DCHECK(!unload_ack_callback_ || !callback);
+  unload_ack_callback_ = callback;
 }
 
 void RenderFrameHostImpl::DidBlockNavigation(

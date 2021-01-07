@@ -1385,8 +1385,8 @@ void NavigationSimulatorImpl::StopLoading() {
 void NavigationSimulatorImpl::
     SimulateUnloadCompletionCallbackForPreviousFrameIfNeeded(
         RenderFrameHostImpl* previous_rfh) {
-  // Do not dispatch FrameHostMsg_Unload_ACK if the navigation was committed in
-  // the same RenderFrameHost.
+  // Do not dispatch mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame if the
+  // navigation was committed in the same RenderFrameHost.
   if (previous_rfh == render_frame_host_)
     return;
   if (drop_unload_ack_)
@@ -1397,11 +1397,10 @@ void NavigationSimulatorImpl::
     return;
   // The previous RenderFrameHost entered the back-forward cache and hasn't been
   // requested to unload. The browser process do not expect
-  // FrameHostMsg_Unload_ACK.
+  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame.
   if (previous_rfh->IsInBackForwardCache())
     return;
-  previous_rfh->OnMessageReceived(
-      FrameHostMsg_Unload_ACK(previous_rfh->GetRoutingID()));
+  previous_rfh->OnUnloadACK();
 }
 
 }  // namespace content

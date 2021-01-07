@@ -155,6 +155,11 @@ void AgentSchedulingGroup::RemoveRoute(int32_t routing_id) {
   render_thread_.RemoveRoute(routing_id);
 }
 
+void AgentSchedulingGroup::DidUnloadRenderFrame(
+    const base::UnguessableToken& frame_token) {
+  host_remote_->DidUnloadRenderFrame(frame_token);
+}
+
 mojom::RouteProvider* AgentSchedulingGroup::GetRemoteRouteProvider() {
   DCHECK(remote_route_provider_);
   return remote_route_provider_.get();

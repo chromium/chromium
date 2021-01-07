@@ -20,14 +20,6 @@
 
 #define IPC_MESSAGE_START UnfreezableFrameMsgStart
 
-// Unload this RenderFrame and replace it by a RenderFrameProxy, so
-// the frame can navigate to a document rendered by a different process.
-IPC_MESSAGE_ROUTED4(UnfreezableFrameMsg_Unload,
-                    int /* proxy_routing_id */,
-                    bool /* is_loading */,
-                    content::FrameReplicationState /* replication_state */,
-                    base::UnguessableToken /*proxy_frame_token*/)
-
 // Instructs the renderer to delete the RenderFrame.
 IPC_MESSAGE_ROUTED1(UnfreezableFrameMsg_Delete, content::FrameDeleteIntention)
 

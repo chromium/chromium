@@ -1111,7 +1111,8 @@ TEST_P(RenderFrameHostManagerTest, WebUIWasCleared) {
 // See http://crbug.com/93427.
 TEST_P(RenderFrameHostManagerTest, NavigateAfterMissingUnloadACK) {
   // When a page enters the BackForwardCache, the RenderFrameHost is not
-  // deleted.  Similarly, no Unload_ACK message is sent.
+  // deleted.  Similarly, no
+  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame message is sent.
   contents()->GetController().GetBackForwardCache().DisableForTesting(
       BackForwardCache::TEST_ASSUMES_NO_CACHING);
   const GURL kUrl1("http://www.google.com/");
@@ -1129,9 +1130,10 @@ TEST_P(RenderFrameHostManagerTest, NavigateAfterMissingUnloadACK) {
   TestRenderFrameHost* rfh2 = main_test_rfh();
   rfh2->GetSiteInstance()->IncrementActiveFrameCount();
 
-  // Now go back, but suppose the Unload_ACK isn't received.  This shouldn't
-  // happen, but we have seen it when going back quickly across many entries
-  // (http://crbug.com/93427).
+  // Now go back, but suppose the
+  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame isn't received.  This
+  // shouldn't happen, but we have seen it when going back quickly across many
+  // entries (http://crbug.com/93427).
   auto back_navigation1 =
       NavigationSimulatorImpl::CreateHistoryNavigation(-1, contents());
   back_navigation1->ReadyToCommit();
@@ -1586,12 +1588,15 @@ TEST_P(RenderFrameHostManagerTest, CloseWithPendingWhileUnresponsive) {
 }
 
 // Tests that the RenderFrameHost is properly deleted when the
-// FrameHostMsg_Unload_ACK is received. (UnfreezableFrameMsg_Unload and the
-// corresponding FrameHostMsg_Unload_ACK always occur after commit.)
-// Also tests that an early FrameHostMsg_Unload_ACK is properly ignored.
+// mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame is received.
+// (mojo::FrameNavigationControl::Unload and the corresponding
+// mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame always occur after
+// commit.) Also tests that an early
+// mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame is properly ignored.
 TEST_P(RenderFrameHostManagerTest, DeleteFrameAfterUnloadACK) {
   // When a page enters the BackForwardCache, the RenderFrameHost is not
-  // deleted.  Similarly, no Unload_ACK message is sent.
+  // deleted.  Similarly, no
+  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame message is sent.
   contents()->GetController().GetBackForwardCache().DisableForTesting(
       BackForwardCache::TEST_ASSUMES_NO_CACHING);
   const GURL kUrl1("http://www.google.com/");
@@ -1635,11 +1640,14 @@ TEST_P(RenderFrameHostManagerTest, DeleteFrameAfterUnloadACK) {
 }
 
 // Tests that the RenderFrameHost is properly unloaded when the
-// FrameHostMsg_Unload_ACK is received. (UnfreezableFrameMsg_Unload and the
-// corresponding FrameHostMsg_Unload_ACK always occur after commit.)
+// mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame is received.
+// (mojo::FrameNavigationControl::Unload and the corresponding
+// mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame always occur after
+// commit.)
 TEST_P(RenderFrameHostManagerTest, UnloadFrameAfterUnloadACK) {
   // When a page enters the BackForwardCache, the RenderFrameHost is not
-  // deleted.  Similarly, no Unload_ACK message is sent.
+  // deleted.  Similarly, no
+  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame message is sent.
   contents()->GetController().GetBackForwardCache().DisableForTesting(
       BackForwardCache::TEST_ASSUMES_NO_CACHING);
   const GURL kUrl1("http://www.google.com/");
@@ -1680,13 +1688,14 @@ TEST_P(RenderFrameHostManagerTest, UnloadFrameAfterUnloadACK) {
 }
 
 // Test that a RenderFrameHost is properly deleted if a navigation in the new
-// renderer commits before sending the UnfreezableFrameMsg_Unload message to the
-// old renderer.
-// This simulates a cross-site navigation to a synchronously committing URL
-// (e.g., a data URL) and ensures it works properly.
+// renderer commits before sending the mojo::FrameNavigationControl::Unload
+// message to the old renderer. This simulates a cross-site navigation to a
+// synchronously committing URL (e.g., a data URL) and ensures it works
+// properly.
 TEST_P(RenderFrameHostManagerTest, CommitNewNavigationBeforeSendingUnload) {
   // When a page enters the BackForwardCache, the RenderFrameHost is not
-  // deleted.  Similarly, no Unload_ACK message is sent.
+  // deleted.  Similarly, no
+  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame message is sent.
   contents()->GetController().GetBackForwardCache().DisableForTesting(
       BackForwardCache::TEST_ASSUMES_NO_CACHING);
   const GURL kUrl1("http://www.google.com/");

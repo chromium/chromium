@@ -22,34 +22,43 @@ namespace content {
 // static
 std::unique_ptr<MockAgentSchedulingGroup> MockAgentSchedulingGroup::Create(
     RenderThread& render_thread) {
-  return (GetMBIMode() == features::MBIMode::kLegacy)
-             ? std::make_unique<MockAgentSchedulingGroup>(
-                   render_thread, mojo::PendingAssociatedReceiver<
-                                      mojom::AgentSchedulingGroup>())
-             : std::make_unique<MockAgentSchedulingGroup>(
-                   render_thread,
-                   mojo::PendingReceiver<IPC::mojom::ChannelBootstrap>());
+  auto agent_scheduling_group =
+      (GetMBIMode() == features::MBIMode::kLegacy)
+          ? std::make_unique<MockAgentSchedulingGroup>(
+                base::PassKey<MockAgentSchedulingGroup>(), render_thread,
+                mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>())
+          : std::make_unique<MockAgentSchedulingGroup>(
+                base::PassKey<MockAgentSchedulingGroup>(), render_thread,
+                mojo::PendingReceiver<IPC::mojom::ChannelBootstrap>());
+  agent_scheduling_group->Init();
+  return agent_scheduling_group;
 }
 
 MockAgentSchedulingGroup::MockAgentSchedulingGroup(
+    base::PassKey<MockAgentSchedulingGroup> pass_key,
     RenderThread& render_thread,
     mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
         pending_receiver)
     : AgentSchedulingGroup(render_thread, std::move(pending_receiver)) {}
 
 MockAgentSchedulingGroup::MockAgentSchedulingGroup(
+    base::PassKey<MockAgentSchedulingGroup> pass_key,
     RenderThread& render_thread,
     mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> pending_receiver)
     : AgentSchedulingGroup(render_thread, std::move(pending_receiver)) {}
 
-mojom::RouteProvider* MockAgentSchedulingGroup::GetRemoteRouteProvider() {
-  DCHECK(!RenderThreadImpl::current());
-  static base::NoDestructor<mojo::Remote<mojom::RouteProvider>> static_remote;
-  if (!static_remote->is_bound()) {
-    ignore_result(static_remote->BindNewPipeAndPassReceiver());
-  }
-  DCHECK(static_remote->is_bound());
-  return static_remote->get();
+void MockAgentSchedulingGroup::Init() {
+  mojo::AssociatedRemote<mojom::AgentSchedulingGroupHost>
+      agent_scheduling_group_host;
+  ignore_result(
+      agent_scheduling_group_host.BindNewEndpointAndPassDedicatedReceiver());
+  mojo::AssociatedRemote<mojom::RouteProvider> browser_route_provider;
+  ignore_result(
+      browser_route_provider.BindNewEndpointAndPassDedicatedReceiver());
+
+  BindAssociatedInterfaces(
+      agent_scheduling_group_host.Unbind(), browser_route_provider.Unbind(),
+      mojo::PendingAssociatedReceiver<mojom::RouteProvider>());
 }
 
 }  // namespace content

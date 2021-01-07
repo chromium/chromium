@@ -1564,11 +1564,7 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "editContext.updateLayout(control_bound, selection_bound);");
   // This RunLoop is waiting for EditContext to be created and layout bounds
   // to be updated in the EditContext.
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop.QuitClosure());
-  run_loop.Run();
-
+  base::RunLoop().RunUntilIdle();
   // Update the IME status and verify if our IME backend sends an IPC message
   // to notify layout bounds of the EditContext.
   main_frame_widget()->UpdateTextInputState();
@@ -1610,10 +1606,7 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "editContext.updateLayout(control_bound, selection_bound);");
   // This RunLoop is waiting for EditContext to be created and layout bounds
   // to be updated in the EditContext.
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop.QuitClosure());
-  run_loop.Run();
+  base::RunLoop().RunUntilIdle();
   // Update the IME status and verify if our IME backend sends an IPC message
   // to notify layout bounds of the EditContext.
   main_frame_widget()->UpdateTextInputState();
@@ -1656,10 +1649,7 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "editContext.updateLayout(control_bound, selection_bound);");
   // This RunLoop is waiting for EditContext to be created and layout bounds
   // to be updated in the EditContext.
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                run_loop.QuitClosure());
-  run_loop.Run();
+  base::RunLoop().RunUntilIdle();
   // Update the IME status and verify if our IME backend sends an IPC message
   // to notify layout bounds of the EditContext.
   main_frame_widget()->UpdateTextInputState();
@@ -2970,9 +2960,8 @@ TEST_F(RenderViewImplTest, DispatchBeforeUnloadCanDetachFrame) {
         EXPECT_EQ(base::UTF8ToUTF16("OnBeforeUnload called"), msg);
 
         // Unloads the main frame.
-        frame()->OnMessageReceived(UnfreezableFrameMsg_Unload(
-            frame()->GetRoutingID(), 1, false, FrameReplicationState(),
-            base::UnguessableToken::Create()));
+        frame()->Unload(1, false, FrameReplicationState(),
+                        base::UnguessableToken::Create());
 
         was_callback_run = true;
         run_loop.Quit();

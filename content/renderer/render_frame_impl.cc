@@ -2175,7 +2175,6 @@ bool RenderFrameImpl::OnMessageReceived(const IPC::Message& msg) {
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(RenderFrameImpl, msg)
-    IPC_MESSAGE_HANDLER(UnfreezableFrameMsg_Unload, OnUnload)
     IPC_MESSAGE_HANDLER(FrameMsg_ContextMenuClosed, OnContextMenuClosed)
     IPC_MESSAGE_HANDLER(FrameMsg_CustomContextMenuAction,
                         OnCustomContextMenuAction)
@@ -2249,12 +2248,12 @@ void RenderFrameImpl::BindNavigationClient(
 // a different process. We also allow this process to exit if there are no other
 // active RenderFrames in it.
 // This executes the unload handlers on this frame and its local descendants.
-void RenderFrameImpl::OnUnload(
+void RenderFrameImpl::Unload(
     int proxy_routing_id,
     bool is_loading,
     const FrameReplicationState& replicated_frame_state,
-    const base::UnguessableToken& frame_token) {
-  TRACE_EVENT1("navigation,rail", "RenderFrameImpl::OnUnload", "id",
+    const base::UnguessableToken& proxy_frame_token) {
+  TRACE_EVENT1("navigation,rail", "RenderFrameImpl::UnloadFrame", "id",
                routing_id_);
   DCHECK(!base::RunLoop::IsNestedOnCurrentThread());
 
@@ -2266,17 +2265,17 @@ void RenderFrameImpl::OnUnload(
   CHECK_NE(proxy_routing_id, MSG_ROUTING_NONE);
   RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyToReplaceFrame(
       agent_scheduling_group_, this, proxy_routing_id,
-      replicated_frame_state.scope, frame_token);
+      replicated_frame_state.scope, proxy_frame_token);
 
   RenderViewImpl* render_view = render_view_;
   bool is_main_frame = is_main_frame_;
-  int routing_id = GetRoutingID();
   auto& agent_scheduling_group = agent_scheduling_group_;
+  base::UnguessableToken frame_token = frame_->GetFrameToken();
 
   // Before |this| is destroyed, grab the TaskRunner to be used for sending the
-  // FrameHostMsg_Unload_ACK.  This will be used to schedule
-  // FrameHostMsg_Unload_ACK to be sent after any postMessage IPCs scheduled
-  // from the unload event above.
+  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame.  This will be used to
+  // schedule mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame to be sent
+  // after any postMessage IPCs scheduled from the unload event above.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       GetTaskRunner(blink::TaskType::kPostedMessage);
 
@@ -2332,12 +2331,11 @@ void RenderFrameImpl::OnUnload(
   // ACK, so that any postMessage IPCs scheduled from the unload handler are
   // sent before the ACK (see https://crbug.com/857274).
   auto send_unload_ack = base::BindOnce(
-      [](AgentSchedulingGroup* agent_scheduling_group, int routing_id,
-         bool is_main_frame) {
-        auto* msg = new FrameHostMsg_Unload_ACK(routing_id);
-        agent_scheduling_group->Send(msg);
+      [](AgentSchedulingGroup* agent_scheduling_group,
+         const base::UnguessableToken& frame_token) {
+        agent_scheduling_group->DidUnloadRenderFrame(frame_token);
       },
-      &agent_scheduling_group, routing_id, is_main_frame);
+      &agent_scheduling_group, frame_token);
   task_runner->PostTask(FROM_HERE, std::move(send_unload_ack));
 }
 

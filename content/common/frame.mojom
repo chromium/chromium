@@ -216,6 +216,20 @@ interface FrameNavigationControl {
   // the sad iframe without waiting for the provisional RenderFrame's navigation
   // to commit.
   SwapIn();
+
+  // Unload this RenderFrame and replace it by a RenderFrameProxy, so the frame
+  // can navigate to a document rendered by a different process. The unload can
+  // fail if the RenderFrame is currently detached (it was removed from the
+  // frame tree before the Unload was received). If successful this message will
+  // send back AgentSchedulingGroupHost::DidUnloadRenderFrame message. This
+  // cannot be a standard reply callback because the unload acknowledgement must
+  // be posted back to the event loop to be invoked later. This is to ensure
+  // that any postMessage() calls executed by JS during unload are dispatched,
+  // since postMessage dispatch is always scheduled asynchronously.
+  Unload(int32 new_remote_frame_routing_id,
+         bool is_loading,
+         FrameReplicationState new_remote_frame_replication_state,
+         mojo_base.mojom.UnguessableToken new_remote_frame_token);
 };
 
 // Implemented by the frame (e.g. renderer processes).

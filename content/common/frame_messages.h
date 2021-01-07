@@ -345,11 +345,6 @@ IPC_MESSAGE_CONTROL3(FrameHostMsg_DidDeleteOutOfProcessPepperInstance,
 
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
-// Indicates that the current frame has finished running its unload handler (if
-// one was registered) and has been detached, as a response to
-// UnfreezableFrameMsg_Unload message from the browser process.
-IPC_MESSAGE_ROUTED0(FrameHostMsg_Unload_ACK)
-
 // Used to tell the parent that the user right clicked on an area of the
 // content area, and a context menu should be shown for it. The params
 // object contains information about the node(s) that were selected when the

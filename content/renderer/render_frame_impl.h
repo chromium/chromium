@@ -527,6 +527,10 @@ class CONTENT_EXPORT RenderFrameImpl
       JavaScriptExecuteRequestInIsolatedWorldCallback callback) override;
   void SetWantErrorMessageStackTrace() override;
   void SwapIn() override;
+  void Unload(int proxy_routing_id,
+              bool is_loading,
+              const FrameReplicationState& replicated_frame_state,
+              const base::UnguessableToken& frame_token) override;
 
   // mojom::MhtmlFileWriter implementation:
   void SerializeAsMHTML(const mojom::SerializeAsMHTMLParamsPtr params,
@@ -899,10 +903,6 @@ class CONTENT_EXPORT RenderFrameImpl
   //
   // The documentation for these functions should be in
   // content/common/*_messages.h for the message that the function is handling.
-  void OnUnload(int proxy_routing_id,
-                bool is_loading,
-                const FrameReplicationState& replicated_frame_state,
-                const base::UnguessableToken& frame_token);
   void OnDeleteFrame(FrameDeleteIntention intent);
   void OnShowContextMenu(const gfx::Point& location);
   void OnContextMenuClosed(const CustomContextMenuContext& custom_context);

@@ -216,6 +216,13 @@ struct CreateFrameParams {
 // AgentSchedulingGroup and the browser process's AgentSchedulingGroupHost.
 // Implemented by AgentSchedulingGroupHost (in the browser process).
 interface AgentSchedulingGroupHost {
+  // Acknowledge a RenderFrame was unloaded due to NavigationControl::Unload().
+  // This is not simply a reply callback on NavigationControl::Unload() because
+  // it needs to be invoked after the AssociatedReceiver (owned by RenderFrame)
+  // is already destroyed. This timing is required to ensure that any scheduled
+  // postMessages are dispatched prior to acknowledging the unload (which tears
+  // down the browser-side RFHI by removing it from the pending delete list)
+  DidUnloadRenderFrame(mojo_base.mojom.UnguessableToken frame_token);
 };
 
 // Interface for general communication between the browser process's

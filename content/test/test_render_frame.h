@@ -18,10 +18,6 @@
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 
-namespace base {
-class UnguessableToken;
-}
-
 namespace content {
 
 class MockFrameHost;
@@ -48,10 +44,6 @@ class TestRenderFrame : public RenderFrameImpl {
                          int error_code,
                          const net::ResolveErrorInfo& resolve_error_info,
                          const base::Optional<std::string>& error_page_content);
-  void Unload(int proxy_routing_id,
-              bool is_loading,
-              const FrameReplicationState& replicated_frame_state,
-              const base::UnguessableToken& frame_token);
   void BeginNavigation(std::unique_ptr<blink::WebNavigationInfo> info) override;
 
   mojom::DidCommitProvisionalLoadParamsPtr TakeLastCommitParams();

@@ -128,8 +128,8 @@ class RenderFrameImplTest : public RenderViewTest {
 
     RenderFrameImpl::FromWebFrame(
         view_->GetMainRenderFrame()->GetWebFrame()->FirstChild())
-        ->OnUnload(kFrameProxyRouteId, false, frame_replication_state,
-                   base::UnguessableToken::Create());
+        ->Unload(kFrameProxyRouteId, false, frame_replication_state,
+                 base::UnguessableToken::Create());
 
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         stub_browser_interface_broker;

@@ -46,7 +46,6 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.h"
 #include "content/common/navigation_params_utils.h"
-#include "content/common/unfreezable_frame_messages.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
@@ -488,7 +487,7 @@ void RenderFrameHostManager::UnloadOldFrame(
   // Now close any modal dialogs that would prevent us from unloading the frame.
   // This must be done separately from Unload(), so that the
   // ScopedPageLoadDeferrer is no longer on the stack when we send the
-  // UnfreezableFrameMsg_Unload message.
+  // mojo::FrameNavigationControl::Unload message.
   delegate_->CancelModalDialogsForRenderManager();
 
   // If the old RFH is not live, just return as there is no further work to do.
@@ -2608,11 +2607,7 @@ void RenderFrameHostManager::SwapOuterDelegateFrame(
   // TODO(lazyboy): This |is_loading| behavior might not be what we want,
   // investigate and fix.
   DCHECK_EQ(render_frame_host->GetSiteInstance(), proxy->GetSiteInstance());
-  render_frame_host->Send(new UnfreezableFrameMsg_Unload(
-      render_frame_host->GetRoutingID(), proxy->GetRoutingID(),
-      false /* is_loading */,
-      render_frame_host->frame_tree_node()->current_replication_state(),
-      proxy->GetFrameToken()));
+  render_frame_host->SwapOuterDelegateFrame(proxy);
   proxy->SetRenderFrameProxyCreated(true);
 }
 

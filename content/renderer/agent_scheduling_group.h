@@ -54,13 +54,22 @@ class CONTENT_EXPORT AgentSchedulingGroup
   bool Send(IPC::Message* message);
   void AddRoute(int32_t routing_id, IPC::Listener* listener);
   void RemoveRoute(int32_t routing_id);
+  void DidUnloadRenderFrame(const base::UnguessableToken& frame_token);
 
-  // This is virtual only for unit tests.
-  virtual mojom::RouteProvider* GetRemoteRouteProvider();
+  mojom::RouteProvider* GetRemoteRouteProvider();
 
   blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler() {
     return *agent_group_scheduler_;
   }
+
+ protected:
+  // mojom::AgentSchedulingGroup:
+  void BindAssociatedInterfaces(
+      mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
+          remote_host,
+      mojo::PendingAssociatedRemote<mojom::RouteProvider> remote_route_provider,
+      mojo::PendingAssociatedReceiver<mojom::RouteProvider>
+          route_provider_receiever) override;
 
  private:
   // IPC::Listener:
@@ -82,12 +91,6 @@ class CONTENT_EXPORT AgentSchedulingGroup
       const FrameReplicationState& replicated_state,
       const base::UnguessableToken& frame_token,
       const base::UnguessableToken& devtools_frame_token) override;
-  void BindAssociatedInterfaces(
-      mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
-          remote_host,
-      mojo::PendingAssociatedRemote<mojom::RouteProvider> remote_route_provider,
-      mojo::PendingAssociatedReceiver<mojom::RouteProvider>
-          route_provider_receiever) override;
 
   // mojom::RouteProvider
   void GetRoute(

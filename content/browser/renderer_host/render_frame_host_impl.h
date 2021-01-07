@@ -752,6 +752,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // deleted or deferred depending on its children's unload status.
   void Unload(RenderFrameProxyHost* proxy, bool is_loading);
 
+  // Unload this frame for the proxy. Similar to `Unload()` but without
+  // managing the lifecycle of this object.
+  void SwapOuterDelegateFrame(RenderFrameProxyHost* proxy);
+
+  // Process the acknowledgment of the unload of this frame from the renderer.
+  void OnUnloadACK();
+
   // Remove this frame and its children. This happens asynchronously, an IPC
   // round trip with the renderer process is needed to ensure children's unload
   // handlers are run.
@@ -820,7 +827,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // state. Then, the RenderFrameHost sends IPCs to the renderer process to
     // execute unload handlers and deletes the RenderFrame. The RenderFrameHost
     // waits for an ACK from the renderer process, either
-    // FrameHostMsg_Unload_ACK for a navigating frame or FrameHostMsg_Detach for
+    // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame for a navigating
+    // frame or FrameHostMsg_Detach for
     // its subframes, after which the RenderFrameHost transitions to
     // kReadyToBeDeleted state.
     //
@@ -1285,6 +1293,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Set a callback to listen to the |CreateNewPopupWidget| for testing.
   void SetCreateNewPopupCallbackForTesting(
       const CreateNewPopupWidgetCallbackForTesting& callback);
+
+  using UnloadACKCallbackForTesting = base::RepeatingCallback<bool()>;
+
+  // Set a callback to listen to the |OnUnloadACK| for testing.
+  void SetUnloadACKCallbackForTesting(
+      const UnloadACKCallbackForTesting& callback);
 
   // Posts a message from a frame in another process to the current renderer.
   void PostMessageEvent(
@@ -2047,7 +2061,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void UpdateRenderProcessHostFramePriorities();
 
   // IPC Message handlers.
-  void OnUnloadACK();
   void OnContextMenu(const UntrustworthyContextMenuParams& params);
   void OnForwardResourceTimingToParent(
       const ResourceTimingInfo& resource_timing);
@@ -2497,7 +2510,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // subframes have completed running unload handlers. If so, this function
   // destroys this frame. This will happen as soon as...
   // 1) The children in other processes have been deleted.
-  // 2) The ack (FrameHostMsg_Unload_ACK or mojom::FrameHost::Detach) has been
+  // 2) The ack (mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame or
+  // mojom::FrameHost::Detach) has been
   //    received. It means this frame in the renderer process is gone.
   void PendingDeletionCheckCompleted();
 
@@ -2712,7 +2726,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const int routing_id_;
 
   // Boolean indicating whether this RenderFrameHost is being actively used or
-  // is waiting for FrameHostMsg_Unload_ACK and thus pending deletion.
+  // is waiting for mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame and
+  // thus pending deletion.
   bool is_waiting_for_unload_ack_ = false;
 
   // Tracks the creation state of the RenderFrame in renderer process for this
@@ -3156,6 +3171,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Used to hear about CreateNewPopupWidget calls in tests.
   CreateNewPopupWidgetCallbackForTesting create_new_popup_widget_callback_;
+
+  // Used to hear about UnloadACK calls in tests.
+  UnloadACKCallbackForTesting unload_ack_callback_;
 
   // Mask of the active features tracked by the scheduler used by this frame.
   // This is used only for metrics.

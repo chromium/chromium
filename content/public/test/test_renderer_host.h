@@ -119,8 +119,9 @@ class RenderFrameHostTester {
   // parameter.
   virtual void SimulateBeforeUnloadCompleted(bool proceed) = 0;
 
-  // Simulates the FrameHostMsg_Unload_ACK that fires if you commit a cross-site
-  // navigation without making any network requests.
+  // Simulates the mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame that
+  // fires if you commit a cross-site navigation without making any network
+  // requests.
   virtual void SimulateUnloadACK() = 0;
 
   // Simulates the frame receiving a user activation.

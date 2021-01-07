@@ -97,6 +97,9 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   static AgentSchedulingGroupHostFactory*
   get_agent_scheduling_group_host_factory_for_testing();
 
+  // mojom::AgentSchedulingGroupHost overrides.
+  void DidUnloadRenderFrame(const base::UnguessableToken& frame_token) override;
+
  private:
   enum class LifecycleState {
     // Just instantiated, no route assigned yet.

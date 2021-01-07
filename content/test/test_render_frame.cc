@@ -293,14 +293,6 @@ void TestRenderFrame::NavigateWithError(
                      base::Unretained(mock_frame_host_.get())));
 }
 
-void TestRenderFrame::Unload(
-    int proxy_routing_id,
-    bool is_loading,
-    const FrameReplicationState& replicated_frame_state,
-    const base::UnguessableToken& frame_token) {
-  OnUnload(proxy_routing_id, is_loading, replicated_frame_state, frame_token);
-}
-
 void TestRenderFrame::BeginNavigation(
     std::unique_ptr<blink::WebNavigationInfo> info) {
   if (next_navigation_html_override_.has_value()) {

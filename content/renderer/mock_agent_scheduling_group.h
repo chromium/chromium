@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/types/pass_key.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
 #include "content/renderer/agent_scheduling_group.h"
@@ -27,15 +28,17 @@ class MockAgentSchedulingGroup : public AgentSchedulingGroup {
   static std::unique_ptr<MockAgentSchedulingGroup> Create(
       RenderThread& render_thread);
   MockAgentSchedulingGroup(
+      base::PassKey<MockAgentSchedulingGroup> pass_key,
       RenderThread& render_thread,
       mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
           pending_receiver);
   MockAgentSchedulingGroup(
+      base::PassKey<MockAgentSchedulingGroup> pass_key,
       RenderThread& render_thread,
       mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> pending_receiver);
 
  private:
-  mojom::RouteProvider* GetRemoteRouteProvider() override;
+  void Init();
 };
 
 }  // namespace content
