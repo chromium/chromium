@@ -8,6 +8,7 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "build/branding_buildflags.h"');
+GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "components/autofill/core/common/autofill_features.h"');
 GEN('#include "components/password_manager/core/common/password_manager_features.h"');
@@ -542,9 +543,13 @@ GEN('#if !defined(OS_MAC)');
 ].forEach(test => registerTest(...test));
 GEN('#endif  //!defined(OS_MAC)');
 
-GEN('#if !defined(OS_CHROMEOS)');
+GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
 [['DefaultBrowser', 'default_browser_browsertest.js'],
- ['ImportDataDialog', 'import_data_dialog_test.js'],
+].forEach(test => registerTest(...test));
+GEN('#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
+
+GEN('#if !defined(OS_CHROMEOS)');
+[['ImportDataDialog', 'import_data_dialog_test.js'],
  ['PeoplePageManageProfile', 'people_page_manage_profile_test.js'],
  ['SystemPage', 'system_page_tests.js'],
 ].forEach(test => registerTest(...test));

@@ -146,10 +146,12 @@ function createBrowserSettingsRoutes() {
     r.SAFETY_CHECK = r.BASIC.createSection('/safetyCheck', 'safetyCheck');
   }
 
+  // <if expr="not chromeos and not lacros">
   if (visibility.defaultBrowser !== false) {
     r.DEFAULT_BROWSER =
         r.BASIC.createSection('/defaultBrowser', 'defaultBrowser');
   }
+  // </if>
 
   r.SEARCH_ENGINES = r.SEARCH.createChild('/searchEngines');
 

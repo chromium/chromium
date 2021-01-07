@@ -10,7 +10,7 @@ export {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_p
 export {MultiStoreExceptionEntry} from './autofill_page/multi_store_exception_entry.js';
 export {MultiStorePasswordUiEntry} from './autofill_page/multi_store_password_ui_entry.js';
 export {PasswordManagerImpl, PasswordManagerProxy} from './autofill_page/password_manager_proxy.js';
-// <if expr="not chromeos">
+// <if expr="not chromeos and not lacros">
 export {DefaultBrowserBrowserProxyImpl} from './default_browser_page/default_browser_browser_proxy.js';
 // </if>
 export {ExtensionControlBrowserProxyImpl} from './extension_control_browser_proxy.m.js';

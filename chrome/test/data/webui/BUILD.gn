@@ -192,6 +192,7 @@ if (include_js_tests) {
 
     deps = [
       ":modulize",
+      "settings:preprocess",
       "//build:branding_buildflags",
       "//chrome/browser/ui",
       "//services/network/public/cpp",
@@ -232,6 +233,7 @@ if (include_js_tests) {
       "$root_gen_dir/chrome/test/data/webui/settings/pref_util_tests.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/prefs_test_cases.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/prefs_tests.m.js",
+      "$root_gen_dir/chrome/test/data/webui/settings/route_tests.js",
       "$root_gen_dir/chrome/test/data/webui/settings/settings_slider_tests.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/settings_textarea_tests.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/settings_toggle_button_tests.m.js",

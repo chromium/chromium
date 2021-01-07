@@ -26,7 +26,7 @@ import '../settings_page_css.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 // </if>
 
-// <if expr="not chromeos">
+// <if expr="not chromeos and not lacros">
 import '../default_browser_page/default_browser_page.js';
 // </if>
 

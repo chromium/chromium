@@ -5,8 +5,15 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/resources/settings/settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../namespace_rewrites.gni")
+
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir"
+  in_files = [ "route_tests.js" ]
+}
 
 group("modulize") {
   public_deps = [ ":modulize_local" ]

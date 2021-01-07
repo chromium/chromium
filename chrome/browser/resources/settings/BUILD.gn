@@ -146,8 +146,10 @@ preprocess_if_expr("preprocess") {
       "site_settings/android_info_browser_proxy.js",
     ]
   } else {
+    if (!is_chromeos_lacros) {
+      in_files += [ "default_browser_page/default_browser_browser_proxy.js" ]
+    }
     in_files += [
-      "default_browser_page/default_browser_browser_proxy.js",
       "people_page/import_data_browser_proxy.js",
       "people_page/manage_profile_browser_proxy.js",
       "system_page/system_page_browser_proxy.js",
@@ -326,8 +328,10 @@ preprocess_if_expr("preprocess_generated") {
   if (is_chromeos_ash) {
     in_files += [ "people_page/account_manager_browser_proxy.m.js" ]
   } else {
+    if (!is_chromeos_lacros) {
+      in_files += [ "default_browser_page/default_browser_page.js" ]
+    }
     in_files += [
-      "default_browser_page/default_browser_page.js",
       "people_page/import_data_dialog.js",
       "people_page/manage_profile.js",
       "system_page/system_page.js",
@@ -462,10 +466,10 @@ group("closure_compile_module") {
     "site_settings_page:closure_compile_module",
   ]
   if (!is_chromeos_ash) {
-    deps += [
-      "default_browser_page:closure_compile_module",
-      "system_page:closure_compile_module",
-    ]
+    if (!is_chromeos_lacros) {
+      deps += [ "default_browser_page:closure_compile_module" ]
+    }
+    deps += [ "system_page:closure_compile_module" ]
   }
 
   if (is_win) {
@@ -673,10 +677,10 @@ group("polymer3_elements") {
   ]
 
   if (!is_chromeos_ash) {
-    public_deps += [
-      "default_browser_page:web_components",
-      "system_page:web_components",
-    ]
+    if (!is_chromeos_lacros) {
+      public_deps += [ "default_browser_page:web_components" ]
+    }
+    public_deps += [ "system_page:web_components" ]
   }
 
   if (is_win) {

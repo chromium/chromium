@@ -131,7 +131,7 @@
             <iron-icon icon="cr:search"></iron-icon>
             $i18n{searchPageTitle}
           </a>
-    <if expr="not chromeos">
+    <if expr="not chromeos and not lacros">
           <a role="menuitem" id="defaultBrowser"
             href="/defaultBrowser"
             hidden="[[!pageVisibility.defaultBrowser]]">
