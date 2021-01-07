@@ -19,6 +19,16 @@ source_set("qr_code_generator") {
   public_deps = [ "//base" ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "qr_code_generator_unittest.cc" ]
+  deps = [
+    ":qr_code_generator",
+    "//base",
+    "//testing/gtest",
+  ]
+}
+
 if (enable_qr_print) {
   executable("qr_print") {
     sources = [ "qr_print.cc" ]

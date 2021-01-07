@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/strings/string_util.h"
-#include "chrome/common/qr_code_generator/dino_image.h"
-#include "chrome/common/qr_code_generator/qr_code_generator.h"
+#include "components/qr_code_generator/dino_image.h"
+#include "components/qr_code_generator/qr_code_generator.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
 

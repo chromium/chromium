@@ -3846,7 +3846,6 @@ test("unit_tests") {
     "../common/ini_parser_unittest.cc",
     "../common/net/safe_search_util_unittest.cc",
     "../common/pref_names_util_unittest.cc",
-    "../common/qr_code_generator/qr_code_generator_unittest.cc",
     "../renderer/chrome_content_renderer_client_unittest.cc",
     "../renderer/chrome_render_frame_observer_unittest.cc",
     "../renderer/instant_restricted_id_cache_unittest.cc",

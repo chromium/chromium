@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/qr_code_generator/qr_code_generator.h"
+#include "components/qr_code_generator/qr_code_generator.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 

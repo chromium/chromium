@@ -165,7 +165,6 @@ static_library("common") {
     "//chrome/common/net",
     "//chrome/common/privacy_budget",
     "//chrome/common/profiler",
-    "//chrome/common/qr_code_generator",
     "//chrome/common/search:mojo_bindings",
     "//chrome/installer/util:with_no_strings",
     "//components/cast_certificate",

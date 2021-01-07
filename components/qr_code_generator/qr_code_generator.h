@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_QR_CODE_GENERATOR_QR_CODE_GENERATOR_H_
-#define CHROME_COMMON_QR_CODE_GENERATOR_QR_CODE_GENERATOR_H_
+#ifndef COMPONENTS_QR_CODE_GENERATOR_QR_CODE_GENERATOR_H_
+#define COMPONENTS_QR_CODE_GENERATOR_QR_CODE_GENERATOR_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -141,4 +141,4 @@ class QRCodeGenerator {
   uint8_t clip_dump_;
 };
 
-#endif  // CHROME_COMMON_QR_CODE_GENERATOR_QR_CODE_GENERATOR_H_
+#endif  // COMPONENTS_QR_CODE_GENERATOR_QR_CODE_GENERATOR_H_

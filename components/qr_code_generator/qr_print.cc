@@ -14,7 +14,7 @@
 #include "base/containers/span.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/common/qr_code_generator/qr_code_generator.h"
+#include "components/qr_code_generator/qr_code_generator.h"
 
 // kTerminalBackgroundIsBright controls the output polarity. Many QR scanners
 // will cope with inverted bright / dark but, if you have a bright terminal

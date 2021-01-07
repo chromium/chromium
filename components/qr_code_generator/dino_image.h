@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_QR_CODE_GENERATOR_DINO_IMAGE_H_
-#define CHROME_COMMON_QR_CODE_GENERATOR_DINO_IMAGE_H_
+#ifndef COMPONENTS_QR_CODE_GENERATOR_DINO_IMAGE_H_
+#define COMPONENTS_QR_CODE_GENERATOR_DINO_IMAGE_H_
 
 // Contains constants clients use to to render a dino on top of a QR image.
 namespace dino_image {
@@ -68,4 +68,4 @@ static const unsigned char kDinoBody[kDinoWidthBytes * kDinoBodyHeight] = {
 };
 
 }  // namespace dino_image
-#endif  // CHROME_COMMON_QR_CODE_GENERATOR_DINO_IMAGE_H_
+#endif  // COMPONENTS_QR_CODE_GENERATOR_DINO_IMAGE_H_
