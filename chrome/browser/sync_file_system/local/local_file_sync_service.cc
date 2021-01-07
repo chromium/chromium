@@ -215,10 +215,11 @@ void LocalFileSyncService::PromoteDemotedChanges(
 }
 
 void LocalFileSyncService::GetLocalFileMetadata(
-    const FileSystemURL& url, const SyncFileMetadataCallback& callback) {
+    const FileSystemURL& url,
+    SyncFileMetadataCallback callback) {
   DCHECK(base::Contains(origin_to_contexts_, url.origin().GetURL()));
   sync_context_->GetFileMetadata(origin_to_contexts_[url.origin().GetURL()],
-                                 url, callback);
+                                 url, std::move(callback));
 }
 
 void LocalFileSyncService::PrepareForProcessRemoteChange(

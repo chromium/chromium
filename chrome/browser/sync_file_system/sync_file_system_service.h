@@ -69,7 +69,7 @@ class SyncFileSystemService
 
   // Returns the file |url|'s sync status.
   void GetFileSyncStatus(const storage::FileSystemURL& url,
-                         const SyncFileStatusCallback& callback);
+                         SyncFileStatusCallback callback);
 
   void AddSyncEventObserver(SyncEventObserver* observer);
   void RemoveSyncEventObserver(SyncEventObserver* observer);
@@ -127,7 +127,7 @@ class SyncFileSystemService
   // Overrides sync_enabled_ setting. This should be called only by tests.
   void SetSyncEnabledForTesting(bool enabled);
 
-  void DidGetLocalChangeStatus(const SyncFileStatusCallback& callback,
+  void DidGetLocalChangeStatus(SyncFileStatusCallback callback,
                                SyncStatusCode status,
                                bool has_pending_local_changes);
 

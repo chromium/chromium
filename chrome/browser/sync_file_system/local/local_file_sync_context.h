@@ -173,7 +173,7 @@ class LocalFileSyncContext
   // This must be called on UI thread.
   void GetFileMetadata(storage::FileSystemContext* file_system_context,
                        const storage::FileSystemURL& url,
-                       const SyncFileMetadataCallback& callback);
+                       SyncFileMetadataCallback callback);
 
   // Returns true via |callback| if the given file |url| has local pending
   // changes.
@@ -312,10 +312,9 @@ class LocalFileSyncContext
                             SyncStatusCallback callback_on_ui,
                             base::File::Error file_error);
 
-  void DidGetFileMetadata(
-      const SyncFileMetadataCallback& callback,
-      base::File::Error file_error,
-      const base::File::Info& file_info);
+  void DidGetFileMetadata(SyncFileMetadataCallback callback,
+                          base::File::Error file_error,
+                          const base::File::Info& file_info);
 
   base::TimeDelta NotifyChangesDuration();
 

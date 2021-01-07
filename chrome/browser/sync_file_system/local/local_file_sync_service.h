@@ -129,7 +129,7 @@ class LocalFileSyncService
 
   // Returns the metadata of a remote file pointed by |url|.
   virtual void GetLocalFileMetadata(const storage::FileSystemURL& url,
-                                    const SyncFileMetadataCallback& callback);
+                                    SyncFileMetadataCallback callback);
 
   // RemoteChangeProcessor overrides.
   void PrepareForProcessRemoteChange(

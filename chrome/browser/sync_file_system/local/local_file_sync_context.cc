@@ -437,14 +437,14 @@ void LocalFileSyncContext::RecordFakeLocalChange(
 void LocalFileSyncContext::GetFileMetadata(
     FileSystemContext* file_system_context,
     const FileSystemURL& url,
-    const SyncFileMetadataCallback& callback) {
+    SyncFileMetadataCallback callback) {
   // This is initially called on UI thread and to be relayed to IO thread.
   if (!io_task_runner_->RunsTasksInCurrentSequence()) {
     DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
     io_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&LocalFileSyncContext::GetFileMetadata, this,
-                       base::RetainedRef(file_system_context), url, callback));
+        FROM_HERE, base::BindOnce(&LocalFileSyncContext::GetFileMetadata, this,
+                                  base::RetainedRef(file_system_context), url,
+                                  std::move(callback)));
     return;
   }
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
@@ -457,7 +457,7 @@ void LocalFileSyncContext::GetFileMetadata(
           FileSystemOperation::GET_METADATA_FIELD_SIZE |
           FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
       base::BindOnce(&LocalFileSyncContext::DidGetFileMetadata, this,
-                     callback));
+                     std::move(callback)));
 }
 
 void LocalFileSyncContext::HasPendingLocalChanges(
@@ -1024,7 +1024,7 @@ void LocalFileSyncContext::DidApplyRemoteChange(
 }
 
 void LocalFileSyncContext::DidGetFileMetadata(
-    const SyncFileMetadataCallback& callback,
+    SyncFileMetadataCallback callback,
     base::File::Error file_error,
     const base::File::Info& file_info) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
@@ -1036,8 +1036,9 @@ void LocalFileSyncContext::DidGetFileMetadata(
     metadata.last_modified = file_info.last_modified;
   }
   ui_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(callback, FileErrorToSyncStatusCode(file_error),
-                                metadata));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), FileErrorToSyncStatusCode(file_error),
+                     metadata));
 }
 
 base::TimeDelta LocalFileSyncContext::NotifyChangesDuration() {

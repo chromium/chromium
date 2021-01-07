@@ -325,23 +325,23 @@ void SyncFileSystemService::DumpDatabase(const DumpFilesCallback& callback) {
                  AsWeakPtr(), callback));
 }
 
-void SyncFileSystemService::GetFileSyncStatus(
-    const FileSystemURL& url, const SyncFileStatusCallback& callback) {
+void SyncFileSystemService::GetFileSyncStatus(const FileSystemURL& url,
+                                              SyncFileStatusCallback callback) {
   DCHECK(local_service_);
   DCHECK(remote_service_);
 
   // It's possible to get an invalid FileEntry.
   if (!url.is_valid()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, SYNC_FILE_ERROR_INVALID_URL,
-                                  SYNC_FILE_STATUS_UNKNOWN));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), SYNC_FILE_ERROR_INVALID_URL,
+                       SYNC_FILE_STATUS_UNKNOWN));
     return;
   }
 
   local_service_->HasPendingLocalChanges(
-      url,
-      base::Bind(&SyncFileSystemService::DidGetLocalChangeStatus,
-                 AsWeakPtr(), callback));
+      url, base::BindOnce(&SyncFileSystemService::DidGetLocalChangeStatus,
+                          AsWeakPtr(), std::move(callback)));
 }
 
 void SyncFileSystemService::AddSyncEventObserver(SyncEventObserver* observer) {
@@ -620,13 +620,12 @@ void SyncFileSystemService::SetSyncEnabledForTesting(bool enabled) {
 }
 
 void SyncFileSystemService::DidGetLocalChangeStatus(
-    const SyncFileStatusCallback& callback,
+    SyncFileStatusCallback callback,
     SyncStatusCode status,
     bool has_pending_local_changes) {
-  callback.Run(
-      status,
-      has_pending_local_changes ?
-          SYNC_FILE_STATUS_HAS_PENDING_CHANGES : SYNC_FILE_STATUS_SYNCED);
+  std::move(callback).Run(status, has_pending_local_changes
+                                      ? SYNC_FILE_STATUS_HAS_PENDING_CHANGES
+                                      : SYNC_FILE_STATUS_SYNCED);
 }
 
 void SyncFileSystemService::OnRemoteServiceStateUpdated(
