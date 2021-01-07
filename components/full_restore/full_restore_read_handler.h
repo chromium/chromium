@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 
@@ -25,6 +26,10 @@ class RestoreData;
 // actual reading.
 class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler {
  public:
+  // The callback function to get the restore data when the reading operation is
+  // done.
+  using Callback = base::OnceCallback<void(std::unique_ptr<RestoreData>)>;
+
   static FullRestoreReadHandler* GetInstance();
 
   FullRestoreReadHandler();
@@ -33,10 +38,15 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler {
   FullRestoreReadHandler(const FullRestoreReadHandler&) = delete;
   FullRestoreReadHandler& operator=(const FullRestoreReadHandler&) = delete;
 
-  void ReadFromFile(const base::FilePath& profile_dir);
+  // Reads the restore data from |profile_path| on a background task runner, and
+  // calls |callback| when the reading operation is done.
+  void ReadFromFile(const base::FilePath& profile_path, Callback callback);
 
  private:
-  void OnGetRestoreData(const base::FilePath& file_path,
+  // Invoked when reading the restore data from |profile_path| is finished, and
+  // calls |callback| to notify that the reading operation is done.
+  void OnGetRestoreData(const base::FilePath& profile_path,
+                        Callback callback,
                         std::unique_ptr<RestoreData>);
 
   base::WeakPtrFactory<FullRestoreReadHandler> weak_factory_{this};

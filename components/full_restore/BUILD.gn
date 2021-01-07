@@ -44,11 +44,13 @@ source_set("unit_tests") {
 
   sources = [
     "full_restore_info_unittest.cc",
+    "full_restore_read_and_save_unittest.cc",
     "restore_data_unittest.cc",
   ]
 
   deps = [
     ":full_restore",
+    "//content/test:test_support",
     "//testing/gtest",
   ]
 }

@@ -49,6 +49,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler {
   // Save |window_info| to |profile_path_to_restore_data_|.
   void SaveWindowInfo(const WindowInfo& window_info);
 
+  base::OneShotTimer* GetTimerForTesting() { return &save_timer_; }
+
  private:
   // Starts the timer that invokes Save (if timer isn't already running).
   void MaybeStartSaveTimer();

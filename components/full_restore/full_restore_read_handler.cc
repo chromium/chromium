@@ -25,19 +25,23 @@ FullRestoreReadHandler::FullRestoreReadHandler() = default;
 
 FullRestoreReadHandler::~FullRestoreReadHandler() = default;
 
-void FullRestoreReadHandler::ReadFromFile(const base::FilePath& file_path) {
-  auto file_handler = base::MakeRefCounted<FullRestoreFileHandler>(file_path);
+void FullRestoreReadHandler::ReadFromFile(const base::FilePath& profile_path,
+                                          Callback callback) {
+  auto file_handler =
+      base::MakeRefCounted<FullRestoreFileHandler>(profile_path);
   file_handler->owning_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FullRestoreFileHandler::ReadFromFile, file_handler.get()),
       base::BindOnce(&FullRestoreReadHandler::OnGetRestoreData,
-                     weak_factory_.GetWeakPtr(), file_path));
+                     weak_factory_.GetWeakPtr(), profile_path,
+                     std::move(callback)));
 }
 
 void FullRestoreReadHandler::OnGetRestoreData(
-    const base::FilePath& file_path,
+    const base::FilePath& profile_path,
+    Callback callback,
     std::unique_ptr<RestoreData> restore_data) {
-  // TODO(crbug.com/1146900): Implement the restore_data saving.
+  std::move(callback).Run(std::move(restore_data));
 }
 
 }  // namespace full_restore
