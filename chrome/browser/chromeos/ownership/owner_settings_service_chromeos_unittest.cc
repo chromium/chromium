@@ -11,6 +11,7 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
@@ -21,6 +22,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/settings/cros_settings_names.h"
+#include "components/flags_ui/pref_service_flags_storage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace em = enterprise_management;
@@ -138,6 +140,12 @@ class OwnerSettingsServiceChromeOSTest : public DeviceSettingsTestBase {
     management_settings_set_ = success;
   }
 
+  const em::ChromeDeviceSettingsProto& device_settings() const {
+    const auto* settings = device_settings_service_->device_settings();
+    CHECK_NE(nullptr, settings);
+    return *settings;
+  }
+
  protected:
   OwnerSettingsServiceChromeOS* service_;
   ScopedTestingLocalState local_state_;
@@ -183,9 +191,8 @@ TEST_F(OwnerSettingsServiceChromeOSTest, FailedSetRequest) {
   checker.Wait();
 
   // Check that DeviceSettingsService's policy isn't updated.
-  ASSERT_EQ(current_channel, device_settings_service_->device_settings()
-                                 ->release_channel()
-                                 .release_channel());
+  ASSERT_EQ(current_channel,
+            device_settings().release_channel().release_channel());
 }
 
 TEST_F(OwnerSettingsServiceChromeOSTest, ForceAllowlist) {
@@ -286,6 +293,85 @@ TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersBothLists) {
             device_policy_->payload().user_allowlist().user_allowlist(0));
   EXPECT_EQ(0,
             device_policy_->payload().user_whitelist().user_whitelist().size());
+}
+
+TEST_F(OwnerSettingsServiceChromeOSTest, MigrateFeatureFlagsAbsent) {
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(device_settings().has_feature_flags());
+
+  // Force a settings write. No changes to feature flags or switches.
+  TestSingleSet(service_, kReleaseChannel, base::Value("dev-channel"));
+
+  EXPECT_FALSE(device_settings().has_feature_flags());
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.DeviceSettings.FeatureFlagsMigration",
+      FeatureFlagsMigrationStatus::kNoFeatureFlags, 1);
+}
+
+TEST_F(OwnerSettingsServiceChromeOSTest, MigrateFeatureFlagsNoSwitches) {
+  base::HistogramTester histogram_tester;
+  device_policy_->payload().mutable_feature_flags();
+  EXPECT_TRUE(device_policy_->payload().has_feature_flags());
+
+  // Force a settings write. No changes to feature flags.
+  TestSingleSet(service_, kReleaseChannel, base::Value("dev-channel"));
+
+  EXPECT_EQ(0, device_settings().feature_flags().feature_flags_size());
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.DeviceSettings.FeatureFlagsMigration",
+      FeatureFlagsMigrationStatus::kNoFeatureFlags, 1);
+}
+
+TEST_F(OwnerSettingsServiceChromeOSTest, MigrateFeatureFlagsSuccess) {
+  base::HistogramTester histogram_tester;
+  device_policy_->payload().mutable_feature_flags()->add_switches("--foobar");
+  device_policy_->Build();
+  session_manager_client_.set_device_policy(device_policy_->GetBlob());
+  ReloadDeviceSettings();
+
+  ASSERT_EQ(1, device_settings().feature_flags().switches_size());
+  EXPECT_EQ("--foobar", device_settings().feature_flags().switches(0));
+
+  flags_ui::PrefServiceFlagsStorage flags_storage(profile_->GetPrefs());
+  flags_storage.SetFlags({"feature-name"});
+
+  // Force a settings write. The switches field should be dropped and the
+  // feature_flags field be re-initialized from OwnerFlagsStorage.
+  TestSingleSet(service_, kReleaseChannel, base::Value("dev-channel"));
+
+  EXPECT_EQ(0, device_settings().feature_flags().switches_size());
+  ASSERT_EQ(1, device_settings().feature_flags().feature_flags_size());
+  EXPECT_EQ("feature-name", device_settings().feature_flags().feature_flags(0));
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.DeviceSettings.FeatureFlagsMigration",
+      FeatureFlagsMigrationStatus::kMigrationPerformed, 1);
+}
+
+TEST_F(OwnerSettingsServiceChromeOSTest, MigrateFeatureFlagsAlreadyMigrated) {
+  base::HistogramTester histogram_tester;
+  device_policy_->payload().mutable_feature_flags()->add_switches("--foobar");
+  device_policy_->payload().mutable_feature_flags()->add_feature_flags(
+      "feature-name");
+  device_policy_->Build();
+  session_manager_client_.set_device_policy(device_policy_->GetBlob());
+  ReloadDeviceSettings();
+
+  ASSERT_EQ(1, device_settings().feature_flags().switches_size());
+  EXPECT_EQ("--foobar", device_settings().feature_flags().switches(0));
+
+  flags_ui::PrefServiceFlagsStorage flags_storage(profile_->GetPrefs());
+  flags_storage.SetFlags({"feature-name-2"});
+
+  // Force a settings write. No migration should take place because the
+  // feature flags field is already populated.
+  TestSingleSet(service_, kReleaseChannel, base::Value("dev-channel"));
+
+  EXPECT_EQ(0, device_settings().feature_flags().switches_size());
+  ASSERT_EQ(1, device_settings().feature_flags().feature_flags_size());
+  EXPECT_EQ("feature-name", device_settings().feature_flags().feature_flags(0));
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.DeviceSettings.FeatureFlagsMigration",
+      FeatureFlagsMigrationStatus::kAlreadyMigrated, 1);
 }
 
 class OwnerSettingsServiceChromeOSNoOwnerTest

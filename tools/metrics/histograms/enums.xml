@@ -16844,6 +16844,12 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="3" label="Cancel"/>
 </enum>
 
+<enum name="DeviceSettingsFeatureFlagsMigrationStatus">
+  <int value="0" label="No feature flags present"/>
+  <int value="1" label="Migration already completed previously"/>
+  <int value="2" label="Migration has been performed"/>
+</enum>
+
 <enum name="DeviceSettingsStatus">
   <int value="0" label="STORE_SUCCESS"/>
   <int value="1" label="STORE_KEY_UNAVAILABLE"/>

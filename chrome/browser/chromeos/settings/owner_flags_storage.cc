@@ -29,20 +29,19 @@ OwnerFlagsStorage::OwnerFlagsStorage(
 OwnerFlagsStorage::~OwnerFlagsStorage() {}
 
 bool OwnerFlagsStorage::SetFlags(const std::set<std::string>& flags) {
+  // Write the flags configuration to profile preferences, which are used to
+  // determine flags to apply when launching a user session.
   PrefServiceFlagsStorage::SetFlags(flags);
 
-  base::ListValue experiments_list;
-
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  ::about_flags::ConvertFlagsToSwitches(this, &command_line,
-                                        flags_ui::kNoSentinels);
-  base::CommandLine::StringVector switches = command_line.argv();
-  for (base::CommandLine::StringVector::const_iterator it =
-           switches.begin() + 1;
-       it != switches.end(); ++it) {
-    experiments_list.AppendString(*it);
+  // Also write the flags to device settings so they get applied to the Chrome
+  // OS login screen. The device setting is read by session_manager and passed
+  // to Chrome via a command line flag on startup.
+  std::vector<base::Value> feature_flags_list;
+  for (const auto& flag : flags) {
+    feature_flags_list.push_back(base::Value(flag));
   }
-  owner_settings_service_->Set(kStartUpFlagsDeprecated, experiments_list);
+  owner_settings_service_->Set(kFeatureFlags,
+                               base::Value(std::move(feature_flags_list)));
 
   return true;
 }

@@ -314,6 +314,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.DeviceSettings.FeatureFlagsMigration"
+    enum="DeviceSettingsFeatureFlagsMigrationStatus" expires_after="2021-11-30">
+  <owner>mnissler@chromium.org</owner>
+  <owner>src/chrome/browser/chromeos/settings/OWNERS</owner>
+  <summary>
+    Migration status for Chrome OS feature flags configuration in device
+    settings. This is intended to track migration progress in the field, so the
+    migration code can be removed when the old approach of storing bare flags is
+    no longer relevant in the field.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.DiagnosticsUi.RoutineCount" units="routines"
     expires_after="2021-07-15">
   <owner>baileyberro@chromium.org</owner>

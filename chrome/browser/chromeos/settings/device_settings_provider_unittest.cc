@@ -1228,17 +1228,6 @@ TEST_F(DeviceSettingsProviderTest, DeviceFamilyLinkAccountsAllowedEnabled) {
             *provider_->Get(kAccountsPrefFamilyLinkAccountsAllowed));
 }
 
-TEST_F(DeviceSettingsProviderTest, StartUpFlagsDeprecated) {
-  EXPECT_EQ(nullptr, provider_->Get(kStartUpFlagsDeprecated));
-
-  device_policy_->payload().mutable_feature_flags()->add_switches("--foo");
-  BuildAndInstallDevicePolicy();
-
-  base::ListValue expected_switches;
-  expected_switches.Append(base::Value("--foo"));
-  EXPECT_EQ(expected_switches, *provider_->Get(kStartUpFlagsDeprecated));
-}
-
 TEST_F(DeviceSettingsProviderTest, FeatureFlags) {
   EXPECT_EQ(nullptr, provider_->Get(kFeatureFlags));
 

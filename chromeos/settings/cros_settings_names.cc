@@ -237,11 +237,6 @@ const char kAllowRedeemChromeOsRegistrationOffers[] =
 // should to be applied at the login screen.
 const char kFeatureFlags[] = "cros.feature_flags";
 
-// A list pref storing the flags that need to be applied to the browser upon
-// start-up. This lists raw flags, which isn't ideal since Chrome can't easily
-// tie this back to feature flags. Deprecated in favor of kFeatureFlags.
-const char kStartUpFlagsDeprecated[] = "cros.startup_flags";
-
 // A string pref for the restrict parameter to be appended to the Variations URL
 // when pinging the Variations server.
 const char kVariationsRestrictParameter[] =

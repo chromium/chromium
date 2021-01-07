@@ -146,7 +146,6 @@ const char* const kKnownSettings[] = {
     kSamlLoginAuthenticationType,
     kServiceAccountIdentity,
     kSignedDataRoamingEnabled,
-    kStartUpFlagsDeprecated,
     kStatsReportingPref,
     kSystemLogUploadEnabled,
     kSystemProxySettings,
@@ -376,15 +375,6 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
       policy.device_local_accounts().prompt_for_network_when_offline());
 
   if (policy.has_feature_flags()) {
-    std::vector<base::Value> switches_list;
-    for (const std::string& entry : policy.feature_flags().switches()) {
-      switches_list.push_back(base::Value(entry));
-    }
-    if (!switches_list.empty()) {
-      new_values_cache->SetValue(kStartUpFlagsDeprecated,
-                                 base::Value(std::move(switches_list)));
-    }
-
     std::vector<base::Value> feature_flags_list;
     for (const std::string& entry : policy.feature_flags().feature_flags()) {
       feature_flags_list.push_back(base::Value(entry));

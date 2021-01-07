@@ -33,6 +33,13 @@ class OwnerKeyUtil;
 
 namespace chromeos {
 
+enum FeatureFlagsMigrationStatus {
+  kNoFeatureFlags,
+  kAlreadyMigrated,
+  kMigrationPerformed,
+  kMaxValue = kMigrationPerformed,
+};
+
 // The class is a profile-keyed service which holds public/private keypair
 // corresponds to a profile. The keypair is reloaded automatically when profile
 // is created and TPM token is ready. Note that the private part of a key can be
@@ -154,6 +161,11 @@ class OwnerSettingsServiceChromeOS : public ownership::OwnerSettingsService,
   // Report status to observers and tries to continue storing pending chages to
   // device settings.
   void ReportStatusAndContinueStoring(bool success);
+
+  // Migrates feature flags from being stored as raw switches to being stored as
+  // feature flag names.
+  void MigrateFeatureFlags(
+      enterprise_management::ChromeDeviceSettingsProto* settings);
 
   DeviceSettingsService* device_settings_service_;
 
