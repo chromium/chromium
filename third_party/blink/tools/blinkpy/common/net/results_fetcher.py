@@ -41,6 +41,7 @@ _log = logging.getLogger(__name__)
 
 TEST_RESULTS_SERVER = 'https://test-results.appspot.com'
 RESULTS_URL_BASE = '%s/data/layout_results' % TEST_RESULTS_SERVER
+RESULTS_SUMMARY_URL_BASE = 'https://storage.googleapis.com/chromium-layout-test-archives'
 
 
 class Build(collections.namedtuple('Build', ('builder_name', 'build_number'))):
@@ -85,33 +86,50 @@ class TestResultsFetcher(object):
             return '%s/%s/layout-test-results' % (url_base, build_number)
         return self.accumulated_results_url_base(builder_name)
 
-    def builder_results_url_base(self, builder_name):
-        """Returns the URL for the given builder's directory in Google Storage.
+    def get_full_builder_url(self, url_base, builder_name):
+        """ Returns the url for a builder directory in google storage.
 
         Each builder has a directory in the GS bucket, and the directory
         name is the builder name transformed to be more URL-friendly by
         replacing all spaces, periods and parentheses with underscores.
         """
-        return '%s/%s' % (RESULTS_URL_BASE, re.sub('[ .()]', '_',
-                                                   builder_name))
+        return '%s/%s' % (url_base, re.sub('[ .()]', '_', builder_name))
+
+    def builder_results_url_base(self, builder_name):
+        """Returns the URL for the given builder's directory in Google Storage.
+        """
+        return self.get_full_builder_url(RESULTS_URL_BASE, builder_name)
+
+    def builder_retry_results_url_base(self, builder_name):
+        """Returns the URL for the given builder's directory in Google Storage.
+
+        This is used for fetching the retry data which is now contained in
+        test_results_summary.json which cannot be fetched from
+        https://test-results.appspot.com anymore. Migrating this tool to use
+        resultDB is the ideal solution.
+        """
+        return self.get_full_builder_url(RESULTS_SUMMARY_URL_BASE,
+                                         builder_name)
 
     @memoized
     def fetch_retry_summary_json(self, build):
-        """Fetches and returns the text of the archived retry_summary file.
+        """Fetches and returns the text of the archived test_results_summary.json file.
 
         This file is expected to contain the results of retrying web tests
         with and without a patch in a try job. It includes lists of tests
         that failed only with the patch ("failures"), and tests that failed
         both with and without ("ignored").
         """
-        url_base = '%s/%s' % (self.builder_results_url_base(
+        url_base = '%s/%s' % (self.builder_retry_results_url_base(
             build.builder_name), build.build_number)
-        # Originally we used retry_summary.json, which is the summary of retry
-        # without patch; now we retry again with patch and ignore the flakes.
-        # See https://crbug.com/882969.
-        return self.web.get_binary(
-            '%s/%s' % (url_base, 'retry_with_patch_summary.json'),
-            return_none_on_404=True)
+        # NOTE(crbug.com/1082907): We used to fetch retry_with_patch_summary.json from
+        # test-results.appspot.com. The file has been renamed and can no longer be
+        # accessed via test-results, so we download it from GCS directly.
+        # There is still a bug in uploading this json file for other platforms than linux.
+        # see https://crbug.com/1157202
+        return self.web.get_binary('%s/%s' %
+                                   (url_base, 'test_results_summary.json'),
+                                   return_none_on_404=True)
 
     def accumulated_results_url_base(self, builder_name):
         return self.builder_results_url_base(
