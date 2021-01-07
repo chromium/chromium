@@ -135,8 +135,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/notifications/NotificationTriggerSchedulerTest.java",
   "junit/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitionsTest.java",
   "junit/src/org/chromium/chrome/browser/ntp/cards/InnerNodeTest.java",
-  "junit/src/org/chromium/chrome/browser/ntp/cards/promo/HomepagePromoUnitTest.java",
-  "junit/src/org/chromium/chrome/browser/ntp/cards/promo/HomepagePromoVariationManagerTest.java",
   "junit/src/org/chromium/chrome/browser/offlinepages/BackgroundSchedulerTest.java",
   "junit/src/org/chromium/chrome/browser/offlinepages/CctOfflinePageModelObserverTest.java",
   "junit/src/org/chromium/chrome/browser/offlinepages/ClientIdTest.java",

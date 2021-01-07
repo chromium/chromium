@@ -27,8 +27,6 @@ import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
-import org.chromium.chrome.browser.ntp.cards.promo.HomepagePromoController.HomepagePromoStateListener;
-import org.chromium.chrome.browser.ntp.cards.promo.HomepagePromoVariationManager;
 import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoController.EnhancedProtectionPromoStateListener;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeader;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -65,7 +63,7 @@ import java.util.Locale;
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public class FeedSurfaceMediator
         implements NewTabPageLayout.ScrollDelegate, ContextMenuManager.TouchEnabledDelegate,
-                   TemplateUrlServiceObserver, ListMenu.Delegate, HomepagePromoStateListener,
+                   TemplateUrlServiceObserver, ListMenu.Delegate,
                    EnhancedProtectionPromoStateListener, IdentityManager.Observer {
     @VisibleForTesting
     public static final String FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA = "FeedContentFirstLoadedTime";
@@ -316,30 +314,13 @@ public class FeedSurfaceMediator
     }
 
     private void initStreamHeaderViews() {
-        View homepagePromoView = null;
-        boolean signInPromoVisible = false;
-
-        if (!HomepagePromoVariationManager.getInstance().isSuppressingSignInPromo()) {
-            signInPromoVisible = createSignInPromoIfNeeded();
-            if (!signInPromoVisible) homepagePromoView = createHomepagePromoIfNeeded();
-        } else {
-            homepagePromoView = createHomepagePromoIfNeeded();
-            if (homepagePromoView == null) signInPromoVisible = createSignInPromoIfNeeded();
-        }
-
-        // Post processing - if HomepagePromo is showing, then we set the SignInPromo to null.
-        if (homepagePromoView != null && mSignInPromo != null) {
-            mSignInPromo.destroy();
-            mSignInPromo = null;
-        }
-
+        boolean signInPromoVisible = createSignInPromoIfNeeded();
         View enhancedProtectionPromoView = null;
-        if (homepagePromoView == null && !signInPromoVisible) {
+        if (!signInPromoVisible) {
             enhancedProtectionPromoView = createEnhancedProtectionPromoIfNeeded();
         }
         // We are not going to show two promos at the same time.
-        mCoordinator.updateHeaderViews(
-                signInPromoVisible, homepagePromoView, enhancedProtectionPromoView);
+        mCoordinator.updateHeaderViews(signInPromoVisible, enhancedProtectionPromoView);
     }
 
     /**
@@ -359,16 +340,6 @@ public class FeedSurfaceMediator
             mSignInPromo.setCanShowPersonalizedSuggestions(suggestionsVisible);
         }
         return mSignInPromo.isVisible();
-    }
-
-    private View createHomepagePromoIfNeeded() {
-        if (mCoordinator.getHomepagePromoController() == null) return null;
-
-        View homepagePromoView = mCoordinator.getHomepagePromoController().getPromoView();
-        if (homepagePromoView != null) {
-            mCoordinator.getHomepagePromoController().setHomepagePromoStateListener(this);
-        }
-        return homepagePromoView;
     }
 
     private View createEnhancedProtectionPromoIfNeeded() {
@@ -626,17 +597,9 @@ public class FeedSurfaceMediator
     }
 
     @Override
-    public void onHomepagePromoStateChange() {
-        // If the homepage has status update, we'll not show the HomepagePromo again.
-        // There are cases where the user has their homepage reset to default. This is an edge case
-        // and we don't have to reflect that change immediately.
-        mCoordinator.updateHeaderViews(false, null, null);
-    }
-
-    @Override
     public void onEnhancedProtectionPromoStateChange() {
         // If the enhanced protection promo has been dismissed, delete it.
-        mCoordinator.updateHeaderViews(false, null, null);
+        mCoordinator.updateHeaderViews(false, null);
     }
 
     // IdentityManager.Observer interface.
@@ -661,7 +624,7 @@ public class FeedSurfaceMediator
             if (isVisible() == visible) return;
 
             super.setVisibilityInternal(visible);
-            mCoordinator.updateHeaderViews(visible, null, null);
+            mCoordinator.updateHeaderViews(visible, null);
             maybeUpdateSignInPromo();
         }
 

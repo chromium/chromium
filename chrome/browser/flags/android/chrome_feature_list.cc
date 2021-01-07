@@ -184,8 +184,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kFocusOmniboxInIncognitoTabIntents,
     &kHandleMediaIntents,
     &kHomepagePromoCard,
-    &kHomepagePromoSyntheticPromoSeenEnabled,
-    &kHomepagePromoSyntheticPromoSeenTracking,
     &kHorizontalTabSwitcherAndroid,
     &kImmersiveUiMode,
     &kIncognitoScreenshot,
@@ -515,14 +513,6 @@ const base::Feature kHandleMediaIntents{"HandleMediaIntents",
 
 const base::Feature kHomepagePromoCard{"HomepagePromoCard",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Homepage Promo experiment group for synthetic field trial.
-const base::Feature kHomepagePromoSyntheticPromoSeenEnabled{
-    "HomepagePromoSyntheticPromoSeenEnabled",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kHomepagePromoSyntheticPromoSeenTracking{
-    "HomepagePromoSyntheticPromoSeenTracking",
-    base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kHorizontalTabSwitcherAndroid{
     "HorizontalTabSwitcherAndroid", base::FEATURE_DISABLED_BY_DEFAULT};

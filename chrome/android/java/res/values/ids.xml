@@ -105,9 +105,6 @@
     <item type="id" name="ntp_feed_header_menu_item_learn" />
     <item type="id" name="ntp_feed_header_menu_item_toggle_switch" />
 
-    <!-- Homepage Promo -->
-    <item type="id" name="homepage_promo" />
-
     <!-- Enhanced Protection Promo -->
     <item type="id" name="enhanced_protection_promo" />
 

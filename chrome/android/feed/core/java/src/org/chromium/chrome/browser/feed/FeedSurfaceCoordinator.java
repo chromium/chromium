@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
-import org.chromium.chrome.browser.ntp.cards.promo.HomepagePromoController;
 import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoController;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -113,10 +112,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private Tracker mTracker;
     private long mStreamCreatedTimeMs;
 
-    // Homepage promo view will be not-null once we have it created, until it is destroyed.
-    private @Nullable View mHomepagePromoView;
-    private @Nullable HomepagePromoController mHomepagePromoController;
-
     // Enhanced Protection promo view will be not-null once we have it created, until it is
     // destroyed.
     private @Nullable View mEnhancedProtectionPromoView;
@@ -154,25 +149,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         @Override
         public void onDismissed() {
             mMediator.onSignInPromoDismissed();
-        }
-    }
-
-    private class HomepagePromoHeader implements Header {
-        @Override
-        public View getView() {
-            assert mHomepagePromoView != null;
-            return mHomepagePromoView;
-        }
-
-        @Override
-        public boolean isDismissible() {
-            return true;
-        }
-
-        @Override
-        public void onDismissed() {
-            assert mHomepagePromoController != null;
-            mHomepagePromoController.dismissPromo();
         }
     }
 
@@ -288,10 +264,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
         mTracker = TrackerFactory.getTrackerForProfile(profile);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HOMEPAGE_PROMO_CARD)) {
-            mHomepagePromoController =
-                    new HomepagePromoController(mActivity, mSnackbarManager, mTracker);
-        }
         if (isEnhancedProtectionPromoEnabled()) {
             mEnhancedProtectionPromoController =
                     new EnhancedProtectionPromoController(mActivity, mProfile);
@@ -310,7 +282,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         if (mStreamLifecycleManager != null) mStreamLifecycleManager.destroy();
         mStreamLifecycleManager = null;
         mStreamWrapper.doneWithStream();
-        if (mHomepagePromoController != null) mHomepagePromoController.destroy();
         if (mEnhancedProtectionPromoController != null) {
             mEnhancedProtectionPromoController.destroy();
         }
@@ -396,7 +367,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         if (mNtpHeader != null) UiUtils.removeViewFromParent(mNtpHeader);
         if (mSectionHeaderView != null) UiUtils.removeViewFromParent(mSectionHeaderView);
         if (mSigninPromoView != null) UiUtils.removeViewFromParent(mSigninPromoView);
-        if (mHomepagePromoView != null) UiUtils.removeViewFromParent(mHomepagePromoView);
         if (mEnhancedProtectionPromoView != null) {
             UiUtils.removeViewFromParent(mEnhancedProtectionPromoView);
         }
@@ -447,12 +417,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             mStream = null;
             mSectionHeaderView = null;
             mSigninPromoView = null;
-            mHomepagePromoView = null;
-            // TODO(wenyufu): Support HomepagePromo when policy enabled.
-            if (mHomepagePromoController != null) {
-                mHomepagePromoController.destroy();
-                mHomepagePromoController = null;
-            }
 
             mEnhancedProtectionPromoView = null;
             if (mEnhancedProtectionPromoController != null) {
@@ -522,19 +486,14 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     /**
      *  Update header views in the Stream.
      *  */
-    void updateHeaderViews(boolean isSignInPromoVisible, @Nullable View homepagePromoView,
-            @Nullable View enhancedProtectionPromoView) {
+    void updateHeaderViews(
+            boolean isSignInPromoVisible, @Nullable View enhancedProtectionPromoView) {
         if (mStream == null) return;
 
         List<Header> headers = new ArrayList<>();
         if (mNtpHeader != null) {
             assert mSectionHeaderView != null;
             headers.add(new NonDismissibleHeader(mNtpHeader));
-        }
-
-        if (homepagePromoView != null) {
-            mHomepagePromoView = homepagePromoView;
-            headers.add(new HomepagePromoHeader());
         }
 
         if (enhancedProtectionPromoView != null) {
@@ -591,10 +550,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     UserEducationHelper getUserEducationHelper() {
         return mUserEducationHelper;
-    }
-
-    HomepagePromoController getHomepagePromoController() {
-        return mHomepagePromoController;
     }
 
     EnhancedProtectionPromoController getEnhancedProtectionPromoController() {

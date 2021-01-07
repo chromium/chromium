@@ -677,26 +677,6 @@ CHAR-LIMIT guidelines:
         Chrome’s homepage
       </message>
 
-      <!-- Homepage Promo card -->
-      <message name="IDS_HOMEPAGE_PROMO_TITLE" desc="The title displayed on homepage promo card, which guide user set chrome's new tab page as their new homepage.">
-        Get here quicker
-      </message>
-      <message name="IDS_HOMEPAGE_PROMO_TITLE_SLIM" desc="The title displayed on homepage promo card, which guide user set chrome's new tab page as their new homepage. Used for the one liner variation.">
-        Make this page your homepage
-      </message>
-      <message name="IDS_HOMEPAGE_PROMO_DESCRIPTION" desc="The description displayed on homepage promo card, which guide user set chrome's new tab page as their new homepage.">
-        See your top sites and recent stories whenever you tap the Home button
-      </message>
-      <message name="IDS_HOMEPAGE_PROMO_PRIMARY_BUTTON" desc="The text displayed on homepage promo card's primary button compat, which will change the user's homepage to new tab page when they tab.">
-        Change homepage
-      </message>
-      <message name="IDS_HOMEPAGE_PROMO_PRIMARY_BUTTON_SLIM" desc="The text displayed on homepage promo card's primary button compat, which will change the user's homepage to new tab page when they tab. Used for the slim variation that has a smaller space for the button.">
-        Change
-      </message>
-      <message name="IDS_HOMEPAGE_PROMO_SNACKBAR_MESSAGE" desc="The text displayed on the snackbar that appears after setting homepage by click on homepage promo card's primary button, which will change the user's homepage to new tab page.">
-        Homepage changed
-      </message>
-
       <!-- Enhanced Protection Promo card -->
       <message name="IDS_ENHANCED_PROTECTION_PROMO_TITLE" desc="The title displayed on homepage promo card, which guides the user to the chrome settings page to select the enhanced protection option.">
         Get Chrome’s strongest security

@@ -7854,7 +7854,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </suffix>
   <suffix name="IPH_HomepagePromoCard"
-      label="In product help homepage promo card displayed on new tab page."/>
+      label="In product help homepage promo card displayed on new tab page.">
+    <obsolete>
+      Feature was deprecated in January 2021.
+    </obsolete>
+  </suffix>
   <suffix name="IPH_HomepageTile" label="In product help homepage tile.">
     <obsolete>
       This feature was deprecated in M79

@@ -3624,65 +3624,6 @@
             ]
         }
     ],
-    "HomepagePromoAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Compact",
-                    "params": {
-                        "availability": ">=1",
-                        "event_homebutton_clicked": "name:homepage_button_clicked;comparator:==0;window:1;storage:360",
-                        "event_ntp_shown": "name:ntp_shown;comparator:>1;window:14;storage:360",
-                        "event_promo_accepted": "name:homepage_promo_accepted;comparator:==0;window:360;storage:360",
-                        "event_promo_seen": "name:homepage_promo_seen;comparator:<7;window:30;storage:360",
-                        "event_trigger": "name:homepage_promo_created;comparator:any;window:30;storage:360",
-                        "event_used": "name:ntp_homebutton_clicked;comparator:any;window:30;storage:360",
-                        "session_rate": "any"
-                    },
-                    "enable_features": [
-                        "HomepagePromoCard",
-                        "IPH_HomepagePromoCard"
-                    ],
-                    "disable_features": []
-                }
-            ]
-        }
-    ],
-    "HomepagePromoAndroidSeenEnabledCohort": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HomepagePromoSyntheticPromoSeenEnabled"
-                    ],
-                    "disable_features": []
-                }
-            ]
-        }
-    ],
-    "HomepagePromoAndroidSeenTrackingCohort": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HomepagePromoSyntheticPromoSeenTracking"
-                    ],
-                    "disable_features": []
-                }
-            ]
-        }
-    ],
     "HostResolverDispatch": [
         {
             "platforms": [
