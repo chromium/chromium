@@ -109,9 +109,12 @@ bool WindowCanOpenTabs(const NavigateParams& params) {
 // such Browser is located.
 Browser* GetOrCreateBrowser(Profile* profile, bool user_gesture) {
   Browser* browser = chrome::FindTabbedBrowser(profile, false);
-  return browser
-             ? browser
-             : Browser::Create(Browser::CreateParams(profile, user_gesture));
+
+  if (!browser && Browser::GetBrowserCreationStatusForProfile(profile) ==
+                      Browser::BrowserCreationStatus::kOk) {
+    browser = Browser::Create(Browser::CreateParams(profile, user_gesture));
+  }
+  return browser;
 }
 
 // Change some of the navigation parameters based on the particular URL.
@@ -165,12 +168,15 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
                                                 /*window_only=*/true);
     if (app_id) {
       std::string app_name = web_app::GenerateApplicationNameFromAppId(*app_id);
-      return {
-          Browser::Create(Browser::CreateParams::CreateForApp(
-              app_name,
-              true,  // trusted_source. Installed PWAs are considered trusted.
-              params.window_bounds, profile, params.user_gesture)),
-          -1};
+      Browser* browser = nullptr;
+      if (Browser::GetBrowserCreationStatusForProfile(profile) ==
+          Browser::BrowserCreationStatus::kOk) {
+        browser = Browser::Create(Browser::CreateParams::CreateForApp(
+            app_name,
+            true,  // trusted_source. Installed PWAs are considered trusted.
+            params.window_bounds, profile, params.user_gesture));
+      }
+      return {browser, -1};
     }
   }
 #endif
@@ -231,6 +237,10 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
         app_name = params.browser->app_name();
       }
 #endif
+      if (Browser::GetBrowserCreationStatusForProfile(profile) !=
+          Browser::BrowserCreationStatus::kOk) {
+        return {nullptr, -1};
+      }
       if (app_name.empty()) {
         Browser::CreateParams browser_params(Browser::TYPE_POPUP, profile,
                                              params.user_gesture);
@@ -243,11 +253,16 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
                   profile, params.user_gesture)),
               -1};
     }
-    case WindowOpenDisposition::NEW_WINDOW:
+    case WindowOpenDisposition::NEW_WINDOW: {
       // Make a new normal browser window.
-      return {
-          Browser::Create(Browser::CreateParams(profile, params.user_gesture)),
-          -1};
+      Browser* browser = nullptr;
+      if (Browser::GetBrowserCreationStatusForProfile(profile) ==
+          Browser::BrowserCreationStatus::kOk) {
+        browser = Browser::Create(
+            Browser::CreateParams(profile, params.user_gesture));
+      }
+      return {browser, -1};
+    }
     case WindowOpenDisposition::OFF_THE_RECORD:
       // Make or find an incognito window.
       return {GetOrCreateBrowser(profile->GetPrimaryOTRProfile(),
