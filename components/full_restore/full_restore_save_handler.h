@@ -24,6 +24,7 @@ namespace full_restore {
 struct AppLaunchInfo;
 class FullRestoreFileHandler;
 class RestoreData;
+struct WindowInfo;
 
 // FullRestoreSaveHandler is responsible for writing both the app launch
 // information and the app window information to disk. FullRestoreSaveHandler
@@ -41,15 +42,18 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler {
   FullRestoreSaveHandler(const FullRestoreSaveHandler&) = delete;
   FullRestoreSaveHandler& operator=(const FullRestoreSaveHandler&) = delete;
 
-  // Save |app_launch_info| to the full restore file in |profile_dir|.
-  void SaveAppLaunchInfo(const base::FilePath& profile_dir,
+  // Save |app_launch_info| to the full restore file in |profile_path|.
+  void SaveAppLaunchInfo(const base::FilePath& profile_path,
                          std::unique_ptr<AppLaunchInfo> app_launch_info);
+
+  // Save |window_info| to |profile_path_to_restore_data_|.
+  void SaveWindowInfo(const WindowInfo& window_info);
 
  private:
   // Starts the timer that invokes Save (if timer isn't already running).
   void MaybeStartSaveTimer();
 
-  // Passes |file_path_to_file_handler_| to the backend for saving.
+  // Passes |profile_path_to_restore_data_| to the backend for saving.
   void Save();
 
   // Invoked when write to file operation for |file_path| is finished.
@@ -60,16 +64,22 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler {
   base::SequencedTaskRunner* BackendTaskRunner(const base::FilePath& file_path);
 
   // Records whether there are new updates for saving between each saving delay.
-  // |ShouldUpdate| is cleared when Save is invoked.
-  std::set<base::FilePath> should_update_;
+  // |pending_save_profile_paths_| is cleared when Save is invoked.
+  std::set<base::FilePath> pending_save_profile_paths_;
 
   // The restore data for each user's profile. The key is the profile path.
-  std::map<base::FilePath, RestoreData> file_path_to_restore_data_;
+  std::map<base::FilePath, RestoreData> profile_path_to_restore_data_;
 
   // The file handler for each user's profile to write the restore data to the
   // full restore file for each user. The key is the profile path.
   std::map<base::FilePath, scoped_refptr<FullRestoreFileHandler>>
-      file_path_to_file_handler_;
+      profile_path_to_file_handler_;
+
+  // The map from the window id to the full restore file path and the app id.
+  // The window id is saved in the window property. This map is used to find the
+  // file path and the app id when save the window info.
+  std::map<int32_t, std::pair<base::FilePath, std::string>>
+      window_id_to_app_restore_info_;
 
   // Timer used to delay the restore data writing to the full restore file.
   base::OneShotTimer save_timer_;

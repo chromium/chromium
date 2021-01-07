@@ -36,6 +36,7 @@
 #include "ui/views/widget/native_widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/full_restore/full_restore_utils.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -81,6 +82,10 @@ void BrowserFrame::InitBrowserFrame() {
   views::Widget::InitParams params = native_browser_frame_->GetWidgetParams();
   params.name = "BrowserFrame";
   params.delegate = browser_view_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  params.init_properties_container.SetProperty(
+      full_restore::kWindowIdKey, browser_view_->browser()->session_id().id());
+#endif
   if (browser_view_->browser()->is_type_normal() ||
       browser_view_->browser()->is_type_devtools() ||
       browser_view_->browser()->is_type_app()) {

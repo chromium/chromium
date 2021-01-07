@@ -5,3 +5,9 @@ include_rules = [
   "+components/services/app_service/public",
   "+ui",
 ]
+
+specific_include_rules = {
+  "full_restore_save_handler\.cc": [
+    "+components/sessions/core/session_id.h",
+  ],
+}

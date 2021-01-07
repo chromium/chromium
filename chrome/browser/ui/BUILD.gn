@@ -2709,6 +2709,7 @@ static_library("ui") {
       "//components/captive_portal/core",
       "//components/consent_auditor:consent_auditor",
       "//components/exo",
+      "//components/full_restore",
       "//components/login",
       "//components/metrics/structured:structured_events",
       "//components/services/app_service/public/cpp:app_file_handling",

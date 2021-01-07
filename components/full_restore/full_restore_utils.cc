@@ -14,6 +14,8 @@
 
 namespace full_restore {
 
+DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kWindowIdKey, 0)
+
 void SaveAppLaunchInfo(const base::FilePath& profile_dir,
                        std::unique_ptr<AppLaunchInfo> app_launch_info) {
   if (!ash::features::IsFullRestoreEnabled() || !app_launch_info)
@@ -23,12 +25,11 @@ void SaveAppLaunchInfo(const base::FilePath& profile_dir,
       profile_dir, std::move(app_launch_info));
 }
 
-void SaveWindowInfo(std::unique_ptr<WindowInfo> window_info) {
+void SaveWindowInfo(const WindowInfo& window_info) {
   if (!ash::features::IsFullRestoreEnabled())
     return;
 
-  // TODO(crbug.com/1146900): Save the window information to the full restore
-  // file.
+  FullRestoreSaveHandler::GetInstance()->SaveWindowInfo(window_info);
 }
 
 std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window) {

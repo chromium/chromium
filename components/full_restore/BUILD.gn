@@ -34,6 +34,7 @@ component("full_restore") {
     "//components/account_id:account_id",
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/mojom",
+    "//components/sessions",
     "//ui/aura",
   ]
 }

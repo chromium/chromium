@@ -4,6 +4,7 @@
 
 #include "components/full_restore/full_restore_save_handler.h"
 
+#include "ash/public/cpp/app_types.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
@@ -11,7 +12,12 @@
 #include "base/time/time.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_file_handler.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "components/full_restore/restore_data.h"
+#include "components/full_restore/window_info.h"
+#include "components/sessions/core/session_id.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
 
 namespace full_restore {
 
@@ -33,20 +39,52 @@ FullRestoreSaveHandler::FullRestoreSaveHandler() = default;
 FullRestoreSaveHandler::~FullRestoreSaveHandler() = default;
 
 void FullRestoreSaveHandler::SaveAppLaunchInfo(
-    const base::FilePath& file_path,
+    const base::FilePath& profile_path,
     std::unique_ptr<AppLaunchInfo> app_launch_info) {
   if (!app_launch_info)
     return;
 
+  if (!app_launch_info->id.has_value()) {
+    // TODO(crbug.com/1146900): Handle ARC app windows.
+    return;
+  }
+
+  window_id_to_app_restore_info_[app_launch_info->id.value()] =
+      std::make_pair(profile_path, app_launch_info->app_id);
+
   // Each user should have one full restore file saving the restore data in the
-  // profile directory |file_path|. So |app_launch_info| is saved to the restore
-  // data for the user with the profile path |file_path|.
-  file_path_to_restore_data_[file_path].AddAppLaunchInfo(
+  // profile directory |profile_path|. So |app_launch_info| is saved to the
+  // restore data for the user with |profile_path|.
+  profile_path_to_restore_data_[profile_path].AddAppLaunchInfo(
       std::move(app_launch_info));
 
-  should_update_.insert(file_path);
+  pending_save_profile_paths_.insert(profile_path);
 
   MaybeStartSaveTimer();
+}
+
+void FullRestoreSaveHandler::SaveWindowInfo(const WindowInfo& window_info) {
+  if (!window_info.window)
+    return;
+
+  int32_t window_id =
+      window_info.window->GetProperty(::full_restore::kWindowIdKey);
+
+  if (window_info.window->GetProperty(aura::client::kAppType) ==
+      static_cast<int>(ash::AppType::ARC_APP)) {
+    // TODO(crbug.com/1146900): Handle ARC app windows.
+    return;
+  }
+
+  if (!SessionID::IsValidValue(window_id))
+    return;
+
+  auto it = window_id_to_app_restore_info_.find(window_id);
+  if (it == window_id_to_app_restore_info_.end())
+    return;
+
+  profile_path_to_restore_data_[it->second.first].ModifyWindowInfo(
+      it->second.second, window_id, window_info);
 }
 
 void FullRestoreSaveHandler::MaybeStartSaveTimer() {
@@ -58,20 +96,20 @@ void FullRestoreSaveHandler::MaybeStartSaveTimer() {
 }
 
 void FullRestoreSaveHandler::Save() {
-  if (should_update_.empty())
+  if (pending_save_profile_paths_.empty())
     return;
 
-  for (const auto& file_path : should_update_) {
+  for (const auto& file_path : pending_save_profile_paths_) {
     save_running_.insert(file_path);
     BackendTaskRunner(file_path)->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&FullRestoreFileHandler::WriteToFile,
                        GetFileHandler(file_path),
-                       file_path_to_restore_data_[file_path].Clone()),
+                       profile_path_to_restore_data_[file_path].Clone()),
         base::BindOnce(&FullRestoreSaveHandler::OnSaveFinished,
                        weak_factory_.GetWeakPtr(), file_path));
   }
-  should_update_.clear();
+  pending_save_profile_paths_.clear();
 }
 
 void FullRestoreSaveHandler::OnSaveFinished(const base::FilePath& file_path) {
@@ -80,12 +118,12 @@ void FullRestoreSaveHandler::OnSaveFinished(const base::FilePath& file_path) {
 
 FullRestoreFileHandler* FullRestoreSaveHandler::GetFileHandler(
     const base::FilePath& file_path) {
-  if (file_path_to_file_handler_.find(file_path) ==
-      file_path_to_file_handler_.end()) {
-    file_path_to_file_handler_[file_path] =
+  if (profile_path_to_file_handler_.find(file_path) ==
+      profile_path_to_file_handler_.end()) {
+    profile_path_to_file_handler_[file_path] =
         base::MakeRefCounted<FullRestoreFileHandler>(file_path);
   }
-  return file_path_to_file_handler_[file_path].get();
+  return profile_path_to_file_handler_[file_path].get();
 }
 
 base::SequencedTaskRunner* FullRestoreSaveHandler::BackendTaskRunner(
