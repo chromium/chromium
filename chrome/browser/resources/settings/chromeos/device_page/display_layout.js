@@ -9,9 +9,15 @@
  */
 
 /**
- * Required memeber fields for events which select displays.
- * @typedef {!{model: !{item: !chrome.system.display.DisplayUnitInfo}, target:
- *     !HTMLDivElement}} DisplaySelectEvent
+ * Container for DisplayUnitInfo.  Mostly here to make the DisplaySelectEvent
+ * typedef more readable.
+ * @typedef {{item: !chrome.system.display.DisplayUnitInfo}}
+ */
+let InfoItem;
+
+/**
+ * Required member fields for events which select displays.
+ * @typedef {{model: !InfoItem, target: !HTMLDivElement}}
  */
 let DisplaySelectEvent;
 
