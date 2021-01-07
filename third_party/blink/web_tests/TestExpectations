@@ -69,6 +69,11 @@ crbug.com/906791 external/wpt/fullscreen/api/element-ready-check-allowed-cross-o
 # they continue to fail.
 crbug.com/881040 media/controls/lazy-loaded-style.html [ Failure Pass ]
 
+# Temporarily disable until Chrome DevTools change has rolled.
+crbug.com/1132260 http/tests/devtools/components/linkifier.js [ Pass Failure ]
+crbug.com/1132260 http/tests/devtools/console/console-bad-stacktrace.js [ Pass Failure ]
+crbug.com/1132260 http/tests/devtools/console/console-uncaught-promise.js [ Pass Failure ]
+
 # With --enable-display-compositor-pixel-dump enabled by default, these three
 # tests fail. See crbug.com/887140 for more info.
 crbug.com/887140 virtual/hdr/color-jpeg-with-color-profile.html [ Failure ]
