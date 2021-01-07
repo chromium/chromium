@@ -977,11 +977,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "disable-progress-bar-animation",
-    "owners": [ "eugenebut", "djean", "bling-flags@google.com" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "disable-threaded-scrolling",
     "owners": [ "bokan", "input-dev" ],
     // This flag is a useful debugging control when investigating scrolling

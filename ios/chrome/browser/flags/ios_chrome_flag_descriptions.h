@@ -132,10 +132,6 @@ extern const char kDelayThresholdMinutesToUpdateGaiaCookieDescription[];
 extern const char kDetectMainThreadFreezeName[];
 extern const char kDetectMainThreadFreezeDescription[];
 
-// Title and description for the flag to disable progress bar animation.
-extern const char kDisableProgressBarAnimationName[];
-extern const char kDisableProgressBarAnimationDescription[];
-
 // Title and description for the flag to replace the Zine feed with the
 // Discover feed in the Bling NTP.
 extern const char kDiscoverFeedInNtpName[];

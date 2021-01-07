@@ -52,7 +52,7 @@
   __weak PrimaryToolbarViewController* weakSelf = self;
   [self.view.progressBar setProgress:0];
   [self.view.progressBar setHidden:NO
-                          animated:[self areAnimationsEnabled]
+                          animated:YES
                         completion:^(BOOL finished) {
                           [weakSelf stopProgressBar];
                         }];

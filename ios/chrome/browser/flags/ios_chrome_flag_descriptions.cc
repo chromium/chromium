@@ -154,11 +154,6 @@ const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "
     "the time specified by this flag.";
 
-const char kDisableProgressBarAnimationName[] =
-    "Disable page load progress bar animation";
-const char kDisableProgressBarAnimationDescription[] =
-    "Disable progress bar animation when a page loads.";
-
 const char kDiscoverFeedInNtpName[] = "Enable new content Suggestion Feed";
 const char kDiscoverFeedInNtpDescription[] =
     "When enabled, replaces articles feed with new content Suggestion Feed in "

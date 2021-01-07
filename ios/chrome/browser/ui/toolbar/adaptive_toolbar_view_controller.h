@@ -39,8 +39,6 @@
 // Returns the tools menu button.
 - (ToolbarToolsMenuButton*)toolsMenuButton;
 
-// Returns YES if animations are globally enabled in chrome.
-- (BOOL)areAnimationsEnabled;
 // Updates the view so a snapshot can be taken. It needs to be adapted,
 // depending on if it is a snapshot displayed |onNTP| or not.
 - (void)updateForSideSwipeSnapshotOnNTP:(BOOL)onNTP;
