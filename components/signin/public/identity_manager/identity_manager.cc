@@ -509,38 +509,6 @@ void IdentityManager::OnPrimaryAccountChanged(
   Java_IdentityManager_onPrimaryAccountChanged(
       env, java_identity_manager_,
       ConvertToJavaPrimaryAccountChangeEvent(env, event_details));
-  switch (event_details.GetEventTypeFor(ConsentLevel::kSync)) {
-    case PrimaryAccountChangeEvent::Type::kSet:
-      Java_IdentityManager_onPrimaryAccountSet(
-          env, java_identity_manager_,
-          ConvertToJavaCoreAccountInfo(
-              env, event_details.GetCurrentState().primary_account));
-      return;
-    case PrimaryAccountChangeEvent::Type::kCleared:
-      Java_IdentityManager_onPrimaryAccountCleared(
-          env, java_identity_manager_,
-          ConvertToJavaCoreAccountInfo(
-              env, event_details.GetPreviousState().primary_account));
-      return;
-    case PrimaryAccountChangeEvent::Type::kNone:
-      break;
-  }
-  switch (event_details.GetEventTypeFor(ConsentLevel::kNotRequired)) {
-    // TODO(http://crbug.com/1158855): This is a hack as the Java code expects
-    // a call to onPrimaryAccountCleared() when the unconsented primary account
-    // is cleared. This does not match the intent of OnPrimaryAccountCleared
-    // which is supposed to be fired only when sync account is being cleared.
-    // This hack *must* be removed quickly as it has a high misusage risk.
-    case PrimaryAccountChangeEvent::Type::kCleared:
-      Java_IdentityManager_onPrimaryAccountCleared(
-          env, java_identity_manager_,
-          ConvertToJavaCoreAccountInfo(
-              env, event_details.GetPreviousState().primary_account));
-      break;
-    case PrimaryAccountChangeEvent::Type::kSet:
-    case PrimaryAccountChangeEvent::Type::kNone:
-      break;
-  }
 #endif
 }
 

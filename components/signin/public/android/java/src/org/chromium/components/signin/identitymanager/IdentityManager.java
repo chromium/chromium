@@ -36,19 +36,6 @@ public class IdentityManager {
         default void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {}
 
         /**
-         * Called when an account becomes the user's primary account.
-         * This method is not called during a reauth.
-         */
-        default void onPrimaryAccountSet(CoreAccountInfo account) {}
-
-        /**
-         * Called when the user moves from having a primary account to no longer having a primary
-         * account (note that the user may still have an *unconsented* primary account after this
-         * event).
-         */
-        default void onPrimaryAccountCleared(CoreAccountInfo account) {}
-
-        /**
          * Called when the Gaia cookie has been deleted explicitly by a user action, e.g. from
          * the settings.
          */
@@ -118,27 +105,6 @@ public class IdentityManager {
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
         for (Observer observer : mObservers) {
             observer.onPrimaryAccountChanged(eventDetails);
-        }
-    }
-
-    /**
-     * Notifies observers that the primary account was set in C++.
-     */
-    @CalledByNative
-    private void onPrimaryAccountSet(CoreAccountInfo account) {
-        for (Observer observer : mObservers) {
-            observer.onPrimaryAccountSet(account);
-        }
-    }
-
-    /**
-     * Notifies observers that the primary account was cleared in C++.
-     */
-    @CalledByNative
-    @VisibleForTesting
-    public void onPrimaryAccountCleared(CoreAccountInfo account) {
-        for (Observer observer : mObservers) {
-            observer.onPrimaryAccountCleared(account);
         }
     }
 
