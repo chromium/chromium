@@ -60,8 +60,6 @@ static void GetNativeThemeExtraParams(
           extra_params->text_field.is_listbox;
       native_theme_extra_params->text_field.background_color =
           extra_params->text_field.background_color;
-      native_theme_extra_params->text_field.has_border =
-          extra_params->text_field.has_border;
       break;
     case WebThemeEngine::kPartMenuList:
       native_theme_extra_params->menu_list.has_border =

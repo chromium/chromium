@@ -158,25 +158,6 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
           /* screenshot_height */ 40);
 }
 
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Input) {
-  RunTest("form_controls_browsertest_input",
-          "<!-- text inputs -->"
-          "<style>input {width: 150px;}</style>"
-          "<input type=\"text\" /><br><br>"
-          "<input type=\"number\" /><br><br>"
-          "<input type=\"search\" /><br><br>"
-          "<input type=\"email\" /><br><br>"
-          "<input type=\"password\" /><br><br>"
-          "<!-- border -->"
-          "<input type=\"text\" style=\"border: 3px solid lime;\"/><br><br>"
-          "<!-- shadow -->"
-          "<input type=\"text\" style=\"box-shadow: 4px 4px 10px rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);\"/><br><br>"
-          "<!-- disabled -->"
-          "<input type=\"text\" disabled/>",
-          /* screenshot_width */ 200,
-          /* screenshot_height */ 330);
-}
-
 // TODO(jarhar): Add tests for other elements from
 //   https://concrete-hardboard.glitch.me
 
