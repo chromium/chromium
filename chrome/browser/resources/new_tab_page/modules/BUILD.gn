@@ -94,6 +94,7 @@ preprocess_if_expr("preprocess") {
     "module_registry.js",
     "task_module/task_module_handler_proxy.js",
     "cart/chrome_cart_proxy.js",
+    "drive/drive_module_proxy.js",
   ]
   if (!is_official_build) {
     in_files += [ "dummy/foo_proxy.js" ]

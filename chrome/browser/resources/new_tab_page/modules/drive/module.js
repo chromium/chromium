@@ -7,6 +7,7 @@ import '../module_header.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ModuleDescriptor} from '../module_descriptor.js';
+import {DriveProxy} from './drive_module_proxy.js';
 
 /**
  * @fileoverview The Drive module, which serves as an inside look in to
@@ -29,6 +30,8 @@ customElements.define(DriveModuleElement.is, DriveModuleElement);
  * @return {!Promise<?DriveModuleElement>}
  */
 async function createDriveElement() {
+  const {testString} = await DriveProxy.getInstance().handler.getTestString();
+  console.log(testString);
   return new DriveModuleElement();
 }
 

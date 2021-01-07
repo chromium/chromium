@@ -1,0 +1,14 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module drive.mojom;
+
+// TODO(crbug/1163760): Create struct to model Drive data response.
+
+// Browser-side handler for requests from NTP Module UI.
+interface DriveHandler {
+  // TODO(crbug/1163760): Replace GetTestString method with
+  // method to retrieve file info from recent drive files.
+  GetTestString() => (string test_string);
+};

@@ -363,6 +363,15 @@ generate_grd("build_search_mojo_grdp") {
       rebase_path("$root_gen_dir/chrome/common/search", root_build_dir)
 }
 
+generate_grd("build_drive_mojo_grdp") {
+  grd_prefix = grd_prefix
+  out_grd = "$target_gen_dir/drive_mojo_resources.grdp"
+  input_files = [ "drive.mojom-lite.js" ]
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/chrome/browser/search/drive", root_build_dir)
+  resource_path_prefix = "modules/drive"
+}
+
 generate_grd("build_task_module_mojo_grdp") {
   grd_prefix = grd_prefix
   out_grd = "$target_gen_dir/task_module_mojo_resources.grdp"
@@ -404,9 +413,11 @@ generate_grd("build_grd") {
     "$target_gen_dir/search_mojo_resources.grdp",
     "$target_gen_dir/task_module_mojo_resources.grdp",
     "$target_gen_dir/chrome_cart_mojo_resources.grdp",
+    "$target_gen_dir/drive_mojo_resources.grdp",
   ]
   deps = [
     ":build_chrome_cart_mojo_grdp",
+    ":build_drive_mojo_grdp",
     ":build_new_tab_page_mojo_grdp",
     ":build_promo_browser_command_mojo_grdp",
     ":build_search_mojo_grdp",
@@ -445,6 +456,7 @@ grit("resources") {
     ":build_grd",
     "//chrome/browser/cart:mojo_bindings_js",
     "//chrome/browser/promo_browser_command:mojo_bindings_js",
+    "//chrome/browser/search/drive:mojo_bindings_js",
     "//chrome/browser/search/task_module:mojo_bindings_js",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js",
     "//chrome/common/search:mojo_bindings_js",
@@ -500,6 +512,7 @@ if (optimize_webui) {
       "omnibox.mojom-lite.js",
       "one_google_bar_api.js",
       "promo_browser_command.mojom-lite.js",
+      "modules/drive/drive.mojom-lite.js",
       "modules/task_module/task_module.mojom-lite.js",
       "foo.mojom-lite.js",
       "modules/cart/chrome_cart.mojom-lite.js",

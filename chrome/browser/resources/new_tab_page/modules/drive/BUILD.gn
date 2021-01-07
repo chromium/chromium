@@ -7,8 +7,16 @@ import("//tools/polymer/html_to_js.gni")
 
 js_library("module") {
   deps = [
+    ":drive_module_proxy",
     "..:module_descriptor",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("drive_module_proxy") {
+  deps = [
+    "//chrome/browser/search/drive:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
   ]
 }
 

@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom-forward.h"
+#include "chrome/browser/search/drive/drive.mojom.h"
 #include "chrome/browser/search/instant_service_observer.h"
 #include "chrome/browser/search/task_module/task_module.mojom.h"
 #if !defined(OFFICIAL_BUILD)
@@ -38,6 +39,7 @@ class Profile;
 class PromoBrowserCommandHandler;
 class TaskModuleHandler;
 class CartHandler;
+class DriveHandler;
 
 class NewTabPageUI
     : public ui::MojoWebUIController,
@@ -77,6 +79,11 @@ class NewTabPageUI
   void BindInterface(
       mojo::PendingReceiver<task_module::mojom::TaskModuleHandler>
           pending_receiver);
+
+  // Instantiates the implementor of drive::mojom::DriveHandler mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<drive::mojom::DriveHandler> pending_receiver);
 
 #if !defined(OFFICIAL_BUILD)
   // Instantiates the implementor of the foo::mojom::FooHandler mojo interface
@@ -137,6 +144,7 @@ class NewTabPageUI
 
   // Mojo implementations for modules:
   std::unique_ptr<TaskModuleHandler> task_module_handler_;
+  std::unique_ptr<DriveHandler> drive_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 

@@ -108,6 +108,7 @@
 #include "chrome/browser/payments/payment_credential_factory.h"
 #include "chrome/browser/payments/payment_request_factory.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom.h"
+#include "chrome/browser/search/drive/drive.mojom.h"
 #include "chrome/browser/search/task_module/task_module.mojom.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
@@ -658,6 +659,11 @@ void PopulateChromeWebUIFrameBinders(
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule)) {
     RegisterWebUIControllerInterfaceBinder<chrome_cart::mojom::CartHandler,
+                                           NewTabPageUI>(map);
+  }
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpDriveModule)) {
+    RegisterWebUIControllerInterfaceBinder<drive::mojom::DriveHandler,
                                            NewTabPageUI>(map);
   }
 

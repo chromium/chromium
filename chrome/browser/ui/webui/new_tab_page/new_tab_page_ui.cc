@@ -10,6 +10,7 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/drive/drive_handler.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/task_module/task_module_handler.h"
@@ -357,6 +358,12 @@ void NewTabPageUI::BindInterface(
   task_module_handler_ = std::make_unique<TaskModuleHandler>(
       std::move(pending_receiver), profile_);
 }
+
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<drive::mojom::DriveHandler> pending_receiver) {
+  drive_handler_ = std::make_unique<DriveHandler>(std::move(pending_receiver));
+}
+
 #if !defined(OFFICIAL_BUILD)
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<foo::mojom::FooHandler> pending_page_handler) {
