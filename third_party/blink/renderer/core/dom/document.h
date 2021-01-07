@@ -1628,7 +1628,7 @@ class CORE_EXPORT Document : public ContainerNode,
                                  unsigned new_length);
   void NotifyChangeChildren(const ContainerNode& container);
 
-  FontPreloadManager& GetFontPreloadManager() { return font_preload_manager_; }
+  FontPreloadManager& GetFontPreloadManager() { return *font_preload_manager_; }
   void FontPreloadingFinishedOrTimedOut();
 
   void IncrementAsyncScriptCount() { async_script_count_++; }
@@ -2184,7 +2184,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // call or potential user prompt.
   bool expressly_denied_storage_access_ = false;
 
-  FontPreloadManager font_preload_manager_;
+  Member<FontPreloadManager> font_preload_manager_;
 
   int async_script_count_ = 0;
   bool first_paint_recorded_ = false;
