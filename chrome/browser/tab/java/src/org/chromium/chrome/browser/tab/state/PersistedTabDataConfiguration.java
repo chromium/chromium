@@ -131,7 +131,7 @@ public enum PersistedTabDataConfiguration {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected static PersistedTabDataConfiguration getTestConfig() {
+    static PersistedTabDataConfiguration getTestConfig() {
         return TEST_CONFIG;
     }
 }

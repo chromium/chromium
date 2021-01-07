@@ -40,9 +40,9 @@ public final class CastSettingsManager {
     private final ContentResolver mContentResolver;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected ContentObserver mDeviceNameObserver;
+    ContentObserver mDeviceNameObserver;
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected ContentObserver mIsDeviceProvisionedObserver;
+    ContentObserver mIsDeviceProvisionedObserver;
 
     /**
      * Can be implemented to receive notifications from a CastSettingsManager instance when

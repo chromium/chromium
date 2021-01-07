@@ -45,7 +45,7 @@ public final class TabSuggestionsClientFetcher implements TabSuggestionsFetcher 
         }
     }
 
-    protected void setUseBaselineTabSuggestionsForTesting() {
+    void setUseBaselineTabSuggestionsForTesting() {
         mClientSuggestionProviders =
                 new ArrayList<>(Arrays.asList(new BaselineTabSuggestionProvider()));
     }

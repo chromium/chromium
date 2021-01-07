@@ -47,7 +47,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'MutablePublicArray',
     'UnescapedEntity',
     'NonCanonicalType',
-    'ProtectedMembersInFinalClass',
     'AlmostJavadoc',
     # TODO(crbug.com/834807): Follow steps in bug
     'DoubleBraceInitialization',
