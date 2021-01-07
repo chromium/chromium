@@ -13,6 +13,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +23,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
@@ -60,6 +62,7 @@ import java.util.concurrent.Callable;
 
 /** Tests for the TabPersistentStore. */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class TabPersistentStoreTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
@@ -198,7 +201,7 @@ public class TabPersistentStoreTest {
         }
     }
 
-    private final TabModelSelectorFactory mMockTabModelSelectorFactory =
+    private static final TabModelSelectorFactory sMockTabModelSelectorFactory =
             new TabModelSelectorFactory() {
                 @Override
                 public TabModelSelector buildSelector(Activity activity,
@@ -211,20 +214,25 @@ public class TabPersistentStoreTest {
                     }
                 }
             };
+    private static TabWindowManagerImpl sTabWindowManager;
 
     /** Class for mocking out the directory containing all of the TabState files. */
     private TestTabModelDirectory mMockDirectory;
     private AdvancedMockContext mAppContext;
     private SharedPreferencesManager mPreferences;
-    private TabWindowManagerImpl mTabWindowManager;
+
+    @BeforeClass
+    public static void beforeClassSetUp() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
+                    sMockTabModelSelectorFactory);
+            sTabWindowManager = (TabWindowManagerImpl) TabWindowManagerSingleton.getInstance();
+        });
+    }
 
     @Before
     public void setUp() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
-                    mMockTabModelSelectorFactory);
-            mTabWindowManager = (TabWindowManagerImpl) TabWindowManagerSingleton.getInstance();
-
             mChromeActivity = new ChromeActivity() {
                 @Override
                 protected boolean handleBackPressed() {
@@ -268,7 +276,7 @@ public class TabPersistentStoreTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTabWindowManager.onActivityStateChange(mChromeActivity, ActivityState.DESTROYED);
+            sTabWindowManager.onActivityStateChange(mChromeActivity, ActivityState.DESTROYED);
         });
         mMockDirectory.tearDown();
     }
@@ -705,9 +713,9 @@ public class TabPersistentStoreTest {
                     public TestTabModelSelector call() {
                         // Clear any existing TestTabModelSelector (required when
                         // createAndRestoreRealTabModelImpls is called multiple times in one test).
-                        mTabWindowManager.onActivityStateChange(
+                        sTabWindowManager.onActivityStateChange(
                                 mChromeActivity, ActivityState.DESTROYED);
-                        return (TestTabModelSelector) mTabWindowManager.requestSelector(
+                        return (TestTabModelSelector) sTabWindowManager.requestSelector(
                                 mChromeActivity, mChromeActivity, null, 0);
                     }
                 });

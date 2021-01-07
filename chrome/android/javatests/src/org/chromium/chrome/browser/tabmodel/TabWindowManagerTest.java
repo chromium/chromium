@@ -10,13 +10,14 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
@@ -39,9 +40,10 @@ import java.util.List;
  * {@link Activity}s getting destroyed, etc.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class TabWindowManagerTest {
     private List<Activity> mActivities = new ArrayList<>();
-    private final TabModelSelectorFactory mMockTabModelSelectorFactory =
+    private static final TabModelSelectorFactory sMockTabModelSelectorFactory =
             new TabModelSelectorFactory() {
                 @Override
                 public TabModelSelector buildSelector(Activity activity,
@@ -51,10 +53,10 @@ public class TabWindowManagerTest {
                 }
             };
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() {
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
-                mMockTabModelSelectorFactory);
+                sMockTabModelSelectorFactory);
     }
 
     private ChromeActivity buildActivity() {
