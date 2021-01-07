@@ -434,6 +434,8 @@ const struct QuicErrorMapping {
     {quic::QUIC_INVALID_0RTT_PACKET_NUMBER_OUT_OF_ORDER,
      "quic.quic_invalid_0rtt_packet_number_out_of_order"},
     {quic::QUIC_INVALID_PRIORITY_UPDATE, "quic::quic_invalid_priority_update"},
+    {quic::QUIC_PEER_PORT_CHANGE_HANDSHAKE_UNCONFIRMED,
+     "quic.peer_port_change_handshake_unconfirmed"},
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};
 

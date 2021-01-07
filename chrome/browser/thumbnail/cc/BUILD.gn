@@ -19,6 +19,7 @@ source_set("cc") {
     "//content/public/browser",
     "//media",
     "//mojo/public/cpp/bindings",
+    "//net",
     "//skia",
     "//ui/gfx",
   ]
@@ -45,6 +46,7 @@ source_set("unit_tests") {
   deps = [
     ":cc",
     "//base",
+    "//net",
     "//testing/gmock",
     "//testing/gtest",
   ]

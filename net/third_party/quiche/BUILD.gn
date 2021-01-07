@@ -6,6 +6,10 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+config("quiche_config") {
+  include_dirs = [ "src" ]
+}
+
 # Since //net and //net/third_party/quiche have a circular dependency on each
 # other, exporting dependencies from the :quiche target directly does not work.
 # Thus, all public dependencies for QUICHE should go into the target below,
@@ -13,6 +17,7 @@ import("//third_party/protobuf/proto_library.gni")
 source_set("quiche_public_deps") {
   visibility = [ "//net:net_public_deps" ]
 
+  public_configs = [ ":quiche_config" ]
   public_deps = [ "//third_party/abseil-cpp:absl" ]
 }
 
@@ -638,6 +643,8 @@ proto_library("net_quic_proto") {
   cc_generator_options = "dllexport_decl=NET_EXPORT_PRIVATE:"
   cc_include = "net/base/net_export.h"
   component_build_force_source_set = true
+
+  proto_in_dir = "src"
 
   deps = [ "//net:net_export_header" ]
 

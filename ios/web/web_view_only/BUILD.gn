@@ -31,6 +31,7 @@ source_set("unittests") {
 
   deps = [
     "//base",
+    "//ios/web/public",
     "//ios/web/public/web_view_only",
     "//ios/web/test:test_support",
 
