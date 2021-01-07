@@ -429,8 +429,7 @@ class OpenInControllerBridge
 }
 
 - (void)showErrorWithMessage:(NSString*)message {
-  UIViewController* topViewController =
-      [[[UIApplication sharedApplication] keyWindow] rootViewController];
+  UIViewController* topViewController = [GetAnyKeyWindow() rootViewController];
 
   _alertCoordinator =
       [[AlertCoordinator alloc] initWithBaseViewController:topViewController

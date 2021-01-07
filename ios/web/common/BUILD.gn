@@ -44,6 +44,17 @@ source_set("features") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("uikit") {
+  deps = [ "//base" ]
+
+  sources = [
+    "uikit_ui_util.h",
+    "uikit_ui_util.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("web_view_creation_util") {
   sources = [
     "web_view_creation_util.h",

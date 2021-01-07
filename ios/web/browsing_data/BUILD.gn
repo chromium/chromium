@@ -15,6 +15,7 @@ source_set("browsing_data") {
     "//base",
     "//ios/net",
     "//ios/web/common",
+    "//ios/web/common:uikit",
     "//ios/web/net/cookies",
     "//ios/web/public",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",

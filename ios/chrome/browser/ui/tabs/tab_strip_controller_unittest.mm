@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_controller.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_view.h"
@@ -36,6 +38,9 @@ namespace {
 
 class TabStripControllerTest : public PlatformTest {
  protected:
+  TabStripControllerTest()
+      : scene_state_([[SceneState alloc] initWithAppState:nil]) {}
+
   void SetUp() override {
     if (!IsIPadIdiom())
       return;
@@ -57,6 +62,8 @@ class TabStripControllerTest : public PlatformTest {
     [browser_.GetCommandDispatcher()
         startDispatchingToTarget:mock_popup_menu_commands_handler_
                      forProtocol:@protocol(PopupMenuCommands)];
+
+    SceneStateBrowserAgent::CreateForBrowser(&browser_, scene_state_);
 
     controller_ = [[TabStripController alloc] initWithBrowser:&browser_
                                                         style:NORMAL];
@@ -87,6 +94,7 @@ class TabStripControllerTest : public PlatformTest {
   id mock_application_settings_commands_handler_;
   TabStripController* controller_;
   UIWindow* window_;
+  SceneState* scene_state_;
 };
 
 TEST_F(TabStripControllerTest, LoadAndDisplay) {

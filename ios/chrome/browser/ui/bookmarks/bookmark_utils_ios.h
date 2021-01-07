@@ -50,9 +50,6 @@ NSString* TitleForBookmarkNode(const bookmarks::BookmarkNode* node);
 // Returns the subtitle relevant to the bookmark navigation ui.
 NSString* subtitleForBookmarkNode(const bookmarks::BookmarkNode* node);
 
-// Returns the current status bar height.
-CGFloat StatusBarHeight();
-
 #pragma mark - Updating Bookmarks
 
 // Creates the bookmark if |node| is NULL. Otherwise updates |node|.

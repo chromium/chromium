@@ -32,6 +32,8 @@
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
@@ -66,6 +68,9 @@ namespace {
 class BrowserViewControllerTest : public BlockCleanupTest {
  public:
  protected:
+  BrowserViewControllerTest()
+      : scene_state_([[SceneState alloc] initWithAppState:nil]) {}
+
   void SetUp() override {
     BlockCleanupTest::SetUp();
     // Set up a TestChromeBrowserState instance.
@@ -116,6 +121,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     SessionRestorationBrowserAgent::CreateForBrowser(
         browser_.get(), [[TestSessionService alloc] init]);
+
+    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
     id mockFindInPageCommandHandler =
         OCMProtocolMock(@protocol(FindInPageCommands));
@@ -208,6 +215,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   BrowserContainerViewController* container_;
   BrowserViewController* bvc_;
   UIWindow* window_;
+  SceneState* scene_state_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {

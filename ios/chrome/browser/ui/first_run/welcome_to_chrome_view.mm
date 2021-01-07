@@ -774,7 +774,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 }
 
 - (SizeClassIdiom)widthSizeClassIdiom {
-  UIWindow* keyWindow = [UIApplication sharedApplication].keyWindow;
+  UIWindow* keyWindow = GetAnyKeyWindow();
   UIUserInterfaceSizeClass sizeClass = self.traitCollection.horizontalSizeClass;
   if (sizeClass == UIUserInterfaceSizeClassUnspecified)
     sizeClass = keyWindow.traitCollection.horizontalSizeClass;
@@ -782,7 +782,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 }
 
 - (SizeClassIdiom)heightSizeClassIdiom {
-  UIWindow* keyWindow = [UIApplication sharedApplication].keyWindow;
+  UIWindow* keyWindow = GetAnyKeyWindow();
   UIUserInterfaceSizeClass sizeClass = self.traitCollection.verticalSizeClass;
   if (sizeClass == UIUserInterfaceSizeClassUnspecified)
     sizeClass = keyWindow.traitCollection.verticalSizeClass;

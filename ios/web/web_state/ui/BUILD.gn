@@ -15,6 +15,7 @@ source_set("ui") {
     "//ios/web:core",
     "//ios/web/browsing_data",
     "//ios/web/common",
+    "//ios/web/common:uikit",
     "//ios/web/favicon",
     "//ios/web/find_in_page",
     "//ios/web/js_messaging",

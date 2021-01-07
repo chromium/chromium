@@ -121,19 +121,6 @@ NSString* subtitleForBookmarkNode(const BookmarkNode* node) {
   return subtitle;
 }
 
-CGFloat StatusBarHeight() {
-  CGRect statusBarFrame = [UIApplication sharedApplication].statusBarFrame;
-  CGRect statusBarWindowRect =
-      [[UIApplication sharedApplication].keyWindow convertRect:statusBarFrame
-                                                    fromWindow:nil];
-  if (UIInterfaceOrientationIsPortrait(
-          [UIApplication sharedApplication].statusBarOrientation)) {
-    return CGRectGetHeight(statusBarWindowRect);
-  } else {
-    return CGRectGetWidth(statusBarWindowRect);
-  }
-}
-
 #pragma mark - Updating Bookmarks
 
 // Deletes all subnodes of |node|, including |node|, that are in |bookmarks|.

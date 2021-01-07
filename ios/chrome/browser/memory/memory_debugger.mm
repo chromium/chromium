@@ -547,10 +547,9 @@ const CGFloat kPadding = 10;
   [alert addAction:[UIAlertAction actionWithTitle:@"OK"
                                             style:UIAlertActionStyleDefault
                                           handler:nil]];
-  [[[[UIApplication sharedApplication] keyWindow] rootViewController]
-      presentViewController:alert
-                   animated:YES
-                 completion:nil];
+  [[self.window rootViewController] presentViewController:alert
+                                                 animated:YES
+                                               completion:nil];
 }
 
 @end

@@ -299,7 +299,7 @@ UIView* GetFirstResponderSubview(UIView* view) {
 
 UIResponder* GetFirstResponder() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return GetFirstResponderSubview([UIApplication sharedApplication].keyWindow);
+  return GetFirstResponderSubview(GetAnyKeyWindow());
 }
 
 // Trigger a haptic vibration for the user selecting an action. This is a no-op

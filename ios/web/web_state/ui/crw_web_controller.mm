@@ -19,6 +19,7 @@
 #import "ios/web/browsing_data/browsing_data_remover.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #include "ios/web/common/features.h"
+#import "ios/web/common/uikit_ui_util.h"
 #include "ios/web/common/url_util.h"
 #import "ios/web/favicon/favicon_manager.h"
 #import "ios/web/find_in_page/find_in_page_manager_impl.h"
@@ -1504,10 +1505,8 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   } else {
     // Use the screen size because the application's key window and the
     // container may still be nil.
-    _containerView.frame =
-        UIApplication.sharedApplication.keyWindow
-            ? UIApplication.sharedApplication.keyWindow.bounds
-            : UIScreen.mainScreen.bounds;
+    _containerView.frame = GetAnyKeyWindow() ? GetAnyKeyWindow().bounds
+                                             : UIScreen.mainScreen.bounds;
   }
 
   DCHECK(!CGRectIsEmpty(_containerView.frame));

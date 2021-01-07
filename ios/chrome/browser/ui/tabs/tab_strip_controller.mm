@@ -33,6 +33,8 @@
 #include "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #include "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_long_press_delegate.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_constants.h"
@@ -444,7 +446,9 @@ UIColor* BackgroundColor() {
 
     // |self.view| setup.
     _useTabStacking = [self shouldUseTabStacking];
-    CGRect tabStripFrame = [UIApplication sharedApplication].keyWindow.bounds;
+    CGRect tabStripFrame = SceneStateBrowserAgent::FromBrowser(browser)
+                               ->GetSceneState()
+                               .window.bounds;
     tabStripFrame.size.height = kTabStripHeight;
     _view = [[TabStripContainerView alloc] initWithFrame:tabStripFrame];
     _view.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
