@@ -7,9 +7,12 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_path_override.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/error_reporting/chrome_js_error_report_processor.h"
 
 class MockCrashEndpoint;
@@ -31,6 +34,17 @@ class MockChromeJsErrorReportProcessor : public ChromeJsErrorReportProcessor {
   // return the given (other) JsErrorReportProcessor.
   static void SetDefaultTo(scoped_refptr<JsErrorReportProcessor> new_default);
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // By default, a MockChromeJsErrorReportProcessor will suppress the updating
+  // of the crash database (a.k.a. uploads.log) to avoid contaminating the real
+  // database with test uploads. Set |update_report_database| to true to have
+  // ChromeJsErrorReportProcessor::UpdateReportDatabase called like it normally
+  // would be.
+  void set_update_report_database(bool update_report_database) {
+    update_report_database_ = update_report_database;
+  }
+#endif
+
  protected:
   std::string GetCrashEndpoint() override;
   std::string GetCrashEndpointStaging() override;
@@ -40,10 +54,18 @@ class MockChromeJsErrorReportProcessor : public ChromeJsErrorReportProcessor {
                     int32_t& os_minor_version,
                     int32_t& os_bugfix_version) override;
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  void UpdateReportDatabase(std::string remote_report_id,
+                            base::Time report_time) override;
+#endif
+
  private:
   ~MockChromeJsErrorReportProcessor() override;
   std::string crash_endpoint_;
   std::string crash_endpoint_staging_;
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool update_report_database_ = false;
+#endif
 };
 
 // Wrapper for MockChromeJsErrorReportProcessor. Will automatically create, set
@@ -62,6 +84,8 @@ class ScopedMockChromeJsErrorReportProcessor {
   // from JsErrorReportProcessor::Get(). After this,
   // JsErrorReportProcessor::Get() will return nullptr.
   ~ScopedMockChromeJsErrorReportProcessor();
+
+  MockChromeJsErrorReportProcessor& processor() const { return *processor_; }
 
  private:
   scoped_refptr<MockChromeJsErrorReportProcessor> processor_;

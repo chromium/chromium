@@ -9,6 +9,7 @@
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 
 MockChromeJsErrorReportProcessor::MockChromeJsErrorReportProcessor() = default;
+
 MockChromeJsErrorReportProcessor::~MockChromeJsErrorReportProcessor() = default;
 
 void MockChromeJsErrorReportProcessor::SetAsDefault() {
@@ -49,6 +50,17 @@ void MockChromeJsErrorReportProcessor::GetOsVersion(
   os_minor_version = 20;
   os_bugfix_version = 1;
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+void MockChromeJsErrorReportProcessor::UpdateReportDatabase(
+    std::string remote_report_id,
+    base::Time report_time) {
+  if (update_report_database_) {
+    ChromeJsErrorReportProcessor::UpdateReportDatabase(
+        std::move(remote_report_id), report_time);
+  }
+}
+#endif  //  !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 ScopedMockChromeJsErrorReportProcessor::ScopedMockChromeJsErrorReportProcessor(
     const MockCrashEndpoint& endpoint)

@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
 
 namespace content {
@@ -68,11 +69,20 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
                             int32_t& os_minor_version,
                             int32_t& os_bugfix_version);
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Update the uploads.log file with a record of this error report. This
+  // ensures that the error appears on chrome://crashes and is listed in the
+  // feedback reports.
+  virtual void UpdateReportDatabase(std::string remote_report_id,
+                                    base::Time report_time);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+
  private:
   struct PlatformInfo;
 
   void OnRequestComplete(std::unique_ptr<network::SimpleURLLoader> url_loader,
                          base::ScopedClosureRunner callback_runner,
+                         base::Time report_time,
                          std::unique_ptr<std::string> response_body);
 
   base::Optional<JavaScriptErrorReport> CheckConsentAndRedact(
@@ -83,12 +93,14 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   void SendReport(const GURL& url,
                   const std::string& body,
                   base::ScopedClosureRunner callback_runner,
+                  base::Time report_time,
                   network::SharedURLLoaderFactory* loader_factory);
 
   void OnConsentCheckCompleted(
       base::ScopedClosureRunner callback_runner,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       base::TimeDelta browser_process_uptime,
+      base::Time report_time,
       base::Optional<JavaScriptErrorReport> error_report);
 
   // To avoid spamming the error collection system, do not send duplicate

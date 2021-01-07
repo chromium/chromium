@@ -9,12 +9,18 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
+#include "chrome/browser/crash_upload_list/crash_upload_list.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
+#include "components/crash/core/app/crashpad.h"
+#include "components/upload_list/upload_list.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,7 +44,7 @@ class ChromeJsErrorReportProcessorTest : public ::testing::Test {
 
   void SetUp() override {
     // Set clock to something arbitrary which is not the null value.
-    test_clock_.SetNow(base::Time::FromTimeT(1586581472));
+    test_clock_.SetNow(base::Time::FromTimeT(kFakeNow));
     test_server_ = std::make_unique<net::test_server::EmbeddedTestServer>();
     endpoint_ = std::make_unique<MockCrashEndpoint>(test_server_.get());
     processor_->SetCrashEndpoint(endpoint_->GetCrashEndpointURL());
@@ -73,6 +79,7 @@ class ChromeJsErrorReportProcessorTest : public ::testing::Test {
   bool finish_callback_was_called_ = false;
   scoped_refptr<MockChromeJsErrorReportProcessor> processor_;
 
+  static constexpr time_t kFakeNow = 1586581472;
   static constexpr char kFirstMessage[] = "An Error Is Me";
   static constexpr char kFirstMessageQuery[] =
       "error_message=An%20Error%20Is%20Me";
@@ -85,6 +92,7 @@ class ChromeJsErrorReportProcessorTest : public ::testing::Test {
   static constexpr char kSecondProduct[] = "Chrome_Linux";
 };
 
+constexpr time_t ChromeJsErrorReportProcessorTest::kFakeNow;
 constexpr char ChromeJsErrorReportProcessorTest::kFirstMessage[];
 constexpr char ChromeJsErrorReportProcessorTest::kFirstMessageQuery[];
 constexpr char ChromeJsErrorReportProcessorTest::kSecondMessage[];
@@ -421,3 +429,82 @@ TEST_F(ChromeJsErrorReportProcessorTest, DifferentColumnNumbersAreDistinct) {
   SendErrorReport(std::move(report3));
   EXPECT_EQ(endpoint_->report_count(), 3);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+static std::string UploadInfoStateToString(
+    UploadList::UploadInfo::State state) {
+  switch (state) {
+    case UploadList::UploadInfo::State::NotUploaded:
+      return "NotUploaded";
+    case UploadList::UploadInfo::State::Pending:
+      return "Pending";
+    case UploadList::UploadInfo::State::Pending_UserRequested:
+      return "Pending_UserRequested";
+    case UploadList::UploadInfo::State::Uploaded:
+      return "Uploaded";
+    default:
+      return base::StrCat({"Unknown upload state ",
+                           base::NumberToString(static_cast<int>(state))});
+  }
+}
+
+static std::string UploadInfoVectorToString(
+    const std::vector<UploadList::UploadInfo>& uploads) {
+  std::string result = "[";
+  bool first = true;
+  for (const UploadList::UploadInfo& upload : uploads) {
+    if (first) {
+      first = false;
+    } else {
+      result += ", ";
+    }
+    base::StrAppend(&result,
+                    {"{state ", UploadInfoStateToString(upload.state),
+                     ", upload_id ", upload.upload_id, ", upload_time ",
+                     base::NumberToString(upload.upload_time.ToTimeT()),
+                     ", local_id ", upload.local_id, ", capture_time ",
+                     base::NumberToString(upload.capture_time.ToTimeT()),
+                     ", source ", upload.source, ", file size ",
+                     base::UTF16ToUTF8(upload.file_size), "}"});
+  }
+  result += "]";
+  return result;
+}
+
+TEST_F(ChromeJsErrorReportProcessorTest, UpdatesUploadsLog) {
+  if (crash_reporter::IsCrashpadEnabled()) {
+    // TODO(crbug.com/1162356): Combine uploads.log with Crashpad database when
+    // getting list of crashes.
+    GTEST_SKIP();
+  }
+
+  base::ScopedPathOverride crash_dir_override(chrome::DIR_CRASH_DUMPS);
+  processor_->set_update_report_database(true);
+
+  constexpr char kCrashId[] = "123abc456def";
+  endpoint_->set_response(net::HTTP_OK, kCrashId);
+
+  SendErrorReport(MakeErrorReport(kFirstMessage));
+  EXPECT_EQ(endpoint_->report_count(), 1);
+
+  auto upload_list = CreateCrashUploadList();
+  base::RunLoop run_loop;
+  upload_list->Load(run_loop.QuitClosure());
+  run_loop.Run();
+  std::vector<UploadList::UploadInfo> uploads;
+  upload_list->GetUploads(50, &uploads);
+  EXPECT_EQ(uploads.size(), 1U) << UploadInfoVectorToString(uploads);
+
+  bool found = false;
+  for (const UploadList::UploadInfo& upload : uploads) {
+    if (upload.state == UploadList::UploadInfo::State::Uploaded &&
+        upload.upload_id == kCrashId) {
+      EXPECT_FALSE(found) << "Found twice";
+      found = true;
+      EXPECT_EQ(upload.upload_time.ToTimeT(), kFakeNow);
+    }
+  }
+  EXPECT_TRUE(found) << "Didn't find upload record in "
+                     << UploadInfoVectorToString(uploads);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)

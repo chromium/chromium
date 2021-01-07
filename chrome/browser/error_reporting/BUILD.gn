@@ -14,10 +14,12 @@ static_library("error_reporting") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/common:constants",
     "//components/crash/content/browser/error_reporting",
     "//components/crash/core/app",
     "//components/feedback",
     "//components/startup_metric_utils/browser",
+    "//components/upload_list",
     "//content/public/browser",
     "//net",
     "//services/network:network_service",
@@ -34,6 +36,9 @@ source_set("test_support") {
   deps = [
     ":error_reporting",
     "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/common:constants",
     "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
   ]
 }
@@ -49,6 +54,7 @@ source_set("unit_test") {
     "//components/crash/content/browser/error_reporting",
     "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
     "//components/crash/core/app",
+    "//components/upload_list",
     "//content/test:test_support",
     "//net:test_support",
     "//testing/gtest",

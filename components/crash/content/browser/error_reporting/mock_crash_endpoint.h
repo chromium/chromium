@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
+#include "net/http/http_status_code.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -51,6 +52,12 @@ class MockCrashEndpoint {
   // submitting crash reports.
   void set_consented(bool consented) { consented_ = consented; }
 
+  // Set the response that the server will return.
+  void set_response(net::HttpStatusCode code, const std::string& content) {
+    response_code_ = code;
+    response_content_ = content;
+  }
+
   // Returns the URL that tests should send crash reports to.
   std::string GetCrashEndpointURL() const;
 
@@ -66,6 +73,8 @@ class MockCrashEndpoint {
   int report_count_ = 0;
   bool consented_ = true;
   base::RepeatingClosure on_report_;
+  net::HttpStatusCode response_code_ = net::HTTP_OK;
+  std::string response_content_ = "123";
 };
 
 #endif  // COMPONENTS_CRASH_CONTENT_BROWSER_ERROR_REPORTING_MOCK_CRASH_ENDPOINT_H_

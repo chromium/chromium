@@ -10,8 +10,11 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -20,11 +23,13 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/common/chrome_paths.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/core/app/client_upload_info.h"
+#include "components/crash/core/app/crashpad.h"
 #include "components/feedback/redaction_tool.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/upload_list/crash_upload_list.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -100,17 +105,58 @@ ChromeJsErrorReportProcessor::ChromeJsErrorReportProcessor()
     : clock_(base::DefaultClock::GetInstance()) {}
 ChromeJsErrorReportProcessor::~ChromeJsErrorReportProcessor() = default;
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+void ChromeJsErrorReportProcessor::UpdateReportDatabase(
+    std::string remote_report_id,
+    base::Time report_time) {
+  // Uploads.log format is "seconds_since_epoch,crash_id\n"
+  base::FilePath crash_dir_path;
+  if (!base::PathService::Get(chrome::DIR_CRASH_DUMPS, &crash_dir_path)) {
+    VLOG(1) << "Nowhere to write uploads.log";
+    return;
+  }
+  base::FilePath upload_log_path =
+      crash_dir_path.AppendASCII(CrashUploadList::kReporterLogFilename);
+  base::File upload_log(upload_log_path,
+                        base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND);
+  if (!upload_log.IsValid()) {
+    VLOG(1) << "Could not open upload.log: "
+            << base::File::ErrorToString(upload_log.error_details());
+    return;
+  }
+  std::string line = base::StrCat({base::NumberToString(report_time.ToTimeT()),
+                                   ",", remote_report_id, "\n"});
+  // WriteAtCurrentPos because O_APPEND.
+  if (upload_log.WriteAtCurrentPos(line.c_str(), line.length()) !=
+      static_cast<int>(line.length())) {
+    VLOG(1) << "Could not write to upload.log";
+    return;
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+
 void ChromeJsErrorReportProcessor::OnRequestComplete(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     base::ScopedClosureRunner callback_runner,
+    base::Time report_time,
     std::unique_ptr<std::string> response_body) {
   if (response_body) {
-    // TODO(iby): Update the crash log (uploads.log)
     VLOG(1) << "Uploaded crash report. ID: " << *response_body;
+    // On Chrome OS, we use a different format than other platforms. Since we
+    // will soon not call this function at all on Chrome OS (crbug.com/986166),
+    // don't bother writing code to write to that format.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&ChromeJsErrorReportProcessor::UpdateReportDatabase,
+                       this, *response_body, report_time),
+        callback_runner.Release());
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   } else {
     LOG(ERROR) << "Failed to upload crash report";
   }
-  // callback_runner will implicitly run the callback when we reach this line.
+  // callback_runner may implicitly run the callback when we reach this line if
+  // we didn't add a task to update the report database.
 }
 
 // Returns the redacted, fixed-up error report if the user consented to have it
@@ -166,6 +212,7 @@ void ChromeJsErrorReportProcessor::SendReport(
     const GURL& url,
     const std::string& body,
     base::ScopedClosureRunner callback_runner,
+    base::Time report_time,
     network::SharedURLLoaderFactory* loader_factory) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "POST";
@@ -220,7 +267,8 @@ void ChromeJsErrorReportProcessor::SendReport(
   loader->DownloadToString(
       loader_factory,
       base::BindOnce(&ChromeJsErrorReportProcessor::OnRequestComplete, this,
-                     std::move(url_loader), std::move(callback_runner)),
+                     std::move(url_loader), std::move(callback_runner),
+                     report_time),
       kCrashEndpointResponseMaxSizeInBytes);
 }
 
@@ -229,6 +277,7 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     base::ScopedClosureRunner callback_runner,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     base::TimeDelta browser_process_uptime,
+    base::Time report_time,
     base::Optional<JavaScriptErrorReport> error_report) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!error_report) {
@@ -292,7 +341,8 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     body = std::move(*error_report->stack_trace);
   }
 
-  SendReport(url, body, std::move(callback_runner), loader_factory.get());
+  SendReport(url, body, std::move(callback_runner), report_time,
+             loader_factory.get());
 }
 
 void ChromeJsErrorReportProcessor::CheckAndUpdateRecentErrorReports(
@@ -417,7 +467,8 @@ void ChromeJsErrorReportProcessor::SendErrorReport(
                      std::move(error_report)),
       base::BindOnce(&ChromeJsErrorReportProcessor::OnConsentCheckCompleted,
                      this, std::move(callback_runner),
-                     std::move(loader_factory), browser_process_uptime));
+                     std::move(loader_factory), browser_process_uptime,
+                     clock_->Now()));
 }
 
 std::string ChromeJsErrorReportProcessor::GetCrashEndpoint() {
