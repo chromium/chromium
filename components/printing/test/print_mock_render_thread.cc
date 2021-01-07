@@ -43,7 +43,6 @@ bool PrintMockRenderThread::OnMessageReceived(const IPC::Message& msg) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     IPC_MESSAGE_HANDLER(PrintHostMsg_DidStartPreview, OnDidStartPreview)
     IPC_MESSAGE_HANDLER(PrintHostMsg_DidPreviewPage, OnDidPreviewPage)
-    IPC_MESSAGE_HANDLER(PrintHostMsg_CheckForCancel, OnCheckForCancel)
 #endif
 #endif  // BUILDFLAG(ENABLE_PRINTING)
     IPC_MESSAGE_UNHANDLED(handled = false)
@@ -69,11 +68,8 @@ void PrintMockRenderThread::OnDidPreviewPage(
       params.page_number, params.content->metafile_data_region.GetSize());
 }
 
-void PrintMockRenderThread::OnCheckForCancel(
-    const printing::mojom::PreviewIds& ids,
-    bool* cancel) {
-  *cancel =
-      (print_preview_pages_remaining_ == print_preview_cancel_page_number_);
+bool PrintMockRenderThread::ShouldCancelRequest() const {
+  return print_preview_pages_remaining_ == print_preview_cancel_page_number_;
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 

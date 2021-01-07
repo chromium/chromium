@@ -5415,8 +5415,6 @@ static_library("browser") {
       "printing/printer_query.h",
       "printing/printing_init.cc",
       "printing/printing_init.h",
-      "printing/printing_message_filter.cc",
-      "printing/printing_message_filter.h",
     ]
     deps += [
       "//components/printing/browser",

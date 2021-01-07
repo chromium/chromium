@@ -2482,11 +2482,10 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
 bool PrintRenderFrameHelper::CheckForCancel() {
   const mojom::PrintParams& print_params = *print_pages_params_->params;
   bool cancel = false;
-  Send(new PrintHostMsg_CheckForCancel(
-      routing_id(),
-      mojom::PreviewIds(print_params.preview_request_id,
-                        print_params.preview_ui_id),
-      &cancel));
+
+  if (preview_ui_)
+    preview_ui_->CheckForCancel(print_params.preview_request_id, &cancel);
+
   if (cancel)
     notify_browser_of_print_failure_ = false;
   return cancel;

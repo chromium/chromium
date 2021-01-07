@@ -258,11 +258,6 @@ IPC_MESSAGE_ROUTED2(PrintHostMsg_DidPreviewPage,
                     printing::mojom::DidPreviewPageParams /* params */,
                     printing::mojom::PreviewIds /* ids */)
 
-// Asks the browser whether the print preview has been cancelled.
-IPC_SYNC_MESSAGE_ROUTED1_1(PrintHostMsg_CheckForCancel,
-                           printing::mojom::PreviewIds /* ids */,
-                           bool /* print preview cancelled */)
-
 // Sends back to the browser the complete rendered document (non-draft mode,
 // used for printing) that was requested by a PrintMsg_PrintPreview message.
 // The memory handle in this message is already valid in the browser process.

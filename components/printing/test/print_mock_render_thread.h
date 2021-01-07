@@ -42,6 +42,9 @@ class PrintMockRenderThread : public content::MockRenderThread {
 
   // Get a vector of print preview pages.
   const std::vector<std::pair<uint32_t, uint32_t>>& print_preview_pages() const;
+
+  // Determines whether to cancel a print preview request.
+  bool ShouldCancelRequest() const;
 #endif
 
   MockPrinter* GetPrinter() { return printer_.get(); }
@@ -56,7 +59,6 @@ class PrintMockRenderThread : public content::MockRenderThread {
                          const printing::mojom::PreviewIds& ids);
   void OnDidPreviewPage(const printing::mojom::DidPreviewPageParams& params,
                         const printing::mojom::PreviewIds& ids);
-  void OnCheckForCancel(const printing::mojom::PreviewIds& ids, bool* cancel);
 #endif
 
   // A mock printer device used for printing tests.

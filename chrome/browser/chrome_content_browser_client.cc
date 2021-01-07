@@ -613,10 +613,6 @@
 #include "chrome/browser/media/cast_remoting_connector.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PRINTING)
-#include "chrome/browser/printing/printing_message_filter.h"
-#endif
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "chrome/browser/media/output_protection_impl.h"
 #if BUILDFLAG(ENABLE_WIDEVINE)
@@ -1577,11 +1573,7 @@ bool ChromeContentBrowserClient::AllowGpuLaunchRetryOnIOThread() {
 
 void ChromeContentBrowserClient::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
-  int id = host->GetID();
   Profile* profile = Profile::FromBrowserContext(host->GetBrowserContext());
-#if BUILDFLAG(ENABLE_PRINTING)
-  host->AddFilter(new printing::PrintingMessageFilter(id, profile));
-#endif
 
   WebRtcLoggingController::AttachToRenderProcessHost(
       host, g_browser_process->webrtc_log_uploader());
@@ -1596,8 +1588,8 @@ void ChromeContentBrowserClient::RenderProcessWillLaunch(
           audio_debug_recordings_handler));
 
 #if BUILDFLAG(ENABLE_NACL)
-  host->AddFilter(new nacl::NaClHostMessageFilter(id, profile->IsOffTheRecord(),
-                                                  profile->GetPath()));
+  host->AddFilter(new nacl::NaClHostMessageFilter(
+      host->GetID(), profile->IsOffTheRecord(), profile->GetPath()));
 #endif
 
 #if defined(OS_ANDROID)
