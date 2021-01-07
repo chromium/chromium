@@ -40,6 +40,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records the number of pages scanned in a successful scan.</summary>
 </histogram>
 
+<histogram name="Scanning.ReadyTime" units="ms" expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the time between sending a request for scanners and receiving
+    capabilities for the selected scanner, which is essentially the time between
+    the user launching the Scan app and being able to interact with it to select
+    a scanner, change scan settings, or start a scan.
+  </summary>
+</histogram>
+
 <histogram name="Scanning.ScanAppEntryPoint" enum="ScanAppEntryPoint"
     expires_after="2021-12-04">
   <owner>gavinwill@chromium.org</owner>

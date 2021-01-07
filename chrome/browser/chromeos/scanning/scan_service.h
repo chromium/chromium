@@ -157,6 +157,10 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // Tracks the number of pages scanned for histogram recording.
   int num_pages_scanned_;
 
+  // The time at which GetScanners() is called. Used to record the time between
+  // a user launching the Scan app and being able to interact with it.
+  base::TimeTicks get_scanners_time_;
+
   base::WeakPtrFactory<ScanService> weak_ptr_factory_{this};
 };
 

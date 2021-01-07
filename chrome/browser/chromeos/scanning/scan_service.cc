@@ -245,6 +245,7 @@ ScanService::ScanService(LorgnetteScannerManager* lorgnette_scanner_manager,
 ScanService::~ScanService() = default;
 
 void ScanService::GetScanners(GetScannersCallback callback) {
+  get_scanners_time_ = base::TimeTicks::Now();
   lorgnette_scanner_manager_->GetScannerNames(
       base::BindOnce(&ScanService::OnScannerNamesReceived,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -349,6 +350,18 @@ void ScanService::OnScannerCapabilitiesReceived(
     LOG(ERROR) << "Failed to get scanner capabilities.";
     std::move(callback).Run(mojo_ipc::ScannerCapabilities::New());
     return;
+  }
+
+  // If this is the first time capabilities have been received since the last
+  // call to GetScanners(), record the time between the two events to capture
+  // the time between the Scan app launching and the user being able to interact
+  // with the app (e.g. select a scanner, change scan settings, or start a
+  // scan). If the user selects a different scanner and new capabilities are
+  // received, don't record the metric again.
+  if (!get_scanners_time_.is_null()) {
+    base::UmaHistogramMediumTimes("Scanning.ReadyTime",
+                                  base::TimeTicks::Now() - get_scanners_time_);
+    get_scanners_time_ = base::TimeTicks();
   }
 
   std::move(callback).Run(
