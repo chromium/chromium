@@ -64,9 +64,9 @@ InternalSettings::Backup::Backup(Settings* settings)
     : original_csp_(RuntimeEnabledFeatures::
                         ExperimentalContentSecurityPolicyFeaturesEnabled()),
       original_editing_behavior_(settings->GetEditingBehaviorType()),
-      original_text_autosizing_enabled_(settings->TextAutosizingEnabled()),
+      original_text_autosizing_enabled_(settings->GetTextAutosizingEnabled()),
       original_text_autosizing_window_size_override_(
-          settings->TextAutosizingWindowSizeOverride()),
+          settings->GetTextAutosizingWindowSizeOverride()),
       original_accessibility_font_scale_factor_(
           settings->GetAccessibilityFontScaleFactor()),
       original_media_type_override_(settings->GetMediaTypeOverride()),
@@ -124,7 +124,7 @@ void InternalSettings::ResetToConsistentState() {
   backup_.RestoreTo(GetSettings());
   backup_ = Backup(GetSettings());
   backup_.original_text_autosizing_enabled_ =
-      GetSettings()->TextAutosizingEnabled();
+      GetSettings()->GetTextAutosizingEnabled();
 
   InternalSettingsGenerated::resetToConsistentState();
 }

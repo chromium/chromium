@@ -97,7 +97,7 @@ void HttpEquiv::ProcessHttpEquivContentSecurityPolicy(
     const AtomicString& content) {
   if (!window || !window->GetFrame())
     return;
-  if (window->GetFrame()->GetSettings()->BypassCSP())
+  if (window->GetFrame()->GetSettings()->GetBypassCSP())
     return;
   if (EqualIgnoringASCIICase(equiv, "content-security-policy")) {
     window->GetContentSecurityPolicy()->DidReceiveHeader(

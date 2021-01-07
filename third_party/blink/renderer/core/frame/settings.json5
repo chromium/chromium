@@ -28,10 +28,15 @@
   // Valid parameters for data entries below.
   parameters: {
     type: {
-      default: "bool"
+      default: "bool",
+      valid_type: "str",  // The string value should be a C++ type name
     },
     initial: {},
-    invalidate: {},
+    invalidate: {
+      default: [],
+      valid_type: "list",
+      // See SettingsDelegate::ChangeType for valid values (without "k"),
+    },
   },
 
   data: [
@@ -70,7 +75,7 @@
     {
       name: "minimumFontSize",
       initial: 0,
-      invalidate: "Style",
+      invalidate: ["Style"],
       type: "int",
     },
 
@@ -79,19 +84,19 @@
     {
       name: "minimumLogicalFontSize",
       initial: 0,
-      invalidate: "Style",
+      invalidate: ["Style"],
       type: "int",
     },
     {
       name: "defaultFontSize",
       initial: 0,
-      invalidate: "Style",
+      invalidate: ["Style"],
       type: "int",
     },
     {
       name: "defaultFixedFontSize",
       initial: 0,
-      invalidate: "Style",
+      invalidate: ["Style"],
       type: "int",
     },
 
@@ -108,7 +113,7 @@
     {
       name: "allowUniversalAccessFromFileURLs",
       initial: true,
-      invalidate: "UniversalAccess",
+      invalidate: ["UniversalAccess"],
     },
     {
       name: "allowFileAccessFromFileURLs",
@@ -133,17 +138,17 @@
     {
       name: "HighlightAds",
       initial: false,
-      invalidate: "HighlightAds"
+      invalidate: ["HighlightAds"],
     },
     {
       name: "textAreasAreResizable",
       initial: false,
-      invalidate: "Style",
+      invalidate: ["Style"],
     },
     {
       name: "acceleratedCompositingEnabled",
       initial: false,
-      invalidate: "AcceleratedCompositing",
+      invalidate: ["AcceleratedCompositing"],
     },
 
     {
@@ -166,7 +171,7 @@
     {
       name: "preferCompositingToLCDTextEnabled",
       initial: false,
-      invalidate: "AcceleratedCompositing",
+      invalidate: ["AcceleratedCompositing"],
     },
 
     {
@@ -231,7 +236,7 @@
     {
       name: "immersiveModeEnabled",
       initial: false,
-      invalidate: "MediaControls",
+      invalidate: ["MediaControls"],
     },
 
     // Only affects main thread scrolling
@@ -246,7 +251,7 @@
     {
       name: "threadedScrollingEnabled",
       initial: true,
-      invalidate: "Style",
+      invalidate: ["Style"],
     },
 
     // Used in web tests for gesture tap highlights. Makes the highlights square
@@ -311,7 +316,7 @@
     {
       name: "spatialNavigationEnabled",
       initial: false,
-      invalidate: "SpatialNavigation",
+      invalidate: ["SpatialNavigation"],
     },
 
     // This setting adds a means to enable/disable touch initiated drag & drop. If
@@ -407,13 +412,13 @@
     {
       name: "forceZeroLayoutHeight",
       initial: false,
-      invalidate: "ViewportDescription",
+      invalidate: ["ViewportDescription"],
     },
 
     {
       name: "mainFrameClipsContent",
       initial: true,
-      invalidate: "ViewportPaintProperties",
+      invalidate: ["ViewportPaintProperties"],
     },
 
     // For android.webkit.WebSettings.setUseWideViewport()
@@ -421,7 +426,7 @@
     {
       name: "useWideViewport",
       initial: true,
-      invalidate: "ViewportDescription",
+      invalidate: ["ViewportDescription"],
     },
 
     // For android.webkit.WebSettings.setLoadWithOverviewMode()
@@ -429,7 +434,7 @@
     {
       name: "loadWithOverviewMode",
       initial: true,
-      invalidate: "ViewportDescription",
+      invalidate: ["ViewportDescription"],
     },
 
     // Used by android_webview to support legacy apps that inject script into a top-level initial empty
@@ -463,14 +468,14 @@
     {
       name: "caretBrowsingEnabled",
       initial: false,
-      invalidate: "Style",
+      invalidate: ["Style"],
     },
 
     // Font scale factor for accessibility, applied as part of text autosizing.
     {
       name: "accessibilityFontScaleFactor",
       initial: "1.0",
-      invalidate: "TextAutosizing",
+      invalidate: ["TextAutosizing"],
       type: "double",
     },
 
@@ -478,13 +483,13 @@
     {
       name: "mediaTypeOverride",
       initial: "\"\"",
-      invalidate: "MediaQuery",
+      invalidate: ["MediaQuery"],
       type: "String",
     },
     {
       name: "displayModeOverride",
       initial: "blink::mojom::DisplayMode::kUndefined",
-      invalidate: "MediaQuery",
+      invalidate: ["MediaQuery"],
       type: "blink::mojom::DisplayMode",
     },
 
@@ -493,12 +498,12 @@
     {
       name: "loadsImagesAutomatically",
       initial: false,
-      invalidate: "ImageLoading",
+      invalidate: ["ImageLoading"],
     },
     {
       name: "imagesEnabled",
       initial: true,
-      invalidate: "ImageLoading",
+      invalidate: ["ImageLoading"],
     },
     {
       name: "imageAnimationPolicy",
@@ -517,18 +522,18 @@
     {
       name: "pluginsEnabled",
       initial: false,
-      invalidate: "Plugins",
+      invalidate: ["Plugins"],
     },
 
     {
       name: "viewportEnabled",
       initial: false,
-      invalidate: "ViewportDescription",
+      invalidate: ["ViewportDescription"],
     },
     {
       name: "viewportMetaEnabled",
       initial: false,
-      invalidate: "ViewportDescription",
+      invalidate: ["ViewportDescription"],
     },
 
     // When true, Blink will use the content width and viewport size to set the
@@ -542,7 +547,7 @@
     {
       name: "dnsPrefetchingEnabled",
       initial: false,
-      invalidate: "DNSPrefetching",
+      invalidate: ["DNSPrefetching"],
     },
 
     // Clients that execute script should call ExecutionContext::canExecuteScripts()
@@ -563,7 +568,7 @@
     {
       name: "forceAndroidOverlayScrollbar",
       initial: false,
-      invalidate: "ScrollbarLayout",
+      invalidate: ["ScrollbarLayout"],
     },
 
     // Set the timeout seconds of the network-quiet timers in IdlenessDetector.
@@ -580,7 +585,7 @@
     {
       name: "forceMainWorldInitialization",
       initial: false,
-      invalidate: "DOMWorlds",
+      invalidate: ["DOMWorlds"],
     },
 
     // Forces TouchEventFeatureDetection conditional feature for all main
@@ -597,7 +602,7 @@
     {
       name: "deviceScaleAdjustment",
       initial: "1.0",
-      invalidate: "TextAutosizing",
+      invalidate: ["TextAutosizing"],
       type: "double",
     },
 
@@ -623,13 +628,13 @@
     {
       name: "availablePointerTypes",
       initial: "ui::POINTER_TYPE_NONE",
-      invalidate: "MediaQuery",
+      invalidate: ["MediaQuery"],
       type: "int",
     },
     {
       name: "availableHoverTypes",
       initial: "ui::HOVER_TYPE_NONE",
-      invalidate: "MediaQuery",
+      invalidate: ["MediaQuery"],
       type: "int",
     },
 
@@ -637,13 +642,13 @@
     {
       name: "primaryPointerType",
       initial: "mojom::blink::PointerType::kPointerNone",
-      invalidate: "MediaQuery",
+      invalidate: ["MediaQuery"],
       type: "blink::mojom::PointerType",
     },
     {
       name: "primaryHoverType",
       initial: "mojom::blink::HoverType::kHoverNone",
-      invalidate: "MediaQuery",
+      invalidate: ["MediaQuery"],
       type: "mojom::blink::HoverType",
     },
 
@@ -717,7 +722,7 @@
     {
       name: "viewportStyle",
       initial: "mojom::blink::ViewportStyle::kDefault",
-      invalidate: "ViewportRule",
+      invalidate: ["ViewportRule"],
       type: "mojom::blink::ViewportStyle",
     },
 
@@ -726,7 +731,7 @@
     {
       name: "textTrackKindUserPreference",
       initial: "TextTrackKindUserPreference::kDefault",
-      invalidate: "TextTrackKindUserPreference",
+      invalidate: ["TextTrackKindUserPreference"],
       type: "TextTrackKindUserPreference",
     },
 
@@ -836,7 +841,7 @@
     {
       name: "hideScrollbars",
       initial: false,
-      invalidate: "ViewportPaintProperties",
+      invalidate: ["ViewportPaintProperties"],
     },
 
     // Spellchecking is enabled by default for elements that do not specify it explicitly
@@ -863,7 +868,7 @@
     {
       name: "mediaControlsEnabled",
       initial: true,
-      invalidate: "MediaControls",
+      invalidate: ["MediaControls"],
     },
 
     // Whether we should not update selection attributes when mutating selection range.
@@ -886,7 +891,7 @@
     {
       name: "forceDarkModeEnabled",
       initial: false,
-      invalidate: "ForceDark",
+      invalidate: ["ColorScheme", "Paint"],
     },
 
     {
@@ -1008,7 +1013,7 @@
     {
       name: "preferredColorScheme",
       initial: "mojom::blink::PreferredColorScheme::kLight",
-      invalidate: "ColorScheme",
+      invalidate: ["ColorScheme"],
       type: "mojom::blink::PreferredColorScheme",
     },
 
@@ -1017,7 +1022,7 @@
     {
       name: "preferredContrast",
       initial: "mojom::blink::PreferredContrast::kNoPreference",
-      invalidate: "MediaQuery",
+      invalidate: ["MediaQuery"],
       type: "mojom::blink::PreferredContrast",
     },
 
@@ -1026,7 +1031,7 @@
     {
       name: "prefersReducedMotion",
       initial: false,
-      invalidate: "MediaQuery",
+      invalidate: ["MediaQuery"],
     },
     {
       name: "DontSendKeyEventsToJavascript",
@@ -1037,14 +1042,13 @@
     {
       name: "navigationControls",
       initial: "NavigationControls::kNone",
-      invalidate: "MediaQuery",
+      invalidate: ["MediaQuery"],
       type: "NavigationControls",
     },
     {
       name: "accessibilityAlwaysShowFocus",
       initial: false,
-      invalidate: "Style",
-      type: "bool"
+      invalidate: ["Style"],
     },
     // aria-modal="true" on some platforms requires the accessibility tree to
     // be pruned so no other background content is exposed to assistive
@@ -1053,7 +1057,6 @@
     {
       name: "ariaModalPrunesAXTree",
       initial: false,
-      type: "bool",
     },
     // The AXMenuList class provides a fake implementation of the
     // select element pop-up menu, which is required on platforms like
@@ -1067,12 +1070,25 @@
     {
       name: "selectionClipboardBufferAvailable",
       initial: false,
-      type: "bool",
     },
     {
       name: "accessibilityIncludeSvgGElement",
       initial: false,
-      type: "bool",
+    },
+    {
+      name: "bypassCSP",
+      initial: false,
+    },
+    {
+      name: "textAutosizingEnabled",
+      initial: false,
+      invalidate: ["TextAutosizing"],
+    },
+    // Only set by web tests, and only used if textAutosizingEnabled is true.
+    {
+      name: "textAutosizingWindowSizeOverride",
+      invalidate: ["TextAutosizing"],
+      type: "IntSize",
     },
   ],
 }

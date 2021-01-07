@@ -63,20 +63,7 @@ class CORE_EXPORT Settings {
     return generic_font_family_settings_;
   }
   void NotifyGenericFontFamilyChange() {
-    Invalidate(SettingsDelegate::kFontFamilyChange);
-  }
-
-  void SetTextAutosizingEnabled(bool);
-  bool TextAutosizingEnabled() const { return text_autosizing_enabled_; }
-
-  void SetBypassCSP(bool enabled) { bypass_csp_ = enabled; }
-  bool BypassCSP() const { return bypass_csp_; }
-
-  // Only set by web tests, and only used if TextAutosizingEnabled() returns
-  // true.
-  void SetTextAutosizingWindowSizeOverride(const IntSize&);
-  const IntSize& TextAutosizingWindowSizeOverride() const {
-    return text_autosizing_window_size_override_;
+    Invalidate(SettingsDelegate::ChangeType::kFontFamily);
   }
 
   SETTINGS_GETTERS_AND_SETTERS
@@ -89,9 +76,6 @@ class CORE_EXPORT Settings {
   SettingsDelegate* delegate_;
 
   GenericFontFamilySettings generic_font_family_settings_;
-  IntSize text_autosizing_window_size_override_;
-  bool text_autosizing_enabled_ : 1;
-  bool bypass_csp_ = false;
 
   SETTINGS_MEMBER_VARIABLES
 

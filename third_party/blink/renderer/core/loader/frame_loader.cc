@@ -1764,7 +1764,7 @@ ContentSecurityPolicy* FrameLoader::CreateCSP(
   ContentSecurityPolicy* csp = MakeGarbageCollected<ContentSecurityPolicy>();
   csp->SetOverrideURLForSelf(response.CurrentRequestUrl());
 
-  if (frame_->GetSettings()->BypassCSP())
+  if (frame_->GetSettings()->GetBypassCSP())
     return csp;  // Empty CSP.
 
   // Parse CSP from the HTTP response.

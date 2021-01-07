@@ -1277,7 +1277,7 @@ TEST_F(WebFrameTest, ChangeInFixedLayoutResetsTextAutosizingMultipliers) {
       To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame())
           ->GetDocument();
   document->GetSettings()->SetTextAutosizingEnabled(true);
-  EXPECT_TRUE(document->GetSettings()->TextAutosizingEnabled());
+  EXPECT_TRUE(document->GetSettings()->GetTextAutosizingEnabled());
   web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
 
   EXPECT_TRUE(SetTextAutosizingMultiplier(document, 2));
@@ -1306,7 +1306,7 @@ TEST_F(WebFrameTest, WorkingTextAutosizingMultipliers_VirtualViewport) {
       To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame())
           ->GetDocument();
   document->GetSettings()->SetTextAutosizingEnabled(true);
-  EXPECT_TRUE(document->GetSettings()->TextAutosizingEnabled());
+  EXPECT_TRUE(document->GetSettings()->GetTextAutosizingEnabled());
 
   web_view_helper.Resize(gfx::Size(490, 800));
 
@@ -1331,7 +1331,7 @@ TEST_F(WebFrameTest,
   Document* document = main_frame->GetDocument();
   LocalFrameView* frame_view = web_view_helper.LocalMainFrame()->GetFrameView();
   document->GetSettings()->SetTextAutosizingEnabled(true);
-  EXPECT_TRUE(document->GetSettings()->TextAutosizingEnabled());
+  EXPECT_TRUE(document->GetSettings()->GetTextAutosizingEnabled());
   web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
 
   for (Frame* frame = main_frame; frame; frame = frame->Tree().TraverseNext()) {

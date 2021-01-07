@@ -621,12 +621,12 @@ int Page::SubframeCount() const {
   return subframe_count_;
 }
 
-void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
+void Page::SettingsChanged(ChangeType change_type) {
   switch (change_type) {
-    case SettingsDelegate::kStyleChange:
+    case ChangeType::kStyle:
       InitialStyleChanged();
       break;
-    case SettingsDelegate::kViewportDescriptionChange:
+    case ChangeType::kViewportDescription:
       if (MainFrame() && MainFrame()->IsLocalFrame()) {
         DeprecatedLocalMainFrame()
             ->GetDocument()
@@ -639,7 +639,7 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
         TextAutosizer::UpdatePageInfoInAllFrames(MainFrame());
       }
       break;
-    case SettingsDelegate::kViewportPaintPropertiesChange:
+    case ChangeType::kViewportPaintProperties:
       GetVisualViewport().SetNeedsPaintPropertyUpdate();
       GetVisualViewport().InitializeScrollbars();
       if (auto* local_frame = DynamicTo<LocalFrame>(MainFrame())) {
@@ -647,14 +647,14 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
           view->SetNeedsPaintPropertyUpdate();
       }
       break;
-    case SettingsDelegate::kDNSPrefetchingChange:
+    case ChangeType::kDNSPrefetching:
       for (Frame* frame = MainFrame(); frame;
            frame = frame->Tree().TraverseNext()) {
         if (auto* local_frame = DynamicTo<LocalFrame>(frame))
           local_frame->GetDocument()->InitDNSPrefetch();
       }
       break;
-    case SettingsDelegate::kImageLoadingChange:
+    case ChangeType::kImageLoading:
       for (Frame* frame = MainFrame(); frame;
            frame = frame->Tree().TraverseNext()) {
         if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
@@ -665,14 +665,14 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
         }
       }
       break;
-    case SettingsDelegate::kTextAutosizingChange:
+    case ChangeType::kTextAutosizing:
       if (!MainFrame())
         break;
       // We need to update even for remote main frames since this setting
       // could be changed via InternalSettings.
       TextAutosizer::UpdatePageInfoInAllFrames(MainFrame());
       break;
-    case SettingsDelegate::kFontFamilyChange:
+    case ChangeType::kFontFamily:
       for (Frame* frame = MainFrame(); frame;
            frame = frame->Tree().TraverseNext()) {
         if (auto* local_frame = DynamicTo<LocalFrame>(frame))
@@ -681,10 +681,10 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
               .UpdateGenericFontFamilySettings();
       }
       break;
-    case SettingsDelegate::kAcceleratedCompositingChange:
+    case ChangeType::kAcceleratedCompositing:
       UpdateAcceleratedCompositingSettings();
       break;
-    case SettingsDelegate::kMediaQueryChange:
+    case ChangeType::kMediaQuery:
       for (Frame* frame = MainFrame(); frame;
            frame = frame->Tree().TraverseNext()) {
         if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
@@ -693,7 +693,7 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
         }
       }
       break;
-    case SettingsDelegate::kAccessibilityStateChange:
+    case ChangeType::kAccessibilityState:
       if (!MainFrame() || !MainFrame()->IsLocalFrame())
         break;
       DeprecatedLocalMainFrame()
@@ -701,7 +701,7 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
           ->AXObjectCacheOwner()
           .ClearAXObjectCache();
       break;
-    case SettingsDelegate::kViewportRuleChange: {
+    case ChangeType::kViewportRule: {
       auto* main_local_frame = DynamicTo<LocalFrame>(MainFrame());
       if (!main_local_frame)
         break;
@@ -709,7 +709,7 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
         doc->GetStyleEngine().ViewportRulesChanged();
       break;
     }
-    case SettingsDelegate::kTextTrackKindUserPreferenceChange:
+    case ChangeType::kTextTrackKindUserPreference:
       for (Frame* frame = MainFrame(); frame;
            frame = frame->Tree().TraverseNext()) {
         if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
@@ -720,7 +720,7 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
         }
       }
       break;
-    case SettingsDelegate::kDOMWorldsChange: {
+    case ChangeType::kDOMWorlds: {
       if (!GetSettings().GetForceMainWorldInitialization())
         break;
       for (Frame* frame = MainFrame(); frame;
@@ -733,7 +733,7 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
       }
       break;
     }
-    case SettingsDelegate::kMediaControlsChange:
+    case ChangeType::kMediaControls:
       for (Frame* frame = MainFrame(); frame;
            frame = frame->Tree().TraverseNext()) {
         auto* local_frame = DynamicTo<LocalFrame>(frame);
@@ -744,11 +744,11 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
           HTMLMediaElement::OnMediaControlsEnabledChange(doc);
       }
       break;
-    case SettingsDelegate::kPluginsChange: {
+    case ChangeType::kPlugins: {
       NotifyPluginsChanged();
       break;
     }
-    case SettingsDelegate::kHighlightAdsChange: {
+    case ChangeType::kHighlightAds: {
       for (Frame* frame = MainFrame(); frame;
            frame = frame->Tree().TraverseNext()) {
         if (auto* local_frame = DynamicTo<LocalFrame>(frame))
@@ -756,11 +756,11 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
       }
       break;
     }
-    case SettingsDelegate::kPaintChange: {
+    case ChangeType::kPaint: {
       InvalidatePaint();
       break;
     }
-    case SettingsDelegate::kScrollbarLayoutChange: {
+    case ChangeType::kScrollbarLayout: {
       for (Frame* frame = MainFrame(); frame;
            frame = frame->Tree().TraverseNext()) {
         auto* local_frame = DynamicTo<LocalFrame>(frame);
@@ -783,16 +783,16 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
       }
       break;
     }
-    case SettingsDelegate::kColorSchemeChange:
+    case ChangeType::kColorScheme:
       InvalidateColorScheme();
       break;
-    case SettingsDelegate::kSpatialNavigationChange:
+    case ChangeType::kSpatialNavigation:
       if (spatial_navigation_controller_ ||
           GetSettings().GetSpatialNavigationEnabled()) {
         GetSpatialNavigationController().OnSpatialNavigationSettingChanged();
       }
       break;
-    case SettingsDelegate::kUniversalAccessChange: {
+    case ChangeType::kUniversalAccess: {
       if (!GetSettings().GetAllowUniversalAccessFromFileURLs())
         break;
       for (Frame* frame = MainFrame(); frame;
@@ -807,15 +807,11 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
       }
       break;
     }
-    case SettingsDelegate::kVisionDeficiencyChange: {
+    case ChangeType::kVisionDeficiency: {
       if (auto* main_local_frame = DynamicTo<LocalFrame>(MainFrame()))
         main_local_frame->GetDocument()->VisionDeficiencyChanged();
       break;
     }
-    case SettingsDelegate::kForceDarkChange:
-      InvalidateColorScheme();
-      InvalidatePaint();
-      break;
   }
 }
 
@@ -1092,21 +1088,21 @@ void Page::SetMediaFeatureOverride(const AtomicString& media_feature,
   }
   media_feature_overrides_->SetOverride(media_feature, value);
   if (media_feature == "prefers-color-scheme")
-    SettingsChanged(SettingsDelegate::kColorSchemeChange);
+    SettingsChanged(ChangeType::kColorScheme);
   else
-    SettingsChanged(SettingsDelegate::kMediaQueryChange);
+    SettingsChanged(ChangeType::kMediaQuery);
 }
 
 void Page::ClearMediaFeatureOverrides() {
   media_feature_overrides_.reset();
-  SettingsChanged(SettingsDelegate::kMediaQueryChange);
-  SettingsChanged(SettingsDelegate::kColorSchemeChange);
+  SettingsChanged(ChangeType::kMediaQuery);
+  SettingsChanged(ChangeType::kColorScheme);
 }
 
 void Page::SetVisionDeficiency(VisionDeficiency new_vision_deficiency) {
   if (new_vision_deficiency != vision_deficiency_) {
     vision_deficiency_ = new_vision_deficiency;
-    SettingsChanged(SettingsDelegate::kVisionDeficiencyChange);
+    SettingsChanged(ChangeType::kVisionDeficiency);
   }
 }
 

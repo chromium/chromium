@@ -71,7 +71,7 @@ DevToolsEmulator::DevToolsEmulator(WebViewImpl* web_view)
       original_default_minimum_page_scale_factor_(0),
       original_default_maximum_page_scale_factor_(0),
       embedder_text_autosizing_enabled_(
-          web_view->GetPage()->GetSettings().TextAutosizingEnabled()),
+          web_view->GetPage()->GetSettings().GetTextAutosizingEnabled()),
       embedder_device_scale_adjustment_(
           web_view->GetPage()->GetSettings().GetDeviceScaleAdjustment()),
       embedder_prefer_compositing_to_lcd_text_enabled_(

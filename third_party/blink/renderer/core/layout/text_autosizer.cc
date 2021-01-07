@@ -621,7 +621,7 @@ void TextAutosizer::UpdatePageInfo() {
 
   PageInfo previous_page_info(page_info_);
   page_info_.setting_enabled_ =
-      document_->GetSettings()->TextAutosizingEnabled();
+      document_->GetSettings()->GetTextAutosizingEnabled();
 
   if (!page_info_.setting_enabled_ || document_->Printing()) {
     page_info_.page_needs_autosizing_ = false;
@@ -638,7 +638,7 @@ void TextAutosizer::UpdatePageInfo() {
     } else {
       LocalFrame& main_frame = To<LocalFrame>(frame);
       IntSize frame_size =
-          document_->GetSettings()->TextAutosizingWindowSizeOverride();
+          document_->GetSettings()->GetTextAutosizingWindowSizeOverride();
       if (frame_size.IsEmpty())
         frame_size = WindowSize();
 
