@@ -146,7 +146,7 @@ class ExtensionMetricsApiTest
   }
 
   bool RunComponentTestWithParamFlag(const std::string& extension_name) {
-    int flags = kFlagEnableFileAccess;
+    int flags = kFlagNone;
     if (GetParam() == ContextType::kServiceWorker)
       flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
 

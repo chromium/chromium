@@ -65,13 +65,8 @@ class NativeMessagingLazyApiTest
     if (GetParam() == ContextType::kEventPage) {
       return RunExtensionTest(extension_name);
     }
-    // TODO(https://crbug.com/1146173): These tests are being run with
-    // file access to prevent flakiness for the SW version. This should
-    // be reverted to run without file access when this bug is fixed.
     return RunExtensionTestWithFlags(
-        extension_name,
-        kFlagRunAsServiceWorkerBasedExtension | kFlagEnableFileAccess,
-        kFlagNone);
+        extension_name, kFlagRunAsServiceWorkerBasedExtension, kFlagNone);
   }
 
   std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;

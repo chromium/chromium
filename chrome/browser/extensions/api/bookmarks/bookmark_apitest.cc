@@ -73,13 +73,8 @@ IN_PROC_BROWSER_TEST_P(BookmarksApiTest, Bookmarks) {
   if (GetParam() == ContextType::kEventPage) {
     ASSERT_TRUE(RunExtensionTest("bookmarks")) << message_;
   } else {
-    // TODO(https://crbug.com/1146173): This test is being run with
-    // file access to prevent flakiness for the SW version. This should
-    // be reverted to run without file access when this bug is fixed.
     ASSERT_TRUE(RunExtensionTestWithFlags(
-        "bookmarks",
-        kFlagRunAsServiceWorkerBasedExtension | kFlagEnableFileAccess,
-        kFlagNone))
+        "bookmarks", kFlagRunAsServiceWorkerBasedExtension, kFlagNone))
         << message_;
   }
 }

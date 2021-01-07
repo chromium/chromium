@@ -63,9 +63,7 @@ class PermissionsApiTestWithContextType
 
  protected:
   bool RunTest(const std::string& extension_name) {
-    // TODO(https://crbug.com/1146173): Change this to kFlagNone once the bug is
-    // fixed.
-    int browser_test_flags = kFlagEnableFileAccess;
+    int browser_test_flags = kFlagNone;
     if (GetParam() == ContextType::kServiceWorker)
       browser_test_flags |= kFlagRunAsServiceWorkerBasedExtension;
     return RunExtensionTestWithFlags(extension_name, browser_test_flags,
