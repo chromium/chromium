@@ -235,6 +235,7 @@ class PLATFORM_EXPORT ResourceFetcher
                           uint32_t inflight_keepalive_bytes,
                           bool should_report_corb_blocking);
   void HandleLoaderError(Resource*,
+                         base::TimeTicks finish_time,
                          const ResourceError&,
                          uint32_t inflight_keepalive_bytes);
   blink::mojom::ControllerServiceWorkerMode IsControlledByServiceWorker() const;

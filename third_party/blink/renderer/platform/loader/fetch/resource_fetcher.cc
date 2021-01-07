@@ -1926,6 +1926,7 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
 }
 
 void ResourceFetcher::HandleLoaderError(Resource* resource,
+                                        base::TimeTicks finish_time,
                                         const ResourceError& error,
                                         uint32_t inflight_keepalive_bytes) {
   DCHECK(resource);
@@ -1938,7 +1939,7 @@ void ResourceFetcher::HandleLoaderError(Resource* resource,
   if (scoped_refptr<ResourceTimingInfo> info =
           resource_timing_info_map_.Take(resource)) {
     PopulateAndAddResourceTimingInfo(
-        resource, info, info->InitialTime(),
+        resource, info, finish_time,
         resource->GetResponse().EncodedDataLength());
     if (resource->Options().request_initiator_context == kDocumentContext)
       Context().AddResourceTiming(*info);

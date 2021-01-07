@@ -144,7 +144,8 @@ class FakeWebURLLoader : public blink::WebURLLoader {
       int64_t&,
       blink::WebBlobInfo&,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>) override {
-    client->DidFail(blink::WebURLError(kFailureReason, request->url), 0, 0, 0);
+    client->DidFail(blink::WebURLError(kFailureReason, request->url),
+                    base::TimeTicks::Now(), 0, 0, 0);
   }
 
   void LoadAsynchronously(
@@ -159,8 +160,8 @@ class FakeWebURLLoader : public blink::WebURLLoader {
     freezable_task_runner_handle_->GetTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeWebURLLoader::DidFail, weak_factory_.GetWeakPtr(),
-                       blink::WebURLError(kFailureReason, request->url), 0, 0,
-                       0));
+                       blink::WebURLError(kFailureReason, request->url),
+                       base::TimeTicks::Now(), 0, 0, 0));
   }
 
   void SetDefersLoading(DeferType) override {}
@@ -171,11 +172,12 @@ class FakeWebURLLoader : public blink::WebURLLoader {
   }
 
   void DidFail(const blink::WebURLError& error,
+               base::TimeTicks response_end,
                int64_t total_encoded_data_length,
                int64_t total_encoded_body_length,
                int64_t total_decoded_body_length) {
     DCHECK(async_client_);
-    async_client_->DidFail(error, total_encoded_data_length,
+    async_client_->DidFail(error, response_end, total_encoded_data_length,
                            total_encoded_body_length,
                            total_decoded_body_length);
   }

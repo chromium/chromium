@@ -762,8 +762,9 @@ void WebURLLoaderImpl::Context::OnCompletedRequest(
                            this, TRACE_EVENT_FLAG_FLOW_IN);
 
     if (status.error_code != net::OK) {
-      client_->DidFail(PopulateURLError(status, url_), total_transfer_size,
-                       encoded_body_size, status.decoded_body_length);
+      client_->DidFail(PopulateURLError(status, url_), status.completion_time,
+                       total_transfer_size, encoded_body_size,
+                       status.decoded_body_length);
     } else {
       client_->DidFinishLoading(status.completion_time, total_transfer_size,
                                 encoded_body_size, status.decoded_body_length,
@@ -783,6 +784,7 @@ void WebURLLoaderImpl::Context::CancelBodyStreaming() {
   if (client_) {
     // TODO(yhirano): Set |stale_copy_in_cache| appropriately if possible.
     client_->DidFail(WebURLError(net::ERR_ABORTED, url_),
+                     base::TimeTicks::Now(),
                      WebURLLoaderClient::kUnknownEncodedDataLength, 0, 0);
   }
 
