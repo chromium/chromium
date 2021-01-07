@@ -1230,14 +1230,6 @@ static_library("extensions") {
     ]
   }
 
-  if (enable_print_preview && !is_chromeos_ash) {
-    sources += [
-      "api/cloud_print_private/cloud_print_private_api.cc",
-      "api/cloud_print_private/cloud_print_private_api.h",
-    ]
-    deps += [ "//chrome/common:service_process_mojom" ]
-  }
-
   if (enable_service_discovery) {
     sources += [
       "api/mdns/mdns_api.cc",

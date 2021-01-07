@@ -24295,7 +24295,7 @@ Called by update_extension_histograms.py.-->
   <int value="48" label="DELETED_EXPERIMENTAL_RLZ_RECORDPRODUCTEVENT"/>
   <int value="49" label="BOOKMARKS_GETRECENT"/>
   <int value="50" label="APP_CURRENTWINDOWINTERNAL_SETBOUNDS"/>
-  <int value="51" label="CLOUDPRINTPRIVATE_SETUPCONNECTOR"/>
+  <int value="51" label="DELETED_CLOUDPRINTPRIVATE_SETUPCONNECTOR"/>
   <int value="52" label="SERIAL_SETCONTROLSIGNALS"/>
   <int value="53" label="DELETED_FILEMANAGERPRIVATE_SETLASTMODIFIED"/>
   <int value="54" label="IDLE_SETDETECTIONINTERVAL"/>
@@ -24358,7 +24358,7 @@ Called by update_extension_histograms.py.-->
   <int value="111" label="FONTSETTINGS_CLEARDEFAULTFIXEDFONTSIZE"/>
   <int value="112" label="MEDIAPLAYERPRIVATE_CLOSEWINDOW"/>
   <int value="113" label="WEBREQUESTINTERNAL_ADDEVENTLISTENER"/>
-  <int value="114" label="CLOUDPRINTPRIVATE_GETPRINTERS"/>
+  <int value="114" label="DELETED_CLOUDPRINTPRIVATE_GETPRINTERS"/>
   <int value="115" label="STORAGE_SET"/>
   <int value="116" label="FONTSETTINGS_GETDEFAULTFONTSIZE"/>
   <int value="117" label="EXTENSION_SETUPDATEURLDATA"/>
@@ -24445,7 +24445,7 @@ Called by update_extension_histograms.py.-->
   <int value="197" label="BROWSERACTION_ENABLE"/>
   <int value="198" label="METRICSPRIVATE_RECORDMEDIUMTIME"/>
   <int value="199" label="PAGEACTION_SETTITLE"/>
-  <int value="200" label="CLOUDPRINTPRIVATE_GETHOSTNAME"/>
+  <int value="200" label="DELETED_CLOUDPRINTPRIVATE_GETHOSTNAME"/>
   <int value="201" label="CONTENTSETTINGS_GETRESOURCEIDENTIFIERS"/>
   <int value="202" label="SOCKET_CREATE"/>
   <int value="203" label="DEVELOPERPRIVATE_RELOAD"/>
@@ -24671,7 +24671,7 @@ Called by update_extension_histograms.py.-->
   <int value="423" label="DELETED_DEVELOPERPRIVATE_ALLOWINCOGNITO"/>
   <int value="424" label="INPUT_IME_DELETESURROUNDINGTEXT"/>
   <int value="425" label="DELETED_FILEMANAGERPRIVATE_OPENNEWWINDOW"/>
-  <int value="426" label="CLOUDPRINTPRIVATE_GETCLIENTID"/>
+  <int value="426" label="DELETED_CLOUDPRINTPRIVATE_GETCLIENTID"/>
   <int value="427" label="ECHOPRIVATE_GETUSERCONSENT"/>
   <int value="428" label="SYNCFILESYSTEM_SETCONFLICTRESOLUTIONPOLICY"/>
   <int value="429" label="SYNCFILESYSTEM_GETCONFLICTRESOLUTIONPOLICY"/>
@@ -26236,7 +26236,7 @@ Called by update_extension_permission.py.-->
   <int value="26" label="kChromeosInfoPrivate"/>
   <int value="27" label="kClipboardRead"/>
   <int value="28" label="kClipboardWrite"/>
-  <int value="29" label="kCloudPrintPrivate"/>
+  <int value="29" label="kDeleted_CloudPrintPrivate"/>
   <int value="30" label="kCommandLinePrivate"/>
   <int value="31" label="kCommandsAccessibility"/>
   <int value="32" label="kContentSettings"/>

@@ -3124,9 +3124,6 @@ if (!is_android) {
         "../browser/printing/pwg_raster_converter_browsertest.cc",
         "../browser/ui/webui/print_preview/print_preview_ui_browsertest.cc",
       ]
-      if (enable_extensions && !is_chromeos_ash) {
-        sources += [ "../browser/extensions/api/cloud_print_private/cloud_print_private_apitest.cc" ]
-      }
       if (!is_mac && !is_chromeos_ash && !is_chromeos_lacros) {
         sources += [
           # This test depends on GetCommandLineForRelaunch, which is not

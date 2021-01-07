@@ -70,7 +70,7 @@ class APIPermission {
     kChromeosInfoPrivate = 26,
     kClipboardRead = 27,
     kClipboardWrite = 28,
-    kCloudPrintPrivate = 29,
+    kDeleted_CloudPrintPrivate = 29,  // API removed.
     kCommandLinePrivate = 30,
     kCommandsAccessibility = 31,
     kContentSettings = 32,

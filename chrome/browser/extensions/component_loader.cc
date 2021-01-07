@@ -461,11 +461,6 @@ void ComponentLoader::AddDefaultComponentExtensions(
   AddKeyboardApp();
 #else  // BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(!skip_session_components);
-#if BUILDFLAG(ENABLE_PRINTING)
-  // Cloud Print component app. Not required on Chrome OS.
-  Add(IDR_CLOUDPRINT_MANIFEST,
-      base::FilePath(FILE_PATH_LITERAL("cloud_print")));
-#endif  // BUILDFLAG(ENABLE_PRINTING)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (!skip_session_components) {

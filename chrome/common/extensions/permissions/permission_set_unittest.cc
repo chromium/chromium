@@ -823,7 +823,6 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermission::kCast);
   skip.insert(APIPermission::kCecPrivate);
   skip.insert(APIPermission::kChromeosInfoPrivate);
-  skip.insert(APIPermission::kCloudPrintPrivate);
   skip.insert(APIPermission::kCommandLinePrivate);
   skip.insert(APIPermission::kCrashReportPrivate);
   skip.insert(APIPermission::kDeveloperPrivate);

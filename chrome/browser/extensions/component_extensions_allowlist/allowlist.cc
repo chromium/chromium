@@ -63,9 +63,6 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
 bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
   switch (manifest_resource_id) {
     // Please keep the list in alphabetical order.
-#if BUILDFLAG(ENABLE_PRINTING)
-    case IDR_CLOUDPRINT_MANIFEST:
-#endif
     case IDR_CRYPTOTOKEN_MANIFEST:
     case IDR_FEEDBACK_MANIFEST:
 #if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)

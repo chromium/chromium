@@ -129,10 +129,6 @@ if (!is_chromeos_ash) {
   schema_sources_ += [ "enterprise_reporting_private.idl" ]
 }
 
-if (enable_print_preview && !is_chromeos_ash) {
-  schema_sources_ += [ "cloud_print_private.json" ]
-}
-
 if (enable_service_discovery) {
   schema_sources_ += [ "mdns.idl" ]
 }

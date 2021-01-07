@@ -232,10 +232,6 @@
       "chrome://add-supervision/*"
     ]
   }],
-  "cloudPrintPrivate": {
-    "dependencies": ["permission:cloudPrintPrivate"],
-    "contexts": ["blessed_extension"]
-  },
   "commandLinePrivate": {
     "dependencies": ["permission:commandLinePrivate"],
     "contexts": ["blessed_extension"]

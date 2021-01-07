@@ -154,8 +154,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermission::kNetworkingCastPrivate, "networking.castPrivate"},
     {APIPermission::kSystemPrivate, "systemPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kCloudPrintPrivate, "cloudPrintPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kInputMethodPrivate, "inputMethodPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kEchoPrivate, "echoPrivate",

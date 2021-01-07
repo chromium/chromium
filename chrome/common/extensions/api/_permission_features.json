@@ -149,12 +149,6 @@
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
   },
-  "cloudPrintPrivate": {
-    "channel": "stable",
-    "extension_types": ["hosted_app"],
-    // CloudPrint
-    "whitelist": ["99060B01DE911EB85FD630C8BA6320C9186CA3AB"]
-  },
   "commandLinePrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
