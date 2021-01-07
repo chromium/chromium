@@ -35,9 +35,9 @@ class DirectSocketsUnitTest : public RenderViewHostTestHarness {
     return direct_sockets_service().ValidateOptions(options);
   }
 
-  void PopulateLocalAddr(const blink::mojom::DirectSocketOptions& options,
-                         base::Optional<net::IPEndPoint>& local_addr) {
-    DirectSocketsServiceImpl::PopulateLocalAddrForTesting(options, local_addr);
+  base::Optional<net::IPEndPoint> GetLocalAddr(
+      const blink::mojom::DirectSocketOptions& options) {
+    return DirectSocketsServiceImpl::GetLocalAddrForTesting(options);
   }
 
  private:
@@ -69,30 +69,26 @@ TEST_F(DirectSocketsUnitTest, PopulateLocalAddr) {
   blink::mojom::DirectSocketOptions options;
 
   // Test for default condition.
-  base::Optional<net::IPEndPoint> local_addr = base::nullopt;
-  PopulateLocalAddr(options, local_addr);
+  base::Optional<net::IPEndPoint> local_addr = GetLocalAddr(options);
   EXPECT_EQ(local_addr, base::nullopt);
 
   // Test with IPv4 address and default port(0) provided.
-  local_addr = base::nullopt;
   options.local_hostname = "12.34.56.78";
-  PopulateLocalAddr(options, local_addr);
+  local_addr = GetLocalAddr(options);
   const uint8_t ipv4[net::IPAddress::kIPv4AddressSize] = {12, 34, 56, 78};
   EXPECT_EQ(local_addr, net::IPEndPoint(net::IPAddress(ipv4), 0));
 
   // Test with IPv6 address and default port(0) provided.
-  local_addr = base::nullopt;
   options.local_hostname = "fedc:ba98:7654:3210:fedc:ba98:7654:3210";
-  PopulateLocalAddr(options, local_addr);
+  local_addr = GetLocalAddr(options);
   const uint8_t ipv6[net::IPAddress::kIPv6AddressSize] = {
       0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10,
       0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10};
   EXPECT_EQ(local_addr, net::IPEndPoint(net::IPAddress(ipv6), 0));
 
   // Test with IPv6 address and port(12345) provided.
-  local_addr = base::nullopt;
   options.local_port = 12345;
-  PopulateLocalAddr(options, local_addr);
+  local_addr = GetLocalAddr(options);
   EXPECT_EQ(local_addr, net::IPEndPoint(net::IPAddress(ipv6), 12345));
 }
 

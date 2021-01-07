@@ -37,17 +37,19 @@ network::mojom::NetworkContext*& GetNetworkContextForTesting() {
   return network_context;
 }
 
-// Populate |local_addr| from options.
-void PopulateLocalAddr(const blink::mojom::DirectSocketOptions& options,
-                       base::Optional<net::IPEndPoint>& local_addr) {
-  DCHECK(!local_addr);
+// Get local ip address from options.
+base::Optional<net::IPEndPoint> GetLocalAddr(
+    const blink::mojom::DirectSocketOptions& options) {
+  base::Optional<net::IPEndPoint> local_addr = base::nullopt;
   if (!options.local_hostname)
-    return;
+    return local_addr;
 
   net::IPAddress local_address;
   bool success = local_address.AssignFromIPLiteral(*options.local_hostname);
   if (success)
     local_addr = net::IPEndPoint(local_address, options.local_port);
+
+  return local_addr;
 }
 
 }  // namespace
@@ -142,8 +144,7 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
     }
 
     DCHECK(resolved_addresses && !resolved_addresses->empty());
-    base::Optional<net::IPEndPoint> local_addr = base::nullopt;
-    PopulateLocalAddr(*options_, local_addr);
+    const base::Optional<net::IPEndPoint> local_addr = GetLocalAddr(*options_);
 
     network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options =
         network::mojom::TCPConnectedSocketOptions::New();
@@ -180,8 +181,7 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
     }
 
     DCHECK(resolved_addresses && !resolved_addresses->empty());
-    base::Optional<net::IPEndPoint> local_addr = base::nullopt;
-    PopulateLocalAddr(*options_, local_addr);
+    base::Optional<net::IPEndPoint> local_addr = GetLocalAddr(*options_);
 
     // TODO(crbug.com/1119620): network_context_->CreateUDPSocket
     // TODO(crbug.com/1119620): Connect(remote_addr, udp_socket_options)
@@ -274,10 +274,10 @@ void DirectSocketsServiceImpl::SetNetworkContextForTesting(
 }
 
 // static
-void DirectSocketsServiceImpl::PopulateLocalAddrForTesting(
-    const blink::mojom::DirectSocketOptions& options,
-    base::Optional<net::IPEndPoint>& local_addr) {
-  PopulateLocalAddr(options, local_addr);
+base::Optional<net::IPEndPoint>
+DirectSocketsServiceImpl::GetLocalAddrForTesting(
+    const blink::mojom::DirectSocketOptions& options) {
+  return GetLocalAddr(options);
 }
 
 void DirectSocketsServiceImpl::RenderFrameDeleted(

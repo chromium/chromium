@@ -65,9 +65,8 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 
   static void SetNetworkContextForTesting(network::mojom::NetworkContext*);
 
-  static void PopulateLocalAddrForTesting(
-      const blink::mojom::DirectSocketOptions& options,
-      base::Optional<net::IPEndPoint>& local_addr);
+  static base::Optional<net::IPEndPoint> GetLocalAddrForTesting(
+      const blink::mojom::DirectSocketOptions& options);
 
  private:
   friend class DirectSocketsUnitTest;
