@@ -278,8 +278,14 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // Send a notification that the print preview has loaded.
   void SendPrintPreviewLoadedNotification();
 
-  // Send document metadata. (e.g. PDF title, attachments and bookmarks.)
-  void SendDocumentMetadata();
+  // Send attachments.
+  void SendAttachments();
+
+  // Send bookmarks.
+  void SendBookmarks();
+
+  // Send document metadata.
+  void SendMetadata();
 
   // Send the loading progress, where |percentage| represents the progress, or
   // -1 for loading error.

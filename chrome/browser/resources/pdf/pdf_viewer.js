@@ -66,8 +66,6 @@ let NavigateMessageData;
  * @typedef {{
  *   type: string,
  *   title: string,
- *   attachments: !Array<!Attachment>,
- *   bookmarks: !Array<!Bookmark>,
  *   canSerializeDocument: boolean,
  * }}
  */
@@ -900,8 +898,18 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   handlePluginMessage(e) {
     const data = e.detail;
     switch (data.type.toString()) {
+      case 'attachments':
+        this.setAttachments_(
+            /** @type {{ attachmentsData: !Array<!Attachment> }} */ (data)
+                .attachmentsData);
+        return;
       case 'beep':
         this.handleBeep_();
+        return;
+      case 'bookmarks':
+        this.setBookmarks_(
+            /** @type {{ bookmarksData: !Array<!Bookmark> }} */ (data)
+                .bookmarksData);
         return;
       case 'documentDimensions':
         this.setDocumentDimensions(
@@ -1029,6 +1037,24 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   }
 
   /**
+   * Sets the document attachment data.
+   * @param {!Array<!Attachment>} attachments
+   * @private
+   */
+  setAttachments_(attachments) {
+    this.attachments_ = attachments;
+  }
+
+  /**
+   * Sets the document bookmarks data.
+   * @param {!Array<!Bookmark>} bookmarks
+   * @private
+   */
+  setBookmarks_(bookmarks) {
+    this.bookmarks_ = bookmarks;
+  }
+
+  /**
    * Sets document metadata from the current controller.
    * @param {!MetadataMessageData} metadata
    * @private
@@ -1036,8 +1062,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   setDocumentMetadata_(metadata) {
     this.title_ = metadata.title || getFilenameFromURL(this.originalUrl);
     document.title = this.title_;
-    this.attachments_ = metadata.attachments;
-    this.bookmarks_ = metadata.bookmarks;
     this.canSerializeDocument_ = metadata.canSerializeDocument;
   }
 

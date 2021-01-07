@@ -121,10 +121,14 @@ constexpr char kJSLoadProgressType[] = "loadProgress";
 constexpr char kJSProgressPercentage[] = "progress";
 // Document print preview loaded (Plugin -> Page)
 constexpr char kJSPreviewLoadedType[] = "printPreviewLoaded";
-// Metadata
+// Attachments (Plugin -> Page)
+constexpr char kJSAttachmentsType[] = "attachments";
+constexpr char kJSAttachmentsData[] = "attachmentsData";
+// Bookmarks (Plugin -> Page)
+constexpr char kJSBookmarksType[] = "bookmarks";
+constexpr char kJSBookmarksData[] = "bookmarksData";
+// Metadata (Plugin -> Page)
 constexpr char kJSMetadataType[] = "metadata";
-constexpr char kJSAttachments[] = "attachments";
-constexpr char kJSBookmarks[] = "bookmarks";
 constexpr char kJSTitle[] = "title";
 constexpr char kJSCanSerializeDocument[] = "canSerializeDocument";
 // Get password (Plugin -> Page)
@@ -1615,7 +1619,9 @@ void OutOfProcessInstance::DocumentLoadComplete(
     OnGeometryChanged(0, 0);
   }
 
-  SendDocumentMetadata();
+  SendAttachments();
+  SendBookmarks();
+  SendMetadata();
   SendLoadingProgress(/*percentage=*/100);
 
   if (accessibility_state_ == ACCESSIBILITY_STATE_PENDING)
@@ -2339,19 +2345,38 @@ void OutOfProcessInstance::SendPrintPreviewLoadedNotification() {
   PostMessage(loaded_message);
 }
 
-void OutOfProcessInstance::SendDocumentMetadata() {
+void OutOfProcessInstance::SendAttachments() {
+  pp::VarArray attachments = GetDocumentAttachments();
+  if (attachments.GetLength() == 0)
+    return;
+
+  pp::VarDictionary attachments_message;
+  attachments_message.Set(pp::Var(kType), pp::Var(kJSAttachmentsType));
+  attachments_message.Set(pp::Var(kJSAttachmentsData), attachments);
+
+  PostMessage(attachments_message);
+}
+
+void OutOfProcessInstance::SendBookmarks() {
+  base::Value bookmarks = engine()->GetBookmarks();
+  DCHECK(bookmarks.is_list());
+  if (bookmarks.GetList().empty())
+    return;
+
+  pp::VarDictionary bookmarks_message;
+  bookmarks_message.Set(pp::Var(kType), pp::Var(kJSBookmarksType));
+  bookmarks_message.Set(pp::Var(kJSBookmarksData), VarFromValue(bookmarks));
+
+  PostMessage(bookmarks_message);
+}
+
+void OutOfProcessInstance::SendMetadata() {
   pp::VarDictionary metadata_message;
   metadata_message.Set(pp::Var(kType), pp::Var(kJSMetadataType));
 
   const std::string& title = engine()->GetDocumentMetadata().title;
   if (!base::TrimWhitespace(base::UTF8ToUTF16(title), base::TRIM_ALL).empty())
     metadata_message.Set(pp::Var(kJSTitle), pp::Var(title));
-
-  metadata_message.Set(pp::Var(kJSAttachments), GetDocumentAttachments());
-
-  base::Value bookmarks = engine()->GetBookmarks();
-  DCHECK(bookmarks.is_list());
-  metadata_message.Set(pp::Var(kJSBookmarks), VarFromValue(bookmarks));
 
   metadata_message.Set(
       pp::Var(kJSCanSerializeDocument),
