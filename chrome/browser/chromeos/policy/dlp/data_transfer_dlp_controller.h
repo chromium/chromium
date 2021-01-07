@@ -33,14 +33,15 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   void operator=(const DataTransferDlpController&) = delete;
 
   // ui::DataTransferPolicyController:
-  // nullptr can be passed instead of `data_src` or `data_dst`. If data read is
-  // not allowed, this function will show a notification to the user.
-  bool IsDataReadAllowed(
+  bool IsClipboardReadAllowed(
+      const ui::DataTransferEndpoint* const data_src,
+      const ui::DataTransferEndpoint* const data_dst) override;
+  bool IsDragDropAllowed(
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst) override;
 
  protected:
-  DataTransferDlpController(const DlpRulesManager& dlp_rules_manager);
+  explicit DataTransferDlpController(const DlpRulesManager& dlp_rules_manager);
   ~DataTransferDlpController() override;
 
  private:

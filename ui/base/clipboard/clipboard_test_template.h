@@ -109,7 +109,10 @@ class MockPolicyController : public DataTransferPolicyController {
   MockPolicyController();
   ~MockPolicyController() override;
 
-  MOCK_METHOD2(IsDataReadAllowed,
+  MOCK_METHOD2(IsClipboardReadAllowed,
+               bool(const DataTransferEndpoint* const data_src,
+                    const DataTransferEndpoint* const data_dst));
+  MOCK_METHOD2(IsDragDropAllowed,
                bool(const DataTransferEndpoint* const data_src,
                     const DataTransferEndpoint* const data_dst));
 };
@@ -1038,7 +1041,7 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
         std::make_unique<DataTransferEndpoint>(url::Origin()));
     writer.WriteText(kTestText);
   }
-  EXPECT_CALL(*policy_controller, IsDataReadAllowed)
+  EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)
       .WillRepeatedly(testing::Return(true));
   base::string16 read_result;
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
@@ -1058,7 +1061,7 @@ TYPED_TEST(ClipboardTest, PolicyDisallow_ReadText) {
         std::make_unique<DataTransferEndpoint>(url::Origin()));
     writer.WriteText(kTestText);
   }
-  EXPECT_CALL(*policy_controller, IsDataReadAllowed)
+  EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)
       .WillRepeatedly(testing::Return(false));
   base::string16 read_result;
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
@@ -1069,7 +1072,7 @@ TYPED_TEST(ClipboardTest, PolicyDisallow_ReadText) {
 
 TYPED_TEST(ClipboardTest, PolicyDisallow_ReadImage) {
   auto policy_controller = std::make_unique<MockPolicyController>();
-  EXPECT_CALL(*policy_controller, IsDataReadAllowed)
+  EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)
       .WillRepeatedly(testing::Return(false));
   const SkBitmap& image = clipboard_test_util::ReadImage(&this->clipboard());
   ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());

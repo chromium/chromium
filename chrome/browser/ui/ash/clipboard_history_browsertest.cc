@@ -789,7 +789,7 @@ class FakeDataTransferPolicyController
   ~FakeDataTransferPolicyController() override = default;
 
   // ui::DataTransferPolicyController:
-  bool IsDataReadAllowed(
+  bool IsClipboardReadAllowed(
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst) override {
     // The multipaste menu should have access to any clipboard data.
@@ -800,6 +800,12 @@ class FakeDataTransferPolicyController
     // should be accessible.
     return data_src && data_src->IsUrlType() &&
            (*data_src->origin() == allowed_origin_);
+  }
+
+  bool IsDragDropAllowed(
+      const ui::DataTransferEndpoint* const data_src,
+      const ui::DataTransferEndpoint* const data_dst) override {
+    return false;
   }
 
  private:

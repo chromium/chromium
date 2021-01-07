@@ -52,7 +52,7 @@ class MockDlpRulesManager : public DlpRulesManager {
 
 class MockDlpController : public DataTransferDlpController {
  public:
-  MockDlpController(const DlpRulesManager& dlp_rules_manager)
+  explicit MockDlpController(const DlpRulesManager& dlp_rules_manager)
       : DataTransferDlpController(dlp_rules_manager) {}
 
   MOCK_METHOD2(DoNotifyBlockedPaste,
@@ -81,7 +81,7 @@ class DataTransferDlpControllerTest : public testing::Test {
 };
 
 TEST_F(DataTransferDlpControllerTest, NullSrc) {
-  EXPECT_EQ(true, dlp_controller_.IsDataReadAllowed(nullptr, nullptr));
+  EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(nullptr, nullptr));
 }
 
 TEST_F(DataTransferDlpControllerTest, NullDst) {
@@ -89,7 +89,7 @@ TEST_F(DataTransferDlpControllerTest, NullDst) {
   EXPECT_CALL(rules_manager_, IsRestrictedDestination)
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
   EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
-  EXPECT_EQ(false, dlp_controller_.IsDataReadAllowed(&data_src, nullptr));
+  EXPECT_EQ(false, dlp_controller_.IsClipboardReadAllowed(&data_src, nullptr));
 }
 
 TEST_F(DataTransferDlpControllerTest, DefaultDst) {
@@ -98,7 +98,8 @@ TEST_F(DataTransferDlpControllerTest, DefaultDst) {
   EXPECT_CALL(rules_manager_, IsRestrictedDestination)
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
   EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
-  EXPECT_EQ(false, dlp_controller_.IsDataReadAllowed(&data_src, &data_dst_1));
+  EXPECT_EQ(false,
+            dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst_1));
   testing::Mock::VerifyAndClearExpectations(&rules_manager_);
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
@@ -107,13 +108,14 @@ TEST_F(DataTransferDlpControllerTest, DefaultDst) {
                                       /*notify_if_restricted=*/false);
   EXPECT_CALL(rules_manager_, IsRestrictedDestination)
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
-  EXPECT_EQ(false, dlp_controller_.IsDataReadAllowed(&data_src, &data_dst_2));
+  EXPECT_EQ(false,
+            dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst_2));
 }
 
 TEST_F(DataTransferDlpControllerTest, ClipboardHistoryDst) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kGoogleUrl)));
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
-  EXPECT_EQ(true, dlp_controller_.IsDataReadAllowed(&data_src, &data_dst));
+  EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst));
 }
 
 TEST_F(DataTransferDlpControllerTest, UrlSrcDst) {
@@ -122,7 +124,8 @@ TEST_F(DataTransferDlpControllerTest, UrlSrcDst) {
   EXPECT_CALL(rules_manager_, IsRestrictedDestination)
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
   EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
-  EXPECT_EQ(false, dlp_controller_.IsDataReadAllowed(&data_src, &data_dst_1));
+  EXPECT_EQ(false,
+            dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst_1));
   testing::Mock::VerifyAndClearExpectations(&rules_manager_);
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
@@ -131,7 +134,8 @@ TEST_F(DataTransferDlpControllerTest, UrlSrcDst) {
                                       /*notify_if_restricted=*/false);
   EXPECT_CALL(rules_manager_, IsRestrictedDestination)
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
-  EXPECT_EQ(false, dlp_controller_.IsDataReadAllowed(&data_src, &data_dst_2));
+  EXPECT_EQ(false,
+            dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst_2));
 }
 
 TEST_F(DataTransferDlpControllerTest, ArcDst) {
@@ -140,7 +144,8 @@ TEST_F(DataTransferDlpControllerTest, ArcDst) {
   EXPECT_CALL(rules_manager_, IsRestrictedComponent)
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
   EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
-  EXPECT_EQ(false, dlp_controller_.IsDataReadAllowed(&data_src, &data_dst));
+  EXPECT_EQ(false,
+            dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst));
 }
 
 TEST_F(DataTransferDlpControllerTest, CrostiniDst) {
@@ -149,7 +154,8 @@ TEST_F(DataTransferDlpControllerTest, CrostiniDst) {
   EXPECT_CALL(rules_manager_, IsRestrictedComponent)
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
   EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
-  EXPECT_EQ(false, dlp_controller_.IsDataReadAllowed(&data_src, &data_dst));
+  EXPECT_EQ(false,
+            dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst));
 }
 
 }  // namespace policy

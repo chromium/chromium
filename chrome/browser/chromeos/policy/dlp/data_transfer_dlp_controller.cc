@@ -30,7 +30,7 @@ void DataTransferDlpController::Init(const DlpRulesManager& dlp_rules_manager) {
     new DataTransferDlpController(dlp_rules_manager);
 }
 
-bool DataTransferDlpController::IsDataReadAllowed(
+bool DataTransferDlpController::IsClipboardReadAllowed(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst) {
   if (!data_src || !data_src->IsUrlType()) {  // Currently we only handle URLs.
@@ -103,6 +103,13 @@ bool DataTransferDlpController::IsDataReadAllowed(
   }
 
   return level == DlpRulesManager::Level::kAllow;
+}
+
+bool DataTransferDlpController::IsDragDropAllowed(
+    const ui::DataTransferEndpoint* const data_src,
+    const ui::DataTransferEndpoint* const data_dst) {
+  // TODO(crbug.com/1160656): Migrate off using `IsClipboardReadAllowed`.
+  return IsClipboardReadAllowed(data_src, data_dst);
 }
 
 DataTransferDlpController::DataTransferDlpController(
