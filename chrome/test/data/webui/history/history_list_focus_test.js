@@ -146,6 +146,7 @@ suite('<history-list>', function() {
     assertEquals(4, element.historyData_.length);
     assertEquals(4, items.length);
     items[3].$['menu-button'].click();
+    await flushTasks();
     element.$$('#menuRemoveButton').click();
     assertNotEquals(items[2].$['menu-button'], element.lastFocused_);
     await testService.whenCalled('removeVisits');
