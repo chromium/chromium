@@ -2328,7 +2328,7 @@
   {
     "name": "enable-touch-drag-drop",
     "owners": [ "nzolghadr", "input-dev" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 93
   },
   {
     "name": "enable-touchscreen-calibration",
