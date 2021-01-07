@@ -1425,6 +1425,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckDataUrlIcon) {
                                        "/banners/manifest_data_url_icon.json"));
   run_loop.Run();
 
+
   EXPECT_FALSE(tester->manifest().IsEmpty());
   EXPECT_FALSE(tester->manifest_url().is_empty());
 
@@ -1505,53 +1506,6 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
     EXPECT_EQ(nullptr, tester->splash_icon());
     CheckServiceWorkerForTester(tester.get());
   }
-}
-
-// The case that a service worker doesn't return an offline response for the
-// start_url, but does for the manifest scope.
-// - manifest's scope: /banners/
-// - manifest's start_url: /banners/manifest_test_page.html?ignore
-// - service worker's scope: /banners/
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
-                       CheckNotOfflineCapableStartUrl) {
-  base::RunLoop run_loop;
-  std::unique_ptr<CallbackTester> tester(
-      new CallbackTester(run_loop.QuitClosure()));
-
-  NavigateAndRunInstallableManager(
-      browser(), tester.get(), GetWebAppParams(),
-      GetURLOfPageWithServiceWorkerAndManifest(
-          "/banners/manifest_not_offline_capable_url.json"));
-
-  run_loop.Run();
-
-  EXPECT_FALSE(tester->manifest().IsEmpty());
-  EXPECT_FALSE(tester->manifest_url().is_empty());
-  EXPECT_FALSE(tester->primary_icon_url().is_empty());
-  EXPECT_NE(nullptr, tester->primary_icon());
-  EXPECT_TRUE(tester->valid_manifest());
-  EXPECT_TRUE(tester->splash_icon_url().is_empty());
-  EXPECT_EQ(nullptr, tester->splash_icon());
-  EXPECT_FALSE(tester->has_worker());
-  EXPECT_EQ(std::vector<InstallableStatusCode>{NOT_OFFLINE_CAPABLE},
-            tester->errors());
-
-  InstallableManager* manager = GetManager(browser());
-
-  EXPECT_FALSE(manager->manifest().IsEmpty());
-  EXPECT_FALSE(manager->manifest_url().is_empty());
-  EXPECT_TRUE(manager->valid_manifest());
-  EXPECT_EQ(1u, manager->icons_.size());
-  EXPECT_FALSE(
-      (manager->icon_url(InstallableManager::IconUsage::kPrimary).is_empty()));
-  EXPECT_NE(nullptr, (manager->icon(InstallableManager::IconUsage::kPrimary)));
-  EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
-  EXPECT_EQ(NO_ERROR_DETECTED, manager->valid_manifest_error());
-  EXPECT_EQ(NO_ERROR_DETECTED,
-            (manager->icon_error(InstallableManager::IconUsage::kPrimary)));
-  EXPECT_TRUE(!manager->task_queue_.HasCurrent());
-  EXPECT_FALSE(manager->has_worker());
-  EXPECT_EQ(NOT_OFFLINE_CAPABLE, manager->worker_error());
 }
 
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
