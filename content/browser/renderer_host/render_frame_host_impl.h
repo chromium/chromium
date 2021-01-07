@@ -1987,7 +1987,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(
       RenderFrameHostManagerUnloadBrowserTest,
       PendingDeleteRFHProcessShutdownDoesNotRemoveSubframes);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest, CrashSubframe);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest, FindImmediateLocalRoots);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            RenderViewHostIsNotReusedAfterDelayedUnloadACK);
@@ -2615,6 +2614,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
                                      const ukm::SourceId document_ukm_source_id,
                                      ukm::UkmRecorder* ukm_recorder);
 
+  // Has the RenderFrame been created in the renderer process and not yet been
+  // deleted, exited or crashed. See RenderFrameState.
+  bool is_render_frame_created() {
+    return render_frame_state_ == RenderFrameState::kCreated;
+  }
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
@@ -2710,14 +2715,21 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // is waiting for FrameHostMsg_Unload_ACK and thus pending deletion.
   bool is_waiting_for_unload_ack_ = false;
 
-  // Tracks whether the RenderFrame for this RenderFrameHost has been created in
-  // the renderer process.
-  bool render_frame_created_ = false;
-
-  // Tracks whether the RenderFrame has ever been created for this
-  // RenderFrameHost or not. This starts out as false, becomes true after the
-  // first call to RenderFrameCreated(), and stays true thereafter.
-  bool was_render_frame_ever_created_ = false;
+  // Tracks the creation state of the RenderFrame in renderer process for this
+  // RenderFrameHost.
+  enum class RenderFrameState {
+    // A RenderFrame has never been created for this RenderFrameHost. The next
+    // state will be kCreated or kDeleted.
+    kNeverCreated = 0,
+    // A RenderFrame has been created in the renderer and is still in that
+    // state. The next state will be kDeleted.
+    kCreated,
+    // A RenderFrame has either been cleanly deleted or its renderer process has
+    // exited or crashed. The next state may be kCreated or the RenderFrameHost
+    // may be destroyed.
+    kDeleted,
+  };
+  RenderFrameState render_frame_state_ = RenderFrameState::kNeverCreated;
 
   // When the last BeforeUnload message was sent.
   base::TimeTicks send_before_unload_start_time_;

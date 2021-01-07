@@ -1210,8 +1210,8 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   site_instance_->RemoveObserver(this);
   GetProcess()->RemoveObserver(this);
 
-  const bool was_created = render_frame_created_;
-  render_frame_created_ = false;
+  const bool was_created = is_render_frame_created();
+  render_frame_state_ = RenderFrameState::kDeleted;
   if (was_created)
     delegate_->RenderFrameDeleted(this);
 
@@ -1932,7 +1932,7 @@ bool RenderFrameHostImpl::Send(IPC::Message* message) {
 
 bool RenderFrameHostImpl::OnMessageReceived(const IPC::Message& msg) {
   // Only process messages if the RenderFrame is alive.
-  if (!render_frame_created_)
+  if (!is_render_frame_created())
     return false;
 
   // Crash reports triggered by IPC messages for this frame should be associated
@@ -2442,7 +2442,7 @@ void RenderFrameHostImpl::DeleteRenderFrame(FrameDeleteIntention intent) {
   bool wait_for_unload_handlers =
       has_unload_handlers() && !IsInBackForwardCache();
 
-  if (render_frame_created_) {
+  if (is_render_frame_created()) {
     Send(new UnfreezableFrameMsg_Delete(routing_id_, intent));
 
     if (!frame_tree_node_->IsMainFrame() && IsCurrent()) {
@@ -2481,10 +2481,10 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   // (e.g., via a WebContentsObserver during WebContents shutdown).  This seems
   // to have caused crashes in https://crbug.com/717650.
   CHECK(!delegate_->IsBeingDestroyed());
+  DCHECK_NE(render_frame_state_, RenderFrameState::kCreated);
 
-  bool was_created = render_frame_created_;
-  DCHECK(!was_created);
-  render_frame_created_ = true;
+  const RenderFrameState old_render_frame_state = render_frame_state_;
+  render_frame_state_ = RenderFrameState::kCreated;
 
   // Clear all the user data associated with this RenderFrameHost when its
   // RenderFrame is recreated after a crash. Checking
@@ -2496,9 +2496,8 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   // Clearing of user data should be called before RenderFrameCreated to ensure:
   // - a) new new state set in RenderFrameCreated doesn't get deleted.
   // - b) the old state is not leaked to a new RenderFrameHost.
-  if (was_render_frame_ever_created_)
+  if (old_render_frame_state == RenderFrameState::kDeleted)
     document_associated_data_.ClearAllUserData();
-  was_render_frame_ever_created_ = true;
 
   // Initialize the RenderWidgetHost which marks it and the RenderViewHost as
   // live before calling to the `delegate_`.
@@ -2523,8 +2522,8 @@ void RenderFrameHostImpl::RenderFrameCreated() {
 }
 
 void RenderFrameHostImpl::RenderFrameDeleted() {
-  bool was_created = render_frame_created_;
-  render_frame_created_ = false;
+  bool was_created = is_render_frame_created();
+  render_frame_state_ = RenderFrameState::kDeleted;
 
   // If the current status is different than the new status, the delegate
   // needs to be notified.
@@ -2673,7 +2672,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
   // child, but by the time we get here, it's possible for the RenderFrameHost
   // to become pending deletion, or for its process to have disconnected (maybe
   // due to browser shutdown). Ignore such messages.
-  if (IsInactiveAndDisallowReactivation() || !render_frame_created_)
+  if (IsInactiveAndDisallowReactivation() || !is_render_frame_created())
     return;
 
   // |new_routing_id|, |browser_interface_broker_receiver| and
@@ -3995,7 +3994,7 @@ void RenderFrameHostImpl::AllowBindings(int bindings_flags) {
 
   enabled_bindings_ |= bindings_flags;
 
-  if (render_frame_created_) {
+  if (is_render_frame_created()) {
     GetFrameBindingsControl()->AllowBindings(enabled_bindings_);
     if (web_ui_ && enabled_bindings_ & BINDINGS_POLICY_WEB_UI)
       web_ui_->SetupMojoConnection();
@@ -5203,7 +5202,7 @@ void RenderFrameHostImpl::CreateNewWindow(
   // Ignore window creation when sent from a frame that's not current or
   // created.
   bool can_create_window =
-      IsCurrent() && render_frame_created_ &&
+      IsCurrent() && is_render_frame_created() &&
       GetContentClient()->browser()->CanCreateWindow(
           this, GetLastCommittedURL(), GetMainFrame()->GetLastCommittedURL(),
           last_committed_origin_, params->window_container_type,
@@ -7192,12 +7191,12 @@ void RenderFrameHostImpl::InsertVisualStateCallback(
 }
 
 bool RenderFrameHostImpl::IsRenderFrameCreated() {
-  return render_frame_created_;
+  return is_render_frame_created();
 }
 
 bool RenderFrameHostImpl::IsRenderFrameLive() {
   bool is_live =
-      GetProcess()->IsInitializedAndNotDead() && render_frame_created_;
+      GetProcess()->IsInitializedAndNotDead() && is_render_frame_created();
 
   // Sanity check: the RenderView should always be live if the RenderFrame is.
   DCHECK(!is_live || render_view_host_->IsRenderViewLive());
@@ -9404,7 +9403,7 @@ void RenderFrameHostImpl::PostMessageEvent(
     const base::string16& source_origin,
     const base::string16& target_origin,
     blink::TransferableMessage message) {
-  DCHECK(render_frame_created_);
+  DCHECK(is_render_frame_created());
 
   GetAssociatedLocalFrame()->PostMessageEvent(
       source_token, source_origin, target_origin, std::move(message));
