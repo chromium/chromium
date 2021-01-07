@@ -51,7 +51,7 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
             @Nullable String callerAccount, @Nullable String userName) {
         if (shouldStartTriggerScript(parameters)) {
-            if (!AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn()) {
+            if (!AutofillAssistantPreferencesUtil.isProactiveHelpOn()) {
                 // Opt-out users who have disabled the proactive help Chrome setting.
                 AutofillAssistantMetrics.recordLiteScriptStarted(
                         webContents, LiteScriptStarted.LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED);

@@ -172,7 +172,7 @@ public class AssistantTriggerScriptBridge {
 
     @CalledByNative
     private static boolean isProactiveHelpEnabled() {
-        return AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn();
+        return AutofillAssistantPreferencesUtil.isProactiveHelpOn();
     }
 
     @CalledByNative

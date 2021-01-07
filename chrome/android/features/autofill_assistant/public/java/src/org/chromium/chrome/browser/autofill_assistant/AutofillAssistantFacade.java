@@ -123,8 +123,7 @@ public class AutofillAssistantFacade {
                 // regular autofill assistant Chrome setting. Since M-88, they also respect the new
                 // proactive help setting.
                 if (arguments.containsTriggerScript()
-                        && (!AutofillAssistantPreferencesUtil.isAutofillAssistantSwitchOn()
-                                || !AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn())) {
+                        && (!AutofillAssistantPreferencesUtil.isProactiveHelpOn())) {
                     if (AutofillAssistantPreferencesUtil
                                     .isAutofillAssistantLiteScriptCancelThresholdReached()) {
                         AutofillAssistantMetrics.recordLiteScriptStarted(tab.getWebContents(),
