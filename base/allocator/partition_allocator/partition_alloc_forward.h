@@ -19,7 +19,7 @@ constexpr bool ThreadSafe = true;
 constexpr bool NotThreadSafe = false;
 
 #if DCHECK_IS_ON()
-BASE_EXPORT void DCheckGetSlotOffsetIsZero(void* ptr);
+BASE_EXPORT void DCheckGetSlotOffsetIsZero(void*);
 #else
 ALWAYS_INLINE void DCheckGetSlotOffsetIsZero(void*) {}
 #endif

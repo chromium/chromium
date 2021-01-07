@@ -103,11 +103,9 @@ static constexpr size_t kPartitionRefCountOffset =
 static constexpr size_t kPartitionRefCountOffset = kInSlotRefCountBufferSize;
 #endif
 
-
-ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* ptr) {
-  DCheckGetSlotOffsetIsZero(ptr);
-  return reinterpret_cast<PartitionRefCount*>(reinterpret_cast<char*>(ptr) -
-                                              kPartitionRefCountOffset);
+ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
+  DCheckGetSlotOffsetIsZero(slot_start);
+  return reinterpret_cast<PartitionRefCount*>(slot_start);
 }
 
 #else  // ENABLE_REF_COUNTER_FOR_BACKUP_REF_PTR

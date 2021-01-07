@@ -634,8 +634,7 @@ PartitionAllocGetSlotSpanForSizeQuery(void* ptr) {
 // This file may end up getting included even when PartitionAlloc isn't used,
 // but the .cc file won't be linked. Exclude the code that relies on it.
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-// Gets the offset from the beginning of the allocated slot, adjusted for cookie
-// (if any).
+// Gets the offset from the beginning of the allocated slot.
 // CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
 // lead to undefined behavior.
 //
@@ -651,7 +650,6 @@ ALWAYS_INLINE size_t PartitionAllocGetSlotOffset(void* ptr) {
   // The only allocations that don't use ref-count are allocated outside of
   // GigaCage, hence we'd never get here in the `allow_extras = false` case.
   PA_DCHECK(root->allow_extras);
-  ptr = root->AdjustPointerForExtrasSubtract(ptr);
 
   // Get the offset from the beginning of the slot span.
   uintptr_t ptr_addr = reinterpret_cast<uintptr_t>(ptr);
@@ -679,31 +677,30 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
   size_t offset_in_slot_span = ptr_addr - slot_span_start;
 
   auto* bucket = slot_span->bucket;
-  return root->AdjustPointerForExtrasAdd(reinterpret_cast<void*>(
+  return reinterpret_cast<void*>(
       slot_span_start +
-      bucket->slot_size * bucket->GetSlotNumber(offset_in_slot_span)));
+      bucket->slot_size * bucket->GetSlotNumber(offset_in_slot_span));
 }
 
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
 // TODO(glazunov): Simplify the function once the non-thread-safe PartitionRoot
 // is no longer used.
-ALWAYS_INLINE void PartitionAllocFreeForRefCounting(void* ptr) {
-  PA_DCHECK(!internal::PartitionRefCountPointer(ptr)->IsAlive());
+ALWAYS_INLINE void PartitionAllocFreeForRefCounting(void* slot_start) {
+  PA_DCHECK(!internal::PartitionRefCountPointer(slot_start)->IsAlive());
 
   auto* slot_span =
-      SlotSpanMetadata<ThreadSafe>::FromPointerNoAlignmentCheck(ptr);
+      SlotSpanMetadata<ThreadSafe>::FromPointerNoAlignmentCheck(slot_start);
   auto* root = PartitionRoot<ThreadSafe>::FromSlotSpan(slot_span);
+  // PartitionRefCount is required to be allocated inside a `PartitionRoot` that
+  // supports extras.
   PA_DCHECK(root->allow_extras);
 
 #ifdef ADDRESS_SANITIZER
-  size_t utilized_slot_size = slot_span->GetUtilizedSlotSize();
-  // PartitionRefCount is required to be allocated inside a `PartitionRoot` that
-  // supports extras.
-  size_t usable_size = root->AdjustSizeForExtrasSubtract(utilized_slot_size);
+  void* ptr = root->AdjustPointerForExtrasAdd(slot_start);
+  size_t usable_size =
+      root->AdjustSizeForExtrasSubtract(slot_span->GetUtilizedSlotSize());
   ASAN_UNPOISON_MEMORY_REGION(ptr, usable_size);
 #endif
-
-  void* slot_start = root->AdjustPointerForExtrasSubtract(ptr);
 
 #if DCHECK_IS_ON()
   memset(slot_start, kFreedByte, slot_span->GetUtilizedSlotSize());
@@ -865,9 +862,11 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     internal::PartitionCookieCheckValue(char_ptr + usable_size);
 #endif
 
+    void* slot_start = AdjustPointerForExtrasSubtract(ptr);
+
     if (!slot_span->bucket->is_direct_mapped()) {
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
-      auto* ref_count = internal::PartitionRefCountPointer(ptr);
+      auto* ref_count = internal::PartitionRefCountPointer(slot_start);
       // If we are holding the last reference to the allocation, it can be freed
       // immediately. Otherwise, defer the operation and zap the memory to turn
       // potential use-after-free issues into unexploitable crashes.
@@ -885,7 +884,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     }
 
     // Shift ptr to the beginning of the slot.
-    ptr = AdjustPointerForExtrasSubtract(ptr);
+    ptr = slot_start;
   }  // if (allow_extras)
 
 #if DCHECK_IS_ON()
@@ -1194,6 +1193,9 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   to save raw_size, i.e. only for large allocations. For small allocations,
   //   we have no other choice than putting the cookie at the very end of the
   //   slot, thus creating the "empty" space.
+#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+  void* slot_start = ret;
+#endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
   size_t usable_size = AdjustSizeForExtrasSubtract(utilized_slot_size);
   // The value given to the application is just after the ref-count and cookie.
   ret = AdjustPointerForExtrasAdd(ret);
@@ -1221,7 +1223,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   bool is_direct_mapped = raw_size > kMaxBucketed;
   if (allow_extras && !is_direct_mapped) {
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
-    new (internal::PartitionRefCountPointer(ret)) internal::PartitionRefCount();
+    new (internal::PartitionRefCountPointer(slot_start))
+        internal::PartitionRefCount();
 #endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
   }
   return ret;

@@ -854,6 +854,7 @@ TEST_F(PartitionAllocTest, AllocSizes) {
 // Test that we can fetch the real allocated size after an allocation.
 TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   void* ptr;
+  void* slot_start;
   size_t requested_size, actual_size, predicted_size;
 
   // Allocate something small.
@@ -861,6 +862,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   predicted_size = allocator.root()->ActualSize(requested_size);
   ptr = allocator.root()->Alloc(requested_size, type_name);
   EXPECT_TRUE(ptr);
+  slot_start = reinterpret_cast<char*>(ptr) - allocator.root()->extras_offset;
   actual_size = allocator.root()->GetSize(ptr);
   EXPECT_EQ(predicted_size, actual_size);
   EXPECT_LT(requested_size, actual_size);
@@ -868,9 +870,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   if (features::IsPartitionAllocGigaCageEnabled()) {
     for (size_t offset = 0; offset < requested_size; ++offset) {
       EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
-                offset);
+                offset + allocator.root()->extras_offset);
       EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-                ptr);
+                slot_start);
     }
   }
 #endif
@@ -882,6 +884,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   predicted_size = allocator.root()->ActualSize(requested_size);
   ptr = allocator.root()->Alloc(requested_size, type_name);
   EXPECT_TRUE(ptr);
+  slot_start = reinterpret_cast<char*>(ptr) - allocator.root()->extras_offset;
   actual_size = allocator.root()->GetSize(ptr);
   EXPECT_EQ(predicted_size, actual_size);
   EXPECT_EQ(requested_size, actual_size);
@@ -889,9 +892,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   if (features::IsPartitionAllocGigaCageEnabled()) {
     for (size_t offset = 0; offset < requested_size; offset += 877) {
       EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
-                offset);
+                offset + allocator.root()->extras_offset);
       EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-                ptr);
+                slot_start);
     }
   }
 #endif
@@ -907,6 +910,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   predicted_size = allocator.root()->ActualSize(requested_size);
   ptr = allocator.root()->Alloc(requested_size, type_name);
   EXPECT_TRUE(ptr);
+  slot_start = reinterpret_cast<char*>(ptr) - allocator.root()->extras_offset;
   actual_size = allocator.root()->GetSize(ptr);
   EXPECT_EQ(predicted_size, actual_size);
   EXPECT_EQ(requested_size + SystemPageSize(), actual_size);
@@ -914,9 +918,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   if (features::IsPartitionAllocGigaCageEnabled()) {
     for (size_t offset = 0; offset < requested_size; offset += 4999) {
       EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
-                offset);
+                offset + allocator.root()->extras_offset);
       EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-                ptr);
+                slot_start);
     }
   }
 #endif
@@ -926,6 +930,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   predicted_size = allocator.root()->ActualSize(requested_size);
   ptr = allocator.root()->Alloc(requested_size, type_name);
   EXPECT_TRUE(ptr);
+  slot_start = reinterpret_cast<char*>(ptr) - allocator.root()->extras_offset;
   actual_size = allocator.root()->GetSize(ptr);
   EXPECT_EQ(predicted_size, actual_size);
   EXPECT_EQ(requested_size, actual_size);
@@ -933,9 +938,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   if (features::IsPartitionAllocGigaCageEnabled()) {
     for (size_t offset = 0; offset < requested_size; offset += 4999) {
       EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
-                offset);
+                offset + allocator.root()->extras_offset);
       EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-                ptr);
+                slot_start);
     }
   }
 #endif
@@ -991,7 +996,8 @@ TEST_F(PartitionAllocTest, GetOffsetMultiplePages) {
     char* ptr = static_cast<char*>(ptrs[i]);
     for (size_t offset = 0; offset < requested_size; offset += 13) {
       EXPECT_EQ(allocator.root()->GetSize(ptr), requested_size);
-      EXPECT_EQ(PartitionAllocGetSlotOffset(ptr + offset), offset);
+      EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
+                offset + allocator.root()->extras_offset);
     }
     allocator.root()->Free(ptr);
   }
@@ -2725,7 +2731,8 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
 
   *ptr1 = kCookie;
 
-  auto* ref_count = PartitionRefCountPointer(ptr1);
+  auto* ref_count =
+      PartitionRefCountPointer(reinterpret_cast<char*>(ptr1) - kPointerOffset);
   EXPECT_TRUE(ref_count->HasOneRef());
 
   ref_count->Acquire();
@@ -2750,7 +2757,8 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
 
   // When the last reference is released, the slot should become reusable.
   EXPECT_TRUE(ref_count->Release());
-  PartitionAllocFreeForRefCounting(ptr1);
+  PartitionAllocFreeForRefCounting(reinterpret_cast<char*>(ptr1) -
+                                   kPointerOffset);
   uint64_t* ptr3 = reinterpret_cast<uint64_t*>(
       allocator.root()->Alloc(alloc_size, type_name));
   EXPECT_EQ(ptr1, ptr3);
