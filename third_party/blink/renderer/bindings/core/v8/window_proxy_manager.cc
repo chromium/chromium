@@ -114,6 +114,16 @@ WindowProxy* WindowProxyManager::WindowProxyMaybeUninitialized(
   return window_proxy;
 }
 
+void LocalWindowProxyManager::UpdateDocument() {
+  MainWorldProxyMaybeUninitialized()->UpdateDocument();
+
+  for (auto& entry : isolated_worlds_) {
+    auto* isolated_window_proxy =
+        static_cast<LocalWindowProxy*>(entry.value.Get());
+    isolated_window_proxy->UpdateDocument();
+  }
+}
+
 void LocalWindowProxyManager::UpdateSecurityOrigin(
     const SecurityOrigin* security_origin) {
   static_cast<LocalWindowProxy*>(window_proxy_.Get())
