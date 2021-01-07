@@ -16,6 +16,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_content_browser_client.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/browser/test_metrics_web_contents_observer_embedder.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -172,6 +173,14 @@ class MetricsWebContentsObserverTest
         ++empty;
     }
     return empty;
+  }
+
+  void CheckErrorNoIPCsReceivedIfNeeded(int count) {
+    // With BackForwardCache, page is kept alive after navigation.
+    // ERR_NO_IPCS_RECEIVED isn't recorded as it is reported during destruction
+    // of page after navigation which doesn't happen with BackForwardCache.
+    if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled())
+      CheckErrorEvent(ERR_NO_IPCS_RECEIVED, count);
   }
 
   const std::vector<mojom::PageLoadTimingPtr>& updated_timings() const {
@@ -550,7 +559,7 @@ TEST_F(MetricsWebContentsObserverTest, DontLogAbortChains) {
   NavigateAndCommit(GURL(kDefaultTestUrl2));
   NavigateAndCommit(GURL(kDefaultTestUrl));
   histogram_tester_.ExpectTotalCount(internal::kAbortChainSizeNewNavigation, 0);
-  CheckErrorEvent(ERR_NO_IPCS_RECEIVED, 2);
+  CheckErrorNoIPCsReceivedIfNeeded(2);
   CheckTotalErrorEvents();
 }
 
@@ -881,7 +890,7 @@ TEST_F(MetricsWebContentsObserverTest,
       page_load_metrics::internal::INVALID_NULL_FIRST_INPUT_TIMESTAMP, 1);
 
   CheckErrorEvent(ERR_BAD_TIMING_IPC_INVALID_TIMING, 1);
-  CheckErrorEvent(ERR_NO_IPCS_RECEIVED, 1);
+  CheckErrorNoIPCsReceivedIfNeeded(1);
   CheckTotalErrorEvents();
 }
 
@@ -911,7 +920,7 @@ TEST_F(MetricsWebContentsObserverTest,
       page_load_metrics::internal::INVALID_NULL_FIRST_INPUT_DELAY, 1);
 
   CheckErrorEvent(ERR_BAD_TIMING_IPC_INVALID_TIMING, 1);
-  CheckErrorEvent(ERR_NO_IPCS_RECEIVED, 1);
+  CheckErrorNoIPCsReceivedIfNeeded(1);
   CheckTotalErrorEvents();
 }
 
@@ -941,7 +950,7 @@ TEST_F(MetricsWebContentsObserverTest,
       page_load_metrics::internal::INVALID_NULL_LONGEST_INPUT_TIMESTAMP, 1);
 
   CheckErrorEvent(ERR_BAD_TIMING_IPC_INVALID_TIMING, 1);
-  CheckErrorEvent(ERR_NO_IPCS_RECEIVED, 1);
+  CheckErrorNoIPCsReceivedIfNeeded(1);
   CheckTotalErrorEvents();
 }
 
@@ -971,7 +980,7 @@ TEST_F(MetricsWebContentsObserverTest,
       page_load_metrics::internal::INVALID_NULL_LONGEST_INPUT_DELAY, 1);
 
   CheckErrorEvent(ERR_BAD_TIMING_IPC_INVALID_TIMING, 1);
-  CheckErrorEvent(ERR_NO_IPCS_RECEIVED, 1);
+  CheckErrorNoIPCsReceivedIfNeeded(1);
   CheckTotalErrorEvents();
 }
 
@@ -1010,7 +1019,7 @@ TEST_F(MetricsWebContentsObserverTest,
       1);
 
   CheckErrorEvent(ERR_BAD_TIMING_IPC_INVALID_TIMING, 1);
-  CheckErrorEvent(ERR_NO_IPCS_RECEIVED, 1);
+  CheckErrorNoIPCsReceivedIfNeeded(1);
   CheckTotalErrorEvents();
 }
 
@@ -1049,7 +1058,7 @@ TEST_F(MetricsWebContentsObserverTest,
       1);
 
   CheckErrorEvent(ERR_BAD_TIMING_IPC_INVALID_TIMING, 1);
-  CheckErrorEvent(ERR_NO_IPCS_RECEIVED, 1);
+  CheckErrorNoIPCsReceivedIfNeeded(1);
   CheckTotalErrorEvents();
 }
 

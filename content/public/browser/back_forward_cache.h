@@ -28,6 +28,9 @@ class RenderFrameHost;
 // All methods of this class should be called from the UI thread.
 class CONTENT_EXPORT BackForwardCache {
  public:
+  // Returns true if BackForwardCache is enabled.
+  static bool IsBackForwardCacheFeatureEnabled();
+
   // Prevents the |render_frame_host| from entering the BackForwardCache. A
   // RenderFrameHost can only enter the BackForwardCache if the main one and all
   // its children can. This action can not be undone. Any document that is

@@ -633,6 +633,11 @@ void BackForwardCacheImpl::PostTaskToDestroyEvictedFrames() {
 }
 
 // static
+bool BackForwardCache::IsBackForwardCacheFeatureEnabled() {
+  return IsBackForwardCacheEnabled();
+}
+
+// static
 void BackForwardCache::DisableForRenderFrameHost(RenderFrameHost* rfh,
                                                  base::StringPiece reason) {
   DisableForRenderFrameHost(
