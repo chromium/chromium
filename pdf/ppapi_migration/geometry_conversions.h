@@ -22,7 +22,6 @@ class Size;
 namespace chrome_pdf {
 
 gfx::Point PointFromPPPoint(const PP_Point& pp_point);
-PP_Point PPPointFromPoint(const gfx::Point& point);
 
 gfx::PointF PointFFromPPFloatPoint(const PP_FloatPoint& pp_point);
 

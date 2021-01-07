@@ -28,16 +28,6 @@ TEST(GeometryConversionsTest, PointFromPPPoint) {
   EXPECT_EQ(point, gfx::Point(2, -1));
 }
 
-TEST(GeometryConversionsTest, PPPointFromPoint) {
-  pp::Point pp_cpp_point = PPPointFromPoint(gfx::Point(-1, 2));
-  EXPECT_EQ(pp_cpp_point.x(), -1);
-  EXPECT_EQ(pp_cpp_point.y(), 2);
-
-  PP_Point pp_c_point = PPPointFromPoint(gfx::Point(2, -1));
-  EXPECT_EQ(pp_c_point.x, 2);
-  EXPECT_EQ(pp_c_point.y, -1);
-}
-
 TEST(GeometryConversionsTest, PointFFromPPFloatPoint) {
   gfx::PointF float_point = PointFFromPPFloatPoint(pp::FloatPoint(-1.2f, 2.2f));
   EXPECT_EQ(float_point, gfx::PointF(-1.2f, 2.2f));

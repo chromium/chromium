@@ -20,10 +20,6 @@ gfx::Point PointFromPPPoint(const PP_Point& pp_point) {
   return gfx::Point(pp_point.x, pp_point.y);
 }
 
-PP_Point PPPointFromPoint(const gfx::Point& point) {
-  return PP_MakePoint(point.x(), point.y());
-}
-
 gfx::PointF PointFFromPPFloatPoint(const PP_FloatPoint& pp_point) {
   return gfx::PointF(pp_point.x, pp_point.y);
 }

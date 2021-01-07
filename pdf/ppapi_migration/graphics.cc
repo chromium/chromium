@@ -75,7 +75,8 @@ void PepperGraphics::SetLayerTransform(float scale,
                                        const gfx::Point& origin,
                                        const gfx::Vector2d& translate) {
   bool result = pepper_graphics_.SetLayerTransform(
-      scale, PPPointFromPoint(origin), pp::Point(translate.x(), translate.y()));
+      scale, pp::Point(origin.x(), origin.y()),
+      pp::Point(translate.x(), translate.y()));
   DCHECK(result);
 }
 
