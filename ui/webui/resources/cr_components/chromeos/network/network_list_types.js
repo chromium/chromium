@@ -14,6 +14,7 @@
 NetworkList.CustomItemType = {
   OOBE: 1,
   ESIM_PENDING_PROFILE: 2,
+  ESIM_INSTALLING_PROFILE: 3,
 };
 
 /**

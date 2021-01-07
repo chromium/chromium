@@ -152,4 +152,29 @@ suite('CellularNetworkList', function() {
     eidPopup = cellularNetworkList.$$('.eid-popup');
     assertTrue(!!eidPopup);
   });
+
+  test('Install pending eSIM profile', async () => {
+    eSimManagerRemote.addEuiccForTest(1);
+    await flushAsync();
+
+    let eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+    assertTrue(!!eSimNetworkList);
+    assertEquals(1, cellularNetworkList.eSimPendingProfileItems_.length);
+
+    const listItem = eSimNetworkList.$$('network-list-item');
+    assertTrue(!!listItem);
+    const installButton = listItem.$$('#installButton');
+    assertTrue(!!installButton);
+    installButton.click();
+
+    await flushAsync();
+
+    // eSIM network list should now be hidden and link showing.
+    eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+    assertFalse(!!eSimNetworkList);
+    const esimNoNetworkAnchor = cellularNetworkList.$$('#eSimNoNetworkFound')
+                                    .querySelector('settings-localized-link')
+                                    .shadowRoot.querySelector('a');
+    assertTrue(!!esimNoNetworkAnchor);
+  });
 });

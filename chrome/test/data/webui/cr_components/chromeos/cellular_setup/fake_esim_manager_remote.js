@@ -44,6 +44,10 @@ cr.define('cellular_setup', function() {
      *     chromeos.cellularSetup.mojom.ProfileInstallResult},}>}
      */
     installProfile(confirmationCode) {
+      this.properties_.state =
+          chromeos.cellularSetup.mojom.ProfileState.kActive;
+      this.fakeEuicc_.notifyProfileChangedForTest(this);
+      this.fakeEuicc_.notifyProfileListChangedForTest();
       return Promise.resolve({
         result: this.profileInstallResult_ ?
             this.profileInstallResult_ :
@@ -119,6 +123,7 @@ cr.define('cellular_setup', function() {
 
     /** @override */
     uninstallProfile() {
+      this.fakeEuicc_.notifyProfileChangedForTest(this);
       this.defferedUninstallProfilePromise_ = this.deferredPromise_();
       return this.defferedUninstallProfilePromise_.promise;
     }
@@ -144,7 +149,8 @@ cr.define('cellular_setup', function() {
 
   /** @implements {chromeos.cellularSetup.mojom.Euicc} */
   class FakeEuicc {
-    constructor(numProfiles) {
+    constructor(numProfiles, fakeESimManager) {
+      this.fakeESimManager_ = fakeESimManager;
       this.profiles_ = [];
       for (let i = 0; i < numProfiles; i++) {
         this.addProfileForTest_();
@@ -180,6 +186,7 @@ cr.define('cellular_setup', function() {
      *     chromeos.cellularSetup.mojom.ProfileInstallResult},}>}
      */
     installProfileFromActivationCode(activationCode, confirmationCode) {
+      this.notifyProfileListChangedForTest();
       return Promise.resolve({
         result: this.profileInstallResult_ ?
             this.profileInstallResult_ :
@@ -218,6 +225,7 @@ cr.define('cellular_setup', function() {
       this.profiles_ = result;
 
       if (profileRemoved) {
+        this.notifyProfileListChangedForTest();
         return {
           result: chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess
         };
@@ -226,12 +234,24 @@ cr.define('cellular_setup', function() {
         result: chromeos.cellularSetup.mojom.ESimOperationResult.kFailure
       };
     }
+
+    /**
+     * @param {FakeProfile} profile
+     */
+    notifyProfileChangedForTest(profile) {
+      this.fakeESimManager_.notifyProfileChangedForTest(profile);
+    }
+
+    notifyProfileListChangedForTest() {
+      this.fakeESimManager_.notifyProfileListChangedForTest(this);
+    }
   }
 
   /** @implements {chromeos.cellularSetup.mojom.ESimManagerInterface} */
   /* #export */ class FakeESimManagerRemote {
     constructor() {
       this.euiccs_ = [];
+      this.observers_ = [];
     }
 
     /**
@@ -248,8 +268,34 @@ cr.define('cellular_setup', function() {
      * @param {number} numProfiles The number of profiles the EUICC has.
      */
     addEuiccForTest(numProfiles) {
-      const euicc = new FakeEuicc(numProfiles);
+      const euicc = new FakeEuicc(numProfiles, this);
       this.euiccs_.push(euicc);
+    }
+
+    /**
+     * @param {!chromeos.cellularSetup.mojom.ESimManagerObserverInterface}
+     *     observer
+     */
+    addObserver(observer) {
+      this.observers_.push(observer);
+    }
+
+    /**
+     * @param {FakeEuicc} euicc
+     */
+    notifyProfileListChangedForTest(euicc) {
+      for (const observer of this.observers_) {
+        observer.onProfileListChanged(euicc);
+      }
+    }
+
+    /**
+     * @param {FakeProfile} profile
+     */
+    notifyProfileChangedForTest(profile) {
+      for (const observer of this.observers_) {
+        observer.onProfileChanged(profile);
+      }
     }
   }
 

@@ -213,6 +213,7 @@ js_library("cellular_networks_list") {
   deps = [
     ":cellular_eid_popup",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:cellular_types",
+    "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_listener_behavior",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
     "//ui/webui/resources/cr_components/chromeos/network:network_list_types",
@@ -536,6 +537,7 @@ js_library("cellular_networks_list.m") {
     "//chrome/browser/resources/settings/chromeos/localized_link:localized_link.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:cellular_types.m",
+    "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_listener_behavior.m",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_list_types.m",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {getESimManagerRemote} from './mojo_interface_provider.m.js';
+// #import {observeESimManager} from './mojo_interface_provider.m.js';
 
 /**
  * @fileoverview Polymer behavior for observing ESimManagerObserver
@@ -16,10 +16,7 @@
 
   /** @override */
   attached() {
-    this.observer_ =
-        new chromeos.cellularSetup.mojom.ESimManagerObserverReceiver(this);
-    cellular_setup.getESimManagerRemote().addObserver(
-        this.observer_.$.bindNewPipeAndPassRemote());
+    cellular_setup.observeESimManager(this);
   },
 
   // ESimManagerObserver methods. Override these in the implementation.

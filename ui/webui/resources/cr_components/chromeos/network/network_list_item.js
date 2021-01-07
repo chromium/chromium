@@ -377,6 +377,15 @@ Polymer({
           return this.i18n(
               'networkListItemLabelESimPendingProfile', index, total,
               this.getItemName_());
+        } else if (this.isESimInstallingProfile_()) {
+          if (this.subtitle_) {
+            return this.i18n(
+                'networkListItemLabelESimPendingProfileWithProviderNameInstalling',
+                index, total, this.getItemName_(), this.subtitle_);
+          }
+          return this.i18n(
+              'networkListItemLabelESimPendingProfileInstalling', index, total,
+              this.getItemName_());
         }
         return this.i18n(
             'networkListItemLabel', index, total, this.getItemName_());
@@ -495,6 +504,8 @@ Polymer({
     if (this.isSubpageButtonVisible_(this.networkState, this.showButtons) &&
         this.$$('#subpage-button') === this.shadowRoot.activeElement) {
       this.fireShowDetails_(event);
+    } else if (this.isESimPendingProfile_()) {
+      this.onInstallButtonClick_();
     } else if (this.item.hasOwnProperty('customItemName')) {
       this.fire('custom-item-selected', this.item);
     } else {
@@ -552,12 +563,17 @@ Polymer({
     return this.isFocused ? 'polite' : 'off';
   },
 
+  /** @private */
+  onInstallButtonClick_() {
+    this.fire('install-profile', {iccid: this.item.customData.iccid});
+  },
+
   /**
    * @return {boolean}
    * @private
    */
   isESimPendingProfile_() {
-    return this.item.hasOwnProperty('customItemType') &&
+    return !!this.item && this.item.hasOwnProperty('customItemType') &&
         this.item.customItemType ===
         NetworkList.CustomItemType.ESIM_PENDING_PROFILE;
   },
@@ -568,5 +584,15 @@ Polymer({
    */
   getItemClassName_() {
     return this.isESimPendingProfile_() ? 'esim-pending-profile' : '';
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isESimInstallingProfile_() {
+    return !!this.item && this.item.hasOwnProperty('customItemType') &&
+        this.item.customItemType ===
+        NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE;
   },
 });

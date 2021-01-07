@@ -1,6 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_list_types.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
@@ -84,19 +85,19 @@
       </div>
     </div>
     <template is="dom-if"
-        if="[[shouldShowNetworkSublist_(eSimNetworks_, eSimPendingProfiles_)]]" restamp>
+        if="[[shouldShowNetworkSublist_(eSimNetworks_, eSimPendingProfileItems_)]]" restamp>
       <div class="cellular-network-content">
         <network-list id="esimNetworkList" show-buttons
             show-technology-badge="[[showTechnologyBadge]]"
             networks="[[eSimNetworks_]]"
-            custom-items="[[eSimPendingProfiles_]]"
+            custom-items="[[eSimPendingProfileItems_]]"
             device-state="[[deviceState]]">
         </network-list>
       </div>
     </template>
     <template
         is="dom-if"
-        if="[[!shouldShowNetworkSublist_(eSimNetworks_, eSimPendingProfiles_)]]" restamp>
+        if="[[!shouldShowNetworkSublist_(eSimNetworks_, eSimPendingProfileItems_)]]" restamp>
       <div id="eSimNoNetworkFound"
           class="cellular-network-content cellular-not-setup">
         <settings-localized-link

@@ -11,6 +11,7 @@ Polymer({
   is: 'cellular-networks-list',
 
   behaviors: [
+    ESimManagerListenerBehavior,
     I18nBehavior,
   ],
 
@@ -51,11 +52,24 @@ Polymer({
     },
 
     /**
+     * Dictionary mapping pending eSIM profile iccids to pending eSIM profiles.
+     * @type {!Map<string, chromeos.cellularSetup.mojom.ESimProfileRemote>}
+     * @private
+     */
+    profilesMap_: {
+      type: Object,
+      value() {
+        return new Map();
+      },
+    },
+
+    /**
      * The list of pending eSIM profiles to display after the list of eSIM
      * networks.
      * @type {!Array<NetworkList.CustomItemState>}
+     * @private
      */
-    eSimPendingProfiles_: {
+    eSimPendingProfileItems_: {
       type: Array,
       value() {
         return [];
@@ -95,6 +109,7 @@ Polymer({
 
   listeners: {
     'close-eid-popup': 'toggleEidPopup_',
+    'install-profile': 'installProfile_',
   },
 
   /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
@@ -107,40 +122,103 @@ Polymer({
     this.fetchESimPendingProfileList_();
   },
 
+  /**
+   * @param {!chromeos.cellularSetup.mojom.EuiccRemote} euicc
+   * ESimManagerListenerBehavior override
+   */
+  onProfileListChanged(euicc) {
+    this.fetchESimPendingProfileListForEuicc_(euicc);
+  },
+
+  /**
+   * @param {!chromeos.cellularSetup.mojom.ESimProfileRemote} profile
+   * ESimManagerListenerBehavior override
+   */
+  onProfileChanged(profile) {
+    profile.getProperties().then(response => {
+      const eSimPendingProfileItem =
+          this.eSimPendingProfileItems_.find(item => {
+            return item.customData.iccid === response.properties.iccid;
+          });
+      if (!eSimPendingProfileItem) {
+        return;
+      }
+      eSimPendingProfileItem.customItemType = response.properties.state ===
+              chromeos.cellularSetup.mojom.ProfileState.kInstalling ?
+          NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE :
+          NetworkList.CustomItemType.ESIM_PENDING_PROFILE;
+    });
+  },
+
   /** @private */
   fetchESimPendingProfileList_() {
     cellular_setup.getESimManagerRemote()
         .getAvailableEuiccs()
         .then(response => {
           if (response.euiccs.length > 0) {
-            return cellular_setup.getPendingESimProfiles(response.euiccs[0]);
+            return this.fetchESimPendingProfileListForEuicc_(
+                response.euiccs[0]);
           }
           throw new Error('No EUICCs available.');
-        })
-        .then(profiles => {
-          const pendingProfilePromises = profiles.map(profile => {
-            return profile.getProperties().then(response => {
-              return {
-                customItemType: NetworkList.CustomItemType.ESIM_PENDING_PROFILE,
-                customItemName:
-                    String.fromCharCode(...response.properties.name.data),
-                customItemSubtitle: String.fromCharCode(
-                    ...response.properties.serviceProvider.data),
-                polymerIcon: 'network:cellular-0',
-                showBeforeNetworksList: false,
-                customData: {
-                  iccid: response.properties.iccid,
-                },
-              };
-            });
-          });
-          Promise.all(pendingProfilePromises).then(profiles => {
-            this.eSimPendingProfiles_ = profiles;
-          });
         })
         .catch(error => {
           console.error(error);
         });
+  },
+
+  /**
+   * @param {!chromeos.cellularSetup.mojom.EuiccRemote} euicc
+   * @private
+   */
+  fetchESimPendingProfileListForEuicc_(euicc) {
+    cellular_setup.getPendingESimProfiles(euicc).then(
+        this.processESimPendingProfiles_.bind(this));
+  },
+
+  /**
+   * @param {Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>} profiles
+   * @private
+   */
+  processESimPendingProfiles_(profiles) {
+    this.profilesMap_ = new Map();
+    const eSimPendingProfilePromises =
+        profiles.map(this.createESimPendingProfilePromise_.bind(this));
+    Promise.all(eSimPendingProfilePromises).then(eSimPendingProfileItems => {
+      this.eSimPendingProfileItems_ = eSimPendingProfileItems;
+    });
+  },
+
+  /**
+   * @param {!chromeos.cellularSetup.mojom.ESimProfileRemote} profile
+   * @return {!Promise<NetworkList.CustomItemState>}
+   * @private
+   */
+  createESimPendingProfilePromise_(profile) {
+    return profile.getProperties().then(response => {
+      this.profilesMap_.set(response.properties.iccid, profile);
+      return this.createESimPendingProfileItem_(response.properties);
+    });
+  },
+
+  /**
+   * @param {!chromeos.cellularSetup.mojom.ESimProfileProperties} properties
+   * @return {NetworkList.CustomItemState}
+   */
+  createESimPendingProfileItem_(properties) {
+    return {
+      customItemType: properties.state ===
+              chromeos.cellularSetup.mojom.ProfileState.kInstalling ?
+          NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE :
+          NetworkList.CustomItemType.ESIM_PENDING_PROFILE,
+      customItemName: String.fromCharCode(...properties.name.data),
+      customItemSubtitle:
+          String.fromCharCode(...properties.serviceProvider.data),
+      polymerIcon: 'network:cellular-0',
+      showBeforeNetworksList: false,
+      customData: {
+        iccid: properties.iccid,
+      },
+    };
   },
 
   /**
@@ -227,5 +305,19 @@ Polymer({
         this.$$('.eid-popup').focus();
       });
     }
-  }
+  },
+
+  /**
+   * @param {Event} event
+   * @private
+   */
+  installProfile_(event) {
+    const profileIccid = event.detail.iccid;
+    const profile = this.profilesMap_.get(profileIccid);
+    profile.installProfile('').then(
+        () => {
+            // TODO(crbug.com/1093185) Show error if install fails.
+            // Show confirmation code page if required.
+        });
+  },
 });

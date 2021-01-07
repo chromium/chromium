@@ -94,7 +94,7 @@ suite('NetworkListItemTest', function() {
   });
 
   test(
-      'Pending eSIM profile name, provider, download button visibilty',
+      'Pending eSIM profile name, provider, install button visibilty',
       async () => {
         const itemName = 'Item Name';
         const itemSubtitle = 'Item Subtitle';
@@ -118,7 +118,44 @@ suite('NetworkListItemTest', function() {
         assertTrue(!!subtitle);
         assertEquals(itemSubtitle, subtitle.textContent.trim());
 
-        let downloadButton = listItem.$$('#downloadButton');
-        assertTrue(!!downloadButton);
+        let installButton = listItem.$$('#installButton');
+        assertTrue(!!installButton);
+
+        let installProfileEventIccid = null;
+        listItem.addEventListener('install-profile', (event) => {
+          installProfileEventIccid = event.detail.iccid;
+        });
+        installButton.click();
+
+        await flushAsync();
+        assertEquals(installProfileEventIccid, 'iccid');
+      });
+
+  test(
+      'Installing eSIM profile name, provider, spinner visibilty', async () => {
+        const itemName = 'Item Name';
+        const itemSubtitle = 'Item Subtitle';
+        listItem.item = {
+          customItemType: NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE,
+          customItemName: itemName,
+          customItemSubtitle: itemSubtitle,
+          polymerIcon: 'network:cellular-0',
+          showBeforeNetworksList: false,
+          customData: {
+            iccid: 'iccid',
+          },
+        };
+        await flushAsync();
+
+        let networkName = listItem.$$('#networkName');
+        assertTrue(!!networkName);
+        assertEquals(itemName, networkName.textContent.trim());
+
+        let subtitle = listItem.$$('#subtitle');
+        assertTrue(!!subtitle);
+        assertEquals(itemSubtitle, subtitle.textContent.trim());
+
+        let spinner = listItem.$$('paper-spinner-lite');
+        assertTrue(!!spinner);
       });
 });

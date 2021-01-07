@@ -1,6 +1,7 @@
 <link rel="import" href="../../../html/polymer.html">
 
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="../../../cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="../../../cr_elements/icons.html">
 <link rel="import" href="../../../cr_elements/policy/cr_policy_indicator.html">
@@ -78,6 +79,12 @@
         --iron-icon-fill-color: #1A73E8;
         margin-inline-end: 8px;
       }
+
+      paper-spinner-lite {
+        height: 20px;
+        margin-inline-end: 16px;
+        width: 20px;
+      }
     </style>
     <div id="wrapper" focus-row-container
          class="layout horizontal center flex">
@@ -99,9 +106,11 @@
           </network-icon>
         </template>
         <template is="dom-if" if="[[item.polymerIcon]]">
-          <iron-icon icon="[[item.polymerIcon]]" class$="[[getItemClassName_(item)]]"></iron-icon>
+          <iron-icon icon="[[item.polymerIcon]]"
+              class$="[[getItemClassName_(item, item.customItemType]]"></iron-icon>
         </template>
-        <div id="divText" class$="layout horizontal flex [[getItemClassName_(item)]]">
+        <div id="divText" class$="layout horizontal flex
+            [[getItemClassName_(item, item.customItemType)]]">
           <div id="networkName" aria-hidden="true">
             [[getItemName_(item)]]
           </div>
@@ -135,13 +144,17 @@
             </cr-icon-button>
           </div>
         </template>
-        <template is="dom-if" if="[[isESimPendingProfile_(item)]]" restamp>
-          <!-- TODO(crbug.com/1093185): Download profile when clicked. -->
-          <cr-button id="downloadButton"
-              aria-label$="[[getItemName_(item)]], $i18n{networkListItemDownload}">
+        <template is="dom-if" if="[[isESimPendingProfile_(item, item.customItemType)]]" restamp>
+          <cr-button id="installButton"
+              aria-label$="[[getItemName_(item)]], $i18n{networkListItemDownload}"
+              on-click="onInstallButtonClick_">
             <iron-icon icon="network:download"></iron-icon>
             $i18n{networkListItemDownload}
           </cr-button>
+        </template>
+        <template is="dom-if" if="[[isESimInstallingProfile_(item, item.customItemType)]]" restamp>
+          <paper-spinner-lite active></paper-spinner-lite>
+          $i18n{networkListItemAddingProfile}
         </template>
       </div>
     </div>
