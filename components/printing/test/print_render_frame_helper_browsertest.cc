@@ -331,6 +331,16 @@ class TestPrintManagerHost
     std::move(callback).Run(std::move(params), canceled);
   }
   void DidShowPrintDialog() override {}
+  void ScriptedPrint(printing::mojom::ScriptedPrintParamsPtr params,
+                     ScriptedPrintCallback callback) override {
+    auto settings = printing::mojom::PrintPagesParams::New();
+    settings->params = printing::mojom::PrintParams::New();
+    if (print_dialog_user_response_) {
+      printer_->ScriptedPrint(params->cookie, params->expected_pages_count,
+                              params->has_selection, settings.get());
+    }
+    std::move(callback).Run(std::move(settings));
+  }
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void ShowScriptedPrintPreview(bool source_is_modifiable) override {}
   void RequestPrintPreview(
@@ -347,6 +357,12 @@ class TestPrintManagerHost
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
+  }
+
+  // Call with |response| set to true if the user wants to print.
+  // False if the user decides to cancel.
+  void SetPrintDialogUserResponse(bool response) {
+    print_dialog_user_response_ = response;
   }
 
  private:
@@ -370,6 +386,8 @@ class TestPrintManagerHost
   bool is_printed_ = false;
   MockPrinter* printer_;
   base::OnceClosure quit_closure_;
+  // True to simulate user clicking print. False to cancel.
+  bool print_dialog_user_response_ = true;
   mojo::AssociatedReceiver<mojom::PrintManagerHost> receiver_{this};
 };
 
@@ -605,7 +623,7 @@ class MAYBE_PrintRenderFrameHelperTest : public PrintRenderFrameHelperTestBase {
 // frequently.
 TEST_F(MAYBE_PrintRenderFrameHelperTest, BlockScriptInitiatedPrinting) {
   // Pretend user will cancel printing.
-  print_render_thread()->set_print_dialog_user_response(false);
+  print_manager()->SetPrintDialogUserResponse(false);
   // Try to print with window.print() a few times.
   PrintWithJavaScript();
   PrintWithJavaScript();
@@ -613,7 +631,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, BlockScriptInitiatedPrinting) {
   VerifyPagesPrinted(false);
 
   // Pretend user will print. (but printing is blocked.)
-  print_render_thread()->set_print_dialog_user_response(true);
+  print_manager()->SetPrintDialogUserResponse(true);
   PrintWithJavaScript();
   VerifyPagesPrinted(false);
 
@@ -629,7 +647,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, BlockScriptInitiatedPrinting) {
 // initiated.
 TEST_F(MAYBE_PrintRenderFrameHelperTest, AllowUserOriginatedPrinting) {
   // Pretend user will cancel printing.
-  print_render_thread()->set_print_dialog_user_response(false);
+  print_manager()->SetPrintDialogUserResponse(false);
   // Try to print with window.print() a few times.
   PrintWithJavaScript();
   PrintWithJavaScript();
@@ -637,7 +655,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, AllowUserOriginatedPrinting) {
   VerifyPagesPrinted(false);
 
   // Pretend user will print. (but printing is blocked.)
-  print_render_thread()->set_print_dialog_user_response(true);
+  print_manager()->SetPrintDialogUserResponse(true);
   PrintWithJavaScript();
   VerifyPagesPrinted(false);
 

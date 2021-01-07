@@ -23,10 +23,6 @@
 #include "ui/accessibility/ax_tree_update_forward.h"
 #endif
 
-namespace IPC {
-class Message;
-}
-
 namespace printing {
 
 class PrintManager : public content::WebContentsObserver,
@@ -81,17 +77,7 @@ class PrintManager : public content::WebContentsObserver,
   void PrintingRenderFrameDeleted();
 
   // content::WebContentsObserver
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-
-  // IPC handling support
-  struct FrameDispatchHelper;
-
-  // IPC handlers
-  virtual void OnScriptedPrint(content::RenderFrameHost* render_frame_host,
-                               const mojom::ScriptedPrintParams& params,
-                               IPC::Message* reply_msg) = 0;
 
   uint32_t number_pages_ = 0;  // Number of pages to print in the print job.
   int cookie_ = 0;        // The current document cookie.

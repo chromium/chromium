@@ -40,7 +40,6 @@ bool PrintMockRenderThread::OnMessageReceived(const IPC::Message& msg) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(PrintMockRenderThread, msg)
 #if BUILDFLAG(ENABLE_PRINTING)
-    IPC_MESSAGE_HANDLER_DELAY_REPLY(PrintHostMsg_ScriptedPrint, OnScriptedPrint)
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     IPC_MESSAGE_HANDLER(PrintHostMsg_DidStartPreview, OnDidStartPreview)
     IPC_MESSAGE_HANDLER(PrintHostMsg_DidPreviewPage, OnDidPreviewPage)
@@ -53,20 +52,6 @@ bool PrintMockRenderThread::OnMessageReceived(const IPC::Message& msg) {
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
-
-void PrintMockRenderThread::OnScriptedPrint(
-    const printing::mojom::ScriptedPrintParams& params,
-    IPC::Message* reply_msg) {
-  printing::mojom::PrintPagesParams settings;
-  settings.params = printing::mojom::PrintParams::New();
-  if (print_dialog_user_response_) {
-    printer_->ScriptedPrint(params.cookie, params.expected_pages_count,
-                            params.has_selection, &settings);
-  }
-  PrintHostMsg_ScriptedPrint::WriteReplyParams(reply_msg, settings);
-  Send(reply_msg);
-}
-
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintMockRenderThread::OnDidStartPreview(
     const printing::mojom::DidStartPreviewParams& params,
@@ -94,10 +79,6 @@ void PrintMockRenderThread::OnCheckForCancel(
 
 MockPrinter* PrintMockRenderThread::printer() {
   return printer_.get();
-}
-
-void PrintMockRenderThread::set_print_dialog_user_response(bool response) {
-  print_dialog_user_response_ = response;
 }
 
 void PrintMockRenderThread::set_print_preview_cancel_page_number(

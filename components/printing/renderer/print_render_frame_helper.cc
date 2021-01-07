@@ -1855,27 +1855,25 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
 
   // Ask the browser to show UI to retrieve the final print settings.
   {
-    // PrintHostMsg_ScriptedPrint in GetPrintSettingsFromUser() will reset
+    // ScriptedPrint() in GetPrintSettingsFromUser() will reset
     // |print_scaling_option|, so save the value here and restore it afterwards.
     mojom::PrintScalingOption scaling_option =
         print_pages_params_->params->print_scaling_option;
 
-    mojom::PrintPagesParams print_settings;
-    print_settings.params = mojom::PrintParams::New();
     auto self = weak_ptr_factory_.GetWeakPtr();
-    GetPrintSettingsFromUser(frame_ref.GetFrame(), node, expected_page_count,
-                             print_request_type, &print_settings);
+    mojom::PrintPagesParamsPtr print_settings = GetPrintSettingsFromUser(
+        frame_ref.GetFrame(), node, expected_page_count, print_request_type);
     // Check if |this| is still valid.
     if (!self)
       return;
 
-    print_settings.params->print_scaling_option =
-        print_settings.params->prefer_css_page_size
+    print_settings->params->print_scaling_option =
+        print_settings->params->prefer_css_page_size
             ? mojom::PrintScalingOption::kSourceSize
             : scaling_option;
-    SetPrintPagesParams(print_settings);
-    if (print_settings.params->dpi.IsEmpty() ||
-        !print_settings.params->document_cookie) {
+    SetPrintPagesParams(*print_settings);
+    if (print_settings->params->dpi.IsEmpty() ||
+        !print_settings->params->document_cookie) {
       DidFinishPrinting(OK);  // Release resources and fail silently on failure.
       return;
     }
@@ -2248,34 +2246,32 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-void PrintRenderFrameHelper::GetPrintSettingsFromUser(
+mojom::PrintPagesParamsPtr PrintRenderFrameHelper::GetPrintSettingsFromUser(
     blink::WebLocalFrame* frame,
     const blink::WebNode& node,
     uint32_t expected_pages_count,
-    PrintRequestType print_request_type,
-    mojom::PrintPagesParams* print_settings) {
+    PrintRequestType print_request_type) {
   bool is_scripted = print_request_type == PrintRequestType::kScripted;
   DCHECK(is_scripted || print_request_type == PrintRequestType::kRegular);
 
-  mojom::ScriptedPrintParams params;
-  params.cookie = print_pages_params_->params->document_cookie;
-  params.has_selection = frame->HasSelection();
-  params.expected_pages_count = expected_pages_count;
+  auto params = mojom::ScriptedPrintParams::New();
+  params->cookie = print_pages_params_->params->document_cookie;
+  params->has_selection = frame->HasSelection();
+  params->expected_pages_count = expected_pages_count;
   mojom::MarginType margin_type = mojom::MarginType::kDefaultMargins;
   if (IsPrintingNodeOrPdfFrame(frame, node))
     margin_type = GetMarginsForPdf(frame, node, *print_pages_params_->params);
-  params.margin_type = margin_type;
-  params.is_scripted = is_scripted;
-  params.is_modifiable = !IsPrintingNodeOrPdfFrame(frame, node);
+  params->margin_type = margin_type;
+  params->is_scripted = is_scripted;
+  params->is_modifiable = !IsPrintingNodeOrPdfFrame(frame, node);
 
   GetPrintManagerHost()->DidShowPrintDialog();
 
   print_pages_params_.reset();
 
-  auto msg = std::make_unique<PrintHostMsg_ScriptedPrint>(routing_id(), params,
-                                                          print_settings);
-  msg->EnableMessagePumping();
-  Send(msg.release());
+  mojom::PrintPagesParamsPtr print_settings;
+  GetPrintManagerHost()->ScriptedPrint(std::move(params), &print_settings);
+  return print_settings;
   // WARNING: |this| may be gone at this point. Do not do any more work here
   // and just return.
 }

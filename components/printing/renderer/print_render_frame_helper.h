@@ -326,13 +326,13 @@ class PrintRenderFrameHelper
                            const base::DictionaryValue& passed_job_settings);
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-  // Get final print settings from the user.
+  // Returns final print settings from the user.
   // WARNING: |this| may be gone after this method returns.
-  void GetPrintSettingsFromUser(blink::WebLocalFrame* frame,
-                                const blink::WebNode& node,
-                                uint32_t expected_pages_count,
-                                PrintRequestType print_request_type,
-                                mojom::PrintPagesParams* print_settings);
+  mojom::PrintPagesParamsPtr GetPrintSettingsFromUser(
+      blink::WebLocalFrame* frame,
+      const blink::WebNode& node,
+      uint32_t expected_pages_count,
+      PrintRequestType print_request_type);
 
   // Page Printing / Rendering ------------------------------------------------
 

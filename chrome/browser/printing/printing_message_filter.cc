@@ -96,56 +96,12 @@ void PrintingMessageFilter::OnDestruct() const {
 bool PrintingMessageFilter::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(PrintingMessageFilter, message)
-    IPC_MESSAGE_HANDLER_DELAY_REPLY(PrintHostMsg_ScriptedPrint, OnScriptedPrint)
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     IPC_MESSAGE_HANDLER(PrintHostMsg_CheckForCancel, OnCheckForCancel)
 #endif
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
-}
-
-void PrintingMessageFilter::OnScriptedPrint(
-    const mojom::ScriptedPrintParams& params,
-    IPC::Message* reply_msg) {
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  ModuleDatabase::GetInstance()->DisableThirdPartyBlocking();
-#endif
-
-  std::unique_ptr<PrinterQuery> printer_query =
-      queue_->PopPrinterQuery(params.cookie);
-  if (!printer_query) {
-    printer_query =
-        queue_->CreatePrinterQuery(render_process_id_, reply_msg->routing_id());
-  }
-  auto* printer_query_ptr = printer_query.get();
-  printer_query_ptr->GetSettings(
-      PrinterQuery::GetSettingsAskParam::ASK_USER, params.expected_pages_count,
-      params.has_selection, params.margin_type, params.is_scripted,
-      params.is_modifiable,
-      base::BindOnce(&PrintingMessageFilter::OnScriptedPrintReply, this,
-                     std::move(printer_query), reply_msg));
-}
-
-void PrintingMessageFilter::OnScriptedPrintReply(
-    std::unique_ptr<PrinterQuery> printer_query,
-    IPC::Message* reply_msg) {
-  mojom::PrintPagesParams params;
-  params.params = mojom::PrintParams::New();
-  if (printer_query->last_status() == PrintingContext::OK &&
-      printer_query->settings().dpi()) {
-    RenderParamsFromPrintSettings(printer_query->settings(),
-                                  params.params.get());
-    params.params->document_cookie = printer_query->cookie();
-    params.pages = PageRange::GetPages(printer_query->settings().ranges());
-  }
-  PrintHostMsg_ScriptedPrint::WriteReplyParams(reply_msg, params);
-  Send(reply_msg);
-  if (!params.params->dpi.IsEmpty() && params.params->document_cookie) {
-    queue_->QueuePrinterQuery(std::move(printer_query));
-  } else {
-    printer_query->StopWorker();
-  }
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)

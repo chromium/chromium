@@ -226,28 +226,7 @@ IPC_STRUCT_TRAITS_BEGIN(printing::mojom::DidPrintDocumentParams)
   IPC_STRUCT_TRAITS_MEMBER(physical_offsets)
 IPC_STRUCT_TRAITS_END()
 
-// TODO(dgn): Rename *ScriptedPrint messages because they are not called only
-//           from scripts.
-// Parameters for the IPC message PrintHostMsg_ScriptedPrint
-IPC_STRUCT_TRAITS_BEGIN(printing::mojom::ScriptedPrintParams)
-  IPC_STRUCT_TRAITS_MEMBER(cookie)
-  IPC_STRUCT_TRAITS_MEMBER(expected_pages_count)
-  IPC_STRUCT_TRAITS_MEMBER(has_selection)
-  IPC_STRUCT_TRAITS_MEMBER(is_scripted)
-  IPC_STRUCT_TRAITS_MEMBER(is_modifiable)
-  IPC_STRUCT_TRAITS_MEMBER(margin_type)
-IPC_STRUCT_TRAITS_END()
-
 // Messages sent from the renderer to the browser.
-
-// It's the renderer that controls the printing process when it is generated
-// by javascript. This step is about showing UI to the user to select the
-// final print settings. The output parameter is the same as
-// PrintMsg_PrintPages which is executed implicitly.
-IPC_SYNC_MESSAGE_ROUTED1_1(PrintHostMsg_ScriptedPrint,
-                           printing::mojom::ScriptedPrintParams,
-                           printing::mojom::PrintPagesParams
-                           /* settings chosen by the user*/)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 // Notify the browser the about the to-be-rendered print preview document.

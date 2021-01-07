@@ -25,7 +25,6 @@ class Profile;
 namespace printing {
 
 class PrintQueriesQueue;
-class PrinterQuery;
 
 // This class filters out incoming printing related IPC messages for the
 // renderer process on the IPC thread.
@@ -45,14 +44,6 @@ class PrintingMessageFilter : public content::BrowserMessageFilter {
   void OnDestruct() const override;
 
   void ShutdownOnUIThread();
-
-  // The renderer host have to show to the user the print dialog and returns
-  // the selected print settings. The task is handled by the print worker
-  // thread and the UI thread. The reply occurs on the IO thread.
-  void OnScriptedPrint(const mojom::ScriptedPrintParams& params,
-                       IPC::Message* reply_msg);
-  void OnScriptedPrintReply(std::unique_ptr<PrinterQuery> printer_query,
-                            IPC::Message* reply_msg);
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   // Check to see if print preview has been cancelled.

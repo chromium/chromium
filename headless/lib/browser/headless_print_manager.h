@@ -90,20 +90,14 @@ class HeadlessPrintManager
 
   printing::mojom::PrintPagesParamsPtr GetPrintParamsFromSettings(
       const HeadlessPrintSettings& settings);
-  // content::WebContentsObserver implementation.
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override;
-
-  // printing::PrintManager:
-  void OnScriptedPrint(content::RenderFrameHost* render_frame_host,
-                       const printing::mojom::ScriptedPrintParams& params,
-                       IPC::Message* reply_msg) override;
 
   // printing::mojom::PrintManagerHost:
   void DidPrintDocument(printing::mojom::DidPrintDocumentParamsPtr params,
                         DidPrintDocumentCallback callback) override;
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override;
+  void ScriptedPrint(printing::mojom::ScriptedPrintParamsPtr params,
+                     ScriptedPrintCallback callback) override;
   void ShowInvalidPrinterSettingsError() override;
   void PrintingFailed(int32_t cookie) override;
 
