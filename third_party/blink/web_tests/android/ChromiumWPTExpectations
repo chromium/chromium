@@ -3157,6 +3157,7 @@ crbug.com/1050754 external/wpt/measure-memory/window-open.cross-origin.tentative
 crbug.com/1050754 external/wpt/measure-memory/window-open.cross-site.tentative.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/measure-memory/window-open.mix.tentative.https.window.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/measure-memory/window-open.same-origin.tentative.https.window.html [ Failure ]
+crbug.com/1050754 external/wpt/measure-memory/randomized-breakdown.tentative.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/media-capabilities/decodingInfo.any.html [ Failure ]
 crbug.com/1050754 external/wpt/media-capabilities/decodingInfo.any.worker.html [ Failure ]
 crbug.com/1050754 external/wpt/media-capabilities/encodingInfo.html [ Failure Pass ]
