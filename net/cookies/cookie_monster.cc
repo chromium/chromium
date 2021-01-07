@@ -981,6 +981,11 @@ void CookieMonster::FilterCookiesWithOptions(
             cookie_util::GetSamePartyStatus(*cookie_ptr, options)});
 
     if (!access_result.status.IsInclude()) {
+      UMA_HISTOGRAM_BOOLEAN(
+          "Cookie.SameParty.ReadExclusionDecidedBySameParty",
+          access_result.status.HasOnlyExclusionReason(
+              CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT));
+
       if (options.return_excluded_cookies())
         excluded_cookies->push_back({*cookie_ptr, access_result});
       continue;
@@ -1305,6 +1310,11 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
           "Cookie.Port.Set.RemoteHost",
           ReducePortRangeForCookieHistogram(source_url.EffectiveIntPort()));
     }
+  } else {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Cookie.SameParty.SetExclusionDecidedBySameParty",
+        access_result.status.HasOnlyExclusionReason(
+            CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT));
   }
 
   // TODO(chlily): Log metrics.
