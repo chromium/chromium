@@ -70,6 +70,7 @@ class BrowserPersister : public sessions::CommandStorageManagerDelegate,
   bool ShouldUseDelayedSave() override;
   void OnWillSaveCommands() override;
   void OnGeneratedNewCryptoKey(const std::vector<uint8_t>& key) override;
+  void OnErrorWritingSessionCommands() override;
 
   // BrowserObserver;
   void OnTabAdded(Tab* tab) override;

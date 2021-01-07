@@ -199,6 +199,7 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   // CommandStorageManagerDelegate:
   bool ShouldUseDelayedSave() override;
   void OnWillSaveCommands() override;
+  void OnErrorWritingSessionCommands() override;
 
   // sessions::SessionTabHelperDelegate:
   void SetTabUserAgentOverride(const SessionID& window_id,

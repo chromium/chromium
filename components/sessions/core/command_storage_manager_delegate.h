@@ -28,6 +28,11 @@ class CommandStorageManagerDelegate {
   // CommandStorageManager was configured to enable encryption.
   virtual void OnGeneratedNewCryptoKey(const std::vector<uint8_t>& key) {}
 
+  // Called if there is an error in writing commands to the file. The
+  // expectation is that once this is called, the delegate calls
+  // set_pending_reset(true) and adds commands to restore the current state.
+  virtual void OnErrorWritingSessionCommands() = 0;
+
  protected:
   virtual ~CommandStorageManagerDelegate() {}
 };

@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/optional.h"
@@ -29,8 +30,29 @@ namespace sessions {
 
 // CommandStorageBackend is the backend used by CommandStorageManager. It writes
 // SessionCommands to disk with the ability to read back at a later date.
-// CommandStorageBackend does not interpret the commands in anyway, it simply
-// reads/writes them.
+// CommandStorageBackend (mostly) does not interpret the commands in any way, it
+// simply reads/writes them.
+//
+// The following comment applies when `use_marker` is true, which will
+// eventually be the default (and there will not be an option to disable it).
+// CommandStorageBackend writes to a file with a suffix that indicates the
+// time the file was opened. The time stamp allows this code to determine the
+// most recently written file. When AppendCommands() is supplied a value of true
+// for `truncate`, the current file is closed and a new file is created (with
+// a newly generated timestamp). When AppendCommands() successfully writes the
+// commands to the file an internal command (whose id is
+// `kInitialStateMarkerCommandId`) is written. During startup, the most recent
+// file that has the internal command written is used. This ensures restore does
+// not attempt to use a file that did not have the complete state written
+// (this would happen if chrome crashed while writing the commands, or there
+// was a file system error part way through writing).
+//
+// AppendCommands() takes a callback that is called if there is an error in
+// writing to the file. The expectation is if there is an error, the consuming
+// code must call AppendCommands() again with `truncate` set to true. If there
+// was an error in writing to the file, calls to AppendCommands() with a value
+// of false for `truncate` are ignored. This is done to ensure the consuming
+// code correctly supplies the initial state.
 class SESSIONS_EXPORT CommandStorageBackend
     : public base::RefCountedDeleteOnSequence<CommandStorageBackend> {
  public:
@@ -45,11 +67,6 @@ class SESSIONS_EXPORT CommandStorageBackend
   static const size_type kEncryptionOverheadInBytes;
 
   // Represents data for a session. Public for tests.
-  struct SessionInfo {
-    base::FilePath path;
-    base::Time timestamp;
-  };
-
   // Creates a CommandStorageBackend. This method is invoked on the MAIN thread,
   // and does no IO. The real work is done from Init, which is invoked on
   // a background task runer.
@@ -58,7 +75,9 @@ class SESSIONS_EXPORT CommandStorageBackend
   CommandStorageBackend(
       scoped_refptr<base::SequencedTaskRunner> owning_task_runner,
       const base::FilePath& path,
-      CommandStorageManager::SessionType type);
+      CommandStorageManager::SessionType type,
+      bool use_marker,
+      const std::vector<uint8_t>& decryption_key = {});
   CommandStorageBackend(const CommandStorageBackend&) = delete;
   CommandStorageBackend& operator=(const CommandStorageBackend&) = delete;
 
@@ -75,10 +94,12 @@ class SESSIONS_EXPORT CommandStorageBackend
 
   // Appends the specified commands to the current file. If |truncate| is true
   // the file is truncated. If |truncate| is true and |crypto_key| is non-empty,
-  // then all commands are encrypted using the supplied key.
+  // then all commands are encrypted using the supplied key. If there is an
+  // error writing the commands, `error_callback` is run.
   void AppendCommands(
       std::vector<std::unique_ptr<sessions::SessionCommand>> commands,
       bool truncate,
+      base::OnceClosure error_callback,
       const std::vector<uint8_t>& crypto_key = std::vector<uint8_t>());
 
   bool inited() const { return inited_; }
@@ -94,21 +115,30 @@ class SESSIONS_EXPORT CommandStorageBackend
       CommandStorageManager::SessionType type);
 
   // Returns the commands from the last session file.
-  std::vector<std::unique_ptr<SessionCommand>> ReadLastSessionCommands(
-      const std::vector<uint8_t>& crypto_key = {});
+  std::vector<std::unique_ptr<SessionCommand>> ReadLastSessionCommands();
 
   // Deletes the file containing the commands for the last session.
   void DeleteLastSession();
 
   // Moves the current session file to the last session file. This is typically
   // called during startup or if the user launches the app and no tabbed
-  // browsers are running.
+  // browsers are running. After calling this, set_pending_reset() must be
+  // called.
   void MoveCurrentSessionToLastSession();
+
+  // Used in testing to emulate an error in writing to the file. The value is
+  // automatically reset after the failure.
+  void ForceAppendCommandsToFailForTesting();
 
  private:
   friend class base::RefCountedDeleteOnSequence<CommandStorageBackend>;
   friend class base::DeleteHelper<CommandStorageBackend>;
   friend class CommandStorageBackendTest;
+
+  struct SessionInfo {
+    base::FilePath path;
+    base::Time timestamp;
+  };
 
   ~CommandStorageBackend();
 
@@ -121,10 +151,6 @@ class SESSIONS_EXPORT CommandStorageBackend
       CommandStorageManager::SessionType type,
       const base::FilePath& path,
       base::Time time);
-
-  // Change the file path used to save the session. Must be called after closing
-  // the file first (CloseFile())
-  void SetPath(const base::FilePath& path);
 
   // Reads the commands from the specified file.  If |crypto_key| is non-empty,
   // it is used to decrypt the file.
@@ -142,11 +168,12 @@ class SESSIONS_EXPORT CommandStorageBackend
   // current_session_file_ contains no commands.
   // NOTE: current_session_file_ may be null if the file couldn't be opened or
   // the header couldn't be written.
-  void TruncateFile();
+  void TruncateOrOpenFile();
 
   // Opens the current file and writes the header. On success a handle to
   // the file is returned.
-  std::unique_ptr<base::File> OpenAndWriteHeader(const base::FilePath& path);
+  std::unique_ptr<base::File> OpenAndWriteHeader(
+      const base::FilePath& path) const;
 
   // Appends the specified commands to the specified file.
   bool AppendCommandsToFile(
@@ -167,25 +194,44 @@ class SESSIONS_EXPORT CommandStorageBackend
   bool IsEncrypted() const { return !crypto_key_.empty(); }
 
   // Gets data for the last session file.
-  void DetermineLastSessionFile();
+  base::Optional<SessionInfo> FindLastSessionFile() const;
 
   // Attempt to delete all sessions besides the current and last. This is a
   // best effort operation.
-  void DeleteLastSessionFiles();
+  void DeleteLastSessionFiles() const;
 
   // Gets all sessions files.
-  std::vector<SessionInfo> GetSessionFiles() const {
-    return GetSessionFiles(supplied_path_, type_);
+  std::vector<SessionInfo> GetSessionFilesSortedByReverseTimestamp() const {
+    return GetSessionFilesSortedByReverseTimestamp(supplied_path_, type_);
   }
-  static std::vector<SessionInfo> GetSessionFiles(
+  static std::vector<SessionInfo> GetSessionFilesSortedByReverseTimestamp(
       const base::FilePath& path,
       CommandStorageManager::SessionType type);
+
+  static bool CompareSessionInfoTimestamps(const SessionInfo& a,
+                                           const SessionInfo& b) {
+    return b.timestamp < a.timestamp;
+  }
+
+  // Returns true if `path` can be used for the last session.
+  bool CanUseFileForLastSession(const base::FilePath& path) const;
 
   const CommandStorageManager::SessionType type_;
 
   // This is the path supplied to the constructor. See CommandStorageManager
   // constructor for details.
   const base::FilePath supplied_path_;
+
+  const bool use_marker_;
+
+  // Used to decode the initial last session file.
+  // TODO(sky): this is currently required because InitIfNecessary() determines
+  // the last file. If that can be delayed, then this can be supplied to
+  // GetLastSessionCommands().
+  const std::vector<uint8_t> initial_decryption_key_;
+
+  // TaskRunner that the callback is added to.
+  scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
 
   // Path commands are currently being saved to.
   base::FilePath current_path_;
@@ -203,11 +249,18 @@ class SESSIONS_EXPORT CommandStorageBackend
   // Incremented every time a command is written.
   int commands_written_ = 0;
 
+  // Set to true once `kInitialStateMarkerCommandId` is written.
+  bool did_write_marker_ = false;
+
   // Timestamp when this session was started.
   base::Time timestamp_;
 
   // Data for the last session. If unset, fallback to legacy session data.
   base::Optional<SessionInfo> last_session_info_;
+
+  base::Optional<base::FilePath> last_file_with_valid_marker_;
+
+  bool force_append_commands_to_fail_for_testing_ = false;
 };
 
 }  // namespace sessions

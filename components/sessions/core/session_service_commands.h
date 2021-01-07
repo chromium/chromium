@@ -9,12 +9,9 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/task/cancelable_task_tracker.h"
-#include "base/token.h"
 #include "components/sessions/core/command_storage_manager.h"
+#include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/tab_groups/tab_group_id.h"

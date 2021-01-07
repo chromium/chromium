@@ -150,6 +150,8 @@ void SessionService::MoveCurrentSessionToLastSession() {
   pending_window_close_ids_.clear();
 
   command_storage_manager_->MoveCurrentSessionToLastSession();
+  // TODO(https://crbug.com/1163158): this needs to call
+  // ScheduleResetCommands().
 }
 
 void SessionService::DeleteLastSession() {
@@ -485,6 +487,11 @@ bool SessionService::ShouldUseDelayedSave() {
 
 void SessionService::OnWillSaveCommands() {
   RebuildCommandsIfRequired();
+}
+
+void SessionService::OnErrorWritingSessionCommands() {
+  // TODO(https://crbug.com/648266): implement this.
+  NOTIMPLEMENTED();
 }
 
 void SessionService::RebuildCommandsIfRequired() {

@@ -365,6 +365,7 @@ class TabRestoreServiceImpl::PersistenceDelegate
   // CommandStorageManagerDelegate:
   bool ShouldUseDelayedSave() override;
   void OnWillSaveCommands() override;
+  void OnErrorWritingSessionCommands() override;
 
   // TabRestoreServiceHelper::Observer:
   void OnClearEntries() override;
@@ -538,6 +539,12 @@ void TabRestoreServiceImpl::PersistenceDelegate::OnWillSaveCommands() {
   }
   if (command_storage_manager_->pending_reset())
     entries_written_ = 0;
+}
+
+void TabRestoreServiceImpl::PersistenceDelegate::
+    OnErrorWritingSessionCommands() {
+  // TODO(sky): make this use marker.
+  NOTIMPLEMENTED();
 }
 
 void TabRestoreServiceImpl::PersistenceDelegate::OnClearEntries() {

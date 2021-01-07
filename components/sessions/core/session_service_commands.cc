@@ -17,12 +17,7 @@
 #include "base/pickle.h"
 #include "base/token.h"
 #include "components/sessions/core/base_session_service_commands.h"
-#include "components/sessions/core/command_storage_manager_delegate.h"
-#include "components/sessions/core/session_command.h"
-#include "components/sessions/core/session_types.h"
 #include "components/tab_groups/tab_group_color.h"
-#include "components/tab_groups/tab_group_id.h"
-#include "components/tab_groups/tab_group_visual_data.h"
 
 namespace sessions {
 
@@ -72,6 +67,7 @@ static const SessionCommand::id_type kCommandSetTabGuid = 28;
 static const SessionCommand::id_type kCommandSetTabUserAgentOverride2 = 29;
 static const SessionCommand::id_type kCommandSetTabData = 30;
 static const SessionCommand::id_type kCommandSetWindowUserTitle = 31;
+// ID 255 is used by CommandStorageBackend.
 
 namespace {
 

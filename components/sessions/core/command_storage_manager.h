@@ -53,10 +53,14 @@ class SESSIONS_EXPORT CommandStorageManager {
   // `kOther`, then it is a path to a directory. The actual file name used
   // depends upon the type. Once SessionType can be removed, this logic can
   // standardize on that of `kOther`.
+  //
+  // See CommandStorageBackend for details on `use_marker`.
   CommandStorageManager(SessionType type,
                         const base::FilePath& path,
                         CommandStorageManagerDelegate* delegate,
-                        bool enable_crypto = false);
+                        bool use_marker = false,
+                        bool enable_crypto = false,
+                        const std::vector<uint8_t>& decryption_key = {});
   CommandStorageManager(const CommandStorageManager&) = delete;
   CommandStorageManager& operator=(const CommandStorageManager&) = delete;
   virtual ~CommandStorageManager();
@@ -120,21 +124,15 @@ class SESSIONS_EXPORT CommandStorageManager {
   // Uses the backend to load the last session commands from disk. |callback|
   // is called once the data has arrived, and may be called after this is
   // deleted.
-  void GetLastSessionCommands(GetCommandsCallback callback,
-                              const std::vector<uint8_t>& decryption_key = {});
+  void GetLastSessionCommands(GetCommandsCallback callback);
 
  private:
   friend class CommandStorageManagerTestHelper;
 
-  // Creates a SequencedTaskRunner suitable for the backend.
-  static scoped_refptr<base::SequencedTaskRunner>
-  CreateDefaultBackendTaskRunner();
-
-  scoped_refptr<base::SequencedTaskRunner> backend_task_runner() {
-    return backend_task_runner_;
-  }
-
   CommandStorageBackend* backend() { return backend_.get(); }
+
+  // Called by the backend if writing to the file failed.
+  void OnErrorWritingToFile();
 
   // The backend object which reads and saves commands.
   scoped_refptr<CommandStorageBackend> backend_;
@@ -157,6 +155,8 @@ class SESSIONS_EXPORT CommandStorageManager {
   // TaskRunner all backend tasks are run on. This is a SequencedTaskRunner as
   // all tasks *must* be processed in the order they are scheduled.
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+
+  base::WeakPtrFactory<CommandStorageManager> weak_factory_{this};
 
   // Used solely for saving after a delay, and not to be used for any other
   // purposes.
