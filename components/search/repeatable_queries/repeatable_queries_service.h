@@ -19,6 +19,7 @@
 
 class SearchProviderObserver;
 class TemplateURLService;
+class TemplateURL;
 
 namespace base {
 class SequencedTaskRunner;
@@ -119,8 +120,10 @@ class RepeatableQueriesService : public KeyedService {
   // Called when the signin status changes.
   void SigninStatusChanged();
 
-  // Returns the server destination URL for |query|.
-  GURL GetQueryDestinationURL(const base::string16& query);
+  // Returns the server destination URL for |query| with |search_provider|.
+  // |search_provider| may not be nullptr.
+  GURL GetQueryDestinationURL(const base::string16& query,
+                              const TemplateURL* search_provider);
 
   // Returns the resolved deletion URL for the given relative deletion URL.
   GURL GetQueryDeletionURL(const std::string& deletion_url);
