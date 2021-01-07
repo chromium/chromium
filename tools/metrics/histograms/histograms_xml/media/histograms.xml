@@ -3589,7 +3589,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VAJDA.ResponseToClient"
-    enum="MjpegDecodeAcceleratorErrorCode" expires_after="2020-03-21">
+    enum="MjpegDecodeAcceleratorErrorCode" expires_after="2022-01-07">
   <owner>andrescj@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
