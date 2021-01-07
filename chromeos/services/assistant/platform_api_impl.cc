@@ -8,9 +8,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/system/sys_info.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/services/assistant/media_session/assistant_media_session.h"
+#include "chromeos/services/assistant/platform/audio_devices.h"
 #include "chromeos/services/assistant/platform/power_manager_provider_impl.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/utils.h"
@@ -83,16 +82,15 @@ PlatformApiImpl::PlatformApiImpl(
     mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor,
     scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> background_task_runner,
-    std::string pref_locale)
+    const std::string& pref_locale)
     : audio_input_provider_(),
       audio_output_provider_(media_session,
                              background_task_runner,
                              media::AudioDeviceDescription::kDefaultDeviceId),
       audio_input_host_(&audio_input_provider_.GetAudioInput(),
                         cras_audio_handler,
-                        power_manager_client),
-      pref_locale_(pref_locale),
-      cras_audio_handler_(cras_audio_handler) {
+                        power_manager_client,
+                        pref_locale) {
   // Only enable native power features if they are supported by the UI.
   std::unique_ptr<PowerManagerProviderImpl> provider;
   if (features::IsPowerManagerEnabled()) {
@@ -101,14 +99,9 @@ PlatformApiImpl::PlatformApiImpl(
   }
   system_provider_ = std::make_unique<SystemProviderImpl>(
       std::move(provider), std::move(battery_monitor));
-
-  cras_audio_handler_->AddAudioObserver(this);
-  OnAudioNodesChanged();
 }
 
-PlatformApiImpl::~PlatformApiImpl() {
-  cras_audio_handler_->RemoveAudioObserver(this);
-}
+PlatformApiImpl::~PlatformApiImpl() = default;
 
 AudioInputProviderImpl& PlatformApiImpl::GetAudioInputProvider() {
   return audio_input_provider_;
@@ -132,50 +125,6 @@ NetworkProvider& PlatformApiImpl::GetNetworkProvider() {
 
 SystemProvider& PlatformApiImpl::GetSystemProvider() {
   return *system_provider_;
-}
-
-void PlatformApiImpl::OnAudioNodesChanged() {
-  if (!base::SysInfo::IsRunningOnChromeOS())
-    return;
-
-  chromeos::AudioDeviceList devices;
-  cras_audio_handler_->GetAudioDevices(&devices);
-
-  const chromeos::AudioDevice* input_device = nullptr;
-  const chromeos::AudioDevice* hotword_device = nullptr;
-
-  for (const chromeos::AudioDevice& device : devices) {
-    if (!device.is_input)
-      continue;
-
-    switch (device.type) {
-      case chromeos::AUDIO_TYPE_USB:
-      case chromeos::AUDIO_TYPE_HEADPHONE:
-      case chromeos::AUDIO_TYPE_INTERNAL_MIC:
-      case chromeos::AUDIO_TYPE_FRONT_MIC:
-        if (!input_device || input_device->priority < device.priority)
-          input_device = &device;
-        break;
-      case chromeos::AUDIO_TYPE_HOTWORD:
-        if (!hotword_device || hotword_device->priority < device.priority)
-          hotword_device = &device;
-        break;
-      default:
-        // ignore other devices
-        break;
-    }
-  }
-
-  audio_input_host_.SetDeviceId(
-      input_device ? base::NumberToString(input_device->id) : std::string());
-
-  if (hotword_device) {
-    audio_input_host_.SetHotwordDeviceId(
-        base::NumberToString(hotword_device->id));
-    audio_input_host_.SetDspHotwordLocale(pref_locale_);
-  } else {
-    audio_input_host_.SetHotwordDeviceId(std::string());
-  }
 }
 
 void PlatformApiImpl::SetMicState(bool mic_open) {

@@ -283,6 +283,7 @@ void AudioInputImpl::RemoveObserver(
   DCHECK_CALLED_ON_VALID_SEQUENCE(observer_sequence_checker_);
   if (open_audio_stream_)
     VLOG(1) << open_audio_stream_->device_id() << " remove observer";
+
   bool have_no_observer = false;
   {
     base::AutoLock lock(lock_);

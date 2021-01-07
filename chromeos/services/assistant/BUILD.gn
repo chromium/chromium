@@ -26,6 +26,8 @@ component("lib") {
     "fake_assistant_manager_service_impl.h",
     "fake_assistant_settings_impl.cc",
     "fake_assistant_settings_impl.h",
+    "platform/audio_devices.cc",
+    "platform/audio_devices.h",
     "service.cc",
     "service.h",
     "service_context.h",
@@ -174,6 +176,7 @@ source_set("tests") {
   ]
 
   sources = [
+    "platform/audio_devices_unittest.cc",
     "service_unittest.cc",
     "test_support/fully_initialized_assistant_state.cc",
     "test_support/fully_initialized_assistant_state.h",
