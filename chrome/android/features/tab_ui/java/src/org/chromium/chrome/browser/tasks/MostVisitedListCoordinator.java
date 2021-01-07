@@ -48,6 +48,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     private final Supplier<Tab> mParentTabSupplier;
     private TileGroup mTileGroup;
     private TileRenderer mRenderer;
+    private SuggestionsUiDelegate mSuggestionsUiDelegate;
 
     public MostVisitedListCoordinator(ChromeActivity activity, ViewGroup parent,
             PropertyModel propertyModel, Supplier<Tab> parentTabSupplier) {
@@ -59,27 +60,22 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     }
 
     public void initialize() {
-        if (mRenderer != null) return;
-        assert mTileGroup == null;
-
-        // This function is never called in incognito mode.
         Profile profile = Profile.getLastUsedRegularProfile();
-
-        ImageFetcher imageFetcher = new ImageFetcher(profile);
         SnackbarManager snackbarManager = mActivity.getSnackbarManager();
+        if (mRenderer == null) {
+            // This function is never called in incognito mode.
+            ImageFetcher imageFetcher = new ImageFetcher(profile);
+            mRenderer = new TileRenderer(
+                    mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, imageFetcher);
 
-        mRenderer = new TileRenderer(
-                mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, imageFetcher);
-
+            mSuggestionsUiDelegate = new MostVisitedSuggestionsUiDelegate(profile, snackbarManager);
+        }
         OfflinePageBridge offlinePageBridge =
                 SuggestionsDependencyFactory.getInstance().getOfflinePageBridge(profile);
-
         TileGroupDelegateImpl tileGroupDelegate =
                 new TileGroupDelegateImpl(mActivity, profile, null, snackbarManager);
-        SuggestionsUiDelegate suggestionsUiDelegate =
-                new MostVisitedSuggestionsUiDelegate(profile, snackbarManager);
-        mTileGroup = new TileGroup(
-                mRenderer, suggestionsUiDelegate, null, tileGroupDelegate, this, offlinePageBridge);
+        mTileGroup = new TileGroup(mRenderer, mSuggestionsUiDelegate, null, tileGroupDelegate, this,
+                offlinePageBridge);
         mTileGroup.startObserving(MAX_RESULTS);
     }
 
