@@ -506,6 +506,28 @@ TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {
   }
 }
 
+TEST_F(WebMemoryAggregatorTest, AggregateProvisionalWindowOpener) {
+  FrameNodeImpl* main_frame = AddFrameNode("https://example.com/", Bytes{10});
+
+  // This creates an openee window with pending navigation which should be
+  // skipped because it may get its own browsing context group once the
+  // navigation completes.
+  FrameNodeImpl* pending_frame =
+      AddFrameNodeFromOpener(base::nullopt, Bytes{4}, main_frame);
+
+  WebMemoryAggregator aggregator(main_frame);
+
+  EXPECT_EQ(aggregator.FindNodeAggregationType(pending_frame),
+            NodeAggregationType::kInvisible);
+
+  auto expected_result = CreateExpectedMemoryMeasurement({
+      ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
+                              "https://example.com/"),
+  });
+  auto result = aggregator.AggregateMeasureMemoryResult();
+  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+}
+
 }  // namespace
 
 }  // namespace v8_memory

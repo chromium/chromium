@@ -247,7 +247,7 @@ class WebMemoryTestHarness : public GraphTestHarness {
   }
 
   // Creates a frame node as if from window.open and adds it to the graph.
-  FrameNodeImpl* AddFrameNodeFromOpener(std::string url,
+  FrameNodeImpl* AddFrameNodeFromOpener(base::Optional<std::string> url,
                                         Bytes bytes,
                                         FrameNodeImpl* opener) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes,
@@ -283,7 +283,7 @@ class WebMemoryTestHarness : public GraphTestHarness {
 
   // Creates and adds a new frame node to the graph.
   FrameNodeImpl* AddFrameNodeImpl(
-      std::string url,
+      base::Optional<std::string> url,
       int browsing_instance_id,
       Bytes bytes,
       FrameNodeImpl* parent = nullptr,

@@ -18,6 +18,7 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_frame_host_proxy.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
+#include "components/performance_manager/v8_memory/web_memory_aggregator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -36,46 +37,16 @@ mojom::WebMemoryMeasurementPtr BuildMemoryUsageResult(
     const blink::LocalFrameToken& frame_token,
     const ProcessNode* process_node) {
   const auto& frame_nodes = process_node->GetFrameNodes();
+  const auto it = std::find_if(frame_nodes.begin(), frame_nodes.end(),
+                               [frame_token](const FrameNode* node) {
+                                 return node->GetFrameToken() == frame_token;
+                               });
 
-  // Find the frame that made the request.
-  const FrameNode* requesting_frame = nullptr;
-  for (auto* frame_node : frame_nodes) {
-    if (frame_node->GetFrameToken() == frame_token) {
-      requesting_frame = frame_node;
-      break;
-    }
-  }
-
-  if (!requesting_frame) {
+  if (it == frame_nodes.end()) {
     // The frame no longer exists.
     return mojom::WebMemoryMeasurement::New();
   }
-
-  auto result = mojom::WebMemoryMeasurement::New();
-
-  for (const FrameNode* frame_node : frame_nodes) {
-    if (frame_node->GetBrowsingInstanceId() !=
-        requesting_frame->GetBrowsingInstanceId()) {
-      continue;
-    }
-    if (frame_node->GetURL().GetOrigin() !=
-        requesting_frame->GetURL().GetOrigin()) {
-      continue;
-    }
-    auto* data = v8_memory::V8DetailedMemoryExecutionContextData::ForFrameNode(
-        frame_node);
-    if (!data) {
-      continue;
-    }
-    auto attribution = mojom::WebMemoryAttribution::New();
-    attribution->url = frame_node->GetURL().spec();
-    attribution->scope = mojom::WebMemoryAttribution::Scope::kWindow;
-    auto entry = mojom::WebMemoryBreakdownEntry::New();
-    entry->bytes = data->v8_bytes_used();
-    entry->attribution.push_back(std::move(attribution));
-    result->breakdown.push_back(std::move(entry));
-  }
-  return result;
+  return WebMemoryAggregator(*it).AggregateMeasureMemoryResult();
 }
 
 v8_memory::V8DetailedMemoryRequest::MeasurementMode
@@ -160,8 +131,6 @@ void WebMemoryMeasurer::MeasureMemory(mojom::WebMemoryMeasurement::Mode mode,
 void WebMemoryMeasurer::MeasurementComplete(
     const ProcessNode* process_node,
     const V8DetailedMemoryProcessData*) {
-  // TODO(crbug.com/1085129): Use WebMemoryAggregator here instead of
-  // BuildMemoryUsageResult.
   std::move(callback_).Run(BuildMemoryUsageResult(frame_token_, process_node));
 }
 

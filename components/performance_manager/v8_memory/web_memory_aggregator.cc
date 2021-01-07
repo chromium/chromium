@@ -106,9 +106,11 @@ WebMemoryAggregator::FindNodeAggregationType(const FrameNode* frame_node) {
     return NodeAggregationType::kInvisible;
   }
 
+  auto frame_origin = GetOrigin(frame_node);
+
   // If |frame_node| is same-origin to |start_node|, it's an aggregation point.
   // (This trivially includes the |start_node| itself.)
-  if (requesting_origin_.IsSameOriginWith(GetOrigin(frame_node)))
+  if (requesting_origin_.IsSameOriginWith(frame_origin))
     return NodeAggregationType::kSameOriginAggregationPoint;
   DCHECK_NE(frame_node, aggregation_start_node_);
 
@@ -116,8 +118,16 @@ WebMemoryAggregator::FindNodeAggregationType(const FrameNode* frame_node) {
   // a same-origin node, its existence is visible to |start_node| so it's an
   // aggregation point. But its current url will be hidden from |start_node|.
   const FrameNode* parent_node = frame_node->GetParentFrameNode();
-  // |frame_node| is a child of |start_node| so must have a parent.
-  DCHECK(parent_node);
+
+  if (!parent_node) {
+    // A cross-origin window opened via window.open gets its own browsing
+    // context group due to COOP. However, while the window is being loaded it
+    // belongs to the old browsing context group. In that case the origin is
+    // opaque.
+    DCHECK(frame_origin.opaque());
+    return NodeAggregationType::kInvisible;
+  }
+
   if (requesting_origin_.IsSameOriginWith(GetOrigin(parent_node)))
     return NodeAggregationType::kCrossOriginAggregationPoint;
 

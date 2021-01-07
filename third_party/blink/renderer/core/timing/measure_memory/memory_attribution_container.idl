@@ -6,6 +6,6 @@
 
 // The attributes of the container iframe element.
 dictionary MemoryAttributionContainer {
-  required DOMString id;
-  required USVString src;
+  DOMString id;
+  USVString src;
 };

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_memory_attribution.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_memory_attribution_container.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_memory_breakdown_entry.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_memory_measurement.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -138,12 +139,27 @@ WTF::String ConvertScope(WebMemoryAttribution::Scope scope) {
   }
 }
 
+MemoryAttributionContainer* ConvertContainer(
+    const WebMemoryAttributionPtr& attribution) {
+  if (!attribution->src && !attribution->id) {
+    return nullptr;
+  }
+  auto* result = MemoryAttributionContainer::Create();
+  result->setSrc(attribution->src);
+  result->setId(attribution->id);
+  return result;
+}
+
 MemoryAttribution* ConvertAttribution(
     const WebMemoryAttributionPtr& attribution) {
   auto* result = MemoryAttribution::Create();
-  result->setUrl(attribution->url);
+  if (attribution->url) {
+    result->setUrl(attribution->url);
+  } else {
+    result->setUrl("cross-origin-url");
+  }
   result->setScope(ConvertScope(attribution->scope));
-  result->setContainer(nullptr);
+  result->setContainer(ConvertContainer(attribution));
   return result;
 }
 

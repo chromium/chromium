@@ -25,8 +25,6 @@ namespace v8_memory {
 // A helper class for implementing WebMeasureMemory(). This manages a request
 // object that sends a V8 detailed memory request to the renderer, and formats
 // the result into a mojom::WebMemoryMeasurement.
-// TODO(crbug.com/1085129): Extend this to measure all renderers that are
-// reachable from the requesting node.
 class WebMemoryMeasurer {
  public:
   using MeasurementCallback =

@@ -234,7 +234,7 @@ int WebMemoryTestHarness::GetNextUniqueId() {
 }
 
 FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
-    std::string url,
+    base::Optional<std::string> url,
     int browsing_instance_id,
     Bytes memory_usage,
     FrameNodeImpl* parent,
@@ -255,7 +255,9 @@ FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
   auto frame = CreateNode<FrameNodeImpl>(process_.get(), page, parent,
                                          frame_tree_node_id, frame_routing_id,
                                          frame_token, browsing_instance_id);
-  frame->OnNavigationCommitted(GURL(url), /*same document*/ true);
+  if (url) {
+    frame->OnNavigationCommitted(GURL(*url), /*same document*/ true);
+  }
   V8DetailedMemoryExecutionContextData::CreateForTesting(frame.get())
       ->set_v8_bytes_used(memory_usage.bytes);
   frames_.push_back(std::move(frame));
