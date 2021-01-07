@@ -215,6 +215,7 @@ cast_source_set("browser_base") {
     "//chromecast/media/base:media_codec_support",
     "//chromecast/media/base:video_plane_controller",
     "//chromecast/media/cdm:cdm_origin_provider",
+    "//chromecast/media/common:media_pipeline_backend_manager",
     "//chromecast/media/service",
     "//chromecast/media/service/mojom",
     "//chromecast/net",

@@ -51,7 +51,7 @@
 #include "chromecast/graphics/cast_window_manager.h"
 #include "chromecast/media/base/key_systems_common.h"
 #include "chromecast/media/base/video_plane_controller.h"
-#include "chromecast/media/cma/backend/media_pipeline_backend_manager.h"
+#include "chromecast/media/common/media_pipeline_backend_manager.h"
 #include "chromecast/media/common/media_resource_tracker.h"
 #include "chromecast/metrics/cast_metrics_service_client.h"
 #include "chromecast/net/connectivity_checker.h"

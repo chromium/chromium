@@ -71,13 +71,6 @@ cast_source_set("base") {
   assert_no_deps = [ "//media" ]
 }
 
-# TODO(b/174777644): remove once references have been updated.
-cast_source_set("media_resource_tracker") {
-  sources = [ "media_resource_tracker.h" ]
-
-  deps = [ "//chromecast/media/common:media_resource_tracker" ]
-}
-
 cast_source_set("media_codec_support") {
   sources = [
     "media_codec_support.cc",
@@ -130,11 +123,4 @@ cast_source_set("monotonic_clock") {
     "//base",
     "//chromecast/media/api:api",
   ]
-}
-
-# TODO(b/174777644): remove once references have been updated.
-cast_source_set("test_media_resource_tracker") {
-  sources = [ "test_media_resource_tracker.h" ]
-  deps = [ "//chromecast/media/common:test_media_resource_tracker" ]
-  testonly = true
 }

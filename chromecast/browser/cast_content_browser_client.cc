@@ -56,7 +56,7 @@
 #include "chromecast/media/cdm/cast_cdm_factory.h"
 #include "chromecast/media/cdm/cast_cdm_origin_provider.h"
 #include "chromecast/media/cma/backend/cma_backend_factory_impl.h"
-#include "chromecast/media/cma/backend/media_pipeline_backend_manager.h"
+#include "chromecast/media/common/media_pipeline_backend_manager.h"
 #include "chromecast/media/common/media_resource_tracker.h"
 #include "chromecast/media/service/cast_renderer.h"
 #include "chromecast/media/service/mojom/video_geometry_setter.mojom.h"

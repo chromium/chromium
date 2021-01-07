@@ -37,6 +37,7 @@ cast_source_set("receiver_cma") {
     "//chromecast/media/audio/mixer_service:proto",
     "//chromecast/media/cma/backend",
     "//chromecast/media/cma/base",
+    "//chromecast/media/common:media_pipeline_backend_manager",
     "//chromecast/public",
     "//chromecast/public/media",
     "//media",
