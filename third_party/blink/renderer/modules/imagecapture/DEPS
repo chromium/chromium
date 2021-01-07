@@ -2,7 +2,8 @@ include_rules = [
   "+media/capture/mojom/image_capture.mojom-blink.h",
   "+media/capture/mojom/image_capture.mojom-blink-forward.h",
 
-  "+media/base",
+  "+cc/paint/skia_paint_canvas.h",
+  "+media",
   "+skia/ext/legacy_display_globals.h",
   "+skia/ext/platform_canvas.h",
   "+third_party/libyuv",
