@@ -40,6 +40,7 @@ void ErrorScreenHandler::Show() {
 
 void ErrorScreenHandler::Hide() {
   showing_ = false;
+  show_on_init_ = false;
   if (screen_)
     screen_->DoHide();
 }

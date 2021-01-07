@@ -20,6 +20,7 @@
 #include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/guest_session_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
+#include "chrome/browser/chromeos/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/chromeos/login/test/offline_gaia_test_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
@@ -86,6 +87,7 @@ class LoginOfflineTest : public LoginManagerTest {
   // We need Fake gaia to avoid network errors that can be caused by
   // attempts to load real GAIA.
   FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 };
 
 class LoginOfflineManagedTest : public LoginManagerTest {
@@ -209,6 +211,8 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineTest, PRE_GaiaAuthOffline) {
 }
 
 IN_PROC_BROWSER_TEST_F(LoginOfflineTest, GaiaAuthOffline) {
+  network_portal_detector_.SimulateDefaultNetworkState(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
   offline_gaia_test_mixin_.GoOffline();
   offline_gaia_test_mixin_.InitOfflineLogin(test_account_id_,
                                             LoginManagerTest::kPassword);
