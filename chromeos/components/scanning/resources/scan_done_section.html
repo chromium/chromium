@@ -17,6 +17,7 @@
     @apply --scanning-done-section-option-font;
     align-items: center;
     color: var(--scanning-done-section-option-text-color);
+    cursor: pointer;
     display: flex;
     height: 36px;
     margin-bottom: 8px;
@@ -68,12 +69,12 @@
     [[titleText_]]
   </h1>
 </div>
-<div class="container">
+<div class="container" on-click="showFileInLocation_">
   <span id="showFileLocationLabel" class="label" aria-hidden="true">
     [[i18n('showFileLocationLabel')]]
   </span>
   <cr-icon-button id="showFileButton" class="button" iron-icon="cr:open-in-new"
-      on-click="showFileInLocation_" aria-labelledby="showFileLocationLabel">
+      aria-labelledby="showFileLocationLabel">
   </cr-icon-button>
 </div>
 <div id="doneButtonContainer">
