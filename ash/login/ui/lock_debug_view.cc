@@ -826,6 +826,9 @@ void LockDebugView::Layout() {
   lock_->SetBoundsRect(GetLocalBounds());
   container_->SetPosition(gfx::Point());
   container_->SizeToPreferredSize();
+
+  for (views::View* child : container_->children())
+    child->Layout();
 }
 
 void LockDebugView::AddOrRemoveUsersButtonPressed(int delta) {
