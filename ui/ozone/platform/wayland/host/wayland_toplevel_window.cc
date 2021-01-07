@@ -12,7 +12,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/shell_object_factory.h"
-#include "ui/ozone/platform/wayland/host/shell_surface_wrapper.h"
+#include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
@@ -40,21 +40,21 @@ WaylandToplevelWindow::WaylandToplevelWindow(PlatformWindowDelegate* delegate,
 
 WaylandToplevelWindow::~WaylandToplevelWindow() = default;
 
-bool WaylandToplevelWindow::CreateShellSurface() {
+bool WaylandToplevelWindow::CreateShellToplevel() {
   ShellObjectFactory factory;
-  shell_surface_ = factory.CreateShellSurfaceWrapper(connection(), this);
-  if (!shell_surface_) {
-    LOG(ERROR) << "Failed to create a ShellSurface.";
+  shell_toplevel_ = factory.CreateShellToplevelWrapper(connection(), this);
+  if (!shell_toplevel_) {
+    LOG(ERROR) << "Failed to create a ShellToplevel.";
     return false;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  shell_surface_->SetAppId(window_unique_id_);
+  shell_toplevel_->SetAppId(window_unique_id_);
 #else
-  shell_surface_->SetAppId(wm_class_class_);
+  shell_toplevel_->SetAppId(wm_class_class_);
 #endif
   SetDecorationMode();
-  shell_surface_->SetTitle(window_title_);
+  shell_toplevel_->SetTitle(window_title_);
   SetSizeConstraints();
   TriggerStateChanges();
   InitializeAuraShellSurface();
@@ -64,10 +64,10 @@ bool WaylandToplevelWindow::CreateShellSurface() {
 void WaylandToplevelWindow::ApplyPendingBounds() {
   if (pending_bounds_dip_.IsEmpty())
     return;
-  DCHECK(shell_surface_);
+  DCHECK(shell_toplevel_);
 
   SetBoundsDip(pending_bounds_dip_);
-  shell_surface_->SetWindowGeometry(pending_bounds_dip_);
+  shell_toplevel_->SetWindowGeometry(pending_bounds_dip_);
   pending_bounds_dip_ = gfx::Rect();
   connection()->ScheduleFlush();
 }
@@ -75,22 +75,22 @@ void WaylandToplevelWindow::ApplyPendingBounds() {
 void WaylandToplevelWindow::DispatchHostWindowDragMovement(
     int hittest,
     const gfx::Point& pointer_location_in_px) {
-  DCHECK(shell_surface_);
+  DCHECK(shell_toplevel_);
 
   connection()->event_source()->ResetPointerFlags();
   if (hittest == HTCAPTION)
-    shell_surface_->SurfaceMove(connection());
+    shell_toplevel_->SurfaceMove(connection());
   else
-    shell_surface_->SurfaceResize(connection(), hittest);
+    shell_toplevel_->SurfaceResize(connection(), hittest);
 
   connection()->ScheduleFlush();
 }
 
 void WaylandToplevelWindow::Show(bool inactive) {
-  if (shell_surface_)
+  if (shell_toplevel_)
     return;
 
-  if (!CreateShellSurface()) {
+  if (!CreateShellToplevel()) {
     Close();
     return;
   }
@@ -104,7 +104,7 @@ void WaylandToplevelWindow::Show(bool inactive) {
 }
 
 void WaylandToplevelWindow::Hide() {
-  if (!shell_surface_)
+  if (!shell_toplevel_)
     return;
 
   if (child_window()) {
@@ -112,7 +112,7 @@ void WaylandToplevelWindow::Hide() {
     set_child_window(nullptr);
   }
 
-  shell_surface_.reset();
+  shell_toplevel_.reset();
   connection()->ScheduleFlush();
 
   // Detach buffer from surface in order to completely shutdown menus and
@@ -123,7 +123,7 @@ void WaylandToplevelWindow::Hide() {
 bool WaylandToplevelWindow::IsVisible() const {
   // X and Windows return true if the window is minimized. For consistency, do
   // the same.
-  return !!shell_surface_ || state_ == PlatformWindowState::kMinimized;
+  return !!shell_toplevel_ || state_ == PlatformWindowState::kMinimized;
 }
 
 void WaylandToplevelWindow::SetTitle(const base::string16& title) {
@@ -132,8 +132,8 @@ void WaylandToplevelWindow::SetTitle(const base::string16& title) {
 
   window_title_ = title;
 
-  if (shell_surface_) {
-    shell_surface_->SetTitle(title);
+  if (shell_toplevel_) {
+    shell_toplevel_->SetTitle(title);
     connection()->ScheduleFlush();
   }
 }
@@ -167,7 +167,7 @@ void WaylandToplevelWindow::Minimize() {
 }
 
 void WaylandToplevelWindow::Restore() {
-  DCHECK(shell_surface_);
+  DCHECK(shell_toplevel_);
 
   // Differently from other platforms, under Wayland, unmaximizing the dragged
   // window before starting the drag loop is not needed as it is assumed to be
@@ -188,7 +188,7 @@ PlatformWindowState WaylandToplevelWindow::GetPlatformWindowState() const {
 
 void WaylandToplevelWindow::SizeConstraintsChanged() {
   // Size constraints only make sense for normal windows.
-  if (!shell_surface_)
+  if (!shell_toplevel_)
     return;
 
   DCHECK(delegate());
@@ -209,7 +209,7 @@ void WaylandToplevelWindow::SetUseNativeFrame(bool use_native_frame) {
   if (use_native_frame_ == use_native_frame)
     return;
   use_native_frame_ = use_native_frame;
-  if (shell_surface_)
+  if (shell_toplevel_)
     SetDecorationMode();
 }
 
@@ -330,7 +330,7 @@ void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
 }
 
 void WaylandToplevelWindow::TriggerStateChanges() {
-  if (!shell_surface_)
+  if (!shell_toplevel_)
     return;
 
   // Call UnSetMaximized only if current state is normal. Otherwise, if the
@@ -338,15 +338,15 @@ void WaylandToplevelWindow::TriggerStateChanges() {
   // UnSetMaximized may result in wrong restored window position that clients
   // are not allowed to know about.
   if (state_ == PlatformWindowState::kMinimized) {
-    shell_surface_->SetMinimized();
+    shell_toplevel_->SetMinimized();
   } else if (state_ == PlatformWindowState::kFullScreen) {
-    shell_surface_->SetFullscreen();
+    shell_toplevel_->SetFullscreen();
   } else if (previous_state_ == PlatformWindowState::kFullScreen) {
-    shell_surface_->UnSetFullscreen();
+    shell_toplevel_->UnSetFullscreen();
   } else if (state_ == PlatformWindowState::kMaximized) {
-    shell_surface_->SetMaximized();
+    shell_toplevel_->SetMaximized();
   } else if (state_ == PlatformWindowState::kNormal) {
-    shell_surface_->UnSetMaximized();
+    shell_toplevel_->UnSetMaximized();
   }
 
   connection()->ScheduleFlush();
@@ -364,9 +364,9 @@ WmMoveResizeHandler* WaylandToplevelWindow::AsWmMoveResizeHandler() {
 
 void WaylandToplevelWindow::SetSizeConstraints() {
   if (min_size_.has_value())
-    shell_surface_->SetMinSize(min_size_->width(), min_size_->height());
+    shell_toplevel_->SetMinSize(min_size_->width(), min_size_->height());
   if (max_size_.has_value())
-    shell_surface_->SetMaxSize(max_size_->width(), max_size_->height());
+    shell_toplevel_->SetMaxSize(max_size_->width(), max_size_->height());
 
   connection()->ScheduleFlush();
 }
@@ -387,7 +387,7 @@ void WaylandToplevelWindow::SetOrResetRestoredBounds() {
 void WaylandToplevelWindow::InitializeAuraShellSurface() {
   // InitializeAuraShellSurface() should be called after the XDG surface is
   // initialized.
-  DCHECK(shell_surface_);
+  DCHECK(shell_toplevel_);
 
   if (connection()->zaura_shell() && !aura_surface_) {
     aura_surface_.reset(zaura_shell_get_aura_surface(
@@ -397,13 +397,15 @@ void WaylandToplevelWindow::InitializeAuraShellSurface() {
 }
 
 void WaylandToplevelWindow::SetDecorationMode() {
-  DCHECK(shell_surface_);
+  DCHECK(shell_toplevel_);
   if (use_native_frame_) {
     // Set server-side decoration for windows using a native frame,
     // e.g. taskmanager
-    shell_surface_->SetDecoration(DecorationMode::kServerSide);
+    shell_toplevel_->SetDecoration(
+        ShellToplevelWrapper::DecorationMode::kServerSide);
   } else {
-    shell_surface_->SetDecoration(DecorationMode::kClientSide);
+    shell_toplevel_->SetDecoration(
+        ShellToplevelWrapper::DecorationMode::kClientSide);
   }
 }
 

@@ -14,7 +14,7 @@
 
 namespace ui {
 
-class ShellSurfaceWrapper;
+class ShellToplevelWrapper;
 
 class WaylandToplevelWindow : public WaylandWindow,
                               public WmMoveResizeHandler,
@@ -27,7 +27,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   WaylandToplevelWindow& operator=(const WaylandToplevelWindow&) = delete;
   ~WaylandToplevelWindow() override;
 
-  ShellSurfaceWrapper* shell_surface() const { return shell_surface_.get(); }
+  ShellToplevelWrapper* shell_toplevel() const { return shell_toplevel_.get(); }
 
   // Apply the bounds specified in the most recent configure event. This should
   // be called after processing all pending events in the wayland connection.
@@ -77,11 +77,11 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetWindowState(PlatformWindowState state);
 
   // Creates a surface window, which is visible as a main window.
-  bool CreateShellSurface();
+  bool CreateShellToplevel();
 
   WmMoveResizeHandler* AsWmMoveResizeHandler();
 
-  // Propagates the |min_size_| and |max_size_| to the ShellSurface.
+  // Propagates the |min_size_| and |max_size_| to the ShellToplevel.
   void SetSizeConstraints();
 
   void SetOrResetRestoredBounds();
@@ -94,7 +94,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetDecorationMode();
 
   // Wrappers around shell surface.
-  std::unique_ptr<ShellSurfaceWrapper> shell_surface_;
+  std::unique_ptr<ShellToplevelWrapper> shell_toplevel_;
 
   // These bounds attributes below have suffices that indicate units used.
   // Wayland operates in DIP but the platform operates in physical pixels so
@@ -127,7 +127,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   std::string wm_class_class_;
 #endif
 
-  // Title of the ShellSurface.
+  // Title of the ShellToplevel.
   base::string16 window_title_;
 
   // Max and min sizes of the WaylandToplevelWindow window.
