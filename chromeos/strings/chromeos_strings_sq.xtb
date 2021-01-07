@@ -3,6 +3,7 @@
 <translationbundle lang="sq">
 <translation id="1018656279737460067">Anuluar</translation>
 <translation id="1059913517121127803">Skanimi nuk mund të nisej</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">U zbulua mur mbrojtës</translation>
 <translation id="1075811647922107217">Madhësia e faqes</translation>
 <translation id="1124772482545689468">Përdoruesi</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Gabim i panjohur.</translation>
 <translation id="1204296502688602597">Vonesa e DNS-së</translation>
 <translation id="123124571410524056">Dyshohet për portal</translation>
+<translation id="1238191093934674082">VPN e hapur</translation>
 <translation id="1238612778414822719">Vonesa e HTTPS</translation>
+<translation id="1270369111467284986">U dyshua portal izolues</translation>
 <translation id="1290331692326790741">Sinjal i dobët</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">Porta e kalimit</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Përshtat me zonën e skanuar</translation>
 <translation id="1397738625398125236">Porta e kalimit mund të kryejë verifikimin "ping"</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Memoria specifike</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Të dhëna celulare</translation>
+<translation id="315738237743207937">U zbulua portal izolues</translation>
 <translation id="3188257591659621405">Skedarët e mi</translation>
 <translation id="3199982728237701504">Furnizuesi i dokumentit (dy anë)</translation>
 <translation id="3246869037381808805">Printimet më të vjetra se 1 ditë do të hiqen</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Testi është në ekzekutim</translation>
 <translation id="3368922792935385530">Lidhur</translation>
 <translation id="3369013195428705271">Je i sigurt që do ta pastrosh të gjithë historikun e printimit? Printimet e tua në vazhdim nuk do të pastrohen.</translation>
+<translation id="3435738964857648380">Siguria</translation>
 <translation id="3456078764689556234">U printua faqja <ph name="PRINTED_PAGES" /> nga <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Po printon</translation>
 <translation id="3515615323037921860">Printimet</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Disku im</translation>
 <translation id="4429881212383817840">Bileta e Kerberos skadon së shpejti</translation>
 <translation id="445059817448385655">Fjalëkalimi i vjetër</translation>
+<translation id="4453205916657964690">Maska e nënrrjetit</translation>
 <translation id="4454245904991689773">Skano te</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Dyshohet për mur mbrojtës</translation>
 <translation id="4691278870498629773">Ndaloi - Tabakaja mungon</translation>
 <translation id="469379815867856270">Fuqia e sinjalit</translation>
+<translation id="4707579418881001319">L2TP/IPsec + certifikatë përdoruesi</translation>
 <translation id="4731797938093519117">Qasja e prindit</translation>
 <translation id="4773299976671772492">Ndaloi</translation>
 <translation id="4808449224298348341">U anulua printimi i "<ph name="DOCUMENT_TITLE" />"</translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Kontrollo skanerin dhe provo përsëri. Sigurohu që të jetë hapësirë lokale të mjaftueshme për të ruajtur skedarët e skanuar.</translation>
 <translation id="4985509611418653372">Ekzekuto</translation>
 <translation id="500920857929044050">Ndalo testin</translation>
+<translation id="5050042263972837708">Emri i grupit</translation>
+<translation id="5088172560898466307">Emri i strehuesit të serverit</translation>
 <translation id="5089810972385038852">Shteti</translation>
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5168185087976003268">Integriteti i baterisë</translation>
@@ -144,6 +155,7 @@
 <translation id="5264277876637023664">Ekzekuto testin e njësisë CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Riekzekuto rutinat</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Zgjidh një të ri tani</translation>
@@ -158,7 +170,9 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Mëso më shumë në "Qendrën e ndihmës"</translation>
 <translation id="5635169860413004179">Shiko raportin</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Kjo mat përdorimin e CPU-së dhe është një përmbledhje e të gjitha të dhënave kryesore</translation>
+<translation id="5760715441271661976">Gjendja e portalit</translation>
 <translation id="5781694279199921985">Ruaj evidencën e sesionit</translation>
 <translation id="5797428682393400134">ME SUKSES</translation>
 <translation id="5832805196449965646">Shto person</translation>
@@ -184,6 +198,7 @@
 <translation id="6325525973963619867">Dështoi</translation>
 <translation id="636850387210749493">Regjistrimi i ndërmarrjes</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Skedari i skanuar u ruajt}other{Skedarët e skanuar u ruajtën}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Ndaloi - Bllokim letre</translation>
 <translation id="6517239166834772319">Eksploro</translation>
 <translation id="6527081081771465939">Protokoll i panjohur sigurie i Wi-Fi</translation>
@@ -193,6 +208,7 @@
 <translation id="6618744767048954150">Në ekzekutim</translation>
 <translation id="6620487321149975369">Printimet do të shfaqen te historiku, përveçse kur hiqen manualisht</translation>
 <translation id="6643016212128521049">Pastro</translation>
+<translation id="6657585470893396449">Fjalëkalimi</translation>
 <translation id="6704062477274546131">Rezolucioni i DNS-së</translation>
 <translation id="6747215703636344499">Ndaloi - Dalja është plot</translation>
 <translation id="6756731097889387912">Skanimi nuk mund të anulohej</translation>
@@ -209,19 +225,24 @@
 <translation id="7177485034254901881">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />. Administratorët mund ta konfigurojnë në distancë pajisjen.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Lloji i skedarit</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanimi përfundoi. U skanua 1 faqe}other{Skanimi përfundoi. U skanuan {NUMBER_OF_PAGES} faqe}}</translation>
 <translation id="7441459999606975924">Kapaciteti i baterisë bie me përdorimin e saj</translation>
 <translation id="7469648432129124067">U zbulua një portal</translation>
 <translation id="7490813197707563893">Adresa MAC</translation>
+<translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Vonesë e lartë në HTTPS</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
+<translation id="7701040980221191251">Asnjë</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Numri i cikleve</translation>
 <translation id="7732651821766520760">Testi: <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Statusi</translation>
+<translation id="7819857487979277519">PSK (WPA ose RSN)</translation>
+<translation id="7882358943899516840">Lloji i ofruesit</translation>
 <translation id="7928373994957558460">Shfaq vendndodhjen e skedarit</translation>
 <translation id="7936303884198020182">Nuk u gjetën serverë DNS</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -238,11 +259,15 @@
 <translation id="8347227221149377169">Printimet</translation>
 <translation id="8352772353338965963">Shto një llogari në identifikimin e shumëfishtë. Të gjitha llogaritë e identifikuara mund të qasen pa fjalëkalim, prandaj ky funksion duhet të përdoret vetëm me llogari të besuara.</translation>
 <translation id="8364946094152050673">Serverët DNS janë bosh</translation>
+<translation id="8372477600026034341">Pritësit e tjerë</translation>
 <translation id="8395584934117017006">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga ndërmarrja</translation>
 <translation id="8398927464629426868">Shpejtësia me të cilën pajisja aktualisht po karikohet ose po shkarkohet</translation>
 <translation id="8475690821716466388">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP PSK</translation>
 <translation id="8477551185774834963">Vonesa e DNS-së është pak më lart se pragu i lejueshëm</translation>
+<translation id="8483248364096924578">Adresa e IP-së</translation>
+<translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="8576249514688522074">E pafilluar</translation>
+<translation id="8675354002693747642">Çelës i ndarë paraprakisht</translation>
 <translation id="871560550817059752">Dështoi - Nuk ka bojë</translation>
 <translation id="8723108084122415655">Rrjeti jo i parazgjedhur është mbi pragun e vonesës</translation>
 <translation id="8726019395068607495">Ndaloi - Dera e hapur</translation>
@@ -250,6 +275,7 @@
 <translation id="8747900814994928677">Konfirmo ndryshimin</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">I parazgjedhur</translation>
+<translation id="8798441408945964110">Emri i ofruesit</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Kërko ndihmë</translation>
 <translation id="8881098542468797602">Testi u krye me sukses</translation>
@@ -261,11 +287,14 @@
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> përpjekje të mbetura</translation>
 <translation id="8968751544471797276">Shpejtësia e karikimit</translation>
 <translation id="8970109610781093811">Ekzekuto përsëri</translation>
+<translation id="9003704114456258138">Frekuenca</translation>
 <translation id="9074739597929991885">Bluetooth-i</translation>
 <translation id="9088306295921699330">Përdorimi aktual</translation>
 <translation id="910415269708673980">Rifresko biletën për <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Po skanon faqen <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Shkyç</translation>
 <translation id="9149391708638971077">Ekzekuto testin e memories</translation>
+<translation id="9190063653747922532">L2TP/IPsec + çelësi i ndarë paraprakisht</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Ekzekuto testin e shkarkimit</translation>
 </translationbundle>

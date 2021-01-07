@@ -24,6 +24,7 @@ Za dodjelu tog dopuštenja kliknite "<ph name="BUTTON_NAME" />" u nastavku da bi
 Ako je okvir "<ph name="SERVICE_SCRIPT_NAME" />" već potvrđen, uklonite kvačicu i zatim je ponovno stavite.</translation>
 <translation id="225614027745146050">Dobro došli</translation>
 <translation id="2320166752086256636">Sakrij tipkovnicu</translation>
+<translation id="2333212046079545895">Autorska prava 2021. Google LLC. Sva prava pridržana.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2366718077645204424">Nije moguće pristupiti hostu. To je vjerojatno zbog konfiguracije mreže koju upotrebljavate.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Posljednji put viđen online <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -129,7 +130,6 @@ Ako je okvir "<ph name="SERVICE_SCRIPT_NAME" />" već potvrđen, uklonite kvači
 <translation id="7067321367069083429">Zaslon se ponaša kao dodirni zaslon</translation>
 <translation id="7116737094673640201">Dobro došli na Udaljenu radnu površinu Chrome</translation>
 <translation id="7144878232160441200">Pokušaj ponovno</translation>
-<translation id="724402108658370587">Autorska prava 2020 Google LLC. Sva prava pridržana.</translation>
 <translation id="7312846573060934304">Host je izvan mreže.</translation>
 <translation id="7319983568955948908">Zaustavi dijeljenje</translation>
 <translation id="7401733114166276557">Udaljena radna površine Chrome</translation>

@@ -1921,6 +1921,7 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
 <translation id="3709266154059827597">Uzantı kurulum kara listesini yapılandır</translation>
 <translation id="3711895659073496551">Askıya al</translation>
 <translation id="3715569262675717862">İstemci sertifikalarına dayalı kimlik doğrulama</translation>
+<translation id="3719826155360621982">Ana sayfa</translation>
 <translation id="3727476641336727380"><ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> Devre Dışı değerine ayarlanmazsa <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> politikasının Etkin değerine ayarlaması veya ayarlanmadan bırakılması güç yönetimi için ekran uyanık kalma kilitlerine izin verir. Uzantılar, güç yönetimi uzantı API'si ve ARC uygulamaları aracılığıyla ekran uyanık kalma kilitleri isteyebilir.
 
       Politika, Devre Dışı değerine ayarlanırsa ekran uyanık kalma kilidi istekleri sistem uyanık kalma kilidi isteklerine düşürülür.</translation>
@@ -5185,6 +5186,7 @@ Windows'da politika yapılandırmak için önerilen yol GPO kullanmaktır. Ancak
 Politika ayarlanırsa sınıra uymak için eski anlık görüntüler gerektiğinde silinir. Politika 0 değerine ayarlanırsa anlık görüntü alınmaz</translation>
 <translation id="8451988835943702790">Ana sayfa olarak Yeni Sekme Sayfası'nı kullan</translation>
 <translation id="8455529558077979314">Gizlilik ekranı ayarları</translation>
+<translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">POST kullanan anlık URL parametreleri</translation>
 <translation id="8465746466645315861">Bu politika ayarlanmazsa kullanıcı, dil ayarlarında yazım denetimini etkinleştirebilir veya devre dışı bırakabilir.
 

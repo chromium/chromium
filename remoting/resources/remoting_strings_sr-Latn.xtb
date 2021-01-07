@@ -24,6 +24,7 @@ Da biste dali ovu dozvolu, kliknite na „<ph name="BUTTON_NAME" />“ u nastavk
 Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite oznaku i ponovo je označite.</translation>
 <translation id="225614027745146050">Dobro došli</translation>
 <translation id="2320166752086256636">Sakrij tastaturu</translation>
+<translation id="2333212046079545895">Autorska prava 2021. Google LLC. Sva prava zadržana.</translation>
 <translation id="2359808026110333948">Nastavite</translation>
 <translation id="2366718077645204424">Nije moguće uspostaviti vezu sa hostom. Do ovoga je verovatno došlo zbog konfiguracije mreže koju koristite.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Poslednji put je viđen onlajn <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -129,7 +130,6 @@ Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite 
 <translation id="7067321367069083429">Ekran služi kao dodirni ekran</translation>
 <translation id="7116737094673640201">Dobro došli u Chrome udaljeni računar</translation>
 <translation id="7144878232160441200">Probaj ponovo</translation>
-<translation id="724402108658370587">Autorska prava 2020. Google LLC. Sva prava su zadržana.</translation>
 <translation id="7312846573060934304">Host je oflajn.</translation>
 <translation id="7319983568955948908">Zaustavi deljenje</translation>
 <translation id="7401733114166276557">Chrome udaljeni računar</translation>

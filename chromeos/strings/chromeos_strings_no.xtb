@@ -3,6 +3,7 @@
 <translationbundle lang="no">
 <translation id="1018656279737460067">Avbrutt</translation>
 <translation id="1059913517121127803">Kunne ikke starte skanningen</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Oppdaget en brannmur</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
 <translation id="1124772482545689468">Bruker</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Ukjent feil.</translation>
 <translation id="1204296502688602597">DNS-tidsforsinkelse</translation>
 <translation id="123124571410524056">Mistanke om portal</translation>
+<translation id="1238191093934674082">OpenVPN</translation>
 <translation id="1238612778414822719">HTTPS-tidsforsinkelse</translation>
+<translation id="1270369111467284986">Mistanke om obligatorisk side</translation>
 <translation id="1290331692326790741">Svakt signal</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpass til skanneområdet</translation>
 <translation id="1397738625398125236">Gatewayen kan pinges</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Buffer</translation>
 <translation id="3122464029669770682">Prosessor</translation>
 <translation id="315116470104423982">Mobildata</translation>
+<translation id="315738237743207937">Oppdaget en obligatorisk side</translation>
 <translation id="3188257591659621405">Mine filer</translation>
 <translation id="3199982728237701504">Dokumentmater (tosidig)</translation>
 <translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Testen kjøres</translation>
 <translation id="3368922792935385530">Tilkoblet</translation>
 <translation id="3369013195428705271">Er du sikker på at du vil tømme hele utskriftsloggen? Utskriftsjobber som allerede er i gang, fjernes ikke.</translation>
+<translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="3456078764689556234">Skrev ut side <ph name="PRINTED_PAGES" /> av <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Utskrift</translation>
 <translation id="3515615323037921860">Utskriftsjobber</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Min disk</translation>
 <translation id="4429881212383817840">Kerberos-saken utløper snart</translation>
 <translation id="445059817448385655">Gammelt passord</translation>
+<translation id="4453205916657964690">Nettverksmaske</translation>
 <translation id="4454245904991689773">Skann til</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for ikke-standardnettverket</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Mistanke om brannmur</translation>
 <translation id="4691278870498629773">Stoppet – en skuff mangler</translation>
 <translation id="469379815867856270">Signalstyrke</translation>
+<translation id="4707579418881001319">L2TP/IPSec + brukersertifikat</translation>
 <translation id="4731797938093519117">Foreldretilgang</translation>
 <translation id="4773299976671772492">Stoppet</translation>
 <translation id="4808449224298348341">Avbrøt utskriftsjobben <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Sjekk skanneren, og prøv på nytt. Sørg for at det er nok lokal lagringsplass til å lagre skannede filer.</translation>
 <translation id="4985509611418653372">Kjør</translation>
 <translation id="500920857929044050">Stans testen</translation>
+<translation id="5050042263972837708">Gruppenavn</translation>
+<translation id="5088172560898466307">Vertsnavn for tjener</translation>
 <translation id="5089810972385038852">Fylke/delstat</translation>
 <translation id="5154917547274118687">Minne</translation>
 <translation id="5168185087976003268">Batterihelse</translation>
@@ -145,6 +156,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5264277876637023664">Kjør prosessortest</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Kjør rutinene på nytt</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Velg et nytt passord nå</translation>
@@ -159,7 +171,9 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Finn ut mer i brukerstøtten</translation>
 <translation id="5635169860413004179">Se rapporten</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Dette er en sammenstilt måling av CPU-bruken for alle kjernene</translation>
+<translation id="5760715441271661976">Portaltilstand</translation>
 <translation id="5781694279199921985">Lagre øktlogg</translation>
 <translation id="5797428682393400134">FULLFØRT</translation>
 <translation id="5832805196449965646">Legg til person</translation>
@@ -185,6 +199,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6325525973963619867">Mislykket</translation>
 <translation id="636850387210749493">Bedriftsregistrering</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Den skannede filen er lagret}other{De skannede filene er lagret}}</translation>
+<translation id="6472207088655375767">Engangspassord</translation>
 <translation id="649050271426829538">Stoppet – papirstopp</translation>
 <translation id="6517239166834772319">Utforsk</translation>
 <translation id="6527081081771465939">Ukjent Wi-Fi-sikkerhetsprotokoll</translation>
@@ -194,6 +209,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6618744767048954150">Kjører</translation>
 <translation id="6620487321149975369">Utskriftsjobber vises i loggen med mindre de fjernes manuelt</translation>
 <translation id="6643016212128521049">Tøm</translation>
+<translation id="6657585470893396449">Passord</translation>
 <translation id="6704062477274546131">DNS-konvertering</translation>
 <translation id="6747215703636344499">Stoppet – utskriftsmottaket er fullt</translation>
 <translation id="6756731097889387912">Kunne ikke avbryte skanningen</translation>
@@ -210,19 +226,24 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" />. Administratorer kan konfigurere enheten eksternt.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Filtype</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanningen er fullført. 1 side er skannet}other{Skanningen er fullført. {NUMBER_OF_PAGES} sider er skannet}}</translation>
 <translation id="7441459999606975924">Batterikapasiteten avtar med bruken</translation>
 <translation id="7469648432129124067">Oppdaget en portal</translation>
 <translation id="7490813197707563893">MAC-adresse</translation>
+<translation id="7502658306369382406">IPv6-adresse</translation>
 <translation id="7561454561030345039">Denne handlingen administreres av administratoren</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Høy HTTPS-tidsforsinkelse</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7690294790491645610">Bekreft det nye passordet</translation>
+<translation id="7701040980221191251">Ingen</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Syklusantall</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />test</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7819857487979277519">PSK (WPA eller RSN)</translation>
+<translation id="7882358943899516840">Leverandørtype</translation>
 <translation id="7928373994957558460">Vis filplassering</translation>
 <translation id="7936303884198020182">Fant ingen navnetjenere</translation>
 <translation id="7960831585769876809">Temperatur</translation>
@@ -239,11 +260,15 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8347227221149377169">Utskriftsjobber</translation>
 <translation id="8352772353338965963">Legg til en konto for multipålogging. Alle påloggede kontoer kan brukes uten passord, så denne funksjonen burde bare brukes med pålitelige kontoer.</translation>
 <translation id="8364946094152050673">Tomme navnetjenere</translation>
+<translation id="8372477600026034341">Tilleggsverter</translation>
 <translation id="8395584934117017006">Denne <ph name="DEVICE_TYPE" />-enheten er bedriftsadministrert</translation>
 <translation id="8398927464629426868">Hvor raskt enheten lades eller utlades for øyeblikket</translation>
 <translation id="8475690821716466388">Wi-Fi-nettverket er sikret med den svake protokollen WEP PSK</translation>
 <translation id="8477551185774834963">DNS-forsinkelsen er noe høyere enn den tillatte grenseverdien</translation>
+<translation id="8483248364096924578">IP-adresse</translation>
+<translation id="8503813439785031346">Brukernavn</translation>
 <translation id="8576249514688522074">Ikke initialisert</translation>
+<translation id="8675354002693747642">Forhåndsdelt nøkkel</translation>
 <translation id="871560550817059752">Mislykket – tom for blekk</translation>
 <translation id="8723108084122415655">Tidsforsinkelsen for ikke-standardnettverket er over grenseverdien</translation>
 <translation id="8726019395068607495">Stoppet – luken er åpen</translation>
@@ -251,6 +276,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8747900814994928677">Bekreft endringen</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
+<translation id="8798441408945964110">Leverandørnavn</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Få hjelp</translation>
 <translation id="8881098542468797602">Testen er fullført</translation>
@@ -262,11 +288,14 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> forsøk igjen</translation>
 <translation id="8968751544471797276">Ladefrekvens</translation>
 <translation id="8970109610781093811">Kjør på nytt</translation>
+<translation id="9003704114456258138">Frekvens</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Nåværende bruk</translation>
 <translation id="910415269708673980">Oppdater saken for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skanner side <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Lås opp</translation>
 <translation id="9149391708638971077">Kjør minnetest</translation>
+<translation id="9190063653747922532">L2TP/IPsec + forhåndsdelt nøkkel</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Kjør utladingstest</translation>
 </translationbundle>

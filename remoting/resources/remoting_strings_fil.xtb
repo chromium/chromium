@@ -24,6 +24,7 @@ Para ibigay ang pahintulot na ito, i-click ang '<ph name="BUTTON_NAME" />' sa ib
 Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito at pagkatapos ay lagyan ulit ito ng check.</translation>
 <translation id="225614027745146050">Maligayang pagdating</translation>
 <translation id="2320166752086256636">Itago ang keyboard</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2366718077645204424">Hindi maabot ang host. Malamang na dahil ito sa configuration ng network na iyong ginagamit.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Huling nakitang naka-online noong <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -129,7 +130,6 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="7067321367069083429">Gumagana ang screen tulad ng touch screen</translation>
 <translation id="7116737094673640201">Welcome sa Remote na Desktop ng Chrome</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
-<translation id="724402108658370587">Copyright 2020 Google LLC. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="7312846573060934304">Naka-offline ang host.</translation>
 <translation id="7319983568955948908">Ihinto ang Pagbabahagi</translation>
 <translation id="7401733114166276557">Remote na Desktop ng Chrome</translation>

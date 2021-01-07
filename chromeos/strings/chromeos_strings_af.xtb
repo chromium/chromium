@@ -3,6 +3,7 @@
 <translationbundle lang="af">
 <translation id="1018656279737460067">Gekanselleer</translation>
 <translation id="1059913517121127803">Kon nie skandering begin nie</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Brandmuur is bespeur</translation>
 <translation id="1075811647922107217">Bladsygrootte</translation>
 <translation id="1124772482545689468">Gebruiker</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Onbekende fout.</translation>
 <translation id="1204296502688602597">DNS-traagheid</translation>
 <translation id="123124571410524056">Portaal vermoed</translation>
+<translation id="1238191093934674082">Oop VPN (virtuele private netwerk)</translation>
 <translation id="1238612778414822719">HTTPS-traaagheid</translation>
+<translation id="1270369111467284986">Kontroleringsportaal vermoed</translation>
 <translation id="1290331692326790741">Swak sein</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">Deurgang</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Pas op skandeergebied</translation>
 <translation id="1397738625398125236">Deurgang kan gepieng word</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Kas</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Mobiele data</translation>
+<translation id="315738237743207937">Kontroleringsportaal is bespeur</translation>
 <translation id="3188257591659621405">My lêers</translation>
 <translation id="3199982728237701504">Dokumentvoerder (twee kante)</translation>
 <translation id="3246869037381808805">Druktake ouer as 1 dag sal verwyder word</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Toets loop tans</translation>
 <translation id="3368922792935385530">Gekoppel</translation>
 <translation id="3369013195428705271">Is jy seker jy wil alle drukgeskiedenis uitvee? Jou aangaande druktake sal nie uitgevee word nie.</translation>
+<translation id="3435738964857648380">Sekuriteit</translation>
 <translation id="3456078764689556234">Het bladsy <ph name="PRINTED_PAGES" /> van <ph name="TOTAL_PAGES" /> gedruk.</translation>
 <translation id="3459509316159669723">Druk tans</translation>
 <translation id="3515615323037921860">Druktake</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">Kerberos-kaartjie verval binnekort</translation>
 <translation id="445059817448385655">Ou wagwoord</translation>
+<translation id="4453205916657964690">Subnetmasker</translation>
 <translation id="4454245904991689773">Skandeer na</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kon nie die nieversteknetwerkdeurgang pieng nie</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Brandmuur word vermoed</translation>
 <translation id="4691278870498629773">Gestop – laai ontbreek</translation>
 <translation id="469379815867856270">Seinsterkte</translation>
+<translation id="4707579418881001319">L2TP/IPSec + gebruikersertifikaat</translation>
 <translation id="4731797938093519117">Ouertoegang</translation>
 <translation id="4773299976671772492">Gestop</translation>
 <translation id="4808449224298348341">Gekanselleerde druktaak <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Gaan die skandeerder na en probeer weer. Maak seker daar is genoeg plaaslike spasie om lêers wat geskandeer is, te stoor.</translation>
 <translation id="4985509611418653372">Laat loop</translation>
 <translation id="500920857929044050">Stop toets</translation>
+<translation id="5050042263972837708">Groepnaam</translation>
+<translation id="5088172560898466307">Bediener se gasheernaam</translation>
 <translation id="5089810972385038852">Deelstaat</translation>
 <translation id="5154917547274118687">Geheue</translation>
 <translation id="5168185087976003268">Batterygesondheid</translation>
@@ -145,6 +156,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5264277876637023664">Laat loop CPU-toets</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Laat Roetines weer loop</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Kies nou 'n nuwe een</translation>
@@ -159,7 +171,9 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Kom meer te wete in die Hulpsentrum</translation>
 <translation id="5635169860413004179">Sien verslag</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Dit meet die CPU-gebruik en is 'n samevoeging van alle kerns</translation>
+<translation id="5760715441271661976">Portaalstatus</translation>
 <translation id="5781694279199921985">Stoor Sessie-loglêer</translation>
 <translation id="5797428682393400134">SUKSES</translation>
 <translation id="5832805196449965646">Voeg persoon by</translation>
@@ -185,6 +199,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6325525973963619867">Misluk</translation>
 <translation id="636850387210749493">Onderneminginskrywing</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Geskandeerde lêer is gestoor}other{Geskandeerde lêers is gestoor}}</translation>
+<translation id="6472207088655375767">EW</translation>
 <translation id="649050271426829538">Gestop – papierknoop</translation>
 <translation id="6517239166834772319">Verken</translation>
 <translation id="6527081081771465939">Onbekende wi-fi-sekuriteitprotokol</translation>
@@ -194,6 +209,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6618744767048954150">Werk tans</translation>
 <translation id="6620487321149975369">Druktake sal in geskiedenis verskyn tensy hulle handmatig verwyder word</translation>
 <translation id="6643016212128521049">Vee uit</translation>
+<translation id="6657585470893396449">Wagwoord</translation>
 <translation id="6704062477274546131">DNS-ontbinding</translation>
 <translation id="6747215703636344499">Gestop – uitvoer is vol</translation>
 <translation id="6756731097889387912">Kon nie skandering kanselleer nie</translation>
@@ -210,19 +226,24 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7177485034254901881">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />. Administrateurs kan die toestel oor 'n afstand opstel.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Lêertipe</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skandering is voltooi. 1 bladsy is geskandeer}other{Skandering is voltooi. {NUMBER_OF_PAGES} bladsye is geskandeer}}</translation>
 <translation id="7441459999606975924">Batterye se kapasiteit neem af met gebruik</translation>
 <translation id="7469648432129124067">Portaal is bespeur</translation>
 <translation id="7490813197707563893">MAC-adres</translation>
+<translation id="7502658306369382406">IPv6-adres</translation>
 <translation id="7561454561030345039">Jou administrateur bestuur hierdie handeling</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Hoë HTTPS-traagheid</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7690294790491645610">Bevestig nuwe wagwoord</translation>
+<translation id="7701040980221191251">Geen</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Siklustelling</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />-toets</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7819857487979277519">PSK (WPA of RSN)</translation>
+<translation id="7882358943899516840">Verskaffertipe</translation>
 <translation id="7928373994957558460">Wys lêerligging</translation>
 <translation id="7936303884198020182">Geen naambedieners gekry nie</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
@@ -239,11 +260,15 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8347227221149377169">Druktake</translation>
 <translation id="8352772353338965963">Voeg 'n rekening by meervuldige aanmelding. Daar kan sonder 'n wagwoord by alle aangemelde rekeninge ingegaan word, en daarom moet hierdie kenmerk net met vertroude rekeninge gebruik word.</translation>
 <translation id="8364946094152050673">Leë naambedieners</translation>
+<translation id="8372477600026034341">Ekstra gashere</translation>
 <translation id="8395584934117017006">Hierdie <ph name="DEVICE_TYPE" /> word deur 'n onderneming bestuur</translation>
 <translation id="8398927464629426868">Die koers waarteen die toestel tans laai of ontlaai</translation>
 <translation id="8475690821716466388">Wi-fi-netwerk is met swak protokol WEP PSK beveilig</translation>
 <translation id="8477551185774834963">DNS-traagheid is effens bo toelaatbare drempel</translation>
+<translation id="8483248364096924578">IP-adres</translation>
+<translation id="8503813439785031346">Gebruikernaam</translation>
 <translation id="8576249514688522074">Ongeïnisieer</translation>
+<translation id="8675354002693747642">Voorafgedeelde sleutel</translation>
 <translation id="871560550817059752">Misluk – Ink is op</translation>
 <translation id="8723108084122415655">Nieversteknetwerk is bo traagheiddrempel</translation>
 <translation id="8726019395068607495">Gestop – deur is oop</translation>
@@ -251,6 +276,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8747900814994928677">Bevestig verandering</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Verstek</translation>
+<translation id="8798441408945964110">Verskaffer se naam</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Kry hulp</translation>
 <translation id="8881098542468797602">Toets was suksesvol</translation>
@@ -262,11 +288,14 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> pogings oor</translation>
 <translation id="8968751544471797276">Laaikoers</translation>
 <translation id="8970109610781093811">Laat loop weer</translation>
+<translation id="9003704114456258138">Frekwensie</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Huidige gebruik</translation>
 <translation id="910415269708673980">Herlaai kaartjie vir <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skandeer tans bladsy <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Ontsluit</translation>
 <translation id="9149391708638971077">Laat loop geheuetoets</translation>
+<translation id="9190063653747922532">L2TP/IPsec + voorafgedeelde sleutel</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Laat loop ontlaaitoets</translation>
 </translationbundle>

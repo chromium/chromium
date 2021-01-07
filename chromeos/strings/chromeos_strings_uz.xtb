@@ -3,6 +3,7 @@
 <translationbundle lang="uz">
 <translation id="1018656279737460067">Bekor qilindi</translation>
 <translation id="1059913517121127803">Skanerlash ishga tushmadi</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Himoya devori aniqlandi</translation>
 <translation id="1075811647922107217">Sahifa hajmi</translation>
 <translation id="1124772482545689468">Foydalanuvchi</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Noma’lum xatolik.</translation>
 <translation id="1204296502688602597">DNS kechikishi</translation>
 <translation id="123124571410524056">Portal muzlatildi</translation>
+<translation id="1238191093934674082">OpenVPN</translation>
 <translation id="1238612778414822719">HTTPS kechikishi</translation>
+<translation id="1270369111467284986">Kirish portali muzlatildi</translation>
 <translation id="1290331692326790741">Signal kuchsiz</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">Shlyuz</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Skanerlash sohasiga moslash</translation>
 <translation id="1397738625398125236">Darvozani tekshirish mumkin</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Kesh</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Mobil internet</translation>
+<translation id="315738237743207937">Kirish portali aniqlandi</translation>
 <translation id="3188257591659621405">Fayllarim</translation>
 <translation id="3199982728237701504">Hujjat tasmasi (Ikki tomonlama)</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Tekshirilmoqda</translation>
 <translation id="3368922792935385530">Ulangan</translation>
 <translation id="3369013195428705271">Chop etish tarixi tozalansinmi? Joriy chop etish vazifalari oʻchirib tashlanmaydi.</translation>
+<translation id="3435738964857648380">Xavfsizlik</translation>
 <translation id="3456078764689556234">Sahifa chop etildi: <ph name="PRINTED_PAGES" /> / <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Chop etish</translation>
 <translation id="3515615323037921860">Chop etish vazifalari</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">Kerberos chiptasi amal qilish muddati tezda tugaydi</translation>
 <translation id="445059817448385655">Eski parol</translation>
+<translation id="4453205916657964690">Quyi tarmoq niqobi</translation>
 <translation id="4454245904991689773">Saqlash joyi</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ikkilamchi tarmoq shlyuzi ping qilinmadi</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Himoya devori aniqlandi</translation>
 <translation id="4691278870498629773">Toʻxtatildi - Tarnov joyida emas</translation>
 <translation id="469379815867856270">Signal darajasi</translation>
+<translation id="4707579418881001319">L2TP/IPSec + foydalanuvchi sertifikati</translation>
 <translation id="4731797938093519117">Ota-ona kirishi</translation>
 <translation id="4773299976671772492">To‘xtatildi</translation>
 <translation id="4808449224298348341">Chop etilishi bekor qilindi: <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Skanerni tekshiring va qayta urining. Skanerlangan fayllarni saqlash uchun joy yetarli ekanini tekshiring.</translation>
 <translation id="4985509611418653372">Ishga tushirish</translation>
 <translation id="500920857929044050">Tekshiruvni toʻxtatish</translation>
+<translation id="5050042263972837708">Guruh nomi</translation>
+<translation id="5088172560898466307">Server hosti nomi</translation>
 <translation id="5089810972385038852">Shtat</translation>
 <translation id="5154917547274118687">Operativ xotira</translation>
 <translation id="5168185087976003268">Quvvat darajasi</translation>
@@ -145,6 +156,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5264277876637023664">Protsessor tezligini tekshirish</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Dasturlarni qayta bajarish</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Hoziroq yangi parol tanlang</translation>
@@ -159,7 +171,9 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Batafsil axborotni Yordam markazidan oling</translation>
 <translation id="5635169860413004179">Hisobotni ochish</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Bunda butun CPU tezligi va barcha yadrolar faoliyati tekshiriladi</translation>
+<translation id="5760715441271661976">Portal holati</translation>
 <translation id="5781694279199921985">Seans jurnalini saqlash</translation>
 <translation id="5797428682393400134">BAJARILDI</translation>
 <translation id="5832805196449965646">Foydalanuvchi qo‘shish</translation>
@@ -185,6 +199,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6325525973963619867">Amalga oshmadi</translation>
 <translation id="636850387210749493">Korporativ domen ro‘yxatidan o‘tish</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Skanerlangan fayl saqlandi}other{Skanerlangan fayllar saqlandi}}</translation>
+<translation id="6472207088655375767">Bir martalik kod</translation>
 <translation id="649050271426829538">Toʻxtatildi – Qogʻoz tiqilib qoldi</translation>
 <translation id="6517239166834772319">Tanishuv</translation>
 <translation id="6527081081771465939">Notanish WiFi xavfsizlik protokoli</translation>
@@ -194,6 +209,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6618744767048954150">Bajarilmoqda</translation>
 <translation id="6620487321149975369">Chop etish vazifalari mustaqil olib tashlanmagucha tarix sahifasida chiqadi</translation>
 <translation id="6643016212128521049">Tozalash</translation>
+<translation id="6657585470893396449">Parol</translation>
 <translation id="6704062477274546131">DNS parametrlari</translation>
 <translation id="6747215703636344499">Toʻxtatildi – Boʻsh joy qolmadi</translation>
 <translation id="6756731097889387912">Skanerlash bekor qilinmadi</translation>
@@ -210,19 +226,24 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi. Administratorlar qurilmani masofadan sozlashi mumkin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Fayl turi</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanerlandi. 1 ta sahifa skanerlandi}other{Skanerlandi. {NUMBER_OF_PAGES} ta sahifa skanerlandi}}</translation>
 <translation id="7441459999606975924">Batareya sigʻimi ishlatilishi davomida kamayadi</translation>
 <translation id="7469648432129124067">Portal aniqlandi</translation>
 <translation id="7490813197707563893">MAC manzil</translation>
+<translation id="7502658306369382406">IPv6 manzil</translation>
 <translation id="7561454561030345039">Bu sozlama administrator tomonidan boshqariladi</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS kechikishi yuqori</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7690294790491645610">Yangi parolni tasdiqlang.</translation>
+<translation id="7701040980221191251">Hech qanday</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Davrlar soni</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> sinovi</translation>
 <translation id="7805768142964895445">Holat</translation>
+<translation id="7819857487979277519">PSK (WPA yoki RSN)</translation>
+<translation id="7882358943899516840">Ta’minot turi</translation>
 <translation id="7928373994957558460">Fayl joylashuvini chiqarish</translation>
 <translation id="7936303884198020182">Nom serverlari topilmadi</translation>
 <translation id="7960831585769876809">Harorat</translation>
@@ -239,11 +260,15 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
 <translation id="8352772353338965963">Bir nechta hisobga kirish tizimiga hisob qo‘shish. Kirish bajarilgan hisoblarni ko‘rish uchun parol so‘ralmaydi, shuning uchun bu funksiyadan faqat ishonchli hisoblarda foydalanish kerak.</translation>
 <translation id="8364946094152050673">Nom serverlari kiritilmagan</translation>
+<translation id="8372477600026034341">Qoʻshimcha hostlar</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" /> korporativ domen boshqaruvida</translation>
 <translation id="8398927464629426868">Qurilmaning quvvat olish yoki sarflash darajasi</translation>
 <translation id="8475690821716466388">WiFi tarmoq zaif WEP PSK protokoli bilan himoyalangan</translation>
 <translation id="8477551185774834963">DNS kutish vaqti ruxsat etilgan chegaradan biroz baland</translation>
+<translation id="8483248364096924578">IP manzil</translation>
+<translation id="8503813439785031346">Foydalanuvchi nomi</translation>
 <translation id="8576249514688522074">Faolsizlantirildi</translation>
+<translation id="8675354002693747642">Umumiy kalit</translation>
 <translation id="871560550817059752">Bajarilmadi - Rang tugadi</translation>
 <translation id="8723108084122415655">Ikkilamchi tarmoq kutish vaqti baland</translation>
 <translation id="8726019395068607495">Toʻxtatildi – Eshikchasi ochiq</translation>
@@ -251,6 +276,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8747900814994928677">Almashtiruvni tasdiqlang</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standart</translation>
+<translation id="8798441408945964110">Ta’minotchi nomi</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Yordam</translation>
 <translation id="8881098542468797602">Tekshiruv yakunlandi</translation>
@@ -262,11 +288,14 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> ta urinish qoldi</translation>
 <translation id="8968751544471797276">Quvvatlash tezligi</translation>
 <translation id="8970109610781093811">Qayta tekshirish</translation>
+<translation id="9003704114456258138">Chastotasi</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Joriy faollik</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> uchun chiptani yangilash</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ta sahifa skanerlandi</translation>
 <translation id="9111102763498581341">Qulfdan yechish</translation>
 <translation id="9149391708638971077">Xotirani tekshirish</translation>
+<translation id="9190063653747922532">L2TP/IPsec + umumiy kalit</translation>
+<translation id="939519157834106403">Tarmoq nomi (SSID)</translation>
 <translation id="982713511914535780">Quvvatsizlanishini tekshirish</translation>
 </translationbundle>

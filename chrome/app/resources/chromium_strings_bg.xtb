@@ -97,6 +97,7 @@
 <translation id="4407044323746248786">Искате ли да излезете от Chromium въпреки това?</translation>
 <translation id="4415566066719264597">Разрешаване на Chromium да се изпълнява на заден план</translation>
 <translation id="4423735387467980091">Персонализиране и контролиране на Chromium</translation>
+<translation id="452711251841752011">Добре дошли в Chromium. Отворен е нов прозорец на браузъра</translation>
 <translation id="4544142686420020088">Chromium не се актуализира, защото нещо се обърка. <ph name="BEGIN_LINK" />Отстранете проблеми с актуализирането на Chromium и неуспешни актуализации<ph name="END_LINK" />.</translation>
 <translation id="4567424176335768812">Влезли сте като <ph name="USER_EMAIL_ADDRESS" />. Сега имате достъп до отметките, историята и другите си настройки на всички устройства, на които сте влезли.</translation>
 <translation id="459535195905078186">Приложения в Chromium</translation>
@@ -156,6 +157,7 @@
 <translation id="6248213926982192922">Нека Chromium да е браузърът по подразбиране</translation>
 <translation id="6266342355635466082">Chromium не може да провери за актуализации. Проверете връзката си с интернет.</translation>
 <translation id="6268381023930128611">Искате ли да излезете от Chromium?</translation>
+<translation id="6281746429495226318">Персонализиране на потребителския ви профил в Chromium</translation>
 <translation id="6295779123002464101">Chromium блокира „<ph name="FILE_NAME" />“, тъй като файлът може да е опасен.</translation>
 <translation id="6309712487085796862">Chromium използва камерата ви.</translation>
 <translation id="6333502561965082103">Извършва се друго действие, свързано с Chromium. Моля, опитайте отново по-късно.</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="ko">
 <translation id="1018656279737460067">취소됨</translation>
 <translation id="1059913517121127803">스캔을 시작할 수 없음</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">방화벽 감지됨</translation>
 <translation id="1075811647922107217">페이지 크기</translation>
 <translation id="1124772482545689468">사용자</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">알 수 없는 오류</translation>
 <translation id="1204296502688602597">DNS 지연 시간</translation>
 <translation id="123124571410524056">포털 의심됨</translation>
+<translation id="1238191093934674082">공개 VPN</translation>
 <translation id="1238612778414822719">HTTPS 지연 시간</translation>
+<translation id="1270369111467284986">종속 포털로 의심됨</translation>
 <translation id="1290331692326790741">신호 약함</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">게이트웨이</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">스캔 영역에 맞춤</translation>
 <translation id="1397738625398125236">핑할 수 있는 게이트웨이</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">캐시</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">모바일 데이터</translation>
+<translation id="315738237743207937">종속 포털 감지됨</translation>
 <translation id="3188257591659621405">내 파일</translation>
 <translation id="3199982728237701504">서류 급지(양면)</translation>
 <translation id="3246869037381808805">1일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">테스트 실행 중</translation>
 <translation id="3368922792935385530">연결됨</translation>
 <translation id="3369013195428705271">모든 인쇄 기록을 삭제하시겠습니까? 진행 중인 인쇄 작업은 삭제되지 않습니다.</translation>
+<translation id="3435738964857648380">보안</translation>
 <translation id="3456078764689556234">인쇄된 페이지 <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="3459509316159669723">인쇄</translation>
 <translation id="3515615323037921860">인쇄 작업</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">내 드라이브</translation>
 <translation id="4429881212383817840">Kerberos 티켓이 곧 만료됨</translation>
 <translation id="445059817448385655">이전 비밀번호</translation>
+<translation id="4453205916657964690">서브넷 마스크</translation>
 <translation id="4454245904991689773">스캔 파일 저장 위치</translation>
 <translation id="4479639480957787382">이더넷</translation>
 <translation id="4483049906298469269">기본이 아닌 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">방화벽 의심됨</translation>
 <translation id="4691278870498629773">중지됨 - 배지대 없음</translation>
 <translation id="469379815867856270">신호 강도</translation>
+<translation id="4707579418881001319">L2TP/IPSec + 사용자 인증서</translation>
 <translation id="4731797938093519117">부모 액세스</translation>
 <translation id="4773299976671772492">중지됨</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> 인쇄 작업 취소됨</translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">스캐너를 확인한 후 다시 시도해 보세요. 스캔된 파일을 저장하기에 공간이 충분한지 확인합니다.</translation>
 <translation id="4985509611418653372">실행</translation>
 <translation id="500920857929044050">테스트 중지</translation>
+<translation id="5050042263972837708">그룹 이름</translation>
+<translation id="5088172560898466307">서버 호스트 이름</translation>
 <translation id="5089810972385038852">시/도</translation>
 <translation id="5154917547274118687">메모리</translation>
 <translation id="5168185087976003268">배터리 상태</translation>
@@ -145,6 +156,7 @@
 <translation id="5264277876637023664">CPU 테스트 실행</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">루틴 다시 실행</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">지금 새 비밀번호를 선택하세요.</translation>
@@ -159,7 +171,9 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">고객센터에서 자세히 알아보기</translation>
 <translation id="5635169860413004179">보고서 보기</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">CPU 사용량을 측정하며, 모든 코어에서 집계한 값입니다.</translation>
+<translation id="5760715441271661976">포털 상태</translation>
 <translation id="5781694279199921985">세션 로그 저장</translation>
 <translation id="5797428682393400134">완료</translation>
 <translation id="5832805196449965646">사용자 추가</translation>
@@ -185,6 +199,7 @@
 <translation id="6325525973963619867">실패</translation>
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{스캔한 파일이 저장되었습니다.}other{스캔한 파일이 저장되었습니다.}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">중지됨 - 용지 걸림</translation>
 <translation id="6517239166834772319">살펴보기</translation>
 <translation id="6527081081771465939">알려지지 않은 Wi-Fi 보안 프로토콜입니다.</translation>
@@ -194,6 +209,7 @@
 <translation id="6618744767048954150">실행 중</translation>
 <translation id="6620487321149975369">수동으로 삭제하지 않으면 인쇄 작업이 기록에 나타납니다.</translation>
 <translation id="6643016212128521049">삭제</translation>
+<translation id="6657585470893396449">비밀번호</translation>
 <translation id="6704062477274546131">DNS 변환</translation>
 <translation id="6747215703636344499">중지됨 - 배지대 가득 참</translation>
 <translation id="6756731097889387912">스캔을 취소할 수 없음</translation>
@@ -210,19 +226,24 @@
 <translation id="7177485034254901881">이 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리합니다. 관리자가 기기를 원격으로 구성할 수 있습니다.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">파일 형식</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{스캔이 완료되었습니다. 1페이지가 스캔되었습니다}other{스캔이 완료되었습니다. {NUMBER_OF_PAGES}페이지가 스캔되었습니다}}</translation>
 <translation id="7441459999606975924">배터리 용량은 사용함에 따라 감소함</translation>
 <translation id="7469648432129124067">포털 감지됨</translation>
 <translation id="7490813197707563893">MAC 주소</translation>
+<translation id="7502658306369382406">IPv6 주소</translation>
 <translation id="7561454561030345039">관리자가 관리하는 작업입니다.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS 지연 시간 높음</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7690294790491645610">새 비밀번호 확인</translation>
+<translation id="7701040980221191251">없음</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">사이클 수</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> 테스트</translation>
 <translation id="7805768142964895445">상태</translation>
+<translation id="7819857487979277519">PSK (WPA 또는 RSN)</translation>
+<translation id="7882358943899516840">공급자 유형</translation>
 <translation id="7928373994957558460">파일 위치 표시</translation>
 <translation id="7936303884198020182">네임서버를 찾을 수 없습니다.</translation>
 <translation id="7960831585769876809">온도</translation>
@@ -239,11 +260,15 @@
 <translation id="8347227221149377169">인쇄 작업</translation>
 <translation id="8352772353338965963">멀티 로그인에 계정을 추가하세요. 비밀번호를 입력하지 않고 모든 로그인 계정에 액세스할 수 있으므로 이 기능은 신뢰할 수 있는 계정에만 사용해야 합니다.</translation>
 <translation id="8364946094152050673">네임서버가 비어 있습니다.</translation>
+<translation id="8372477600026034341">추가 호스트</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> 기기는 기업에서 관리합니다.</translation>
 <translation id="8398927464629426868">기기가 현재 충전 또는 방전되는 속도</translation>
 <translation id="8475690821716466388">Wi-Fi 네트워크가 약한 프로토콜 WEP PSK로 보호되었습니다.</translation>
 <translation id="8477551185774834963">DNS 지연 시간이 허용되는 기준을 약간 초과했습니다.</translation>
+<translation id="8483248364096924578">IP 주소</translation>
+<translation id="8503813439785031346">사용자이름</translation>
 <translation id="8576249514688522074">초기화되지 않음</translation>
+<translation id="8675354002693747642">사전 공유 키:</translation>
 <translation id="871560550817059752">실패 - 잉크 없음</translation>
 <translation id="8723108084122415655">기본이 아닌 네트워크가 지연 시간 기준을 초과했습니다.</translation>
 <translation id="8726019395068607495">중지됨 - 덮개 열림</translation>
@@ -251,6 +276,7 @@
 <translation id="8747900814994928677">변경사항 확인</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">기본값</translation>
+<translation id="8798441408945964110">공급자 이름</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">도움말 보기</translation>
 <translation id="8881098542468797602">테스트 성공</translation>
@@ -262,11 +288,14 @@
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> 남은 시도 <ph name="ATTEMPTS_LEFT" />회</translation>
 <translation id="8968751544471797276">충전 속도</translation>
 <translation id="8970109610781093811">다시 실행</translation>
+<translation id="9003704114456258138">주파수</translation>
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9088306295921699330">현재 사용량</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> 티켓을 새로고침하세요.</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />페이지 스캔 중</translation>
 <translation id="9111102763498581341">잠금 해제</translation>
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
+<translation id="9190063653747922532">L2TP/IPSec + 사전 공유 키</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">방전 테스트 실행</translation>
 </translationbundle>

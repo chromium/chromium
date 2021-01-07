@@ -24,6 +24,7 @@ To grant this permission, click '<ph name="BUTTON_NAME" />' below to open the 'S
 If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tick it again.</translation>
 <translation id="225614027745146050">Welcome</translation>
 <translation id="2320166752086256636">Hide keyboard</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. All rights reserved.</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2366718077645204424">Unable to reach the host. This is probably due to the configuration of the network you are using.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Last seen online <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -129,7 +130,6 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="7067321367069083429">Screen acts like a touch screen</translation>
 <translation id="7116737094673640201">Welcome to Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Retry</translation>
-<translation id="724402108658370587">Copyright 2020 Google LLC. All rights reserved.</translation>
 <translation id="7312846573060934304">Host is offline.</translation>
 <translation id="7319983568955948908">Stop Sharing</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>

@@ -24,6 +24,7 @@ Az engedély megadásához kattintson az alábbi „<ph name="BUTTON_NAME" />”
 Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti négyzet, távolítsa el a jelölését, majd jelölje be újra.</translation>
 <translation id="225614027745146050">Üdvözöljük</translation>
 <translation id="2320166752086256636">Billentyűzet elrejtése</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. Minden jog fenntartva.</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2366718077645204424">A gazdagép nem érhető el. Ez valószínűleg az Ön által használt hálózat konfigurációja miatt van.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Legutóbb észlelve az interneten: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -129,7 +130,6 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="7067321367069083429">A képernyő érintőképernyőként működik</translation>
 <translation id="7116737094673640201">Üdvözli a Chrome távoliasztal-szolgáltatás</translation>
 <translation id="7144878232160441200">Újra</translation>
-<translation id="724402108658370587">Copyright 2020 Google LLC. Minden jog fenntartva.</translation>
 <translation id="7312846573060934304">A gazdagép offline állapotban van.</translation>
 <translation id="7319983568955948908">Megosztás leállítása</translation>
 <translation id="7401733114166276557">Chrome távoliasztal-szolgáltatás</translation>

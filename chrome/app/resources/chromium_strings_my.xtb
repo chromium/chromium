@@ -102,6 +102,7 @@
 <translation id="4407044323746248786">မည်သို့ပင်ဖြစ်စေ Chromium မှ ထွက်လိုပါသလား။</translation>
 <translation id="4415566066719264597">Chromium ကို နောက်ခံတွင် ဖွင့်ခွင့်ပေးပါ</translation>
 <translation id="4423735387467980091">Chromium ကို စိတ်ကြိုက် ပြုပြင်ရန် နှင့် ထိန်းချုပ်ရန်</translation>
+<translation id="452711251841752011">Chromium မှ ကြိုဆိုပါသည်၊ ဘရောင်ဇာဝင်းဒိုးအသစ် ဖွင့်လိုက်ပါပြီ</translation>
 <translation id="4544142686420020088">Chromium အပ်ဒိတ်လုပ်၍ မရပါ၊ တစ်ခုခု မှားသွားသည်။ <ph name="BEGIN_LINK" />Chromium အပ်ဒိတ်ပြဿနာများနှင့် လုပ်၍မရသော အပ်ဒိတ်များကို ပြင်ဆင်ပါ။<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">သင်သည် <ph name="USER_EMAIL_ADDRESS" /> အဖြစ် လက်မှတ်ထိုး ဝင်ထားသည်။ သင်သည် ယခုတော့ သင် လက်မှတ်ထိုး ဝင်ထားသည့် ကိရိယာ အားလုံးတို့မှာ သင်၏ စာညှပ်များ၊ မှတ်တမ်း၊ နှင့် အခြား ဆက်တင်များကို ရယူသုံးနိုင်ပါပြီ။</translation>
 <translation id="459535195905078186">Chromium အက်ပ်များ</translation>
@@ -162,6 +163,7 @@
 <translation id="6248213926982192922">Chromium ကို ပုံသေ ဘရောင်ဇာ လုပ်လိုက်ရန်</translation>
 <translation id="6266342355635466082">Chromium က အပ်ဒိတ်များကို စစ်ဆေး၍မရပါ။ သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</translation>
 <translation id="6268381023930128611">Chromium မှထွက်မလား။</translation>
+<translation id="6281746429495226318">သင့် Chromium ပရိုဖိုင်ကို စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> သည် အန္တရာယ်ရှိနိုင်သောကြောင့် Chromium က ၎င်းကို ပိတ်ဆို့ထားပါသည်။</translation>
 <translation id="6309712487085796862">Chromium သင်သည် သင်၏ ကင်မရာကို သုံးနေသည်။</translation>
 <translation id="6333502561965082103">Chromium တွင် အခြားလုပ်ဆောင်ချက်တစ်ခု မပြီးပြတ်သေးပါ။ ခဏကြာမှ ထပ်လုပ်ကြည့်ပါ။</translation>

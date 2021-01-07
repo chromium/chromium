@@ -3,6 +3,7 @@
 <translationbundle lang="cs">
 <translation id="1018656279737460067">Zrušeno</translation>
 <translation id="1059913517121127803">Skenování se nepodařilo zahájit</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Byl zjištěn Firewall</translation>
 <translation id="1075811647922107217">Velikost stránky</translation>
 <translation id="1124772482545689468">Uživatel</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Neznámá chyba.</translation>
 <translation id="1204296502688602597">Latence DNS</translation>
 <translation id="123124571410524056">Podezření na portál</translation>
+<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">Latence HTTPS</translation>
+<translation id="1270369111467284986">Podezření na captive portál</translation>
 <translation id="1290331692326790741">Slabý signál</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">Brána</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Přizpůsobit skenované oblasti</translation>
 <translation id="1397738625398125236">Pingnutí brány</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Mezipaměť</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Mobilní datové přenosy</translation>
+<translation id="315738237743207937">Byl nalezen captive portál</translation>
 <translation id="3188257591659621405">Moje soubory</translation>
 <translation id="3199982728237701504">Podavač dokumentů (oboustranných)</translation>
 <translation id="3246869037381808805">Tiskové úlohy starší než 1 den budou odstraněny</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Běží test</translation>
 <translation id="3368922792935385530">Připojeno</translation>
 <translation id="3369013195428705271">Opravdu chcete vymazat celou historii tisku? Probíhající tiskové úlohy vymazány nebudou.</translation>
+<translation id="3435738964857648380">Zabezpečení</translation>
 <translation id="3456078764689556234">Vytisknuta stránka <ph name="PRINTED_PAGES" /> z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Tisk</translation>
 <translation id="3515615323037921860">Tiskové úlohy</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Můj disk</translation>
 <translation id="4429881212383817840">Platnost lístku Kerberos brzy vyprší</translation>
 <translation id="445059817448385655">Staré heslo</translation>
+<translation id="4453205916657964690">Maska podsítě</translation>
 <translation id="4454245904991689773">Uložit do</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepodařilo se pingnout bránu jiné než výchozí sítě</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Podezření na Firewall</translation>
 <translation id="4691278870498629773">Zastaveno – chybí zásobník</translation>
 <translation id="469379815867856270">Síla signálu</translation>
+<translation id="4707579418881001319">L2TP/IPSec + certifikát uživatele</translation>
 <translation id="4731797938093519117">Rodičovský přístup</translation>
 <translation id="4773299976671772492">Zastaveno</translation>
 <translation id="4808449224298348341">Byla zrušena tisková úloha <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Zkontrolujte skener a zkuste to znovu. Zkontrolujte, zda máte dostatek místního úložného prostoru k ukládání naskenovaných souborů.</translation>
 <translation id="4985509611418653372">Spustit</translation>
 <translation id="500920857929044050">Zastavit test</translation>
+<translation id="5050042263972837708">Název skupiny</translation>
+<translation id="5088172560898466307">Název hostitele serveru</translation>
 <translation id="5089810972385038852">Stát/kraj</translation>
 <translation id="5154917547274118687">Paměť</translation>
 <translation id="5168185087976003268">Opotřebení baterie</translation>
@@ -145,6 +156,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5264277876637023664">Spustit test procesoru</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Znovu spustit sledy činností</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Zvolte si nové</translation>
@@ -159,7 +171,9 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Další informace v centru nápovědy</translation>
 <translation id="5635169860413004179">Zobrazit přehled</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Tento údaj měří využití procesoru a jedná se o agregaci všech jader</translation>
+<translation id="5760715441271661976">Stav portálu</translation>
 <translation id="5781694279199921985">Uložit protokol relace</translation>
 <translation id="5797428682393400134">ÚSPĚCH</translation>
 <translation id="5832805196449965646">Přidat uživatele</translation>
@@ -185,6 +199,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6325525973963619867">Došlo k selhání</translation>
 <translation id="636850387210749493">Registrace podniku</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Naskenovaný soubor byl uložen}few{Naskenované soubory byly uloženy}many{Naskenované soubory byly uloženy}other{Naskenované soubory byly uloženy}}</translation>
+<translation id="6472207088655375767">Jednorázové heslo</translation>
 <translation id="649050271426829538">Zastaveno – zasekl se papír</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Neznámý bezpečnostní protokol Wi-Fi</translation>
@@ -194,6 +209,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6618744767048954150">Probíhá</translation>
 <translation id="6620487321149975369">Tiskové úlohy se budou zobrazovat v historii, pokud je ručně neodstraníte</translation>
 <translation id="6643016212128521049">Vymazat</translation>
+<translation id="6657585470893396449">Heslo</translation>
 <translation id="6704062477274546131">Překlad DNS</translation>
 <translation id="6747215703636344499">Zastaveno – výstupní zásobník je plný</translation>
 <translation id="6756731097889387912">Skenování se nepodařilo zrušit</translation>
@@ -210,19 +226,24 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7177485034254901881">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />. Administrátoři mohou zařízení vzdáleně konfigurovat.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Typ souboru</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skenování bylo dokončeno. Naskenována 1 stránka}few{Skenování bylo dokončeno. Naskenovány {NUMBER_OF_PAGES} stránky}many{Skenování bylo dokončeno. Naskenováno {NUMBER_OF_PAGES} stránky}other{Skenování bylo dokončeno. Naskenováno {NUMBER_OF_PAGES} stránek}}</translation>
 <translation id="7441459999606975924">Kapacita baterie se používáním snižuje</translation>
 <translation id="7469648432129124067">Byl zjištěn portál</translation>
 <translation id="7490813197707563893">Adresa MAC</translation>
+<translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7561454561030345039">Tuto akci spravuje administrátor</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Vysoká latence HTTPS</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
+<translation id="7701040980221191251">Žádné</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Počet cyklů</translation>
 <translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Stav</translation>
+<translation id="7819857487979277519">PSK (WPA nebo RSN)</translation>
+<translation id="7882358943899516840">Typ poskytovatele</translation>
 <translation id="7928373994957558460">Zobrazit umístění souboru</translation>
 <translation id="7936303884198020182">Nebyly nalezeny žádné názvové servery</translation>
 <translation id="7960831585769876809">Teplota</translation>
@@ -239,11 +260,15 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8347227221149377169">Tiskové úlohy</translation>
 <translation id="8352772353338965963">Přidat účet do vícenásobného přihlášení. Ke všem přihlášeným účtům lze přistupovat bez zadání hesla, proto byste tuto funkci měli používat pouze s důvěryhodnými účty.</translation>
 <translation id="8364946094152050673">Prázdné názvové servery</translation>
+<translation id="8372477600026034341">Extra hostitelské servery</translation>
 <translation id="8395584934117017006">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje podnik</translation>
 <translation id="8398927464629426868">Rychlost, s jakou se zařízení momentálně nabíjí nebo vybíjí</translation>
 <translation id="8475690821716466388">Síť Wi-Fi je zabezpečena slabým protokolem WEP PSK</translation>
 <translation id="8477551185774834963">DNS má latenci mírně nad prahovou hodnotou</translation>
+<translation id="8483248364096924578">IP adresa</translation>
+<translation id="8503813439785031346">Uživatelské jméno</translation>
 <translation id="8576249514688522074">Neinicializováno</translation>
+<translation id="8675354002693747642">Předsdílený klíč</translation>
 <translation id="871560550817059752">Tisk selhal – došel inkoust</translation>
 <translation id="8723108084122415655">Jiná než výchozí síť má latenci nad prahovou hodnotou</translation>
 <translation id="8726019395068607495">Zastaveno – jsou otevřená dvířka</translation>
@@ -251,6 +276,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8747900814994928677">Potvrdit změnu</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Výchozí</translation>
+<translation id="8798441408945964110">Název poskytovatele</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Nápověda</translation>
 <translation id="8881098542468797602">Test byl úspěšný</translation>
@@ -262,11 +288,14 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Zbývající pokusy: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Rychlost nabíjení</translation>
 <translation id="8970109610781093811">Spustit znovu</translation>
+<translation id="9003704114456258138">Frekvence</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Současné využití</translation>
 <translation id="910415269708673980">Obnovte lístek pro <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenování stránky <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Odemknout</translation>
 <translation id="9149391708638971077">Spustit test paměti</translation>
+<translation id="9190063653747922532">L2TP/IPsec + předsdílený klíč</translation>
+<translation id="939519157834106403">Identifikátor SSID</translation>
 <translation id="982713511914535780">Spustit test vybíjení</translation>
 </translationbundle>

@@ -99,6 +99,7 @@
 <translation id="4407044323746248786">Vil du afslutte Chromium alligevel?</translation>
 <translation id="4415566066719264597">Lad Chromium køre i baggrunden</translation>
 <translation id="4423735387467980091">Tilpas og kontrollér Chromium</translation>
+<translation id="452711251841752011">Velkommen til Chromium – Et nyt browservindue er åbnet</translation>
 <translation id="4544142686420020088">Chromium kunne ikke opdateres, da der opstod en fejl. <ph name="BEGIN_LINK" />Løs problemer med opdatering af Chromium og mislykkede opdateringer.<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Du er logget ind som <ph name="USER_EMAIL_ADDRESS" />. Nu kan du få adgang til dine bogmærker, din historik og andre indstillinger på alle de enheder, hvor du er logget ind.</translation>
 <translation id="459535195905078186">Chromium-apps</translation>
@@ -158,6 +159,7 @@
 <translation id="6248213926982192922">Gør Chromium til din standardbrowser</translation>
 <translation id="6266342355635466082">Chromium kan ikke søge efter opdateringer. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="6268381023930128611">Vil du logge ud af Chromium?</translation>
+<translation id="6281746429495226318">Tilpas din Chromium-profil</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> kan være skadelig, så Chromium har blokeret den.</translation>
 <translation id="6309712487085796862">Chromium bruger dit kamera.</translation>
 <translation id="6333502561965082103">En anden handling i Chromium er i gang. Prøv igen senere.</translation>

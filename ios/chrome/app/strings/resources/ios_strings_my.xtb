@@ -191,7 +191,6 @@
 <translation id="291754862089661335">QR ကုဒ် သိုမဟုတ် ဘားကုဒ်ကို ဤဘောင်အတွင်းဝင်အောင် ထားပါ</translation>
 <translation id="2921219216347069551">စာမျက်နှာကို မမျှဝေနိုင်ပါ</translation>
 <translation id="2923448633003185837">ကူးထည့်ပြီး ဖွင့်ရန်</translation>
-<translation id="2923827943290349720">Chrome ကို ပိတ်သည့်အခါ 'ရုပ်ဖျက်တဘ်များ' ကို လော့ခ်ချရန်</translation>
 <translation id="292639812446257861">မဖတ်ရသေးကြောင်း အမှတ်အသားလုပ်ရန်</translation>
 <translation id="2952581218264071393">၁။ 'Chrome ဆက်တင်များ' ဖွင့်ပါ</translation>
 <translation id="2958718410589002129">စကားဝှက်များ</translation>
@@ -239,6 +238,7 @@
 <translation id="3443810440409579745">တဘ် ရရှိထားသည်။</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> မိနစ်</translation>
 <translation id="3448016392200048164">မျက်နှာပြင်ခွဲပြသည့် မြင်ကွင်း</translation>
+<translation id="3454224729131972583">ခေါင်းစဉ်</translation>
 <translation id="345565170154308620">စကားဝှက်များ စီမံရန်…</translation>
 <translation id="3469166899695866866">ဒေါင်းလုဒ်ကို ရပ်လိုသလား။</translation>
 <translation id="3470502288861289375">ကူးယူနေ...</translation>
@@ -268,6 +268,7 @@
 <translation id="3670030362669914947">နံပါတ်</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" />သို့ စာညှပ်ကို ထည့်ထားပါသည်</translation>
 <translation id="3709582977625132201">မဖတ်ရသေးအဖြစ် မှတ်သားရန်</translation>
+<translation id="3720541637541300822">Chrome ကို ပိတ်သည့်အခါ ရုပ်ဖျက်တဘ်များကို လော့ခ်ချရန်</translation>
 <translation id="3740397331642243698">ထည့်သွင်းထားသော URL များကို Google Chrome ရုပ်ဖျက်မုဒ်တွင် ဖွင့်သည်။</translation>
 <translation id="3771033907050503522">ကိုယ်ပျောက် တဲဘ်များ</translation>
 <translation id="3775743491439407556">စင့်ခ်လုပ်၍ မရပါ</translation>

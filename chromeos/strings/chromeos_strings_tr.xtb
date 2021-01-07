@@ -3,6 +3,7 @@
 <translationbundle lang="tr">
 <translation id="1018656279737460067">İptal Edildi</translation>
 <translation id="1059913517121127803">Tarama işlemi başlatılamadı</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Güvenlik duvarı algılandı</translation>
 <translation id="1075811647922107217">Sayfa boyutu</translation>
 <translation id="1124772482545689468">Kullanıcı</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Bilinmeyen hata.</translation>
 <translation id="1204296502688602597">DNS Gecikmesi</translation>
 <translation id="123124571410524056">Portal olabilir</translation>
+<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">HTTPS Gecikmesi</translation>
+<translation id="1270369111467284986">Giriş portalı şüpheli</translation>
 <translation id="1290331692326790741">Zayıf sinyal</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">Ağ geçidi</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tarama alanına sığdır</translation>
 <translation id="1397738625398125236">Ağ geçidi için Ping Testi çalıştırılabilir</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Önbellek</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Mobil veriler</translation>
+<translation id="315738237743207937">Giriş portalı algılandı</translation>
 <translation id="3188257591659621405">Dosyalarım</translation>
 <translation id="3199982728237701504">Doküman Besleyici (İki taraflı)</translation>
 <translation id="3246869037381808805">1 günden daha eski yazdırma işleri kaldırılır</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Test çalışıyor</translation>
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3369013195428705271">Tüm yazdırma geçmişini temizlemek istediğinizden emin misiniz? Devam eden yazdırma işleriniz silinmez.</translation>
+<translation id="3435738964857648380">Güvenlik</translation>
 <translation id="3456078764689556234">Yazdırılan sayfa: <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Yazdırma</translation>
 <translation id="3515615323037921860">Yazdırma İşleri</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Drive'ım</translation>
 <translation id="4429881212383817840">Kerberos biletinin süresi yakında doluyor</translation>
 <translation id="445059817448385655">Eski şifre</translation>
+<translation id="4453205916657964690">Alt ağ maskesi</translation>
 <translation id="4454245904991689773">Taramayı şuraya kaydet:</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Varsayılan olmayan ağ geçidi pinglenemedi</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Güvenlik duvarı olabilir</translation>
 <translation id="4691278870498629773">Durduruldu - Tepsi yok</translation>
 <translation id="469379815867856270">Sinyal Gücü</translation>
+<translation id="4707579418881001319">L2TP/IPSec + kullanıcı sertifikası</translation>
 <translation id="4731797938093519117">Ebeveyn erişimi</translation>
 <translation id="4773299976671772492">Durduruldu</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> yazdırma işi iptal edildi</translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Tarayıcıyı kontrol edip tekrar deneyin. Taranan dosyaların kaydedilmesi için yeterli yerel alan bulunduğundan emin olun.</translation>
 <translation id="4985509611418653372">Çalıştır</translation>
 <translation id="500920857929044050">Testi durdur</translation>
+<translation id="5050042263972837708">Grup adı</translation>
+<translation id="5088172560898466307">Sunucu ana makinesinin adı</translation>
 <translation id="5089810972385038852">Eyalet</translation>
 <translation id="5154917547274118687">Bellek</translation>
 <translation id="5168185087976003268">Pil gücü</translation>
@@ -145,6 +156,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5264277876637023664">CPU testini çalıştır</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Rutinleri Tekrar Çalıştır</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Yeni bir tane seçin</translation>
@@ -159,7 +171,9 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Yardım Merkezi'nden daha fazla bilgi edinebilirsiniz</translation>
 <translation id="5635169860413004179">Raporu Göster</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Bu, tüm çekirdeklerin toplamı olup CPU kullanımını ölçer</translation>
+<translation id="5760715441271661976">Portal Durumu</translation>
 <translation id="5781694279199921985">Oturum günlüğünü kaydet</translation>
 <translation id="5797428682393400134">BAŞARILI</translation>
 <translation id="5832805196449965646">Kişi Ekle</translation>
@@ -185,6 +199,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6325525973963619867">Başarısız</translation>
 <translation id="636850387210749493">Kurumsal kayıt</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Taranan dosya kaydedildi}other{Taranan dosyalar kaydedildi}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Durduruldu - Kağıt sıkışması</translation>
 <translation id="6517239166834772319">Keşfet</translation>
 <translation id="6527081081771465939">Bilinmeyen kablosuz ağ güvenlik protokolü</translation>
@@ -194,6 +209,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6618744767048954150">Çalışıyor</translation>
 <translation id="6620487321149975369">Yazdırma işleri, manuel olarak kaldırılmadığı sürece geçmişte görünür</translation>
 <translation id="6643016212128521049">Temizle</translation>
+<translation id="6657585470893396449">Şifre</translation>
 <translation id="6704062477274546131">DNS Çözümlemesi</translation>
 <translation id="6747215703636344499">Durduruldu - Çıkış tepsisi dolu</translation>
 <translation id="6756731097889387912">Tarama iptal edilemedi</translation>
@@ -210,19 +226,24 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor. Yöneticiler bu cihazı uzaktan yapılandırabilir.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Dosya türü</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tarama işlemi tamamlandı. 1 sayfa tarandı}other{Tarama işlemi tamamlandı. {NUMBER_OF_PAGES} sayfa tarandı}}</translation>
 <translation id="7441459999606975924">Pil kullanıldıkça kapasitesi azalır</translation>
 <translation id="7469648432129124067">Portal algılandı</translation>
 <translation id="7490813197707563893">MAC adresi</translation>
+<translation id="7502658306369382406">IPv6 adresi</translation>
 <translation id="7561454561030345039">Bu işlem, yöneticiniz tarafından yönetilir.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Yüksek HTTPS gecikmesi</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7690294790491645610">Yeni şifreyi doğrula</translation>
+<translation id="7701040980221191251">Yok</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Şarj döngüsü sayısı</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> Test</translation>
 <translation id="7805768142964895445">Durum</translation>
+<translation id="7819857487979277519">PSK (WPA veya RSN)</translation>
+<translation id="7882358943899516840">Sağlayıcı türü</translation>
 <translation id="7928373994957558460">Dosya konumunu göster</translation>
 <translation id="7936303884198020182">Alan adı sunucusu bulunamadı</translation>
 <translation id="7960831585769876809">Sıcaklık</translation>
@@ -239,11 +260,15 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8347227221149377169">Yazdırma işleri</translation>
 <translation id="8352772353338965963">Çoklu oturum açmaya bir hesap ekleyin. Oturum açılmış tüm hesaplara şifresiz erişilebileceği için bu özellik sadece güvenilir hesaplarla kullanılmalıdır.</translation>
 <translation id="8364946094152050673">Alan adı sunucuları boş</translation>
+<translation id="8372477600026034341">Ekstra ana makineler</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" />, kuruluş tarafından yönetiliyor</translation>
 <translation id="8398927464629426868">Cihazın şu andaki şarj olma veya şarjının boşalma hızı</translation>
 <translation id="8475690821716466388">Kablosuz ağ, zayıf bir protokol olan WEP PSK ile güvenlik altına alınmış</translation>
 <translation id="8477551185774834963">DNS gecikmesi, izin verilen eşiğin biraz üzerinde</translation>
+<translation id="8483248364096924578">IP adresi</translation>
+<translation id="8503813439785031346">Kullanıcı adı</translation>
 <translation id="8576249514688522074">Başlatılmamış</translation>
+<translation id="8675354002693747642">Önceden paylaşılan anahtar</translation>
 <translation id="871560550817059752">İşlem başarısız - Mürekkep yok</translation>
 <translation id="8723108084122415655">Varsayılan olmayan ağ, gecikme eşiğini aştı</translation>
 <translation id="8726019395068607495">Durduruldu - Kapak açık</translation>
@@ -251,6 +276,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8747900814994928677">Değişikliği onaylayın</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
+<translation id="8798441408945964110">Sağlayıcı adı</translation>
 <translation id="8814190375133053267">Kablosuz</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8881098542468797602">Test başarılı oldu</translation>
@@ -262,11 +288,14 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> deneme hakkınız kaldı</translation>
 <translation id="8968751544471797276">Şarj olma hızı</translation>
 <translation id="8970109610781093811">Yeniden çalıştır</translation>
+<translation id="9003704114456258138">Frekans</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Mevcut kullanım</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> için bileti yenileyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. sayfa taranıyor</translation>
 <translation id="9111102763498581341">Kilidi Aç</translation>
 <translation id="9149391708638971077">Bellek testini çalıştır</translation>
+<translation id="9190063653747922532">L2TP/IPsec + önceden paylaşılan anahtar</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Deşarj testini çalıştır</translation>
 </translationbundle>

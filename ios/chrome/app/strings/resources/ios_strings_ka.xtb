@@ -191,7 +191,6 @@
 <translation id="291754862089661335">მოათავსეთ QR-კოდი ან შტრიხკოდი ამ ჩარჩოში</translation>
 <translation id="2921219216347069551">გვერდის გაზიარება შეუძლებელია</translation>
 <translation id="2923448633003185837">ჩასმა და გადასვლა</translation>
-<translation id="2923827943290349720">Chrome-ის დახურვისას ინკოგნიტო ჩანართების ჩაკეტვა</translation>
 <translation id="292639812446257861">წაუკითხავად მონიშვნა</translation>
 <translation id="2952581218264071393">1. გახსენით Chrome-ის პარამეტრები</translation>
 <translation id="2958718410589002129">პაროლები</translation>
@@ -239,6 +238,7 @@
 <translation id="3443810440409579745">ჩანართი მიღებულია.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> წთ</translation>
 <translation id="3448016392200048164">გაყოფილი ხედი</translation>
+<translation id="3454224729131972583">მიმართვა</translation>
 <translation id="345565170154308620">პაროლების მართვა…</translation>
 <translation id="3469166899695866866">გსურთ ჩამოტვირთვის შეწყვეტა?</translation>
 <translation id="3470502288861289375">კოპირება…</translation>
@@ -268,6 +268,7 @@
 <translation id="3670030362669914947">ნომერი</translation>
 <translation id="3691593122358196899">სანიშნე შენახულია „<ph name="FOLDER_TITLE" />“-ში</translation>
 <translation id="3709582977625132201">წაუკითხავად მონიშვნა</translation>
+<translation id="3720541637541300822">Chrome-ის დახურვისას ინკოგნიტო ჩანართების ჩაკეტვა</translation>
 <translation id="3740397331642243698">მითითებულ URL-ებს Google Chrome-ის ინკოგნიტო რეჟიმში გახსნის.</translation>
 <translation id="3771033907050503522">ინკოგნიტო ჩანართები</translation>
 <translation id="3775743491439407556">სინქრონიზაცია არ მუშაობს</translation>

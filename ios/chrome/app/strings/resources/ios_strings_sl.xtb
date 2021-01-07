@@ -191,7 +191,6 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="291754862089661335">Kodo QR ali črtno kodo postavite v ta okvir</translation>
 <translation id="2921219216347069551">Deljenje te strani z drugimi ni mogoče</translation>
 <translation id="2923448633003185837">Prilepi in nadaljuj</translation>
-<translation id="2923827943290349720">Zakleni zavihke brez beleženja dejavnosti po zaprtju Chroma</translation>
 <translation id="292639812446257861">Označi kot neprebrano</translation>
 <translation id="2952581218264071393">1. Odprite nastavitve brskalnika Chrome.</translation>
 <translation id="2958718410589002129">Gesla</translation>
@@ -239,6 +238,7 @@ Ko uporabljate način brez beleženja dejavnosti, spletna mesta ne smejo uporabl
 <translation id="3443810440409579745">Prejet zavihek.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Razdeljeni pogled</translation>
+<translation id="3454224729131972583">Naslov</translation>
 <translation id="345565170154308620">Upravljanje gesel ...</translation>
 <translation id="3469166899695866866">Želite ustaviti prenos?</translation>
 <translation id="3470502288861289375">Kopiranje ...</translation>
@@ -268,6 +268,7 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="3670030362669914947">Številka</translation>
 <translation id="3691593122358196899">Zaznamek ustvarjen v mapi <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Označi kot neprebrano</translation>
+<translation id="3720541637541300822">Zaklepanje zavihkov brez beleženja dejavnosti po zaprtju Chroma</translation>
 <translation id="3740397331642243698">Odpre vnesene URL-je v Google Chromu v načinu brez beleženja dejavnosti.</translation>
 <translation id="3771033907050503522">Incognito Tabs</translation>
 <translation id="3775743491439407556">Sinhronizacija ne deluje</translation>

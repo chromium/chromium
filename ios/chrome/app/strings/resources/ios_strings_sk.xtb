@@ -191,7 +191,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="291754862089661335">Umiestnite QR kód alebo čiarový kód do tohto rámčeka</translation>
 <translation id="2921219216347069551">Str. sa nedá zdieľať</translation>
 <translation id="2923448633003185837">Prilepiť a prejsť</translation>
-<translation id="2923827943290349720">Uzamknúť karty inkognito pri zavretí Chromu</translation>
 <translation id="292639812446257861">Označiť ako neprečítané</translation>
 <translation id="2952581218264071393">1. Otvorte nastavenia Chromu</translation>
 <translation id="2958718410589002129">Heslá</translation>
@@ -720,7 +719,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8548878600947630424">Nájsť na stránke...</translation>
 <translation id="8574235780160508979">Zmluvné podmienky prehliadača Chrome sa 31. marca zmenia. <ph name="BEGIN_LINK" />Prehliadnuť si nové zmluvné podmienky<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Vypnúť</translation>
-<translation id="8591976964826315682">Blokovať súbory cookie tretích strán v anonymnom režime</translation>
+<translation id="8591976964826315682">Blokovať súbory cookie tretích strán v režime inkognito</translation>
 <translation id="8605219856220328675">Zatvoriť kartu.</translation>
 <translation id="8620640915598389714">Upraviť</translation>
 <translation id="863090005774946393">Prehliadač spravuje vaša organizácia. Niektoré funkcie môžu byť deaktivované.</translation>

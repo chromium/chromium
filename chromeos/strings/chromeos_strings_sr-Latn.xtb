@@ -3,6 +3,7 @@
 <translationbundle lang="sr-Latn">
 <translation id="1018656279737460067">Otkazano</translation>
 <translation id="1059913517121127803">Pokretanje skeniranja nije uspelo</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Otkriven je zaštitni zid</translation>
 <translation id="1075811647922107217">Veličina stranice</translation>
 <translation id="1124772482545689468">Korisnik</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Nepoznata greška.</translation>
 <translation id="1204296502688602597">Kašnjenje DNS-a</translation>
 <translation id="123124571410524056">Sumnja se na portal</translation>
+<translation id="1238191093934674082">Otvoreni VPN</translation>
 <translation id="1238612778414822719">HTTPS kašnjenje</translation>
+<translation id="1270369111467284986">Moguć ulazni portal</translation>
 <translation id="1290331692326790741">Slab signal</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">Mrežni prolaz</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Prilagodi oblasti za skeniranje</translation>
 <translation id="1397738625398125236">Mrežni prolaz može da se pinguje</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Keš</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Mobilni podaci</translation>
+<translation id="315738237743207937">Otkriven je ulazni portal</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3199982728237701504">Uvlačenje dokumenta (dvostrano)</translation>
 <translation id="3246869037381808805">Zadaci štampanja stariji od 1 dana se uklanjaju</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Test je u toku</translation>
 <translation id="3368922792935385530">Povezan</translation>
 <translation id="3369013195428705271">Želite li stvarno da obrišete svu istoriju štampanja? Zadaci štampanja koji su u toku se ne brišu.</translation>
+<translation id="3435738964857648380">Bezbednost</translation>
 <translation id="3456078764689556234">Odštampanih stranica: <ph name="PRINTED_PAGES" /> od <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Štampanje</translation>
 <translation id="3515615323037921860">Zadaci štampanja</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4429881212383817840">Kerberos tiket uskoro ističe</translation>
 <translation id="445059817448385655">Stara lozinka</translation>
+<translation id="4453205916657964690">Maska podmreže</translation>
 <translation id="4454245904991689773">Skeniraj u:</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Pingovanje mrežnog prolaza koji nije podrazumevan nije uspelo</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Sumnja se na zaštitni zid</translation>
 <translation id="4691278870498629773">Zaustavljeno – nedostaje posuda za odštampani materijal</translation>
 <translation id="469379815867856270">Jačina signala</translation>
+<translation id="4707579418881001319">L2TP/IPsec + sertifikat korisnika</translation>
 <translation id="4731797938093519117">Roditeljski pristup</translation>
 <translation id="4773299976671772492">Zaustavljeno je</translation>
 <translation id="4808449224298348341">Otkazan je zadatak štampanja <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Proverite skener i probajte ponovo. Uverite se da ima dovoljno lokalne memorije za čuvanje skeniranih fajlova.</translation>
 <translation id="4985509611418653372">Pokreni</translation>
 <translation id="500920857929044050">Zaustavi test</translation>
+<translation id="5050042263972837708">Naziv grupe</translation>
+<translation id="5088172560898466307">Ime hosta servera</translation>
 <translation id="5089810972385038852">Država</translation>
 <translation id="5154917547274118687">Memorija</translation>
 <translation id="5168185087976003268">Stanje baterije</translation>
@@ -145,6 +156,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5264277876637023664">Pokreni test procesora</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Ponovo pokreni rutine</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Odaberite novu</translation>
@@ -159,7 +171,9 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Saznajte više u centru za pomoć</translation>
 <translation id="5635169860413004179">Prikaži izveštaj</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Ovim se meri korišćenje procesora i zbir je svih jezgara</translation>
+<translation id="5760715441271661976">Status portala</translation>
 <translation id="5781694279199921985">Sačuvaj evidenciju sesije</translation>
 <translation id="5797428682393400134">USPELO JE</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
@@ -185,6 +199,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6325525973963619867">Neuspešno</translation>
 <translation id="636850387210749493">Prijavljivanje za izdanje za preduzeća</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Skenirani fajl je sačuvan}one{Skenirani fajlovi su sačuvani}few{Skenirani fajlovi su sačuvani}other{Skenirani fajlovi su sačuvani}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Zaustavljeno – papir je zaglavljen</translation>
 <translation id="6517239166834772319">Istražite</translation>
 <translation id="6527081081771465939">Nepoznat bezbednosni protokol za WiFi</translation>
@@ -194,6 +209,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6618744767048954150">U toku je</translation>
 <translation id="6620487321149975369">Zadaci štampanja će se pojaviti u istoriji ako ih ne uklonite ručno</translation>
 <translation id="6643016212128521049">Obriši</translation>
+<translation id="6657585470893396449">Lozinka</translation>
 <translation id="6704062477274546131">DNS razrešavanje</translation>
 <translation id="6747215703636344499">Zaustavljeno – posuda za odštampani materijal je puna</translation>
 <translation id="6756731097889387912">Otkazivanje skeniranja nije uspelo</translation>
@@ -210,19 +226,24 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem. Administratori mogu da konfigurišu uređaj daljinski.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tip datoteke</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skeniranje je završeno. Skenirana je 1 stranica}one{Skeniranje je završeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je završeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je završeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
 <translation id="7441459999606975924">Kapacitet baterije se smanjuje tokom korišćenja</translation>
 <translation id="7469648432129124067">Otkriven je portal</translation>
 <translation id="7490813197707563893">MAC adresa</translation>
+<translation id="7502658306369382406">IPv6 adresa</translation>
 <translation id="7561454561030345039">Ovim podešavanjem upravlja administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Veliko HTTPS kašnjenje</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7690294790491645610">Potvrdite novu lozinku</translation>
+<translation id="7701040980221191251">Ništa</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Broj ciklusa</translation>
 <translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7819857487979277519">PSK (WPA ili RSN)</translation>
+<translation id="7882358943899516840">Tip dobavljača</translation>
 <translation id="7928373994957558460">Prikaži lokaciju datoteke</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan server za imena</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -239,11 +260,15 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
 <translation id="8352772353338965963">Dodajte nalog za višestruko prijavljivanje. Svim prijavljenim nalozima se može pristupiti bez lozinke, pa ovu funkciju treba koristiti samo sa pouzdanim nalozima.</translation>
 <translation id="8364946094152050673">Prazni serveri za imena</translation>
+<translation id="8372477600026034341">Dodatni hostovi</translation>
 <translation id="8395584934117017006">Preduzeće upravlja ovim <ph name="DEVICE_TYPE" /> uređajem</translation>
 <translation id="8398927464629426868">Stopa po kojoj se uređaj trenutno puni ili prazni</translation>
 <translation id="8475690821716466388">WiFi mreža je obezbeđena slabim protokolom WEP PSK</translation>
 <translation id="8477551185774834963">Kašnjenje DNS-a u manjoj meri premašuje dozvoljenu graničnu vrednost</translation>
+<translation id="8483248364096924578">IP adresa</translation>
+<translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8576249514688522074">Nije pokrenuto</translation>
+<translation id="8675354002693747642">Tajni ključ</translation>
 <translation id="871560550817059752">Nije uspelo – nema više mastila</translation>
 <translation id="8723108084122415655">Mreža koja nije podrazumevana premašuje graničnu vrednost za kašnjenje</translation>
 <translation id="8726019395068607495">Zaustavljeno – vrata su otvorena</translation>
@@ -251,6 +276,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8747900814994928677">Potvrdite promenu</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Podrazumevano</translation>
+<translation id="8798441408945964110">Naziv dobavljača</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="8845001906332463065">Zatražite pomoć</translation>
 <translation id="8881098542468797602">Test je uspeo</translation>
@@ -262,11 +288,14 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Preostali pokušaji: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Brzina punjenja</translation>
 <translation id="8970109610781093811">Ponovo pokreni</translation>
+<translation id="9003704114456258138">Frekvencija</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Trenutna iskorišćenost</translation>
 <translation id="910415269708673980">Osvežite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenira se <ph name="PAGE_NUMBER" />. stranica</translation>
 <translation id="9111102763498581341">Otključaj</translation>
 <translation id="9149391708638971077">Pokreni test memorije</translation>
+<translation id="9190063653747922532">L2TP/IPsec + tajni ključ</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Pokreni test pražnjenja</translation>
 </translationbundle>

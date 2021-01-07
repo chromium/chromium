@@ -3,6 +3,7 @@
 <translationbundle lang="fa">
 <translation id="1018656279737460067">لغو شده</translation>
 <translation id="1059913517121127803">اسکن شروع نشد</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">دیوار آتش شناسایی شد</translation>
 <translation id="1075811647922107217">اندازه صفحه</translation>
 <translation id="1124772482545689468">کاربر</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">خطای ناشناس.</translation>
 <translation id="1204296502688602597">تأخیر ساناد</translation>
 <translation id="123124571410524056">احتمالاً درگاهی وجود دارد</translation>
+<translation id="1238191093934674082">‏باز کردن VPN</translation>
 <translation id="1238612778414822719">‏تأخیر در HTTPS</translation>
+<translation id="1270369111467284986">احتمالاً درگاه مهمان وجود دارد</translation>
 <translation id="1290331692326790741">سیگنال ضعیف</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">دروازه</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">متناسب با ناحیه اسکن</translation>
 <translation id="1397738625398125236">دروازه را می‌توان پینگ کرد</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">حافظه پنهان</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">داده‌های تلفن همراه</translation>
+<translation id="315738237743207937">درگاه مهمان شناسایی شد</translation>
 <translation id="3188257591659621405">فایل‌های من</translation>
 <translation id="3199982728237701504">تغذیه‌کننده سند (دورو)</translation>
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">درحال اجرای آزمایش</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">مطمئن هستید که می‌خواهید همه سابقه‌های چاپ را حذف کنید؟ کارهای چاپ شما که درحال انجام هستند حذف نخواهند شد.</translation>
+<translation id="3435738964857648380">امنیت</translation>
 <translation id="3456078764689556234">صفحه <ph name="PRINTED_PAGES" /> از مجموع <ph name="TOTAL_PAGES" /> صفحه چاپ شده است.</translation>
 <translation id="3459509316159669723">درحال چاپ</translation>
 <translation id="3515615323037921860">کارهای چاپ</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">‏بلیت Kerberos به‌زودی منقضی می‌شود</translation>
 <translation id="445059817448385655">گذرواژه قدیمی</translation>
+<translation id="4453205916657964690">پوشش زیرشبکه</translation>
 <translation id="4454245904991689773">ذخیره فایل‌های اسکن‌شده در</translation>
 <translation id="4479639480957787382">اترنت</translation>
 <translation id="4483049906298469269">پینگ کردن دروازه شبکه غیر پیش‌فرض انجام نشد</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">احتمال وجود مشکل در دیوار آتش</translation>
 <translation id="4691278870498629773">متوقف شد - سینی موجود نیست</translation>
 <translation id="469379815867856270">قدرت سیگنال</translation>
+<translation id="4707579418881001319">‏L2TP/IPSec + گواهی کاربر</translation>
 <translation id="4731797938093519117">دسترسی والدین</translation>
 <translation id="4773299976671772492">متوقف شد</translation>
 <translation id="4808449224298348341">کار چاپ <ph name="DOCUMENT_TITLE" /> لغو شد</translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">اسکنر را بررسی کنید و دوباره امتحان کنید. مطمئن شوید فضای کافی برای ذخیره کردن فایل‌های اسکن‌شده در دستگاه وجود داشته باشد.</translation>
 <translation id="4985509611418653372">اجرا</translation>
 <translation id="500920857929044050">توقف آزمایش</translation>
+<translation id="5050042263972837708">نام گروه</translation>
+<translation id="5088172560898466307">نام سرور میزبان</translation>
 <translation id="5089810972385038852">ایالت</translation>
 <translation id="5154917547274118687">حافظه</translation>
 <translation id="5168185087976003268">سلامت باتری</translation>
@@ -145,6 +156,7 @@
 <translation id="5264277876637023664">اجرای آزمایش واحد پردازش مرکزی</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">اجرای دوباره روال‌ها</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">انتخاب گذرواژه جدید، هم‌اکنون</translation>
@@ -159,7 +171,9 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">در «مرکز راهنمایی» اطلاعات بیشتری کسب کنید</translation>
 <translation id="5635169860413004179">دیدن گزارش</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">‏این مورد میزان استفاده از CPU را اندازه‌گیری می‌کند و مجموع همه هسته‌ها است</translation>
+<translation id="5760715441271661976">وضعیت درگاه</translation>
 <translation id="5781694279199921985">ذخیره گزارش «جلسه»</translation>
 <translation id="5797428682393400134">موفقیت‌آمیز</translation>
 <translation id="5832805196449965646">افزودن شخص</translation>
@@ -185,6 +199,7 @@
 <translation id="6325525973963619867">ناموفق بود</translation>
 <translation id="636850387210749493">ثبت‌نام شرکت</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{فایل اسکن‌شده ذخیره شد}one{فایل اسکن‌شده ذخیره شد}other{فایل‌های اسکن‌شده ذخیره شد}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">متوقف شد - کاغذ گیر کرده است</translation>
 <translation id="6517239166834772319">کاوش</translation>
 <translation id="6527081081771465939">‏پروتکل امنیتی Wi-Fi ناشناس است</translation>
@@ -194,6 +209,7 @@
 <translation id="6618744767048954150">درحال اجرا</translation>
 <translation id="6620487321149975369">کارهای چاپ تا زمانی‌که به‌طور دستی برداشته نشوند در سابقه نشان داده می‌شوند</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
+<translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6704062477274546131">وضوح ساناد</translation>
 <translation id="6747215703636344499">متوقف شد - خروجی پُر است</translation>
 <translation id="6756731097889387912">اسکن کردن لغو نشد</translation>
@@ -210,19 +226,24 @@
 <translation id="7177485034254901881">این <ph name="DEVICE_TYPE" /> توسط <ph name="MANAGER" /> مدیریت می‌شود. سرپرستان می‌توانند این دستگاه را ازراه‌دور پیکربندی کنند.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">نوع فایل</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اسکن کامل شد. ۱ صفحه اسکن شد}one{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}other{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}}</translation>
 <translation id="7441459999606975924">استفاده از باتری موجب کاهش ظرفیت آن می‌شود</translation>
 <translation id="7469648432129124067">درگاهی شناسایی شد</translation>
 <translation id="7490813197707563893">‏نشانی MAC</translation>
+<translation id="7502658306369382406">‏نشانی IPv6</translation>
 <translation id="7561454561030345039">سرپرست شما این اقدام را مدیریت می‌کند</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">‏تأخیر بالا در HTTPS</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7690294790491645610">تأیید گذرواژه جدید</translation>
+<translation id="7701040980221191251">هیچ‌کدام</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">تعداد چرخه‌ها</translation>
 <translation id="7732651821766520760">آزمایش <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">وضعیت</translation>
+<translation id="7819857487979277519">‏PSK (WPA یا RSN)</translation>
+<translation id="7882358943899516840">نوع ارائه‌دهنده</translation>
 <translation id="7928373994957558460">نمایش مکان فایل</translation>
 <translation id="7936303884198020182">سرور نام دامنه پیدا نشد</translation>
 <translation id="7960831585769876809">دما</translation>
@@ -239,11 +260,15 @@
 <translation id="8347227221149377169">کارهای چاپی</translation>
 <translation id="8352772353338965963">افزودن یک حساب برای ورود چندگانه به سیستم. کلیه حساب‌هایی که به سیستم وارد شده‌اند بدون گذرواژه قابل دسترسی هستند، بنابراین این قابلیت فقط باید با حساب‌های مورداعتماد استفاده شود.</translation>
 <translation id="8364946094152050673">سرورهای نام دامنه خالی است</translation>
+<translation id="8372477600026034341">میزبان‌های اضافی</translation>
 <translation id="8395584934117017006">این <ph name="DEVICE_TYPE" /> تحت‌مدیریت سازمان است</translation>
 <translation id="8398927464629426868">سرعت شارژ یا تخلیه شارژ دستگاه درحال‌حاضر</translation>
 <translation id="8475690821716466388">‏شبکه Wi-Fi با پروتکل ضعیف WEP PSK ایمن شده است</translation>
 <translation id="8477551185774834963">تأخیر در ساناد اندکی از آستانه مجاز بالاتر است</translation>
+<translation id="8483248364096924578">‏نشانی IP</translation>
+<translation id="8503813439785031346">نام کاربری</translation>
 <translation id="8576249514688522074">راه‌اندازی‌نشده</translation>
+<translation id="8675354002693747642">کلید ازپیش هم‌رسانی‌شده</translation>
 <translation id="871560550817059752">انجام نشد - جوهر تمام شده است</translation>
 <translation id="8723108084122415655">آستانه تأخیر در شبکه غیر پیش‌فرض خیلی زیاد است</translation>
 <translation id="8726019395068607495">متوقف شد - در باز است</translation>
@@ -251,6 +276,7 @@
 <translation id="8747900814994928677">تأیید تغییر</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
+<translation id="8798441408945964110">نام ارائه‌دهنده</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">دریافت راهنمایی</translation>
 <translation id="8881098542468797602">آزمایش موفق بود</translation>
@@ -262,11 +288,14 @@
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> فرصت باقی مانده است</translation>
 <translation id="8968751544471797276">سرعت شارژ کردن</translation>
 <translation id="8970109610781093811">اجرای دوباره</translation>
+<translation id="9003704114456258138">فرکانس</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9088306295921699330">مصرف فعلی</translation>
 <translation id="910415269708673980">بازخوانی بلیت برای <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">درحال اسکن کردن صفحه <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">باز کردن قفل</translation>
 <translation id="9149391708638971077">اجرای آزمایش حافظه</translation>
+<translation id="9190063653747922532">‏L2TP/IPSec + کلید از قبل مشترک شده</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">اجرای آزمایش تخلیه شارژ</translation>
 </translationbundle>

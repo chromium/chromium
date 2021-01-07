@@ -24,6 +24,7 @@ Hvis du vil give denne tilladelse, skal du klikke på "<ph name="BUTTON_NAME" />
 Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne markeringen og markere afkrydsningsfeltet igen.</translation>
 <translation id="225614027745146050">Velkommen</translation>
 <translation id="2320166752086256636">Skjul tastaturet</translation>
+<translation id="2333212046079545895">Ophavsret 2021 Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2366718077645204424">Værten kunne ikke nås. Dette skyldes sandsynligvis konfigurationen af det netværk, du bruger.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Sidst set online <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -129,7 +130,6 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="7067321367069083429">Skærmen fungerer som touchskærm</translation>
 <translation id="7116737094673640201">Velkommen til Chrome Fjernskrivebord</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
-<translation id="724402108658370587">Ophavsret 2020 Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="7312846573060934304">Hosten er offline.</translation>
 <translation id="7319983568955948908">Stop deling</translation>
 <translation id="7401733114166276557">Chrome Fjernskrivebord</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="th">
 <translation id="1018656279737460067">ยกเลิกแล้ว</translation>
 <translation id="1059913517121127803">เริ่มการสแกนไม่ได้</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ตรวจพบไฟร์วอลล์</translation>
 <translation id="1075811647922107217">ขนาดหน้า</translation>
 <translation id="1124772482545689468">ผู้ใช้</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="1204296502688602597">เวลาในการตอบสนองของ DNS</translation>
 <translation id="123124571410524056">สงสัยว่าเป็นพอร์ทัล</translation>
+<translation id="1238191093934674082">เปิด VPN</translation>
 <translation id="1238612778414822719">เวลาในการตอบสนองของ HTTPS</translation>
+<translation id="1270369111467284986">สงสัยว่าเป็นแคพทีฟพอร์ทัล</translation>
 <translation id="1290331692326790741">สัญญาณไม่ดี</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">เกตเวย์</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">พอดีกับพื้นที่สแกน</translation>
 <translation id="1397738625398125236">ปิงเกตเวย์ได้</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">แคช</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">เน็ตมือถือ</translation>
+<translation id="315738237743207937">ตรวจพบแคพทีฟพอร์ทัล</translation>
 <translation id="3188257591659621405">ไฟล์ของฉัน</translation>
 <translation id="3199982728237701504">ตัวป้อนเอกสาร (สองด้าน)</translation>
 <translation id="3246869037381808805">ระบบจะนำงานพิมพ์ที่เก่ากว่า 1 วันออก</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">กำลังทดสอบ</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3369013195428705271">คุณแน่ใจไหมว่าต้องการล้างประวัติการพิมพ์ทั้งหมด ทั้งนี้ ระบบจะไม่ล้างงานพิมพ์ที่กำลังดำเนินอยู่</translation>
+<translation id="3435738964857648380">ความปลอดภัย</translation>
 <translation id="3456078764689556234">พิมพ์แล้ว <ph name="PRINTED_PAGES" /> จาก <ph name="TOTAL_PAGES" /> หน้า</translation>
 <translation id="3459509316159669723">การพิมพ์</translation>
 <translation id="3515615323037921860">งานพิมพ์</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">ไดรฟ์ของฉัน</translation>
 <translation id="4429881212383817840">ตั๋ว Kerberos กำลังจะหมดอายุ</translation>
 <translation id="445059817448385655">รหัสผ่านเดิม</translation>
+<translation id="4453205916657964690">ซับเน็ตมาสก์</translation>
 <translation id="4454245904991689773">สแกนแล้วบันทึกไว้ใน</translation>
 <translation id="4479639480957787382">อีเทอร์เน็ต</translation>
 <translation id="4483049906298469269">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายที่ไม่ใช่ค่าเริ่มต้นไม่สำเร็จ</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">คาดว่าติดไฟร์วอลล์</translation>
 <translation id="4691278870498629773">หยุดพิมพ์ - ไม่มีถาด</translation>
 <translation id="469379815867856270">ความแรงของสัญญาณ</translation>
+<translation id="4707579418881001319">L2TP/IPsec + ใบรับรองผู้ใช้</translation>
 <translation id="4731797938093519117">การเข้าถึงของผู้ปกครอง</translation>
 <translation id="4773299976671772492">หยุดแล้ว</translation>
 <translation id="4808449224298348341">ยกเลิกงานพิมพ์ <ph name="DOCUMENT_TITLE" /> แล้ว</translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">ตรวจสอบเครื่องสแกนแล้วลองอีกครั้ง ตรวจดูว่ามีพื้นที่ว่างในเครื่องเพียงพอสำหรับบันทึกไฟล์ที่สแกน</translation>
 <translation id="4985509611418653372">เรียกใช้</translation>
 <translation id="500920857929044050">หยุดการทดสอบ</translation>
+<translation id="5050042263972837708">ชื่อกลุ่ม</translation>
+<translation id="5088172560898466307">ชื่อโฮสต์ของเซิร์ฟเวอร์</translation>
 <translation id="5089810972385038852">รัฐ</translation>
 <translation id="5154917547274118687">หน่วยความจำ</translation>
 <translation id="5168185087976003268">ประสิทธิภาพของแบตเตอรี่</translation>
@@ -145,6 +156,7 @@
 <translation id="5264277876637023664">ทดสอบ CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">เรียกใช้กิจวัตรอีกครั้ง</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">เลือกรหัสผ่านใหม่เลย</translation>
@@ -159,7 +171,9 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">ดูข้อมูลเพิ่มเติมในศูนย์ช่วยเหลือ</translation>
 <translation id="5635169860413004179">ดูรายงาน</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">การทดสอบนี้จะวัดการใช้งาน CPU และเป็นการรวม Core ทั้งหมด</translation>
+<translation id="5760715441271661976">สถานะพอร์ทัล</translation>
 <translation id="5781694279199921985">เก็บบันทึกเซสชัน</translation>
 <translation id="5797428682393400134">สำเร็จ</translation>
 <translation id="5832805196449965646">เพิ่มบุคคล</translation>
@@ -185,6 +199,7 @@
 <translation id="6325525973963619867">ล้มเหลว</translation>
 <translation id="636850387210749493">การลงทะเบียนองค์กร</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{บันทึกไฟล์สแกนเรียบร้อยแล้ว}other{บันทึกไฟล์สแกนเรียบร้อยแล้ว}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">หยุดพิมพ์ - กระดาษติด</translation>
 <translation id="6517239166834772319">สำรวจ</translation>
 <translation id="6527081081771465939">โปรโตคอลรักษาความปลอดภัย WiFi ที่ไม่รู้จัก</translation>
@@ -194,6 +209,7 @@
 <translation id="6618744767048954150">กำลังดำเนินการ</translation>
 <translation id="6620487321149975369">งานพิมพ์จะปรากฏในประวัติการพิมพ์ เว้นแต่จะมีผู้ใช้นำออกไปด้วยตนเอง</translation>
 <translation id="6643016212128521049">ล้าง</translation>
+<translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="6704062477274546131">การแปลง DNS</translation>
 <translation id="6747215703636344499">หยุดพิมพ์ - ถาดกระดาษออกเต็ม</translation>
 <translation id="6756731097889387912">ยกเลิกการสแกนไม่ได้</translation>
@@ -210,19 +226,24 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> นี้ได้รับการจัดการโดย <ph name="MANAGER" /> ผู้ดูแลระบบอาจกำหนดค่าอุปกรณ์จากระยะไกล</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ประเภทไฟล์</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{การสแกนเสร็จสมบูรณ์ สแกนแล้ว 1 หน้า}other{การสแกนเสร็จสมบูรณ์ สแกนแล้ว {NUMBER_OF_PAGES} หน้า}}</translation>
 <translation id="7441459999606975924">ความจุแบตเตอรี่จะลดลงเมื่อใช้ไปเรื่อยๆ</translation>
 <translation id="7469648432129124067">ตรวจพบพอร์ทัล</translation>
 <translation id="7490813197707563893">ที่อยู่ MAC</translation>
+<translation id="7502658306369382406">ที่อยู่ IPv6</translation>
 <translation id="7561454561030345039">การดำเนินการนี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">เวลาในการตอบสนองของ HTTPS สูง</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7690294790491645610">ยืนยันรหัสผ่านใหม่</translation>
+<translation id="7701040980221191251">ไม่มี</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">จำนวนรอบ</translation>
 <translation id="7732651821766520760">การทดสอบ <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">สถานะ</translation>
+<translation id="7819857487979277519">PSK (WPA หรือ RSN)</translation>
+<translation id="7882358943899516840">ประเภทผู้ให้บริการ</translation>
 <translation id="7928373994957558460">แสดงตำแหน่งของไฟล์</translation>
 <translation id="7936303884198020182">ไม่พบเนมเซิร์ฟเวอร์</translation>
 <translation id="7960831585769876809">อุณหภูมิ</translation>
@@ -239,11 +260,15 @@
 <translation id="8347227221149377169">งานพิมพ์</translation>
 <translation id="8352772353338965963">เพิ่มบัญชีเพื่อลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี บัญชีที่ลงชื่อเข้าใช้แล้วทั้งหมดสามารถเข้าถึงได้โดยไม่ต้องใช้รหัสผ่าน คุณจึงควรใช้ฟีเจอร์นี้กับบัญชีที่เชื่อถือเท่านั้น</translation>
 <translation id="8364946094152050673">เนมเซิร์ฟเวอร์ว่างเปล่า</translation>
+<translation id="8372477600026034341">โฮสต์เพิ่มเติม</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> เครื่องนี้จัดการโดยองค์กร</translation>
 <translation id="8398927464629426868">อัตราการชาร์จหรือการคายประจุของอุปกรณ์ในปัจจุบัน</translation>
 <translation id="8475690821716466388">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP PSK ที่ไม่รัดกุม</translation>
 <translation id="8477551185774834963">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้เล็กน้อย</translation>
+<translation id="8483248364096924578">ที่อยู่ IP</translation>
+<translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="8576249514688522074">ยังไม่ได้เริ่มต้น</translation>
+<translation id="8675354002693747642">คีย์ที่แชร์ล่วงหน้า</translation>
 <translation id="871560550817059752">ไม่สำเร็จ - หมึกหมด</translation>
 <translation id="8723108084122415655">เครือข่ายที่ไม่ใช่ค่าเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
 <translation id="8726019395068607495">หยุดพิมพ์ - ฝาเครื่องเปิดอยู่</translation>
@@ -251,6 +276,7 @@
 <translation id="8747900814994928677">ยืนยันการเปลี่ยนแปลง</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>
+<translation id="8798441408945964110">ชื่อผู้ให้บริการ</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">ขอความช่วยเหลือ</translation>
 <translation id="8881098542468797602">การทดสอบสำเร็จ</translation>
@@ -262,11 +288,14 @@
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> ลองได้อีก <ph name="ATTEMPTS_LEFT" /> ครั้ง</translation>
 <translation id="8968751544471797276">อัตราการชาร์จ</translation>
 <translation id="8970109610781093811">ทำงานอีกครั้ง</translation>
+<translation id="9003704114456258138">ความถี่</translation>
 <translation id="9074739597929991885">บลูทูธ</translation>
 <translation id="9088306295921699330">การใช้งานปัจจุบัน</translation>
 <translation id="910415269708673980">รีเฟรชตั๋วสำหรับ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">กำลังสแกนหน้า <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ปลดล็อก</translation>
 <translation id="9149391708638971077">ทดสอบหน่วยความจำ</translation>
+<translation id="9190063653747922532">L2TP/IPsec + คีย์ที่แชร์ล่วงหน้า</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">ทดสอบการคายประจุของแบตเตอรี่</translation>
 </translationbundle>

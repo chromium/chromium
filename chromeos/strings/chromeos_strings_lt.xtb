@@ -3,6 +3,7 @@
 <translationbundle lang="lt">
 <translation id="1018656279737460067">Atšaukta</translation>
 <translation id="1059913517121127803">Nepavyko pradėti nuskaitymo</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Aptikta užkarda</translation>
 <translation id="1075811647922107217">Puslapio dydis</translation>
 <translation id="1124772482545689468">Naudotojas</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Nežinoma klaida.</translation>
 <translation id="1204296502688602597">DNS delsa</translation>
 <translation id="123124571410524056">Įtariamas portalas</translation>
+<translation id="1238191093934674082">Atidaryti VPN</translation>
 <translation id="1238612778414822719">HTTPS delsa</translation>
+<translation id="1270369111467284986">Įtariamas fiksuotasis portalas</translation>
 <translation id="1290331692326790741">Silpnas signalas</translation>
+<translation id="1314565355471455267">„Android“ VPN</translation>
+<translation id="1327977588028644528">Tinklų sietuvas</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Pritaikyti pagal nuskaitomą sritį</translation>
 <translation id="1397738625398125236">Galima patikrinti tinklų sietuvo ryšį</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Talpykla</translation>
 <translation id="3122464029669770682">Centrinis procesorius</translation>
 <translation id="315116470104423982">Duomenys mobiliesiems</translation>
+<translation id="315738237743207937">Aptiktas fiksuotasis portalas</translation>
 <translation id="3188257591659621405">Mano failai</translation>
 <translation id="3199982728237701504">Dokumentų tiektuvas (dvipusis)</translation>
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Vykdomas bandymas</translation>
 <translation id="3368922792935385530">Prijungta</translation>
 <translation id="3369013195428705271">Ar tikrai norite išvalyti visą spausdinimo istoriją? Vykdomos spausdinimo užduotys nebus išvalytos.</translation>
+<translation id="3435738964857648380">Sauga</translation>
 <translation id="3456078764689556234">Atspausdinta <ph name="PRINTED_PAGES" /> iš <ph name="TOTAL_PAGES" /> psl.</translation>
 <translation id="3459509316159669723">Spausdinimas</translation>
 <translation id="3515615323037921860">Spausdinimo užduotys</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Mano Diskas</translation>
 <translation id="4429881212383817840">„Kerberos“ bilietas netrukus baigs galioti</translation>
 <translation id="445059817448385655">Senas slaptažodis</translation>
+<translation id="4453205916657964690">Potinklio kaukė</translation>
 <translation id="4454245904991689773">Nuskaityti į</translation>
 <translation id="4479639480957787382">Eternetas</translation>
 <translation id="4483049906298469269">Nepavyko patikrinti ryšio su nenumatytuoju tinklų sietuvu</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Įtariama užkarda</translation>
 <translation id="4691278870498629773">Sustabdyta – nėra dėklo</translation>
 <translation id="469379815867856270">Signalo stiprumas</translation>
+<translation id="4707579418881001319">L2TP / „IPsec“ ir naudotojo sertifikatas</translation>
 <translation id="4731797938093519117">Tėvų prieiga</translation>
 <translation id="4773299976671772492">Sustabdyta</translation>
 <translation id="4808449224298348341">Spausdinimo užduotis atšaukta: <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Patikrinkite skaitytuvą ir bandykite dar kartą. Įsitikinkite, kad vietinėje sistemoje pakanka vietos nuskaitytiems failams išsaugoti.</translation>
 <translation id="4985509611418653372">Vykdyti</translation>
 <translation id="500920857929044050">Stabdyti bandymą</translation>
+<translation id="5050042263972837708">Grupės pavadinimas</translation>
+<translation id="5088172560898466307">Prieglobos serverio pavadinimas</translation>
 <translation id="5089810972385038852">Valstija</translation>
 <translation id="5154917547274118687">Atmintis</translation>
 <translation id="5168185087976003268">Akumuliatoriaus būsena</translation>
@@ -145,6 +156,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5264277876637023664">Vykdyti centrinio procesoriaus bandymą</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Iš naujo vykdyti veiksmų sekas</translation>
+<translation id="5286252187236914003">L2TP / „IPsec“</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Pasirinkite naują slaptažodį dabar</translation>
@@ -159,7 +171,9 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Sužinokite daugiau pagalbos centre</translation>
 <translation id="5635169860413004179">Žr. ataskaitą</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Tai įvertina centrinio procesoriaus naudojimą ir nurodo apibendrintus visų branduolių duomenis</translation>
+<translation id="5760715441271661976">Portalo būsena</translation>
 <translation id="5781694279199921985">Išsaugoti seanso žurnalą</translation>
 <translation id="5797428682393400134">SĖKMINGAS</translation>
 <translation id="5832805196449965646">Pridėti asmenį</translation>
@@ -185,6 +199,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6325525973963619867">Nepavyko</translation>
 <translation id="636850387210749493">Įmonės registracija</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Nuskaitytas failas išsaugotas}one{Nuskaityti failai išsaugoti}few{Nuskaityti failai išsaugoti}many{Nuskaityti failai išsaugoti}other{Nuskaityti failai išsaugoti}}</translation>
+<translation id="6472207088655375767">Vienk. slaptažodis</translation>
 <translation id="649050271426829538">Sustabdyta – įstrigęs popierius</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Nežinomas „Wi-Fi“ saugos protokolas</translation>
@@ -194,6 +209,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6618744767048954150">Vykdoma</translation>
 <translation id="6620487321149975369">Spausdinimo užduotys bus rodomos istorijoje, nebent bus pašalintos neautomatiškai</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
+<translation id="6657585470893396449">Slaptažodis</translation>
 <translation id="6704062477274546131">DNS pavadinimų vertimas</translation>
 <translation id="6747215703636344499">Sustabdyta – išvestis pilna</translation>
 <translation id="6756731097889387912">Nepavyko atšaukti nuskaitymo</translation>
@@ -210,19 +226,24 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7177485034254901881">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Failo tipas</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Nuskaitymas baigtas. Nuskaitytas vienas puslapis}one{Nuskaitymas baigtas. Nuskaitytas {NUMBER_OF_PAGES} puslapis}few{Nuskaitymas baigtas. Nuskaityti {NUMBER_OF_PAGES} puslapiai}many{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapio}other{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapių}}</translation>
 <translation id="7441459999606975924">Akumuliatoriaus galia mažėja jį naudojant</translation>
 <translation id="7469648432129124067">Aptiktas portalas</translation>
 <translation id="7490813197707563893">MAC adresas</translation>
+<translation id="7502658306369382406">„IPv6“ adresas</translation>
 <translation id="7561454561030345039">Šį veiksmą tvarko jūsų administratorius</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Didelė HTTPS delsa</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7690294790491645610">Patvirtinkite naują slaptažodį</translation>
+<translation id="7701040980221191251">Nėra</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Ciklų skaičius</translation>
 <translation id="7732651821766520760">Bandymas „<ph name="TEST_NAME" />“</translation>
 <translation id="7805768142964895445">Būsena</translation>
+<translation id="7819857487979277519">PSK (WPA ar RSN)</translation>
+<translation id="7882358943899516840">Teikėjo tipas</translation>
 <translation id="7928373994957558460">Rodyti failo vietą</translation>
 <translation id="7936303884198020182">Domenų pavadinimų serverių nerasta</translation>
 <translation id="7960831585769876809">Temperatūra</translation>
@@ -239,11 +260,15 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8347227221149377169">Spausdinimo užduotys</translation>
 <translation id="8352772353338965963">Pridėkite paskyrą prie kelių paskyrų. Visos paskyros, prie kurių prisijungta, gali būti pasiekiamos be slaptažodžio, todėl ši funkcija turėtų būti naudojama tik su patikimomis paskyromis.</translation>
 <translation id="8364946094152050673">Domenų pavadinimų serveriai tušti</translation>
+<translation id="8372477600026034341">Papildomos prieglobos</translation>
 <translation id="8395584934117017006">Šį „<ph name="DEVICE_TYPE" />“ įrenginį valdo įmonė</translation>
 <translation id="8398927464629426868">Rodiklis, nurodantis, per kiek laiko įrenginys šiuo metu įkraunamas arba išsikrauna</translation>
 <translation id="8475690821716466388">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP PSK</translation>
 <translation id="8477551185774834963">DNS delsa šiek tiek viršija leistiną slenksčio vertę</translation>
+<translation id="8483248364096924578">IP adresas</translation>
+<translation id="8503813439785031346">Vartotojo vardas</translation>
 <translation id="8576249514688522074">Neinicijuota</translation>
+<translation id="8675354002693747642">Paruoštas bendrinti raktas</translation>
 <translation id="871560550817059752">Nepavyko – baigėsi rašalas</translation>
 <translation id="8723108084122415655">Nenumatytojo tinklo delsa viršija slenksčio vertę</translation>
 <translation id="8726019395068607495">Sustabdyta – atidarytos durelės</translation>
@@ -251,6 +276,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8747900814994928677">Patvirtinti pakeitimą</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Numatytasis</translation>
+<translation id="8798441408945964110">Teikėjo pavadinimas</translation>
 <translation id="8814190375133053267">WI-Fi</translation>
 <translation id="8845001906332463065">Gauti pagalbos</translation>
 <translation id="8881098542468797602">Bandymas sėkmingas</translation>
@@ -262,11 +288,14 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Liko bandymų: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Įkrovimo rodiklis</translation>
 <translation id="8970109610781093811">Paleisti dar kartą</translation>
+<translation id="9003704114456258138">Dažnis</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Dabartinis naudojimas</translation>
 <translation id="910415269708673980">Atnaujinkite <ph name="PRINCIPAL_NAME" /> bilietą</translation>
 <translation id="9106415115617144481">Nuskaitomas <ph name="PAGE_NUMBER" /> psl.</translation>
 <translation id="9111102763498581341">Atrakinti</translation>
 <translation id="9149391708638971077">Vykdyti atminties bandymą</translation>
+<translation id="9190063653747922532">L2TP / „IPSec“ ir iš anksto bendrinamas raktas</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Vykdyti iškrovimo bandymą</translation>
 </translationbundle>

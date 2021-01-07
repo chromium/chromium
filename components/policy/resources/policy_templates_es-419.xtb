@@ -1938,6 +1938,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="3709266154059827597">Configurar la lista negra de instalación de extensiones</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3715569262675717862">Autenticación basada en certificados de clientes</translation>
+<translation id="3719826155360621982">Página principal</translation>
 <translation id="3727476641336727380">A menos que inhabilites <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" />, si habilitas <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> o no la estableces, se permitirá el uso de bloqueos de activación de pantalla para la administración de energía. Las extensiones pueden solicitar estos bloqueos mediante la API de extensión de administración de energía. Las apps de ARC también pueden solicitarlos.
 
       Si inhabilitas la política, se relegarán las solicitudes de bloqueo de activación de pantalla a solicitudes de bloqueo de activación del sistema.</translation>
@@ -5207,6 +5208,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si se establece la política, se borrarán las instantáneas anteriores según sea necesario para respetar el límite. Si se establece la política como "0", no se realizarán instantáneas.</translation>
 <translation id="8451988835943702790">Usar la página Nueva pestaña como página principal</translation>
 <translation id="8455529558077979314">Configuración de la pantalla de privacidad</translation>
+<translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parámetros para URL instantánea que utiliza POST</translation>
 <translation id="8465746466645315861">Si no se establece esta política, el usuario podrá habilitar o inhabilitar el corrector ortográfico en la configuración de idiomas.
 

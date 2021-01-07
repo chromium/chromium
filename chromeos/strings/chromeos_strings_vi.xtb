@@ -3,6 +3,7 @@
 <translationbundle lang="vi">
 <translation id="1018656279737460067">Đã hủy</translation>
 <translation id="1059913517121127803">Không thể bắt đầu quét</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Đã phát hiện thấy tường lửa</translation>
 <translation id="1075811647922107217">Kích thước trang</translation>
 <translation id="1124772482545689468">Người dùng</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
 <translation id="1204296502688602597">Độ trễ DNS</translation>
 <translation id="123124571410524056">Nghi là có cổng</translation>
+<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">Độ trễ HTTPS</translation>
+<translation id="1270369111467284986">Tin là có trang xác thực</translation>
 <translation id="1290331692326790741">Tín hiệu yếu</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">Cổng vào</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Vừa với vùng quét</translation>
 <translation id="1397738625398125236">Có thể ping cổng vào</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Bộ nhớ đệm</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Dữ liệu di động</translation>
+<translation id="315738237743207937">Đã phát hiện thấy trang xác thực</translation>
 <translation id="3188257591659621405">Tệp của tôi</translation>
 <translation id="3199982728237701504">Khay nạp tài liệu (2 mặt)</translation>
 <translation id="3246869037381808805">Các lệnh in quá 1 ngày sẽ bị xóa</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Đang chạy quá trình kiểm tra</translation>
 <translation id="3368922792935385530">Đã kết nối</translation>
 <translation id="3369013195428705271">Bạn có chắc chắn muốn xóa toàn bộ lịch sử in không? Các lệnh in đang thực hiện sẽ không bị xóa.</translation>
+<translation id="3435738964857648380">Bảo mật</translation>
 <translation id="3456078764689556234">Đã in trang <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">In</translation>
 <translation id="3515615323037921860">Lệnh in</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Drive của tôi</translation>
 <translation id="4429881212383817840">Vé Kerberos sẽ sớm hết hạn</translation>
 <translation id="445059817448385655">Mật khẩu cũ</translation>
+<translation id="4453205916657964690">Mặt nạ mạng con</translation>
 <translation id="4454245904991689773">Lưu bản quét vào</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Không ping được cổng của mạng không phải mạng mặc định</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Tin là có tường lửa</translation>
 <translation id="4691278870498629773">Đã dừng – Thiếu khay</translation>
 <translation id="469379815867856270">Cường độ tín hiệu</translation>
+<translation id="4707579418881001319">L2TP/IPsec + chứng chỉ người dùng</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
 <translation id="4773299976671772492">Đã dừng</translation>
 <translation id="4808449224298348341">Đã hủy lệnh in <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Hãy kiểm tra trình quét rồi thử lại. Đảm bảo máy có đủ dung lượng để lưu các tệp đã quét.</translation>
 <translation id="4985509611418653372">Chạy</translation>
 <translation id="500920857929044050">Dừng kiểm tra</translation>
+<translation id="5050042263972837708">Tên nhóm</translation>
+<translation id="5088172560898466307">Tên máy chủ</translation>
 <translation id="5089810972385038852">Tỉnh</translation>
 <translation id="5154917547274118687">Bộ nhớ</translation>
 <translation id="5168185087976003268">Tình trạng pin</translation>
@@ -145,6 +156,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5264277876637023664">Chạy quá trình Kiểm tra CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Chạy lại quy trình</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Chọn ngay một mật khẩu mới</translation>
@@ -159,7 +171,9 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Tìm hiểu thêm trong Trung tâm trợ giúp</translation>
 <translation id="5635169860413004179">Xem báo cáo</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Số liệu này đo mức sử dụng CPU và là số liệu tổng hợp của tất cả các lõi</translation>
+<translation id="5760715441271661976">Trạng thái trang xác thực</translation>
 <translation id="5781694279199921985">Lưu nhật ký phiên</translation>
 <translation id="5797428682393400134">THÀNH CÔNG</translation>
 <translation id="5832805196449965646">Thêm người</translation>
@@ -185,6 +199,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6325525973963619867">Lỗi</translation>
 <translation id="636850387210749493">Đăng ký doanh nghiệp</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Đã lưu tệp được quét}other{Đã lưu các tệp được quét}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Đã dừng – Kẹt giấy</translation>
 <translation id="6517239166834772319">Khám phá</translation>
 <translation id="6527081081771465939">Giao thức bảo mật Wi-Fi không xác định</translation>
@@ -194,6 +209,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6618744767048954150">Đang chạy</translation>
 <translation id="6620487321149975369">Lệnh in sẽ xuất hiện trong lịch sử in trừ phi bạn tự xóa</translation>
 <translation id="6643016212128521049">Xóa</translation>
+<translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="6704062477274546131">Phân giải DNS</translation>
 <translation id="6747215703636344499">Đã dừng – Khay giấy ra đã đầy</translation>
 <translation id="6756731097889387912">Không thể hủy quá trình quét</translation>
@@ -210,19 +226,24 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý. Quản trị viên có thể định cấu hình từ xa thiết bị này.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Loại tệp</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Đã quét xong. Đã quét 1 trang}other{Đã quét xong. Đã quét {NUMBER_OF_PAGES} trang}}</translation>
 <translation id="7441459999606975924">Dung lượng pin sụt giảm cùng với mức sử dụng</translation>
 <translation id="7469648432129124067">Đã phát hiện thấy cổng</translation>
 <translation id="7490813197707563893">Địa chỉ MAC</translation>
+<translation id="7502658306369382406">Địa chỉ IPv6</translation>
 <translation id="7561454561030345039">Quản trị viên của bạn quản lý thao tác này</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Yêu cầu HTTPS có độ trễ cao</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7690294790491645610">Xác nhận mật khẩu mới</translation>
+<translation id="7701040980221191251">Không có</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Số chu kỳ</translation>
 <translation id="7732651821766520760">Kiểm tra <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Trạng thái</translation>
+<translation id="7819857487979277519">PSK (WPA hoặc RSN)</translation>
+<translation id="7882358943899516840">Loại nhà mạng</translation>
 <translation id="7928373994957558460">Hiển thị vị trí tệp</translation>
 <translation id="7936303884198020182">Không tìm thấy máy chủ định danh</translation>
 <translation id="7960831585769876809">Nhiệt độ</translation>
@@ -239,11 +260,15 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8347227221149377169">Lệnh in</translation>
 <translation id="8352772353338965963">Thêm một tài khoản để đăng nhập nhiều lần. Tất cả các tài khoản đã đăng nhập đều có thể truy cập được mà không cần mật khẩu, do đó bạn chỉ nên sử dụng tính năng này với các tài khoản đáng tin cậy.</translation>
 <translation id="8364946094152050673">Máy chủ định danh trống</translation>
+<translation id="8372477600026034341">Máy chủ khác</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> này do doanh nghiệp quản lý</translation>
 <translation id="8398927464629426868">Tốc độ sạc hoặc xả pin hiện tại của thiết bị</translation>
 <translation id="8475690821716466388">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP PSK</translation>
 <translation id="8477551185774834963">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đôi chút</translation>
+<translation id="8483248364096924578">Địa chỉ IP</translation>
+<translation id="8503813439785031346">Tên người dùng</translation>
 <translation id="8576249514688522074">Chưa khởi chạy</translation>
+<translation id="8675354002693747642">Khóa được chia sẻ trước</translation>
 <translation id="871560550817059752">Không thành công – Hết mực</translation>
 <translation id="8723108084122415655">Mạng không phải mạng mặc định vượt ngưỡng độ trễ</translation>
 <translation id="8726019395068607495">Đã dừng – Cửa máy in đang mở</translation>
@@ -251,6 +276,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8747900814994928677">Xác nhận thay đổi</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Mặc định</translation>
+<translation id="8798441408945964110">Tên nhà mạng</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Nhận trợ giúp</translation>
 <translation id="8881098542468797602">Đã kiểm tra thành công</translation>
@@ -262,11 +288,14 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Bạn còn <ph name="ATTEMPTS_LEFT" /> lần thử</translation>
 <translation id="8968751544471797276">Tốc độ sạc</translation>
 <translation id="8970109610781093811">Chạy lại</translation>
+<translation id="9003704114456258138">Tần số</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Mức sử dụng hiện tại</translation>
 <translation id="910415269708673980">Làm mới phiếu cho <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Đang quét trang <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Mở khóa</translation>
 <translation id="9149391708638971077">Chạy quá trình Kiểm tra bộ nhớ</translation>
+<translation id="9190063653747922532">L2TP/IPsec + khóa chia sẻ trước</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Chạy quá trình Kiểm tra mức xả pin</translation>
 </translationbundle>

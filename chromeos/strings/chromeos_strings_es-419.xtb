@@ -3,6 +3,7 @@
 <translationbundle lang="es-419">
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1059913517121127803">No se pudo comenzar el escaneo</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Se detectó un firewall</translation>
 <translation id="1075811647922107217">Tamaño de la página</translation>
 <translation id="1124772482545689468">Usuario</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Error desconocido.</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
 <translation id="123124571410524056">Posible portal</translation>
+<translation id="1238191093934674082">OpenVPN</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
+<translation id="1270369111467284986">Posible portal cautivo</translation>
 <translation id="1290331692326790741">Señal débil</translation>
+<translation id="1314565355471455267">VPN de Android</translation>
+<translation id="1327977588028644528">Puerta de enlace</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajustar al área de escaneo</translation>
 <translation id="1397738625398125236">Se puede hacer ping a la puerta de enlace</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Caché</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Datos móviles</translation>
+<translation id="315738237743207937">Se detectó un portal cautivo.</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
 <translation id="3199982728237701504">Alimentador de documentos (dos caras)</translation>
 <translation id="3246869037381808805">Se quitarán los trabajos de impresión que tengan más de 1 día</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Prueba en ejecución</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369013195428705271">¿Seguro que quieres borrar todo el historial de impresiones? No se quitarán tus trabajos de impresión en curso.</translation>
+<translation id="3435738964857648380">Seguridad</translation>
 <translation id="3456078764689556234">Se imprimió la página <ph name="PRINTED_PAGES" /> de un total de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Impresión</translation>
 <translation id="3515615323037921860">Trabajos de impresión</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Mi unidad</translation>
 <translation id="4429881212383817840">El ticket de Kerberos caducará pronto</translation>
 <translation id="445059817448385655">Contraseña anterior</translation>
+<translation id="4453205916657964690">Máscara de subred</translation>
 <translation id="4454245904991689773">Destino del escaneo</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">no se pudo hacer ping en la puerta de enlace de la red no predeterminada</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Posible firewall</translation>
 <translation id="4691278870498629773">Se detuvo: falta la bandeja</translation>
 <translation id="469379815867856270">Intensidad de la señal</translation>
+<translation id="4707579418881001319">L2TP/IPsec + certificado de usuario</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4773299976671772492">Detenida</translation>
 <translation id="4808449224298348341">Se canceló el trabajo de impresión <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Revisa el escáner y vuelve a intentarlo. Asegúrate de que haya espacio suficiente en el almacenamiento local para guardar los archivos escaneados.</translation>
 <translation id="4985509611418653372">Ejecutar</translation>
 <translation id="500920857929044050">Detener la prueba</translation>
+<translation id="5050042263972837708">Nombre del grupo</translation>
+<translation id="5088172560898466307">Nombre de host del servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5168185087976003268">Estado de la batería</translation>
@@ -145,6 +156,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5264277876637023664">Ejecutar prueba de CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Volver a ejecutar las rutinas</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Elige una nueva ahora</translation>
@@ -159,7 +171,9 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Más información en el Centro de ayuda</translation>
 <translation id="5635169860413004179">Ver el informe</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Este valor mide el uso de la CPU y es una combinación de todos los núcleos</translation>
+<translation id="5760715441271661976">Estado del portal</translation>
 <translation id="5781694279199921985">Guardar el registro de la sesión</translation>
 <translation id="5797428682393400134">COMPLETA</translation>
 <translation id="5832805196449965646">Agregar a una persona</translation>
@@ -185,6 +199,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6325525973963619867">Se ha producido un error.</translation>
 <translation id="636850387210749493">Registro de empresa</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Se guardó el archivo escaneado}other{Se guardaron los archivos escaneados}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Se detuvo: se atascó el papel</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">el protocolo de seguridad Wi-Fi es desconocido</translation>
@@ -194,6 +209,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6618744767048954150">En ejecución</translation>
 <translation id="6620487321149975369">Los trabajos de impresión aparecerán en el historial, a menos que se quiten manualmente</translation>
 <translation id="6643016212128521049">Borrar</translation>
+<translation id="6657585470893396449">Contraseña</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
 <translation id="6747215703636344499">Se detuvo: la bandeja de salida está llena</translation>
 <translation id="6756731097889387912">No se pudo cancelar el escaneo</translation>
@@ -210,19 +226,24 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />. Los administradores pueden configurarlo de forma remota.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Se completó el escaneo. Se escaneó 1 página}other{Se completó el escaneo. Se escanearon {NUMBER_OF_PAGES} páginas}}</translation>
 <translation id="7441459999606975924">La capacidad de las baterías se reduce con el uso</translation>
 <translation id="7469648432129124067">Se detectó un portal</translation>
 <translation id="7490813197707563893">Dirección MAC</translation>
+<translation id="7502658306369382406">Dirección IPv6</translation>
 <translation id="7561454561030345039">El administrador controla esta acción</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar contraseña nueva</translation>
+<translation id="7701040980221191251">Ninguna</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Conteo de ciclos</translation>
 <translation id="7732651821766520760">Prueba de <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Estado</translation>
+<translation id="7819857487979277519">PSK (WPA o RSN)</translation>
+<translation id="7882358943899516840">Tipo de proveedor</translation>
 <translation id="7928373994957558460">Mostrar ubicación del archivo</translation>
 <translation id="7936303884198020182">no se encontraron servidores de nombres</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -239,11 +260,15 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="8352772353338965963">Agrega una cuenta para el acceso múltiple. Puedes acceder a todas las cuentas abiertas sin una contraseña, por lo que esta función solo debe utilizarse con cuentas de confianza.</translation>
 <translation id="8364946094152050673">los servidores de nombres están vacíos</translation>
+<translation id="8372477600026034341">Hosts adicionales</translation>
 <translation id="8395584934117017006">Una empresa administra el dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8398927464629426868">La tasa a la que el dispositivo se está cargando o descargando</translation>
 <translation id="8475690821716466388">la red Wi-Fi está protegida con el protocolo de PSK WEP (poco seguro)</translation>
 <translation id="8477551185774834963">la latencia de DNS supera ligeramente el umbral permitido</translation>
+<translation id="8483248364096924578">Dirección IP</translation>
+<translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8576249514688522074">No se inicializó</translation>
+<translation id="8675354002693747642">Clave compartida previamente</translation>
 <translation id="871560550817059752">Error: Sin tinta</translation>
 <translation id="8723108084122415655">la red no predeterminada supera el umbral de latencia</translation>
 <translation id="8726019395068607495">Se detuvo: la tapa está abierta</translation>
@@ -251,6 +276,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8747900814994928677">Confirmar cambio</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
+<translation id="8798441408945964110">Nombre del proveedor</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8881098542468797602">Se completó correctamente la prueba</translation>
@@ -262,11 +288,14 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Intentos restantes: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Velocidad de carga</translation>
 <translation id="8970109610781093811">Volver a ejecutar</translation>
+<translation id="9003704114456258138">Frecuencia</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Uso actual</translation>
 <translation id="910415269708673980">Actualizar ticket para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="9149391708638971077">Ejecutar prueba de memoria</translation>
+<translation id="9190063653747922532">L2TP/IPsec + clave previamente compartida</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Ejecutar prueba de descarga</translation>
 </translationbundle>

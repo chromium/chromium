@@ -24,6 +24,7 @@
 अगर '<ph name="SERVICE_SCRIPT_NAME" />' पहले से चुना है, तो सही का निशान हटाकर दोबारा लगाएं.</translation>
 <translation id="225614027745146050">आपका स्वागत है</translation>
 <translation id="2320166752086256636">कीबोर्ड छिपाएं</translation>
+<translation id="2333212046079545895">कॉपीराइट 2021 Google LLC. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2366718077645204424">होस्‍ट तक पहुंचने में असमर्थ. यह संभवत:   उपयोग किए जाने वाले नेटवर्क के कॉन्फ़िगरेशन के कारण है.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  पिछली बार <ph name="RELATIVE_TIMESTAMP" /> ऑनलाइन दिखाई दिया.</translation>
@@ -129,7 +130,6 @@
 <translation id="7067321367069083429">स्क्रीन किसी टच स्क्रीन की तरह काम करती है</translation>
 <translation id="7116737094673640201">Chrome दूरस्‍थ डेस्‍कटॉप में आपका स्वागत है</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
-<translation id="724402108658370587">कॉपीराइट 2020 Google LLC. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="7312846573060934304">होस्ट ऑफ़लाइन है.</translation>
 <translation id="7319983568955948908">साझाकरण रोकें</translation>
 <translation id="7401733114166276557">Chrome दूरस्थ डेस्कटॉप</translation>

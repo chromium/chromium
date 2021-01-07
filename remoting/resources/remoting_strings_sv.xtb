@@ -24,6 +24,7 @@ Du beviljar behörigheten genom att klicka på <ph name="BUTTON_NAME" /> nedan o
 Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och markerar den på nytt.</translation>
 <translation id="225614027745146050">Välkommen</translation>
 <translation id="2320166752086256636">Dölj tangentbordet</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. Med ensamrätt.</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2366718077645204424">Det går inte att nå värden. Detta beror troligen på konfigurationen av nätverket som du använder.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Var senast uppe på webben <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -129,7 +130,6 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="7067321367069083429">Skärmen används som pekskärm</translation>
 <translation id="7116737094673640201">Välkommen till Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Försök igen</translation>
-<translation id="724402108658370587">Copyright 2020 Google LLC. Med ensamrätt.</translation>
 <translation id="7312846573060934304">Värden är offline.</translation>
 <translation id="7319983568955948908">Sluta dela</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>

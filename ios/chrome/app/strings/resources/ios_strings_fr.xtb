@@ -17,7 +17,7 @@
 <translation id="110724200315609752">Passer à une autre fenêtre ouverte</translation>
 <translation id="1112015203684611006">Échec impr.</translation>
 <translation id="1125564390852150847">Créer un onglet</translation>
-<translation id="1145536944570833626">Supprimer les données existantes.</translation>
+<translation id="1145536944570833626">Supprimer les données existantes</translation>
 <translation id="1147031633655575115">Connecté en tant que <ph name="USER" /></translation>
 <translation id="1154690515305205900">La création d'un lien vers le texte surligné a échoué.</translation>
 <translation id="1154984953698510061">Voir les autres onglets</translation>
@@ -191,7 +191,6 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="291754862089661335">Positionnez le code QR ou le code-barres dans ce cadre</translation>
 <translation id="2921219216347069551">Impossible de partager page</translation>
 <translation id="2923448633003185837">Coller et rechercher</translation>
-<translation id="2923827943290349720">Verrouiller les onglets de navigation privée lorsque vous fermez Chrome</translation>
 <translation id="292639812446257861">Marquer comme non lues</translation>
 <translation id="2952581218264071393">1. Accédez aux paramètres de Chrome</translation>
 <translation id="2958718410589002129">Mots de passe</translation>
@@ -645,7 +644,7 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="7771470029643830783">Si vous vous déconnectez, vos favoris, votre historique, vos mots de passe et d'autres données Chrome ne seront plus synchronisés avec votre compte Google.
 
 Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chrome seront supprimées de cet appareil lors de votre déconnexion. En revanche, vos données synchronisées resteront dans votre compte Google.</translation>
-<translation id="7772032839648071052">Confirmer la phrase secrète</translation>
+<translation id="7772032839648071052">Confirmez la phrase secrète</translation>
 <translation id="7778472311864276518">Supprimer le compte de cet appareil</translation>
 <translation id="7781011649027948662">Traduire la page ?</translation>
 <translation id="7781829728241885113">Hier</translation>

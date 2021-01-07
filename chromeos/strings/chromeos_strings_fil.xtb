@@ -3,6 +3,7 @@
 <translationbundle lang="fil">
 <translation id="1018656279737460067">Nakansela</translation>
 <translation id="1059913517121127803">Hindi masimulan ang pag-scan</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">May na-detect na firewall</translation>
 <translation id="1075811647922107217">Laki ng page</translation>
 <translation id="1124772482545689468">User</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Hindi kilalang error.</translation>
 <translation id="1204296502688602597">Latency ng DNS</translation>
 <translation id="123124571410524056">May pinaghihinalaang portal</translation>
+<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">Latency ng HTTPS</translation>
+<translation id="1270369111467284986">May pinaghihinalaang captive portal</translation>
 <translation id="1290331692326790741">Mahina ang signal</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Pagkasyahin sa nasa-scan na bahagi</translation>
 <translation id="1397738625398125236">Puwedeng I-ping ang Gateway</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Data sa mobile</translation>
+<translation id="315738237743207937">May na-detect na captive portal</translation>
 <translation id="3188257591659621405">Aking mga file</translation>
 <translation id="3199982728237701504">Document Feeder (Dalawang bahagi)</translation>
 <translation id="3246869037381808805">Aalisin ang mga pag-print na lampas 1 araw na</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Tumatakbo ang pagsusuri</translation>
 <translation id="3368922792935385530">Nakakonekta</translation>
 <translation id="3369013195428705271">Sigurado ka bang gusto mong i-clear ang lahat ng history ng pag-print? Hindi maki-clear ang iyong mga kasalukuyang pag-print.</translation>
+<translation id="3435738964857648380">Seguridad</translation>
 <translation id="3456078764689556234">Na-print ang page <ph name="PRINTED_PAGES" /> sa <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Pagpi-print</translation>
 <translation id="3515615323037921860">Mga Pag-print</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Aking Drive</translation>
 <translation id="4429881212383817840">Mag-e-expire na ang ticket ng Kerberos</translation>
 <translation id="445059817448385655">Lumang password</translation>
+<translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Pag-scan sa</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Hindi na-ping ang hindi default na network gateway</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">May pinaghihinalaang firewall</translation>
 <translation id="4691278870498629773">Huminto - Walang tray</translation>
 <translation id="469379815867856270">Lakas ng Signal</translation>
+<translation id="4707579418881001319">L2TP/IPsec + certificate ng user</translation>
 <translation id="4731797938093519117">Pangunahing access</translation>
 <translation id="4773299976671772492">Inihinto</translation>
 <translation id="4808449224298348341">Kinansela ang pag-print ng <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Suriin ang scanner at subukan ulit. Tiyaking may sapat na lokal na space para mag-save ng mga na-scan na file.</translation>
 <translation id="4985509611418653372">Patakbuhin</translation>
 <translation id="500920857929044050">Ihinto ang pagsusuri</translation>
+<translation id="5050042263972837708">Pangalan ng pangkat</translation>
+<translation id="5088172560898466307">Hostname ng server</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5154917547274118687">Memorya</translation>
 <translation id="5168185087976003268">Tagal ng baterya</translation>
@@ -145,6 +156,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5264277876637023664">Patakbuhin ang pagsusuri sa CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Patakbuhin Ulit ang Mga Routine</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Pumili ng bago ngayon</translation>
@@ -159,7 +171,9 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Matuto pa sa Help Center</translation>
 <translation id="5635169860413004179">Tingnan ang Ulat</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Sinusukat nito ang paggamit ng CPU, at ito ang pagsasama-sama ng lahat ng core</translation>
+<translation id="5760715441271661976">Status ng Portal</translation>
 <translation id="5781694279199921985">I-save ang Log ng session</translation>
 <translation id="5797428682393400134">TAGUMPAY</translation>
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
@@ -185,6 +199,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6325525973963619867">Nabigo</translation>
 <translation id="636850387210749493">Pagpapatala ng negosyo</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Na-save ang na-scan na file}one{Na-save ang mga na-scan na file}other{Na-save ang mga na-scan na file}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Huminto - Nagka-paper jam</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Hindi alam na panseguridad na protocol ng WiFi</translation>
@@ -194,6 +209,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6618744767048954150">Tumatakbo</translation>
 <translation id="6620487321149975369">Lalabas sa history ang mga pag-print maliban na lang kung manual na aalisin ang mga ito</translation>
 <translation id="6643016212128521049">I-clear</translation>
+<translation id="6657585470893396449">Password</translation>
 <translation id="6704062477274546131">Resolution ng DNS</translation>
 <translation id="6747215703636344499">Huminto - Puno na ang output</translation>
 <translation id="6756731097889387912">Hindi makansela ang pag-scan</translation>
@@ -210,19 +226,24 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7177485034254901881">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito. Puwedeng i-configure ng mga administrator ang device sa remote na paraan.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Uri ng file</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tapos na ang pag-scan. 1 page ang na-scan}one{Tapos na ang pag-scan. {NUMBER_OF_PAGES} page ang na-scan}other{Tapos na ang pag-scan. {NUMBER_OF_PAGES} na page ang na-scan}}</translation>
 <translation id="7441459999606975924">Nababawasan ang kapasidad ng mga baterya sa paggamit</translation>
 <translation id="7469648432129124067">May na-detect na portal</translation>
 <translation id="7490813197707563893">MAC address</translation>
+<translation id="7502658306369382406">IPv6 address</translation>
 <translation id="7561454561030345039">Pinapamahalaan ng iyong administrator ang pagkilos na ito.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Mataas na latency ng HTTPS</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7690294790491645610">Kumpirmahin ang bagong password</translation>
+<translation id="7701040980221191251">Wala</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Bilang ng cycke</translation>
 <translation id="7732651821766520760">Pagsusuri sa <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Katayuan</translation>
+<translation id="7819857487979277519">PSK (WPA o RSN)</translation>
+<translation id="7882358943899516840">Uri ng provider</translation>
 <translation id="7928373994957558460">Ipakita ang lokasyon ng file</translation>
 <translation id="7936303884198020182">Walang nakitang name server</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -239,11 +260,15 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8347227221149377169">Mga pag-print</translation>
 <translation id="8352772353338965963">Magdagdag ng account sa multiple na pag-sign in. Maa-access ang lahat ng naka-sign in na account nang walang password, kaya dapat na gamitin lang ang feature na ito sa mga pinagkakatiwalaang account.</translation>
 <translation id="8364946094152050673">Mga walang lamang name server</translation>
+<translation id="8372477600026034341">Mga karagdagang host</translation>
 <translation id="8395584934117017006">Pinapamahalaan ng enterprise ang <ph name="DEVICE_TYPE" /> na ito</translation>
 <translation id="8398927464629426868">Ang rate ng kasalukuyang pag-charge o pag-discharge ng device</translation>
 <translation id="8475690821716466388">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP PSK</translation>
 <translation id="8477551185774834963">Medyo mas mataas sa pinapayagang limitasyon ang latency ng DNS</translation>
+<translation id="8483248364096924578">IP address</translation>
+<translation id="8503813439785031346">Username</translation>
 <translation id="8576249514688522074">Hindi Nasimulan</translation>
+<translation id="8675354002693747642">Pre-shared key:</translation>
 <translation id="871560550817059752">Hindi na-print - Wala nang ink</translation>
 <translation id="8723108084122415655">Mas mataas sa limitasyon ng latency ang hindi default na network</translation>
 <translation id="8726019395068607495">Huminto - Nakabukas ang door</translation>
@@ -251,6 +276,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8747900814994928677">Kumpirmahin ang pagbabago</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Default</translation>
+<translation id="8798441408945964110">Pangalan ng provider</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Humingi ng tulong</translation>
 <translation id="8881098542468797602">Nagtagumpay ang pagsusuri</translation>
@@ -262,11 +288,14 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> (na) pagsubok ang natitira</translation>
 <translation id="8968751544471797276">Rate ng Pag-charge</translation>
 <translation id="8970109610781093811">Patakbuhing muli</translation>
+<translation id="9003704114456258138">Frequency</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Kasalukuyang paggamit</translation>
 <translation id="910415269708673980">I-refresh ang ticket para sa <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Sina-scan ang pahina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">I-unlock</translation>
 <translation id="9149391708638971077">Patakbuhin ang pagsusuri sa Memory</translation>
+<translation id="9190063653747922532">L2TP/IPsec + paunang nakabahaging key</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Patakbuhin ang pagsusuri sa Discharge</translation>
 </translationbundle>

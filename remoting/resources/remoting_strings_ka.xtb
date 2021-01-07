@@ -24,6 +24,7 @@
 თუ „<ph name="SERVICE_SCRIPT_NAME" />“ უკვე მონიშნულია, მოხსენით და ხელახლა მონიშნეთ.</translation>
 <translation id="225614027745146050">მოგესალმებით!</translation>
 <translation id="2320166752086256636">კლავიატურის დამალვა</translation>
+<translation id="2333212046079545895">© 2021 Google LLC. ყველა უფლება დაცულია.</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2366718077645204424">ვერ დაუკავშირდა ჰოსტს. ამის მიზეზი შეიძლება იყოს იმ ქსელის კონფიგურაცია, რომელსაც იყენებთ.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> ბოლოს დაფიქსირდა ონლაინ: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -129,7 +130,6 @@
 <translation id="7067321367069083429">ეკრანი მუშაობს სენსორული ეკრანის სახით</translation>
 <translation id="7116737094673640201">მოგესალმებათ Chrome-ის დისტანციური სამუშაო დაფა</translation>
 <translation id="7144878232160441200">გაიმეორეთ</translation>
-<translation id="724402108658370587">© 2020 Google LLC. ყველა უფლება დაცულია.</translation>
 <translation id="7312846573060934304">საკვანძო კომპიუტერი ოფლაინშია.</translation>
 <translation id="7319983568955948908">შეწყვიტეთ გაზიარება</translation>
 <translation id="7401733114166276557">Chrome-ის დისტანციური სამუშაო დაფა</translation>

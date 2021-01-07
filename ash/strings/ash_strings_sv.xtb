@@ -327,6 +327,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3901991538546252627">Ansluter till <ph name="NAME" /></translation>
 <translation id="3943857333388298514">Klistra in</translation>
 <translation id="394485226368336402">Ljudinställningar</translation>
+<translation id="3945867833895287237">Ansluter till surfzon …</translation>
 <translation id="3962859241508114581">Föregående spår</translation>
 <translation id="3969043077941541451">Av</translation>
 <translation id="397105322502079400">Beräknar ...</translation>
@@ -514,7 +515,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5648021990716966815">Mikrofonuttag</translation>
 <translation id="5669267381087807207">Aktiverar</translation>
 <translation id="5673434351075758678">Från <ph name="FROM_LOCALE" /> till <ph name="TO_LOCALE" /> efter synkronisering av inställningarna.</translation>
-<translation id="5677928146339483299">Blockerade</translation>
+<translation id="5677928146339483299">Blockerat</translation>
 <translation id="5679050765726761783">En nätadapter med låg effekt upptäcktes</translation>
 <translation id="5682642926269496722">Google-assistenten är inte tillgänglig för det här användarkontot.</translation>
 <translation id="5689633613396158040">Med Nattljus blir det behagligare för ögonen att titta på skärmen eller läsa i svag belysning Tryck om du vill ändra vilken tid Nattljus aktiveras eller inaktivera det helt.</translation>

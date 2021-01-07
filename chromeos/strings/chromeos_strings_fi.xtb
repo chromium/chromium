@@ -3,6 +3,7 @@
 <translationbundle lang="fi">
 <translation id="1018656279737460067">Peruutettu</translation>
 <translation id="1059913517121127803">Skannauksen aloittaminen ei onnistunut</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Palomuuri havaittu</translation>
 <translation id="1075811647922107217">Sivun koko</translation>
 <translation id="1124772482545689468">Käyttäjä</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Tuntematon virhe.</translation>
 <translation id="1204296502688602597">DNS-viive</translation>
 <translation id="123124571410524056">Mahdollinen portaali</translation>
+<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">HTTPS-viive</translation>
+<translation id="1270369111467284986">Mahdollinen captive portal</translation>
 <translation id="1290331692326790741">Heikko signaali</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">Yhdyskäytävä</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sovita skannattavalle alueelle</translation>
 <translation id="1397738625398125236">Yhdyskäytävää voidaan pingata</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Välimuisti</translation>
 <translation id="3122464029669770682">Keskusyksikkö</translation>
 <translation id="315116470104423982">Mobiilitiedonsiirto</translation>
+<translation id="315738237743207937">Captive portal havaittu</translation>
 <translation id="3188257591659621405">Omat tiedostot</translation>
 <translation id="3199982728237701504">Syöttölaite (kaksipuolinen)</translation>
 <translation id="3246869037381808805">Yli päivän vanhat tulostustyöt poistetaan</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Testi käynnissä</translation>
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3369013195428705271">Haluatko varmasti poistaa tulostushistorian? Käynnissä olevia tulostustöitä ei poisteta.</translation>
+<translation id="3435738964857648380">Suojaus</translation>
 <translation id="3456078764689556234">Tulostettu <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> sivua.</translation>
 <translation id="3459509316159669723">Tulostaminen</translation>
 <translation id="3515615323037921860">Tulostustyöt</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Oma Drive</translation>
 <translation id="4429881212383817840">Kerberos-tukipyyntö vanhenee pian</translation>
 <translation id="445059817448385655">Vanha salasana</translation>
+<translation id="4453205916657964690">Aliverkon maski</translation>
 <translation id="4454245904991689773">Skannauskohde</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping-kutsu epäonnistui</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Mahdollinen palomuuri</translation>
 <translation id="4691278870498629773">Pysähtynyt – Lokero puuttuu</translation>
 <translation id="469379815867856270">Signaalin voimakkuus</translation>
+<translation id="4707579418881001319">L2TP/IPsec + käyttäjävarmenne</translation>
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
 <translation id="4773299976671772492">Keskeytetty</translation>
 <translation id="4808449224298348341">Peruutettu tulostustyö: <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Tarkista skanneri ja yritä uudelleen. Varmista, että paikallinen tallennustila riittää skannattujen tiedostojen tallentamiseen.</translation>
 <translation id="4985509611418653372">Suorita</translation>
 <translation id="500920857929044050">Lopeta testi</translation>
+<translation id="5050042263972837708">Ryhmän nimi</translation>
+<translation id="5088172560898466307">Palvelimen isäntänimi</translation>
 <translation id="5089810972385038852">Osavaltio/alue</translation>
 <translation id="5154917547274118687">Muisti</translation>
 <translation id="5168185087976003268">Akun toiminta</translation>
@@ -145,6 +156,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5264277876637023664">Suorita CPU-testi</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Suorita ohjelmat uudelleen</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Valitse uusi nyt</translation>
@@ -159,7 +171,9 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Katso lisätietoja ohjekeskuksesta</translation>
 <translation id="5635169860413004179">Katso raportti</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Tämä mittaa prosessorin käyttöä ja tarkoittaa kaikkien ytimien yhteissummaa</translation>
+<translation id="5760715441271661976">Portaalitila</translation>
 <translation id="5781694279199921985">Tallenna käyttökertaloki</translation>
 <translation id="5797428682393400134">ONNISTUI</translation>
 <translation id="5832805196449965646">Lisää henkilö</translation>
@@ -185,6 +199,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6325525973963619867">Epäonnistui</translation>
 <translation id="636850387210749493">Yritysversion käyttöönotto</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Skannattu tiedosto tallennettu}other{Skannatut tiedostot tallennettu}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Pysähtynyt – Paperitukos</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Tuntematon Wi-Fi-suojausprotokolla</translation>
@@ -194,6 +209,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6618744767048954150">Käynnissä</translation>
 <translation id="6620487321149975369">Tulostustyöt näkyvät historiassa, ellei niitä poisteta manuaalisesti</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
+<translation id="6657585470893396449">Salasana</translation>
 <translation id="6704062477274546131">DNS-ratkaisu</translation>
 <translation id="6747215703636344499">Pysähtynyt – Syöte täynnä</translation>
 <translation id="6756731097889387912">Skannausta ei voitu perua</translation>
@@ -210,19 +226,24 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ylläpitää tätä: <ph name="DEVICE_TYPE" />. Järjestelmänvalvojat voivat määrittää laitteen etänä.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tiedostotyyppi</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skannaus valmis. 1 sivu skannattu}other{Skannaus valmis. {NUMBER_OF_PAGES} sivua skannattu}}</translation>
 <translation id="7441459999606975924">Akun kapasiteetti pienenee käytön myötä</translation>
 <translation id="7469648432129124067">Portaali havaittu</translation>
 <translation id="7490813197707563893">MAC-osoite</translation>
+<translation id="7502658306369382406">IPv6-osoite</translation>
 <translation id="7561454561030345039">Järjestelmänvalvojasi ylläpitää tätä toimintoa</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Suuri HTTPS-viive</translation>
 <translation id="7658239707568436148">Peruuta</translation>
 <translation id="7690294790491645610">Vahvista uusi salasana</translation>
+<translation id="7701040980221191251">Ei mitään</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Syklien määrä</translation>
 <translation id="7732651821766520760">Testi: <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Tila</translation>
+<translation id="7819857487979277519">PSK (WPA tai RSN)</translation>
+<translation id="7882358943899516840">Palveluntarjoajan tyyppi</translation>
 <translation id="7928373994957558460">Näytä tiedoston sijainti</translation>
 <translation id="7936303884198020182">Nimipalvelimia ei löydy</translation>
 <translation id="7960831585769876809">Lämpötila</translation>
@@ -239,11 +260,15 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8347227221149377169">Tulostustyöt</translation>
 <translation id="8352772353338965963">Lisää tili useaan tiliin kirjautumiseen. Kaikkia tilejä, joihin on kirjauduttu sisään, voi käyttää ilman salasanaa. Käytä siis ominaisuutta vain luotetuilla tileillä.</translation>
 <translation id="8364946094152050673">Nimipalvelimet tyhjiä</translation>
+<translation id="8372477600026034341">Muut isännät</translation>
 <translation id="8395584934117017006">Tämä <ph name="DEVICE_TYPE" /> on yrityksen ylläpitämä</translation>
 <translation id="8398927464629426868">Laitteen tämänhetkinen latausnopeus tai latauksen purkunopeus</translation>
 <translation id="8475690821716466388">Wi-Fi-verkko on suojattu heikolla WEP PSK -protokollalla</translation>
 <translation id="8477551185774834963">DNS-viive hieman yli sallitun rajan</translation>
+<translation id="8483248364096924578">IP-osoite</translation>
+<translation id="8503813439785031346">Käyttäjätunnus</translation>
 <translation id="8576249514688522074">Ei ole alustettu</translation>
+<translation id="8675354002693747642">Esijaettu avain</translation>
 <translation id="871560550817059752">Epäonnistui – Muste loppu</translation>
 <translation id="8723108084122415655">Muu kuin oletusverkko yli viiverajan</translation>
 <translation id="8726019395068607495">Pysähtynyt – Luukku auki</translation>
@@ -251,6 +276,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8747900814994928677">Vahvista muutos</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Oletus</translation>
+<translation id="8798441408945964110">Palveluntarjoajan nimi</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Hae ohjeita</translation>
 <translation id="8881098542468797602">Testi onnistui</translation>
@@ -262,11 +288,14 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> yritystä jäljellä</translation>
 <translation id="8968751544471797276">Latausnopeus</translation>
 <translation id="8970109610781093811">Suorita uudelleen</translation>
+<translation id="9003704114456258138">Taajuus</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Nykyinen käyttö</translation>
 <translation id="910415269708673980">Päivitä tukipyyntö: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannataan sivu <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Poista lukitus</translation>
 <translation id="9149391708638971077">Suorita muistitesti</translation>
+<translation id="9190063653747922532">L2TP/IPsec + esijaettu avain</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Suorita purkautumistesti</translation>
 </translationbundle>

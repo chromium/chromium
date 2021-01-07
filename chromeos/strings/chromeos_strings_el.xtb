@@ -3,6 +3,7 @@
 <translationbundle lang="el">
 <translation id="1018656279737460067">Ακυρώθηκε</translation>
 <translation id="1059913517121127803">Δεν ήταν δυνατή η έναρξη της σάρωσης</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Εντοπίστηκε τείχος προστασίας</translation>
 <translation id="1075811647922107217">Μέγεθος σελίδας</translation>
 <translation id="1124772482545689468">Χρήστης</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Άγνωστο σφάλμα.</translation>
 <translation id="1204296502688602597">Λανθάνων χρόνος DNS</translation>
 <translation id="123124571410524056">Πιθανή ύπαρξη πύλης</translation>
+<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">Λανθάνων χρόνος HTTPS</translation>
+<translation id="1270369111467284986">Η πύλη υποδοχής είναι ύποπτη</translation>
 <translation id="1290331692326790741">Ασθενές σήμα</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">Πύλη</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Προσαρμογή στην περιοχή σάρωσης</translation>
 <translation id="1397738625398125236">Η πύλη λαμβάνει ping</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Κρυφή μνήμη</translation>
 <translation id="3122464029669770682">Κεντρική μονάδα επεξεργασίας</translation>
 <translation id="315116470104423982">Δεδομένα κινητής τηλεφωνίας</translation>
+<translation id="315738237743207937">Εντοπίστηκε πύλη υποδοχής</translation>
 <translation id="3188257591659621405">Τα αρχεία μου</translation>
 <translation id="3199982728237701504">Τροφοδότης εγγράφων (Διπλής όψης)</translation>
 <translation id="3246869037381808805">Οι εργασίες εκτύπωσης που είναι παλαιότερες της 1 ημέρας θα καταργηθούν.</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Η δοκιμή εκτελείται</translation>
 <translation id="3368922792935385530">Σε σύνδεση</translation>
 <translation id="3369013195428705271">Είστε βέβαιοι ότι θέλετε να διαγράψετε όλο το ιστορικό εκτύπωσης; Οι τρέχουσες εργασίες εκτύπωσης δεν θα διαγραφούν.</translation>
+<translation id="3435738964857648380">Ασφάλεια</translation>
 <translation id="3456078764689556234">Εκτυπώθηκε η σελίδα <ph name="PRINTED_PAGES" /> από <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Εκτύπωση</translation>
 <translation id="3515615323037921860">Εργασίες εκτύπωσης</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Το Drive μου</translation>
 <translation id="4429881212383817840">Το εισιτήριο Kerberos θα λήξει σύντομα</translation>
 <translation id="445059817448385655">Παλιός κωδικός πρόσβασης</translation>
+<translation id="4453205916657964690">Μάσκα υποδικτύου</translation>
 <translation id="4454245904991689773">Σάρωση σε</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Αποτυχία ping της μη προεπιλεγμένης πύλης δικτύου.</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Πιθανή ύπαρξη τείχους προστασίας</translation>
 <translation id="4691278870498629773">Διακοπή - Λείπει δίσκος</translation>
 <translation id="469379815867856270">Ισχύς σήματος</translation>
+<translation id="4707579418881001319">L2TP/IPsec + πιστοποιητικό χρήστη</translation>
 <translation id="4731797938093519117">Γονική πρόσβαση</translation>
 <translation id="4773299976671772492">Διακόπηκε</translation>
 <translation id="4808449224298348341">Ακυρώθηκε η εργασία εκτύπωσης <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Ελέγξτε τον σαρωτή και δοκιμάστε ξανά. Βεβαιωθείτε ότι υπάρχει αρκετός τοπικός αποθηκευτικός χώρος για την αποθήκευση των αρχείων που σαρώνονται.</translation>
 <translation id="4985509611418653372">Εκτέλεση</translation>
 <translation id="500920857929044050">Διακοπή δοκιμής</translation>
+<translation id="5050042263972837708">Όνομα ομάδας</translation>
+<translation id="5088172560898466307">Όνομα κεντρικού υπολογιστή διακομιστή</translation>
 <translation id="5089810972385038852">Πολιτεία</translation>
 <translation id="5154917547274118687">Μνήμη</translation>
 <translation id="5168185087976003268">Κατάσταση μπαταρίας</translation>
@@ -145,6 +156,7 @@
 <translation id="5264277876637023664">Εκτέλεση δοκιμής CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Επανεκτέλεση ρουτινών</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Επιλέξτε έναν νέο τώρα</translation>
@@ -159,7 +171,9 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Μάθετε περισσότερα στο Κέντρο βοήθειας</translation>
 <translation id="5635169860413004179">Προβολή αναφοράς</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Αυτή η επιλογή μετρά τη χρήση CPU και είναι αθροιστική για όλους τους πυρήνες.</translation>
+<translation id="5760715441271661976">Κατάσταση πύλης</translation>
 <translation id="5781694279199921985">Αποθήκευση αρχείου καταγραφής περιόδου λειτουργίας</translation>
 <translation id="5797428682393400134">ΕΠΙΤΥΧΙΑ</translation>
 <translation id="5832805196449965646">Προσθήκη ατόμου</translation>
@@ -185,6 +199,7 @@
 <translation id="6325525973963619867">Απέτυχε</translation>
 <translation id="636850387210749493">Εγγραφή επιχείρησης</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Το σαρωμένο αρχείο αποθηκεύτηκε}other{Τα σαρωμένα αρχεία αποθηκεύτηκαν}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Διακοπή - Εμπλοκή χαρτιού</translation>
 <translation id="6517239166834772319">Εξερεύνηση</translation>
 <translation id="6527081081771465939">Άγνωστο πρωτόκολλο ασφαλείας Wi-Fi</translation>
@@ -194,6 +209,7 @@
 <translation id="6618744767048954150">Σε εξέλιξη</translation>
 <translation id="6620487321149975369">Οι εργασίες εκτύπωσης θα εμφανίζονται στο ιστορικό, εκτός εάν καταργηθούν μη αυτόματα.</translation>
 <translation id="6643016212128521049">Διαγραφή</translation>
+<translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="6704062477274546131">Επίλυση DNS</translation>
 <translation id="6747215703636344499">Διακοπή - Ο δίσκος εξόδου είναι γεμάτος</translation>
 <translation id="6756731097889387912">Δεν ήταν δυνατή η ακύρωση της σάρωσης.</translation>
@@ -210,19 +226,24 @@
 <translation id="7177485034254901881">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />. Οι διαχειριστές μπορούν να διαμορφώσουν τη συσκευή απομακρυσμένα.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Τύπος αρχείου</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Η σάρωση ολοκληρώθηκε. Σαρώθηκε 1 σελίδα.}other{Η σάρωση ολοκληρώθηκε. Σαρώθηκαν {NUMBER_OF_PAGES} σελίδες.}}</translation>
 <translation id="7441459999606975924">Η χωρητικότητα των μπαταριών μειώνεται με τη χρήση.</translation>
 <translation id="7469648432129124067">Εντοπίστηκε πύλη</translation>
 <translation id="7490813197707563893">Διεύθυνση MAC</translation>
+<translation id="7502658306369382406">Διεύθυνση IPv6</translation>
 <translation id="7561454561030345039">Η διαχείριση αυτής της ενέργειας γίνεται από τον διαχειριστή σας.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Μεγάλος λανθάνων χρόνος HTTPS</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7690294790491645610">Επιβεβαίωση νέου κωδικού πρόσβασης</translation>
+<translation id="7701040980221191251">Καμία</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Πλήθος φορτίσεων-εξαντλήσεων μπαταρίας</translation>
 <translation id="7732651821766520760">Δοκιμή <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Κατάσταση</translation>
+<translation id="7819857487979277519">PSK (WPA ή RSN)</translation>
+<translation id="7882358943899516840">Τύπος παρόχου</translation>
 <translation id="7928373994957558460">Εμφάνιση τοποθεσίας αρχείου</translation>
 <translation id="7936303884198020182">Δεν βρέθηκαν διακομιστές ονομάτων.</translation>
 <translation id="7960831585769876809">Θερμοκρασία</translation>
@@ -239,11 +260,15 @@
 <translation id="8347227221149377169">Εργασίες εκτύπωσης</translation>
 <translation id="8352772353338965963">Προσθέστε έναν λογαριασμό στη σύνδεση σε πολλούς λογαριασμούς. Όλοι οι συνδεδεμένοι λογαριασμοί μπορούν να προσπελαστούν χωρίς κωδικό πρόσβασης, επομένως αυτή η δυνατότητα πρέπει να χρησιμοποιείται μόνο με αξιόπιστους λογαριασμούς.</translation>
 <translation id="8364946094152050673">Κενά ονόματα διακομιστών</translation>
+<translation id="8372477600026034341">Επιπλέον κεντρικοί υπολογιστές</translation>
 <translation id="8395584934117017006">Η διαχείριση αυτής της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από επιχείρηση.</translation>
 <translation id="8398927464629426868">Ο ρυθμός με τον οποίο φορτίζεται ή εκφορτίζεται η συσκευή αυτήν τη στιγμή.</translation>
 <translation id="8475690821716466388">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε ένα αδύναμο πρωτόκολλο WEP PSK.</translation>
 <translation id="8477551185774834963">Ο λανθάνων χρόνος DNS έχει υπερβεί ελαφρώς το επιτρεπόμενο ελάχιστο όριο.</translation>
+<translation id="8483248364096924578">Διεύθυνση IP</translation>
+<translation id="8503813439785031346">Όνομα χρήστη</translation>
 <translation id="8576249514688522074">Μη προετοιμασμένο</translation>
+<translation id="8675354002693747642">Ήδη κοινόχρηστο κλειδί</translation>
 <translation id="871560550817059752">Σφάλμα - Τελείωσε το μελάνι</translation>
 <translation id="8723108084122415655">Ο λανθάνων χρόνος του μη προεπιλεγμένου δικτύου έχει υπερβεί το ελάχιστο όριο.</translation>
 <translation id="8726019395068607495">Διακοπή - Ανοικτή θύρα</translation>
@@ -251,6 +276,7 @@
 <translation id="8747900814994928677">Επιβεβαίωση αλλαγής</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Προεπιλογή</translation>
+<translation id="8798441408945964110">Όνομα παρόχου</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Λήψη βοήθειας</translation>
 <translation id="8881098542468797602">Επιτυχία δοκιμής</translation>
@@ -262,11 +288,14 @@
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> προσπάθειες απομένουν.</translation>
 <translation id="8968751544471797276">Ρυθμός φόρτισης</translation>
 <translation id="8970109610781093811">Επανεκτέλεση</translation>
+<translation id="9003704114456258138">Συχνότητα</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Τρέχουσα χρήση</translation>
 <translation id="910415269708673980">Ανανέωση εισιτηρίου για το <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Σάρωση σελίδας <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Ξεκλείδωμα</translation>
 <translation id="9149391708638971077">Εκτέλεση δοκιμής μνήμης</translation>
+<translation id="9190063653747922532">L2TP/IPsec + ήδη κοινόχρηστο κλειδί</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Εκτέλεση δοκιμής αποφόρτισης</translation>
 </translationbundle>

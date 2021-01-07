@@ -3,6 +3,7 @@
 <translationbundle lang="ca">
 <translation id="1018656279737460067">S'ha cancel·lat</translation>
 <translation id="1059913517121127803">No s'ha pogut iniciar l'escaneig</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">S'ha detectat un tallafoc</translation>
 <translation id="1075811647922107217">Mida de la pàgina</translation>
 <translation id="1124772482545689468">Usuari</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Error desconegut.</translation>
 <translation id="1204296502688602597">Latència de DNS</translation>
 <translation id="123124571410524056">Possible portal</translation>
+<translation id="1238191093934674082">VPN oberta</translation>
 <translation id="1238612778414822719">Latència d'HTTPS</translation>
+<translation id="1270369111467284986">Possible portal captiu</translation>
 <translation id="1290331692326790741">Senyal feble</translation>
+<translation id="1314565355471455267">VPN d'Android</translation>
+<translation id="1327977588028644528">Passarel·la</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajusta a l'àrea d'escaneig</translation>
 <translation id="1397738625398125236">Es pot fer ping a la passarel·la</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Memòria cau</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Dades mòbils</translation>
+<translation id="315738237743207937">S'ha detectat un portal captiu</translation>
 <translation id="3188257591659621405">Els meus fitxers</translation>
 <translation id="3199982728237701504">Alimentador de documents (a dues cares)</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">La prova s'està executant</translation>
 <translation id="3368922792935385530">Connectat</translation>
 <translation id="3369013195428705271">Confirmes que vols esborrar tot l'historial d'impressions? Les tasques d'impressió en curs no s'esborraran.</translation>
+<translation id="3435738964857648380">Seguretat</translation>
 <translation id="3456078764689556234">S'ha imprès la pàgina <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Imprimeix</translation>
 <translation id="3515615323037921860">Tasques d'impressió</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">La meva unitat</translation>
 <translation id="4429881212383817840">El tiquet de Kerberos caducarà aviat</translation>
 <translation id="445059817448385655">Contrasenya antiga</translation>
+<translation id="4453205916657964690">Màscara de subxarxa</translation>
 <translation id="4454245904991689773">Desa a</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">No s'ha pogut fer ping a la passarel·la de xarxa no predeterminada</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Possible tallafoc</translation>
 <translation id="4691278870498629773">S'ha aturat: no es troba la safata</translation>
 <translation id="469379815867856270">Intensitat del senyal</translation>
+<translation id="4707579418881001319">L2TP/IPsec + certificat d'usuari</translation>
 <translation id="4731797938093519117">Accés parental</translation>
 <translation id="4773299976671772492">En pausa</translation>
 <translation id="4808449224298348341">S'ha cancel·lat la tasca d'impressió del document <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Comprova l'escàner i torna-ho a provar. Assegura't que hi hagi prou espai local per desar els fitxers escanejats.</translation>
 <translation id="4985509611418653372">Executa</translation>
 <translation id="500920857929044050">Atura la prova</translation>
+<translation id="5050042263972837708">Nom del grup</translation>
+<translation id="5088172560898466307">Nom d'amfitrió del servidor</translation>
 <translation id="5089810972385038852">Estat</translation>
 <translation id="5154917547274118687">Memòria</translation>
 <translation id="5168185087976003268">Estat de la bateria</translation>
@@ -145,6 +156,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5264277876637023664">Executa la prova de CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Torna a executar les rutines</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Tria'n una de nova ara</translation>
@@ -159,7 +171,9 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Més informació al Centre d'ajuda</translation>
 <translation id="5635169860413004179">Mostra l'informe</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Mesura l'ús de la CPU i és una suma de tots els nuclis</translation>
+<translation id="5760715441271661976">Estat del portal</translation>
 <translation id="5781694279199921985">Desa el registre de sessió</translation>
 <translation id="5797428682393400134">SUPERADA</translation>
 <translation id="5832805196449965646">Afegeix una persona</translation>
@@ -185,6 +199,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6325525973963619867">Error</translation>
 <translation id="636850387210749493">Inscripció empresarial</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{El fitxer escanejat s'ha desat}other{Els fitxers escanejats s'han desat}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">S'ha aturat: embús de paper</translation>
 <translation id="6517239166834772319">Explora</translation>
 <translation id="6527081081771465939">Protocol de seguretat Wi-Fi desconegut</translation>
@@ -194,6 +209,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6618744767048954150">Comprovació en curs</translation>
 <translation id="6620487321149975369">Les tasques d'impressió es mostraran a l'historial tret que se suprimeixin manualment</translation>
 <translation id="6643016212128521049">Esborra</translation>
+<translation id="6657585470893396449">Contrasenya</translation>
 <translation id="6704062477274546131">Resolució de DNS</translation>
 <translation id="6747215703636344499">S'ha aturat: safata de sortida plena</translation>
 <translation id="6756731097889387912">No s'ha pogut cancel·lar l'escaneig</translation>
@@ -210,19 +226,24 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7177485034254901881">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />. És possible que els administradors el configurin de manera remota.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipus de fitxer</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{S'ha completat l'escaneig. S'ha escanejat 1 pàgina}other{S'ha completat l'escaneig. S'han escanejat {NUMBER_OF_PAGES} pàgines}}</translation>
 <translation id="7441459999606975924">La capacitat de les bateries es redueix amb l'ús</translation>
 <translation id="7469648432129124067">S'ha detectat un portal</translation>
 <translation id="7490813197707563893">Adreça MAC</translation>
+<translation id="7502658306369382406">Adreça IPv6</translation>
 <translation id="7561454561030345039">El teu administrador gestiona aquesta acció</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">La latència d'HTTPS és alta</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7690294790491645610">Confirma la contrasenya nova</translation>
+<translation id="7701040980221191251">Cap</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Nombre de cicles</translation>
 <translation id="7732651821766520760">Prova <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Estat</translation>
+<translation id="7819857487979277519">PSK (WPA o RSN)</translation>
+<translation id="7882358943899516840">Tipus de proveïdor</translation>
 <translation id="7928373994957558460">Mostra la ubicació del fitxer</translation>
 <translation id="7936303884198020182">No s'han trobat servidors de noms</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -239,11 +260,15 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
 <translation id="8352772353338965963">Afegiu un compte per a l'inici de sessió múltiple. Es pot accedir a tots el comptes registrats sense contrasenya, de manera que només hauríeu d'utilitzar aquesta funció en comptes de confiança.</translation>
 <translation id="8364946094152050673">Servidors de noms buits</translation>
+<translation id="8372477600026034341">Amfitrions addicionals</translation>
 <translation id="8395584934117017006">Aquest <ph name="DEVICE_TYPE" /> està gestionat per una empresa</translation>
 <translation id="8398927464629426868">El percentatge al qual s'està carregant o descarregant el dispositiu actualment</translation>
 <translation id="8475690821716466388">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP PSK</translation>
 <translation id="8477551185774834963">La latència DNS supera lleugerament el llindar permès</translation>
+<translation id="8483248364096924578">Adreça IP</translation>
+<translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="8576249514688522074">No s'ha inicialitzat</translation>
+<translation id="8675354002693747642">Clau precompartida</translation>
 <translation id="871560550817059752">Error: no hi ha tinta</translation>
 <translation id="8723108084122415655">La xarxa no predeterminada supera el llindar de latència</translation>
 <translation id="8726019395068607495">S'ha aturat: porta oberta</translation>
@@ -251,6 +276,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8747900814994928677">Confirma el canvi</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminat</translation>
+<translation id="8798441408945964110">Nom del proveïdor</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8881098542468797602">La prova s'ha superat</translation>
@@ -262,11 +288,14 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Intents restants: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="8968751544471797276">Percentatge de càrrega</translation>
 <translation id="8970109610781093811">Torna a executar</translation>
+<translation id="9003704114456258138">Freqüència</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Ús actual</translation>
 <translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">S'està cercant la pàgina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloqueja</translation>
 <translation id="9149391708638971077">Executa la prova de memòria</translation>
+<translation id="9190063653747922532">L2TP/IPsec + clau precompartida</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Executa la prova de descàrrega</translation>
 </translationbundle>

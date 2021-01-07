@@ -3,6 +3,7 @@
 <translationbundle lang="kk">
 <translation id="1018656279737460067">Бас тартылды</translation>
 <translation id="1059913517121127803">Сканерлеуді қосу мүмкін болмады.</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Брандмаэур анықталды.</translation>
 <translation id="1075811647922107217">Бет өлшемі</translation>
 <translation id="1124772482545689468">Пайдаланушы</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Белгісіз қате.</translation>
 <translation id="1204296502688602597">DNS кідірісі</translation>
 <translation id="123124571410524056">Портал болуы мүмкін.</translation>
+<translation id="1238191093934674082">VPN ашу</translation>
 <translation id="1238612778414822719">HTTPS кідірісі</translation>
+<translation id="1270369111467284986">Адаптивті портал болуы мүмкін.</translation>
 <translation id="1290331692326790741">Әлсіз сигнал</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">Шлюз</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Сканерлеу аймағына сәйкестендіру</translation>
 <translation id="1397738625398125236">Шлюздің байланысын тексеруге болады</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Кэш</translation>
 <translation id="3122464029669770682">Орталық процессор</translation>
 <translation id="315116470104423982">Мобильді деректер</translation>
+<translation id="315738237743207937">Адаптивті портал анықталды.</translation>
 <translation id="3188257591659621405">Файлдарым</translation>
 <translation id="3199982728237701504">Құжат беруші (екі жақты)</translation>
 <translation id="3246869037381808805">1 күннен асқан баспа жұмыстары өшіріледі.</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Тексерілуде</translation>
 <translation id="3368922792935385530">Қосылған</translation>
 <translation id="3369013195428705271">Басып шығару тарихын шынымен толығымен тазалағыңыз келе ме? Қазір орындалып жатқан басып шығару жұмысының деректері сақталады.</translation>
+<translation id="3435738964857648380">Қауіпсіздік</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> бет (жалпы саны: <ph name="TOTAL_PAGES" />) басып шығарылды.</translation>
 <translation id="3459509316159669723">Басып шығару</translation>
 <translation id="3515615323037921860">Баспа жұмыстары</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Менің Drive дискім</translation>
 <translation id="4429881212383817840">Kerberos билетінің жарамдылық мерзімі жақында аяқталады</translation>
 <translation id="445059817448385655">Ескі құпия сөз</translation>
+<translation id="4453205916657964690">Қосалқы желі маскасы</translation>
 <translation id="4454245904991689773">Сақтау орны</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Әдепкі емес желі шлюзінің байланысы тексерілмеді.</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Брандмауэр болуы мүмкін.</translation>
 <translation id="4691278870498629773">Тоқтатылды: науа жоқ</translation>
 <translation id="469379815867856270">Сигнал күші</translation>
+<translation id="4707579418881001319">L2TP/IPsec + пайдаланушы сертификаты</translation>
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
 <translation id="4773299976671772492">Тоқтатылды</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> құжатын басып шығарудан бас тартылды.</translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Сканерді тексеріп, әрекетті қайталаңыз. Сканерленген файлдарды сақтайтын орынның жеткілікті екенін тексеріңіз.</translation>
 <translation id="4985509611418653372">Іске қосу</translation>
 <translation id="500920857929044050">Тексеруді тоқтату</translation>
+<translation id="5050042263972837708">Топ атауы</translation>
+<translation id="5088172560898466307">Сервер хостының атауы</translation>
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5154917547274118687">Жад</translation>
 <translation id="5168185087976003268">Батарея күйі</translation>
@@ -144,6 +155,7 @@
 <translation id="5264277876637023664">Орталық процессор тексерісін іске қосу</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Режимдерді қайта іске қосу</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Жаңа құпия сөз енгізіңіз.</translation>
@@ -158,7 +170,9 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Толығырақ ақпаратты Анықтамалық орталықтан қарау</translation>
 <translation id="5635169860413004179">Есепті көру</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Бұл орталық процессорды қолдану трафигін есептейді және ол – барлық ядролар жинағы.</translation>
+<translation id="5760715441271661976">Портал күйі</translation>
 <translation id="5781694279199921985">Сеанс журналын сақтау</translation>
 <translation id="5797428682393400134">СӘТТІ АЯҚТАЛДЫ</translation>
 <translation id="5832805196449965646">Адам қосу</translation>
@@ -184,6 +198,7 @@
 <translation id="6325525973963619867">Қате шықты</translation>
 <translation id="636850387210749493">Кәсіпорынды тіркеу</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Сканерленген файл сақталды.}other{Сканерленген файлдар сақталды.}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Тоқтатылды: қағаз кептелісі</translation>
 <translation id="6517239166834772319">Шолу</translation>
 <translation id="6527081081771465939">WiFi қауіпсіздік протоколы белгісіз.</translation>
@@ -193,6 +208,7 @@
 <translation id="6618744767048954150">Жұмыс істеп тұр</translation>
 <translation id="6620487321149975369">Қолмен өшірмесеңіз, баспа жұмыстары тарихта сақтала береді.</translation>
 <translation id="6643016212128521049">Тазалау</translation>
+<translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="6704062477274546131">DNS ажыратымдылығы</translation>
 <translation id="6747215703636344499">Тоқтатылды: шығыс науа толып кетті</translation>
 <translation id="6756731097889387912">Сканерлеуді тоқтату мүмкін болмады.</translation>
@@ -209,19 +225,24 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады. Әкімшілер құрылғыны қашықтан конфигурациялай алады.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Файл түрі</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканерлеу аяқталды. 1 бет сканерленді.}other{Сканерлеу аяқталды. {NUMBER_OF_PAGES} бет сканерленді.}}</translation>
 <translation id="7441459999606975924">Қолданған сайын, батареялардың заряды отыра береді.</translation>
 <translation id="7469648432129124067">Портал анықталды.</translation>
 <translation id="7490813197707563893">MAC мекенжайы</translation>
+<translation id="7502658306369382406">IPv6 мекенжайы</translation>
 <translation id="7561454561030345039">Бұл әрекетті әкімшіңіз басқарады.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS кідірісі жоғары.</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7690294790491645610">Жаңа құпия сөзді қайталаңыз</translation>
+<translation id="7701040980221191251">Жоқ</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Цикл саны</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> тексерісі</translation>
 <translation id="7805768142964895445">Күйі</translation>
+<translation id="7819857487979277519">PSK (WPA немесе RSN)</translation>
+<translation id="7882358943899516840">Провайдер түрі</translation>
 <translation id="7928373994957558460">Файл орнын көрсету</translation>
 <translation id="7936303884198020182">Атау серверлері табылмады.</translation>
 <translation id="7960831585769876809">Температура</translation>
@@ -238,11 +259,15 @@
 <translation id="8347227221149377169">Баспа жұмыстары</translation>
 <translation id="8352772353338965963">Бірнеше есептік жазбаға кіру үшін есептік жазба қосыңыз. Барлық кірілген есептік жазбаларға құпия сөзсіз кіруге болады, сондықтан бұл мүмкіндікті тек сенімді есептік жазбалар пайдалануы тиіс.</translation>
 <translation id="8364946094152050673">Атау серверлері бос.</translation>
+<translation id="8372477600026034341">Қосымша хостар</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> құрылғысын кәсіпорын басқарады.</translation>
 <translation id="8398927464629426868">Құрылғының зарядталу немесе зарядын жоғалту көрсеткіші.</translation>
 <translation id="8475690821716466388">WiFi желісі WEP PSK әлсіз протоколымен қорғалған.</translation>
 <translation id="8477551185774834963">DNS кідірісі рұқсат етілетін шектен сәл жоғары.</translation>
+<translation id="8483248364096924578">IP мекенжайы</translation>
+<translation id="8503813439785031346">Пайдаланушы аты</translation>
 <translation id="8576249514688522074">Бастаудан бас тартылды</translation>
+<translation id="8675354002693747642">Алдын ала бөлісілген код</translation>
 <translation id="871560550817059752">Сәтсіз: сия бітіп қалды</translation>
 <translation id="8723108084122415655">Әдепкі емес желі кідірісі шекті мәннен асады.</translation>
 <translation id="8726019395068607495">Тоқтатылды: есігі ашық</translation>
@@ -250,6 +275,7 @@
 <translation id="8747900814994928677">Өзгерісті растау</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
+<translation id="8798441408945964110">Провайдер аты</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Анықтама алу</translation>
 <translation id="8881098542468797602">Тексеріс сәтті аяқталды.</translation>
@@ -261,11 +287,14 @@
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Қалған әрекеттер саны: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Зарядталу жылдамдығы</translation>
 <translation id="8970109610781093811">Қайта тексеру</translation>
+<translation id="9003704114456258138">Жиілік</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Қазір пайдаланылуы</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үшін билетті жаңарту</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет сканерленуде</translation>
 <translation id="9111102763498581341">Құлпын ашу</translation>
 <translation id="9149391708638971077">Жад тексерісін іске қосу</translation>
+<translation id="9190063653747922532">L2TP/IPsec + алдын ала бөлісілген кілт</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Зарядтың азаюы тексерісін іске қосу</translation>
 </translationbundle>

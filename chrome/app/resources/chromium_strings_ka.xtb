@@ -101,6 +101,7 @@
 <translation id="4407044323746248786">მაინც გსურთ Chromium-იდან გასვლა?</translation>
 <translation id="4415566066719264597">Chromium-ისთვის ფონურ რეჟიმში მუშაობის დაშვება</translation>
 <translation id="4423735387467980091">Chromium-ის მორგება და კონტროლი</translation>
+<translation id="452711251841752011">მოგესალმებით Chromium-ში; გახსნილია ბრაუზერის ახალი ფანჯარა</translation>
 <translation id="4544142686420020088">Chromium-ის განახლება ვერ მოხერხდა შეფერხების გამო. <ph name="BEGIN_LINK" />შეასწორეთ Chromium-ის განახლებასთან დაკავშირებული პრობლემები და განუხორციელებელი განახლებები.<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">თქვენ შესული ხართ, როგორც <ph name="USER_EMAIL_ADDRESS" />. ახლა შეგიძლიათ გახსნათ თქვენი სანიშნეები, ისტორია და სხვა პარამეტრები ყველა მოწყობილობიდან, რომელშიც შესული ხართ.</translation>
 <translation id="459535195905078186">Chromium პროგრამები</translation>
@@ -160,6 +161,7 @@
 <translation id="6248213926982192922">Chromium გახდეს ნაგულისხმევი ბრაუზერი</translation>
 <translation id="6266342355635466082">Chromium ვერ ახერხებს განახლებების შემოწმებას. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="6268381023930128611">გსურთ Chromium-იდან გამოსვლა?</translation>
+<translation id="6281746429495226318">თქვენი Chromium პროფილის მორგება</translation>
 <translation id="6295779123002464101">Chromium-მა დაბლოკა <ph name="FILE_NAME" />, რადგან ის შეიძლება სახიფათო იყოს.</translation>
 <translation id="6309712487085796862">Chromium იყენებს თქვენს კამერას.</translation>
 <translation id="6333502561965082103">Chromium-ში სხვა ოპერაცია მიმდინარეობს. გთხოვთ, ცადოთ მოგვიანებით.</translation>

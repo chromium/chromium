@@ -24,6 +24,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 如果已勾選「<ph name="SERVICE_SCRIPT_NAME" />」，則需要取消勾選，然後再次勾選。</translation>
 <translation id="225614027745146050">歡迎使用</translation>
 <translation id="2320166752086256636">隱藏鍵盤</translation>
+<translation id="2333212046079545895">版權所有 2021 Google LLC。保留所有權利。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2366718077645204424">無法連線至主機，這可能與您使用的網絡設定有關。</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />最後上線時間：<ph name="RELATIVE_TIMESTAMP" />。</translation>
@@ -129,7 +130,6 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="7067321367069083429">將螢幕變成輕觸式螢幕</translation>
 <translation id="7116737094673640201">歡迎使用 Chrome 遠端桌面</translation>
 <translation id="7144878232160441200">重試</translation>
-<translation id="724402108658370587">版權所有 2020 Google LLC。保留所有權利。</translation>
 <translation id="7312846573060934304">主機已離線。</translation>
 <translation id="7319983568955948908">停止共用</translation>
 <translation id="7401733114166276557">Chrome 遠端桌面</translation>

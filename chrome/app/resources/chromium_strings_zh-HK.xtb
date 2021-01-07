@@ -101,6 +101,7 @@
 <translation id="4407044323746248786">仍要結束 Chromium 嗎？</translation>
 <translation id="4415566066719264597">讓 Chromium 在背景執行</translation>
 <translation id="4423735387467980091">自訂及控制 Chromium</translation>
+<translation id="452711251841752011">歡迎使用 Chromium；開咗新瀏覽器視窗</translation>
 <translation id="4544142686420020088">發生錯誤，Chromium 未能更新。<ph name="BEGIN_LINK" />請修正 Chromium 更新問題與更新失敗問題。<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入，可以在所有登入的裝置上使用您的書籤、記錄和其他設定。</translation>
 <translation id="459535195905078186">Chromium 應用程式</translation>
@@ -160,6 +161,7 @@
 <translation id="6248213926982192922">將 Chromium 設為預設瀏覽器</translation>
 <translation id="6266342355635466082">Chromium 無法檢查更新，請檢查互聯網連線。</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
+<translation id="6281746429495226318">自訂您的 Chromium 設定檔</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> 可能不安全，因此 Chromium 已封鎖此檔案。</translation>
 <translation id="6309712487085796862">Chromium 正在使用您的相機。</translation>
 <translation id="6333502561965082103">Chromium 正在執行另一項操作，請稍後再試。</translation>

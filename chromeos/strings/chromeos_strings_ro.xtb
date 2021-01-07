@@ -3,6 +3,7 @@
 <translationbundle lang="ro">
 <translation id="1018656279737460067">Anulat</translation>
 <translation id="1059913517121127803">Nu s-a putut începe scanarea</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">S-a detectat un firewall</translation>
 <translation id="1075811647922107217">Dimensiunea paginii</translation>
 <translation id="1124772482545689468">Utilizator</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Eroare necunoscută.</translation>
 <translation id="1204296502688602597">Latența DNS</translation>
 <translation id="123124571410524056">Posibil portal</translation>
+<translation id="1238191093934674082">VPN deschisă</translation>
 <translation id="1238612778414822719">Latență a solicitărilor HTTPS</translation>
+<translation id="1270369111467284986">Posibil portal captiv</translation>
 <translation id="1290331692326790741">Semnal slab</translation>
+<translation id="1314565355471455267">VPN Android</translation>
+<translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Potrivește în funcție de zona de scanare</translation>
 <translation id="1397738625398125236">Gateway-ul acceptă testul de ping</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Memoria cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Date mobile</translation>
+<translation id="315738237743207937">S-a detectat un portal captiv</translation>
 <translation id="3188257591659621405">Fișierele mele</translation>
 <translation id="3199982728237701504">Alimentator de documente (față-verso)</translation>
 <translation id="3246869037381808805">Sarcinile de printare mai vechi de o zi vor fi eliminate</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Se rulează testul</translation>
 <translation id="3368922792935385530">Conectat</translation>
 <translation id="3369013195428705271">Sigur vrei să ștergi tot istoricul printărilor? Sarcinile de printare în curs nu vor fi șterse.</translation>
+<translation id="3435738964857648380">Securitate</translation>
 <translation id="3456078764689556234">S-a printat pagina <ph name="PRINTED_PAGES" /> din <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Printare</translation>
 <translation id="3515615323037921860">Sarcini de printare</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Contul meu Drive</translation>
 <translation id="4429881212383817840">Tichetul Kerberos expiră în curând</translation>
 <translation id="445059817448385655">Parolă veche</translation>
+<translation id="4453205916657964690">Mască de subrețea</translation>
 <translation id="4454245904991689773">Scanează către</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nu s-a putut da ping către gateway-ul de rețea care nu este prestabilit</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Posibil firewall</translation>
 <translation id="4691278870498629773">Oprită – Tavă lipsă</translation>
 <translation id="469379815867856270">Puterea semnalului</translation>
+<translation id="4707579418881001319">L2TP/IPSec + certificat de utilizator</translation>
 <translation id="4731797938093519117">Acces pentru părinți</translation>
 <translation id="4773299976671772492">Oprit</translation>
 <translation id="4808449224298348341">S-a anulat sarcina de printare <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Verifică scanerul și încearcă din nou. Asigură-te că există spațiu suficient la nivel local pentru a salva fișierele scanate.</translation>
 <translation id="4985509611418653372">Rulează</translation>
 <translation id="500920857929044050">Oprește testul</translation>
+<translation id="5050042263972837708">Numele grupului</translation>
+<translation id="5088172560898466307">Nume de gazdă server</translation>
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5154917547274118687">Memorie</translation>
 <translation id="5168185087976003268">Buna funcționare a bateriei:</translation>
@@ -145,6 +156,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5264277876637023664">Rulează testul CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Rulează din nou rutinele</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Alege una nouă acum</translation>
@@ -159,7 +171,9 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Află mai multe din Centrul de ajutor</translation>
 <translation id="5635169860413004179">Consultă raportul</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Indică utilizarea procesorului și este o valoare cumulată pentru toate nucleele</translation>
+<translation id="5760715441271661976">Starea portalului</translation>
 <translation id="5781694279199921985">Salvează jurnalul de sesiune</translation>
 <translation id="5797428682393400134">TRECUT</translation>
 <translation id="5832805196449965646">Adăugați un utilizator</translation>
@@ -185,6 +199,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6325525973963619867">Eșuat</translation>
 <translation id="636850387210749493">Înscriere pentru întreprindere</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Fișierul scanat a fost salvat}few{Fișierele scanate au fost salvate}other{Fișierele scanate au fost salvate}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Oprită – Blocaj de hârtie</translation>
 <translation id="6517239166834772319">Explorare</translation>
 <translation id="6527081081771465939">Protocol de securitate Wi-Fi necunoscut</translation>
@@ -194,6 +209,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6618744767048954150">Rulează</translation>
 <translation id="6620487321149975369">Sarcinile de printare vor apărea în istoric dacă nu sunt eliminate manual</translation>
 <translation id="6643016212128521049">Șterge</translation>
+<translation id="6657585470893396449">Parolă</translation>
 <translation id="6704062477274546131">Rezolvare DNS</translation>
 <translation id="6747215703636344499">Oprită – Tavă de ieșire plină</translation>
 <translation id="6756731097889387912">Nu s-a putut anula scanarea</translation>
@@ -210,19 +226,24 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7177485034254901881">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />. Administratorii pot să configureze dispozitivul de la distanță.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tip de fișier</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanare finalizată. S-a scanat o pagină.}few{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} pagini.}other{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} de pagini.}}</translation>
 <translation id="7441459999606975924">Capacitatea bateriei scade pe măsura utilizării</translation>
 <translation id="7469648432129124067">S-a detectat un portal</translation>
 <translation id="7490813197707563893">Adresă MAC</translation>
+<translation id="7502658306369382406">Adresă IPv6</translation>
 <translation id="7561454561030345039">Această setare este gestionată de administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Latență mare a solicitărilor HTTPS</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7690294790491645610">Confirmă noua parolă</translation>
+<translation id="7701040980221191251">Niciuna</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Numărul de cicluri</translation>
 <translation id="7732651821766520760">Testul <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Stare</translation>
+<translation id="7819857487979277519">PSK (WPA sau RSN)</translation>
+<translation id="7882358943899516840">Tip furnizor</translation>
 <translation id="7928373994957558460">Afișează locația fișierului</translation>
 <translation id="7936303884198020182">Nu s-au găsit servere de nume</translation>
 <translation id="7960831585769876809">Temperatură</translation>
@@ -239,11 +260,15 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8347227221149377169">Sarcini de printare</translation>
 <translation id="8352772353338965963">Adăugați un cont pentru conectarea multiplă. Conturile conectate pot fi accesate fără parolă, prin urmare, această funcție trebuie folosită numai cu conturile de încredere.</translation>
 <translation id="8364946094152050673">Serverele de nume sunt goale</translation>
+<translation id="8372477600026034341">Gazde suplimentare</translation>
 <translation id="8395584934117017006">Acest <ph name="DEVICE_TYPE" /> este gestionat de companie</translation>
 <translation id="8398927464629426868">Rata de încărcare sau de descărcare a dispozitivului</translation>
 <translation id="8475690821716466388">Rețeaua Wi-Fi este securizată cu protocolul slab WEP PSK</translation>
 <translation id="8477551185774834963">Latența DNS depășește ușor pragul permisibil</translation>
+<translation id="8483248364096924578">Adresă IP</translation>
+<translation id="8503813439785031346">Nume utilizator</translation>
 <translation id="8576249514688522074">Neinițializată</translation>
+<translation id="8675354002693747642">Cheie predistribuită</translation>
 <translation id="871560550817059752">Nereușită – Cerneală epuizată</translation>
 <translation id="8723108084122415655">Rețeaua care nu este prestabilită depășește pragul de latență</translation>
 <translation id="8726019395068607495">Oprită – Ușă deschisă</translation>
@@ -251,6 +276,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8747900814994928677">Confirmă schimbarea</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Prestabilit</translation>
+<translation id="8798441408945964110">Numele furnizorului</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Obține ajutor</translation>
 <translation id="8881098542468797602">Testul a reușit</translation>
@@ -262,11 +288,14 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> încercări rămase</translation>
 <translation id="8968751544471797276">Rata de încărcare</translation>
 <translation id="8970109610781093811">Rulați din nou</translation>
+<translation id="9003704114456258138">Frecvență</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Folosire actuală</translation>
 <translation id="910415269708673980">Actualizează tichetul pentru <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Se scanează pagina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Deblochează</translation>
 <translation id="9149391708638971077">Rulează testul Memorie</translation>
+<translation id="9190063653747922532">L2TP/IPSec + cheia predistribuită</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Rulează testul Descărcare</translation>
 </translationbundle>

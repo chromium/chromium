@@ -3,6 +3,7 @@
 <translationbundle lang="ru">
 <translation id="1018656279737460067">Отменено</translation>
 <translation id="1059913517121127803">Не удалось начать сканирование.</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">обнаружен брандмауэр</translation>
 <translation id="1075811647922107217">Размер страницы</translation>
 <translation id="1124772482545689468">Пользователь</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Неизвестная ошибка.</translation>
 <translation id="1204296502688602597">Задержка DNS</translation>
 <translation id="123124571410524056">Возможно, обнаружен сетевой портал.</translation>
+<translation id="1238191093934674082">OpenVPN</translation>
 <translation id="1238612778414822719">Время ожидания HTTPS</translation>
+<translation id="1270369111467284986">Потенциальная страница входа</translation>
 <translation id="1290331692326790741">слабый сигнал</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">Шлюз</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">По области сканирования</translation>
 <translation id="1397738625398125236">Запрос ping к шлюзу</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">ЦПУ</translation>
 <translation id="315116470104423982">Мобильное подключение</translation>
+<translation id="315738237743207937">Обнаружена страница входа</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
 <translation id="3199982728237701504">Автоподатчик документов (двусторонний)</translation>
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Идет проверка</translation>
 <translation id="3368922792935385530">Подключено</translation>
 <translation id="3369013195428705271">Очистить историю печати? Текущие задания печати не будут удалены.</translation>
+<translation id="3435738964857648380">Безопасность</translation>
 <translation id="3456078764689556234">Напечатано страниц: <ph name="PRINTED_PAGES" /> из <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Печать</translation>
 <translation id="3515615323037921860">Задания печати</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Мой диск</translation>
 <translation id="4429881212383817840">Срок действия билета Kerberos истекает</translation>
 <translation id="445059817448385655">Старый пароль</translation>
+<translation id="4453205916657964690">Маска подсети</translation>
 <translation id="4454245904991689773">Место сохранения</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не удалось выполнить проверку ping сетевого шлюза, не заданного по умолчанию.</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">потенциальный брандмауэр</translation>
 <translation id="4691278870498629773">Печать прервана: нет лотка для бумаги</translation>
 <translation id="469379815867856270">Уровень сигнала</translation>
+<translation id="4707579418881001319">L2TP/IPsec + сертификат пользователя</translation>
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="4773299976671772492">Остановлено</translation>
 <translation id="4808449224298348341">Отменено задание печати файла "<ph name="DOCUMENT_TITLE" />"</translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Проверьте сканер и повторите попытку. Убедитесь, что на диске достаточно свободного места для хранения отсканированных файлов.</translation>
 <translation id="4985509611418653372">Проверить</translation>
 <translation id="500920857929044050">Прекратить проверку</translation>
+<translation id="5050042263972837708">Название группы</translation>
+<translation id="5088172560898466307">Имя хоста сервера</translation>
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5154917547274118687">Память</translation>
 <translation id="5168185087976003268">Уровень заряда</translation>
@@ -145,6 +156,7 @@
 <translation id="5264277876637023664">Запустить проверку ЦП</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Запустить заново</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5326394068492324457">Файл "<ph name="DOCUMENT_TITLE" />", принтер "<ph name="PRINTER_NAME" />", дата – <ph name="CREATION_TIME" />, состояние: "<ph name="COMPLETION_STATUS" />"</translation>
 <translation id="5332948983412042822">Смените пароль как можно скорее.</translation>
@@ -159,7 +171,9 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Подробнее в Справочном центре</translation>
 <translation id="5635169860413004179">Посмотреть отчет</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Использование ЦП всеми ядрами</translation>
+<translation id="5760715441271661976">Состояние страницы входа</translation>
 <translation id="5781694279199921985">Сохранить журнал сеанса</translation>
 <translation id="5797428682393400134">ВЫПОЛНЕНО</translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
@@ -185,6 +199,7 @@
 <translation id="6325525973963619867">Ошибка</translation>
 <translation id="636850387210749493">Регистрация в корпоративном домене</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Отсканированный файл сохранен.}one{Отсканированные файлы сохранены.}few{Отсканированные файлы сохранены.}many{Отсканированные файлы сохранены.}other{Отсканированные файлы сохранены.}}</translation>
+<translation id="6472207088655375767">Одноразовый код</translation>
 <translation id="649050271426829538">Печать прервана: застряла бумага</translation>
 <translation id="6517239166834772319">Возможности</translation>
 <translation id="6527081081771465939">Неизвестный протокол обеспечения безопасности сети Wi-Fi.</translation>
@@ -194,6 +209,7 @@
 <translation id="6618744767048954150">Выполняется</translation>
 <translation id="6620487321149975369">Задания печати показываются в истории до тех пор, пока вы их не удалите</translation>
 <translation id="6643016212128521049">Удалить</translation>
+<translation id="6657585470893396449">Пароль</translation>
 <translation id="6704062477274546131">Разрешение DNS</translation>
 <translation id="6747215703636344499">Печать прервана: выходной лоток заполнен</translation>
 <translation id="6756731097889387912">Не удалось отменить сканирование.</translation>
@@ -210,19 +226,24 @@
 <translation id="7177485034254901881">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />. Администраторы могут настраивать устройство удаленно.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Тип файла</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканирование завершено. Отсканирована 1 страница.}one{Сканирование завершено. Отсканирована {NUMBER_OF_PAGES} страница.}few{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}many{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страниц.}other{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}}</translation>
 <translation id="7441459999606975924">Емкость батареи со временем уменьшается</translation>
 <translation id="7469648432129124067">Обнаружен сетевой портал.</translation>
 <translation id="7490813197707563893">MAC-адрес</translation>
+<translation id="7502658306369382406">Адрес IPv6</translation>
 <translation id="7561454561030345039">Этим действием управляет администратор.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">большое время ожидания HTTPS</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7690294790491645610">Введите новый пароль ещё раз</translation>
+<translation id="7701040980221191251">Нет</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Количество циклов</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />: проверка</translation>
 <translation id="7805768142964895445">Состояние</translation>
+<translation id="7819857487979277519">PSK (WPA или RSN)</translation>
+<translation id="7882358943899516840">Тип провайдера</translation>
 <translation id="7928373994957558460">Показать, где сохранен файл</translation>
 <translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
 <translation id="7960831585769876809">Температура</translation>
@@ -239,11 +260,15 @@
 <translation id="8347227221149377169">Задания печати</translation>
 <translation id="8352772353338965963">Добавить аккаунт в систему множественного входа. Для доступа к аккаунтам, в которые выполнен вход, пароль не требуется, поэтому эту функцию следует использовать только для надежных аккаунтов.</translation>
 <translation id="8364946094152050673">Не указаны серверы доменных имен.</translation>
+<translation id="8372477600026034341">Дополнительные хосты</translation>
 <translation id="8395584934117017006">Этим устройством <ph name="DEVICE_TYPE" /> управляет организация.</translation>
 <translation id="8398927464629426868">Скорость, с которой устройство заряжается или разряжается в настоящее время</translation>
 <translation id="8475690821716466388">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP PSK</translation>
 <translation id="8477551185774834963">Задержка на сервере доменных имен незначительно превышает допустимое значение.</translation>
+<translation id="8483248364096924578">IP-адрес</translation>
+<translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="8576249514688522074">Без инициализации</translation>
+<translation id="8675354002693747642">Общий ключ</translation>
 <translation id="871560550817059752">Сбой: закончились чернила</translation>
 <translation id="8723108084122415655">В сети, не используемой по умолчанию, превышено пороговое значение задержки.</translation>
 <translation id="8726019395068607495">Печать прервана: открыта крышка</translation>
@@ -251,6 +276,7 @@
 <translation id="8747900814994928677">Подтверждение изменений</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
+<translation id="8798441408945964110">Название провайдера</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Справка</translation>
 <translation id="8881098542468797602">Проверка пройдена</translation>
@@ -262,11 +288,14 @@
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Осталось попыток: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="8968751544471797276">Скорость зарядки</translation>
 <translation id="8970109610781093811">Выполнить ещё раз</translation>
+<translation id="9003704114456258138">Частота</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Используется</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Разблокировать</translation>
 <translation id="9149391708638971077">Запустить проверку памяти</translation>
+<translation id="9190063653747922532">L2TP/IPsec + общий ключ</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Запустить проверку расхода заряда</translation>
 </translationbundle>

@@ -191,7 +191,6 @@
 <translation id="291754862089661335">Τοποθετήστε τον κώδικα QR ή τον γραμμωτό κώδικα σε αυτό το πλαίσιο</translation>
 <translation id="2921219216347069551">Κοιν.χ. σελ. αδύνατη</translation>
 <translation id="2923448633003185837">Επικόλληση και μετάβαση</translation>
-<translation id="2923827943290349720">Κλείδωμα καρτελών ανώνυμης περιήγησης κατά το κλείσιμο του Chrome</translation>
 <translation id="292639812446257861">Επισ. ως μη αναγνωσμένων</translation>
 <translation id="2952581218264071393">1. Ανοίξτε τις Ρυθμίσεις του Chrome.</translation>
 <translation id="2958718410589002129">Κωδικοί πρόσβασης</translation>
@@ -239,6 +238,7 @@
 <translation id="3443810440409579745">Η καρτέλα λήφθηκε.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> λεπτά</translation>
 <translation id="3448016392200048164">Προβολή διαχωρισμού οθόνης</translation>
+<translation id="3454224729131972583">Τίτλος</translation>
 <translation id="345565170154308620">Διαχείριση κωδικών πρόσβασης…</translation>
 <translation id="3469166899695866866">Διακοπή λήψης;</translation>
 <translation id="3470502288861289375">Αντιγραφή…</translation>
@@ -268,6 +268,7 @@
 <translation id="3670030362669914947">Αριθμός</translation>
 <translation id="3691593122358196899">Ο σελιδοδείκτης είναι στο "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3709582977625132201">Επισήμανση ως μη αναγνωσμένη</translation>
+<translation id="3720541637541300822">Κλείδωμα καρτελών ανώνυμης περιήγησης κατά το κλείσιμο του Chrome</translation>
 <translation id="3740397331642243698">Ανοίγει τα URL που εισάγονται στο Google Chrome σε ανώνυμη περιήγηση.</translation>
 <translation id="3771033907050503522">Καρτ.αν.περιήγ.</translation>
 <translation id="3775743491439407556">Ο συγχρονισμός δεν λειτουργεί</translation>

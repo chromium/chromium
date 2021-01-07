@@ -3,6 +3,7 @@
 <translationbundle lang="gl">
 <translation id="1018656279737460067">Cancelados</translation>
 <translation id="1059913517121127803">Non se puido iniciar o escaneo</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Detectouse un firewall</translation>
 <translation id="1075811647922107217">Tamaño da páxina</translation>
 <translation id="1124772482545689468">Usuario</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Erro descoñecido.</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
 <translation id="123124571410524056">Posible portal</translation>
+<translation id="1238191093934674082">Abrir VPN</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
+<translation id="1270369111467284986">Posible portal cativo</translation>
 <translation id="1290331692326790741">Sinal feble</translation>
+<translation id="1314565355471455267">VPN de Android</translation>
+<translation id="1327977588028644528">Pasarela</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Axustar á zona de escaneo</translation>
 <translation id="1397738625398125236">Pódeselle facer ping á pasarela</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Caché</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Datos móbiles</translation>
+<translation id="315738237743207937">Detectouse un portal cativo</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
 <translation id="3199982728237701504">Alimentador de documentos (a dúas caras)</translation>
 <translation id="3246869037381808805">Quitaranse os traballos de impresión de máis de 1 día</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Proba en curso</translation>
 <translation id="3368922792935385530">Conectada</translation>
 <translation id="3369013195428705271">Seguro que queres borrar todo o historial de impresión? Non se borrarán os traballos de impresión en curso.</translation>
+<translation id="3435738964857648380">Seguranza</translation>
 <translation id="3456078764689556234">Páxina <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" /> impresa.</translation>
 <translation id="3459509316159669723">Impresión</translation>
 <translation id="3515615323037921860">Traballos de impresión</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">A miña unidade</translation>
 <translation id="4429881212383817840">O tícket de Kerberos caduca pronto</translation>
 <translation id="445059817448385655">Contrasinal antigo</translation>
+<translation id="4453205916657964690">Máscara de subrede</translation>
 <translation id="4454245904991689773">Gardar en</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Produciuse un erro ao facer ping na pasarela de rede non predeterminada</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">Posible firewall</translation>
 <translation id="4691278870498629773">Detívose (falta a bandexa)</translation>
 <translation id="469379815867856270">Intensidade do sinal</translation>
+<translation id="4707579418881001319">L2TP/IPsec + certificado de usuario</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4773299976671772492">Detido</translation>
 <translation id="4808449224298348341">Cancelouse o traballo de impresión <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Comproba o escáner e téntao de novo. Asegúrate de que exista espazo local suficiente para gardar os ficheiros escaneados.</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="500920857929044050">Deter proba</translation>
+<translation id="5050042263972837708">Nome do grupo</translation>
+<translation id="5088172560898466307">Nome do host do servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5168185087976003268">Estado da batería</translation>
@@ -145,6 +156,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5264277876637023664">Realizar proba de CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Volver executar rutinas</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Escolle un novo agora</translation>
@@ -159,7 +171,9 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Máis información no Centro de Axuda</translation>
 <translation id="5635169860413004179">Ver informe</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Mide o uso da CPU sumando o de todos os núcleos</translation>
+<translation id="5760715441271661976">Estado do portal</translation>
 <translation id="5781694279199921985">Gardar rexistro da sesión</translation>
 <translation id="5797428682393400134">SUPEROUSE</translation>
 <translation id="5832805196449965646">Engadir unha persoa</translation>
@@ -185,6 +199,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6325525973963619867">Produciuse un erro</translation>
 <translation id="636850387210749493">Inscrición corporativa</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Gardouse o ficheiro escaneado}other{Gardáronse os ficheiros escaneados}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">Detívose (atasco de papel)</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">Descoñécese o protocolo de seguranza da wifi</translation>
@@ -194,6 +209,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6618744767048954150">En execución</translation>
 <translation id="6620487321149975369">Os traballos de impresión aparecerán no historial a menos que os quites de xeito manual</translation>
 <translation id="6643016212128521049">Borrar</translation>
+<translation id="6657585470893396449">Contrasinal</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
 <translation id="6747215703636344499">Detívose (a saída está chea)</translation>
 <translation id="6756731097889387912">Non se puido cancelar o escaneo</translation>
@@ -210,19 +226,24 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> xestiona este dispositivo (<ph name="DEVICE_TYPE" />). Os administradores poden configuralo de forma remota.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{A operación rematou. Escaneouse 1 páxina}other{A operación rematou. Escaneáronse {NUMBER_OF_PAGES} páxinas}}</translation>
 <translation id="7441459999606975924">A capacidade das baterías diminúe co uso</translation>
 <translation id="7469648432129124067">Detectouse un portal</translation>
 <translation id="7490813197707563893">Enderezo MAC</translation>
+<translation id="7502658306369382406">Enderezo IPv6</translation>
 <translation id="7561454561030345039">O teu administrador xestiona esta acción</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar contrasinal novo</translation>
+<translation id="7701040980221191251">Ningunha</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7732651821766520760">Proba de <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Estado</translation>
+<translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
+<translation id="7882358943899516840">Tipo de fornecedor</translation>
 <translation id="7928373994957558460">Mostrar localización do ficheiro</translation>
 <translation id="7936303884198020182">Non se atoparon servidores de nomes</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -239,11 +260,15 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8347227221149377169">Traballos de impresión</translation>
 <translation id="8352772353338965963">Engade unha conta ao inicio de sesión múltiple. É posible acceder a todas as contas en que iniciaches sesión sen necesidade de inserir un contrasinal, polo que esta función só se debe utilizar coas contas de confianza.</translation>
 <translation id="8364946094152050673">Os servidores de nomes están baleiros</translation>
+<translation id="8372477600026034341">Hosts extra</translation>
 <translation id="8395584934117017006">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por unha empresa</translation>
 <translation id="8398927464629426868">O ritmo actual de carga ou descarga da batería do dispositivo</translation>
 <translation id="8475690821716466388">A rede wifi está protexida co protocolo WEP PSK, que non é moi seguro</translation>
 <translation id="8477551185774834963">A latencia do DNS supera lixeiramente o límite permitido</translation>
+<translation id="8483248364096924578">Enderezo IP</translation>
+<translation id="8503813439785031346">Nome de usuario</translation>
 <translation id="8576249514688522074">Non iniciada</translation>
+<translation id="8675354002693747642">Clave compartida previamente</translation>
 <translation id="871560550817059752">Produciuse un erro: a impresora quedou sen tinta</translation>
 <translation id="8723108084122415655">A rede non predeterminada supera o límite de latencia</translation>
 <translation id="8726019395068607495">Detívose (a tapa está aberta)</translation>
@@ -251,6 +276,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8747900814994928677">Confirmar o cambio</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
+<translation id="8798441408945964110">Nome do fornecedor</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8845001906332463065">Obter axuda</translation>
 <translation id="8881098542468797602">Superouse a proba</translation>
@@ -262,11 +288,14 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Intentos restantes: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Taxa de carga</translation>
 <translation id="8970109610781093811">Repetir proba</translation>
+<translation id="9003704114456258138">Frecuencia</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">En uso</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando páxina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="9149391708638971077">Realizar proba de memoria</translation>
+<translation id="9190063653747922532">L2TP/IPsec + clave precompartida</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Realizar proba de descarga</translation>
 </translationbundle>

@@ -3,6 +3,7 @@
 <translationbundle lang="as">
 <translation id="1018656279737460067">বাতিল কৰা হ’ল</translation>
 <translation id="1059913517121127803">স্কেনিং আৰম্ভ কৰিব পৰা নগ’ল</translation>
+<translation id="1070066693520972135">ডব্লিউইপি</translation>
 <translation id="1071587090247825784">ফায়াৰৱাল চিনাক্ত কৰা হৈছে</translation>
 <translation id="1075811647922107217">পৃষ্ঠাৰ আকাৰ</translation>
 <translation id="1124772482545689468">ব্যৱহাৰকাৰী</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">অজ্ঞাত আসোঁৱাহ।</translation>
 <translation id="1204296502688602597">DNS বিলম্বতা</translation>
 <translation id="123124571410524056">প’ৰ্টেলৰ সন্দেহ কৰা হৈছে</translation>
+<translation id="1238191093934674082">VPN খোলক</translation>
 <translation id="1238612778414822719">HTTPSৰ বিলম্বতা</translation>
+<translation id="1270369111467284986">কেপটিভ প’র্টেলৰ সন্দেহ কৰা হৈছে</translation>
 <translation id="1290331692326790741">দুৰ্বল সংকেত</translation>
+<translation id="1314565355471455267">Android ভিপিএন</translation>
+<translation id="1327977588028644528">গে’টৱে’</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">স্কেনৰ ক্ষেত্ৰত খাপ খুৱাওক</translation>
 <translation id="1397738625398125236">গে’টৱে’ পিং কৰিব পৰা যায়</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">কেশ্ব</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">ম’বাইল ডেটা</translation>
+<translation id="315738237743207937">কেপ্টিভ প’ৰ্টেল চিনাক্ত কৰা হৈছে</translation>
 <translation id="3188257591659621405">মোৰ ফাইলসমূহ</translation>
 <translation id="3199982728237701504">নথি ফীডাৰ (দুফাল থকা)</translation>
 <translation id="3246869037381808805">১ দিনতকৈ পুৰণি প্ৰিণ্ট কাৰ্যসমূহ আঁতৰোৱা হ’ব</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">পৰীক্ষা চলি আছে</translation>
 <translation id="3368922792935385530">সংযোগ কৰা হ’ল</translation>
 <translation id="3369013195428705271">আপুনি সকলো প্ৰিণ্টৰ ইতিহাস নিশ্চিতভাৱে মচিব বিচাৰেনে? আপোনাৰ চলি থকা প্ৰিণ্টৰ কামসমূহ মচা নহয়।</translation>
+<translation id="3435738964857648380">সুৰক্ষা</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> খনৰ ভিতৰত <ph name="PRINTED_PAGES" /> নম্বৰৰ পৃষ্ঠাখন প্ৰিণ্ট কৰা হৈছে।</translation>
 <translation id="3459509316159669723">প্ৰিণ্টিং</translation>
 <translation id="3515615323037921860">প্ৰিণ্ট কাৰ্যসমূহ</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">মোৰ ড্ৰাইভ</translation>
 <translation id="4429881212383817840">Kerberos টিকেটৰ ম্যাদ শীঘ্ৰেই উকলি যাব</translation>
 <translation id="445059817448385655">পুৰণি পাছৱৰ্ড</translation>
+<translation id="4453205916657964690">ছাবনেট মাস্ক</translation>
 <translation id="4454245904991689773">স্কেন কৰি ইয়াত ছেভ কৰক</translation>
 <translation id="4479639480957787382">ইথাৰনেট</translation>
 <translation id="4483049906298469269">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্কৰ গে’টৱে’টোক পিং কৰাত বিফল হ'ল</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">ফায়াৰৱালৰ সন্দেহ কৰা হৈছে</translation>
 <translation id="4691278870498629773">বন্ধ হৈছে - ট্ৰে’ উপলব্ধ নহয়</translation>
 <translation id="469379815867856270">ছিগনেলৰ ক্ষমতা</translation>
+<translation id="4707579418881001319">L2TP/IPsec + ব্যৱহাৰকাৰীৰ প্ৰমাণপত্ৰ</translation>
 <translation id="4731797938093519117">অভিভাৱকৰ এক্সেছ</translation>
 <translation id="4773299976671772492">বন্ধ হৈছে</translation>
 <translation id="4808449224298348341">বাতিল কৰা প্ৰিণ্টিঙৰ কাৰ্য <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">স্কেনাৰটো পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক। স্কেন কৰা ফাইল ছেভ কৰিবলৈ পৰ্যাপ্ত পৰিমাণে স্থানীয় খালী ঠাই থকাটো নিশ্চিত কৰক।</translation>
 <translation id="4985509611418653372">চলাওক</translation>
 <translation id="500920857929044050">পৰীক্ষা কৰা বন্ধ কৰক</translation>
+<translation id="5050042263972837708">গোটৰ নাম</translation>
+<translation id="5088172560898466307">ছার্ভাৰ হ‘ষ্টনে‘ম</translation>
 <translation id="5089810972385038852">ৰাজ্য</translation>
 <translation id="5154917547274118687">মেম’ৰি</translation>
 <translation id="5168185087976003268">বেটাৰীৰ অৱস্থা</translation>
@@ -145,6 +156,7 @@
 <translation id="5264277876637023664">চিপিইউ পৰীক্ষা চলাওক</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">ৰুটিন পুনৰ চলাওক</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">ছেভ কৰক</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">এতিয়া নতুন এটা বাছনি কৰক</translation>
@@ -159,7 +171,9 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">সহায় কেন্দ্ৰত অধিক জানক</translation>
 <translation id="5635169860413004179">ৰিপ’ৰ্ট চাওক</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">এইটোৱে চিপিইউৰ ব্যৱহাৰ জোখে আৰু ই সকলো মুখ্য বস্তুৰ একত্ৰীকৰণ</translation>
+<translation id="5760715441271661976">প’ৰ্টেল ষ্টে’ট</translation>
 <translation id="5781694279199921985">ছেশ্বনৰ লগ ছেভ কৰক</translation>
 <translation id="5797428682393400134">সফল</translation>
 <translation id="5832805196449965646">অন্য লোক যোগ কৰক</translation>
@@ -185,6 +199,7 @@
 <translation id="6325525973963619867">বিফল হৈছে</translation>
 <translation id="636850387210749493">এন্টাৰপ্ৰাইজৰ পঞ্জীয়ন</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{স্কেন কৰা ফাইলটো ছেভ কৰা হ’ল}one{স্কেন কৰা ফাইলসমূহ ছেভ কৰা হ’ল}other{স্কেন কৰা ফাইলসমূহ ছেভ কৰা হ’ল}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">বন্ধ হৈছে - কাগজ ঠাহ খাই গৈছে</translation>
 <translation id="6517239166834772319">অন্বেষণ</translation>
 <translation id="6527081081771465939">ৱাই-ফাইৰ অজ্ঞাত সুৰক্ষাৰ প্ৰ'টকল</translation>
@@ -194,6 +209,7 @@
 <translation id="6618744767048954150">চলি আছে</translation>
 <translation id="6620487321149975369">প্ৰিণ্টিঙৰ কামসমূহ মেনুৱেলভাৱে আঁতৰাই নিদিয়ালৈকে সেইসমূহ ইতিহাসত দেখা পোৱা যাব</translation>
 <translation id="6643016212128521049">মচক</translation>
+<translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="6704062477274546131">DNS ৰিজ’লিউশ্বন</translation>
 <translation id="6747215703636344499">বন্ধ হৈছে - আউটপুট ভৰ্তি হৈ গৈছে</translation>
 <translation id="6756731097889387912">স্কেনিং বাতিল কৰিব পৰা নগ’ল</translation>
@@ -210,19 +226,24 @@
 <translation id="7177485034254901881">এই <ph name="DEVICE_TYPE" />টো <ph name="MANAGER" />এ পৰিচালনা কৰে। প্ৰশাসকে দূৰৰ পৰাই ডিভাইচটো কনফিগাৰ কৰিব পাৰে।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ফাইলৰ প্রকাৰ</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{স্কেনিং সম্পূৰ্ণ হ’ল। ১ খন পৃষ্ঠা স্কেন কৰা হ’ল}one{স্কেনিং সম্পূৰ্ণ হ’ল। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হ’ল}other{স্কেনিং সম্পূৰ্ণ হ’ল। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হ’ল}}</translation>
 <translation id="7441459999606975924">ব্যৱহাৰ কৰাৰ সমান্তৰালভাৱে বেটাৰীৰ ক্ষমতা কমি আহে</translation>
 <translation id="7469648432129124067">প’ৰ্টেল চিনাক্ত কৰা হৈছে</translation>
 <translation id="7490813197707563893">MAC ঠিকনা</translation>
+<translation id="7502658306369382406">IPv6 ঠিকনা</translation>
 <translation id="7561454561030345039">এই কাৰ্যটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPSৰ বেছি বিলম্বতা</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7690294790491645610">নতুন পাছৱর্ড নিশ্চিত কৰক</translation>
+<translation id="7701040980221191251">নাই</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">চক্ৰৰ গণনা</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> পৰীক্ষা</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
+<translation id="7819857487979277519">PSK (WPA বা RSN)</translation>
+<translation id="7882358943899516840">প্ৰদানকাৰীৰ ধৰণ</translation>
 <translation id="7928373994957558460">ফাইলৰ অৱস্থান দেখুৱাওক</translation>
 <translation id="7936303884198020182">ড’মেইন নাম থকা কোনো ছাৰ্ভাৰ পোৱা নগ'ল</translation>
 <translation id="7960831585769876809">তাপমান</translation>
@@ -239,11 +260,15 @@
 <translation id="8347227221149377169">প্ৰিণ্টিঙৰ কামসমূহ</translation>
 <translation id="8352772353338965963">একাধিক ছাইন-ইন কৰিবলৈ এটা একাউণ্ট যোগ কৰক। ছাইন ইন কৰি থোৱা সকলো একাউণ্ট পাছৱৰ্ড অবিহনেই এক্সেছ কৰিব পাৰি, সেয়েহে এই সুবিধাটো কেৱল বিশ্বাসযোগ্য একাউণ্টৰ সৈতেহে ব্যৱহাৰ কৰা উচিত।</translation>
 <translation id="8364946094152050673">ড’মেইনৰ নাম থকা ছাৰ্ভাৰসমূহ খালী</translation>
+<translation id="8372477600026034341">অতিৰিক্ত হ’ষ্ট</translation>
 <translation id="8395584934117017006">এই <ph name="DEVICE_TYPE" />টো এণ্টাৰপ্ৰাইজে পৰিচালনা কৰে</translation>
 <translation id="8398927464629426868">বৰ্তমান ডিভাইচটো চাৰ্জ অথবা ডিছচাৰ্জ হৈ থকাৰ হাৰ</translation>
 <translation id="8475690821716466388">ৱাই-ফাই নেটৱৰ্কটো দুৰ্বল প্ৰট’কল WEP PSKৰ দ্বাৰা সুৰক্ষিত</translation>
 <translation id="8477551185774834963">DNSৰ বিলম্বতা সামান্য পৰিমাণে অনুমতি দিয়া সীমাতকৈ ওপৰত আছে</translation>
+<translation id="8483248364096924578">IP ঠিকনা</translation>
+<translation id="8503813439785031346">ব্যৱহাৰকাৰীৰ নাম</translation>
 <translation id="8576249514688522074">আৰম্ভ কৰা হোৱা নাই</translation>
+<translation id="8675354002693747642">আগতীয়াকৈ শ্বেয়াৰ কৰা চাবি</translation>
 <translation id="871560550817059752">বিফল হৈছে - চিয়াহী শেষ হৈছে</translation>
 <translation id="8723108084122415655">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্ক বিলম্বতাৰ সীমাৰ ওপৰত আছে</translation>
 <translation id="8726019395068607495">বন্ধ হৈছে - দুৱাৰ খোল খাই আছে</translation>
@@ -251,6 +276,7 @@
 <translation id="8747900814994928677">সলনি কৰাটো নিশ্চিত কৰক</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ডিফ’ল্ট</translation>
+<translation id="8798441408945964110">প্ৰদানকাৰীৰ নাম</translation>
 <translation id="8814190375133053267">ৱাই-ফাই</translation>
 <translation id="8845001906332463065">সহায় পাওক</translation>
 <translation id="8881098542468797602">পৰীক্ষা সফল হৈছে</translation>
@@ -262,11 +288,14 @@
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> টা প্ৰয়াস বাকী আছে</translation>
 <translation id="8968751544471797276">চাৰ্জিঙৰ হাৰ</translation>
 <translation id="8970109610781093811">পুনৰ চলাওক</translation>
+<translation id="9003704114456258138">ফ্ৰিকুৱেন্সী</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9088306295921699330">এতিয়ালৈকে কৰা ব্যৱহাৰৰ পৰিমাণ</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />ৰ টিকেট ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> নম্বৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে</translation>
 <translation id="9111102763498581341">আনলক</translation>
 <translation id="9149391708638971077">মেম’ৰি পৰীক্ষা চলাওক</translation>
+<translation id="9190063653747922532">L2TP/IPsec + পূৰ্বে শ্বেয়াৰ কৰা কী</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">ডিচচাৰ্জ পৰীক্ষা চলাওক</translation>
 </translationbundle>

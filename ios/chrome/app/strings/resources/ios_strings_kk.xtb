@@ -191,7 +191,6 @@
 <translation id="291754862089661335">QR кодын не штрих-кодты осы кадрға қойыңыз</translation>
 <translation id="2921219216347069551">Бетті бөлісу мүмкін емес</translation>
 <translation id="2923448633003185837">Қою және өту</translation>
-<translation id="2923827943290349720">Chrome браузерін жабу кезінде инкогнито қойындыларын құлыптау</translation>
 <translation id="292639812446257861">Оқылмаған етіп белгілеу</translation>
 <translation id="2952581218264071393">1. Chrome параметрлерін ашыңыз.</translation>
 <translation id="2958718410589002129">Құпия сөздер</translation>
@@ -239,6 +238,7 @@
 <translation id="3443810440409579745">Қойынды қабылданды.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> минут</translation>
 <translation id="3448016392200048164">Қатар ашу</translation>
+<translation id="3454224729131972583">Атауы</translation>
 <translation id="345565170154308620">Құпия сөздерді басқару...</translation>
 <translation id="3469166899695866866">Жүктеп алу процесін тоқтату керек пе?</translation>
 <translation id="3470502288861289375">Көшіруде…</translation>
@@ -268,6 +268,7 @@
 <translation id="3670030362669914947">Нөмір</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> бетбелгісі жасалды</translation>
 <translation id="3709582977625132201">Оқылмаған деп белгілеу</translation>
+<translation id="3720541637541300822">Chrome браузерін жабу кезінде инкогнито қойындыларын құлыптау</translation>
 <translation id="3740397331642243698">Енгізілген URL сілтемелерін Google Chrome браузерінде инкогнито режимінде ашады.</translation>
 <translation id="3771033907050503522">Инкогнито қойындылары</translation>
 <translation id="3775743491439407556">Синхрондалмай жатыр</translation>

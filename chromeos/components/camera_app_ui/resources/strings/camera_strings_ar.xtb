@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
-<translation id="1175958423215084756">تم رصد الرابط. <ph name="HOSTNAME" /></translation>
+<translation id="1175958423215084756">تم رصد رابط. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">صور المعرض</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1473110567575736769">مؤقّت لمدة 3 ثوانٍ</translation>
@@ -81,7 +81,7 @@
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7670511624014457267">60 لقطة في الثانية</translation>
-<translation id="7983668134180549431">تم رصد النص.</translation>
+<translation id="7983668134180549431">تم رصد نص.</translation>
 <translation id="8067883171444229417">تشغيل الفيديو</translation>
 <translation id="8131740175452115882">التأكيد</translation>
 <translation id="8145038249676204903">التبديل لالتقاط صورة</translation>

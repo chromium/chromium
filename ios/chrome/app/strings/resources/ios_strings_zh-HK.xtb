@@ -191,7 +191,6 @@
 <translation id="291754862089661335">將二維條碼或條碼放置此頁框中</translation>
 <translation id="2921219216347069551">無法分享網頁</translation>
 <translation id="2923448633003185837">貼上並前往</translation>
-<translation id="2923827943290349720">關閉 Chrome 時鎖定無痕式分頁</translation>
 <translation id="292639812446257861">標示為未閱讀</translation>
 <translation id="2952581218264071393">1. 開啟 Chrome 設定</translation>
 <translation id="2958718410589002129">密碼</translation>
@@ -239,6 +238,7 @@
 <translation id="3443810440409579745">已收到分頁。</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="3448016392200048164">分割檢視</translation>
+<translation id="3454224729131972583">標題</translation>
 <translation id="345565170154308620">管理密碼…</translation>
 <translation id="3469166899695866866">要停止下載嗎？</translation>
 <translation id="3470502288861289375">複製中…</translation>
@@ -268,6 +268,7 @@
 <translation id="3670030362669914947">號碼</translation>
 <translation id="3691593122358196899">已將書籤加入到「<ph name="FOLDER_TITLE" />」</translation>
 <translation id="3709582977625132201">標示為未讀取</translation>
+<translation id="3720541637541300822">關閉 Chrome 時鎖定無痕式分頁</translation>
 <translation id="3740397331642243698">在 Google Chrome 中以無痕模式開啟已輸入的網址。</translation>
 <translation id="3771033907050503522">無痕式分頁</translation>
 <translation id="3775743491439407556">同步功能無法正常運作</translation>

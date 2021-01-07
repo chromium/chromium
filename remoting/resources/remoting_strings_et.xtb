@@ -24,6 +24,7 @@ Selle loa andmiseks klõpsake alloleval nupul „<ph name="BUTTON_NAME" />”, e
 Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitud, eemaldage märge ja märkige see siis uuesti.</translation>
 <translation id="225614027745146050">Tere tulemast</translation>
 <translation id="2320166752086256636">Peida klaviatuur</translation>
+<translation id="2333212046079545895">Autoriõigus 2021 Google LLC. Kõik õigused kaitstud.</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2366718077645204424">Hostiga ei saa ühendust. Seda põhjustab ilmselt kasutatava võrgu konfiguratsioon.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Viimati nähtud võrgus <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -129,7 +130,6 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="7067321367069083429">Ekraan toimib puuteekraanina</translation>
 <translation id="7116737094673640201">Tere tulemast kasutama Chrome Remote Desktopi!</translation>
 <translation id="7144878232160441200">Proovi uuesti</translation>
-<translation id="724402108658370587">Autoriõigus 2020 Google LLC. Kõik õigused kaitstud.</translation>
 <translation id="7312846573060934304">Host pole võrgus.</translation>
 <translation id="7319983568955948908">Lõpeta jagamine</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>

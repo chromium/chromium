@@ -24,6 +24,7 @@
 ಒಂದು ವೇಳೆ '<ph name="SERVICE_SCRIPT_NAME" />' ಅನ್ನು ಈಗಾಗಲೇ ಚೆಕ್ ಗುರುತು ಮಾಡಲಾಗಿದ್ದರೆ, ಚೆಕ್ ಗುರುತು ತೆಗೆದು, ಮತ್ತೊಮ್ಮೆ ಚೆಕ್ ಗುರುತು ಮಾಡಿ.</translation>
 <translation id="225614027745146050">ಸ್ವಾಗತ</translation>
 <translation id="2320166752086256636">ಕೀಬೋರ್ಡ್ ಮರೆಮಾಡಿ</translation>
+<translation id="2333212046079545895">ಕೃತಿಸ್ವಾಮ್ಯ 2021 Google LLC. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2366718077645204424">ಹೋಸ್ಟ್‌ ಅನ್ನು ತಲುಪಲು ಸಾಧ್ಯವಿಲ್ಲ. ಇದಕ್ಕೆ ಬಹುಶಃ ನೀವು ಬಳಸುತ್ತಿರುವ ಕಾನ್ಫಿಗರೇಶನ್ ನೆಟ್‌ವರ್ಕ್ ಕಾರಣವಾಗಿರಬಹುದು.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  ಆನ್‌ಲೈನ್‌ನಲ್ಲಿನ ಕೊನೆಯ ವೀಕ್ಷಣೆ <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -129,7 +130,6 @@
 <translation id="7067321367069083429">ಪರದೆಯು ಸ್ಪರ್ಶ ಪರದೆಯಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ</translation>
 <translation id="7116737094673640201">Chrome ರಿಮೋಟ್ ಡೆಸ್ಕ್‌ಟಾಪ್‌ಗೆ ಸ್ವಾಗತ</translation>
 <translation id="7144878232160441200">ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
-<translation id="724402108658370587">ಕೃತಿಸ್ವಾಮ್ಯ 2020 Google LLC. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
 <translation id="7312846573060934304">ಹೋಸ್ಟ್‌ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದೆ.</translation>
 <translation id="7319983568955948908">ಹಂಚಿಕೆಯನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="7401733114166276557">Chrome ರಿಮೋಟ್ ಡೆಸ್ಕ್‌ಟಾಪ್</translation>

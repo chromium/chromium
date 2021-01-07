@@ -3,6 +3,7 @@
 <translationbundle lang="uk">
 <translation id="1018656279737460067">Скасовано</translation>
 <translation id="1059913517121127803">Не вдається почати сканування</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">виявлено брандмауер</translation>
 <translation id="1075811647922107217">Розмір сторінки</translation>
 <translation id="1124772482545689468">Користувач</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">Невідома помилка.</translation>
 <translation id="1204296502688602597">Затримка DNS</translation>
 <translation id="123124571410524056">Можливо, виявлено портал</translation>
+<translation id="1238191093934674082">Відкрити VPN</translation>
 <translation id="1238612778414822719">Затримка HTTPS</translation>
+<translation id="1270369111467284986">Вірогідно, є адаптивний портал</translation>
 <translation id="1290331692326790741">слабкий сигнал</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">Шлюз</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">За розміром області сканування</translation>
 <translation id="1397738625398125236">Шлюз можна перевірити</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">ЦП</translation>
 <translation id="315116470104423982">Мобільне передавання даних</translation>
+<translation id="315738237743207937">Виявлено адаптивний портал</translation>
 <translation id="3188257591659621405">Мої файли</translation>
 <translation id="3199982728237701504">Пристрій автоподачі документів (двосторонній)</translation>
 <translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">Триває перевірка</translation>
 <translation id="3368922792935385530">Підключено</translation>
 <translation id="3369013195428705271">Видалити всю історію друку? Поточні завдання друку збережуться.</translation>
+<translation id="3435738964857648380">Безпека</translation>
 <translation id="3456078764689556234">Надруковано сторінку <ph name="PRINTED_PAGES" /> з <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Друк</translation>
 <translation id="3515615323037921860">Завдання друку</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">Мій диск</translation>
 <translation id="4429881212383817840">Термін дії квитка Kerberos незабаром минає</translation>
 <translation id="445059817448385655">Старий пароль</translation>
+<translation id="4453205916657964690">Маска підмережі</translation>
 <translation id="4454245904991689773">Зберегти зіскановані файли в</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не вдалося надіслати запит ping шлюзу мережі не за умовчанням</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">можливо, працює брандмауер</translation>
 <translation id="4691278870498629773">Зупинено – немає лотка</translation>
 <translation id="469379815867856270">Потужність сигналу</translation>
+<translation id="4707579418881001319">L2TP/IPSec + Сертифікат користувача</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
 <translation id="4773299976671772492">Зупинено</translation>
 <translation id="4808449224298348341">Завдання друку "<ph name="DOCUMENT_TITLE" />" скасовано</translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">Перевірте сканер і повторіть спробу. Переконайтеся, що на пристрої достатньо вільного місця для зберігання відсканованих файлів.</translation>
 <translation id="4985509611418653372">Виконати</translation>
 <translation id="500920857929044050">Зупинити перевірку</translation>
+<translation id="5050042263972837708">Назва групи</translation>
+<translation id="5088172560898466307">Ім’я хосту сервера</translation>
 <translation id="5089810972385038852">Штат/провінція</translation>
 <translation id="5154917547274118687">Пам’ять</translation>
 <translation id="5168185087976003268">Стан акумулятора</translation>
@@ -145,6 +156,7 @@
 <translation id="5264277876637023664">Виконати перевірку ЦП</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Повторити програми</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Виберіть новий зараз</translation>
@@ -159,7 +171,9 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Докладніше в довідковому центрі</translation>
 <translation id="5635169860413004179">Переглянути звіт</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">Показник використання ЦП, зведений для всіх ядер</translation>
+<translation id="5760715441271661976">Стан порталу</translation>
 <translation id="5781694279199921985">Зберегти журнал сеансу</translation>
 <translation id="5797428682393400134">ПРОЙДЕНО</translation>
 <translation id="5832805196449965646">Додати користувача</translation>
@@ -185,6 +199,7 @@
 <translation id="6325525973963619867">Помилка</translation>
 <translation id="636850387210749493">Реєстрація підприємства</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{Відсканований файл збережено}one{Відскановані файли збережено}few{Відскановані файли збережено}many{Відскановані файли збережено}other{Відскановані файли збережено}}</translation>
+<translation id="6472207088655375767">Одноразовий пароль</translation>
 <translation id="649050271426829538">Зупинено – зам'яло папір</translation>
 <translation id="6517239166834772319">Можливості</translation>
 <translation id="6527081081771465939">Невідомий протокол безпеки Wi-Fi</translation>
@@ -194,6 +209,7 @@
 <translation id="6618744767048954150">Виконується</translation>
 <translation id="6620487321149975369">Завдання друку відображатимуться в історії, доки ви не вилучите їх вручну</translation>
 <translation id="6643016212128521049">Очистити</translation>
+<translation id="6657585470893396449">Пароль</translation>
 <translation id="6704062477274546131">Розпізнавання DNS</translation>
 <translation id="6747215703636344499">Зупинено – вихідний лоток заповнений</translation>
 <translation id="6756731097889387912">Не вдалося скасувати сканування</translation>
@@ -210,19 +226,24 @@
 <translation id="7177485034254901881">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />. Адміністратори можуть віддалено налаштовувати його.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Тип файлу</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканування завершено. Відскановано 1 сторінку}one{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінку}few{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}many{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінок}other{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}}</translation>
 <translation id="7441459999606975924">Ємність акумулятора зменшується внаслідок використання</translation>
 <translation id="7469648432129124067">Виявлено портал</translation>
 <translation id="7490813197707563893">MAC-адреса</translation>
+<translation id="7502658306369382406">Адреса IPv6</translation>
 <translation id="7561454561030345039">Цією дією керує адміністратор</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">велика затримка HTTPS</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7690294790491645610">Підтвердьте новий пароль</translation>
+<translation id="7701040980221191251">Немає</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Кількість циклів</translation>
 <translation id="7732651821766520760">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="7805768142964895445">Статус</translation>
+<translation id="7819857487979277519">PSK (WPA або RSN)</translation>
+<translation id="7882358943899516840">Тип постачальника</translation>
 <translation id="7928373994957558460">Показати, де збережено файл</translation>
 <translation id="7936303884198020182">не знайдено серверів імен</translation>
 <translation id="7960831585769876809">Температура</translation>
@@ -239,11 +260,15 @@
 <translation id="8347227221149377169">Завдання друку</translation>
 <translation id="8352772353338965963">Додайте обліковий запис для паралельного входу. Доступ до всіх облікових записів, у які ви ввійшли, можна отримувати без пароля, тому цю функцію варто використовувати лише з надійними обліковими записами.</translation>
 <translation id="8364946094152050673">Сервери імен порожні</translation>
+<translation id="8372477600026034341">Додаткові хости</translation>
 <translation id="8395584934117017006">Цим пристроєм <ph name="DEVICE_TYPE" /> керує організація</translation>
 <translation id="8398927464629426868">Поточна сила струму заряджання або розряджання</translation>
 <translation id="8475690821716466388">Мережа Wi-Fi захищена ненадійним протоколом WEP PSK</translation>
 <translation id="8477551185774834963">Затримка DNS трохи довша, ніж дозволено</translation>
+<translation id="8483248364096924578">IP-адреса</translation>
+<translation id="8503813439785031346">Ім’я користувача</translation>
 <translation id="8576249514688522074">Не ініціалізовано</translation>
+<translation id="8675354002693747642">Спільний ключ</translation>
 <translation id="871560550817059752">Не надруковано – закінчилося чорнило</translation>
 <translation id="8723108084122415655">Затримка мережі не за умовчанням задовга</translation>
 <translation id="8726019395068607495">Зупинено – відкрито кришку принтера</translation>
@@ -251,6 +276,7 @@
 <translation id="8747900814994928677">Підтвердити зміни</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">За умовчанням</translation>
+<translation id="8798441408945964110">Назва постачальника</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Отримати довідку</translation>
 <translation id="8881098542468797602">Перевірку пройдено</translation>
@@ -262,11 +288,14 @@
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Залишилося спроб: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Швидкість заряджання</translation>
 <translation id="8970109610781093811">Запустити знову</translation>
+<translation id="9003704114456258138">Частота</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Використовується</translation>
 <translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканування сторінки <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Розблокувати</translation>
 <translation id="9149391708638971077">Виконати перевірку пам'яті</translation>
+<translation id="9190063653747922532">L2TP/IPSec + Спільний ключ</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">Виконати перевірку розряджання</translation>
 </translationbundle>

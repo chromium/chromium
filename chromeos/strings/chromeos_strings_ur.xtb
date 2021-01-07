@@ -3,6 +3,7 @@
 <translationbundle lang="ur">
 <translation id="1018656279737460067">منسوخ کردہ</translation>
 <translation id="1059913517121127803">اسکین کرنا شروع نہیں کیا جا سکا</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">فائروال کا پتا چلا</translation>
 <translation id="1075811647922107217">صفحہ کا سائز</translation>
 <translation id="1124772482545689468">صارف</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">نامعلوم خرابی۔</translation>
 <translation id="1204296502688602597">‏DNS تاخیر</translation>
 <translation id="123124571410524056">پورٹل مشکوک ہے</translation>
+<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">‏HTTPS تاخیر</translation>
+<translation id="1270369111467284986">مشکوک کیپٹو پورٹل</translation>
 <translation id="1290331692326790741">کمزور سگنل</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">گیٹ وے</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">اسکین کرنے کی جگہ تک فٹ کریں</translation>
 <translation id="1397738625398125236">گیٹ وے کو پنگ کیا جا سکتا ہے</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">کیش</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">موبائل ڈیٹا</translation>
+<translation id="315738237743207937">کیپٹو پورٹل کا پتا چلا</translation>
 <translation id="3188257591659621405">میری فائلز</translation>
 <translation id="3199982728237701504">دستاویز فیڈر (دو طرفہ)</translation>
 <translation id="3246869037381808805">1 دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">ٹیسٹ جاری ہے</translation>
 <translation id="3368922792935385530">منسلک</translation>
 <translation id="3369013195428705271">کیا آپ واقعی پرنٹ کی تمام سرگزشت کو صاف کرنا چاہتے ہیں؟ آپ کی جاری پرنٹ جابز کو صاف نہیں کیا جائے گا۔</translation>
+<translation id="3435738964857648380">سیکیورٹی</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> میں سے <ph name="PRINTED_PAGES" /> پرنٹ کئے ہوئے صفحات۔</translation>
 <translation id="3459509316159669723">پرنٹ کیا جا رہا ہے</translation>
 <translation id="3515615323037921860">پرنٹ جابز</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">میری ڈرائیو</translation>
 <translation id="4429881212383817840">‏Kerberos کی ٹکٹ کی میعاد جلد ہی ختم ہو جائے گی</translation>
 <translation id="445059817448385655">پرانا پاس ورڈ</translation>
+<translation id="4453205916657964690">سب نیٹ ماسک</translation>
 <translation id="4454245904991689773">اس میں اسکین کریں</translation>
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">فائروال مشکوک ہے</translation>
 <translation id="4691278870498629773">رک گیا - ٹرے موجود نہیں ہے</translation>
 <translation id="469379815867856270">سگنل کی مضبوطی</translation>
+<translation id="4707579418881001319">‏L2TP/IPsec + صارف سرٹیفکیٹ</translation>
 <translation id="4731797938093519117">والدین کی رسائی</translation>
 <translation id="4773299976671772492">روک دیا گیا</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> پرنٹ جاب منسوخ کر دی گئی</translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">اسکینر چیک کریں اور دوبارہ کوشش کریں۔ یقینی بنائیں کہ اسکین کردہ فائلز محفوظ کرنے کے لیے کافی مقامی جگہ ہے۔</translation>
 <translation id="4985509611418653372">چلائیں</translation>
 <translation id="500920857929044050">ٹیسٹ روکیں</translation>
+<translation id="5050042263972837708">گروپ کا نام</translation>
+<translation id="5088172560898466307">سرور کا میزبان نام</translation>
 <translation id="5089810972385038852">ریاست</translation>
 <translation id="5154917547274118687">میموری</translation>
 <translation id="5168185087976003268">بیٹری کی صحت</translation>
@@ -144,6 +155,7 @@
 <translation id="5264277876637023664">‏CPU ٹیسٹ چلائیں</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">روٹینز کو دوبارہ چلائیں</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">ابھی ایک نیا پاس ورڈ منتخب کریں</translation>
@@ -158,7 +170,9 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">مرکز امداد میں مزید جانیں</translation>
 <translation id="5635169860413004179">رپورٹ دیکھیں</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">‏اس سے CPU استعمال کی پیمائش ہوتی ہے اور یہ سبھی کورز کا مجموعہ ہے</translation>
+<translation id="5760715441271661976">پورٹل صورت حال</translation>
 <translation id="5781694279199921985">سیشن لاگ محفوظ کریں</translation>
 <translation id="5797428682393400134">کامیاب</translation>
 <translation id="5832805196449965646">شخص کو شامل کریں</translation>
@@ -184,6 +198,7 @@
 <translation id="6325525973963619867">ناکام</translation>
 <translation id="636850387210749493">انٹرپرائز اندراج</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{اسکین کردہ فائل محفوظ ہو گئی}other{اسکین کردہ فائلز محفوظ ہو گئیں}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">رک گیا - پیپر جام</translation>
 <translation id="6517239166834772319">دریافت</translation>
 <translation id="6527081081771465939">‏نامعلوم WiFi سیکیورٹی پروٹوکول</translation>
@@ -193,6 +208,7 @@
 <translation id="6618744767048954150">جاری ہے</translation>
 <translation id="6620487321149975369">پرنٹ جابز سرگزشت میں ظاہر ہوں گی جب تک کہ انہیں دستی طور پر ہٹا نہیں دیا جاتا</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
+<translation id="6657585470893396449">پاس ورڈ</translation>
 <translation id="6704062477274546131">‏DNS ریزولیوشن</translation>
 <translation id="6747215703636344499">رک گیا - آؤٹ پٹ بھر گیا ہے</translation>
 <translation id="6756731097889387912">اسکین کا عمل منسوخ نہیں کیا جا سکا</translation>
@@ -209,19 +225,24 @@
 <translation id="7177485034254901881">یہ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے۔ منتظمین دور سے آلے کو کنفیگر کر سکتے ہیں۔</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">فائل کی قسم</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اسکیننگ مکمل ہو گئی۔ 1 صفحہ اسکین ہو گیا}other{اسکیننگ مکمل ہو گئی۔ {NUMBER_OF_PAGES} صفحات اسکین ہو گئے}}</translation>
 <translation id="7441459999606975924">استعمال کے ساتھ بیٹریز کی استعداد کم ہوتی ہے</translation>
 <translation id="7469648432129124067">پورٹل کا پتہ چلا</translation>
 <translation id="7490813197707563893">‏MAC پتہ</translation>
+<translation id="7502658306369382406">‏IPv6 پتہ</translation>
 <translation id="7561454561030345039">یہ کارروائی آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">‏زیادہ HTTPS تاخیر</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7690294790491645610">نئے پاس ورڈ کی توثیق کریں</translation>
+<translation id="7701040980221191251">کوئی نہیں</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">دورانیے کی تعداد</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> ٹیسٹ</translation>
 <translation id="7805768142964895445">صورتحال</translation>
+<translation id="7819857487979277519">‏‫‫PSK‎‏ (WPA یا RSN)‏</translation>
+<translation id="7882358943899516840">فراہم کنندہ کی قسم</translation>
 <translation id="7928373994957558460">فائل کا مقام دکھائیں</translation>
 <translation id="7936303884198020182">کوئی نام سرور نہیں ملا</translation>
 <translation id="7960831585769876809">درجہ حرارت</translation>
@@ -238,11 +259,15 @@
 <translation id="8347227221149377169">پرنٹ جابز</translation>
 <translation id="8352772353338965963">متعدد سائن ان میں ایک اکاؤنٹ شامل کریں۔ سبھی سائن ان کردہ اکاؤنٹس تک پاس ورڈ کے بغیر رسائی کی جا سکتی ہے لہذا یہ خصوصیت صرف بھروسہ مند اکاؤنٹس کے ساتھ استعمال کی جانی چاہیے۔</translation>
 <translation id="8364946094152050673">نام سرورز خالی ہیں</translation>
+<translation id="8372477600026034341">بہت زیادہ میزبان</translation>
 <translation id="8395584934117017006">یہ <ph name="DEVICE_TYPE" /> انٹرپرائز کے زیر انتظام ہے</translation>
 <translation id="8398927464629426868">آلے کی فی الحال چارج ہونے یا چارج ختم ہونے کی شرح</translation>
 <translation id="8475690821716466388">‏WiFi نیٹ ورک کمزور پروٹوکول WEP PSK کے ساتھ محفوظ ہے</translation>
 <translation id="8477551185774834963">‏DNS تاخیر قابل اجازت حد سے تھوڑی سی زیادہ ہے</translation>
+<translation id="8483248364096924578">‏IP پتہ</translation>
+<translation id="8503813439785031346">صارف کا نام</translation>
 <translation id="8576249514688522074">شروع نہیں کیا گیا</translation>
+<translation id="8675354002693747642">پہلے سے اشتراک کردہ کلید</translation>
 <translation id="871560550817059752">ناکام ہو گیا - سیاہی ختم ہو گئی</translation>
 <translation id="8723108084122415655">تاخیر کی حد کے اوپر غیر ڈیفالٹ نیٹ ورک</translation>
 <translation id="8726019395068607495">رک گیا - دروازہ کھلا ہے</translation>
@@ -250,6 +275,7 @@
 <translation id="8747900814994928677">تبدیلی کی توثیق کریں</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ڈیفالٹ</translation>
+<translation id="8798441408945964110">فراہم کنندہ کا نام</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">مدد حاصل کریں</translation>
 <translation id="8881098542468797602">ٹیسٹ کامیاب ہو گیا</translation>
@@ -261,11 +287,14 @@
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> کوششیں باقی ہیں</translation>
 <translation id="8968751544471797276">چارج ہونے کی شرح</translation>
 <translation id="8970109610781093811">دوبارہ چلائيں</translation>
+<translation id="9003704114456258138">فریکوئنسی</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>
 <translation id="9088306295921699330">حالیہ استعمال</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> کے لیے ٹکٹ ریفریش کریں</translation>
 <translation id="9106415115617144481">اسکین شدہ صفحہ <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">غیر مقفل کریں</translation>
 <translation id="9149391708638971077">میموری ٹیسٹ چلائیں</translation>
+<translation id="9190063653747922532">‏‎L2TP/IPsec + پیشگی اشتراک کردہ کلید</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">ڈسچارج ٹیسٹ چلائیں</translation>
 </translationbundle>

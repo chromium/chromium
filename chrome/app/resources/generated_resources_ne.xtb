@@ -63,7 +63,6 @@
 <translation id="1061904396131502319">विश्राम लिने समय हुनै लाग्यो</translation>
 <translation id="1067048845568873861">सिर्जना गरियो</translation>
 <translation id="1067922213147265141">Google का अन्य सेवाहरू</translation>
-<translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">तपाईँको कम्प्युटरमा अर्को प्रोग्रामले एउटा विस्तार थप्यो जसले Chrome को कार्य गर्ने तरिकालाई बदल्न सक्छ। <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382"><ph name="COUNTDOWN_SECONDS" /> सेकेन्डमा वैकल्पिक ब्राउजरमा खोल्दै</translation>
 <translation id="1071917609930274619">लगत एन्सिफरमेन्ट</translation>
@@ -219,7 +218,6 @@
 <translation id="1234808891666923653">सेवा कामदार</translation>
 <translation id="1235458158152011030">ज्ञात नेटवर्कहरू</translation>
 <translation id="123578888592755962">डिस्क भरियो</translation>
-<translation id="1238191093934674082">खुल्ला VPN</translation>
 <translation id="1239594683407221485">Files अनुप्रयोगमार्फत यन्त्रको सामग्री अन्वेषण गर्नुहोस्।</translation>
 <translation id="124116460088058876">थप भाषाहरू</translation>
 <translation id="1241753985463165747">इन्भोक गरिएको बेला हालको वेबसाइटमा रहेका आफ्ना सम्पूर्ण डेटा पढ्नुहोस् र तिनीहरूलाई परिवर्तन गर्नुहोस्</translation>
@@ -245,7 +243,6 @@
 <translation id="1264337193001759725">नेटवर्कका UI लगहरू हेर्न यहाँ जानुहोस्: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="126710816202626562">अनुवाद भाषा:</translation>
 <translation id="126768002343224824">१६ गुणा</translation>
-<translation id="1270369111467284986">संदिग्ध क्याप्टिभ पोर्टल</translation>
 <translation id="1272079795634619415">रोक्नुहोस्</translation>
 <translation id="1272293450992660632">PIN का मानहरू मिल्दैनन्।</translation>
 <translation id="1272978324304772054">यो प्रयोगकर्ता खाता साधन भर्ना भएको डोमेनमा पर्दैन । यदि तपाईं फरक डोमेनमा भर्ना हुन चाहनुहुन्छ भने, तपाईं पहिले डिभाइस रिकभरीमार्फत जानुपर्छ ।</translation>
@@ -286,7 +283,6 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">तपाईंलाई खुला रहेका ट्याबहरूसहित सबै साइटहरूबाट साइन आउट गरिने छ</translation>
 <translation id="1313705515580255288">तपाइँका पृष्ठमञ्जूषाहरू, इतिहास, र अन्य सेटिङहरू तपाइँको Google खातामा समक्रमण गरिनेछन्।</translation>
-<translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">गृह सञ्जाल, रोम गरिरहेको छैन</translation>
 <translation id="1316136264406804862">खोज्दै...</translation>
 <translation id="1316495628809031177">सिंक पज गरिएको छ</translation>
@@ -298,7 +294,6 @@
 <translation id="1327272175893960498">Kerberos का टिकटहरू</translation>
 <translation id="1327495825214193325">ADB डिबग प्रक्रिया सक्षम पार्न यो <ph name="DEVICE_TYPE" /> पुनः सुरु गर्नु पर्ने हुन्छ। यसलाई असक्षम पार्न यस यन्त्रका सेटिङ रिसेट गरी फ्याक्ट्री संस्करणमा लैजानु पर्ने हुन्छ।</translation>
 <translation id="1327794256477341646">तपाईंको स्थानसम्बन्धी जानकारी प्रयोग गर्ने सुविधाहरूले काम गर्ने छैनन्</translation>
-<translation id="1327977588028644528">गेटवे</translation>
 <translation id="1329584516321524826">अहिले भर्खरै अद्यावधिक गरियो</translation>
 <translation id="1330145147221172764">अन-स्क्रिन किबोर्ड सक्षम बनाउनुहोस्</translation>
 <translation id="1331977651797684645">यो म थिएँ।</translation>
@@ -1103,7 +1098,6 @@
 <translation id="2220529011494928058">मुद्दा उजुरी गर्नुहोस्</translation>
 <translation id="2220572644011485463">PIN वा पासवर्ड</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
-<translation id="2224337661447660594">इन्टरनेट छैन</translation>
 <translation id="2224444042887712269">यो सेटिङ <ph name="OWNER_EMAIL" /> को हो</translation>
 <translation id="222447520299472966">आर्ट ग्यालेरीमा रहेको कम्तीमा एउटा एल्बम चयन गर्नु पर्ने हुन्छ</translation>
 <translation id="2224551243087462610">फोल्डर नाम सम्पादन गर्नुहोस्</translation>
@@ -1933,7 +1927,6 @@
 <translation id="3154429428035006212">एक महिना भन्दा धेरै समयको लागि अफलाइन</translation>
 <translation id="3155072594963189910">साइटहरूलाई तपाईंको यन्त्रमा भएका फाइल तथा फोल्डरहरू सम्पादन गर्न नदिनुहोस्</translation>
 <translation id="3156531245809797194">Chrome प्रयोग गर्न कृपया साइन इन गर्नुहोस्</translation>
-<translation id="315738237743207937">क्याप्टिभ पोर्टल भेटियो</translation>
 <translation id="3157387275655328056">पाठ्य सूचीमा थप्नुहोस्</translation>
 <translation id="3157931365184549694">पुन: भण्डारण</translation>
 <translation id="3158033540161634471">आफ्नो फिंगरप्रिन्ट सेटअप गर्नुहोस्</translation>
@@ -3048,7 +3041,6 @@
 <translation id="4450974146388585462">पत्ता लगाउनुहोस्</translation>
 <translation id="4451479197788154834">तपाईंको पासवर्ड यो यन्त्र र तपाईंको Google खातामा सुरक्षित गरिएको छ</translation>
 <translation id="4451757071857432900">हस्तक्षेपकारी वा भ्रामक विज्ञापन देखाउने साइटहरूमा रोक लगाइएको (सिफारिस गरिएको)</translation>
-<translation id="4453205916657964690">सबनेट मास्क</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> खोज्नुहोस्‌ वा URL टाइप गर्नुहोस्</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> दिन पहिले सक्रिय</translation>
 <translation id="4460014764210899310">समूह विघटन गर्नुहोस्</translation>
@@ -3176,7 +3168,6 @@
 <translation id="4590324241397107707">डेटाबेस भण्डारण</translation>
 <translation id="4592891116925567110">रेखाचित्र बनाउन प्रयोग गरिने स्टाइलस एप</translation>
 <translation id="4593021220803146968"><ph name="URL" /> मा &amp;जानुहोस्</translation>
-<translation id="4593212453765072419">प्रोक्सी प्रमाणित गर्नु पर्ने हुन्छ</translation>
 <translation id="4595560905247879544">Apps र विस्तारहरू प्रबन्धकद्वारा मात्र संशोधित गर्न सकिन्छ (<ph name="CUSTODIAN_NAME" />)।</translation>
 <translation id="4596295440756783523">तपाईँसँग फाइलमा यी सर्भरहरूको पहिचान गर्ने प्रमाणपत्रहरू छन्</translation>
 <translation id="4598556348158889687">भण्डारणको व्यवस्थापन</translation>
@@ -3271,7 +3262,6 @@
 <translation id="4699357559218762027">(स्वत: सुरुवात गरिएको)</translation>
 <translation id="4701025263201366865">अभिभावकको साइन इन</translation>
 <translation id="4707302005824653064">chrome.com मा रहेको व्यवस्थापक (<ph name="CUSTODIAN_EMAIL" />) ले उपयोग र इतिहासको समीक्षा गर्न सक्छ।</translation>
-<translation id="4707579418881001319">L2TP/IPsec + प्रयोगकर्ता प्रमाणपत्र</translation>
 <translation id="4708794300267213770">शयन अवस्थाबाट सक्रिय पार्दा लक स्क्रिन देखाउनुहोस्</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड्नुहोस्</translation>
 <translation id="4711638718396952945">सेटिङहरू पुनर्स्थापित गर्नुहोस्</translation>
@@ -3542,7 +3532,6 @@
 <translation id="5045550434625856497">गलत पासवर्ड</translation>
 <translation id="504561833207953641">विद्यमान ब्राउजर सत्रमा खोल्दै।</translation>
 <translation id="5047421709274785093">साइटहरूलाई चाल र प्रकाशसम्बन्धी सेन्सरहरू प्रयोग गर्नबाट रोक लगाउनुहोस्</translation>
-<translation id="5050042263972837708">समूहको नाम</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">तपाईंले चयन गर्नुभएको भाषामा हिज्जे परीक्षण गर्ने सुविधा प्रयोग गर्न मिल्दैन</translation>
 <translation id="5052499409147950210">साइट सम्पादन गर्नुहोस्</translation>
@@ -3576,7 +3565,6 @@
 <translation id="5087249366037322692">तेस्रो-पक्षद्वारा थपिएको</translation>
 <translation id="5087580092889165836">कार्ड थप्नुहोस्</translation>
 <translation id="5087926280563932024">तपाईंको खातालाई प्रमाणित गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस् वा आफ्नो Chromebook लाई पुनः सुरु गर्नुहोस्।</translation>
-<translation id="5088172560898466307">सर्भरको होस्टनाम</translation>
 <translation id="5088534251099454936">RSA को साथमा PKCS #1 SHA-512 गुप्तलेखन</translation>
 <translation id="5090637338841444533">तपाईंको क्यामेराको स्थिति ट्र्याक गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="5094721898978802975">सहयोगी मुल अनुप्रयोगहरूसँग सञ्चार गर्नुहोस्</translation>
@@ -3742,7 +3730,6 @@
 <translation id="5284445933715251131">डाउनलोड जारी राख्नुहोस्</translation>
 <translation id="5285635972691565180"><ph name="DISPLAY_ID" /> देखाउनुहोस्</translation>
 <translation id="5286194356314741248">स्क्यान गर्दै</translation>
-<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5287425679749926365">तपाइँका खाताहरू</translation>
 <translation id="5288678174502918605">बन्द गरिएको ट्याब पुनः&amp;खोल्नुहोस्</translation>
 <translation id="52895863590846877">पृष्ठ <ph name="LANGUAGE" /> भाषामा उपलब्ध छैन</translation>
@@ -4082,7 +4069,6 @@
 <translation id="5669267381087807207">सक्रिय गर्दै</translation>
 <translation id="5669691691057771421">नयाँ PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="56702779821643359">आफू वरपरका मान्छेहरूसँग फाइल सेयर गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
-<translation id="5670702108860320605">BSSID</translation>
 <translation id="5671641761787789573">छविहरूमाथि रोक लगाइएको छ</translation>
 <translation id="5671658447180261823">सुझाव <ph name="SUGGESTION_NAME" /> हटाउनुहोस्</translation>
 <translation id="567587836466137939">यो यन्त्रले <ph name="MONTH_AND_YEAR" /> सम्म मात्र सफ्टवेयर तथा सुरक्षासम्बन्धी अद्यावधिकहरू स्वतः प्राप्त गर्ने छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
@@ -4156,7 +4142,6 @@
 <translation id="5756163054456765343">मद्द&amp;त केन्द्र</translation>
 <translation id="5758631781033351321">तपाईंको अध्ययन सूची यहाँ देखिने छ</translation>
 <translation id="5759728514498647443">तपाईँले प्रिन्टमा <ph name="APP_NAME" /> मार्फत पठाउने कागजातहरू <ph name="APP_NAME" /> द्वारा पढ्न सकिन्छ।</translation>
-<translation id="5760715441271661976">पोर्टलको स्थिति</translation>
 <translation id="5763751966069581670">कुनै USB यन्त्र भेटिएन</translation>
 <translation id="5764483294734785780">यस रूपमा अडियो ब&amp;चत गर्नुहोस्...</translation>
 <translation id="57646104491463491">परिमार्जित गरिएको मिति</translation>
@@ -4781,7 +4766,6 @@
 <translation id="6468485451923838994">फन्टहरू</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> वटा फाइल</translation>
 <translation id="6469557521904094793">सेलुलर नेटवर्क अन गर्नुहोस्</translation>
-<translation id="6472207088655375767">OTP</translation>
 <translation id="6472893788822429178">गृह बटन देखाउनुहोस्</translation>
 <translation id="6473842110411557830">पावरवाशका चित्रणहरू</translation>
 <translation id="6474498546677193336">एउटा अनुप्रयोगले यो फोल्डर प्रयोग गरिरहेका कारण आदान प्रदान गर्ने कार्य रद्द गर्न सकिएन। अर्को पटक Linux बन्द हुँदा उक्त फोल्डरको आदान प्रदान रद्द गरिने छ।</translation>
@@ -5358,7 +5342,6 @@
 <translation id="713888829801648570">माफ गर्नुहोस्, तपाइँको पासवर्ड रुजू गर्न सकिएन किनभने तपाइँ अफलाइन हुनुहुन्छ।</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> ले तपाईंको यन्त्रको माइक्रोफोन प्रयोग गरिरहेको छ</translation>
 <translation id="7141105143012495934">साइन इन असफल भयो किनभने तपाईँका खाता विवरणहरू पुनःप्राप्त गर्न सकेन। कृपया तपाईँको प्रशासकसँग सम्पर्क गर्नुहोस् वा फेरि प्रयास गर्नुहोस्।</translation>
-<translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="7143358760238281735">कुनै पनि एप उपलब्ध छैन</translation>
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="7149893636342594995">पछिल्ला २४ घन्टा</translation>
@@ -5526,7 +5509,6 @@
 <translation id="7354341762311560488">तपाईंको किबोर्डको बायाँतिर फेदमा रहेको कुञ्जी फिंगरप्रिन्ट सेन्सर हो। यसलाई जुनसुकै औँलाले हल्का छुनुहोस्।</translation>
 <translation id="7356908624372060336">नेटवर्क लगहरू</translation>
 <translation id="735745346212279324">VPN को जडान विच्छेद भयो</translation>
-<translation id="7360183604634508679">पुस्तक चिन्हहरूको मेनु</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" /> मा <ph name="PAGE_NUMBER" /> पृष्ठहरू</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> सञ्चालन गर्नका लागि दायाँ-क्लिक गर्नुहोस्</translation>
 <translation id="7363117941401515667"><ph name="HOURS" /> घन्टाअघि अद्यावधिक गरिएको</translation>
@@ -5543,7 +5525,6 @@
 <translation id="7371006317849674875">सुरु हुने समय</translation>
 <translation id="7371490947952970241">तपाईं यो यन्त्रमा स्थानसम्बन्धी मुख्य सेटिङ निष्क्रिय पारी स्थानसम्बन्धी सेवा निष्क्रिय पार्न सक्नुहुन्छ। तपाईं स्थानसम्बन्धी सेटिङमा गई स्थान पत्ता लगाउने प्रयोजनका लागि Wi-Fi, मोबाइल नेटवर्क र सेन्सरहरूको प्रयोग गर्न नदिन पनि सक्नुहुन्छ।</translation>
 <translation id="7374376573160927383">USB हरू व्यवस्थापन गर्नुहोस्</translation>
-<translation id="7375053625150546623">EAP</translation>
 <translation id="7375235221357833624">{0,plural, =1{एक घन्टाभित्र यन्त्र अपडेट गर्नुहोस्}other{# घन्टाभित्र यन्त्र अपडेट गर्नुहोस्}}</translation>
 <translation id="7376553024552204454">गतिशील हुँदा माउसको कर्सरलाई हाइलाइट गर्नुहोस्</translation>
 <translation id="7377451353532943397">सेन्सरको पहुँचमाथि रोक लगाउन जारी राख्नुहोस्‌</translation>
@@ -5654,7 +5635,6 @@
 <translation id="7497215489070763236">सर्भरको CA को प्रमाणपत्र</translation>
 <translation id="7497981768003291373">तपाईंसँग हालै क्याप्चर गरिएको WebRTC पाठको कुनै पनि लग छैन।</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> ले यो ट्याबमा रहेका सामग्री क्याप्चर गर्ने अनुमति माग्दै छ।</translation>
-<translation id="7502658306369382406">IPv6 ठेगाना</translation>
 <translation id="7503191893372251637">नेटस्केप प्रमाणपत्र प्रकार</translation>
 <translation id="7503985202154027481">तपाईंको सुरक्षा साँचोमा तपाईं यो साइटमा जानुभएको कुराको रेकर्ड राखिने छ।</translation>
 <translation id="750509436279396091">डाउनलोडहरू फोल्डर खोल्नुहोस्</translation>
@@ -5940,7 +5920,6 @@
 <translation id="7815680994978050279">खतरनाक डाउनलोडमाथि रोक लगाइयो</translation>
 <translation id="7817361223956157679">अनस्क्रिन किबोर्डले Linux का एपहरूमा अझै काम गर्दैन</translation>
 <translation id="7818135753970109980">नयाँ थिम थपियो (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819857487979277519">PSK (WPA वा RSN)</translation>
 <translation id="7819992334107904369">Chrome सिंक</translation>
 <translation id="782057141565633384">भिडियो ठेगानाको प्रतिलिपि बनाउनुहोस्</translation>
 <translation id="7822187537422052256">तपाईंले यो ठेगाना हटाउन खोज्नुभएकै हो?</translation>
@@ -6009,7 +5988,6 @@
 <translation id="7880823633812189969">तपाईंले पुन: सुरु गर्नुहुँदा स्थानीय डेटा मेटाइने छ</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">खाता हेर्नुहोस्</translation>
-<translation id="7882358943899516840">प्रदायकको प्रकार</translation>
 <translation id="7885253890047913815">हालैका गन्तव्यहरू</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">नक्कल बनाउनुहोस्</translation>
@@ -6117,7 +6095,6 @@
 कुञ्जी फाइल: <ph name="KEY_FILE" />
 
 तपाइँको फाइल एक सुरक्षित ठाउँमा राख्नुहोस्। तपाइँले विस्तारका नयाँ संस्करणहरू सिर्जना गर्न आवश्यक छ।</translation>
-<translation id="8000020256436988724">टुलबार</translation>
 <translation id="8000066093800657092">कुनै नेटवर्क छैन</translation>
 <translation id="8002274832045662704">प्रिन्टरसम्बन्धी उन्नत कन्फिगुरेसन</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> अब उप्रान्त उपलब्ध छैन</translation>
@@ -6440,7 +6417,6 @@
 <translation id="8371695176452482769">अब बोल्नुहोस्</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{साइट म्युट गर्नुहोस्}other{साइटहरू म्युट गर्नुहोस्}}</translation>
 <translation id="8372369524088641025">खराब WEP कुञ्जी</translation>
-<translation id="8372477600026034341">अतिरिक्त होस्टहरू</translation>
 <translation id="8373652277231415614">Crostini बाट सेयर गरिएका डिरेक्टरीहरू</translation>
 <translation id="8376384591331888629">यस साइटका तेस्रो पक्षीय कुकीसमेत</translation>
 <translation id="8378714024927312812">तपाईंको सङ्गठनले व्यवस्थापन गरेको</translation>
@@ -6528,7 +6504,6 @@
 <translation id="8480082892550707549">तपाईँले पहिले यस साइटबाट फाइलहरू डाउनलोड गर्नुभएको भए पनि यो साइट अस्थायी रूपमा असुरक्षित (ह्याक गरिएको) हुन सक्छ। यो फाइल प‍छि डाउनलोड गरी हेर्नुहोस्।</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> को अज्ञात यन्त्र</translation>
 <translation id="8481187309597259238">USB अनुमति निश्चित गर्नुहोस्</translation>
-<translation id="8483248364096924578">IP ठेगाना</translation>
 <translation id="8487678622945914333">जुम बढाउनुहोस्</translation>
 <translation id="8489156414266187072">व्यक्तिगत सिफारिस तपाईंको खातामा मात्र देखाइन्छन्</translation>
 <translation id="8490896350101740396">निम्न kisok एपहरू " <ph name="UPDATED_APPS" /> "अद्यावधिक गरिएका छन्। अद्यावधिक प्रक्रिया पूरा गर्न यन्त्रलाई रिबुट गर्नुहोस्।</translation>
@@ -6690,7 +6665,6 @@
 <translation id="867085395664725367">सर्भरसम्बन्धी अस्थायी त्रुटि भयो।</translation>
 <translation id="8673026256276578048">वेबमा खोज्नुहोस्...</translation>
 <translation id="8673383193459449849">सर्भर समस्या</translation>
-<translation id="8675354002693747642">पहिलै साझा गरिएको साँचो</translation>
 <translation id="8676374126336081632">आगत मेटाउनुहोस्</translation>
 <translation id="8676770494376880701">अल्प-पावर चार्जर जडित</translation>
 <translation id="8677212948402625567">सबै संकुचित पार्नुहोस्...</translation>
@@ -6806,7 +6780,6 @@
 <translation id="8795916974678578410">नयाँ विन्डो</translation>
 <translation id="8797459392481275117">यस साइटलाई कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="8798099450830957504">पूर्वनिर्धारित</translation>
-<translation id="8798441408945964110">प्रदायकको नाम</translation>
 <translation id="8800004011501252845">यसको लागि गन्तव्यहरू देखाउँदै</translation>
 <translation id="8800034312320686233">साइटले काम गरिरहेको छैन?</translation>
 <translation id="8803953437405899238">एक क्लिकमै नयाँ ट्याब खोल्नुहोस्</translation>
@@ -7002,7 +6975,6 @@
 <translation id="9002878223019487115"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="9003647077635673607">सबै वेबसाइटहरूमा अनुमति दिनुहोस्</translation>
 <translation id="9003677638446136377">फेरि जाँच गर्नुहोस्</translation>
-<translation id="9003704114456258138">फ्रिक्वेन्सी</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क<ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
 <translation id="9004952710076978168">एक अज्ञात प्रिन्टरका लागि जानकारी प्राप्त।</translation>
 <translation id="9008201768610948239">बेवास्ता गर्नुहोस्</translation>
@@ -7172,7 +7144,6 @@
 <translation id="9180380851667544951">साइटले तपाईंको स्क्रिन आदान प्रदान गर्न सक्छ</translation>
 <translation id="9186963452600581158">आफ्ना बच्चाको Google खाता प्रयोग गरी साइन इन गर्नुहोस्</translation>
 <translation id="9188732951356337132">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। यो यन्त्रले हाल निदान, यन्त्र र एपको उपयोगसम्बन्धी डेटा स्वतः Google मा पठाइरहेको छ। यस्तो डेटा तपाईंका बालकको पहिचान गर्ने प्रयोजनका लागि प्रयोग गरिने छैन र यसले प्रणाली तथा एपको स्थिरता र थप कुराहरू सुधार गर्न मद्दत गर्ने छ। केही एकीकृत डेटाले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छ। तपाईंका बालकको खातामा वेब तथा एपसम्बन्धी अतिरिक्त क्रियाकलापको सेटिङ सक्रिय गरिएको छ भने यो डेटा उनको Google खातामा सुरक्षित गरिन सक्छ। <ph name="BEGIN_LINK2" />थप जान्नुहोस्<ph name="END_LINK2" /></translation>
-<translation id="9190063653747922532">L2TP/IPsec + पहिले नै साझा गरिएको कुञ्जी</translation>
 <translation id="9198090666959937775">आफ्नो Android फोन सुरक्षा साँचोका रूपमा प्रयोग गर्नुहोस्</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="9201023452444595544">सबै अफलाइन डेटा हटाइने छ</translation>
@@ -7211,7 +7182,6 @@
 <translation id="93766956588638423">विस्तार मर्मत गर्नुहोस्</translation>
 <translation id="938470336146445890">कृपया एउटा प्रयोगकर्ता प्रमाणपत्र स्थापना गर्नुहोस्।</translation>
 <translation id="939252827960237676">स्क्रिनसट बचत गर्न अ</translation>
-<translation id="939519157834106403">SSID</translation>
 <translation id="939598580284253335">पासफ्रेज प्रविष्टि गर्नुहोस्</translation>
 <translation id="939736085109172342">नयाँ फोल्डर</translation>
 <translation id="941070664607309480">तपाईंको यन्त्रसँग डेटा सेयर गर्न सकियोस् भन्नाका खातिर आफ्नो यन्त्र अरूले देख्न सक्ने बनाउन क्लिक गर्नुहोस्</translation>

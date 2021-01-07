@@ -3,6 +3,7 @@
 <translationbundle lang="ja">
 <translation id="1018656279737460067">キャンセルされました</translation>
 <translation id="1059913517121127803">スキャンを開始できませんでした</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ファイアウォールが検出されました</translation>
 <translation id="1075811647922107217">ページサイズ</translation>
 <translation id="1124772482545689468">ユーザー</translation>
@@ -10,8 +11,12 @@
 <translation id="1195447618553298278">不明なエラーです。</translation>
 <translation id="1204296502688602597">DNS レイテンシ</translation>
 <translation id="123124571410524056">ポータルの可能性があります</translation>
+<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">HTTPS レイテンシ</translation>
+<translation id="1270369111467284986">キャプティブ ポータルの可能性があります</translation>
 <translation id="1290331692326790741">電波: 弱い</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="1327977588028644528">ゲートウェイ</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">スキャン領域に合わせる</translation>
 <translation id="1397738625398125236">ゲートウェイへの ping</translation>
@@ -69,6 +74,7 @@
 <translation id="3102119246920354026">キャッシュ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">モバイル データ</translation>
+<translation id="315738237743207937">キャプティブ ポータルが検出されました</translation>
 <translation id="3188257591659621405">マイファイル</translation>
 <translation id="3199982728237701504">ドキュメント フィーダー（両面）</translation>
 <translation id="3246869037381808805">昨日より前の印刷ジョブは削除されます</translation>
@@ -77,6 +83,7 @@
 <translation id="3328783797891415197">テスト実行中</translation>
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3369013195428705271">印刷履歴をすべて削除してもよろしいですか？実行中の印刷ジョブは削除されません。</translation>
+<translation id="3435738964857648380">セキュリティ</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> ページを印刷しました。</translation>
 <translation id="3459509316159669723">印刷</translation>
 <translation id="3515615323037921860">印刷ジョブ</translation>
@@ -107,6 +114,7 @@
 <translation id="4425149324548788773">マイドライブ</translation>
 <translation id="4429881212383817840">Kerberos チケットはまもなく有効期限が切れます</translation>
 <translation id="445059817448385655">古いパスワード</translation>
+<translation id="4453205916657964690">サブネット マスク</translation>
 <translation id="4454245904991689773">スキャンの保存先</translation>
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
@@ -121,6 +129,7 @@
 <translation id="467715984478005772">ファイアウォールの可能性があります</translation>
 <translation id="4691278870498629773">停止 - トレイなし</translation>
 <translation id="469379815867856270">電波強度</translation>
+<translation id="4707579418881001319">L2TP/IPSec + ユーザー証明書</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="4773299976671772492">停止しました</translation>
 <translation id="4808449224298348341">キャンセルされた印刷ジョブ <ph name="DOCUMENT_TITLE" /></translation>
@@ -135,6 +144,8 @@
 <translation id="498186245079027698">スキャナを確認して、もう一度お試しください。デバイスにスキャンしたファイルを保存するのに十分な容量があるかどうかも確認してください。</translation>
 <translation id="4985509611418653372">実行</translation>
 <translation id="500920857929044050">テストを停止</translation>
+<translation id="5050042263972837708">グループ名</translation>
+<translation id="5088172560898466307">サーバーのホスト名</translation>
 <translation id="5089810972385038852">都道府県 / 州</translation>
 <translation id="5154917547274118687">メモリ</translation>
 <translation id="5168185087976003268">電池の状態</translation>
@@ -145,6 +156,7 @@
 <translation id="5264277876637023664">CPU テストを実行</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">ルーティンを再実行</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">新しいパスワードを今すぐ選択してください</translation>
@@ -159,7 +171,9 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">ヘルプセンターで詳細を確認</translation>
 <translation id="5635169860413004179">レポートを表示</translation>
+<translation id="5670702108860320605">BSSID</translation>
 <translation id="5719918614880940190">コア CPU 全体の使用状況を測定します</translation>
+<translation id="5760715441271661976">ポータル状態</translation>
 <translation id="5781694279199921985">セッションログを保存</translation>
 <translation id="5797428682393400134">完了</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
@@ -185,6 +199,7 @@
 <translation id="6325525973963619867">失敗しました</translation>
 <translation id="636850387210749493">企業の登録</translation>
 <translation id="6426373337268369892">{COUNT,plural, =1{スキャンしたファイルを保存しました}other{スキャンしたファイルを保存しました}}</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">停止 - 紙詰まり</translation>
 <translation id="6517239166834772319">使い方・ヒント</translation>
 <translation id="6527081081771465939">Wi-Fi のセキュリティ プロトコルが不明です</translation>
@@ -194,6 +209,7 @@
 <translation id="6618744767048954150">実行中</translation>
 <translation id="6620487321149975369">印刷ジョブは、手動で削除するまで履歴に表示されます</translation>
 <translation id="6643016212128521049">削除</translation>
+<translation id="6657585470893396449">パスワード</translation>
 <translation id="6704062477274546131">DNS の解決</translation>
 <translation id="6747215703636344499">停止 - 排紙トレイがいっぱいです</translation>
 <translation id="6756731097889387912">スキャンをキャンセルできませんでした</translation>
@@ -210,19 +226,24 @@
 <translation id="7177485034254901881">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。管理者がこのデバイスをリモートで設定している可能性があります。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ファイル形式</translation>
+<translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{スキャンが完了しました。1 ページをスキャンしました}other{スキャンが完了しました。{NUMBER_OF_PAGES} ページをスキャンしました}}</translation>
 <translation id="7441459999606975924">バッテリー容量は使用に伴って減少します</translation>
 <translation id="7469648432129124067">ポータルが検出されました</translation>
 <translation id="7490813197707563893">MAC アドレス</translation>
+<translation id="7502658306369382406">IPv6 アドレス</translation>
 <translation id="7561454561030345039">この操作は管理者によって管理されています</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
+<translation id="7701040980221191251">なし</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">サイクル回数</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> テスト</translation>
 <translation id="7805768142964895445">ステータス</translation>
+<translation id="7819857487979277519">PSK（WPA または RSN）</translation>
+<translation id="7882358943899516840">プロバイダの種類</translation>
 <translation id="7928373994957558460">ファイルの場所を表示</translation>
 <translation id="7936303884198020182">ネームサーバーが見つかりませんでした</translation>
 <translation id="7960831585769876809">温度</translation>
@@ -239,11 +260,15 @@
 <translation id="8347227221149377169">印刷ジョブ</translation>
 <translation id="8352772353338965963">マルチログインにアカウントを追加します。ログインしているすべてのアカウントにパスワードなしでアクセスできるようになるため、この機能は信頼できるアカウントでのみ使用してください。</translation>
 <translation id="8364946094152050673">ネームサーバーが空です</translation>
+<translation id="8372477600026034341">その他のホスト</translation>
 <translation id="8395584934117017006">この <ph name="DEVICE_TYPE" /> は企業の管理対象デバイスです</translation>
 <translation id="8398927464629426868">現在デバイスが充電または放電している速度</translation>
 <translation id="8475690821716466388">Wi-Fi ネットワークで安全性の低いプロトコル WEP PSK が使用されています</translation>
 <translation id="8477551185774834963">DNS の応答時間が許容値を少し超えています</translation>
+<translation id="8483248364096924578">IP アドレス</translation>
+<translation id="8503813439785031346">ユーザー名</translation>
 <translation id="8576249514688522074">初期化が未完了</translation>
+<translation id="8675354002693747642">事前共有キー</translation>
 <translation id="871560550817059752">失敗 - インクがありません</translation>
 <translation id="8723108084122415655">デフォルト以外のネットワークの応答時間がしきい値を超えています</translation>
 <translation id="8726019395068607495">停止 - 扉が開いています</translation>
@@ -251,6 +276,7 @@
 <translation id="8747900814994928677">変更を確認</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">既定</translation>
+<translation id="8798441408945964110">プロバイダ名</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">ヘルプ</translation>
 <translation id="8881098542468797602">テストが完了しました</translation>
@@ -262,11 +288,14 @@
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />: あと <ph name="ATTEMPTS_LEFT" /> 回</translation>
 <translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再実行</translation>
+<translation id="9003704114456258138">周波数</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">現在の使用状況</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています</translation>
 <translation id="9111102763498581341">ロック解除</translation>
 <translation id="9149391708638971077">メモリテストを実行</translation>
+<translation id="9190063653747922532">L2TP/IPSec + 事前共有鍵</translation>
+<translation id="939519157834106403">SSID</translation>
 <translation id="982713511914535780">放電テストを実行</translation>
 </translationbundle>

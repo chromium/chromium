@@ -24,6 +24,7 @@ Lai piešķirtu šo atļauju, tālāk noklikšķiniet uz “<ph name="BUTTON_NAM
 Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet atzīmi un atzīmējiet to vēlreiz.</translation>
 <translation id="225614027745146050">Laipni lūdzam!</translation>
 <translation id="2320166752086256636">Paslēpt tastatūru</translation>
+<translation id="2333212046079545895">Autortiesības: Google LLC (2021). Visas tiesības paturētas.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2366718077645204424">Nevar sasniegt saimniekdatoru. Iespējamais iemesls var būt tīkla konfigurācija, kuru izmantojat.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Pēdējo reizi redzēts tiešsaistē <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -129,7 +130,6 @@ Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet
 <translation id="7067321367069083429">Ekrāns darbojas kā skārienekrāns</translation>
 <translation id="7116737094673640201">Laipni lūdzam Chrome attālajā darbvirsmā!</translation>
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>
-<translation id="724402108658370587">Autortiesības: Google LLC (2020). Visas tiesības paturētas.</translation>
 <translation id="7312846573060934304">Saimniekdators darbojas bezsaistes režīmā.</translation>
 <translation id="7319983568955948908">Pārtraukt koplietošanu</translation>
 <translation id="7401733114166276557">Chrome attālā darbvirsma</translation>
