@@ -90,10 +90,12 @@ source_set("eg_app_support+eg2") {
   deps = [
     ":qr_scanner",
     "//base",
+    "//components/search_engines",
     "//components/version_info",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/main",
+    "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/location_bar",
     "//ios/chrome/browser/ui/scanner",

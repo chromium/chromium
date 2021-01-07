@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_camera_controller.h"
 #include "ios/chrome/browser/ui/qr_scanner/qr_scanner_view.h"
@@ -16,6 +17,7 @@
 #include "ios/chrome/browser/ui/scanner/scanner_view.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -82,6 +84,13 @@ using base::UserMetricsAction;
 #pragma mark - QRScannerCameraControllerDelegate
 
 - (void)receiveQRScannerResult:(NSString*)result loadImmediately:(BOOL)load {
+  GURL url = GURL(base::SysNSStringToUTF8(result));
+  if (url.is_valid() && !url.SchemeIsHTTPOrHTTPS()) {
+    // Only HTTP(S) URLs are supported.
+    // For other URLs, add quotes so they are considered as search terms instead
+    // of URLs.
+    result = [NSString stringWithFormat:@"\"%@\"", result];
+  }
   if ([self isVoiceOverActive]) {
     // Post a notification announcing that a code was scanned. QR scanner will
     // be dismissed when the UIAccessibilityAnnouncementDidFinishNotification is

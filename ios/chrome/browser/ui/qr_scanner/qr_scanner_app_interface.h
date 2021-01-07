@@ -30,13 +30,13 @@
 // should not be called directly.
 + (id)cameraControllerSwizzleBlockWithMock:(id)cameraControllerMock;
 
-// Returns the block to use for swizzling the LocationBarCoordinator
-// loadGURLFromLocationBarBlock:transition: method to load |searchURL| instead
-// of the generated search URL.
-// This block is only used for swizzling, which is why its type is opaque. It
-// should not be called directly.
-+ (id)locationBarCoordinatorLoadGURLFromLocationBarSwizzleBlockForSearchURL:
-    (NSURL*)searchURL;
+#pragma mark Search engine override
+
+// Overrides the default search engine with the |templateURL|.
++ (void)overrideSearchEngine:(NSString*)templateURL;
+
+// Restored the Google default search engine.
++ (void)resetSearchEngine;
 
 #pragma mark Mocking and Expectations
 
