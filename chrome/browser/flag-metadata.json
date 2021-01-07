@@ -4062,6 +4062,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "query-tiles-more-trending",
+    "owners": [ "qinmin" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "query-tiles-ntp",
     "owners": [ "shaktisahu", "qinmin" ],
     "expiry_milestone": 90
@@ -4075,6 +4080,11 @@
     "name": "query-tiles-single-tier",
     "owners": [ "shaktisahu" ],
     "expiry_milestone": 90
+  },
+  {
+    "name": "query-tiles-swap-trending",
+    "owners": [ "qinmin" ],
+    "expiry_milestone": 92
   },
   {
     "name": "quiet-notification-prompts",

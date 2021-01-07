@@ -38,5 +38,7 @@ const char kQueryTilesInstantBackgroundTask[] =
     "query-tiles-instant-background-task";
 
 const char kQueryTilesEnableTrending[] = "query-tiles-enable-trending";
+
+const char kQueryTilesMoreTrending[] = "query-tiles-more-trending";
 }  // namespace switches
 }  // namespace query_tiles

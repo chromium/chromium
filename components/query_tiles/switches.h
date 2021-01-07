@@ -58,6 +58,8 @@ extern const char kQueryTilesInstantBackgroundTask[];
 // If set, server will return trending tiles along with curated tiles.
 extern const char kQueryTilesEnableTrending[];
 
+// If set, the client will request more trending tiles from the server.
+extern const char kQueryTilesMoreTrending[];
 }  // namespace switches
 }  // namespace query_tiles
 

@@ -3543,6 +3543,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kQueryTilesInstantFetchDescription, kOsAndroid,
      SINGLE_VALUE_TYPE(
          query_tiles::switches::kQueryTilesInstantBackgroundTask)},
+    {"query-tiles-more-trending",
+     flag_descriptions::kQueryTilesMoreTrendingName,
+     flag_descriptions::kQueryTilesMoreTrendingDescription, kOsAndroid,
+     SINGLE_VALUE_TYPE(query_tiles::switches::kQueryTilesMoreTrending)},
+    {"query-tiles-swap-trending",
+     flag_descriptions::kQueryTilesSwapTrendingName,
+     flag_descriptions::kQueryTilesSwapTrendingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         query_tiles::features::kQueryTilesRemoveTrendingTilesAfterInactivity)},
     {"video-tutorials", flag_descriptions::kVideoTutorialsName,
      flag_descriptions::kVideoTutorialsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(video_tutorials::features::kVideoTutorials)},

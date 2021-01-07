@@ -1761,6 +1761,10 @@ extern const char kQueryTilesLocalOrderingName[];
 extern const char kQueryTilesLocalOrderingDescription[];
 extern const char kQueryTilesInstantFetchName[];
 extern const char kQueryTilesInstantFetchDescription[];
+extern const char kQueryTilesMoreTrendingName[];
+extern const char kQueryTilesMoreTrendingDescription[];
+extern const char kQueryTilesSwapTrendingName[];
+extern const char kQueryTilesSwapTrendingDescription[];
 
 extern const char kReaderModeHeuristicsName[];
 extern const char kReaderModeHeuristicsDescription[];
