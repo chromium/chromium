@@ -317,7 +317,7 @@ wheel: <
 >
 wheel: <
   name: "infra/python/wheels/mozlog-py2_py3"
-  version: "version:5.0"
+  version: "version:7.1.0"
 >
 wheel: <
   name: "infra/python/wheels/mozprocess-py2_py3"

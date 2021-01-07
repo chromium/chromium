@@ -45904,6 +45904,19 @@
         ],
         {}
        ]
+      ],
+      "one-element-transition.html": [
+       "51d3a968c735f78c3ba2b3f0213ec0d2a989ae15",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/animations/one-element-animation-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "background-334.html": [
@@ -52808,6 +52821,32 @@
      ],
      "out-of-flow-in-multicolumn-011.html": [
       "93350899950a11631484564027cad7d458f8f39b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-012.html": [
+      "349d059b7a77f9b70046d99bc4a5e26c7c298bad",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-013.html": [
+      "3bf06dfc1a779e3034122987a456fb33b2feb36e",
       [
        null,
        [
@@ -120017,7 +120056,7 @@
        ]
       ],
       "transform-interpolation-rotate-slerp.html": [
-       "ac11801bd40137c8a7aa46ecbcef407cc32f65e4",
+       "73d4bd8a1f8da143fac0183aca3c4acd8c15b6df",
        [
         null,
         [
@@ -120026,7 +120065,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             160
+            ],
+            [
+             0,
+             500
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "transform-interpolation-rotate.html": [
@@ -177322,7 +177377,7 @@
      []
     ],
     "address-space.window-expected.txt": [
-     "ec4009fa9fc7f5e418ffe5881e4f67c8b8a0ccb7",
+     "d796fb9ad2812bbff17bad1693a769baf0df5b35",
      []
     ],
     "resources": {
@@ -222674,11 +222729,23 @@
         "b47f0f274ef43148d3be418e2c0628a567f1c3c1",
         []
        ],
+       "sandbox-inherited-from-initiator-response-helper.html": [
+        "29c7f12441f7473d8f7dc5adb9046c764daa7745",
+        []
+       ],
+       "sandbox-inherited-from-initiator-response-helper.html.headers": [
+        "82e8023d0ba61851af5747ee2ccba154193d1875",
+        []
+       ],
        "sandbox-javascript-window-open.html": [
         "909956a54ff52153756f863c3489f4c792b5aaff",
         []
        ]
       },
+      "sandbox-inherited-from-required-csp-expected.txt": [
+       "9e875fecf3e2fdd3aa2705d2cfc5901b539567e9",
+       []
+      ],
       "sandbox-navigation-timing-iframe.tentative.html": [
        "43726e7720065d9fe3c7d2ea3f3563f5f80315bb",
        []
@@ -232804,6 +232871,40 @@
          []
         ]
        },
+       "import-assertions": {
+        "empty-assertion-clause-expected.txt": [
+         "8139c2d954064ceb5c431cd3d8bdd1982a5a43bc",
+         []
+        ],
+        "empty-assertion-clause.js": [
+         "6913dd61dffe682063eb887a08c90242ca1b5f42",
+         []
+        ],
+        "empty-type-assertion.js": [
+         "5bb9b1ddb8e648c7165a3b29ab425fc97cb81037",
+         []
+        ],
+        "hello.js": [
+         "2f348444606435700656725dbcd9a08e8e10775f",
+         []
+        ],
+        "invalid-type-assertion-error-expected.txt": [
+         "e73d0699b1740a82751f8fb3f61807c51ec184be",
+         []
+        ],
+        "invalid-type-assertion.js": [
+         "e28c0176d5c3e444051f7b21070ac62a86f0ff0f",
+         []
+        ],
+        "unsupported-assertion-expected.txt": [
+         "aa0317aba4c060fd2bb0a0eb371b8de75a5e46e6",
+         []
+        ],
+        "unsupported-assertion.js": [
+         "45f6d60c9dae25f26640d6b79b08fc9a009fc06b",
+         []
+        ]
+       },
        "is-module-goal.mjs": [
         "b533fc2e906b4b9a0a912044b19ee523ae5eef7a",
         []
@@ -235424,7 +235525,7 @@
      []
     ],
     "OWNERS": [
-     "0df202b1edbe15295f368da5bdde3cdfd5687251",
+     "c4ad7cc6cae03b1453674f2b659eac0fb16b2ad4",
      []
     ],
     "README.md": [
@@ -237947,6 +238048,10 @@
      "4fff9d9fba4c81f953826ffea010a75be626b95d",
      []
     ],
+    "randomized-breakdown.tentative.https.window.js.headers": [
+     "4fff9d9fba4c81f953826ffea010a75be626b95d",
+     []
+    ],
     "redirect.client.tentative.https.window.js.headers": [
      "4fff9d9fba4c81f953826ffea010a75be626b95d",
      []
@@ -237957,7 +238062,7 @@
     ],
     "resources": {
      "common.js": [
-      "11b40d7d3d17ff0708c457a43d66b360b7e0bb07",
+      "63d5eac7c9b807b1faf67a1adc60cdfeca97c901",
       []
      ],
      "iframe.redirect.sub.html": [
@@ -240975,14 +241080,6 @@
     ],
     "idlharness.window.js.ini": [
      "2c8f43716403bfd4a8bd8a7bdecaf888a2bcd697",
-     []
-    ],
-    "pointerevent_auxclick_is_a_pointerevent.html.ini": [
-     "e4f7b0ee92d0e4d3b4bdf95c83223be85ca0b0a5",
-     []
-    ],
-    "pointerevent_click_is_a_pointerevent.html.ini": [
-     "3994b407af65d66547f2820b6a72e96f99ed86a7",
      []
     ],
     "pointerevent_coalesced_events_attributes-expected.txt": [
@@ -245659,6 +245756,10 @@
        "ff333bd97da4c6949a3142ac8789cb2e45d41b86",
        []
       ],
+      "create-blob-url-worker.js": [
+       "57e4882c24f7273e3469b9b60649ffa4b4f39617",
+       []
+      ],
       "echo-content.py": [
        "70ae4b60254cf7971cdd92dc2b1e382ef1a6196b",
        []
@@ -246243,8 +246344,20 @@
        "8539b40066dd91bbfaf7ef240b8104dcb2ab3b27",
        []
       ],
+      "nested-blob-url-worker-created-from-worker.html": [
+       "fc048e288e903e6c558c5518d133f2c2ec96223e",
+       []
+      ],
+      "nested-blob-url-workers.html": [
+       "f0eafcd3e01c3f1857eee7fced78a3a494a8afb4",
+       []
+      ],
       "nested-iframe-parent.html": [
        "115ab26e1221024b30313569f484942b10f6dba0",
+       []
+      ],
+      "nested-worker-created-from-blob-url-worker.html": [
+       "3fad2c9228ceb1573a09a18cba480fdd6747cdc4",
        []
       ],
       "nested_load_worker.js": [
@@ -246385,6 +246498,10 @@
       ],
       "postmessage-echo-worker.js": [
        "f088ad127804297cf981e61acb1c33ea7b0620c4",
+       []
+      ],
+      "postmessage-fetched-text.js": [
+       "9fc67171d05dd28d6317e9e2ab986b0b68a7fc15",
        []
       ],
       "postmessage-msgport-to-client-worker.js": [
@@ -248638,11 +248755,11 @@
    },
    "tools": {
     "META.yml": [
-     "3eb893f4e65c3c0e5567688bd30725bc21eb40cb",
+     "bb8ed039dc39ed4105de306302398be25e037f07",
      []
     ],
     "OWNERS": [
-     "1cfc2ba5907a71ed1007031053a855bde4ebeea3",
+     "83511f437a1dc1719d18b7b87df9f6369673a56c",
      []
     ],
     "__init__.py": [
@@ -248738,7 +248855,7 @@
        []
       ],
       "safari-technology-preview.rb": [
-       "c78bcef5c454c0e023c411f09753aedb1b90df0b",
+       "628c5f60914cffa26da7d26d2d9a0502e1be735f",
        []
       ],
       "system_info.yml": [
@@ -248883,7 +249000,7 @@
       }
      },
      "website_build.sh": [
-      "f6b26310aabce200fc0d77844f5f3ad28de0bb7f",
+      "fc255ae83f2219d3e32a859f0d63745ed682b436",
       []
      ]
     },
@@ -248964,7 +249081,7 @@
      ]
     },
     "localpaths.py": [
-     "87eafccf4d23367d765cffd9754543c72aec38a7",
+     "a79acb82a50c55ece58bb6040f6b9a19808c8a2a",
      []
     ],
     "manifest": {
@@ -248999,11 +249116,11 @@
       []
      ],
      "log.py": [
-      "9e2ad74081e4a1b38b9c3c3ba61d49be2e8151fd",
+      "6551c2b5f7cc0f61a85ef5ffb4bbc466a585b1ab",
       []
      ],
      "manifest.py": [
-      "14d3844d461cd7e0d7a071dd957ad2829885a3c6",
+      "1b4f407b9626be61fca132cd7d0124b4b3d69d7e",
       []
      ],
      "sourcefile.py": [
@@ -249019,7 +249136,7 @@
       []
      ],
      "update.py": [
-      "296533a6babf176e4514bcf3f29e163fdf9a9fdf",
+      "a86ef7c8aa28f1f209f10b7254d1ca07cb17df51",
       []
      ],
      "utils.py": [
@@ -249092,7 +249209,7 @@
      []
     ],
     "requirements_mypy.txt": [
-     "65100d70376cf614b4396dd242181394453efa49",
+     "d5e04b94d534cbb6491aa0a04950c56434725ff2",
      []
     ],
     "runner": {
@@ -249159,7 +249276,7 @@
       []
      ],
      "serve.py": [
-      "8fdbdc6bc671090107a5e6479cf16ebda076d084",
+      "0a5f16ef57e4740138f14f2e5c1a5fb797af915a",
       []
      ],
      "test_functional.py": [
@@ -255247,6 +255364,96 @@
         []
        ]
       }
+     },
+     "zipp": {
+      "CHANGES.rst": [
+       "a464a6324b7bea813db8846bd6c69fe9cdec433f",
+       []
+      ],
+      "LICENSE": [
+       "5e795a61f302ff5d425eac2281ff13c15b21ed1b",
+       []
+      ],
+      "PKG-INFO": [
+       "33ef1cf01c4b232648a70a0f2fa9733a4232b498",
+       []
+      ],
+      "README.rst": [
+       "ce128a32ba3113f118830a1fb975879b7dd1038b",
+       []
+      ],
+      "appveyor.yml": [
+       "f35aa27d684244ed59c1dedfd84d758aedab4cd2",
+       []
+      ],
+      "conftest.py": [
+       "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+       []
+      ],
+      "docs": {
+       "conf.py": [
+        "41b53557fb2e372683899c51a6a5892b80bc5935",
+        []
+       ],
+       "history.rst": [
+        "8e217503ba1a68826af8e1e9db4bd16ce7a21857",
+        []
+       ],
+       "index.rst": [
+        "ff49bf9dc706d62c9e8524f346db1bdd63d026bb",
+        []
+       ]
+      },
+      "pyproject.toml": [
+       "3afc8c33b78baa7666d30f38ee522c84a21bfb7f",
+       []
+      ],
+      "setup.cfg": [
+       "ef4abd248a435a9f990f78401172db9f6f3650e3",
+       []
+      ],
+      "setup.py": [
+       "827e955fcd6c2af63ad1ad4cb42e41e29e62074f",
+       []
+      ],
+      "skeleton.md": [
+       "52b97f09b418894679951fb9867b5b0dc6618f1b",
+       []
+      ],
+      "test_zipp.py": [
+       "810d10bd68fc27f897dff2d411582de979962451",
+       []
+      ],
+      "tox.ini": [
+       "cb542c136c38eaf330fd2e9b3231d1010fbe1aac",
+       []
+      ],
+      "zipp.egg-info": {
+       "PKG-INFO": [
+        "33ef1cf01c4b232648a70a0f2fa9733a4232b498",
+        []
+       ],
+       "SOURCES.txt": [
+        "845b342cefc40058134ac715dc8fa806e40b6e95",
+        []
+       ],
+       "dependency_links.txt": [
+        "8b137891791fe96927ad78e64b0aad7bded08bdc",
+        []
+       ],
+       "requires.txt": [
+        "90bab46ac4930d35f39e82172aadf0e9a5bdd8a2",
+        []
+       ],
+       "top_level.txt": [
+        "e82f676f82a3381fa909d1e6578c7a22044fafca",
+        []
+       ]
+      },
+      "zipp.py": [
+       "892205834abaee2b4c1d3bb4507609de0ad1c2f6",
+       []
+      ]
      }
     },
     "tox.ini": [
@@ -255939,7 +256146,7 @@
       []
      ],
      "requirements.txt": [
-      "a0b9b2df9f7dc4654f25e510498da706cff9cda8",
+      "1dd417465bb883a1f4802978a85c7a0732b90616",
       []
      ],
      "requirements_android_webview.txt": [
@@ -256061,11 +256268,11 @@
         []
        ],
        "firefox.py": [
-        "9104fedb5f9f45b6c8e9640159315a62e93a37c7",
+        "b8f1c7d8286fdef935ce8dbf3e2ed513f202d04f",
         []
        ],
        "firefox_android.py": [
-        "ca6ea96013b67ed548f5487520253ca61e0ae32c",
+        "5e9de564963f63e013a3fb63fdede1a97a1f7386",
         []
        ],
        "ie.py": [
@@ -256106,7 +256313,7 @@
        []
       ],
       "environment.py": [
-       "2527d26d391d99683779392c035ceffa30fe5bc2",
+       "d98e1203930cab51ab7468037a0665b85126e1e5",
        []
       ],
       "executors": {
@@ -256119,7 +256326,7 @@
         []
        ],
        "base.py": [
-        "51d752cdebc61976066a15c5dd9e778f9378ff00",
+        "539c791fbd9c9d1db4598246ff460742e514974a",
         []
        ],
        "executorchrome.py": [
@@ -256139,7 +256346,7 @@
         []
        ],
        "executormarionette.py": [
-        "dc9e3e164e40251b9e0b91b900e2ae6651776447",
+        "e5d7683facd7880d13a7d30451230b23833c3cee",
         []
        ],
        "executoropera.py": [
@@ -256151,7 +256358,7 @@
         []
        ],
        "executorselenium.py": [
-        "0228922134a704afdde5f37e4edec31dc540fc2f",
+        "6070007b21a7af0dd4b83cae283f853eecde576f",
         []
        ],
        "executorservo.py": [
@@ -256159,11 +256366,11 @@
         []
        ],
        "executorservodriver.py": [
-        "2cd1dbf3ad06f41b9555dad64d6d0c0a86537260",
+        "039bcd14e2be57680089e785e60c74cddee285b4",
         []
        ],
        "executorwebdriver.py": [
-        "43fc910c5151554df38d2a11608040442754d962",
+        "e6c5f9f1a206cb4f9f4d4fc3d2b72f5dd20e1fbc",
         []
        ],
        "executorwebkit.py": [
@@ -256269,6 +256476,10 @@
        "ab8d4740f3fcc2b186a68d57758d46db47ad97ab",
        []
       ],
+      "mpcontext.py": [
+       "daade1054cf41689981a50b7ec5d944be1681424",
+       []
+      ],
       "print_reftest_runner.html": [
        "3ce18d4dd823e042e986ce94f2f858977a0ddb19",
        []
@@ -256310,11 +256521,11 @@
        []
       ],
       "testloader.py": [
-       "4a3fa4273654a8a86d5224ef6b0a9daed73b01d7",
+       "e57619b45fefda53305b43ff3001cdd4b078b47a",
        []
       ],
       "testrunner.py": [
-       "e5d7042c73b30d8d6280c2e231d9d81b9d0d8975",
+       "8dd93418dd8f37fc220306f7a4e6d85e7fb9b55a",
        []
       ],
       "update": {
@@ -256356,7 +256567,7 @@
        []
       ],
       "wptcommandline.py": [
-       "15d2322494dbe5c281cb77db7a1c0dd754e7db2a",
+       "bfd6491b2d66693e225d91b84846b5c0a38e1aba",
        []
       ],
       "wptlogging.py": [
@@ -256426,7 +256637,7 @@
        }
       },
       "wptrunner.py": [
-       "b02805ff7e3df6645722e63fbc2d9715959c1ce6",
+       "3fc9e397a92a0927ac2c85ca27453754f78e0771",
        []
       ],
       "wpttest.py": [
@@ -256520,7 +256731,7 @@
        ]
       },
       "stash.py": [
-       "6b351847491bfee1f8e17a42127c88be97a62923",
+       "535355a828796196ee6be950c5ef9a0802236826",
        []
       ],
       "utils.py": [
@@ -292746,6 +292957,13 @@
       ],
       "content-visibility-077.html": [
        "7cc9a335035678f9cf9f0514eaf700198553f889",
+       [
+        null,
+        {}
+       ]
+      ],
+      "content-visibility-080.html": [
+       "d3cea5fb83767ddfc236850097387644e0f74c8e",
        [
         null,
         {}
@@ -346961,6 +347179,27 @@
         {}
        ]
       ],
+      "sandbox-inherited-from-initiator-frame.html": [
+       "ab87fce5e0ce82bfed5ac88bcbf9890e8c39a4ce",
+       [
+        null,
+        {}
+       ]
+      ],
+      "sandbox-inherited-from-initiator-response.html": [
+       "638f1ba783985c309759cdc63ec332d1b5ad5a58",
+       [
+        null,
+        {}
+       ]
+      ],
+      "sandbox-inherited-from-required-csp.html": [
+       "d1bc4d1e04d01177943b91893156d715ec2ed15a",
+       [
+        null,
+        {}
+       ]
+      ],
       "sandbox-initial-empty-document-toward-same-origin.html": [
        "d1306c970322682f3979c497a5decd78218ba845",
        [
@@ -377539,6 +377778,29 @@
          {}
         ]
        ],
+       "import-assertions": {
+        "empty-assertion-clause.html": [
+         "3a7c371189c9e847327ac14f49d4ee5153f35295",
+         [
+          null,
+          {}
+         ]
+        ],
+        "invalid-type-assertion-error.html": [
+         "d3399f085cede5afa124523b43ac6a301b6cb080",
+         [
+          null,
+          {}
+         ]
+        ],
+        "unsupported-assertion.html": [
+         "edda2d737a3cfa4c39f717f527ed6ad6da6b338d",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
        "json-module": {
         "invalid-content-type.tentative.html": [
          "e6da2db7ebc03ac7753b19dce4e9c3fc38a30014",
@@ -387777,6 +388039,29 @@
       }
      ]
     ],
+    "randomized-breakdown.tentative.https.window.js": [
+     "e3a65c1ba2a6a90c142b9c2da3368fc949c874b7",
+     [
+      "measure-memory/randomized-breakdown.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "./resources/common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
     "redirect.client.tentative.https.window.js": [
      "36d9a9d44cd1734572c2b3b930cec7ff0b3eeee2",
      [
@@ -397589,7 +397874,7 @@
      ]
     ],
     "pointerevent_auxclick_is_a_pointerevent.html": [
-     "000d0df764e53f8d1cfa629ebfcccfb768a7a4bf",
+     "aac73db9eb7c5f5a7c71207e52eab30bf53f3526",
      [
       null,
       {
@@ -397652,7 +397937,7 @@
      ]
     ],
     "pointerevent_click_is_a_pointerevent.html": [
-     "dfea148898e4eed29f25e9bf04067a6e7e251b25",
+     "2f5dfd4dbfdd81e45868517632a41998aed8f21d",
      [
       null,
       {
@@ -415744,6 +416029,13 @@
      ],
      "navigation-timing.https.html": [
       "6b51a5c2da213eb27cf0d9fd401b7c49b5349950",
+      [
+       null,
+       {}
+      ]
+     ],
+     "nested-blob-url-workers.https.html": [
+      "7269cbb701fabc2faa746f6ed47fba8fa9d423c8",
       [
        null,
        {}
