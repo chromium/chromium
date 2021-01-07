@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/material_components/utils.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/common/web_view_creation_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -70,7 +70,7 @@
                             cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
                         timeoutInterval:60.0];
   [_webView loadRequest:request];
-  [_webView setBackgroundColor:UIColor.cr_systemBackgroundColor];
+  [_webView setBackgroundColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
   [self.view addSubview:_webView];
 
   ConfigureAppBarViewControllerWithCardStyle(_appBarViewController);

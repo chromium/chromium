@@ -25,7 +25,6 @@
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -289,7 +288,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = UIColor.cr_systemBackgroundColor;
+  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
   if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
     self.navigationBar.translucent = NO;

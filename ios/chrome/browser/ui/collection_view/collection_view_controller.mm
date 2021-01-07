@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/material_components/chrome_app_bar_view_controller.h"
 #import "ios/chrome/browser/ui/material_components/utils.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -65,9 +65,10 @@
   }
 
   // Suport dark mode.
-  self.collectionView.backgroundColor = UIColor.cr_systemGroupedBackgroundColor;
+  self.collectionView.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   self.styler.cellBackgroundColor =
-      UIColor.cr_secondarySystemGroupedBackgroundColor;
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
 }
 
 - (void)contentSizeCategoryDidChange:(id)sender {
