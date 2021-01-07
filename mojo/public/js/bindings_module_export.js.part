@@ -1,5 +1,5 @@
 const mojoTmp = self['mojo'];
 export {mojoTmp as mojo};
 if (preservedGlobalMojo) {
-  window.mojo = preservedGlobalMojo;
+  self.mojo = preservedGlobalMojo;
 }

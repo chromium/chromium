@@ -103,6 +103,7 @@ concatenate_files("bindings_uncompiled_module") {
     "bindings_uncompiled_module_preamble.js.part",
     "bindings_lite.js",
     "$root_gen_dir/mojo/public/interfaces/bindings/interface_control_messages.mojom-lite.js",
+    "$root_gen_dir/mojo/public/interfaces/bindings/pipe_control_messages.mojom-lite.js",
     "interface_support.js",
     "bindings_uncompiled_module_export.js.part",
   ]
@@ -146,6 +147,7 @@ if (enable_mojom_closure_compile || enable_js_type_check) {
     inputs = [
       "$target_gen_dir/mojo_internal.js",
       "$root_gen_dir/mojo/public/interfaces/bindings/interface_control_messages.mojom-lite-for-compile.js",
+      "$root_gen_dir/mojo/public/interfaces/bindings/pipe_control_messages.mojom-lite-for-compile.js",
       "$target_gen_dir/interface_support.js",
     ]
     script = "//mojo/public/tools/bindings/concatenate_and_replace_closure_exports.py"

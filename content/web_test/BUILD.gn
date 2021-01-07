@@ -164,6 +164,7 @@ static_library("web_test_browser") {
     "//content/public/browser",  # For component builds.
     "//content/shell:content_shell_lib",
     "//content/test:blink_test_browser_support",
+    "//content/test:mojo_bindings_web_test_mojom",
     "//content/test:mojo_web_test_bindings",
     "//content/test:test_support",
     "//device/bluetooth:fake_bluetooth",
