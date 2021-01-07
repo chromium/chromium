@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAPPS_WEBAPPS_CLIENT_H_
 #define COMPONENTS_WEBAPPS_WEBAPPS_CLIENT_H_
 
+#include "build/build_config.h"
 #include "components/security_state/core/security_state.h"
 
 class GURL;
@@ -44,8 +45,12 @@ class WebappsClient {
       content::WebContents* web_contents,
       InstallTrigger trigger) = 0;
 
+#if defined(OS_ANDROID)
   virtual bool IsInstallationInProgress(content::WebContents* web_contents,
                                         const GURL& manifest_url) = 0;
+
+  virtual bool CanShowAppBanners(content::WebContents* web_contents) = 0;
+#endif
 };
 
 }  // namespace webapps

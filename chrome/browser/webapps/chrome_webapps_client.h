@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEBAPPS_CHROME_WEBAPPS_CLIENT_H_
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "components/webapps/webapps_client.h"
 
 namespace webapps {
@@ -24,8 +25,11 @@ class ChromeWebappsClient : public WebappsClient {
       content::WebContents* web_contents) override;
   WebappInstallSource GetInstallSource(content::WebContents* web_contents,
                                        InstallTrigger trigger) override;
+#if defined(OS_ANDROID)
   bool IsInstallationInProgress(content::WebContents* web_contents,
                                 const GURL& manifest_url) override;
+  bool CanShowAppBanners(content::WebContents* web_contents) override;
+#endif
 
  private:
   friend base::NoDestructor<ChromeWebappsClient>;

@@ -14,8 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/AppBannerManagerHelper_jni.h"
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/android/webapk/webapk_metrics.h"
 #include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_coordinator.h"
@@ -68,14 +66,6 @@ constexpr char kIphReplacesToolbar[] = "x_iph_replaces_toolbar";
 // Whether to ignore the Chrome channel in QueryNativeApp() for testing.
 bool gIgnoreChromeChannelForTesting = false;
 
-bool CanShowAppBanners(TabAndroid* tab) {
-  if (!tab)
-    return false;
-  return static_cast<android::TabWebContentsDelegateAndroid*>(
-             tab->web_contents()->GetDelegate())
-      ->CanShowAppBanners();
-}
-
 }  // anonymous namespace
 
 AppBannerManagerAndroid::AppBannerManagerAndroid(
@@ -127,12 +117,10 @@ bool AppBannerManagerAndroid::OnAppDetailsRetrieved(
 
 void AppBannerManagerAndroid::RequestAppBanner(const GURL& validated_url) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (!Java_AppBannerManagerHelper_isEnabledForTab(env))
+  if (!Java_AppBannerManagerHelper_isEnabledForTab(env) ||
+      !WebappsClient::Get()->CanShowAppBanners(web_contents())) {
     return;
-
-  TabAndroid* tab = TabAndroid::FromWebContents(web_contents());
-  if (!CanShowAppBanners(tab))
-    return;
+  }
 
   AppBannerManager::RequestAppBanner(validated_url);
 }
