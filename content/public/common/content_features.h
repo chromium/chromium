@@ -132,7 +132,6 @@ CONTENT_EXPORT extern const base::Feature kPushSubscriptionChangeEvent;
 CONTENT_EXPORT extern const base::Feature kDirectSockets;
 CONTENT_EXPORT extern const base::Feature kReloadHiddenTabsWithCrashedSubframes;
 CONTENT_EXPORT extern const base::Feature kRenderDocument;
-CONTENT_EXPORT extern const base::Feature kRespectMacLCDTextSetting;
 CONTENT_EXPORT extern const base::Feature
     kRunVideoCaptureServiceInBrowserProcess;
 CONTENT_EXPORT extern const base::Feature kSavePageAsWebBundle;

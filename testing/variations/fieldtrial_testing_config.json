@@ -6425,21 +6425,6 @@
             ]
         }
     ],
-    "RespectMacLCDTextSetting": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RespectMacLCDTextSetting"
-                    ]
-                }
-            ]
-        }
-    ],
     "RevampedContextMenu": [
         {
             "platforms": [
