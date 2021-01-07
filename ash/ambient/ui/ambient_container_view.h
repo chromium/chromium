@@ -21,11 +21,11 @@ class PhotoView;
 // weather info.
 class ASH_EXPORT AmbientContainerView : public views::View {
  public:
+  METADATA_HEADER(AmbientContainerView);
+
   explicit AmbientContainerView(AmbientViewDelegate* delegate);
   ~AmbientContainerView() override;
 
-  // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
 
@@ -46,7 +46,6 @@ class ASH_EXPORT AmbientContainerView : public views::View {
   PhotoView* photo_view_ = nullptr;
   AmbientAssistantContainerView* ambient_assistant_container_view_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(AmbientContainerView);
 };
 
 }  // namespace ash

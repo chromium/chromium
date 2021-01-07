@@ -24,11 +24,10 @@ class AmbientAssistantDialogPlate : public views::View,
                                     public AssistantControllerObserver,
                                     public AssistantInteractionModelObserver {
  public:
+  METADATA_HEADER(AmbientAssistantDialogPlate);
+
   explicit AmbientAssistantDialogPlate(AssistantViewDelegate* delegate);
   ~AmbientAssistantDialogPlate() override;
-
-  // views::View:
-  const char* GetClassName() const override;
 
   // AssistantButtonListener:
   void OnButtonPressed(AssistantButtonId button_id) override;
@@ -52,7 +51,6 @@ class AmbientAssistantDialogPlate : public views::View,
   ScopedObserver<AssistantController, AssistantControllerObserver>
       assistant_controller_observer_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(AmbientAssistantDialogPlate);
 };
 
 }  // namespace ash

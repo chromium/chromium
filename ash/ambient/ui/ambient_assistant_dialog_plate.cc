@@ -17,6 +17,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -33,10 +34,6 @@ AmbientAssistantDialogPlate::AmbientAssistantDialogPlate(
 AmbientAssistantDialogPlate::~AmbientAssistantDialogPlate() {
   if (AssistantInteractionController::Get())
     AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
-}
-
-const char* AmbientAssistantDialogPlate::GetClassName() const {
-  return "AmbientAssistantDialogPlate";
 }
 
 void AmbientAssistantDialogPlate::OnButtonPressed(AssistantButtonId button_id) {
@@ -74,5 +71,8 @@ void AmbientAssistantDialogPlate::InitLayout() {
   // Voice input query view.
   voice_query_view_ = AddChildView(std::make_unique<AssistantQueryView>());
 }
+
+BEGIN_METADATA(AmbientAssistantDialogPlate, views::View)
+END_METADATA
 
 }  // namespace ash

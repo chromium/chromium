@@ -25,6 +25,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -56,10 +57,6 @@ AmbientAssistantContainerView::AmbientAssistantContainerView()
 AmbientAssistantContainerView::~AmbientAssistantContainerView() {
   if (AssistantUiController::Get())
     AssistantUiController::Get()->GetModel()->RemoveObserver(this);
-}
-
-const char* AmbientAssistantContainerView::GetClassName() const {
-  return "AmbientAssistantContainerView";
 }
 
 void AmbientAssistantContainerView::OnAssistantControllerDestroying() {
@@ -146,4 +143,6 @@ void AmbientAssistantContainerView::InitLayout() {
   avatar_view_->SetClipPath(circular_mask);
 }
 
+BEGIN_METADATA(AmbientAssistantContainerView, views::View)
+END_METADATA
 }  // namespace ash

@@ -27,11 +27,10 @@ class AmbientAssistantContainerView : public views::View,
                                       public AssistantControllerObserver,
                                       public AssistantUiModelObserver {
  public:
+  METADATA_HEADER(AmbientAssistantContainerView);
+
   AmbientAssistantContainerView();
   ~AmbientAssistantContainerView() override;
-
-  // views::View:
-  const char* GetClassName() const override;
 
   // AssistantControllerObserver:
   void OnAssistantControllerDestroying() override;
@@ -58,7 +57,6 @@ class AmbientAssistantContainerView : public views::View,
   ScopedObserver<AssistantController, AssistantControllerObserver>
       assistant_controller_observer_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(AmbientAssistantContainerView);
 };
 
 }  // namespace ash

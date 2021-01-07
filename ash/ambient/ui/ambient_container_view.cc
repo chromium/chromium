@@ -17,6 +17,7 @@
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "ui/aura/window.h"
 #include "ui/views/background.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -38,10 +39,6 @@ AmbientContainerView::AmbientContainerView(AmbientViewDelegate* delegate)
 }
 
 AmbientContainerView::~AmbientContainerView() = default;
-
-const char* AmbientContainerView::GetClassName() const {
-  return "AmbientContainerView";
-}
 
 gfx::Size AmbientContainerView::CalculatePreferredSize() const {
   // TODO(b/139953389): Handle multiple displays.
@@ -86,5 +83,8 @@ void AmbientContainerView::LayoutAssistantView() {
   ambient_assistant_container_view_->SetBoundsRect(
       gfx::Rect(0, 0, preferred_width, preferred_height));
 }
+
+BEGIN_METADATA(AmbientContainerView, views::View)
+END_METADATA
 
 }  // namespace ash
