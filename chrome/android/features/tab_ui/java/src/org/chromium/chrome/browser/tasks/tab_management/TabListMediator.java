@@ -259,9 +259,8 @@ class TabListMediator {
         /**
          * Run additional actions on tab selection.
          * @param tabId The ID of selected {@link Tab}.
-         * @param fromActionButton Whether it is called from the Action button on the card.
          */
-        void onTabSelecting(int tabId, boolean fromActionButton);
+        void onTabSelecting(int tabId);
     }
 
     @IntDef({TabClosedFrom.TAB_STRIP, TabClosedFrom.GRID_TAB_SWITCHER,
@@ -323,8 +322,7 @@ class TabListMediator {
                 recordUserSwitchedTab(currentTab, newlySelectedTab);
             }
             if (mGridCardOnClickListenerProvider != null) {
-                mGridCardOnClickListenerProvider.onTabSelecting(
-                        tabId, true /* fromActiionButton */);
+                mGridCardOnClickListenerProvider.onTabSelecting(tabId);
             } else {
                 mTabModelSelector.getCurrentModel().setIndex(
                         TabModelUtils.getTabIndexById(mTabModelSelector.getCurrentModel(), tabId),

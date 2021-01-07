@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
-import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -294,7 +293,7 @@ class TabSwitcherMediator
                 }
 
                 if (mContainerViewModel.get(IS_VISIBLE)) {
-                    onTabSelecting(tab.getId(), false);
+                    onTabSelecting(tab.getId());
                 }
             }
 
@@ -726,7 +725,7 @@ class TabSwitcherMediator
         }
         if (mTabModelSelector.getCurrentTab() == null) return false;
 
-        onTabSelecting(mTabModelSelector.getCurrentTabId(), false);
+        onTabSelecting(mTabModelSelector.getCurrentTabId());
 
         return true;
     }
@@ -813,12 +812,7 @@ class TabSwitcherMediator
     }
 
     @Override
-    public void onTabSelecting(int tabId, boolean fromActionButton) {
-        if (fromActionButton && (mMode == TabListMode.CAROUSEL || mMode == TabListMode.GRID)) {
-            Tab newlySelectedTab =
-                    TabModelUtils.getTabById(mTabModelSelector.getCurrentModel(), tabId);
-            StartSurfaceUserData.setKeepTab(newlySelectedTab, true);
-        }
+    public void onTabSelecting(int tabId) {
         mIsSelectingInTabSwitcher = true;
         if (mOnTabSelectingListener != null) {
             mOnTabSelectingListener.onTabSelecting(LayoutManagerImpl.time(), tabId);
