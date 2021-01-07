@@ -113,7 +113,7 @@ void AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap(
       continue;
     }
 
-    country_to_state_names_map[country].push_back(std::move(normalized_state));
+    country_to_state_names_map[country].push_back(normalized_state);
     parsed_state_values_.insert({country, normalized_state});
   }
 
