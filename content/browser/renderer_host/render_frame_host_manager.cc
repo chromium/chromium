@@ -2801,6 +2801,41 @@ bool RenderFrameHostManager::InitRenderFrame(
   int previous_routing_id =
       GetReplacementRoutingId(existing_proxy, render_frame_host);
 
+  // TOOD(https://crbug.com/1163509): Delete this.
+  if (previous_routing_id == MSG_ROUTING_NONE &&
+      parent_routing_id == MSG_ROUTING_NONE) {
+    // If this was true we would have CHECK-failed above.
+    SCOPED_CRASH_KEY_BOOL("bug-1163509", "has_parent",
+                          !!frame_tree_node_->parent());
+    // If this was true we would have CHECK-failed in GetReplacementRoutingId.
+    SCOPED_CRASH_KEY_BOOL("bug-1163509", "existing_proxy", !!existing_proxy);
+    // This must be true since existing_proxy is false and previous_routing_id
+    // is NONE.
+    SCOPED_CRASH_KEY_BOOL("bug-1163509", "SameSiteInstance",
+                          render_frame_host->GetSiteInstance() ==
+                              current_frame_host()->GetSiteInstance());
+    SCOPED_CRASH_KEY_STRING64("bug-1163509", "old->SiteInstance",
+                              current_frame_host()
+                                  ->GetSiteInstance()
+                                  ->GetSiteURL()
+                                  .possibly_invalid_spec());
+    SCOPED_CRASH_KEY_STRING64("bug-1163509", "new->SiteInstance",
+                              render_frame_host->GetSiteInstance()
+                                  ->GetSiteURL()
+                                  .possibly_invalid_spec());
+    SCOPED_CRASH_KEY_BOOL("bug-1163509", "IsRenderFrameLive",
+                          current_frame_host()->IsRenderFrameLive());
+    // If the frame is live then the previous_routing_id comes from the current
+    // RFH.
+    SCOPED_CRASH_KEY_NUMBER("bug-1163509", "old->GetRoutingID",
+                            current_frame_host()->GetRoutingID());
+    SCOPED_CRASH_KEY_NUMBER("bug-1163509", "new->GetRoutingID",
+                            render_frame_host->GetRoutingID());
+    SCOPED_CRASH_KEY_BOOL("bug-1163509", "must_be_replaced",
+                          current_frame_host()->must_be_replaced());
+    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
+  }
   return render_frame_host->CreateRenderFrame(
       previous_routing_id, opener_frame_token, parent_routing_id,
       previous_sibling_routing_id);
