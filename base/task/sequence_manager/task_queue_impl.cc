@@ -1407,7 +1407,7 @@ void TaskQueueImpl::DelayedIncomingQueue::SweepCancelledTasks(
   // canceled tasks in place.
   bool task_deleted = false;
   auto it = queue_.c.begin();
-  while (it != queue_.c.end()) {
+  while (!queue_.c.empty() && it != queue_.c.end()) {
     // TODO(crbug.com/1155905): Remove after figuring out the cause of the
     // crash.
     sequence_manager->RecordCrashKeys(*it);
@@ -1417,6 +1417,8 @@ void TaskQueueImpl::DelayedIncomingQueue::SweepCancelledTasks(
       *it = std::move(queue_.c.back());
       queue_.c.pop_back();
       task_deleted = true;
+      // Note: if we just removed the last task in the queue, |it| is now
+      // invalid and shouldn't be used.
     } else {
       it++;
     }
