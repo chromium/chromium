@@ -12,7 +12,10 @@ ScopedProfileKeepAlive::ScopedProfileKeepAlive(const Profile* profile,
                                                ProfileKeepAliveOrigin origin)
     : profile_(profile), origin_(origin) {
   DCHECK(profile_);
-  g_browser_process->profile_manager()->AddKeepAlive(profile_, origin_);
+  // |profile_manager| can be nullptr in tests.
+  auto* profile_manager = g_browser_process->profile_manager();
+  if (profile_manager)
+    profile_manager->AddKeepAlive(profile_, origin_);
 }
 
 ScopedProfileKeepAlive::~ScopedProfileKeepAlive() {
