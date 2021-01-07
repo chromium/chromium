@@ -43,6 +43,8 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(const base::FilePath& path,
     IdentityTestEnvironmentProfileAdaptor adaptor(profile.get());
     adaptor.identity_test_env()->ResetToAccountsNotYetLoadedFromDiskState();
   }
+  if (profile->GetPath() == ProfileManager::GetGuestProfilePath())
+    profile->SetGuestSession(true);
   return profile;
 }
 
@@ -196,6 +198,10 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
   EXPECT_TRUE(IdentityManagerFactory::GetForProfile(signed_in_profile())
                   ->HasAccountWithRefreshToken(account_info.account_id));
 
+  // Check profile type
+  ASSERT_EQ(use_guest_profile(),
+            signed_in_profile()->IsEphemeralGuestProfile());
+
   // Check the profile name and icon.
   ProfileAttributesEntry* entry = nullptr;
   ProfileAttributesStorage& storage =
@@ -203,8 +209,11 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
   ASSERT_TRUE(storage.GetProfileAttributesWithPath(
       signed_in_profile()->GetPath(), &entry));
   ASSERT_TRUE(entry);
-  EXPECT_EQ(kProfileTestName16, entry->GetLocalProfileName());
-  EXPECT_EQ(kTestIcon, entry->GetAvatarIconIndex());
+  ASSERT_EQ(entry->IsGuest(), use_guest_profile());
+  if (!use_guest_profile()) {
+    EXPECT_EQ(kProfileTestName16, entry->GetLocalProfileName());
+    EXPECT_EQ(kTestIcon, entry->GetAvatarIconIndex());
+  }
 }
 
 TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensNotLoaded) {

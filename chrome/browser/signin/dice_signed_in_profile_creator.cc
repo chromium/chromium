@@ -139,19 +139,27 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
     : source_profile_(source_profile),
       account_id_(account_id),
       callback_(std::move(callback)) {
-  // TODO(https://crbug.com/2587062): Use |use_guest_profile| param.
-  DCHECK(!use_guest_profile || Profile::IsEphemeralGuestProfileEnabled());
-  ProfileAttributesStorage& storage =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage();
-  if (!icon_index.has_value())
-    icon_index = storage.ChooseAvatarIconIndexForNewProfile();
-  base::string16 name = local_profile_name.empty()
-                            ? storage.ChooseNameForNewProfile(*icon_index)
-                            : local_profile_name;
-  ProfileManager::CreateMultiProfileAsync(
-      name, profiles::GetDefaultAvatarIconUrl(*icon_index),
-      base::BindRepeating(&DiceSignedInProfileCreator::OnNewProfileCreated,
-                          weak_pointer_factory_.GetWeakPtr()));
+  if (use_guest_profile) {
+    DCHECK(Profile::IsEphemeralGuestProfileEnabled());
+    DCHECK(!ProfileManager::GuestProfileExists());
+    g_browser_process->profile_manager()->CreateProfileAsync(
+        ProfileManager::GetGuestProfilePath(),
+        base::BindRepeating(&DiceSignedInProfileCreator::OnNewProfileCreated,
+                            weak_pointer_factory_.GetWeakPtr()),
+        base::string16(), std::string());
+  } else {
+    ProfileAttributesStorage& storage =
+        g_browser_process->profile_manager()->GetProfileAttributesStorage();
+    if (!icon_index.has_value())
+      icon_index = storage.ChooseAvatarIconIndexForNewProfile();
+    base::string16 name = local_profile_name.empty()
+                              ? storage.ChooseNameForNewProfile(*icon_index)
+                              : local_profile_name;
+    ProfileManager::CreateMultiProfileAsync(
+        name, profiles::GetDefaultAvatarIconUrl(*icon_index),
+        base::BindRepeating(&DiceSignedInProfileCreator::OnNewProfileCreated,
+                            weak_pointer_factory_.GetWeakPtr()));
+  }
 }
 
 DiceSignedInProfileCreator::DiceSignedInProfileCreator(

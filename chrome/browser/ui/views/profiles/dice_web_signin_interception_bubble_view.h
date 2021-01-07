@@ -59,6 +59,8 @@ class DiceWebSigninInterceptionBubbleView
                            BubbleDeclined);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            BubbleAccepted);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
+                           BubbleAcceptedGuestMode);
 
   // Closes the bubble when `ScopedHandle` is destroyed. Does nothing if the
   // bubble has been already closed.
