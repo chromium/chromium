@@ -7,6 +7,7 @@ import("//build/config/crypto.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//chrome/test/include_js_tests.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//ui/webui/webui_features.gni")
@@ -521,7 +522,6 @@ group("closure_compile") {
     "inline_login:closure_compile",
     "js/cr:closure_compile",
     "new_tab_page:closure_compile",
-    "print_preview:closure_compile",
     "read_later:closure_compile",
     "settings:closure_compile",
     "signin:closure_compile",
@@ -539,6 +539,9 @@ group("closure_compile") {
   }
   if (!is_android) {
     deps += [ "commander:closure_compile" ]
+  }
+  if (enable_print_preview) {
+    deps += [ "print_preview:closure_compile" ]
   }
 }
 
