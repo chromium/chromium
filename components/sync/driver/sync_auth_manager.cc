@@ -279,15 +279,18 @@ void SyncAuthManager::ConnectionClosed() {
   connection_open_ = false;
 }
 
-void SyncAuthManager::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  UpdateSyncAccountIfNecessary();
-}
-
-void SyncAuthManager::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  UMA_HISTOGRAM_ENUMERATION("Sync.StopSource", SIGN_OUT, STOP_SOURCE_LIMIT);
-  UpdateSyncAccountIfNecessary();
+void SyncAuthManager::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      UMA_HISTOGRAM_ENUMERATION("Sync.StopSource", SIGN_OUT, STOP_SOURCE_LIMIT);
+      FALLTHROUGH;
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      UpdateSyncAccountIfNecessary();
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
 void SyncAuthManager::OnRefreshTokenUpdatedForAccount(
