@@ -34,6 +34,7 @@
 #include <string>
 #include <utility>
 
+#include "base/i18n/uchar.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/blob/blob_url_null_origin_map.h"
@@ -719,9 +720,9 @@ String SecurityOrigin::CanonicalizeHost(const String& host, bool* success) {
     *success = url::CanonicalizeHost(
         utf8.data(), url::Component(0, utf8.size()), &canon_output, &out_host);
   } else {
-    *success = url::CanonicalizeHost(host.Characters16(),
-                                     url::Component(0, host.length()),
-                                     &canon_output, &out_host);
+    *success = url::CanonicalizeHost(
+        base::i18n::ToChar16Ptr(host.Characters16()),
+        url::Component(0, host.length()), &canon_output, &out_host);
   }
   return String::FromUTF8(canon_output.data(), canon_output.length());
 }

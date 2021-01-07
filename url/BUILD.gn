@@ -93,7 +93,10 @@ component("url") {
       "url_canon_icu.h",
       "url_idna_icu.cc",
     ]
-    deps += [ "//third_party/icu" ]
+    deps += [
+      "//base:i18n",
+      "//third_party/icu",
+    ]
   }
 }
 

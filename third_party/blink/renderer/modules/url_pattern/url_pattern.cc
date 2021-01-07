@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/url_pattern/url_pattern.h"
 
+#include "base/i18n/uchar.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/bindings/modules/v8/usv_string_or_url_pattern_init.h"
@@ -158,9 +159,9 @@ String CanonicalizeProtocol(const String& input,
     result = url::CanonicalizeScheme(
         utf8.data(), url::Component(0, utf8.size()), &canon_output, &component);
   } else {
-    result = url::CanonicalizeScheme(input.Characters16(),
-                                     url::Component(0, input.length()),
-                                     &canon_output, &component);
+    result = url::CanonicalizeScheme(
+        base::i18n::ToChar16Ptr(input.Characters16()),
+        url::Component(0, input.length()), &canon_output, &component);
   }
 
   if (!result) {
@@ -212,9 +213,11 @@ void CanonicalizeUsernameAndPassword(const String& username,
     username16.Ensure16Bit();
     password16.Ensure16Bit();
     result = url::CanonicalizeUserInfo(
-        username16.Characters16(), url::Component(0, username16.length()),
-        password16.Characters16(), url::Component(0, password16.length()),
-        &canon_output, &username_component, &password_component);
+        base::i18n::ToChar16Ptr(username16.Characters16()),
+        url::Component(0, username16.length()),
+        base::i18n::ToChar16Ptr(password16.Characters16()),
+        url::Component(0, password16.length()), &canon_output,
+        &username_component, &password_component);
   }
 
   if (!result) {
@@ -310,9 +313,9 @@ String CanonicalizePathname(const String& input,
     result = url::CanonicalizePath(utf8.data(), url::Component(0, utf8.size()),
                                    &canon_output, &component);
   } else {
-    result = url::CanonicalizePath(input.Characters16(),
-                                   url::Component(0, input.length()),
-                                   &canon_output, &component);
+    result = url::CanonicalizePath(
+        base::i18n::ToChar16Ptr(input.Characters16()),
+        url::Component(0, input.length()), &canon_output, &component);
   }
 
   if (!result) {
@@ -341,7 +344,7 @@ String CanonicalizeSearch(const String& input,
     url::CanonicalizeQuery(utf8.data(), url::Component(0, utf8.size()),
                            /*converter=*/nullptr, &canon_output, &component);
   } else {
-    url::CanonicalizeQuery(input.Characters16(),
+    url::CanonicalizeQuery(base::i18n::ToChar16Ptr(input.Characters16()),
                            url::Component(0, input.length()),
                            /*converter=*/nullptr, &canon_output, &component);
   }
@@ -367,7 +370,7 @@ String CanonicalizeHash(const String& input,
     url::CanonicalizeRef(utf8.data(), url::Component(0, utf8.size()),
                          &canon_output, &component);
   } else {
-    url::CanonicalizeRef(input.Characters16(),
+    url::CanonicalizeRef(base::i18n::ToChar16Ptr(input.Characters16()),
                          url::Component(0, input.length()), &canon_output,
                          &component);
   }

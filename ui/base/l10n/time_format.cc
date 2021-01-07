@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/component_export.h"
+#include "base/i18n/uchar.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -144,8 +145,9 @@ base::string16 TimeFormat::DetailedWithMonthAndYear(
   DCHECK_GT(capacity, 1);
   base::string16 result;
   UErrorCode error = U_ZERO_ERROR;
-  time_string.extract(static_cast<UChar*>(base::WriteInto(&result, capacity)),
-                      capacity, error);
+  time_string.extract(
+      base::i18n::ToUCharPtr(base::WriteInto(&result, capacity)), capacity,
+      error);
   DCHECK(U_SUCCESS(error));
   return result;
 }

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/i18n/uchar.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
@@ -63,10 +64,10 @@ string16 CaseMap(StringPiece16 string, CaseMapperFunction case_mapper) {
     // ICU won't terminate the string if there's not enough room for the null
     // terminator, but will otherwise. So we don't need to save room for that.
     // Don't use WriteInto, which assumes null terminators.
-    int32_t new_length = case_mapper(
-        &dest[0], saturated_cast<int32_t>(dest.size()),
-        string.data(), saturated_cast<int32_t>(string.size()),
-        &error);
+    int32_t new_length =
+        case_mapper(ToUCharPtr(&dest[0]), saturated_cast<int32_t>(dest.size()),
+                    ToUCharPtr(string.data()),
+                    saturated_cast<int32_t>(string.size()), &error);
     dest.resize(new_length);
   } while (error == U_BUFFER_OVERFLOW_ERROR);
   return dest;

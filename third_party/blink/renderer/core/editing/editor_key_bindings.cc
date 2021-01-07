@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/editing/editor.h"
 
+#include "base/i18n/uchar.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
@@ -74,11 +75,12 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
     return false;
 
   // Return true to prevent default action. e.g. Space key scroll.
-  if (DispatchBeforeInputInsertText(evt->target()->ToNode(), key_event->text) !=
+  if (DispatchBeforeInputInsertText(evt->target()->ToNode(),
+                                    base::i18n::ToUCharPtr(key_event->text)) !=
       DispatchEventResult::kNotCanceled)
     return true;
 
-  return InsertText(key_event->text, evt);
+  return InsertText(base::i18n::ToUCharPtr(key_event->text), evt);
 }
 
 void Editor::HandleKeyboardEvent(KeyboardEvent* evt) {

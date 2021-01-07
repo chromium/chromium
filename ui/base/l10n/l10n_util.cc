@@ -19,6 +19,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/string_compare.h"
+#include "base/i18n/uchar.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
@@ -591,11 +592,13 @@ base::string16 GetDisplayNameForLocale(const std::string& locale,
     if (locale_code[0] == '-' || locale_code[0] == '_') {
       actual_size = uloc_getDisplayCountry(
           locale_code.c_str(), display_locale.c_str(),
-          base::WriteInto(&display_name, kBufferSize), kBufferSize - 1, &error);
+          base::i18n::ToUCharPtr(base::WriteInto(&display_name, kBufferSize)),
+          kBufferSize - 1, &error);
     } else {
       actual_size = uloc_getDisplayName(
           locale_code.c_str(), display_locale.c_str(),
-          base::WriteInto(&display_name, kBufferSize), kBufferSize - 1, &error);
+          base::i18n::ToUCharPtr(base::WriteInto(&display_name, kBufferSize)),
+          kBufferSize - 1, &error);
     }
     if (disallow_default && U_USING_DEFAULT_WARNING == error)
       return base::string16();

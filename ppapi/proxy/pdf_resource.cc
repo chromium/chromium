@@ -65,10 +65,8 @@ void PDFResource::SearchString(const unsigned short* input_string,
   if (locale_.empty())
     locale_ = GetLocale() + "@collation=search";
 
-  const base::char16* string =
-      reinterpret_cast<const base::char16*>(input_string);
-  const base::char16* term =
-      reinterpret_cast<const base::char16*>(input_term);
+  const UChar* string = reinterpret_cast<const UChar*>(input_string);
+  const UChar* term = reinterpret_cast<const UChar*>(input_term);
 
   UErrorCode status = U_ZERO_ERROR;
   UStringSearch* searcher =

@@ -2446,6 +2446,7 @@ component("i18n") {
     "i18n/time_formatting.h",
     "i18n/timezone.cc",
     "i18n/timezone.h",
+    "i18n/uchar.h",
     "i18n/unicodestring.h",
     "i18n/utf8_validator_tables.cc",
     "i18n/utf8_validator_tables.h",

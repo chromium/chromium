@@ -5,6 +5,7 @@
 #include "ui/gfx/bidi_line_iterator.h"
 
 #include "base/check.h"
+#include "base/i18n/uchar.h"
 #include "base/notreached.h"
 
 namespace ui {
@@ -45,7 +46,8 @@ bool BiDiLineIterator::Open(const base::string16& text,
   if (U_FAILURE(error))
     return false;
 
-  ubidi_setPara(bidi_, text.data(), static_cast<int>(text.length()),
+  ubidi_setPara(bidi_, base::i18n::ToUCharPtr(text.data()),
+                static_cast<int>(text.length()),
                 GetParagraphLevelForDirection(direction), nullptr, &error);
   return (U_SUCCESS(error));
 }

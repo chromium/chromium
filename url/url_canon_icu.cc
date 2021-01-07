@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "base/check.h"
+#include "base/i18n/uchar.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 #include "third_party/icu/source/common/unicode/ucnv_cb.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -94,8 +95,9 @@ void ICUCharsetConverter::ConvertFromUTF16(const base::char16* input,
   do {
     UErrorCode err = U_ZERO_ERROR;
     char* dest = &output->data()[begin_offset];
-    int required_capacity = ucnv_fromUChars(converter_, dest, dest_capacity,
-                                            input, input_len, &err);
+    int required_capacity =
+        ucnv_fromUChars(converter_, dest, dest_capacity,
+                        base::i18n::ToUCharPtr(input), input_len, &err);
     if (err != U_BUFFER_OVERFLOW_ERROR) {
       output->set_length(begin_offset + required_capacity);
       return;

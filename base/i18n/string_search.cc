@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "base/i18n/string_search.h"
+#include "base/i18n/uchar.h"
 
 #include "third_party/icu/source/i18n/unicode/usearch.h"
 
@@ -19,10 +20,11 @@ FixedPatternStringSearch::FixedPatternStringSearch(const string16& find_this,
   const string16& dummy = find_this_;
 
   UErrorCode status = U_ZERO_ERROR;
-  search_ = usearch_open(find_this_.data(), find_this_.size(), dummy.data(),
-                         dummy.size(), uloc_getDefault(),
-                         nullptr,  // breakiter
-                         &status);
+  search_ =
+      usearch_open(ToUCharPtr(find_this_.data()), find_this_.size(),
+                   ToUCharPtr(dummy.data()), dummy.size(), uloc_getDefault(),
+                   nullptr,  // breakiter
+                   &status);
   if (U_SUCCESS(status)) {
     // http://icu-project.org/apiref/icu4c40/ucol_8h.html#6a967f36248b0a1bc7654f538ee8ba96
     // Set comparison level to UCOL_PRIMARY to ignore secondary and tertiary
@@ -48,7 +50,7 @@ bool FixedPatternStringSearch::Search(const string16& in_this,
                                       size_t* match_length,
                                       bool forward_search) {
   UErrorCode status = U_ZERO_ERROR;
-  usearch_setText(search_, in_this.data(), in_this.size(), &status);
+  usearch_setText(search_, ToUCharPtr(in_this.data()), in_this.size(), &status);
 
   // Default to basic substring search if usearch fails. According to
   // http://icu-project.org/apiref/icu4c/usearch_8h.html, usearch_open will fail

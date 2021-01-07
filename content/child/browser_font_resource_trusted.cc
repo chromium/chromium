@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/i18n/uchar.h"
 #include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -72,8 +73,8 @@ class TextRunCollection {
     } else {
       bidi_ = ubidi_open();
       UErrorCode uerror = U_ZERO_ERROR;
-      ubidi_setPara(bidi_, text_.data(), text_.size(), run.rtl, nullptr,
-                    &uerror);
+      ubidi_setPara(bidi_, base::i18n::ToUCharPtr(text_.data()), text_.size(),
+                    run.rtl, nullptr, &uerror);
       if (U_SUCCESS(uerror))
         num_runs_ = ubidi_countRuns(bidi_, &uerror);
     }

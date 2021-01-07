@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/i18n/uchar.h"
 #include "base/lazy_instance.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
@@ -436,8 +437,9 @@ ComponentResult IDNToUnicodeOneComponent(
     // code units, |status| will be U_BUFFER_OVERFLOW_ERROR and we'll try
     // the conversion again, but with a sufficiently large buffer.
     output_length = uidna_labelToUnicode(
-        uidna, comp, static_cast<int32_t>(comp_len), &(*out)[original_length],
-        output_length, &info, &status);
+        uidna, base::i18n::ToUCharPtr(comp), static_cast<int32_t>(comp_len),
+        base::i18n::ToUCharPtr(&(*out)[original_length]), output_length, &info,
+        &status);
   } while ((status == U_BUFFER_OVERFLOW_ERROR && info.errors == 0));
 
   if (U_SUCCESS(status) && info.errors == 0) {

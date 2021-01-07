@@ -5,6 +5,7 @@
 #ifndef BASE_I18N_UNICODESTRING_H_
 #define BASE_I18N_UNICODESTRING_H_
 
+#include "base/i18n/uchar.h"
 #include "base/strings/string16.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/uvernum.h"
@@ -18,7 +19,7 @@ namespace i18n {
 
 inline string16 UnicodeStringToString16(const icu::UnicodeString& unistr) {
 #if U_ICU_VERSION_MAJOR_NUM >= 59
-  return base::string16(icu::toUCharPtr(unistr.getBuffer()),
+  return base::string16(ToChar16Ptr(icu::toUCharPtr(unistr.getBuffer())),
                         static_cast<size_t>(unistr.length()));
 #else
   return base::string16(unistr.getBuffer(),

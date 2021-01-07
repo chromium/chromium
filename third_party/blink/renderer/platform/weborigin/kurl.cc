@@ -29,6 +29,7 @@
 
 #include <algorithm>
 
+#include "base/i18n/uchar.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -102,8 +103,9 @@ class KURLCharsetConverter final : public url::CharsetConverter {
   void ConvertFromUTF16(const base::char16* input,
                         int input_length,
                         url::CanonOutput* output) override {
-    std::string encoded = encoding_->Encode(
-        String(input, input_length), WTF::kURLEncodedEntitiesForUnencodables);
+    std::string encoded =
+        encoding_->Encode(String(base::i18n::ToUCharPtr(input), input_length),
+                          WTF::kURLEncodedEntitiesForUnencodables);
     output->Append(encoded.c_str(), static_cast<int>(encoded.length()));
   }
 
@@ -338,10 +340,12 @@ String KURL::LastPathComponent() const {
     path.len--;
 
   url::Component file;
-  if (string_.Is8Bit())
+  if (string_.Is8Bit()) {
     url::ExtractFileName(AsURLChar8Subtle(string_), path, &file);
-  else
-    url::ExtractFileName(string_.Characters16(), path, &file);
+  } else {
+    url::ExtractFileName(base::i18n::ToChar16Ptr(string_.Characters16()), path,
+                         &file);
+  }
 
   // Bug: https://bugs.webkit.org/show_bug.cgi?id=21015 this function returns
   // a null string when the path is empty, which we duplicate here.
@@ -363,9 +367,11 @@ uint16_t KURL::Port() const {
   if (!is_valid_ || parsed_.port.len <= 0)
     return 0;
   DCHECK(!string_.IsNull());
-  int port = string_.Is8Bit()
-                 ? url::ParsePort(AsURLChar8Subtle(string_), parsed_.port)
-                 : url::ParsePort(string_.Characters16(), parsed_.port);
+  int port =
+      string_.Is8Bit()
+          ? url::ParsePort(AsURLChar8Subtle(string_), parsed_.port)
+          : url::ParsePort(base::i18n::ToChar16Ptr(string_.Characters16()),
+                           parsed_.port);
   DCHECK_NE(port, url::PORT_UNSPECIFIED);  // Checked port.len <= 0 already.
   DCHECK_NE(port, url::PORT_INVALID);      // Checked is_valid_ already.
 
@@ -666,7 +672,8 @@ bool KURL::IsHierarchical() const {
     return false;
   return string_.Is8Bit()
              ? url::IsStandard(AsURLChar8Subtle(string_), parsed_.scheme)
-             : url::IsStandard(string_.Characters16(), parsed_.scheme);
+             : url::IsStandard(base::i18n::ToChar16Ptr(string_.Characters16()),
+                               parsed_.scheme);
 }
 
 bool EqualIgnoringFragmentIdentifier(const KURL& a, const KURL& b) {
@@ -716,10 +723,12 @@ unsigned KURL::PathAfterLastSlash() const {
   if (!is_valid_ || !parsed_.path.is_valid())
     return parsed_.CountCharactersBefore(url::Parsed::PATH, false);
   url::Component filename;
-  if (string_.Is8Bit())
+  if (string_.Is8Bit()) {
     url::ExtractFileName(AsURLChar8Subtle(string_), parsed_.path, &filename);
-  else
-    url::ExtractFileName(string_.Characters16(), parsed_.path, &filename);
+  } else {
+    url::ExtractFileName(base::i18n::ToChar16Ptr(string_.Characters16()),
+                         parsed_.path, &filename);
+  }
   return filename.begin;
 }
 
@@ -733,8 +742,8 @@ bool ProtocolIs(const String& url, const char* protocol) {
     return url::FindAndCompareScheme(AsURLChar8Subtle(url), url.length(),
                                      protocol, nullptr);
   }
-  return url::FindAndCompareScheme(url.Characters16(), url.length(), protocol,
-                                   nullptr);
+  return url::FindAndCompareScheme(base::i18n::ToChar16Ptr(url.Characters16()),
+                                   url.length(), protocol, nullptr);
 }
 
 void KURL::Init(const KURL& base,
@@ -765,10 +774,10 @@ void KURL::Init(const KURL& base,
                                      clampTo<int>(relative_utf8.size()),
                                      charset_converter, &output, &parsed_);
   } else {
-    is_valid_ = url::ResolveRelative(base_utf8.data(), base_utf8.size(),
-                                     base.parsed_, relative.Characters16(),
-                                     clampTo<int>(relative.length()),
-                                     charset_converter, &output, &parsed_);
+    is_valid_ = url::ResolveRelative(
+        base_utf8.data(), base_utf8.size(), base.parsed_,
+        base::i18n::ToChar16Ptr(relative.Characters16()),
+        clampTo<int>(relative.length()), charset_converter, &output, &parsed_);
   }
 
   // AtomicString::fromUTF8 will re-hash the raw output and check the
