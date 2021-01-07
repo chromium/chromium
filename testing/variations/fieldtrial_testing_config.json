@@ -7614,7 +7614,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "TrustTokenOperationsRequiringOriginTrial": "only-issuance-requires-origin-trial"
+                        "TrustTokenOperationsRequiringOriginTrial": "all-operations-require-origin-trial"
                     },
                     "enable_features": [
                         "TrustTokens"
