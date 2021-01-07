@@ -11,9 +11,7 @@
 #include "base/bind.h"
 #include "chrome/android/chrome_jni_headers/ChildAccountService_jni.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
-#include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
@@ -23,17 +21,6 @@ using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::RunBooleanCallbackAndroid;
 using base::android::ScopedJavaGlobalRef;
-
-void JNI_ChildAccountService_ListenForChildStatusReceived(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& callback) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  ChildAccountService* service = ChildAccountServiceFactory::GetForProfile(
-      profile_manager->GetLastUsedProfile());
-  service->AddChildStatusReceivedCallback(
-      base::BindOnce(&RunBooleanCallbackAndroid,
-                     ScopedJavaGlobalRef<jobject>(callback), true));
-}
 
 void ReauthenticateChildAccount(
     content::WebContents* web_contents,

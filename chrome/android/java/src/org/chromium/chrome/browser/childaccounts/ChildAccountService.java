@@ -55,14 +55,6 @@ public class ChildAccountService {
         });
     }
 
-    /**
-     * Set a callback to be called the next time a child account status change is received
-     * @param callback the callback to be called when the status changes.
-     */
-    public static void listenForStatusChange(Callback<Boolean> callback) {
-        ChildAccountServiceJni.get().listenForChildStatusReceived(callback);
-    }
-
     @CalledByNative
     private static void reauthenticateChildAccount(
             WindowAndroid windowAndroid, String accountName, final long nativeCallback) {
@@ -85,7 +77,6 @@ public class ChildAccountService {
 
     @NativeMethods
     interface Natives {
-        void listenForChildStatusReceived(Callback<Boolean> callback);
         void onReauthenticationResult(long callbackPtr, boolean reauthSuccessful);
     }
 }
