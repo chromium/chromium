@@ -641,7 +641,11 @@ class CORE_EXPORT NGConstraintSpace final {
     return bitfields_.AreInlineSizeConstraintsEqual(other.bitfields_);
   }
   bool AreBlockSizeConstraintsEqual(const NGConstraintSpace& other) const {
-    return bitfields_.AreBlockSizeConstraintsEqual(other.bitfields_);
+    if (!bitfields_.AreBlockSizeConstraintsEqual(other.bitfields_))
+      return false;
+    if (!HasRareData() && !other.HasRareData())
+      return true;
+    return TableCellAlignmentBaseline() == other.TableCellAlignmentBaseline();
   }
 
   bool AreSizesEqual(const NGConstraintSpace& other) const {
