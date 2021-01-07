@@ -55,7 +55,7 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
 
   // Sets a factory to respond to calls of the CreateUpdateClient method.
   void SetUpdateClientFactory(
-      const base::Callback<update_client::UpdateClient*(void)>& factory);
+      base::RepeatingCallback<update_client::UpdateClient*(void)> factory);
 
   // Sets the main browser context. Only call if a BrowserContext was not
   // already provided. |main_context| must not be an incognito context.
@@ -168,7 +168,8 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
 
   std::unique_ptr<ExtensionCache> extension_cache_;
 
-  base::Callback<update_client::UpdateClient*(void)> update_client_factory_;
+  base::RepeatingCallback<update_client::UpdateClient*(void)>
+      update_client_factory_;
 };
 
 }  // namespace extensions
