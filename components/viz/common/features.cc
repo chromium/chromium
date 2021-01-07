@@ -115,6 +115,11 @@ const base::Feature kUseX11Present{"UseX11Present",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+// Used to debug Android WebView Vulkan composite. Composite to an intermediate
+// buffer and draw the intermediate buffer to the secondary command buffer.
+const base::Feature kWebViewVulkanIntermediateBuffer{
+    "WebViewVulkanIntermediateBuffer", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsOverlayPrioritizationEnabled() {
   return base::FeatureList::IsEnabled(kEnableOverlayPrioritization);
 }

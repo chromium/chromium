@@ -36,6 +36,7 @@ VIZ_COMMON_EXPORT extern const base::Feature kUseSetPresentDuration;
 #if defined(USE_X11)
 VIZ_COMMON_EXPORT extern const base::Feature kUseX11Present;
 #endif
+VIZ_COMMON_EXPORT extern const base::Feature kWebViewVulkanIntermediateBuffer;
 
 VIZ_COMMON_EXPORT bool IsForcePreferredIntervalForVideoEnabled();
 VIZ_COMMON_EXPORT bool IsVizHitTestingDebugEnabled();
