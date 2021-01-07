@@ -5,7 +5,6 @@
 package org.chromium.base.library_loader;
 
 import android.annotation.SuppressLint;
-import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
@@ -14,7 +13,6 @@ import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.annotations.AccessedByNative;
@@ -87,23 +85,20 @@ abstract class Linker {
     private static final String BASE_LOAD_ADDRESS =
             "org.chromium.base.android.linker.base_load_address";
 
-    protected static final Object sLock = new Object();
+    protected final Object mLock = new Object();
 
-    @GuardedBy("sLock")
-    private static Linker sSingleton;
-
-    @GuardedBy("sLock")
+    @GuardedBy("mLock")
     protected LibInfo mLibInfo;
 
     // Whether this Linker instance should potentially create the RELRO region. Even if true, the
     // library loading can fall back to the system linker without producing the region. The default
     // value is used in tests, it is set to true so that the Linker does not have to wait for RELRO
     // to arrive from another process.
-    @GuardedBy("sLock")
+    @GuardedBy("mLock")
     protected boolean mRelroProducer = true;
 
     // Current common random base load address. A value of -1 indicates not yet initialized.
-    @GuardedBy("sLock")
+    @GuardedBy("mLock")
     protected long mBaseLoadAddress = -1;
 
     /**
@@ -142,75 +137,17 @@ abstract class Linker {
         int DONE = 3;
     }
 
-    @GuardedBy("sLock")
+    @GuardedBy("mLock")
     @State
     protected int mState = State.UNINITIALIZED;
 
-    // Protected singleton constructor.
-    protected Linker() {}
+    private static Linker sLinkerForAssert;
 
-    /**
-     * Returns the singleton instance. Returns either a LegacyLinker or a ModernLinker.
-     *
-     * ModernLinker requires OS features from Android M and later: a system linker that handles
-     * packed relocations and load from APK, and |android_dlopen_ext()| for shared RELRO support. It
-     * cannot run on Android releases earlier than M.
-     *
-     * LegacyLinker runs on all Android releases but it is slower and more complex than
-     * ModernLinker. The LegacyLinker is used on M as it avoids writing the relocation to disk.
-     *
-     * On N, O and P Monochrome is selected by Play Store. With Monochrome this code is not used,
-     * instead Chrome asks the WebView to provide the library (and the shared RELRO). If the WebView
-     * fails to provide the library, the system linker is used as a fallback.
-     *
-     * LegacyLinker can run on all Android releases, but is unused on P+ as it may cause issues.
-     * LegacyLinker is preferred on M- because it does not write the shared RELRO to disk at
-     * almost every cold startup.
-     *
-     * Finally, ModernLinker is used on Android Q+ with Trichrome.
-     *
-     * @return the Linker implementation instance.
-     */
-    static Linker getInstance(ApplicationInfo info) {
-        // A non-monochrome APK (such as ChromePublic.apk) can be installed on N+ in these
-        // circumstances:
-        // * installing APK manually
-        // * after OTA from M to N
-        // * side-installing Chrome (possibly from another release channel)
-        // * Play Store bugs leading to incorrect APK flavor being installed
-        // * installing other Chromium-based browsers
-        //
-        // For Chrome builds regularly shipped to users on N+, the system linker (or the Android
-        // Framework) provides the necessary functionality to load without crazylinker. The
-        // LegacyLinker is risky to auto-enable on newer Android releases, as it may interfere with
-        // regular library loading. See http://crbug.com/980304 as example.
-        //
-        // This is only called if LibraryLoader.useChromiumLinker() returns true, meaning this is
-        // either Chrome{,Modern} or Trichrome.
-        synchronized (sLock) {
-            if (sSingleton == null) {
-                // With incremental install, it's important to fall back to the "normal"
-                // library loading path in order for the libraries to be found.
-                String appClass = info.className;
-                boolean isIncrementalInstall =
-                        appClass != null && appClass.contains("incrementalinstall");
-                if (LibraryLoader.getInstance().useModernLinker() && !isIncrementalInstall) {
-                    sSingleton = new ModernLinker();
-                } else {
-                    sSingleton = new LegacyLinker();
-                }
-                Log.i(TAG, "Using linker: %s", sSingleton.getClass().getName());
-            }
-            return sSingleton;
-        }
-    }
-
-    /**
-     * Version of getInstance() which will use the ApplicationInfo from
-     * ContextUtils.getApplicationContext().
-     */
-    static Linker getInstance() {
-        return getInstance(ContextUtils.getApplicationContext().getApplicationInfo());
+    protected Linker() {
+        // Only one instance is allowed in a given process because effects of loading a library are
+        // global, and the list of loaded libraries is not maintained at this level.
+        assert sLinkerForAssert == null;
+        sLinkerForAssert = this;
     }
 
     /**
@@ -219,7 +156,7 @@ abstract class Linker {
      * {@link #putSharedRelrosToBundle(Bundle)}.
      */
     final void initAsRelroProducer() {
-        synchronized (sLock) {
+        synchronized (mLock) {
             mRelroProducer = true;
             ensureInitializedLocked();
             if (DEBUG) Log.i(TAG, "initAsRelroProducer() chose address=0x%x", mBaseLoadAddress);
@@ -235,7 +172,7 @@ abstract class Linker {
      */
     final void initAsRelroConsumer(long baseLoadAddress) {
         if (DEBUG) Log.i(TAG, "initAsRelroConsumer(0x%x) called", baseLoadAddress);
-        synchronized (sLock) {
+        synchronized (mLock) {
             mRelroProducer = false;
             ensureInitializedLocked();
             mBaseLoadAddress = baseLoadAddress;
@@ -256,7 +193,7 @@ abstract class Linker {
      * @param bundle Bundle to put the address to.
      */
     void putLoadAddressToBundle(Bundle bundle) {
-        synchronized (sLock) {
+        synchronized (mLock) {
             ensureInitializedLocked();
             if (mBaseLoadAddress != 0) {
                 bundle.putLong(BASE_LOAD_ADDRESS, mBaseLoadAddress);
@@ -304,7 +241,7 @@ abstract class Linker {
     final void loadLibrary(String library, boolean isFixedAddressPermitted) {
         if (DEBUG) Log.i(TAG, "loadLibrary: %s", library);
         assert !library.equals(LINKER_JNI_LIBRARY);
-        synchronized (sLock) {
+        synchronized (mLock) {
             loadLibraryImplLocked(library, isFixedAddressPermitted);
         }
     }
@@ -316,7 +253,7 @@ abstract class Linker {
      */
     void putSharedRelrosToBundle(Bundle bundle) {
         Bundle relros = null;
-        synchronized (sLock) {
+        synchronized (mLock) {
             if (mState == State.DONE_PROVIDE_RELRO) {
                 assert mRelroProducer;
                 relros = mLibInfo.toBundle();
@@ -336,12 +273,12 @@ abstract class Linker {
         if (DEBUG) Log.i(TAG, "called takeSharedRelrosFromBundle(%s)", bundle);
         Bundle relros = bundle.getBundle(SHARED_RELROS);
         if (relros != null) {
-            synchronized (sLock) {
+            synchronized (mLock) {
                 assert mState != State.DONE && mState != State.DONE_PROVIDE_RELRO;
                 // This can be called before initAsRelroConsumer().
                 mLibInfo = LibInfo.fromBundle(relros);
                 // Wake up blocked callers of {@link #waitForSharedRelrosLocked()}.
-                sLock.notifyAll();
+                mLock.notifyAll();
             }
         }
     }
@@ -363,7 +300,7 @@ abstract class Linker {
 
     /** Load the Linker JNI library. Throws UnsatisfiedLinkError on error. */
     @SuppressLint({"UnsafeDynamicallyLoadedCode"})
-    @GuardedBy("sLock")
+    @GuardedBy("mLock")
     private void loadLinkerJniLibraryLocked() {
         assert mState == State.UNINITIALIZED;
 
@@ -377,7 +314,7 @@ abstract class Linker {
     }
 
     // Used internally to initialize the linker's data. Loads JNI.
-    @GuardedBy("sLock")
+    @GuardedBy("mLock")
     protected final void ensureInitializedLocked() {
         if (mState != State.UNINITIALIZED) return;
 
@@ -393,7 +330,7 @@ abstract class Linker {
 
     // Used internally to wait for shared RELROs. Returns once provideSharedRelros() has been
     // called to supply a valid shared RELROs bundle.
-    @GuardedBy("sLock")
+    @GuardedBy("mLock")
     protected final void waitForSharedRelrosLocked() {
         if (DEBUG) Log.i(TAG, "waitForSharedRelros() called");
 
@@ -404,7 +341,7 @@ abstract class Linker {
         long startTime = DEBUG ? SystemClock.uptimeMillis() : 0;
         while (mLibInfo == null) {
             try {
-                sLock.wait();
+                mLock.wait();
             } catch (InterruptedException e) {
                 // Continue waiting even if we were just interrupted.
             }

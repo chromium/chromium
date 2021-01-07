@@ -117,6 +117,12 @@ public class LibraryLoader {
     // Guards all the fields below.
     private final Object mLock = new Object();
 
+    // When a Chromium linker is used, this field represents the concrete class serving as a Linker.
+    // Always accessed via getLinker() because the choice of the class can be influenced by
+    // public setLinkerImplementation() below.
+    @GuardedBy("mLock")
+    private Linker mLinker;
+
     @GuardedBy("mLock")
     private NativeLibraryPreloader mLibraryPreloader;
 
@@ -188,7 +194,7 @@ public class LibraryLoader {
         public void ensureInitializedInMainProcess() {
             if (mInitDone) return;
             if (useChromiumLinker()) {
-                Linker.getInstance().initAsRelroProducer();
+                getLinker().initAsRelroProducer();
             }
             mInitDone = true;
         }
@@ -201,7 +207,7 @@ public class LibraryLoader {
         public void putLoadAddressToBundle(Bundle bundle) {
             assert mInitDone;
             if (useChromiumLinker()) {
-                Linker.getInstance().putLoadAddressToBundle(bundle);
+                getLinker().putLoadAddressToBundle(bundle);
             }
         }
 
@@ -211,7 +217,7 @@ public class LibraryLoader {
         public void initInChildProcess() {
             if (useChromiumLinker()) {
                 synchronized (mLock) {
-                    Linker.getInstance().initAsRelroConsumer(mLoadAddress);
+                    getLinker().initAsRelroConsumer(mLoadAddress);
                 }
             }
             mInitDone = true;
@@ -224,7 +230,7 @@ public class LibraryLoader {
          */
         public void takeSharedRelrosFromBundle(Bundle bundle) {
             if (useChromiumLinker() && !isLoadedByZygote()) {
-                Linker.getInstance().takeSharedRelrosFromBundle(bundle);
+                getLinker().takeSharedRelrosFromBundle(bundle);
             }
         }
 
@@ -236,7 +242,7 @@ public class LibraryLoader {
         public void putSharedRelrosToBundle(Bundle bundle) {
             assert mInitDone;
             if (useChromiumLinker()) {
-                Linker.getInstance().putSharedRelrosToBundle(bundle);
+                getLinker().putSharedRelrosToBundle(bundle);
             }
         }
     }
@@ -351,8 +357,66 @@ public class LibraryLoader {
         return mUseChromiumLinker && !forceSystemLinker();
     }
 
-    boolean useModernLinker() {
-        return mUseModernLinker;
+    /**
+     * Returns either a LegacyLinker or a ModernLinker.
+     *
+     * ModernLinker requires OS features from Android M and later: a system linker that handles
+     * packed relocations and load from APK, and |android_dlopen_ext()| for shared RELRO support. It
+     * cannot run on Android releases earlier than M.
+     *
+     * LegacyLinker runs on all Android releases but it is slower and more complex than
+     * ModernLinker. The LegacyLinker is used on M as it avoids writing the relocation to disk.
+     *
+     * On N, O and P Monochrome is selected by Play Store. With Monochrome this code is not used,
+     * instead Chrome asks the WebView to provide the library (and the shared RELRO). If the WebView
+     * fails to provide the library, the system linker is used as a fallback.
+     *
+     * LegacyLinker can run on all Android releases, but is unused on P+ as it may cause issues.
+     * LegacyLinker is preferred on M- because it does not write the shared RELRO to disk at
+     * almost every cold startup.
+     *
+     * Finally, ModernLinker is used on Android Q+ with Trichrome.
+     *
+     * More: docs/android_native_libraries.md
+     *
+     * @return the Linker implementation instance.
+     */
+    private Linker getLinker(ApplicationInfo info) {
+        // A non-monochrome APK (such as ChromePublic.apk) can be installed on N+ in these
+        // circumstances:
+        // * installing APK manually
+        // * after OTA from M to N
+        // * side-installing Chrome (possibly from another release channel)
+        // * Play Store bugs leading to incorrect APK flavor being installed
+        // * installing other Chromium-based browsers
+        //
+        // For Chrome builds regularly shipped to users on N+, the system linker (or the Android
+        // Framework) provides the necessary functionality to load without crazylinker. The
+        // LegacyLinker is risky to auto-enable on newer Android releases, as it may interfere with
+        // regular library loading. See http://crbug.com/980304 as example.
+        //
+        // This is only called if LibraryLoader.useChromiumLinker() returns true, meaning this is
+        // either Chrome{,Modern} or Trichrome.
+        synchronized (mLock) {
+            if (mLinker == null) {
+                // With incremental install, it's important to fall back to the "normal"
+                // library loading path in order for the libraries to be found.
+                String appClass = info.className;
+                boolean isIncrementalInstall =
+                        appClass != null && appClass.contains("incrementalinstall");
+                if (mUseModernLinker && !isIncrementalInstall) {
+                    mLinker = new ModernLinker();
+                } else {
+                    mLinker = new LegacyLinker();
+                }
+                Log.i(TAG, "Using linker: %s", mLinker.getClass().getName());
+            }
+            return mLinker;
+        }
+    }
+
+    private Linker getLinker() {
+        return getLinker(ContextUtils.getApplicationContext().getApplicationInfo());
     }
 
     @CheckDiscard("Can't use @RemovableInRelease because Release build with DCHECK_IS_ON needs it")
@@ -547,7 +611,7 @@ public class LibraryLoader {
     }
 
     private void loadWithChromiumLinker(ApplicationInfo appInfo, String library) {
-        Linker linker = Linker.getInstance(appInfo);
+        Linker linker = getLinker(appInfo);
 
         if (isInZipFile()) {
             String sourceDir = appInfo.sourceDir;

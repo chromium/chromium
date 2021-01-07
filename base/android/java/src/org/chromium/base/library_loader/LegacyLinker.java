@@ -25,14 +25,14 @@ class LegacyLinker extends Linker {
 
     @Override
     void setApkFilePath(String path) {
-        synchronized (sLock) {
+        synchronized (mLock) {
             ensureInitializedLocked();
             nativeAddZipArchivePath(path);
         }
     }
 
     @Override
-    @GuardedBy("sLock")
+    @GuardedBy("mLock")
     void loadLibraryImplLocked(String library, boolean isFixedAddressPermitted) {
         ensureInitializedLocked();
         assert mState == State.INITIALIZED; // Only one successful call.
@@ -83,7 +83,6 @@ class LegacyLinker extends Linker {
      *
      * @param info Object containing the relro file descriptor.
      */
-    @GuardedBy("sLock")
     private static void useSharedRelrosLocked(LibInfo info) {
         String libFilePath = info.mLibFilePath;
         if (!nativeUseSharedRelro(libFilePath, info)) {

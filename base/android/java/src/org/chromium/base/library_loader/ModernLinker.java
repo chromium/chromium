@@ -26,7 +26,7 @@ class ModernLinker extends Linker {
     ModernLinker() {}
 
     @Override
-    @GuardedBy("sLock")
+    @GuardedBy("mLock")
     void loadLibraryImplLocked(String library, boolean isFixedAddressPermitted) {
         // We expect to load monochrome, if it's not the case, log.
         if (!"monochrome".equals(library) || DEBUG) {
@@ -112,7 +112,7 @@ class ModernLinker extends Linker {
         }
     }
 
-    @GuardedBy("sLock")
+    @GuardedBy("mLock")
     private void resetAndThrow(String message) {
         mState = State.INITIALIZED;
         Log.e(TAG, message);
