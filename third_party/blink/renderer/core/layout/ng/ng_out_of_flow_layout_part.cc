@@ -641,7 +641,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     for (auto& descendant : *descendants) {
       scoped_refptr<const NGLayoutResult> result =
           LayoutFragmentainerDescendant(descendant);
-      container_builder_->PropagateOOFPositionedFragmentainerDescendants(
+      container_builder_->PropagateOOFPositionedInfo(
           result->PhysicalFragment(), result->OutOfFlowPositionedOffset());
     }
     // Sweep any descendants that might have been bubbled up from the fragment

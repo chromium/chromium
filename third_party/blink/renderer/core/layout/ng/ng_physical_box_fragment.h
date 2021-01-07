@@ -154,6 +154,20 @@ class CORE_EXPORT NGPhysicalBoxFragment final
     return {descendants.data(), descendants.size()};
   }
 
+  bool HasMulticolsWithPendingOOFs() const {
+    if (!has_rare_data_)
+      return false;
+
+    return !ComputeRareDataAddress()->multicols_with_pending_oofs.IsEmpty();
+  }
+
+  HashSet<NGBlockNode> MulticolsWithPendingOOFs() const {
+    if (!has_rare_data_)
+      return HashSet<NGBlockNode>();
+    return const_cast<HashSet<NGBlockNode>&>(
+        ComputeRareDataAddress()->multicols_with_pending_oofs);
+  }
+
   NGPixelSnappedPhysicalBoxStrut PixelSnappedPadding() const {
     if (!has_padding_)
       return NGPixelSnappedPhysicalBoxStrut();
@@ -305,6 +319,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
 
     Vector<NGPhysicalOutOfFlowPositionedNode>
         oof_positioned_fragmentainer_descendants;
+    HashSet<NGBlockNode> multicols_with_pending_oofs;
     const std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
 
     // TablesNG rare data.

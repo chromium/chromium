@@ -128,11 +128,21 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   void AddOutOfFlowDescendant(
       const NGLogicalOutOfFlowPositionedNode& descendant);
 
+  // Out-of-flow positioned elements inside a nested fragmentation context
+  // are laid out once they've reached the outermost fragmentation context.
+  // However, once at the outer context, they will get laid out inside the
+  // inner multicol in which their containing block resides. Thus, we need to
+  // store such inner multicols for later use.
+  void AddMulticolWithPendingOOFs(const NGBlockNode& multicol);
+
   void SwapOutOfFlowPositionedCandidates(
       Vector<NGLogicalOutOfFlowPositionedNode>* candidates);
 
   void SwapOutOfFlowFragmentainerDescendants(
       Vector<NGLogicalOutOfFlowPositionedNode>* descendants);
+
+  void SwapMulticolsWithPendingOOFs(
+      HashSet<NGBlockNode>* multicols_with_pending_oofs);
 
   bool HasOutOfFlowPositionedCandidates() const {
     return !oof_positioned_candidates_.IsEmpty();
@@ -140,6 +150,10 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
 
   bool HasOutOfFlowFragmentainerDescendants() const {
     return !oof_positioned_fragmentainer_descendants_.IsEmpty();
+  }
+
+  bool HasMulticolsWithPendingOOFs() const {
+    return !multicols_with_pending_oofs_.IsEmpty();
   }
 
   // This method should only be used within the inline layout algorithm. It is
@@ -155,9 +169,9 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // descendants on the fragment are NGPhysicalOutOfFlowPositionedNodes, we
   // first have to create NGLogicalOutOfFlowPositionedNodes copies before
   // appending them to our list of descendants.
-  void PropagateOOFPositionedFragmentainerDescendants(
-      const NGPhysicalContainerFragment& fragment,
-      LogicalOffset offset);
+  // In addition, propagate any inner multicols with pending OOF descendants.
+  void PropagateOOFPositionedInfo(const NGPhysicalContainerFragment& fragment,
+                                  LogicalOffset offset);
 
   void SetIsSelfCollapsing() { is_self_collapsing_ = true; }
 
@@ -245,6 +259,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   Vector<NGLogicalOutOfFlowPositionedNode>
       oof_positioned_fragmentainer_descendants_;
   Vector<NGLogicalOutOfFlowPositionedNode> oof_positioned_descendants_;
+
+  HashSet<NGBlockNode> multicols_with_pending_oofs_;
 
   NGUnpositionedListMarker unpositioned_list_marker_;
 

@@ -61,7 +61,7 @@ void NGContainerFragmentBuilder::PropagateChildData(
                                             new_inline_container);
   }
 
-  PropagateOOFPositionedFragmentainerDescendants(child, child_offset);
+  PropagateOOFPositionedInfo(child, child_offset);
 
   // We only need to report if inflow or floating elements depend on the
   // percentage resolution block-size. OOF-positioned children resolve their
@@ -240,6 +240,18 @@ void NGContainerFragmentBuilder::SwapOutOfFlowPositionedCandidates(
   has_oof_candidate_that_needs_block_offset_adjustment_ = false;
 }
 
+void NGContainerFragmentBuilder::AddMulticolWithPendingOOFs(
+    const NGBlockNode& multicol) {
+  DCHECK(To<LayoutBlockFlow>(multicol.GetLayoutBox())->MultiColumnFlowThread());
+  multicols_with_pending_oofs_.insert(multicol);
+}
+
+void NGContainerFragmentBuilder::SwapMulticolsWithPendingOOFs(
+    HashSet<NGBlockNode>* multicols_with_pending_oofs) {
+  DCHECK(multicols_with_pending_oofs->IsEmpty());
+  std::swap(multicols_with_pending_oofs_, *multicols_with_pending_oofs);
+}
+
 void NGContainerFragmentBuilder::SwapOutOfFlowFragmentainerDescendants(
     Vector<NGLogicalOutOfFlowPositionedNode>* descendants) {
   DCHECK(descendants->IsEmpty());
@@ -274,14 +286,28 @@ void NGContainerFragmentBuilder::
   }
 }
 
-void NGContainerFragmentBuilder::PropagateOOFPositionedFragmentainerDescendants(
+void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     const NGPhysicalContainerFragment& fragment,
     LogicalOffset offset) {
   const NGPhysicalBoxFragment* box_fragment =
       DynamicTo<NGPhysicalBoxFragment>(&fragment);
-  // Fragmentainer descendants are only on box fragments.
-  if (!box_fragment ||
-      !box_fragment->HasOutOfFlowPositionedFragmentainerDescendants()) {
+  if (!box_fragment)
+    return;
+
+  if (box_fragment->HasMulticolsWithPendingOOFs()) {
+    const auto& multicols_with_pending_oofs =
+        box_fragment->MulticolsWithPendingOOFs();
+    for (const NGBlockNode& multicol : multicols_with_pending_oofs)
+      AddMulticolWithPendingOOFs(multicol);
+  }
+
+  // If we find a multicol with OOF positioned fragmentainer descendants,
+  // then that multicol is an inner multicol with pending OOFs. Those OOFs
+  // will be laid out inside the inner multicol when we reach the outermost
+  // fragmentation context, so we should not propagate those OOFs up the tree
+  // any further.
+  if (!box_fragment->HasOutOfFlowPositionedFragmentainerDescendants() ||
+      box_fragment->IsFragmentationContextRoot()) {
     return;
   }
 

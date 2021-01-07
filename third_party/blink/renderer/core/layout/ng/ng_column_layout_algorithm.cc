@@ -299,6 +299,15 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
     FinishFragmentation(Node(), ConstraintSpace(), BorderPadding().block_end,
                         FragmentainerSpaceAtBfcStart(ConstraintSpace()),
                         &container_builder_);
+
+    // OOF positioned elements inside a nested fragmentation context are laid
+    // out at the outermost context. If this multicol has OOF positioned
+    // elements pending layout, store its node for later use.
+    if (container_builder_.HasOutOfFlowFragmentainerDescendants()) {
+      // TODO(almaher): Run layout on the pending OOFs once we hit the
+      // outermost fragmentation context.
+      container_builder_.AddMulticolWithPendingOOFs(Node());
+    }
   }
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();

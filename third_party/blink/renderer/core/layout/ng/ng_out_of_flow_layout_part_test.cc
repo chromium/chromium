@@ -1305,7 +1305,9 @@ TEST_F(NGOutOfFlowLayoutPartTest,
 }
 
 // Fragmented OOF element inside a nested multi-column.
-TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentation) {
+// TODO(almaher): Re-enable once layout is run on the pending OOFs of inner
+// multicols inside a nested fragmentation context.
+TEST_F(NGOutOfFlowLayoutPartTest, DISABLED_AbsposNestedFragmentation) {
   SetBodyInnerHTML(
       R"HTML(
       <style>

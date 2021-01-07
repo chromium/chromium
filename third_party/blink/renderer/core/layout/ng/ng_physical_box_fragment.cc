@@ -102,6 +102,7 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
   bool has_rare_data =
       builder->mathml_paint_info_ ||
       !builder->oof_positioned_fragmentainer_descendants_.IsEmpty() ||
+      !builder->multicols_with_pending_oofs_.IsEmpty() ||
       builder->table_grid_rect_ || builder->table_column_geometries_ ||
       builder->table_collapsed_borders_ ||
       builder->table_collapsed_borders_geometry_ ||
@@ -326,6 +327,10 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
                 : PhysicalSize()),
         descendant.containing_block_fragment);
   }
+  if (builder->HasMulticolsWithPendingOOFs()) {
+    multicols_with_pending_oofs =
+        std::move(builder->multicols_with_pending_oofs_);
+  }
   if (builder->table_grid_rect_)
     table_grid_rect = *builder->table_grid_rect_;
   if (builder->table_column_geometries_)
@@ -343,6 +348,7 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
 NGPhysicalBoxFragment::RareData::RareData(const RareData& other)
     : oof_positioned_fragmentainer_descendants(
           other.oof_positioned_fragmentainer_descendants),
+      multicols_with_pending_oofs(other.multicols_with_pending_oofs),
       mathml_paint_info(other.mathml_paint_info
                             ? new NGMathMLPaintInfo(*other.mathml_paint_info)
                             : nullptr),
