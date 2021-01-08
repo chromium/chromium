@@ -584,11 +584,11 @@ class CORE_EXPORT WebLocalFrameImpl final
   // cleared upon close().
   SelfKeepAlive<WebLocalFrameImpl> self_keep_alive_;
 
+#if DCHECK_IS_ON()
   // True if DispatchBeforePrintEvent() was called, and
   // DispatchAfterPrintEvent() is not called yet.
-  // TODO(crbug.com/1121077) After fixing the bug, make this member variable
-  // only available when DCHECK_IS_ON().
   bool is_in_printing_ = false;
+#endif
 
   // Bookkeeping to suppress redundant scroll and focus requests for an already
   // scrolled and focused editable node.
