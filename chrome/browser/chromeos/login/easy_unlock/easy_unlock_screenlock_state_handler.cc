@@ -322,6 +322,8 @@ void EasyUnlockScreenlockStateHandler::ShowHardlockUI() {
   }
 
   bool autoshow = true;
+  // TODO(crbug.com/1152491): Only call into SetHasShownLoginDisabledMessage()
+  // if this is a signin screen, not lock screen, context.
   if (hardlock_state_ == LOGIN_DISABLED) {
     // If Signin with Smart Lock is disabled, only automatically show the
     // tooltip if it hasn't been shown yet. See https://crbug.com/848893 for

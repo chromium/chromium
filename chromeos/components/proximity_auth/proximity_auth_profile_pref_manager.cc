@@ -175,7 +175,10 @@ void ProximityAuthProfilePrefManager::SetHasShownLoginDisabledMessage(
     bool has_shown) {
   // This is persisted within SyncPrefsToLocalState() instead, since the local
   // state must act as the source of truth for this pref.
-  NOTREACHED();
+  
+  // TODO(crbug.com/1152491): Add a NOTREACHED() to ensure this method is not
+  // called. It is currently incorrectly, though harmlessly, called by virtual
+  // Chrome OS on Linux.
 }
 
 bool ProximityAuthProfilePrefManager::HasShownLoginDisabledMessage() const {
