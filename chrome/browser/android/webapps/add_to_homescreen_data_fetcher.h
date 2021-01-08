@@ -21,9 +21,9 @@ struct FaviconRawBitmapResult;
 }
 
 namespace webapps {
+
 class InstallableManager;
 struct InstallableData;
-}  // namespace webapps
 
 // Aysnchronously fetches and processes data needed to create a shortcut for an
 // Android Home screen launcher.
@@ -39,7 +39,7 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
 
     // Called when all the data needed to prompt the user to add to home screen
     // is available.
-    virtual void OnDataAvailable(const webapps::ShortcutInfo& info,
+    virtual void OnDataAvailable(const ShortcutInfo& info,
                                  const SkBitmap& primary_icon) = 0;
 
    protected:
@@ -64,7 +64,7 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
 
   // Accessors, etc.
   const SkBitmap& primary_icon() const { return primary_icon_; }
-  webapps::ShortcutInfo& shortcut_info() { return shortcut_info_; }
+  ShortcutInfo& shortcut_info() { return shortcut_info_; }
   bool has_maskable_primary_icon() const { return has_maskable_primary_icon_; }
 
  private:
@@ -75,10 +75,10 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
   void OnDataTimedout();
 
   // Called when InstallableManager finishes looking for a manifest and icon.
-  void OnDidGetManifestAndIcons(const webapps::InstallableData& data);
+  void OnDidGetManifestAndIcons(const InstallableData& data);
 
   // Called when InstallableManager finishes checking for installability.
-  void OnDidPerformInstallableCheck(const webapps::InstallableData& data);
+  void OnDidPerformInstallableCheck(const InstallableData& data);
 
   // Grabs the favicon for the current URL.
   void FetchFavicon();
@@ -95,13 +95,13 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
                      const SkBitmap& icon_for_view,
                      bool is_icon_generated);
 
-  webapps::InstallableManager* installable_manager_;
+  InstallableManager* installable_manager_;
   Observer* observer_;
 
   // The icons must only be set on the UI thread for thread safety.
   SkBitmap raw_primary_icon_;
   SkBitmap primary_icon_;
-  webapps::ShortcutInfo shortcut_info_;
+  ShortcutInfo shortcut_info_;
   bool has_maskable_primary_icon_;
 
   base::CancelableTaskTracker favicon_task_tracker_;
@@ -118,5 +118,7 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
   AddToHomescreenDataFetcher& operator=(const AddToHomescreenDataFetcher&) =
       delete;
 };
+
+}  // namespace webapps
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_DATA_FETCHER_H_

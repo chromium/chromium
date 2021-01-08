@@ -11,11 +11,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_installer.h"
 
-struct AddToHomescreenParams;
-
 namespace webapps {
+
+struct AddToHomescreenParams;
 class AppBannerManager;
-}
 
 // AddToHomescreenCoordinator is the C++ counterpart of org.chromium.chrome.
 // browser.webapps.addtohomescreen.AddToHomescreenCoordinator in Java.
@@ -23,7 +22,7 @@ class AddToHomescreenCoordinator {
  public:
   // Called for showing the add-to-homescreen UI for AppBannerManager.
   static bool ShowForAppBanner(
-      base::WeakPtr<webapps::AppBannerManager> weak_manager,
+      base::WeakPtr<AppBannerManager> weak_manager,
       std::unique_ptr<AddToHomescreenParams> params,
       base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                    const AddToHomescreenParams&)>
@@ -34,5 +33,7 @@ class AddToHomescreenCoordinator {
   AddToHomescreenCoordinator& operator=(const AddToHomescreenCoordinator&) =
       delete;
 };
+
+}  // namespace webapps
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_COORDINATOR_H_

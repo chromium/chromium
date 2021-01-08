@@ -13,8 +13,8 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace webapps {
+
 struct ShortcutInfo;
-}
 
 struct AddToHomescreenParams {
   // A Java counterpart will be generated for this enum.
@@ -29,13 +29,15 @@ struct AddToHomescreenParams {
   AppType app_type;
   SkBitmap primary_icon;
   bool has_maskable_primary_icon = false;
-  std::unique_ptr<webapps::ShortcutInfo> shortcut_info;
-  webapps::WebappInstallSource install_source;
+  std::unique_ptr<ShortcutInfo> shortcut_info;
+  WebappInstallSource install_source;
   std::string native_app_package_name;
   base::android::ScopedJavaGlobalRef<jobject> native_app_data;
 
   AddToHomescreenParams();
   ~AddToHomescreenParams();
 };
+
+}  // namespace webapps
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_PARAMS_H_

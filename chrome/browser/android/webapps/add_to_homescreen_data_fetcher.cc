@@ -39,6 +39,8 @@
 #include "ui/gfx/favicon_size.h"
 #include "url/gurl.h"
 
+namespace webapps {
+
 namespace {
 
 // Looks up the original, online, visible URL of |web_contents|. The current
@@ -49,23 +51,23 @@ GURL GetShortcutUrl(content::WebContents* web_contents) {
       web_contents->GetVisibleURL());
 }
 
-webapps::InstallableParams ParamsToPerformManifestAndIconFetch() {
-  webapps::InstallableParams params;
+InstallableParams ParamsToPerformManifestAndIconFetch() {
+  InstallableParams params;
   params.valid_primary_icon = true;
   params.prefer_maskable_icon =
-      webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons();
+      WebappsIconUtils::DoesAndroidSupportMaskableIcons();
   params.wait_for_worker = true;
   return params;
 }
 
-webapps::InstallableParams ParamsToPerformInstallableCheck() {
-  webapps::InstallableParams params;
+InstallableParams ParamsToPerformInstallableCheck() {
+  InstallableParams params;
   params.check_eligibility = true;
   params.valid_manifest = true;
   params.has_worker = true;
   params.valid_primary_icon = true;
   params.prefer_maskable_icon =
-      webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons();
+      WebappsIconUtils::DoesAndroidSupportMaskableIcons();
   params.wait_for_worker = true;
   return params;
 }
@@ -82,9 +84,8 @@ void CreateLauncherIconInBackground(
     scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
     base::OnceCallback<void(const SkBitmap&, bool)> callback) {
   bool is_generated = false;
-  SkBitmap primary_icon =
-      webapps::WebappsIconUtils::FinalizeLauncherIconInBackground(
-          icon, maskable, start_url, &is_generated);
+  SkBitmap primary_icon = WebappsIconUtils::FinalizeLauncherIconInBackground(
+      icon, maskable, start_url, &is_generated);
   ui_thread_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), primary_icon, is_generated));
@@ -120,8 +121,7 @@ AddToHomescreenDataFetcher::AddToHomescreenDataFetcher(
     int data_timeout_ms,
     Observer* observer)
     : content::WebContentsObserver(web_contents),
-      installable_manager_(
-          webapps::InstallableManager::FromWebContents(web_contents)),
+      installable_manager_(InstallableManager::FromWebContents(web_contents)),
       observer_(observer),
       shortcut_info_(GetShortcutUrl(web_contents)),
       has_maskable_primary_icon_(false),
@@ -172,7 +172,7 @@ void AddToHomescreenDataFetcher::OnDidGetWebPageMetadata(
           chrome::mojom::WebPageMobileCapable::ENABLED_APPLE) {
     shortcut_info_.display = blink::mojom::DisplayMode::kStandalone;
     shortcut_info_.UpdateSource(
-        webapps::ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_STANDALONE);
+        ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_STANDALONE);
   }
 
   // Record what type of shortcut was added by the user.
@@ -225,7 +225,7 @@ void AddToHomescreenDataFetcher::OnDataTimedout() {
 }
 
 void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
-    const webapps::InstallableData& data) {
+    const InstallableData& data) {
   if (!web_contents())
     return;
 
@@ -254,9 +254,9 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
 
   // Save the splash screen URL for the later download.
   shortcut_info_.ideal_splash_image_size_in_px =
-      webapps::WebappsIconUtils::GetIdealSplashImageSizeInPx();
+      WebappsIconUtils::GetIdealSplashImageSizeInPx();
   shortcut_info_.minimum_splash_image_size_in_px =
-      webapps::WebappsIconUtils::GetMinimumSplashImageSizeInPx();
+      WebappsIconUtils::GetMinimumSplashImageSizeInPx();
   shortcut_info_.splash_image_url =
       blink::ManifestIconSelector::FindBestMatchingSquareIcon(
           data.manifest->icons, shortcut_info_.ideal_splash_image_size_in_px,
@@ -270,7 +270,7 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
 }
 
 void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
-    const webapps::InstallableData& data) {
+    const InstallableData& data) {
   StopTimer();
 
   if (!web_contents())
@@ -278,8 +278,7 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
 
   bool webapk_compatible =
       (data.NoBlockingErrors() && data.valid_manifest && data.has_worker &&
-       webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(
-           *data.manifest));
+       WebappsUtils::AreWebManifestUrlsWebApkCompatible(*data.manifest));
   observer_->OnUserTitleAvailable(
       webapk_compatible ? shortcut_info_.name : shortcut_info_.user_title,
       shortcut_info_.url, webapk_compatible);
@@ -290,8 +289,7 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
     // that icon is maskable.
     should_use_created_icon_for_launcher = false;
     primary_icon_ = raw_primary_icon_;
-    shortcut_info_.UpdateSource(
-        webapps::ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA);
+    shortcut_info_.UpdateSource(ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA);
     if (!has_maskable_primary_icon_) {
       // We can skip creating an icon for the view because the raw icon is
       // sufficient when WebAPK-compatible and the icon is non-maskable.
@@ -323,7 +321,7 @@ void AddToHomescreenDataFetcher::FetchFavicon() {
   // Using favicon if its size is not smaller than platform required size,
   // otherwise using the largest icon among all available icons.
   int threshold_to_get_any_largest_icon =
-      webapps::WebappsIconUtils::GetIdealHomescreenIconSizeInPx() - 1;
+      WebappsIconUtils::GetIdealHomescreenIconSizeInPx() - 1;
   favicon_service->GetLargestRawFaviconForPageURL(
       shortcut_info_.url, icon_types, threshold_to_get_any_largest_icon,
       base::BindOnce(&AddToHomescreenDataFetcher::OnFaviconFetched,
@@ -387,3 +385,5 @@ void AddToHomescreenDataFetcher::OnIconCreated(bool use_for_launcher,
 
   observer_->OnDataAvailable(shortcut_info_, icon_for_view);
 }
+
+}  // namespace webapps

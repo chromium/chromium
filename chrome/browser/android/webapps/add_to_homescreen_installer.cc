@@ -13,6 +13,8 @@
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "content/public/browser/web_contents.h"
 
+namespace webapps {
+
 // static
 void AddToHomescreenInstaller::Install(
     content::WebContents* web_contents,
@@ -77,3 +79,5 @@ void AddToHomescreenInstaller::InstallShortcut(
       web_contents, *(params.shortcut_info), params.primary_icon,
       params.has_maskable_primary_icon);
 }
+
+}  // namespace webapps

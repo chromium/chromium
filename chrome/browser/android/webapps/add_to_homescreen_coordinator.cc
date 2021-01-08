@@ -15,9 +15,11 @@
 #include "chrome/browser/android/webapps/add_to_homescreen_params.h"
 #include "chrome/browser/banners/app_banner_manager.h"
 
+namespace webapps {
+
 // static
 bool AddToHomescreenCoordinator::ShowForAppBanner(
-    base::WeakPtr<webapps::AppBannerManager> weak_manager,
+    base::WeakPtr<AppBannerManager> weak_manager,
     std::unique_ptr<AddToHomescreenParams> params,
     base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                  const AddToHomescreenParams&)>
@@ -36,3 +38,5 @@ bool AddToHomescreenCoordinator::ShowForAppBanner(
                               std::move(event_callback));
   return true;
 }
+
+}  // namespace webapps

@@ -12,6 +12,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.banners.AppBannerManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -33,6 +34,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * The {@link #showForAppMenu} method is used to show the add-to-homescreen UI when the user
  * chooses the "Add to Home screen" option from the app menu.
  */
+@JNINamespace("webapps")
 public class AddToHomescreenCoordinator {
     @VisibleForTesting
     Context mActivityContext;

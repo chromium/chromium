@@ -12,6 +12,8 @@ namespace content {
 class WebContents;
 }
 
+namespace webapps {
+
 // Helper class for installing a web app or an Android native app and recording
 // related UMA.
 class AddToHomescreenInstaller {
@@ -52,5 +54,7 @@ class AddToHomescreenInstaller {
   AddToHomescreenInstaller(const AddToHomescreenInstaller&) = delete;
   AddToHomescreenInstaller& operator=(const AddToHomescreenInstaller&) = delete;
 };
+
+}  // namespace webapps
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_INSTALLER_H_

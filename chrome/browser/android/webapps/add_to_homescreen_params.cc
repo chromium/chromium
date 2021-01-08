@@ -6,5 +6,9 @@
 
 #include "components/webapps/android/shortcut_info.h"
 
+namespace webapps {
+
 AddToHomescreenParams::AddToHomescreenParams() = default;
 AddToHomescreenParams::~AddToHomescreenParams() = default;
+
+}  // namespace webapps

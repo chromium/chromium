@@ -10,6 +10,7 @@ import android.util.Pair;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.banners.AppData;
 import org.chromium.chrome.browser.webapps.AddToHomescreenProperties;
@@ -28,6 +29,7 @@ import javax.annotation.Nonnull;
  * information about the app is available. These methods modify the model that lives on the Java
  * side.
  */
+@JNINamespace("webapps")
 class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
     private long mNativeAddToHomescreenMediator;
     private PropertyModel mModel;
