@@ -29,6 +29,7 @@
 #include "content/browser/renderer_host/input/touch_selection_controller_client_aura.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -68,6 +69,7 @@
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -1353,9 +1355,17 @@ void WebContentsViewAura::DragUpdatedCallback(
     drag_dest_delegate_->OnDragOver();
 }
 
-int WebContentsViewAura::OnDragUpdated(const ui::DropTargetEvent& event) {
+aura::client::DragUpdateInfo WebContentsViewAura::OnDragUpdated(
+    const ui::DropTargetEvent& event) {
   if (web_contents_->ShouldIgnoreInputEvents())
-    return ui::DragDropTypes::DRAG_NONE;
+    return aura::client::DragUpdateInfo();
+
+  aura::client::DragUpdateInfo drag_info;
+  auto* focused_frame = web_contents_->GetFocusedFrame();
+  if (focused_frame) {
+    drag_info.data_endpoint = ui::DataTransferEndpoint(
+        web_contents_->GetFocusedFrame()->GetLastCommittedOrigin());
+  }
 
   std::unique_ptr<DropData> drop_data = std::make_unique<DropData>();
   // Calling this here as event.data might become invalid inside the callback.
@@ -1368,8 +1378,10 @@ int WebContentsViewAura::OnDragUpdated(const ui::DropTargetEvent& event) {
           base::BindOnce(&WebContentsViewAura::DragUpdatedCallback,
                          weak_ptr_factory_.GetWeakPtr(), event,
                          std::move(drop_data)));
-  return ConvertFromDragOperationsMask(
+
+  drag_info.drag_operation = ConvertFromDragOperationsMask(
       static_cast<blink::DragOperationsMask>(current_drag_op_));
+  return drag_info;
 }
 
 void WebContentsViewAura::OnDragExited() {

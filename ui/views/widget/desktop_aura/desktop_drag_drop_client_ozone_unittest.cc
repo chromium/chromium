@@ -10,8 +10,10 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/platform_window/platform_window.h"
@@ -166,14 +168,18 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
     last_event_flags_ = event.flags();
   }
 
-  int OnDragUpdated(const ui::DropTargetEvent& event) override {
+  aura::client::DragUpdateInfo OnDragUpdated(
+      const ui::DropTargetEvent& event) override {
     // The event must always have valid data.  This will crash if it doesn't.
     // See crbug.com/1151836.
     auto dummy_copy = event.data().provider().Clone();
 
     ++num_updates_;
     last_event_flags_ = event.flags();
-    return destination_operation_;
+
+    return aura::client::DragUpdateInfo(
+        destination_operation_,
+        ui::DataTransferEndpoint(ui::EndpointType::kDefault));
   }
 
   void OnDragExited() override { ++num_exits_; }
