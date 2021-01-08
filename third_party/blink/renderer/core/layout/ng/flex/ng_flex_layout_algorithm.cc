@@ -439,10 +439,11 @@ LayoutUnit ComputeIntrinsicInlineSizeForAspectRatioElement(
                                      clamped_intrinsic_block_border_box);
   }
 
+  MinMaxSizes inline_min_max = ComputeTransferredMinMaxInlineSizes(
+      aspect_ratio, used_min_max_block_sizes, border_padding,
+      EBoxSizing::kContentBox);
+
   if (intrinsic_inline) {
-    MinMaxSizes inline_min_max = ComputeTransferredMinMaxInlineSizes(
-        aspect_ratio, used_min_max_block_sizes, border_padding,
-        EBoxSizing::kContentBox);
     LayoutUnit intrinsic_inline_border_box =
         *intrinsic_inline + border_padding.InlineSum();
     return inline_min_max.ClampSizeToMinAndMax(intrinsic_inline_border_box);
@@ -456,7 +457,9 @@ LayoutUnit ComputeIntrinsicInlineSizeForAspectRatioElement(
   // https://drafts.csswg.org/css-sizing-3/#intrinsic-sizes
   DCHECK_NE(space.AvailableSize().inline_size, kIndefiniteSize);
   NGBoxStrut margins = ComputeMarginsForSelf(space, style);
-  return (space.AvailableSize().inline_size - margins.InlineSum())
+  return inline_min_max
+      .ClampSizeToMinAndMax(space.AvailableSize().inline_size -
+                            margins.InlineSum())
       .ClampNegativeToZero();
 }
 
@@ -488,9 +491,6 @@ LayoutUnit ComputeIntrinsicBlockSizeForAspectRatioElement(
   }
 
   if (inline_size_border_box) {
-    // Clamping block size to the transferred inline min/max sizes might be
-    // uninentionally unspecified. See
-    // https://github.com/w3c/csswg-drafts/issues/5583
     LayoutUnit clamped_intrinsic_inline_border_box =
         used_min_max_inline_sizes.ClampSizeToMinAndMax(*inline_size_border_box);
     return BlockSizeFromAspectRatio(border_padding, aspect_ratio,
@@ -498,18 +498,18 @@ LayoutUnit ComputeIntrinsicBlockSizeForAspectRatioElement(
                                     clamped_intrinsic_inline_border_box);
   }
 
+  MinMaxSizes transferred_block_min_max = {LayoutUnit(), LayoutUnit::Max()};
+  if (used_min_max_inline_sizes.min_size > LayoutUnit()) {
+    transferred_block_min_max.min_size = BlockSizeFromAspectRatio(
+        border_padding, aspect_ratio, EBoxSizing::kContentBox,
+        used_min_max_inline_sizes.min_size);
+  }
+  if (used_min_max_inline_sizes.max_size != LayoutUnit::Max()) {
+    transferred_block_min_max.max_size = BlockSizeFromAspectRatio(
+        border_padding, aspect_ratio, EBoxSizing::kContentBox,
+        used_min_max_inline_sizes.max_size);
+  }
   if (intrinsic_block) {
-    MinMaxSizes transferred_block_min_max = {LayoutUnit(), LayoutUnit::Max()};
-    if (used_min_max_inline_sizes.min_size > LayoutUnit()) {
-      transferred_block_min_max.min_size = BlockSizeFromAspectRatio(
-          border_padding, aspect_ratio, EBoxSizing::kContentBox,
-          used_min_max_inline_sizes.min_size);
-    }
-    if (used_min_max_inline_sizes.max_size != LayoutUnit::Max()) {
-      transferred_block_min_max.max_size = BlockSizeFromAspectRatio(
-          border_padding, aspect_ratio, EBoxSizing::kContentBox,
-          used_min_max_inline_sizes.max_size);
-    }
     // Minimum size wins over maximum size.
     transferred_block_min_max.max_size = std::max(
         transferred_block_min_max.max_size, transferred_block_min_max.min_size);
@@ -530,9 +530,10 @@ LayoutUnit ComputeIntrinsicBlockSizeForAspectRatioElement(
   LayoutUnit stretch_into_available_inline_size(
       (space.AvailableSize().inline_size - margins.InlineSum())
           .ClampNegativeToZero());
-  return BlockSizeFromAspectRatio(border_padding, aspect_ratio,
-                                  EBoxSizing::kContentBox,
-                                  stretch_into_available_inline_size);
+  return transferred_block_min_max.ClampSizeToMinAndMax(
+      BlockSizeFromAspectRatio(border_padding, aspect_ratio,
+                               EBoxSizing::kContentBox,
+                               stretch_into_available_inline_size));
 }
 
 }  // namespace
