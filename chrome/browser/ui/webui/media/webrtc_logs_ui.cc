@@ -27,6 +27,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/webrtc_logs_resources.h"
+#include "chrome/grit/webrtc_logs_resources_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/upload_list/upload_list.h"
 #include "components/version_info/version_info.h"
@@ -78,8 +79,9 @@ content::WebUIDataSource* CreateWebRtcLogsUIHTMLSource() {
   AddLocalizedStringsBulk(source, kStrings);
 
   source->UseStringsJs();
-  source->AddResourcePath("webrtc_logs.js", IDR_WEBRTC_LOGS_JS);
-  source->SetDefaultResource(IDR_WEBRTC_LOGS_HTML);
+  webui::AddResourcePathsBulk(
+      source, base::make_span(kWebrtcLogsResources, kWebrtcLogsResourcesSize));
+  source->SetDefaultResource(IDR_WEBRTC_LOGS_WEBRTC_LOGS_HTML);
   return source;
 }
 
