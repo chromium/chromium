@@ -26,7 +26,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "components/feed/core/common/pref_names.h"
-#include "components/feed/core/proto/v2/keyvalue_store.pb.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/proto/v2/wire/chrome_client_info.pb.h"
@@ -38,10 +37,8 @@
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/image_fetcher.h"
 #include "components/feed/core/v2/metrics_reporter.h"
-#include "components/feed/core/v2/persistent_key_value_store_impl.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/protocol_translator.h"
-#include "components/feed/core/v2/public/persistent_key_value_store.h"
 #include "components/feed/core/v2/refresh_task_scheduler.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/stream_model.h"
@@ -596,9 +593,8 @@ class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
     // Ensure the task queue can return to idle. Failure to do so may be due
     // to a stuck task that never called |TaskComplete()|.
     WaitForIdleTaskQueue();
-    // ProtoDatabase requires PostTask to clean up.
+    // Store requires PostTask to clean up.
     store_.reset();
-    persistent_key_value_store_.reset();
     task_environment_.RunUntilIdle();
   }
 
@@ -629,8 +625,7 @@ class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
     chrome_info.version = base::Version({99, 1, 9911, 2});
     stream_ = std::make_unique<FeedStream>(
         &refresh_scheduler_, metrics_reporter_.get(), this, &profile_prefs_,
-        &network_, image_fetcher_.get(), store_.get(),
-        persistent_key_value_store_.get(), &prefetch_service_,
+        &network_, image_fetcher_.get(), store_.get(), &prefetch_service_,
         &offline_page_model_, chrome_info);
 
     WaitForIdleTaskQueue();  // Wait for any initialization.
@@ -699,16 +694,8 @@ class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
   std::unique_ptr<FeedStore> store_ = std::make_unique<FeedStore>(
       leveldb_proto::ProtoDatabaseProvider::GetUniqueDB<feedstore::Record>(
           leveldb_proto::ProtoDbType::FEED_STREAM_DATABASE,
-          /*db_dir=*/{},
+          /*file_path=*/{},
           task_environment_.GetMainThreadTaskRunner()));
-
-  std::unique_ptr<PersistentKeyValueStoreImpl> persistent_key_value_store_ =
-      std::make_unique<PersistentKeyValueStoreImpl>(
-          leveldb_proto::ProtoDatabaseProvider::GetUniqueDB<feedkvstore::Entry>(
-              leveldb_proto::ProtoDbType::FEED_KEY_VALUE_DATABASE,
-              /*db_dir=*/{},
-              task_environment_.GetMainThreadTaskRunner()));
-
   FakeRefreshTaskScheduler refresh_scheduler_;
   TestPrefetchService prefetch_service_;
   TestOfflinePageModel offline_page_model_;
@@ -2800,23 +2787,6 @@ TEST_F(FeedStreamTest, SessionIdPersistsAcrossStreamLoads) {
   ASSERT_EQ(1, network_.send_query_call_count);
   EXPECT_EQ(kSessionToken, stream_->GetMetadata()->GetSessionIdToken());
   EXPECT_TIME_EQ(kExpiryTime, stream_->GetMetadata()->GetSessionIdExpiryTime());
-}
-
-TEST_F(FeedStreamTest, PersistentKeyValueStoreIsClearedOnClearAll) {
-  // Store some data and verify it exists.
-  PersistentKeyValueStore* store = stream_->GetPersistentKeyValueStore();
-  store->Put("x", "y", base::DoNothing());
-  CallbackReceiver<PersistentKeyValueStore::Result> get_result;
-  store->Get("x", get_result.Bind());
-  ASSERT_EQ("y", *get_result.RunAndGetResult().get_result);
-
-  stream_->OnCacheDataCleared();  // triggers ClearAll().
-  WaitForIdleTaskQueue();
-
-  // Verify ClearAll() deleted the data.
-  get_result.Clear();
-  store->Get("x", get_result.Bind());
-  EXPECT_FALSE(get_result.RunAndGetResult().get_result);
 }
 
 }  // namespace

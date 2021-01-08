@@ -2714,7 +2714,6 @@ static_library("browser") {
       "android/feed/v2/background_refresh_task.cc",
       "android/feed/v2/background_refresh_task.h",
       "android/feed/v2/feed_image_fetch_client.cc",
-      "android/feed/v2/feed_persistent_key_value_cache.cc",
       "android/feed/v2/feed_service_bridge.cc",
       "android/feed/v2/feed_service_bridge.h",
       "android/feed/v2/feed_service_factory.cc",

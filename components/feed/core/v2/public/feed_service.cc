@@ -15,7 +15,6 @@
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/image_fetcher.h"
 #include "components/feed/core/v2/metrics_reporter.h"
-#include "components/feed/core/v2/persistent_key_value_store_impl.h"
 #include "components/feed/core/v2/refresh_task_scheduler.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/history/core/browser/history_service.h"
@@ -182,8 +181,6 @@ FeedService::FeedService(
     PrefService* profile_prefs,
     PrefService* local_state,
     std::unique_ptr<leveldb_proto::ProtoDatabase<feedstore::Record>> database,
-    std::unique_ptr<leveldb_proto::ProtoDatabase<feedkvstore::Entry>>
-        key_value_store_database,
     signin::IdentityManager* identity_manager,
     history::HistoryService* history_service,
     offline_pages::PrefetchService* prefetch_service,
@@ -203,14 +200,12 @@ FeedService::FeedService(
       profile_prefs);
   image_fetcher_ = std::make_unique<ImageFetcher>(url_loader_factory);
   store_ = std::make_unique<FeedStore>(std::move(database));
-  persistent_key_value_store_ = std::make_unique<PersistentKeyValueStoreImpl>(
-      std::move(key_value_store_database));
 
   stream_ = std::make_unique<FeedStream>(
       refresh_task_scheduler_.get(), metrics_reporter_.get(),
       stream_delegate_.get(), profile_prefs, feed_network_.get(),
-      image_fetcher_.get(), store_.get(), persistent_key_value_store_.get(),
-      prefetch_service, offline_page_model, chrome_info);
+      image_fetcher_.get(), store_.get(), prefetch_service, offline_page_model,
+      chrome_info);
 
   history_observer_ = std::make_unique<HistoryObserverImpl>(
       history_service, static_cast<FeedStream*>(stream_.get()),

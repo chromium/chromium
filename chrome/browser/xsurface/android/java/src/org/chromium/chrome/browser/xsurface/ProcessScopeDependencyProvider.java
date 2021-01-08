@@ -58,11 +58,6 @@ public interface ProcessScopeDependencyProvider {
         return null;
     }
 
-    @Nullable
-    default PersistentKeyValueCache getPersistentKeyValueCache() {
-        return null;
-    }
-
     // Posts task to the UI thread.
     int TASK_TYPE_UI_THREAD = 1;
     // Posts to a background thread. The task may block.

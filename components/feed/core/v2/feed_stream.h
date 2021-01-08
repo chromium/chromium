@@ -20,7 +20,6 @@
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/notice_card_tracker.h"
-#include "components/feed/core/v2/persistent_key_value_store_impl.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/public/feed_stream_api.h"
 #include "components/feed/core/v2/request_throttler.h"
@@ -45,7 +44,6 @@ class ImageFetcher;
 class MetricsReporter;
 class OfflinePageSpy;
 class RefreshTaskScheduler;
-class PersistentKeyValueStoreImpl;
 class StreamModel;
 class SurfaceUpdater;
 struct StreamModelUpdateRequest;
@@ -112,7 +110,6 @@ class FeedStream : public FeedStreamApi,
              FeedNetwork* feed_network,
              ImageFetcher* image_fetcher,
              FeedStore* feed_store,
-             PersistentKeyValueStoreImpl* persistent_key_value_store,
              offline_pages::PrefetchService* prefetch_service,
              offline_pages::OfflinePageModel* offline_page_model,
              const ChromeInfo& chrome_info);
@@ -138,7 +135,6 @@ class FeedStream : public FeedStreamApi,
       const GURL& url,
       base::OnceCallback<void(NetworkResponse)> callback) override;
   void CancelImageFetch(ImageFetchId id) override;
-  PersistentKeyValueStoreImpl* GetPersistentKeyValueStore() override;
   void LoadMore(SurfaceId surface_id,
                 base::OnceCallback<void(bool)> callback) override;
   void ExecuteOperations(
@@ -331,7 +327,6 @@ class FeedStream : public FeedStreamApi,
   FeedNetwork* feed_network_;
   ImageFetcher* image_fetcher_;
   FeedStore* store_;
-  PersistentKeyValueStoreImpl* persistent_key_value_store_;
   const WireResponseTranslator* wire_response_translator_;
 
   ChromeInfo chrome_info_;

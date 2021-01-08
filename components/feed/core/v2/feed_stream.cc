@@ -168,7 +168,6 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
                        FeedNetwork* feed_network,
                        ImageFetcher* image_fetcher,
                        FeedStore* feed_store,
-                       PersistentKeyValueStoreImpl* persistent_key_value_store,
                        offline_pages::PrefetchService* prefetch_service,
                        offline_pages::OfflinePageModel* offline_page_model,
                        const ChromeInfo& chrome_info)
@@ -180,7 +179,6 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
       feed_network_(feed_network),
       image_fetcher_(image_fetcher),
       store_(feed_store),
-      persistent_key_value_store_(persistent_key_value_store),
       chrome_info_(chrome_info),
       task_queue_(this),
       request_throttler_(profile_prefs),
@@ -727,10 +725,6 @@ ImageFetchId FeedStream::FetchImage(
     const GURL& url,
     base::OnceCallback<void(NetworkResponse)> callback) {
   return image_fetcher_->Fetch(url, std::move(callback));
-}
-
-PersistentKeyValueStoreImpl* FeedStream::GetPersistentKeyValueStore() {
-  return persistent_key_value_store_;
 }
 
 void FeedStream::CancelImageFetch(ImageFetchId id) {

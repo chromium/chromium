@@ -18,8 +18,7 @@ const char* const kFeatureEngagementName = "FeatureEngagement";
 // The enum values are used to index into the shared database. Do not rearrange
 // or reuse the integer values. Add new database types at the end of the enum,
 // and update the string mapping in ProtoDbTypeToString(). Also update the
-// suffix LevelDBClients in histogram_suffixes_list.xml to match the strings for
-// the types.
+// suffix LevelDBClients in histograms.xml to match the strings for the types.
 enum class ProtoDbType {
   TEST_DATABASE0 = 0,
   TEST_DATABASE1 = 1,
@@ -54,7 +53,6 @@ enum class ProtoDbType {
   UPBOARDING_QUERY_TILE_STORE = 28,
   NEARBY_SHARE_PUBLIC_CERTIFICATE_DATABASE = 29,
   VIDEO_TUTORIALS_DATABASE = 30,
-  FEED_KEY_VALUE_DATABASE = 31,
   LAST,
 };
 
@@ -70,7 +68,6 @@ constexpr ProtoDbType kWhitelistedDbForSharedImpl[]{
     ProtoDbType::UPBOARDING_QUERY_TILE_STORE,
     ProtoDbType::NEARBY_SHARE_PUBLIC_CERTIFICATE_DATABASE,
     ProtoDbType::VIDEO_TUTORIALS_DATABASE,
-    ProtoDbType::FEED_KEY_VALUE_DATABASE,
     ProtoDbType::LAST,  // Marks the end of list.
 };
 
