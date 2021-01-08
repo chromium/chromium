@@ -800,9 +800,18 @@ void CompositorAnimations::GetAnimationOnCompositor(
     }
     DCHECK(curve.get());
 
-    auto keyframe_model = std::make_unique<CompositorKeyframeModel>(
-        *curve, target_property, 0, group, std::move(custom_property_name),
-        native_property_type);
+    std::unique_ptr<CompositorKeyframeModel> keyframe_model;
+    if (!custom_property_name.IsEmpty()) {
+      keyframe_model = std::make_unique<CompositorKeyframeModel>(
+          *curve, target_property, 0, group, std::move(custom_property_name));
+    } else if (native_property_type !=
+               CompositorPaintWorkletInput::NativePropertyType::kInvalid) {
+      keyframe_model = std::make_unique<CompositorKeyframeModel>(
+          *curve, target_property, 0, group, native_property_type);
+    } else {
+      keyframe_model = std::make_unique<CompositorKeyframeModel>(
+          *curve, target_property, 0, group);
+    }
 
     if (start_time)
       keyframe_model->SetStartTime(start_time.value());

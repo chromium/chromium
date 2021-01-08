@@ -167,7 +167,7 @@ void Animation::RemoveKeyframeModels(int target_property) {
   base::EraseIf(keyframe_models_,
                 [target_property](
                     const std::unique_ptr<cc::KeyframeModel>& keyframe_model) {
-                  return keyframe_model->target_property_id() ==
+                  return keyframe_model->target_property_type() ==
                          target_property;
                 });
 }
@@ -255,7 +255,7 @@ void Animation::TransitionColorTo(base::TimeTicks monotonic_time,
 
 bool Animation::IsAnimatingProperty(int property) const {
   for (auto& keyframe_model : keyframe_models_) {
-    if (keyframe_model->target_property_id() == property)
+    if (keyframe_model->target_property_type() == property)
       return true;
   }
   return false;
@@ -293,17 +293,17 @@ void Animation::StartKeyframeModels(base::TimeTicks monotonic_time,
       continue;
     if (keyframe_model->run_state() == cc::KeyframeModel::RUNNING ||
         keyframe_model->run_state() == cc::KeyframeModel::PAUSED) {
-      animated_properties[keyframe_model->target_property_id()] = true;
+      animated_properties[keyframe_model->target_property_type()] = true;
     }
   }
   for (auto& keyframe_model : keyframe_models_) {
     if (!include_infinite_animations &&
         keyframe_model->iterations() == std::numeric_limits<double>::infinity())
       continue;
-    if (!animated_properties[keyframe_model->target_property_id()] &&
+    if (!animated_properties[keyframe_model->target_property_type()] &&
         keyframe_model->run_state() ==
             cc::KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY) {
-      animated_properties[keyframe_model->target_property_id()] = true;
+      animated_properties[keyframe_model->target_property_type()] = true;
       keyframe_model->SetRunState(cc::KeyframeModel::RUNNING, monotonic_time);
       keyframe_model->set_start_time(monotonic_time);
     }
@@ -361,9 +361,9 @@ void Animation::TransitionValueTo(base::TimeTicks monotonic_time,
   curve->AddKeyframe(AnimationTraits<ValueType>::KeyframeType::Create(
       transition_.duration, target, CreateTransitionTimingFunction()));
 
-  AddKeyframeModel(
-      cc::KeyframeModel::Create(std::move(curve), GetNextKeyframeModelId(),
-                                GetNextGroupId(), target_property));
+  AddKeyframeModel(cc::KeyframeModel::Create(
+      std::move(curve), GetNextKeyframeModelId(), GetNextGroupId(),
+      cc::KeyframeModel::TargetPropertyId(target_property)));
 }
 
 cc::KeyframeModel* Animation::GetRunningKeyframeModelForProperty(
@@ -371,7 +371,7 @@ cc::KeyframeModel* Animation::GetRunningKeyframeModelForProperty(
   for (auto& keyframe_model : keyframe_models_) {
     if ((keyframe_model->run_state() == cc::KeyframeModel::RUNNING ||
          keyframe_model->run_state() == cc::KeyframeModel::PAUSED) &&
-        keyframe_model->target_property_id() == target_property) {
+        keyframe_model->target_property_type() == target_property) {
       return keyframe_model.get();
     }
   }
@@ -381,7 +381,7 @@ cc::KeyframeModel* Animation::GetRunningKeyframeModelForProperty(
 cc::KeyframeModel* Animation::GetKeyframeModelForProperty(
     int target_property) const {
   for (auto& keyframe_model : keyframe_models_) {
-    if (keyframe_model->target_property_id() == target_property) {
+    if (keyframe_model->target_property_type() == target_property) {
       return keyframe_model.get();
     }
   }

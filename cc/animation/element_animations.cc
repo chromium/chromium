@@ -223,7 +223,7 @@ void ElementAnimations::NotifyClientFloatAnimated(
     float value,
     int target_property_id,
     KeyframeModel* keyframe_model) {
-  switch (keyframe_model->target_property_id()) {
+  switch (keyframe_model->target_property_type()) {
     case TargetProperty::CSS_CUSTOM_PROPERTY:
     case TargetProperty::NATIVE_PROPERTY:
       // Custom properties are only tracked on the pending tree, where they may
@@ -251,7 +251,7 @@ void ElementAnimations::NotifyClientFilterAnimated(
     const FilterOperations& filters,
     int target_property_id,
     KeyframeModel* keyframe_model) {
-  switch (keyframe_model->target_property_id()) {
+  switch (keyframe_model->target_property_type()) {
     case TargetProperty::BACKDROP_FILTER:
       if (KeyframeModelAffectsActiveElements(keyframe_model))
         OnBackdropFilterAnimated(ElementListType::ACTIVE, filters,
@@ -275,7 +275,7 @@ void ElementAnimations::NotifyClientColorAnimated(
     SkColor value,
     int target_property_id,
     KeyframeModel* keyframe_model) {
-  DCHECK_EQ(keyframe_model->target_property_id(),
+  DCHECK_EQ(keyframe_model->target_property_type(),
             TargetProperty::CSS_CUSTOM_PROPERTY);
   OnCustomPropertyAnimated(PaintWorkletInput::PropertyValue(value),
                            keyframe_model, target_property_id);

@@ -54,7 +54,7 @@ int AddOpacityTransition(Animation* target,
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), id, AnimationIdProvider::NextGroupId(),
-      TargetProperty::OPACITY));
+      KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
   keyframe_model->set_needs_synchronized_start_time(true);
 
   target->AddKeyframeModel(std::move(keyframe_model));
@@ -80,7 +80,7 @@ int AddAnimatedTransform(Animation* target,
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), id, AnimationIdProvider::NextGroupId(),
-      TargetProperty::TRANSFORM));
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   keyframe_model->set_needs_synchronized_start_time(true);
 
   target->AddKeyframeModel(std::move(keyframe_model));
@@ -125,7 +125,7 @@ int AddAnimatedFilter(Animation* target,
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), id, AnimationIdProvider::NextGroupId(),
-      TargetProperty::FILTER));
+      KeyframeModel::TargetPropertyId(TargetProperty::FILTER)));
   keyframe_model->set_needs_synchronized_start_time(true);
 
   target->AddKeyframeModel(std::move(keyframe_model));
@@ -155,7 +155,7 @@ int AddAnimatedBackdropFilter(Animation* target,
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), id, AnimationIdProvider::NextGroupId(),
-      TargetProperty::BACKDROP_FILTER));
+      KeyframeModel::TargetPropertyId(TargetProperty::BACKDROP_FILTER)));
   keyframe_model->set_needs_synchronized_start_time(true);
 
   target->AddKeyframeModel(std::move(keyframe_model));
@@ -252,7 +252,7 @@ int AddScrollOffsetAnimationToAnimation(Animation* animation,
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), id, AnimationIdProvider::NextGroupId(),
-      TargetProperty::SCROLL_OFFSET));
+      KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
   keyframe_model->SetIsImplOnly();
 
   animation->AddKeyframeModel(std::move(keyframe_model));
@@ -320,7 +320,7 @@ int AddOpacityStepsToAnimation(Animation* animation,
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), id, AnimationIdProvider::NextGroupId(),
-      TargetProperty::OPACITY));
+      KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
   keyframe_model->set_needs_synchronized_start_time(true);
 
   animation->AddKeyframeModel(std::move(keyframe_model));

@@ -1747,7 +1747,7 @@ TEST_F(DrawPropertiesTest,
   // Add a transform animation with a start delay to |grand_child|.
   std::unique_ptr<KeyframeModel> keyframe_model = KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeTransformTransition(1.0)), 0, 1,
-      TargetProperty::TRANSFORM);
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
   keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
   AddKeyframeModelToElementWithAnimation(
@@ -6410,7 +6410,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingSubtreeMain) {
   int keyframe_model_id = 0;
   std::unique_ptr<KeyframeModel> keyframe_model = KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeTransformTransition(1.0)),
-      keyframe_model_id, 1, TargetProperty::TRANSFORM);
+      keyframe_model_id, 1,
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
   keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
   AddKeyframeModelToElementWithAnimation(child->element_id(), timeline(),
@@ -6437,7 +6438,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingSubtreeMain) {
   keyframe_model_id = 1;
   keyframe_model = KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeFloatTransition(1.0, 0.f, 1.f)),
-      keyframe_model_id, 1, TargetProperty::OPACITY);
+      keyframe_model_id, 1,
+      KeyframeModel::TargetPropertyId(TargetProperty::OPACITY));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
   keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
   AddKeyframeModelToElementWithExistingKeyframeEffect(
@@ -6555,8 +6557,9 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingLayerImpl) {
       TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
   curve->AddKeyframe(TransformKeyframe::Create(
       base::TimeDelta::FromSecondsD(1.0), operation, nullptr));
-  std::unique_ptr<KeyframeModel> transform_animation(
-      KeyframeModel::Create(std::move(curve), 3, 3, TargetProperty::TRANSFORM));
+  std::unique_ptr<KeyframeModel> transform_animation(KeyframeModel::Create(
+      std::move(curve), 3, 3,
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   scoped_refptr<Animation> animation(Animation::Create(1));
   timeline()->AttachAnimation(animation);
   animation->AttachElement(parent->element_id());
@@ -6587,8 +6590,9 @@ TEST_F(DrawPropertiesTest, LayerSkippingInSubtreeOfSingularTransform) {
       TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
   curve->AddKeyframe(TransformKeyframe::Create(
       base::TimeDelta::FromSecondsD(1.0), operation, nullptr));
-  std::unique_ptr<KeyframeModel> transform_animation(
-      KeyframeModel::Create(std::move(curve), 3, 3, TargetProperty::TRANSFORM));
+  std::unique_ptr<KeyframeModel> transform_animation(KeyframeModel::Create(
+      std::move(curve), 3, 3,
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   scoped_refptr<Animation> animation(Animation::Create(1));
   timeline_impl()->AttachAnimation(animation);
   animation->AddKeyframeModel(std::move(transform_animation));
@@ -6699,8 +6703,9 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingPendingLayerImpl) {
       FloatKeyframe::Create(base::TimeDelta(), 0.9f, std::move(func)));
   curve->AddKeyframe(
       FloatKeyframe::Create(base::TimeDelta::FromSecondsD(1.0), 0.3f, nullptr));
-  std::unique_ptr<KeyframeModel> keyframe_model(
-      KeyframeModel::Create(std::move(curve), 3, 3, TargetProperty::OPACITY));
+  std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
+      std::move(curve), 3, 3,
+      KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
   scoped_refptr<Animation> animation(Animation::Create(1));
   timeline()->AttachAnimation(animation);
   animation->AddKeyframeModel(std::move(keyframe_model));
@@ -7505,7 +7510,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, OpacityAnimationsTrackingTest) {
   int keyframe_model_id = 0;
   std::unique_ptr<KeyframeModel> keyframe_model = KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeFloatTransition(1.0, 0.f, 1.f)),
-      keyframe_model_id, 1, TargetProperty::OPACITY);
+      keyframe_model_id, 1,
+      KeyframeModel::TargetPropertyId(TargetProperty::OPACITY));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
   keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
   KeyframeModel* keyframe_model_ptr = keyframe_model.get();
@@ -7561,8 +7567,9 @@ TEST_F(DrawPropertiesTestWithLayerTree, TransformAnimationsTrackingTest) {
       TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
   curve->AddKeyframe(TransformKeyframe::Create(
       base::TimeDelta::FromSecondsD(1.0), operation, nullptr));
-  std::unique_ptr<KeyframeModel> keyframe_model(
-      KeyframeModel::Create(std::move(curve), 3, 3, TargetProperty::TRANSFORM));
+  std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
+      std::move(curve), 3, 3,
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
   keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
   KeyframeModel* keyframe_model_ptr = keyframe_model.get();

@@ -76,7 +76,8 @@ Spinner::Spinner(int texture_width)
 
   std::unique_ptr<cc::KeyframeModel> keyframe_model(cc::KeyframeModel::Create(
       std::move(curve), Animation::GetNextKeyframeModelId(),
-      Animation::GetNextGroupId(), SPINNER_ROTATION));
+      Animation::GetNextGroupId(),
+      cc::KeyframeModel::TargetPropertyId(SPINNER_ROTATION)));
 
   keyframe_model->set_iterations(std::numeric_limits<double>::infinity());
   AddKeyframeModel(std::move(keyframe_model));
@@ -91,7 +92,8 @@ Spinner::Spinner(int texture_width)
 
   keyframe_model = cc::KeyframeModel::Create(
       std::move(curve), Animation::GetNextKeyframeModelId(),
-      Animation::GetNextGroupId(), SPINNER_ANGLE_SWEEP);
+      Animation::GetNextGroupId(),
+      cc::KeyframeModel::TargetPropertyId(SPINNER_ANGLE_SWEEP));
 
   keyframe_model->set_iterations(std::numeric_limits<double>::infinity());
   AddKeyframeModel(std::move(keyframe_model));
@@ -105,7 +107,8 @@ Spinner::Spinner(int texture_width)
 
   keyframe_model = cc::KeyframeModel::Create(
       std::move(curve), Animation::GetNextKeyframeModelId(),
-      Animation::GetNextGroupId(), SPINNER_ANGLE_START);
+      Animation::GetNextGroupId(),
+      cc::KeyframeModel::TargetPropertyId(SPINNER_ANGLE_START));
 
   keyframe_model->set_iterations(std::numeric_limits<double>::infinity());
   AddKeyframeModel(std::move(keyframe_model));

@@ -1005,7 +1005,8 @@ void BindIndicatorTranscienceForWin(
 
   e->AddKeyframeModel(cc::KeyframeModel::Create(
       std::move(curve), Animation::GetNextKeyframeModelId(),
-      Animation::GetNextGroupId(), TRANSFORM));
+      Animation::GetNextGroupId(),
+      cc::KeyframeModel::TargetPropertyId(TRANSFORM)));
 }
 
 #else
@@ -1090,7 +1091,8 @@ void BindIndicatorTranscience(
 
   e->AddKeyframeModel(cc::KeyframeModel::Create(
       std::move(curve), Animation::GetNextKeyframeModelId(),
-      Animation::GetNextGroupId(), TRANSFORM));
+      Animation::GetNextGroupId(),
+      cc::KeyframeModel::TargetPropertyId(TRANSFORM)));
 }
 
 #endif

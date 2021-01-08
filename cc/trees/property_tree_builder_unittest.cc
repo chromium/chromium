@@ -552,8 +552,9 @@ TEST_F(PropertyTreeBuilderTest, DelayedFilterAnimationCreatesRenderSurface) {
       FilterKeyframe::Create(base::TimeDelta(), start_filters, nullptr));
   curve->AddKeyframe(FilterKeyframe::Create(
       base::TimeDelta::FromMilliseconds(100), end_filters, nullptr));
-  std::unique_ptr<KeyframeModel> keyframe_model =
-      KeyframeModel::Create(std::move(curve), 0, 1, TargetProperty::FILTER);
+  std::unique_ptr<KeyframeModel> keyframe_model = KeyframeModel::Create(
+      std::move(curve), 0, 1,
+      KeyframeModel::TargetPropertyId(TargetProperty::FILTER));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
   keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
 

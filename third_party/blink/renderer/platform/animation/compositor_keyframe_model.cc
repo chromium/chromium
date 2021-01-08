@@ -25,18 +25,42 @@ CompositorKeyframeModel::CompositorKeyframeModel(
     const CompositorAnimationCurve& curve,
     compositor_target_property::Type target_property,
     int keyframe_model_id,
-    int group_id,
-    const AtomicString& custom_property_name,
-    CompositorPaintWorkletInput::NativePropertyType native_property_type) {
-  if (!keyframe_model_id)
-    keyframe_model_id = AnimationIdProvider::NextKeyframeModelId();
-  if (!group_id)
-    group_id = AnimationIdProvider::NextGroupId();
+    int group_id)
+    : CompositorKeyframeModel(
+          curve,
+          keyframe_model_id,
+          group_id,
+          KeyframeModel::TargetPropertyId(target_property)) {}
 
-  keyframe_model_ = KeyframeModel::Create(
-      curve.CloneToAnimationCurve(), keyframe_model_id, group_id,
-      target_property, custom_property_name.Utf8().data(),
-      native_property_type);
+CompositorKeyframeModel::CompositorKeyframeModel(
+    const CompositorAnimationCurve& curve,
+    compositor_target_property::Type target_property,
+    int keyframe_model_id,
+    int group_id,
+    const AtomicString& custom_property_name)
+    : CompositorKeyframeModel(
+          curve,
+          keyframe_model_id,
+          group_id,
+          KeyframeModel::TargetPropertyId(target_property,
+                                          custom_property_name.Utf8().data())) {
+  DCHECK(!custom_property_name.IsEmpty());
+}
+
+CompositorKeyframeModel::CompositorKeyframeModel(
+    const CompositorAnimationCurve& curve,
+    compositor_target_property::Type target_property,
+    int keyframe_model_id,
+    int group_id,
+    CompositorPaintWorkletInput::NativePropertyType native_property_type)
+    : CompositorKeyframeModel(
+          curve,
+          keyframe_model_id,
+          group_id,
+          KeyframeModel::TargetPropertyId(target_property,
+                                          native_property_type)) {
+  DCHECK_NE(native_property_type,
+            CompositorPaintWorkletInput::NativePropertyType::kInvalid);
 }
 
 CompositorKeyframeModel::~CompositorKeyframeModel() = default;
@@ -49,10 +73,23 @@ int CompositorKeyframeModel::Group() const {
   return keyframe_model_->group();
 }
 
+CompositorKeyframeModel::CompositorKeyframeModel(
+    const CompositorAnimationCurve& curve,
+    int keyframe_model_id,
+    int group_id,
+    const KeyframeModel::TargetPropertyId& id) {
+  if (!keyframe_model_id)
+    keyframe_model_id = AnimationIdProvider::NextKeyframeModelId();
+  if (!group_id)
+    group_id = AnimationIdProvider::NextGroupId();
+  keyframe_model_ = KeyframeModel::Create(curve.CloneToAnimationCurve(),
+                                          keyframe_model_id, group_id, id);
+}
+
 compositor_target_property::Type CompositorKeyframeModel::TargetProperty()
     const {
   return static_cast<compositor_target_property::Type>(
-      keyframe_model_->target_property_id());
+      keyframe_model_->target_property_type());
 }
 
 void CompositorKeyframeModel::SetElementId(CompositorElementId element_id) {

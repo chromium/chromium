@@ -87,7 +87,7 @@ TEST(AnimationTest, AddRemoveKeyframeModels) {
                                                    gfx::SizeF(20, 200),
                                                    MicrosecondsToDelta(10000)));
   EXPECT_EQ(1ul, animation.keyframe_models().size());
-  EXPECT_EQ(BOUNDS, animation.keyframe_models()[0]->target_property_id());
+  EXPECT_EQ(BOUNDS, animation.keyframe_models()[0]->target_property_type());
 
   cc::TransformOperations from_operations;
   from_operations.AppendTranslate(10, 100, 1000);
@@ -97,16 +97,16 @@ TEST(AnimationTest, AddRemoveKeyframeModels) {
       2, 2, from_operations, to_operations, MicrosecondsToDelta(10000)));
 
   EXPECT_EQ(2ul, animation.keyframe_models().size());
-  EXPECT_EQ(TRANSFORM, animation.keyframe_models()[1]->target_property_id());
+  EXPECT_EQ(TRANSFORM, animation.keyframe_models()[1]->target_property_type());
 
   animation.AddKeyframeModel(CreateTransformAnimation(
       3, 3, from_operations, to_operations, MicrosecondsToDelta(10000)));
   EXPECT_EQ(3ul, animation.keyframe_models().size());
-  EXPECT_EQ(TRANSFORM, animation.keyframe_models()[2]->target_property_id());
+  EXPECT_EQ(TRANSFORM, animation.keyframe_models()[2]->target_property_type());
 
   animation.RemoveKeyframeModels(TRANSFORM);
   EXPECT_EQ(1ul, animation.keyframe_models().size());
-  EXPECT_EQ(BOUNDS, animation.keyframe_models()[0]->target_property_id());
+  EXPECT_EQ(BOUNDS, animation.keyframe_models()[0]->target_property_type());
 
   animation.RemoveKeyframeModel(animation.keyframe_models()[0]->id());
   EXPECT_TRUE(animation.keyframe_models().empty());
@@ -121,7 +121,7 @@ TEST(AnimationTest, AnimationLifecycle) {
                                                    gfx::SizeF(20, 200),
                                                    MicrosecondsToDelta(10000)));
   EXPECT_EQ(1ul, animation.keyframe_models().size());
-  EXPECT_EQ(BOUNDS, animation.keyframe_models()[0]->target_property_id());
+  EXPECT_EQ(BOUNDS, animation.keyframe_models()[0]->target_property_type());
   EXPECT_EQ(cc::KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY,
             animation.keyframe_models()[0]->run_state());
 
@@ -150,7 +150,7 @@ TEST(AnimationTest, AnimationQueue) {
                                                    gfx::SizeF(20, 200),
                                                    MicrosecondsToDelta(10000)));
   EXPECT_EQ(1ul, animation.keyframe_models().size());
-  EXPECT_EQ(BOUNDS, animation.keyframe_models()[0]->target_property_id());
+  EXPECT_EQ(BOUNDS, animation.keyframe_models()[0]->target_property_type());
   EXPECT_EQ(cc::KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY,
             animation.keyframe_models()[0]->run_state());
 
@@ -172,8 +172,8 @@ TEST(AnimationTest, AnimationQueue) {
       3, 2, from_operations, to_operations, MicrosecondsToDelta(10000)));
 
   EXPECT_EQ(3ul, animation.keyframe_models().size());
-  EXPECT_EQ(BOUNDS, animation.keyframe_models()[1]->target_property_id());
-  EXPECT_EQ(TRANSFORM, animation.keyframe_models()[2]->target_property_id());
+  EXPECT_EQ(BOUNDS, animation.keyframe_models()[1]->target_property_type());
+  EXPECT_EQ(TRANSFORM, animation.keyframe_models()[2]->target_property_type());
   int id1 = animation.keyframe_models()[1]->id();
 
   animation.Tick(start_time + MicrosecondsToDelta(1));

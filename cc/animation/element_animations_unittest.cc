@@ -4,6 +4,9 @@
 
 #include "cc/animation/element_animations.h"
 
+#include <limits>
+#include <utility>
+
 #include "base/memory/ptr_util.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_delegate.h"
@@ -269,7 +272,8 @@ TEST_F(ElementAnimationsTest,
   curve_fixed->SetInitialValue(initial_value);
   const int animation1_id = 1;
   std::unique_ptr<KeyframeModel> animation_fixed(KeyframeModel::Create(
-      std::move(curve_fixed), animation1_id, 0, TargetProperty::SCROLL_OFFSET));
+      std::move(curve_fixed), animation1_id, 0,
+      KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
   animation_->AddKeyframeModel(std::move(animation_fixed));
   PushProperties();
   EXPECT_VECTOR2DF_EQ(initial_value, animation_impl_->keyframe_effect()
@@ -285,7 +289,8 @@ TEST_F(ElementAnimationsTest,
           target_value));
   const int animation2_id = 2;
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-      std::move(curve), animation2_id, 1, TargetProperty::SCROLL_OFFSET));
+      std::move(curve), animation2_id, 1,
+      KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
   animation_->AddKeyframeModel(std::move(keyframe_model));
   PushProperties();
   EXPECT_VECTOR2DF_EQ(provider_initial_value,
@@ -751,7 +756,8 @@ static std::unique_ptr<KeyframeModel> CreateKeyframeModel(
     std::unique_ptr<AnimationCurve> curve,
     int group_id,
     TargetProperty::Type property) {
-  return KeyframeModel::Create(std::move(curve), 0, group_id, property);
+  return KeyframeModel::Create(std::move(curve), 0, group_id,
+                               KeyframeModel::TargetPropertyId(property));
 }
 
 TEST_F(ElementAnimationsTest, TrivialTransition) {
@@ -807,8 +813,9 @@ TEST_F(ElementAnimationsTest, FilterTransition) {
   curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(1.0),
                                             end_filters, nullptr));
 
-  std::unique_ptr<KeyframeModel> keyframe_model(
-      KeyframeModel::Create(std::move(curve), 1, 0, TargetProperty::FILTER));
+  std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
+      std::move(curve), 1, 0,
+      KeyframeModel::TargetPropertyId(TargetProperty::FILTER)));
   animation_->AddKeyframeModel(std::move(keyframe_model));
 
   animation_->Tick(kInitialTickTime);
@@ -850,7 +857,8 @@ TEST_F(ElementAnimationsTest, BackdropFilterTransition) {
                                             end_filters, nullptr));
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-      std::move(curve), 1, 0, TargetProperty::BACKDROP_FILTER));
+      std::move(curve), 1, 0,
+      KeyframeModel::TargetPropertyId(TargetProperty::BACKDROP_FILTER)));
   animation_->AddKeyframeModel(std::move(keyframe_model));
 
   animation_->Tick(kInitialTickTime);
@@ -889,7 +897,8 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransition) {
           target_value));
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-      std::move(curve), 1, 0, TargetProperty::SCROLL_OFFSET));
+      std::move(curve), 1, 0,
+      KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
   keyframe_model->set_needs_synchronized_start_time(true);
   animation_->AddKeyframeModel(std::move(keyframe_model));
 
@@ -961,7 +970,8 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionOnImplOnly) {
   double duration_in_seconds = curve->Duration().InSecondsF();
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-      std::move(curve), 1, 0, TargetProperty::SCROLL_OFFSET));
+      std::move(curve), 1, 0,
+      KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
   keyframe_model->SetIsImplOnly();
   animation_impl_->AddKeyframeModel(std::move(keyframe_model));
 
@@ -1060,7 +1070,8 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionNoImplProvider) {
           target_value));
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-      std::move(curve), 1, 0, TargetProperty::SCROLL_OFFSET));
+      std::move(curve), 1, 0,
+      KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
   keyframe_model->set_needs_synchronized_start_time(true);
   animation_->AddKeyframeModel(std::move(keyframe_model));
 
@@ -1139,7 +1150,8 @@ TEST_F(ElementAnimationsTest, ScrollOffsetRemovalClearsScrollDelta) {
 
   int keyframe_model_id = 1;
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-      std::move(curve), keyframe_model_id, 0, TargetProperty::SCROLL_OFFSET));
+      std::move(curve), keyframe_model_id, 0,
+      KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
   keyframe_model->set_needs_synchronized_start_time(true);
   animation_->AddKeyframeModel(std::move(keyframe_model));
   PushProperties();
@@ -1166,8 +1178,9 @@ TEST_F(ElementAnimationsTest, ScrollOffsetRemovalClearsScrollDelta) {
   // Now, test the 2-argument version of RemoveKeyframeModel.
   curve = ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
       target_value);
-  keyframe_model = KeyframeModel::Create(std::move(curve), keyframe_model_id, 0,
-                                         TargetProperty::SCROLL_OFFSET);
+  keyframe_model = KeyframeModel::Create(
+      std::move(curve), keyframe_model_id, 0,
+      KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET));
   keyframe_model->set_needs_synchronized_start_time(true);
   animation_->AddKeyframeModel(std::move(keyframe_model));
   PushProperties();
@@ -1261,7 +1274,8 @@ TEST_F(ElementAnimationsTest,
   curve->SetInitialValue(initial_value);
   TimeDelta duration = curve->Duration();
   std::unique_ptr<KeyframeModel> to_add(KeyframeModel::Create(
-      std::move(curve), 1, 0, TargetProperty::SCROLL_OFFSET));
+      std::move(curve), 1, 0,
+      KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
   to_add->SetIsImplOnly();
   animation_impl_->AddKeyframeModel(std::move(to_add));
 
@@ -1379,10 +1393,12 @@ TEST_F(ElementAnimationsTest, TrivialQueuing) {
   int animation2_id = 2;
   animation_->AddKeyframeModel(KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeFloatTransition(1.0, 0.f, 1.f)),
-      animation1_id, 1, TargetProperty::OPACITY));
+      animation1_id, 1,
+      KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
   animation_->AddKeyframeModel(KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeFloatTransition(1.0, 1.f, 0.5f)),
-      animation2_id, 2, TargetProperty::OPACITY));
+      animation2_id, 2,
+      KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
 
   animation_->Tick(kInitialTickTime);
 
@@ -1679,13 +1695,14 @@ TEST_F(ElementAnimationsTest, AbortAGroupedAnimation) {
   const int keyframe_model_id = 2;
   animation_->AddKeyframeModel(KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeTransformTransition(1)), 1, 1,
-      TargetProperty::TRANSFORM));
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   animation_->AddKeyframeModel(KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeFloatTransition(2.0, 0.f, 1.f)),
-      keyframe_model_id, 1, TargetProperty::OPACITY));
+      keyframe_model_id, 1,
+      KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
   animation_->AddKeyframeModel(KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeFloatTransition(1.0, 1.f, 0.75f)),
-      3, 2, TargetProperty::OPACITY));
+      3, 2, KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
 
   animation_->Tick(kInitialTickTime);
   animation_->UpdateState(true, events.get());
@@ -1873,19 +1890,19 @@ TEST_F(ElementAnimationsTest, AbortKeyframeModelsWithProperty) {
   // state.
   animation_->AddKeyframeModel(KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeTransformTransition(1.0)), 1, 1,
-      TargetProperty::TRANSFORM));
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   animation_->AddKeyframeModel(KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeFloatTransition(1.0, 0.f, 1.f)),
-      2, 2, TargetProperty::OPACITY));
+      2, 2, KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
   animation_->AddKeyframeModel(KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeTransformTransition(1.0)), 3, 3,
-      TargetProperty::TRANSFORM));
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   animation_->AddKeyframeModel(KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeTransformTransition(2.0)), 4, 4,
-      TargetProperty::TRANSFORM));
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   animation_->AddKeyframeModel(KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeFloatTransition(1.0, 0.f, 1.f)),
-      5, 5, TargetProperty::OPACITY));
+      5, 5, KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
 
   animation_->Tick(kInitialTickTime);
   animation_->UpdateState(true, nullptr);
@@ -2047,7 +2064,8 @@ TEST_F(ElementAnimationsTest, ImplThreadTakeoverAnimationGetsDeleted) {
           target_value));
   curve->SetInitialValue(initial_value);
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-      std::move(curve), keyframe_model_id, 0, TargetProperty::SCROLL_OFFSET));
+      std::move(curve), keyframe_model_id, 0,
+      KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
   keyframe_model->set_start_time(TicksFromSecondsF(123));
   keyframe_model->SetIsImplOnly();
   animation_impl_->AddKeyframeModel(std::move(keyframe_model));
@@ -2113,13 +2131,13 @@ TEST_F(ElementAnimationsTest, FinishedEventsForGroup) {
   // Add two animations with the same group id but different durations.
   std::unique_ptr<KeyframeModel> first_keyframe_model(KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeTransformTransition(2.0)), 1,
-      group_id, TargetProperty::TRANSFORM));
+      group_id, KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   first_keyframe_model->set_is_controlling_instance_for_test(true);
   animation_impl_->AddKeyframeModel(std::move(first_keyframe_model));
 
   std::unique_ptr<KeyframeModel> second_keyframe_model(KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeFloatTransition(1.0, 0.f, 1.f)),
-      2, group_id, TargetProperty::OPACITY));
+      2, group_id, KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
   second_keyframe_model->set_is_controlling_instance_for_test(true);
   animation_impl_->AddKeyframeModel(std::move(second_keyframe_model));
 
@@ -2242,7 +2260,8 @@ TEST_F(ElementAnimationsTest, GetAnimationScalesNotScaled) {
       base::TimeDelta::FromSecondsD(1.0), operations1, nullptr));
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-      std::move(curve1), 2, 2, TargetProperty::TRANSFORM));
+      std::move(curve1), 2, 2,
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   animation_impl_->AddKeyframeModel(std::move(keyframe_model));
 
   // The only transform animation we've added is a translation.
@@ -2273,7 +2292,8 @@ TEST_F(ElementAnimationsTest, GetAnimationScales) {
   curve1->AddKeyframe(TransformKeyframe::Create(
       base::TimeDelta::FromSecondsD(1.0), operations1b, nullptr));
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-      std::move(curve1), 1, 1, TargetProperty::TRANSFORM));
+      std::move(curve1), 1, 1,
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   keyframe_model->set_affects_active_elements(false);
   animation_impl_->AddKeyframeModel(std::move(keyframe_model));
 
@@ -2311,8 +2331,9 @@ TEST_F(ElementAnimationsTest, GetAnimationScales) {
       base::TimeDelta::FromSecondsD(1.0), operations2b, nullptr));
 
   animation_impl_->RemoveKeyframeModel(1);
-  keyframe_model =
-      KeyframeModel::Create(std::move(curve2), 2, 2, TargetProperty::TRANSFORM);
+  keyframe_model = KeyframeModel::Create(
+      std::move(curve2), 2, 2,
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM));
 
   // Reverse Direction
   keyframe_model->set_direction(KeyframeModel::Direction::REVERSE);
@@ -2331,8 +2352,9 @@ TEST_F(ElementAnimationsTest, GetAnimationScales) {
   curve3->AddKeyframe(TransformKeyframe::Create(
       base::TimeDelta::FromSecondsD(1.0), operations3b, nullptr));
 
-  keyframe_model =
-      KeyframeModel::Create(std::move(curve3), 3, 3, TargetProperty::TRANSFORM);
+  keyframe_model = KeyframeModel::Create(
+      std::move(curve3), 3, 3,
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM));
   keyframe_model->set_affects_active_elements(false);
   animation_impl_->AddKeyframeModel(std::move(keyframe_model));
 
@@ -2386,7 +2408,8 @@ TEST_F(ElementAnimationsTest, GetAnimationScalesWithDirection) {
       base::TimeDelta::FromSecondsD(1.0), operations2, nullptr));
 
   std::unique_ptr<KeyframeModel> keyframe_model_owned(KeyframeModel::Create(
-      std::move(curve1), 1, 1, TargetProperty::TRANSFORM));
+      std::move(curve1), 1, 1,
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   KeyframeModel* keyframe_model = keyframe_model_owned.get();
   animation_impl_->AddKeyframeModel(std::move(keyframe_model_owned));
 
@@ -3883,10 +3906,10 @@ TEST_F(ElementAnimationsTest, FinishedKeyframeModelsNotCopiedToImpl) {
 
   animation_->AddKeyframeModel(KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeTransformTransition(1.0)), 1, 1,
-      TargetProperty::TRANSFORM));
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   animation_->AddKeyframeModel(KeyframeModel::Create(
       std::unique_ptr<AnimationCurve>(new FakeFloatTransition(2.0, 0.f, 1.f)),
-      2, 2, TargetProperty::OPACITY));
+      2, 2, KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
 
   // Finish the first keyframe model.
   animation_->Tick(kInitialTickTime);

@@ -48,6 +48,30 @@ static_assert(static_cast<int>(cc::AnimationCurve::LAST_CURVE_TYPE) + 1 ==
 
 namespace cc {
 
+KeyframeModel::TargetPropertyId::TargetPropertyId(int target_property_type)
+    : target_property_type_(target_property_type),
+      custom_property_name_(""),
+      native_property_type_(PaintWorkletInput::NativePropertyType::kInvalid) {}
+
+KeyframeModel::TargetPropertyId::TargetPropertyId(
+    int target_property_type,
+    const std::string& custom_property_name)
+    : target_property_type_(target_property_type),
+      custom_property_name_(custom_property_name),
+      native_property_type_(PaintWorkletInput::NativePropertyType::kInvalid) {}
+
+KeyframeModel::TargetPropertyId::TargetPropertyId(
+    int target_property_type,
+    PaintWorkletInput::NativePropertyType native_property_type)
+    : target_property_type_(target_property_type),
+      custom_property_name_(""),
+      native_property_type_(native_property_type) {}
+
+KeyframeModel::TargetPropertyId::TargetPropertyId(
+    const TargetPropertyId& other) = default;
+
+KeyframeModel::TargetPropertyId::~TargetPropertyId() = default;
+
 std::string KeyframeModel::ToString(RunState state) {
   return s_runStateNames[state];
 }
@@ -56,12 +80,9 @@ std::unique_ptr<KeyframeModel> KeyframeModel::Create(
     std::unique_ptr<AnimationCurve> curve,
     int keyframe_model_id,
     int group_id,
-    int target_property_id,
-    const std::string& custom_property_name,
-    PaintWorkletInput::NativePropertyType native_property_type) {
-  return base::WrapUnique(new KeyframeModel(
-      std::move(curve), keyframe_model_id, group_id, target_property_id,
-      custom_property_name, native_property_type));
+    TargetPropertyId target_property_id) {
+  return base::WrapUnique(new KeyframeModel(std::move(curve), keyframe_model_id,
+                                            group_id, target_property_id));
 }
 
 std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
@@ -70,8 +91,7 @@ std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
   // creating multiple controlling instances.
   DCHECK(!is_controlling_instance_);
   std::unique_ptr<KeyframeModel> to_return(
-      new KeyframeModel(curve_->Clone(), id_, group_, target_property_id_,
-                        custom_property_name_, native_property_type_));
+      new KeyframeModel(curve_->Clone(), id_, group_, target_property_id_));
   to_return->element_id_ = element_id_;
   to_return->run_state_ = initial_run_state;
   to_return->iterations_ = iterations_;
@@ -88,19 +108,14 @@ std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
   return to_return;
 }
 
-KeyframeModel::KeyframeModel(
-    std::unique_ptr<AnimationCurve> curve,
-    int keyframe_model_id,
-    int group_id,
-    int target_property_id,
-    const std::string& custom_property_name,
-    PaintWorkletInput::NativePropertyType native_property_type)
+KeyframeModel::KeyframeModel(std::unique_ptr<AnimationCurve> curve,
+                             int keyframe_model_id,
+                             int group_id,
+                             TargetPropertyId target_property_id)
     : curve_(std::move(curve)),
       id_(keyframe_model_id),
       group_(group_id),
       target_property_id_(target_property_id),
-      custom_property_name_(custom_property_name),
-      native_property_type_(native_property_type),
       run_state_(WAITING_FOR_TARGET_AVAILABILITY),
       iterations_(1),
       iteration_start_(0),
@@ -112,10 +127,7 @@ KeyframeModel::KeyframeModel(
       is_controlling_instance_(false),
       is_impl_only_(false),
       affects_active_elements_(true),
-      affects_pending_elements_(true) {
-  DCHECK(custom_property_name_.empty() ||
-         target_property_id_ == TargetProperty::CSS_CUSTOM_PROPERTY);
-}
+      affects_pending_elements_(true) {}
 
 KeyframeModel::~KeyframeModel() {
   if (run_state_ == RUNNING || run_state_ == PAUSED)
@@ -126,7 +138,8 @@ void KeyframeModel::SetRunState(RunState run_state,
                                 base::TimeTicks monotonic_time) {
   char name_buffer[256];
   base::snprintf(name_buffer, sizeof(name_buffer), "%s-%d-%d",
-                 s_curveTypeNames[curve_->Type()], target_property_id_, group_);
+                 s_curveTypeNames[curve_->Type()],
+                 target_property_id_.target_property_type(), group_);
 
   bool is_waiting_to_start =
       run_state_ == WAITING_FOR_TARGET_AVAILABILITY || run_state_ == STARTING;
@@ -354,10 +367,14 @@ void KeyframeModel::PushPropertiesTo(KeyframeModel* other) const {
 
 std::string KeyframeModel::ToString() const {
   return base::StringPrintf(
-      "KeyframeModel{id=%d, group=%d, target_property_id=%d, "
-      "run_state=%s}",
-      id_, group_, target_property_id_,
-      KeyframeModel::ToString(run_state_).c_str());
+      "KeyframeModel{id=%d, group=%d, target_property_type=%d, "
+      "custom_property_name=%s, native_property_type=%d, run_state=%s, "
+      "element_id=%s}",
+      id_, group_, target_property_id_.target_property_type(),
+      target_property_id_.custom_property_name().c_str(),
+      static_cast<int>(target_property_id_.native_property_type()),
+      KeyframeModel::ToString(run_state_).c_str(),
+      element_id_.ToString().c_str());
 }
 
 void KeyframeModel::SetIsImplOnly() {
