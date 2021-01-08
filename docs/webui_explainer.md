@@ -883,28 +883,34 @@ since taking control of a WebUI page can sometimes be sufficient to escape
 Chrome's sandbox.  To make sure that the special powers granted to WebUI pages
 are safe, WebUI pages are restricted in what they can do:
 
-* WebUI pages cannot embed http/https resources or frames
+* WebUI pages cannot embed http/https resources
 * WebUI pages cannot issue http/https fetches
 
 In the rare case that a WebUI page really needs to include web content, the safe
-way to do this is by using a `<webview>` tag.  Using a `<webview>` tag is more
-secure than using an iframe for multiple reasons, even if Site Isolation and
-out-of-process iframes keep the web content out of the privileged WebUI process.
+way to do this is by using an `<iframe>` tag. Chrome's security model gives
+process isolation between the WebUI and the web content. However, some extra
+precautions need to be taken, because there are properties of the page that are
+accessible cross-origin and malicious code can take advantage of such data to
+attack the WebUI. Here are some things to keep in mind:
 
-First, the content inside the `<webview>` tag has a much reduced attack surface,
-since it does not have a window reference to its embedder or any other frames.
-Only postMessage channel is supported, and this needs to be initiated by the
-embedder, not the guest.
+* The WebUI page can receive postMessage payloads from the web and should
+  ensure it verifies any messages as they are not trustworthy.
+* The entire frame tree is visible to the embedded web content, including
+  ancestor origins.
+* The web content runs in the same StoragePartition and Profile as the WebUI,
+  which reflect where the WebUI page was loaded (e.g., the default profile,
+  Incognito, etc). The corresponding user credentials will thus be available to
+  the web content inside the WebUI, possibly showing the user as signed in.
 
-Second, the content inside the `<webview>` tag is hosted in a separate
-StoragePartition. Thus, cookies and other persistent storage for both the WebUI
-page and other browser tabs are inaccessible to it.
+Note: WebUIs have a default Content Security Policy which disallows embedding
+any frames. If you want to include any web content in an <iframe> you will need
+to update the policy for your WebUI. When doing so, allow only known origins and
+avoid making the policy more permissive than strictly necessary.
 
-This greater level of isolation makes it safer to load possibly untrustworthy or
-compromised web content, reducing the risk of sandbox escapes.
-
-For an example of switching from iframe to webview tag see
-https://crrev.com/c/710738.
+Alternatively, a `<webview>` tag can be used, which runs in a separate
+StoragePartition, a separate frame tree, and restricts postMessage communication
+by default. However, `<webview>` does not support Site Isolation and
+therefore it is not advisable to use for any sensitive content.
 
 
 ## See also
