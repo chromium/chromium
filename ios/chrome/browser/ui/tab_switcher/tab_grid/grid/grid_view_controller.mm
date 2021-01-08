@@ -92,6 +92,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // horizontal to grid layout.
 @property(nonatomic, strong)
     UICollectionViewTransitionLayout* gridHorizontalTransitionLayout;
+
+// YES while batch updates and the batch update completion are being performed.
+@property(nonatomic) BOOL updating;
 @end
 
 @implementation GridViewController
@@ -836,11 +839,15 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
         (ProceduralBlockWithBool)collectionViewUpdatesCompletion {
   [self.collectionView
       performBatchUpdates:^{
+        self.updating = YES;
         // Synchronize model and view updates.
         modelUpdates();
         collectionViewUpdates();
       }
-               completion:collectionViewUpdatesCompletion];
+      completion:^(BOOL completed) {
+        collectionViewUpdatesCompletion(completed);
+        self.updating = NO;
+      }];
 }
 
 // Returns the index in |self.items| of the first item whose identifier is
@@ -889,6 +896,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self.delegate didTapPlusSignInGridViewController:self];
     return;
   }
+
+  // Speculative fix for crbug.com/1134663, where this method is called while
+  // updates from a tab insertion are processing.
+  if (self.updating)
+    return;
+
   NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
   DCHECK_LT(index, self.items.count);
   NSString* itemID = self.items[index].identifier;

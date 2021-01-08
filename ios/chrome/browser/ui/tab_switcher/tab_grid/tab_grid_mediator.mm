@@ -82,7 +82,7 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
 }
 
 // Returns the index of the tab with |identifier| in |web_state_list|. Returns
-// -1 if not found.
+// WebStateList::kInvalidIndex if not found.
 int GetIndexOfTabWithId(WebStateList* web_state_list, NSString* identifier) {
   for (int i = 0; i < web_state_list->count(); i++) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
@@ -90,7 +90,7 @@ int GetIndexOfTabWithId(WebStateList* web_state_list, NSString* identifier) {
     if ([identifier isEqualToString:tab_helper->tab_id()])
       return i;
   }
-  return -1;
+  return WebStateList::kInvalidIndex;
 }
 
 // Returns the WebState with |identifier| in |web_state_list|. Returns |nullptr|
@@ -241,8 +241,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   if (webStateList->IsBatchInProgress())
     return;
   // If the selected index changes as a result of the last webstate being
-  // detached, atIndex will be -1.
-  if (atIndex == -1) {
+  // detached, atIndex will be kInvalidIndex.
+  if (atIndex == WebStateList::kInvalidIndex) {
     [self.consumer selectItemWithID:nil];
     return;
   }
@@ -301,19 +301,36 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 
 - (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)destinationIndex {
   int sourceIndex = GetIndexOfTabWithId(self.webStateList, itemID);
-  if (sourceIndex >= 0)
+  if (sourceIndex != WebStateList::kInvalidIndex)
     self.webStateList->MoveWebStateAt(sourceIndex, destinationIndex);
 }
 
 - (void)selectItemWithID:(NSString*)itemID {
   int index = GetIndexOfTabWithId(self.webStateList, itemID);
-  if (index >= 0)
-    self.webStateList->ActivateWebStateAt(index);
+
+  // Don't activate non-existent indexes.
+  if (index == WebStateList::kInvalidIndex)
+    return;
+
+  // Don't attempt a no-op activation. Normally this is not an issue, but it's
+  // possible that this method (-selectItemWithID:) is being called as part of
+  // a WebStateListObserver callback, in which case even a no-op activation
+  // will cause a CHECK().
+  if (index == self.webStateList->active_index())
+    return;
+
+  // Avoid a reentrant activation. This is a fix for crbug.com/1134663, although
+  // ignoring the slection at this point may do weird things.
+  if (self.webStateList->IsMutating())
+    return;
+
+  // It should be safe to activate here.
+  self.webStateList->ActivateWebStateAt(index);
 }
 
 - (void)closeItemWithID:(NSString*)itemID {
   int index = GetIndexOfTabWithId(self.webStateList, itemID);
-  if (index >= 0)
+  if (index != WebStateList::kInvalidIndex)
     self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
 }
 
@@ -456,7 +473,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
     }
     // Reorder tab within same grid.
     int sourceIndex = GetIndexOfTabWithId(self.webStateList, tabInfo.tabID);
-    if (sourceIndex >= 0)
+    if (sourceIndex != WebStateList::kInvalidIndex)
       self.webStateList->MoveWebStateAt(sourceIndex, destinationIndex);
     return;
   }
