@@ -156,10 +156,6 @@ class FormSuggestionControllerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    // Mock out the JsSuggestionManager.
-    mock_js_suggestion_manager_ =
-        [OCMockObject niceMockForClass:[JsSuggestionManager class]];
-
     fake_web_state_.SetWebViewProxy(mock_web_view_proxy_);
   }
 
@@ -172,10 +168,9 @@ class FormSuggestionControllerTest : public PlatformTest {
   // Sets up |suggestion_controller_| with the specified array of
   // FormSuggestionProviders.
   void SetUpController(NSArray* providers) {
-    suggestion_controller_ = [[FormSuggestionController alloc]
-           initWithWebState:&fake_web_state_
-                  providers:providers
-        JsSuggestionManager:mock_js_suggestion_manager_];
+    suggestion_controller_ =
+        [[FormSuggestionController alloc] initWithWebState:&fake_web_state_
+                                                 providers:providers];
     [suggestion_controller_ setWebViewProxy:mock_web_view_proxy_];
 
     id mock_consumer = [OCMockObject
@@ -217,7 +212,6 @@ class FormSuggestionControllerTest : public PlatformTest {
 
     [accessory_mediator_ injectWebState:&fake_web_state_];
     [accessory_mediator_ injectProvider:suggestion_controller_];
-    [accessory_mediator_ injectSuggestionManager:mock_js_suggestion_manager_];
   }
 
   // The FormSuggestionController under test.
@@ -225,9 +219,6 @@ class FormSuggestionControllerTest : public PlatformTest {
 
   // The suggestions the controller sent to the client, if any.
   NSArray* received_suggestions_;
-
-  // Mock JsSuggestionManager for verifying interactions.
-  id mock_js_suggestion_manager_;
 
   // Mock CRWWebViewProxy for verifying interactions.
   id mock_web_view_proxy_;
@@ -253,7 +244,6 @@ TEST_F(FormSuggestionControllerTest, PageLoadShouldBeIgnoredWhenNotWebScheme) {
   fake_web_state_.SetCurrentURL(GURL("data:text/html;charset=utf8;base64,"));
   fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
   EXPECT_FALSE(received_suggestions_.count);
-  EXPECT_OCMOCK_VERIFY(mock_js_suggestion_manager_);
 }
 
 // Tests that pages whose content isn't HTML aren't processed.

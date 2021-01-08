@@ -9,6 +9,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/keyboard_accessory_metrics_logger.h"
 #import "components/autofill/ios/browser/js_suggestion_manager.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -255,12 +256,17 @@ NSArray* FindDescendantToolbarItemsForActionName(
 }
 
 - (void)fetchPreviousAndNextElementsPresenceWithCompletionHandler:
-    (void (^)(BOOL, BOOL))completionHandler {
+    (void (^)(bool, bool))completionHandler {
   DCHECK(completionHandler);
-  [_JSSuggestionManager
-      fetchPreviousAndNextElementsPresenceInFrameWithID:
-          _lastFocusFormActivityWebFrameID
-                                      completionHandler:completionHandler];
+
+  if (!_JSSuggestionManager) {
+    completionHandler(false, false);
+    return;
+  }
+
+  _JSSuggestionManager->FetchPreviousAndNextElementsPresenceInFrameWithID(
+      base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID),
+      base::BindOnce(completionHandler));
 }
 
 #pragma mark - Private
@@ -272,11 +278,12 @@ NSArray* FindDescendantToolbarItemsForActionName(
   NSString* actionName = kFormSuggestionAssistButtonDone;
   BOOL performedAction = [self executeFormAssistAction:actionName];
 
-  if (!performedAction && [_lastFocusFormActivityWebFrameID length]) {
+  if (!performedAction && [_lastFocusFormActivityWebFrameID length] &&
+      _JSSuggestionManager) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    [_JSSuggestionManager
-        closeKeyboardForFrameWithID:_lastFocusFormActivityWebFrameID];
+    _JSSuggestionManager->CloseKeyboardForFrameWithID(
+        base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
   }
   if (loggingButtonPressed) {
     _keyboardAccessoryMetricsLogger->OnCloseButtonPressed();
@@ -290,11 +297,11 @@ NSArray* FindDescendantToolbarItemsForActionName(
   NSString* actionName = kFormSuggestionAssistButtonPreviousElement;
   BOOL performedAction = [self executeFormAssistAction:actionName];
 
-  if (!performedAction) {
+  if (!performedAction && _JSSuggestionManager) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    [_JSSuggestionManager
-        selectPreviousElementInFrameWithID:_lastFocusFormActivityWebFrameID];
+    _JSSuggestionManager->SelectPreviousElementInFrameWithID(
+        base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
   }
   if (loggingButtonPressed) {
     _keyboardAccessoryMetricsLogger->OnPreviousButtonPressed();
@@ -308,11 +315,11 @@ NSArray* FindDescendantToolbarItemsForActionName(
   NSString* actionName = kFormSuggestionAssistButtonNextElement;
   BOOL performedAction = [self executeFormAssistAction:actionName];
 
-  if (!performedAction) {
+  if (!performedAction && _JSSuggestionManager) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    [_JSSuggestionManager
-        selectNextElementInFrameWithID:_lastFocusFormActivityWebFrameID];
+    _JSSuggestionManager->SelectNextElementInFrameWithID(
+        base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
   }
   if (loggingButtonPressed) {
     _keyboardAccessoryMetricsLogger->OnNextButtonPressed();

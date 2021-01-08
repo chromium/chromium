@@ -292,10 +292,6 @@ void AutofillControllerTest::SetUp() {
 
   [accessory_mediator_ injectWebState:web_state()];
   [accessory_mediator_ injectProvider:suggestion_controller_];
-  auto suggestionManager = base::mac::ObjCCastStrict<JsSuggestionManager>(
-      [web_state()->GetJSInjectionReceiver()
-          instanceOfClass:[JsSuggestionManager class]]);
-  [accessory_mediator_ injectSuggestionManager:suggestionManager];
 
   histogram_tester_.reset(new base::HistogramTester());
 }

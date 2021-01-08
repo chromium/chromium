@@ -55,7 +55,7 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
 @property(nonatomic, readonly) CRWJSInjectionReceiver* injectionReceiver;
 
 // Convenience getter for the current suggestion manager.
-@property(nonatomic, readonly) JsSuggestionManager* suggestionManager;
+@property(nonatomic, readonly) autofill::JsSuggestionManager* suggestionManager;
 
 // Interface for |reauthenticationModule|, handling mostly the case when no
 // hardware for authentication is available.
@@ -192,14 +192,14 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
   return nil;
 }
 
-- (JsSuggestionManager*)suggestionManager {
-  JsSuggestionManager* manager = base::mac::ObjCCastStrict<JsSuggestionManager>(
-      [self.injectionReceiver instanceOfClass:[JsSuggestionManager class]]);
+- (autofill::JsSuggestionManager*)suggestionManager {
+  autofill::JsSuggestionManager* suggestionManager = nullptr;
   web::WebState* webState = self.webStateList->GetActiveWebState();
   if (webState) {
-    [manager setWebFramesManager:webState->GetWebFramesManager()];
+    suggestionManager =
+        autofill::JsSuggestionManager::GetOrCreateForWebState(webState);
   }
-  return manager;
+  return suggestionManager;
 }
 
 #pragma mark - Private

@@ -652,11 +652,6 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
       initWithPrefService:_configuration.browserState->GetPrefs()
                  webState:_webState.get()];
   JsAutofillManager* JSAutofillManager = [[JsAutofillManager alloc] init];
-  JsSuggestionManager* JSSuggestionManager =
-      base::mac::ObjCCastStrict<JsSuggestionManager>(
-          [_webState->GetJSInjectionReceiver()
-              instanceOfClass:[JsSuggestionManager class]]);
-  [JSSuggestionManager setWebFramesManager:_webState->GetWebFramesManager()];
 
   auto passwordManagerClient =
       ios_web_view::WebViewPasswordManagerClient::Create(
@@ -682,7 +677,6 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
              autofillClient:std::move(autofillClient)
               autofillAgent:autofillAgent
           JSAutofillManager:JSAutofillManager
-        JSSuggestionManager:JSSuggestionManager
             passwordManager:std::move(passwordManager)
       passwordManagerClient:std::move(passwordManagerClient)
       passwordManagerDriver:std::move(passwordManagerDriver)

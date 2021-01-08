@@ -5,70 +5,90 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_JS_SUGGESTION_MANAGER_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_JS_SUGGESTION_MANAGER_H_
 
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#include "base/callback.h"
+#include "base/memory/weak_ptr.h"
+#import "ios/web/public/web_state_user_data.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace web {
-class WebFramesManager;
-}  // namespace
+class WebFrame;
+class WebState;
+}  // namespace web
 
-// Loads the JavaScript file, suggestion_manager.js, which contains form parsing
-// and autofill functions.
-@interface JsSuggestionManager : NSObject
+namespace autofill {
 
-// Designated initializer. |receiver| should not be nil.
-- (instancetype)initWithReceiver:(CRWJSInjectionReceiver*)receiver
-    NS_DESIGNATED_INITIALIZER;
+class JsSuggestionManager : public web::WebStateUserData<JsSuggestionManager> {
+ public:
+  ~JsSuggestionManager() override;
 
-- (instancetype)init NS_UNAVAILABLE;
+  static JsSuggestionManager* GetOrCreateForWebState(web::WebState* web_state);
 
-// Sets the WebFrames manager associated with the receiver.
-- (void)setWebFramesManager:(web::WebFramesManager*)framesManager;
+  // Focuses the next focusable element in tab order inside the web frame with
+  // frame id |frame_ID|. No action if there is no such element.
+  void SelectNextElementInFrameWithID(const std::string& frame_ID);
 
-// Focuses the next focusable element in tab order inside the web frame with
-// frame id |frameID|. No action if there is no such element.
-- (void)selectNextElementInFrameWithID:(NSString*)frameID;
+  // Focuses the next focusable element in tab order after the element specified
+  // by |form_name| and |field_name| in tab order inside the web frame with
+  // frame id |frame_ID|. No action if there is no such element.
+  void SelectNextElementInFrameWithID(const std::string& frame_ID,
+                                      const std::string& form_name,
+                                      const std::string& field_name);
 
-// Focuses the next focusable element in tab order after the element specified
-// by |formName| and |fieldName| in tab order inside the web frame with frame id
-// |frameID|. No action if there is no such element.
-- (void)selectNextElementInFrameWithID:(NSString*)frameID
-                             afterForm:(NSString*)formName
-                                 field:(NSString*)fieldName;
+  // Focuses the previous focusable element in tab order inside the web frame
+  // with frame id |frame_ID|. No action if there is no such element.
+  void SelectPreviousElementInFrameWithID(const std::string& frame_ID);
 
-// Focuses the previous focusable element in tab order inside the web frame with
-// frame id |frameID|. No action if there is no such element.
-- (void)selectPreviousElementInFrameWithID:(NSString*)frameID;
+  // Focuses the previous focusable element in tab order from the element
+  // specified by |form_name| and |field_name| in tab order inside the web frame
+  // with frame id |frame_ID|. No action if there is no such element.
+  void SelectPreviousElementInFrameWithID(const std::string& frame_ID,
+                                          const std::string& form_name,
+                                          const std::string& field_name);
 
-// Focuses the previous focusable element in tab order from the element
-// specified by |formName| and |fieldName| in tab order inside the web frame
-// with frame id |frameID|. No action if there is no such element.
-- (void)selectPreviousElementInFrameWithID:(NSString*)frameID
-                                beforeForm:(NSString*)formName
-                                     field:(NSString*)fieldName;
+  // Checks if the frame with frame id |frame_ID| contains a next and previous
+  // element. |completionHandler| is called with 2 bools, the first indicating
+  // if a previous element was found, and the second indicating if a next
+  // element was found. |completionHcompletion_handlerandler| cannot be nil.
+  void FetchPreviousAndNextElementsPresenceInFrameWithID(
+      const std::string& frame_ID,
+      base::OnceCallback<void(bool, bool)> completion_handler);
 
-// Checks if the frame with frame id |frameID| contains a next and previous
-// element. |completionHandler| is called with 2 BOOLs, the first indicating if
-// a previous element was found, and the second indicating if a next element was
-// found. |completionHandler| cannot be nil.
-- (void)fetchPreviousAndNextElementsPresenceInFrameWithID:(NSString*)frameID
-                                        completionHandler:(void (^)(BOOL, BOOL))
-                                                              completionHandler;
+  // Checks if the frame with frame id |frame_ID| contains a next and previous
+  // element starting from the field specified by |form_name| and |field_name|.
+  // |completionHandler| is called with 2 BOOLs, the first indicating if a
+  // previous element was found, and the second indicating if a next element was
+  // found. |completion_handler| cannot be nil.
+  void FetchPreviousAndNextElementsPresenceInFrameWithID(
+      const std::string& frame_ID,
+      const std::string& form_name,
+      const std::string& field_name,
+      base::OnceCallback<void(bool, bool)> completion_handler);
 
-// Checks if the frame with frame id |frameID| contains a next and previous
-// element starting from the field specified by |formName| and |fieldName|.
-// |completionHandler| is called with 2 BOOLs, the first indicating if a
-// previous element was found, and the second indicating if a next element was
-// found. |completionHandler| cannot be nil.
-- (void)fetchPreviousAndNextElementsPresenceInFrameWithID:(NSString*)frameID
-                                                  forForm:(NSString*)formName
-                                                    field:(NSString*)fieldName
-                                        completionHandler:(void (^)(BOOL, BOOL))
-                                                              completionHandler;
+  // Closes the keyboard and defocuses the active input element in the frame
+  // with frame id |frame_ID|.
+  void CloseKeyboardForFrameWithID(const std::string& frame_ID);
 
-// Closes the keyboard and defocuses the active input element in the frame with
-// frame id |frameID|.
-- (void)closeKeyboardForFrameWithID:(NSString*)frameID;
+ private:
+  explicit JsSuggestionManager(web::WebState* web_state);
 
-@end
+  void PreviousAndNextElementsPresenceResult(
+      base::OnceCallback<void(bool, bool)> completion_handler,
+      const base::Value* res);
+
+  web::WebFrame* GetFrameWithFrameID(const std::string& frame_ID);
+
+  web::WebState* web_state_;
+
+  base::WeakPtrFactory<JsSuggestionManager> weak_ptr_factory_;
+
+  friend class web::WebStateUserData<JsSuggestionManager>;
+
+  WEB_STATE_USER_DATA_KEY_DECL();
+};
+
+}  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_IOS_BROWSER_JS_SUGGESTION_MANAGER_H_

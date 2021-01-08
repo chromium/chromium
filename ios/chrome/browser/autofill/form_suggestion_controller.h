@@ -52,12 +52,6 @@ class WebState;
 
 @interface FormSuggestionController (ForTesting)
 
-// Initializes a new controller in the same way as the public initializer, but
-// supports specifying a JsSuggestionManager for testing.
-- (instancetype)initWithWebState:(web::WebState*)webState
-                       providers:(NSArray*)providers
-             JsSuggestionManager:(JsSuggestionManager*)jsSuggestionManager;
-
 // Overrides the web view proxy.
 - (void)setWebViewProxy:(id<CRWWebViewProxy>)webViewProxy;
 

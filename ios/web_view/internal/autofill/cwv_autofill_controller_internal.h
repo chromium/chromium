@@ -37,7 +37,6 @@ class WebState;
 
 @class AutofillAgent;
 @class JsAutofillManager;
-@class JsSuggestionManager;
 @class SharedPasswordController;
 
 @interface CWVAutofillController () <AutofillDriverIOSBridge,
@@ -53,7 +52,6 @@ class WebState;
                               autofillClient
             autofillAgent:(AutofillAgent*)autofillAgent
         JSAutofillManager:(JsAutofillManager*)JSAutofillManager
-      JSSuggestionManager:(JsSuggestionManager*)JSSuggestionManager
           passwordManager:(std::unique_ptr<password_manager::PasswordManager>)
                               passwordManager
     passwordManagerClient:

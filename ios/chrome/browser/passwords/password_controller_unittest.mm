@@ -1226,11 +1226,6 @@ class PasswordControllerTestSimple : public PlatformTest {
     ON_CALL(*store_, IsAbleToSavePasswords).WillByDefault(Return(true));
 
     std::unique_ptr<TestChromeBrowserState> browser_state(builder.Build());
-    id mock_js_injection_receiver =
-        [OCMockObject mockForClass:[CRWJSInjectionReceiver class]];
-    [[mock_js_injection_receiver expect] executeJavaScript:[OCMArg any]
-                                         completionHandler:[OCMArg any]];
-    web_state_.SetJSInjectionReceiver(mock_js_injection_receiver);
     ON_CALL(web_state_, GetBrowserState)
         .WillByDefault(testing::Return(browser_state.get()));
     UniqueIDDataTabHelper::CreateForWebState(&web_state_);
