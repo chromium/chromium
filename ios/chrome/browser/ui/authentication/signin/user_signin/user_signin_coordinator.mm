@@ -214,6 +214,15 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   [self interruptUserSigninUIWithAction:action completion:completion];
 }
 
+- (void)stop {
+  DCHECK(!self.viewController);
+  DCHECK(!self.mediator);
+  DCHECK(!self.unifiedConsentCoordinator);
+  DCHECK(!self.addAccountSigninCoordinator);
+  DCHECK(!self.advancedSettingsSigninCoordinator);
+  [super stop];
+}
+
 #pragma mark - UnifiedConsentCoordinatorDelegate
 
 - (void)unifiedConsentCoordinatorDidTapSettingsLink:
@@ -505,10 +514,10 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   __weak UserSigninCoordinator* weakSelf = self;
   ProceduralBlock runCompletionCallback = ^{
     [weakSelf
-        runCompletionCallbackWithSigninResult:SigninCoordinatorResultInterrupted
-                                     identity:self.unifiedConsentCoordinator
-                                                  .selectedIdentity
-                   showAdvancedSettingsSignin:NO];
+        viewControllerDismissedWithResult:SigninCoordinatorResultInterrupted
+                                 identity:weakSelf.unifiedConsentCoordinator
+                                              .selectedIdentity
+                    settingsLinkWasTapped:NO];
     if (completion) {
       completion();
     }
