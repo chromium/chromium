@@ -5761,7 +5761,7 @@ test("unit_tests") {
       "//components/safe_browsing/content/triggers:ad_redirect_trigger",
       "//components/safe_browsing/core:ping_manager_unittest",
       "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
-      "//components/safe_browsing/core/browser:token_fetcher_unittest",
+      "//components/safe_browsing/core/browser/sync:unittests",
       "//components/safe_browsing/core/db:v4_test_util",
     ]
   } else if (safe_browsing_mode == 2 && is_android) {

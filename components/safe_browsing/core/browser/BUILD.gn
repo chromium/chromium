@@ -77,28 +77,10 @@ source_set("referrer_chain_provider") {
 }
 
 source_set("token_fetcher") {
-  sources = [
-    "safe_browsing_token_fetcher.cc",
-    "safe_browsing_token_fetcher.h",
-  ]
+  sources = [ "safe_browsing_token_fetcher.h" ]
 
   deps = [
     "//base",
-    "//components/safe_browsing/core/common:thread_utils",
     "//components/signin/public/identity_manager",
-    "//google_apis",
-  ]
-}
-
-source_set("token_fetcher_unittest") {
-  testonly = true
-  sources = [ "safe_browsing_token_fetcher_unittest.cc" ]
-
-  deps = [
-    ":token_fetcher",
-    "//base/test:test_support",
-    "//components/safe_browsing/core/common:test_support",
-    "//components/signin/public/identity_manager:test_support",
-    "//testing/gtest",
   ]
 }

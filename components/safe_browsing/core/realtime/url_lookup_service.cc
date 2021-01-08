@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
+#include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
@@ -54,8 +54,8 @@ RealTimeUrlLookupService::RealTimeUrlLookupService(
       pref_service_(pref_service),
       is_off_the_record_(is_off_the_record),
       variations_(variations_service) {
-  token_fetcher_ =
-      std::make_unique<SafeBrowsingTokenFetcher>(identity_manager_);
+  token_fetcher_ = std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
+      identity_manager_);
 }
 
 void RealTimeUrlLookupService::GetAccessToken(

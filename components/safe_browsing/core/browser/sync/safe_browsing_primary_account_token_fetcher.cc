@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
+#include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -33,7 +33,7 @@ const int kTimeoutDelayFromMilliseconds = 1000;
 
 }  // namespace
 
-SafeBrowsingTokenFetcher::SafeBrowsingTokenFetcher(
+SafeBrowsingPrimaryAccountTokenFetcher::SafeBrowsingPrimaryAccountTokenFetcher(
     signin::IdentityManager* identity_manager)
     : identity_manager_(identity_manager),
       requests_sent_(0),
@@ -41,14 +41,16 @@ SafeBrowsingTokenFetcher::SafeBrowsingTokenFetcher(
   DCHECK(CurrentlyOnThread(ThreadID::UI));
 }
 
-SafeBrowsingTokenFetcher::~SafeBrowsingTokenFetcher() {
+SafeBrowsingPrimaryAccountTokenFetcher::
+    ~SafeBrowsingPrimaryAccountTokenFetcher() {
   for (auto& id_and_callback : callbacks_) {
     std::move(id_and_callback.second).Run(base::nullopt);
   }
 }
 
-void SafeBrowsingTokenFetcher::Start(signin::ConsentLevel consent_level,
-                                     Callback callback) {
+void SafeBrowsingPrimaryAccountTokenFetcher::Start(
+    signin::ConsentLevel consent_level,
+    Callback callback) {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
   const int request_id = requests_sent_;
   requests_sent_++;
@@ -58,17 +60,18 @@ void SafeBrowsingTokenFetcher::Start(signin::ConsentLevel consent_level,
   token_fetchers_[request_id] =
       identity_manager_->CreateAccessTokenFetcherForAccount(
           account_id, "safe_browsing_service", {kAPIScope},
-          base::BindOnce(&SafeBrowsingTokenFetcher::OnTokenFetched,
-                         weak_ptr_factory_.GetWeakPtr(), request_id),
+          base::BindOnce(
+              &SafeBrowsingPrimaryAccountTokenFetcher::OnTokenFetched,
+              weak_ptr_factory_.GetWeakPtr(), request_id),
           signin::AccessTokenFetcher::Mode::kImmediate);
   base::PostDelayedTask(
       FROM_HERE, CreateTaskTraits(ThreadID::UI),
-      base::BindOnce(&SafeBrowsingTokenFetcher::OnTokenTimeout,
+      base::BindOnce(&SafeBrowsingPrimaryAccountTokenFetcher::OnTokenTimeout,
                      weak_ptr_factory_.GetWeakPtr(), request_id),
       base::TimeDelta::FromMilliseconds(kTimeoutDelayFromMilliseconds));
 }
 
-void SafeBrowsingTokenFetcher::OnTokenFetched(
+void SafeBrowsingPrimaryAccountTokenFetcher::OnTokenFetched(
     int request_id,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
@@ -80,11 +83,11 @@ void SafeBrowsingTokenFetcher::OnTokenFetched(
     Finish(request_id, base::nullopt);
 }
 
-void SafeBrowsingTokenFetcher::OnTokenTimeout(int request_id) {
+void SafeBrowsingPrimaryAccountTokenFetcher::OnTokenTimeout(int request_id) {
   Finish(request_id, base::nullopt);
 }
 
-void SafeBrowsingTokenFetcher::Finish(
+void SafeBrowsingPrimaryAccountTokenFetcher::Finish(
     int request_id,
     base::Optional<signin::AccessTokenInfo> token_info) {
   if (callbacks_.contains(request_id)) {

@@ -170,8 +170,8 @@ CheckClientDownloadRequestBase::CheckClientDownloadRequestBase(
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     if (!profile->IsOffTheRecord() && identity_manager) {
-      token_fetcher_ =
-          std::make_unique<SafeBrowsingTokenFetcher>(identity_manager);
+      token_fetcher_ = std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
+          identity_manager);
     }
   }
 }

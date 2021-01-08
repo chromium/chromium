@@ -1,0 +1,64 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_SYNC_SAFE_BROWSING_PRIMARY_ACCOUNT_TOKEN_FETCHER_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_SYNC_SAFE_BROWSING_PRIMARY_ACCOUNT_TOKEN_FETCHER_H_
+
+#include <memory>
+
+#include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
+#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+
+namespace signin {
+class AccessTokenFetcher;
+class IdentityManager;
+}  // namespace signin
+
+namespace safe_browsing {
+
+// This class fetches access tokens for Safe Browsing for the current
+// primary account.
+class SafeBrowsingPrimaryAccountTokenFetcher : public SafeBrowsingTokenFetcher {
+ public:
+  // Create a SafeBrowsingPrimaryAccountTokenFetcher for the primary account of
+  // |identity_manager|. |identity_manager| is unowned, and must outlive this
+  // object.
+  explicit SafeBrowsingPrimaryAccountTokenFetcher(
+      signin::IdentityManager* identity_manager);
+
+  ~SafeBrowsingPrimaryAccountTokenFetcher() override;
+
+  // SafeBrowsingTokenFetcher:
+  void Start(signin::ConsentLevel consent_level, Callback callback) override;
+
+ private:
+  void OnTokenFetched(int request_id,
+                      GoogleServiceAuthError error,
+                      signin::AccessTokenInfo access_token_info);
+  void OnTokenTimeout(int request_id);
+  void Finish(int request_id,
+              base::Optional<signin::AccessTokenInfo> token_info);
+
+  // Reference to the identity manager to fetch from.
+  signin::IdentityManager* identity_manager_;
+
+  // The count of requests sent. This is used as an ID for requests.
+  int requests_sent_;
+
+  // Active fetchers, keyed by ID.
+  base::flat_map<int, std::unique_ptr<signin::AccessTokenFetcher>>
+      token_fetchers_;
+
+  // Active callbacks, keyed by ID.
+  base::flat_map<int, Callback> callbacks_;
+
+  base::WeakPtrFactory<SafeBrowsingPrimaryAccountTokenFetcher>
+      weak_ptr_factory_;
+};
+
+}  // namespace safe_browsing
+
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_SYNC_SAFE_BROWSING_PRIMARY_ACCOUNT_TOKEN_FETCHER_H_
