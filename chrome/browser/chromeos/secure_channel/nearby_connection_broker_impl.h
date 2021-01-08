@@ -168,6 +168,14 @@ class NearbyConnectionBrokerImpl
   // Starts empty, then set in OnEndpointDiscovered().
   std::string remote_endpoint_id_;
 
+  // Starts as false and changes to true when WebRTC upgrade occurs.
+  bool has_upgraded_to_webrtc_ = false;
+
+  // Whether or not a metric has been logged to note that a metric has been
+  // logged indicated that Disconnect() was called before a WebRTC upgrade
+  // occurred.
+  bool has_recorded_no_webrtc_metric_ = false;
+
   // Starts as false; set to true in OnConnectionInitiated() and back to false
   // in OnDisconnected().
   bool need_to_disconnect_endpoint_ = false;

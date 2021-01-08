@@ -33,12 +33,19 @@ NearbyConnectionBrokerImpl::Factory* g_test_factory = nullptr;
 constexpr base::TimeDelta kConnectionStatusChangeTimeout =
     base::TimeDelta::FromSeconds(10);
 
+// The amount of time by which we can expect a WebRTC upgrade to have been
+// completed. According to metrics, 30 seconds is the 95th+ percentile of how
+// long it takes to upgrade to WebRTC.
+constexpr base::TimeDelta kWebRtcUpgradeDelay =
+    base::TimeDelta::FromSeconds(30);
+
 // Numerical values should not be reused or changed since this is used by
 // metrics.
 enum class ConnectionMedium {
   kConnectedViaBluetooth = 0,
   kUpgradedToWebRtc = 1,
-  kMaxValue = kUpgradedToWebRtc
+  kDisconnectedInUnder30Seconds = 2,
+  kMaxValue = kDisconnectedInUnder30Seconds
 };
 
 void RecordConnectionMediumMetric(ConnectionMedium medium) {
@@ -149,6 +156,15 @@ void NearbyConnectionBrokerImpl::Disconnect(
   if (!has_disconnect_reason_been_logged_) {
     has_disconnect_reason_been_logged_ = true;
     util::RecordNearbyDisconnection(reason);
+  }
+
+  if (!has_recorded_no_webrtc_metric_ && !has_upgraded_to_webrtc_ &&
+      !time_when_connection_accepted_.is_null() &&
+      (base::Time::Now() - time_when_connection_accepted_) <
+          kWebRtcUpgradeDelay) {
+    has_recorded_no_webrtc_metric_ = true;
+    RecordConnectionMediumMetric(
+        ConnectionMedium::kDisconnectedInUnder30Seconds);
   }
 
   if (!need_to_disconnect_endpoint_) {
@@ -398,6 +414,7 @@ void NearbyConnectionBrokerImpl::OnBandwidthChanged(
   PA_LOG(INFO) << "Bandwidth changed: " << medium;
 
   if (medium == Medium::kWebRtc) {
+    has_upgraded_to_webrtc_ = true;
     RecordConnectionMediumMetric(ConnectionMedium::kUpgradedToWebRtc);
 
     DCHECK(!time_when_connection_accepted_.is_null());

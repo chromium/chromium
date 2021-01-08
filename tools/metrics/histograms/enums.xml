@@ -66900,6 +66900,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 <enum name="SecureChannelNearbyConnectionMedium">
   <int value="0" label="Connected via Bluetooth"/>
   <int value="1" label="Upgraded bandwidth to WebRTC"/>
+  <int value="2"
+      label="Disconnected in under 30s without WebRTC upgrade; not provided
+             enough time to complete bandwidth upgrade process"/>
 </enum>
 
 <enum name="SecureCookieAction">
