@@ -33,9 +33,14 @@ namespace {
 
 using ::policy::MockCloudPolicyClient;
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Gt;
 using ::testing::Invoke;
 using ::testing::InvokeArgument;
+using ::testing::IsEmpty;
 using ::testing::MockFunction;
+using ::testing::Not;
+using ::testing::Property;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
 
@@ -154,7 +159,6 @@ base::Value ValueFromSucceededSequencingInfo(
     encryption_settings.SetStringKey("publicKey", public_key);
     encryption_settings.SetIntKey("publicKeyId", 12345);
     std::string public_key_signature;
-    // TODO(b/170054326): Generate signature.
     base::Base64Encode("PUBLIC KEY SIG", &public_key_signature);
     encryption_settings.SetStringKey("publicKeySignature",
                                      public_key_signature);
@@ -240,7 +244,12 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   TestCallbackWaiterWithCounter waiter(kExpectedCallTimes);
 
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
-  EXPECT_CALL(encryption_key_attached, Call(_))
+  EXPECT_CALL(
+      encryption_key_attached,
+      Call(AllOf(Property(&SignedEncryptionInfo::public_asymmetric_key,
+                          Not(IsEmpty())),
+                 Property(&SignedEncryptionInfo::public_key_id, Gt(0)),
+                 Property(&SignedEncryptionInfo::signature, Not(IsEmpty())))))
       .Times(need_encryption_key() ? 1 : 0);
   auto encryption_key_attached_cb =
       base::BindRepeating(&TestEncryptionKeyAttached::Call,

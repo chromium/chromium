@@ -28,9 +28,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::Eq;
+using ::testing::Gt;
 using ::testing::Invoke;
+using ::testing::IsEmpty;
 using ::testing::MockFunction;
+using ::testing::Not;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::StrictMock;
@@ -132,7 +136,6 @@ base::Optional<base::Value> BuildEncryptionSettingsFromRequest(
   encryption_settings.SetStringKey("publicKey", public_key);
   encryption_settings.SetIntKey("publicKeyId", 12345);
   std::string public_key_signature;
-  // TODO(b/170054326): Generate signature.
   base::Base64Encode("PUBLIC KEY SIG", &public_key_signature);
   encryption_settings.SetStringKey("publicKeySignature", public_key_signature);
   return encryption_settings;
@@ -249,7 +252,12 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
   StrictMock<TestCompletionResponder> responder;
   TestCallbackWaiter responder_waiter;
 
-  EXPECT_CALL(encryption_key_attached, Call(_))
+  EXPECT_CALL(
+      encryption_key_attached,
+      Call(AllOf(Property(&SignedEncryptionInfo::public_asymmetric_key,
+                          Not(IsEmpty())),
+                 Property(&SignedEncryptionInfo::public_key_id, Gt(0)),
+                 Property(&SignedEncryptionInfo::signature, Not(IsEmpty())))))
       .Times(need_encryption_key() ? 1 : 0);
 
   EXPECT_CALL(
@@ -313,7 +321,12 @@ TEST_P(RecordHandlerImplTest, ReportsEarlyFailure) {
       .WillOnce(Invoke([&responder_waiter]() { responder_waiter.Signal(); }));
 
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
-  EXPECT_CALL(encryption_key_attached, Call(_))
+  EXPECT_CALL(
+      encryption_key_attached,
+      Call(AllOf(Property(&SignedEncryptionInfo::public_asymmetric_key,
+                          Not(IsEmpty())),
+                 Property(&SignedEncryptionInfo::public_key_id, Gt(0)),
+                 Property(&SignedEncryptionInfo::signature, Not(IsEmpty())))))
       .Times(need_encryption_key() ? 1 : 0);
 
   auto encryption_key_attached_callback =
@@ -389,7 +402,12 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
       .WillOnce(Invoke([&responder_waiter]() { responder_waiter.Signal(); }));
 
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
-  EXPECT_CALL(encryption_key_attached, Call(_))
+  EXPECT_CALL(
+      encryption_key_attached,
+      Call(AllOf(Property(&SignedEncryptionInfo::public_asymmetric_key,
+                          Not(IsEmpty())),
+                 Property(&SignedEncryptionInfo::public_key_id, Gt(0)),
+                 Property(&SignedEncryptionInfo::signature, Not(IsEmpty())))))
       .Times(need_encryption_key() ? 1 : 0);
   auto encryption_key_attached_callback =
       base::BindRepeating(&TestEncryptionKeyAttached::Call,

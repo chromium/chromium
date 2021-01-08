@@ -257,17 +257,14 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
         signed_encryption_key_record->FindStringKey("publicKey");
     const auto public_key_id_result =
         signed_encryption_key_record->FindIntKey("publicKeyId");
-    // TODO(b/170054326): Make signature mandatory too.
-    // const std::string* public_key_signature_str =
-    //     signed_encryption_key_record->FindStringKey("publicKeySignature");
+    const std::string* public_key_signature_str =
+        signed_encryption_key_record->FindStringKey("publicKeySignature");
     std::string public_key;
     std::string public_key_signature;
     if (public_key_str != nullptr &&
         base::Base64Decode(*public_key_str, &public_key) &&
-        // TODO(b/170054326): Make signature mandatory too.
-        // public_key_signature_str != nullptr
-        // base::Base64Decode(*public_key_signature_str,
-        //                    &public_key_signature) &&
+        public_key_signature_str != nullptr &&
+        base::Base64Decode(*public_key_signature_str, &public_key_signature) &&
         public_key_id_result.has_value()) {
       SignedEncryptionInfo signed_encryption_key;
       signed_encryption_key.set_public_asymmetric_key(public_key);
