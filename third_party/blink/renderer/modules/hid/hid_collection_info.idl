@@ -12,6 +12,9 @@ dictionary HIDCollectionInfo {
     // The 16-bit usage value associated with this collection. Zero if not set.
     unsigned short usage;
 
+    // The 8-bit collection type for this collection.
+    octet type;
+
     // The subcollections of this collection, in the order they were encountered
     // in the report descriptor.
     sequence<HIDCollectionInfo> children;

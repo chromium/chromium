@@ -184,6 +184,7 @@ HIDCollectionInfo* ToHIDCollectionInfo(
   HIDCollectionInfo* result = HIDCollectionInfo::Create();
   result->setUsage(collection.usage->usage);
   result->setUsagePage(collection.usage->usage_page);
+  result->setType(collection.collection_type);
 
   HeapVector<Member<HIDReportInfo>> input_reports;
   for (const auto& report : collection.input_reports)

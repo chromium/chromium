@@ -105,6 +105,7 @@ hid_test(async (t, fake) => {
   const c = d.collections[0];
   assert_equals(c.usagePage, PAGE_GENERIC_DESKTOP, 'collection.usagePage');
   assert_equals(c.usage, GENERIC_DESKTOP_GAME_PAD, 'collection.usage');
+  assert_equals(c.type, HID_COLLECTION_TYPE_APPLICATION, 'collection.type');
   assert_equals(c.children.length, 0, 'collection.children.length');
   assert_equals(c.inputReports.length, 1, 'collection.inputReports.length');
   assert_equals(c.outputReports.length, 0, 'collection.outputReports.length');
