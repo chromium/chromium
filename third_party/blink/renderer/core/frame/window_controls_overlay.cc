@@ -15,15 +15,20 @@ namespace blink {
 const char WindowControlsOverlay::kSupplementName[] = "WindowControlsOverlay";
 
 // static
-WindowControlsOverlay* WindowControlsOverlay::windowControlsOverlay(
-    Navigator& navigator) {
-  auto* supplement =
+WindowControlsOverlay& WindowControlsOverlay::From(Navigator& navigator) {
+  WindowControlsOverlay* supplement =
       Supplement<Navigator>::From<WindowControlsOverlay>(navigator);
   if (!supplement) {
     supplement = MakeGarbageCollected<WindowControlsOverlay>(navigator);
     ProvideTo(navigator, supplement);
   }
-  return supplement;
+  return *supplement;
+}
+
+// static
+WindowControlsOverlay* WindowControlsOverlay::windowControlsOverlay(
+    Navigator& navigator) {
+  return &From(navigator);
 }
 
 WindowControlsOverlay::WindowControlsOverlay(Navigator& navigator)
@@ -32,19 +37,23 @@ WindowControlsOverlay::WindowControlsOverlay(Navigator& navigator)
 WindowControlsOverlay::~WindowControlsOverlay() = default;
 
 bool WindowControlsOverlay::visible() const {
-  if (!GetSupplementable()->DomWindow()->GetFrame())
+  if (!GetSupplementable()->DomWindow())
     return false;
-  // TODO(crbug.com/937121): Replace the hardcoded value in the next javascript
-  // API CL.
-  return false;
+
+  return GetSupplementable()
+      ->DomWindow()
+      ->GetFrame()
+      ->IsWindowControlsOverlayVisible();
 }
 
 DOMRect* WindowControlsOverlay::getBoundingClientRect() const {
-  if (!GetSupplementable()->DomWindow()->GetFrame())
+  if (!GetSupplementable()->DomWindow())
     return DOMRect::Create(0, 0, 0, 0);
-  // TODO(crbug.com/937121): Replace the hardcoded value in the next javascript
-  // API CL.
-  return DOMRect::Create(0, 0, 0, 0);
+
+  return GetSupplementable()
+      ->DomWindow()
+      ->GetFrame()
+      ->GetWindowControlsOverlayRect();
 }
 
 void WindowControlsOverlay::Trace(blink::Visitor* visitor) const {

@@ -999,6 +999,10 @@ interface LocalMainFrame {
   UpdateBrowserControlsState(cc.mojom.BrowserControlsState constraints,
                              cc.mojom.BrowserControlsState current,
                              bool animate);
+
+  // Notify renderer that the window controls overlay has changed size or
+  // visibility.
+  UpdateWindowControlsOverlay(gfx.mojom.Rect window_controls_overlay_rect);
 };
 
 // Implemented in Blink, this interface defines remote main-frame-specific

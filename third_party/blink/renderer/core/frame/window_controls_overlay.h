@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WINDOW_CONTROLS_OVERLAY_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
-class DOMRect;
 class Navigator;
 
 class CORE_EXPORT WindowControlsOverlay final : public ScriptWrappable,
@@ -23,6 +23,8 @@ class CORE_EXPORT WindowControlsOverlay final : public ScriptWrappable,
   static const char kSupplementName[];
   // Web Exposed as navigator.windowControlsOverlay
   static WindowControlsOverlay* windowControlsOverlay(Navigator& navigator);
+
+  static WindowControlsOverlay& From(Navigator& navigator);
 
   explicit WindowControlsOverlay(Navigator& navigator);
   WindowControlsOverlay(const WindowControlsOverlay&) = delete;
