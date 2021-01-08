@@ -10,9 +10,7 @@
 #include "base/android/build_info.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/bind.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -685,11 +683,6 @@ void GLSurfaceEGLSurfaceControl::TransactionAckTimeoutManager::
   LOG(ERROR) << "Transaction id " << transaction_id
              << " haven't received any ack from past 5 second which indicates "
                 "it hanged";
-
-  // Hang detection logic here. we want to limit the number of dumps to 10% of
-  // the cases to avoid seeing too many instances in crash report.
-  if (base::RandInt(1, 10) == 1)
-    base::debug::DumpWithoutCrashing();
 }
 
 }  // namespace gl
