@@ -8,7 +8,7 @@ namespace content {
 
 PolicyContainerHost::PolicyContainerHost() = default;
 PolicyContainerHost::PolicyContainerHost(
-    PolicyContainerHost::DocumentPolicies document_policies)
+    const PolicyContainerHost::DocumentPolicies& document_policies)
     : document_policies_(document_policies) {}
 PolicyContainerHost::~PolicyContainerHost() = default;
 

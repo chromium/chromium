@@ -41,7 +41,7 @@ class CONTENT_EXPORT PolicyContainerHost
   };
 
   PolicyContainerHost();
-  explicit PolicyContainerHost(DocumentPolicies document_policies);
+  explicit PolicyContainerHost(const DocumentPolicies& document_policies);
   PolicyContainerHost(const PolicyContainerHost&) = delete;
   PolicyContainerHost& operator=(const PolicyContainerHost&) = delete;
   ~PolicyContainerHost() override;
