@@ -889,8 +889,7 @@ NearbySharingServiceImpl::GetCertificateManager() {
 void NearbySharingServiceImpl::OnNearbyProfileChanged(Profile* profile) {
   // TODO(crbug.com/1084576): Notify UI about the new active profile.
   if (profile) {
-    NS_LOG(VERBOSE) << __func__ << ": Active Nearby profile changed to: "
-                    << profile->GetProfileUserName();
+    NS_LOG(VERBOSE) << __func__ << ": Active Nearby profile changed";
   } else {
     NS_LOG(VERBOSE) << __func__ << ": Active Nearby profile cleared";
   }
@@ -900,8 +899,8 @@ void NearbySharingServiceImpl::OnNearbyProfileChanged(Profile* profile) {
 void NearbySharingServiceImpl::OnNearbyProcessStarted() {
   DCHECK(profile_);
   if (process_manager_->IsActiveProfile(profile_)) {
-    NS_LOG(VERBOSE) << __func__ << ": Nearby process started for profile: "
-                    << profile_->GetProfileUserName();
+    NS_LOG(VERBOSE) << __func__
+                    << ": Nearby process started for active profile";
   }
 }
 
@@ -909,8 +908,8 @@ void NearbySharingServiceImpl::OnNearbyProcessStopped() {
   DCHECK(profile_);
   InvalidateSurfaceState();
   if (process_manager_->IsActiveProfile(profile_)) {
-    NS_LOG(VERBOSE) << __func__ << ": Nearby process stopped for profile: "
-                    << profile_->GetProfileUserName();
+    NS_LOG(VERBOSE) << __func__
+                    << ": Nearby process stopped for active profile";
   }
 }
 
@@ -1414,8 +1413,7 @@ void NearbySharingServiceImpl::InvalidateScanningState() {
 
   if (!process_manager_->IsActiveProfile(profile_)) {
     NS_LOG(VERBOSE) << __func__
-                    << ": Stopping discovery because profile was not active: "
-                    << profile_->GetProfileUserName();
+                    << ": Stopping discovery because profile was not active";
     StopScanning();
     return;
   }
@@ -1487,8 +1485,7 @@ void NearbySharingServiceImpl::InvalidateFastInitiationAdvertising() {
     StopFastInitiationAdvertising();
     NS_LOG(VERBOSE)
         << __func__
-        << ": Stopping fast init advertising because profile was not active: "
-        << profile_->GetProfileUserName();
+        << ": Stopping fast init advertising because profile was not active";
     return;
   }
 
@@ -1557,8 +1554,7 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
 
   if (!process_manager_->IsActiveProfile(profile_)) {
     NS_LOG(VERBOSE) << __func__
-                    << ": Stopping advertising because profile was not active: "
-                    << profile_->GetProfileUserName();
+                    << ": Stopping advertising because profile was not active";
     StopAdvertising();
     return;
   }

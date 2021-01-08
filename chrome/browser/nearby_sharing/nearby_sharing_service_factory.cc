@@ -79,13 +79,11 @@ KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
   if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
     NS_LOG(VERBOSE)
         << __func__
-        << ": Nearby Sharing service is skipping non-primary profile: "
-        << profile->GetProfileUserName();
+        << ": Nearby Sharing service is skipping non-primary profile";
     return nullptr;
   }
   NS_LOG(VERBOSE) << __func__
-                  << "Nearby Sharing service is forcing active profile: "
-                  << profile->GetProfileUserName();
+                  << "Nearby Sharing service is forcing primary profile";
   // Force active profile for ChromeOS for now.
   process_manager.SetActiveProfile(profile);
 #endif
@@ -97,8 +95,8 @@ KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
   auto nearby_connections_manager =
       std::make_unique<NearbyConnectionsManagerImpl>(&process_manager, profile);
 
-  NS_LOG(VERBOSE) << __func__ << ": creating NearbySharingService for profile: "
-                  << profile->GetProfileUserName();
+  NS_LOG(VERBOSE) << __func__
+                  << ": creating NearbySharingService for primary profile";
 
   return new NearbySharingServiceImpl(
       pref_service, notification_display_service, profile,
