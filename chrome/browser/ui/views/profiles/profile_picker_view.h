@@ -15,7 +15,8 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/window/dialog_delegate.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget_delegate.h"
 
 struct AccountInfo;
 class Browser;
@@ -31,11 +32,13 @@ class WebContents;
 }  // namespace content
 
 // Dialog widget that contains the Desktop Profile picker webui.
-class ProfilePickerView : public views::DialogDelegateView,
+class ProfilePickerView : public views::WidgetDelegateView,
                           public content::WebContentsDelegate,
                           public signin::IdentityManager::Observer {
  public:
   using BrowserOpenedCallback = base::OnceCallback<void(Browser*)>;
+
+  const ui::ThemeProvider* GetThemeProviderForProfileBeingCreated() const;
 
  private:
   friend class ProfilePicker;
@@ -73,11 +76,13 @@ class ProfilePickerView : public views::DialogDelegateView,
   // Switches the layout to the sync confirmation screen.
   void SwitchToSyncConfirmation();
 
-  // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
+  // views::WidgetDelegate:
   void WindowClosing() override;
+  views::ClientView* CreateClientView(views::Widget* widget) override;
+  views::View* GetContentsView() override;
 
-  // views::View;
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 

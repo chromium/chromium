@@ -134,6 +134,25 @@ GURL GetSigninURL() {
   return signin_url;
 }
 
+class ProfilePickerWidget : public views::Widget {
+ public:
+  explicit ProfilePickerWidget(ProfilePickerView* profile_picker_view)
+      : profile_picker_view_(profile_picker_view) {
+    views::Widget::InitParams params;
+    params.delegate = profile_picker_view_;
+    Init(std::move(params));
+  }
+  ~ProfilePickerWidget() override = default;
+
+  // views::Widget:
+  const ui::ThemeProvider* GetThemeProvider() const override {
+    return profile_picker_view_->GetThemeProviderForProfileBeingCreated();
+  }
+
+ private:
+  ProfilePickerView* const profile_picker_view_;
+};
+
 }  // namespace
 
 // static
@@ -232,14 +251,22 @@ void ProfilePicker::SetExtendedAccountInfoTimeoutForTesting(
   }
 }
 
+const ui::ThemeProvider*
+ProfilePickerView::GetThemeProviderForProfileBeingCreated() const {
+  if (!signed_in_profile_being_created_)
+    return nullptr;
+  return &ThemeService::GetThemeProviderForProfile(
+      signed_in_profile_being_created_);
+}
+
 ProfilePickerView::ProfilePickerView()
     : keep_alive_(KeepAliveOrigin::USER_MANAGER_VIEW,
                   KeepAliveRestartOption::DISABLED),
       extended_account_info_timeout_(kExtendedAccountInfoTimeout) {
+  // Setup the WidgetDelegate.
   SetHasWindowSizeControls(true);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
   SetTitle(IDS_PRODUCT_NAME);
-  set_use_custom_frame(false);
+
   ConfigureAccelerators();
   // TODO(crbug.com/1063856): Add |RecordDialogCreation|.
 }
@@ -309,7 +336,8 @@ void ProfilePickerView::Init(ProfilePicker::EntryPoint entry_point,
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
       system_profile_contents_.get());
 
-  CreateDialogWidget(this, nullptr, nullptr);
+  // The widget is owned by the native widget.
+  new ProfilePickerWidget(this);
 
 #if defined(OS_WIN)
   // Set the app id for the user manager to the app id of its parent.
@@ -432,6 +460,22 @@ void ProfilePickerView::SwitchToSyncConfirmation() {
   sync_confirmation_ui->InitializeMessageHandlerForCreationFlow(profile_color_);
 }
 
+void ProfilePickerView::WindowClosing() {
+  // Now that the window is closed, we can allow a new one to be opened.
+  // (WindowClosing comes in asynchronously from the call to Close() and we
+  // may have already opened a new instance).
+  if (g_profile_picker_view == this)
+    g_profile_picker_view = nullptr;
+}
+
+views::ClientView* ProfilePickerView::CreateClientView(views::Widget* widget) {
+  return new views::ClientView(widget, TransferOwnershipOfContentsView());
+}
+
+views::View* ProfilePickerView::GetContentsView() {
+  return this;
+}
+
 gfx::Size ProfilePickerView::CalculatePreferredSize() const {
   gfx::Size preferred_size = gfx::Size(kWindowWidth, kWindowHeight);
   gfx::Size work_area_size = GetWidget()->GetWorkAreaBoundsInScreen().size();
@@ -441,14 +485,6 @@ gfx::Size ProfilePickerView::CalculatePreferredSize() const {
       work_area_size, kMaxRatioOfWorkArea, kMaxRatioOfWorkArea);
   preferred_size.SetToMin(max_dialog_size);
   return preferred_size;
-}
-
-void ProfilePickerView::WindowClosing() {
-  // Now that the window is closed, we can allow a new one to be opened.
-  // (WindowClosing comes in asynchronously from the call to Close() and we
-  // may have already opened a new instance).
-  if (g_profile_picker_view == this)
-    g_profile_picker_view = nullptr;
 }
 
 gfx::Size ProfilePickerView::GetMinimumSize() const {
