@@ -40,10 +40,13 @@ constexpr int kDialogTitleMarginEndDp = 0;
 }  // namespace
 
 ToastDialogView::ToastDialogView(const base::string16& app_name,
-                                 base::OnceClosure dismissed_callback)
-    : app_name_(app_name) {
-  DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
-  DialogDelegate::SetCloseCallback(std::move(dismissed_callback));
+                                 base::OnceClosure dismissed_callback) {
+  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetCloseCallback(std::move(dismissed_callback));
+  SetModalType(ui::MODAL_TYPE_NONE);
+  SetShowCloseButton(true);
+  SetTitle(l10n_util::GetStringFUTF16(
+      IDS_LOCK_SCREEN_NOTE_APP_TOAST_DIALOG_TITLE, app_name));
 
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::LOCK_SCREEN_NOTE_APP_TOAST);
@@ -59,7 +62,7 @@ ToastDialogView::ToastDialogView(const base::string16& app_name,
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto* label = new views::Label(l10n_util::GetStringFUTF16(
-      IDS_LOCK_SCREEN_NOTE_APP_TOAST_DIALOG_MESSAGE, app_name_));
+      IDS_LOCK_SCREEN_NOTE_APP_TOAST_DIALOG_MESSAGE, app_name));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetEnabledColor(SkColorSetARGB(138, 0, 0, 0));
@@ -75,25 +78,12 @@ ToastDialogView::ToastDialogView(const base::string16& app_name,
 
 ToastDialogView::~ToastDialogView() = default;
 
-ui::ModalType ToastDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_NONE;
-}
-
-base::string16 ToastDialogView::GetWindowTitle() const {
-  return l10n_util::GetStringFUTF16(IDS_LOCK_SCREEN_NOTE_APP_TOAST_DIALOG_TITLE,
-                                    app_name_);
-}
-
 void ToastDialogView::AddedToWidget() {
   std::unique_ptr<views::Label> title =
       views::BubbleFrameView::CreateDefaultTitleLabel(GetWindowTitle());
   title->SetFontList(views::Label::GetDefaultFontList().Derive(
       3, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
   GetBubbleFrameView()->SetTitleView(std::move(title));
-}
-
-bool ToastDialogView::ShouldShowCloseButton() const {
-  return true;
 }
 
 void ToastDialogView::OnBeforeBubbleWidgetInit(

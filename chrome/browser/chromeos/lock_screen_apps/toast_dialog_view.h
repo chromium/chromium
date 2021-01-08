@@ -22,17 +22,11 @@ class ToastDialogView : public views::BubbleDialogDelegateView {
   ~ToastDialogView() override;
 
   // views::BubbleDialogDelegateView:
-  ui::ModalType GetModalType() const override;
-  base::string16 GetWindowTitle() const override;
   void AddedToWidget() override;
-  bool ShouldShowCloseButton() const override;
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;
 
  private:
-  // The name of the app for which the dialog is shown.
-  const base::string16 app_name_;
-
   // Callback to be called when the user closes the dialog.
   base::OnceClosure dismissed_callback_;
 
