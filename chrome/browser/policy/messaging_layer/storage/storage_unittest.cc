@@ -438,6 +438,8 @@ class StorageTest
       // Enable encryption.
       scoped_feature_list_.InitFromCommandLine(
           {EncryptionModule::kEncryptedReporting}, {});
+      // Generate signing key pair.
+      ED25519_keypair(signature_verification_public_key_, signing_private_key_);
       // Create decryption module.
       auto decryptor_result = Decryptor::Create();
       ASSERT_OK(decryptor_result.status()) << decryptor_result.status();
@@ -495,9 +497,16 @@ class StorageTest
   }
 
   StorageOptions BuildTestStorageOptions() const {
-    return StorageOptions()
-        .set_directory(base::FilePath(location_.GetPath()))
-        .set_single_file_size(::testing::get<1>(GetParam()));
+    auto options = StorageOptions()
+                       .set_directory(base::FilePath(location_.GetPath()))
+                       .set_single_file_size(::testing::get<1>(GetParam()));
+    if (::testing::get<0>(GetParam())) {
+      // Encryption enabled.
+      options.set_signature_verification_public_key(std::string(
+          reinterpret_cast<const char*>(signature_verification_public_key_),
+          ED25519_PUBLIC_KEY_LEN));
+    }
+    return options;
   }
 
   StatusOr<std::unique_ptr<Storage::UploaderInterface>> BuildMockUploader(
@@ -534,8 +543,9 @@ class StorageTest
   void GenerateAndDeliverKey(Storage* storage) {
     ASSERT_TRUE(decryptor_) << "Decryptor not created";
     // Generate new pair of private key and public value.
-    uint8_t public_value[X25519_PUBLIC_VALUE_LEN];
     uint8_t private_key[X25519_PRIVATE_KEY_LEN];
+    Encryptor::PublicKeyId public_key_id;
+    uint8_t public_value[X25519_PUBLIC_VALUE_LEN];
     X25519_keypair(public_value, private_key);
     TestEvent<StatusOr<Encryptor::PublicKeyId>> prepare_key_pair;
     decryptor_->RecordKeyPair(
@@ -546,13 +556,28 @@ class StorageTest
         prepare_key_pair.cb());
     auto prepare_key_result = prepare_key_pair.result();
     ASSERT_OK(prepare_key_result.status());
-    Encryptor::PublicKeyId new_public_key_id = prepare_key_result.ValueOrDie();
+    public_key_id = prepare_key_result.ValueOrDie();
     // Deliver public key to storage.
     SignedEncryptionInfo signed_encryption_key;
     signed_encryption_key.set_public_asymmetric_key(std::string(
         reinterpret_cast<const char*>(public_value), X25519_PUBLIC_VALUE_LEN));
-    signed_encryption_key.set_public_key_id(new_public_key_id);
-    // TODO(b/170054326): Add key signature.
+    signed_encryption_key.set_public_key_id(public_key_id);
+    // Sign public key.
+    uint8_t
+        value_to_sign[sizeof(Encryptor::PublicKeyId) + X25519_PUBLIC_VALUE_LEN];
+    memcpy(value_to_sign, &public_key_id, sizeof(Encryptor::PublicKeyId));
+    memcpy(value_to_sign + sizeof(Encryptor::PublicKeyId), public_value,
+           X25519_PUBLIC_VALUE_LEN);
+    uint8_t signature[ED25519_SIGNATURE_LEN];
+    ASSERT_THAT(ED25519_sign(signature, value_to_sign, sizeof(value_to_sign),
+                             signing_private_key_),
+                Eq(1));
+    signed_encryption_key.set_signature(std::string(
+        reinterpret_cast<const char*>(signature), ED25519_SIGNATURE_LEN));
+    // Double check signature.
+    ASSERT_THAT(ED25519_verify(value_to_sign, sizeof(value_to_sign), signature,
+                               signature_verification_public_key_),
+                Eq(1));
     storage->UpdateEncryptionKey(signed_encryption_key);
   }
 
@@ -560,6 +585,9 @@ class StorageTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  uint8_t signature_verification_public_key_[ED25519_PUBLIC_KEY_LEN];
+  uint8_t signing_private_key_[ED25519_PRIVATE_KEY_LEN];
 
   base::ScopedTempDir location_;
   scoped_refptr<Decryptor> decryptor_;

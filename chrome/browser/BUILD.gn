@@ -1228,6 +1228,7 @@ static_library("browser") {
     "policy/messaging_layer/storage/resources/resource_interface.h",
     "policy/messaging_layer/storage/storage.cc",
     "policy/messaging_layer/storage/storage.h",
+    "policy/messaging_layer/storage/storage_configuration.cc",
     "policy/messaging_layer/storage/storage_configuration.h",
     "policy/messaging_layer/storage/storage_module.cc",
     "policy/messaging_layer/storage/storage_module.h",

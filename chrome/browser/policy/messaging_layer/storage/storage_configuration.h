@@ -5,6 +5,12 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_STORAGE_STORAGE_CONFIGURATION_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_STORAGE_STORAGE_CONFIGURATION_H_
 
+#include <string>
+
+#include "base/files/file_path.h"
+#include "base/strings/string_piece.h"
+#include "base/time/time.h"
+
 namespace reporting {
 
 // Storage options class allowing to set parameters individually, e.g.:
@@ -16,11 +22,18 @@ namespace reporting {
 //                 callback);
 class StorageOptions {
  public:
-  StorageOptions() = default;
-  StorageOptions(const StorageOptions& options) = default;
-  StorageOptions& operator=(const StorageOptions& options) = default;
+  StorageOptions();
+  StorageOptions(const StorageOptions& options);
+  StorageOptions& operator=(const StorageOptions& options);
+  ~StorageOptions();
   StorageOptions& set_directory(const base::FilePath& directory) {
     directory_ = directory;
+    return *this;
+  }
+  StorageOptions& set_signature_verification_public_key(
+      base::StringPiece signature_verification_public_key) {
+    signature_verification_public_key_ =
+        std::string(signature_verification_public_key);
     return *this;
   }
   StorageOptions& set_max_record_size(size_t max_record_size) {
@@ -40,6 +53,9 @@ class StorageOptions {
     return *this;
   }
   const base::FilePath& directory() const { return directory_; }
+  base::StringPiece signature_verification_public_key() const {
+    return signature_verification_public_key_;
+  }
   size_t max_record_size() const { return max_record_size_; }
   uint64_t max_total_files_size() const { return max_total_files_size_; }
   uint64_t max_total_memory_size() const { return max_total_memory_size_; }
@@ -48,6 +64,10 @@ class StorageOptions {
  private:
   // Subdirectory of the location assigned for this Storage.
   base::FilePath directory_;
+
+  // Public key for signature verification when encryption key
+  // is delivered to Storage.
+  std::string signature_verification_public_key_;
 
   // Maximum record size.
   size_t max_record_size_ = 1 * 1024LL * 1024LL;  // 1 MiB

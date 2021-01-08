@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/messaging_layer/storage/storage.h"
 
+#include <cstdint>
 #include <utility>
 #include <vector>
 
@@ -22,6 +23,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
+#include "chrome/browser/policy/messaging_layer/encryption/verification.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_queue.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
@@ -29,6 +31,7 @@
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "chrome/browser/policy/messaging_layer/util/task_runner_context.h"
 #include "components/policy/proto/record.pb.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
 
 namespace reporting {
@@ -157,8 +160,9 @@ class Storage::QueueUploaderInterface : public StorageQueue::UploaderInterface {
 
 class Storage::KeyInStorage {
  public:
-  explicit KeyInStorage(const base::FilePath& directory)
-      : directory_(directory) {}
+  explicit KeyInStorage(base::StringPiece signature_verification_public_key,
+                        const base::FilePath& directory)
+      : verifier_(signature_verification_public_key), directory_(directory) {}
   ~KeyInStorage() = default;
 
   // Uploads signed encryption key to a file with an |index| >=
@@ -217,6 +221,24 @@ class Storage::KeyInStorage {
     return std::make_pair(
         signed_encryption_key_result.value().second.public_asymmetric_key(),
         signed_encryption_key_result.value().second.public_key_id());
+  }
+
+  Status VerifySignature(const SignedEncryptionInfo& signed_encryption_key) {
+    if (signed_encryption_key.public_asymmetric_key().size() !=
+        X25519_PUBLIC_VALUE_LEN) {
+      return Status{error::FAILED_PRECONDITION, "Key size mismatch"};
+    }
+    char value_to_verify[sizeof(Encryptor::PublicKeyId) +
+                         X25519_PUBLIC_VALUE_LEN];
+    const Encryptor::PublicKeyId public_key_id =
+        signed_encryption_key.public_key_id();
+    memcpy(value_to_verify, &public_key_id, sizeof(Encryptor::PublicKeyId));
+    memcpy(value_to_verify + sizeof(Encryptor::PublicKeyId),
+           signed_encryption_key.public_asymmetric_key().data(),
+           X25519_PUBLIC_VALUE_LEN);
+    return verifier_.Verify(
+        std::string(value_to_verify, sizeof(value_to_verify)),
+        signed_encryption_key.signature());
   }
 
  private:
@@ -375,8 +397,16 @@ class Storage::KeyInStorage {
         }
       }
 
-      // Parsed successfully.
-      // TODO(b/170054326): Validate signature.
+      // Parsed successfully. Verify signature of the whole "id"+"key" string.
+      const auto signature_verification_status =
+          VerifySignature(signed_encryption_key);
+      if (!signature_verification_status.ok()) {
+        LOG(WARNING) << "Loaded key failed verification, status="
+                     << signature_verification_status << ", full_name='"
+                     << key_file_it->second.MaybeAsASCII() << "'";
+        continue;
+      }
+
       // Validated successfully. Return file name and signed key proto.
       return std::make_pair(key_file_it->second, signed_encryption_key);
     }
@@ -391,6 +421,8 @@ class Storage::KeyInStorage {
   // index; however, any file found with the matching signature can be used
   // to successfully encrypt records and for the server to then decrypt them.
   std::atomic<uint64_t> next_key_file_index_{0};
+
+  SignatureVerifier verifier_;
 
   const base::FilePath directory_;
 };
@@ -537,7 +569,9 @@ Storage::Storage(const StorageOptions& options,
                  StartUploadCb start_upload_cb)
     : options_(options),
       encryption_module_(encryption_module),
-      key_in_storage_(std::make_unique<KeyInStorage>(options.directory())),
+      key_in_storage_(std::make_unique<KeyInStorage>(
+          options.signature_verification_public_key(),
+          options.directory())),
       start_upload_cb_(std::move(start_upload_cb)) {}
 
 Storage::~Storage() = default;
@@ -571,7 +605,14 @@ Status Storage::Flush(Priority priority) {
 }
 
 void Storage::UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) {
-  // TODO(b/170054326): Verify received key signature. Bail out if failed.
+  // Verify received key signature. Bail out if failed.
+  const auto signature_verification_status =
+      key_in_storage_->VerifySignature(signed_encryption_key);
+  if (!signature_verification_status.ok()) {
+    LOG(WARNING) << "Key failed verification, status="
+                 << signature_verification_status;
+    return;
+  }
 
   // Assign the received key to encryption module.
   encryption_module_->UpdateAsymmetricKey(
