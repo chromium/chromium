@@ -6917,6 +6917,28 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="BLOCK_STATUS_ALL_DOMAINS_BLOCKED"/>
 </enum>
 
+<enum name="BluetoothAdapterConnectToServiceInsecurelyResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error: Invalid arguments"/>
+  <int value="2" label="Error: Operation already in progress"/>
+  <int value="3" label="Error: Already exists"/>
+  <int value="4" label="Error: Operation is not supported"/>
+  <int value="5" label="Error: Not connected"/>
+  <int value="6" label="Error: Already connected"/>
+  <int value="7" label="Error: Operation currently not available"/>
+  <int value="8" label="Error: Does not exist"/>
+  <int value="9" label="Error: Operation not authorized"/>
+  <int value="10" label="Error: Not permitted"/>
+  <int value="11" label="Error: No such adapter"/>
+  <int value="12" label="Error: Agent not available"/>
+  <int value="13" label="Error: Resource not ready"/>
+  <int value="14" label="Error: Failed"/>
+  <int value="15" label="Error: Failed to create receiving Mojo pipe"/>
+  <int value="16" label="Error: Failed to create sending Mojo pipe"/>
+  <int value="17" label="Error: Could not connect to device"/>
+  <int value="18" label="Error: Unknown"/>
+</enum>
+
 <enum name="BluetoothAvailability">
   <int value="0" label="Unexpected error"/>
   <int value="1" label="Not available"/>

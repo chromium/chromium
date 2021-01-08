@@ -49,6 +49,13 @@ source_set("deprecated_experimental_mojo") {
     "socket.h",
   ]
 
+  if (is_chromeos || is_linux) {
+    sources += [
+      "bluez/metrics_recorder.cc",
+      "bluez/metrics_recorder.h",
+    ]
+  }
+
   deps = [
     ":bluetooth",
     "//device/bluetooth/public/mojom:deprecated_experimental_interfaces",

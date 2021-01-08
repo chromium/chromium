@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -301,11 +302,11 @@ void BluetoothSocketBlueZ::OnConnectProfileError(
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(profile_);
 
+  const std::string error = base::StrCat({error_name, ": ", error_message});
   LOG(WARNING) << profile_->object_path().value()
-               << ": Failed to connect profile: " << error_name << ": "
-               << error_message;
+               << ": Failed to connect profile: " << error;
   UnregisterProfile();
-  std::move(error_callback).Run(error_message);
+  std::move(error_callback).Run(error);
 }
 
 void BluetoothSocketBlueZ::AdapterPresentChanged(BluetoothAdapter* adapter,

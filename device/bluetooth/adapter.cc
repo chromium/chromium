@@ -24,7 +24,20 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#include "device/bluetooth/bluez/metrics_recorder.h"
+#endif
+
 namespace bluetooth {
+namespace {
+
+const char kMojoReceivingPipeError[] = "Failed to create receiving DataPipe.";
+const char kMojoSendingPipeError[] = "Failed to create sending DataPipe.";
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+const char kCannotConnectToDeviceError[] = "Cannot connect to device.";
+#endif
+
+}  // namespace
 
 Adapter::Adapter(scoped_refptr<device::BluetoothAdapter> adapter)
     : adapter_(std::move(adapter)) {
@@ -198,7 +211,7 @@ void Adapter::ConnectToServiceInsecurely(
                      copyable_callback),
       base::BindOnce(&Adapter::OnConnectToServiceError,
                      weak_ptr_factory_.GetWeakPtr(), copyable_callback,
-                     "Cannot connect to device."));
+                     kCannotConnectToDeviceError));
 #else
   OnConnectToServiceError(std::move(callback), "Device does not exist.");
 #endif
@@ -400,7 +413,7 @@ void Adapter::OnConnectToService(
   if (result != MOJO_RESULT_OK) {
     socket->Disconnect(base::BindOnce(
         &Adapter::OnConnectToServiceError, weak_ptr_factory_.GetWeakPtr(),
-        std::move(callback), "Failed to create receiving DataPipe."));
+        std::move(callback), kMojoReceivingPipeError));
     return;
   }
 
@@ -411,7 +424,7 @@ void Adapter::OnConnectToService(
   if (result != MOJO_RESULT_OK) {
     socket->Disconnect(base::BindOnce(
         &Adapter::OnConnectToServiceError, weak_ptr_factory_.GetWeakPtr(),
-        std::move(callback), "Failed to create sending DataPipe."));
+        std::move(callback), kMojoSendingPipeError));
     return;
   }
 
@@ -429,6 +442,11 @@ void Adapter::OnConnectToService(
       std::move(receive_pipe_consumer_handle);
   connect_to_service_result->send_stream = std::move(send_pipe_producer_handle);
   std::move(callback).Run(std::move(connect_to_service_result));
+
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+  RecordConnectToServiceInsecurelyResult(
+      ConnectToServiceInsecurelyResult::kSuccess);
+#endif
 }
 
 void Adapter::OnConnectToServiceError(
@@ -436,6 +454,26 @@ void Adapter::OnConnectToServiceError(
     const std::string& message) {
   DLOG(ERROR) << "Failed to connect to service: '" << message << "'";
   std::move(callback).Run(/*result=*/nullptr);
+
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+  base::Optional<ConnectToServiceInsecurelyResult> result =
+      ExtractResultFromErrorString(message);
+  if (result) {
+    RecordConnectToServiceInsecurelyResult(*result);
+  } else if (message == kMojoSendingPipeError) {
+    RecordConnectToServiceInsecurelyResult(
+        ConnectToServiceInsecurelyResult::kMojoSendingPipeError);
+  } else if (message == kMojoReceivingPipeError) {
+    RecordConnectToServiceInsecurelyResult(
+        ConnectToServiceInsecurelyResult::kMojoReceivingPipeError);
+  } else if (message == kCannotConnectToDeviceError) {
+    RecordConnectToServiceInsecurelyResult(
+        ConnectToServiceInsecurelyResult::kCouldNotConnectError);
+  } else {
+    RecordConnectToServiceInsecurelyResult(
+        ConnectToServiceInsecurelyResult::kUnknownError);
+  }
+#endif
 }
 
 void Adapter::OnCreateRfcommServiceInsecurely(
