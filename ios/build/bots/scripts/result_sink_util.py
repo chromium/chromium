@@ -106,11 +106,15 @@ class ResultSinkClient(object):
       # Ensure session is closed at exit.
       atexit.register(self.close)
 
+    logging.getLogger("requests").setLevel(logging.WARNING)
+
   def close(self):
     """Closes the connection to result sink server."""
     if not self.sink:
       return
     LOGGER.info('Closing connection with result sink server.')
+    # Reset to default logging level of test runner scripts.
+    logging.getLogger("requests").setLevel(logging.DEBUG)
     self._session.close()
 
   def post(self, test_result):
