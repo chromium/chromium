@@ -1097,10 +1097,11 @@ int HeadsUpDisplayLayerImpl::DrawSingleMetric(
     int top,
     std::string name,
     const WebVitalMetrics::MetricsInfo& info,
+    bool has_value,
     double value) const {
   std::string value_str = "-";
   SkColor metrics_color = DebugColors::HUDTitleColor();
-  if (value >= 0.f) {
+  if (has_value) {
     value_str = ToStringTwoDecimalPrecision(value) + info.UnitToString();
     if (value < info.green_threshold)
       metrics_color = SK_ColorGREEN;
@@ -1132,25 +1133,27 @@ SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
   DrawGraphBackground(canvas, &flags, area);
 
   int current_top = top + metrics_sizes.kTopPadding + metrics_sizes.kFontHeight;
-  double lcp_value = -1;
-  if (web_vital_metrics_ &&
-      web_vital_metrics_->largest_contentful_paint.has_value())
-    lcp_value = web_vital_metrics_->largest_contentful_paint->InSecondsF();
-  current_top = DrawSingleMetric(canvas, left, left + width, current_top,
-                                 "Largest Contentful Paint",
-                                 WebVitalMetrics::lcp_info, lcp_value);
+  double metric_value = 0.f;
+  bool has_lcp = web_vital_metrics_ && web_vital_metrics_->has_lcp;
+  if (has_lcp)
+    metric_value = web_vital_metrics_->largest_contentful_paint.InSecondsF();
+  current_top = DrawSingleMetric(
+      canvas, left, left + width, current_top, "Largest Contentful Paint",
+      WebVitalMetrics::lcp_info, has_lcp, metric_value);
 
-  double fid_value = -1;
-  if (web_vital_metrics_ && web_vital_metrics_->first_input_delay.has_value())
-    fid_value = web_vital_metrics_->first_input_delay->InMillisecondsF();
+  bool has_fid = web_vital_metrics_ && web_vital_metrics_->has_fid;
+  if (has_fid)
+    metric_value = web_vital_metrics_->first_input_delay.InMillisecondsF();
   current_top = DrawSingleMetric(canvas, left, left + width, current_top,
                                  "First Input Delay", WebVitalMetrics::fid_info,
-                                 fid_value);
+                                 has_fid, metric_value);
 
+  bool has_layout_shift = web_vital_metrics_ && web_vital_metrics_->has_cls;
+  if (has_layout_shift)
+    metric_value = web_vital_metrics_->layout_shift;
   current_top = DrawSingleMetric(
       canvas, left, left + width, current_top, "Cumulative Layout Shift",
-      WebVitalMetrics::cls_info,
-      web_vital_metrics_ ? web_vital_metrics_->layout_shift : -1);
+      WebVitalMetrics::cls_info, has_layout_shift, metric_value);
 
   return area;
 }

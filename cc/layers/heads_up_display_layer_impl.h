@@ -143,6 +143,7 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
                        int top,
                        std::string name,
                        const WebVitalMetrics::MetricsInfo& info,
+                       bool has_value,
                        double value) const;
   SkRect DrawWebVitalMetrics(PaintCanvas* canvas,
                              int left,
