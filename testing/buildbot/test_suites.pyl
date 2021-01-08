@@ -151,30 +151,22 @@
     'android_pie_rel_reduced_capacity_gtests': {
       'android_browsertests': {},
       'blink_platform_unittests': {},
-      'chrome_java_test_pagecontroller_tests': {},
-      'chrome_java_test_webapk_launch_tests': {},
+      'chrome_public_test_apk': {
+        'swarming': {
+          'shards': 20,
+        },
+        'mixins': [
+          'chrome-gold-service-account',
+          'skia_gold_test',
+          'enable_resultdb',
+        ],
+      },
       'content_browsertests': {
         'swarming': {
           'shards': 15,
         },
       },
-      'monochrome_public_bundle_fake_modules_smoke_test': {},
-      'monochrome_public_bundle_smoke_test': {},
-      'monochrome_public_smoke_test': {},
-      'weblayer_browsertests': {},
       'weblayer_instrumentation_test_apk': {},
-      'webview_cts_tests': {
-        'swarming': {
-          'shards': 2,
-          'cipd_packages': [
-            {
-              "cipd_package": 'chromium/android_webview/tools/cts_archive',
-              'location': 'android_webview/tools/cts_archive',
-              'revision': 'ai8Ig4HlO0vG6aP_JP2uhyruE2yPzze8PFP1g8Z4_hgC',
-            }
-          ]
-        },
-      },
       'webview_instrumentation_test_apk': {
         'swarming': {
           'shards': 7,
@@ -5273,12 +5265,16 @@
     #
     # TODO(https://crbug.com/1058067): Remove this once SkiaRenderer goes
     # stable on Android.
-    # 'android_pie_rel_non_skia_renderer_gtests': [
-    #   'android_monochrome_smoke_tests',
-    #   'android_pagecontroller_self_tests',
-    #   'android_smoke_tests',
-    #   'android_webapk_launch_tests',
-    #   # TODO: Following tests are experimental (crbug/1010211).
+    'android_pie_rel_non_skia_renderer_gtests': [
+      # TODO(crbug.com/1111436): Deprecate this when all the test suites below
+      # it are re-enabled.
+      'android_pie_rel_reduced_capacity_gtests',
+
+      'android_monochrome_smoke_tests',
+      'android_pagecontroller_self_tests',
+      'android_smoke_tests',
+      'android_webapk_launch_tests',
+      # TODO: Following tests are experimental (crbug/1010211).
     #   'android_specific_chromium_gtests',  # Already includes gl_gtests.
     #   'chromium_gtests',
     #   'chromium_gtests_for_devices_with_graphical_output',
@@ -5288,11 +5284,11 @@
     #   'system_webview_shell_instrumentation_tests', # Not an experimental test
     #   'vr_platform_specific_chromium_gtests',
     #   'weblayer_android_gtests',
-    #   'weblayer_gtests',
-    #   # Experimental tests end here.
-    #   'webview_cts_tests_gtest',
-    #   'webview_ui_instrumentation_tests',
-    # ],
+      'weblayer_gtests',
+      # Experimental tests end here.
+      'webview_cts_tests_gtest',
+      'webview_ui_instrumentation_tests',
+    ],
 
     'android_wpt_scripts': [
       'chrome_public_wpt',
