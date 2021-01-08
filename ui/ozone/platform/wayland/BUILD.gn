@@ -383,6 +383,8 @@ source_set("wayland_unittests") {
     "host/wayland_window_manager_unittests.cc",
     "host/wayland_window_unittest.cc",
     "host/wayland_zaura_shell_unittest.cc",
+    "test/wayland_drag_drop_test.cc",
+    "test/wayland_drag_drop_test.h",
     "test/wayland_test.cc",
     "test/wayland_test.h",
   ]

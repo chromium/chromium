@@ -30,7 +30,7 @@
 #include "ui/ozone/platform/wayland/test/test_data_offer.h"
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
-#include "ui/ozone/platform/wayland/test/wayland_test.h"
+#include "ui/ozone/platform/wayland/test/wayland_drag_drop_test.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -41,14 +41,14 @@ using testing::Mock;
 
 namespace ui {
 
-class WaylandWindowDragControllerTest : public WaylandTest,
-                                        public wl::TestDataDevice::Delegate {
+class WaylandWindowDragControllerTest : public WaylandDragDropTest {
  public:
   WaylandWindowDragControllerTest() = default;
   ~WaylandWindowDragControllerTest() override = default;
 
   void SetUp() override {
-    WaylandTest::SetUp();
+    WaylandDragDropTest::SetUp();
+
     screen_ = std::make_unique<WaylandScreen>(connection_.get());
 
     wl_seat_send_capabilities(server_.seat()->resource(),
@@ -59,16 +59,6 @@ class WaylandWindowDragControllerTest : public WaylandTest,
 
     EXPECT_FALSE(window_->has_pointer_focus());
     EXPECT_EQ(State::kIdle, drag_controller()->state());
-
-    data_device_manager_ = server_.data_device_manager();
-    DCHECK(data_device_manager_);
-
-    source_ = nullptr;
-    data_device_manager_->data_device()->set_delegate(this);
-  }
-
-  void TearDown() override {
-    data_device_manager_->data_device()->set_delegate(nullptr);
   }
 
   WaylandWindowDragController* drag_controller() const {
@@ -79,51 +69,8 @@ class WaylandWindowDragControllerTest : public WaylandTest,
     return connection_->wayland_window_manager();
   }
 
-  uint32_t NextSerial() const {
-    static uint32_t serial = 0;
-    return ++serial;
-  }
-
-  uint32_t NextTime() const {
-    static uint32_t timestamp = 0;
-    return ++timestamp;
-  }
-
  protected:
   using State = WaylandWindowDragController::State;
-
-  // wl::TestDataDevice::Delegate:
-  void StartDrag(wl::TestDataSource* source,
-                 wl::MockSurface* origin,
-                 uint32_t serial) override {
-    EXPECT_FALSE(source_);
-    source_ = source;
-    OfferAndEnter(origin);
-  }
-
-  // Helper functions
-  void SendDndMotion(const gfx::Point& location) {
-    EXPECT_TRUE(source_);
-    wl_fixed_t x = wl_fixed_from_int(location.x());
-    wl_fixed_t y = wl_fixed_from_int(location.y());
-    data_device_manager_->data_device()->OnMotion(NextTime(), x, y);
-  }
-
-  void SendDndEnter(WaylandWindow* window) {
-    EXPECT_TRUE(window);
-    OfferAndEnter(server_.GetObject<wl::MockSurface>(
-        window->root_surface()->GetSurfaceId()));
-  }
-
-  void SendDndLeave() {
-    EXPECT_TRUE(source_);
-    data_device_manager_->data_device()->OnLeave();
-  }
-
-  void SendDndDrop() {
-    EXPECT_TRUE(source_);
-    source_->OnCancelled();
-  }
 
   void SendPointerEnter(WaylandWindow* window,
                         MockPlatformWindowDelegate* delegate) {
@@ -181,24 +128,17 @@ class WaylandWindowDragControllerTest : public WaylandTest,
               screen_->GetLocalProcessWidgetAtPoint(location, {}));
   }
 
-  void OfferAndEnter(wl::MockSurface* surface) {
-    EXPECT_TRUE(source_);
-    auto* data_device = data_device_manager_->data_device();
-    auto* offer = data_device->OnDataOffer();
-    EXPECT_EQ(1u, source_->mime_types().size());
-    for (const auto& mime_type : source_->mime_types())
-      offer->OnOffer(mime_type, {});
-
-    wl_data_device_send_enter(data_device->resource(), NextSerial(),
-                              surface->resource(), 0, 0, offer->resource());
-  }
+  // For the context of window drag, "drop" is detected through
+  // wl_data_source::cancelled in the regular case. Unless extended-drag
+  // protocol is available.
+  //
+  // TODO(crbug.com/1116431): Support extended-drag in test compositor.
+  void SendDndDrop() { SendDndCancelled(); }
 
   // client objects
   std::unique_ptr<WaylandScreen> screen_;
 
   // server objects
-  wl::TestDataDeviceManager* data_device_manager_;
-  wl::TestDataSource* source_;
   wl::MockPointer* pointer_;
 };
 
@@ -471,7 +411,7 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
 
         // Exit |source_window| and enter the |target_window|.
         SendDndLeave();
-        SendDndEnter(target_window);
+        SendDndEnter(target_window, {});
         test_step = kEnteredTarget;
       });
 
