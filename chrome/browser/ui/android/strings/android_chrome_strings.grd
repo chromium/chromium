@@ -3096,6 +3096,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_READING_LIST_TITLE" desc="The title for the reading list page in main bookmark UI.">
         Reading list
       </message>
+      <message name="IDS_READING_LIST_TITLE_NEW" desc="The title for the reading list with a new text.">
+        Reading list <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
+      </message>
       <message name="IDS_READING_LIST_READ" desc="The header for the read section in the reading list UI.">
         Read
       </message>

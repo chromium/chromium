@@ -1706,7 +1706,7 @@ public class BookmarkTest {
                 mActivityTestRule.getActivity(), R.id.bookmark_this_page_id);
 
         // Click the reading list folder in the bottom sheet, and wait for reading list item added.
-        onView(withText("Reading list")).check(matches(isDisplayed())).perform(click());
+        onView(withText("Reading list ")).check(matches(isDisplayed())).perform(click());
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(mTestPage) != null);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {

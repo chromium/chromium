@@ -11,6 +11,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.mockito.Mockito.when;
+
+import static org.chromium.components.feature_engagement.FeatureConstants.READ_LATER_BOTTOM_SHEET_FEATURE;
+
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +26,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -30,6 +35,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -41,6 +47,7 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -60,19 +67,27 @@ public class BookmarkBottomSheetTest {
     private static final String TITLE = "bookmark title";
     private static final String TEST_URL_A = "http://a.com";
     private static final String TEST_URL_B = "http://b.com";
+    private static final String READING_LIST_TITLE = "Reading list ";
+    private static final String READING_LIST_TITLE_NEW = "Reading list New";
 
     private BookmarkBottomSheetCoordinator mBottomSheetCoordinator;
     private BottomSheetController mBottomSheetController;
     private BookmarkModel mBookmarkModel;
     private BookmarkItem mItemClicked;
     private boolean mCallbackInvoked;
+    @Mock
+    private Tracker mTracker;
 
     @Before
     public void setUp() {
+        when(mTracker.isInitialized()).thenReturn(true);
+        when(mTracker.shouldTriggerHelpUI(READ_LATER_BOTTOM_SHEET_FEATURE)).thenReturn(false);
+
         mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarkModel = new BookmarkModel(Profile.fromWebContents(
                     mActivityTestRule.getActivity().getActivityTab().getWebContents()));
+            TrackerFactory.setTrackerForTests(mTracker);
         });
 
         mBottomSheetController = mActivityTestRule.getActivity()
@@ -86,6 +101,11 @@ public class BookmarkBottomSheetTest {
     @After
     public void tearDown() {
         mItemClicked = null;
+    }
+
+    private void setShouldShowNew(boolean shouldShowNew) {
+        when(mTracker.shouldTriggerHelpUI(READ_LATER_BOTTOM_SHEET_FEATURE))
+                .thenReturn(shouldShowNew);
     }
 
     private void bottomSheetCallback(BookmarkItem item) {
@@ -144,13 +164,21 @@ public class BookmarkBottomSheetTest {
     public void testBottomSheetShowWithoutBookmarks() throws InterruptedException {
         showBottomSheet();
         onView(withId(R.id.sheet_title)).check(matches(isDisplayed()));
-        onView(withText("Reading list")).check(matches(isDisplayed()));
+        onView(withText(READING_LIST_TITLE)).check(matches(isDisplayed()));
         assertViewHolderHasString(0, "Save this page for later and get a reminder");
         assertNoOverflowMenu(0, "No overflow menu for reading list folder.");
 
         onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
         assertViewHolderHasString(1, "No bookmarks");
         assertNoOverflowMenu(1, "No overflow menu for mobile bookmark folder.");
+    }
+
+    @Test
+    @MediumTest
+    public void testBottomSheetNewIPH() {
+        setShouldShowNew(true);
+        showBottomSheet();
+        onView(withText(READING_LIST_TITLE_NEW)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -163,7 +191,7 @@ public class BookmarkBottomSheetTest {
         });
 
         showBottomSheet();
-        onView(withText("Reading list")).check(matches(isDisplayed()));
+        onView(withText(READING_LIST_TITLE)).check(matches(isDisplayed()));
         assertViewHolderHasString(0, "1 unread page");
 
         onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
@@ -182,7 +210,7 @@ public class BookmarkBottomSheetTest {
         });
 
         showBottomSheet();
-        onView(withText("Reading list")).check(matches(isDisplayed()));
+        onView(withText(READING_LIST_TITLE)).check(matches(isDisplayed()));
         assertViewHolderHasString(0, "2 unread pages");
 
         onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
@@ -194,7 +222,7 @@ public class BookmarkBottomSheetTest {
     public void testBottomSheetClickThrough() {
         showBottomSheet();
         onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
-        onView(withText("Reading list")).check(matches(isDisplayed())).perform(click());
+        onView(withText(READING_LIST_TITLE)).check(matches(isDisplayed())).perform(click());
 
         waitForBookmarkClicked();
         Assert.assertEquals(BookmarkType.READING_LIST, mItemClicked.getId().getType());
@@ -205,7 +233,7 @@ public class BookmarkBottomSheetTest {
     @MediumTest
     public void testBottomSheetCloseInvokeCallback() {
         showBottomSheet();
-        onView(withText("Reading list")).check(matches(isDisplayed()));
+        onView(withText(READING_LIST_TITLE)).check(matches(isDisplayed()));
         hideBottomSheet();
         Assert.assertNull(mItemClicked);
         Assert.assertTrue(mCallbackInvoked);

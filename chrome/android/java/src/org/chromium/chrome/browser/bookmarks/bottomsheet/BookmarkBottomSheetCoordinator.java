@@ -5,6 +5,10 @@
 package org.chromium.chrome.browser.bookmarks.bottomsheet;
 
 import android.content.Context;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.SuperscriptSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -15,22 +19,29 @@ import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.bottomsheet.BookmarkBottomSheetItemProperties.ItemType;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.util.List;
 
@@ -110,7 +121,7 @@ public class BookmarkBottomSheetCoordinator {
         int type = bookmarkItem.getId().getType();
         PropertyModel model =
                 new PropertyModel.Builder(BookmarkBottomSheetItemProperties.ALL_KEYS)
-                        .with(BookmarkBottomSheetItemProperties.TITLE, bookmarkItem.getTitle())
+                        .with(BookmarkBottomSheetItemProperties.TITLE, getTitle(bookmarkItem))
                         .with(BookmarkBottomSheetItemProperties.SUBTITLE, getSubtitle(bookmarkItem))
                         .with(BookmarkBottomSheetItemProperties.ICON_DRAWABLE_AND_COLOR,
                                 new Pair<>(BookmarkUtils.getFolderIcon(mContext, type),
@@ -121,7 +132,36 @@ public class BookmarkBottomSheetCoordinator {
         return model;
     }
 
-    private @Nullable String getSubtitle(@NonNull final BookmarkItem bookmarkItem) {
+    private CharSequence getTitle(@NonNull final BookmarkItem bookmarkItem) {
+        if (bookmarkItem.getId().getType() == BookmarkType.READING_LIST) {
+            Tracker tracker =
+                    TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+            boolean showNew = tracker.isInitialized()
+                    && tracker.shouldTriggerHelpUI(
+                            FeatureConstants.READ_LATER_BOTTOM_SHEET_FEATURE);
+            SpannableString spannableString = new SpannableString(
+                    mContext.getResources().getString(R.string.reading_list_title_new));
+
+            // Maybe show a "New" text after the reading list title.
+            if (showNew) {
+                tracker.dismissed(FeatureConstants.READ_LATER_BOTTOM_SHEET_FEATURE);
+                spannableString = SpanApplier.applySpans(spannableString.toString(),
+                        new SpanInfo("<new>", "</new>", new RelativeSizeSpan(0.75f),
+                                new SuperscriptSpan(),
+                                new ForegroundColorSpan(
+                                        ApiCompatibilityUtils.getColor(mContext.getResources(),
+                                                R.color.default_text_color_blue))));
+            } else {
+                spannableString = new SpannableString(SpanApplier.removeSpanText(
+                        spannableString.toString(), new SpanInfo("<new>", "</new>")));
+            }
+            return spannableString;
+        }
+
+        return bookmarkItem.getTitle();
+    }
+
+    private @Nullable CharSequence getSubtitle(@NonNull final BookmarkItem bookmarkItem) {
         switch (bookmarkItem.getId().getType()) {
             case BookmarkType.NORMAL:
                 int totalCount = mBookmarkModel.getTotalBookmarkCount(bookmarkItem.getId());

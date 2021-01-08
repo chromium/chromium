@@ -33,11 +33,11 @@ class BookmarkBottomSheetFolderRow extends BookmarkRow {
         super(context, attrs);
     }
 
-    void setTitle(@NonNull String title) {
+    void setTitle(@NonNull CharSequence title) {
         mTitleView.setText(title);
     }
 
-    void setSubtitle(@Nullable String subtitle) {
+    void setSubtitle(@Nullable CharSequence subtitle) {
         mDescriptionView.setText(subtitle == null ? "" : subtitle);
     }
 
