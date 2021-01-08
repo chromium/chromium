@@ -147,8 +147,8 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
     PrefService* pref_service,
     bool metrics_reporting_enabled) {
   // Create an object to monitor files of metrics and include them in reports.
-  std::unique_ptr<metrics::FileMetricsProvider> file_metrics_provider(
-      new metrics::FileMetricsProvider(pref_service));
+  std::unique_ptr<metrics::FileMetricsProvider> file_metrics_provider =
+      std::make_unique<metrics::FileMetricsProvider>(pref_service);
 
   base::FilePath user_data_dir;
   base::PathService::Get(base::DIR_ANDROID_APP_DATA, &user_data_dir);
@@ -264,34 +264,46 @@ void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
 // TODO:(crbug.com/1148351) Make the initialization consistent with Chrome.
 void AndroidMetricsServiceClient::MaybeStartMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!IsConsentDetermined())
+    return;
+
+#if DCHECK_IS_ON()
+  // This function should be called only once after consent has been determined.
+  DCHECK(!did_start_metrics_with_consent_);
+  did_start_metrics_with_consent_ = true;
+#endif
+
   // Treat the debugging flag the same as user consent because the user set it,
   // but keep app_consent_ separate so we never persist data from an opted-out
   // app.
   bool user_consent_or_flag = user_consent_ || IsMetricsReportingForceEnabled();
-  if (IsConsentDetermined()) {
-    if (app_consent_ && user_consent_or_flag) {
-      did_start_metrics_ = true;
-      // Make GetSampleBucketValue() work properly.
-      metrics_state_manager_->ForceClientIdCreation();
-      is_client_id_forced_ = true;
-      RegisterMetricsProvidersAndInitState();
-      // Register for notifications so we can detect when the user or app are
-      // interacting with the embedder. We use these as signals to wake up the
-      // MetricsService.
-      RegisterForNotifications();
-      OnMetricsStart();
+  if (app_consent_ && user_consent_or_flag) {
+    did_start_metrics_ = true;
+    // Make GetSampleBucketValue() work properly.
+    metrics_state_manager_->ForceClientIdCreation();
+    is_client_id_forced_ = true;
+    RegisterMetricsProvidersAndInitState();
+    // Register for notifications so we can detect when the user or app are
+    // interacting with the embedder. We use these as signals to wake up the
+    // MetricsService.
+    RegisterForNotifications();
+    OnMetricsStart();
 
-      if (IsReportingEnabled()) {
-        // We assume the embedder has no shutdown sequence, so there's no need
-        // for a matching Stop() call.
-        metrics_service_->Start();
-      }
-
-      CreateUkmService();
-    } else {
-      OnMetricsNotStarted();
-      pref_service_->ClearPref(prefs::kMetricsClientID);
+    if (IsReportingEnabled()) {
+      // We assume the embedder has no shutdown sequence, so there's no need
+      // for a matching Stop() call.
+      metrics_service_->Start();
     }
+
+    CreateUkmService();
+  } else {
+    // Even though reporting is not enabled, CreateFileMetricsProvider() is
+    // called. This ensures on disk state is removed.
+    metrics_service_->RegisterMetricsProvider(CreateFileMetricsProvider(
+        pref_service_, /* metrics_reporting_enabled */ false));
+    OnMetricsNotStarted();
+    pref_service_->ClearPref(prefs::kMetricsClientID);
   }
 }
 

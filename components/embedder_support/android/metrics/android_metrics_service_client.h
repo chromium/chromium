@@ -263,6 +263,10 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   base::OnceClosure collect_final_metrics_for_log_closure_;
   base::RepeatingClosure on_final_metrics_collected_listener_;
 
+#if DCHECK_IS_ON()
+  bool did_start_metrics_with_consent_ = false;
+#endif
+
   // MetricsServiceClient may be created before the UI thread is promoted to
   // BrowserThread::UI. Use |sequence_checker_| to enforce that the
   // MetricsServiceClient is used on a single thread.
