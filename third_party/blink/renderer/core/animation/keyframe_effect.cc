@@ -503,18 +503,29 @@ bool KeyframeEffect::UpdateBoxSizeAndCheckTransformAxisAlignment(
     if (effect_target_size_) {
       if ((size_dependencies & TransformOperation::kDependsWidth) &&
           (effect_target_size_->Width() != box_size.Width()))
-        GetAnimation()->RestartAnimationOnCompositor();
+        RestartRunningAnimationOnCompositor();
       else if ((size_dependencies & TransformOperation::kDependsHeight) &&
-               (effect_target_size_->Width() != box_size.Height()))
-        GetAnimation()->RestartAnimationOnCompositor();
-    } else if (size_dependencies) {
-      GetAnimation()->RestartAnimationOnCompositor();
+               (effect_target_size_->Height() != box_size.Height()))
+        RestartRunningAnimationOnCompositor();
     }
   }
 
   effect_target_size_ = box_size;
 
   return preserves_axis_alignment;
+}
+
+void KeyframeEffect::RestartRunningAnimationOnCompositor() {
+  Animation* animation = GetAnimation();
+  if (!animation)
+    return;
+
+  // No need to to restart an animation that is in the process of starting up,
+  // paused or idle.
+  if (!animation->startTime())
+    return;
+
+  animation->RestartAnimationOnCompositor();
 }
 
 bool KeyframeEffect::IsIdentityOrTranslation() const {

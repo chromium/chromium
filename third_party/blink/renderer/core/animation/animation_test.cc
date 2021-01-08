@@ -231,6 +231,38 @@ class AnimationAnimationTestNoCompositing : public RenderingTest {
 
 class AnimationAnimationTestCompositing
     : public AnimationAnimationTestNoCompositing {
+ public:
+  Animation* CreateAnimation(CSSPropertyID property_id,
+                             String from,
+                             String to) {
+    Timing timing;
+    timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+
+    Persistent<StringKeyframe> start_keyframe =
+        MakeGarbageCollected<StringKeyframe>();
+    start_keyframe->SetCSSPropertyValue(
+        property_id, from, SecureContextMode::kInsecureContext, nullptr);
+    Persistent<StringKeyframe> end_keyframe =
+        MakeGarbageCollected<StringKeyframe>();
+    end_keyframe->SetCSSPropertyValue(
+        property_id, to, SecureContextMode::kInsecureContext, nullptr);
+
+    StringKeyframeVector keyframes;
+    keyframes.push_back(start_keyframe);
+    keyframes.push_back(end_keyframe);
+
+    Element* element = GetElementById("target");
+    auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+
+    NonThrowableExceptionState exception_state;
+    DocumentTimeline* timeline =
+        MakeGarbageCollected<DocumentTimeline>(&GetDocument());
+    return Animation::Create(
+        MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
+        exception_state);
+  }
+
+ private:
   void SetUp() override {
     EnableCompositing();
     AnimationAnimationTestNoCompositing::SetUp();
@@ -1411,39 +1443,150 @@ TEST_F(AnimationAnimationTestCompositing, BackgroundColorComposited) {
     </div>
   )HTML");
 
-  // Create KeyframeEffect
-  Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
-
-  Persistent<StringKeyframe> start_keyframe =
-      MakeGarbageCollected<StringKeyframe>();
-  start_keyframe->SetCSSPropertyValue(CSSPropertyID::kBackgroundColor, "red",
-                                      SecureContextMode::kInsecureContext,
-                                      nullptr);
-  Persistent<StringKeyframe> end_keyframe =
-      MakeGarbageCollected<StringKeyframe>();
-  end_keyframe->SetCSSPropertyValue(CSSPropertyID::kBackgroundColor, "green",
-                                    SecureContextMode::kInsecureContext,
-                                    nullptr);
-
-  StringKeyframeVector keyframes;
-  keyframes.push_back(start_keyframe);
-  keyframes.push_back(end_keyframe);
-
-  Element* element = GetElementById("target");
-  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
-
-  NonThrowableExceptionState exception_state;
-  DocumentTimeline* timeline =
-      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
-  Animation* animation = Animation::Create(
-      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
-      exception_state);
+  Animation* animation =
+      CreateAnimation(CSSPropertyID::kBackgroundColor, "red", "green");
 
   UpdateAllLifecyclePhasesForTest();
   animation->play();
   EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(nullptr),
             CompositorAnimations::kNoFailure);
+}
+
+// crbug.com/1149012
+// Regression test to ensure proper restart logic for composited animations on
+// relative transforms after a size change. In this test, the transform depends
+// on the width and height of the box and a change to either triggers a restart
+// of the animation if running.
+TEST_F(AnimationAnimationTestCompositing,
+       RestartCompositedAnimationOnSizeChange) {
+  // TODO(crbug.com/389359): Remove forced feature enabling once on by
+  // default.
+  ScopedCompositeRelativeKeyframesForTest composite_relative_keyframes(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id ="target"
+         style="width: 100px; height: 200px; will-change: transform">
+    </div>
+  )HTML");
+
+  Animation* animation = CreateAnimation(
+      CSSPropertyID::kTransform, "translate(100%, 100%)", "translate(0%, 0%)");
+
+  UpdateAllLifecyclePhasesForTest();
+  animation->play();
+  KeyframeEffect* keyframe_effect =
+      DynamicTo<KeyframeEffect>(animation->effect());
+  ASSERT_TRUE(keyframe_effect);
+
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(nullptr),
+            CompositorAnimations::kNoFailure);
+
+  GetDocument().GetPendingAnimations().Update(nullptr, true);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+
+  // Kick the animation out of the play-pending state.
+  animation->setStartTime(0);
+
+  // No size change and animation does not require a restart.
+  keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
+      FloatSize(100, 200));
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+
+  // Restart animation on a width change.
+  keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
+      FloatSize(200, 200));
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+
+  GetDocument().GetPendingAnimations().Update(nullptr, true);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+
+  // Restart animation on a height change.
+  keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
+      FloatSize(200, 300));
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+}
+
+// crbug.com/1149012
+// Regression test to ensure proper restart logic for composited animations on
+// relative transforms after a size change. In this test, the transform only
+// depends on width and a change to the height does not trigger a restart.
+TEST_F(AnimationAnimationTestCompositing,
+       RestartCompositedAnimationOnWidthChange) {
+  // TODO(crbug.com/389359): Remove forced feature enabling once on by
+  // default.
+  ScopedCompositeRelativeKeyframesForTest composite_relative_keyframes(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id ="target"
+         style="width: 100px; height: 200px; will-change: transform">
+    </div>
+  )HTML");
+
+  animation = CreateAnimation(CSSPropertyID::kTransform, "translateX(100%)",
+                              "translateX(0%)");
+
+  UpdateAllLifecyclePhasesForTest();
+  animation->play();
+  KeyframeEffect* keyframe_effect =
+      DynamicTo<KeyframeEffect>(animation->effect());
+  ASSERT_TRUE(keyframe_effect);
+
+  GetDocument().GetPendingAnimations().Update(nullptr, true);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
+      FloatSize(100, 200));
+  animation->setStartTime(0);
+
+  // Transform is not height dependent and a change to the height does not force
+  // an animation restart.
+  keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
+      FloatSize(100, 300));
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+
+  // Width change forces a restart.
+  keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
+      FloatSize(200, 300));
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+}
+
+// crbug.com/1149012
+// Regression test to ensure proper restart logic for composited animations on
+// relative transforms after a size change.  In this test, the transition only
+// affects height and a change to the width does not trigger a restart.
+TEST_F(AnimationAnimationTestCompositing,
+       RestartCompositedAnimationOnHeightChange) {
+  // TODO(crbug.com/389359): Remove forced feature enabling once on by
+  // default.
+  ScopedCompositeRelativeKeyframesForTest composite_relative_keyframes(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id ="target"
+         style="width: 100px; height: 200px; will-change: transform">
+    </div>
+  )HTML");
+
+  animation = CreateAnimation(CSSPropertyID::kTransform, "translateY(100%)",
+                              "translateY(0%)");
+
+  UpdateAllLifecyclePhasesForTest();
+  animation->play();
+  KeyframeEffect* keyframe_effect =
+      DynamicTo<KeyframeEffect>(animation->effect());
+  ASSERT_TRUE(keyframe_effect);
+
+  GetDocument().GetPendingAnimations().Update(nullptr, true);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
+      FloatSize(100, 200));
+  animation->setStartTime(0);
+
+  // Transform is not width dependent and a change to the width does not force
+  // an animation restart.
+  keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
+      FloatSize(300, 200));
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+
+  // Height change forces a restart.
+  keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
+      FloatSize(300, 400));
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
 }
 
 TEST_F(AnimationAnimationTestCompositing,
