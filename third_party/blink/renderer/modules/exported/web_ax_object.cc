@@ -849,13 +849,13 @@ WebAXObject WebAXObject::ChooserPopup() const {
 
 WebString WebAXObject::GetName(ax::mojom::NameFrom& out_name_from,
                                WebVector<WebAXObject>& out_name_objects) const {
+  out_name_from = ax::mojom::blink::NameFrom::kUninitialized;
+
   if (IsDetached())
     return WebString();
 
-  ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kUninitialized;
   HeapVector<Member<AXObject>> name_objects;
-  WebString result = private_->GetName(name_from, &name_objects);
-  out_name_from = name_from;
+  WebString result = private_->GetName(out_name_from, &name_objects);
 
   out_name_objects.reserve(name_objects.size());
   out_name_objects.resize(name_objects.size());
@@ -877,15 +877,14 @@ WebString WebAXObject::Description(
     ax::mojom::NameFrom name_from,
     ax::mojom::DescriptionFrom& out_description_from,
     WebVector<WebAXObject>& out_description_objects) const {
+  out_description_from = ax::mojom::blink::DescriptionFrom::kUninitialized;
+
   if (IsDetached())
     return WebString();
 
-  ax::mojom::DescriptionFrom description_from =
-      ax::mojom::DescriptionFrom::kUninitialized;
   HeapVector<Member<AXObject>> description_objects;
-  String result =
-      private_->Description(name_from, description_from, &description_objects);
-  out_description_from = description_from;
+  String result = private_->Description(name_from, out_description_from,
+                                        &description_objects);
 
   out_description_objects.reserve(description_objects.size());
   out_description_objects.resize(description_objects.size());
