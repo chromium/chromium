@@ -13373,6 +13373,154 @@ be describing additional metrics about the same event.
   <metric name="TargetLanguage" semantic_type="ST_DEMOGRAPHIC_INFO"/>
 </event>
 
+<event name="TranslatePageLoad">
+  <owner>curranmax@chromium.org</owner>
+  <owner>megjablon@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Summary of the user's interaction with Translate from the beginning of the
+    page load to when the event is recorded. This event is recorded when a page
+    load is completed and every time that Chrome is backgrounded during the
+    course of the page load. This means we can record multiple events for a
+    single page load, but it guarentees that we will still record data in
+    instances where the user backgrounds then kills Chrome.
+  </summary>
+  <metric name="FinalSourceLanguage" semantic_type="ST_DEMOGRAPHIC_INFO"
+      enum="CLD3LanguageCode">
+    <summary>
+      The source language at the time the event is recorded. In most cases this
+      will match the intial source language, but the user can change the source
+      language manually if they want. Note that the semantic_type attribute is
+      included in order to remain consistent with the previous Translate UKM
+      proto.
+    </summary>
+  </metric>
+  <metric name="FinalState" enum="TranslateState">
+    <summary>
+      At the time this event is recorded, the state of Translate. This includes
+      whether the page is translated or not and if no UI is shown, just the
+      omnibox icon is shown, or the full translate UI is shown.
+    </summary>
+  </metric>
+  <metric name="FinalTargetLanguage" semantic_type="ST_DEMOGRAPHIC_INFO"
+      enum="CLD3LanguageCode">
+    <summary>
+      The target language at the time the event is recorded. In most cases this
+      will match the initial target language, but the user can change the target
+      language manually if they want. Note that the semantic_type attribute is
+      included in order to remain consistent with the previous Translate UKM
+      proto.
+    </summary>
+  </metric>
+  <metric name="FirstTranslateError" enum="TranslateError">
+    <summary>
+      The first error to occur within Translate for this page load.
+    </summary>
+  </metric>
+  <metric name="FirstUIInteraction" enum="TranslateUIInteraction">
+    <summary>
+      The user's first interaction with the Translate UI.
+    </summary>
+  </metric>
+  <metric name="InitialSourceLanguage" semantic_type="ST_DEMOGRAPHIC_INFO"
+      enum="CLD3LanguageCode">
+    <summary>
+      The initial source language that Translate determines for the page. Note
+      that the semantic_type attribute is included in order to remain consistent
+      with the previous Translate UKM proto.
+    </summary>
+  </metric>
+  <metric name="InitialSourceLanguageInContentLanguages" enum="Boolean">
+    <summary>
+      Signals whether the initial source language is in the list of the user's
+      content languages. The user's content languages loosely match with the
+      languages the user has translated to before or has blocked for
+      translation.
+    </summary>
+  </metric>
+  <metric name="InitialState" enum="TranslateState">
+    <summary>
+      At the beginning of the page load, the state of Translate. This includes
+      whether the page is translated or not and if no UI is shown, just the
+      omnibox icon is shown, or the full translate UI is shown.
+    </summary>
+  </metric>
+  <metric name="InitialTargetLanguage" semantic_type="ST_DEMOGRAPHIC_INFO"
+      enum="CLD3LanguageCode">
+    <summary>
+      The initial target language that Translate thinks it should translate to.
+      Note that the semantic_type attribute is included in order to remain
+      consistent with the previous Translate UKM proto.
+    </summary>
+  </metric>
+  <metric name="MaxTimeToTranslate">
+    <summary>
+      Across all translations during this page load, the maximum amount of time
+      (in milliseconds) it took to translate the page.
+    </summary>
+  </metric>
+  <metric name="NumReversions">
+    <summary>
+      The number of times a translation was reverted.
+    </summary>
+  </metric>
+  <metric name="NumTargetLanguageChanges">
+    <summary>
+      The number of times that the target language was changed by the user over
+      the course of this page load.
+    </summary>
+  </metric>
+  <metric name="NumTranslateErrors">
+    <summary>
+      The number of errors to occur within Translate for this page load.
+    </summary>
+  </metric>
+  <metric name="NumTranslations">
+    <summary>
+      The number of times the page was translated.
+    </summary>
+  </metric>
+  <metric name="NumUIInteractions">
+    <summary>
+      The number of times that the user interacts with the Translate UI.
+    </summary>
+  </metric>
+  <metric name="RankerDecision" enum="TranslateRankerDecision">
+    <summary>
+      Decision of the Ranker whether to show the UI or not.
+    </summary>
+  </metric>
+  <metric name="RankerVersion">
+    <summary>
+      Version of Ranker used for this page load.
+    </summary>
+  </metric>
+  <metric name="SequenceNumber">
+    <summary>
+      In case multiple events are logged for one page load, we track the
+      sequence in the order each event is logged.
+    </summary>
+  </metric>
+  <metric name="TotalTimeNotTranslated">
+    <summary>
+      The amount of time (in seconds) this page was in the foreground and not
+      translated.
+    </summary>
+  </metric>
+  <metric name="TotalTimeTranslated">
+    <summary>
+      The amount of time (in seconds) this page was in the foreground and
+      translated.
+    </summary>
+  </metric>
+  <metric name="TriggerDecision" enum="TranslateTriggerDecision">
+    <summary>
+      The highest priority trigger that determined the initial state of
+      Translate for this page load.
+    </summary>
+  </metric>
+</event>
+
 <event name="TrustedWebActivity.Open" singular="True">
   <owner>peconn@chromium.org</owner>
   <summary>

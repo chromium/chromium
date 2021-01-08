@@ -34,6 +34,10 @@ class MockTranslateMetricsLoggerContainer
     mock_translate_metrics_logger_->RecordMetrics(is_final);
   }
 
+  void SetUkmSourceId(ukm::SourceId ukm_source_id) override {
+    mock_translate_metrics_logger_->SetUkmSourceId(ukm_source_id);
+  }
+
   void LogRankerMetrics(translate::RankerDecision ranker_decision,
                         uint32_t ranker_version) override {
     mock_translate_metrics_logger_->LogRankerMetrics(ranker_decision,

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "components/translate/core/common/translate_errors.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace translate {
 
@@ -57,6 +58,8 @@ enum class TriggerDecision {
   kMaxValue = kAutomaticTranslationByPref,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class UIInteraction {
   kUninitialized = 0,
   kTranslate = 1,
@@ -88,6 +91,9 @@ class TranslateMetricsLogger {
   // Logs all stored page load metrics. If is_final is |true| then RecordMetrics
   // won't be called again.
   virtual void RecordMetrics(bool is_final) = 0;
+
+  // Sets the UKM source ID for the current page load.
+  virtual void SetUkmSourceId(ukm::SourceId ukm_source_id) = 0;
 
   virtual void LogRankerMetrics(RankerDecision ranker_decision,
                                 uint32_t ranker_version) = 0;

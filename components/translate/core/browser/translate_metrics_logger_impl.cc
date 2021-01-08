@@ -8,6 +8,9 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/time/default_tick_clock.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace translate {
 
@@ -63,18 +66,74 @@ void TranslateMetricsLoggerImpl::OnForegroundChange(bool is_foreground) {
 void TranslateMetricsLoggerImpl::RecordMetrics(bool is_final) {
   UpdateTimeTranslated(current_state_is_translated_, is_foreground_);
 
+  // If a translation is still in progress, then use the previous state.
+  bool this_initial_state_is_translated =
+      is_initial_state_dependent_on_in_progress_translation_
+          ? previous_state_is_translated_
+          : initial_state_is_translated_;
+  bool this_current_state_is_translated = is_translation_in_progress_
+                                              ? previous_state_is_translated_
+                                              : current_state_is_translated_;
+
   // The first time |RecordMetrics| is called, record all page load frequency
   // UMA metrcis.
   if (sequence_no_ == 0)
-    RecordPageLoadUmaMetrics();
+    RecordPageLoadUmaMetrics(this_initial_state_is_translated,
+                             this_current_state_is_translated);
 
-  // TODO(curranmax): Log UKM metrics now that the page load is.
-  // completed. https://crbug.com/1114868.
+  // Record metrics to UKM.
+  ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+  ukm::builders::TranslatePageLoad(ukm_source_id_)
+      .SetSequenceNumber(sequence_no_)
+      .SetTriggerDecision(int(trigger_decision_))
+      .SetRankerDecision(int(ranker_decision_))
+      .SetRankerVersion(int(ranker_version_))
+      .SetInitialState(int(ConvertToTranslateState(
+          this_initial_state_is_translated, initial_state_is_ui_shown_,
+          initial_state_is_omnibox_icon_shown_)))
+      .SetFinalState(int(ConvertToTranslateState(
+          this_current_state_is_translated, current_state_is_ui_shown_,
+          current_state_is_omnibox_icon_shown_)))
+      .SetNumTranslations(
+          ukm::GetExponentialBucketMinForCounts1000(num_translations_))
+      .SetNumReversions(
+          ukm::GetExponentialBucketMinForCounts1000(num_reversions_))
+      .SetInitialSourceLanguage(
+          int(base::HashMetricName(initial_source_language_)))
+      .SetFinalSourceLanguage(
+          int(base::HashMetricName(current_source_language_)))
+      .SetInitialSourceLanguageInContentLanguages(
+          int(is_initial_source_language_in_users_content_languages_))
+      .SetInitialTargetLanguage(
+          int(base::HashMetricName(initial_target_language_)))
+      .SetFinalTargetLanguage(
+          int(base::HashMetricName(current_target_language_)))
+      .SetNumTargetLanguageChanges(ukm::GetExponentialBucketMinForCounts1000(
+          num_target_language_changes_))
+      .SetFirstUIInteraction(int(first_ui_interaction_))
+      .SetNumUIInteractions(
+          ukm::GetExponentialBucketMinForCounts1000(num_ui_interactions_))
+      .SetFirstTranslateError(int(first_translate_error_type_))
+      .SetNumTranslateErrors(
+          ukm::GetExponentialBucketMinForCounts1000(num_translate_errors_))
+      .SetTotalTimeTranslated(ukm::GetExponentialBucketMinForUserTiming(
+          total_time_translated_.InSeconds()))
+      .SetTotalTimeNotTranslated(ukm::GetExponentialBucketMinForUserTiming(
+          total_time_not_translated_.InSeconds()))
+      .SetMaxTimeToTranslate(ukm::GetExponentialBucketMinForUserTiming(
+          max_time_to_translate_.InMilliseconds()))
+      .Record(ukm_recorder);
 
   sequence_no_++;
 }
 
-void TranslateMetricsLoggerImpl::RecordPageLoadUmaMetrics() {
+void TranslateMetricsLoggerImpl::SetUkmSourceId(ukm::SourceId ukm_source_id) {
+  ukm_source_id_ = ukm_source_id;
+}
+
+void TranslateMetricsLoggerImpl::RecordPageLoadUmaMetrics(
+    bool initial_state_is_translated,
+    bool current_state_is_translated) {
   base::UmaHistogramEnumeration(kTranslatePageLoadRankerDecision,
                                 ranker_decision_);
   base::UmaHistogramSparse(kTranslatePageLoadRankerVersion,
@@ -85,23 +144,14 @@ void TranslateMetricsLoggerImpl::RecordPageLoadUmaMetrics() {
       kTranslatePageLoadAutofillAssistantDeferredTriggerDecision,
       autofill_assistant_deferred_trigger_decision_);
 
-  // If a translation is still in progress, then use the previous state.
-  bool this_initial_state_is_translated =
-      is_initial_state_dependent_on_in_progress_translation_
-          ? previous_state_is_translated_
-          : initial_state_is_translated_;
-  bool this_current_state_is_translated = is_translation_in_progress_
-                                              ? previous_state_is_translated_
-                                              : current_state_is_translated_;
-
   base::UmaHistogramEnumeration(
       kTranslatePageLoadInitialState,
-      ConvertToTranslateState(this_initial_state_is_translated,
+      ConvertToTranslateState(initial_state_is_translated,
                               initial_state_is_ui_shown_,
                               initial_state_is_omnibox_icon_shown_));
   base::UmaHistogramEnumeration(
       kTranslatePageLoadFinalState,
-      ConvertToTranslateState(this_current_state_is_translated,
+      ConvertToTranslateState(current_state_is_translated,
                               current_state_is_ui_shown_,
                               current_state_is_omnibox_icon_shown_));
   base::UmaHistogramCounts10000(kTranslatePageLoadNumTranslations,

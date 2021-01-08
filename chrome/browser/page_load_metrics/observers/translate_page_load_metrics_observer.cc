@@ -43,6 +43,14 @@ TranslatePageLoadMetricsObserver::OnStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+TranslatePageLoadMetricsObserver::OnCommit(
+    content::NavigationHandle* navigation_handle,
+    ukm::SourceId source_id) {
+  translate_metrics_logger_->SetUkmSourceId(source_id);
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 TranslatePageLoadMetricsObserver::OnHidden(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   translate_metrics_logger_->OnForegroundChange(false);

@@ -41,6 +41,7 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
   void OnPageLoadStart(bool is_foreground) override {}
   void OnForegroundChange(bool is_foreground) override {}
   void RecordMetrics(bool is_final) override {}
+  void SetUkmSourceId(ukm::SourceId ukm_source_id) override {}
   void LogRankerMetrics(RankerDecision ranker_decision,
                         uint32_t ranker_version) override {}
   void LogTriggerDecision(TriggerDecision trigger_decision) override {}
@@ -85,6 +86,7 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   void OnPageLoadStart(bool is_foreground) override;
   void OnForegroundChange(bool is_foreground) override;
   void RecordMetrics(bool is_final) override;
+  void SetUkmSourceId(ukm::SourceId ukm_source_id) override;
   void LogRankerMetrics(RankerDecision ranker_decision,
                         uint32_t ranker_version) override;
   void LogTriggerDecision(TriggerDecision trigger_decision) override;
@@ -108,7 +110,8 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   friend class testing::TranslateMetricsLoggerImplTest;
 
   // Logs all page load frequency UMA metrics based on the stored state.
-  void RecordPageLoadUmaMetrics();
+  void RecordPageLoadUmaMetrics(bool initial_state_is_translated,
+                                bool current_stat_is_translated);
 
   // Helpter function to get the correct |TranslateState| value based on the
   // different dimensions we care about.
@@ -127,6 +130,9 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   // is backgrounded and reopened, we use |sequence_no_| to differentiate the
   // recorded UKM protos.
   unsigned int sequence_no_ = 0;
+
+  // The UKM source ID for the current page load.
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
   // Tracks if the associated page is in the foreground (|true|) or the
   // background (|false|)

@@ -74325,6 +74325,19 @@ Full version information for the fingerprint enum values:
   <int value="15" label="Automatic translation, by user preference"/>
 </enum>
 
+<enum name="TranslateUIInteraction">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="Translate page"/>
+  <int value="2" label="Revert translation"/>
+  <int value="3" label="Always translate language"/>
+  <int value="4" label="Change source language"/>
+  <int value="5" label="Change target language"/>
+  <int value="6" label="Never translate language"/>
+  <int value="7" label="Never translate site"/>
+  <int value="8" label="Close UI explicitly"/>
+  <int value="9" label="Close UI by lost focus"/>
+</enum>
+
 <enum name="TrendingTileEvent">
   <int value="0" label="Tile was shown"/>
   <int value="1" label="Tile was removed"/>
