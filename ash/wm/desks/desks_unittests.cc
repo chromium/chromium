@@ -3832,6 +3832,238 @@ TEST_F(DesksBentoTest, ScrollableDesks) {
   EXPECT_FALSE(display_bounds.Contains(new_desk_button->GetBoundsInScreen()));
 }
 
+// Tests that the bounds of a window that is visible on all desks is shared
+// across desks.
+TEST_F(DesksBentoTest, VisibleOnAllDesksGlobalBounds) {
+  auto* controller = DesksController::Get();
+  NewDesk();
+  const Desk* desk_1 = controller->desks()[0].get();
+  const Desk* desk_2 = controller->desks()[1].get();
+  auto* root = Shell::GetPrimaryRootWindow();
+  const gfx::Rect window_initial_bounds(1, 1, 200, 200);
+  const gfx::Rect window_moved_bounds(200, 200, 250, 250);
+
+  auto window = CreateAppWindow(window_initial_bounds);
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window.get());
+  ASSERT_EQ(window_initial_bounds, window->bounds());
+
+  // Assign |window| to all desks. It shouldn't change bounds.
+  widget->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  EXPECT_EQ(window_initial_bounds, window->bounds());
+  EXPECT_EQ(1u, controller->visible_on_all_desks_windows().size());
+
+  // Move to desk 2. The only window on the new desk should be |window|
+  // and it should have the same bounds.
+  ActivateDesk(desk_2);
+  auto desk_2_children = desk_2->GetDeskContainerForRoot(root)->children();
+  EXPECT_EQ(1u, desk_2_children.size());
+  EXPECT_EQ(window.get(), desk_2_children[0]);
+  EXPECT_EQ(window_initial_bounds, window->bounds());
+
+  // Change |window|'s bounds and move to desk 1. It should retain its moved
+  // bounds.
+  window->SetBounds(window_moved_bounds);
+  EXPECT_EQ(window_moved_bounds, window->bounds());
+  ActivateDesk(desk_1);
+  auto desk_1_children = desk_1->GetDeskContainerForRoot(root)->children();
+  EXPECT_EQ(1u, desk_1_children.size());
+  EXPECT_EQ(window.get(), desk_1_children[0]);
+  EXPECT_EQ(window_moved_bounds, window->bounds());
+}
+
+// Tests that the z-ordering of windows that are visible on all desks respects
+// its global MRU ordering.
+TEST_F(DesksBentoTest, VisibleOnAllDesksGlobalZOrder) {
+  auto* controller = DesksController::Get();
+  NewDesk();
+  const Desk* desk_1 = controller->desks()[0].get();
+  const Desk* desk_2 = controller->desks()[1].get();
+  auto* root = Shell::GetPrimaryRootWindow();
+
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  auto win1 = CreateAppWindow(gfx::Rect(1, 1, 150, 150));
+  auto win2 = CreateAppWindow(gfx::Rect(2, 2, 200, 200));
+  auto* widget0 = views::Widget::GetWidgetForNativeWindow(win0.get());
+  auto* widget1 = views::Widget::GetWidgetForNativeWindow(win1.get());
+  auto* widget2 = views::Widget::GetWidgetForNativeWindow(win2.get());
+  ASSERT_TRUE(IsStackedBelow(win0.get(), win1.get()));
+  ASSERT_TRUE(IsStackedBelow(win1.get(), win2.get()));
+
+  // Assign |win1| to all desks. It shouldn't change stacking order.
+  widget1->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(win1->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  EXPECT_TRUE(IsStackedBelow(win0.get(), win1.get()));
+  EXPECT_TRUE(IsStackedBelow(win1.get(), win2.get()));
+  EXPECT_EQ(1u, controller->visible_on_all_desks_windows().size());
+
+  // Move to desk 2. The only window on the new desk should be |win1|.
+  ActivateDesk(desk_2);
+  auto desk_2_children = desk_2->GetDeskContainerForRoot(root)->children();
+  EXPECT_EQ(1u, desk_2_children.size());
+  EXPECT_EQ(win1.get(), desk_2_children[0]);
+
+  // Move to desk 1. Since |win1|  was activated last, |win1| should be on top
+  // of the stacking order.
+  ActivateDesk(desk_1);
+  auto desk_1_children = desk_1->GetDeskContainerForRoot(root)->children();
+  EXPECT_EQ(3u, desk_1_children.size());
+  EXPECT_TRUE(IsStackedBelow(win0.get(), win2.get()));
+  EXPECT_TRUE(IsStackedBelow(win2.get(), win1.get()));
+
+  // Assign all the other windows and rearrange the order by activating the
+  // windows.
+  widget0->SetVisibleOnAllWorkspaces(true);
+  widget2->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(win0->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  ASSERT_TRUE(win1->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  wm::ActivateWindow(win2.get());
+  wm::ActivateWindow(win1.get());
+  wm::ActivateWindow(win0.get());
+  EXPECT_TRUE(IsStackedBelow(win2.get(), win1.get()));
+  EXPECT_TRUE(IsStackedBelow(win1.get(), win0.get()));
+  EXPECT_EQ(3u, controller->visible_on_all_desks_windows().size());
+
+  // Move to desk 2. All the windows should move to the new desk and maintain
+  // their order.
+  ActivateDesk(desk_2);
+  desk_2_children = desk_2->GetDeskContainerForRoot(root)->children();
+  EXPECT_EQ(3u, desk_2_children.size());
+  EXPECT_TRUE(IsStackedBelow(win2.get(), win1.get()));
+  EXPECT_TRUE(IsStackedBelow(win1.get(), win0.get()));
+}
+
+// Tests the behavior of windows that are visible on all desks when the active
+// desk is removed.
+TEST_F(DesksBentoTest, VisibleOnAllDesksActiveDeskRemoval) {
+  auto* controller = DesksController::Get();
+  NewDesk();
+  const Desk* desk_1 = controller->desks()[0].get();
+  const Desk* desk_2 = controller->desks()[1].get();
+  auto* root = Shell::GetPrimaryRootWindow();
+
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  auto win1 = CreateAppWindow(gfx::Rect(1, 1, 150, 150));
+  auto* widget0 = views::Widget::GetWidgetForNativeWindow(win0.get());
+  auto* widget1 = views::Widget::GetWidgetForNativeWindow(win1.get());
+
+  // Assign |win0| and |win1| to all desks.
+  widget0->SetVisibleOnAllWorkspaces(true);
+  widget1->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(win0->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  ASSERT_TRUE(win1->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+
+  // Remove the active desk. The visible on all desks windows should be on
+  // |desk_2|.
+  controller->RemoveDesk(desk_1, DesksCreationRemovalSource::kKeyboard);
+  auto desk_2_children = desk_2->GetDeskContainerForRoot(root)->children();
+  EXPECT_EQ(2u, desk_2_children.size());
+  EXPECT_TRUE(IsStackedBelow(win0.get(), win1.get()));
+  EXPECT_EQ(2u, controller->visible_on_all_desks_windows().size());
+}
+
+// Tests the behavior of a minimized window that is visible on all desks.
+TEST_F(DesksBentoTest, VisibleOnAllDesksMinimizedWindow) {
+  auto* controller = DesksController::Get();
+  NewDesk();
+  const Desk* desk_2 = controller->desks()[1].get();
+  auto* root = Shell::GetPrimaryRootWindow();
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window.get());
+
+  // Minimize |window| and then assign it to all desks. This shouldn't
+  // unminimize it.
+  auto* window_state = WindowState::Get(window.get());
+  window_state->Minimize();
+  ASSERT_TRUE(window_state->IsMinimized());
+  widget->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  EXPECT_TRUE(window_state->IsMinimized());
+
+  // Switch desks. |window| should be on the newly active desk and should still
+  // be minimized.
+  ActivateDesk(desk_2);
+  auto desk_2_children = desk_2->GetDeskContainerForRoot(root)->children();
+  EXPECT_EQ(1u, desk_2_children.size());
+  EXPECT_EQ(window.get(), desk_2_children[0]);
+  EXPECT_TRUE(window_state->IsMinimized());
+}
+
+// Tests the behavior of a window that is visible on all desks when a user tries
+// to move it to another desk using drag and drop (overview mode).
+TEST_F(DesksBentoTest, VisibleOnAllDesksMoveWindowToDeskViaDragAndDrop) {
+  auto* controller = DesksController::Get();
+  auto* root = Shell::GetPrimaryRootWindow();
+  NewDesk();
+  const Desk* desk_1 = controller->desks()[0].get();
+  const Desk* desk_2 = controller->desks()[1].get();
+
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window.get());
+
+  // Assign |window| to all desks.
+  widget->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+
+  // Try to move |window| to |desk_2| via drag and drop. It should not be moved.
+  EXPECT_FALSE(controller->MoveWindowFromActiveDeskTo(
+      window.get(), const_cast<Desk*>(desk_2), root,
+      DesksMoveWindowFromActiveDeskSource::kDragAndDrop));
+  EXPECT_TRUE(desks_util::BelongsToActiveDesk(window.get()));
+  EXPECT_EQ(1u, controller->visible_on_all_desks_windows().size());
+  EXPECT_TRUE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  EXPECT_TRUE(base::Contains(desk_1->windows(), window.get()));
+}
+
+// Tests the behavior of a window that is visible on all desks when a user tries
+// to move it to another desk using keyboard shorcuts.
+TEST_F(DesksBentoTest, VisibleOnAllDesksMoveWindowToDeskViaShortcuts) {
+  auto* controller = DesksController::Get();
+  auto* root = Shell::GetPrimaryRootWindow();
+  NewDesk();
+  const Desk* desk_2 = controller->desks()[1].get();
+
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window.get());
+
+  // Assign |window| to all desks.
+  widget->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+
+  // Move |window| to |desk_2| via keyboard shortcut. It should be on |desk_2|
+  // and should no longer be visible on all desks.
+  EXPECT_TRUE(controller->MoveWindowFromActiveDeskTo(
+      window.get(), const_cast<Desk*>(desk_2), root,
+      DesksMoveWindowFromActiveDeskSource::kShortcut));
+  EXPECT_FALSE(desks_util::BelongsToActiveDesk(window.get()));
+  EXPECT_EQ(0u, controller->visible_on_all_desks_windows().size());
+  EXPECT_FALSE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
+}
+
+// Tests the behavior of a window that is visible on all desks when a user tries
+// to move it using the context menu.
+TEST_F(DesksBentoTest, VisibleOnAllDesksMoveWindowToDeskViaContextMenu) {
+  auto* controller = DesksController::Get();
+  NewDesk();
+  const Desk* desk_2 = controller->desks()[1].get();
+
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window.get());
+
+  // Assign |window| to all desks.
+  widget->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+
+  // Move |window| to |desk_2| via keyboard shortcut. It should be on |desk_2|
+  // and should no longer be visible on all desks.
+  controller->SendToDeskAtIndex(window.get(), controller->GetDeskIndex(desk_2));
+  EXPECT_FALSE(desks_util::BelongsToActiveDesk(window.get()));
+  EXPECT_EQ(0u, controller->visible_on_all_desks_windows().size());
+  EXPECT_FALSE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.

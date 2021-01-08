@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -383,10 +383,13 @@ void Desk::MoveWindowToDesk(aura::Window* window,
     MoveWindowToDeskInternal(transient_root, target_desk, target_root);
 
     // Unminimize the window so that it shows up in the mini_view after it had
-    // been dragged and moved to another desk.
+    // been dragged and moved to another desk. Don't unminimize if the window is
+    // visible on all desks since it's being moved during desk activation.
     auto* window_state = WindowState::Get(transient_root);
-    if (window_state->IsMinimized())
+    if (window_state->IsMinimized() &&
+        !window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)) {
       window_state->Unminimize();
+    }
   }
 
   NotifyContentChanged();

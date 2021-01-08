@@ -40,6 +40,7 @@
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
 #include "base/timer/timer.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -491,6 +492,17 @@ bool DesksController::MoveWindowFromActiveDeskTo(
   if (!base::Contains(active_desk_->windows(), window))
     return false;
 
+  if (window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)) {
+    if (source == DesksMoveWindowFromActiveDeskSource::kDragAndDrop) {
+      // Since a visible on all desks window is on all desks, prevent users from
+      // moving them manually in overview.
+      // TODO(chinsenj): Add a UX indication for users.
+      return false;
+    } else if (source == DesksMoveWindowFromActiveDeskSource::kShortcut) {
+      window->SetProperty(aura::client::kVisibleOnAllWorkspacesKey, false);
+    }
+  }
+
   base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
 
   auto* overview_controller = Shell::Get()->overview_controller();
@@ -532,6 +544,15 @@ bool DesksController::MoveWindowFromActiveDeskTo(
   if (!in_overview)
     wm::DeactivateWindow(window);
   return true;
+}
+
+void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
+  const bool added = visible_on_all_desks_windows_.emplace(window).second;
+  DCHECK(added);
+}
+
+void DesksController::RemoveVisibleOnAllDesksWindow(aura::Window* window) {
+  visible_on_all_desks_windows_.erase(window);
 }
 
 void DesksController::RevertDeskNameToDefault(Desk* desk) {
@@ -594,6 +615,9 @@ int DesksController::GetNumberOfDesks() const {
 void DesksController::SendToDeskAtIndex(aura::Window* window, int desk_index) {
   if (desk_index < 0 || desk_index >= static_cast<int>(desks_.size()))
     return;
+
+  if (window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey))
+    window->SetProperty(aura::client::kVisibleOnAllWorkspacesKey, false);
 
   const int active_desk_index = GetDeskIndex(active_desk_);
   if (desk_index == active_desk_index)
@@ -700,7 +724,9 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
   // `old_active` desk do not activate other windows on the same desk. See
   // `ash::AshFocusRules::GetNextActivatableWindow()`.
   Desk* old_active = active_desk_;
+  MoveVisibleOnAllDesksWindowsFromActiveDeskTo(const_cast<Desk*>(desk));
   active_desk_ = const_cast<Desk*>(desk);
+  RestackAssignedWindowsOnActiveDesk();
 
   // There should always be an active desk at any time.
   DCHECK(old_active);
@@ -821,6 +847,10 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
     // Desk activation should not change overview mode state.
     DCHECK_EQ(in_overview, overview_controller->InOverviewSession());
 
+    // Now that |target_desk| is activated, we can restack the visible on all
+    // desks windows that were moved from the old active desk.
+    RestackAssignedWindowsOnActiveDesk();
+
     // Now that the windows from the removed and target desks merged, add them
     // all to the grid in the order of the new MRU.
     if (in_overview)
@@ -870,6 +900,58 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   desks_restore_util::UpdatePrimaryUserDesksPrefs();
 
   DCHECK_LE(available_container_ids_.size(), desks_util::GetMaxNumberOfDesks());
+}
+
+void DesksController::MoveVisibleOnAllDesksWindowsFromActiveDeskTo(
+    Desk* new_desk) {
+  // Ignore activations in the MRU tracker until we finish moving all visible on
+  // all desks windows so we maintain global MRU order that is used later
+  // for stacking visible on all desks windows.
+  auto* mru_tracker = Shell::Get()->mru_window_tracker();
+  mru_tracker->SetIgnoreActivations(true);
+
+  for (auto* visible_on_all_desks_window : visible_on_all_desks_windows_) {
+    MoveWindowFromActiveDeskTo(
+        visible_on_all_desks_window, new_desk,
+        visible_on_all_desks_window->GetRootWindow(),
+        DesksMoveWindowFromActiveDeskSource::kVisibleOnAllDesks);
+  }
+
+  mru_tracker->SetIgnoreActivations(false);
+}
+
+void DesksController::RestackAssignedWindowsOnActiveDesk() {
+  auto mru_windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  for (auto* visible_on_all_desks_window : visible_on_all_desks_windows_) {
+    auto visible_on_all_desks_window_iter = std::find(
+        mru_windows.begin(), mru_windows.end(), visible_on_all_desks_window);
+    DCHECK(visible_on_all_desks_window_iter != mru_windows.end());
+    auto* desk_container =
+        visible_on_all_desks_window->GetRootWindow()->GetChildById(
+            active_desk_->container_id());
+    DCHECK_EQ(desk_container, visible_on_all_desks_window->parent());
+
+    // Search through the MRU list for the next element that shares the same
+    // parent. This will be used to stack |visible_on_all_desks_window| in
+    // the active desk so its stacking respects global MRU order.
+    auto closest_window_below_iter =
+        std::next(visible_on_all_desks_window_iter);
+    while (closest_window_below_iter != mru_windows.end() &&
+           (*closest_window_below_iter)->parent() !=
+               visible_on_all_desks_window->parent()) {
+      closest_window_below_iter = std::next(closest_window_below_iter);
+    }
+
+    if (closest_window_below_iter == mru_windows.end()) {
+      // There was no element in the MRU list that was used after
+      // |visible_on_all_desks_window| so stack it at the bottom.
+      desk_container->StackChildAtBottom(visible_on_all_desks_window);
+    } else {
+      desk_container->StackChildAbove(visible_on_all_desks_window,
+                                      *closest_window_below_iter);
+    }
+  }
 }
 
 const Desk* DesksController::FindDeskOfWindow(aura::Window* window) const {

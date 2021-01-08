@@ -11,6 +11,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -23,6 +24,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/ash_features.h"
 #include "chrome/browser/ui/toolbar/assign_to_desks_menu_model.h"
+#include "ui/views/widget/widget.h"
 #endif
 
 constexpr int WebAppMenuModel::kUninstallAppCommandId;
@@ -74,7 +76,9 @@ void WebAppMenuModel::Build() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::features::IsBentoEnabled()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
-    assign_to_desks_submenu_ = std::make_unique<AssignToDesksMenuModel>(this);
+    assign_to_desks_submenu_ = std::make_unique<AssignToDesksMenuModel>(
+        this, views::Widget::GetWidgetForNativeWindow(
+                  browser()->window()->GetNativeWindow()));
     AddSubMenuWithStringId(IDC_ASSIGN_TO_DESKS_MENU, IDS_ASSIGN_TO_DESKS_MENU,
                            assign_to_desks_submenu_.get());
   }

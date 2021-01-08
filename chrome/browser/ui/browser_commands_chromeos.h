@@ -13,4 +13,7 @@ void SendToDeskAtIndex(Browser* browser, int desk_index);
 // Takes a screenshot of the entire desktop (not just the browser window).
 void TakeScreenshot();
 
+// Toggles whether |browser| is assigned to all desks.
+void ToggleAssignedToAllDesks(Browser* browser);
+
 #endif  // CHROME_BROWSER_UI_BROWSER_COMMANDS_CHROMEOS_H_

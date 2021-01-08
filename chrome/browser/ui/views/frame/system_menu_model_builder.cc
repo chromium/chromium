@@ -33,6 +33,7 @@
 #include "components/user_manager/user_info.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/widget/widget.h"
 #endif
 
 SystemMenuModelBuilder::SystemMenuModelBuilder(
@@ -150,8 +151,10 @@ void SystemMenuModelBuilder::AppendAssignToDesksMenu(
     ui::SimpleMenuModel* model) {
   if (ash::features::IsBentoEnabled()) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
-    assign_to_desks_model_ =
-        std::make_unique<AssignToDesksMenuModel>(&menu_delegate_);
+    assign_to_desks_model_ = std::make_unique<AssignToDesksMenuModel>(
+        &menu_delegate_,
+        views::Widget::GetWidgetForNativeWindow(
+            menu_delegate_.browser()->window()->GetNativeWindow()));
     model->AddSubMenuWithStringId(IDC_ASSIGN_TO_DESKS_MENU,
                                   IDS_ASSIGN_TO_DESKS_MENU,
                                   assign_to_desks_model_.get());

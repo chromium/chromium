@@ -16,6 +16,7 @@
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/account_id/account_id.h"
@@ -75,6 +76,10 @@ class ASH_EXPORT DesksController : public DesksHelper,
   const std::vector<std::unique_ptr<Desk>>& desks() const { return desks_; }
 
   const Desk* active_desk() const { return active_desk_; }
+
+  const base::flat_set<aura::Window*>& visible_on_all_desks_windows() const {
+    return visible_on_all_desks_windows_;
+  }
 
   DeskAnimationBase* animation() const { return animation_.get(); }
 
@@ -145,14 +150,22 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // |target_root| is provided if |window| is desired to be moved to another
   // desk on another display, otherwise, you can just provide
   // |window->GetRootWindow()| if the window should stay on the same display.
-  // If |window| is minimized, it will be unminimized after it's moved to
-  // |target_desk|.
-  // Returns true on success, false otherwise (e.g. if |window| doesn't belong
-  // to the active desk).
+  // If |window| is minimized and isn't visible on all desks, it will be
+  // unminimized after it's moved to |target_desk|. Returns true on success,
+  // false otherwise (e.g. if |window| doesn't belong to the active desk or
+  // |window| is visible on all desks and user is manually moving it). If
+  // |window| is visible on all desks and |source| is kShortcut, it will be made
+  // not visible on all desks.
   bool MoveWindowFromActiveDeskTo(aura::Window* window,
                                   Desk* target_desk,
                                   aura::Window* target_root,
                                   DesksMoveWindowFromActiveDeskSource source);
+
+  // Adds |window| to |visible_on_all_desks_windows_|.
+  void AddVisibleOnAllDesksWindow(aura::Window* window);
+
+  // Removes |window| if it is in |visible_on_all_desks_windows_|.
+  void RemoveVisibleOnAllDesksWindow(aura::Window* window);
 
   // Reverts the name of the given |desk| to the default value (i.e. "Desk 1",
   // "Desk 2", ... etc.) according to its position in the |desks_| list, as if
@@ -218,6 +231,15 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // Removes `desk` without animation.
   void RemoveDeskInternal(const Desk* desk, DesksCreationRemovalSource source);
 
+  // Moves all the windows that are visible on all desks that currently
+  // reside on |active_desk_| to |new_desk|.
+  void MoveVisibleOnAllDesksWindowsFromActiveDeskTo(Desk* new_desk);
+
+  // Iterates through the visible on all desks windows on the active desk
+  // and restacks them based on their position in the global MRU tracker. This
+  // should be called after desk activation.
+  void RestackAssignedWindowsOnActiveDesk();
+
   // Returns the desk to which |window| belongs or nullptr if it doesn't belong
   // to any desk.
   const Desk* FindDeskOfWindow(aura::Window* window) const;
@@ -242,6 +264,9 @@ class ASH_EXPORT DesksController : public DesksHelper,
 
   // Stores the per-user last active desk index.
   base::flat_map<AccountId, int> user_to_active_desk_index_;
+
+  // Stores the visible on all desks windows.
+  base::flat_set<aura::Window*> visible_on_all_desks_windows_;
 
   // True when desks addition, removal, or activation change are in progress.
   // This can be checked when overview mode is active to avoid exiting overview

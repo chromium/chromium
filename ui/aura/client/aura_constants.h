@@ -154,6 +154,9 @@ AURA_EXPORT extern const WindowProperty<base::string16*>* const kTitleKey;
 // the web contents for app windows and varies for fullscreen windows.
 AURA_EXPORT extern const WindowProperty<int>* const kTopViewInset;
 
+// A property key to store whether this window is visible on all workspaces.
+AURA_EXPORT extern const WindowProperty<bool>* const kVisibleOnAllWorkspacesKey;
+
 // A property key to store the window icon, typically 16x16 for title bars.
 AURA_EXPORT extern const WindowProperty<gfx::ImageSkia*>* const kWindowIconKey;
 

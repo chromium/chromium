@@ -1161,6 +1161,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_ASSIGN_TO_DESKS_MENU" desc="The text label of the Assign to Desks submenu">
           Assign to desk
         </message>
+        <message name="IDS_ASSIGN_TO_ALL_DESKS" desc="The text label of the Assign to All Desks menu item">
+          All desks
+        </message>
       </if>
 
       <message name="IDS_ACCNAME_ZOOM_PLUS2" desc="The accessible description of the Make Text Larger menu item in the merged menu">

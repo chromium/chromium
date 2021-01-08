@@ -253,6 +253,8 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
     SetRestoreBounds(window_, window_bounds);
   else
     SetBounds(window_bounds);
+  // For similar reasons, wait to set visible on all workspaces.
+  SetVisibleOnAllWorkspaces(params.visible_on_all_workspaces);
   window_->SetEventTargetingPolicy(
       params.accept_events ? aura::EventTargetingPolicy::kTargetAndDescendants
                            : aura::EventTargetingPolicy::kNone);
@@ -657,11 +659,13 @@ ui::ZOrderLevel NativeWidgetAura::GetZOrderLevel() const {
 }
 
 void NativeWidgetAura::SetVisibleOnAllWorkspaces(bool always_visible) {
-  // Not implemented on chromeos or for child widgets.
+  window_->SetProperty(aura::client::kVisibleOnAllWorkspacesKey,
+                       always_visible);
 }
 
 bool NativeWidgetAura::IsVisibleOnAllWorkspaces() const {
-  return false;
+  return window_ &&
+         window_->GetProperty(aura::client::kVisibleOnAllWorkspacesKey);
 }
 
 void NativeWidgetAura::Maximize() {

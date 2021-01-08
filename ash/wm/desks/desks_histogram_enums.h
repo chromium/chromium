@@ -25,7 +25,8 @@ enum class DesksMoveWindowFromActiveDeskSource {
   kDragAndDrop = 0,
   kShortcut = 1,
   kSendToDesk = 2,
-  kMaxValue = kSendToDesk,
+  kVisibleOnAllDesks = 3,
+  kMaxValue = kVisibleOnAllDesks,
 };
 
 // These values are logged to UMA. Entries should not be renumbered and

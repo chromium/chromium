@@ -16721,6 +16721,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="0" label="Drag and drop"/>
   <int value="1" label="Move-window-to-desk keyboard shortcut"/>
   <int value="2" label="Send to desk menu"/>
+  <int value="3" label="Assign to desk menu"/>
 </enum>
 
 <enum name="DesksSwitchSource">

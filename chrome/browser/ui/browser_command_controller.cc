@@ -690,6 +690,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SEND_TO_DESK_8:
       SendToDeskAtIndex(browser_, id - IDC_SEND_TO_DESK_1);
       break;
+    case IDC_TOGGLE_ASSIGN_TO_ALL_DESKS:
+      ToggleAssignedToAllDesks(browser_);
+      break;
 #endif
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case IDC_FEEDBACK:
@@ -988,6 +991,7 @@ void BrowserCommandController::InitCommandState() {
                 "IDC_SEND_TO_DESK_* commands must be in order.");
   auto* desks_helper = ash::DesksHelper::Get();
   UpdateCommandsForDesks(desks_helper ? desks_helper->GetNumberOfDesks() : 1);
+  command_updater_.UpdateCommandEnabled(IDC_TOGGLE_ASSIGN_TO_ALL_DESKS, true);
 #endif
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
