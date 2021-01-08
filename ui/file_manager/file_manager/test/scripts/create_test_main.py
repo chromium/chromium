@@ -45,16 +45,16 @@ GENERATED = 'Generated at %s by: %s' % (time.ctime(), sys.path[0])
 GENERATED_HTML = '<!-- %s -->\n\n' % GENERATED
 
 
-def read(path):
-  with open(os.path.join(SRC, path)) as f:
+def read(path, mode='r'):
+  with open(os.path.join(SRC, path), mode) as f:
     return f.read()
 
 
-def write(path, content):
+def write(path, content, mode='w'):
   fullpath = os.path.join(GEN, path)
   if not os.path.exists(os.path.dirname(fullpath)):
     os.makedirs(os.path.dirname(fullpath))
-  with open(fullpath, 'w') as f:
+  with open(fullpath, mode) as f:
     f.write(content)
 
 
@@ -130,7 +130,11 @@ def copyresources(src_dir, dst_dir):
       srcf = os.path.join(root[len(SRC):], f)
       dstf = R_GEN + dst_dir + srcf[len(src_dir):]
       relpath = os.path.relpath(R_GEN, os.path.dirname(dstf)) + '/'
-      write(dstf, i18n(read(srcf).replace('chrome://resources/', relpath)))
+      try:
+        write(dstf, i18n(read(srcf).replace('chrome://resources/', relpath)))
+      except UnicodeDecodeError:
+        # Binary files get utf-8 codec errors in py3, copy them as binary.
+        write(dstf, read(srcf, 'rb'), 'wb')
 
 # Copy any files required in chrome://resources/... into test/gen/resources.
 copyresources('ui/webui/resources/', '')
@@ -256,5 +260,5 @@ for filename, substitutions in (
   main_html = replaceline(main_html, filename,
                           ['<script src="test/gen/%s"></script>' % filename])
 
-test_html = GENERATED_HTML + '\n'.join(main_html).encode('utf-8')
-write('test.html', test_html)
+test_html = (GENERATED_HTML + '\n'.join(main_html)).encode('utf-8')
+write('test.html', test_html, 'wb')
