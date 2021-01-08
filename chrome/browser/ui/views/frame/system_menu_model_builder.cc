@@ -134,6 +134,9 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   model->AddItemWithStringId(IDC_CLOSE_WINDOW, IDS_CLOSE);
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AppendAssignToDesksMenu(model);
+#endif
   AppendTeleportMenu(model);
 }
 
