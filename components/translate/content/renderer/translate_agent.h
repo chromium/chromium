@@ -154,6 +154,10 @@ class TranslateAgent : public content::RenderFrameObserver,
   // if the page is being closed.
   blink::WebLocalFrame* GetMainFrame();
 
+  // Called by the translate host when a new language detection model file
+  // has been loaded and is available.
+  void UpdateLanguageDetectionModel(base::File model_file);
+
   // The states associated with the current translation.
   TranslateFrameCallback translate_callback_pending_;
   std::string source_lang_;
@@ -183,6 +187,9 @@ class TranslateAgent : public content::RenderFrameObserver,
 
   // Method factory used to make calls to TranslatePageImpl.
   base::WeakPtrFactory<TranslateAgent> weak_method_factory_{this};
+
+  // Weak pointer factory used to provide references to the translate host.
+  base::WeakPtrFactory<TranslateAgent> weak_pointer_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TranslateAgent);
 };

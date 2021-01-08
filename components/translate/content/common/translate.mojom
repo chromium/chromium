@@ -4,6 +4,7 @@
 
 module translate.mojom;
 
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
@@ -78,4 +79,10 @@ interface ContentTranslateDriver {
   // and the language for it has been determined.
   RegisterPage(pending_remote<TranslateAgent> translate_agent,
                LanguageDetectionDetails details, bool translation_critiera_met);
+
+  // Request that the language detection model being loaded and returned
+  // for use by the TranslateAgent.
+  GetLanguageDetectionModel()
+        => (mojo_base.mojom.File? model_file);
+
 };
