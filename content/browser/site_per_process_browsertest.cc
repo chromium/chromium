@@ -813,23 +813,6 @@ class SitePerProcessScrollAnchorTest : public SitePerProcessBrowserTest {
   }
 };
 
-// SitePerProcessEmbedderCSPEnforcementBrowserTest
-
-class SitePerProcessEmbedderCSPEnforcementBrowserTest
-    : public SitePerProcessBrowserTest {
- public:
-  SitePerProcessEmbedderCSPEnforcementBrowserTest() {}
-
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SitePerProcessBrowserTestBase::SetUpCommandLine(command_line);
-    // TODO(amalika): Remove this switch when the EmbedderCSPEnforcement becomes
-    // stable
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "EmbedderCSPEnforcement");
-  }
-};
-
 // SitePerProcessProgrammaticScrollTest.
 
 class SitePerProcessProgrammaticScrollTest : public SitePerProcessBrowserTest {
@@ -4173,7 +4156,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
 // Verify that "csp" property on frame elements propagates to child frames
 // correctly. See  https://crbug.com/647588
-IN_PROC_BROWSER_TEST_P(SitePerProcessEmbedderCSPEnforcementBrowserTest,
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        FrameOwnerPropertiesPropagationCSP) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/frame_owner_properties_csp.html"));
@@ -16676,9 +16659,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessBrowserTouchActionTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
-INSTANTIATE_TEST_SUITE_P(All,
-                         SitePerProcessEmbedderCSPEnforcementBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessHighDPIBrowserTest,
