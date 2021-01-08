@@ -34,9 +34,9 @@ void ThreadState::DetachCurrentThread() {
 }
 
 ThreadState::ThreadState(v8::CppHeap& cpp_heap)
-    : cpp_heap_(cpp_heap),
-      allocation_handle_(cpp_heap.GetAllocationHandle())
-          thread_id_(CurrentThread()) {}
+    : allocation_handle_(cpp_heap.GetAllocationHandle()),
+      cpp_heap_(cpp_heap),
+      thread_id_(CurrentThread()) {}
 
 ThreadState::~ThreadState() {
   DCHECK(!IsMainThread());

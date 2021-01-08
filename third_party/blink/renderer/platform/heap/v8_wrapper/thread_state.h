@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_THREAD_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_THREAD_STATE_H_
 
+#include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
@@ -68,6 +69,7 @@ class ThreadState final {
   ALWAYS_INLINE cppgc::AllocationHandle& allocation_handle() const {
     return allocation_handle_;
   }
+  ALWAYS_INLINE v8::CppHeap& cpp_heap() const { return cpp_heap_; }
 
  private:
   // Main-thread ThreadState avoids TLS completely by using a regular global.
