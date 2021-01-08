@@ -2152,6 +2152,11 @@
     "expiry_milestone": 85
   },
   {
+    "name": "enable-resampling-scroll-events-experimental-prediction",
+    "owners": [ "input-dev" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "enable-resource-loading-hints",
     "owners": [ "//components/data_reduction_proxy/OWNERS" ],
     // This flag is used for frequent manual testing and should not be removed.

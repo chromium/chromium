@@ -30,7 +30,8 @@ bool EmptyPredictor::HasPrediction() const {
 }
 
 std::unique_ptr<InputPredictor::InputData> EmptyPredictor::GeneratePrediction(
-    base::TimeTicks predict_time) const {
+    base::TimeTicks predict_time,
+    base::TimeDelta frame_interval) {
   if (!HasPrediction())
     return nullptr;
   return std::make_unique<InputData>(last_input_.value());

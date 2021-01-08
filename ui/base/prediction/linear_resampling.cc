@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include <base/feature_list.h>
+#include "base/strings/string_number_conversions.h"
 #include "ui/base/ui_base_features.h"
 
 namespace ui {
@@ -22,7 +24,13 @@ constexpr auto kResampleMaxPrediction = base::TimeDelta::FromMilliseconds(8);
 // resampling either doing interpolation or extrapolating a closer future time
 // so that resampled result is more accurate and has less noise. This adds some
 // latency during resampling but a few ms should be fine.
-constexpr auto kResampleLatency = base::TimeDelta::FromMilliseconds(5);
+constexpr auto kResampleLatency = base::TimeDelta::FromMilliseconds(-5);
+// The optimal prediction anticipation from experimentation: In the study
+// https://bit.ly/3iyQf8V we found that, on a machine with VSync at 60Hz, adding
+// 1/2 * frame_interval (on top of kResampleLatency) minimizes the Lag on touch
+// scrolling. + 1/2 * (1/60) - 5ms = 3.3ms.
+constexpr auto kResampleLatencyExperimental =
+    base::TimeDelta::FromMillisecondsD(3.3);
 
 // Get position at |sample_time| by linear interpolate/extrapolate a and b.
 inline gfx::PointF lerp(const InputPredictor::InputData& a,
@@ -71,11 +79,14 @@ bool LinearResampling::HasPrediction() const {
 }
 
 std::unique_ptr<InputPredictor::InputData> LinearResampling::GeneratePrediction(
-    base::TimeTicks frame_time) const {
+    base::TimeTicks frame_time,
+    base::TimeDelta frame_interval) {
   if (!HasPrediction())
     return nullptr;
 
-  base::TimeTicks sample_time = frame_time - kResampleLatency;
+  base::TimeDelta resample_latency =
+      latency_calculator_.GetResampleLatency(frame_interval);
+  base::TimeTicks sample_time = frame_time + resample_latency;
 
   base::TimeDelta max_prediction =
       std::min(kResampleMaxPrediction, events_dt_ / 2.0);
@@ -92,6 +103,39 @@ base::TimeDelta LinearResampling::TimeInterval() const {
     return events_dt_;
   }
   return kTimeInterval;
+}
+
+base::TimeDelta LinearResampling::LatencyCalculator::GetResampleLatency(
+    base::TimeDelta frame_interval) {
+  // Cache |resample_latency_| and recalculate only when |frame_interval|
+  // changes.
+  if (frame_interval != frame_interval_ || resample_latency_.is_zero()) {
+    frame_interval_ = frame_interval;
+    resample_latency_ = CalculateLatency();
+  }
+  return resample_latency_;
+}
+
+base::TimeDelta LinearResampling::LatencyCalculator::CalculateLatency() {
+  std::string prediction_type = GetFieldTrialParamValueByFeature(
+      ::features::kResamplingScrollEventsExperimentalPrediction, "mode");
+
+  if (prediction_type != ::features::kPredictionTypeTimeBased &&
+      prediction_type != ::features::kPredictionTypeFramesBased)
+    return kResampleLatency;
+
+  std::string latency_value = GetFieldTrialParamValueByFeature(
+      ::features::kResamplingScrollEventsExperimentalPrediction, "latency");
+  double latency;
+  if (base::StringToDouble(latency_value, &latency)) {
+    return prediction_type == ::features::kPredictionTypeTimeBased
+               ? base::TimeDelta::FromMillisecondsD(latency)
+               : latency * frame_interval_ + kResampleLatency;
+  }
+
+  return prediction_type == ::features::kPredictionTypeTimeBased
+             ? kResampleLatencyExperimental
+             : 0.5 * frame_interval_ + kResampleLatency;
 }
 
 }  // namespace ui

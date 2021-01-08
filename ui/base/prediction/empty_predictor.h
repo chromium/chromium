@@ -30,7 +30,8 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) EmptyPredictor
 
   // Returns the last_input_ for testing.
   std::unique_ptr<InputData> GeneratePrediction(
-      base::TimeTicks predict_time) const override;
+      base::TimeTicks predict_time,
+      base::TimeDelta frame_interval) override;
 
   // Returns kTimeInterval for testing.
   base::TimeDelta TimeInterval() const override;

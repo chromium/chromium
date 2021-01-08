@@ -22,8 +22,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="GPU.AcceleratedSurfaceRefreshRate" units="hz"
-    expires_after="M85">
+    expires_after="M90">
   <owner>vmiura@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Refresh rate of the display in Hz. This is recorded every time we present a
     frame.

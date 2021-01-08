@@ -42,7 +42,8 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) LinearPredictor
   // Generate the prediction based on stored points and given time_stamp.
   // Return false if no prediction available.
   std::unique_ptr<InputData> GeneratePrediction(
-      base::TimeTicks predict_time) const override;
+      base::TimeTicks predict_time,
+      base::TimeDelta frame_interval) override;
 
   // Return the average time delta in the event queue.
   base::TimeDelta TimeInterval() const override;

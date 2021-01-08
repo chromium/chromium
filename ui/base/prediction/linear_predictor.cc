@@ -81,7 +81,8 @@ bool LinearPredictor::HasPrediction() const {
 }
 
 std::unique_ptr<InputPredictor::InputData> LinearPredictor::GeneratePrediction(
-    base::TimeTicks predict_time) const {
+    base::TimeTicks predict_time,
+    base::TimeDelta frame_interval) {
   if (!HasPrediction())
     return nullptr;
 

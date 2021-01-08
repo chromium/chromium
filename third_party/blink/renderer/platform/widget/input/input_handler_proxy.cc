@@ -1409,7 +1409,7 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
   while (!compositor_event_queue_->empty()) {
     std::unique_ptr<EventWithCallback> event_with_callback =
         scroll_predictor_->ResampleScrollEvents(compositor_event_queue_->Pop(),
-                                                args.frame_time);
+                                                args.frame_time, args.interval);
 
     DispatchSingleInputEvent(std::move(event_with_callback), args.frame_time);
   }

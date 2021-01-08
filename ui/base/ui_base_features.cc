@@ -253,6 +253,10 @@ bool IsSynchronousPageFlipTestingEnabled() {
   return base::FeatureList::IsEnabled(kSynchronousPageFlipTesting);
 }
 
+const base::Feature kResamplingScrollEventsExperimentalPrediction{
+    "ResamplingScrollEventsExperimentalPrediction",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if defined(USE_X11) || defined(USE_OZONE)
 const base::Feature kUseOzonePlatform {
   "UseOzonePlatform",
@@ -291,6 +295,11 @@ const char kPredictorNameEmpty[] = "empty";
 
 const char kFilterNameEmpty[] = "empty_filter";
 const char kFilterNameOneEuro[] = "one_euro_filter";
+
+const char kPredictionTypeTimeBased[] = "time";
+const char kPredictionTypeFramesBased[] = "frames";
+const char kPredictionTypeDefaultTime[] = "3.3";
+const char kPredictionTypeDefaultFramesRatio[] = "0.5";
 
 const base::Feature kSwipeToMoveCursor{"SwipeToMoveCursor",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

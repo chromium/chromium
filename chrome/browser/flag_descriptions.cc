@@ -988,6 +988,11 @@ const char kEnableResamplingScrollEventsName[] =
     "Enable resampling scroll events";
 const char kEnableResamplingScrollEventsDescription[] =
     "Predicts the scroll amount at vsync time based on previous input";
+const char kEnableResamplingScrollEventsExperimentalPredictionName[] =
+    "Enable experimental prediction for scroll events";
+const char kEnableResamplingScrollEventsExperimentalPredictionDescription[] =
+    "Predicts the scroll amount after the vsync time to more closely match "
+    "when the frame is visible.";
 
 const char kEnableTabSearchFlagId[] = "enable-tab-search";
 const char kEnableTabSearchName[] = "Enable Tab Search";

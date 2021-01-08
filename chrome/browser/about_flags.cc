@@ -1659,6 +1659,25 @@ const FeatureEntry::FeatureVariation kResamplingInputEventsFeatureVariations[] =
       kResamplingInputEventsLinearResamplingEnabled,
       base::size(kResamplingInputEventsLinearResamplingEnabled), nullptr}};
 
+const FeatureEntry::FeatureParam
+    kResamplingScrollEventsPredictionTimeBasedEnabled[] = {
+        {"mode", features::kPredictionTypeTimeBased},
+        {"latency", features::kPredictionTypeDefaultTime}};
+const FeatureEntry::FeatureParam
+    kResamplingScrollEventsPredictionFramesBasedEnabled[] = {
+        {"mode", features::kPredictionTypeFramesBased},
+        {"latency", features::kPredictionTypeDefaultFramesRatio}};
+const FeatureEntry::FeatureVariation
+    kResamplingScrollEventsExperimentalPredictionVariations[] = {
+        {features::kPredictionTypeTimeBased,
+         kResamplingScrollEventsPredictionTimeBasedEnabled,
+         base::size(kResamplingScrollEventsPredictionTimeBasedEnabled),
+         nullptr},
+        {features::kPredictionTypeFramesBased,
+         kResamplingScrollEventsPredictionFramesBasedEnabled,
+         base::size(kResamplingScrollEventsPredictionFramesBasedEnabled),
+         nullptr}};
+
 const FeatureEntry::FeatureParam kFilteringPredictionEmptyFilterEnabled[] = {
     {"filter", features::kFilterNameEmpty}};
 const FeatureEntry::FeatureParam kFilteringPredictionOneEuroFilterEnabled[] = {
@@ -4966,6 +4985,18 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kResamplingScrollEvents,
                                     kResamplingInputEventsFeatureVariations,
                                     "ResamplingScrollEvents")},
+
+    // Should only be available if kResamplingScrollEvents is on, and using
+    // linear resampling.
+    {"enable-resampling-scroll-events-experimental-prediction",
+     flag_descriptions::kEnableResamplingScrollEventsExperimentalPredictionName,
+     flag_descriptions::
+         kEnableResamplingScrollEventsExperimentalPredictionDescription,
+     kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         ::features::kResamplingScrollEventsExperimentalPrediction,
+         kResamplingScrollEventsExperimentalPredictionVariations,
+         "ResamplingScrollEventsExperimentalLatency")},
 
     {"enable-filtering-scroll-events",
      flag_descriptions::kFilteringScrollPredictionName,

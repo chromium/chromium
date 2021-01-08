@@ -138,6 +138,23 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const char kPredictorNameLinearResampling[];
 COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kPredictorNameEmpty[];
 
+// Enables resampling of scroll events using an experimental latency of +3.3ms
+// instead of the original -5ms.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kResamplingScrollEventsExperimentalPrediction;
+
+// The type of prediction used. TimeBased uses a fixed timing, FramesBased uses
+// a ratio of the vsync refresh rate. The timing/ratio can be changed on the
+// command line through a `latency` param.
+COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kPredictionTypeTimeBased[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kPredictionTypeFramesBased[];
+// The default values for `latency`
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kPredictionTypeDefaultTime[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kPredictionTypeDefaultFramesRatio[];
+
 // The type of filter to use for filtering events. These values are used as the
 // 'filter' feature param for |blink::features::kFilteringScrollPrediction|.
 COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kFilterNameEmpty[];
