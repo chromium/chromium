@@ -46,9 +46,9 @@ class ASH_EXPORT TrayNetworkStateModel {
       chromeos::network_config::mojom::NetworkType type,
       bool enabled);
 
-  // Returns true if built-in VPN is enabled.
-  // Note: Currently only built-in VPNs can be disabled by policy.
-  bool IsBuiltinVpnEnabled() const;
+  // Returns true if built-in VPN is prohibited.
+  // Note: Currently only built-in VPNs can be prohibited by policy.
+  bool IsBuiltinVpnProhibited() const;
 
   // This used to be inlined but now requires details from the Impl class.
   chromeos::network_config::mojom::CrosNetworkConfig* cros_network_config();

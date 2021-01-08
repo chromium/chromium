@@ -440,8 +440,8 @@ void VPNListView::AddProviderAndNetworks(VpnProviderPtr vpn_provider,
   views::View* provider_view = nullptr;
 
   // Note: Currently only built-in VPNs can be disabled by policy.
-  bool vpn_enabled =
-      vpn_provider->type != VpnType::kOpenVPN || model()->IsBuiltinVpnEnabled();
+  bool vpn_enabled = vpn_provider->type != VpnType::kOpenVPN ||
+                     !model()->IsBuiltinVpnProhibited();
 
   provider_view =
       new VPNListProviderEntry(vpn_provider, list_empty_, vpn_name, vpn_enabled,

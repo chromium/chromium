@@ -81,10 +81,10 @@ Polymer({
     },
 
     /**
-     * False if VPN is disabled by policy.
+     * True if VPN is prohibited by policy.
      * @private {boolean}
      */
-    vpnIsEnabled_: {
+    vpnIsProhibited_: {
       type: Boolean,
       value: false,
     },
@@ -502,9 +502,9 @@ Polymer({
     }
 
     const vpn = this.deviceStates[mojom.NetworkType.kVPN];
-    this.vpnIsEnabled_ = !!vpn &&
+    this.vpnIsProhibited_ = !!vpn &&
         vpn.deviceState ===
-            chromeos.networkConfig.mojom.DeviceStateType.kEnabled;
+            chromeos.networkConfig.mojom.DeviceStateType.kProhibited;
 
     if (this.detailType_ && !this.deviceStates[this.detailType_]) {
       // If the device type associated with the current network has been
@@ -541,7 +541,7 @@ Polymer({
 
   /** @private */
   onAddVPNTap_() {
-    if (this.vpnIsEnabled_) {
+    if (!this.vpnIsProhibited_) {
       this.showConfig_(
           true /* configAndConnect */,
           chromeos.networkConfig.mojom.NetworkType.kVPN);

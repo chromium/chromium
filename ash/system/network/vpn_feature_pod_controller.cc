@@ -36,7 +36,7 @@ bool IsVPNVisibleInSystemTray() {
     return true;
 
   // Note: At this point, only built-in VPNs are considered.
-  return model->IsBuiltinVpnEnabled() && model->has_vpn();
+  return !model->IsBuiltinVpnProhibited() && model->has_vpn();
 }
 
 }  // namespace

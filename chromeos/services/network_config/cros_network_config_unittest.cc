@@ -25,6 +25,7 @@
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/prohibited_technologies_handler.h"
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "components/onc/onc_constants.h"
@@ -485,6 +486,16 @@ class CrosNetworkConfigTest : public testing::Test {
     run_loop.Run();
   }
 
+  bool ContainsVpnDeviceState(
+      std::vector<mojom::DeviceStatePropertiesPtr> devices) {
+    for (auto& device : devices) {
+      if (device->type == mojom::NetworkType::kVPN) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   NetworkStateTestHelper& helper() { return helper_; }
   CrosNetworkConfigTestObserver* observer() { return observer_.get(); }
   CrosNetworkConfig* cros_network_config() {
@@ -682,6 +693,32 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateList) {
   ASSERT_EQ(4u, devices.size());
   EXPECT_EQ(mojom::NetworkType::kWiFi, devices[0]->type);
   EXPECT_EQ(mojom::DeviceStateType::kDisabled, devices[0]->device_state);
+}
+
+// Tests that no VPN device state is returned by GetDeviceStateList if no VPN
+// services exist and built-in VPN is not prohibited.
+TEST_F(CrosNetworkConfigTest, GetDeviceStateListNoVpnServices) {
+  helper().ClearServices();
+
+  std::vector<std::string> prohibited_technologies =
+      NetworkHandler::Get()
+          ->prohibited_technologies_handler()
+          ->GetCurrentlyProhibitedTechnologies();
+  ASSERT_FALSE(base::Contains(prohibited_technologies, shill::kTypeVPN));
+
+  EXPECT_FALSE(ContainsVpnDeviceState(GetDeviceStateList()));
+}
+
+// Tests that a VPN device state is returned by GetDeviceStateList if built-in
+// VPN is not prohibited even if no VPN services exist.
+TEST_F(CrosNetworkConfigTest, GetDeviceStateListNoVpnServicesAndVpnProhibited) {
+  helper().ClearServices();
+
+  NetworkHandler::Get()
+      ->prohibited_technologies_handler()
+      ->AddGloballyProhibitedTechnology(shill::kTypeVPN);
+
+  EXPECT_TRUE(ContainsVpnDeviceState(GetDeviceStateList()));
 }
 
 // Test a sampling of properties, ensuring that string property types are

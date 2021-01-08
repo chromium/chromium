@@ -274,21 +274,24 @@ const std::string& GetVpnProviderName(
   return base::EmptyString();
 }
 
-mojom::DeviceStatePropertiesPtr GetVpnState() {
-  auto result = mojom::DeviceStateProperties::New();
-  result->type = mojom::NetworkType::kVPN;
-
-  bool vpn_disabled = false;
+bool IsVpnProhibited() {
+  bool vpn_prohibited = false;
   if (NetworkHandler::IsInitialized()) {
     std::vector<std::string> prohibited_technologies =
         NetworkHandler::Get()
             ->prohibited_technologies_handler()
             ->GetCurrentlyProhibitedTechnologies();
-    vpn_disabled = base::Contains(prohibited_technologies, shill::kTypeVPN);
+    vpn_prohibited = base::Contains(prohibited_technologies, shill::kTypeVPN);
   }
+  return vpn_prohibited;
+}
 
-  result->device_state = vpn_disabled ? mojom::DeviceStateType::kProhibited
-                                      : mojom::DeviceStateType::kEnabled;
+mojom::DeviceStatePropertiesPtr GetVpnState() {
+  auto result = mojom::DeviceStateProperties::New();
+  result->type = mojom::NetworkType::kVPN;
+
+  result->device_state = IsVpnProhibited() ? mojom::DeviceStateType::kProhibited
+                                           : mojom::DeviceStateType::kEnabled;
   return result;
 }
 
@@ -1861,7 +1864,15 @@ void CrosNetworkConfig::GetDeviceStateList(
   // Handle VPN state separately because VPN is not considered a device by shill
   // and thus will not be included in the |devices| list returned by network
   // state handler. In the UI code, it is treated as a "device" for consistency.
-  result.emplace_back(GetVpnState());
+  // In the UI code, knowing whether a device is prohibited or not is done by
+  // checking |device_state| field of the DeviceStateProperties of the
+  // corresponding device. A VPN device state is returned if built-in VPN
+  // services are prohibited by policy even if no VPN services exist in order to
+  // indicate that adding a VPN is prohibited in the UI.
+  if (network_state_handler_->FirstNetworkByType(NetworkTypePattern::VPN()) ||
+      IsVpnProhibited()) {
+    result.emplace_back(GetVpnState());
+  }
 
   std::move(callback).Run(std::move(result));
 }

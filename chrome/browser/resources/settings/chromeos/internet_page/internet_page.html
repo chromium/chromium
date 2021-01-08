@@ -71,13 +71,13 @@
                       aria-labelledby="add-wifi-label"></cr-icon-button>
                 </div>
               </template>
-              <div actionable$="[[vpnIsEnabled_]]" class="list-item"
+              <div actionable$="[[!vpnIsProhibited_]]" class="list-item"
                   on-click="onAddVPNTap_">
                 <div class="start settings-box-text"
                     id="add-vpn-label" aria-hidden="true">
                   $i18n{internetAddVPN}
                 </div>
-                <template is="dom-if" if="[[!vpnIsEnabled_]]">
+                <template is="dom-if" if="[[vpnIsProhibited_]]">
                   <cr-policy-indicator id="vpnPolicyIndicator"
                       icon-aria-label="$i18n{networkVpnBuiltin}"
                       indicator-type="devicePolicy"
@@ -86,7 +86,7 @@
                 </template>
                 <cr-icon-button class="icon-add-circle"
                     aria-labelledby="add-vpn-label"
-                    disabled="[[!vpnIsEnabled_]]">
+                    disabled="[[vpnIsProhibited_]]">
                 </cr-icon-button>
               </div>
               <template is="dom-repeat" items="[[vpnProviders_]]">
