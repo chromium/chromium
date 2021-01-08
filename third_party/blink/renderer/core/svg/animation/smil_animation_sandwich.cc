@@ -97,14 +97,11 @@ bool SMILAnimationSandwich::ApplyAnimationValues() {
   // Only calculate the relevant animations. If we actually set the
   // animation value, we don't need to calculate what is beneath it
   // in the sandwich.
-  bool needs_underlying_value = true;
   auto* sandwich_start = active_.end();
   while (sandwich_start != active_.begin()) {
     --sandwich_start;
-    if ((*sandwich_start)->OverwritesUnderlyingAnimationValue()) {
-      needs_underlying_value = false;
+    if ((*sandwich_start)->OverwritesUnderlyingAnimationValue())
       break;
-    }
   }
 
   // For now we need an element to setup and apply an animation. Any animation
@@ -114,8 +111,7 @@ bool SMILAnimationSandwich::ApplyAnimationValues() {
   // Only reset the animated type to the base value once for
   // the lowest priority animation that animates and
   // contributes to a particular element/attribute pair.
-  SMILAnimationValue animation_value =
-      animation->CreateAnimationValue(needs_underlying_value);
+  SMILAnimationValue animation_value = animation->CreateAnimationValue();
 
   for (auto* sandwich_it = sandwich_start; sandwich_it != active_.end();
        sandwich_it++) {
