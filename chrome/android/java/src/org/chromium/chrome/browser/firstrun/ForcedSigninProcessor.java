@@ -10,8 +10,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
+import org.chromium.chrome.browser.childaccounts.ChildAccountService;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.services.AndroidChildAccountHelper;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
@@ -48,16 +48,13 @@ public final class ForcedSigninProcessor {
      * changes with early exit if an account has already been signed in.
      */
     public static void start(@Nullable final Runnable onComplete) {
-        new AndroidChildAccountHelper() {
-            @Override
-            public void onParametersReady() {
-                boolean hasChildAccount = ChildAccountStatus.isChild(getChildAccountStatus());
-                AccountManagementFragment.setSignOutAllowedPreferenceValue(!hasChildAccount);
-                if (hasChildAccount) {
-                    processForcedSignIn(onComplete);
-                }
+        ChildAccountService.checkChildAccountStatus(status -> {
+            boolean hasChildAccount = ChildAccountStatus.isChild(status);
+            AccountManagementFragment.setSignOutAllowedPreferenceValue(!hasChildAccount);
+            if (hasChildAccount) {
+                processForcedSignIn(onComplete);
             }
-        }.start();
+        });
     }
 
     /**

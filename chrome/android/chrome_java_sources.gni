@@ -1213,7 +1213,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/searchwidget/SearchWidgetProvider.java",
   "java/src/org/chromium/chrome/browser/send_tab_to_self/SendTabToSelfShareActivity.java",
   "java/src/org/chromium/chrome/browser/services/AccountsChangedReceiver.java",
-  "java/src/org/chromium/chrome/browser/services/AndroidChildAccountHelper.java",
   "java/src/org/chromium/chrome/browser/services/gcm/ChromeGcmListenerServiceImpl.java",
   "java/src/org/chromium/chrome/browser/services/gcm/GCMBackgroundServiceImpl.java",
   "java/src/org/chromium/chrome/browser/services/gcm/GCMBackgroundTask.java",

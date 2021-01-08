@@ -127,7 +127,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public void checkChildAccountStatus(Account account, Callback<Integer> callback) {}
+    public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {}
 
     @Override
     public void createAddAccountIntent(Callback<Intent> callback) {}

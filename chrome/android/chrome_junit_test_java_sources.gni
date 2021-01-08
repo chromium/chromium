@@ -44,6 +44,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/browserservices/ui/view/DisclosureInfobarTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ui/view/DisclosureNotificationTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ui/view/DisclosureSnackbarTest.java",
+  "junit/src/org/chromium/chrome/browser/childaccounts/ChildAccountServiceTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/CompositorSurfaceManagerImplTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/CompositorViewHolderUnitTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/layouts/SceneOverlayTest.java",

@@ -271,8 +271,7 @@ public class AccountManagerFacadeRobolectricTest {
         mDelegate.removeAccountHolderExplicitly(AccountHolder.builder(account).build());
     }
 
-    private void assertChildAccountStatus(
-            Account account, @ChildAccountStatus.Status Integer status) {
+    private void assertChildAccountStatus(Account account, @ChildAccountStatus.Status int status) {
         final AtomicInteger callCount = new AtomicInteger();
         mFacade.checkChildAccountStatus(account, result -> {
             callCount.incrementAndGet();

@@ -22,11 +22,11 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.childaccounts.ChildAccountService;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.services.AndroidChildAccountHelper;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
@@ -77,15 +77,12 @@ public abstract class FirstRunFlowSequencer  {
         }
 
         long childAccountStatusStart = SystemClock.elapsedRealtime();
-        new AndroidChildAccountHelper() {
-            @Override
-            public void onParametersReady() {
-                RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
-                        SystemClock.elapsedRealtime() - childAccountStatusStart);
-                initializeSharedState(getChildAccountStatus());
-                processFreEnvironmentPreNative();
-            }
-        }.start();
+        ChildAccountService.checkChildAccountStatus(status -> {
+            RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
+                    SystemClock.elapsedRealtime() - childAccountStatusStart);
+            initializeSharedState(status);
+            processFreEnvironmentPreNative();
+        });
     }
 
     @VisibleForTesting

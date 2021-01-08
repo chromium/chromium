@@ -221,7 +221,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     // overriding.
     @SuppressWarnings("WrongThread")
     @Override
-    public void checkChildAccountStatus(Account account, Callback<Integer> callback) {
+    public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {
         ThreadUtils.assertOnUiThread();
         new AsyncTask<Integer>() {
             @Override
@@ -236,8 +236,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             }
 
             @Override
-            public void onPostExecute(@ChildAccountStatus.Status Integer value) {
-                callback.onResult(value);
+            public void onPostExecute(@ChildAccountStatus.Status Integer status) {
+                listener.onStatusReady(status);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
