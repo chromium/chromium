@@ -608,9 +608,9 @@ class PDFiumEngine : public PDFEngine,
   // document is loaded.
   void LoadDocumentMetadata();
 
-  // Retrieves the unparsed value of |field| in the document information
-  // dictionary.
-  std::string GetMetadataByField(FPDF_BYTESTRING field) const;
+  // Retrieves the value of |field| in the document information dictionary.
+  // Trims whitespace characters from the retrieved value.
+  std::string GetTrimmedMetadataByField(FPDF_BYTESTRING field) const;
 
   // Retrieves the version of the PDF (e.g. 1.4 or 2.0) as an enum.
   PdfVersion GetDocumentVersion() const;

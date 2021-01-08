@@ -2374,7 +2374,7 @@ void OutOfProcessInstance::SendMetadata() {
   metadata_message.Set(pp::Var(kType), pp::Var(kJSMetadataType));
 
   const std::string& title = engine()->GetDocumentMetadata().title;
-  if (!base::TrimWhitespace(base::UTF8ToUTF16(title), base::TRIM_ALL).empty())
+  if (!title.empty())
     metadata_message.Set(pp::Var(kJSTitle), pp::Var(title));
 
   metadata_message.Set(
