@@ -29,6 +29,10 @@ struct WindowInfo;
 COMPONENT_EXPORT(FULL_RESTORE)
 extern const ui::ClassProperty<int32_t>* const kWindowIdKey;
 
+// A property key to indicate the restore id for the window from RestoreData.
+COMPONENT_EXPORT(FULL_RESTORE)
+extern const ui::ClassProperty<int32_t>* const kRestoreWindowIdKey;
+
 // Saves the app launch parameters to the full restore file.
 COMPONENT_EXPORT(FULL_RESTORE)
 void SaveAppLaunchInfo(const base::FilePath& profile_dir,

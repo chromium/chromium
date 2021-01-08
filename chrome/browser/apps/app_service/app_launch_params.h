@@ -62,6 +62,9 @@ struct AppLaunchParams {
   // If non-empty, use override_app_name in place of generating one normally.
   std::string override_app_name;
 
+  // The id from the restore data to restore the browser window.
+  int32_t restore_id = 0;
+
   // If non-empty, information from the command line may be passed on to the
   // application.
   base::CommandLine command_line;

@@ -85,6 +85,9 @@ void BrowserFrame::InitBrowserFrame() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   params.init_properties_container.SetProperty(
       full_restore::kWindowIdKey, browser_view_->browser()->session_id().id());
+  params.init_properties_container.SetProperty(
+      full_restore::kRestoreWindowIdKey,
+      browser_view_->browser()->create_params().restore_id);
 #endif
   if (browser_view_->browser()->is_type_normal() ||
       browser_view_->browser()->is_type_devtools() ||

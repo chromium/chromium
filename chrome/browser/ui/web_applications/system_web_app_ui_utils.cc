@@ -241,8 +241,9 @@ Browser* LaunchSystemWebApp(Profile* profile,
   content::WebContents* web_contents = nullptr;
 
   if (!browser) {
-    browser = CreateWebApplicationWindow(profile_for_launch, params->app_id,
-                                         params->disposition);
+    browser =
+        CreateWebApplicationWindow(profile_for_launch, params->app_id,
+                                   params->disposition, params->restore_id);
   }
 
   // Navigate application window to application's |url| if necessary.

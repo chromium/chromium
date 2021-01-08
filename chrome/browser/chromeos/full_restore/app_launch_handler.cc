@@ -179,6 +179,7 @@ void AppLaunchHandler::LaunchWebAppOrExtension(
         it.second->file_paths.has_value() ? it.second->file_paths.value()
                                           : std::vector<base::FilePath>{},
         it.second->intent.has_value() ? it.second->intent.value() : intent);
+    params.restore_id = it.first;
     launcher->LaunchAppWithParams(std::move(params));
   }
 }

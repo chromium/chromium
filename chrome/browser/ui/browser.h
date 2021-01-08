@@ -246,6 +246,11 @@ class Browser : public TabStripModelObserver,
 
     bool is_session_restore = false;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // The id from the restore data to restore the browser window.
+    int32_t restore_id = 0;
+#endif
+
     bool is_focus_mode = false;
 
     // Whether this browser was created by a user gesture. We track this

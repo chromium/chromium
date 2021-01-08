@@ -104,7 +104,8 @@ GURL GetLaunchUrl(WebAppProvider& provider,
 
 Browser* CreateWebApplicationWindow(Profile* profile,
                                     const std::string& app_id,
-                                    WindowOpenDisposition disposition) {
+                                    WindowOpenDisposition disposition,
+                                    int32_t restore_id) {
   std::string app_name = GenerateApplicationNameFromAppId(app_id);
   gfx::Rect initial_bounds;
   Browser::CreateParams browser_params =
@@ -116,6 +117,9 @@ Browser* CreateWebApplicationWindow(Profile* profile,
                 app_name, /*trusted_source=*/true, initial_bounds, profile,
                 /*user_gesture=*/true);
   browser_params.initial_show_state = DetermineWindowShowState();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  browser_params.restore_id = restore_id;
+#endif
   return Browser::Create(browser_params);
 }
 
@@ -192,8 +196,8 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
       }
     }
     if (!browser) {
-      browser = CreateWebApplicationWindow(profile_, params.app_id,
-                                           params.disposition);
+      browser = CreateWebApplicationWindow(
+          profile_, params.app_id, params.disposition, params.restore_id);
     }
   }
 
