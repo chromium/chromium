@@ -13,6 +13,16 @@
 // TODO (crbug.com/981889): Remove along with iOS 12.
 @interface UIColor (CRSemanticColors)
 
+// System Background Color
+@property(class, nonatomic, readonly) UIColor* cr_systemBackgroundColor;
+@property(class, nonatomic, readonly)
+    UIColor* cr_secondarySystemBackgroundColor;
+
+// System Grouped Background Colors
+@property(class, nonatomic, readonly) UIColor* cr_systemGroupedBackgroundColor;
+@property(class, nonatomic, readonly)
+    UIColor* cr_secondarySystemGroupedBackgroundColor;
+
 // Label Colors
 @property(class, nonatomic, readonly) UIColor* cr_labelColor;
 @property(class, nonatomic, readonly) UIColor* cr_secondaryLabelColor;

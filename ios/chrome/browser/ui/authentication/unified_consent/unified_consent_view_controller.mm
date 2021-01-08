@@ -193,7 +193,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   // Separator.
   UIView* separator = [[UIView alloc] initWithFrame:CGRectZero];
   separator.translatesAutoresizingMaskIntoConstraints = NO;
-  separator.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  separator.backgroundColor = UIColor.cr_secondarySystemBackgroundColor;
   [container addSubview:separator];
 
   // Customize label.

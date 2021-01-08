@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/gradient_view.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -306,7 +307,7 @@ enum AuthenticationButtonType {
 #pragma mark - Properties
 
 - (UIColor*)systemBackgroundColor {
-  return [UIColor colorNamed:kPrimaryBackgroundColor];
+  return UIColor.cr_systemBackgroundColor;
 }
 
 - (NSString*)confirmationButtonTitle {

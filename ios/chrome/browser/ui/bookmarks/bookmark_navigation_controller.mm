@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -16,7 +16,7 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  self.view.backgroundColor = UIColor.cr_systemBackgroundColor;
   self.navigationBar.accessibilityIdentifier = kBookmarkNavigationBarIdentifier;
 }
 

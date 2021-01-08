@@ -10,6 +10,42 @@
 
 @implementation UIColor (CRSemanticColors)
 
+#pragma mark - System Background Colors
+
++ (UIColor*)cr_systemBackgroundColor {
+  if (@available(iOS 13, *)) {
+    return UIColor.systemBackgroundColor;
+  }
+  return UIColor.whiteColor;
+}
+
++ (UIColor*)cr_secondarySystemBackgroundColor {
+  if (@available(iOS 13, *)) {
+    return UIColor.secondarySystemBackgroundColor;
+  }
+  // This is the value for secondarySystemBackgroundColor in light mode.
+  return [UIColor colorWithRed:244 / (CGFloat)0xFF
+                         green:244 / (CGFloat)0xFF
+                          blue:248 / (CGFloat)0xFF
+                         alpha:1];
+}
+
+#pragma mark - System Grouped Background Colors
+
++ (UIColor*)cr_systemGroupedBackgroundColor {
+  if (@available(iOS 13, *)) {
+    return UIColor.systemGroupedBackgroundColor;
+  }
+  return UIColor.groupTableViewBackgroundColor;
+}
+
++ (UIColor*)cr_secondarySystemGroupedBackgroundColor {
+  if (@available(iOS 13, *)) {
+    return UIColor.secondarySystemGroupedBackgroundColor;
+  }
+  return UIColor.whiteColor;
+}
+
 #pragma mark - Label Colors
 
 + (UIColor*)cr_labelColor {

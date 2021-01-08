@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/gradient_view.h"
 
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -53,9 +53,8 @@
   [CATransaction setDisableActions:YES];
 
   self.gradientLayer.colors = @[
-    (id)[[UIColor colorNamed:kPrimaryBackgroundColor] colorWithAlphaComponent:0]
-        .CGColor,
-    (id)[UIColor colorNamed:kPrimaryBackgroundColor].CGColor,
+    (id)[UIColor.cr_systemBackgroundColor colorWithAlphaComponent:0].CGColor,
+    (id)UIColor.cr_systemBackgroundColor.CGColor,
   ];
   [CATransaction commit];
 }

@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -87,8 +88,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor =
-      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  self.view.backgroundColor = UIColor.cr_systemGroupedBackgroundColor;
   self.tableView.accessibilityIdentifier = kAddCreditCardViewID;
 
   self.navigationItem.title = l10n_util::GetNSString(

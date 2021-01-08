@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
@@ -48,7 +47,7 @@ const CGFloat kArrowDownMargin = 12.;
   if (self) {
     self.accessibilityIdentifier = kIdentityPickerViewIdentifier;
     self.layer.cornerRadius = kIdentityPickerViewRadius;
-    self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+    self.backgroundColor = UIColor.cr_secondarySystemBackgroundColor;
     // Adding view elements inside.
     // Ink view.
     _rippleView = [[MDCRippleView alloc] initWithFrame:CGRectZero];
