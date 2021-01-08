@@ -524,12 +524,16 @@ TEST_P(LayoutBoxTest, VisualOverflowRectWithOverflowClipMargin) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .parent { width: 100px; height: 50px; overflow: clip; }
+      .parent2 { width: 100px; height: 50px; contain: paint; }
       .child { width: 110px; height: 55px; }
     </style>
     <div id="clip1" style="overflow-clip-margin: 4px" class="parent">
       <div class="child"></div>
     </div>
     <div id="clip2" style="overflow-clip-margin: 11px" class="parent">
+      <div class="child"></div>
+    </div>
+    <div id="clip3" style="overflow-clip-margin: 11px" class="parent2">
       <div class="child"></div>
     </div>
   )HTML");
@@ -543,12 +547,18 @@ TEST_P(LayoutBoxTest, VisualOverflowRectWithOverflowClipMargin) {
   EXPECT_FALSE(clip2->IsScrollContainer());
   EXPECT_TRUE(clip2->ShouldClipOverflowAlongBothAxis());
   EXPECT_EQ(LayoutRect(0, 0, 110, 55), clip2->VisualOverflowRect());
+
+  LayoutBox* clip3 = GetLayoutBoxByElementId("clip3");
+  EXPECT_FALSE(clip3->IsScrollContainer());
+  EXPECT_TRUE(clip3->ShouldClipOverflowAlongBothAxis());
+  EXPECT_EQ(LayoutRect(0, 0, 110, 55), clip3->VisualOverflowRect());
 }
 
 TEST_P(LayoutBoxTest, LayoutOverflowRectWithOverflowClipMargin) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .parent { width: 100px; height: 50px; overflow: clip; }
+      .parent2 { width: 100px; height: 50px; contain: paint; }
       .child { position: relative; top: -5px; left: -6px; width: 110px;
                height: 112px; }
     </style>
@@ -556,6 +566,9 @@ TEST_P(LayoutBoxTest, LayoutOverflowRectWithOverflowClipMargin) {
       <div class="child"></div>
     </div>
     <div id="clip2" style="overflow-clip-margin: 10px" class="parent">
+      <div class="child"></div>
+    </div>
+    <div id="clip3" style="overflow-clip-margin: 10px" class="parent2">
       <div class="child"></div>
     </div>
   )HTML");
@@ -571,6 +584,12 @@ TEST_P(LayoutBoxTest, LayoutOverflowRectWithOverflowClipMargin) {
   EXPECT_TRUE(clip2->ShouldClipOverflowAlongBothAxis());
   EXPECT_EQ(LayoutRect(-6, -5, 110, 65),
             clip2->LayoutOverflowRectForPropagation(clip2->Parent()));
+
+  LayoutBox* clip3 = GetLayoutBoxByElementId("clip3");
+  EXPECT_FALSE(clip3->IsScrollContainer());
+  EXPECT_TRUE(clip3->ShouldClipOverflowAlongBothAxis());
+  EXPECT_EQ(LayoutRect(-6, -5, 110, 65),
+            clip3->LayoutOverflowRectForPropagation(clip3->Parent()));
 }
 
 TEST_P(LayoutBoxTest, ContentsVisualOverflowPropagation) {

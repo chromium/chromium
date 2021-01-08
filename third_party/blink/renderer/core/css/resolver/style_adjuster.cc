@@ -734,10 +734,11 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     AdjustOverflow(style);
 
   // overflow-clip-margin only applies if 'overflow: clip' is set along both
-  // axis.
-  if (style.OverflowX() != EOverflow::kClip ||
-      style.OverflowY() != EOverflow::kClip) {
-    style.SetOverflowClipMargin(LayoutUnit());
+  // axis or 'contain: paint'.
+  if (!style.ContainsPaint() && !(style.OverflowX() == EOverflow::kClip &&
+                                  style.OverflowY() == EOverflow::kClip)) {
+    style.SetOverflowClipMargin(
+        ComputedStyleInitialValues::InitialOverflowClipMargin());
   }
 
   if (StopPropagateTextDecorations(style, element))

@@ -251,8 +251,12 @@ void LayoutBlock::UpdateFromStyle() {
   NOT_DESTROYED();
   LayoutBox::UpdateFromStyle();
 
-  bool should_clip_overflow = !StyleRef().IsOverflowVisibleAlongBothAxes() &&
-                              AllowsNonVisibleOverflow();
+  // OverflowClipMargin() is only set if overflow is 'clip' along both axis, or
+  // 'contain: paint'. The later implies clipping along both axis.
+  bool should_clip_overflow =
+      (!StyleRef().IsOverflowVisibleAlongBothAxes() ||
+       StyleRef().OverflowClipMargin() != LayoutUnit()) &&
+      AllowsNonVisibleOverflow();
   if (should_clip_overflow != HasNonVisibleOverflow()) {
     if (GetScrollableArea())
       GetScrollableArea()->InvalidateAllStickyConstraints();

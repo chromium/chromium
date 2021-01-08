@@ -128,6 +128,7 @@ TEST_F(StyleAdjusterTest, AdjustOverflow) {
          overflow-clip-margin: 1px;'>
     <div id='vishidden' style='overflow-x: visible; overflow-y: hidden;
          overflow-clip-margin: 1px;'>
+    <div id='containpaint' style='contain: paint; overflow-clip-margin: 1px;'>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -173,6 +174,11 @@ TEST_F(StyleAdjusterTest, AdjustOverflow) {
   EXPECT_EQ(EOverflow::kHidden, target->GetComputedStyle()->OverflowX());
   EXPECT_EQ(EOverflow::kAuto, target->GetComputedStyle()->OverflowY());
   EXPECT_EQ(LayoutUnit(), target->GetComputedStyle()->OverflowClipMargin());
+
+  target = GetDocument().getElementById("containpaint");
+  ASSERT_TRUE(target);
+  EXPECT_TRUE(target->GetComputedStyle()->ContainsPaint());
+  EXPECT_EQ(LayoutUnit(1), target->GetComputedStyle()->OverflowClipMargin());
 }
 
 TEST_F(StyleAdjusterTest, TouchActionContentEditableArea) {
