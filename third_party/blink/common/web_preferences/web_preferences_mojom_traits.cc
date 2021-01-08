@@ -131,6 +131,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.dont_send_key_events_to_javascript();
   out->barrel_button_for_drag_enabled = data.barrel_button_for_drag_enabled();
   out->sync_xhr_in_documents_enabled = data.sync_xhr_in_documents_enabled();
+  out->target_blank_implies_no_opener_enabled_will_be_removed =
+      data.target_blank_implies_no_opener_enabled_will_be_removed();
   out->number_of_cpu_cores = data.number_of_cpu_cores();
   out->editing_behavior = data.editing_behavior();
   out->supports_multiple_windows = data.supports_multiple_windows();

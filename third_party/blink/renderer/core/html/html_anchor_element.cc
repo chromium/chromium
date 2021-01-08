@@ -544,7 +544,9 @@ void HTMLAnchorElement::HandleClick(Event& event) {
   }
   if (HasRel(kRelationNoOpener) ||
       (EqualIgnoringASCIICase(target, "_blank") && !HasRel(kRelationOpener) &&
-       RuntimeEnabledFeatures::TargetBlankImpliesNoOpenerEnabled())) {
+       RuntimeEnabledFeatures::TargetBlankImpliesNoOpenerEnabled() &&
+       frame->GetSettings()
+           ->GetTargetBlankImpliesNoOpenerEnabledWillBeRemoved())) {
     frame_request.SetNoOpener();
   }
 

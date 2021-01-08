@@ -624,6 +624,11 @@ void WebSettingsImpl::SetSyncXHRInDocumentsEnabled(bool enabled) {
   settings_->SetSyncXHRInDocumentsEnabled(enabled);
 }
 
+void WebSettingsImpl::SetTargetBlankImpliesNoOpenerEnabledWillBeRemoved(
+    bool enabled) {
+  settings_->SetTargetBlankImpliesNoOpenerEnabledWillBeRemoved(enabled);
+}
+
 void WebSettingsImpl::SetCaretBrowsingEnabled(bool enabled) {
   settings_->SetCaretBrowsingEnabled(enabled);
 }

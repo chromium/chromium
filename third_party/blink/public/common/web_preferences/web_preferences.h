@@ -135,6 +135,8 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool dont_send_key_events_to_javascript;
   bool barrel_button_for_drag_enabled = false;
   bool sync_xhr_in_documents_enabled;
+  // TODO(https://crbug.com/1163644): Remove once Chrome Apps are deprecated.
+  bool target_blank_implies_no_opener_enabled_will_be_removed = true;
   int number_of_cpu_cores;
   blink::mojom::EditingBehavior editing_behavior;
   bool supports_multiple_windows;
