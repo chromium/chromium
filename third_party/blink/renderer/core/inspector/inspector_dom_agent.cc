@@ -180,6 +180,10 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::Selection;
     case kPseudoIdTargetText:
       return protocol::DOM::PseudoTypeEnum::TargetText;
+    case kPseudoIdSpellingError:
+      return protocol::DOM::PseudoTypeEnum::SpellingError;
+    case kPseudoIdGrammarError:
+      return protocol::DOM::PseudoTypeEnum::GrammarError;
     case kPseudoIdFirstLineInherited:
       return protocol::DOM::PseudoTypeEnum::FirstLineInherited;
     case kPseudoIdScrollbar:

@@ -155,12 +155,12 @@ TEST(ComputedStyleTest, FirstPublicPseudoStyle) {
 }
 
 TEST(ComputedStyleTest, LastPublicPseudoElementStyle) {
-  static_assert(kFirstInternalPseudoId - 1 == kPseudoIdTargetText,
+  static_assert(kFirstInternalPseudoId - 1 == kPseudoIdGrammarError,
                 "Make sure we are testing the last public pseudo id");
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
-  style->SetHasPseudoElementStyle(kPseudoIdTargetText);
-  EXPECT_TRUE(style->HasPseudoElementStyle(kPseudoIdTargetText));
+  style->SetHasPseudoElementStyle(kPseudoIdGrammarError);
+  EXPECT_TRUE(style->HasPseudoElementStyle(kPseudoIdGrammarError));
   EXPECT_TRUE(style->HasAnyPseudoElementStyles());
 }
 

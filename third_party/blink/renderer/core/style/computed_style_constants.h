@@ -65,6 +65,8 @@ enum PseudoId : uint8_t {
   kPseudoIdSelection,
   kPseudoIdScrollbar,
   kPseudoIdTargetText,
+  kPseudoIdSpellingError,
+  kPseudoIdGrammarError,
   // Internal IDs follow:
   kPseudoIdFirstLineInherited,
   kPseudoIdScrollbarThumb,

@@ -245,6 +245,10 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdResizer;
     case kPseudoTargetText:
       return kPseudoIdTargetText;
+    case kPseudoSpellingError:
+      return kPseudoIdSpellingError;
+    case kPseudoGrammarError:
+      return kPseudoIdGrammarError;
     case kPseudoUnknown:
     case kPseudoEmpty:
     case kPseudoFirstChild:
@@ -411,6 +415,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"focus-within", CSSSelector::kPseudoFocusWithin},
     {"fullscreen", CSSSelector::kPseudoFullscreen},
     {"future", CSSSelector::kPseudoFutureCue},
+    {"grammar-error", CSSSelector::kPseudoGrammarError},
     {"horizontal", CSSSelector::kPseudoHorizontal},
     {"host", CSSSelector::kPseudoHost},
     {"hover", CSSSelector::kPseudoHover},
@@ -440,6 +445,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"scope", CSSSelector::kPseudoScope},
     {"selection", CSSSelector::kPseudoSelection},
     {"single-button", CSSSelector::kPseudoSingleButton},
+    {"spelling-error", CSSSelector::kPseudoSpellingError},
     {"start", CSSSelector::kPseudoStart},
     {"target", CSSSelector::kPseudoTarget},
     {"target-text", CSSSelector::kPseudoTargetText},
@@ -518,6 +524,12 @@ static CSSSelector::PseudoType NameToPseudoType(const AtomicString& name,
 
   if (match->type == CSSSelector::kPseudoTargetText &&
       !RuntimeEnabledFeatures::CSSTargetTextPseudoElementEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
+  if ((match->type == CSSSelector::kPseudoSpellingError ||
+       match->type == CSSSelector::kPseudoGrammarError) &&
+      !RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -630,6 +642,8 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoWebKitCustomElement:
     case kPseudoSlotted:
     case kPseudoTargetText:
+    case kPseudoSpellingError:
+    case kPseudoGrammarError:
       if (match_ != kPseudoElement)
         pseudo_type_ = kPseudoUnknown;
       break;
@@ -1121,6 +1135,8 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoFirstLetter:
     case kPseudoSelection:
     case kPseudoTargetText:
+    case kPseudoSpellingError:
+    case kPseudoGrammarError:
       return true;
     default:
       return false;

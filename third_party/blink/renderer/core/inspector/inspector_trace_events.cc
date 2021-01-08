@@ -369,6 +369,8 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoXrOverlay)
     DEFINE_STRING_MAPPING(PseudoTargetText)
     DEFINE_STRING_MAPPING(PseudoModal)
+    DEFINE_STRING_MAPPING(PseudoSpellingError)
+    DEFINE_STRING_MAPPING(PseudoGrammarError)
 #undef DEFINE_STRING_MAPPING
   }
 

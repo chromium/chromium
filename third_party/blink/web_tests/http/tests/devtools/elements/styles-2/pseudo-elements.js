@@ -12,6 +12,14 @@
         color: green;
       }
 
+      #inspected::spelling-error {
+        color: orange;
+      }
+
+      #inspected::grammar-error {
+        color: teal;
+      }
+
       #inspected {
         display: list-item;
       }

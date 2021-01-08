@@ -228,7 +228,7 @@
     {
       name: "PseudoBits",
       field_template: "primitive",
-      field_size: 9,
+      field_size: 11,
       default_value: "kPseudoIdNone",
       type_name: "unsigned",
       custom_copy: true,

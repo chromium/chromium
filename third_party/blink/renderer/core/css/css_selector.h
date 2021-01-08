@@ -285,6 +285,8 @@ class CORE_EXPORT CSSSelector {
     kPseudoVideoPersistentAncestor,
     kPseudoTargetText,
     kPseudoDir,
+    kPseudoSpellingError,
+    kPseudoGrammarError,
   };
 
   enum class AttributeMatchType {
