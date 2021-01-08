@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "url/gurl.h"
+#include "url/origin_abstract_tests.h"
 #include "url/url_util.h"
 
 namespace blink {
@@ -909,24 +910,6 @@ TEST_F(SecurityOriginTest, NonStandardScheme) {
   EXPECT_TRUE(origin->IsOpaque());
 }
 
-TEST_F(SecurityOriginTest, NonStandardSchemeWithAndroidWebViewHack) {
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::EnableNonStandardSchemesForAndroidWebView();
-
-  // Regression test for https://crbug.com/896059.
-  scoped_refptr<const SecurityOrigin> origin =
-      SecurityOrigin::CreateFromString("cow://");
-  EXPECT_FALSE(origin->IsOpaque());
-  EXPECT_EQ("cow", origin->Protocol());
-  EXPECT_EQ("", origin->Host());
-  EXPECT_EQ(0, origin->Port());
-
-  // about:blank translates into an opaque origin, even in presence of
-  // EnableNonStandardSchemesForAndroidWebView.
-  origin = SecurityOrigin::CreateFromString("about:blank");
-  EXPECT_TRUE(origin->IsOpaque());
-}
-
 TEST_F(SecurityOriginTest, OpaqueIsolatedCopy) {
   scoped_refptr<const SecurityOrigin> origin =
       SecurityOrigin::CreateUniqueOpaque();
@@ -1214,3 +1197,38 @@ TEST_F(SecurityOriginTest, PercentEncodesHost) {
 }
 
 }  // namespace blink
+
+// Apparently INSTANTIATE_TYPED_TEST_SUITE_P needs to be used in the same
+// namespace as where the typed test suite was defined.
+namespace url {
+
+class BlinkSecurityOriginTestTraits final
+    : public url::OriginTraitsBase<scoped_refptr<blink::SecurityOrigin>> {
+ public:
+  OriginType CreateOriginFromString(base::StringPiece s) const override {
+    return blink::SecurityOrigin::CreateFromString(
+        String(s.data(), s.length()));
+  }
+
+  bool IsOpaque(const OriginType& origin) const override {
+    return origin->IsOpaque();
+  }
+
+  std::string GetScheme(const OriginType& origin) const override {
+    return origin->Protocol().Utf8();
+  }
+
+  std::string GetHost(const OriginType& origin) const override {
+    return origin->Host().Utf8();
+  }
+
+  uint16_t GetPort(const OriginType& origin) const override {
+    return origin->Port();
+  }
+};
+
+INSTANTIATE_TYPED_TEST_SUITE_P(BlinkSecurityOrigin,
+                               AbstractOriginTest,
+                               BlinkSecurityOriginTestTraits);
+
+}  // namespace url

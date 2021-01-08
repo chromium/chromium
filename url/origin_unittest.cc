@@ -10,9 +10,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/origin_abstract_tests.h"
 #include "url/url_util.h"
 
 namespace url {
+
+namespace {
 
 void ExpectParsedUrlsEqual(const GURL& a, const GURL& b) {
   EXPECT_EQ(a, b);
@@ -35,6 +38,8 @@ void ExpectParsedUrlsEqual(const GURL& a, const GURL& b) {
   EXPECT_EQ(a_parsed.ref.begin, b_parsed.ref.begin);
   EXPECT_EQ(a_parsed.ref.len, b_parsed.ref.len);
 }
+
+}  // namespace
 
 class OriginTest : public ::testing::Test {
  public:
@@ -671,22 +676,6 @@ TEST_F(OriginTest, NonStandardScheme) {
   EXPECT_TRUE(origin.opaque());
 }
 
-TEST_F(OriginTest, NonStandardSchemeWithAndroidWebViewHack) {
-  EnableNonStandardSchemesForAndroidWebView();
-
-  // Regression test for https://crbug.com/896059.
-  Origin origin = Origin::Create(GURL("cow://"));
-  EXPECT_FALSE(origin.opaque());
-  EXPECT_EQ("cow", origin.scheme());
-  EXPECT_EQ("", origin.host());
-  EXPECT_EQ(0, origin.port());
-
-  // about:blank translates into an opaque origin, even in presence of
-  // EnableNonStandardSchemesForAndroidWebView.
-  origin = Origin::Create(GURL("about:blank"));
-  EXPECT_TRUE(origin.opaque());
-}
-
 TEST_F(OriginTest, CanBeDerivedFrom) {
   AddStandardScheme("new-standard", SchemeType::SCHEME_WITH_HOST);
   Origin opaque_unique_origin = Origin();
@@ -973,5 +962,32 @@ TEST_F(OriginTest, DeserializeValidNonce) {
   EXPECT_TRUE(DoEqualityComparisons(opaque, deserialized.value(), true));
   EXPECT_EQ(opaque.GetDebugString(), deserialized.value().GetDebugString());
 }
+
+class UrlOriginTestTraits final : public OriginTraitsBase<Origin> {
+ public:
+  OriginType CreateOriginFromString(base::StringPiece s) const override {
+    return Origin::Create(GURL(s));
+  }
+
+  bool IsOpaque(const OriginType& origin) const override {
+    return origin.opaque();
+  }
+
+  std::string GetScheme(const OriginType& origin) const override {
+    return origin.scheme();
+  }
+
+  std::string GetHost(const OriginType& origin) const override {
+    return origin.host();
+  }
+
+  uint16_t GetPort(const OriginType& origin) const override {
+    return origin.port();
+  }
+};
+
+INSTANTIATE_TYPED_TEST_SUITE_P(UrlOrigin,
+                               AbstractOriginTest,
+                               UrlOriginTestTraits);
 
 }  // namespace url

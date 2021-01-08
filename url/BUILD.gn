@@ -171,6 +171,20 @@ if (is_android) {
   }
 }
 
+source_set("url_test_support") {
+  testonly = true
+
+  sources = [ "origin_abstract_tests.h" ]
+
+  public_deps = [
+    ":url",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 test("url_unittests") {
   sources = [
     "gurl_unittest.cc",
@@ -186,6 +200,7 @@ test("url_unittests") {
 
   deps = [
     ":url",
+    ":url_test_support",
     "//base",
     "//base/test:test_support",
     "//testing/gmock",
