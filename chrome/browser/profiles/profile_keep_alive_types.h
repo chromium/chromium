@@ -9,22 +9,29 @@
 
 // Refers to what a ScopedProfileKeepAlive's lifetime is tied to, to help
 // debugging.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Keep this in sync with ProfileKeepAliveOrigin in enums.xml.
 enum class ProfileKeepAliveOrigin {
   // When a Profile gets created by ProfileManager, it initially has this type
   // of keep-alive. This ensures that the Profile has a refcount >=1, at least
   // until RemoveKeepAlive() gets called.
   //
   // When a kBrowserWindow keep-alive gets added, this one gets removed.
-  kWaitingForFirstBrowserWindow,
+  kWaitingForFirstBrowserWindow = 0,
 
   // This Profile has browser windows open.
-  kBrowserWindow,
+  kBrowserWindow = 1,
 
   // This Profile is running extensions with persistent background scripts.
-  kBackgroundMode,
+  kBackgroundMode = 2,
 
   // A child off-the-record profile holds a strong reference to its parent.
-  kOffTheRecordProfile,
+  kOffTheRecordProfile = 3,
+
+  kMaxValue = kOffTheRecordProfile,
 };
 
 std::ostream& operator<<(std::ostream& out,

@@ -61431,6 +61431,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="ProfileKeepAliveOrigin">
+  <int value="0" label="kWaitingForFirstBrowserWindow"/>
+  <int value="1" label="kBrowserWindow"/>
+  <int value="2" label="kBackgroundMode"/>
+  <int value="3" label="kOffTheRecordProfile"/>
+</enum>
+
 <enum name="ProfileMenuActionableItem">
   <int value="0" label="Manage your Google Account button"/>
   <int value="1" label="Passwords button"/>

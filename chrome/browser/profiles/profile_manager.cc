@@ -378,6 +378,20 @@ ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
 
 ProfileManager::~ProfileManager() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    // Ideally, all the keepalives should've been cleared already. Report
+    // metrics for incorrect usage of ScopedProfileKeepAlive.
+    for (const auto& path_and_profile_info : profiles_info_) {
+      const ProfileInfo* profile_info = path_and_profile_info.second.get();
+      for (const auto& origin_and_count : profile_info->keep_alives) {
+        ProfileKeepAliveOrigin origin = origin_and_count.first;
+        int count = origin_and_count.second;
+        if (count > 0) {
+          UMA_HISTOGRAM_ENUMERATION("Profile.KeepAliveLeakAtShutdown", origin);
+        }
+      }
+    }
+  }
 }
 
 // static
@@ -1278,8 +1292,10 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
 
   int& waiting_for_first_browser_window =
       info->keep_alives[ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow];
-  if (waiting_for_first_browser_window != 0)
+  if (origin == ProfileKeepAliveOrigin::kBrowserWindow &&
+      waiting_for_first_browser_window != 0) {
     waiting_for_first_browser_window = 0;
+  }
 }
 
 void ProfileManager::RemoveKeepAlive(const Profile* profile,
