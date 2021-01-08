@@ -1020,13 +1020,13 @@ body.view-grid-settings.grid-4x4 #preview-grid-vertical::before {
   width: 50%;
 }
 
-#preview-grid-horizontal.animate,
-#preview-grid-horizontal.animate::before {
+#preview-grid-horizontal,
+#preview-grid-horizontal::before {
   transition: height 500ms, visibility 500ms;
 }
 
-#preview-grid-vertical.animate,
-#preview-grid-vertical.animate::before {
+#preview-grid-vertical,
+#preview-grid-vertical::before {
   transition: width 500ms, visibility 500ms;
 }
 

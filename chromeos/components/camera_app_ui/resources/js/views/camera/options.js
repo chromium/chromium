@@ -95,7 +95,6 @@ export class Options {
     this.audioTrack_ = null;
 
     [['#switch-device', () => this.switchDevice_()],
-     ['#toggle-grid', () => this.animatePreviewGrid_()],
      ['#open-settings', () => nav.open(ViewName.SETTINGS)],
     ]
         .forEach(
@@ -164,15 +163,6 @@ export class Options {
     }
     const isSuccess = await this.doSwitchDevice_();
     state.set(PerfEvent.CAMERA_SWITCHING, false, {hasError: !isSuccess});
-  }
-
-  /**
-   * Animates the preview grid.
-   * @private
-   */
-  animatePreviewGrid_() {
-    Array.from(document.querySelector('#preview-grid').children)
-        .forEach((grid) => util.animateOnce(grid));
   }
 
   /**
