@@ -165,7 +165,8 @@
     </div>
   </div>
   <!-- TODO(https://crbug.com/1157764): Change to make only link clickable. -->
-  <template is="dom-if" if="[[shouldShowGuest_]]" restamp>
+  <template is="dom-if" if="[[interceptionParameters_.showGuestOption]]"
+      restamp>
     <div slot="footer">
       <div class="divider"></div>
       <div id="footer-description" on-click="onGuest_"

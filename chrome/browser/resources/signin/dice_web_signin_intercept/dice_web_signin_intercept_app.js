@@ -35,14 +35,6 @@ Polymer({
       value: false,
     },
 
-    /** @private {boolean} */
-    shouldShowGuest_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('shouldShowGuest');
-      },
-    },
-
     /** @private {string} */
     guestLink_: {
       type: String,

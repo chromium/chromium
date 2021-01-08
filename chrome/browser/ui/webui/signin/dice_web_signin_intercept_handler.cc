@@ -181,6 +181,8 @@ base::Value DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
                           l10n_util::GetStringUTF8(confirmButtonStringID));
   parameters.SetStringKey("cancelButtonLabel",
                           l10n_util::GetStringUTF8(cancelButtonStringID));
+  parameters.SetBoolKey("showGuestOption",
+                        bubble_parameters_.show_guest_option);
   parameters.SetKey("interceptedAccount",
                     GetAccountInfoValue(intercepted_account()));
   parameters.SetStringKey("headerBackgroundColor",

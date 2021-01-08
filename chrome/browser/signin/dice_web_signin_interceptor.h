@@ -150,6 +150,7 @@ class DiceWebSigninInterceptor : public KeyedService,
       AccountInfo intercepted_account;
       AccountInfo primary_account;
       SkColor profile_highlight_color;
+      bool show_guest_option;
     };
 
     virtual ~Delegate() = default;

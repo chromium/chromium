@@ -17,6 +17,7 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy {
       bodyText: '',
       cancelButtonLabel: '',
       confirmButtonLabel: '',
+      showGuestOption: false,
       headerTextColor: '',
       headerBackgroundColor: '',
       interceptedAccount: {isManaged: false, pictureUrl: ''},

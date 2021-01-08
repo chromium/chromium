@@ -155,11 +155,10 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
   std::unique_ptr<views::WebView> web_view =
       std::make_unique<views::WebView>(profile);
   web_view->LoadInitialURL(GURL(chrome::kChromeUIDiceWebSigninInterceptURL));
-  web_view->SetPreferredSize(
-      gfx::Size(kInterceptionBubbleWidth,
-                DiceWebSigninInterceptUI::ShouldShowGuestOption()
-                    ? kInterceptionBubbleWithGuestHeight
-                    : kInterceptionBubbleWithoutGuestHeight));
+  web_view->SetPreferredSize(gfx::Size(
+      kInterceptionBubbleWidth, bubble_parameters.show_guest_option
+                                    ? kInterceptionBubbleWithGuestHeight
+                                    : kInterceptionBubbleWithoutGuestHeight));
   DiceWebSigninInterceptUI* web_ui = web_view->GetWebContents()
                                          ->GetWebUI()
                                          ->GetController()

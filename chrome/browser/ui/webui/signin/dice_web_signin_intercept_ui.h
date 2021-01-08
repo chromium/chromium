@@ -28,8 +28,6 @@ class DiceWebSigninInterceptUI : public content::WebUIController {
           bubble_parameters,
       base::OnceCallback<void(SigninInterceptionUserChoice)> callback);
 
-  static bool ShouldShowGuestOption();
-
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

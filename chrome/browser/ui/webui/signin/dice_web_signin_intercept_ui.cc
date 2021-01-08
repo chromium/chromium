@@ -33,7 +33,6 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
   source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
   source->AddLocalizedString("guestLink",
                              IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_GUEST_LINK);
-  source->AddBoolean("shouldShowGuest", ShouldShowGuestOption());
   source->UseStringsJs();
 
   // Resources for testing.
@@ -48,12 +47,6 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
 }
 
 DiceWebSigninInterceptUI::~DiceWebSigninInterceptUI() = default;
-
-// static
-bool DiceWebSigninInterceptUI::ShouldShowGuestOption() {
-  return Profile::IsEphemeralGuestProfileEnabled() &&
-         !ProfileManager::GuestProfileExists();
-}
 
 void DiceWebSigninInterceptUI::Initialize(
     const DiceWebSigninInterceptor::Delegate::BubbleParameters&
