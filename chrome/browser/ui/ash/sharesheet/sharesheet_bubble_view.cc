@@ -14,11 +14,13 @@
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/about_flags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_expand_button.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_target_button.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -165,6 +167,24 @@ void SharesheetBubbleView::ShowBubble(
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title->SetProperty(views::kMarginsKey, gfx::Insets(kSpacing));
 
+  // Add content preview text descriptor.
+  if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews) &&
+      (intent_->file_urls.has_value())) {
+    // Remove the margin under the title for file_title
+    title->SetProperty(views::kMarginsKey,
+                       gfx::Insets(kSpacing, kSpacing, 0, kSpacing));
+    // This displays text data only for the first file_url provided.
+    auto* file_title = main_view_->AddChildView(std::make_unique<views::Label>(
+        base::ASCIIToUTF16(
+            (intent_->file_urls.value().front().ExtractFileName())),
+        ash::CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY));
+    file_title->SetLineHeight(kTitleLineHeight);
+    file_title->SetEnabledColor(kShareTargetTitleColor);
+    file_title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    file_title->SetProperty(views::kMarginsKey,
+                            gfx::Insets(3, kSpacing, kSpacing, kSpacing));
+  }
+
   if (targets.empty()) {
     auto* image =
         main_view_->AddChildView(std::make_unique<views::ImageView>());
@@ -210,6 +230,11 @@ void SharesheetBubbleView::ShowBubble(
     expand_button_separator_->SetVisible(false);
   }
   UpdateAnchorPosition();
+
+  // Expanding the sharesheet is needed for content previews
+  if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews)) {
+    ResizeBubble(kDefaultBubbleWidth, GetBubbleHeight());
+  }
 }
 
 std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
@@ -510,8 +535,7 @@ void SharesheetBubbleView::CreateBubble() {
 
 void SharesheetBubbleView::ExpandButtonPressed() {
   show_expanded_view_ = !show_expanded_view_;
-  ResizeBubble(kDefaultBubbleWidth, show_expanded_view_ ? kExpandedBubbleHeight
-                                                        : kDefaultBubbleHeight);
+  ResizeBubble(kDefaultBubbleWidth, GetBubbleHeight());
 
   // Scrollview has separators that overlaps with |expand_button_separator_|
   // to create a double line when both are visible, so when scrollview is
@@ -580,7 +604,7 @@ void SharesheetBubbleView::UpdateAnchorPosition() {
 
 void SharesheetBubbleView::SetToDefaultBubbleSizing() {
   width_ = kDefaultBubbleWidth;
-  height_ = kDefaultBubbleHeight;
+  height_ = GetBubbleHeight();
 }
 
 void SharesheetBubbleView::ShowWidgetWithAnimateFadeIn() {
@@ -639,6 +663,16 @@ void SharesheetBubbleView::CloseWidgetWithReason(
 
   // Bubble is deleted here.
   delegate_->OnBubbleClosed(active_target_);
+}
+
+int SharesheetBubbleView::GetBubbleHeight() {
+  int height =
+      show_expanded_view_ ? kExpandedBubbleHeight : kDefaultBubbleHeight;
+
+  if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews)) {
+    height += kTitleLineHeight + 3;
+  }
+  return height;
 }
 
 void SharesheetBubbleView::RecordFormFactorMetric() {

@@ -38,7 +38,6 @@ SharesheetActionCache::SharesheetActionCache() {
     AddShareAction(std::make_unique<ExampleAction>());
     AddShareAction(std::make_unique<ExampleAction>());
     AddShareAction(std::make_unique<ExampleAction>());
-    AddShareAction(std::make_unique<ExampleAction>());
   }
 #endif
 }

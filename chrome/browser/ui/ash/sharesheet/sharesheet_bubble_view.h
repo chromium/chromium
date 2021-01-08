@@ -73,6 +73,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   void ShowWidgetWithAnimateFadeIn();
   void CloseWidgetWithAnimateFadeOut(views::Widget::ClosedReason closed_reason);
   void CloseWidgetWithReason(views::Widget::ClosedReason closed_reason);
+  int GetBubbleHeight();
   void RecordFormFactorMetric();
 
   // Owns this class.
