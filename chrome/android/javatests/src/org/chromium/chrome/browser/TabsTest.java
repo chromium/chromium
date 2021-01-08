@@ -564,8 +564,11 @@ public class TabsTest {
     @Test
     @LargeTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1164443",
+            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
     @Feature({"Android-TabSwitcher"})
-    public void testTabSwitcherLandscapeCloseButton() {
+    public void
+    testTabSwitcherLandscapeCloseButton() {
         mActivityTestRule.getActivity().setRequestedOrientation(
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         // Hard-coded coordinates of the close button on the bottom left of the screen.
