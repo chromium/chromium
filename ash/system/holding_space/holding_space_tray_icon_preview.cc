@@ -4,6 +4,8 @@
 
 #include "ash/system/holding_space/holding_space_tray_icon_preview.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -20,11 +22,15 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_source.h"
+#include "ui/gfx/shadow_util.h"
 #include "ui/gfx/skia_paint_util.h"
 
 namespace ash {
 
 namespace {
+
+// Appearance.
+constexpr int kElevation = 1;
 
 // The duration of each of the preview icon bounce animation.
 constexpr base::TimeDelta kBounceAnimationSegmentDuration =
@@ -45,6 +51,13 @@ constexpr base::TimeDelta kShiftAnimationDuration =
 gfx::Size GetPreviewSize() {
   return gfx::Size(kHoldingSpaceTrayIconPreviewSize,
                    kHoldingSpaceTrayIconPreviewSize);
+}
+
+// Returns the shadow details for painting elevation.
+const gfx::ShadowDetails& GetShadowDetails() {
+  const gfx::Size size(GetPreviewSize());
+  const int radius = std::min(size.height(), size.width()) / 2;
+  return gfx::ShadowDetails::Get(kElevation, radius);
 }
 
 // Returns whether the specified `shelf_alignment` is horizontal.
@@ -307,13 +320,16 @@ void HoldingSpaceTrayIconPreview::OnPaintLayer(
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(SK_ColorWHITE);
+  flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
   canvas->DrawCircle(
-      contents_bounds.CenterPoint(),
-      std::min(contents_bounds.width(), contents_bounds.height()) / 2 - 1,
+      gfx::PointF(contents_bounds.CenterPoint()),
+      std::min(contents_bounds.width(), contents_bounds.height()) / 2 - 0.5,
       flags);
 
   // Contents.
+  // NOTE: The `contents_image_` should already be resized.
   if (!contents_image_.isNull()) {
+    DCHECK_EQ(contents_image_.size(), contents_bounds.size());
     canvas->DrawImageInt(contents_image_, contents_bounds.x(),
                          contents_bounds.y());
   }

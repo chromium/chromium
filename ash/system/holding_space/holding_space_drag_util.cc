@@ -159,8 +159,8 @@ class DragImageItemView : public views::View {
     // painting the background outside content bounds as might otherwise occur
     // due to pixel rounding. Failure to do so could result in white paint
     // artifacts.
-    gfx::Rect bounds(GetContentsBounds());
-    bounds.Inset(gfx::Insets(1));
+    gfx::RectF bounds(GetContentsBounds());
+    bounds.Inset(gfx::InsetsF(0.5f));
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);

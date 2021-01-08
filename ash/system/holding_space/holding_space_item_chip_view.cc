@@ -4,6 +4,8 @@
 
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
@@ -17,8 +19,40 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/painter.h"
 
 namespace ash {
+
+// CirclePainter ---------------------------------------------------------------
+
+class CirclePainter : public views::Painter {
+ public:
+  CirclePainter(SkColor color, const gfx::InsetsF& insets)
+      : color_(color), insets_(insets) {}
+  CirclePainter(const CirclePainter&) = delete;
+  CirclePainter& operator=(const CirclePainter&) = delete;
+  ~CirclePainter() override = default;
+
+ private:
+  // views::Painter:
+  gfx::Size GetMinimumSize() const override { return gfx::Size(); }
+
+  void Paint(gfx::Canvas* canvas, const gfx::Size& size) override {
+    gfx::RectF bounds{gfx::SizeF(size)};
+    bounds.Inset(insets_);
+
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setColor(color_);
+
+    canvas->DrawCircle(
+        bounds.CenterPoint(),
+        std::min(bounds.size().width(), bounds.size().height()) / 2.f, flags);
+  }
+
+  const SkColor color_;
+  const gfx::InsetsF insets_;
+};
 
 // HoldingSpaceItemChipView::LabelMaskOwner ------------------------------------
 
@@ -88,8 +122,12 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
 
   image_ = AddChildView(std::make_unique<RoundedImageView>(
       kHoldingSpaceChipIconSize / 2, RoundedImageView::Alignment::kLeading));
-  image_->SetBackground(views::CreateRoundedRectBackground(
-      SK_ColorWHITE, kHoldingSpaceChipIconSize / 2));
+
+  // Shrink circular background by a single pixel to prevent painting outside of
+  // the image which may otherwise occur due to pixel rounding. Failure to do so
+  // could result in white paint artifacts.
+  image_->SetBackground(views::CreateBackgroundFromPainter(
+      std::make_unique<CirclePainter>(SK_ColorWHITE, gfx::InsetsF(0.5f))));
 
   // Subscribe to be notified of changes to `item_`'s image.
   image_subscription_ =
