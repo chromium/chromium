@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -279,6 +280,9 @@ class StartupTracingTest
   base::FilePath temp_file_path_;
 
  private:
+  base::test::ScopedRunLoopTimeout increased_timeout_{
+      FROM_HERE, TestTimeouts::test_launcher_timeout()};
+
   DISALLOW_COPY_AND_ASSIGN(StartupTracingTest);
 };
 
@@ -294,15 +298,7 @@ INSTANTIATE_TEST_SUITE_P(
             OutputLocation::kDirectoryWithDefaultBasename,
             OutputLocation::kDirectoryWithBasenameUpdatedBeforeStop)));
 
-// Failing on Android/Win ASAN, Linux TSAN. crbug.com/1041392
-#if (defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)) || \
-    (defined(OS_WIN) && defined(ADDRESS_SANITIZER)) ||     \
-    ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER))
-#define MAYBE_TestEnableTracing DISABLED_TestStartupTracing
-#else
-#define MAYBE_TestEnableTracing TestStartupTracing
-#endif
-IN_PROC_BROWSER_TEST_P(StartupTracingTest, MAYBE_TestEnableTracing) {
+IN_PROC_BROWSER_TEST_P(StartupTracingTest, TestEnableTracing) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   if (GetOutputLocation() ==
