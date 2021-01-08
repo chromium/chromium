@@ -2,39 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("storage") {
-  sources = [
-    "prepare_directory_task.cc",
-    "prepare_directory_task.h",
-    "store_file_task.cc",
-    "store_file_task.h",
-    "store_files_task.cc",
-    "store_files_task.h",
-  ]
-  deps = [
-    "//content/public/browser",
-    "//mojo/public/cpp/bindings",
-  ]
-  public_deps = [
-    "//base",
-    "//third_party/blink/public/common",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "prepare_directory_task_unittest.cc",
-    "sharesheet_client_unittest.cc",
-  ]
+  sources = [ "sharesheet_client_unittest.cc" ]
 
   deps = [
-    ":storage",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/browser/chromeos:chromeos",
+    "//chrome/browser/webshare:storage",
     "//chrome/common",
     "//chrome/test:test_support",
     "//content/public/browser",

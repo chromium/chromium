@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEBSHARE_CHROMEOS_PREPARE_DIRECTORY_TASK_H_
-#define CHROME_BROWSER_WEBSHARE_CHROMEOS_PREPARE_DIRECTORY_TASK_H_
+#ifndef CHROME_BROWSER_WEBSHARE_PREPARE_DIRECTORY_TASK_H_
+#define CHROME_BROWSER_WEBSHARE_PREPARE_DIRECTORY_TASK_H_
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -51,4 +51,4 @@ class PrepareDirectoryTask {
 
 }  // namespace webshare
 
-#endif  // CHROME_BROWSER_WEBSHARE_CHROMEOS_PREPARE_DIRECTORY_TASK_H_
+#endif  // CHROME_BROWSER_WEBSHARE_PREPARE_DIRECTORY_TASK_H_

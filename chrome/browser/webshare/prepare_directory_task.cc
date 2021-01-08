@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/webshare/chromeos/prepare_directory_task.h"
+#include "chrome/browser/webshare/prepare_directory_task.h"
 
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -10,8 +10,12 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
+
+#if defined(OS_CHROMEOS)
 #include "third_party/cros_system_api/constants/cryptohome.h"
+#endif
 
 using content::BrowserThread;
 
@@ -80,12 +84,14 @@ base::File::Error PrepareDirectoryTask::PrepareDirectory(
       }
     }
 
+#if defined(OS_CHROMEOS)
     if (base::SysInfo::AmountOfFreeDiskSpace(directory) <
         static_cast<int64_t>(cryptohome::kMinFreeSpaceInBytes +
                              required_space)) {
       result = base::File::FILE_ERROR_NO_SPACE;
       VLOG(1) << "Insufficient space for sharing files";
     }
+#endif
   } else {
     DCHECK(result != base::File::FILE_OK);
     VLOG(1) << "Could not create directory for shared files";

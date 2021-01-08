@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEBSHARE_CHROMEOS_STORE_FILES_TASK_H_
-#define CHROME_BROWSER_WEBSHARE_CHROMEOS_STORE_FILES_TASK_H_
+#ifndef CHROME_BROWSER_WEBSHARE_STORE_FILES_TASK_H_
+#define CHROME_BROWSER_WEBSHARE_STORE_FILES_TASK_H_
 
 #include <memory>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/sequenced_task_runner.h"
-#include "chrome/browser/webshare/chromeos/store_file_task.h"
+#include "chrome/browser/webshare/store_file_task.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 
 namespace webshare {
@@ -45,4 +45,4 @@ class StoreFilesTask {
 
 }  // namespace webshare
 
-#endif  // CHROME_BROWSER_WEBSHARE_CHROMEOS_STORE_FILES_TASK_H_
+#endif  // CHROME_BROWSER_WEBSHARE_STORE_FILES_TASK_H_

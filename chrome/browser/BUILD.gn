@@ -4511,7 +4511,7 @@ static_library("browser") {
       "//chrome/browser/nearby_sharing/scheduling",
       "//chrome/browser/ui/webui/nearby_share:mojom",
       "//chrome/browser/ui/webui/nearby_share/public/mojom",
-      "//chrome/browser/webshare/chromeos:storage",
+      "//chrome/browser/webshare:storage",
       "//chromeos/components/account_manager",
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
       "//chromeos/components/quick_answers",
