@@ -2138,13 +2138,6 @@ void RenderFrameImpl::PepperSelectionChanged(
   SyncSelectionIfRequired();
 }
 
-void RenderFrameImpl::PluginCrashed(const base::FilePath& plugin_path,
-                                    base::ProcessId plugin_pid) {
-  // TODO(jam): dispatch this IPC in RenderFrameHost and switch to use
-  // routing_id_ as a result.
-  Send(new FrameHostMsg_PluginCrashed(routing_id_, plugin_path, plugin_pid));
-}
-
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 void RenderFrameImpl::ScriptedPrint(bool user_initiated) {

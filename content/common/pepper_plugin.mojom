@@ -4,6 +4,9 @@
 
 module content.mojom;
 
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/process_id.mojom";
+
 // Generic Pepper messages. Implemented by the browser.
 interface PepperHost {
   // Notification that a Pepper plugin instance is created in the DOM.
@@ -19,6 +22,14 @@ interface PepperPluginInstanceHost {
 
   // Notification a plugin instance has stopped playback.
   StopsPlayback();
+
+  // Notification that a plugin instance has crashed.
+  // Note: |plugin_pid| should not be trusted. The corresponding process has
+  // probably died. Moreover, the ID may have been reused by a new process. Any
+  // usage other than displaying it in a prompt to the user is very likely to be
+  // wrong.
+  InstanceCrashed(mojo_base.mojom.FilePath plugin_path,
+                  mojo_base.mojom.ProcessId plugin_pid);
 };
 
 // Plugin instance specific messages. Implemented by the renderer.

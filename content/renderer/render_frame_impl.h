@@ -332,10 +332,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // Informs the render view that a PPAPI plugin has changed selection.
   void PepperSelectionChanged(PepperPluginInstanceImpl* instance);
 
-  // Notification that the given plugin has crashed.
-  void PluginCrashed(const base::FilePath& plugin_path,
-                     base::ProcessId plugin_pid);
-
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
   void ScriptedPrint(bool user_initiated);

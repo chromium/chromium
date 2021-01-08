@@ -257,15 +257,6 @@ IPC_MESSAGE_ROUTED3(FrameHostMsg_PepperPluginHung,
                     base::FilePath /* path */,
                     bool /* is_hung */)
 
-// Sent by the renderer process to indicate that a plugin instance has crashed.
-// Note: |plugin_pid| should not be trusted. The corresponding process has
-// probably died. Moreover, the ID may have been reused by a new process. Any
-// usage other than displaying it in a prompt to the user is very likely to be
-// wrong.
-IPC_MESSAGE_ROUTED2(FrameHostMsg_PluginCrashed,
-                    base::FilePath /* plugin_path */,
-                    base::ProcessId /* plugin_pid */)
-
 // Return information about a plugin for the given URL and MIME
 // type. If there is no matching plugin, |found| is false.
 // |actual_mime_type| is the actual mime type supported by the

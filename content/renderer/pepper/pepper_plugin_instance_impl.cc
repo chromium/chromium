@@ -787,8 +787,8 @@ void PepperPluginInstanceImpl::InstanceCrashed() {
   BindGraphics(pp_instance(), 0);
   InvalidateRect(gfx::Rect());
 
-  if (render_frame_)
-    render_frame_->PluginCrashed(module_->path(), module_->GetPeerProcessId());
+  if (auto* host = GetPepperPluginInstanceHost())
+    host->InstanceCrashed(module_->path(), module_->GetPeerProcessId());
 }
 
 bool PepperPluginInstanceImpl::Initialize(

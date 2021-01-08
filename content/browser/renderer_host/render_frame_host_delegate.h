@@ -666,6 +666,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                                       int32_t pp_instance) {}
   virtual void OnPepperStopsPlayback(RenderFrameHostImpl* source,
                                      int32_t pp_instance) {}
+  virtual void OnPepperPluginCrashed(RenderFrameHostImpl* source,
+                                     const base::FilePath& plugin_path,
+                                     base::ProcessId plugin_pid) {}
 #endif
 
  protected:
