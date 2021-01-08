@@ -68,6 +68,13 @@ void WindowProxyManager::SetGlobalProxies(
     WindowProxyMaybeUninitialized(*entry.first)->InitializeIfNeeded();
 }
 
+void WindowProxyManager::ResetIsolatedWorldsForTesting() {
+  for (auto& world_info : isolated_worlds_) {
+    world_info.value->ClearForClose();
+  }
+  isolated_worlds_.clear();
+}
+
 WindowProxyManager::WindowProxyManager(Frame& frame, FrameType frame_type)
     : isolate_(V8PerIsolateData::MainThreadIsolate()),
       frame_(&frame),
@@ -112,6 +119,16 @@ WindowProxy* WindowProxyManager::WindowProxyMaybeUninitialized(
     }
   }
   return window_proxy;
+}
+
+void LocalWindowProxyManager::UpdateDocument() {
+  MainWorldProxyMaybeUninitialized()->UpdateDocument();
+
+  for (auto& entry : isolated_worlds_) {
+    auto* isolated_window_proxy =
+        static_cast<LocalWindowProxy*>(entry.value.Get());
+    isolated_window_proxy->UpdateDocument();
+  }
 }
 
 void LocalWindowProxyManager::UpdateSecurityOrigin(

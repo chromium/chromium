@@ -27,7 +27,7 @@ class WindowProxyManager : public GarbageCollected<WindowProxyManager> {
   v8::Isolate* GetIsolate() const { return isolate_; }
 
   void ClearForClose();
-  void CORE_EXPORT ClearForNavigation();
+  CORE_EXPORT void ClearForNavigation();
   void ClearForSwap();
   void ClearForV8MemoryPurge();
 
@@ -44,6 +44,8 @@ class WindowProxyManager : public GarbageCollected<WindowProxyManager> {
     window_proxy->InitializeIfNeeded();
     return window_proxy;
   }
+
+  CORE_EXPORT void ResetIsolatedWorldsForTesting();
 
  protected:
   using IsolatedWorldMap = HeapHashMap<int, Member<WindowProxy>>;
@@ -92,6 +94,8 @@ class LocalWindowProxyManager
   LocalWindowProxy* MainWorldProxyMaybeUninitialized() {
     return static_cast<LocalWindowProxy*>(window_proxy_.Get());
   }
+
+  void UpdateDocument();
 
   // Sets the given security origin to the main world's context.  Also updates
   // the security origin of the context for each isolated world.
