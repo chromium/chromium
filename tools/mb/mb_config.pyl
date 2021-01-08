@@ -374,10 +374,6 @@
       'win32-archive-rel-goma-canary-localoutputcache': 'release_bot_x86_minimal_symbols_enable_archive_compression',
       'win32-archive-rel-goma-latest-localoutputcache': 'release_bot_x86_minimal_symbols_enable_archive_compression',
 
-      'Win7 Builder (dbg) Goma Canary': 'gpu_tests_debug_bot_x86_no_symbols',
-      'Win7 Builder (dbg) Goma Latest Client': 'gpu_tests_debug_bot_x86_no_symbols',
-      'Win7 Builder Goma Canary': 'gpu_tests_release_bot_x86_minimal_symbols',
-      'Win7 Builder Goma Latest Client': 'gpu_tests_release_bot_x86_minimal_symbols',
 
       'Mac Builder (dbg) Goma Canary': 'gpu_tests_debug_bot',
       'Mac Builder (dbg) Goma Canary (clobber)': 'gpu_tests_debug_bot',

@@ -24,14 +24,6 @@ luci.console_view(
             short_name = "loc",
         ),
         luci.console_view_entry(
-            builder = "goma/Win7 Builder Goma Canary",
-            category = "win7|rel",
-        ),
-        luci.console_view_entry(
-            builder = "goma/Win7 Builder (dbg) Goma Canary",
-            category = "win7|dbg",
-        ),
-        luci.console_view_entry(
             builder = "goma/Mac Builder Goma Canary",
             category = "mac|rel",
         ),

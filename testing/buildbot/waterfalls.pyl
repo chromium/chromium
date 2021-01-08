@@ -3452,23 +3452,6 @@
           'gtest_tests': 'goma_gtests',
         },
       },
-      'Win7 Builder (dbg) Goma Canary': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
-      'Win7 Builder Goma Canary': {
-        'additional_compile_targets': [
-          'all',
-          'pdf_fuzzers',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
       'android-archive-dbg-goma-canary': {
         'additional_compile_targets': [
           'all',
