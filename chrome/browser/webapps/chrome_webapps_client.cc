@@ -13,6 +13,9 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #endif
 
 namespace webapps {
@@ -83,6 +86,15 @@ bool ChromeWebappsClient::CanShowAppBanners(
   return tab && static_cast<android::TabWebContentsDelegateAndroid*>(
                     tab->web_contents()->GetDelegate())
                     ->CanShowAppBanners();
+}
+
+void ChromeWebappsClient::OnWebApkInstallInitiatedFromAppMenu(
+    content::WebContents* web_contents) {
+  DVLOG(2) << "Sending event: IPH used for Installing PWA";
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext());
+  tracker->NotifyEvent(feature_engagement::events::kPwaInstallMenuSelected);
 }
 #endif
 

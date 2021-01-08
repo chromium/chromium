@@ -50,6 +50,9 @@ class WebappsClient {
                                         const GURL& manifest_url) = 0;
 
   virtual bool CanShowAppBanners(content::WebContents* web_contents) = 0;
+
+  virtual void OnWebApkInstallInitiatedFromAppMenu(
+      content::WebContents* web_contents) = 0;
 #endif
 };
 

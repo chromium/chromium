@@ -29,6 +29,8 @@ class ChromeWebappsClient : public WebappsClient {
   bool IsInstallationInProgress(content::WebContents* web_contents,
                                 const GURL& manifest_url) override;
   bool CanShowAppBanners(content::WebContents* web_contents) override;
+  void OnWebApkInstallInitiatedFromAppMenu(
+      content::WebContents* web_contents) override;
 #endif
 
  private:
