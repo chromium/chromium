@@ -7169,6 +7169,14 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="Unknown"/>
 </enum>
 
+<enum name="BlueZResultOfAdvertisementMonitor">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown Error"/>
+  <int value="2" label="Invalid Parameters"/>
+  <int value="3" label="No Resource"/>
+  <int value="4" label="Busy"/>
+</enum>
+
 <enum name="BlueZResultOfAdvertisementRegistration">
   <int value="1" label="Success"/>
   <int value="2" label="LE unsupported"/>

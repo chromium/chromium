@@ -1251,6 +1251,53 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="BlueZ.AdvertisementMonitor.NumOfMonitors" units="count"
+    expires_after="2021-12-28">
+  <owner>apusaka@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
+  <summary>
+    This is specific to Chrome OS. Records the number of active advertisement
+    monitors every couple of minutes. This helps us to gauge the additional
+    power requirement for the advertisement monitor feature.
+  </summary>
+</histogram>
+
+<histogram name="BlueZ.AdvertisementMonitor.{Filter}.FilterPatternsPerMinute"
+    units="count" expires_after="2021-12-28">
+  <owner>apusaka@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
+  <summary>
+    This is specific to Chrome OS. Records the number of advertisement packet
+    received in the user space while the advertisement monitor is done using
+    {Filter} filtering. This helps us to gauge the additional power requirement
+    for the advertisement monitor feature.
+  </summary>
+  <token key="Filter">
+    <variant name="MSFT"/>
+    <variant name="SW"/>
+  </token>
+</histogram>
+
+<histogram name="BlueZ.AdvertisementMonitor.{Filter}.{Operation}.Result"
+    enum="BlueZResultOfAdvertisementMonitor" expires_after="2021-12-28">
+  <owner>apusaka@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
+  <summary>
+    This is specific to Chrome OS. Records the outcome of {Operation} operation
+    of advertisement monitor when {Filter} filtering is used. This helps us to
+    verify the correctness of this feature as well as to point out possible
+    regression.
+  </summary>
+  <token key="Filter">
+    <variant name="MSFT"/>
+    <variant name="SW"/>
+  </token>
+  <token key="Operation">
+    <variant name="Add"/>
+    <variant name="Remove"/>
+  </token>
+</histogram>
+
 <histogram name="BlueZ.ChipLost2" units="seconds" expires_after="2021-05-16">
   <owner>sonnysasaka@chromium.org</owner>
   <summary>
