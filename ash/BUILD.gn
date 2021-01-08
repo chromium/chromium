@@ -2252,7 +2252,6 @@ test("ash_unittests") {
     "system/session/session_limit_notification_controller_unittest.cc",
     "system/status_area_widget_unittest.cc",
     "system/supervised/supervised_notification_controller_unittest.cc",
-    "system/time/time_tray_item_view_unittest.cc",
     "system/time/time_view_unittest.cc",
     "system/toast/toast_manager_unittest.cc",
     "system/tracing_notification_controller_unittest.cc",
