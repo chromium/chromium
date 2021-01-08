@@ -411,6 +411,26 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
     @MediumTest
     @Feature({"Browser"})
     @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP})
+    public void testLensChipNotShowingIfNotEnabled() throws Throwable {
+        // Required to avoid runtime error.
+        Looper.prepare();
+
+        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
+        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
+
+        RevampedContextMenuCoordinator menuCoordinator =
+                RevampedContextMenuUtils.openContextMenu(tab, "testImage");
+        // Needs to run on UI thread so creation happens on same thread as dismissal.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNull("Chip popoup was initialized.",
+                    menuCoordinator.getCurrentPopupWindowForTesting());
+        });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP})
     public void testSelectLensChip() throws Throwable {
         // Required to avoid runtime error.
         Looper.prepare();
