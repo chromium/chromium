@@ -1033,7 +1033,7 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
   // This test should attempt to configure a mirror mode that will not succeed
   // and should end up in extended mode.
   native_display_delegate_->set_max_configurable_pixels(
-      modes[3]->size().GetArea());
+      modes[1]->size().GetArea());
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
   UpdateOutputs(2, true);
 
@@ -1046,17 +1046,32 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
           GetCrtcAction(
               {outputs_[1]->display_id(), gfx::Point(0, 0), modes[0].get()})
               .c_str(),
-          // First mode tried is expected to fail and it will
-          // retry with the 4th mode in the list (for non-internal displays).
+          // First try is expected to fail and it will retry with the next
+          // largest mode in the list (for non-internal displays).since the
+          // internal display will always fail, the display configurator will
+          // attempt all of the external display's available modes before it
+          // gives up.
           GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
                          outputs_[0]->native_mode()})
               .c_str(),
           GetCrtcAction(
               {outputs_[1]->display_id(), gfx::Point(0, 0), modes[3].get()})
               .c_str(),
+          GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                         outputs_[0]->native_mode()})
+              .c_str(),
+          GetCrtcAction(
+              {outputs_[1]->display_id(), gfx::Point(0, 0), modes[2].get()})
+              .c_str(),
+          GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                         outputs_[0]->native_mode()})
+              .c_str(),
+          GetCrtcAction(
+              {outputs_[1]->display_id(), gfx::Point(0, 0), modes[1].get()})
+              .c_str(),
           // Since it was requested to go into mirror mode and the configured
           // modes were different, it should now try and setup a valid
-          // configurable extended mode.
+          // configurable extended mode in the same order described above.
           GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
                          outputs_[0]->native_mode()})
               .c_str(),
@@ -1072,6 +1087,22 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
                          gfx::Point(0, modes[0]->size().height() +
                                            DisplayConfigurator::kVerticalGap),
                          modes[3].get()})
+              .c_str(),
+          GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                         outputs_[0]->native_mode()})
+              .c_str(),
+          GetCrtcAction({outputs_[1]->display_id(),
+                         gfx::Point(0, modes[0]->size().height() +
+                                           DisplayConfigurator::kVerticalGap),
+                         modes[2].get()})
+              .c_str(),
+          GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                         outputs_[0]->native_mode()})
+              .c_str(),
+          GetCrtcAction({outputs_[1]->display_id(),
+                         gfx::Point(0, modes[0]->size().height() +
+                                           DisplayConfigurator::kVerticalGap),
+                         modes[1].get()})
               .c_str(),
           nullptr),
       log_->GetActionsAndClear());

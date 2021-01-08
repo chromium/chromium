@@ -41,7 +41,7 @@ class WindowManager : public display::NativeDisplayObserver {
       const std::vector<display::DisplaySnapshot*>& displays);
   void OnDisplayConfigured(const int64_t display_id,
                            const gfx::Rect& bounds,
-                           const base::flat_map<int64_t, bool>& statuses);
+                           bool config_success);
 
   // display::NativeDisplayDelegate:
   void OnConfigurationChanged() override;

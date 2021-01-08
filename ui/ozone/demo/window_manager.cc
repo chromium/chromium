@@ -108,13 +108,10 @@ void WindowManager::OnDisplaysAcquired(
   }
 }
 
-void WindowManager::OnDisplayConfigured(
-    const int64_t display_id,
-    const gfx::Rect& bounds,
-    const base::flat_map<int64_t, bool>& statuses) {
-  DCHECK_EQ(statuses.size(), 1UL);
-
-  if (statuses.at(display_id)) {
+void WindowManager::OnDisplayConfigured(const int64_t display_id,
+                                        const gfx::Rect& bounds,
+                                        bool config_success) {
+  if (config_success) {
     std::unique_ptr<DemoWindow> window(
         new DemoWindow(this, renderer_factory_.get(), bounds));
     window->Start();

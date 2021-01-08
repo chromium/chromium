@@ -101,12 +101,6 @@ std::vector<uint64_t> GetModifiersForPrimaryFormat(
   return controller->GetFormatModifiersForModesetting(fourcc_format);
 }
 
-bool AreAllStatusesTrue(base::flat_map<int64_t, bool>& display_statuses) {
-  auto it = find_if(display_statuses.begin(), display_statuses.end(),
-                    [](const auto status) { return status.second == false; });
-  return (it == display_statuses.end());
-}
-
 }  // namespace
 
 ScreenManager::ScreenManager() = default;
@@ -227,7 +221,7 @@ void ScreenManager::RemoveDisplayControllers(
     UpdateControllerToWindowMapping();
 }
 
-base::flat_map<int64_t, bool> ScreenManager::ConfigureDisplayControllers(
+bool ScreenManager::ConfigureDisplayControllers(
     const ControllerConfigsList& controllers_params) {
   TRACE_EVENT0("drm", "ScreenManager::ConfigureDisplayControllers");
 
@@ -244,29 +238,17 @@ base::flat_map<int64_t, bool> ScreenManager::ConfigureDisplayControllers(
     displays_for_drm_devices[params.drm].emplace_back(params);
   }
 
-  base::flat_map<int64_t, bool> statuses;
+  bool config_success = true;
   // Perform display configurations together for the same DRM only.
   for (const auto& configs_on_drm : displays_for_drm_devices) {
-    auto display_statuses = TestAndModeset(configs_on_drm.second);
-    statuses.insert(display_statuses.begin(), display_statuses.end());
+    config_success &=
+        TestModeset(configs_on_drm.second) && Modeset(configs_on_drm.second);
   }
 
-  if (AreAllStatusesTrue(statuses))
+  if (config_success)
     UpdateControllerToWindowMapping();
 
-  return statuses;
-}
-
-base::flat_map<int64_t, bool> ScreenManager::TestAndModeset(
-    const ControllerConfigsList& controllers_params) {
-  if (!TestModeset(controllers_params)) {
-    base::flat_map<int64_t, bool> statuses;
-    for (const auto& params : controllers_params)
-      statuses.insert(std::make_pair(params.display_id, false));
-    return statuses;
-  }
-
-  return Modeset(controllers_params);
+  return config_success;
 }
 
 bool ScreenManager::TestModeset(
@@ -301,11 +283,10 @@ bool ScreenManager::TestModeset(
       DRM_MODE_ATOMIC_TEST_ONLY | DRM_MODE_ATOMIC_ALLOW_MODESET);
 }
 
-base::flat_map<int64_t, bool> ScreenManager::Modeset(
-    const ControllerConfigsList& controllers_params) {
+bool ScreenManager::Modeset(const ControllerConfigsList& controllers_params) {
   TRACE_EVENT0("drm", "ScreenManager::Modeset");
 
-  base::flat_map<int64_t, bool> statuses;
+  bool modeset_success = true;
 
   for (const auto& params : controllers_params) {
     // Commit one controller at a time.
@@ -339,10 +320,10 @@ base::flat_map<int64_t, bool> ScreenManager::Modeset(
       UpdateControllerStateAfterModeset(params, request_for_update, status);
     }
 
-    statuses.insert(std::make_pair(params.display_id, status));
+    modeset_success &= status;
   }
 
-  return statuses;
+  return modeset_success;
 }
 
 void ScreenManager::SetDisplayControllerForEnableAndGetProps(

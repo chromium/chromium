@@ -68,7 +68,7 @@ class ScreenManager {
   void RemoveDisplayControllers(const CrtcsWithDrmList& controllers_to_remove);
 
   // Enables/Disables the display controller based on if a mode exists.
-  base::flat_map<int64_t, bool> ConfigureDisplayControllers(
+  bool ConfigureDisplayControllers(
       const ControllerConfigsList& controllers_params);
 
   // Returns a reference to the display controller configured to display within
@@ -105,13 +105,9 @@ class ScreenManager {
       const scoped_refptr<DrmDevice>& drm,
       uint32_t crtc);
 
-  base::flat_map<int64_t, bool> TestAndModeset(
-      const ControllerConfigsList& controllers_params);
-
   bool TestModeset(const ControllerConfigsList& controllers_params);
 
-  base::flat_map<int64_t, bool> Modeset(
-      const ControllerConfigsList& controllers_params);
+  bool Modeset(const ControllerConfigsList& controllers_params);
 
   // Configures a display controller to be enabled. The display controller is
   // identified by (|crtc|, |connector|) and the controller is to be modeset

@@ -113,15 +113,6 @@ int ComputeDisplayResolutionEnum(const DisplayMode* mode) {
   return width_idx * base::size(kDisplayResolutionSamples) + height_idx + 1;
 }
 
-std::__wrap_iter<const DisplayConfigureRequest*> GetRequestForDisplayId(
-    int64_t display_id,
-    const std::vector<DisplayConfigureRequest>& requests) {
-  return find_if(requests.begin(), requests.end(),
-                 [display_id](const DisplayConfigureRequest& request) {
-                   return request.display->display_id() == display_id;
-                 });
-}
-
 void UpdateResolutionAndRefreshRateUma(const DisplayConfigureRequest& request) {
   const bool internal =
       request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
@@ -236,55 +227,37 @@ void ConfigureDisplaysTask::OnDisplaySnapshotsInvalidated() {
   std::move(callback_).Run(task_status_);
 }
 
-void ConfigureDisplaysTask::OnConfigured(
-    const base::flat_map<int64_t, bool>& statuses) {
-  bool config_success = true;
-  // Check if all displays are successfully configured.
-  for (const auto& status : statuses) {
-    int64_t display_id = status.first;
-    bool display_success = status.second;
-    config_success &= display_success;
+void ConfigureDisplaysTask::OnConfigured(bool config_success) {
+  bool should_reconfigure = false;
 
-    auto request = GetRequestForDisplayId(display_id, requests_);
-    DCHECK(request != requests_.end());
-
-    VLOG(2) << "Configured status=" << display_success
-            << " display=" << request->display->display_id()
-            << " origin=" << request->origin.ToString()
-            << " mode=" << (request->mode ? request->mode->ToString() : "null");
-
-    UpdateAttemptSucceededUma(request->display, display_success);
-  }
-
-  // Update displays upon success or prep |requests_| for reconfiguration.
-  if (config_success) {
-    for (auto& request : requests_) {
+  for (auto& request : requests_) {
+    // Update displays upon success or prep |requests_| for reconfiguration.
+    if (config_success) {
       request.display->set_current_mode(request.mode);
       request.display->set_origin(request.origin);
-    }
-  } else {
-    bool should_reconfigure = false;
-    // For the failing config, check if there is another mode to be requested.
-    // If there is one, attempt to reconfigure everything again.
-    for (const auto& status : statuses) {
-      int64_t display_id = status.first;
-      bool display_success = status.second;
-      if (!display_success) {
-        const DisplayConfigureRequest* request =
-            GetRequestForDisplayId(display_id, requests_).base();
-        const DisplayMode* next_mode =
-            FindNextMode(*request->display, request->mode);
-        if (next_mode) {
-          const_cast<DisplayConfigureRequest*>(request)->mode = next_mode;
-          should_reconfigure = true;
-        }
+    } else {
+      // For the failing config, check if there is another mode to be requested.
+      // If there is one, attempt to reconfigure everything again.
+      const DisplayMode* next_mode =
+          FindNextMode(*request.display, request.mode);
+      if (next_mode) {
+        request.mode = next_mode;
+        should_reconfigure = true;
       }
     }
-    if (should_reconfigure) {
-      task_status_ = PARTIAL_SUCCESS;
-      Run();
-      return;
-    }
+
+    VLOG(2) << "Configured status=" << config_success
+            << " display=" << request.display->display_id()
+            << " origin=" << request.origin.ToString()
+            << " mode=" << (request.mode ? request.mode->ToString() : "null");
+
+    UpdateAttemptSucceededUma(request.display, config_success);
+  }
+
+  if (should_reconfigure) {
+    task_status_ = PARTIAL_SUCCESS;
+    Run();
+    return;
   }
 
   // Update the final state.

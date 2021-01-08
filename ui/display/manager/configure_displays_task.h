@@ -66,7 +66,7 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   void OnDisplaySnapshotsInvalidated() override;
 
  private:
-  void OnConfigured(const base::flat_map<int64_t, bool>& statuses);
+  void OnConfigured(bool config_status);
 
   NativeDisplayDelegate* delegate_;  // Not owned.
 

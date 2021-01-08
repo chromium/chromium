@@ -237,15 +237,11 @@ void DrmDisplayHostManager::UpdateDisplays(
 void DrmDisplayHostManager::ConfigureDisplays(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
     display::ConfigureCallback callback) {
-  base::flat_map<int64_t, bool> dummy_statuses;
-  bool is_any_dummy = false;
   for (auto& config : config_requests) {
-    is_any_dummy |= GetDisplay(config.id)->is_dummy();
-    dummy_statuses.insert(std::make_pair(config.id, true));
-  }
-  if (is_any_dummy) {
-    std::move(callback).Run(dummy_statuses);
-    return;
+    if (GetDisplay(config.id)->is_dummy()) {
+      std::move(callback).Run(true);
+      return;
+    }
   }
 
   proxy_->GpuConfigureNativeDisplays(config_requests, std::move(callback));

@@ -166,9 +166,9 @@ void DrmGpuDisplayManager::RelinquishDisplayControl() {
     drm->DropMaster();
 }
 
-base::flat_map<int64_t, bool> DrmGpuDisplayManager::ConfigureDisplays(
+bool DrmGpuDisplayManager::ConfigureDisplays(
     const std::vector<display::DisplayConfigurationParams>& config_requests) {
-  base::flat_map<int64_t, bool> statuses;
+  bool config_success = true;
   ScreenManager::ControllerConfigsList controllers_to_configure;
 
   for (const auto& config : config_requests) {
@@ -176,7 +176,7 @@ base::flat_map<int64_t, bool> DrmGpuDisplayManager::ConfigureDisplays(
     DrmDisplay* display = FindDisplay(display_id);
     if (!display) {
       LOG(ERROR) << "There is no display with ID " << display_id;
-      statuses.insert(std::make_pair(display_id, false));
+      config_success = false;
       continue;
     }
 
@@ -185,7 +185,7 @@ base::flat_map<int64_t, bool> DrmGpuDisplayManager::ConfigureDisplays(
     if (config.mode) {
       if (!FindModeForDisplay(mode_ptr.get(), *config.mode.value(),
                               display->modes(), displays_)) {
-        statuses.insert(std::make_pair(display_id, false));
+        config_success = false;
         continue;
       }
     }
@@ -206,22 +206,21 @@ base::flat_map<int64_t, bool> DrmGpuDisplayManager::ConfigureDisplays(
   }
 
   if (controllers_to_configure.empty())
-    return statuses;
+    return config_success;
 
   if (clear_overlay_cache_callback_)
     clear_overlay_cache_callback_.Run();
 
-  auto config_statuses =
+  config_success &=
       screen_manager_->ConfigureDisplayControllers(controllers_to_configure);
-  for (const auto& status : config_statuses) {
-    int64_t display_id = status.first;
-    bool success = status.second;
+  for (const auto& controller : controllers_to_configure) {
+    int64_t display_id = controller.display_id;
     DrmDisplay* display = FindDisplay(display_id);
     auto config = std::find_if(
         config_requests.begin(), config_requests.end(),
         [display_id](const auto& request) { return request.id == display_id; });
 
-    if (success) {
+    if (config_success) {
       display->SetOrigin(config->origin);
     } else {
       if (config->mode) {
@@ -235,11 +234,9 @@ base::flat_map<int64_t, bool> DrmGpuDisplayManager::ConfigureDisplays(
                 << " crtc=" << display->crtc();
       }
     }
-
-    statuses.insert(std::make_pair(display_id, success));
   }
 
-  return statuses;
+  return config_success;
 }
 
 bool DrmGpuDisplayManager::GetHDCPState(

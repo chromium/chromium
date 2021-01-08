@@ -51,11 +51,11 @@ interface DrmDevice {
   // Instructs the GPU to abandon a DRM device.
   RemoveGraphicsDevice(mojo_base.mojom.FilePath path);
 
-  // Configures (Enables/Disables) DRM displays, returns a map: each configured
-  // display ID to its status, true on success.
+  // Configures (Enables/Disables) DRM displays, returns whether or not the
+  // configuration was successful.
   ConfigureNativeDisplays(
       array<display.mojom.DisplayConfigurationParams> config_requests) =>
-    (map<int64, bool> statuses);
+    (bool config_success);
 
   // Gets high-definition content protection (HDCP) (DRM as in
   // digital rights management) state.
