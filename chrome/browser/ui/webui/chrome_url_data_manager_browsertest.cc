@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -143,7 +146,14 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<const char*> {
  public:
-  ChromeURLDataManagerWebUITrustedTypesTest() = default;
+  ChromeURLDataManagerWebUITrustedTypesTest() {
+    std::vector<base::Feature> enabled_features;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    if (GetParam() == std::string("chrome://welcome"))
+      enabled_features.push_back(welcome::kForceEnabled);
+#endif
+    feature_list_.InitWithFeatures(enabled_features, {});
+  }
 
   void CheckTrustedTypesViolation(base::StringPiece url) {
     std::string message_filter1 = "*This document requires*assignment*";
@@ -156,16 +166,26 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 
     ASSERT_TRUE(embedded_test_server()->Start());
     ui_test_utils::NavigateToURL(browser(), GURL(url));
-    // We don't ASSERT_TRUE here because some WebUI pages are by design not
-    // PAGE_TYPE_NORMAL (e.g. chrome://interstitials/ssl).
-    content::WaitForLoadStop(content);
+
+    if (url == "chrome://network-error" || url == "chrome://dino") {
+      // We don't ASSERT_TRUE here because some WebUI pages are
+      // PAGE_TYPE_ERROR by design.
+      content::WaitForLoadStop(content);
+    } else {
+      ASSERT_TRUE(content::WaitForLoadStop(content));
+    }
+
     EXPECT_TRUE(console_observer.messages().empty());
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Verify that there's no Trusted Types violation in chrome://chrome-urls
 IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
                        NoTrustedTypesViolation) {
+  LOG(INFO) << "Navigating to " << GetParam();
   CheckTrustedTypesViolation(GetParam());
 }
 
@@ -176,23 +196,18 @@ static constexpr const char* const kChromeUrls[] = {
     // TODO(crbug.com/1114074): DCHECK failure when opening
     // chrome://appcache-internals.
     // "chrome://appcache-internals",
-    "chrome://apps",
     "chrome://autofill-internals",
     "chrome://blob-internals",
     "chrome://bluetooth-internals",
     "chrome://bookmarks",
-    "chrome://browser-switch",
     "chrome://chrome-urls",
     "chrome://components",
-    "chrome://conflicts",
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",
     "chrome://conversion-internals",
     "chrome://crashes",
     "chrome://credits",
     "chrome://device-log",
-    // TODO(crbug.com/1114062): Crash when closing chrome://devices.
-    // "chrome://devices",
     "chrome://dino",
     // TODO(crbug.com/1113446): Test failure due to excessive output.
     // "chrome://discards",
@@ -215,21 +230,18 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://invalidations",
     "chrome://local-state",
     "chrome://management",
-    "chrome://md-user-manager",
     "chrome://media-engagement",
     "chrome://media-feeds",
     "chrome://media-history",
     "chrome://media-internals",
     "chrome://media-router-internals",
     "chrome://memory-internals",
-    "chrome://nacl",
     "chrome://net-export",
     "chrome://net-internals",
     "chrome://network-error",
     "chrome://network-errors",
     "chrome://new-tab-page",
     "chrome://newtab",
-    "chrome://notifications-internals",
     "chrome://ntp-tiles-internals",
     "chrome://omnibox",
     "chrome://password-manager-internals",
@@ -241,16 +253,13 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://quota-internals",
     "chrome://reset-password",
     "chrome://safe-browsing",
-    "chrome://sandbox",
     "chrome://serviceworker-internals",
     "chrome://settings",
     // TODO(crbug.com/1115600): DCHECK failure when opening
     // chrome://signin-dice-web-intercept.
     // "chrome://signin-dice-web-intercept",
-    "chrome://signin-email-confirmation",
     "chrome://signin-internals",
     "chrome://site-engagement",
-    "chrome://snippets-internals",
     "chrome://suggestions",
     // TODO(crbug.com/1099564): Navigating to chrome://sync-confirmation and
     // quickly navigating away cause DCHECK failure.
@@ -270,12 +279,12 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://version",
     "chrome://webrtc-internals",
     "chrome://webrtc-logs",
-    "chrome://welcome",
 #if defined(OS_ANDROID)
     "chrome://explore-sites-internals",
     "chrome://internals/notifications",
     "chrome://internals/query-tiles",
     "chrome://offline-internals",
+    "chrome://snippets-internals",
     "chrome://webapks",
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -295,7 +304,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://crostini-installer",
     "chrome://cryptohome",
     "chrome://drive-internals",
-    "chrome://first-run",
     "chrome://help-app",
     "chrome://internet-config-dialog",
     "chrome://internet-detail-dialog",
@@ -314,10 +322,21 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://smb-share-dialog",
     "chrome://supervised-user-internals",
     "chrome://sys-internals",
-    // TODO(crbug.com/1115643): DCHECK failure when opening
-    // chrome-untrusted://crosh.
-    // "chrome-untrusted://crosh",
     "chrome-untrusted://terminal",
+#endif
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    "chrome://apps",
+    "chrome://browser-switch",
+    "chrome://md-user-manager",
+    "chrome://signin-email-confirmation",
+    "chrome://welcome",
+#endif
+#if !defined(OS_MAC)
+    "chrome://sandbox",
+    "chrome://nacl",
+#endif
+#if defined(OS_WIN)
+    "chrome://conflicts",
 #endif
 };
 
