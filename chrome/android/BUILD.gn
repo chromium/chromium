@@ -906,6 +906,7 @@ junit_binary("chrome_junit_tests") {
     "//components/omnibox/browser:browser_java",
     "//components/optimization_guide/proto:optimization_guide_proto_java",
     "//components/page_info/android:java",
+    "//components/paint_preview/player/android:java",
     "//components/payments/content/android:java",
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",
@@ -969,7 +970,7 @@ junit_binary("chrome_junit_tests") {
     "//url/mojom:url_mojom_gurl_java",
   ]
 
-  deps += feed_test_deps
+  deps += chrome_junit_test_java_deps
 
   data_deps = [ "//testing/buildbot/filters:chrome_junit_tests_filters" ]
 

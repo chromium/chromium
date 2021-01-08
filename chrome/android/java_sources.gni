@@ -41,6 +41,8 @@ chrome_test_java_sources += omnibox_test_java_sources
 chrome_test_java_sources += tab_management_test_java_sources
 chrome_test_java_sources += share_test_java_sources
 chrome_junit_test_java_sources += share_junit_test_java_sources
+chrome_junit_test_java_deps = share_junit_test_java_deps
+chrome_junit_test_java_deps += feed_test_deps
 
 if (enable_arcore) {
   chrome_java_sources += [

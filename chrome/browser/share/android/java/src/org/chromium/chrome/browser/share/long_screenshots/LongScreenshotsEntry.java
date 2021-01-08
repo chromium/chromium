@@ -114,7 +114,7 @@ public class LongScreenshotsEntry implements LongScreenshotsTabService.CapturePr
     public void processCapturedTab(PaintPreviewProto response, int status) {
         // TODO(tgupta): Process a non success status
         mCompositor = new LongScreenshotsCompositor(new GURL(response.getMetadata().getUrl()),
-                mContext, mLongScreenshotsTabService, DIR_NAME, response,
+                mLongScreenshotsTabService, DIR_NAME, response,
                 new Rect(mStartXAxis, mStartYAxis, mEndXAxis, mEndYAxis), this::onBitmapResult);
     }
 

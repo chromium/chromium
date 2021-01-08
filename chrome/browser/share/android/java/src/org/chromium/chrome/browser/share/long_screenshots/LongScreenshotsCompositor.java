@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.share.long_screenshots;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UnguessableToken;
@@ -22,32 +25,34 @@ import org.chromium.url.GURL;
  * captured webpage.
  */
 public class LongScreenshotsCompositor {
-    private Context mContext;
     private PlayerCompositorDelegate mDelegate;
     private Callback<Bitmap> mBitmapCallback;
     private Rect mRect;
+
+    private static PlayerCompositorDelegate.Factory sCompositorDelegateFactory =
+            new CompositorDelegateFactory();
 
     /**
      * Creates a new {@link LongScreenshotsCompositor}.
      *
      * @param url The URL for which the content should be composited for.
-     * @param context An instance of current Android {@link Context}.
      * @param nativePaintPreviewServiceProvider The native paint preview service.
      * @param directoryKey The key for the directory storing the data.
      * @param rect The area of the captured webpage that should be composited.
      * @param response The proto with the address of the captured bitmap.
      * @param bitmapCallback Callback to process the composited bitmap.
      */
-    public LongScreenshotsCompositor(GURL url, Context context,
+    public LongScreenshotsCompositor(GURL url,
             NativePaintPreviewServiceProvider nativePaintPreviewServiceProvider,
             String directoryKey, PaintPreviewProto response, Rect rect,
             Callback<Bitmap> bitmapCallback) {
-        mContext = context;
         mBitmapCallback = bitmapCallback;
         mRect = rect;
 
-        mDelegate = new PlayerCompositorDelegateImpl(nativePaintPreviewServiceProvider, response,
-                url, directoryKey, true, this::onCompositorReady, this::onCompositorError);
+        // TODO(tgupta): Look into warmupCompositor
+        mDelegate = getCompositorDelegateFactory().createForProto(nativePaintPreviewServiceProvider,
+                response, url, directoryKey, true, this::onCompositorReady,
+                this::onCompositorError);
     }
 
     /**
@@ -63,9 +68,11 @@ public class LongScreenshotsCompositor {
      * method initializes a sub-component for each frame and adds the view for the root frame to
      * {@link #mHostView}.
      */
-    private void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
+    @VisibleForTesting
+    protected void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
             int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
             UnguessableToken[] subFrameGuids, int[] subFrameClipRects) {
+        // TODO(tgupta): Keep track of the returned id.
         mDelegate.requestBitmap(mRect, 1, mBitmapCallback, this::onError);
     }
 
@@ -82,5 +89,36 @@ public class LongScreenshotsCompositor {
             mDelegate.destroy();
             mDelegate = null;
         }
+    }
+
+    static class CompositorDelegateFactory implements PlayerCompositorDelegate.Factory {
+        @Override
+        public PlayerCompositorDelegate create(NativePaintPreviewServiceProvider service,
+                @NonNull GURL url, String directoryKey, boolean mainFrameMode,
+                @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
+                Callback<Integer> compositorErrorCallback) {
+            return new PlayerCompositorDelegateImpl(service, null, url, directoryKey, mainFrameMode,
+                    compositorListener, compositorErrorCallback);
+        }
+
+        @Override
+        public PlayerCompositorDelegate createForProto(NativePaintPreviewServiceProvider service,
+                @Nullable PaintPreviewProto proto, @NonNull GURL url, String directoryKey,
+                boolean mainFrameMode,
+                @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
+                Callback<Integer> compositorErrorCallback) {
+            return new PlayerCompositorDelegateImpl(service, proto, url, directoryKey,
+                    mainFrameMode, compositorListener, compositorErrorCallback);
+        }
+    }
+
+    private PlayerCompositorDelegate.Factory getCompositorDelegateFactory() {
+        return sCompositorDelegateFactory;
+    }
+
+    @VisibleForTesting
+    public static void overrideCompositorDelegateFactoryForTesting(
+            PlayerCompositorDelegate.Factory factory) {
+        sCompositorDelegateFactory = factory; // IN-TEST
     }
 }
