@@ -9,6 +9,7 @@
 
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "cc/paint/paint_record.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -944,6 +945,31 @@ gfx::RectF GM2TabStyle::ScaleAndAlignBounds(const gfx::Rect& bounds,
 }
 
 }  // namespace
+
+// static
+base::string16 views::metadata::TypeConverter<TabStyle::TabColors>::ToString(
+    views::metadata::ArgType<TabStyle::TabColors> source_value) {
+  return base::ASCIIToUTF16(base::StringPrintf(
+      "{%s,%s}",
+      color_utils::SkColorToRgbaString(source_value.foreground_color).c_str(),
+      color_utils::SkColorToRgbaString(source_value.background_color).c_str()));
+}
+
+// static
+base::Optional<TabStyle::TabColors> views::metadata::TypeConverter<
+    TabStyle::TabColors>::FromString(const base::string16& source_value) {
+  base::string16 pruned_string;
+  base::RemoveChars(source_value, base::ASCIIToUTF16("()rgba"), &pruned_string);
+  const auto values =
+      base::SplitStringPiece(pruned_string, base::ASCIIToUTF16("{,}"),
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  const auto foreground_color = RgbaPiecesToSkColor(values, 0);
+  const auto background_color = RgbaPiecesToSkColor(values, 4);
+  return (foreground_color.has_value() && background_color.has_value())
+             ? base::make_optional<TabStyle::TabColors>(
+                   foreground_color.value(), background_color.value())
+             : base::nullopt;
+}
 
 // TabStyle --------------------------------------------------------------------
 

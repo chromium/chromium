@@ -1021,8 +1021,7 @@ void Tab::UpdateForegroundColors() {
 
   title_->SetEnabledColor(colors.foreground_color);
 
-  close_button_->SetIconColors(colors.foreground_color,
-                               colors.background_color);
+  close_button_->SetColors(colors);
 
   if (foreground_color_ != colors.foreground_color) {
     foreground_color_ = colors.foreground_color;

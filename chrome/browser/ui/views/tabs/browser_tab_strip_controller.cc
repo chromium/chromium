@@ -776,7 +776,7 @@ void BrowserTabStripController::AddTab(WebContents* contents,
                       is_active);
 
   // Try to show tab groups IPH if needed.
-  if (tabstrip_->tab_count() >= 6) {
+  if (tabstrip_->GetTabCount() >= 6) {
     feature_engagement_tracker_->NotifyEvent(
         feature_engagement::events::kSixthTabOpened);
 

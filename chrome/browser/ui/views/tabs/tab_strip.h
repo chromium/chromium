@@ -34,6 +34,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
@@ -80,6 +81,7 @@ class TabStrip : public views::View,
                  public TabController,
                  public BrowserRootView::DropTarget {
  public:
+  METADATA_HEADER(TabStrip);
   explicit TabStrip(std::unique_ptr<TabStripController> controller);
   TabStrip(const TabStrip&) = delete;
   TabStrip& operator=(const TabStrip&) = delete;
@@ -238,7 +240,7 @@ class TabStrip : public views::View,
   int GetModelIndexOf(const TabSlotView* view) const;
 
   // Gets the number of Tabs in the tab strip.
-  int tab_count() const { return tabs_.view_size(); }
+  int GetTabCount() const;
 
   // Cover method for TabStripController::GetCount.
   int GetModelCount() const;
@@ -337,7 +339,6 @@ class TabStrip : public views::View,
   // views::View:
   void Layout() override;
   void PaintChildren(const views::PaintInfo& paint_info) override;
-  const char* GetClassName() const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize() const override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
@@ -470,14 +471,6 @@ class TabStrip : public views::View,
   // Returns the current width of inactive tabs. An individual inactive tab may
   // differ from this width slightly due to rounding.
   int GetInactiveTabWidth() const;
-
-  // Returns the width of the area that contains tabs not including the new tab
-  // button.
-  int GetTabAreaWidth() const;
-
-  // Returns the width of the area right of the tabs reserved for the new tab
-  // button and the frame grab area.
-  int GetRightSideReservedWidth() const;
 
   // Returns the last tab in the strip that's actually visible.  This will be
   // the actual last tab unless the strip is in the overflow node_data.
@@ -680,9 +673,9 @@ class TabStrip : public views::View,
   views::BoundsAnimator bounds_animator_{this};
 
   // If this value is defined, it is used as the width to lay out tabs
-  // (instead of GetTabAreaWidth()). It is defined when closing tabs with the
-  // mouse, and is used to control which tab will end up under the cursor
-  // after the close animation completes.
+  // (instead of GetAvailableWidthForTabStrip()). It is defined when closing
+  // tabs with the mouse, and is used to control which tab will end up under the
+  // cursor after the close animation completes.
   base::Optional<int> override_available_width_for_tabs_;
 
   // The background offset used by inactive tabs to match the frame image.

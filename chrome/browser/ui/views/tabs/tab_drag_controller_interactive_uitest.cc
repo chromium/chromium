@@ -3914,8 +3914,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
       displays.first.id(),
       screen->GetDisplayNearestWindow(browser()->window()->GetNativeWindow())
           .id());
-  EXPECT_EQ(2, tab_strip->tab_count());
-  EXPECT_EQ(1, tab_strip2->tab_count());
+  EXPECT_EQ(2, tab_strip->GetTabCount());
+  EXPECT_EQ(1, tab_strip2->GetTabCount());
 
   // Move to the first tab and drag it enough so that it detaches, but not
   // enough that it attaches to browser2.
@@ -3932,8 +3932,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   ASSERT_TRUE(ReleaseInput());
 
   // tab should have moved
-  EXPECT_EQ(1, tab_strip->tab_count());
-  EXPECT_EQ(2, tab_strip2->tab_count());
+  EXPECT_EQ(1, tab_strip->GetTabCount());
+  EXPECT_EQ(2, tab_strip2->GetTabCount());
 
   ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());

@@ -89,6 +89,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/masked_targeter_delegate.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view_model_utils.h"
@@ -487,7 +488,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     return tab_strip_->GetModelIndexOf(view);
   }
 
-  int GetTabCount() const override { return tab_strip_->tab_count(); }
+  int GetTabCount() const override { return tab_strip_->GetTabCount(); }
 
   bool IsTabPinned(const Tab* tab) const override {
     return tab_strip_->IsTabPinned(tab);
@@ -1160,17 +1161,17 @@ void TabStrip::RemoveObserver(TabStripObserver* observer) {
 }
 
 void TabStrip::FrameColorsChanged() {
-  for (int i = 0; i < tab_count(); ++i)
+  for (int i = 0; i < GetTabCount(); ++i)
     tab_at(i)->FrameColorsChanged();
   UpdateContrastRatioValues();
   SchedulePaint();
 }
 
 void TabStrip::SetBackgroundOffset(int background_offset) {
-  if (background_offset != background_offset_) {
-    background_offset_ = background_offset;
-    SchedulePaint();
-  }
+  if (background_offset == background_offset_)
+    return;
+  background_offset_ = background_offset;
+  OnPropertyChanged(&background_offset_, views::kPropertyEffectsPaint);
 }
 
 bool TabStrip::IsRectInWindowCaption(const gfx::Rect& rect) {
@@ -1231,7 +1232,7 @@ base::Optional<TabAlertState> TabStrip::GetTabAlertState(int tab_index) const {
 }
 
 void TabStrip::UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) {
-  for (int i = 0; i < tab_count(); i++)
+  for (int i = 0; i < GetTabCount(); i++)
     tab_at(i)->StepLoadingAnimation(elapsed_time);
 }
 
@@ -1250,7 +1251,7 @@ void TabStrip::SetStackedLayout(bool stacked_layout) {
     AnimateToIdealBounds();
   }
 
-  for (int i = 0; i < tab_count(); ++i)
+  for (int i = 0; i < GetTabCount(); ++i)
     tab_at(i)->Layout();
 }
 
@@ -1280,7 +1281,7 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
 
   // Don't animate the first tab, it looks weird, and don't animate anything
   // if the containing window isn't visible yet.
-  if (tab_count() > 1 && GetWidget() && GetWidget()->IsVisible()) {
+  if (GetTabCount() > 1 && GetWidget() && GetWidget()->IsVisible()) {
     StartInsertTabAnimation(model_index,
                             pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
   } else {
@@ -1310,9 +1311,9 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
   Profile* profile = controller()->GetProfile();
   if (profile) {
     if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
-      base::UmaHistogramCounts100("Tab.Count.Guest", tab_count());
+      base::UmaHistogramCounts100("Tab.Count.Guest", GetTabCount());
     else if (profile->IsIncognitoProfile())
-      base::UmaHistogramCounts100("Tab.Count.Incognito", tab_count());
+      base::UmaHistogramCounts100("Tab.Count.Incognito", GetTabCount());
   }
 }
 
@@ -1727,6 +1728,10 @@ int TabStrip::GetModelIndexOf(const TabSlotView* view) const {
   return tabs_.GetIndexOfView(view);
 }
 
+int TabStrip::GetTabCount() const {
+  return tabs_.view_size();
+}
+
 int TabStrip::GetModelCount() const {
   return controller_->GetCount();
 }
@@ -1766,7 +1771,7 @@ base::Optional<int> TabStrip::GetFocusedTabIndex() const {
 }
 
 views::View* TabStrip::GetTabViewForPromoAnchor(int index_hint) {
-  return tab_at(base::ClampToRange(index_hint, 0, tab_count() - 1));
+  return tab_at(base::ClampToRange(index_hint, 0, GetTabCount() - 1));
 }
 
 views::View* TabStrip::GetDefaultFocusableChild() {
@@ -1905,11 +1910,11 @@ void TabStrip::MoveTabLast(Tab* tab) {
   int target_index;
   if (controller_->IsTabPinned(start_index)) {
     int temp_index = start_index + 1;
-    while (temp_index < tab_count() && controller_->IsTabPinned(temp_index))
+    while (temp_index < GetTabCount() && controller_->IsTabPinned(temp_index))
       ++temp_index;
     target_index = temp_index - 1;
   } else {
-    target_index = tab_count() - 1;
+    target_index = GetTabCount() - 1;
   }
 
   if (!IsValidModelIndex(target_index))
@@ -2390,11 +2395,6 @@ void TabStrip::PaintChildren(const views::PaintInfo& paint_info) {
       base::TimeDelta::FromMicroseconds(10000), 50);
 }
 
-const char* TabStrip::GetClassName() const {
-  static const char kViewClassName[] = "TabStrip";
-  return kViewClassName;
-}
-
 gfx::Size TabStrip::GetMinimumSize() const {
   // If tabs can be stacked, our minimum width is the smallest width of the
   // stacked tabstrip.
@@ -2464,7 +2464,7 @@ BrowserRootView::DropIndex TabStrip::GetDropIndex(
   // coordinates since we calculate the drop index based on the
   // original (and therefore non-mirrored) positions of the tabs.
   const int x = GetMirroredXInView(event.x());
-  for (int i = 0; i < tab_count(); ++i) {
+  for (int i = 0; i < GetTabCount(); ++i) {
     Tab* tab = tab_at(i);
     const int tab_max_x = tab->x() + tab->width();
 
@@ -2480,7 +2480,7 @@ BrowserRootView::DropIndex TabStrip::GetDropIndex(
   }
 
   // The drop isn't over a tab, add it to the end.
-  return {tab_count(), true};
+  return {GetTabCount(), true};
 }
 
 views::View* TabStrip::GetViewForDrop() {
@@ -2572,7 +2572,7 @@ void TabStrip::StartInsertTabAnimation(int model_index, TabPinned pinned) {
   if (model_index > 0) {
     // If we have a tab to our left, start at its right edge.
     bounds.set_x(tab_at(model_index - 1)->bounds().right() - tab_overlap);
-  } else if (model_index + 1 < tab_count()) {
+  } else if (model_index + 1 < GetTabCount()) {
     // Otherwise, if we have a tab to our right, start at its left edge.
     bounds.set_x(tab_at(model_index + 1)->bounds().x());
   } else {
@@ -2686,7 +2686,7 @@ void TabStrip::StartMoveTabAnimation() {
 void TabStrip::AnimateToIdealBounds() {
   UpdateHoverCard(nullptr);
 
-  for (int i = 0; i < tab_count(); ++i) {
+  for (int i = 0; i < GetTabCount(); ++i) {
     // If the tab is being dragged manually, skip it.
     Tab* tab = tab_at(i);
     if (tab->dragging() && !bounds_animator_.IsAnimating(tab))
@@ -2736,7 +2736,7 @@ void TabStrip::AnimateToIdealBounds() {
 }
 
 void TabStrip::SnapToIdealBounds() {
-  for (int i = 0; i < tab_count(); ++i)
+  for (int i = 0; i < GetTabCount(); ++i)
     tab_at(i)->SetBoundsRect(ideal_bounds(i));
 
   for (const auto& header_pair : group_views_) {
@@ -2810,7 +2810,7 @@ void TabStrip::SetTabSlotVisibility() {
 }
 
 void TabStrip::UpdateAccessibleTabIndices() {
-  const int num_tabs = tab_count();
+  const int num_tabs = GetTabCount();
   for (int i = 0; i < num_tabs; ++i)
     tab_at(i)->GetViewAccessibility().OverridePosInSet(i + 1, num_tabs);
 }
@@ -2824,7 +2824,7 @@ int TabStrip::GetInactiveTabWidth() const {
 }
 
 const Tab* TabStrip::GetLastVisibleTab() const {
-  for (int i = tab_count() - 1; i >= 0; --i) {
+  for (int i = GetTabCount() - 1; i >= 0; --i) {
     const Tab* tab = tab_at(i);
 
     // The tab is marked not visible in a collapsed group, but is "visible" in
@@ -2851,14 +2851,14 @@ int TabStrip::GetViewInsertionIndex(Tab* tab,
   // If to_model_index is beyond the end of the tab strip, then the tab is newly
   // added to the end of the tab strip. In that case we can just return one
   // beyond the view index of the last existing tab.
-  if (to_model_index >= tab_count())
-    return (tab_count() ? GetIndexOf(tab_at(tab_count() - 1)) + 1 : 0);
+  if (to_model_index >= GetTabCount())
+    return (GetTabCount() ? GetIndexOf(tab_at(GetTabCount() - 1)) + 1 : 0);
 
   // If there is no from_model_index, then the tab is newly added in the middle
   // of the tab strip. In that case we treat it as coming from the end of the
   // tab strip, since new views are ordered at the end by default.
   if (!from_model_index.has_value())
-    from_model_index = tab_count();
+    from_model_index = GetTabCount();
 
   DCHECK_NE(to_model_index, from_model_index.value());
 
@@ -3207,7 +3207,7 @@ void TabStrip::ResizeLayoutTabs() {
   // We've been called back after the TabStrip has been emptied out (probably
   // just prior to the window being destroyed). We need to do nothing here or
   // else GetTabAt below will crash.
-  if (tab_count() == 0)
+  if (GetTabCount() == 0)
     return;
 
   // It is critically important that this is unhooked here, otherwise we will
@@ -3216,7 +3216,7 @@ void TabStrip::ResizeLayoutTabs() {
 
   ExitTabClosingMode();
   int pinned_tab_count = GetPinnedTabCount();
-  if (pinned_tab_count == tab_count()) {
+  if (pinned_tab_count == GetTabCount()) {
     // Only pinned tabs, we know the tab widths won't have changed (all
     // pinned tabs have the same width), so there is nothing to do.
     return;
@@ -3265,11 +3265,11 @@ gfx::Rect TabStrip::GetDropBounds(int drop_index,
                                   bool* is_beneath) {
   DCHECK_NE(drop_index, -1);
 
-  Tab* tab = tab_at(std::min(drop_index, tab_count() - 1));
+  Tab* tab = tab_at(std::min(drop_index, GetTabCount() - 1));
   int center_x = tab->x();
   const int width = tab->width();
   const int overlap = TabStyle::GetTabOverlap();
-  if (drop_index < tab_count())
+  if (drop_index < GetTabCount())
     center_x += drop_before ? (overlap / 2) : (width / 2);
   else
     center_x += width - (overlap / 2);
@@ -3400,13 +3400,13 @@ void TabStrip::DropArrow::OnWidgetDestroying(views::Widget* widget) {
 void TabStrip::PrepareForAnimation() {
   if (!drag_context_->IsDragSessionActive() &&
       !TabDragController::IsAttachedTo(GetDragContext())) {
-    for (int i = 0; i < tab_count(); ++i)
+    for (int i = 0; i < GetTabCount(); ++i)
       tab_at(i)->set_dragging(false);
   }
 }
 
 void TabStrip::UpdateIdealBounds() {
-  if (tab_count() == 0)
+  if (GetTabCount() == 0)
     return;  // Should only happen during creation/destruction, ignore.
 
   // Update |last_available_width_| in case there is a different amount of
@@ -3470,10 +3470,10 @@ Tab* TabStrip::FindTabForEvent(const gfx::Point& point) {
 Tab* TabStrip::FindTabForEventFrom(const gfx::Point& point,
                                    int start,
                                    int delta) {
-  // |start| equals tab_count() when there are only pinned tabs.
-  if (start == tab_count())
+  // |start| equals GetTabCount() when there are only pinned tabs.
+  if (start == GetTabCount())
     start += delta;
-  for (int i = start; i >= 0 && i < tab_count(); i += delta) {
+  for (int i = start; i >= 0 && i < GetTabCount(); i += delta) {
     if (IsPointInTab(tab_at(i), point))
       return tab_at(i);
   }
@@ -3560,7 +3560,7 @@ bool TabStrip::NeedsTouchLayout() const {
     return false;
 
   const int pinned_tab_count = GetPinnedTabCount();
-  const int normal_count = tab_count() - pinned_tab_count;
+  const int normal_count = GetTabCount() - pinned_tab_count;
   if (normal_count <= 1)
     return false;
 
@@ -3779,3 +3779,18 @@ void TabStrip::AnnounceTabRemovedFromGroup(tab_groups::TabGroupId group_id) {
                 IDS_TAB_AX_ANNOUNCE_TAB_REMOVED_FROM_NAMED_GROUP, group_title,
                 contents_string));
 }
+
+BEGIN_METADATA(TabStrip, views::View)
+ADD_PROPERTY_METADATA(int, BackgroundOffset)
+ADD_READONLY_PROPERTY_METADATA(int, TabCount)
+ADD_READONLY_PROPERTY_METADATA(int, ModelCount)
+ADD_READONLY_PROPERTY_METADATA(int, PinnedTabCount)
+ADD_READONLY_PROPERTY_METADATA(base::Optional<int>, FocusedTabIndex)
+ADD_READONLY_PROPERTY_METADATA(int, StrokeThickness)
+ADD_READONLY_PROPERTY_METADATA(SkColor, ToolbarTopSeparatorColor)
+ADD_READONLY_PROPERTY_METADATA(SkColor, TabSeparatorColor)
+ADD_READONLY_PROPERTY_METADATA(float, HoverOpacityForRadialHighlight)
+ADD_READONLY_PROPERTY_METADATA(int, ActiveTabWidth)
+ADD_READONLY_PROPERTY_METADATA(int, InactiveTabWidth)
+ADD_READONLY_PROPERTY_METADATA(int, AvailableWidthForTabStrip)
+END_METADATA

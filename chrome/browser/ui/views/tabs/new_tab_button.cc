@@ -28,15 +28,13 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(OS_WIN)
 #include "ui/display/win/screen_win.h"
 #include "ui/views/win/hwnd_util.h"
 #endif
-
-// static
-constexpr char NewTabButton::kClassName[];
 
 // static
 const gfx::Size NewTabButton::kButtonSize{28, 28};
@@ -89,10 +87,6 @@ void NewTabButton::FrameColorsChanged() {
 
 void NewTabButton::AnimateInkDropToStateForTesting(views::InkDropState state) {
   GetInkDrop()->AnimateToState(state);
-}
-
-const char* NewTabButton::GetClassName() const {
-  return kClassName;
 }
 
 void NewTabButton::AddLayerBeneathView(ui::Layer* new_layer) {
@@ -273,3 +267,6 @@ void NewTabButton::UpdateInkDropBaseColor() {
   SetInkDropBaseColor(
       color_utils::GetColorWithMaxContrast(GetButtonFillColor()));
 }
+
+BEGIN_METADATA(NewTabButton, views::ImageButton)
+END_METADATA

@@ -193,14 +193,14 @@ class TabStripTest : public ChromeViewsTestBase,
 
   // Makes sure that all tabs have the correct AX indices.
   void VerifyTabIndices() {
-    for (int i = 0; i < tab_strip_->tab_count(); ++i) {
+    for (int i = 0; i < tab_strip_->GetTabCount(); ++i) {
       ui::AXNodeData ax_node_data;
       tab_strip_->tab_at(i)->GetViewAccessibility().GetAccessibleNodeData(
           &ax_node_data);
       EXPECT_EQ(i + 1, ax_node_data.GetIntAttribute(
                            ax::mojom::IntAttribute::kPosInSet));
       EXPECT_EQ(
-          tab_strip_->tab_count(),
+          tab_strip_->GetTabCount(),
           ax_node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
     }
   }
@@ -218,7 +218,7 @@ class TabStripTest : public ChromeViewsTestBase,
     views::View::Views all_children = tab_strip_->children();
 
     const int num_tab_slot_views =
-        tab_strip_->tab_count() + tab_strip_->group_views_.size();
+        tab_strip_->GetTabCount() + tab_strip_->group_views_.size();
 
     return views::View::Views(all_children.begin(),
                               all_children.begin() + num_tab_slot_views);
@@ -231,7 +231,7 @@ class TabStripTest : public ChromeViewsTestBase,
 
     base::Optional<tab_groups::TabGroupId> prev_group = base::nullopt;
 
-    for (int i = 0; i < tab_strip_->tab_count(); ++i) {
+    for (int i = 0; i < tab_strip_->GetTabCount(); ++i) {
       Tab* tab = tab_strip_->tab_at(i);
 
       // If the current Tab is the first one in a group, first add the
@@ -312,13 +312,13 @@ TEST_P(TabStripTest, IsValidModelIndex) {
 }
 
 TEST_P(TabStripTest, tab_count) {
-  EXPECT_EQ(0, tab_strip_->tab_count());
+  EXPECT_EQ(0, tab_strip_->GetTabCount());
 }
 
 TEST_P(TabStripTest, AddTabAt) {
   TestTabStripObserver observer(tab_strip_);
   controller_->AddTab(0, false);
-  ASSERT_EQ(1, tab_strip_->tab_count());
+  ASSERT_EQ(1, tab_strip_->GetTabCount());
   EXPECT_EQ(0, observer.last_tab_added());
   Tab* tab = tab_strip_->tab_at(0);
   EXPECT_FALSE(tab == NULL);
@@ -329,7 +329,7 @@ TEST_P(TabStripTest, MoveTab) {
   controller_->AddTab(0, false);
   controller_->AddTab(1, false);
   controller_->AddTab(2, false);
-  ASSERT_EQ(3, tab_strip_->tab_count());
+  ASSERT_EQ(3, tab_strip_->GetTabCount());
   EXPECT_EQ(2, observer.last_tab_added());
   Tab* tab = tab_strip_->tab_at(0);
   controller_->MoveTab(0, 1);
@@ -344,11 +344,11 @@ TEST_P(TabStripTest, RemoveTab) {
   controller_->AddTab(0, false);
   controller_->AddTab(1, false);
   const size_t num_children = tab_strip_->children().size();
-  EXPECT_EQ(2, tab_strip_->tab_count());
+  EXPECT_EQ(2, tab_strip_->GetTabCount());
   controller_->RemoveTab(0);
   EXPECT_EQ(0, observer.last_tab_removed());
   // When removing a tab the tabcount should immediately decrement.
-  EXPECT_EQ(1, tab_strip_->tab_count());
+  EXPECT_EQ(1, tab_strip_->GetTabCount());
   // But the number of views should remain the same (it's animatining closed).
   EXPECT_EQ(num_children, tab_strip_->children().size());
 
@@ -453,12 +453,12 @@ TEST_P(TabStripTest, VisibilityInOverflow) {
   ASSERT_GT(i, 0);
   EXPECT_LT(i, invisible_tab_index);
   invisible_tab_index = i;
-  for (int i = invisible_tab_index + 1; i < tab_strip_->tab_count(); ++i)
+  for (int i = invisible_tab_index + 1; i < tab_strip_->GetTabCount(); ++i)
     EXPECT_FALSE(tab_strip_->tab_at(i)->GetVisible());
 
   // When we're already in overflow, adding tabs at the beginning or end of
   // the strip should not change how many tabs are visible.
-  controller_->AddTab(tab_strip_->tab_count(), false);
+  controller_->AddTab(tab_strip_->GetTabCount(), false);
   CompleteAnimationAndLayout();
   EXPECT_TRUE(tab_strip_->tab_at(invisible_tab_index - 1)->GetVisible());
   EXPECT_FALSE(tab_strip_->tab_at(invisible_tab_index)->GetVisible());
@@ -468,10 +468,10 @@ TEST_P(TabStripTest, VisibilityInOverflow) {
   EXPECT_FALSE(tab_strip_->tab_at(invisible_tab_index)->GetVisible());
 
   // If we remove enough tabs, all the tabs should be visible.
-  for (int i = tab_strip_->tab_count() - 1; i >= invisible_tab_index; --i)
+  for (int i = tab_strip_->GetTabCount() - 1; i >= invisible_tab_index; --i)
     controller_->RemoveTab(i);
   CompleteAnimationAndLayout();
-  EXPECT_TRUE(tab_strip_->tab_at(tab_strip_->tab_count() - 1)->GetVisible());
+  EXPECT_TRUE(tab_strip_->tab_at(tab_strip_->GetTabCount() - 1)->GetVisible());
 }
 
 TEST_P(TabStripTest, GroupedTabSlotVisibility) {
@@ -529,7 +529,7 @@ TEST_P(TabStripTest, TabForEventWhenStacked) {
   controller_->AddTab(1, true);
   controller_->AddTab(2, false);
   controller_->AddTab(3, false);
-  ASSERT_EQ(4, tab_strip_->tab_count());
+  ASSERT_EQ(4, tab_strip_->GetTabCount());
 
   // Switch to stacked layout mode and force a layout to ensure tabs stack.
   tab_strip_->SetStackedLayout(true);
@@ -544,7 +544,7 @@ TEST_P(TabStripTest, TabForEventWhenStacked) {
       int tab = tab_strip_->GetModelIndexOf(FindTabForEvent(p));
       if (tab == previous_tab)
         continue;
-      if ((tab != -1) || (previous_tab != tab_strip_->tab_count() - 1))
+      if ((tab != -1) || (previous_tab != tab_strip_->GetTabCount() - 1))
         EXPECT_EQ(previous_tab + 1, tab) << "p = " << p.ToString();
       previous_tab = tab;
     }
@@ -559,7 +559,7 @@ TEST_P(TabStripTest, TabGroupCreatedWhenStacked) {
   controller_->AddTab(1, true);
   controller_->AddTab(2, false);
   controller_->AddTab(3, false);
-  ASSERT_EQ(4, tab_strip_->tab_count());
+  ASSERT_EQ(4, tab_strip_->GetTabCount());
 
   // Switch to stacked layout mode and force a layout to ensure tabs stack.
   tab_strip_->SetStackedLayout(true);
@@ -588,7 +588,7 @@ TEST_P(TabStripTest, TabCloseButtonVisibilityWhenStacked) {
   controller_->AddTab(0, false);
   controller_->AddTab(1, true);
   controller_->AddTab(2, false);
-  ASSERT_EQ(3, tab_strip_->tab_count());
+  ASSERT_EQ(3, tab_strip_->GetTabCount());
 
   Tab* tab0 = tab_strip_->tab_at(0);
   Tab* tab1 = tab_strip_->tab_at(1);
@@ -661,7 +661,7 @@ TEST_P(TabStripTest, TabCloseButtonVisibilityWhenNotStacked) {
   controller_->AddTab(0, false);
   controller_->AddTab(1, true);
   controller_->AddTab(2, false);
-  ASSERT_EQ(3, tab_strip_->tab_count());
+  ASSERT_EQ(3, tab_strip_->GetTabCount());
 
   Tab* tab0 = tab_strip_->tab_at(0);
   ASSERT_FALSE(tab0->IsActive());
@@ -738,7 +738,7 @@ TEST_P(TabStripTest, GetEventHandlerForOverlappingArea) {
   controller_->AddTab(2, false);
   controller_->AddTab(3, false);
   CompleteAnimationAndLayout();
-  ASSERT_EQ(4, tab_strip_->tab_count());
+  ASSERT_EQ(4, tab_strip_->GetTabCount());
 
   // Verify that the active tab will be a tooltip handler for points that hit
   // it.
@@ -802,7 +802,7 @@ TEST_P(TabStripTest, GetTooltipHandler) {
   controller_->AddTab(2, false);
   controller_->AddTab(3, false);
   CompleteAnimationAndLayout();
-  ASSERT_EQ(4, tab_strip_->tab_count());
+  ASSERT_EQ(4, tab_strip_->GetTabCount());
 
   // Verify that the active tab will be a tooltip handler for points that hit
   // it.
@@ -903,17 +903,17 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
     CompleteAnimationAndLayout();
   }
 
-  EXPECT_GT(tab_strip_->tab_count(), 1);
+  EXPECT_GT(tab_strip_->GetTabCount(), 1);
 
   const int active_index = controller_->GetActiveIndex();
-  EXPECT_EQ(tab_strip_->tab_count() - 1, active_index);
+  EXPECT_EQ(tab_strip_->GetTabCount() - 1, active_index);
   EXPECT_LT(tab_strip_->ideal_bounds(0).width(),
             tab_strip_->ideal_bounds(active_index).width());
 
   // During mouse-based tab closure, the active tab should remain at least as
   // wide as it's minimum width.
   controller_->SelectTab(0, dummy_event_);
-  while (tab_strip_->tab_count() > 0) {
+  while (tab_strip_->GetTabCount() > 0) {
     const int active_index = controller_->GetActiveIndex();
     EXPECT_GE(tab_strip_->ideal_bounds(active_index).width(),
               TabStyleViews::GetMinimumActiveWidth());
@@ -943,7 +943,7 @@ TEST_P(TabStripTest, InactiveTabWidthWhenTabsAreTiny) {
   // If there are only two tabs in the strip, then after closing one the
   // remaining one will be active and there will be no inactive tabs,
   // so we stop at 2.
-  while (tab_strip_->tab_count() > 2) {
+  while (tab_strip_->GetTabCount() > 2) {
     const int last_inactive_width = GetInactiveTabWidth();
     tab_strip_->CloseTab(tab_strip_->tab_at(controller_->GetActiveIndex()),
                          CLOSE_TAB_FROM_MOUSE);
@@ -963,23 +963,24 @@ TEST_P(TabStripTest, ExitsClosingModeAtStandardWidth) {
   }
 
   // The test closes two tabs, we need at least one left over after that.
-  ASSERT_GE(tab_strip_->tab_count(), 3);
+  ASSERT_GE(tab_strip_->GetTabCount(), 3);
 
   // Close the second-to-last tab to enter tab closing mode.
-  tab_strip_->CloseTab(tab_strip_->tab_at(tab_strip_->tab_count() - 2),
+  tab_strip_->CloseTab(tab_strip_->tab_at(tab_strip_->GetTabCount() - 2),
                        CLOSE_TAB_FROM_MOUSE);
   CompleteAnimationAndLayout();
   ASSERT_LT(GetActiveTabWidth(), standard_width);
 
   // Close the last tab; tabs should reach standard width.
-  tab_strip_->CloseTab(tab_strip_->tab_at(tab_strip_->tab_count() - 1),
+  tab_strip_->CloseTab(tab_strip_->tab_at(tab_strip_->GetTabCount() - 1),
                        CLOSE_TAB_FROM_MOUSE);
   CompleteAnimationAndLayout();
   EXPECT_EQ(GetActiveTabWidth(), standard_width);
 
   // The tabstrip width should match the rightmost tab's right edge.
-  EXPECT_EQ(tab_strip_->bounds().width(),
-            tab_strip_->tab_at(tab_strip_->tab_count() - 1)->bounds().right());
+  EXPECT_EQ(
+      tab_strip_->bounds().width(),
+      tab_strip_->tab_at(tab_strip_->GetTabCount() - 1)->bounds().right());
 }
 
 // When dragged tabs are moving back to their position, changes to ideal bounds
@@ -1332,7 +1333,7 @@ TEST_P(TabStripTest, CloseTabInGroupWhilePreviousTabAnimatingClosed) {
   controller_->MoveTabIntoGroup(2, group_id);
 
   CompleteAnimationAndLayout();
-  ASSERT_EQ(3, tab_strip_->tab_count());
+  ASSERT_EQ(3, tab_strip_->GetTabCount());
   ASSERT_EQ(3, tab_strip_->GetModelCount());
   EXPECT_EQ(base::nullopt, tab_strip_->tab_at(0)->group());
   EXPECT_EQ(group_id, tab_strip_->tab_at(1)->group());
@@ -1362,7 +1363,7 @@ TEST_P(TabStripTest, CloseTabInGroupWhilePreviousTabAnimatingClosed) {
 
   // After finishing animations, there should be exactly 1 tab in no
   // group.
-  EXPECT_EQ(1, tab_strip_->tab_count());
+  EXPECT_EQ(1, tab_strip_->GetTabCount());
   EXPECT_EQ(base::nullopt, tab_strip_->tab_at(0)->group());
   EXPECT_EQ(1, tab_strip_->GetModelCount());
 }

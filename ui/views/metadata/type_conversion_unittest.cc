@@ -95,7 +95,7 @@ TEST_F(TypeConversionTest, TestConversion_ShadowValuesToString) {
 TEST_F(TypeConversionTest, TestConversion_StringToShadowValues) {
   base::Optional<gfx::ShadowValues> opt_result =
       metadata::TypeConverter<gfx::ShadowValues>::FromString(base::ASCIIToUTF16(
-          "[ (6,4),0.53,rgba(23,44,0,255); (93,83),4.33,rgba(10,20,0,15) ]"));
+          "[ (6,4),0.53,rgba(23,44,0,1); (93,83),4.33,rgba(10,20,0,0.059) ]"));
 
   EXPECT_EQ(opt_result.has_value(), true);
   gfx::ShadowValues result = opt_result.value();

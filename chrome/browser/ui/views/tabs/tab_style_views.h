@@ -10,6 +10,17 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/glow_hover_controller.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/views/metadata/type_conversion.h"
+
+template <>
+struct views::metadata::TypeConverter<TabStyle::TabColors> {
+  static constexpr bool is_serializable = true;
+  static bool IsSerializable() { return is_serializable; }
+  static base::string16 ToString(
+      views::metadata::ArgType<TabStyle::TabColors> source_value);
+  static base::Optional<TabStyle::TabColors> FromString(
+      const base::string16& source_value);
+};
 
 class Tab;
 

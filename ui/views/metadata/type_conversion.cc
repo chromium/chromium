@@ -19,6 +19,24 @@
 namespace views {
 namespace metadata {
 
+base::Optional<SkColor> RgbaPiecesToSkColor(
+    const std::vector<base::StringPiece16>& pieces,
+    size_t start_piece) {
+  int r, g, b;
+  double a;
+  return ((pieces.size() >= start_piece + 4) &&
+          base::StringToInt(pieces[start_piece], &r) &&
+          base::IsValueInRangeForNumericType<uint8_t>(r) &&
+          base::StringToInt(pieces[start_piece + 1], &g) &&
+          base::IsValueInRangeForNumericType<uint8_t>(g) &&
+          base::StringToInt(pieces[start_piece + 2], &b) &&
+          base::IsValueInRangeForNumericType<uint8_t>(b) &&
+          base::StringToDouble(pieces[start_piece + 3], &a))
+             ? base::make_optional(SkColorSetARGB(
+                   base::ClampRound<SkAlpha>(a * SK_AlphaOPAQUE), r, g, b))
+             : base::nullopt;
+}
+
 const base::string16& GetNullOptStr() {
   static const base::NoDestructor<base::string16> kNullOptStr(
       base::ASCIIToUTF16("<Empty>"));
@@ -215,16 +233,15 @@ base::Optional<gfx::ShadowValues> TypeConverter<gfx::ShadowValues>::FromString(
     const auto members = base::SplitStringPiece(
         member_string, base::ASCIIToUTF16(","), base::TRIM_WHITESPACE,
         base::SPLIT_WANT_NONEMPTY);
-    int x, y, r, g, b, a;
+    int x, y;
     double blur;
+    const auto color = RgbaPiecesToSkColor(members, 3);
 
     if ((members.size() == 7) && base::StringToInt(members[0], &x) &&
         base::StringToInt(members[1], &y) &&
         base::StringToDouble(UTF16ToASCII(members[2]), &blur) &&
-        base::StringToInt(members[3], &r) &&
-        base::StringToInt(members[4], &g) &&
-        base::StringToInt(members[5], &b) && base::StringToInt(members[6], &a))
-      ret.emplace_back(gfx::Vector2d(x, y), blur, SkColorSetARGB(a, r, g, b));
+        color.has_value())
+      ret.emplace_back(gfx::Vector2d(x, y), blur, color.value());
   }
   return ret;
 }

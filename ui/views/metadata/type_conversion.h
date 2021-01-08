@@ -107,6 +107,13 @@ static const EnumStrings<T>& GetEnumStringsInstance();
 
 // String Conversions ---------------------------------------------------------
 
+// Converts the four elements of |pieces| beginning at |start_piece| to an
+// SkColor by assuming the pieces are split from a string like "rgba(r,g,b,a)".
+// Returns nullopt if conversion was unsuccessful.
+VIEWS_EXPORT base::Optional<SkColor> RgbaPiecesToSkColor(
+    const std::vector<base::StringPiece16>& pieces,
+    size_t start_piece);
+
 #define DECLARE_CONVERSIONS(T)                                               \
   template <>                                                                \
   struct VIEWS_EXPORT TypeConverter<T> {                                     \
