@@ -86,8 +86,9 @@ bool AssociateFieldTrialParamsFromString(
 
 bool GetFieldTrialParams(const std::string& trial_name,
                          FieldTrialParams* params) {
-  return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(
-      trial_name, params);
+  FieldTrial* trial = FieldTrialList::Find(trial_name);
+  return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(trial,
+                                                                       params);
 }
 
 bool GetFieldTrialParamsByFeature(const Feature& feature,
@@ -96,10 +97,8 @@ bool GetFieldTrialParamsByFeature(const Feature& feature,
     return false;
 
   FieldTrial* trial = FeatureList::GetFieldTrial(feature);
-  if (!trial)
-    return false;
-
-  return GetFieldTrialParams(trial->trial_name(), params);
+  return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(trial,
+                                                                       params);
 }
 
 std::string GetFieldTrialParamValue(const std::string& trial_name,

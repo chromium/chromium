@@ -33,9 +33,9 @@ class BASE_EXPORT FieldTrialParamAssociator {
                                  const FieldTrialParams& params);
 
   // Gets the parameters for a field trial and its chosen group. If not found in
-  // field_trial_params_, then tries to looks it up in shared memory.
-  bool GetFieldTrialParams(const std::string& trial_name,
-                           FieldTrialParams* params);
+  // field_trial_params_, then tries to looks it up in shared memory. Returns
+  // false if no params are available or the passed |field_trial| is null.
+  bool GetFieldTrialParams(FieldTrial* field_trial, FieldTrialParams* params);
 
   // Gets the parameters for a field trial and its chosen group. Does not
   // fallback to looking it up in shared memory. This should only be used if you

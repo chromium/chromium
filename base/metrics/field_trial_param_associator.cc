@@ -39,16 +39,13 @@ bool FieldTrialParamAssociator::AssociateFieldTrialParams(
   return true;
 }
 
-bool FieldTrialParamAssociator::GetFieldTrialParams(
-    const std::string& trial_name,
-    FieldTrialParams* params) {
-  FieldTrial* field_trial = FieldTrialList::Find(trial_name);
+bool FieldTrialParamAssociator::GetFieldTrialParams(FieldTrial* field_trial,
+                                                    FieldTrialParams* params) {
   if (!field_trial)
     return false;
-
   // First try the local map, falling back to getting it from shared memory.
-  if (GetFieldTrialParamsWithoutFallback(trial_name, field_trial->group_name(),
-                                         params)) {
+  if (GetFieldTrialParamsWithoutFallback(field_trial->trial_name(),
+                                         field_trial->group_name(), params)) {
     return true;
   }
 
