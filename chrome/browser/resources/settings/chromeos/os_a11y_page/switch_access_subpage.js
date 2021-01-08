@@ -49,21 +49,21 @@ Polymer({
       notify: true,
     },
 
-    /** @private {Array<string>} */
+    /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
     selectAssignments_: {
       type: Array,
       value: [],
       notify: true,
     },
 
-    /** @private {Array<string>} */
+    /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
     nextAssignments_: {
       type: Array,
       value: [],
       notify: true,
     },
 
-    /** @private {Array<string>} */
+    /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
     previousAssignments_: {
       type: Array,
       value: [],
@@ -202,23 +202,34 @@ Polymer({
   },
 
   /**
-   * @param {!Object<SwitchAccessCommand, !Array<string>>} value
+   * @param {!Object<SwitchAccessCommand, !Array<{key: string, device:
+   *     !SwitchAccessDeviceType}>>} value
    * @private
    */
   onAssignmentsChanged_(value) {
-    // TODO: include |v.devices| for each key in UI.
-    this.selectAssignments_ = value[SwitchAccessCommand.SELECT].map(v => v.key);
-    this.nextAssignments_ = value[SwitchAccessCommand.NEXT].map(v => v.key);
-    this.previousAssignments_ =
-        value[SwitchAccessCommand.PREVIOUS].map(v => v.key);
+    this.selectAssignments_ = value[SwitchAccessCommand.SELECT];
+    this.nextAssignments_ = value[SwitchAccessCommand.NEXT];
+    this.previousAssignments_ = value[SwitchAccessCommand.PREVIOUS];
   },
 
   /**
-   * @param {!Array<string>} switches List of switch names
-   * @return {string} (e.g. 'Alt, Backspace, Enter, and 4 more switches')
+   * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
+   * @return {string}
    * @private
    */
-  getAssignSwitchSubLabel_(switches) {
+  getLabelForAssignment_(assignment) {
+    return getLabelForAssignment(assignment);
+  },
+
+  /**
+   * @param {!Array<{key: string, device: !SwitchAccessDeviceType}>} assignments
+   *     List of assignments
+   * @return {string} (e.g. 'Alt (USB), Backspace, Enter, and 4 more switches')
+   * @private
+   */
+  getAssignSwitchSubLabel_(assignments) {
+    const switches =
+        assignments.map(assignment => this.getLabelForAssignment_(assignment));
     switch (switches.length) {
       case 0:
         return this.i18n('assignSwitchSubLabel0Switches');

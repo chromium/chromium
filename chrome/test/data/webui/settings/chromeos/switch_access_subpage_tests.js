@@ -101,7 +101,7 @@ suite('ManageAccessibilityPageTests', function() {
    */
   function getSublabelForSelectUpdates(keys) {
     cr.webUIListenerCallback('switch-access-assignments-changed', {
-      select: keys.map(key => ({key, devices: ['internal']})),
+      select: keys.map(key => ({key, device: 'usb'})),
       next: [],
       previous: []
     });
@@ -120,10 +120,10 @@ suite('ManageAccessibilityPageTests', function() {
     // Simulate a pref change for the select action.
     cr.webUIListenerCallback(
         'switch-access-assignments-changed',
-        {select: [{key: 'a', devices: ['internal']}], next: [], previous: []});
+        {select: [{key: 'a', device: 'usb'}], next: [], previous: []});
 
     assertEquals(1, page.selectAssignments_.length);
-    assertEquals('a', page.selectAssignments_[0]);
+    assertDeepEquals({key: 'a', device: 'usb'}, page.selectAssignments_[0]);
     assertEquals(0, page.nextAssignments_.length);
     assertEquals(0, page.previousAssignments_.length);
   });
@@ -132,24 +132,29 @@ suite('ManageAccessibilityPageTests', function() {
     initPage();
 
     assertEquals('0 switches assigned', getSublabelForSelectUpdates([]));
-    assertEquals('Backspace', getSublabelForSelectUpdates(['Backspace']));
+    assertEquals('Backspace (USB)', getSublabelForSelectUpdates(['Backspace']));
     assertEquals(
-        'Backspace, Tab', getSublabelForSelectUpdates(['Backspace', 'Tab']));
+        'Backspace (USB), Tab (USB)',
+        getSublabelForSelectUpdates(['Backspace', 'Tab']));
     assertEquals(
-        'Backspace, Tab, Enter',
+        'Backspace (USB), Tab (USB), Enter (USB)',
         getSublabelForSelectUpdates(['Backspace', 'Tab', 'Enter']));
     assertEquals(
-        'Backspace, Tab, Enter, and 1 more switch',
+        'Backspace (USB), Tab (USB), Enter (USB), ' +
+            'and 1 more switch',
         getSublabelForSelectUpdates(['Backspace', 'Tab', 'Enter', 'a']));
     assertEquals(
-        'Backspace, Tab, Enter, and 2 more switches',
+        'Backspace (USB), Tab (USB), Enter (USB), ' +
+            'and 2 more switches',
         getSublabelForSelectUpdates(['Backspace', 'Tab', 'Enter', 'a', 'b']));
     assertEquals(
-        'Backspace, Tab, Enter, and 3 more switches',
+        'Backspace (USB), Tab (USB), Enter (USB), ' +
+            'and 3 more switches',
         getSublabelForSelectUpdates(
             ['Backspace', 'Tab', 'Enter', 'a', 'b', 'c']));
     assertEquals(
-        'Backspace, Tab, Enter, and 4 more switches',
+        'Backspace (USB), Tab (USB), Enter (USB), ' +
+            'and 4 more switches',
         getSublabelForSelectUpdates(
             ['Backspace', 'Tab', 'Enter', 'a', 'b', 'c', 'd']));
   });
@@ -171,9 +176,11 @@ suite('ManageAccessibilityPageTests', function() {
 
     // Simulate pressing 'a' twice.
     cr.webUIListenerCallback(
-        'switch-access-got-key-press-for-assignment', {key: 'a', keyCode: 65});
+        'switch-access-got-key-press-for-assignment',
+        {key: 'a', keyCode: 65, device: 'usb'});
     cr.webUIListenerCallback(
-        'switch-access-got-key-press-for-assignment', {key: 'a', keyCode: 65});
+        'switch-access-got-key-press-for-assignment',
+        {key: 'a', keyCode: 65, device: 'usb'});
 
     // This should cause the dialog to close.
     await browserProxy.methodCalled(
@@ -191,9 +198,11 @@ suite('ManageAccessibilityPageTests', function() {
 
     // Simulate pressing 'a', and then 'b'.
     cr.webUIListenerCallback(
-        'switch-access-got-key-press-for-assignment', {key: 'a', keyCode: 65});
+        'switch-access-got-key-press-for-assignment',
+        {key: 'a', keyCode: 65, device: 'usb'});
     cr.webUIListenerCallback(
-        'switch-access-got-key-press-for-assignment', {key: 'b', keyCode: 66});
+        'switch-access-got-key-press-for-assignment',
+        {key: 'b', keyCode: 66, device: 'usb'});
 
     const element = page.$$('#switchAccessActionAssignmentDialog');
     await test_util.waitAfterNextRender(element);

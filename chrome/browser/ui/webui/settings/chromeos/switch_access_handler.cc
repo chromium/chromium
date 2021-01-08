@@ -137,15 +137,17 @@ void SwitchAccessHandler::OnKeyEvent(ui::KeyEvent* event) {
   base::DictionaryValue response;
   response.SetIntPath("keyCode", static_cast<int>(event->key_code()));
   response.SetStringPath("key", GetStringForKeyboardCode(event->key_code()));
+  ui::InputDeviceType deviceType = ui::INPUT_DEVICE_UNKNOWN;
 
   int source_device_id = event->source_device_id();
   for (const auto& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     if (source_device_id == keyboard.id) {
-      response.SetStringPath("device", GetSwitchAccessDevice(keyboard.type));
+      deviceType = keyboard.type;
       break;
     }
   }
+  response.SetStringPath("device", GetSwitchAccessDevice(deviceType));
 
   FireWebUIListener("switch-access-got-key-press-for-assignment", response);
 }
@@ -186,17 +188,18 @@ void SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated() {
     auto* keycodes = prefs_->GetDictionary(info.pref_name);
     base::ListValue keys;
     for (const auto& item : keycodes->DictItems()) {
-      base::DictionaryValue key;
       int key_code;
       if (!base::StringToInt(item.first, &key_code)) {
         NOTREACHED();
         return;
       }
-      key.SetStringPath("key", GetStringForKeyboardCode(
-                                   static_cast<ui::KeyboardCode>(key_code)));
-      key.SetPath("devices", item.second.Clone());
-
-      keys.Append(std::move(key));
+      for (const base::Value& device_type : item.second.GetList()) {
+        base::DictionaryValue key;
+        key.SetStringPath("key", GetStringForKeyboardCode(
+                                     static_cast<ui::KeyboardCode>(key_code)));
+        key.SetStringPath("device", device_type.GetString());
+        keys.Append(std::move(key));
+      }
     }
     response.SetPath(info.action_name_for_js, std::move(keys));
   }

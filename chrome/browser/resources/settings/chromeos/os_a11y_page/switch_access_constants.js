@@ -11,3 +11,14 @@
   PREVIOUS: 'previous',
   SELECT: 'select'
 };
+
+/**
+ * Possible device types for Switch Access.
+ * @enum {string}
+ */
+/* #export */ const SwitchAccessDeviceType = {
+  INTERNAL: 'internal',
+  USB: 'usb',
+  BLUETOOTH: 'bluetooth',
+  UNKNOWN: 'unknown'
+};

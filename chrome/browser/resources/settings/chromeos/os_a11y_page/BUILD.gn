@@ -129,9 +129,9 @@ js_type_check("closure_compile_module") {
 
     #    ":os_a11y_page.m",
     ":os_a11y_page_browser_proxy.m",
-
     ":switch_access_action_assignment_dialog.m",
     ":switch_access_constants.m",
+
     #    ":switch_access_subpage.m",
     ":switch_access_subpage_browser_proxy.m",
     ":tts_subpage.m",
