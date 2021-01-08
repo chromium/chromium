@@ -1282,9 +1282,14 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
         (!doneOnce && base::mac::WasLaunchedAsHiddenLoginItem());
     doneOnce = YES;
     if (attemptRestore) {
+      Profile* lastProfile = [self lastProfile];
+      if (!lastProfile) {
+        // There is no session to be restored without a valid profile. Return NO
+        // to do nothing.
+        return NO;
+      }
       SessionService* sessionService =
-          SessionServiceFactory::GetForProfileForSessionRestore(
-              [self lastProfile]);
+          SessionServiceFactory::GetForProfileForSessionRestore(lastProfile);
       if (sessionService &&
           sessionService->RestoreIfNecessary(std::vector<GURL>()))
         return NO;
