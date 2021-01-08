@@ -96,6 +96,7 @@ def ci_builder(
     experiments = experiments or {}
     experiments.setdefault("chromium.resultdb.result_sink", 100)
     experiments.setdefault("chromium.resultdb.result_sink.junit_tests", 100)
+    experiments.setdefault("chromium.resultdb.result_sink.gtests_local", 100)
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
@@ -368,9 +369,6 @@ def fyi_builder(
         builder_group = "chromium.fyi",
         execution_timeout = execution_timeout,
         goma_backend = goma_backend,
-        experiments = {
-            "chromium.resultdb.result_sink.gtests_local": 30,
-        },
         **kwargs
     )
 
