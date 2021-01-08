@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
-class FileSystemCreateWriterOptions;
+class FileSystemCreateWritableOptions;
 
 class FileSystemFileHandle final : public FileSystemHandle {
   DEFINE_WRAPPERTYPEINFO();
@@ -25,7 +25,7 @@ class FileSystemFileHandle final : public FileSystemHandle {
   bool isFile() const override { return true; }
 
   ScriptPromise createWritable(ScriptState*,
-                               const FileSystemCreateWriterOptions* options,
+                               const FileSystemCreateWritableOptions* options,
                                ExceptionState&);
   ScriptPromise getFile(ScriptState*, ExceptionState&);
 

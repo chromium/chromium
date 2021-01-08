@@ -8,7 +8,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_create_writer_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_create_writable_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
@@ -34,7 +34,7 @@ FileSystemFileHandle::FileSystemFileHandle(
 
 ScriptPromise FileSystemFileHandle::createWritable(
     ScriptState* script_state,
-    const FileSystemCreateWriterOptions* options,
+    const FileSystemCreateWritableOptions* options,
     ExceptionState& exception_state) {
   if (!mojo_ptr_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");

@@ -9,7 +9,8 @@
     Serializable,
     RuntimeEnabled=FileSystemAccess
 ] interface FileSystemFileHandle : FileSystemHandle {
-    [CallWith=ScriptState, RaisesException] Promise<FileSystemWritableFileStream> createWritable(optional FileSystemCreateWriterOptions options = {});
+    [CallWith=ScriptState, RaisesException]
+    Promise<FileSystemWritableFileStream> createWritable(optional FileSystemCreateWritableOptions options = {});
 
     [CallWith=ScriptState, RaisesException] Promise<File> getFile();
 };

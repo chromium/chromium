@@ -98,12 +98,12 @@ class FileSystemHandle {
 }
 
 /** @typedef {{keepExistingData: boolean}} */
-let FileSystemCreateWriterOptions;
+let FileSystemCreateWritableOptions;
 
 /** @interface */
 class FileSystemFileHandle extends FileSystemHandle {
   /**
-   * @param {FileSystemCreateWriterOptions=} options
+   * @param {FileSystemCreateWritableOptions=} options
    * @return {!Promise<!FileSystemWritableFileStream>}
    */
   createWritable(options) {}
