@@ -34,10 +34,17 @@ func getCppFiles(dir string) []string {
 	for _, file := range files {
 		if file.IsDir() {
 			paths = append(paths, getCppFiles(filepath.Join(dir, file.Name()))...)
+			continue
 		}
 		ext := filepath.Ext(file.Name())
 		if ext == ".cc" || ext == ".h" {
-			paths = append(paths, filepath.Join(dir, file.Name()))
+			isTestFile, err := filepath.Match("*_test.*", file.Name())
+			if err != nil {
+				panic(err)
+			}
+			if !isTestFile {
+				paths = append(paths, filepath.Join(dir, file.Name()))
+			}
 		}
 	}
 	return paths
@@ -102,7 +109,7 @@ func main() {
 		for _, d := range topDirs {
 			if strings.HasPrefix(f, d) {
 				var bd string
-				for _, asm := range []string{"sse4"} {
+				for _, asm := range []string{"sse4", "avx2"} {
 					pattern := "*_" + asm + "*"
 					if match, err := filepath.Match(pattern, filepath.Base(f)); err != nil {
 						panic(err)

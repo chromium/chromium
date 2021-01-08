@@ -66,6 +66,7 @@ if (enable_libgav1_decoder || use_libgav1_parser) {
     public_configs = [ ":public_libgav1_config" ]
 
     sources = gav1_dsp_sources + gav1_dsp_headers_sources
+    sources += gav1_dsp_avx2_sources + gav1_dsp_avx2_headers_sources
   }
 
   # SSE4 sources are split to their own target as Chrome is currently built
@@ -83,7 +84,7 @@ if (enable_libgav1_decoder || use_libgav1_parser) {
     }
 
     sources = gav1_dsp_sse4_sources + gav1_dsp_sse4_headers_sources +
-              gav1_dsp_headers_sources
+              gav1_dsp_headers_sources + gav1_dsp_avx2_headers_sources
   }
 
   static_library("libgav1") {
