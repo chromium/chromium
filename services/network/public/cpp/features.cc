@@ -202,6 +202,9 @@ const base::FeatureParam<TrustTokenOriginTrialSpec>
 // Determines whether Trust Tokens issuance requests should be diverted, at the
 // corresponding issuers' request, to the operating system instead of sent
 // to the issuers' servers.
+//
+// WARNING: If you rename this param, you must update the corresponding flag
+// entry in about_flags.cc.
 const base::FeatureParam<bool> kPlatformProvidedTrustTokenIssuance{
     &kTrustTokens, "PlatformProvidedTrustTokenIssuance", false};
 

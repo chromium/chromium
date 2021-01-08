@@ -2488,6 +2488,15 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+constexpr FeatureEntry::FeatureParam kPlatformProvidedTrustTokenIssuance[] = {
+    {"PlatformProvidedTrustTokenIssuance", "true"}};
+
+constexpr FeatureEntry::FeatureVariation
+    kPlatformProvidedTrustTokensVariations[] = {
+        {"with platform-provided trust token issuance",
+         kPlatformProvidedTrustTokenIssuance,
+         base::size(kPlatformProvidedTrustTokenIssuance), nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -6335,7 +6344,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"trust-tokens", flag_descriptions::kTrustTokensName,
      flag_descriptions::kTrustTokensDescription, kOsAll,
-     FEATURE_VALUE_TYPE(network::features::kTrustTokens)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(network::features::kTrustTokens,
+                                    kPlatformProvidedTrustTokensVariations,
+                                    "TrustTokenOriginTrial")},
 
 #if defined(OS_ANDROID)
     {"android-partner-customization-phenotype",
