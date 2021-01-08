@@ -8,6 +8,7 @@ import argparse
 import bisect
 import calendar
 import collections
+import copy
 import datetime
 import gzip
 import itertools
@@ -52,7 +53,6 @@ _OWNERS_COMPONENT_REGEX = re.compile(r'^\s*#\s*COMPONENT:\s*(\S+)',
 _OWNERS_FILE_PATH_REGEX = re.compile(r'^\s*file://(\S+)', re.MULTILINE)
 
 _UNCOMPRESSED_COMPRESSION_RATIO_THRESHOLD = 0.9
-_APKS_MAIN_APK = 'splits/base-master.apk'
 
 # Holds computation state that is live only when an output directory exists.
 _OutputDirectoryContext = collections.namedtuple('_OutputDirectoryContext', [
@@ -748,8 +748,8 @@ def LoadAndPostProcessDeltaSizeInfo(path, file_obj=None):
   return before_size_info, after_size_info
 
 
-def _CollectModuleSizes(minimal_apks_path):
-  sizes_by_module = collections.defaultdict(int)
+def _GetModuleInfoList(minimal_apks_path):
+  module_info_list = []
   with zipfile.ZipFile(minimal_apks_path) as z:
     for info in z.infolist():
       # E.g.:
@@ -760,7 +760,14 @@ def _CollectModuleSizes(minimal_apks_path):
       # TODO(agrieve): Might be worth measuring a non-en locale as well.
       m = re.match(r'splits/(.*)-master\.apk', info.filename)
       if m:
-        sizes_by_module[m.group(1)] += info.file_size
+        module_info_list.append((m.group(1), info.file_size))
+  return sorted(module_info_list)
+
+
+def _CollectModuleSizes(minimal_apks_path):
+  sizes_by_module = collections.defaultdict(int)
+  for module_name, file_size in _GetModuleInfoList(minimal_apks_path):
+    sizes_by_module[module_name] += file_size
   return sizes_by_module
 
 
@@ -834,14 +841,18 @@ def CreateMetadata(args, linker_name, build_config):
     metadata[models.METADATA_MAP_FILENAME] = shorten_path(args.map_file)
 
   if args.minimal_apks_file:
-    sizes_by_module = _CollectModuleSizes(args.minimal_apks_file)
     metadata[models.METADATA_APK_FILENAME] = shorten_path(
         args.minimal_apks_file)
-    for name, size in sizes_by_module.items():
-      key = models.METADATA_APK_SIZE
-      if name != 'base':
-        key += '-' + name
-      metadata[key] = size
+    if args.split_name and args.split_name != 'base':
+      metadata[models.METADATA_APK_SPLIT_NAME] = args.split_name
+      metadata[models.METADATA_APK_SIZE] = os.path.getsize(args.apk_file)
+    else:
+      sizes_by_module = _CollectModuleSizes(args.minimal_apks_file)
+      for name, size in sizes_by_module.items():
+        key = models.METADATA_APK_SIZE
+        if name != 'base':
+          key += '-' + name
+        metadata[key] = size
   elif args.apk_file:
     metadata[models.METADATA_APK_FILENAME] = shorten_path(args.apk_file)
     metadata[models.METADATA_APK_SIZE] = os.path.getsize(args.apk_file)
@@ -1882,6 +1893,9 @@ def _AddContainerArguments(parser):
       help='Include a padding field for each symbol, instead of rederiving '
       'from consecutive symbols on file load.')
 
+  # The split_name arg is used for bundles to identify DFMs.
+  parser.set_defaults(split_name=None)
+
 
 def AddArguments(parser):
   parser.add_argument('size_file', help='Path to output .size file.')
@@ -2076,14 +2090,7 @@ def _ReadMultipleArgsFromFile(ssargs_file, on_config_error):
                                      on_config_error)
 
 
-def _ProcessContainerArgs(top_args, sub_args, main_file, on_config_error):
-  if hasattr(sub_args, 'name'):
-    container_name = sub_args.name
-  else:
-    container_name = os.path.basename(main_file)
-  if set(container_name) & set('<>'):
-    parser.error('Container name cannot have characters in "<>"')
-
+def _ProcessContainerArgs(top_args, sub_args, container_name, on_config_error):
   # Copy output_directory, tool_prefix, etc. into sub_args.
   for k, v in top_args.__dict__.items():
     sub_args.__dict__.setdefault(k, v)
@@ -2132,6 +2139,28 @@ def _ProcessContainerArgs(top_args, sub_args, main_file, on_config_error):
           linker_name, size_info_prefix)
 
 
+def _IsOnDemand(apk_path):
+  # Check if the manifest specifies whether or not to extract native libs.
+  output = subprocess.check_output([
+      path_util.GetAapt2Path(), 'dump', 'xmltree', '--file',
+      'AndroidManifest.xml', apk_path
+  ]).decode('ascii')
+
+  def parse_attr(name):
+    # http://schemas.android.com/apk/res/android:isFeatureSplit(0x0101055b)=true
+    # http://schemas.android.com/apk/distribution:onDemand=true
+    m = re.search(name + r'(?:\(.*?\))?=(\w+)', output)
+    return m and m.group(1) == 'true'
+
+  is_feature_split = parse_attr('android:isFeatureSplit')
+  # Can use <dist:on-demand>, or <module dist:onDemand="true">.
+  on_demand = parse_attr(
+      'distribution:onDemand') or 'distribution:on-demand' in output
+  on_demand = bool(on_demand and is_feature_split)
+
+  return on_demand
+
+
 def _IterSubArgs(top_args, on_config_error):
   """Generates main paths (may be deduced) for each containers given by input.
 
@@ -2167,16 +2196,33 @@ def _IterSubArgs(top_args, on_config_error):
   # Each element in |sub_args_list| specifies a container.
   for sub_args in sub_args_list:
     main_file = _IdentifyInputFile(sub_args, on_config_error)
+    if hasattr(sub_args, 'name'):
+      container_name = sub_args.name
+    else:
+      container_name = os.path.basename(main_file)
+    if set(container_name) & set('<>'):
+      parser.error('Container name cannot have characters in "<>"')
+
 
     # If needed, extract .apk file to a temp file and process that instead.
     if sub_args.minimal_apks_file:
-      with zip_util.UnzipToTemp(sub_args.minimal_apks_file,
-                                _APKS_MAIN_APK) as temp:
-        sub_args.apk_file = temp
-        yield _ProcessContainerArgs(top_args, sub_args, main_file,
-                                    on_config_error)
+      for module_name, _ in _GetModuleInfoList(sub_args.minimal_apks_file):
+        with zip_util.UnzipToTemp(
+            sub_args.minimal_apks_file,
+            'splits/{}-master.apk'.format(module_name)) as temp:
+          if _IsOnDemand(temp):
+            continue
+          module_sub_args = copy.copy(sub_args)
+          module_sub_args.apk_file = temp
+          module_sub_args.split_name = module_name
+          module_sub_args.name = '{}/{}.apk'.format(container_name, module_name)
+          if module_name != 'base':
+            # TODO(crbug.com/1143690): Fix native analysis for split APKs.
+            module_sub_args.map_file = None
+          yield _ProcessContainerArgs(top_args, module_sub_args,
+                                      module_sub_args.name, on_config_error)
     else:
-      yield _ProcessContainerArgs(top_args, sub_args, main_file,
+      yield _ProcessContainerArgs(top_args, sub_args, container_name,
                                   on_config_error)
 
 

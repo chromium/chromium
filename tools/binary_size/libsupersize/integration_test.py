@@ -40,10 +40,15 @@ _TEST_PAK_INFO_PATH = os.path.join(
 _TEST_ELF_FILE_BEGIN = os.path.join(_TEST_OUTPUT_DIR, 'elf.begin')
 _TEST_APK_LOCALE_PAK_PATH = os.path.join(_TEST_APK_ROOT_DIR, 'assets/en-US.pak')
 _TEST_APK_PAK_PATH = os.path.join(_TEST_APK_ROOT_DIR, 'assets/resources.pak')
+_TEST_ON_DEMAND_MANIFEST_PATH = os.path.join(_TEST_DATA_DIR,
+                                             'AndroidManifest_OnDemand.xml')
+_TEST_ALWAYS_INSTALLED_MANIFEST_PATH = os.path.join(
+    _TEST_DATA_DIR, 'AndroidManifest_AlwaysInstalled.xml')
 
 # The following files are dynamically created.
 _TEST_ELF_PATH = os.path.join(_TEST_OUTPUT_DIR, 'elf')
 _TEST_APK_PATH = os.path.join(_TEST_OUTPUT_DIR, 'test.apk')
+_TEST_OTHER_SPLIT_APK_PATH = os.path.join(_TEST_OUTPUT_DIR, 'other.apk')
 _TEST_MINIMAL_APKS_PATH = os.path.join(_TEST_OUTPUT_DIR, 'Bundle.minimal.apks')
 _TEST_SSARGS_PATH = os.path.join(_TEST_OUTPUT_DIR, 'test.ssargs')
 
@@ -80,11 +85,13 @@ def _AddMocksToPath():
   os.environ['PATH'] = _TEST_TOOL_PREFIX[:-1] + os.path.pathsep + prev_path
   os.environ['APK_ANALYZER'] = os.path.join(_TEST_SDK_DIR, 'tools', 'bin',
                                             'apkanalyzer')
+  os.environ['AAPT2'] = os.path.join(_TEST_SDK_DIR, 'tools', 'bin', 'aapt2')
   try:
     yield
   finally:
     os.environ['PATH'] = prev_path
     del os.environ['APK_ANALYZER']
+    del os.environ['AAPT2']
 
 
 def _RunApp(name, args, debug_measures=False):
@@ -145,19 +152,30 @@ class IntegrationTest(unittest.TestCase):
       apk_file.writestr(
           _TEST_APK_DEX_PATH, IntegrationTest._CreateBlankData(23))
 
+    with zipfile.ZipFile(_TEST_OTHER_SPLIT_APK_PATH, 'w') as other_apk_zip:
+      other_apk_zip.write(_TEST_ALWAYS_INSTALLED_MANIFEST_PATH,
+                          'AndroidManifest.xml')
+
     with zipfile.ZipFile(_TEST_MINIMAL_APKS_PATH, 'w') as apk_file:
       apk_file.write(_TEST_APK_PATH, 'splits/base-master.apk')
       apk_file.writestr('splits/base-en.apk', 'x' * 10)
-      apk_file.writestr('splits/vr-master.apk', 'x' * 20)
+
+      with tempfile.NamedTemporaryFile(suffix='.apk') as vr_apk_file:
+        with zipfile.ZipFile(vr_apk_file.name, 'w') as vr_apk_zip:
+          vr_apk_zip.write(_TEST_ON_DEMAND_MANIFEST_PATH, 'AndroidManifest.xml')
+        apk_file.write(vr_apk_file.name, 'splits/vr-master.apk')
       apk_file.writestr('splits/vr-en.apk', 'x' * 40)
+
+      apk_file.write(_TEST_OTHER_SPLIT_APK_PATH, 'splits/other-master.apk')
       apk_file.writestr('toc.pb', 'x' * 80)
 
   @classmethod
   def tearDownClass(cls):
     IntegrationTest._SafeRemoveFiles([
-      _TEST_ELF_PATH,
-      _TEST_APK_PATH,
-      _TEST_MINIMAL_APKS_PATH,
+        _TEST_ELF_PATH,
+        _TEST_APK_PATH,
+        _TEST_OTHER_SPLIT_APK_PATH,
+        _TEST_MINIMAL_APKS_PATH,
     ])
 
   def _CreateTestArgs(self):
@@ -192,11 +210,13 @@ class IntegrationTest(unittest.TestCase):
       apk_so_path = None
       size_info_prefix = None
       extracted_minimal_apk_path = None
+      container_name = ''
       if use_apk:
         args.apk_file = _TEST_APK_PATH
       elif use_minimal_apks:
         args.minimal_apks_file = _TEST_MINIMAL_APKS_PATH
         extracted_minimal_apk_path = _TEST_APK_PATH
+        container_name = 'Bundle.minimal.apks'
       if use_apk or use_minimal_apks:
         apk_so_path = _TEST_APK_SO_PATH
         if args.output_directory:
@@ -219,10 +239,13 @@ class IntegrationTest(unittest.TestCase):
       with _AddMocksToPath():
         build_config = {}
         metadata = archive.CreateMetadata(args, linker_name, build_config)
+        container_list = []
+        raw_symbols_list = []
         container, raw_symbols = archive.CreateContainerAndSymbols(
             knobs=knobs,
             opts=opts,
-            container_name='',
+            container_name='{}/base.apk'.format(container_name)
+            if container_name else '',
             metadata=metadata,
             map_path=args.map_file,
             tool_prefix=args.tool_prefix,
@@ -235,8 +258,29 @@ class IntegrationTest(unittest.TestCase):
             pak_info_file=pak_info_file,
             linker_name=linker_name,
             size_info_prefix=size_info_prefix)
+        container_list.append(container)
+        raw_symbols_list.append(raw_symbols)
+        if use_minimal_apks:
+          opts.analyze_native = False
+          args.split_name = 'other'
+          args.apk_file = _TEST_OTHER_SPLIT_APK_PATH
+          args.elf_file = None
+          args.map_file = None
+          metadata = archive.CreateMetadata(args, None, build_config)
+          container, raw_symbols = archive.CreateContainerAndSymbols(
+              knobs=knobs,
+              opts=opts,
+              container_name='{}/other.apk'.format(container_name),
+              metadata=metadata,
+              tool_prefix=args.tool_prefix,
+              output_directory=args.output_directory,
+              source_directory=args.source_directory,
+              apk_path=_TEST_OTHER_SPLIT_APK_PATH,
+              size_info_prefix=size_info_prefix)
+          container_list.append(container)
+          raw_symbols_list.append(raw_symbols)
         IntegrationTest.cached_size_info[cache_key] = archive.CreateSizeInfo(
-            build_config, [container], [raw_symbols])
+            build_config, container_list, raw_symbols_list)
     return copy.deepcopy(IntegrationTest.cached_size_info[cache_key])
 
   def _DoArchive(self,
@@ -321,9 +365,13 @@ class IntegrationTest(unittest.TestCase):
 
     sym_strs = (repr(sym) for sym in size_info.symbols)
     stats = describe.DescribeSizeInfoCoverage(size_info)
-    assert len(size_info.containers) == 1
-    # If there's only one container, merge the its metadata into build_config.
-    merged_data_desc = describe.DescribeDict(size_info.metadata_legacy)
+    if len(size_info.containers) == 1:
+      # If there's only one container, merge the its metadata into build_config.
+      merged_data_desc = describe.DescribeDict(size_info.metadata_legacy)
+    else:
+      merged_data_desc = describe.DescribeDict(size_info.build_config)
+      for m in size_info.metadata:
+        merged_data_desc.extend(describe.DescribeDict(m))
     return itertools.chain(merged_data_desc, stats, sym_strs)
 
   @_CompareWithGolden()
