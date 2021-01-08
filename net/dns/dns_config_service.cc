@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 
 namespace net {
@@ -53,12 +52,6 @@ void DnsConfigService::RefreshConfig() {
 
 void DnsConfigService::InvalidateConfig() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::TimeTicks now = base::TimeTicks::Now();
-  if (!last_invalidate_config_time_.is_null()) {
-    UMA_HISTOGRAM_LONG_TIMES("AsyncDNS.ConfigNotifyInterval",
-                             now - last_invalidate_config_time_);
-  }
-  last_invalidate_config_time_ = now;
   if (!have_config_)
     return;
   have_config_ = false;
@@ -67,12 +60,6 @@ void DnsConfigService::InvalidateConfig() {
 
 void DnsConfigService::InvalidateHosts() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::TimeTicks now = base::TimeTicks::Now();
-  if (!last_invalidate_hosts_time_.is_null()) {
-    UMA_HISTOGRAM_LONG_TIMES("AsyncDNS.HostsNotifyInterval",
-                             now - last_invalidate_hosts_time_);
-  }
-  last_invalidate_hosts_time_ = now;
   if (!have_hosts_)
     return;
   have_hosts_ = false;
@@ -83,17 +70,10 @@ void DnsConfigService::OnConfigRead(const DnsConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config.IsValid());
 
-  bool changed = false;
   if (!config.EqualsIgnoreHosts(dns_config_)) {
     dns_config_.CopyIgnoreHosts(config);
     need_update_ = true;
-    changed = true;
   }
-  if (!changed && !last_sent_empty_time_.is_null()) {
-    UMA_HISTOGRAM_LONG_TIMES("AsyncDNS.UnchangedConfigInterval",
-                             base::TimeTicks::Now() - last_sent_empty_time_);
-  }
-  UMA_HISTOGRAM_BOOLEAN("AsyncDNS.ConfigChange", changed);
 
   have_config_ = true;
   if (have_hosts_ || watch_failed_)
@@ -103,17 +83,10 @@ void DnsConfigService::OnConfigRead(const DnsConfig& config) {
 void DnsConfigService::OnHostsRead(const DnsHosts& hosts) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  bool changed = false;
   if (hosts != dns_config_.hosts) {
     dns_config_.hosts = hosts;
     need_update_ = true;
-    changed = true;
   }
-  if (!changed && !last_sent_empty_time_.is_null()) {
-    UMA_HISTOGRAM_LONG_TIMES("AsyncDNS.UnchangedHostsInterval",
-                             base::TimeTicks::Now() - last_sent_empty_time_);
-  }
-  UMA_HISTOGRAM_BOOLEAN("AsyncDNS.HostsChange", changed);
 
   have_hosts_ = true;
   if (have_config_ || watch_failed_)
@@ -145,7 +118,6 @@ void DnsConfigService::OnTimeout() {
   need_update_ = true;
   // Empty config is considered invalid.
   last_sent_empty_ = true;
-  last_sent_empty_time_ = base::TimeTicks::Now();
   callback_.Run(DnsConfig());
 }
 

@@ -57,15 +57,6 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   virtual void RefreshConfig();
 
  protected:
-  enum WatchStatus {
-    DNS_CONFIG_WATCH_STARTED = 0,
-    DNS_CONFIG_WATCH_FAILED_TO_START_CONFIG,
-    DNS_CONFIG_WATCH_FAILED_TO_START_HOSTS,
-    DNS_CONFIG_WATCH_FAILED_CONFIG,
-    DNS_CONFIG_WATCH_FAILED_HOSTS,
-    DNS_CONFIG_WATCH_MAX,
-  };
-
   // Immediately attempts to read the current configuration.
   virtual void ReadNow() = 0;
   // Registers system watchers. Returns true iff succeeds.
@@ -107,12 +98,6 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // True if the last config sent was empty (instead of |dns_config_|).
   // Set when |timer_| expires.
   bool last_sent_empty_;
-
-  // Initialized and updated on Invalidate* call.
-  base::TimeTicks last_invalidate_config_time_;
-  base::TimeTicks last_invalidate_hosts_time_;
-  // Initialized and updated when |timer_| expires.
-  base::TimeTicks last_sent_empty_time_;
 
   // Started in Invalidate*, cleared in On*Read.
   base::OneShotTimer timer_;

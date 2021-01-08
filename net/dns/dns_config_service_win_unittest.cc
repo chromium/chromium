@@ -184,14 +184,11 @@ TEST(DnsConfigServiceWinTest, ConvertAdapterAddresses) {
     }
 
     DnsConfig config;
-    internal::ConfigParseWinResult result =
-        internal::ConvertSettingsToDnsConfig(settings, &config);
-    internal::ConfigParseWinResult expected_result =
-        expected_nameservers.empty() ? internal::CONFIG_PARSE_WIN_NO_NAMESERVERS
-            : internal::CONFIG_PARSE_WIN_OK;
-    EXPECT_EQ(expected_result, result);
+    bool success = internal::ConvertSettingsToDnsConfig(settings, &config);
+    bool expected_success = !expected_nameservers.empty();
+    EXPECT_EQ(expected_success, success);
     EXPECT_EQ(expected_nameservers, config.nameservers);
-    if (result == internal::CONFIG_PARSE_WIN_OK) {
+    if (success) {
       ASSERT_EQ(1u, config.search.size());
       EXPECT_EQ(t.expected_suffix, config.search[0]);
     }
@@ -393,8 +390,7 @@ TEST(DnsConfigServiceWinTest, ConvertSuffixSearch) {
     settings.tcpip_devolution = t.input_settings.tcpip_devolution;
 
     DnsConfig config;
-    EXPECT_EQ(internal::CONFIG_PARSE_WIN_OK,
-              internal::ConvertSettingsToDnsConfig(settings, &config));
+    EXPECT_TRUE(internal::ConvertSettingsToDnsConfig(settings, &config));
     std::vector<std::string> expected_search;
     for (size_t j = 0; !t.expected_search[j].empty(); ++j) {
       expected_search.push_back(t.expected_search[j]);
@@ -421,8 +417,7 @@ TEST(DnsConfigServiceWinTest, AppendToMultiLabelName) {
     settings.addresses = CreateAdapterAddresses(infos);
     settings.append_to_multi_label_name = t.input;
     DnsConfig config;
-    EXPECT_EQ(internal::CONFIG_PARSE_WIN_OK,
-              internal::ConvertSettingsToDnsConfig(settings, &config));
+    EXPECT_TRUE(internal::ConvertSettingsToDnsConfig(settings, &config));
     EXPECT_EQ(t.expected_output, config.append_to_multi_label_name);
   }
 }
@@ -437,10 +432,9 @@ TEST(DnsConfigServiceWinTest, HaveNRPT) {
   const struct TestCase {
     bool have_nrpt;
     bool unhandled_options;
-    internal::ConfigParseWinResult result;
   } cases[] = {
-    { false, false, internal::CONFIG_PARSE_WIN_OK },
-    { true, true, internal::CONFIG_PARSE_WIN_UNHANDLED_OPTIONS },
+      {false, false},
+      {true, true},
   };
 
   for (const auto& t : cases) {
@@ -448,8 +442,7 @@ TEST(DnsConfigServiceWinTest, HaveNRPT) {
     settings.addresses = CreateAdapterAddresses(infos);
     settings.have_name_resolution_policy = t.have_nrpt;
     DnsConfig config;
-    EXPECT_EQ(t.result,
-              internal::ConvertSettingsToDnsConfig(settings, &config));
+    EXPECT_TRUE(internal::ConvertSettingsToDnsConfig(settings, &config));
     EXPECT_EQ(t.unhandled_options, config.unhandled_options);
     EXPECT_EQ(t.have_nrpt, config.use_local_ipv6);
   }
@@ -465,10 +458,9 @@ TEST(DnsConfigServiceWinTest, HaveProxy) {
   const struct TestCase {
     bool have_proxy;
     bool unhandled_options;
-    internal::ConfigParseWinResult result;
   } cases[] = {
-      {false, false, internal::CONFIG_PARSE_WIN_OK},
-      {true, true, internal::CONFIG_PARSE_WIN_UNHANDLED_OPTIONS},
+      {false, false},
+      {true, true},
   };
 
   for (const auto& t : cases) {
@@ -476,8 +468,7 @@ TEST(DnsConfigServiceWinTest, HaveProxy) {
     settings.addresses = CreateAdapterAddresses(infos);
     settings.have_proxy = t.have_proxy;
     DnsConfig config;
-    EXPECT_EQ(t.result,
-              internal::ConvertSettingsToDnsConfig(settings, &config));
+    EXPECT_TRUE(internal::ConvertSettingsToDnsConfig(settings, &config));
     EXPECT_EQ(t.unhandled_options, config.unhandled_options);
   }
 }
@@ -493,8 +484,7 @@ TEST(DnsConfigServiceWinTest, UsesVpn) {
   internal::DnsSystemSettings settings;
   settings.addresses = CreateAdapterAddresses(infos);
   DnsConfig config;
-  EXPECT_EQ(internal::CONFIG_PARSE_WIN_UNHANDLED_OPTIONS,
-            internal::ConvertSettingsToDnsConfig(settings, &config));
+  EXPECT_TRUE(internal::ConvertSettingsToDnsConfig(settings, &config));
   EXPECT_TRUE(config.unhandled_options);
 }
 

@@ -3878,6 +3878,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AsyncDNSConfigParsePosix">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <int value="0" label="OK"/>
   <int value="1" label="RES_INIT_FAILED"/>
   <int value="2" label="RES_INIT_UNSET"/>
@@ -3890,6 +3893,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AsyncDNSConfigParseWin">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <int value="0" label="OK"/>
   <int value="1" label="READ_IPHELPER"/>
   <int value="2" label="READ_POLICY_SEARCHLIST"/>
@@ -3906,6 +3912,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AsyncDNSHostsParseWin">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <int value="0" label="OK"/>
   <int value="1" label="UNREADABLE_HOSTS_FILE"/>
   <int value="2" label="COMPUTER_NAME_FAILED"/>
@@ -3914,6 +3923,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AsyncDNSNameServersType">
+  <obsolete>
+    Removed unknown date before 2021-01.
+  </obsolete>
   <summary>Type of nameservers in the DNS config.</summary>
   <int value="0" label="NONE">No nameservers configured.</int>
   <int value="1" label="GOOGLE_PUBLIC_DNS">
@@ -3933,6 +3945,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AsyncDNSParseResult">
+  <obsolete>
+    Removed unknown date before 2021-01.
+  </obsolete>
   <summary>Results of DnsResponse::ParseToAddressList.</summary>
   <int value="0" label="SUCCESS"/>
   <int value="1" label="MALFORMED_RESPONSE"/>
@@ -3945,12 +3960,18 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AsyncDNSPrefDefaultSource">
+  <obsolete>
+    Removed unknown date before 2021-01.
+  </obsolete>
   <int value="0" label="PLATFORM"/>
   <int value="1" label="FIELD_TRIAL"/>
   <int value="2" label="HARD_CODED_DEFAULT"/>
 </enum>
 
 <enum name="AsyncDNSPrefSource">
+  <obsolete>
+    Removed unknown date before 2021-01.
+  </obsolete>
   <int value="0" label="MANAGED_PREF"/>
   <int value="1" label="SUPERVISED_PREF"/>
   <int value="2" label="EXTENSION_PREF"/>
@@ -3962,6 +3983,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AsyncDNSRcode">
+  <obsolete>
+    Removed unknown date before 2021-01.
+  </obsolete>
   <summary>
     https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-6
   </summary>
@@ -3974,6 +3998,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AsyncDNSResolveStatus">
+  <obsolete>
+    Removed unknown date before 2021-01.
+  </obsolete>
   <int value="0" label="DNS_SUCCESS">Succeeded with async DNS.</int>
   <int value="1" label="PROC_SUCCESS">
     Succeeded with getaddrinfo after async DNS failed.
@@ -3985,6 +4012,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AsyncDNSWatchStatus">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <int value="0" label="STARTED">Started.</int>
   <int value="1" label="FAILED_TO_START_CONFIG">
     Failed to start watching config.

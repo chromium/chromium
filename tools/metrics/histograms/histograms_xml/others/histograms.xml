@@ -817,6 +817,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AsyncDNS.ConfigChange" enum="BooleanSuccess"
     expires_after="M77">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>
@@ -826,6 +829,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AsyncDNS.ConfigNotifyInterval" units="ms" expires_after="M77">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>
@@ -834,6 +840,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AsyncDNS.ConfigParseDuration" units="ms" expires_after="M81">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>Duration of time spent parsing DnsConfig.</summary>
@@ -841,6 +850,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AsyncDNS.ConfigParsePosix" enum="AsyncDNSConfigParsePosix"
     expires_after="M77">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>
@@ -850,6 +862,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AsyncDNS.ConfigParseWin" enum="AsyncDNSConfigParseWin"
     expires_after="M77">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>
@@ -859,6 +874,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AsyncDNS.HostParseResult" enum="BooleanSuccess"
     expires_after="M77">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>Whether DnsHosts were parsed successfully.</summary>
@@ -866,6 +884,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AsyncDNS.HostsChange" enum="BooleanSuccess"
     expires_after="M77">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>
@@ -875,6 +896,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AsyncDNS.HostsNotifyInterval" units="ms" expires_after="M77">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>
@@ -883,6 +907,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AsyncDNS.HostsParseDuration" units="ms" expires_after="M77">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>Duration of time spent parsing DnsHosts.</summary>
@@ -890,6 +917,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AsyncDNS.HostsParseWin" enum="AsyncDNSHostsParseWin"
     expires_after="M77">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>
@@ -898,6 +928,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AsyncDNS.ServerCount" units="units" expires_after="2021-03-21">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>
@@ -908,6 +941,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AsyncDNS.UnchangedConfigInterval" units="ms"
     expires_after="M77">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>
@@ -918,6 +954,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AsyncDNS.UnchangedHostsInterval" units="ms"
     expires_after="2021-01-31">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -928,6 +967,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AsyncDNS.WatchStatus" enum="AsyncDNSWatchStatus"
     expires_after="2021-01-31">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>

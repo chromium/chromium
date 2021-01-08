@@ -149,8 +149,7 @@ TEST(DnsConfigServicePosixTest, ConvertResStateToDnsConfig) {
   DnsConfig config;
   EXPECT_FALSE(config.IsValid());
   InitializeResState(&res);
-  ASSERT_EQ(internal::CONFIG_PARSE_POSIX_OK,
-            internal::ConvertResStateToDnsConfig(res, &config));
+  ASSERT_TRUE(internal::ConvertResStateToDnsConfig(res, &config));
   CloseResState(&res);
   EXPECT_TRUE(config.IsValid());
 
@@ -177,13 +176,11 @@ TEST(DnsConfigServicePosixTest, RejectEmptyNameserver) {
   res.nscount = 2;
 
   DnsConfig config;
-  EXPECT_EQ(internal::CONFIG_PARSE_POSIX_NULL_ADDRESS,
-            internal::ConvertResStateToDnsConfig(res, &config));
+  EXPECT_FALSE(internal::ConvertResStateToDnsConfig(res, &config));
 
   sa.sin_addr.s_addr = 0xDEADBEEF;
   res.nsaddr_list[0] = sa;
-  EXPECT_EQ(internal::CONFIG_PARSE_POSIX_OK,
-            internal::ConvertResStateToDnsConfig(res, &config));
+  EXPECT_TRUE(internal::ConvertResStateToDnsConfig(res, &config));
 }
 
 TEST(DnsConfigServicePosixTest, DestroyWhileJobsWorking) {

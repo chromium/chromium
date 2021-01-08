@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "net/dns/dns_config.h"
@@ -28,10 +27,7 @@ DnsSession::DnsSession(const DnsConfig& config,
       rand_callback_(base::BindRepeating(rand_int_callback,
                                          0,
                                          std::numeric_limits<uint16_t>::max())),
-      net_log_(net_log) {
-  UMA_HISTOGRAM_CUSTOM_COUNTS("AsyncDNS.ServerCount",
-                              config_.nameservers.size(), 1, 10, 11);
-}
+      net_log_(net_log) {}
 
 DnsSession::~DnsSession() = default;
 

@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_config_service.h"
 
@@ -65,24 +66,12 @@ class NET_EXPORT_PRIVATE DnsConfigServicePosix : public DnsConfigService {
   DISALLOW_COPY_AND_ASSIGN(DnsConfigServicePosix);
 };
 
-enum ConfigParsePosixResult {
-  CONFIG_PARSE_POSIX_OK = 0,
-  CONFIG_PARSE_POSIX_RES_INIT_FAILED,
-  CONFIG_PARSE_POSIX_RES_INIT_UNSET,
-  CONFIG_PARSE_POSIX_BAD_ADDRESS,
-  CONFIG_PARSE_POSIX_BAD_EXT_STRUCT,
-  CONFIG_PARSE_POSIX_NULL_ADDRESS,
-  CONFIG_PARSE_POSIX_NO_NAMESERVERS,
-  CONFIG_PARSE_POSIX_MISSING_OPTIONS,
-  CONFIG_PARSE_POSIX_UNHANDLED_OPTIONS,
-  CONFIG_PARSE_POSIX_NO_DNSINFO,
-  CONFIG_PARSE_POSIX_MAX  // Bounding values for enumeration.
-};
-
 #if !defined(OS_ANDROID)
-// Fills in |dns_config| from |res|.
-ConfigParsePosixResult NET_EXPORT_PRIVATE ConvertResStateToDnsConfig(
-    const struct __res_state& res, DnsConfig* dns_config);
+// Fills in |dns_config| from |res|. Returns false iff a valid config could not
+// be determined.
+bool NET_EXPORT_PRIVATE
+ConvertResStateToDnsConfig(const struct __res_state& res,
+                           DnsConfig* dns_config);
 #endif
 
 }  // namespace internal
