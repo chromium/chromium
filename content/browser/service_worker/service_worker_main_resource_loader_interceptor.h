@@ -72,12 +72,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   base::Optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
       override;
 
-  void LoaderCallbackWrapper(
-      LoaderCallback loader_callback,
-      SingleRequestURLLoaderFactory::RequestHandler handler);
-
-  base::WeakPtr<ServiceWorkerMainResourceLoaderInterceptor> GetWeakPtr();
-
  private:
   friend class ServiceWorkerMainResourceLoaderInterceptorTest;
 
@@ -131,9 +125,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   // |worker_token_| will be set.
   const int process_id_;
   const base::Optional<DedicatedOrSharedWorkerToken> worker_token_;
-
-  base::WeakPtrFactory<ServiceWorkerMainResourceLoaderInterceptor>
-      weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerMainResourceLoaderInterceptor);
 };
