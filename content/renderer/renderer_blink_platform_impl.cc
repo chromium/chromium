@@ -963,11 +963,18 @@ RendererBlinkPlatformImpl::GetGpuFactories() {
   return render_thread->GetGpuFactories();
 }
 
-media::DecoderFactory* RendererBlinkPlatformImpl::GetMediaDecoderFactory() {
+scoped_refptr<base::SingleThreadTaskRunner>
+RendererBlinkPlatformImpl::MediaThreadTaskRunner() {
   auto* render_thread = RenderThreadImpl::current();
   if (!render_thread)
     return nullptr;
 
+  return render_thread->GetMediaThreadTaskRunner();
+}
+
+media::DecoderFactory* RendererBlinkPlatformImpl::GetMediaDecoderFactory() {
+  auto* render_thread = RenderThreadImpl::current();
+  DCHECK(!!render_thread);
   return render_thread->GetMediaDecoderFactory();
 }
 

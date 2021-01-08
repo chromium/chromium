@@ -6,12 +6,16 @@
 
 #include "build/build_config.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
+#include "media/video/gpu_memory_buffer_video_frame_pool.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_webcodecs_texture_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_webcodecs_video_frame_handle.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "ui/gfx/color_transform.h"
 
 namespace blink {
@@ -19,14 +23,167 @@ namespace blink {
 namespace {
 
 #if defined(OS_WIN)
-const char* kRequiredExtension = "GL_NV_EGL_stream_consumer_external";
+const char kRequiredExtension[] = "GL_NV_EGL_stream_consumer_external";
 #elif defined(OS_MAC)
-const char* kRequiredExtension = "GL_ANGLE_texture_rectangle";
+const char kRequiredExtension[] = "GL_ANGLE_texture_rectangle";
 #elif defined(OS_ANDROID) || defined(OS_CHROMEOS)
-const char* kRequiredExtension = "GL_OES_EGL_image_external";
+const char kRequiredExtension[] = "GL_OES_EGL_image_external";
 #else
-const char* kRequiredExtension = "";
+const char kRequiredExtension[] = "";
 #endif
+
+void FillVideoColorSpace(VideoColorSpace* video_color_space,
+                         gfx::ColorSpace& gfx_color_space) {
+  gfx::ColorSpace::PrimaryID primaries = gfx_color_space.GetPrimaryID();
+  switch (primaries) {
+    case gfx::ColorSpace::PrimaryID::BT709:
+      video_color_space->setPrimaryID("BT709");
+      break;
+    case gfx::ColorSpace::PrimaryID::BT470M:
+      video_color_space->setPrimaryID("BT470M");
+      break;
+    case gfx::ColorSpace::PrimaryID::BT470BG:
+      video_color_space->setPrimaryID("BT470BG");
+      break;
+    case gfx::ColorSpace::PrimaryID::SMPTE170M:
+      video_color_space->setPrimaryID("SMPTE170M");
+      break;
+    case gfx::ColorSpace::PrimaryID::SMPTE240M:
+      video_color_space->setPrimaryID("SMPTE240M");
+      break;
+    case gfx::ColorSpace::PrimaryID::FILM:
+      video_color_space->setPrimaryID("FILM");
+      break;
+    case gfx::ColorSpace::PrimaryID::BT2020:
+      video_color_space->setPrimaryID("BT2020");
+      break;
+    case gfx::ColorSpace::PrimaryID::SMPTEST428_1:
+      video_color_space->setPrimaryID("SMPTEST428_1");
+      break;
+    case gfx::ColorSpace::PrimaryID::SMPTEST431_2:
+      video_color_space->setPrimaryID("SMPTEST431_2");
+      break;
+    case gfx::ColorSpace::PrimaryID::SMPTEST432_1:
+      video_color_space->setPrimaryID("SMPTEST432_1");
+      break;
+    // TODO(jie.a.chen@intel.com): Need to check EBU_3213_E.
+    default:;
+  }
+
+  gfx::ColorSpace::TransferID transfer = gfx_color_space.GetTransferID();
+  switch (transfer) {
+    case gfx::ColorSpace::TransferID::BT709:
+#if defined(OS_MAC)
+    // TODO(jie.a.chen@intel.com): BT709_APPLE is not available in WebCodecs.
+    case gfx::ColorSpace::TransferID::BT709_APPLE:
+#endif
+      video_color_space->setTransferID("BT709");
+      break;
+    case gfx::ColorSpace::TransferID::GAMMA22:
+      video_color_space->setTransferID("GAMMA22");
+      break;
+    case gfx::ColorSpace::TransferID::GAMMA28:
+      video_color_space->setTransferID("GAMMA28");
+      break;
+    case gfx::ColorSpace::TransferID::SMPTE170M:
+      video_color_space->setTransferID("SMPTE170M");
+      break;
+    case gfx::ColorSpace::TransferID::SMPTE240M:
+      video_color_space->setTransferID("SMPTE240M");
+      break;
+    case gfx::ColorSpace::TransferID::LINEAR:
+      video_color_space->setTransferID("LINEAR");
+      break;
+    case gfx::ColorSpace::TransferID::LOG:
+      video_color_space->setTransferID("LOG");
+      break;
+    case gfx::ColorSpace::TransferID::LOG_SQRT:
+      video_color_space->setTransferID("LOG_SQRT");
+      break;
+    case gfx::ColorSpace::TransferID::IEC61966_2_4:
+      video_color_space->setTransferID("IEC61966_2_4");
+      break;
+    case gfx::ColorSpace::TransferID::BT1361_ECG:
+      video_color_space->setTransferID("BT1361_ECG");
+      break;
+    case gfx::ColorSpace::TransferID::IEC61966_2_1:
+      video_color_space->setTransferID("IEC61966_2_1");
+      break;
+    case gfx::ColorSpace::TransferID::BT2020_10:
+      video_color_space->setTransferID("BT2020_10");
+      break;
+
+    case gfx::ColorSpace::TransferID::BT2020_12:
+      video_color_space->setTransferID("BT2020_12");
+      break;
+    case gfx::ColorSpace::TransferID::SMPTEST2084:
+      video_color_space->setTransferID("SMPTEST2084");
+      break;
+    case gfx::ColorSpace::TransferID::SMPTEST428_1:
+      video_color_space->setTransferID("SMPTEST428_1");
+      break;
+    default:;
+  }
+
+  gfx::ColorSpace::MatrixID matrix = gfx_color_space.GetMatrixID();
+  switch (matrix) {
+    case gfx::ColorSpace::MatrixID::RGB:
+      video_color_space->setMatrixID("RGB");
+      break;
+    case gfx::ColorSpace::MatrixID::BT709:
+      video_color_space->setMatrixID("BT709");
+      break;
+    case gfx::ColorSpace::MatrixID::FCC:
+      video_color_space->setMatrixID("FCC");
+      break;
+    case gfx::ColorSpace::MatrixID::BT470BG:
+      video_color_space->setMatrixID("BT470BG");
+      break;
+    case gfx::ColorSpace::MatrixID::SMPTE170M:
+      video_color_space->setMatrixID("SMPTE170M");
+      break;
+    case gfx::ColorSpace::MatrixID::SMPTE240M:
+      video_color_space->setMatrixID("SMPTE240M");
+      break;
+    case gfx::ColorSpace::MatrixID::YCOCG:
+      video_color_space->setMatrixID("YCOCG");
+      break;
+    case gfx::ColorSpace::MatrixID::BT2020_NCL:
+      video_color_space->setMatrixID("BT2020_NCL");
+      break;
+    case gfx::ColorSpace::MatrixID::BT2020_CL:
+      video_color_space->setMatrixID("BT2020_CL");
+      break;
+    case gfx::ColorSpace::MatrixID::YDZDX:
+      video_color_space->setMatrixID("YDZDX");
+      break;
+    default:;
+  }
+
+  gfx::ColorSpace::RangeID range = gfx_color_space.GetRangeID();
+  switch (range) {
+    case gfx::ColorSpace::RangeID::LIMITED:
+      video_color_space->setRangeID("LIMITED");
+      break;
+    case gfx::ColorSpace::RangeID::FULL:
+      video_color_space->setRangeID("FULL");
+      break;
+    case gfx::ColorSpace::RangeID::DERIVED:
+      video_color_space->setRangeID("DERIVED");
+      break;
+    default:;
+  }
+}
+
+void GetMediaTaskRunnerAndGpuFactoriesOnMainThread(
+    scoped_refptr<base::SingleThreadTaskRunner>* media_task_runner_out,
+    media::GpuVideoAcceleratorFactories** gpu_factories_out,
+    base::WaitableEvent* waitable_event) {
+  DCHECK(IsMainThread());
+  *media_task_runner_out = Platform::Current()->MediaThreadTaskRunner();
+  *gpu_factories_out = Platform::Current()->GetGpuFactories();
+  waitable_event->Signal();
+}
 
 }  // namespace
 
@@ -40,27 +197,37 @@ WebGLWebCodecsVideoFrame::WebGLWebCodecsVideoFrame(
   context->ContextGL()->Enable(GC3D_TEXTURE_RECTANGLE_ARB);
 #endif
 
-  // TODO(jie.a.chen@intel.com): More supports for HDR video.
 #if defined(OS_WIN)
-  sampler_type_ = "samplerExternalOES";
-  sampler_func_ = "texture2D";
   formats_supported[media::PIXEL_FORMAT_NV12] = true;
-  auto& components = format_to_components_map_[media::PIXEL_FORMAT_NV12];
-  components[media::VideoFrame::kYPlane] = "r";
-  components[media::VideoFrame::kUPlane] = "rg";
+  auto& components_nv12 = format_to_components_map_[media::PIXEL_FORMAT_NV12];
+  components_nv12[media::VideoFrame::kYPlane] = "r";
+  components_nv12[media::VideoFrame::kUPlane] = "rg";
 #elif defined(OS_MAC)
-  sampler_type_ = "sampler2DRect";
-  sampler_func_ = "texture2DRect";
   formats_supported[media::PIXEL_FORMAT_XRGB] = true;
-  auto& components = format_to_components_map_[media::PIXEL_FORMAT_XRGB];
-  components[media::VideoFrame::kYPlane] = "rgba";
-#elif defined(OS_ANDROID) || defined(OS_CHROMEOS)
-  sampler_type_ = "samplerExternalOES";
-  sampler_func_ = "texture2D";
+  auto& components_xrgb = format_to_components_map_[media::PIXEL_FORMAT_XRGB];
+  components_xrgb[media::VideoFrame::kYPlane] = "rgba";
+#elif defined(OS_ANDROID)
   formats_supported[media::PIXEL_FORMAT_ABGR] = true;
-  auto& components = format_to_components_map_[media::PIXEL_FORMAT_ABGR];
-  components[media::VideoFrame::kYPlane] = "rgb";
+  auto& components_abgr = format_to_components_map_[media::PIXEL_FORMAT_ABGR];
+  components_abgr[media::VideoFrame::kYPlane] = "rgb";
+
+  // GpuMemoryBufferVideoFramePool
+  formats_supported[media::PIXEL_FORMAT_NV12] = true;
+  auto& components_nv12 = format_to_components_map_[media::PIXEL_FORMAT_NV12];
+  components_nv12[media::VideoFrame::kYPlane] = "r";
+  components_nv12[media::VideoFrame::kUPlane] = "rg";
+#elif defined(OS_CHROMEOS)
+  formats_supported[media::PIXEL_FORMAT_ABGR] = true;
+  auto& components_abgr = format_to_components_map_[media::PIXEL_FORMAT_ABGR];
+  components_abgr[media::VideoFrame::kYPlane] = "rgb";
 #endif
+}
+
+WebGLWebCodecsVideoFrame::~WebGLWebCodecsVideoFrame() {
+  if (gpu_memory_buffer_pool_) {
+    media_task_runner_->DeleteSoon(FROM_HERE,
+                                   std::move(gpu_memory_buffer_pool_));
+  }
 }
 
 WebGLExtensionName WebGLWebCodecsVideoFrame::GetName() const {
@@ -92,29 +259,68 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
   if (!video_frame || scoped.IsLost())
     return nullptr;
 
+  const char* sampler_type = "sampler2D";
+  const char* sampler_func = "texture2D";
+  gfx::ColorSpace src_color_space = gfx::ColorSpace::CreateREC709();
+  media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_UNKNOWN;
+#if defined(OS_WIN)
+  sampler_type = "samplerExternalOES";
+  pixel_format = media::PIXEL_FORMAT_NV12;
+#elif defined(OS_MAC)
+  sampler_type = "sampler2DRect";
+  sampler_func = "texture2DRect";
+  pixel_format = media::PIXEL_FORMAT_XRGB;
+#elif defined(OS_ANDROID) || defined(OS_CHROMEOS)
+  sampler_type = "samplerExternalOES";
+  pixel_format = media::PIXEL_FORMAT_ABGR;
+  src_color_space = gfx::ColorSpace::CreateSRGB();
+#endif
+
   scoped_refptr<media::VideoFrame> frame = video_frame->frame();
   if (!frame->HasTextures()) {
-    exception_state.ThrowTypeError("Unable to import a software video frame.");
+    InitializeGpuMemoryBufferPool();
+    base::WaitableEvent waitable_event;
+    media_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &media::GpuMemoryBufferVideoFramePool::MaybeCreateHardwareFrame,
+            base::Unretained(gpu_memory_buffer_pool_.get()),
+            base::RetainedRef(frame),
+            base::BindOnce(
+                &WebGLWebCodecsVideoFrame::OnHardwareVideoFrameCreated,
+                base::Unretained(this), base::Unretained(&waitable_event))));
+    waitable_event.Wait();
+
+    if (frame == hardware_video_frame_) {
+      exception_state.ThrowTypeError(
+          "Unable to import a software video frame.");
+      return nullptr;
+    }
+    frame = std::move(hardware_video_frame_);
+#if defined(OS_WIN)
+    sampler_type = "sampler2D";
+#elif defined(OS_ANDROID)
+    sampler_type = "sampler2D";
+    pixel_format = frame->format();
+    src_color_space = frame->ColorSpace();
+#endif
+  }
+
+  if (!formats_supported[pixel_format]) {
+    exception_state.ThrowTypeError(
+        String::Format("VideoPixelFormat:%s is not supported yet.",
+                       media::VideoPixelFormatToString(pixel_format).c_str()));
     return nullptr;
   }
 
-  if (!formats_supported[frame->format()]) {
-    std::ostringstream ss;
-    ss << "VideoPixelFormat:"
-       << media::VideoPixelFormatToString(frame->format())
-       << " is not supported yet.";
-    exception_state.ThrowTypeError(ss.str().c_str());
-    return nullptr;
-  }
-
-  const auto& components = format_to_components_map_[frame->format()];
+  const auto& components = format_to_components_map_[pixel_format];
   HeapVector<Member<WebGLWebCodecsTextureInfo>> info_array;
   for (size_t tex = 0; tex < frame->NumTextures(); ++tex) {
     WebGLWebCodecsTextureInfo* texture_info =
         MakeGarbageCollected<WebGLWebCodecsTextureInfo>();
     info_array.push_back(texture_info);
-    texture_info->setSamplerType(sampler_type_.c_str());
-    texture_info->setSamplerFunc(sampler_func_.c_str());
+    texture_info->setSamplerType(sampler_type);
+    texture_info->setSamplerFunc(sampler_func);
     texture_info->setComponents(components[tex].c_str());
 
     auto* gl = scoped.Context()->ContextGL();
@@ -144,45 +350,27 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
   if (std::string(kRequiredExtension) != "") {
     video_frame_handle->setRequiredExtension(kRequiredExtension);
   }
+  // Remove "PIXEL_FORMAT_" prefix
+  video_frame_handle->setPixelFormat(
+      &VideoPixelFormatToString(pixel_format)[13]);
+
   // TODO(jie.a.chen@intel.com): Is the colorspace/flip-y/pre-alpha of video
   // frame specific to OS only? For the same OS, does it vary for different
   // video streams?
   video_frame_handle->setFlipY(true);
   video_frame_handle->setPremultipliedAlpha(false);
-  gfx::ColorSpace src_color_space = frame->ColorSpace();
 #if defined(OS_WIN)
-  video_frame_handle->setPixelFormat("NV12");
+  DCHECK(frame->format() == media::PIXEL_FORMAT_NV12);
+  src_color_space = frame->ColorSpace();
 #elif defined(OS_MAC)
   video_frame_handle->setRequiredExtension("GL_ARB_texture_rectangle");
-  video_frame_handle->setPixelFormat("XRGB");
   video_frame_handle->setPremultipliedAlpha(true);
+  src_color_space = frame->ColorSpace();
   src_color_space = src_color_space.GetAsFullRangeRGB();
-#elif defined(OS_ANDROID) || defined(OS_CHROMEOS)
-  if (!frame->ColorSpace().IsValid()) {
-    video_frame_handle->setPixelFormat("ABGR");
-    src_color_space = gfx::ColorSpace::CreateSRGB();
-  }
 #endif
   VideoColorSpace* video_frame_color_space =
       MakeGarbageCollected<VideoColorSpace>();
-  // TODO(jie.a.chen@intel.com): Add ToString() for color space members.
-#if defined(OS_WIN)
-  video_frame_color_space->setPrimaryID("BT709");
-  video_frame_color_space->setTransferID("BT709");
-  video_frame_color_space->setMatrixID("BT709");
-  video_frame_color_space->setRangeID("LIMITED");
-#elif defined(OS_MAC)
-  video_frame_color_space->setPrimaryID("SMPTE240M");
-  // TODO(jie.a.chen@intel.com): The actual BT709_APPLE is not available.
-  video_frame_color_space->setTransferID("BT709");
-  video_frame_color_space->setMatrixID("RGB");
-  video_frame_color_space->setRangeID("FULL");
-#elif defined(OS_ANDROID) || defined(OS_CHROMEOS)
-  video_frame_color_space->setPrimaryID("BT709");
-  video_frame_color_space->setTransferID("IEC61966_2_1");
-  video_frame_color_space->setMatrixID("RGB");
-  video_frame_color_space->setRangeID("FULL");
-#endif
+  FillVideoColorSpace(video_frame_color_space, src_color_space);
   video_frame_handle->setColorSpace(video_frame_color_space);
 
   gfx::ColorSpace dst_color_space = gfx::ColorSpace::CreateSRGB();
@@ -223,6 +411,41 @@ bool WebGLWebCodecsVideoFrame::releaseVideoFrame(
   media::WaitAndReplaceSyncTokenClient client(gl);
   frame->UpdateReleaseSyncToken(&client);
   return true;
+}
+
+void WebGLWebCodecsVideoFrame::OnHardwareVideoFrameCreated(
+    base::WaitableEvent* waitable_event,
+    scoped_refptr<media::VideoFrame> video_frame) {
+  hardware_video_frame_ = std::move(video_frame);
+  waitable_event->Signal();
+}
+
+void WebGLWebCodecsVideoFrame::InitializeGpuMemoryBufferPool() {
+  if (!worker_task_runner_) {
+    worker_task_runner_ = worker_pool::CreateSequencedTaskRunner({});
+  }
+  if (!gpu_memory_buffer_pool_) {
+    media::GpuVideoAcceleratorFactories* gpu_factories = nullptr;
+    if (IsMainThread()) {
+      media_task_runner_ = Platform::Current()->MediaThreadTaskRunner();
+      gpu_factories = Platform::Current()->GetGpuFactories();
+    } else {
+      base::WaitableEvent waitable_event;
+      // TODO(crbug.com/1164152): Lift the main thread restriction.
+      if (PostCrossThreadTask(
+              *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+              CrossThreadBindOnce(
+                  &GetMediaTaskRunnerAndGpuFactoriesOnMainThread,
+                  CrossThreadUnretained(&media_task_runner_),
+                  CrossThreadUnretained(&gpu_factories),
+                  CrossThreadUnretained(&waitable_event)))) {
+        waitable_event.Wait();
+      }
+    }
+    gpu_memory_buffer_pool_ =
+        std::make_unique<media::GpuMemoryBufferVideoFramePool>(
+            media_task_runner_, worker_task_runner_, gpu_factories);
+  }
 }
 
 }  // namespace blink

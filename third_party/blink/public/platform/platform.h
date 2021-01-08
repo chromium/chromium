@@ -387,6 +387,12 @@ class BLINK_PLATFORM_EXPORT Platform {
   // once CreateAndSetCompositorThread() is called.
   scoped_refptr<base::SingleThreadTaskRunner> CompositorThreadTaskRunner();
 
+  // Returns the task runner of the media thread.
+  // This method should only be called on the main thread, or it crashes.
+  virtual scoped_refptr<base::SingleThreadTaskRunner> MediaThreadTaskRunner() {
+    return nullptr;
+  }
+
   // This is called after the compositor thread is created, so the embedder
   // can initiate an IPC to change its thread priority (on Linux we can't
   // increase the nice value, so we need to ask the browser process). This

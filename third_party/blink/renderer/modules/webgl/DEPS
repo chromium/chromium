@@ -8,6 +8,7 @@ include_rules = [
     "+gpu/config/gpu_feature_info.h",
     "+media/base/video_frame.h",
     "+media/base/wait_and_replace_sync_token_client.h",
+    "+media/video/gpu_memory_buffer_video_frame_pool.h",
     "+skia/ext",
     "+third_party/blink/renderer/modules/webcodecs",
     "+ui/gl/gpu_preference.h",
