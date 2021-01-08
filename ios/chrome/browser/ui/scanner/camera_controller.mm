@@ -8,6 +8,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/ios_app_bundle_id_prefix_buildflags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -329,8 +330,7 @@
 }
 
 - (AVCaptureVideoOrientation)videoOrientationForCurrentInterfaceOrientation {
-  UIInterfaceOrientation orientation =
-      [[UIApplication sharedApplication] statusBarOrientation];
+  UIInterfaceOrientation orientation = GetInterfaceOrientation();
   switch (orientation) {
     case UIInterfaceOrientationUnknown:
       return AVCaptureVideoOrientationPortrait;

@@ -11,4 +11,8 @@
 // Use only if the context of which window doesn't matter.
 UIWindow* GetAnyKeyWindow();
 
+// Returns interface orientation for the current window, returned by
+// GetAnyKeyWindow().
+UIInterfaceOrientation GetInterfaceOrientation();
+
 #endif  // IOS_WEB_COMMON_UIKIT_UI_UTIL_H_

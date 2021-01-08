@@ -22,3 +22,11 @@ UIWindow* GetAnyKeyWindow() {
   return nil;
 #endif
 }
+
+UIInterfaceOrientation GetInterfaceOrientation() {
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
+  return [[UIApplication sharedApplication] statusBarOrientation];
+#else
+  return GetAnyKeyWindow().windowScene.interfaceOrientation;
+#endif
+}

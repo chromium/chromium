@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -363,8 +364,7 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   // Focus the first visible input, unless the orientation is landscape. In
   // landscape, the keyboard covers up the storage checkbox shown below this
   // view and the user might never see it.
-  if (UIInterfaceOrientationIsPortrait(
-          [UIApplication sharedApplication].statusBarOrientation)) {
+  if (UIInterfaceOrientationIsPortrait(GetInterfaceOrientation())) {
     // Also check whether any of the inputs are already the first responder and
     // are non-empty, in which case the focus should be left there.
     if ((!CVC.monthInput.isFirstResponder || CVC.monthInput.text.length == 0) &&

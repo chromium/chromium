@@ -118,11 +118,13 @@
 
 - (void)keyboardWillHide:(NSNotification*)notification {
   self.keyboardOnScreen = NO;
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
   dispatch_async(dispatch_get_main_queue(), ^{
     if (self.keyboardOnScreen) {
       [self.consumer keyboardDidStayOnScreen];
     }
   });
+#endif
 }
 
 #pragma mark - Private
