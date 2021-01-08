@@ -12,6 +12,7 @@
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -87,6 +88,15 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
 
   image_ = AddChildView(std::make_unique<RoundedImageView>(
       kHoldingSpaceChipIconSize / 2, RoundedImageView::Alignment::kLeading));
+  image_->SetBackground(views::CreateRoundedRectBackground(
+      SK_ColorWHITE, kHoldingSpaceChipIconSize / 2));
+
+  // Subscribe to be notified of changes to `item_`'s image.
+  image_subscription_ =
+      item->image().AddImageSkiaChangedCallback(base::BindRepeating(
+          &HoldingSpaceItemChipView::UpdateImage, base::Unretained(this)));
+
+  UpdateImage();
 
   label_and_pin_button_container_ =
       AddChildView(std::make_unique<views::View>());
@@ -106,13 +116,6 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   label_->SetPaintToLayer();
   label_->layer()->SetFillsBoundsOpaquely(false);
   label_->layer()->SetMaskLayer(label_mask_layer_owner_->layer());
-
-  // Subscribe to be notified of changes to `item_`'s image.
-  image_subscription_ =
-      item->image().AddImageSkiaChangedCallback(base::BindRepeating(
-          &HoldingSpaceItemChipView::UpdateImage, base::Unretained(this)));
-
-  UpdateImage();
 
   views::View* pin_button_container =
       label_and_pin_button_container_->AddChildView(

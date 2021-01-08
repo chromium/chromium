@@ -5,6 +5,7 @@
 #include "ash/system/holding_space/holding_space_color_provider_impl.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ui/gfx/color_palette.h"
 
 namespace ash {
 
@@ -18,8 +19,7 @@ SkColor HoldingSpaceColorProviderImpl::GetBackgroundColor() const {
 }
 
 SkColor HoldingSpaceColorProviderImpl::GetFileIconColor() const {
-  return AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  return gfx::kGoogleGrey700;
 }
 
 }  // namespace ash
