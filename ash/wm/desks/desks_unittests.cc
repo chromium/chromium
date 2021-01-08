@@ -3935,7 +3935,7 @@ TEST_F(DesksBentoTest, VisibleOnAllDesksGlobalZOrder) {
 
 // Tests the behavior of windows that are visible on all desks when the active
 // desk is removed.
-TEST_F(DesksBentoTest, VisibleOnAllDesksActiveDeskRemoval) {
+TEST_F(DesksBentoTest, DISABLED_VisibleOnAllDesksActiveDeskRemoval) {
   auto* controller = DesksController::Get();
   NewDesk();
   const Desk* desk_1 = controller->desks()[0].get();
