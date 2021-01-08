@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ui/base/class_property.h"
-#include "ui/base/ui_base_types.h"
 
 namespace aura {
 template <typename T>
