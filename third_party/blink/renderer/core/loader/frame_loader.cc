@@ -1140,6 +1140,9 @@ void FrameLoader::DidAccessInitialDocument() {
 bool FrameLoader::DetachDocument(
     SecurityOrigin* committing_origin,
     base::Optional<Document::UnloadEventTiming>* timing) {
+  DCHECK(frame_->GetDocument());
+  DCHECK(document_loader_);
+
   PluginScriptForbiddenScope forbid_plugin_destructor_scripting;
   ClientNavigationState* client_navigation = client_navigation_.get();
 
@@ -1157,8 +1160,7 @@ bool FrameLoader::DetachDocument(
   // both when unloading itself and when unloading its descendants.
   IgnoreOpensDuringUnloadCountIncrementer ignore_opens_during_unload(
       frame_->GetDocument());
-  if (document_loader_)
-    DispatchUnloadEvent(committing_origin, timing);
+  DispatchUnloadEvent(committing_origin, timing);
   frame_->DetachChildren();
   // The previous calls to dispatchUnloadEvent() and detachChildren() can
   // execute arbitrary script via things like unload events. If the executed
@@ -1168,14 +1170,13 @@ bool FrameLoader::DetachDocument(
     return false;
   // FrameNavigationDisabler should prevent another load from starting.
   DCHECK_EQ(client_navigation_.get(), client_navigation);
-  // detachFromFrame() will abort XHRs that haven't completed, which can trigger
-  // event listeners for 'abort'. These event listeners might call
+  // Detaching the document loader will abort XHRs that haven't completed, which
+  // can trigger event listeners for 'abort'. These event listeners might call
   // window.stop(), which will in turn detach the provisional document loader.
   // At this point, the provisional document loader should not detach, because
   // then the FrameLoader would not have any attached DocumentLoaders. This is
   // guaranteed by FrameNavigationDisabler above.
-  if (document_loader_)
-    DetachDocumentLoader(document_loader_, true);
+  DetachDocumentLoader(document_loader_, true);
   // 'abort' listeners can also detach the frame.
   if (!frame_->Client())
     return false;
@@ -1185,8 +1186,7 @@ bool FrameLoader::DetachDocument(
   // No more events will be dispatched so detach the Document.
   // TODO(yoav): Should we also be nullifying domWindow's document (or
   // domWindow) since the doc is now detached?
-  if (frame_->GetDocument())
-    frame_->GetDocument()->Shutdown();
+  frame_->GetDocument()->Shutdown();
   document_loader_ = nullptr;
 
   return true;
