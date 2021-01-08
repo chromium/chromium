@@ -30,7 +30,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.decision" enum="SecurityInterstitialDecision"
-    expires_after="M89">
+    expires_after="M94">
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.decision.repeat_visit"
-    enum="SecurityInterstitialDecision" expires_after="M89">
+    enum="SecurityInterstitialDecision" expires_after="M94">
   <owner>felt@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
@@ -55,7 +55,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.interaction"
-    enum="SecurityInterstitialInteraction" expires_after="M89">
+    enum="SecurityInterstitialInteraction" expires_after="M94">
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
@@ -96,7 +96,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl.cause.overridable" enum="SSLErrorCauses"
-    expires_after="M89">
+    expires_after="M94">
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
@@ -142,8 +142,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl.did_user_revoke_decisions2"
-    enum="BooleanRevoked" expires_after="M89">
+    enum="BooleanRevoked" expires_after="M94">
   <owner>carlosil@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
   <summary>
     Specifies when a user enters the page info menu whether or not the user
     pressed the SSL decisions revoke button. This is logged when the page info
@@ -161,7 +162,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl_error_handler" enum="SSLErrorHandlerEvent"
-    expires_after="M89">
+    expires_after="M94">
   <owner>meacer@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <owner>estark@chromium.org</owner>
@@ -184,7 +185,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl_error_type" enum="SSLErrorTypes"
-    expires_after="M89">
+    expires_after="M94">
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
