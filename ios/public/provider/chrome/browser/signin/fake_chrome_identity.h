@@ -12,6 +12,8 @@
 
 // Returns a ChromeIdentity based on |email|, |gaiaID| and |name|.
 // The |hashedGaiaID| property will be derived from |name|.
+// For simplicity, both |userGivenName| and |userFullName| properties use
+// |name|.
 + (FakeChromeIdentity*)identityWithEmail:(NSString*)email
                                   gaiaID:(NSString*)gaiaID
                                     name:(NSString*)name;
