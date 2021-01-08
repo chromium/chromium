@@ -34,6 +34,7 @@
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/debug/alias.h"
 #include "base/no_destructor.h"
@@ -48,9 +49,11 @@ namespace WTF {
 const char* const Partitions::kAllocatedObjectPoolName =
     "partition_alloc/allocated_objects";
 
+#if defined(PA_HAS_64_BITS_POINTERS) && !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
 // Runs PCScan on WTF partitions.
 const base::Feature kPCScanBlinkPartitions{"PCScanBlinkPartitions",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 bool Partitions::initialized_ = false;
 
@@ -103,7 +106,7 @@ bool Partitions::InitializeOnce() {
   buffer_root_ = buffer_allocator->root();
   layout_root_ = layout_allocator->root();
 
-#if !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#if defined(PA_HAS_64_BITS_POINTERS) && !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
   if (base::features::IsPartitionAllocPCScanEnabled() ||
       base::FeatureList::IsEnabled(kPCScanBlinkPartitions)) {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
