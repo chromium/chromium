@@ -5935,3 +5935,6 @@ crbug.com/1161244 [ Mac10.15 ] external/wpt/html/cross-origin-opener-policy/popu
 crbug.com/1161301 [ Mac10.15 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Pass Timeout ]
 crbug.com/1161352 [ Mac10.14 ] virtual/controls-refresh-hc/fast/forms/color-scheme/search/search-appearance-basic.html [ Pass Timeout ]
 crbug.com/1161352 [ Mac10.14 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Pass Failure Timeout ]
+
+# Sheriff 2021-01-21
+crbug.com/1164166 [ Linux ] virtual/synchronous_html_parser/external/wpt/preload/avoid-prefetching-on-text-plain.html [ Pass Failure ]
