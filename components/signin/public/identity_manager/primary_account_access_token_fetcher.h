@@ -177,10 +177,7 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
   void StartAccessTokenRequest();
 
   // IdentityManager::Observer implementation.
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnUnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& primary_account_info) override;
+  void OnPrimaryAccountChanged(const PrimaryAccountChangeEvent& event) override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
 

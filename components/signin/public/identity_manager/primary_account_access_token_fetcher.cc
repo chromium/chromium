@@ -77,25 +77,15 @@ void PrimaryAccountAccessTokenFetcher::StartAccessTokenRequest() {
       AccessTokenFetcher::Mode::kImmediate);
 }
 
-void PrimaryAccountAccessTokenFetcher::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  // When sync consent is not required the signin is handled in
-  // OnUnconsentedPrimaryAccountChanged() below.
-  if (consent_ == ConsentLevel::kNotRequired)
+void PrimaryAccountAccessTokenFetcher::OnPrimaryAccountChanged(
+    const PrimaryAccountChangeEvent& event) {
+  // We're only interested when the account is set for the |consent_|
+  // consent level.
+  if (event.GetEventTypeFor(consent_) !=
+      PrimaryAccountChangeEvent::Type::kSet) {
     return;
-  DCHECK(!primary_account_info.account_id.empty());
-  ProcessSigninStateChange();
-}
-
-void PrimaryAccountAccessTokenFetcher::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& primary_account_info) {
-  // This method is called after both SetPrimaryAccount and
-  // SetUnconsentedPrimaryAccount.
-  if (consent_ == ConsentLevel::kSync)
-    return;
-  // We're only interested when the account is set.
-  if (primary_account_info.account_id.empty())
-    return;
+  }
+  DCHECK(!event.GetCurrentState().primary_account.account_id.empty());
   ProcessSigninStateChange();
 }
 
