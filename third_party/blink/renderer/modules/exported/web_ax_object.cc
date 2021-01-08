@@ -1238,12 +1238,6 @@ bool WebAXObject::IsScrollableContainer() const {
   return private_->IsScrollableContainer();
 }
 
-bool WebAXObject::IsUserScrollable() const {
-  if (IsDetached())
-    return false;
-
-  return private_->IsUserScrollable();
-}
 gfx::Point WebAXObject::GetScrollOffset() const {
   if (IsDetached())
     return gfx::Point();

@@ -552,10 +552,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
                              indirect_child_ids);
   }
 
-  if (src.IsScrollableContainer()) {
-    SerializeScrollAttributes(src, dst);
-  }
-
   if (dst->id == image_data_node_id_) {
     // In general, string attributes should be truncated using
     // TruncateAndAddStringAttribute, but ImageDataUrl contains a data url
@@ -703,30 +699,6 @@ void BlinkAXTreeSource::SerializeLiveRegionAttributes(
   TruncateAndAddStringAttribute(
       dst, ax::mojom::StringAttribute::kContainerLiveRelevant,
       src.ContainerLiveRegionRelevant().Utf8());
-}
-
-void BlinkAXTreeSource::SerializeScrollAttributes(WebAXObject src,
-                                                  ui::AXNodeData* dst) const {
-  // Only mark as scrollable if user has actual scrollbars to use.
-  dst->AddBoolAttribute(ax::mojom::BoolAttribute::kScrollable,
-                        src.IsUserScrollable());
-  // Provide x,y scroll info if scrollable in any way (programmatically or via
-  // user).
-  const gfx::Point& scroll_offset = src.GetScrollOffset();
-  dst->AddIntAttribute(ax::mojom::IntAttribute::kScrollX, scroll_offset.x());
-  dst->AddIntAttribute(ax::mojom::IntAttribute::kScrollY, scroll_offset.y());
-
-  const gfx::Point& min_scroll_offset = src.MinimumScrollOffset();
-  dst->AddIntAttribute(ax::mojom::IntAttribute::kScrollXMin,
-                       min_scroll_offset.x());
-  dst->AddIntAttribute(ax::mojom::IntAttribute::kScrollYMin,
-                       min_scroll_offset.y());
-
-  const gfx::Point& max_scroll_offset = src.MaximumScrollOffset();
-  dst->AddIntAttribute(ax::mojom::IntAttribute::kScrollXMax,
-                       max_scroll_offset.x());
-  dst->AddIntAttribute(ax::mojom::IntAttribute::kScrollYMax,
-                       max_scroll_offset.y());
 }
 
 void BlinkAXTreeSource::SerializeChooserPopupAttributes(

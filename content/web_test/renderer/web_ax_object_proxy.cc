@@ -1459,12 +1459,12 @@ void WebAXObjectProxy::ScrollToGlobalPoint(int x, int y) {
 
 int WebAXObjectProxy::ScrollX() {
   UpdateLayout();
-  return accessibility_object_.GetScrollOffset().x();
+  return GetAXNodeData().GetIntAttribute(ax::mojom::IntAttribute::kScrollX);
 }
 
 int WebAXObjectProxy::ScrollY() {
   UpdateLayout();
-  return accessibility_object_.GetScrollOffset().y();
+  return GetAXNodeData().GetIntAttribute(ax::mojom::IntAttribute::kScrollY);
 }
 
 std::string WebAXObjectProxy::ToString() {

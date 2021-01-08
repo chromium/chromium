@@ -961,6 +961,9 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
       }
     }
   }
+
+  if (IsScrollableContainer())
+    SerializeScrollAttributes(node_data);
 }
 
 void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) {
@@ -1016,6 +1019,31 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) {
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kSortDirection,
                                static_cast<int32_t>(GetSortDirection()));
   }
+}
+
+void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) {
+  // Only mark as scrollable if user has actual scrollbars to use.
+  node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kScrollable,
+                              IsUserScrollable());
+  // Provide x,y scroll info if scrollable in any way (programmatically or via
+  // user).
+  const gfx::Point& scroll_offset = GetScrollOffset();
+  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollX,
+                             scroll_offset.x());
+  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollY,
+                             scroll_offset.y());
+
+  const gfx::Point& min_scroll_offset = MinimumScrollOffset();
+  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollXMin,
+                             min_scroll_offset.x());
+  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollYMin,
+                             min_scroll_offset.y());
+
+  const gfx::Point& max_scroll_offset = MaximumScrollOffset();
+  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollXMax,
+                             max_scroll_offset.x());
+  node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollYMax,
+                             max_scroll_offset.y());
 }
 
 void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) {

@@ -144,8 +144,6 @@ class CONTENT_EXPORT BlinkAXTreeSource
                                  ui::AXNodeData* dst) const;
   void SerializeLiveRegionAttributes(blink::WebAXObject src,
                                      ui::AXNodeData* dst) const;
-  void SerializeScrollAttributes(blink::WebAXObject src,
-                                 ui::AXNodeData* dst) const;
   void SerializeChooserPopupAttributes(blink::WebAXObject src,
                                        ui::AXNodeData* dst) const;
   void SerializeOtherScreenReaderAttributes(blink::WebAXObject src,
