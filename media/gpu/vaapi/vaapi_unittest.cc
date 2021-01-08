@@ -22,9 +22,11 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
 #include "base/test/launcher/unit_test_launcher.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_suite.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/media_buildflags.h"
 
@@ -104,12 +106,23 @@ base::Optional<VAEntrypoint> StringToVAEntrypoint(
              ? base::make_optional<VAEntrypoint>(it->second)
              : base::nullopt;
 }
+
+std::unique_ptr<base::test::ScopedFeatureList> CreateScopedFeatureList() {
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitWithFeatures(
+      /*enabled_features=*/{media::kVaapiAV1Decoder},
+      /*disabled_features=*/{});
+  return scoped_feature_list;
+}
 }  // namespace
 
 class VaapiTest : public testing::Test {
  public:
-  VaapiTest() = default;
+  VaapiTest() : scoped_feature_list_(CreateScopedFeatureList()) {}
   ~VaapiTest() override = default;
+
+ private:
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 std::map<VAProfile, std::vector<VAEntrypoint>> ParseVainfo(
@@ -334,10 +347,16 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
 
 int main(int argc, char** argv) {
   base::TestSuite test_suite(argc, argv);
-
-  // PreSandboxInitialization() loads and opens the driver, queries its
-  // capabilities and fills in the VASupportedProfiles.
-  media::VaapiWrapper::PreSandboxInitialization();
+  {
+    // Enables/Disables features during PreSandboxInitialization(). We have to
+    // destruct ScopedFeatureList after it because base::TestSuite::Run()
+    // creates a ScopedFeatureList and multiple concurrent ScopedFeatureLists
+    // are not allowed.
+    auto scoped_feature_list = media::CreateScopedFeatureList();
+    // PreSandboxInitialization() loads and opens the driver, queries its
+    // capabilities and fills in the VASupportedProfiles.
+    media::VaapiWrapper::PreSandboxInitialization();
+  }
 
   return base::LaunchUnitTests(
       argc, argv,
