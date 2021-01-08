@@ -27,7 +27,7 @@ function reduce {
   # xargs on some platforms, so we remove those directories first.
   rm -fr html css
   # Remove all except white-listed.
-  comm -23 <(find . -type f | sort) <(cat ../WPTIncludeList | sort) | xargs -d '\n' -n 1 rm
+  comm -23 <(find . -type f -o -type l | sort) <(cat ../WPTIncludeList | sort) | xargs -d '\n' -n 1 rm
   find . -empty -type d -delete
 }
 
