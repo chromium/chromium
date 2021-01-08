@@ -105,9 +105,12 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
   // PNaCl on Chrome OS is on rootfs and there is no need to download it. But
   // Chrome4ChromeOS on Linux doesn't contain PNaCl so enable component
   // installer when running on Linux. See crbug.com/422121 for more details.
-  if (!base::SysInfo::IsRunningOnChromeOS())
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     RegisterPnaclComponent(cus);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_NACL) && !defined(OS_ANDROID)
 
   RegisterSubresourceFilterComponent(cus);
