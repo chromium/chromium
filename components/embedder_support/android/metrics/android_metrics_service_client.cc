@@ -464,7 +464,7 @@ SystemProfileProto::Channel AndroidMetricsServiceClient::GetChannel() {
 }
 
 std::string AndroidMetricsServiceClient::GetVersionString() {
-  return version_info::GetVersionNumber();
+  return metrics::GetVersionString();
 }
 
 void AndroidMetricsServiceClient::CollectFinalMetricsForLog(
