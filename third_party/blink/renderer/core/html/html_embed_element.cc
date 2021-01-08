@@ -126,6 +126,9 @@ void HTMLEmbedElement::ParseAttribute(
       if (FastHasAttribute(html_names::kTypeAttr)) {
         SetNeedsPluginUpdate(true);
         ReattachOnPluginChangeIfNeeded();
+      } else {
+        UseCounter::Count(GetDocument(),
+                          WebFeature::kEmbedElementWithoutTypeSrcChanged);
       }
     }
   } else {
