@@ -144,7 +144,7 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 // Maximum time to let a cancelled webState attempt to finish restore.
 static const size_t kMaximumCancelledWebStateDelay = 2;
 
-// Used to enable the workaround for a WebKit crash, see crbug.com/1032928.
+// Kill switch guarding a workaround for a WebKit crash, see crbug.com/1032928.
 const base::Feature kPreloadDelayWebStateReset{
     "PreloadDelayWebStateReset", base::FEATURE_ENABLED_BY_DEFAULT};
 
