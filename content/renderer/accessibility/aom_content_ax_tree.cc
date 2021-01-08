@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "content/renderer/accessibility/render_accessibility_impl.h"
+#include "content/renderer/accessibility/ax_tree_snapshotter_impl.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -127,18 +127,12 @@ AomContentAxTree::AomContentAxTree(RenderFrameImpl* render_frame)
     : render_frame_(render_frame) {}
 
 bool AomContentAxTree::ComputeAccessibilityTree() {
-  ui::AXTreeUpdate content_tree_update;
-  RenderAccessibilityImpl::SnapshotAccessibilityTree(
-      render_frame_, &content_tree_update, ui::kAXModeComplete);
-
   ui::AXTreeUpdate tree_update;
-  tree_update.has_tree_data = content_tree_update.has_tree_data;
-  ui::AXTreeData* tree_data = &(content_tree_update.tree_data);
-  tree_update.tree_data = *tree_data;
-  tree_update.node_id_to_clear = content_tree_update.node_id_to_clear;
-  tree_update.root_id = content_tree_update.root_id;
-  tree_update.nodes.assign(content_tree_update.nodes.begin(),
-                           content_tree_update.nodes.end());
+  AXTreeSnapshotterImpl snapshotter(render_frame_);
+  snapshotter.Snapshot(ui::kAXModeComplete,
+                       /* exclude_offscreen= */ false,
+                       /* max_node_count= */ 0,
+                       /* timeout= */ {}, &tree_update);
   CHECK(tree_.Unserialize(tree_update)) << tree_.error();
   return true;
 }

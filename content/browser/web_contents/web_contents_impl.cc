@@ -1415,7 +1415,10 @@ class WebContentsImpl::AXTreeSnapshotCombiner
 };
 
 void WebContentsImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
-                                            ui::AXMode ax_mode) {
+                                            ui::AXMode ax_mode,
+                                            bool exclude_offscreen,
+                                            size_t max_nodes,
+                                            base::TimeDelta timeout) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RequestAXTreeSnapshot",
                         "mode", ax_mode.ToString());
   // Send a request to each of the frames in parallel. Each one will return
@@ -1426,13 +1429,19 @@ void WebContentsImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
   auto combiner =
       base::MakeRefCounted<AXTreeSnapshotCombiner>(std::move(callback));
 
-  RecursiveRequestAXTreeSnapshotOnFrame(root_node, combiner.get(), ax_mode);
+  auto params = mojom::SnapshotAccessibilityTreeParams::New();
+  params->ax_mode = ax_mode.mode();
+  params->exclude_offscreen = exclude_offscreen;
+  params->max_nodes = max_nodes;
+  params->timeout = timeout;
+  RecursiveRequestAXTreeSnapshotOnFrame(root_node, combiner.get(),
+                                        std::move(params));
 }
 
 void WebContentsImpl::RecursiveRequestAXTreeSnapshotOnFrame(
     FrameTreeNode* root_node,
     AXTreeSnapshotCombiner* combiner,
-    ui::AXMode ax_mode) {
+    mojom::SnapshotAccessibilityTreeParamsPtr params) {
   OPTIONAL_TRACE_EVENT0(
       "content", "WebContentsImpl::RecursiveRequestAXTreeSnapshotOnFrame");
   for (FrameTreeNode* frame_tree_node : frame_tree_.Nodes()) {
@@ -1440,11 +1449,11 @@ void WebContentsImpl::RecursiveRequestAXTreeSnapshotOnFrame(
         node_.GetInnerWebContentsInFrame(frame_tree_node);
     if (inner_contents) {
       inner_contents->RecursiveRequestAXTreeSnapshotOnFrame(root_node, combiner,
-                                                            ax_mode);
+                                                            params.Clone());
     } else {
       bool is_root = frame_tree_node == root_node;
       frame_tree_node->current_frame_host()->RequestAXTreeSnapshot(
-          combiner->AddFrame(is_root), ax_mode);
+          combiner->AddFrame(is_root), params.Clone());
     }
   }
 }

@@ -2976,9 +2976,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   crash_observer.Wait();
 
   // Call RequestAXSnapshotTree method. The browser process should not crash.
+  auto params = mojom::SnapshotAccessibilityTreeParams::New();
   rfh->RequestAXTreeSnapshot(
       base::BindOnce([](const ui::AXTreeUpdate& snapshot) { NOTREACHED(); }),
-      ui::AXMode::kWebContents);
+      std::move(params));
 
   base::RunLoop().RunUntilIdle();
 

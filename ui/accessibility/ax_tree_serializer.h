@@ -16,6 +16,8 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_tree_source.h"
@@ -76,10 +78,17 @@ class AXTreeSerializer {
   // for no maximum. This is not a hard maximum - once it hits or
   // exceeds this maximum it stops walking the children of nodes, but
   // it may exceed this value a bit in order to create a consistent
-  // tree.
+  // tree. This is only intended to be used for one-time tree snapshots.
   void set_max_node_count(size_t max_node_count) {
     max_node_count_ = max_node_count;
   }
+
+  // Sets the maximum amount of time to be spend serializing, or zero for
+  // no maximum. This is not a hard maximum - once it hits or
+  // exceeds this timeout it stops walking the children of nodes, but
+  // it may exceed this value a bit in order to create a consistent
+  // tree. This is only intended to be used for one-time tree snapshots.
+  void set_timeout(base::TimeDelta timeout) { timeout_ = timeout; }
 
   // Serialize all changes to |node| and append them to |out_update|.
   // Returns true on success. On failure, returns false and calls Reset();
@@ -203,6 +212,11 @@ class AXTreeSerializer {
   // The maximum number of nodes to serialize in a given call to
   // SerializeChanges, or 0 if there's no maximum.
   size_t max_node_count_ = 0;
+
+  // The maximum time to spend serializing before timing out, or 0
+  // if there's no maximum.
+  base::TimeDelta timeout_;
+  std::unique_ptr<base::ElapsedTimer> timer_;
 
   // Keeps track of if Reset() was called. If so, we need to always
   // explicitly set node_id_to_clear to ensure that the next serialized
@@ -419,6 +433,9 @@ template <typename AXSourceNode, typename AXNodeData, typename AXTreeData>
 bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::SerializeChanges(
     AXSourceNode node,
     AXTreeUpdateBase<AXNodeData, AXTreeData>* out_update) {
+  if (!timeout_.is_zero())
+    timer_ = std::make_unique<base::ElapsedTimer>();
+
   // Send the tree data if it's changed since the last update, or if
   // out_update->has_tree_data is already set to true.
   AXTreeData new_tree_data;
@@ -563,6 +580,16 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
   client_node->invalid = false;
   client_node->ignored = tree_->IsIgnored(node);
 
+  // Terminate early if a maximum number of nodes is reached.
+  // the output tree is still consistent).
+  bool should_terminate_early = false;
+  if (max_node_count_ > 0 && out_update->nodes.size() >= max_node_count_)
+    should_terminate_early = true;
+
+  // Also terminate early if a timeout is reached.
+  if (!timeout_.is_zero() && timer_->Elapsed() >= timeout_)
+    should_terminate_early = true;
+
   // Iterate over the ids of the children of |node|.
   // Create a set of the child ids so we can quickly look
   // up which children are new and which ones were there before.
@@ -572,14 +599,24 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
   std::unordered_set<int32_t> new_ignored_ids;
   std::unordered_set<int32_t> new_child_ids;
   std::vector<AXSourceNode> children;
-  if (max_node_count_ == 0 || out_update->nodes.size() < max_node_count_) {
+  if (!should_terminate_early) {
     tree_->GetChildren(node, &children);
-  } else if (max_node_count_ > 0) {
+  } else {
     static bool logged_once = false;
     if (!logged_once) {
-      LOG(WARNING) << "Warning: not serializing AX nodes after a max of "
-                   << max_node_count_;
       logged_once = true;
+
+      LOG(WARNING) << "Warning: stopped serializing AX nodes before "
+                   << "serialization was complete.";
+      if (max_node_count_) {
+        LOG(WARNING) << "Nodes serialized so far: " << out_update->nodes.size()
+                     << ", max_node_count: " << max_node_count_;
+      }
+      if (!timeout_.is_zero()) {
+        LOG(WARNING) << "Elapsed time in ms: "
+                     << timer_->Elapsed().InMilliseconds()
+                     << ", timeout: " << timeout_.InMilliseconds();
+      }
     }
   }
   for (size_t i = 0; i < children.size(); ++i) {

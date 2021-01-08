@@ -81,12 +81,6 @@ using BlinkAXTreeSerializer =
 class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
                                                public RenderFrameObserver {
  public:
-  // Request a one-time snapshot of the accessibility tree without
-  // enabling accessibility if it wasn't already enabled.
-  static void SnapshotAccessibilityTree(RenderFrameImpl* render_frame,
-                                        ui::AXTreeUpdate* response,
-                                        ui::AXMode ax_mode);
-
   RenderAccessibilityImpl(
       RenderAccessibilityManager* const render_accessibility_manager,
       RenderFrameImpl* const render_frame,

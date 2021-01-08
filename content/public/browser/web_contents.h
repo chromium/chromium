@@ -373,11 +373,15 @@ class WebContents : public PageNavigator,
   virtual RenderWidgetHostView* GetTopLevelRenderWidgetHostView() = 0;
 
   // Request a one-time snapshot of the accessibility tree without changing
-  // the accessibility mode. |ax_mode| is the accessibility mode to use.
+  // the accessibility mode. See RenderFrame::AXTreeSnapshotter for
+  // definitions of |ax_mode|, |max_nodes|, and |timeout|.
   using AXTreeSnapshotCallback =
       base::OnceCallback<void(const ui::AXTreeUpdate&)>;
   virtual void RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
-                                     ui::AXMode ax_mode) = 0;
+                                     ui::AXMode ax_mode,
+                                     bool exclude_offscreen,
+                                     size_t max_nodes,
+                                     base::TimeDelta timeout) = 0;
 
   // Causes the current page to be closed, including running its onunload event
   // handler.

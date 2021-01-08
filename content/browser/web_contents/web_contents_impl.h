@@ -372,7 +372,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   const net::LoadStateWithParam& GetLoadState() override;
   const base::string16& GetLoadStateHost() override;
   void RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
-                             ui::AXMode ax_mode) override;
+                             ui::AXMode ax_mode,
+                             bool exclude_offscreen,
+                             size_t max_nodes,
+                             base::TimeDelta timeout) override;
   uint64_t GetUploadSize() override;
   uint64_t GetUploadPosition() override;
   const std::string& GetEncoding() override;
@@ -1680,9 +1683,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void ClearTargetURL();
 
   class AXTreeSnapshotCombiner;
-  void RecursiveRequestAXTreeSnapshotOnFrame(FrameTreeNode* root_node,
-                                             AXTreeSnapshotCombiner* combiner,
-                                             ui::AXMode ax_mode);
+  void RecursiveRequestAXTreeSnapshotOnFrame(
+      FrameTreeNode* root_node,
+      AXTreeSnapshotCombiner* combiner,
+      mojom::SnapshotAccessibilityTreeParamsPtr params);
 
   // Called each time |fullscreen_frames_| is updated. Find the new
   // |current_fullscreen_frame_| and notify observers whenever it changes.

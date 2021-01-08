@@ -334,7 +334,10 @@ void PerFrameContentTranslateDriver::StartLanguageDetection() {
           base::BindOnce(&PerFrameContentTranslateDriver::OnPageContents,
                          weak_pointer_factory_.GetWeakPtr(),
                          capture_begin_time)),
-      ui::AXMode::kWebContents);
+      ui::AXMode::kWebContents,
+      /* exclude_offscreen= */ false,
+      /* max_nodes= */ 5000,
+      /* timeout= */ {});
 
   // Kick off language detection by first requesting web language details.
   details_ = LanguageDetectionDetails();
