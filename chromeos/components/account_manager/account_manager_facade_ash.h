@@ -23,6 +23,12 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerFacadeAsh
 
   // AccountManagerFacade overrides:
   bool IsInitialized() override;
+  void ShowAddAccountDialog(
+      const AccountAdditionSource& source,
+      base::OnceCallback<void(const AccountAdditionResult& result)> callback)
+      override;
+  void ShowReauthAccountDialog(const AccountAdditionSource& source,
+                               const std::string& email) override;
 
  private:
   AccountManager* const account_manager_;

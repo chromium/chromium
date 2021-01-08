@@ -6,6 +6,17 @@
 
 namespace account_manager {
 
+AccountManagerFacade::AccountAdditionResult::AccountAdditionResult() = default;
+AccountManagerFacade::AccountAdditionResult::AccountAdditionResult(
+    Status status,
+    AccountKey account)
+    : status(status), account(account) {}
+AccountManagerFacade::AccountAdditionResult::AccountAdditionResult(
+    Status status,
+    GoogleServiceAuthError error)
+    : status(status), error(error) {}
+AccountManagerFacade::AccountAdditionResult::~AccountAdditionResult() = default;
+
 AccountManagerFacade::AccountManagerFacade() = default;
 AccountManagerFacade::~AccountManagerFacade() = default;
 

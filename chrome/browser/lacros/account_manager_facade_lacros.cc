@@ -38,6 +38,18 @@ bool AccountManagerFacadeLacros::IsInitialized() {
   return is_initialized_;
 }
 
+void AccountManagerFacadeLacros::ShowAddAccountDialog(
+    const AccountAdditionSource& source,
+    base::OnceCallback<void(const AccountAdditionResult& result)> callback) {
+  // TODO(crbug.com/1140469): implement this.
+}
+
+void AccountManagerFacadeLacros::ShowReauthAccountDialog(
+    const AccountAdditionSource& source,
+    const std::string& email) {
+  // TODO(crbug.com/1140469): implement this.
+}
+
 void AccountManagerFacadeLacros::OnVersionCheck(uint32_t version) {
   if (version < kMinVersionWithObserver) {
     std::move(init_finished_).Run();

@@ -29,6 +29,12 @@ class AccountManagerFacadeLacros
 
   // AccountManagerFacade overrides:
   bool IsInitialized() override;
+  void ShowAddAccountDialog(
+      const AccountAdditionSource& source,
+      base::OnceCallback<void(const AccountAdditionResult& result)> callback)
+      override;
+  void ShowReauthAccountDialog(const AccountAdditionSource& source,
+                               const std::string& email) override;
 
   // crosapi::mojom::AccountManagerObserver overrides:
   void OnTokenUpserted(crosapi::mojom::AccountPtr account) override;

@@ -18,4 +18,16 @@ bool AccountManagerFacadeAsh::IsInitialized() {
   return account_manager_->IsInitialized();
 }
 
+void AccountManagerFacadeAsh::ShowAddAccountDialog(
+    const AccountAdditionSource& source,
+    base::OnceCallback<void(const AccountAdditionResult& result)> callback) {
+  // TODO(crbug.com/1140469): implement this.
+}
+
+void AccountManagerFacadeAsh::ShowReauthAccountDialog(
+    const AccountAdditionSource& source,
+    const std::string& email) {
+  // TODO(crbug.com/1140469): implement this.
+}
+
 }  // namespace chromeos

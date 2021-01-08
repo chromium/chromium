@@ -20,6 +20,7 @@ component("account_manager_core") {
   deps = [
     "//base",
     "//chromeos/crosapi/mojom",
+    "//google_apis:google_apis",
   ]
 
   defines = [ "IS_ACCOUNT_MANAGER_CORE_IMPL" ]

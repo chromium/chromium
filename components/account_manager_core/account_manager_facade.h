@@ -5,7 +5,12 @@
 #ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_FACADE_H_
 #define COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_FACADE_H_
 
+#include <string>
+
+#include "base/callback.h"
 #include "base/component_export.h"
+#include "components/account_manager_core/account.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace account_manager {
 
@@ -42,6 +47,31 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     kMaxValue = kOnboarding
   };
 
+  // The result of account addition request.
+  struct AccountAdditionResult {
+    enum class Status : int {
+      // The account was added successfully.
+      kSuccess = 0,
+      // The dialog is already open.
+      kAlreadyInProgress = 1,
+      // User closed the dialog.
+      kCancelledByUser = 2,
+      // Network error.
+      kNetworkError = 3,
+    };
+
+    Status status;
+    // The account that was added.
+    base::Optional<AccountKey> account;
+    // The error is set only if `status` is set to `kNetworkError`.
+    base::Optional<GoogleServiceAuthError> error;
+
+    AccountAdditionResult();
+    AccountAdditionResult(Status status, AccountKey account);
+    AccountAdditionResult(Status status, GoogleServiceAuthError error);
+    ~AccountAdditionResult();
+  };
+
   AccountManagerFacade();
   AccountManagerFacade(const AccountManagerFacade&) = delete;
   AccountManagerFacade& operator=(const AccountManagerFacade&) = delete;
@@ -52,6 +82,18 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
   // Note: For out-of-process implementations, it returns |false| if the IPC
   // pipe to |AccountManager| is disconnected.
   virtual bool IsInitialized() = 0;
+
+  // Launches account addition dialog and calls the `callback` with the result.
+  // If `result` is `kSuccess`, the added account will be passed to the
+  // callback. Otherwise `account` will be set to `base::nullopt`.
+  virtual void ShowAddAccountDialog(
+      const AccountAdditionSource& source,
+      base::OnceCallback<void(const AccountAdditionResult& result)>
+          callback) = 0;
+
+  // Launches account reauthentication dialog for provided `email`.
+  virtual void ShowReauthAccountDialog(const AccountAdditionSource& source,
+                                       const std::string& email) = 0;
 };
 
 }  // namespace account_manager
