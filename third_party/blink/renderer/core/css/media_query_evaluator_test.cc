@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
-#include "third_party/blink/renderer/core/css/media_values_initial_viewport.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -472,20 +471,6 @@ TEST(MediaQueryEvaluatorTest, CachedFloatViewportNonFloatFriendly) {
   MediaQueryEvaluator media_query_evaluator(*media_values);
   TestMQEvaluator(g_float_non_friendly_viewport_test_cases,
                   media_query_evaluator);
-}
-
-TEST(MediaQueryEvaluatorTest, InitialViewport) {
-  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
-  page_holder->GetFrameView().SetMediaType(media_type_names::kScreen);
-  page_holder->GetFrameView().SetLayoutSizeFixedToFrameSize(false);
-  page_holder->GetFrameView().SetInitialViewportSize(IntSize(500, 500));
-  page_holder->GetFrameView().SetLayoutSize(IntSize(800, 800));
-  page_holder->GetFrameView().SetFrameRect(IntRect(0, 0, 800, 800));
-
-  MediaQueryEvaluator media_query_evaluator(
-      MakeGarbageCollected<MediaValuesInitialViewport>(
-          page_holder->GetFrame()));
-  TestMQEvaluator(g_viewport_test_cases, media_query_evaluator);
 }
 
 TEST(MediaQueryEvaluatorTest, DynamicImmersive) {

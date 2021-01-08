@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/document_style_sheet_collection.h"
-#include "third_party/blink/renderer/core/css/media_values_initial_viewport.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
@@ -50,7 +49,6 @@
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/page/viewport_description.h"
 
 namespace blink {
 
@@ -67,8 +65,6 @@ bool HasViewportFitProperty(const CSSPropertyValueSet* property_set) {
 ViewportStyleResolver::ViewportStyleResolver(Document& document)
     : document_(document) {
   DCHECK(document.GetFrame());
-  initial_viewport_medium_ = MakeGarbageCollected<MediaQueryEvaluator>(
-      MakeGarbageCollected<MediaValuesInitialViewport>(*document.GetFrame()));
 }
 
 void ViewportStyleResolver::Reset() {
@@ -329,7 +325,6 @@ void ViewportStyleResolver::UpdateViewport(
 void ViewportStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(property_set_);
-  visitor->Trace(initial_viewport_medium_);
 }
 
 }  // namespace blink

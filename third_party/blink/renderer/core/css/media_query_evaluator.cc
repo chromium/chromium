@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
-#include "third_party/blink/renderer/core/css/media_values_initial_viewport.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -102,12 +101,6 @@ MediaQueryEvaluator::MediaQueryEvaluator(LocalFrame* frame)
 
 MediaQueryEvaluator::MediaQueryEvaluator(const MediaValues& media_values)
     : media_values_(media_values.Copy()) {}
-
-MediaQueryEvaluator::MediaQueryEvaluator(
-    MediaValuesInitialViewport* media_values)
-    : media_values_(media_values) {
-  DCHECK(media_values);
-}
 
 MediaQueryEvaluator::~MediaQueryEvaluator() = default;
 
