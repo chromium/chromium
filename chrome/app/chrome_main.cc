@@ -68,7 +68,7 @@ int ChromeMain(int argc, const char** argv) {
 #endif
 
 #if defined(OS_WIN)
-#if BUILDFLAG(USE_ALLOCATOR_SHIM) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
   // Call this early on in order to configure heap workarounds. This must be
   // called from chrome.dll. This may be a NOP on some platforms.
   base::allocator::ConfigurePartitionAlloc();
