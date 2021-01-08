@@ -77,7 +77,7 @@ namespace blink {
 //      public:
 //       static const char kSupplementName[];
 //
-//       NavigatorFoo& From(Navigator&);
+//       static NavigatorFoo& From(Navigator&);
 //     }
 //
 //     // static
