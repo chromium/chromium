@@ -79,6 +79,16 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
     return IsIsolatedOrigin(url::Origin::Create(url));
   }
 
+  bool ShouldOriginGetOptInIsolation(const url::Origin& origin) {
+    auto* site_instance = static_cast<SiteInstanceImpl*>(
+        shell()->web_contents()->GetMainFrame()->GetSiteInstance());
+
+    return ChildProcessSecurityPolicyImpl::GetInstance()
+        ->ShouldOriginGetOptInIsolation(site_instance->GetIsolationContext(),
+                                        origin,
+                                        false /* origin_requests_isolation */);
+  }
+
   ProcessLock ProcessLockFromUrl(const std::string& url) {
     return ProcessLock(
         SiteInfo(GURL(url), GURL(url), false /* is_origin_keyed */,
@@ -140,13 +150,12 @@ class IsolatedOriginTest : public IsolatedOriginTestBase {
   DISALLOW_COPY_AND_ASSIGN(IsolatedOriginTest);
 };
 
-// Base class used for server-based origin isolation opt-in tests to handle the
-// server responses and other common infrastructure.
-class OriginIsolationOptInServerTest : public IsolatedOriginTestBase {
+// Tests that verify the header can be used to opt-in to origin isolation.
+class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
  public:
-  OriginIsolationOptInServerTest()
+  OriginIsolationOptInHeaderTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
-  ~OriginIsolationOptInServerTest() override = default;
+  ~OriginIsolationOptInHeaderTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedOriginTestBase::SetUpCommandLine(command_line);
@@ -155,16 +164,29 @@ class OriginIsolationOptInServerTest : public IsolatedOriginTestBase {
     // This is needed for this test to run properly on platforms where
     //  --site-per-process isn't the default, such as Android.
     IsolateAllSitesForTesting(command_line);
+
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-    feature_list_.InitAndEnableFeature(feature_switch());
+    feature_list_.InitAndEnableFeature(features::kOriginIsolationHeader);
 
     // Start the HTTPS server here so derived tests can use it if they override
     // SetUpCommandLine().
     https_server()->AddDefaultHandlers(GetTestDataFilePath());
     https_server()->RegisterRequestHandler(
-        base::BindRepeating(&OriginIsolationOptInServerTest::HandleResponse,
+        base::BindRepeating(&OriginIsolationOptInHeaderTest::HandleResponse,
                             base::Unretained(this)));
     ASSERT_TRUE(https_server()->Start());
+  }
+
+  void SetHeaderValue(const std::string& header_value) {
+    header_ = header_value;
+  }
+
+  // Allows specifying what content to return when an opt-in isolation header is
+  // intercepted. Uses a queue so that multiple requests can be handled without
+  // returning to the test body. If the queue is empty, the document content is
+  // simply "isolate me!".
+  void AddContentToQueue(const std::string& content_str) {
+    content_.push(content_str);
   }
 
   void SetUpOnMainThread() override {
@@ -179,115 +201,12 @@ class OriginIsolationOptInServerTest : public IsolatedOriginTestBase {
     IsolatedOriginTestBase::TearDownOnMainThread();
   }
 
-  // Need an https server because
-  // OriginPolicyThrottle::ShouldRequestOriginPolicy() will return false
-  // otherwise.
+  // Need an https server because the header requires HTTPS.
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
-  bool ShouldOriginGetOptInIsolation(const url::Origin& origin) {
-    auto* site_instance = static_cast<SiteInstanceImpl*>(
-        shell()->web_contents()->GetMainFrame()->GetSiteInstance());
-
-    return ChildProcessSecurityPolicyImpl::GetInstance()
-        ->ShouldOriginGetOptInIsolation(site_instance->GetIsolationContext(),
-                                        origin,
-                                        false /* origin_requests_isolation */);
-  }
-
- protected:
-  virtual const base::Feature& feature_switch() = 0;
-  virtual std::unique_ptr<net::test_server::HttpResponse> HandleResponse(
-      const net::test_server::HttpRequest& request) = 0;
-
  private:
-  net::EmbeddedTestServer https_server_;
-  base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginIsolationOptInServerTest);
-};
-
-// Tests of opt-in origin isolation which use origin policy as the opt-in
-// mechanism. Most tests for the overall feature are in this class, but see also
-// OriginIsolationOptInHeaderTest for tests that verify headers can be used as
-// an opt-in mechanism as well.
-class OriginIsolationOptInOriginPolicyTest
-    : public OriginIsolationOptInServerTest {
- public:
-  OriginIsolationOptInOriginPolicyTest() = default;
-
-  void SetOriginPolicyManifest(const std::string& manifest) {
-    origin_policy_manifest_ = manifest;
-  }
-
-  // Allows specifying what content to return when an opt-in isolation header is
-  // intercepted. Uses a queue so that multiple requests can be handled without
-  // returning to the test body. If the queue is empty, the document content is
-  // simply "isolate me!".
-  void AddContentToQueue(const std::string& content_str) {
-    content_.push(content_str);
-  }
-
- protected:
-  const base::Feature& feature_switch() override {
-    return features::kOriginPolicy;
-  }
-
   std::unique_ptr<net::test_server::HttpResponse> HandleResponse(
-      const net::test_server::HttpRequest& request) override {
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-
-    // Ensures requests to /isolate_origin request that the origin policy be
-    // applied.
-    if (request.relative_url == "/isolate_origin") {
-      response->set_code(net::HTTP_OK);
-      response->set_content_type("text/html");
-      response->AddCustomHeader("Origin-Policy", "allowed=(latest)");
-      if (!content_.empty()) {
-        response->set_content(content_.front());
-        content_.pop();
-      } else {
-        response->set_content("isolate me!");
-      }
-      return std::move(response);
-    }
-
-    // Intercepts the request to get the origin policy, and injects the policy.
-    // Note: this will only be activated for requests that load "isolate_origin"
-    // above, since only it sets the Origin-Policy header.
-    if (request.relative_url == "/.well-known/origin-policy") {
-      response->set_code(net::HTTP_OK);
-      response->set_content(origin_policy_manifest_);
-      return std::move(response);
-    }
-
-    // If we return nullptr, then the server will go ahead and actually serve
-    // the file.
-    return nullptr;
-  }
-
-  std::string origin_policy_manifest_;
-  std::queue<std::string> content_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginIsolationOptInOriginPolicyTest);
-};
-
-// Tests that verify headers can be used to opt-in to origin isolation.  See
-// OriginIsolationOptInOriginPolicyTest for most tests of the feature.
-class OriginIsolationOptInHeaderTest : public OriginIsolationOptInServerTest {
- public:
-  OriginIsolationOptInHeaderTest() = default;
-
-  void SetHeaderValue(const std::string& header_value) {
-    header_ = header_value;
-  }
-
- protected:
-  const base::Feature& feature_switch() override {
-    return features::kOriginIsolationHeader;
-  }
-
-  std::unique_ptr<net::test_server::HttpResponse> HandleResponse(
-      const net::test_server::HttpRequest& request) override {
+      const net::test_server::HttpRequest& request) {
     if (request.relative_url == "/isolate_origin") {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
@@ -297,7 +216,12 @@ class OriginIsolationOptInHeaderTest : public OriginIsolationOptInServerTest {
         response->AddCustomHeader("Origin-Agent-Cluster", *header_);
       }
 
-      response->set_content("isolate me!");
+      if (!content_.empty()) {
+        response->set_content(content_.front());
+        content_.pop();
+      } else {
+        response->set_content("isolate me!");
+      }
       return std::move(response);
     }
 
@@ -306,7 +230,11 @@ class OriginIsolationOptInHeaderTest : public OriginIsolationOptInServerTest {
     return nullptr;
   }
 
+  net::EmbeddedTestServer https_server_;
+  base::test::ScopedFeatureList feature_list_;
+
   base::Optional<std::string> header_;
+  std::queue<std::string> content_;
 
   DISALLOW_COPY_AND_ASSIGN(OriginIsolationOptInHeaderTest);
 };
@@ -336,16 +264,6 @@ class OriginIsolationOptInHttpServerHeaderTest : public IsolatedOriginTestBase {
     embedded_test_server()->StartAcceptingConnections();
   }
 
-  bool ShouldOriginGetOptInIsolation(const url::Origin& origin) {
-    auto* site_instance = static_cast<SiteInstanceImpl*>(
-        shell()->web_contents()->GetMainFrame()->GetSiteInstance());
-
-    return ChildProcessSecurityPolicyImpl::GetInstance()
-        ->ShouldOriginGetOptInIsolation(site_instance->GetIsolationContext(),
-                                        origin,
-                                        false /* origin_requests_isolation */);
-  }
-
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleResponse(
       const net::test_server::HttpRequest& request) {
@@ -366,13 +284,13 @@ class OriginIsolationOptInHttpServerHeaderTest : public IsolatedOriginTestBase {
 // isolation for origins. Tests using this class will isolate foo.com and
 // bar.com by default using command-line isolation, but any opt-in isolation
 // will override this.
-class OriginIsolationOptInOriginPolicyCommandLineTest
-    : public OriginIsolationOptInOriginPolicyTest {
+class OriginIsolationOptInHeaderCommandLineTest
+    : public OriginIsolationOptInHeaderTest {
  public:
-  OriginIsolationOptInOriginPolicyCommandLineTest() = default;
+  OriginIsolationOptInHeaderCommandLineTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    OriginIsolationOptInOriginPolicyTest::SetUpCommandLine(command_line);
+    OriginIsolationOptInHeaderTest::SetUpCommandLine(command_line);
     // The base class should already have started the HTTPS server so we can use
     // it here to generate origins to specify on the command line.
     ASSERT_TRUE(https_server()->Started());
@@ -384,7 +302,7 @@ class OriginIsolationOptInOriginPolicyCommandLineTest
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(OriginIsolationOptInOriginPolicyCommandLineTest);
+  DISALLOW_COPY_AND_ASSIGN(OriginIsolationOptInHeaderCommandLineTest);
 };
 
 // This test verifies that opt-in isolation takes precedence over command-line
@@ -392,13 +310,13 @@ class OriginIsolationOptInOriginPolicyCommandLineTest
 // otherwise been isolated via command-line isolation), and then loads a child
 // frame sub-origin which should-not be isolated (but would have been if the
 // base origin was command-line isolated).
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyCommandLineTest,
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderCommandLineTest,
                        OptInOverridesCommandLine) {
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"], "isolation": true })");
+  SetHeaderValue("?1");
   // Start off with an isolated base-origin in an a(a) configuration, then
   // navigate the subframe to a sub-origin not requesting isolation.
   // Note: this works because we serve mock headers with the base origin's html
-  // file, requesting loading the origin policy.
+  // file, which set the header.
   GURL isolated_base_origin_url(https_server()->GetURL(
       "foo.com", "/isolated_base_origin_with_subframe.html"));
   GURL non_isolated_sub_origin(
@@ -455,19 +373,6 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyCommandLineTest,
       browser_context, url::Origin::Create(non_isolated_sub_origin)));
 }
 
-// This tests that origin policy opt-in causes the origin to end up in the
-// isolated origins list.
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest, Basic) {
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"], "isolation": true })");
-
-  GURL url(https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
-  url::Origin origin(url::Origin::Create(url));
-
-  EXPECT_FALSE(ShouldOriginGetOptInIsolation(origin));
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-  EXPECT_TRUE(ShouldOriginGetOptInIsolation(origin));
-}
-
 // This tests that header-based opt-in causes the origin to end up in the
 // isolated origins list.
 IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, Basic) {
@@ -513,15 +418,12 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHttpServerHeaderTest,
 }
 
 // Further tests deep-dive into various scenarios for the isolation opt-ins.
-// They use the origin policy mechanism, under the assumption that it will be
-// the same for the header mechanism since they both trigger the same behavior
-// in ChildProcessSecurityPolicyImpl.
 
-// In this test the sub-origin is isolated because the origin policy requests
-// "isolation". It will have a different site instance than the main frame.
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
+// In this test the sub-origin is isolated because the header requests it. It
+// will have a different site instance than the main frame.
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        SimpleSubOriginIsolationTest) {
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"], "isolation": true })");
+  SetHeaderValue("?1");
   // Start off with an a(a) page, then navigate the subframe to an isolated sub
   // origin.
   GURL test_url(https_server()->GetURL("foo.com",
@@ -561,11 +463,10 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
                 child_frame_node->current_frame_host()->GetProcess()->GetID()));
 }
 
-// In this test the sub-origin isn't isolated because the origin policy doesn't
-// request "isolation". It will have the same site instance as the main frame.
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
+// In this test the sub-origin isn't isolated because no header is set. It will
+// have the same site instance as the main frame.
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        SimpleSubOriginNonIsolationTest) {
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"] })");
   // Start off with an a(a) page, then navigate the subframe to an isolated sub
   // origin.
   GURL test_url(https_server()->GetURL("foo.com",
@@ -586,9 +487,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
 
 // This test verifies that renderer-initiated navigations to/from isolated
 // sub-origins works as expected.
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        RendererInitiatedNavigations) {
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"], "isolation": true })");
+  SetHeaderValue("?1");
   GURL test_url(https_server()->GetURL("foo.com",
                                        "/cross_site_iframe_factory.html?"
                                        "foo.com(foo.com)"));
@@ -629,9 +530,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
 // both for renderer-initiated and browser-initiated navigations.
 // Note: this test is essentially identical to
 // IsolatedOriginTest.MainFrameNavigation.
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
-                       MainFrameNavigation) {
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"], "isolation": true })");
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, MainFrameNavigation) {
+  SetHeaderValue("?1");
   GURL unisolated_url(https_server()->GetURL("www.foo.com", "/title1.html"));
   GURL isolated_url(
       https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
@@ -712,9 +612,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
 // This test ensures that if an origin starts off being isolated in a
 // BrowsingInstance, it continues that way within the BrowsingInstance, even
 // if a new policy is received that removes the opt-in request.
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        OriginIsolationStateRetainedForBrowsingInstance) {
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"], "isolation": true })");
+  SetHeaderValue("?1");
   // Start off with an a(a,a) page, then navigate the subframe to an isolated
   // sub origin.
   GURL test_url(https_server()->GetURL("foo.com",
@@ -734,9 +634,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
             child_frame_node0->current_frame_host()->GetSiteInstance());
 
-  // Change OriginPolicy manifest to stop isolating the sub-origin. It should
+  // Change the server's responses to stop isolating the sub-origin. It should
   // still be isolated, to remain consistent with the other frame.
-  SetOriginPolicyManifest(R"({ })");
+  SetHeaderValue("?0");
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -763,11 +663,11 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
 
 // This test ensures that if an origin starts off not being isolated in a
 // BrowsingInstance, it continues that way within the BrowsingInstance, even
-// if a new opt-in policy is received.
+// if the header starts being sent.
 // Case #1 where the non-opted-in origin is currently in the frame tree.
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        OriginNonIsolationStateRetainedForBrowsingInstance1) {
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"] })");
+  SetHeaderValue("?0");
   // Start off with an a(a,a) page, then navigate the subframe to an isolated
   // sub origin.
   GURL test_url(https_server()->GetURL("foo.com",
@@ -787,9 +687,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
             child_frame_node0->current_frame_host()->GetSiteInstance());
 
-  // Change OriginPolicy manifest to start isolating the sub-origin. It should
+  // Change the server responses to start isolating the sub-origin. It should
   // still be not-isolated, to remain consistent with the other frame.
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"], "isolation": true })");
+  SetHeaderValue("?1");
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
@@ -812,11 +712,11 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
 
 // This test ensures that if an origin starts off not being isolated in a
 // BrowsingInstance, it continues that way within the BrowsingInstance, even
-// if a new opt-in policy is received.
+// if the header starts being sent.
 // Case #2 where the non-opted-in origin is currently not in the frame tree.
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        OriginNonIsolationStateRetainedForBrowsingInstance2) {
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"] })");
+  SetHeaderValue("?0");
   // Start off with an a(a) page, then navigate the subframe to an isolated sub
   // origin.
   GURL test_url(https_server()->GetURL("foo.com",
@@ -845,9 +745,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
             child_frame_node0->current_frame_host()->GetSiteInstance());
 
-  // Change OriginPolicy manifest to start isolating the sub-origin. It should
+  // Change the server to start isolating the sub-origin. It should
   // still be not isolated, to remain consistent with the other frame.
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"], "isolation": true })");
+  SetHeaderValue("?1");
   EXPECT_TRUE(
       NavigateToURLFromRenderer(child_frame_node0, isolated_suborigin_url));
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
@@ -868,10 +768,10 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
 
 // This test makes sure that a different tab in the same BrowsingInstance where
 // an origin originally did not opt-in respects that state even if the
-// OriginPolicy changes.
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
+// server sends a different header.
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        OriginNonIsolationStateRetainedForPopup) {
-  SetOriginPolicyManifest(R"({ })");
+  SetHeaderValue("?0");
   // Start off with an a(a,a) page, then navigate the subframe to an isolated
   // sub origin.
   GURL test_url(https_server()->GetURL("foo.com",
@@ -890,9 +790,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
             child_frame_node0->current_frame_host()->GetSiteInstance());
 
-  // Change OriginPolicy manifest to start isolating the sub-origin. It should
-  // still be isolated, to remain consistent with the other frame.
-  SetOriginPolicyManifest(R"({ "isolation": true })");
+  // Change the server to start isolating the sub-origin. It should
+  // not be isolated, to remain consistent with the other frame.
+  SetHeaderValue("?1");
 
   // Open a popup in the same browsing instance, and navigate it to the
   // not-opted-in origin. Even though the manifest now requests isolation, it
@@ -921,9 +821,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
 // RenderFrameHostManager that is verifying that the second child frame was
 // put in a compatible renderer process.
 // https://crbug.com/1099718
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        NoKillForBrowsingInstanceDifferencesInProcess) {
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"], "isolation": true })");
+  SetHeaderValue("?1");
   GURL opener_url(https_server()->GetURL("foo.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), opener_url));
 
@@ -1002,9 +902,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
 // BrowsingInstance will show sub.foo.com as isolated, then if
 // CanAccessDataForOrigin only checks the first BrowsingInstance it will get the
 // wrong result.
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        NoKillForBrowsingInstanceDifferencesInProcess2) {
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"], "isolation": true })");
+  SetHeaderValue("?1");
   // Start on a page with same-site iframe.
   GURL opener_url(https_server()->GetURL("foo.com", "/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), opener_url));
@@ -1097,9 +997,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
 // value stripped. The test IsolatedBaseOriginNoPorts tests the case where
 // neither the isolated base origin nor the non-isolated sub-origin has a port
 // value.
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
-                       IsolatedBaseOrigin) {
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"], "isolation": true })");
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, IsolatedBaseOrigin) {
+  SetHeaderValue("?1");
   // Start off with an isolated base-origin in an a(a) configuration, then
   // navigate the subframe to a sub-origin no requesting isolation.
   GURL test_url(https_server()->GetURL(
@@ -1171,7 +1070,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
       browser_context, url::Origin::Create(non_isolated_sub_origin2)));
 }
 
-// This test is the same as OriginIsolationOptInOriginPolicyTest
+// This test is the same as OriginIsolationOptInHeaderTest
 // .IsolatedBaseOrigin except it uses port-free URLs. This is critical since we
 // can have two SiteInstances with the same SiteURL as long as one is
 // origin-keyed and the other isn't. Site URLs used to be used as map-keys but
@@ -1200,7 +1099,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
           // Note: this call would normally get the headers from
           // isolated_base_origin_with_subframe.html.mock-http-headers,
           // but those are meant for use with a
-          // OriginIsolationOptInOriginPolicyTest. and won't work here, so we
+          // OriginIsolationOptInHeaderTest. and won't work here, so we
           // override them.
           URLLoaderInterceptor::WriteResponse(
               "content/test/data/isolated_base_origin_with_subframe.html",
@@ -1396,7 +1295,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 // that opts-in to isolation. The opt-in triggers a walk of the session history
 // and the frame tree ... the session history won't pick up the first frame, but
 // the frame-tree walk should.
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest, FrameTreeTest) {
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, FrameTreeTest) {
   EXPECT_TRUE(NavigateToURL(shell(),
                             https_server()->GetURL("bar.com", "/title1.html")));
   // Have tab1 call window.open() to create blank tab2.
@@ -1424,7 +1323,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest, FrameTreeTest) {
   // Do a browser-initiated navigation of tab1 to the same origin, but isolate
   // it this time. This should place the two frames with |isolated_origin_url|
   // into different BrowsingInstances.
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"], "isolation": true })");
+  SetHeaderValue("?1");
   EXPECT_TRUE(NavigateToURL(shell(), isolated_origin_url));
 
   // Since the same origin exists in two tabs, but one is isolated and the other
@@ -1488,7 +1387,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest, FrameTreeTest) {
 // isolation at the pending commit state in tab2, then verify that the FrameTree
 // walk has correctly registered the origin as non-isolated in tab2, but
 // isolated in tab1.
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        FrameTreeTestPendingCommit) {
   GURL isolated_origin_url(
       https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
@@ -1502,7 +1401,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   // Do a browser-initiated navigation of tab2 to the same origin, but isolate
   // it this time. This should place the two frames with |isolated_origin_url|
   // into different BrowsingInstances.
-  SetOriginPolicyManifest(R"({ "ids": ["my-policy"], "isolation": true })");
+  SetHeaderValue("?1");
   EXPECT_TRUE(NavigateToURL(tab2, isolated_origin_url));
 
   // Now commit the non-isolated navigation.
@@ -1546,7 +1445,7 @@ class InjectIsolationRequestingNavigation
     : public DidCommitNavigationInterceptor {
  public:
   InjectIsolationRequestingNavigation(
-      OriginIsolationOptInOriginPolicyTest* test_framework,
+      OriginIsolationOptInHeaderTest* test_framework,
       WebContents* tab1_web_contents,
       Shell* tab2,
       const GURL& url)
@@ -1569,14 +1468,13 @@ class InjectIsolationRequestingNavigation
 
     // Performa a navigation of |tab2_| to |url_|. |url_| should request
     // isolation.
-    test_framework_->SetOriginPolicyManifest(
-        R"({ "ids": ["my-policy"], "isolation": true })");
+    test_framework_->SetHeaderValue("?1");
     EXPECT_TRUE(NavigateToURL(tab2_, url_));
 
     return true;
   }
 
-  OriginIsolationOptInOriginPolicyTest* test_framework_;
+  OriginIsolationOptInHeaderTest* test_framework_;
   Shell* tab2_;
   const GURL& url_;
   bool was_called_ = false;
@@ -1593,7 +1491,7 @@ class InjectIsolationRequestingNavigation
 // This test is similar to the one above, but exercises the pending navigation
 // when it's at a different stage, namely between the CommitNavigation and
 // DidCommitProvisionalLoad, rather than at WillProcessResponse.
-IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        MAYBE_FrameTreeTestBeforeDidCommit) {
   GURL isolated_origin_url(
       https_server()->GetURL("isolated.foo.com", "/isolate_origin"));

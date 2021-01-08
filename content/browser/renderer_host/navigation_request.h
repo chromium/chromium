@@ -239,14 +239,9 @@ class CONTENT_EXPORT NavigationRequest
   // is at (or past) WILL_PROCESS_RESPONSE.
   bool HasCommittingOrigin(const url::Origin& origin);
 
-  // Returns whether and how this navigation request is requesting opt-in
+  // Returns whether this navigation request is requesting opt-in
   // origin-isolation.
-  enum class OptInIsolationCheckResult {
-    NONE,          // no isolation requested
-    HEADER,        // requested using the Origin-Isolation header
-    ORIGIN_POLICY  // requested using origin policy
-  };
-  OptInIsolationCheckResult IsOptInIsolationRequested();
+  bool IsOptInIsolationRequested();
 
   // The origin isolation end result is determined early in the lifecycle of a
   // NavigationRequest, but used late. In particular, we want to trigger use
@@ -254,13 +249,10 @@ class CONTENT_EXPORT NavigationRequest
   enum class OptInOriginIsolationEndResult {
     kNotRequestedAndNotIsolated,
     kNotRequestedButIsolated,
-    kRequestedViaOriginPolicyButNotIsolated,
-    kRequestedViaOriginPolicyAndIsolated,
-    kRequestedViaHeaderButNotIsolated,
-    kRequestedViaHeaderAndIsolated
+    kRequestedButNotIsolated,
+    kRequestedAndIsolated
   };
-  void DetermineOriginIsolationEndResult(
-      OptInIsolationCheckResult check_result);
+  void DetermineOriginIsolationEndResult(bool is_requested);
   void ProcessOriginIsolationEndResult();
 
   // NavigationHandle implementation:

@@ -2023,7 +2023,7 @@ void NavigationRequest::OnRequestRedirected(
 }
 
 void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
-  if (IsOptInIsolationRequested() == OptInIsolationCheckResult::NONE)
+  if (!IsOptInIsolationRequested())
     return;
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -2066,39 +2066,24 @@ bool NavigationRequest::HasCommittingOrigin(const url::Origin& origin) {
   return origin == url::Origin::Create(GetURL());
 }
 
-NavigationRequest::OptInIsolationCheckResult
-NavigationRequest::IsOptInIsolationRequested() {
+bool NavigationRequest::IsOptInIsolationRequested() {
   if (!response())
-    return OptInIsolationCheckResult::NONE;
+    return false;
 
   // Do not attempt isolation if the environment prevents us from enabling site
   // isolation (e.g., when we are under the memory threshold on Android).
   if (!SiteIsolationPolicy::IsOptInOriginIsolationEnabled())
-    return OptInIsolationCheckResult::NONE;
+    return false;
 
-  // For now we only check for the presence of hints; we do not yet act on the
-  // specific hints.
-  const bool requests_via_origin_policy =
-      base::FeatureList::IsEnabled(features::kOriginPolicy) &&
-      response()->origin_policy &&
-      response()->origin_policy->state == network::OriginPolicyState::kLoaded &&
-      response()->origin_policy->contents->isolation_optin_hints.has_value();
+  if (base::FeatureList::IsEnabled(features::kOriginIsolationHeader) &&
+      response_head_->parsed_headers->origin_isolation) {
+    return true;
+  }
 
-  if (requests_via_origin_policy)
-    return OptInIsolationCheckResult::ORIGIN_POLICY;
-
-  const bool requests_via_header =
-      base::FeatureList::IsEnabled(features::kOriginIsolationHeader) &&
-      response_head_->parsed_headers->origin_isolation;
-
-  if (requests_via_header)
-    return OptInIsolationCheckResult::HEADER;
-
-  return OptInIsolationCheckResult::NONE;
+  return false;
 }
 
-void NavigationRequest::DetermineOriginIsolationEndResult(
-    OptInIsolationCheckResult check_result) {
+void NavigationRequest::DetermineOriginIsolationEndResult(bool is_requested) {
   DCHECK_EQ(state_, WILL_PROCESS_RESPONSE);
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -2106,31 +2091,17 @@ void NavigationRequest::DetermineOriginIsolationEndResult(
   const IsolationContext& isolation_context =
       render_frame_host_->GetSiteInstance()->GetIsolationContext();
   const bool got_isolated = policy->ShouldOriginGetOptInIsolation(
-      isolation_context, origin,
-      check_result !=
-          OptInIsolationCheckResult::NONE /* origin_requests_isolation */);
+      isolation_context, origin, is_requested);
 
-  switch (check_result) {
-    case OptInIsolationCheckResult::NONE:
-      origin_isolation_end_result_ =
-          got_isolated
-              ? OptInOriginIsolationEndResult::kNotRequestedButIsolated
-              : OptInOriginIsolationEndResult::kNotRequestedAndNotIsolated;
-      break;
-    case OptInIsolationCheckResult::ORIGIN_POLICY:
-      origin_isolation_end_result_ =
-          got_isolated ? OptInOriginIsolationEndResult::
-                             kRequestedViaOriginPolicyAndIsolated
-                       : OptInOriginIsolationEndResult::
-                             kRequestedViaOriginPolicyButNotIsolated;
-      break;
-    case OptInIsolationCheckResult::HEADER:
-      origin_isolation_end_result_ =
-          got_isolated
-              ? OptInOriginIsolationEndResult::kRequestedViaHeaderAndIsolated
-              : OptInOriginIsolationEndResult::
-                    kRequestedViaHeaderButNotIsolated;
-      break;
+  if (is_requested) {
+    origin_isolation_end_result_ =
+        got_isolated ? OptInOriginIsolationEndResult::kRequestedAndIsolated
+                     : OptInOriginIsolationEndResult::kRequestedButNotIsolated;
+  } else {
+    origin_isolation_end_result_ =
+        got_isolated
+            ? OptInOriginIsolationEndResult::kNotRequestedButIsolated
+            : OptInOriginIsolationEndResult::kNotRequestedAndNotIsolated;
   }
 
   // This needs to be computed separately from origin.opaque() because, per
@@ -2148,9 +2119,7 @@ void NavigationRequest::DetermineOriginIsolationEndResult(
   commit_params_->origin_isolated =
       is_opaque_origin_because_sandbox || origin.opaque() ||
       origin_isolation_end_result_ ==
-          OptInOriginIsolationEndResult::kRequestedViaOriginPolicyAndIsolated ||
-      origin_isolation_end_result_ ==
-          OptInOriginIsolationEndResult::kRequestedViaHeaderAndIsolated ||
+          OptInOriginIsolationEndResult::kRequestedAndIsolated ||
       origin_isolation_end_result_ ==
           OptInOriginIsolationEndResult::kNotRequestedButIsolated;
 }
@@ -2160,19 +2129,16 @@ void NavigationRequest::ProcessOriginIsolationEndResult() {
     return;
 
   if (origin_isolation_end_result_ ==
-          OptInOriginIsolationEndResult::kRequestedViaHeaderAndIsolated ||
+          OptInOriginIsolationEndResult::kRequestedAndIsolated ||
       origin_isolation_end_result_ ==
-          OptInOriginIsolationEndResult::kRequestedViaHeaderButNotIsolated)
+          OptInOriginIsolationEndResult::kRequestedButNotIsolated)
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         render_frame_host_, blink::mojom::WebFeature::kOriginIsolationHeader);
 
   const url::Origin origin = url::Origin::Create(GetURL());
 
   if (origin_isolation_end_result_ ==
-          OptInOriginIsolationEndResult::kRequestedViaHeaderButNotIsolated ||
-      origin_isolation_end_result_ ==
-          OptInOriginIsolationEndResult::
-              kRequestedViaOriginPolicyButNotIsolated)
+      OptInOriginIsolationEndResult::kRequestedButNotIsolated)
     render_frame_host_->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         base::StringPrintf(
@@ -2194,8 +2160,7 @@ void NavigationRequest::ProcessOriginIsolationEndResult() {
 }
 
 UrlInfo NavigationRequest::GetUrlInfo() {
-  return UrlInfo(
-      GetURL(), IsOptInIsolationRequested() != OptInIsolationCheckResult::NONE);
+  return UrlInfo(GetURL(), IsOptInIsolationRequested());
 }
 
 void NavigationRequest::OnResponseStarted(
@@ -2236,9 +2201,9 @@ void NavigationRequest::OnResponseStarted(
 
   ComputeSandboxFlagsToCommit(response_head_.get());
 
-  // The navigation may have encountered an origin policy or Origin-Isolation
-  // header that requests isolation for the url's origin. Before we pick the
-  // renderer, make sure we update the origin-isolation opt-ins appropriately.
+  // The navigation may have encountered a header that requests isolation for
+  // the url's origin. Before we pick the renderer, make sure we update the
+  // origin-isolation opt-ins appropriately.
   CheckForIsolationOptIn(GetURL());
 
   // Check if the response should be sent to a renderer.

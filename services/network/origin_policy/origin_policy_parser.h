@@ -38,7 +38,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OriginPolicyParser {
   bool ParseIds(const base::Value&);
   void ParseContentSecurity(const base::Value&);
   void ParseFeatures(const base::Value&);
-  void ParseIsolation(const base::Value&);
 
   static bool IsValidOriginPolicyId(const std::string&);
 
