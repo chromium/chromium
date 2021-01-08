@@ -141,13 +141,14 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
         when(mIdentityManagerNativeMock
                         .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
                                 anyLong(), eq(accountEmail)))
-                .thenReturn(new AccountInfo(
-                        new CoreAccountId("gaia-id-test"), accountEmail, "gaia-id-test", null));
+                .thenReturn(new AccountInfo(new CoreAccountId("gaia-id-test"), accountEmail,
+                        "gaia-id-test", "full name", "given name", null));
 
         mAccountManagerTestRule.addAccount(
                 new ProfileDataSource.ProfileData(accountEmail, null, "Full Name", "Given Name"));
-        mIdentityManager.onExtendedAccountInfoUpdated(new AccountInfo(
-                new CoreAccountId("gaia-id-test"), accountEmail, "gaia-id-test", createAvatar()));
+        mIdentityManager.onExtendedAccountInfoUpdated(
+                new AccountInfo(new CoreAccountId("gaia-id-test"), accountEmail, "gaia-id-test",
+                        "full name", "given name", createAvatar()));
         TestThreadUtils.runOnUiThreadBlocking(() -> { checkImageIsScaled(accountEmail); });
         mRenderTestRule.render(mImageView, "profile_data_cache_avatar" + mImageSize);
     }

@@ -59,8 +59,9 @@ public class SigninManagerTest {
     @Rule
     public final Features.JUnitProcessor processor = new Features.JUnitProcessor();
 
-    private static final AccountInfo ACCOUNT_INFO = new AccountInfo(
-            new CoreAccountId("gaia-id-user"), "user@domain.com", "gaia-id-user", null);
+    private static final AccountInfo ACCOUNT_INFO =
+            new AccountInfo(new CoreAccountId("gaia-id-user"), "user@domain.com", "gaia-id-user",
+                    "full name", "given name", null);
 
     private final SigninManagerImpl.Natives mNativeMock = mock(SigninManagerImpl.Natives.class);
     private final AccountTrackerService mAccountTrackerService = mock(AccountTrackerService.class);
@@ -335,7 +336,7 @@ public class SigninManagerTest {
     @Test
     public void callbackNotifiedOnSignin() {
         AccountInfo account = new AccountInfo(new CoreAccountId("test_at_gmail.com"),
-                "test@gmail.com", "test_at_gmail.com", null);
+                "test@gmail.com", "test_at_gmail.com", "full name", "given name", null);
 
         // No need to seed accounts to the native code.
         doReturn(true).when(mAccountTrackerService).checkAndSeedSystemAccounts();
@@ -370,7 +371,7 @@ public class SigninManagerTest {
     @Test(expected = AssertionError.class)
     public void failIfAlreadySignedin() {
         AccountInfo account = new AccountInfo(new CoreAccountId("test_at_gmail.com"),
-                "test@gmail.com", "test_at_gmail.com", null);
+                "test@gmail.com", "test_at_gmail.com", "full name", "given name", null);
 
         // No need to seed accounts to the native code.
         doReturn(true).when(mAccountTrackerService).checkAndSeedSystemAccounts();
