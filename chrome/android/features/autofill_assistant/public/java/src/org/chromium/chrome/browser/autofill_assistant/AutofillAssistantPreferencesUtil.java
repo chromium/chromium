@@ -52,7 +52,7 @@ public class AutofillAssistantPreferencesUtil {
     }
 
     /** Returns whether the user has seen a lite script before or not. */
-    static boolean isAutofillAssistantFirstTimeLiteScriptUser() {
+    public static boolean isAutofillAssistantFirstTimeLiteScriptUser() {
         return SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER, true);
     }

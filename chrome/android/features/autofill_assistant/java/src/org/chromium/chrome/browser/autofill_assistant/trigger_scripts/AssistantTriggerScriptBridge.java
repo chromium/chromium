@@ -128,6 +128,12 @@ public class AssistantTriggerScriptBridge {
         return mContext;
     }
 
+    /** Returns whether the user has seen a trigger script before or not. */
+    @CalledByNative
+    private static boolean isFirstTimeTriggerScriptUser() {
+        return AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeLiteScriptUser();
+    }
+
     /**
      * Used by native to update and show the UI. The header should be created and updated using
      * {@code createHeaderAndGetModel} prior to calling this function.

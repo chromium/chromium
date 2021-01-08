@@ -181,7 +181,7 @@ void ClientAndroid::StartTriggerScript(
     const base::android::JavaParamRef<jobjectArray>& jparameter_values,
     jlong jservice_request_sender) {
   trigger_script_bridge_.StartTriggerScript(
-      this, jdelegate,
+      web_contents_, jdelegate,
       GURL(base::android::ConvertJavaStringToUTF8(env, jinitial_url)),
       CreateTriggerContext(env, jexperiment_ids, jparameter_names,
                            jparameter_values),
@@ -529,11 +529,6 @@ void ClientAndroid::RecordDropOut(Metrics::DropOutReason reason) {
 
 bool ClientAndroid::HasHadUI() const {
   return has_had_ui_;
-}
-
-bool ClientAndroid::IsFirstTimeTriggerScriptUser() const {
-  return Java_AutofillAssistantClient_isFirstTimeTriggerScriptUser(
-      AttachCurrentThread());
 }
 
 void ClientAndroid::Shutdown(Metrics::DropOutReason reason) {

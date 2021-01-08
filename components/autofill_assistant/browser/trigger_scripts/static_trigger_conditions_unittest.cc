@@ -4,7 +4,6 @@
 
 #include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
 
-#include "components/autofill_assistant/browser/mock_client.h"
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 
 #include "base/test/gmock_callback_support.h"
@@ -29,23 +28,22 @@ class StaticTriggerConditionsTest : public testing::Test {
 
  protected:
   StaticTriggerConditions static_trigger_conditions_;
+  base::MockCallback<base::RepeatingCallback<bool(void)>>
+      mock_is_first_time_user_callback_;
   base::MockCallback<base::OnceCallback<void(void)>> mock_callback_;
-  NiceMock<MockClient> mock_client_;
   NiceMock<MockWebsiteLoginManager> mock_website_login_manager_;
 };
 
 TEST_F(StaticTriggerConditionsTest, Init) {
   TriggerContextImpl trigger_context(/* params = */ {}, /* exp = */ "1,2,4");
-  EXPECT_CALL(mock_client_, IsFirstTimeTriggerScriptUser)
-      .WillOnce(Return(true));
-  EXPECT_CALL(mock_client_, GetWebsiteLoginManager)
-      .WillOnce(Return(&mock_website_login_manager_));
+  EXPECT_CALL(mock_is_first_time_user_callback_, Run).WillOnce(Return(true));
   EXPECT_CALL(mock_website_login_manager_, OnGetLoginsForUrl(GURL(kFakeUrl), _))
       .WillOnce(RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{
           WebsiteLoginManager::Login(GURL(kFakeUrl), "fake_username")}));
   EXPECT_CALL(mock_callback_, Run).Times(1);
-  static_trigger_conditions_.Init(&mock_client_, GURL(kFakeUrl),
-                                  &trigger_context, mock_callback_.Get());
+  static_trigger_conditions_.Init(
+      &mock_website_login_manager_, mock_is_first_time_user_callback_.Get(),
+      GURL(kFakeUrl), &trigger_context, mock_callback_.Get());
 
   EXPECT_TRUE(static_trigger_conditions_.is_first_time_user());
   EXPECT_TRUE(static_trigger_conditions_.has_stored_login_credentials());
@@ -65,16 +63,14 @@ TEST_F(StaticTriggerConditionsTest, HasResults) {
   EXPECT_FALSE(static_trigger_conditions_.has_results());
 
   TriggerContextImpl trigger_context(/* params = */ {}, /* exp = */ "1,2,4");
-  EXPECT_CALL(mock_client_, IsFirstTimeTriggerScriptUser)
-      .WillOnce(Return(true));
-  EXPECT_CALL(mock_client_, GetWebsiteLoginManager)
-      .WillOnce(Return(&mock_website_login_manager_));
+  EXPECT_CALL(mock_is_first_time_user_callback_, Run).WillOnce(Return(true));
   EXPECT_CALL(mock_website_login_manager_, OnGetLoginsForUrl(GURL(kFakeUrl), _))
       .WillOnce(RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{
           WebsiteLoginManager::Login(GURL(kFakeUrl), "fake_username")}));
   EXPECT_CALL(mock_callback_, Run).Times(1);
-  static_trigger_conditions_.Init(&mock_client_, GURL(kFakeUrl),
-                                  &trigger_context, mock_callback_.Get());
+  static_trigger_conditions_.Init(
+      &mock_website_login_manager_, mock_is_first_time_user_callback_.Get(),
+      GURL(kFakeUrl), &trigger_context, mock_callback_.Get());
   EXPECT_TRUE(static_trigger_conditions_.has_results());
 }
 

@@ -382,12 +382,6 @@ public class AutofillAssistantClient {
         return ChromeAccessibilityUtil.get().isAccessibilityEnabled();
     }
 
-    /** Returns whether the user has seen a trigger script before or not. */
-    @CalledByNative
-    private static boolean isFirstTimeTriggerScriptUser() {
-        return AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeLiteScriptUser();
-    }
-
     /** Adds a dynamic action to the given reporter. */
     @CalledByNative
     private void onFetchWebsiteActions(Callback<Boolean> callback, boolean success) {

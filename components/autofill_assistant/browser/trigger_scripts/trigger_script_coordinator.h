@@ -49,9 +49,11 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
     virtual void OnVisibilityChanged(bool visible) = 0;
   };
 
-  // |client| and |web_contents| must outlive this instance.
+  // |web_contents| must outlive this instance.
   TriggerScriptCoordinator(
-      Client* client,
+      content::WebContents* web_contents,
+      WebsiteLoginManager* website_login_manager,
+      base::RepeatingCallback<bool(void)> is_first_time_user_callback,
       std::unique_ptr<WebController> web_controller,
       std::unique_ptr<ServiceRequestSender> request_sender,
       const GURL& get_trigger_scripts_server,
@@ -126,9 +128,12 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
 
   void NotifyOnTriggerScriptFinished(Metrics::LiteScriptFinishedState state);
 
-  // Used to retrieve deps and also to request shutdown and, if applicable,
-  // start of the regular script.
-  Client* client_;
+  // Used to query login information for the current webcontents.
+  WebsiteLoginManager* website_login_manager_;
+
+  // Callback that can be used to query whether a user has seen the trigger
+  // script UI at least once or not.
+  base::RepeatingCallback<bool(void)> is_first_time_user_callback_;
 
   // The original deeplink to request trigger scripts for.
   GURL deeplink_url_;

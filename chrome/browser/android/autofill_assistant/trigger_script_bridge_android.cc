@@ -10,6 +10,7 @@
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantTriggerScriptBridge_jni.h"
 #include "chrome/browser/android/autofill_assistant/assistant_header_model.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
 #include "components/autofill_assistant/browser/service/server_url_fetcher.h"
@@ -20,6 +21,7 @@
 #include "components/autofill_assistant/browser/trigger_scripts/dynamic_trigger_conditions.h"
 #include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
+#include "components/autofill_assistant/browser/website_login_manager_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -29,13 +31,21 @@ using base::android::ScopedJavaGlobalRef;
 using base::android::ToJavaArrayOfStrings;
 using base::android::ToJavaIntArray;
 
+namespace {
+bool IsFirstTimeTriggerScriptUser() {
+  return autofill_assistant::
+      Java_AssistantTriggerScriptBridge_isFirstTimeTriggerScriptUser(
+          AttachCurrentThread());
+}
+}  // namespace
+
 namespace autofill_assistant {
 
 TriggerScriptBridgeAndroid::TriggerScriptBridgeAndroid() = default;
 TriggerScriptBridgeAndroid::~TriggerScriptBridgeAndroid() = default;
 
 void TriggerScriptBridgeAndroid::StartTriggerScript(
-    Client* client,
+    content::WebContents* web_contents,
     const JavaParamRef<jobject>& jdelegate,
     const GURL& initial_url,
     std::unique_ptr<TriggerContext> trigger_context,
@@ -59,7 +69,7 @@ void TriggerScriptBridgeAndroid::StartTriggerScript(
             base::Base64UrlDecodePolicy::IGNORE_PADDING, &response)) {
       LOG(ERROR) << "Failed to base64-decode trigger scripts response";
       Metrics::RecordLiteScriptFinished(
-          ukm::UkmRecorder::Get(), client->GetWebContents(),
+          ukm::UkmRecorder::Get(), web_contents,
           Metrics::LiteScriptFinishedState::LITE_SCRIPT_BASE64_DECODING_ERROR);
       return;
     }
@@ -67,7 +77,7 @@ void TriggerScriptBridgeAndroid::StartTriggerScript(
         std::make_unique<ServiceRequestSenderLocalImpl>(response);
   } else {
     service_request_sender = std::make_unique<ServiceRequestSenderImpl>(
-        client->GetWebContents()->GetBrowserContext(),
+        web_contents->GetBrowserContext(),
         /* access_token_fetcher = */ nullptr,
         std::make_unique<NativeURLLoaderFactory>(),
         ApiKeyFetcher().GetAPIKey(chrome::GetChannel()),
@@ -76,8 +86,15 @@ void TriggerScriptBridgeAndroid::StartTriggerScript(
   }
 
   ServerUrlFetcher url_fetcher{ServerUrlFetcher::GetDefaultServerUrl()};
+  if (!website_login_manager_) {
+    website_login_manager_ = std::make_unique<WebsiteLoginManagerImpl>(
+        ChromePasswordManagerClient::FromWebContents(web_contents),
+        web_contents);
+  }
   trigger_script_coordinator_ = std::make_unique<TriggerScriptCoordinator>(
-      client, WebController::CreateForWebContents(client->GetWebContents()),
+      web_contents, website_login_manager_.get(),
+      base::BindRepeating(&IsFirstTimeTriggerScriptUser),
+      WebController::CreateForWebContents(web_contents),
       std::move(service_request_sender),
       url_fetcher.GetTriggerScriptsEndpoint(),
       std::make_unique<StaticTriggerConditions>(),
