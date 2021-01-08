@@ -10482,11 +10482,11 @@
       'id': 151,
       'caption': '''Enable or disable spell checking web service''',
       'tags': [],
-      'desc': '''<ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> can use a Google web service to help resolve spelling errors. If this setting is enabled, then this service is always used. If this setting is disabled, then this service is never used.
+      'desc': '''Setting the policy to Enabled puts a Google web service in use to help resolve spelling errors. This policy only controls the use of the online service. Setting the policy to Disabled means this service is never used.
 
-      Spell checking can still be performed using a downloaded dictionary; this policy only controls the usage of the online service.
+      Leaving the policy unset lets users choose whether to use the spellcheck service.
 
-      If this setting is not configured then users can choose whether the spell checking service should be used or not.''',
+      The spell check can always use a downloaded dictionary locally unless the feature is disabled by <ph name="SPELLCHECK_ENABLED_POLICY_NAME">SpellcheckEnabled</ph> in which case this policy will have no effect.''',
     },
     {
       'name': 'ExternalStorageDisabled',
@@ -17653,12 +17653,11 @@
       'id': 408,
       'caption': '''Enable spellcheck''',
       'tags': [],
-      'desc': '''If this policy is not set, the user can enable or disable spellcheck in the language settings.
+      'desc': '''Setting the policy to Enabled turns spellcheck on, and users can't turn it off. On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> and <ph name="LINUX_OS_NAME">Linux®</ph>, spellcheck languages can be switched on or off individually, so users can still turn spellcheck off by switching off every spellcheck language. To avoid that, use the <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME">SpellcheckLanguage</ph> to force-enable specific spellcheck languages.
 
-      If this policy is set to true, spellcheck is enabled and the user cannot disable it. On <ph name="MS_WIN_NAME">Microsoft® Windows</ph>, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> and <ph name="LINUX_OS_NAME">Linux</ph>, spellcheck languages can be individually toggled on or off, so the user can still effectively disable spellcheck by toggling off every spellcheck language. To avoid that, the <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME">SpellcheckLanguage</ph> policy can be used to force specific spellcheck languages to be enabled.
+      Setting the policy to Disabled turns off spellcheck from all sources, and users can't turn it on. The <ph name="SPELL_CHECK_SERVICE_ENABLED_POLICY_NAME">SpellCheckServiceEnabled</ph>, <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME">SpellcheckLanguage</ph> and <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME">SpellcheckLanguageBlocklist</ph> policies have no effect when this policy is set to False.
 
-      If this policy is set to false, spellcheck is disabled and the user cannot enable it. The <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME">SpellcheckLanguage</ph> and <ph name="SPELLCHECK_LANGUAGE_BLACKLIST_POLICY_NAME">SpellcheckLanguageBlacklist</ph> policies have no effect when this policy is set to false.
-      '''
+      Leaving the policy unset lets users turn spellcheck on or off in the language settings. '''
     },
     {
       'name': 'AdsSettingForIntrusiveAdsSites',
