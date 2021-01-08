@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/sync_wifi/local_network_collector.h"
 #include "chromeos/components/sync_wifi/local_network_collector_impl.h"
@@ -63,6 +64,7 @@ class LocalNetworkCollectorImplTest : public testing::Test {
         remote_cros_network_config_.get());
     local_network_collector_->SetNetworkMetadataStore(
         NetworkHandler::Get()->network_metadata_store()->GetWeakPtr());
+    on_get_all_syncable_networks_count_ = 0;
   }
 
   void TearDown() override {
@@ -77,6 +79,7 @@ class LocalNetworkCollectorImplTest : public testing::Test {
     for (int i = 0; i < (int)result.size(); i++) {
       EXPECT_EQ(expected[i], DecodeHexString(result[i].hex_ssid()));
     }
+    on_get_all_syncable_networks_count_++;
   }
 
   void OnGetSyncableNetwork(
@@ -103,6 +106,9 @@ class LocalNetworkCollectorImplTest : public testing::Test {
   }
 
   NetworkTestHelper* helper() { return local_test_helper_.get(); }
+  size_t on_get_all_syncable_networks_count() {
+    return on_get_all_syncable_networks_count_;
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -111,6 +117,8 @@ class LocalNetworkCollectorImplTest : public testing::Test {
   std::unique_ptr<NetworkTestHelper> local_test_helper_;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
+
+  size_t on_get_all_syncable_networks_count_;
 
   DISALLOW_COPY_AND_ASSIGN(LocalNetworkCollectorImplTest);
 };
@@ -127,6 +135,41 @@ TEST_F(LocalNetworkCollectorImplTest, TestGetAllSyncableNetworks) {
                      base::Unretained(this), expected));
 
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(LocalNetworkCollectorImplTest,
+       TestGetAllSyncableNetworks_MojoNetworksUnitializedThenInitialized) {
+  const std::string kSharedUserDirectory =
+      NetworkProfileHandler::GetSharedProfilePath();
+  helper()->network_state_test_helper()->ClearProfiles();
+  // Add back shared profile path to simulate user on the login screen.
+  helper()->network_state_test_helper()->profile_test()->AddProfile(
+      /*profile_path=*/kSharedUserDirectory, /*userhash=*/std::string());
+  base::RunLoop().RunUntilIdle();
+
+  size_t on_get_all_syncable_networks_count_before =
+      on_get_all_syncable_networks_count();
+  local_network_collector()->GetAllSyncableNetworks(base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(on_get_all_syncable_networks_count_before,
+            on_get_all_syncable_networks_count());
+
+  // Log users back in.
+  const char* kProfilePathUser =
+      helper()->network_state_test_helper()->ProfilePathUser();
+  const char* kUserHash = helper()->network_state_test_helper()->UserHash();
+  helper()->network_state_test_helper()->profile_test()->AddProfile(
+      /*profile_path=*/kProfilePathUser, /*userhash=*/kUserHash);
+  helper()->network_state_test_helper()->profile_test()->AddProfile(
+      /*profile_path=*/kUserHash, /*userhash=*/std::string());
+
+  std::vector<std::string> expected;
+  local_network_collector()->GetAllSyncableNetworks(
+      base::BindOnce(&LocalNetworkCollectorImplTest::OnGetAllSyncableNetworks,
+                     base::Unretained(this), expected));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(on_get_all_syncable_networks_count_before + 1,
+            on_get_all_syncable_networks_count());
 }
 
 TEST_F(LocalNetworkCollectorImplTest,

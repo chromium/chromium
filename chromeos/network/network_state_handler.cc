@@ -200,6 +200,10 @@ const NetworkState* NetworkStateHandler::GetAvailableManagedWifiNetwork()
   return GetNetworkState(available_managed_network_path);
 }
 
+bool NetworkStateHandler::IsProfileNetworksLoaded() {
+  return is_profile_networks_loaded_;
+}
+
 bool NetworkStateHandler::OnlyManagedWifiNetworksAllowed() const {
   return allow_only_policy_networks_to_connect_ ||
          (allow_only_policy_networks_to_connect_if_available_ &&
@@ -1290,8 +1294,9 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   }
 }
 
-void NetworkStateHandler::ProfileListChanged() {
+void NetworkStateHandler::ProfileListChanged(const base::Value& profile_list) {
   NET_LOG(EVENT) << "ProfileListChanged. Re-Requesting Network Properties";
+  ProcessIsUserLoggedIn(profile_list);
   for (ManagedStateList::iterator iter = network_list_.begin();
        iter != network_list_.end(); ++iter) {
     const NetworkState* network = (*iter)->AsNetworkState();
@@ -1568,6 +1573,10 @@ void NetworkStateHandler::ManagedStateListChanged(
       NotifyIfActiveNetworksChanged();
       NotifyNetworkListChanged();
       UpdateManagedWifiNetworkAvailable();
+      // ManagedStateListChanged only gets executed if all pending updates have
+      // completed. Profile networks are loaded if a user is logged in and all
+      // pending updates are complete.
+      is_profile_networks_loaded_ = is_user_logged_in_;
       return;
     case ManagedState::MANAGED_TYPE_DEVICE:
       std::string devices;
@@ -2108,6 +2117,16 @@ void NetworkStateHandler::SetDefaultNetworkValues(const std::string& path,
                                                   bool metered) {
   default_network_path_ = path;
   default_network_is_metered_ = metered;
+}
+
+void NetworkStateHandler::ProcessIsUserLoggedIn(
+    const base::Value& profile_list) {
+  if (!profile_list.is_list()) {
+    return;
+  }
+  // The profile list contains the shared profile on the login screen. Once the
+  // user is logged in there is more than one profile in the profile list.
+  is_user_logged_in_ = profile_list.GetList().size() > 1;
 }
 
 }  // namespace chromeos

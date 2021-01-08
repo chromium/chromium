@@ -97,6 +97,11 @@ void NetworkStateTestHelper::ClearServices() {
   base::RunLoop().RunUntilIdle();
 }
 
+void NetworkStateTestHelper::ClearProfiles() {
+  profile_test_->ClearProfiles();
+  manager_test_->ClearProfiles();
+}
+
 void NetworkStateTestHelper::AddDevice(const std::string& device_path,
                                        const std::string& type,
                                        const std::string& name) {

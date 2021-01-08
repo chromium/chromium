@@ -46,6 +46,9 @@ class NetworkStateTestHelper {
   // Clears any fake services.
   void ClearServices();
 
+  // Clears the profile list.
+  void ClearProfiles();
+
   // Calls ShillDeviceClient::TestInterface::AddDevice and sets update_received
   // on the DeviceState.
   void AddDevice(const std::string& device_path,

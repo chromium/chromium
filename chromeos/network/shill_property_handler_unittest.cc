@@ -55,7 +55,12 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
     initial_property_updates(GetTypeString(type))[path] += 1;
   }
 
-  void ProfileListChanged() override {}
+  void ProfileListChanged(const base::Value& profile_list) override {
+    if (!profile_list.is_list()) {
+      return;
+    }
+    profile_list_size_ = profile_list.GetList().size();
+  }
 
   void UpdateNetworkServiceProperty(const std::string& service_path,
                                     const std::string& key,
@@ -113,6 +118,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
   }
   std::string hostname() { return hostname_; }
   int errors() { return errors_; }
+  int profile_list_size() { return profile_list_size_; }
 
  private:
   std::string GetTypeString(ManagedState::ManagedType type) {
@@ -159,6 +165,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
   int technology_list_updates_;
   std::string hostname_;
   int errors_;
+  int profile_list_size_;
 };
 
 }  // namespace
@@ -290,6 +297,17 @@ TEST_F(ShillPropertyHandlerTest, ShillPropertyHandlerStub) {
             listener_->entries(shill::kServiceCompleteListProperty).size());
 
   EXPECT_EQ(0, listener_->errors());
+}
+
+TEST_F(ShillPropertyHandlerTest, ShillPropertyHandlerProfileListChanged) {
+  EXPECT_EQ(1, listener_->profile_list_size());
+
+  const char kMountedUserDirectory[] = "/profile/chronos/shill";
+  // Simulate a user logging in. When a user logs in the mounted user directory
+  // path is added to the list of profile paths.
+  profile_test_->AddProfile(kMountedUserDirectory, /*user_hash=*/"");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, listener_->profile_list_size());
 }
 
 TEST_F(ShillPropertyHandlerTest, ShillPropertyHandlerHostnameChanged) {

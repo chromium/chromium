@@ -113,6 +113,9 @@ class LocalNetworkCollectorImpl
       request_guid_to_in_flight_networks_;
   base::flat_map<std::string, ProtoCallback> request_guid_to_single_callback_;
   base::flat_map<std::string, ProtoListCallback> request_guid_to_list_callback_;
+  base::queue<base::OnceCallback<void()>>
+      after_networks_are_loaded_callback_queue_;
+  bool is_mojo_networks_loaded_ = false;
 
   base::WeakPtrFactory<LocalNetworkCollectorImpl> weak_ptr_factory_{this};
 };

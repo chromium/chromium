@@ -76,7 +76,8 @@ void NetworkTestHelper::SetUp() {
   NetworkHandler::Get()->InitializePrefServices(&user_prefs_, &local_state_);
   network_state_helper_->ResetDevicesAndServices();
   network_state_helper_->profile_test()->AddProfile(
-      network_state_helper_->UserHash(), std::string());
+      /*profile_path=*/network_state_helper_->UserHash(),
+      /*userhash=*/std::string());
 
   base::RunLoop().RunUntilIdle();
 }

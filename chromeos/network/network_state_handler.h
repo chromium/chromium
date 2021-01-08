@@ -402,6 +402,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // available.
   const NetworkState* GetAvailableManagedWifiNetwork() const;
 
+  // Returns true if a user is logged in and the networks for the logged in user
+  // have been loaded.
+  bool IsProfileNetworksLoaded();
+
   // Returns true if the AllowOnlyPolicyNetworksToConnect policy is enabled or
   // if the AllowOnlyPolicyNetworksToConnectIfAvailable policy is enabled and
   // there is a managed wifi network available.
@@ -431,7 +435,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
   // The list of profiles changed (i.e. a user has logged in). Re-request
   // properties for all services since they may have changed.
-  void ProfileListChanged() override;
+  void ProfileListChanged(const base::Value& profile_list) override;
 
   // Parses the properties for the network service or device. Mostly calls
   // managed->PropertyChanged(key, value) for each dictionary entry.
@@ -634,6 +638,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Metered.
   void SetDefaultNetworkValues(const std::string& path, bool metered);
 
+  // Determines whether the user is logged in and sets |is_user_logged_in_|.
+  void ProcessIsUserLoggedIn(const base::Value& profile_list);
+
   // Shill property handler instance, owned by this class.
   std::unique_ptr<internal::ShillPropertyHandler> shill_property_handler_;
 
@@ -702,6 +709,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   bool allow_only_policy_networks_to_connect_ = false;
   bool allow_only_policy_networks_to_connect_if_available_ = false;
   std::vector<std::string> blocked_hex_ssids_;
+
+  // After login the user's saved networks get updated asynchronously from
+  // shill. These variables indicate whether a user is logged in, and if the
+  // user's saved networks are done updating.
+  bool is_profile_networks_loaded_ = false;
+  bool is_user_logged_in_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

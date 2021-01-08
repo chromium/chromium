@@ -53,6 +53,13 @@ LocalNetworkCollectorImpl::~LocalNetworkCollectorImpl() = default;
 
 void LocalNetworkCollectorImpl::GetAllSyncableNetworks(
     ProtoListCallback callback) {
+  if (!is_mojo_networks_loaded_) {
+    after_networks_are_loaded_callback_queue_.push(
+        base::BindOnce(&LocalNetworkCollectorImpl::GetAllSyncableNetworks,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
   std::string request_guid = InitializeRequest();
   request_guid_to_list_callback_[request_guid] = std::move(callback);
 
@@ -273,6 +280,13 @@ void LocalNetworkCollectorImpl::OnRequestFinished(
 }
 
 void LocalNetworkCollectorImpl::OnNetworkStateListChanged() {
+  if (!NetworkHandler::Get()
+           ->network_state_handler()
+           ->IsProfileNetworksLoaded()) {
+    is_mojo_networks_loaded_ = false;
+    return;
+  }
+
   cros_network_config_->GetNetworkStateList(
       network_config::mojom::NetworkFilter::New(
           network_config::mojom::FilterType::kConfigured,
@@ -285,6 +299,11 @@ void LocalNetworkCollectorImpl::OnNetworkStateListChanged() {
 void LocalNetworkCollectorImpl::OnGetNetworkList(
     std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
   mojo_networks_ = std::move(networks);
+  is_mojo_networks_loaded_ = true;
+  while (!after_networks_are_loaded_callback_queue_.empty()) {
+    std::move(after_networks_are_loaded_callback_queue_.front()).Run();
+    after_networks_are_loaded_callback_queue_.pop();
+  }
 }
 
 }  // namespace sync_wifi

@@ -1148,6 +1148,14 @@ base::Value FakeShillManagerClient::GetEnabledServiceList() const {
   return new_service_list;
 }
 
+void FakeShillManagerClient::ClearProfiles() {
+  if (GetListProperty(shill::kProfilesProperty)->empty()) {
+    return;
+  }
+  GetListProperty(shill::kProfilesProperty)->ClearList();
+  CallNotifyObserversPropertyChanged(shill::kProfilesProperty);
+}
+
 void FakeShillManagerClient::ScanCompleted(const std::string& device_path) {
   VLOG(1) << "ScanCompleted: " << device_path;
   if (!device_path.empty()) {
