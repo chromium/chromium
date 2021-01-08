@@ -4675,7 +4675,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.DidUserManuallyUnlockPhone"
-    enum="EasyUnlockDidUserManuallyUnlockPhone" expires_after="2021-02-02">
+    enum="EasyUnlockDidUserManuallyUnlockPhone" expires_after="2022-02-02">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -4687,7 +4687,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.SignIn" enum="EasyUnlockAuthEvent"
-    expires_after="2021-06-06">
+    expires_after="2022-02-02">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -4699,7 +4699,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.SignIn.Duration" units="ms"
-    expires_after="2021-02-02">
+    expires_after="2022-02-02">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -4709,7 +4709,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.Unlock" enum="EasyUnlockAuthEvent"
-    expires_after="2021-06-06">
+    expires_after="2022-02-02">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -4721,7 +4721,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.Unlock.Duration" units="ms"
-    expires_after="2021-04-04">
+    expires_after="2022-02-02">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -4733,7 +4733,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.AuthProximity.RemoteDeviceModelHash"
-    enum="EasyUnlockDeviceModelHash" expires_after="2021-02-02">
+    enum="EasyUnlockDeviceModelHash" expires_after="2022-02-02">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -4747,7 +4747,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.AuthProximity.RollingRssi" units="dBm"
-    expires_after="2021-02-02">
+    expires_after="2022-02-02">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -4768,7 +4768,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.RemoteLockScreenState"
-    enum="EasyUnlockRemoteLockScreenState" expires_after="2021-02-02">
+    enum="EasyUnlockRemoteLockScreenState" expires_after="2022-02-02">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -4782,7 +4782,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.StartupTimeFromSuspend" units="ms"
-    expires_after="2021-02-02">
+    expires_after="2022-02-02">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
