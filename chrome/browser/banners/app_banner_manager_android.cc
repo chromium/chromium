@@ -452,6 +452,12 @@ base::string16 AppBannerManagerAndroid::GetAppName() const {
 }
 
 bool AppBannerManagerAndroid::MaybeShowInProductHelp() const {
+  if (!base::FeatureList::IsEnabled(
+          feature_engagement::kIPHPwaInstallAvailableFeature)) {
+    DVLOG(2) << "Feature not enabled";
+    return false;
+  }
+
   if (!web_contents()) {
     DVLOG(2) << "IPH for PWA aborted: null WebContents";
     return false;
