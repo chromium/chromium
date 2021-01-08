@@ -1,8 +1,3 @@
-<!doctype html>
-<title>Negative timeout in setInterval</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
 setup({ single_test: true });
 var i = 0;
 var interval;
@@ -15,4 +10,3 @@ function next() {
 }
 setTimeout(assert_unreached, 1000);
 interval = setInterval(next, -100);
-</script>

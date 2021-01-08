@@ -1,9 +1,3 @@
-<!doctype html>
-<meta charset=utf-8>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<div id=log></div>
-<script>
 promise_test(() => fetch("resources/urltestdata.json").then(res => res.json()).then(runURLTests), "Loading data…");
 
 function bURL(url, base) {
@@ -21,4 +15,3 @@ function runURLTests(urltests) {
     }, "Origin parsing: <" + expected.input + "> against <" + expected.base + ">")
   }
 }
-</script>
