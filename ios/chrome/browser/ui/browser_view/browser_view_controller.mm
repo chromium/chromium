@@ -1439,7 +1439,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self installFakeStatusBar];
   [self buildToolbarAndTabStrip];
   [self setUpViewLayout:YES];
-  [self addConstraintsToTabStrip];
   [self addConstraintsToToolbar];
 
   // If the tab model and browser state are valid, finish initialization.
@@ -2282,6 +2281,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         [self addChildViewController:self.tabStripCoordinator.viewController];
         self.tabStripView = self.tabStripCoordinator.view;
         [self.view addSubview:self.tabStripView];
+        [self addConstraintsToTabStrip];
       }
       [self.view insertSubview:primaryToolbarView
                   aboveSubview:self.tabStripView];
