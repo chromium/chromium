@@ -995,19 +995,21 @@ void SessionStorageImpl::OnConnectionFinished() {
     std::move(callbacks[i]).Run();
 }
 
+void SessionStorageImpl::PurgeAllNamespaces() {
+  for (const auto& it : data_maps_)
+    it.second->storage_area()->CancelAllPendingRequests();
+  for (const auto& namespace_pair : namespaces_)
+    namespace_pair.second->Reset();
+  DCHECK(data_maps_.empty());
+}
+
 void SessionStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
   if (connection_state_ == CONNECTION_SHUTDOWN)
     return;
 
   // We're about to set database_ to null, so delete the StorageAreas
   // that might still be using the old database.
-  for (const auto& it : data_maps_)
-    it.second->storage_area()->CancelAllPendingRequests();
-
-  for (const auto& namespace_pair : namespaces_) {
-    namespace_pair.second->Reset();
-  }
-  DCHECK(data_maps_.empty());
+  PurgeAllNamespaces();
 
   // Reset state to be in process of connecting. This will cause requests for
   // StorageAreas to be queued until the connection is complete.
@@ -1059,6 +1061,7 @@ void SessionStorageImpl::OnDBDestroyed(bool recreate_in_memory,
 void SessionStorageImpl::OnShutdownComplete() {
   DCHECK(shutdown_complete_callback_);
   // Flush any final tasks on the DB task runner before invoking the callback.
+  PurgeAllNamespaces();
   database_.reset();
   leveldb_task_runner_->PostTaskAndReply(
       FROM_HERE, base::DoNothing(), std::move(shutdown_complete_callback_));
