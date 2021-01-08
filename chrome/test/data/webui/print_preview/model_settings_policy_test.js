@@ -4,15 +4,21 @@
 
 import {ColorModeRestriction, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexModeRestriction, Margins, MarginsType, PinModeRestriction, Size} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {getCddTemplate} from 'chrome://test/print_preview/print_preview_test_utils.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
+import {assertEquals} from '../chai_assert.js';
+
+import {getCddTemplate} from './print_preview_test_utils.js';
 
 suite('ModelSettingsPolicyTest', function() {
-  let model = null;
+  /** @type {!PrintPreviewModelElement} */
+  let model;
 
   /** @override */
   setup(function() {
-    PolymerTest.clearBody();
-    model = document.createElement('print-preview-model');
+    document.body.innerHTML = '';
+    model = /** @type {!PrintPreviewModelElement} */ (
+        document.createElement('print-preview-model'));
     document.body.appendChild(model);
 
     model.documentSettings = {
@@ -22,6 +28,8 @@ suite('ModelSettingsPolicyTest', function() {
       isScalingDisabled: false,
       fitToPageScaling: 100,
       pageCount: 3,
+      isPdf: false,
+      isFromArc: false,
       title: 'title',
     };
 
