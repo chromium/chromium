@@ -282,6 +282,10 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
 
   ui::AXTreeID ax_tree_id = rfh->GetAXTreeID();
 
+  // The AXTreeID is not yet ready/set.
+  if (ax_tree_id == ui::AXTreeIDUnknown())
+    return RespondNow(Error("Tab is not ready."));
+
   // This gets removed when the extension process dies.
   AutomationEventRouter::GetInstance()->RegisterListenerForOneTree(
       extension_id(), source_process_id(), ax_tree_id);
