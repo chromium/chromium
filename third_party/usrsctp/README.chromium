@@ -21,4 +21,7 @@ as well as updates and enhancements from the following Internet Drafts:
    draft-iyengar-sctp-cacc-00.txt
 
 Local Modifications:
-Cherry picked d844a690d30ace22de75e8b80d9bb08ae7283795
+Cherry picked:
+d844a690d30ace22de75e8b80d9bb08ae7283795
+355fb576b1a9dfef70fc0e158d66692662baaddc
+7dab23aa0d8db86fedd222a308067439b03fad0f
