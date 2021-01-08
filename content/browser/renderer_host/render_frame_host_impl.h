@@ -2737,11 +2737,21 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // state will be kCreated or kDeleted.
     kNeverCreated = 0,
     // A RenderFrame has been created in the renderer and is still in that
-    // state. The next state will be kDeleted.
+    // state. The next state will be kDeleting.
     kCreated,
-    // A RenderFrame has either been cleanly deleted or its renderer process has
-    // exited or crashed. The next state may be kCreated or the RenderFrameHost
-    // may be destroyed.
+    // A RenderFrame has either
+    // - been cleanly deleted
+    // - its renderer process has exited or crashed
+    // We will call observers of RenderFrameDeleted in this state and this
+    // allows us to CHECK if an observer causes us to attempt to change state
+    // during deletion. See https://crbug.com/1146573. The next state will
+    // be kDeleted and we will move to that before exiting RenderFrameDeleted.
+    kDeleting,
+    // A RenderFrame has either
+    // - been cleanly deleted
+    // - its renderer process has exited or crashed
+    // The next state may be kCreated if the RenderFrameHost is being reused
+    // after a crash or the RenderFrameHost may be destroyed.
     kDeleted,
   };
   RenderFrameState render_frame_state_ = RenderFrameState::kNeverCreated;

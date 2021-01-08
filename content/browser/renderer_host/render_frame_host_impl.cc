@@ -2477,6 +2477,12 @@ void RenderFrameHostImpl::DeleteRenderFrame(FrameDeleteIntention intent) {
 }
 
 void RenderFrameHostImpl::RenderFrameCreated() {
+  // In https://crbug.com/1146573 a WebContentsObserver was causing the frame to
+  // be reinitialized during deletion. It is not valid to re-enter navigation
+  // code like that and it led to an invalid state. This is not a DCHECK because
+  // the corruption will not be visible until later, making the bug very
+  // difficult to understand.
+  CHECK_NE(render_frame_state_, RenderFrameState::kDeleting);
   // We should not create new RenderFrames while our delegate is being destroyed
   // (e.g., via a WebContentsObserver during WebContents shutdown).  This seems
   // to have caused crashes in https://crbug.com/717650.
@@ -2522,17 +2528,25 @@ void RenderFrameHostImpl::RenderFrameCreated() {
 }
 
 void RenderFrameHostImpl::RenderFrameDeleted() {
+  // In https://crbug.com/1146573 a WebContentsObserver was causing the frame to
+  // be reinitialized during deletion. It is not valid to re-enter navigation
+  // code like that and it led to an invalid state. This is not a DCHECK because
+  // the corruption will cause a crash but later, making the bug very
+  // difficult to understand.
+  CHECK_NE(render_frame_state_, RenderFrameState::kDeleting);
   bool was_created = is_render_frame_created();
-  render_frame_state_ = RenderFrameState::kDeleted;
+  render_frame_state_ = RenderFrameState::kDeleting;
 
   // If the current status is different than the new status, the delegate
   // needs to be notified.
   if (was_created) {
     delegate_->RenderFrameDeleted(this);
   }
+
   if (web_ui_) {
     web_ui_->InvalidateMojoConnection();
   }
+  render_frame_state_ = RenderFrameState::kDeleted;
 }
 
 void RenderFrameHostImpl::SwapIn() {
