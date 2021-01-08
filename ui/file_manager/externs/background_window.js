@@ -19,14 +19,5 @@
      * @type {!BackgroundBase}
      */
     this.background;
-
-    /**
-     * @type {!Object}
-     */
-    this.launcher = {};
   }
-  /**
-   * @param {Window} window
-   */
-  registerDialog(window) {}
 }

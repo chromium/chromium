@@ -80,4 +80,21 @@
    * @param {boolean} enable
    */
   forceFileOperationErrorForTest(enable) {}
+
+  /**
+   * Registers a dialog (file picker or save as) in the background page.
+   * Dialogs are opened by the browser directly and should register themselves
+   * in the background page.
+   * @param {!Window} window
+   */
+  registerDialog(window) {}
+
+  /**
+   * Launches a new File Manager window.
+   *
+   * @param {Object=} opt_appState App state.
+   * @return {!Promise<chrome.app.window.AppWindow|string>} Resolved with the
+   *     App ID.
+   */
+  async launchFileManager(opt_appState) {}
 }

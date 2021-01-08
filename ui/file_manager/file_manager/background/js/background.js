@@ -184,6 +184,33 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
   }
 
   /**
+   * Registers dialog window to the background page.
+   *
+   * @param {!Window} dialogWindow Window of the dialog.
+   */
+  registerDialog(dialogWindow) {
+    const id = DIALOG_ID_PREFIX + (nextFileManagerDialogID++);
+    this.dialogs[id] = dialogWindow;
+    if (window.IN_TEST) {
+      dialogWindow.IN_TEST = true;
+    }
+    dialogWindow.addEventListener('pagehide', () => {
+      delete this.dialogs[id];
+    });
+  }
+
+  /**
+   * Launches a new File Manager window.
+   *
+   * @param {Object=} opt_appState App state.
+   * @return {!Promise<chrome.app.window.AppWindow|string>} Resolved with the
+   *     App ID.
+   */
+  async launchFileManager(opt_appState) {
+    return launcher.launchFileManager(opt_appState);
+  }
+
+  /**
    * Opens the volume root (or opt directoryPath) in main UI.
    *
    * @param {!Event} event An event with the volumeId or
@@ -553,21 +580,6 @@ const DIALOG_ID_PREFIX = 'dialog#';
  */
 let nextFileManagerDialogID = 0;
 
-/**
- * Registers dialog window to the background page.
- *
- * @param {!Window} dialogWindow Window of the dialog.
- */
-/* #export */ function registerDialog(dialogWindow) {
-  const id = DIALOG_ID_PREFIX + (nextFileManagerDialogID++);
-  window.background.dialogs[id] = dialogWindow;
-  if (window.IN_TEST) {
-    dialogWindow.IN_TEST = true;
-  }
-  dialogWindow.addEventListener('pagehide', () => {
-    delete window.background.dialogs[id];
-  });
-}
 
 /** @const {!string} */
 const GPLUS_PHOTOS_APP_ORIGIN =
@@ -577,7 +589,8 @@ const GPLUS_PHOTOS_APP_ORIGIN =
  * Singleton instance of Background object.
  * @type {!FileBrowserBackgroundFull}
  */
-window.background = new FileBrowserBackgroundImpl();
+/* #export */ const background = new FileBrowserBackgroundImpl();
+window.background = background;
 
 /**
  * Lastly, end recording of the background page Load.BackgroundScript metric.

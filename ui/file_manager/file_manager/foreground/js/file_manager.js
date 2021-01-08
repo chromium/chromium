@@ -505,7 +505,7 @@ class FileManager extends cr.EventTarget {
    * @param {Object=} appState App state.
    */
   launchFileManager(appState) {
-    this.backgroundPage_.launcher.launchFileManager(appState);
+    this.fileBrowserBackground_.launchFileManager(appState);
   }
 
   /**
@@ -867,7 +867,7 @@ class FileManager extends cr.EventTarget {
     await new Promise(resolve => this.fileBrowserBackground_.ready(resolve));
     loadTimeData.data = this.fileBrowserBackground_.stringData;
     if (util.runningInBrowser()) {
-      this.backgroundPage_.registerDialog(window);
+      this.fileBrowserBackground_.registerDialog(window);
     }
     this.fileOperationManager_ =
         this.fileBrowserBackground_.fileOperationManager;
