@@ -143,7 +143,7 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   base::FilePath google_drive_path_;
 
   // Indicates whether there was a failure to save scanned images.
-  bool save_failed_;
+  bool page_save_failed_;
 
   // The scanned images used to create a multipage PDF.
   std::vector<std::string> scanned_images_;

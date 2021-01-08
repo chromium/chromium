@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,6 +23,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/chromeos/scanning/scanning_type_converters.h"
+#include "chromeos/components/scanning/scanning_uma.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -221,11 +223,21 @@ base::FilePath SavePage(const base::FilePath& scan_to_path,
   return scan_to_path.Append(filename);
 }
 
-// Records the histograms for scan job success and number of pages scanned.
-void RecordScanJobResult(bool success, int num_pages_scanned) {
+// Records the histograms based on the scan job result.
+void RecordScanJobResult(
+    bool success,
+    const base::Optional<scanning::ScanJobFailureReason>& failure_reason,
+    int num_pages_scanned) {
   base::UmaHistogramBoolean("Scanning.ScanJobSuccessful", success);
-  if (success)
+  if (success) {
     base::UmaHistogramCounts100("Scanning.NumPagesScanned", num_pages_scanned);
+    return;
+  }
+
+  if (failure_reason.has_value()) {
+    base::UmaHistogramEnumeration("Scanning.ScanJobFailureReason",
+                                  failure_reason.value());
+  }
 }
 
 }  // namespace
@@ -272,9 +284,18 @@ void ScanService::StartScan(
     mojo::PendingRemote<mojo_ipc::ScanJobObserver> observer,
     StartScanCallback callback) {
   const std::string scanner_name = GetScannerName(scanner_id);
-  if (scanner_name.empty() || !FilePathSupported(settings->scan_to_path)) {
+  if (scanner_name.empty()) {
     std::move(callback).Run(false);
-    RecordScanJobResult(false, /*not used*/ 0);
+    RecordScanJobResult(false, scanning::ScanJobFailureReason::kScannerNotFound,
+                        /*not used*/ 0);
+    return;
+  }
+
+  if (!FilePathSupported(settings->scan_to_path)) {
+    std::move(callback).Run(false);
+    RecordScanJobResult(false,
+                        scanning::ScanJobFailureReason::kUnsupportedScanToPath,
+                        /*not used*/ 0);
     return;
   }
 
@@ -431,25 +452,33 @@ void ScanService::OnCancelCompleted(bool success) {
 }
 
 void ScanService::OnPdfSaved(const bool success) {
-  save_failed_ = !success;
+  page_save_failed_ = !success;
 }
 
 void ScanService::OnPageSaved(const base::FilePath& saved_file_path) {
-  save_failed_ = save_failed_ || saved_file_path.empty();
-  last_scanned_file_path_ = save_failed_ ? base::FilePath() : saved_file_path;
+  page_save_failed_ = page_save_failed_ || saved_file_path.empty();
+  last_scanned_file_path_ =
+      page_save_failed_ ? base::FilePath() : saved_file_path;
 }
 
 void ScanService::OnAllPagesSaved(bool success) {
-  save_failed_ = !success || save_failed_;
-  if (save_failed_)
+  base::Optional<scanning::ScanJobFailureReason> failure_reason = base::nullopt;
+  if (!success) {
+    failure_reason = scanning::ScanJobFailureReason::kUnknownScannerError;
     last_scanned_file_path_.clear();
+  } else if (page_save_failed_) {
+    failure_reason = scanning::ScanJobFailureReason::kSaveToDiskFailed;
+    last_scanned_file_path_.clear();
+  }
 
-  scan_job_observer_->OnScanComplete(!save_failed_, last_scanned_file_path_);
-  RecordScanJobResult(!save_failed_, num_pages_scanned_);
+  scan_job_observer_->OnScanComplete(success && !page_save_failed_,
+                                     last_scanned_file_path_);
+  RecordScanJobResult(success && !page_save_failed_, failure_reason,
+                      num_pages_scanned_);
 }
 
 void ScanService::ClearScanState() {
-  save_failed_ = false;
+  page_save_failed_ = false;
   last_scanned_file_path_.clear();
   scanned_images_.clear();
   num_pages_scanned_ = 0;

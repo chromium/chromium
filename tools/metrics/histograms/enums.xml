@@ -66418,6 +66418,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Launcher"/>
 </enum>
 
+<enum name="ScanJobFailureReason">
+  <int value="0" label="Unknown scanner error"/>
+  <int value="1" label="Scanner not found"/>
+  <int value="2" label="Unsupported Scan To path"/>
+  <int value="3" label="Save to disk failed"/>
+</enum>
+
 <enum name="ScheduledNavigationType">
   <obsolete>
     Deprecated August 2018

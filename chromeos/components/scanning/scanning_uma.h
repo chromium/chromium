@@ -8,14 +8,22 @@
 namespace chromeos {
 namespace scanning {
 
-// These are used in histograms, do not remove/renumber entries. If you're
-// adding to this enum with the intention that it will be logged, update the
-// ScanAppEntryPoint enum listing in
+// The enums below are used in histograms, do not remove/renumber entries. If
+// you're adding to any of these enums, update the corresponding enum listing in
 // tools/metrics/histograms/enums.xml.
+
 enum class ScanAppEntryPoint {
   kSettings = 0,
   kLauncher = 1,
   kMaxValue = kLauncher,
+};
+
+enum class ScanJobFailureReason {
+  kUnknownScannerError = 0,
+  kScannerNotFound = 1,
+  kUnsupportedScanToPath = 2,
+  kSaveToDiskFailed = 3,
+  kMaxValue = kSaveToDiskFailed,
 };
 
 // Records ScanAppEntryPoint histogram value.
