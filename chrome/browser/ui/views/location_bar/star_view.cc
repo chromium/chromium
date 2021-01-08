@@ -74,6 +74,7 @@ void StarView::OnExecuting(PageActionIconView::ExecuteSource execute_source) {
 }
 
 void StarView::ExecuteCommand(ExecuteSource source) {
+  OnExecuting(source);
   if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
     menu_model_ = std::make_unique<StarMenuModel>(
         this, active(), chrome::CanMoveActiveTabToReadLater(browser_),
@@ -85,7 +86,6 @@ void StarView::ExecuteCommand(ExecuteSource source) {
                             views::MenuAnchorPosition::kTopRight,
                             ui::MENU_SOURCE_NONE);
   } else {
-    OnExecuting(source);
     chrome::BookmarkCurrentTab(browser_);
   }
 }
