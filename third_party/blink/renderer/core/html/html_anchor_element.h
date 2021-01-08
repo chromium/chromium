@@ -101,11 +101,6 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   // determined by looking at the presence of required attributes.
   bool HasImpression() const;
 
-  // Returns the WebImpression struct with all data declared by impression
-  // related attributes on |this|. If the impression attributes do not contain
-  // allowed values, base::nullopt is returned.
-  base::Optional<WebImpression> GetImpressionForNavigation() const;
-
   void SendPings(const KURL& destination_url) const;
 
   void Trace(Visitor*) const override;

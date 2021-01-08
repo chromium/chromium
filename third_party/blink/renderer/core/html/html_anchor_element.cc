@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
+#include "third_party/blink/renderer/core/html/conversion_measurement_parsing.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -358,90 +359,6 @@ bool HTMLAnchorElement::HasImpression() const {
          hasAttribute(html_names::kConversiondestinationAttr);
 }
 
-base::Optional<WebImpression> HTMLAnchorElement::GetImpressionForNavigation()
-    const {
-  DCHECK(HasImpression());
-
-  if (!RuntimeEnabledFeatures::ConversionMeasurementEnabled(
-          GetExecutionContext()))
-    return base::nullopt;
-
-  if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kConversionMeasurement)) {
-    String message =
-        "The 'conversion-measurement' feature policy must be enabled to "
-        "declare an impression.";
-    GetExecutionContext()->AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kOther,
-            mojom::blink::ConsoleMessageLevel::kError, message));
-    return base::nullopt;
-  }
-
-  // Conversion measurement is only allowed when both the frame and the main
-  // frame (if different) have a secure origin.
-  LocalFrame* frame = GetDocument().GetFrame();
-  const Frame& main_frame = frame->Tree().Top();
-  if (!main_frame.GetSecurityContext()
-           ->GetSecurityOrigin()
-           ->IsPotentiallyTrustworthy()) {
-    return base::nullopt;
-  }
-  if (!frame->IsMainFrame() && !frame->GetSecurityContext()
-                                    ->GetSecurityOrigin()
-                                    ->IsPotentiallyTrustworthy()) {
-    return base::nullopt;
-  }
-
-  const AtomicString& conversion_destination_string =
-      FastGetAttribute(html_names::kConversiondestinationAttr);
-  scoped_refptr<const SecurityOrigin> conversion_destination =
-      SecurityOrigin::CreateFromString(conversion_destination_string);
-  if (!conversion_destination->IsPotentiallyTrustworthy())
-    return base::nullopt;
-
-  bool impression_data_is_valid = false;
-  uint64_t impression_data = FastGetAttribute(html_names::kImpressiondataAttr)
-                                 .GetString()
-                                 .HexToUInt64Strict(&impression_data_is_valid);
-
-  // Provide a default of 0 if the impression data was not valid.
-  impression_data = impression_data_is_valid ? impression_data : 0UL;
-
-  // Reporting origin is an optional attribute. Reporting origins must be
-  // secure.
-  base::Optional<WebSecurityOrigin> reporting_origin;
-  if (hasAttribute(html_names::kReportingoriginAttr)) {
-    const AtomicString& reporting_origin_string =
-        FastGetAttribute(html_names::kReportingoriginAttr);
-    reporting_origin =
-        SecurityOrigin::CreateFromString(reporting_origin_string);
-
-    if (!reporting_origin->IsPotentiallyTrustworthy())
-      return base::nullopt;
-  }
-
-  // Impression expiry is an optional attribute.
-  base::Optional<base::TimeDelta> expiry;
-  if (hasAttribute(html_names::kImpressionexpiryAttr)) {
-    bool expiry_is_valid = false;
-    uint64_t expiry_milliseconds =
-        FastGetAttribute(html_names::kImpressionexpiryAttr)
-            .GetString()
-            .ToUInt64Strict(&expiry_is_valid);
-    if (expiry_is_valid)
-      expiry = base::TimeDelta::FromMilliseconds(expiry_milliseconds);
-  }
-
-  UseCounter::Count(GetExecutionContext(),
-                    mojom::blink::WebFeature::kConversionAPIAll);
-  UseCounter::Count(GetExecutionContext(),
-                    mojom::blink::WebFeature::kImpressionRegistration);
-
-  return WebImpression{conversion_destination, reporting_origin,
-                       impression_data, expiry};
-}
-
 void HTMLAnchorElement::SendPings(const KURL& destination_url) const {
   const AtomicString& ping_value = FastGetAttribute(html_names::kPingAttr);
   if (ping_value.IsNull() || !GetDocument().GetSettings() ||
@@ -563,7 +480,7 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     // FindOrCreateFrameForNavigation() call, as that call may result in
     // performing a navigation if the call results in creating a new window with
     // noopener set.
-    base::Optional<WebImpression> impression = GetImpressionForNavigation();
+    base::Optional<WebImpression> impression = GetImpressionForAnchor(this);
     if (impression)
       frame_request.SetImpression(*impression);
   }
