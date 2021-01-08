@@ -152,6 +152,7 @@ class ASH_EXPORT ScreenOrientationController
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
 
   // AccelerometerReader::Observer:
+  void OnECLidAngleDriverStatusChanged(bool is_supported) override {}
   void OnAccelerometerUpdated(const AccelerometerUpdate& update) override;
 
   // WindowTreeHostManager::Observer:

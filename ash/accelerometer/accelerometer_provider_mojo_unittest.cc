@@ -32,6 +32,10 @@ constexpr int64_t kFakeSampleData[] = {1, 2, 3};
 
 class FakeObserver : public AccelerometerReader::Observer {
  public:
+  void OnECLidAngleDriverStatusChanged(bool is_supported) override {
+    CHECK(!is_supported_.has_value());
+    is_supported_ = is_supported;
+  }
   void OnAccelerometerUpdated(const AccelerometerUpdate& update) override {
     for (uint32_t index = 0; index < ACCELEROMETER_SOURCE_COUNT; ++index) {
       auto source = static_cast<AccelerometerSource>(index);
@@ -46,6 +50,7 @@ class FakeObserver : public AccelerometerReader::Observer {
     update_ = update;
   }
 
+  base::Optional<bool> is_supported_;
   AccelerometerUpdate update_;
 };
 
@@ -103,7 +108,8 @@ class AccelerometerProviderMojoTest : public ::testing::Test {
   std::unique_ptr<chromeos::sensors::FakeSensorHalServer> sensor_hal_server_;
   scoped_refptr<AccelerometerProviderMojo> provider_;
 
-  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment{
+      base::test::TaskEnvironment::MainThreadType::UI};
 };
 
 TEST_F(AccelerometerProviderMojoTest, CheckNoScale) {
@@ -117,6 +123,8 @@ TEST_F(AccelerometerProviderMojoTest, CheckNoScale) {
   // Wait until initialization failed.
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_TRUE(observer_.is_supported_.has_value());
+  EXPECT_FALSE(observer_.is_supported_.value());
   EXPECT_EQ(provider_->GetInitializationStateForTesting(), State::FAILED);
 }
 
@@ -131,6 +139,8 @@ TEST_F(AccelerometerProviderMojoTest, CheckNoLocation) {
   // Wait until initialization failed.
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_TRUE(observer_.is_supported_.has_value());
+  EXPECT_FALSE(observer_.is_supported_.value());
   EXPECT_EQ(provider_->GetInitializationStateForTesting(), State::SUCCESS);
 }
 
@@ -141,6 +151,8 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesOfOneAccel) {
   // Wait until a sample is received.
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_TRUE(observer_.is_supported_.has_value());
+  EXPECT_FALSE(observer_.is_supported_.value());
   EXPECT_EQ(provider_->GetInitializationStateForTesting(), State::SUCCESS);
 
   EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
@@ -159,6 +171,8 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesWithNoLidAngle) {
   // Wait until samples are received.
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_TRUE(observer_.is_supported_.has_value());
+  EXPECT_FALSE(observer_.is_supported_.value());
   EXPECT_EQ(provider_->GetInitializationStateForTesting(), State::SUCCESS);
 
   EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
@@ -190,11 +204,13 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesWithLidAngle) {
   chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
       sensor_hal_server_->PassRemote());
 
-  // Wait until all setups are finished and the one time read is done.
+  // Wait until all setups are finished and no samples updated.
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_TRUE(observer_.is_supported_.has_value());
+  EXPECT_TRUE(observer_.is_supported_.value());
   EXPECT_EQ(provider_->GetInitializationStateForTesting(), State::SUCCESS);
-  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
   EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
 
   observer_.update_.Reset();

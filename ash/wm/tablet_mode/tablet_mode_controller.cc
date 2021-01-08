@@ -627,27 +627,27 @@ void TabletModeController::OnChromeTerminating() {
   }
 }
 
+void TabletModeController::OnECLidAngleDriverStatusChanged(bool is_supported) {
+  is_ec_lid_angle_driver_supported_ = is_supported;
+
+  if (!is_supported)
+    return;
+
+  // When ChromeOS EC lid angle driver is supported, EC can handle lid angle
+  // calculation, thus Chrome side lid angle calculation is disabled. In this
+  // case, TabletModeController no longer listens to accelerometer samples.
+
+  // Reset lid angle that might be calculated before lid angle driver is
+  // read.
+  lid_angle_ = 0.f;
+  can_detect_lid_angle_ = false;
+  if (record_lid_angle_timer_.IsRunning())
+    record_lid_angle_timer_.Stop();
+  AccelerometerReader::GetInstance()->RemoveObserver(this);
+}
+
 void TabletModeController::OnAccelerometerUpdated(
     const AccelerometerUpdate& update) {
-  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::UNKNOWN) {
-    ec_lid_angle_driver_status_ =
-        AccelerometerReader::GetInstance()->GetECLidAngleDriverStatus();
-  }
-
-  // When ChromeOS EC lid angle driver is present, EC can handle lid angle
-  // calculation, thus Chrome side lid angle calculation is disabled. In this
-  // case, TabletModeController no longer listens to accelerometer events.
-  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED) {
-    // Reset lid angle that might be calculated before lid angle driver is
-    // read.
-    lid_angle_ = 0.f;
-    can_detect_lid_angle_ = false;
-    if (record_lid_angle_timer_.IsRunning())
-      record_lid_angle_timer_.Stop();
-    AccelerometerReader::GetInstance()->RemoveObserver(this);
-    return;
-  }
-
   have_seen_accelerometer_data_ = true;
   can_detect_lid_angle_ = update.has(ACCELEROMETER_SOURCE_SCREEN) &&
                           update.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
@@ -1300,7 +1300,7 @@ bool TabletModeController::ShouldUiBeInTabletMode() const {
 
   const bool can_enter_tablet_mode =
       IsBoardTypeMarkedAsTabletCapable() && HasActiveInternalDisplay() &&
-      (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED ||
+      (is_ec_lid_angle_driver_supported_.value_or(false) ||
        have_seen_accelerometer_data_);
 
   return !has_internal_pointing_device_ && can_enter_tablet_mode &&

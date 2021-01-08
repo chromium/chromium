@@ -20,7 +20,6 @@
 #include "base/location.h"
 #include "base/memory/singleton.h"
 #include "base/numerics/math_constants.h"
-#include "base/observer_list_threadsafe.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -142,8 +141,7 @@ bool ReadFileToDouble(const base::FilePath& path, double* value) {
 
 }  // namespace
 
-AccelerometerFileReader::AccelerometerFileReader()
-    : ui_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+AccelerometerFileReader::AccelerometerFileReader() = default;
 
 void AccelerometerFileReader::PrepareAndInitialize() {
   DCHECK(base::CurrentUIThread::IsSet());
@@ -165,62 +163,11 @@ void AccelerometerFileReader::PrepareAndInitialize() {
   TryScheduleInitialize();
 }
 
-void AccelerometerFileReader::AddObserver(
-    AccelerometerReader::Observer* observer) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(blocking_task_runner_);
-  observers_.AddObserver(observer);
-
-  if (initialization_state_ != State::SUCCESS)
-    return;
-
-  blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&AccelerometerFileReader::ReadSample, this));
-}
-
-void AccelerometerFileReader::RemoveObserver(
-    AccelerometerReader::Observer* observer) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  observers_.RemoveObserver(observer);
-}
-
-void AccelerometerFileReader::StartListenToTabletModeController() {
-  DCHECK(base::CurrentUIThread::IsSet());
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
-}
-
-void AccelerometerFileReader::StopListenToTabletModeController() {
-  DCHECK(base::CurrentUIThread::IsSet());
-  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
-}
-
-void AccelerometerFileReader::SetEmitEvents(bool emit_events) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  emit_events_ = emit_events;
-}
-
-void AccelerometerFileReader::EnableAccelerometerReading() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (read_refresh_timer_.IsRunning())
-    return;
-
-  read_refresh_timer_.Start(FROM_HERE, kDelayBetweenReads, this,
-                            &AccelerometerFileReader::ReadSample);
-}
-
-void AccelerometerFileReader::DisableAccelerometerReading() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!read_refresh_timer_.IsRunning())
-    return;
-
-  read_refresh_timer_.Stop();
-}
-
 void AccelerometerFileReader::TriggerRead() {
   DCHECK(base::CurrentUIThread::IsSet());
   switch (initialization_state_) {
     case State::SUCCESS:
-      if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED) {
+      if (GetECLidAngleDriverStatus() == ECLidAngleDriverStatus::SUPPORTED) {
         blocking_task_runner_->PostTask(
             FROM_HERE,
             base::BindOnce(&AccelerometerFileReader::EnableAccelerometerReading,
@@ -242,36 +189,12 @@ void AccelerometerFileReader::TriggerRead() {
 void AccelerometerFileReader::CancelRead() {
   DCHECK(base::CurrentUIThread::IsSet());
   if (initialization_state_ == State::SUCCESS &&
-      ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED) {
+      GetECLidAngleDriverStatus() == ECLidAngleDriverStatus::SUPPORTED) {
     blocking_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&AccelerometerFileReader::DisableAccelerometerReading,
                        this));
   }
-}
-
-void AccelerometerFileReader::OnTabletPhysicalStateChanged() {
-  DCHECK(base::CurrentUIThread::IsSet());
-
-  // When CrOS EC lid angle driver is not present, accelerometer read is always
-  // ON and can't be tuned. Thus AccelerometerFileReader no longer listens to
-  // tablet mode event.
-  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::NOT_SUPPORTED) {
-    tablet_mode_controller->RemoveObserver(this);
-    return;
-  }
-
-  // Auto rotation is turned on when the device is physically used as a tablet
-  // (i.e. flipped or detached), regardless of the UI state (i.e. whether tablet
-  // mode is turned on or off).
-  const bool is_auto_rotation_on =
-      tablet_mode_controller->is_in_tablet_physical_state();
-
-  if (is_auto_rotation_on)
-    TriggerRead();
-  else
-    CancelRead();
 }
 
 AccelerometerFileReader::InitializationResult::InitializationResult()
@@ -465,9 +388,9 @@ void AccelerometerFileReader::SetStatesWithInitializationResult(
     case State::SUCCESS:
       DCHECK_NE(result.ec_lid_angle_driver_status,
                 ECLidAngleDriverStatus::UNKNOWN);
-      ec_lid_angle_driver_status_ = result.ec_lid_angle_driver_status;
+      SetECLidAngleDriverStatus(result.ec_lid_angle_driver_status);
 
-      if (ec_lid_angle_driver_status_ ==
+      if (GetECLidAngleDriverStatus() ==
           ECLidAngleDriverStatus::NOT_SUPPORTED) {
         // If ChromeOS lid angle driver is not present, start accelerometer read
         // and read is always on.
@@ -593,6 +516,20 @@ bool AccelerometerFileReader::InitializeLegacyAccelerometers(
   return true;
 }
 
+void AccelerometerFileReader::EnableAccelerometerReading() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (read_refresh_timer_.IsRunning())
+    return;
+
+  read_refresh_timer_.Start(FROM_HERE, kDelayBetweenReads, this,
+                            &AccelerometerFileReader::ReadSample);
+}
+
+void AccelerometerFileReader::DisableAccelerometerReading() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  read_refresh_timer_.Stop();
+}
+
 void AccelerometerFileReader::ReadSample() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -640,19 +577,8 @@ void AccelerometerFileReader::ReadSample() {
 
   ui_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&AccelerometerFileReader::NotifyObserversWithUpdate, this,
+      base::BindOnce(&AccelerometerFileReader::NotifyAccelerometerUpdated, this,
                      update));
-}
-
-void AccelerometerFileReader::NotifyObserversWithUpdate(
-    const AccelerometerUpdate& update) {
-  DCHECK(base::CurrentUIThread::IsSet());
-
-  if (!emit_events_)
-    return;
-
-  for (auto& observer : observers_)
-    observer.OnAccelerometerUpdated(update);
 }
 
 }  // namespace ash
