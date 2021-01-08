@@ -1705,8 +1705,32 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityIframe) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityIframeAriaHidden) {
+  RunHtmlTest(FILE_PATH_LITERAL("iframe-aria-hidden.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityIframeCreate) {
+  RunHtmlTest(FILE_PATH_LITERAL("iframe-create.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityIframeCreateEmpty) {
+  RunHtmlTest(FILE_PATH_LITERAL("iframe-create-empty.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityIframeEmptyPositioned) {
+  RunHtmlTest(FILE_PATH_LITERAL("iframe-empty-positioned.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityIframeScrollable) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-scrollable.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityIframeSrcdocChanged) {
+  RunHtmlTest(FILE_PATH_LITERAL("iframe-srcdoc-changed.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

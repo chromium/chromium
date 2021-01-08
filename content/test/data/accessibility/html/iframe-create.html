@@ -1,0 +1,11 @@
+<!--
+@WIN-ALLOW:ia2_hypertext=*
+@WAIT-FOR:done
+-->
+<body>
+</body>
+<script>
+  const iframe = document.createElement('iframe');
+  iframe.srcdoc = '<a href="/">done</a>';
+  document.body.appendChild(iframe);
+</script>

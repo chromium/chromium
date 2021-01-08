@@ -1,0 +1,4 @@
+ROLE_SYSTEM_DOCUMENT name='done' READONLY FOCUSABLE ia2_hypertext='<obj0>'
+++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
+++++IA2_ROLE_INTERNAL_FRAME ia2_hypertext='<obj0>'
+++++++ROLE_SYSTEM_DOCUMENT value='about:srcdoc' READONLY FOCUSABLE
