@@ -194,6 +194,10 @@ class UiControllerAndroid : public ControllerObserver {
   void OnCloseButtonClicked(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller);
+  void OnFeedbackButtonClicked(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      jint actionIndex);
   void OnKeyboardVisibilityChanged(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,

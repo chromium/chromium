@@ -117,6 +117,7 @@ ActionResponseType GetActionResponseType(const ProcessedActionProto& proto) {
     case HIGHLIGHTED_ACTION:
     case NORMAL_ACTION:
     case CANCEL_ACTION:
+    case FEEDBACK_ACTION:
       return ActionResponseType::UNKNOWN;
     case CLOSE_ACTION:
       return ActionResponseType::PROMPT_CLOSE;
