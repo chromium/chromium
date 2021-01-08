@@ -152,8 +152,8 @@ void Decryptor::RecordKeyPair(
                        " actual=", base::NumberToString(public_key.size())}));
             } else {
               // Assign a random number to be public key id for testing purposes
-              // only (in production it will be Java Fingerprint2011 which is
-              // 'long').
+              // only (in production it will be retrieved from the server as
+              // 'int32').
               Encryptor::PublicKeyId public_key_id;
               base::RandBytes(&public_key_id, sizeof(public_key_id));
               if (!decryptor->keys_.emplace(public_key_id, key_info).second) {

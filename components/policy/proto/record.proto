@@ -116,7 +116,8 @@ message SignedEncryptionInfo {
 
   // Public key id (required).
   // Identifies private key matching |public_asymmetric_key| for the server.
-  optional uint64 public_key_id = 2;
+  // Matches Encryptor::PublicKeyId.
+  optional int32 public_key_id = 2;
 
   // Signature of |public_asymmetric_key| (required).
   // Verified by client against a well-known signature.
