@@ -2172,7 +2172,8 @@
     },
     {
       name: "WebHID",
-      status: {"Android": "", "default": "stable"},
+      origin_trial_feature_name: "WebHID",
+      status: {"Android": "", "default": "experimental"},
     },
     {
       name: "WebID",

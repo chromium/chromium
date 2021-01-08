@@ -2183,40 +2183,6 @@ interface Gyroscope : Sensor
     getter y
     getter z
     method constructor
-interface HID : EventTarget
-    attribute @@toStringTag
-    getter onconnect
-    getter ondisconnect
-    method constructor
-    method getDevices
-    method requestDevice
-    setter onconnect
-    setter ondisconnect
-interface HIDConnectionEvent : Event
-    attribute @@toStringTag
-    getter device
-    method constructor
-interface HIDDevice : EventTarget
-    attribute @@toStringTag
-    getter collections
-    getter oninputreport
-    getter opened
-    getter productId
-    getter productName
-    getter vendorId
-    method close
-    method constructor
-    method open
-    method receiveFeatureReport
-    method sendFeatureReport
-    method sendReport
-    setter oninputreport
-interface HIDInputReportEvent : Event
-    attribute @@toStringTag
-    getter data
-    getter device
-    getter reportId
-    method constructor
 interface HTMLAllCollection
     attribute @@toStringTag
     getter length
@@ -4581,7 +4547,6 @@ interface Navigator
     getter doNotTrack
     getter geolocation
     getter hardwareConcurrency
-    getter hid
     getter keyboard
     getter language
     getter languages
