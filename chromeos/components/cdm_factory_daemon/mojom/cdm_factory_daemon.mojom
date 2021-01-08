@@ -9,7 +9,7 @@
 // interface can also be used to connect directly to the OEMCrypto
 // implementation for ARC.
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 module chromeos.cdm.mojom;
 
@@ -22,20 +22,23 @@ import "components/arc/mojom/protected_buffer_manager.mojom";
 // Next Method ID: 2
 interface CdmFactory {
   // Deprecated, do not use.
-  CreateCdmDeprecated@0(
-      pending_associated_remote<ContentDecryptionModuleClient> client,
-      pending_associated_remote<CdmStorage> storage,
-      pending_associated_receiver<ContentDecryptionModule> cdm);
-
-  // Creates a new ContentDecryptionModule instance with the corresponding
-  // client, remote storage implementation and output protection. Use an
-  // associated interface to ensure ordering and that all become invalidated at
-  // the same time.
   [MinVersion=1]
-  CreateCdm@1(pending_associated_remote<ContentDecryptionModuleClient> client,
+  CreateCdmDeprecated@1(
+              pending_associated_remote<ContentDecryptionModuleClient> client,
               pending_associated_remote<CdmStorage> storage,
               pending_associated_receiver<ContentDecryptionModule> cdm,
               pending_remote<OutputProtection> output_protection);
+
+  // Creates a new ContentDecryptionModule instance for a |host| with the
+  // corresponding |client|, remote |storage| implementation and
+  // |output_protection|. Use an associated interface to ensure ordering and
+  // that all become invalidated at the same time.
+  [MinVersion=3]
+  CreateCdm@2(pending_associated_remote<ContentDecryptionModuleClient> client,
+              pending_associated_remote<CdmStorage> storage,
+              pending_remote<OutputProtection> output_protection,
+              string host,
+              pending_associated_receiver<ContentDecryptionModule> cdm);
 };
 
 // Next Method ID: 5

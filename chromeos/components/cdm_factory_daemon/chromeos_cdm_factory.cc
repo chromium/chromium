@@ -227,11 +227,14 @@ void ChromeOsCdmFactory::CreateCdm(
           &GetOutputProtectionOnTaskRunner,
           output_protection_remote.InitWithNewPipeAndPassReceiver()));
 
+  url::Origin cdm_origin;
+  frame_interfaces_->GetCdmOrigin(&cdm_origin);
+
   // Now create the remote CDM instance that links everything up.
-  remote_factory_->CreateCdm(cdm->GetClientInterface(),
-                             std::move(storage_remote),
-                             std::move(cros_cdm_pending_receiver),
-                             std::move(output_protection_remote));
+  remote_factory_->CreateCdm(
+      cdm->GetClientInterface(), std::move(storage_remote),
+      std::move(output_protection_remote), cdm_origin.host(),
+      std::move(cros_cdm_pending_receiver));
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(cdm_created_cb), std::move(cdm), ""));
