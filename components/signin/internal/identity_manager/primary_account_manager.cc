@@ -328,7 +328,6 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
   if (primary_account_info().IsEmpty()) {
     return;
   }
-
   // TODO(crbug.com/887756): Consider moving this higher up, or document why
   // the above blocks are exempt from the |signout_decision| early return.
   if (signout_decision == SigninClient::SignoutDecision::DISALLOW_SIGNOUT) {
@@ -351,6 +350,12 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
               kPrimaryAccountManager_ClearAccount);
       break;
     case RemoveAccountsOption::kKeepAllAccounts:
+      if (previous_state.consent_level == signin::ConsentLevel::kNotRequired) {
+        // Nothing to update as the primary account is already at kNotRequired
+        // consent level. Prefer returning to avoid firing useless
+        // OnPrimaryAccountChanged() notifications.
+        return;
+      }
       SetPrimaryAccountInternal(primary_account_info(),
                                 /*consented_to_sync=*/false);
       break;

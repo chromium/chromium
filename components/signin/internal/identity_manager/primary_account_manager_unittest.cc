@@ -43,9 +43,7 @@ class PrimaryAccountManagerTest : public testing::Test,
       : test_signin_client_(&user_prefs_),
         token_service_(
             &user_prefs_,
-            std::make_unique<FakeProfileOAuth2TokenServiceDelegate>()),
-        num_successful_signins_(0),
-        num_unconsented_account_changed_(0) {
+            std::make_unique<FakeProfileOAuth2TokenServiceDelegate>()) {
     AccountFetcherService::RegisterPrefs(user_prefs_.registry());
     AccountTrackerService::RegisterPrefs(user_prefs_.registry());
     ProfileOAuth2TokenService::RegisterProfilePrefs(user_prefs_.registry());
@@ -135,7 +133,7 @@ class PrimaryAccountManagerTest : public testing::Test,
         num_successful_signins_++;
         break;
       case signin::PrimaryAccountChangeEvent::Type::kCleared:
-        // ignored
+        num_successful_signouts_++;
         break;
       case signin::PrimaryAccountChangeEvent::Type::kNone:
         break;
@@ -163,8 +161,9 @@ class PrimaryAccountManagerTest : public testing::Test,
   std::unique_ptr<PrimaryAccountManager> manager_;
   std::vector<std::string> oauth_tokens_fetched_;
   std::vector<std::string> cookies_;
-  int num_successful_signins_;
-  int num_unconsented_account_changed_;
+  int num_successful_signins_{0};
+  int num_successful_signouts_{0};
+  int num_unconsented_account_changed_{0};
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -176,6 +175,7 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
       account_tracker()->GetAccountInfo(main_account_id));
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
                                 signin_metrics::SignoutDelete::IGNORE_METRIC);
+  EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(
       manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email.empty());
@@ -211,6 +211,7 @@ TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
                                 signin_metrics::SignoutDelete::IGNORE_METRIC);
 
   // Tokens are revoked.
+  EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(token_service_.GetAccounts().empty());
 }
@@ -229,10 +230,12 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
   signin_client()->set_is_signout_allowed(false);
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
                                 signin_metrics::SignoutDelete::IGNORE_METRIC);
+  EXPECT_EQ(0, num_successful_signouts_);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   signin_client()->set_is_signout_allowed(true);
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
                                 signin_metrics::SignoutDelete::IGNORE_METRIC);
+  EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 }
 
@@ -281,6 +284,26 @@ TEST_F(PrimaryAccountManagerTest, ProhibitedAfterStartup) {
             manager_->GetPrimaryAccountId(ConsentLevel::kSync));
 }
 #endif
+
+// Regression test for https://crbug.com/1155519.
+TEST_F(PrimaryAccountManagerTest, NoopSignOutDoesNotNotifyObservers) {
+  CreatePrimaryAccountManager();
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
+
+  CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
+  CoreAccountInfo account_info = account_tracker()->GetAccountInfo(account_id);
+  manager_->SetUnconsentedPrimaryAccountInfo(account_info);
+  EXPECT_EQ(1, num_unconsented_account_changed_);
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
+
+  manager_->RevokeSyncConsent(signin_metrics::SIGNOUT_TEST,
+                              signin_metrics::SignoutDelete::IGNORE_METRIC);
+
+  // Since there was no sync consent, observers shouldn't be notified.
+  EXPECT_EQ(0, num_successful_signouts_);
+  EXPECT_EQ(1, num_unconsented_account_changed_);
+}
 
 TEST_F(PrimaryAccountManagerTest, SignIn) {
   CreatePrimaryAccountManager();
@@ -472,6 +495,7 @@ TEST_F(PrimaryAccountManagerTest, SetUnconsentedPrimaryAccountInfo) {
   account_info.email = "user@gmail.com";
   manager_->SetUnconsentedPrimaryAccountInfo(account_info);
   EXPECT_EQ(0, num_successful_signins_);
+  EXPECT_EQ(0, num_successful_signouts_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
   EXPECT_EQ(account_info,
             manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired));
@@ -481,6 +505,7 @@ TEST_F(PrimaryAccountManagerTest, SetUnconsentedPrimaryAccountInfo) {
   // Set the same account again.
   manager_->SetUnconsentedPrimaryAccountInfo(account_info);
   EXPECT_EQ(0, num_successful_signins_);
+  EXPECT_EQ(0, num_successful_signouts_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
   EXPECT_EQ(account_info,
             manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired));
@@ -492,6 +517,7 @@ TEST_F(PrimaryAccountManagerTest, SetUnconsentedPrimaryAccountInfo) {
   account_info.email = "us.er@gmail.com";
   manager_->SetUnconsentedPrimaryAccountInfo(account_info);
   EXPECT_EQ(0, num_successful_signins_);
+  EXPECT_EQ(0, num_successful_signouts_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
   EXPECT_EQ(account_info,
             manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired));
@@ -501,6 +527,7 @@ TEST_F(PrimaryAccountManagerTest, SetUnconsentedPrimaryAccountInfo) {
   // Clear it.
   manager_->SetUnconsentedPrimaryAccountInfo(CoreAccountInfo());
   EXPECT_EQ(0, num_successful_signins_);
+  EXPECT_EQ(0, num_successful_signouts_);
   EXPECT_EQ(2, num_unconsented_account_changed_);
   EXPECT_EQ(CoreAccountInfo(),
             manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired));
@@ -517,6 +544,7 @@ TEST_F(PrimaryAccountManagerTest, RevokeSyncConsent) {
 
   manager_->RevokeSyncConsent(signin_metrics::ProfileSignout::SIGNOUT_TEST,
                               signin_metrics::SignoutDelete::IGNORE_METRIC);
+  EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
   EXPECT_EQ(
@@ -534,6 +562,7 @@ TEST_F(PrimaryAccountManagerTest, ClearPrimaryAccount) {
 
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::SIGNOUT_TEST,
                                 signin_metrics::SignoutDelete::IGNORE_METRIC);
+  EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
 }
