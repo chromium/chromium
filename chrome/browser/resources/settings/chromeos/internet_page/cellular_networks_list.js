@@ -104,6 +104,15 @@ Polymer({
     shouldShowEidPopup_: {
       type: Boolean,
       value: false,
+    },
+
+    /**
+     * Euicc object representing the active euicc_ module on the device
+     * @private {?chromeos.cellularSetup.mojom.EuiccRemote}
+     */
+    euicc_: {
+      type: Object,
+      value: null,
     }
   },
 
@@ -156,13 +165,12 @@ Polymer({
         .getAvailableEuiccs()
         .then(response => {
           if (response.euiccs.length > 0) {
-            return this.fetchESimPendingProfileListForEuicc_(
-                response.euiccs[0]);
+            // Use first available euicc as current. Only single Euicc modules are
+            // currently supported.
+            this.euicc_ = response.euiccs[0];
+            return this.fetchESimPendingProfileListForEuicc_(this.euicc_);
           }
-          throw new Error('No EUICCs available.');
-        })
-        .catch(error => {
-          console.error(error);
+          this.euicc_ = null;
         });
   },
 

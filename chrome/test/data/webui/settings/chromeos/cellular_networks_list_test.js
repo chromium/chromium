@@ -32,7 +32,9 @@ suite('CellularNetworkList', function() {
 
     eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
     cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
+  });
 
+  function init() {
     cellularNetworkList = document.createElement('cellular-networks-list');
     // iron-list will not create list items if the container of the list is of
     // size zero.
@@ -40,7 +42,7 @@ suite('CellularNetworkList', function() {
     cellularNetworkList.style.width = '100%';
     document.body.appendChild(cellularNetworkList);
     Polymer.dom.flush();
-  });
+  }
 
   function setNetworksForTest(type, networks) {
     mojoApi_.resetForTest();
@@ -57,6 +59,8 @@ suite('CellularNetworkList', function() {
   }
 
   test('Tether, cellular and eSIM profiles', async () => {
+    init();
+
     const eSimNetwork1 = OncMojo.getDefaultNetworkState(
         mojom.NetworkType.kCellular, 'cellular_esim1');
     const eSimNetwork2 = OncMojo.getDefaultNetworkState(
@@ -102,10 +106,12 @@ suite('CellularNetworkList', function() {
   test(
       'Fire show cellular setup event on eSim/psim no network link click',
       async () => {
+        eSimManagerRemote.addEuiccForTest(0);
+        init();
+
         setNetworksForTest(mojom.NetworkType.kCellular, [
           OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
         ]);
-        eSimManagerRemote.addEuiccForTest(0);
         Polymer.dom.flush();
 
         await flushAsync();
@@ -139,8 +145,8 @@ suite('CellularNetworkList', function() {
       });
 
   test('Show EID and QR code popup', async () => {
-    eSimManagerRemote.addEuiccForTest(0);
-
+    eSimManagerRemote.addEuiccForTest(1);
+    init();
     let eidPopup = cellularNetworkList.$$('.eid-popup');
     assertFalse(!!eidPopup);
     const eidPopupBtn = cellularNetworkList.$$('#eidPopupButton');
@@ -155,6 +161,7 @@ suite('CellularNetworkList', function() {
 
   test('Install pending eSIM profile', async () => {
     eSimManagerRemote.addEuiccForTest(1);
+    init();
     await flushAsync();
 
     let eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
@@ -177,4 +184,16 @@ suite('CellularNetworkList', function() {
                                     .shadowRoot.querySelector('a');
     assertTrue(!!esimNoNetworkAnchor);
   });
+  test('Hide esim section when no EUICC is found', async () => {
+    setNetworksForTest(mojom.NetworkType.kCellular, [
+      OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
+    ]);
+    init();
+    Polymer.dom.flush();
+    await flushAsync();
+    const esimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+
+    assertFalse(!!esimNetworkList);
+  });
+
 });

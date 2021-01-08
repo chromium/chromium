@@ -68,43 +68,45 @@
       }
 
     </style>
-    <div class="cellular-network-list-header esim-list-header flex">
-      <div class="esim-list-title">$i18n{cellularNetworkEsimLabel}</div>
-      <div class="flex-column">
-        <cr-icon-button
-            id="eidPopupButton"
-            iron-icon="cr:info-outline"
-            title="$i18n{showEidPopupButtonLabel}"
-            aria-label="$i18n{showEidPopupButtonLabel}"
-            on-click="toggleEidPopup_">
-        </cr-icon-button>
-        <template is="dom-if" if="[[shouldShowEidPopup_]]" restamp>
-          <cellular-eid-popup class="eid-popup">
-          </cellular-eid-popup>
-        </template>
+    <template is="dom-if" if="[[!!euicc_]]" restamp>
+      <div class="cellular-network-list-header esim-list-header flex">
+        <div class="esim-list-title">$i18n{cellularNetworkEsimLabel}</div>
+        <div class="flex-column">
+          <cr-icon-button
+              id="eidPopupButton"
+              iron-icon="cr:info-outline"
+              title="$i18n{showEidPopupButtonLabel}"
+              aria-label="$i18n{showEidPopupButtonLabel}"
+              on-click="toggleEidPopup_">
+          </cr-icon-button>
+          <template is="dom-if" if="[[shouldShowEidPopup_]]" restamp>
+            <cellular-eid-popup class="eid-popup">
+            </cellular-eid-popup>
+          </template>
+        </div>
       </div>
-    </div>
-    <template is="dom-if"
-        if="[[shouldShowNetworkSublist_(eSimNetworks_, eSimPendingProfileItems_)]]" restamp>
-      <div class="cellular-network-content">
-        <network-list id="esimNetworkList" show-buttons
-            show-technology-badge="[[showTechnologyBadge]]"
-            networks="[[eSimNetworks_]]"
-            custom-items="[[eSimPendingProfileItems_]]"
-            device-state="[[deviceState]]">
-        </network-list>
-      </div>
-    </template>
-    <template
-        is="dom-if"
-        if="[[!shouldShowNetworkSublist_(eSimNetworks_, eSimPendingProfileItems_)]]" restamp>
-      <div id="eSimNoNetworkFound"
-          class="cellular-network-content cellular-not-setup">
-        <settings-localized-link
-            on-link-clicked="onEsimLearnMoreClicked_"
-            localized-string="$i18n{eSimNetworkNotSetup}">
-        </settings-localized-link>
-      </div>
+      <template is="dom-if"
+          if="[[shouldShowNetworkSublist_(eSimNetworks_, eSimPendingProfileItems_)]]" restamp>
+        <div class="cellular-network-content">
+          <network-list id="esimNetworkList" show-buttons
+              show-technology-badge="[[showTechnologyBadge]]"
+              networks="[[eSimNetworks_]]"
+              custom-items="[[eSimPendingProfileItems_]]"
+              device-state="[[deviceState]]">
+          </network-list>
+        </div>
+      </template>
+      <template
+          is="dom-if"
+          if="[[!shouldShowNetworkSublist_(eSimNetworks_, eSimPendingProfileItems_)]]" restamp>
+        <div id="eSimNoNetworkFound"
+            class="cellular-network-content cellular-not-setup">
+          <settings-localized-link
+              on-link-clicked="onEsimLearnMoreClicked_"
+              localized-string="$i18n{eSimNetworkNotSetup}">
+          </settings-localized-link>
+        </div>
+      </template>
     </template>
     <div class="cellular-network-list-header">
       $i18n{cellularNetworkPsimLabel}
