@@ -1,12 +1,3 @@
-<!doctype html>
-<!-- Originally developed by Aryeh Gregor, funded by Google.  Copyright belongs
-to Google. -->
-<title>atob()/btoa() tests</title>
-<meta charset=utf-8>
-<div id=log></div>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script>
 /**
  * btoa() as defined by the HTML5 spec, which mostly just references RFC4648.
  */
@@ -160,9 +151,9 @@ function runAtobTests(tests) {
           output = allTests[i][1];
     test(() => {
       if(output === null) {
-        assert_throws_dom("InvalidCharacterError", () => window.atob(input));
+        assert_throws_dom("InvalidCharacterError", () => globalThis.atob(input));
       } else {
-        const result = window.atob(input);
+        const result = globalThis.atob(input);
         for(let ii = 0; ii < output.length; ii++) {
           assert_equals(result.charCodeAt(ii), output[ii]);
         }
@@ -170,4 +161,3 @@ function runAtobTests(tests) {
     }, "atob(" + format_value(input) + ")");
   }
 }
-</script>

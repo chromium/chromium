@@ -274,7 +274,7 @@ GENERATE_TESTS: html/syntax/parsing/template/clearing-the-stack-back-to-a-given-
 GENERATE_TESTS: html/syntax/parsing/template/clearing-the-stack-back-to-a-given-context/clearing-stack-back-to-a-table-row-context.html
 GENERATE_TESTS: html/syntax/parsing/template/creating-an-element-for-the-token/template-owner-document.html
 GENERATE_TESTS: html/syntax/serializing-html-fragments/serializing.html
-GENERATE_TESTS: html/webappapis/atob/base64.html
+GENERATE_TESTS: html/webappapis/atob/base64.any.js
 GENERATE_TESTS: mediacapture-fromelement/capture.html
 GENERATE_TESTS: mediacapture-fromelement/creation.html
 GENERATE_TESTS: mediacapture-fromelement/ended.html

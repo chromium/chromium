@@ -234672,6 +234672,10 @@
         ]
        },
        "unhandled-promise-rejections": {
+        "promise-rejection-event-during-parse-expected.txt": [
+         "89c041abb5d763c4a2c2468a412619eb5fac0a4f",
+         []
+        ],
         "support": {
          "promise-access-control.py": [
           "cf8ed5e49244a614dbe44acf2dc9146629e79290",
@@ -236808,7 +236812,7 @@
     ]
    },
    "lint.ignore": [
-    "049d4f81235cbe0538f41e7066c9cd98405b6a68",
+    "31cb00022d3002508f794a29841efd28b0639a4b",
     []
    ],
    "loading": {
@@ -301466,6 +301470,13 @@
        {}
       ]
      ],
+     "highlight-pseudos-computed.html": [
+      "ec3532db6a9f47965fb4819b5cfcbd3e55157f5a",
+      [
+       null,
+       {}
+      ]
+     ],
      "idlharness.html": [
       "514d31f6b39ef066df52c113e68232119cb6927d",
       [
@@ -301534,6 +301545,13 @@
       ]
      ],
      "parsing": {
+      "highlight-pseudos.html": [
+       "aa3c4e20aa2d15b267cddfb76163d8edf9ff03c8",
+       [
+        null,
+        {}
+       ]
+      ],
       "marker-supported-properties-in-animation.html": [
        "df0e9bc6d34b3e8828d886bbe7ad3359f4178756",
        [
@@ -301548,13 +301566,6 @@
         {}
        ]
       ],
-      "target-text.html": [
-       "37cbdd4c15aedaa09d62af71545b7d9760a207ff",
-       [
-        null,
-        {}
-       ]
-      ],
       "tree-abiding-pseudo-elements.html": [
        "05c23a3bc143ce2a005b3686af2eae2cb60cb7ba",
        [
@@ -301563,13 +301574,6 @@
        ]
       ]
      },
-     "target-text-computed.html": [
-      "429903052ed196d272464b6a5838c2d3a18cd46e",
-      [
-       null,
-       {}
-      ]
-     ],
      "text-selection.html": [
       "42acd0aa52a25b3f92c0cfc47089fcd79c71c75c",
       [
@@ -381484,10 +381488,14 @@
       ]
      },
      "atob": {
-      "base64.html": [
-       "61c3667dceeb136e03abcec1d4835ea852e0018b",
+      "base64.any.js": [
+       "7f433f4d8a9ee2e317def3327c5882938cbd6732",
        [
-        null,
+        "html/webappapis/atob/base64.any.html",
+        {}
+       ],
+       [
+        "html/webappapis/atob/base64.any.worker.html",
         {}
        ]
       ]
@@ -383200,6 +383208,13 @@
         ],
         "promise-rejection-event-constructor.html": [
          "916527909173fd87429590e51a866a712cf97854",
+         [
+          null,
+          {}
+         ]
+        ],
+        "promise-rejection-event-during-parse.html": [
+         "160dad9b36bd38de015c9dc82fd2410c5276cc8d",
          [
           null,
           {}
