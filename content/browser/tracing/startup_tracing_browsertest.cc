@@ -5,6 +5,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -246,13 +247,13 @@ class StartupTracingTest
                                        GetOutputTypeAsString());
   }
 
-  void CheckOutput(base::FilePath path) {
+  static void CheckOutput(base::FilePath path, OutputType output_type) {
     std::string trace;
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::ReadFileToString(path, &trace))
         << "Failed to read file " << path;
 
-    if (GetOutputType() == OutputType::kJSON) {
+    if (output_type == OutputType::kJSON) {
       EXPECT_TRUE(base::JSONReader::Read(trace));
     }
 
@@ -312,7 +313,65 @@ IN_PROC_BROWSER_TEST_P(StartupTracingTest, MAYBE_TestEnableTracing) {
 
   Wait();
 
-  CheckOutput(GetExpectedPath());
+  CheckOutput(GetExpectedPath(), GetOutputType());
+}
+
+class EmergencyStopTracingTest : public StartupTracingTest {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    EmergencyStopTracingTest,
+    testing::Combine(
+        testing::Values(FinishType::kStopExplicitly),
+        testing::Values(OutputType::kJSON, OutputType::kProto),
+        testing::Values(OutputLocation::kDirectoryWithDefaultBasename)));
+
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnUIThread) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
+
+  StartupTracingController::EmergencyStop();
+  CheckOutput(GetExpectedPath(), GetOutputType());
+}
+
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnThreadPool) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
+
+  auto expected_path = GetExpectedPath();
+  auto output_type = GetOutputType();
+
+  base::RunLoop run_loop;
+
+  base::ThreadPool::PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                               StartupTracingController::EmergencyStop();
+                               CheckOutput(expected_path, output_type);
+                               run_loop.Quit();
+                             }));
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnThreadPoolTwice) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
+
+  auto expected_path = GetExpectedPath();
+  auto output_type = GetOutputType();
+
+  base::RunLoop run_loop1;
+  base::RunLoop run_loop2;
+
+  base::ThreadPool::PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                               StartupTracingController::EmergencyStop();
+                               CheckOutput(expected_path, output_type);
+                               run_loop1.Quit();
+                             }));
+  base::ThreadPool::PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                               StartupTracingController::EmergencyStop();
+                               CheckOutput(expected_path, output_type);
+                               run_loop2.Quit();
+                             }));
+
+  run_loop1.Run();
+  run_loop2.Run();
 }
 
 }  // namespace content

@@ -21,6 +21,7 @@
 #include "base/files/scoped_file.h"
 #include "base/i18n/icu_util.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -37,6 +38,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/tracing/common/tracing_switches.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/network_service_instance_impl.h"
@@ -530,6 +532,22 @@ void BrowserTestBase::SetUp() {
   // test crashes or times out.
   StartupTracingController::GetInstance().SetUsingTemporaryFile(
       StartupTracingController::TempFilePolicy::kWriteDirectly);
+  // Set a logging handler to flush a trace before crashing the test when
+  // hitting a DCHECK / LOG(FATAL).
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableTracing)) {
+    DCHECK(!logging::GetLogMessageHandler());
+    logging::SetLogMessageHandler([](int severity, const char* file, int line,
+                                     size_t message_start,
+                                     const std::string& str) {
+      // TODO(crbug.com/1157954): Print the message to the console before
+      // calling this to ensure that the message is still printed if something
+      // goes wrong.
+      if (severity == logging::LOGGING_FATAL)
+        StartupTracingController::EmergencyStop();
+      return false;
+    });
+  }
 
 #if defined(OS_ANDROID)
   // For all other platforms, we call ContentMain for browser tests which goes

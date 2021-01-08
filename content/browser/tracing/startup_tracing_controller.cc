@@ -10,8 +10,11 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/thread_annotations.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
@@ -30,6 +33,74 @@
 #endif  // defined(OS_ANDROID)
 
 namespace content {
+
+// A helper class responsible for coordinating emergency trace finalisation
+// (e.g. when the process is about to be killed), which can be initiated from
+// any thread.
+class EmergencyTraceFinalisationCoordinator {
+ public:
+  static EmergencyTraceFinalisationCoordinator& GetInstance() {
+    static base::NoDestructor<EmergencyTraceFinalisationCoordinator> g_instance;
+    return *g_instance;
+  }
+
+  void OnTracingStarted(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                        base::OnceClosure stop_tracing) {
+    tracing_started_.Set();
+    base::AutoLock lock(lock_);
+    startup_tracing_controller_task_runner_ = std::move(task_runner);
+    stop_tracing_ = std::move(stop_tracing);
+  }
+
+  void OnTracingStopped() { finalisation_.Signal(); }
+
+  // May be called multiple times per session, e.g. if a second thread
+  // encounters a crash after the first.
+  void StopAndBlockUntilStopped() {
+    // If DCHECK fires before tracing has started, there isn't much for us to
+    // do.
+    if (!tracing_started_.IsSet())
+      return;
+
+    base::trace_event::TraceLog::GetInstance()
+        ->SetCurrentThreadBlocksMessageLoop();
+
+    base::OnceClosure stop_tracing;
+    scoped_refptr<base::SequencedTaskRunner> task_runner;
+    {
+      base::AutoLock lock(lock_);
+      task_runner = startup_tracing_controller_task_runner_;
+      stop_tracing = std::move(stop_tracing_);
+    }
+
+    if (task_runner->RunsTasksInCurrentSequence()) {
+      VLOG(0) << "Ignored an emergency tracing stop request from the "
+                 "StartupTracingController sequence";
+      return;
+    }
+
+    if (stop_tracing)
+      task_runner->PostTask(FROM_HERE, std::move(stop_tracing));
+
+    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+
+    // Wait for the tracing to be finished before processing.
+    // Note that we should wait even if |stop_tracing| is null — if a second
+    // thread hits DCHECK while the first has posted a task and waits for the
+    // trace to be written, the second one should wait as well to avoid crashing
+    // the process.
+    finalisation_.Wait();
+  }
+
+ private:
+  base::WaitableEvent finalisation_;
+  base::AtomicFlag tracing_started_;
+
+  base::Lock lock_;
+  scoped_refptr<base::SequencedTaskRunner>
+      startup_tracing_controller_task_runner_ GUARDED_BY(lock_);
+  base::OnceClosure stop_tracing_ GUARDED_BY(lock_);
+};
 
 class StartupTracingController::BackgroundTracer {
  public:
@@ -61,23 +132,33 @@ class StartupTracingController::BackgroundTracer {
       tracing_session_->Setup(trace_config);
     }
 
-    tracing_session_->StartBlocking();
+    // |StartBlocking| can take a non-trivial amount of time, so
+    // EmergencyTraceFinalisationController should be set up before it to catch
+    // DCHECKs early.
+    EmergencyTraceFinalisationCoordinator::GetInstance().OnTracingStarted(
+        task_runner_,
+        base::BindOnce(&BackgroundTracer::Stop, weak_ptr_factory_.GetWeakPtr(),
+                       base::nullopt));
+
     tracing_session_->SetOnStopCallback([&]() { OnTracingStopped(); });
+    tracing_session_->StartBlocking();
 
     TRACE_EVENT("startup", "StartupTracingController::Start");
   }
 
-  void Stop(base::FilePath output_file) {
+  void Stop(base::Optional<base::FilePath> output_file) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     // Tracing might have already been finished due to a timeout.
-    if (state_ == State::kFinished) {
+    if (state_ != State::kTracing) {
       // Note: updating output files is not supported together with
       // timeout-based tracing.
       return;
     }
+    state_ = State::kStopping;
 
-    output_file_ = output_file;
+    if (output_file)
+      output_file_ = output_file.value();
     tracing_session_->StopBlocking();
   }
 
@@ -92,7 +173,9 @@ class StartupTracingController::BackgroundTracer {
     }
 
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK_EQ(state_, State::kTracing);
+    // State will be kStopping if Stop() is called and kTracing if tracing
+    // finishes due to a timeout.
+    DCHECK(state_ == State::kStopping || state_ == State::kTracing);
     if (write_mode_ == WriteMode::kStreaming) {
       // No need to explicitly call ReadTrace as Perfetto has already written
       // the file.
@@ -185,6 +268,7 @@ class StartupTracingController::BackgroundTracer {
     }
 
     VLOG(0) << "Completed startup tracing to " << written_to_file_;
+    EmergencyTraceFinalisationCoordinator::GetInstance().OnTracingStopped();
 
     state_ = State::kFinished;
     std::move(on_tracing_finished_).Run();
@@ -192,6 +276,7 @@ class StartupTracingController::BackgroundTracer {
 
   enum class State {
     kTracing,
+    kStopping,
     kWritingToFile,
     kFinished,
   };
@@ -222,6 +307,8 @@ class StartupTracingController::BackgroundTracer {
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<BackgroundTracer> weak_ptr_factory_{this};
 };
 
 // static
@@ -421,6 +508,18 @@ void StartupTracingController::WaitUntilStopped() {
   base::RunLoop run_loop;
   Stop(run_loop.QuitClosure());
   run_loop.Run();
+}
+
+// static
+void StartupTracingController::EmergencyStop() {
+  if (GetIOThreadTaskRunner({})->RunsTasksInCurrentSequence()) {
+    VLOG(0) << "Emergency tracing stop request from IO thread is ignored - not "
+               "possible to finalise trace without running tasks on IO thread";
+    return;
+  }
+
+  EmergencyTraceFinalisationCoordinator::GetInstance()
+      .StopAndBlockUntilStopped();
 }
 
 }  // namespace content

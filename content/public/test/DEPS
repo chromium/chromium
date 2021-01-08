@@ -33,6 +33,7 @@ specific_include_rules = {
   ".*\.(cc|mm)": [
     # Testing utilities can access anything in content/
     "+content",
+    "+components/tracing/common",
     "+gin/v8_initializer.h",
     "+services/network/network_context.h",
     "+third_party/iaccessible2",

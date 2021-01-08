@@ -20,6 +20,14 @@ class CONTENT_EXPORT StartupTracingController {
 
   static StartupTracingController& GetInstance();
 
+  // Stop the trace recording, write the trace to disk and block until complete.
+  // Intended to be used in the situation when the browser process is going to
+  // crash (e.g. DCHECK failure) and we want to avoid losing the trace data. Can
+  // be called from any thread.
+  // May not succeed if called from a sequence that is required to be responsive
+  // during trace finalisation.
+  static void EmergencyStop();
+
   void StartIfNeeded();
   void WaitUntilStopped();
 
