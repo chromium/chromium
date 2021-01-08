@@ -554,7 +554,7 @@ void D3D11VideoDecoder::DoDecode() {
       current_buffer_ = nullptr;
       if (!accelerated_video_decoder_->Flush()) {
         // This will also signal error |current_decode_cb_|.
-        NotifyError("Flush failed");
+        NotifyError(StatusCode::kAcceleratorFlushFailed);
         return;
       }
       // Pictures out output synchronously during Flush.  Signal the decode
@@ -651,11 +651,12 @@ void D3D11VideoDecoder::DoDecode() {
       picture_buffers_.clear();
     } else if (result == media::AcceleratedVideoDecoder::kTryAgain) {
       LOG(ERROR) << "Try again is not supported";
-      NotifyError("Try again is not supported");
+      NotifyError(StatusCode::kTryAgainNotSupported);
       return;
     } else {
-      LOG(ERROR) << "VDA Error " << result;
-      NotifyError("Accelerated decode failed");
+      std::ostringstream message;
+      message << "VDA Error " << result;
+      NotifyError(Status(StatusCode::kDecoderFailedDecode, message.str()));
       return;
     }
   }
@@ -898,13 +899,15 @@ void D3D11VideoDecoder::NotifyError(const Status& reason) {
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::NotifyError");
   state_ = State::kError;
 
-  // TODO(tmathmeyer) - Remove this after plumbing Status through the
-  // decode_cb and input_buffer_queue cb's.
-  MEDIA_LOG(ERROR, media_log_)
-      << "D3D11VideoDecoder error: " << std::hex << reason.code();
-
-  if (init_cb_)
+  if (init_cb_) {
     std::move(init_cb_).Run(reason);
+  } else {
+    // TODO(tmathmeyer) - Remove this after plumbing Status through the
+    // decode_cb and input_buffer_queue cb's.
+    // Let the init handler set the error string if this is an init failure.
+    MEDIA_LOG(ERROR, media_log_) << "D3D11VideoDecoder error: 0x" << std::hex
+                                 << reason.code() << reason.message();
+  }
 
   current_buffer_ = nullptr;
   if (current_decode_cb_)

@@ -78,6 +78,8 @@ enum class StatusCode : StatusCodeType {
   kCreateVideoProcessorEnumeratorFailed = 0x00000312,
   kCreateVideoProcessorFailed = 0x00000313,
   kQueryVideoContextFailed = 0x00000314,
+  kAcceleratorFlushFailed = 0x00000315,
+  kTryAgainNotSupported = 0x00000316,
 
   // MojoDecoder Errors: 0x04
   kMojoDecoderNoWrappedDecoder = 0x00000401,
