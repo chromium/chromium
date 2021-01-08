@@ -2007,6 +2007,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.ScrollingCoordinator.UpdateTime"/>
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.StyleAndLayout.UpdateTime"/>
+  <affected-histogram name="Blink.UpdateViewportIntersection.UpdateTime"/>
   <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
 </histogram_suffixes>
 
@@ -2034,6 +2035,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.ScrollingCoordinator.UpdateTime"/>
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.StyleAndLayout.UpdateTime"/>
+  <affected-histogram name="Blink.UpdateViewportIntersection.UpdateTime"/>
   <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
 </histogram_suffixes>
 
@@ -2061,6 +2063,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.ScrollingCoordinator.UpdateTime"/>
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.StyleAndLayout.UpdateTime"/>
+  <affected-histogram name="Blink.UpdateViewportIntersection.UpdateTime"/>
   <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
 </histogram_suffixes>
 
