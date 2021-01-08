@@ -13,13 +13,15 @@
 
 namespace base {
 
-#if defined(WCHAR_T_IS_UTF16)
 TEST(String16Test, String16Literal) {
   static constexpr char16 kHelloWorld[] = STRING16_LITERAL("Hello, World");
+  constexpr StringPiece16 kPiece = kHelloWorld;
+  static_assert(kHelloWorld == kPiece, "");
+  static_assert(kHelloWorld == kPiece.data(), "");
+
   string16 hello_world = kHelloWorld;
   EXPECT_EQ(kHelloWorld, hello_world);
 }
-#endif
 
 // We define a custom operator<< for string16 so we can use it with logging.
 // This tests that conversion.
