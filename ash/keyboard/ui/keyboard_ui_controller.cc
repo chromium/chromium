@@ -295,7 +295,10 @@ void KeyboardUIController::DeactivateKeyboard() {
       parent_container_->RemoveChild(keyboard_window);
     }
   }
-  parent_container_->GetRootWindow()->RemoveObserver(this);
+  aura::Window* root_window = parent_container_->GetRootWindow();
+  if (root_window) {
+    root_window->RemoveObserver(this);
+  }
   parent_container_ = nullptr;
 }
 
