@@ -211,6 +211,8 @@ StreamType StreamIdToStreamType(uint64_t stream_id) {
       return StreamType::kYUVInput;
     case 3:
       return StreamType::kYUVOutput;
+    case 4:
+      return StreamType::kRecordingOutput;
     default:
       return StreamType::kUnknown;
   }
@@ -226,6 +228,8 @@ std::string StreamTypeToString(StreamType stream_type) {
       return std::string("StreamType::kYUVInput");
     case StreamType::kYUVOutput:
       return std::string("StreamType::kYUVOutput");
+    case StreamType::kRecordingOutput:
+      return std::string("StreamType::kRecordingOutput");
     default:
       return std::string("Unknown StreamType value: ") +
              base::NumberToString(static_cast<int32_t>(stream_type));
@@ -272,18 +276,16 @@ CameraDeviceDelegate::CameraDeviceDelegate(
     VideoCaptureDeviceDescriptor device_descriptor,
     scoped_refptr<CameraHalDelegate> camera_hal_delegate,
     scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
-    CameraAppDeviceImpl* camera_app_device,
-    ClientType client_type)
+    CameraAppDeviceImpl* camera_app_device)
     : device_descriptor_(device_descriptor),
       camera_hal_delegate_(std::move(camera_hal_delegate)),
       ipc_task_runner_(std::move(ipc_task_runner)),
-      camera_app_device_(camera_app_device),
-      client_type_(client_type) {}
+      camera_app_device_(camera_app_device) {}
 
 CameraDeviceDelegate::~CameraDeviceDelegate() = default;
 
 void CameraDeviceDelegate::AllocateAndStart(
-    const VideoCaptureParams& params,
+    const base::flat_map<ClientType, VideoCaptureParams>& params,
     CameraDeviceContext* device_context) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
 
@@ -593,6 +595,18 @@ void CameraDeviceDelegate::SetPhotoOptions(
   result_metadata_frame_number_for_photo_state_ = current_request_frame_number_;
 }
 
+void CameraDeviceDelegate::ReconfigureStreams(
+    const base::flat_map<ClientType, VideoCaptureParams>& params) {
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+  chrome_capture_params_ = params;
+  if (request_manager_) {
+    // ReconfigureStreams is used for video recording. It does not require
+    // photo.
+    request_manager_->StopPreview(base::BindOnce(
+        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), false, base::nullopt));
+  }
+}
+
 void CameraDeviceDelegate::SetRotation(int rotation) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   DCHECK(rotation >= 0 && rotation < 360 && rotation % 90 == 0);
@@ -620,11 +634,11 @@ bool CameraDeviceDelegate::MaybeReconfigureForPhotoStream(
     gfx::Size new_blob_resolution(static_cast<int32_t>(settings->width),
                                   static_cast<int32_t>(settings->height));
     request_manager_->StopPreview(
-        base::BindOnce(&CameraDeviceDelegate::OnFlushed, GetWeakPtr(),
+        base::BindOnce(&CameraDeviceDelegate::OnFlushed, GetWeakPtr(), true,
                        std::move(new_blob_resolution)));
   } else {
     request_manager_->StopPreview(base::BindOnce(
-        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), base::nullopt));
+        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), true, base::nullopt));
   }
   return true;
 }
@@ -645,7 +659,7 @@ void CameraDeviceDelegate::TakePhotoImpl() {
   // Trigger the reconfigure process if it not yet triggered.
   if (on_reconfigured_callbacks_.empty()) {
     request_manager_->StopPreview(base::BindOnce(
-        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), base::nullopt));
+        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), true, base::nullopt));
   }
   auto on_reconfigured_callback = base::BindOnce(
       [](base::WeakPtr<Camera3AController> controller,
@@ -681,6 +695,7 @@ void CameraDeviceDelegate::OnMojoConnectionError() {
 }
 
 void CameraDeviceDelegate::OnFlushed(
+    bool require_photo,
     base::Optional<gfx::Size> new_blob_resolution,
     int32_t result) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
@@ -692,7 +707,7 @@ void CameraDeviceDelegate::OnFlushed(
     return;
   }
   device_context_->SetState(CameraDeviceContext::State::kInitialized);
-  ConfigureStreams(true, std::move(new_blob_resolution));
+  ConfigureStreams(require_photo, std::move(new_blob_resolution));
 }
 
 void CameraDeviceDelegate::OnClosed(int32_t result) {
@@ -760,13 +775,15 @@ void CameraDeviceDelegate::Initialize() {
   DCHECK_EQ(device_context_->GetState(), CameraDeviceContext::State::kStarting);
 
   mojo::PendingRemote<cros::mojom::Camera3CallbackOps> callback_ops;
+  // Assumes the buffer_type will be the same for all |chrome_capture_params|.
   request_manager_ = std::make_unique<RequestManager>(
       callback_ops.InitWithNewPipeAndPassReceiver(),
       std::make_unique<StreamCaptureInterfaceImpl>(GetWeakPtr()),
-      device_context_, chrome_capture_params_.buffer_type,
+      device_context_,
+      chrome_capture_params_[ClientType::kPreviewClient].buffer_type,
       std::make_unique<CameraBufferFactory>(),
       base::BindRepeating(&RotateAndBlobify), ipc_task_runner_,
-      camera_app_device_, client_type_);
+      camera_app_device_);
   camera_3a_controller_ = std::make_unique<Camera3AController>(
       static_metadata_, request_manager_.get(), ipc_task_runner_);
   device_ops_->Initialize(
@@ -820,27 +837,33 @@ void CameraDeviceDelegate::ConfigureStreams(
   DCHECK_EQ(device_context_->GetState(),
             CameraDeviceContext::State::kInitialized);
 
-  // Set up context for preview stream.
-  cros::mojom::Camera3StreamPtr preview_stream =
-      cros::mojom::Camera3Stream::New();
-  preview_stream->id = static_cast<uint64_t>(StreamType::kPreviewOutput);
-  preview_stream->stream_type =
-      cros::mojom::Camera3StreamType::CAMERA3_STREAM_OUTPUT;
-  preview_stream->width =
-      chrome_capture_params_.requested_format.frame_size.width();
-  preview_stream->height =
-      chrome_capture_params_.requested_format.frame_size.height();
-  preview_stream->format =
-      cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_YCbCr_420_888;
-  preview_stream->usage = cros::mojom::GRALLOC_USAGE_HW_COMPOSER |
-                          cros::mojom::GRALLOC_USAGE_HW_VIDEO_ENCODER;
-  preview_stream->data_space = 0;
-  preview_stream->rotation =
-      cros::mojom::Camera3StreamRotation::CAMERA3_STREAM_ROTATION_0;
-
   cros::mojom::Camera3StreamConfigurationPtr stream_config =
       cros::mojom::Camera3StreamConfiguration::New();
-  stream_config->streams.push_back(std::move(preview_stream));
+  for (const auto& param : chrome_capture_params_) {
+    // Set up context for preview stream and record stream.
+    cros::mojom::Camera3StreamPtr stream = cros::mojom::Camera3Stream::New();
+    StreamType stream_type = (param.first == ClientType::kPreviewClient)
+                                 ? StreamType::kPreviewOutput
+                                 : StreamType::kRecordingOutput;
+    // TODO(henryhsu): PreviewClient should remove HW_VIDEO_ENCODER usage when
+    // multiple streams enabled.
+    auto usage = (param.first == ClientType::kPreviewClient)
+                     ? (cros::mojom::GRALLOC_USAGE_HW_COMPOSER |
+                        cros::mojom::GRALLOC_USAGE_HW_VIDEO_ENCODER)
+                     : cros::mojom::GRALLOC_USAGE_HW_VIDEO_ENCODER;
+    stream->id = static_cast<uint64_t>(stream_type);
+    stream->stream_type = cros::mojom::Camera3StreamType::CAMERA3_STREAM_OUTPUT;
+    stream->width = param.second.requested_format.frame_size.width();
+    stream->height = param.second.requested_format.frame_size.height();
+    stream->format =
+        cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_YCbCr_420_888;
+    stream->usage = usage;
+    stream->data_space = 0;
+    stream->rotation =
+        cros::mojom::Camera3StreamRotation::CAMERA3_STREAM_ROTATION_0;
+
+    stream_config->streams.push_back(std::move(stream));
+  }
 
   // Set up context for still capture stream. We set still capture stream to the
   // JPEG stream configuration with maximum supported resolution.
@@ -961,9 +984,9 @@ void CameraDeviceDelegate::OnConfiguredStreams(
   current_blob_resolution_.SetSize(blob_resolution.width(),
                                    blob_resolution.height());
 
-  request_manager_->SetUpStreamsAndBuffers(
-      chrome_capture_params_.requested_format, static_metadata_,
-      std::move(updated_config->streams));
+  request_manager_->SetUpStreamsAndBuffers(chrome_capture_params_,
+                                           static_metadata_,
+                                           std::move(updated_config->streams));
 
   device_context_->SetState(CameraDeviceContext::State::kStreamConfigured);
   // Kick off the preview stream.
@@ -1130,8 +1153,10 @@ void CameraDeviceDelegate::OnGotFpsRange(
     SetFpsRangeInMetadata(&settings, specified_fps_range->GetMin(),
                           specified_fps_range->GetMax());
   } else {
+    // Assumes the frame_rate will be the same for all |chrome_capture_params|.
     int32_t requested_frame_rate =
-        std::round(chrome_capture_params_.requested_format.frame_rate);
+        std::round(chrome_capture_params_[ClientType::kPreviewClient]
+                       .requested_format.frame_rate);
     bool prefer_constant_frame_rate =
         base::FeatureList::IsEnabled(
             chromeos::features::kPreferConstantFrameRate) ||

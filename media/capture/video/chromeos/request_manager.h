@@ -12,6 +12,7 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "media/capture/mojom/image_capture.mojom.h"
@@ -107,14 +108,13 @@ class CAPTURE_EXPORT RequestManager final
                  std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
                  BlobifyCallback blobify_callback,
                  scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
-                 CameraAppDeviceImpl* camera_app_device,
-                 ClientType client_type);
+                 CameraAppDeviceImpl* camera_app_device);
   ~RequestManager() override;
 
   // Sets up the stream context and allocate buffers according to the
   // configuration specified in |streams|.
   void SetUpStreamsAndBuffers(
-      VideoCaptureFormat capture_format,
+      base::flat_map<ClientType, VideoCaptureParams> capture_params,
       const cros::mojom::CameraMetadataPtr& static_metadata,
       std::vector<cros::mojom::Camera3StreamPtr> streams);
 
@@ -227,6 +227,8 @@ class CAPTURE_EXPORT RequestManager final
                                 cros::mojom::CameraMetadataPtr* settings,
                                 TakePhotoCallback* callback);
 
+  bool TryPrepareRecordingRequest(std::set<StreamType>* stream_types);
+
   // Callback for ProcessCaptureRequest().
   void OnProcessedCaptureRequest(int32_t result);
 
@@ -257,8 +259,9 @@ class CAPTURE_EXPORT RequestManager final
   void SubmitCaptureResult(uint32_t frame_number,
                            StreamType stream_type,
                            cros::mojom::Camera3StreamBufferPtr stream_buffer);
-  void SubmitCapturedPreviewBuffer(uint32_t frame_number,
-                                   uint64_t buffer_ipc_id);
+  void SubmitCapturedPreviewRecordingBuffer(uint32_t frame_number,
+                                            uint64_t buffer_ipc_id,
+                                            StreamType stream_type);
   void SubmitCapturedJpegBuffer(uint32_t frame_number, uint64_t buffer_ipc_id);
 
   // If there are some metadata set by SetCaptureMetadata() or
@@ -363,8 +366,6 @@ class CAPTURE_EXPORT RequestManager final
   std::map<StreamType, uint32_t> last_received_frame_number_map_;
 
   CameraAppDeviceImpl* camera_app_device_;  // Weak.
-
-  ClientType client_type_;
 
   base::WeakPtrFactory<RequestManager> weak_ptr_factory_{this};
 

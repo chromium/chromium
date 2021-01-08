@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
+#include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/display_rotation_observer.h"
@@ -29,10 +31,9 @@ class CameraAppDeviceImpl;
 class CameraHalDelegate;
 class CameraDeviceDelegate;
 
-// Implementation of VideoCaptureDevice for ChromeOS with CrOS camera HALv3.
+// Implementation of delegate for ChromeOS with CrOS camera HALv3.
 class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
-    : public VideoCaptureDevice,
-      public DisplayRotationObserver {
+    : public DisplayRotationObserver {
  public:
   VideoCaptureDeviceChromeOSDelegate(
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
@@ -41,22 +42,25 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
       CameraAppDeviceImpl* camera_app_device,
       base::OnceClosure cleanup_callback);
 
-  ~VideoCaptureDeviceChromeOSDelegate() final;
+  ~VideoCaptureDeviceChromeOSDelegate();
+  void Shutdown();
+  bool HasDeviceClient();
 
-  // VideoCaptureDevice implementation.
   void AllocateAndStart(const VideoCaptureParams& params,
-                        std::unique_ptr<Client> client) final;
-  void StopAndDeAllocate() final;
-  void TakePhoto(TakePhotoCallback callback) final;
-  void GetPhotoState(GetPhotoStateCallback callback) final;
+                        std::unique_ptr<VideoCaptureDevice::Client> client,
+                        ClientType client_type);
+  void StopAndDeAllocate(ClientType client_type);
+  void TakePhoto(VideoCaptureDevice::TakePhotoCallback callback);
+  void GetPhotoState(VideoCaptureDevice::GetPhotoStateCallback callback);
   void SetPhotoOptions(mojom::PhotoSettingsPtr settings,
-                       SetPhotoOptionsCallback callback) final;
+                       VideoCaptureDevice::SetPhotoOptionsCallback callback);
 
  private:
   // Helper to interact with PowerManagerClient on DBus original thread.
   class PowerManagerClientProxy;
 
   void OpenDevice();
+  void ReconfigureStreams();
   void CloseDevice(base::UnguessableToken unblock_suspend_token);
 
   // DisplayRotationDelegate implementation.
@@ -79,7 +83,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
   // |capture_task_runner_|.
   base::Thread camera_device_ipc_thread_;
 
-  VideoCaptureParams capture_params_;
+  // Map client type to VideoCaptureParams.
+  base::flat_map<ClientType, VideoCaptureParams> capture_params_;
+
   // |device_context_| is created and owned by
   // VideoCaptureDeviceChromeOSDelegate and is only accessed by
   // |camera_device_delegate_|.
@@ -102,9 +108,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
   base::OnceClosure cleanup_callback_;
 
   scoped_refptr<PowerManagerClientProxy> power_manager_client_proxy_;
-
-  // The client type in CameraDeviceContext.
-  ClientType client_type_;
 
   base::WeakPtrFactory<VideoCaptureDeviceChromeOSDelegate> weak_ptr_factory_{
       this};
