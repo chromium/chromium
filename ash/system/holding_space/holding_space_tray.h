@@ -72,6 +72,8 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
     use_zero_previews_update_delay_ = zero_delay;
   }
 
+  void FirePreviewsUpdateTimerIfRunningForTesting();
+
  private:
   void UpdateVisibility();
 

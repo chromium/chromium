@@ -195,12 +195,16 @@ void HoldingSpaceTray::SetVisiblePreferred(bool preferred_visibility) {
   }
 }
 
+void HoldingSpaceTray::FirePreviewsUpdateTimerIfRunningForTesting() {
+  if (previews_update_.IsRunning())
+    previews_update_.FireNow();
+}
+
 void HoldingSpaceTray::UpdateVisibility() {
   HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
   LoginStatus login_status = shelf()->GetStatusAreaWidget()->login_status();
   const bool in_active_session = login_status != LoginStatus::NOT_LOGGED_IN &&
                                  login_status != LoginStatus::LOCKED;
-
   if (!model || !in_active_session) {
     SetVisiblePreferred(false);
     return;
@@ -378,6 +382,9 @@ void HoldingSpaceTray::UpdatePreviewsVisibility() {
 
   DCHECK(previews_tray_icon_);
   previews_tray_icon_->SetVisible(show_previews);
+
+  if (!show_previews)
+    previews_update_.Stop();
 }
 
 void HoldingSpaceTray::SchedulePreviewsIconUpdate() {

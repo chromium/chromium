@@ -17,6 +17,9 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_widget.h"
+#include "ash/shell.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
@@ -36,6 +39,11 @@ namespace {
 constexpr char kTestUser[] = "user@test";
 
 // Helpers ---------------------------------------------------------------------
+
+// A wrapper around `views::View::GetVisible()` with a null check for `view`.
+bool IsViewVisible(views::View* view) {
+  return view && view->GetVisible();
+}
 
 void Click(views::View* view, int flags) {
   auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
@@ -139,6 +147,12 @@ class HoldingSpaceTrayTest : public AshTestBase,
 
   HoldingSpaceItem* AddItem(HoldingSpaceItem::Type type,
                             const base::FilePath& path) {
+    return AddItemToModel(model(), type, path);
+  }
+
+  HoldingSpaceItem* AddItemToModel(HoldingSpaceModel* target_model,
+                                   HoldingSpaceItem::Type type,
+                                   const base::FilePath& path) {
     GURL file_system_url(
         base::StrCat({"filesystem:", path.BaseName().value()}));
     std::unique_ptr<HoldingSpaceItem> item =
@@ -146,10 +160,9 @@ class HoldingSpaceTrayTest : public AshTestBase,
             type, path, file_system_url,
             base::BindOnce(&CreateStubHoldingSpaceImage));
     HoldingSpaceItem* item_ptr = item.get();
-    model()->AddItem(std::move(item));
+    target_model->AddItem(std::move(item));
     return item_ptr;
   }
-
   HoldingSpaceItem* AddPartiallyInitializedItem(HoldingSpaceItem::Type type,
                                                 const base::FilePath& path) {
     // Create a holding space item, and use it to create a serialized item
@@ -195,6 +208,30 @@ class HoldingSpaceTrayTest : public AshTestBase,
         GetSessionControllerClient()->GetUserPrefService(user_account));
   }
 
+  void SwitchToSecondaryUser(const std::string& user_id,
+                             HoldingSpaceClient* client,
+                             HoldingSpaceModel* model) {
+    AccountId user_account = AccountId::FromUserEmail(user_id);
+    HoldingSpaceController::Get()->RegisterClientAndModelForUser(user_account,
+                                                                 client, model);
+    GetSessionControllerClient()->AddUserSession(user_id);
+
+    holding_space_prefs::MarkTimeOfFirstAvailability(
+        GetSessionControllerClient()->GetUserPrefService(user_account));
+    holding_space_prefs::MarkTimeOfFirstAdd(
+        GetSessionControllerClient()->GetUserPrefService(user_account));
+    holding_space_prefs::MarkTimeOfFirstPin(
+        GetSessionControllerClient()->GetUserPrefService(user_account));
+
+    GetSessionControllerClient()->SwitchActiveUser(user_account);
+  }
+
+  void UnregisterModelForUser(const std::string& user_id) {
+    AccountId user_account = AccountId::FromUserEmail(user_id);
+    HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+        user_account, nullptr, nullptr);
+  }
+
   bool IsPreviewsFeatureEnabled() const { return GetParam(); }
 
   HoldingSpaceTestApi* test_api() { return test_api_.get(); }
@@ -204,6 +241,13 @@ class HoldingSpaceTrayTest : public AshTestBase,
   }
 
   HoldingSpaceModel* model() { return &holding_space_model_; }
+
+  HoldingSpaceTray* GetTray() {
+    return Shelf::ForWindow(Shell::GetRootWindowForNewWindows())
+        ->shelf_widget()
+        ->status_area_widget()
+        ->holding_space_tray();
+  }
 
  private:
   std::unique_ptr<HoldingSpaceTestApi> test_api_;
@@ -216,6 +260,7 @@ class HoldingSpaceTrayTest : public AshTestBase,
 
 TEST_P(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
   StartSession(/*pre_mark_time_of_first_add=*/false);
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
 
   // The tray button should *not* be shown for users that have never added
   // anything to the holding space.
@@ -225,7 +270,12 @@ TEST_P(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
   HoldingSpaceItem* item =
       AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake"));
   MarkTimeOfFirstAdd();
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
+  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_EQ(IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
 
   // Show the bubble - both the pinned files and recent files child bubbles
   // should be shown.
@@ -242,6 +292,9 @@ TEST_P(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
   test_api()->Close();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
 
+  EXPECT_TRUE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_FALSE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+
   test_api()->Show();
 
   // Add and remove a pinned item.
@@ -256,6 +309,92 @@ TEST_P(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 }
 
+TEST_P(HoldingSpaceTrayTest, HideButtonWhenModelDetached) {
+  MarkTimeOfFirstPin();
+  StartSession();
+
+  // The tray button should be hidden if the user has previously pinned an item,
+  // and the holding space is empty.
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  // Add a download item - the button should be shown.
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_EQ(IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+
+  SwitchToSecondaryUser("user@secondary", /*client=*/nullptr,
+                        /*model=*/nullptr);
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+  UnregisterModelForUser("user@secondary");
+}
+
+TEST_P(HoldingSpaceTrayTest, HideButtonOnChangeToEmptyModel) {
+  MarkTimeOfFirstPin();
+  StartSession();
+
+  // The tray button should be hidden if the user has previously pinned an item,
+  // and the holding space is empty.
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  // Add a download item - the button should be shown.
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_EQ(IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+
+  HoldingSpaceModel secondary_holding_space_model;
+  SwitchToSecondaryUser("user@secondary", /*client=*/nullptr,
+                        /*model=*/&secondary_holding_space_model);
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  AddItemToModel(&secondary_holding_space_model,
+                 HoldingSpaceItem::Type::kDownload,
+                 base::FilePath("/tmp/fake_2"));
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_EQ(IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+
+  UnregisterModelForUser("user@secondary");
+}
+
+TEST_P(HoldingSpaceTrayTest, HideButtonOnChangeToNonEmptyModel) {
+  MarkTimeOfFirstPin();
+  StartSession();
+
+  // The tray button should be hidden if the user has previously pinned an item,
+  // and the holding space is empty.
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  HoldingSpaceModel secondary_holding_space_model;
+  AddItemToModel(&secondary_holding_space_model,
+                 HoldingSpaceItem::Type::kDownload,
+                 base::FilePath("/tmp/fake_2"));
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  SwitchToSecondaryUser("user@secondary", /*client=*/nullptr,
+                        /*model=*/&secondary_holding_space_model);
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_EQ(IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+
+  UnregisterModelForUser("user@secondary");
+}
+
 TEST_P(HoldingSpaceTrayTest, AddingItemShowsTrayBubble) {
   MarkTimeOfFirstPin();
   StartSession();
@@ -267,25 +406,45 @@ TEST_P(HoldingSpaceTrayTest, AddingItemShowsTrayBubble) {
   // Add a download item - the button should be shown.
   HoldingSpaceItem* item_1 =
       AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
+  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_EQ(IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+
   // Remove the only item - the button should be hidden.
   model()->RemoveItem(item_1->id());
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 
   // Add a screen capture item - the button should be shown.
   HoldingSpaceItem* item_2 =
       AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_2"));
   EXPECT_TRUE(test_api()->IsShowingInShelf());
+  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_EQ(IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+
   // Remove the only item - the button should be hidden.
   model()->RemoveItem(item_2->id());
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 
   // Add a pinned item - the button should be shown.
   HoldingSpaceItem* item_3 =
       AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_3"));
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
+  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_EQ(IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+
   // Remove the only item - the button should be hidden.
   model()->RemoveItem(item_3->id());
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 }
 
@@ -309,15 +468,22 @@ TEST_P(HoldingSpaceTrayTest, TrayButtonNotShownForPartialItemsOnly) {
   EXPECT_FALSE(test_api()->IsShowingInShelf());
   AddPartiallyInitializedItem(HoldingSpaceItem::Type::kPinnedFile,
                               base::FilePath("/tmp/fake_4"));
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 
   // Finalize one item, and verify the tray button gets shown.
   model()->FinalizeOrRemoveItem(item_2->id(), GURL("filesystem:fake_2"));
 
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
+  EXPECT_EQ(!IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_EQ(IsPreviewsFeatureEnabled(),
+            IsViewVisible(test_api()->GetPreviewsTrayIcon()));
 
   // Remove the finalized item - the shelf button should get hidden.
   model()->RemoveItem(item_2->id());
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 }
 
