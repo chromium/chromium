@@ -50,18 +50,8 @@ void TrustedVaultAccessTokenFetcherFrontend::FetchAccessToken(
   }
 }
 
-void TrustedVaultAccessTokenFetcherFrontend::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  UpdatePrimaryAccountIfNeeded();
-}
-
-void TrustedVaultAccessTokenFetcherFrontend::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  UpdatePrimaryAccountIfNeeded();
-}
-
-void TrustedVaultAccessTokenFetcherFrontend::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& unconsented_primary_account_info) {
+void TrustedVaultAccessTokenFetcherFrontend::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
   UpdatePrimaryAccountIfNeeded();
 }
 
