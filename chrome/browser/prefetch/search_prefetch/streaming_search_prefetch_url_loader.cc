@@ -270,8 +270,8 @@ void StreamingSearchPrefetchURLLoader::OnComplete(
     return;
   }
 
-  if (!forwarding_client_) {
-    DCHECK(streaming_prefetch_request_);
+  if (streaming_prefetch_request_) {
+    DCHECK(!forwarding_client_);
     if (status.error_code == net::OK) {
       streaming_prefetch_request_->MarkPrefetchAsComplete();
     } else {
