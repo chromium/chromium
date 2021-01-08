@@ -68,9 +68,9 @@ float kPaddingSecurityHeader = 28.0f;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  self.navigationItem.titleView =
+      [self titleViewLabelForURL:self.pageInfoSecurityDescription.siteURL];
   self.title = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SITE_INFORMATION);
-  self.navigationItem.prompt = self.pageInfoSecurityDescription.siteURL;
-  self.navigationController.navigationBar.prefersLargeTitles = NO;
   self.tableView.accessibilityIdentifier = kPageInfoViewAccessibilityIdentifier;
 
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
@@ -145,6 +145,19 @@ float kPaddingSecurityHeader = 28.0f;
             didRequestOpenURL:(const GURL&)URL {
   DCHECK(URL == GURL(kPageInfoHelpCenterURL));
   [self.handler showSecurityHelpPage];
+}
+
+#pragma mark - Private
+
+// Returns the navigationItem titleView for |siteURL|.
+- (UILabel*)titleViewLabelForURL:(NSString*)siteURL {
+  UILabel* labelURL = [[UILabel alloc] init];
+  labelURL.lineBreakMode = NSLineBreakByTruncatingHead;
+  labelURL.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  labelURL.text = siteURL;
+  labelURL.adjustsFontSizeToFitWidth = YES;
+  labelURL.minimumScaleFactor = 0.7;
+  return labelURL;
 }
 
 @end
