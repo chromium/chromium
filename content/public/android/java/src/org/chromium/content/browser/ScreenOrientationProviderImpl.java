@@ -21,6 +21,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.content_public.browser.ScreenOrientationDelegate;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -41,6 +42,10 @@ public class ScreenOrientationProviderImpl
 
     private static final String TAG = "ScreenOrientation";
 
+    // More readable constants to be passed to |addPendingRequest|.
+    private static final boolean LOCK = true;
+    private static final boolean UNLOCK = false;
+
     private ScreenOrientationDelegate mDelegate;
 
     /**
@@ -59,6 +64,45 @@ public class ScreenOrientationProviderImpl
      * for an activity but no screen orientation requests have been made for the activity.
      */
     private Map<Activity, Pair<Boolean, Integer>> mDelayedRequests = new WeakHashMap<>();
+
+    private static final class PendingRequest implements WindowEventObserver {
+        private final ScreenOrientationProviderImpl mProvider;
+        private final WindowEventObserverManager mWindowEventManager;
+        private final boolean mLockOrUnlock;
+        private final byte mWebScreenOrientation;
+        private boolean mObserverRemoved;
+
+        public PendingRequest(ScreenOrientationProviderImpl provider,
+                WindowEventObserverManager windowEventManager, boolean lockOrUnlock,
+                byte webScreenOrientation) {
+            mProvider = provider;
+            mWindowEventManager = windowEventManager;
+            mLockOrUnlock = lockOrUnlock;
+            mWebScreenOrientation = webScreenOrientation;
+            mWindowEventManager.addObserver(this);
+        }
+
+        public void cancel() {
+            if (mObserverRemoved) return;
+            mWindowEventManager.removeObserver(this);
+            mObserverRemoved = true;
+        }
+
+        @Override
+        public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {
+            if (newWindowAndroid == null) return;
+
+            if (mLockOrUnlock) {
+                mProvider.lockOrientation(newWindowAndroid, mWebScreenOrientation);
+            } else {
+                mProvider.unlockOrientation(newWindowAndroid);
+            }
+            mWindowEventManager.removeObserver(this);
+            mObserverRemoved = true;
+        }
+    }
+
+    private final Map<WebContents, PendingRequest> mPendingRequests = new WeakHashMap<>();
 
     @CalledByNative
     public static ScreenOrientationProviderImpl getInstance() {
@@ -114,7 +158,26 @@ public class ScreenOrientationProviderImpl
         }
     }
 
+    private void addPendingRequest(
+            WebContents webContents, boolean lockOrUnlock, byte webScreenOrientation) {
+        WindowEventObserverManager windowEventManager =
+                WindowEventObserverManager.from(webContents);
+        PendingRequest existingRequest = mPendingRequests.get(webContents);
+        if (existingRequest != null) existingRequest.cancel();
+        mPendingRequests.put(webContents,
+                new PendingRequest(this, windowEventManager, lockOrUnlock, webScreenOrientation));
+    }
+
     @CalledByNative
+    private void lockOrientationForWebContents(WebContents webContents, byte webScreenOrientation) {
+        WindowAndroid window = webContents.getTopLevelNativeWindow();
+        if (window == null) {
+            addPendingRequest(webContents, LOCK, webScreenOrientation);
+        } else {
+            lockOrientation(window, webScreenOrientation);
+        }
+    }
+
     @Override
     public void lockOrientation(@Nullable WindowAndroid window, byte webScreenOrientation) {
         // WindowAndroid may be null if the tab is being reparented.
@@ -136,6 +199,15 @@ public class ScreenOrientationProviderImpl
     }
 
     @CalledByNative
+    private void unlockOrientationForWebContents(WebContents webContents) {
+        WindowAndroid window = webContents.getTopLevelNativeWindow();
+        if (window == null) {
+            addPendingRequest(webContents, UNLOCK, (byte) 0);
+        } else {
+            unlockOrientation(window);
+        }
+    }
+
     @Override
     public void unlockOrientation(@Nullable WindowAndroid window) {
         // WindowAndroid may be null if the tab is being reparented.
