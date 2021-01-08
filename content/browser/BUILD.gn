@@ -2101,6 +2101,10 @@ source_set("browser") {
     deps += [ "//ui/ozone:buildflags" ]
   }
 
+  if (is_chromeos) {
+    deps += [ "//ui/base/ime/chromeos:chromeos" ]
+  }
+
   if (is_linux || is_chromeos) {
     sources += [
       "child_process_launcher_helper_linux.cc",

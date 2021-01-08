@@ -99,6 +99,11 @@ bool COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
 std::string COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
     GetComponentIDByInputMethodID(const std::string& input_method_id);
 
+// Returns true if |input_method_id| refers to a CrOS 1P experimental
+// multilingual input method.
+bool COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
+    IsExperimentalMultilingual(const std::string& input_method_id);
+
 }  // namespace extension_ime_util
 }  // namespace chromeos
 

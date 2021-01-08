@@ -143,6 +143,7 @@ static_library("arc") {
     "//ui/base:base",
     "//ui/base/clipboard",
     "//ui/base/ime",
+    "//ui/base/ime/chromeos:chromeos",
     "//ui/chromeos/strings",
     "//ui/display/manager",
     "//ui/events",

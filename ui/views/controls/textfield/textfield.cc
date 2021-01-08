@@ -96,6 +96,11 @@
 #include "ui/ozone/public/platform_gl_egl_utility.h"
 #endif
 
+#if defined(OS_CHROMEOS)
+#include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/chromeos/input_method_manager.h"
+#endif
+
 namespace views {
 
 namespace {
@@ -1937,6 +1942,20 @@ bool Textfield::SetAutocorrectRange(const gfx::Range& range) {
   if (!range.is_empty()) {
     base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Count",
                                   TextInputClient::SubClass::kTextField);
+
+#if defined(OS_CHROMEOS)
+    auto* input_method_manager =
+        chromeos::input_method::InputMethodManager::Get();
+    if (input_method_manager &&
+        chromeos::extension_ime_util::IsExperimentalMultilingual(
+            input_method_manager->GetActiveIMEState()
+                ->GetCurrentInputMethod()
+                .id())) {
+      base::UmaHistogramEnumeration(
+          "InputMethod.MultilingualExperiment.Autocorrect.Count",
+          TextInputClient::SubClass::kTextField);
+    }
+#endif
   }
   return model_->SetAutocorrectRange(range);
 }

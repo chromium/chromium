@@ -1036,7 +1036,10 @@ test("ui_base_unittests") {
         "ime/chromeos/input_method_descriptor_unittest.cc",
         "ime/chromeos/input_method_util_unittest.cc",
       ]
-      deps += [ "//ui/base/ime/chromeos" ]
+      deps += [
+        "//build:branding_buildflags",
+        "//ui/base/ime/chromeos",
+      ]
     }
     if ((is_linux || is_chromeos_lacros) && use_aura) {
       sources += [ "dragdrop/os_exchange_data_provider_non_backed_unittest.cc" ]

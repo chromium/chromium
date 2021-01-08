@@ -4,6 +4,7 @@
 
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 
@@ -164,6 +165,17 @@ bool IsKeyboardLayoutExtension(const std::string& input_method_id) {
     return base::StartsWith(GetComponentIDByInputMethodID(input_method_id),
                             "xkb:", base::CompareCase::SENSITIVE);
   return false;
+}
+
+bool IsExperimentalMultilingual(const std::string& input_method_id) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  const std::string prefix = base::StrCat(
+      {kComponentExtensionIMEPrefix, kXkbExtensionId, "experimental_"});
+  return base::StartsWith(input_method_id, prefix,
+                          base::CompareCase::SENSITIVE);
+#else
+  return false;
+#endif
 }
 
 }  // namespace extension_ime_util

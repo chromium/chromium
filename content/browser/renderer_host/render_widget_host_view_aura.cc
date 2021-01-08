@@ -125,6 +125,11 @@
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #endif
 
+#if defined(OS_CHROMEOS)
+#include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/chromeos/input_method_manager.h"
+#endif
+
 using gfx::RectToSkIRect;
 using gfx::SkIRectToRect;
 
@@ -1498,6 +1503,20 @@ bool RenderWidgetHostViewAura::SetAutocorrectRange(
     base::UmaHistogramEnumeration(
         "InputMethod.Assistive.Autocorrect.Count",
         TextInputClient::SubClass::kRenderWidgetHostViewAura);
+
+#if defined(OS_CHROMEOS)
+    auto* input_method_manager =
+        chromeos::input_method::InputMethodManager::Get();
+    if (input_method_manager &&
+        chromeos::extension_ime_util::IsExperimentalMultilingual(
+            input_method_manager->GetActiveIMEState()
+                ->GetCurrentInputMethod()
+                .id())) {
+      base::UmaHistogramEnumeration(
+          "InputMethod.MultilingualExperiment.Autocorrect.Count",
+          TextInputClient::SubClass::kRenderWidgetHostViewAura);
+    }
+#endif
   }
 
   auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();

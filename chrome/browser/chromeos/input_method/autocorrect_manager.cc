@@ -7,11 +7,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
 #include "chrome/browser/chromeos/input_method/suggestion_enums.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
+#include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
@@ -28,9 +31,31 @@ enum class AutocorrectActions {
   kMaxValue = kReverted,
 };
 
+bool IsCurrentInputMethodExperimentalMultilingual() {
+  auto* input_method_manager = input_method::InputMethodManager::Get();
+  if (!input_method_manager) {
+    return false;
+  }
+  return extension_ime_util::IsExperimentalMultilingual(
+      input_method_manager->GetActiveIMEState()->GetCurrentInputMethod().id());
+}
+
 void LogAssistiveAutocorrectAction(AutocorrectActions action) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Actions",
                                 action);
+  if (IsCurrentInputMethodExperimentalMultilingual()) {
+    base::UmaHistogramEnumeration(
+        "InputMethod.MultilingualExperiment.Autocorrect.Actions", action);
+  }
+}
+
+void LogAssistiveAutocorrectDelay(base::TimeDelta delay) {
+  base::UmaHistogramMediumTimes("InputMethod.Assistive.Autocorrect.Delay",
+                                delay);
+  if (IsCurrentInputMethodExperimentalMultilingual()) {
+    base::UmaHistogramMediumTimes(
+        "InputMethod.MultilingualExperiment.Autocorrect.Delay", delay);
+  }
 }
 
 void RecordAssistiveCoverage(AssistiveType type) {
@@ -193,8 +218,7 @@ void AutocorrectManager::UndoAutocorrect() {
   LogAssistiveAutocorrectAction(AutocorrectActions::kReverted);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectReverted);
   RecordAssistiveSuccess(AssistiveType::kAutocorrectReverted);
-  base::UmaHistogramMediumTimes("InputMethod.Assistive.Autocorrect.Delay",
-                                (base::TimeTicks::Now() - autocorrect_time_));
+  LogAssistiveAutocorrectDelay(base::TimeTicks::Now() - autocorrect_time_);
 }
 
 }  // namespace chromeos
