@@ -764,18 +764,18 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
   gfx::Size view_device_size(view_rect.width() * new_device_scale,
                              view_rect.height() * new_device_scale);
 
-  if (view_device_size != plugin_size_ || new_device_scale != device_scale() ||
-      view_rect.origin() != plugin_offset_) {
+  if (view_device_size != plugin_size() || new_device_scale != device_scale() ||
+      view_rect.origin() != plugin_offset()) {
     set_device_scale(new_device_scale);
-    plugin_dip_size_ = view_rect.size();
-    plugin_size_ = view_device_size;
-    plugin_offset_ = view_rect.origin();
+    set_plugin_dip_size(view_rect.size());
+    set_plugin_size(view_device_size);
+    set_plugin_offset(view_rect.origin());
 
     paint_manager().SetSize(view_device_size, device_scale());
 
     const gfx::Size old_image_data_size = SizeFromPPSize(image_data_.size());
     gfx::Size new_image_data_size =
-        PaintManager::GetNewContextSize(old_image_data_size, plugin_size_);
+        PaintManager::GetNewContextSize(old_image_data_size, plugin_size());
     if (new_image_data_size != old_image_data_size) {
       image_data_ = pp::ImageData(this, PP_IMAGEDATAFORMAT_BGRA_PREMUL,
                                   PPSizeFromSize(new_image_data_size), false);
@@ -785,7 +785,7 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
     }
 
     if (image_data_.is_null()) {
-      DCHECK(plugin_size_.IsEmpty());
+      DCHECK(plugin_size().IsEmpty());
       return;
     }
 
@@ -913,9 +913,9 @@ void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
 
 void OutOfProcessInstance::SendAccessibilityViewportInfo() {
   PP_PrivateAccessibilityViewportInfo viewport_info;
-  viewport_info.scroll.x = -plugin_offset_.x();
+  viewport_info.scroll.x = -plugin_offset().x();
   viewport_info.scroll.y =
-      -top_toolbar_height_in_viewport_coords() - plugin_offset_.y();
+      -top_toolbar_height_in_viewport_coords() - plugin_offset().y();
   viewport_info.offset.x = available_area_.x() / (device_scale() * zoom());
   viewport_info.offset.y = available_area_.y() / (device_scale() * zoom());
 
@@ -1115,7 +1115,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
                                    std::vector<PaintReadyRect>* ready,
                                    std::vector<gfx::Rect>* pending) {
   if (image_data_.is_null()) {
-    DCHECK(plugin_size_.IsEmpty());
+    DCHECK(plugin_size().IsEmpty());
     return;
   }
   if (first_paint()) {
@@ -1133,7 +1133,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
   for (const auto& paint_rect : paint_rects) {
     // Intersect with plugin area since there could be pending invalidates from
     // when the plugin area was larger.
-    gfx::Rect rect = gfx::IntersectRects(paint_rect, gfx::Rect(plugin_size_));
+    gfx::Rect rect = gfx::IntersectRects(paint_rect, gfx::Rect(plugin_size()));
     if (rect.IsEmpty())
       continue;
 
@@ -1160,7 +1160,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
                                   : engine()->GetPageScreenRect(0).y();
     if (rect.y() < first_page_ypos) {
       gfx::Rect region = gfx::IntersectRects(
-          rect, gfx::Rect(gfx::Size(plugin_size_.width(), first_page_ypos)));
+          rect, gfx::Rect(gfx::Size(plugin_size().width(), first_page_ypos)));
       ready->push_back(PaintReadyRect(region, image_data_));
       FillRect(region, GetBackgroundColor());
     }
@@ -1190,8 +1190,8 @@ void OutOfProcessInstance::CalculateBackgroundParts() {
   background_parts_.clear();
   int left_width = available_area_.x();
   int right_start = available_area_.right();
-  int right_width = abs(plugin_size_.width() - available_area_.right());
-  int bottom = std::min(available_area_.bottom(), plugin_size_.height());
+  int right_width = abs(plugin_size().width() - available_area_.right());
+  int bottom = std::min(available_area_.bottom(), plugin_size().height());
 
   // Add the left, right, and bottom rectangles.  Note: we assume only
   // horizontal centering.
@@ -1202,8 +1202,8 @@ void OutOfProcessInstance::CalculateBackgroundParts() {
   part.location = pp::Rect(right_start, 0, right_width, bottom);
   if (!part.location.IsEmpty())
     background_parts_.push_back(part);
-  part.location =
-      pp::Rect(0, bottom, plugin_size_.width(), plugin_size_.height() - bottom);
+  part.location = pp::Rect(0, bottom, plugin_size().width(),
+                           plugin_size().height() - bottom);
   if (!part.location.IsEmpty())
     background_parts_.push_back(part);
 }
@@ -1834,7 +1834,7 @@ void OutOfProcessInstance::HandleResetPrintPreviewModeMessage(
   engine()->SetGrayscale(dict.Get(pp::Var(kJSPrintPreviewGrayscale)).AsBool());
   engine()->New(url_.c_str(), /*headers=*/nullptr);
 
-  paint_manager().InvalidateRect(gfx::Rect(plugin_size_));
+  paint_manager().InvalidateRect(gfx::Rect(plugin_size()));
 }
 
 void OutOfProcessInstance::HandleSaveAttachmentMessage(
@@ -2007,7 +2007,7 @@ void OutOfProcessInstance::HandleViewportMessage(
     // position on screen of the paint.
     gfx::Vector2d paint_offset;
 
-    if (plugin_size_.width() > GetDocumentPixelWidth() * zoom_ratio) {
+    if (plugin_size().width() > GetDocumentPixelWidth() * zoom_ratio) {
       // We want to keep the paint in the middle but it must stay in the same
       // position relative to the scroll bars.
       paint_offset = gfx::Vector2d(0, (1 - zoom_ratio) * pinch_center.y());
@@ -2018,10 +2018,10 @@ void OutOfProcessInstance::HandleViewportMessage(
       pinch_vector = gfx::Vector2d();
       last_bitmap_smaller_ = true;
     } else if (last_bitmap_smaller_) {
-      pinch_center = pp::Point((plugin_size_.width() / device_scale()) / 2,
-                               (plugin_size_.height() / device_scale()) / 2);
+      pinch_center = pp::Point((plugin_size().width() / device_scale()) / 2,
+                               (plugin_size().height() / device_scale()) / 2);
       const double zoom_when_doc_covers_plugin_width =
-          zoom() * plugin_size_.width() / GetDocumentPixelWidth();
+          zoom() * plugin_size().width() / GetDocumentPixelWidth();
       paint_offset = gfx::Vector2d(
           (1 - new_zoom / zoom_when_doc_covers_plugin_width) * pinch_center.x(),
           (1 - zoom_ratio) * pinch_center.y());
@@ -2091,7 +2091,7 @@ void OutOfProcessInstance::DocumentLoadFailed() {
   }
 
   document_load_state_ = LOAD_STATE_FAILED;
-  paint_manager().InvalidateRect(gfx::Rect(plugin_size_));
+  paint_manager().InvalidateRect(gfx::Rect(plugin_size()));
 
   // Send a progress value of -1 to indicate a failure.
   SendLoadingProgress(-1);
@@ -2182,7 +2182,7 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
   if (zoom() != old_zoom || device_scale() != old_device_scale)
     engine()->ZoomUpdated(zoom() * device_scale());
 
-  available_area_ = gfx::Rect(plugin_size_);
+  available_area_ = gfx::Rect(plugin_size());
   int doc_width = GetDocumentPixelWidth();
   if (doc_width < available_area_.width()) {
     available_area_.Offset((available_area_.width() - doc_width) / 2, 0);
@@ -2200,7 +2200,7 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
 
   if (document_size().IsEmpty())
     return;
-  paint_manager().InvalidateRect(gfx::Rect(plugin_size_));
+  paint_manager().InvalidateRect(gfx::Rect(plugin_size()));
 
   if (accessibility_state_ == ACCESSIBILITY_STATE_LOADED)
     SendAccessibilityViewportInfo();
@@ -2419,11 +2419,12 @@ void OutOfProcessInstance::UserMetricsRecordAction(const std::string& action) {
 pp::FloatPoint OutOfProcessInstance::BoundScrollOffsetToDocument(
     const pp::FloatPoint& scroll_offset) {
   float max_x = std::max(
-      document_size().width() * float{zoom()} - plugin_dip_size_.width(), 0.0f);
+      document_size().width() * float{zoom()} - plugin_dip_size().width(),
+      0.0f);
   float x = base::ClampToRange(scroll_offset.x(), 0.0f, max_x);
   float min_y = -top_toolbar_height_in_viewport_coords();
   float max_y = std::max(
-      document_size().height() * float{zoom()} - plugin_dip_size_.height(),
+      document_size().height() * float{zoom()} - plugin_dip_size().height(),
       min_y);
   float y = base::ClampToRange(scroll_offset.y(), min_y, max_y);
   return pp::FloatPoint(x, y);
