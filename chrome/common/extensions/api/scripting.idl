@@ -8,7 +8,7 @@ namespace scripting {
   callback InjectedFunction = void();
 
   // The origin for a style change.
-  // See <href="https://developer.mozilla.org/en-US/docs/Glossary/Style_origin">style origins</href>
+  // See <a href="https://developer.mozilla.org/en-US/docs/Glossary/Style_origin">style origins</a>
   // for more info.
   enum StyleOrigin {
     AUTHOR,
@@ -19,7 +19,7 @@ namespace scripting {
     // The ID of the tab into which to inject.
     long tabId;
 
-    // The <a href="https://developer.chrome.com/extensions/webNavigation#frame_ids">IDs</href>
+    // The <a href="https://developer.chrome.com/extensions/webNavigation#frame_ids">IDs</a>
     // of specific frames to inject into.
     long[]? frameIds;
 
