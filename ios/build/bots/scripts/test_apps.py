@@ -472,6 +472,8 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
       ]
       self.test_args.append('--gtest_filter=%s' % gtest_filter)
 
+    self.test_args.append('--gmock_verbose=error')
+
     xctestrun_data['TestTargetName'].update(
         {'CommandLineArguments': self.test_args})
 
@@ -586,6 +588,8 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
           el for el in self.test_args if not el.startswith('--gtest_filter=')
       ]
       self.test_args.append('--gtest_filter=%s' % gtest_filter)
+
+    self.test_args.append('--gmock_verbose=error')
 
     xctestrun_data['TestTargetName'].update(
         {'CommandLineArguments': self.test_args})
