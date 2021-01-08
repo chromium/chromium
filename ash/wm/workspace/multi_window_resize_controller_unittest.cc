@@ -77,8 +77,6 @@ class MultiWindowResizeControllerTest : public AshTestBase {
 
   bool HasPendingShow() { return resize_controller_->show_timer_.IsRunning(); }
 
-  void Hide() { resize_controller_->Hide(); }
-
   bool HasTarget(aura::Window* window) {
     if (!resize_controller_->windows_.is_valid())
       return false;

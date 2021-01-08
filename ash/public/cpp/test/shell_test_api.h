@@ -30,7 +30,6 @@ class PaginationModel;
 class PowerPrefs;
 class ScreenPositionController;
 class Shell;
-class SystemGestureEventFilter;
 class WorkspaceController;
 
 // Accesses private data from a Shell for testing.
@@ -45,7 +44,6 @@ class ASH_EXPORT ShellTestApi {
   static void SetTabletControllerUseScreenshotForTest(bool use_screenshot);
 
   MessageCenterController* message_center_controller();
-  SystemGestureEventFilter* system_gesture_event_filter();
   WorkspaceController* workspace_controller();
   ScreenPositionController* screen_position_controller();
   NativeCursorManagerAsh* native_cursor_manager_ash();
@@ -78,9 +76,6 @@ class ASH_EXPORT ShellTestApi {
   // Fullscreens the active window, as if the user had pressed the hardware
   // fullscreen button.
   void ToggleFullscreen();
-
-  // Returns true if it is in overview selecting mode.
-  bool IsOverviewSelecting();
 
   // Used to emulate display change when run in a desktop environment instead
   // of on a device.
@@ -120,10 +115,6 @@ class ASH_EXPORT ShellTestApi {
   // Returns the pagination model of the currently visible app-list view.
   // It returns nullptr when app-list is not shown.
   PaginationModel* GetAppListPaginationModel();
-
-  // Returns the list of windows used in overview item. Returns empty
-  // if not in the overview mode.
-  std::vector<aura::Window*> GetItemWindowListInOverviewGrids();
 
  private:
   Shell* shell_;  // not owned

@@ -32,8 +32,4 @@ display::Display::Rotation CursorManagerTestApi::GetCurrentCursorRotation()
   return ShellTestApi().native_cursor_manager_ash()->GetRotation();
 }
 
-float CursorManagerTestApi::GetCurrentCursorScale() const {
-  return ShellTestApi().native_cursor_manager_ash()->GetScale();
-}
-
 }  // namespace ash

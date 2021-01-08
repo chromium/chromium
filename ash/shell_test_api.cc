@@ -118,10 +118,6 @@ MessageCenterController* ShellTestApi::message_center_controller() {
   return shell_->message_center_controller_.get();
 }
 
-SystemGestureEventFilter* ShellTestApi::system_gesture_event_filter() {
-  return shell_->system_gesture_filter_.get();
-}
-
 WorkspaceController* ShellTestApi::workspace_controller() {
   // TODO(afakhry): Split this into two, one for root, and one for context.
   return GetActiveWorkspaceController(shell_->GetPrimaryRootWindow());
@@ -183,10 +179,6 @@ void ShellTestApi::EnableVirtualKeyboard() {
 
 void ShellTestApi::ToggleFullscreen() {
   accelerators::ToggleFullscreen();
-}
-
-bool ShellTestApi::IsOverviewSelecting() {
-  return shell_->overview_controller()->InOverviewSession();
 }
 
 void ShellTestApi::AddRemoveDisplay() {
@@ -258,12 +250,6 @@ PaginationModel* ShellTestApi::GetAppListPaginationModel() {
   if (!view)
     return nullptr;
   return view->GetAppsPaginationModel();
-}
-
-std::vector<aura::Window*> ShellTestApi::GetItemWindowListInOverviewGrids() {
-  return Shell::Get()
-      ->overview_controller()
-      ->GetItemWindowListInOverviewGridsForTest();
 }
 
 }  // namespace ash

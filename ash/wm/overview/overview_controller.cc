@@ -251,17 +251,6 @@ OverviewController::GetWindowsListInOverviewGridsForTest() {
   return windows;
 }
 
-std::vector<aura::Window*>
-OverviewController::GetItemWindowListInOverviewGridsForTest() {
-  std::vector<aura::Window*> windows;
-  for (const std::unique_ptr<OverviewGrid>& grid :
-       overview_session_->grid_list()) {
-    for (const auto& overview_item : grid->window_list())
-      windows.push_back(overview_item->item_widget()->GetNativeWindow());
-  }
-  return windows;
-}
-
 void OverviewController::ToggleOverview(OverviewEnterExitType type) {
   // Hide the virtual keyboard as it obstructs the overview mode.
   // Don't need to hide if it's the a11y keyboard, as overview mode

@@ -116,7 +116,6 @@ bool DeskActivationAnimation::Replace(bool moving_left,
   // List of animators that need a screenshot. It should be either empty or
   // match the size of |desk_switch_animators_| as all the animations should be
   // in sync.
-  // TODO(sammiequon): Verify all the animations are in sync.
   std::vector<RootWindowDeskSwitchAnimator*> pending_animators;
   for (const auto& animator : desk_switch_animators_) {
     if (animator->ReplaceAnimation(new_ending_desk_index))

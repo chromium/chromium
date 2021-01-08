@@ -155,8 +155,6 @@ class TweenTester : public ui::LayerAnimationObserver {
 
 }  // namespace
 
-// TODO(bruthig): Move all non-simple method definitions out of class
-// declaration.
 class OverviewSessionTest : public AshTestBase {
  public:
   OverviewSessionTest() = default;

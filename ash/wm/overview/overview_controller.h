@@ -102,7 +102,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // Gets the windows list that are shown in the overview windows grids if the
   // overview mode is active for testing.
   std::vector<aura::Window*> GetWindowsListInOverviewGridsForTest();
-  std::vector<aura::Window*> GetItemWindowListInOverviewGridsForTest();
 
  private:
   friend class OverviewSessionTest;

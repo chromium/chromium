@@ -31,10 +31,6 @@ ASH_EXPORT extern const aura::WindowProperty<bool>* const
 // bounds outside of its root window is set.
 ASH_EXPORT extern const aura::WindowProperty<bool>* const kLockedToRootKey;
 
-// Set to true if the window server tells us the window is janky (see
-// WindowManagerDelegate::OnWmClientJankinessChanged()).
-ASH_EXPORT extern const aura::WindowProperty<bool>* const kWindowIsJanky;
-
 // A property key to store WindowState in the window. The window state
 // is owned by the window.
 ASH_EXPORT extern const aura::WindowProperty<WindowState*>* const
