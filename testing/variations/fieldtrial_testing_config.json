@@ -5022,6 +5022,7 @@
                         "OmniboxDisplayTitleForCurrentUrl",
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxEntitySuggestionsReduceLatency",
+                        "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
                         "OmniboxLocalZeroSuggestAgeThreshold",
                         "OmniboxLocalZeroSuggestFrecencyRanking",
                         "OmniboxMaxURLMatches",
@@ -5061,6 +5062,7 @@
                     "enable_features": [
                         "OmniboxAdaptiveSuggestionsCount",
                         "OmniboxCompactSuggestions",
+                        "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
                         "OmniboxLocalZeroSuggestAgeThreshold",
                         "OmniboxLocalZeroSuggestFrecencyRanking",
                         "OmniboxMaxURLMatches",
