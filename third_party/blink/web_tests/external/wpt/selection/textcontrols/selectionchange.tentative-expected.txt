@@ -3,6 +3,7 @@ FAIL Modifying selectionStart value of the input element assert_equals: expected
 FAIL Modifying selectionEnd value of the input element assert_equals: expected 1 but got 0
 FAIL Calling setSelectionRange() on the input element assert_equals: expected 1 but got 0
 FAIL Calling select() on the input element assert_equals: expected 1 but got 0
+FAIL Calling setRangeText() on the input element assert_equals: expected 1 but got 0
 PASS Setting initial zero selectionStart value on the input element
 FAIL Setting the same selectionStart value twice on the input element assert_equals: expected 1 but got 0
 PASS Setting initial zero selectionEnd value on the input element
@@ -14,6 +15,7 @@ FAIL Modifying selectionStart value of the disconnected input element assert_equ
 FAIL Modifying selectionEnd value of the disconnected input element assert_equals: expected 1 but got 0
 FAIL Calling setSelectionRange() on the disconnected input element assert_equals: expected 1 but got 0
 FAIL Calling select() on the disconnected input element assert_equals: expected 1 but got 0
+FAIL Calling setRangeText() on the disconnected input element assert_equals: expected 1 but got 0
 PASS Setting initial zero selectionStart value on the disconnected input element
 FAIL Setting the same selectionStart value twice on the disconnected input element assert_equals: expected 1 but got 0
 PASS Setting initial zero selectionEnd value on the disconnected input element
@@ -25,6 +27,7 @@ FAIL Modifying selectionStart value of the textarea element assert_equals: expec
 FAIL Modifying selectionEnd value of the textarea element assert_equals: expected 1 but got 0
 FAIL Calling setSelectionRange() on the textarea element assert_equals: expected 1 but got 0
 FAIL Calling select() on the textarea element assert_equals: expected 1 but got 0
+FAIL Calling setRangeText() on the textarea element assert_equals: expected 1 but got 0
 PASS Setting initial zero selectionStart value on the textarea element
 FAIL Setting the same selectionStart value twice on the textarea element assert_equals: expected 1 but got 0
 PASS Setting initial zero selectionEnd value on the textarea element
@@ -36,6 +39,7 @@ FAIL Modifying selectionStart value of the disconnected textarea element assert_
 FAIL Modifying selectionEnd value of the disconnected textarea element assert_equals: expected 1 but got 0
 FAIL Calling setSelectionRange() on the disconnected textarea element assert_equals: expected 1 but got 0
 FAIL Calling select() on the disconnected textarea element assert_equals: expected 1 but got 0
+FAIL Calling setRangeText() on the disconnected textarea element assert_equals: expected 1 but got 0
 PASS Setting initial zero selectionStart value on the disconnected textarea element
 FAIL Setting the same selectionStart value twice on the disconnected textarea element assert_equals: expected 1 but got 0
 PASS Setting initial zero selectionEnd value on the disconnected textarea element
