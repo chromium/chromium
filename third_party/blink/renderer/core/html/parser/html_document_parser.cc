@@ -1229,7 +1229,7 @@ void HTMLDocumentParser::Append(const String& input_source) {
 
   const SegmentedString source(input_source);
 
-  if (!preload_scanner_ && preloader_ && GetDocument()->Url().IsValid() &&
+  if (!preload_scanner_ && GetDocument()->Url().IsValid() &&
       (!task_runner_state_->IsSynchronous() ||
        GetDocument()->IsPrefetchOnly() || IsPaused())) {
     // If we're operating with synchronous, budgeted foreground HTML parsing
