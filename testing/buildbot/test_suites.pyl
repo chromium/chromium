@@ -259,7 +259,6 @@
         },
       },
       'android_webview_unittests': {},
-      'breakpad_unittests': {},
       'gl_unittests': {},
       'ui_android_unittests': {},
     },
@@ -4215,6 +4214,77 @@
       },
     },
 
+    'paeverywhere_common_tests': {
+      # Copy from chromium_gtests minus capture_unittests, crashpad_tests,
+      # content_browsertests, events_unittests and perfetto_unittests, because
+      # they fail.
+      'absl_hardening_tests': {},
+      'angle_unittests': {
+        'args': [
+          'angle_unittests',
+        ],
+        'android_args': [
+          '-v',
+        ],
+        'use_isolated_scripts_api': True,
+      },
+      'base_unittests': {},
+      'base_util_unittests': {},
+      'blink_common_unittests': {},
+      'blink_heap_unittests': {},
+      'blink_platform_unittests': {},
+      'boringssl_crypto_tests': {},
+      'boringssl_ssl_tests': {},
+      'cast_unittests': {},
+      'components_browsertests': {},
+      'components_unittests': {
+        'android_swarming': {
+          'shards': 4,
+        },
+      },
+      'content_unittests': {
+        'android_swarming': {
+          'shards': 3,
+        },
+      },
+      'crypto_unittests': {},
+      'gcm_unit_tests': {},
+      'gin_unittests': {},
+      'google_apis_unittests': {},
+      'gpu_unittests': {},
+      'gwp_asan_unittests': {},
+      'ipc_tests': {},
+      'jingle_unittests': {},
+      'latency_unittests': {},
+      'libjingle_xmpp_unittests': {},
+      'liburlpattern_unittests': {},
+      'media_blink_unittests': {},
+      'media_unittests': {},
+      'midi_unittests': {},
+      'mojo_unittests': {},
+      'net_unittests': {
+        'android_swarming': {
+          'shards': 3,
+        },
+      },
+      'services_unittests': {},
+      'shell_dialogs_unittests': {},
+      'skia_unittests': {},
+      'sql_unittests': {},
+      'storage_unittests': {},
+      'ui_base_unittests': {},
+      'ui_touch_selection_unittests': {},
+      'url_unittests': {},
+      'webkit_unit_tests': {
+        'test': 'blink_unittests',
+        'android_swarming': {
+          'shards': 4,
+        },
+      },
+      'wtf_unittests': {},
+      'zlib_unittests': {},
+    },
+
     'perfetto_gtests': {
       'base_unittests': {},
       'content_browsertests': {
@@ -6269,25 +6339,25 @@
     'paeverywhere_android_gtests': [
       'android_specific_chromium_gtests_for_paeverywhere',
       'android_smoke_tests',
-      'chromium_gtests'
+      'paeverywhere_common_tests'
     ],
 
     'paeverywhere_linux_gtests': [
       'chromium_gtests_for_linux_and_mac_only',
       'chromium_gtests_for_linux_only',
       'chromium_gtests_for_win_and_linux_only',
-      'chromium_gtests',
+      'paeverywhere_common_tests',
     ],
 
     'paeverywhere_mac_gtests': [
       'chromium_gtests_for_linux_and_mac_only',
       'mac_specific_chromium_gtests',
-      'chromium_gtests',
+      'paeverywhere_common_tests',
     ],
 
     'paeverywhere_win_gtests': [
       'chromium_gtests_for_win_and_linux_only',
-      'chromium_gtests',
+      'paeverywhere_common_tests',
       'win_specific_chromium_gtests',
     ],
 
