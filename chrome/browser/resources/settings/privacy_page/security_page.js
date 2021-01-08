@@ -21,7 +21,6 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../metrics_browser_proxy.js';
-import {SyncStatus} from '../people_page/sync_browser_proxy.m.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.m.js';
@@ -52,9 +51,6 @@ Polymer({
   ],
 
   properties: {
-    /** @type {SyncStatus} */
-    syncStatus: Object,
-
     /**
      * Preferences state.
      */
@@ -221,9 +217,11 @@ Polymer({
    */
   getPasswordsLeakToggleSubLabel_() {
     let subLabel = this.i18n('passwordsLeakDetectionGeneralDescription');
+    // If the backing password leak detection preference is enabled, but the
+    // generated preference is disabled, then additional text explaining that
+    // the feature will be enabled if the user signs in is added.
     if (this.getPref('profile.password_manager_leak_detection').value &&
-        (!this.syncStatus.signedIn ||
-         !!this.syncStatus.signedIn && !!this.syncStatus.hasError)) {
+        !this.getPref('generated.password_leak_detection').value) {
       subLabel +=
           ' ' +  // Whitespace is a valid sentence separator w.r.t. i18n.
           this.i18n('passwordsLeakDetectionSignedOutEnabledDescription');

@@ -28,7 +28,6 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {HatsBrowserProxyImpl} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
-import {SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.m.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
 import {routes} from '../route.js';
 import {RouteObserverBehavior, Router} from '../router.m.js';
@@ -65,12 +64,6 @@ Polymer({
       type: Object,
       notify: true,
     },
-
-    /**
-     * The current sync status, supplied by SyncBrowserProxy.
-     * @type {?SyncStatus}
-     */
-    syncStatus: Object,
 
     /** @private */
     isGuest_: {
@@ -236,26 +229,12 @@ Polymer({
         'onBlockAutoplayStatusChanged',
         this.onBlockAutoplayStatusChanged_.bind(this));
 
-    SyncBrowserProxyImpl.getInstance().getSyncStatus().then(
-        this.handleSyncStatus_.bind(this));
-    this.addWebUIListener(
-        'sync-status-changed', this.handleSyncStatus_.bind(this));
-
     SiteSettingsPrefsBrowserProxyImpl.getInstance()
         .getCookieSettingDescription()
         .then(description => this.cookieSettingDescription_ = description);
     this.addWebUIListener(
         'cookieSettingDescriptionChanged',
         description => this.cookieSettingDescription_ = description);
-  },
-
-  /**
-   * Handler for when the sync state is pushed from the browser.
-   * @param {?SyncStatus} syncStatus
-   * @private
-   */
-  handleSyncStatus_(syncStatus) {
-    this.syncStatus = syncStatus;
   },
 
   /** @protected */

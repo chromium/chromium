@@ -7,7 +7,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ClearBrowsingDataBrowserProxyImpl, ContentSettingsTypes, CookieControlsMode, SafeBrowsingSetting, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Route, Router, routes, SecureDnsMode, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Route, Router, routes, SecureDnsMode} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {flushTasks, isChildVisible, isVisible} from '../test_util.m.js';
@@ -17,7 +17,6 @@ import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
-import {TestSyncBrowserProxy} from './test_sync_browser_proxy.m.js';
 
 // clang-format on
 
@@ -82,14 +81,12 @@ suite('PrivacyPage', function() {
     });
   });
 
-  setup(async function() {
+  setup(function() {
     testClearBrowsingDataBrowserProxy = new TestClearBrowsingDataBrowserProxy();
     ClearBrowsingDataBrowserProxyImpl.instance_ =
         testClearBrowsingDataBrowserProxy;
     const testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.instance_ = testBrowserProxy;
-    const testSyncBrowserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = testSyncBrowserProxy;
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.instance_ = siteSettingsBrowserProxy;
     siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]);
@@ -112,7 +109,7 @@ suite('PrivacyPage', function() {
           {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
     };
     document.body.appendChild(page);
-    return testSyncBrowserProxy.whenCalled('getSyncStatus');
+    return flushTasks();
   });
 
   teardown(function() {

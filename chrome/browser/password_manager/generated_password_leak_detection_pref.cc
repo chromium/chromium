@@ -34,7 +34,11 @@ bool IsUserSignedInAndSyncing(Profile* profile) {
       status_labels.message_type == sync_ui_util::SYNC_ERROR ||
       status_labels.message_type == sync_ui_util::PASSWORDS_ONLY_SYNC_ERROR;
 
-  return identity_manager->HasPrimaryAccount() && !sync_error;
+  // Password leak detection only requires a signed in account and a functioning
+  // sync service, it does not require sync consent.
+  return identity_manager->HasPrimaryAccount(
+             signin::ConsentLevel::kNotRequired) &&
+         !sync_error;
 }
 
 // Returns whether the effective value of the Safe Browsing preferences for
