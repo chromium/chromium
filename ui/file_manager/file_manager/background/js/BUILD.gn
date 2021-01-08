@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
@@ -265,6 +266,21 @@ js_library("background.m") {
   ]
 
   extra_deps = [ ":modulize" ]
+}
+
+js_library("main_background.m") {
+  visibility = []
+  visibility = [
+    ":*",
+    "//ui/file_manager:preprocess_static",
+  ]
+
+  deps = [
+    ":background.m",
+    ":metrics_start.m",
+    ":test_util.m",
+    "//ui/file_manager/base/js:error_counter.m",
+  ]
 }
 
 js_library("background_base") {
@@ -1314,4 +1330,25 @@ js_modulizer("modulize") {
   ]
 
   namespace_rewrites = cr_namespace_rewrites
+}
+
+preprocess_folder =
+    rebase_path(
+        "$target_gen_dir/../../../preprocessed/file_manager/background/js",
+        root_build_dir)
+
+optimize_webui("build") {
+  host = "file_manager"
+
+  input = preprocess_folder
+  js_module_in_files = [ "main_background.m.js" ]
+
+  js_out_files = [ "main_background.m.rollup.js" ]
+
+  deps = [
+    ":main_background.m",
+    "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_static",
+    "//ui/webui/resources:preprocess",
+  ]
 }
