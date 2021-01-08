@@ -117,6 +117,7 @@ LayoutUnit ComputeAssignableTableInlineSize(
           /* containing_block_expects_minmax_without_percentages */ false,
           /* skip_collapsed_columns */ false);
 
+  // Standard: "used width of the table".
   LayoutUnit used_table_inline_size = ComputeUsedInlineSizeForTableFragment(
       space, table, table_border_padding, grid_min_max);
 
@@ -397,18 +398,8 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
 
 scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
+
   const bool is_fixed_layout = Style().IsFixedTableLayout();
-
-  // TODO(atotic) review autosizer usage in TablesNG.
-  // Legacy has:
-  //  LayoutTable::UpdateLayout
-  //    TextAutosizer::LayoutScope
-  // TableLayoutAlgorithmAuto::ComputeIntrinsicLogicalWidths
-  //    TextAutosizer::TableLayoutScope
-  base::Optional<TextAutosizer::TableLayoutScope> text_autosizer;
-  if (!is_fixed_layout)
-    text_autosizer.emplace(To<LayoutNGTable>(Node().GetLayoutBox()));
-
   const LogicalSize border_spacing = Style().TableBorderSpacing();
   NGTableGroupedChildren grouped_children(Node());
   const scoped_refptr<const NGTableBorders> table_borders =
@@ -628,8 +619,6 @@ void NGTableLayoutAlgorithm::ComputeTableSpecificFragmentData(
     const PhysicalRect& table_grid_rect,
     const LogicalSize& border_spacing,
     const LayoutUnit table_grid_block_size) {
-  // TODO(atotic) SetHasNonCollapsedBorderDecoration should be a fragment
-  // property, not a flag on LayoutObject.
   container_builder_.SetTableGridRect(table_grid_rect);
   container_builder_.SetTableColumnCount(column_locations.size());
   container_builder_.SetHasCollapsedBorders(table_borders.IsCollapsed());
