@@ -1483,7 +1483,7 @@ deps = {
   },
 
   'src/third_party/usrsctp/usrsctplib':
-    Var('chromium_git') + '/external/github.com/sctplab/usrsctp' + '@' + '4191ca1784d8774dbf62d48ab9426c7311a91bc5',
+    Var('chromium_git') + '/external/github.com/sctplab/usrsctp' + '@' + '2c26785bed47cf18e127c516ab242b4e3781ed20',
 
   'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@ffb3b84133b03dfc4b83a8430a418f4fa94308d8',
 
