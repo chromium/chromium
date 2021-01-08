@@ -1081,10 +1081,7 @@ PrinterHandler* PrintPreviewHandler::GetPrinterHandler(
     return extension_printer_handler_.get();
   }
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-  if (printer_type == PrinterType::kPrivet &&
-      (base::FeatureList::IsEnabled(features::kForceEnablePrivetPrinting) ||
-       GetPrefs()->GetBoolean(
-           prefs::kCloudPrintDeprecationWarningsSuppressed))) {
+  if (printer_type == PrinterType::kPrivet) {
     if (!privet_printer_handler_) {
       privet_printer_handler_ =
           PrinterHandler::CreateForPrivetPrinters(Profile::FromWebUI(web_ui()));
@@ -1156,8 +1153,7 @@ void PrintPreviewHandler::RegisterForGaiaCookieChanges() {
   DCHECK(!identity_manager_);
   cloud_print_enabled_ =
       !base::Contains(printer_type_deny_list_, PrinterType::kCloud) &&
-      GetPrefs()->GetBoolean(prefs::kCloudPrintSubmitEnabled) &&
-      GetPrefs()->GetBoolean(prefs::kCloudPrintDeprecationWarningsSuppressed);
+      GetPrefs()->GetBoolean(prefs::kCloudPrintSubmitEnabled);
 
   if (!cloud_print_enabled_)
     return;
