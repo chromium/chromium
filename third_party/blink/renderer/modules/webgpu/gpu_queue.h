@@ -37,13 +37,13 @@ class GPUQueue : public DawnObject<WGPUQueue> {
   void writeBuffer(GPUBuffer* buffer,
                    uint64_t buffer_offset,
                    const MaybeShared<DOMArrayBufferView>& data,
-                   uint64_t data_element_offset,
+                   uint64_t data_byte_offset,
                    ExceptionState& exception_state);
   void writeBuffer(GPUBuffer* buffer,
                    uint64_t buffer_offset,
                    const MaybeShared<DOMArrayBufferView>& data,
-                   uint64_t data_element_offset,
-                   uint64_t data_element_count,
+                   uint64_t data_byte_offset,
+                   uint64_t byte_size,
                    ExceptionState& exception_state);
   void writeBuffer(GPUBuffer* buffer,
                    uint64_t buffer_offset,

@@ -178,22 +178,22 @@ GPUFence* GPUQueue::createFence(const GPUFenceDescriptor* descriptor) {
 void GPUQueue::writeBuffer(GPUBuffer* buffer,
                            uint64_t buffer_offset,
                            const MaybeShared<DOMArrayBufferView>& data,
-                           uint64_t data_element_offset,
+                           uint64_t data_byte_offset,
                            ExceptionState& exception_state) {
   WriteBufferImpl(buffer, buffer_offset, data->byteLength(),
                   data->BaseAddressMaybeShared(), data->TypeSize(),
-                  data_element_offset, {}, exception_state);
+                  data_byte_offset, {}, exception_state);
 }
 
 void GPUQueue::writeBuffer(GPUBuffer* buffer,
                            uint64_t buffer_offset,
                            const MaybeShared<DOMArrayBufferView>& data,
-                           uint64_t data_element_offset,
-                           uint64_t data_element_count,
+                           uint64_t data_byte_offset,
+                           uint64_t byte_size,
                            ExceptionState& exception_state) {
   WriteBufferImpl(buffer, buffer_offset, data->byteLength(),
                   data->BaseAddressMaybeShared(), data->TypeSize(),
-                  data_element_offset, data_element_count, exception_state);
+                  data_byte_offset, byte_size, exception_state);
 }
 
 void GPUQueue::writeBuffer(GPUBuffer* buffer,
@@ -222,38 +222,41 @@ void GPUQueue::WriteBufferImpl(GPUBuffer* buffer,
                                uint64_t data_byte_length,
                                const void* data_base_ptr,
                                unsigned data_bytes_per_element,
-                               uint64_t data_element_offset,
-                               base::Optional<uint64_t> data_element_count,
+                               uint64_t data_byte_offset,
+                               base::Optional<uint64_t> byte_size,
                                ExceptionState& exception_state) {
   if (buffer_offset % 4 != 0) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Buffer offset must be a multiple of 4");
+                                      "bufferOffset must be a multiple of 4");
     return;
   }
 
-  uint64_t data_byte_offset = data_element_offset * data_bytes_per_element;
+  if (data_byte_offset % data_bytes_per_element != 0) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kOperationError,
+        "dataByteOffset must be a multiple of data.BYTES_PER_ELEMENT");
+    return;
+  }
 
   if (data_byte_offset > data_byte_length) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Data offset is too large");
+                                      "dataByteOffset is too large");
     return;
   }
   uint64_t max_write_size = data_byte_length - data_byte_offset;
 
   uint64_t write_byte_size = max_write_size;
-  if (data_element_count.has_value()) {
-    write_byte_size = data_element_count.value() * data_bytes_per_element;
+  if (byte_size.has_value()) {
+    write_byte_size = byte_size.value();
     if (write_byte_size > max_write_size) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kOperationError,
-          "Number of bytes to write is too large");
+      exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                        "byteSize is too large");
       return;
     }
   }
-  if (write_byte_size % 4 != 0) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kOperationError,
-        "Number of bytes to write must be a multiple of 4");
+  if (write_byte_size % std::max(4u, data_bytes_per_element) != 0) {
+    exception_state.ThrowRangeError(
+        "byteSize must be a multiple of max(4, data.BYTES_PER_ELEMENT)");
     return;
   }
 

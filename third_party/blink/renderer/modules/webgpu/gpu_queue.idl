@@ -19,8 +19,8 @@
         GPUBuffer buffer,
         GPUSize64 bufferOffset,
         [AllowShared] ArrayBufferView data,
-        optional GPUSize64 dataElementOffset = 0,
-        optional GPUSize64 dataElementCount);
+        optional GPUSize64 dataByteOffset = 0,
+        optional GPUSize64 byteSize);
     [RaisesException] void writeBuffer(
         GPUBuffer buffer,
         GPUSize64 bufferOffset,
