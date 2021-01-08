@@ -357,9 +357,11 @@ void BrowserAccessibilityManager::ParentConnectionChanged(
     return;
   parent->OnDataChanged();
   parent->UpdatePlatformAttributes();
-  parent =
-      RetargetForEvents(parent, RetargetEventType::RetargetEventTypeGenerated);
-  FireGeneratedEvent(ui::AXEventGenerator::Event::CHILDREN_CHANGED, parent);
+  BrowserAccessibilityManager* parent_manager = parent->manager();
+  parent = parent_manager->RetargetForEvents(
+      parent, RetargetEventType::RetargetEventTypeGenerated);
+  parent_manager->FireGeneratedEvent(
+      ui::AXEventGenerator::Event::CHILDREN_CHANGED, parent);
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetPopupRoot() const {

@@ -196,6 +196,9 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   // If this tree has a parent tree, return the parent node in that tree.
   BrowserAccessibility* GetParentNodeFromParentTree() const;
 
+  // Refreshes a parent node in a parent tree when it needs to be informed that
+  // this tree is ready or being destroyed. For example, an iframe object
+  // in a parent tree may need to link or unlink to this manager.
   void ParentConnectionChanged(BrowserAccessibility* parent);
 
   // In general, there is only a single node with the role of kRootWebArea,
