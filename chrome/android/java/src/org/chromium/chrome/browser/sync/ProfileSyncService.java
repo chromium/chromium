@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.KeyRetrievalTriggerForUMA;
 import org.chromium.components.sync.ModelType;
@@ -565,6 +566,20 @@ public class ProfileSyncService {
     public void recordKeyRetrievalTrigger(@KeyRetrievalTriggerForUMA int keyRetrievalTrigger) {
         ProfileSyncServiceJni.get().recordKeyRetrievalTrigger(
                 mNativeProfileSyncServiceAndroid, ProfileSyncService.this, keyRetrievalTrigger);
+    }
+
+    /**
+     * @return Whether sync is enabled to sync urls or open tabs with a non custom passphrase.
+     */
+    public boolean isSyncingUrlsWithKeystorePassphrase() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+            return isEngineInitialized() && getActiveDataTypes().contains(ModelType.TYPED_URLS)
+                    && (getPassphraseType() == PassphraseType.KEYSTORE_PASSPHRASE
+                            || getPassphraseType() == PassphraseType.TRUSTED_VAULT_PASSPHRASE);
+        }
+        return isEngineInitialized() && getPreferredDataTypes().contains(ModelType.TYPED_URLS)
+                && (getPassphraseType() == PassphraseType.KEYSTORE_PASSPHRASE
+                        || getPassphraseType() == PassphraseType.TRUSTED_VAULT_PASSPHRASE);
     }
 
     @VisibleForTesting
