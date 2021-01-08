@@ -125,7 +125,7 @@ class ImageSkiaStorage : public base::RefCountedThreadSafe<ImageSkiaStorage> {
   //   one and rescale the image.
   // Right now only Windows uses 2 and other platforms use 1 by default.
   // TODO(mukai, oshima): abandon 1 code path and use 2 for every platforms.
-  std::vector<const ImageSkiaRep>::iterator FindRepresentation(
+  std::vector<ImageSkiaRep>::const_iterator FindRepresentation(
       float scale,
       bool fetch_new_image) const;
 
@@ -211,7 +211,7 @@ bool ImageSkiaStorage::HasRepresentationAtAllScales() const {
   return source_ && source_->HasRepresentationAtAllScales();
 }
 
-std::vector<const ImageSkiaRep>::iterator ImageSkiaStorage::FindRepresentation(
+std::vector<ImageSkiaRep>::const_iterator ImageSkiaStorage::FindRepresentation(
     float scale,
     bool fetch_new_image) const {
   auto closest_iter = image_reps_.end();
