@@ -48,6 +48,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
@@ -947,17 +948,38 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(https://crbug.com/1125474): Expand to cover ChromeOS.
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ProfileLifetimeTestUnderOneMinute) {
+class GuestProfileLifetimeBrowserTest
+    : public ProfileBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  GuestProfileLifetimeBrowserTest() : is_ephemeral_(GetParam()) {
+    // Change the value if Ephemeral is not supported.
+    is_ephemeral_ &=
+        TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+            scoped_feature_list_, is_ephemeral_);
+  }
+
+  bool is_ephemeral() const { return is_ephemeral_; }
+
+ private:
+  bool is_ephemeral_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, UnderOneMinute) {
   base::HistogramTester tester;
   Browser* browser = CreateGuestBrowser();
   BrowserCloseObserver close_observer(browser);
 
   BrowserList::CloseAllBrowsersWithProfile(browser->profile());
   close_observer.Wait();
-  tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 0, 1);
+  tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 0,
+                            is_ephemeral() ? 0 : 1);
+  tester.ExpectUniqueSample("Profile.Guest.Ephemeral.Lifetime", 0,
+                            is_ephemeral() ? 1 : 0);
 }
 
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ProfileLifetimeTestOneHour) {
+IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, OneHour) {
   base::HistogramTester tester;
   Browser* browser = CreateGuestBrowser();
   BrowserCloseObserver close_observer(browser);
@@ -966,8 +988,15 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ProfileLifetimeTestOneHour) {
       base::Time::Now() - base::TimeDelta::FromSeconds(60) * 60);
   BrowserList::CloseAllBrowsersWithProfile(browser->profile());
   close_observer.Wait();
-  tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 60, 1);
+  tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 60,
+                            is_ephemeral() ? 0 : 1);
+  tester.ExpectUniqueSample("Profile.Guest.Ephemeral.Lifetime", 60,
+                            is_ephemeral() ? 1 : 0);
 }
+
+INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
+                         GuestProfileLifetimeBrowserTest,
+                         /*is_ephemeral=*/testing::Bool());
 
 class EphemeralGuestProfileBrowserTest : public ProfileBrowserTest {
  public:
@@ -988,30 +1017,6 @@ IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest, TestProfileType) {
   EXPECT_FALSE(guest_profile->IsOffTheRecord());
   EXPECT_FALSE(guest_profile->IsGuestSession());
   EXPECT_TRUE(guest_profile->IsEphemeralGuestProfile());
-}
-
-IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest,
-                       ProfileLifetimeTestUnderOneMinute) {
-  base::HistogramTester tester;
-  Browser* browser = CreateGuestBrowser();
-  BrowserCloseObserver close_observer(browser);
-
-  BrowserList::CloseAllBrowsersWithProfile(browser->profile());
-  close_observer.Wait();
-  tester.ExpectUniqueSample("Profile.Guest.Ephemeral.Lifetime", 0, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest,
-                       ProfileLifetimeTestOneHour) {
-  base::HistogramTester tester;
-  Browser* browser = CreateGuestBrowser();
-  BrowserCloseObserver close_observer(browser);
-
-  browser->profile()->SetCreationTimeForTesting(
-      base::Time::Now() - base::TimeDelta::FromSeconds(60) * 60);
-  BrowserList::CloseAllBrowsersWithProfile(browser->profile());
-  close_observer.Wait();
-  tester.ExpectUniqueSample("Profile.Guest.Ephemeral.Lifetime", 60, 1);
 }
 
 // Tests if ephemeral Guest profile paths are persistent as long as one does not
