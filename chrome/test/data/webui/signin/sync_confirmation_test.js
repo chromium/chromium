@@ -23,7 +23,7 @@ suite('SigninSyncConfirmationTest', function() {
   // Tests that no DCHECKS are thrown during initialization of the UI.
   test('LoadPage', function() {
     assertEquals(
-        'Turn on sync?', app.$.syncConfirmationHeading.textContent.trim());
+        'Turn on sync?', app.$$('#syncConfirmationHeading').textContent.trim());
   });
 });
 
@@ -48,6 +48,9 @@ suite('SigninSyncConfirmationConsentRecordingTest', function() {
     PolymerTest.clearBody();
     app = document.createElement('sync-confirmation-app');
     document.body.append(app);
+    // Wait for the app element to get attached to the document (which is when
+    // the account image gets requested).
+    return browserProxy.whenCalled('requestAccountImage');
   });
 
   const STANDARD_CONSENT_DESCRIPTION_TEXT = [

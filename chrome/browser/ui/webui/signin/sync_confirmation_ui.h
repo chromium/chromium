@@ -37,12 +37,14 @@ class SyncConfirmationUI : public SigninWebDialogUI {
 
   // Initializes the message handler for the profile creation flow (when there's
   // no browser available).
-  void InitializeMessageHandlerForCreationFlow();
+  void InitializeMessageHandlerForCreationFlow(SkColor profile_color);
 
  private:
-  void Initialize();
+  void Initialize(base::Optional<SkColor> profile_creation_flow_color);
   void InitializeMessageHandler(Browser* browser);
-  void InitializeForSyncConfirmation(content::WebUIDataSource* source);
+  void InitializeForSyncConfirmation(
+      content::WebUIDataSource* source,
+      base::Optional<SkColor> profile_creation_flow_color);
   void InitializeForSyncDisabled(content::WebUIDataSource* source);
 
   // Adds a string resource with the given GRD |ids| to the WebUI data |source|

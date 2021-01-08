@@ -31,6 +31,26 @@ Polymer({
         return loadTimeData.getString('accountPictureUrl');
       },
     },
+
+    /** @private */
+    isProfileCreationFlow_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isProfileCreationFlow');
+      }
+    },
+
+    /** @private */
+    highlightColor_: {
+      type: String,
+      value() {
+        if (!loadTimeData.valueExists('highlightColor')) {
+          return '';
+        }
+
+        return loadTimeData.getString('highlightColor');
+      }
+    },
   },
 
   /** @private {?SyncConfirmationBrowserProxy} */
@@ -85,7 +105,7 @@ Polymer({
         Array.from(this.shadowRoot.querySelectorAll('[consent-description]'))
             .filter(element => element.clientWidth * element.clientHeight > 0)
             .map(element => element.innerHTML.trim());
-    assert(consentDescription);
+    assert(consentDescription.length);
     return consentDescription;
   },
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -25,25 +26,32 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
 
 SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
     : SigninWebDialogUI(web_ui), profile_(Profile::FromWebUI(web_ui)) {
-  Initialize();
+  // Initializing the WebUIDataSource in the constructor is needed for polymer
+  // tests.
+  Initialize(/*profile_creation_flow_color=*/base::nullopt);
 }
 
-SyncConfirmationUI::~SyncConfirmationUI() {}
+SyncConfirmationUI::~SyncConfirmationUI() = default;
 
 void SyncConfirmationUI::InitializeMessageHandlerWithBrowser(Browser* browser) {
   InitializeMessageHandler(browser);
 }
 
-void SyncConfirmationUI::InitializeMessageHandlerForCreationFlow() {
+void SyncConfirmationUI::InitializeMessageHandlerForCreationFlow(
+    SkColor profile_color) {
+  // Redo the initialization with `profile_color`.
+  Initialize(profile_color);
   InitializeMessageHandler(/*browser=*/nullptr);
 }
 
-void SyncConfirmationUI::Initialize() {
+void SyncConfirmationUI::Initialize(
+    base::Optional<SkColor> profile_creation_flow_color) {
   const bool is_sync_allowed =
       ProfileSyncServiceFactory::IsSyncAllowed(profile_);
 
@@ -58,7 +66,7 @@ void SyncConfirmationUI::Initialize() {
   source->AddResourcePath("sync_confirmation.js", IDR_SYNC_CONFIRMATION_JS);
 
   if (is_sync_allowed) {
-    InitializeForSyncConfirmation(source);
+    InitializeForSyncConfirmation(source, profile_creation_flow_color);
   } else {
     InitializeForSyncDisabled(source);
   }
@@ -79,23 +87,14 @@ void SyncConfirmationUI::InitializeMessageHandler(Browser* browser) {
 }
 
 void SyncConfirmationUI::InitializeForSyncConfirmation(
-    content::WebUIDataSource* source) {
+    content::WebUIDataSource* source,
+    base::Optional<SkColor> profile_creation_flow_color) {
+  // Resources for testing.
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test 'self';");
-
-  source->SetDefaultResource(IDR_SYNC_CONFIRMATION_HTML);
-  source->AddResourcePath("sync_confirmation_app.js",
-                          IDR_SYNC_CONFIRMATION_APP_JS);
-
-  source->AddResourcePath(
-      "images/sync_confirmation_illustration.svg",
-      IDR_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_SVG);
-  source->AddResourcePath(
-      "images/sync_confirmation_illustration_dark.svg",
-      IDR_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_DARK_SVG);
 
   AddStringResource(source, "syncConfirmationTitle",
                     IDS_SYNC_CONFIRMATION_TITLE);
@@ -109,24 +108,48 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
                     IDS_SYNC_CONFIRMATION_SETTINGS_BUTTON_LABEL);
   AddStringResource(source, "syncConfirmationConfirmLabel",
                     IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL);
-  AddStringResource(source, "syncConfirmationUndoLabel", IDS_CANCEL);
 
-  constexpr int kAccountPictureSize = 68;
-  std::string custom_picture_url = profiles::GetPlaceholderAvatarIconUrl();
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-  base::Optional<AccountInfo> primary_account_info =
-      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager->GetPrimaryAccountInfo());
-  GURL account_picture_url(
-      primary_account_info ? primary_account_info->picture_url : std::string());
-  if (account_picture_url.is_valid()) {
-    custom_picture_url =
-        signin::GetAvatarImageURLWithOptions(
-            account_picture_url, kAccountPictureSize, false /* no_silhouette */)
-            .spec();
+  const int kAccountPictureSize = 128;
+  std::string avatar_picture_url;
+  if (profile_creation_flow_color.has_value()) {
+    SkColor fill_color = *profile_creation_flow_color;
+    gfx::Image avatar_picture = profiles::GetPlaceholderAvatarIconWithColors(
+        /*fill_color=*/fill_color,
+        /*stroke_color=*/GetAvatarStrokeColor(fill_color), kAccountPictureSize);
+    avatar_picture_url = webui::GetBitmapDataUrl(avatar_picture.AsBitmap());
+  } else {
+    avatar_picture_url = profiles::GetPlaceholderAvatarIconUrl();
   }
-  source->AddString("accountPictureUrl", custom_picture_url);
+  source->AddString("accountPictureUrl", avatar_picture_url);
+
+  source->AddResourcePath("sync_confirmation_app.js",
+                          IDR_SYNC_CONFIRMATION_APP_JS);
+  source->SetDefaultResource(IDR_SYNC_CONFIRMATION_HTML);
+
+  source->AddBoolean("isProfileCreationFlow",
+                     profile_creation_flow_color.has_value());
+  if (!profile_creation_flow_color.has_value()) {
+    AddStringResource(source, "syncConfirmationUndoLabel", IDS_CANCEL);
+
+    source->AddResourcePath(
+        "images/sync_confirmation_illustration.svg",
+        IDR_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_SVG);
+    source->AddResourcePath(
+        "images/sync_confirmation_illustration_dark.svg",
+        IDR_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_DARK_SVG);
+    return;
+  }
+
+  AddStringResource(source, "syncConfirmationUndoLabel", IDS_NO_THANKS);
+  source->AddString("highlightColor", color_utils::SkColorToRgbaString(
+                                          *profile_creation_flow_color));
+
+  source->AddResourcePath(
+      "images/sync_confirmation_refreshed_illustration.svg",
+      IDR_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_REFRESHED_ILLUSTRATION_SVG);
+  source->AddResourcePath(
+      "images/sync_confirmation_refreshed_illustration_dark.svg",
+      IDR_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_REFRESHED_ILLUSTRATION_DARK_SVG);
 }
 
 void SyncConfirmationUI::InitializeForSyncDisabled(

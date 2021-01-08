@@ -163,18 +163,16 @@ void SyncConfirmationHandler::SetUserImageURL(const std::string& picture_url) {
     return;
   }
 
-  std::string picture_url_to_load;
   GURL picture_gurl(picture_url);
-  if (picture_gurl.is_valid()) {
-    picture_url_to_load =
-        signin::GetAvatarImageURLWithOptions(picture_gurl, kProfileImageSize,
-                                             false /* no_silhouette */)
-            .spec();
-  } else {
-    // Use the placeholder avatar icon until the account picture URL is fetched.
-    picture_url_to_load = profiles::GetPlaceholderAvatarIconUrl();
+  if (!picture_gurl.is_valid()) {
+    // As long as the provided gaia picture is not valid, stick to the default
+    // avatar provided in the load-time data.
+    return;
   }
-  base::Value picture_url_value(picture_url_to_load);
+
+  GURL picture_gurl_with_options = signin::GetAvatarImageURLWithOptions(
+      picture_gurl, kProfileImageSize, false /* no_silhouette */);
+  base::Value picture_url_value(picture_gurl_with_options.spec());
 
   AllowJavascript();
   FireWebUIListener("account-image-changed", picture_url_value);
@@ -229,7 +227,6 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
   }
 
   if (!primary_account_info->IsValid()) {
-    SetUserImageURL(kNoPictureURLFound);
     identity_manager_->AddObserver(this);
   } else {
     SetUserImageURL(primary_account_info->picture_url);
