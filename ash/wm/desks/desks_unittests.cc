@@ -3935,7 +3935,7 @@ TEST_F(DesksBentoTest, VisibleOnAllDesksGlobalZOrder) {
 
 // Tests the behavior of windows that are visible on all desks when the active
 // desk is removed.
-TEST_F(DesksBentoTest, DISABLED_VisibleOnAllDesksActiveDeskRemoval) {
+TEST_F(DesksBentoTest, VisibleOnAllDesksActiveDeskRemoval) {
   auto* controller = DesksController::Get();
   NewDesk();
   const Desk* desk_1 = controller->desks()[0].get();
@@ -3955,7 +3955,7 @@ TEST_F(DesksBentoTest, DISABLED_VisibleOnAllDesksActiveDeskRemoval) {
 
   // Remove the active desk. The visible on all desks windows should be on
   // |desk_2|.
-  controller->RemoveDesk(desk_1, DesksCreationRemovalSource::kKeyboard);
+  RemoveDesk(desk_1);
   auto desk_2_children = desk_2->GetDeskContainerForRoot(root)->children();
   EXPECT_EQ(2u, desk_2_children.size());
   EXPECT_TRUE(IsStackedBelow(win0.get(), win1.get()));
