@@ -461,7 +461,6 @@ void CheckClientDownloadRequestBase::OnGotTabRedirects(
   if (is_enhanced_protection_ && token_fetcher_ &&
       base::FeatureList::IsEnabled(kDownloadRequestWithToken)) {
     token_fetcher_->Start(
-        signin::ConsentLevel::kNotRequired,
         base::BindOnce(&CheckClientDownloadRequestBase::OnGotAccessToken,
                        GetWeakPtr()));
     return;
@@ -471,9 +470,8 @@ void CheckClientDownloadRequestBase::OnGotTabRedirects(
 }
 
 void CheckClientDownloadRequestBase::OnGotAccessToken(
-    base::Optional<signin::AccessTokenInfo> access_token_info) {
-  if (access_token_info.has_value())
-    access_token_ = access_token_info.value().token;
+    const std::string& access_token) {
+  access_token_ = access_token;
   SendRequest();
 }
 

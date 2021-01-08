@@ -84,12 +84,11 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   bool ShouldIncludeCredentials() const override;
 
   // Called when the access token is obtained from |token_fetcher_|.
-  void OnGetAccessToken(
-      const GURL& url,
-      RTLookupRequestCallback request_callback,
-      RTLookupResponseCallback response_callback,
-      base::TimeTicks get_token_start_time,
-      base::Optional<signin::AccessTokenInfo> access_token_info);
+  void OnGetAccessToken(const GURL& url,
+                        RTLookupRequestCallback request_callback,
+                        RTLookupResponseCallback response_callback,
+                        base::TimeTicks get_token_start_time,
+                        const std::string& access_token);
 
   // Unowned object used for getting access token when real time url check with
   // token is enabled.

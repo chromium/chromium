@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace signin {
@@ -32,15 +33,14 @@ class SafeBrowsingPrimaryAccountTokenFetcher : public SafeBrowsingTokenFetcher {
   ~SafeBrowsingPrimaryAccountTokenFetcher() override;
 
   // SafeBrowsingTokenFetcher:
-  void Start(signin::ConsentLevel consent_level, Callback callback) override;
+  void Start(Callback callback) override;
 
  private:
   void OnTokenFetched(int request_id,
                       GoogleServiceAuthError error,
                       signin::AccessTokenInfo access_token_info);
   void OnTokenTimeout(int request_id);
-  void Finish(int request_id,
-              base::Optional<signin::AccessTokenInfo> token_info);
+  void Finish(int request_id, const std::string& access_token);
 
   // Reference to the identity manager to fetch from.
   signin::IdentityManager* identity_manager_;

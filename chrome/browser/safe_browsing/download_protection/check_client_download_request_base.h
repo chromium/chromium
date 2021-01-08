@@ -153,8 +153,7 @@ class CheckClientDownloadRequestBase {
       DownloadCheckResultReason reason) const = 0;
 
   // Called when |token_fetcher_| has finished fetching the access token.
-  void OnGotAccessToken(
-      base::Optional<signin::AccessTokenInfo> access_token_info);
+  void OnGotAccessToken(const std::string& access_token);
 
   // Called at the request start to determine if we should bailout due to the
   // file being whitelisted by policy

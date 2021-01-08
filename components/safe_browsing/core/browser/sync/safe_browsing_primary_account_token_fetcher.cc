@@ -44,18 +44,17 @@ SafeBrowsingPrimaryAccountTokenFetcher::SafeBrowsingPrimaryAccountTokenFetcher(
 SafeBrowsingPrimaryAccountTokenFetcher::
     ~SafeBrowsingPrimaryAccountTokenFetcher() {
   for (auto& id_and_callback : callbacks_) {
-    std::move(id_and_callback.second).Run(base::nullopt);
+    std::move(id_and_callback.second).Run(std::string());
   }
 }
 
 void SafeBrowsingPrimaryAccountTokenFetcher::Start(
-    signin::ConsentLevel consent_level,
     Callback callback) {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
   const int request_id = requests_sent_;
   requests_sent_++;
-  CoreAccountId account_id =
-      identity_manager_->GetPrimaryAccountId(consent_level);
+  CoreAccountId account_id = identity_manager_->GetPrimaryAccountId(
+      signin::ConsentLevel::kNotRequired);
   callbacks_[request_id] = std::move(callback);
   token_fetchers_[request_id] =
       identity_manager_->CreateAccessTokenFetcherForAccount(
@@ -78,20 +77,20 @@ void SafeBrowsingPrimaryAccountTokenFetcher::OnTokenFetched(
   UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.TokenFetcher.ErrorType",
                             error.state(), GoogleServiceAuthError::NUM_STATES);
   if (error.state() == GoogleServiceAuthError::NONE)
-    Finish(request_id, access_token_info);
+    Finish(request_id, access_token_info.token);
   else
-    Finish(request_id, base::nullopt);
+    Finish(request_id, std::string());
 }
 
 void SafeBrowsingPrimaryAccountTokenFetcher::OnTokenTimeout(int request_id) {
-  Finish(request_id, base::nullopt);
+  Finish(request_id, std::string());
 }
 
 void SafeBrowsingPrimaryAccountTokenFetcher::Finish(
     int request_id,
-    base::Optional<signin::AccessTokenInfo> token_info) {
+    const std::string& access_token) {
   if (callbacks_.contains(request_id)) {
-    std::move(callbacks_[request_id]).Run(token_info);
+    std::move(callbacks_[request_id]).Run(access_token);
   }
 
   token_fetchers_.erase(request_id);

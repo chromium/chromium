@@ -26,78 +26,49 @@ class SafeBrowsingPrimaryAccountTokenFetcherTest : public ::testing::Test {
 TEST_F(SafeBrowsingPrimaryAccountTokenFetcherTest, Success) {
   identity_test_environment_.MakeUnconsentedPrimaryAccountAvailable(
       "test@example.com");
-  base::Optional<signin::AccessTokenInfo> maybe_account_info;
+  std::string access_token;
   SafeBrowsingPrimaryAccountTokenFetcher fetcher(
       identity_test_environment_.identity_manager());
-  fetcher.Start(signin::ConsentLevel::kNotRequired,
-                base::BindOnce(
-                    [](base::Optional<signin::AccessTokenInfo>* target_info,
-                       base::Optional<signin::AccessTokenInfo> info) {
-                      *target_info = info;
-                    },
-                    &maybe_account_info));
+  fetcher.Start(
+      base::BindOnce([](std::string* target_token,
+                        const std::string& token) { *target_token = token; },
+                     &access_token));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           "token", base::Time::Now());
-  ASSERT_TRUE(maybe_account_info.has_value());
-  EXPECT_EQ(maybe_account_info.value().token, "token");
+  EXPECT_EQ(access_token, "token");
 }
 
 TEST_F(SafeBrowsingPrimaryAccountTokenFetcherTest, Failure) {
   identity_test_environment_.MakeUnconsentedPrimaryAccountAvailable(
       "test@example.com");
-  base::Optional<signin::AccessTokenInfo> maybe_account_info;
+  std::string access_token;
   SafeBrowsingPrimaryAccountTokenFetcher fetcher(
       identity_test_environment_.identity_manager());
-  fetcher.Start(signin::ConsentLevel::kNotRequired,
-                base::BindOnce(
-                    [](base::Optional<signin::AccessTokenInfo>* target_info,
-                       base::Optional<signin::AccessTokenInfo> info) {
-                      *target_info = info;
-                    },
-                    &maybe_account_info));
+  fetcher.Start(
+      base::BindOnce([](std::string* target_token,
+                        const std::string& token) { *target_token = token; },
+                     &access_token));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
           GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
-  ASSERT_FALSE(maybe_account_info.has_value());
+  ASSERT_TRUE(access_token.empty());
 }
 
-TEST_F(SafeBrowsingPrimaryAccountTokenFetcherTest, NoSyncingAccount) {
-  identity_test_environment_.MakeUnconsentedPrimaryAccountAvailable(
-      "test@example.com");
-  base::Optional<signin::AccessTokenInfo> maybe_account_info;
-  SafeBrowsingPrimaryAccountTokenFetcher fetcher(
-      identity_test_environment_.identity_manager());
-  fetcher.Start(signin::ConsentLevel::kSync,
-                base::BindOnce(
-                    [](base::Optional<signin::AccessTokenInfo>* target_info,
-                       base::Optional<signin::AccessTokenInfo> info) {
-                      *target_info = info;
-                    },
-                    &maybe_account_info));
-  identity_test_environment_
-      .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-          "token", base::Time::Now());
-  ASSERT_FALSE(maybe_account_info.has_value());
-}
-
-TEST_F(SafeBrowsingPrimaryAccountTokenFetcherTest, SyncSuccess) {
+TEST_F(SafeBrowsingPrimaryAccountTokenFetcherTest,
+       SuccessWithConsentedPrimaryAccount) {
   identity_test_environment_.MakePrimaryAccountAvailable("test@example.com");
-  base::Optional<signin::AccessTokenInfo> maybe_account_info;
+  std::string access_token;
   SafeBrowsingPrimaryAccountTokenFetcher fetcher(
       identity_test_environment_.identity_manager());
-  fetcher.Start(signin::ConsentLevel::kSync,
-                base::BindOnce(
-                    [](base::Optional<signin::AccessTokenInfo>* target_info,
-                       base::Optional<signin::AccessTokenInfo> info) {
-                      *target_info = info;
-                    },
-                    &maybe_account_info));
+  fetcher.Start(
+      base::BindOnce([](std::string* target_token,
+                        const std::string& token) { *target_token = token; },
+                     &access_token));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           "token", base::Time::Now());
-  ASSERT_TRUE(maybe_account_info.has_value());
-  EXPECT_EQ(maybe_account_info.value().token, "token");
+  EXPECT_EQ(access_token, "token");
 }
 
 }  // namespace safe_browsing

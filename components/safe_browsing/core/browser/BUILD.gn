@@ -79,8 +79,5 @@ source_set("referrer_chain_provider") {
 source_set("token_fetcher") {
   sources = [ "safe_browsing_token_fetcher.h" ]
 
-  deps = [
-    "//base",
-    "//components/signin/public/identity_manager",
-  ]
+  deps = [ "//base" ]
 }

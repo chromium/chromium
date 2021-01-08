@@ -63,7 +63,6 @@ void RealTimeUrlLookupService::GetAccessToken(
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback) {
   token_fetcher_->Start(
-      signin::ConsentLevel::kNotRequired,
       base::BindOnce(&RealTimeUrlLookupService::OnGetAccessToken,
                      weak_factory_.GetWeakPtr(), url,
                      std::move(request_callback), std::move(response_callback),
@@ -75,14 +74,12 @@ void RealTimeUrlLookupService::OnGetAccessToken(
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
     base::TimeTicks get_token_start_time,
-    base::Optional<signin::AccessTokenInfo> access_token_info) {
+    const std::string& access_token) {
   base::UmaHistogramTimes("SafeBrowsing.RT.GetToken.Time",
                           base::TimeTicks::Now() - get_token_start_time);
   base::UmaHistogramBoolean("SafeBrowsing.RT.HasTokenFromFetcher",
-                            access_token_info.has_value());
-  std::string access_token_string =
-      access_token_info.value_or(signin::AccessTokenInfo()).token;
-  SendRequest(url, access_token_string, std::move(request_callback),
+                            !access_token.empty());
+  SendRequest(url, access_token, std::move(request_callback),
               std::move(response_callback));
 }
 
