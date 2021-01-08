@@ -6793,7 +6793,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ImportantFile.DeleteOnCloseError" enum="PlatformFileError"
-    expires_after="2021-01-19">
+    expires_after="M89">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>xaerox@yandex-team.ru</owner>
   <summary>

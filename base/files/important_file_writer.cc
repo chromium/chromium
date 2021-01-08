@@ -124,12 +124,9 @@ void DeleteTmpFileWithRetry(File tmp_file,
   if (tmp_file.IsValid()) {
     if (tmp_file.DeleteOnClose(true))
       return;
-    // The file was opened with exclusive r/w access, so it would be very odd
-    // for this to fail.
-    UmaHistogramExactLinearWithSuffix(
-        "ImportantFile.DeleteOnCloseError", histogram_suffix,
-        -File::GetLastFileError(), -File::FILE_ERROR_MAX);
-    // Go ahead and close the file. The call to DeleteFile below will basically
+    // The file was opened with exclusive r/w access, so failures are primarily
+    // due to I/O errors or other phenomena out of the process's control. Go
+    // ahead and close the file. The call to DeleteFile below will basically
     // repeat the above, but maybe it will somehow succeed.
     tmp_file.Close();
   }
