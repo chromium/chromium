@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/prediction/prediction_model_file.h"
+#include "components/optimization_guide/core/prediction_model_file.h"
 
 #include "base/memory/ptr_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"

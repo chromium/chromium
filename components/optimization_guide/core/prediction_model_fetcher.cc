@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/prediction/prediction_model_fetcher.h"
+#include "components/optimization_guide/core/prediction_model_fetcher.h"
 
 #include <memory>
 #include <string>
@@ -16,13 +16,13 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/variations/net/variations_http_headers.h"
-#include "content/public/browser/network_service_instance.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
@@ -30,14 +30,16 @@ namespace optimization_guide {
 
 PredictionModelFetcher::PredictionModelFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    GURL optimization_guide_service_get_models_url)
+    const GURL& optimization_guide_service_get_models_url,
+    network::NetworkConnectionTracker* network_connection_tracker)
     : optimization_guide_service_get_models_url_(
           net::AppendOrReplaceQueryParameter(
               optimization_guide_service_get_models_url,
               "key",
               optimization_guide::features::
-                  GetOptimizationGuideServiceAPIKey())) {
-  url_loader_factory_ = std::move(url_loader_factory);
+                  GetOptimizationGuideServiceAPIKey())),
+      url_loader_factory_(url_loader_factory),
+      network_connection_tracker_(network_connection_tracker) {
   CHECK(optimization_guide_service_get_models_url_.SchemeIs(url::kHttpsScheme));
 }
 
@@ -51,7 +53,7 @@ bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
     ModelsFetchedCallback models_fetched_callback) {
   SEQUENCE_CHECKER(sequence_checker_);
 
-  if (content::GetNetworkConnectionTracker()->IsOffline()) {
+  if (network_connection_tracker_->IsOffline()) {
     std::move(models_fetched_callback).Run(base::nullopt);
     return false;
   }

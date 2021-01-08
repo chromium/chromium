@@ -17,7 +17,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
-#include "chrome/browser/optimization_guide/optimization_guide_session_statistic.h"
 #include "chrome/browser/optimization_guide/optimization_guide_top_host_provider.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
 #include "chrome/browser/profiles/profile.h"

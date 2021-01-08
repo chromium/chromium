@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/optimization_guide_session_statistic.h"
+#include "components/optimization_guide/core/optimization_guide_session_statistic.h"
 
 #include <cmath>
+
+namespace optimization_guide {
 
 OptimizationGuideSessionStatistic::OptimizationGuideSessionStatistic()
     : num_samples_(0u), mean_(0.0), variance_sum_(0.0) {}
@@ -40,3 +42,5 @@ size_t OptimizationGuideSessionStatistic::GetNumberOfSamples() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return num_samples_;
 }
+
+}  // namespace optimization_guide

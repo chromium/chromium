@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MODEL_FETCHER_H_
-#define CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MODEL_FETCHER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_FETCHER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_FETCHER_H_
 
 #include <memory>
 #include <string>
@@ -18,6 +18,7 @@
 #include "url/gurl.h"
 
 namespace network {
+class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
@@ -39,7 +40,8 @@ class PredictionModelFetcher {
  public:
   PredictionModelFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      GURL optimization_guide_service_get_models_url);
+      const GURL& optimization_guide_service_get_models_url,
+      network::NetworkConnectionTracker* network_connection_tracker);
   virtual ~PredictionModelFetcher();
 
   // Requests PredictionModels and HostModelFeatures from the Optimization Guide
@@ -85,6 +87,10 @@ class PredictionModelFetcher {
   // Used for creating a |url_loader_| when needed for request hints.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
+  // Listens to changes around the network connection. Not owned. Guaranteed to
+  // outlive |this|.
+  network::NetworkConnectionTracker* network_connection_tracker_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(PredictionModelFetcher);
@@ -92,4 +98,4 @@ class PredictionModelFetcher {
 
 }  // namespace optimization_guide
 
-#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MODEL_FETCHER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_FETCHER_H_

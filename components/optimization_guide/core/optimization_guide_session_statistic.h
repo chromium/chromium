@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_SESSION_STATISTIC_H_
-#define CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_SESSION_STATISTIC_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_SESSION_STATISTIC_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_SESSION_STATISTIC_H_
 
 #include "base/sequence_checker.h"
 #include "base/values.h"
+
+namespace optimization_guide {
 
 // OptimizationGuideSessionStatistic calculates running statistics, mean and
 // variance, for real valued inputs one sample at a time.
@@ -45,4 +47,6 @@ class OptimizationGuideSessionStatistic {
   DISALLOW_COPY_AND_ASSIGN(OptimizationGuideSessionStatistic);
 };
 
-#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_SESSION_STATISTIC_H_
+}  // namespace optimization_guide
+
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_SESSION_STATISTIC_H_

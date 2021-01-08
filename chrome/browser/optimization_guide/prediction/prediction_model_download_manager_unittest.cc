@@ -8,17 +8,14 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
 #include "base/path_service.h"
+#include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_path_override.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/download/public/background_service/test/mock_download_service.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -62,41 +59,26 @@ enum class PredictionModelDownloadFileStatus {
   kUnverifiedFile,
 };
 
-class PredictionModelDownloadManagerTest
-    : public ChromeRenderViewHostTestHarness {
+class PredictionModelDownloadManagerTest : public testing::Test {
  public:
   PredictionModelDownloadManagerTest() = default;
   ~PredictionModelDownloadManagerTest() override = default;
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    mock_download_service_ = static_cast<download::test::MockDownloadService*>(
-        DownloadServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile()->GetProfileKey(),
-            base::BindRepeating([](SimpleFactoryKey* key)
-                                    -> std::unique_ptr<KeyedService> {
-              return std::make_unique<download::test::MockDownloadService>();
-            })));
+    mock_download_service_ =
+        std::make_unique<download::test::MockDownloadService>();
     download_manager_ = std::make_unique<PredictionModelDownloadManager>(
-        profile(), task_environment()->GetMainThreadTaskRunner());
+        mock_download_service_.get(), temp_dir_.GetPath(),
+        task_environment_.GetMainThreadTaskRunner());
 
     unzip::SetUnzipperLaunchOverrideForTesting(
         base::BindRepeating(&unzip::LaunchInProcessUnzipper));
-
-    path_override_ = std::make_unique<base::ScopedPathOverride>(
-        chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS, temp_dir_.GetPath(),
-        /*is_absolute=*/true,
-        /*create=*/false);
   }
 
   void TearDown() override {
     download_manager_.reset();
     mock_download_service_ = nullptr;
-    path_override_.reset();
-
-    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   PredictionModelDownloadManager* download_manager() {
@@ -104,7 +86,7 @@ class PredictionModelDownloadManagerTest
   }
 
   download::test::MockDownloadService* download_service() {
-    return mock_download_service_;
+    return mock_download_service_.get();
   }
 
  protected:
@@ -137,7 +119,7 @@ class PredictionModelDownloadManagerTest
   }
 
   void RunUntilIdle() {
-    task_environment()->RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     // Wait for all delayed tasks to finish.
     base::RunLoop run_loop;
@@ -221,9 +203,9 @@ class PredictionModelDownloadManagerTest
         zip::Zip(zip_dir, GetFilePathForDownloadFileStatus(status), true));
   }
 
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<base::ScopedPathOverride> path_override_;
-  download::test::MockDownloadService* mock_download_service_;
+  std::unique_ptr<download::test::MockDownloadService> mock_download_service_;
   std::unique_ptr<PredictionModelDownloadManager> download_manager_;
 };
 

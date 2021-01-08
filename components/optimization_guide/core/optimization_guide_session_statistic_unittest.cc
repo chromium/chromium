@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/optimization_guide_session_statistic.h"
+#include "components/optimization_guide/core/optimization_guide_session_statistic.h"
 
 #include <cmath>
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace optimization_guide {
 
 TEST(OptimzationGuideSessionStatisticTest,
      CalculateSessionStatisticsForSamples) {
@@ -41,3 +43,5 @@ TEST(OptimzationGuideSessionStatisticTest, VarianceWitthLessThanTwoSamples) {
   EXPECT_EQ(0.0, stat.GetVariance());
   EXPECT_EQ(0.0, stat.GetStdDev());
 }
+
+}  // namespace optimization_guide

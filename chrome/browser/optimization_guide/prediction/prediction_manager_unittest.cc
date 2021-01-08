@@ -18,7 +18,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
-#include "chrome/browser/optimization_guide/prediction/prediction_model_fetcher.h"
 #include "chrome/services/machine_learning/public/cpp/test_support/fake_service_connection.h"
 #include "chrome/services/machine_learning/public/mojom/decision_tree.mojom.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,6 +29,7 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/prediction_model.h"
+#include "components/optimization_guide/core/prediction_model_fetcher.h"
 #include "components/optimization_guide/core/proto_database_provider_test_base.h"
 #include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/hint_cache.pb.h"
@@ -41,6 +41,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
@@ -193,9 +194,10 @@ class FakePredictionModelDownloadManager
     : public PredictionModelDownloadManager {
  public:
   FakePredictionModelDownloadManager(
-      Profile* profile,
       scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : PredictionModelDownloadManager(profile, task_runner) {}
+      : PredictionModelDownloadManager(/*download_service=*/nullptr,
+                                       base::FilePath(),
+                                       task_runner) {}
   ~FakePredictionModelDownloadManager() override = default;
 
   void StartDownload(const GURL& url) override {
@@ -230,10 +232,12 @@ class TestPredictionModelFetcher : public PredictionModelFetcher {
  public:
   TestPredictionModelFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      GURL optimization_guide_service_get_models_url,
+      const GURL& optimization_guide_service_get_models_url,
+      network::NetworkConnectionTracker* network_connection_tracker,
       PredictionModelFetcherEndState fetch_state)
       : PredictionModelFetcher(url_loader_factory,
-                               optimization_guide_service_get_models_url),
+                               optimization_guide_service_get_models_url,
+                               network_connection_tracker),
         fetch_state_(fetch_state) {}
 
   bool FetchOptimizationGuideServiceModels(
@@ -539,7 +543,8 @@ class PredictionManagerTest : public ProtoDatabaseProviderTestBase {
       PredictionModelFetcherEndState end_state) {
     std::unique_ptr<TestPredictionModelFetcher> prediction_model_fetcher =
         std::make_unique<TestPredictionModelFetcher>(
-            url_loader_factory_, GURL("https://hintsserver.com"), end_state);
+            url_loader_factory_, GURL("https://hintsserver.com"),
+            network::TestNetworkConnectionTracker::GetInstance(), end_state);
     return prediction_model_fetcher;
   }
 
@@ -1178,7 +1183,7 @@ TEST_F(PredictionManagerTest, DownloadManagerUnavailableShouldNotFetch) {
           PredictionModelFetcherEndState::kFetchSuccessWithModelDownloadUrls));
   prediction_manager()->SetPredictionModelDownloadManagerForTesting(
       std::make_unique<FakePredictionModelDownloadManager>(
-          profile(), task_environment()->GetMainThreadTaskRunner()));
+          task_environment()->GetMainThreadTaskRunner()));
   prediction_model_download_manager()->SetAvailableForDownloads(false);
 
   prediction_manager()->RegisterOptimizationTargets(
@@ -1208,7 +1213,7 @@ TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
           PredictionModelFetcherEndState::kFetchSuccessWithModelDownloadUrls));
   prediction_manager()->SetPredictionModelDownloadManagerForTesting(
       std::make_unique<FakePredictionModelDownloadManager>(
-          profile(), task_environment()->GetMainThreadTaskRunner()));
+          task_environment()->GetMainThreadTaskRunner()));
 
   prediction_manager()->RegisterOptimizationTargets(
       {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD});

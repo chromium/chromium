@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/optimization_guide/core/prediction_model_fetcher.h"
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/optimization_guide/prediction/prediction_model_fetcher.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "net/base/url_util.h"
@@ -35,9 +36,11 @@ class PredictionModelFetcherTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {
+                &test_url_loader_factory_)),
+        network_tracker_(network::TestNetworkConnectionTracker::GetInstance()) {
     prediction_model_fetcher_ = std::make_unique<PredictionModelFetcher>(
-        shared_url_loader_factory_, GURL(optimization_guide_service_url));
+        shared_url_loader_factory_, GURL(optimization_guide_service_url),
+        network_tracker_);
   }
 
   ~PredictionModelFetcherTest() override {}
@@ -51,13 +54,11 @@ class PredictionModelFetcherTest : public testing::Test {
   bool models_fetched() { return models_fetched_; }
 
   void SetConnectionOffline() {
-    network_tracker_ = network::TestNetworkConnectionTracker::GetInstance();
     network_tracker_->SetConnectionType(
         network::mojom::ConnectionType::CONNECTION_NONE);
   }
 
   void SetConnectionOnline() {
-    network_tracker_ = network::TestNetworkConnectionTracker::GetInstance();
     network_tracker_->SetConnectionType(
         network::mojom::ConnectionType::CONNECTION_4G);
   }
