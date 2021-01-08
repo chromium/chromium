@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace network {
 
@@ -28,7 +29,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
 
   base::WeakPtr<WebBundleURLLoaderFactory> CreateWebBundleURLLoaderFactory(
       const GURL& bundle_url,
-      const ResourceRequest::WebBundleTokenParams& params);
+      const ResourceRequest::WebBundleTokenParams& params,
+      const mojom::URLLoaderFactoryParamsPtr& factory_params);
 
   base::WeakPtr<WebBundleURLLoaderFactory> GetWebBundleURLLoaderFactory(
       const base::UnguessableToken& token);

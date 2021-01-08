@@ -52,3 +52,17 @@ gen-bundle \
   -primaryURL https://test.example.org/ \
   -har variants_test.har \
   -o variants_test.wbn
+
+# Generate a WBN which will be used as a cross origin bundle.
+gen-bundle \
+  -version b1 \
+  -har cross_origin.har \
+  -primaryURL http://cross-origin.com/web_bundle/resource.json \
+  -o cross_origin.wbn
+
+# Generate a WBN which will be used as a same origin bundle.
+gen-bundle \
+  -version b1 \
+  -har same_origin.har \
+  -primaryURL http://foo.com/web_bundle/resource.json \
+  -o same_origin.wbn

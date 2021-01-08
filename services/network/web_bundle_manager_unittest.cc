@@ -7,6 +7,7 @@
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,8 +38,8 @@ TEST_F(WebBundleManagerTest, RemoveFactoryWhenDisconnected) {
     auto token_params =
         ResourceRequest::WebBundleTokenParams(token, std::move(handle));
 
-    auto factory =
-        manager.CreateWebBundleURLLoaderFactory(GURL(kBundleUrl), token_params);
+    auto factory = manager.CreateWebBundleURLLoaderFactory(
+        GURL(kBundleUrl), token_params, mojom::URLLoaderFactoryParams::New());
     ASSERT_TRUE(factory);
     ASSERT_TRUE(manager.GetWebBundleURLLoaderFactory(token));
     // Getting out of scope to delete |receiver|.

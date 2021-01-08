@@ -18,10 +18,15 @@ namespace network {
 
 namespace {
 
+const char kInitiatorUrl[] = "https://example.com/";
 const char kBundleUrl[] = "https://example.com/bundle.wbn";
 const char kResourceUrl[] = "https://example.com/";
 const char kResourceUrl2[] = "https://example.com/another";
 const char kResourceUrl3[] = "https://example.com/yetanother";
+
+// Cross origin resources
+const char kCrossOriginJsonUrl[] = "https://other.com/resource.json";
+const char kCrossOriginJsUrl[] = "https://other.com/resource.js";
 
 std::vector<uint8_t> CreateSmallBundle() {
   web_package::test::WebBundleBuilder builder(kResourceUrl,
@@ -44,6 +49,19 @@ std::vector<uint8_t> CreateLargeBundle() {
   builder.AddExchange(kResourceUrl3,
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "body");
+  return builder.CreateBundle();
+}
+
+std::vector<uint8_t> CreateCrossOriginBundle() {
+  web_package::test::WebBundleBuilder builder(kCrossOriginJsonUrl,
+                                              "" /* manifest_url */);
+  builder.AddExchange(
+      kCrossOriginJsonUrl,
+      {{":status", "200"}, {"content-type", "application/json"}},
+      "{ secret: 1 }");
+  builder.AddExchange(kCrossOriginJsUrl,
+                      {{":status", "200"}, {"content-type", "application/js"}},
+                      "const not_secret = 1;");
   return builder.CreateBundle();
 }
 
@@ -96,8 +114,8 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
     mojo::Remote<mojom::WebBundleHandle> handle;
     handle_ = std::make_unique<TestWebBundleHandle>(
         handle.BindNewPipeAndPassReceiver());
-    factory_ = std::make_unique<WebBundleURLLoaderFactory>(GURL(kBundleUrl),
-                                                           std::move(handle));
+    factory_ = std::make_unique<WebBundleURLLoaderFactory>(
+        GURL(kBundleUrl), std::move(handle), base::nullopt);
     factory_->SetBundleStream(std::move(consumer));
   }
 
@@ -118,6 +136,8 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
     network::ResourceRequest request;
     request.url = url;
     request.method = "GET";
+    request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
+
     StartRequestResult result;
     result.client = std::make_unique<network::TestURLLoaderClient>();
     factory_->CreateLoaderAndStart(
@@ -338,6 +358,38 @@ TEST_F(WebBundleURLLoaderFactoryTest, TruncatedBundle) {
   EXPECT_EQ(last_bundle_error()->first,
             mojom::WebBundleErrorType::kResponseParseError);
   EXPECT_EQ(last_bundle_error()->second, "Error reading response header.");
+}
+
+TEST_F(WebBundleURLLoaderFactoryTest, CrossOiginJson) {
+  WriteBundle(CreateCrossOriginBundle());
+  FinishWritingBundle();
+
+  auto request = StartRequest(GURL(kCrossOriginJsonUrl));
+  request.client->RunUntilComplete();
+
+  EXPECT_EQ(net::OK, request.client->completion_status().error_code);
+  EXPECT_FALSE(last_bundle_error().has_value());
+  std::string body;
+  ASSERT_TRUE(mojo::BlockingCopyToString(
+      request.client->response_body_release(), &body));
+  EXPECT_TRUE(body.empty())
+      << "body should be empty because JSON is a CORB-protected resource";
+}
+
+TEST_F(WebBundleURLLoaderFactoryTest, CrossOriginJs) {
+  WriteBundle(CreateCrossOriginBundle());
+  FinishWritingBundle();
+
+  auto request = StartRequest(GURL(kCrossOriginJsUrl));
+  request.client->RunUntilComplete();
+
+  EXPECT_EQ(net::OK, request.client->completion_status().error_code);
+  EXPECT_FALSE(last_bundle_error().has_value());
+  std::string body;
+  ASSERT_TRUE(mojo::BlockingCopyToString(
+      request.client->response_body_release(), &body));
+  EXPECT_EQ("const not_secret = 1;", body)
+      << "body should be valid one because JS is not a CORB protected resource";
 }
 
 }  // namespace network

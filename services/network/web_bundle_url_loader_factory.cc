@@ -4,6 +4,7 @@
 
 #include "services/network/web_bundle_url_loader_factory.h"
 
+#include "base/optional.h"
 #include "components/web_package/web_bundle_parser.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -11,6 +12,7 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/cross_origin_read_blocking.h"
 
 namespace network {
 
@@ -128,8 +130,12 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
  public:
   URLLoader(mojo::PendingReceiver<mojom::URLLoader> loader,
             const ResourceRequest& request,
-            mojo::PendingRemote<mojom::URLLoaderClient> client)
+            mojo::PendingRemote<mojom::URLLoaderClient> client,
+            const base::Optional<url::Origin>& request_initiator_origin_lock)
       : url_(request.url),
+        request_mode_(request.mode),
+        request_initiator_(request.request_initiator),
+        request_initiator_origin_lock_(request_initiator_origin_lock),
         receiver_(this, std::move(loader)),
         client_(std::move(client)) {
     receiver_.set_disconnect_handler(
@@ -139,6 +145,15 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   URLLoader& operator=(const URLLoader&) = delete;
 
   const GURL& url() const { return url_; }
+  const mojom::RequestMode& request_mode() const { return request_mode_; }
+
+  const base::Optional<url::Origin>& request_initiator() const {
+    return request_initiator_;
+  }
+
+  const base::Optional<url::Origin>& request_initiator_origin_lock() const {
+    return request_initiator_origin_lock_;
+  }
 
   base::WeakPtr<URLLoader> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -164,6 +179,39 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     delete this;
   }
 
+  void BlockResponseForCorb(mojom::URLResponseHeadPtr response_head) {
+    // A minimum implementation to block CORB-protected resources.
+    //
+    // TODO(crbug.com/1082020): Re-use
+    // network::URLLoader::BlockResponseForCorb(), instead of copying
+    // essential parts from there, so that the two implementations won't
+    // diverge further. That requires non-trivial refactoring.
+    CrossOriginReadBlocking::SanitizeBlockedResponse(response_head.get());
+    client_->OnReceiveResponse(std::move(response_head));
+
+    // Send empty body to the URLLoaderClient.
+    mojo::ScopedDataPipeProducerHandle producer;
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    if (CreateDataPipe(nullptr, &producer, &consumer) != MOJO_RESULT_OK) {
+      OnFail(net::ERR_INSUFFICIENT_RESOURCES);
+      return;
+    }
+    producer.reset();
+    client_->OnStartLoadingResponseBody(std::move(consumer));
+
+    URLLoaderCompletionStatus status;
+    status.error_code = net::OK;
+    status.completion_time = base::TimeTicks::Now();
+    status.encoded_data_length = 0;
+    status.encoded_body_length = 0;
+    status.decoded_body_length = 0;
+    client_->OnComplete(status);
+
+    // Reset the connection to the URLLoaderClient.  This helps ensure that we
+    // won't accidentally leak any data to the renderer from this point on.
+    client_.reset();
+  }
+
  private:
   // mojom::URLLoader
   void FollowRedirect(
@@ -185,6 +233,15 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   void OnMojoDisconnect() { delete this; }
 
   const GURL url_;
+  mojom::RequestMode request_mode_;
+  base::Optional<url::Origin> request_initiator_;
+  // It is safe to hold |request_initiator_origin_lock_| in this factory because
+  // 1). |request_initiator_origin_lock| is a property of |URLLoaderFactory|
+  // (or, more accurately a property of |URLLoaderFactoryParams|), and
+  // 2) |WebURLLoader| is always associated with the same URLLoaderFactory
+  // (via URLLoaderFactory -> WebBundleManager -> WebBundleURLLoaderFactory
+  // -> WebBundleURLLoader).
+  const base::Optional<url::Origin> request_initiator_origin_lock_;
   mojo::Receiver<mojom::URLLoader> receiver_;
   mojo::Remote<mojom::URLLoaderClient> client_;
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
@@ -317,9 +374,11 @@ class WebBundleURLLoaderFactory::BundleDataSource
 
 WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
     const GURL& bundle_url,
-    mojo::Remote<mojom::WebBundleHandle> web_bundle_handle)
+    mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
+    const base::Optional<url::Origin>& request_initiator_origin_lock)
     : bundle_url_(bundle_url),
-      web_bundle_handle_(std::move(web_bundle_handle)) {}
+      web_bundle_handle_(std::move(web_bundle_handle)),
+      request_initiator_origin_lock_(request_initiator_origin_lock) {}
 
 WebBundleURLLoaderFactory::~WebBundleURLLoaderFactory() {
   for (auto loader : pending_loaders_) {
@@ -368,7 +427,8 @@ void WebBundleURLLoaderFactory::CreateLoaderAndStart(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::CreateLoaderAndStart");
   URLLoader* loader =
-      new URLLoader(std::move(receiver), url_request, std::move(client));
+      new URLLoader(std::move(receiver), url_request, std::move(client),
+                    request_initiator_origin_lock_);
   if (metadata_error_) {
     loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
     return;
@@ -459,6 +519,21 @@ void WebBundleURLLoaderFactory::OnResponseParsed(
   mojom::URLResponseHeadPtr response_head =
       web_package::CreateResourceResponse(response);
   response_head->web_bundle_url = bundle_url_;
+  // Add an artifical "X-Content-Type-Options: "nosniff" header, which is
+  // explained at
+  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#name-responses.
+  response_head->headers->SetHeader("X-Content-Type-Options", "nosniff");
+
+  auto corb_analyzer =
+      std::make_unique<CrossOriginReadBlocking::ResponseAnalyzer>(
+          loader->url(), loader->request_initiator(), *response_head,
+          loader->request_initiator_origin_lock(), loader->request_mode());
+
+  if (corb_analyzer->ShouldBlock()) {
+    loader->BlockResponseForCorb(std::move(response_head));
+    return;
+  }
+
   loader->OnResponse(std::move(response_head));
 
   mojo::ScopedDataPipeProducerHandle producer;

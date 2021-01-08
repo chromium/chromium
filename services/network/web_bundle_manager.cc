@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/network_context.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 #include "services/network/web_bundle_url_loader_factory.h"
 
@@ -18,7 +19,8 @@ WebBundleManager::~WebBundleManager() = default;
 base::WeakPtr<WebBundleURLLoaderFactory>
 WebBundleManager::CreateWebBundleURLLoaderFactory(
     const GURL& bundle_url,
-    const ResourceRequest::WebBundleTokenParams& web_bundle_token_params) {
+    const ResourceRequest::WebBundleTokenParams& web_bundle_token_params,
+    const mojom::URLLoaderFactoryParamsPtr& factory_params) {
   DCHECK(factories_.find(web_bundle_token_params.token) == factories_.end());
 
   mojo::Remote<mojom::WebBundleHandle> remote(
@@ -32,8 +34,9 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
                      // |this| outlives |remote|.
                      base::Unretained(this), web_bundle_token_params.token));
 
-  auto factory = std::make_unique<WebBundleURLLoaderFactory>(bundle_url,
-                                                             std::move(remote));
+  auto factory = std::make_unique<WebBundleURLLoaderFactory>(
+      bundle_url, std::move(remote),
+      factory_params->request_initiator_origin_lock);
   auto weak_factory = factory->GetWeakPtr();
   factories_.insert({web_bundle_token_params.token, std::move(factory)});
 

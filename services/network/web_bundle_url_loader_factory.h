@@ -20,7 +20,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory
  public:
   WebBundleURLLoaderFactory(
       const GURL& bundle_url,
-      mojo::Remote<mojom::WebBundleHandle> web_bundle_handle);
+      mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
+      const base::Optional<url::Origin>& request_initiator_origin_lock);
   ~WebBundleURLLoaderFactory() override;
   WebBundleURLLoaderFactory(const WebBundleURLLoaderFactory&) = delete;
   WebBundleURLLoaderFactory& operator=(const WebBundleURLLoaderFactory&) =
@@ -57,6 +58,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory
 
   GURL bundle_url_;
   mojo::Remote<mojom::WebBundleHandle> web_bundle_handle_;
+  const base::Optional<::url::Origin> request_initiator_origin_lock_;
   std::unique_ptr<BundleDataSource> source_;
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;
   web_package::mojom::BundleMetadataPtr metadata_;
