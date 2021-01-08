@@ -67,8 +67,8 @@ HoldingSpaceItemScreenCaptureView::~HoldingSpaceItemScreenCaptureView() =
     default;
 
 void HoldingSpaceItemScreenCaptureView::UpdateImage() {
-  image_->SetImage(item()->image().image_skia(),
-                   kHoldingSpaceScreenCaptureSize);
+  image_->SetImage(
+      item()->image().GetImageSkia(kHoldingSpaceScreenCaptureSize));
   SchedulePaint();
 }
 

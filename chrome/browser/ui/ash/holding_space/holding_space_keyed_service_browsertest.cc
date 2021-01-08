@@ -243,8 +243,7 @@ const HoldingSpaceItem* AddHoldingSpaceItem(Profile* profile,
           base::BindLambdaForTesting([&](HoldingSpaceItem::Type type,
                                          const base::FilePath& file_path) {
             return std::make_unique<HoldingSpaceImage>(
-                file_path,
-                /*placeholder=*/gfx::ImageSkia(),
+                HoldingSpaceImage::GetMaxSizeForType(type), file_path,
                 /*async_bitmap_resolver=*/base::DoNothing());
           }));
 

@@ -153,9 +153,8 @@ void HoldingSpaceItemChipView::OnPinVisiblityChanged(bool pin_visible) {
 }
 
 void HoldingSpaceItemChipView::UpdateImage() {
-  image_->SetImage(
-      item()->image().image_skia(),
-      gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize));
+  image_->SetImage(item()->image().GetImageSkia(
+      gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize)));
   SchedulePaint();
 }
 

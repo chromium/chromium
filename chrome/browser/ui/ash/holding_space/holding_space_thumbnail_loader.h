@@ -38,9 +38,7 @@ class HoldingSpaceThumbnailLoader {
 
   // Thumbnail request data that will be forwarded to the image loader.
   struct ThumbnailRequest {
-    ThumbnailRequest(const base::FilePath& item_path,
-                     const gfx::Size& size,
-                     float scale_factor);
+    ThumbnailRequest(const base::FilePath& item_path, const gfx::Size& size);
     ~ThumbnailRequest();
 
     // The absolute item file path.
@@ -48,15 +46,13 @@ class HoldingSpaceThumbnailLoader {
 
     // The desired bitmap size.
     const gfx::Size size;
-
-    // The scale factor for which the bitmap is being generated.
-    float scale_factor;
   };
 
   // Returns a weak pointer to this instance.
   base::WeakPtr<HoldingSpaceThumbnailLoader> GetWeakPtr();
 
-  using ImageCallback = base::OnceCallback<void(const SkBitmap* bitmap)>;
+  using ImageCallback =
+      base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
   // Starts a request for a thumbnail. `callback` called with the generated
   // bitmap. On error, the bitmap will be null.
   void Load(const ThumbnailRequest& request, ImageCallback callback);
@@ -86,7 +82,8 @@ class HoldingSpaceThumbnailLoader {
   // originally `requested_size`, the bitmap will be cropped.
   void RespondToRequest(const base::UnguessableToken& request_id,
                         const gfx::Size& requested_size,
-                        const SkBitmap* bitmap);
+                        const SkBitmap* bitmap,
+                        base::File::Error error);
 
   Profile* const profile_;
 

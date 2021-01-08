@@ -210,7 +210,7 @@ class DragImageItemChipView : public DragImageItemView {
         RoundedImageView::Alignment::kCenter));
     icon->SetPreferredSize(gfx::Size(kDragImageItemChipViewIconSize,
                                      kDragImageItemChipViewIconSize));
-    icon->SetImage(item->image().image_skia(), icon->GetPreferredSize());
+    icon->SetImage(item->image().GetImageSkia(icon->GetPreferredSize()));
 
     // Label.
     ScopedLightModeAsDefault scoped_light_mode;
@@ -246,7 +246,7 @@ class DragImageItemScreenshotView : public DragImageItemView {
     auto* image = AddChildView(std::make_unique<RoundedImageView>(
         kDragImageItemViewCornerRadius, RoundedImageView::Alignment::kCenter));
     image->SetPreferredSize(kDragImageItemScreenshotViewPreferredSize);
-    image->SetImage(item->image().image_skia(), image->GetPreferredSize());
+    image->SetImage(item->image().GetImageSkia(image->GetPreferredSize()));
   }
 };
 

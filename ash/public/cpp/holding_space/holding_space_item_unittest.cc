@@ -11,8 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
 
@@ -29,7 +27,7 @@ std::unique_ptr<HoldingSpaceImage> CreateFakeHoldingSpaceImage(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
   return std::make_unique<HoldingSpaceImage>(
-      file_path, /*placeholder=*/gfx::test::CreateImageSkia(10, 10),
+      HoldingSpaceImage::GetMaxSizeForType(type), file_path,
       /*async_bitmap_resolver=*/base::DoNothing());
 }
 
@@ -41,7 +39,6 @@ using HoldingSpaceItemTest = testing::TestWithParam<HoldingSpaceItem::Type>;
 TEST_P(HoldingSpaceItemTest, Serialization) {
   const base::FilePath file_path("file_path");
   const GURL file_system_url("filesystem:file_system_url");
-  const gfx::ImageSkia placeholder(gfx::test::CreateImageSkia(10, 10));
 
   const auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(), file_path, file_system_url,

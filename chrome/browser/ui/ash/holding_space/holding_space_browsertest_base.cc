@@ -199,8 +199,7 @@ HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddItem(
       base::BindLambdaForTesting(
           [&](HoldingSpaceItem::Type type, const base::FilePath& path) {
             return std::make_unique<HoldingSpaceImage>(
-                path,
-                /*placeholder=*/gfx::ImageSkia(),
+                HoldingSpaceImage::GetMaxSizeForType(type), path,
                 /*async_bitmap_resolver=*/base::DoNothing());
           }));
 

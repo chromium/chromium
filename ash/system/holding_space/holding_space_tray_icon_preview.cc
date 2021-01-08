@@ -43,7 +43,8 @@ constexpr base::TimeDelta kShiftAnimationDuration =
 
 // Returns the preview icon contents size.
 gfx::Size GetPreviewSize() {
-  return gfx::Size(kTrayItemSize, kTrayItemSize);
+  return gfx::Size(kHoldingSpaceTrayIconPreviewSize,
+                   kHoldingSpaceTrayIconPreviewSize);
 }
 
 // Returns whether the specified `shelf_alignment` is horizontal.
@@ -82,26 +83,12 @@ class ContentsImageSource : public gfx::ImageSkiaSource {
   gfx::ImageSkiaRep GetImageForScale(float scale) override {
     gfx::ImageSkia image = item_image_;
 
-    // Crop to square (if necessary).
-    gfx::Size square_size = image.size();
-    square_size.SetToMin(gfx::Size(square_size.height(), square_size.width()));
-    if (image.size() != square_size) {
-      gfx::Rect square_rect(image.size());
-      square_rect.ClampToCenteredSize(square_size);
-      image = gfx::ImageSkiaOperations::ExtractSubset(image, square_rect);
-    }
-
-    // Resize to contents size (if necessary).
-    gfx::Size contents_size = GetPreviewSize();
-    if (image.size() != contents_size) {
-      image = gfx::ImageSkiaOperations::CreateResizedImage(
-          image, skia::ImageOperations::ResizeMethod::RESIZE_BEST,
-          contents_size);
-    }
+    // The `image` should already be sized appropriately.
+    DCHECK_EQ(image.size(), GetPreviewSize());
 
     // Clip to circle.
-    // NOTE: Since `image` has already been cropped to a square, the center
-    // x-coordinate, center y-coordinate, and radius all equal the same value.
+    // NOTE: Since `image` is a square, the center x-coordinate, center
+    // y-coordinate, and radius all equal the same value.
     const int radius = image.width() / 2;
     gfx::Canvas canvas(image.size(), scale, /*is_opaque=*/false);
     canvas.ClipPath(SkPath::Circle(/*cx=*/radius, /*cy=*/radius, radius),
@@ -122,9 +109,10 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
     views::View* container,
     const HoldingSpaceItem* item)
     : shelf_(shelf), container_(container), item_(item) {
+  const gfx::Size size(GetPreviewSize());
   contents_image_ = gfx::ImageSkia(
-      std::make_unique<ContentsImageSource>(item->image().image_skia()),
-      GetPreviewSize());
+      std::make_unique<ContentsImageSource>(item->image().GetImageSkia(size)),
+      size);
   image_subscription_ =
       item->image().AddImageSkiaChangedCallback(base::BindRepeating(
           &HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged,
@@ -360,9 +348,10 @@ void HoldingSpaceTrayIconPreview::OnViewIsDeleting(views::View* view) {
 }
 
 void HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged() {
+  const gfx::Size size(GetPreviewSize());
   contents_image_ = gfx::ImageSkia(
-      std::make_unique<ContentsImageSource>(item_->image().image_skia()),
-      GetPreviewSize());
+      std::make_unique<ContentsImageSource>(item_->image().GetImageSkia(size)),
+      size);
   InvalidateLayer();
 }
 

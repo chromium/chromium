@@ -382,6 +382,7 @@ source_set("unit_tests") {
     ":cpp",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ui/vector_icons",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
     "//ui/aura:test_support",

@@ -69,8 +69,7 @@ std::unique_ptr<HoldingSpaceImage> CreateTestHoldingSpaceImage(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
   return std::make_unique<HoldingSpaceImage>(
-      file_path,
-      /*placeholder=*/gfx::ImageSkia(),
+      HoldingSpaceImage::GetMaxSizeForType(type), file_path,
       /*async_bitmap_resolver=*/base::DoNothing());
 }
 
@@ -520,9 +519,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
       *holding_space_util::ResolveImage(
            holding_space_service->thumbnail_loader_for_testing(),
            HoldingSpaceItem::Type::kScreenshot, item_1_full_path)
-           ->image_skia()
+           ->GetImageSkia()
            .bitmap(),
-      *item_1->image().image_skia().bitmap()));
+      *item_1->image().GetImageSkia().bitmap()));
   // Verify the item file system URL resolves to the correct file in the file
   // manager's context.
   EXPECT_EQ(item_1_virtual_path,
@@ -536,9 +535,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
       *holding_space_util::ResolveImage(
            holding_space_service->thumbnail_loader_for_testing(),
            HoldingSpaceItem::Type::kScreenshot, item_2_full_path)
-           ->image_skia()
+           ->GetImageSkia()
            .bitmap(),
-      *item_2->image().image_skia().bitmap()));
+      *item_2->image().GetImageSkia().bitmap()));
   // Verify the item file system URL resolves to the correct file in the file
   // manager's context.
   EXPECT_EQ(item_2_virtual_path,
@@ -1700,9 +1699,9 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
       *holding_space_util::ResolveImage(
            holding_space_service->thumbnail_loader_for_testing(),
            HoldingSpaceItem::Type::kNearbyShare, item_1_full_path)
-           ->image_skia()
+           ->GetImageSkia()
            .bitmap(),
-      *item_1->image().image_skia().bitmap()));
+      *item_1->image().GetImageSkia().bitmap()));
   // Verify the item file system URL resolves to the correct file in the file
   // manager's context.
   EXPECT_EQ(item_1_virtual_path,
@@ -1716,9 +1715,9 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
       *holding_space_util::ResolveImage(
            holding_space_service->thumbnail_loader_for_testing(),
            HoldingSpaceItem::Type::kNearbyShare, item_2_full_path)
-           ->image_skia()
+           ->GetImageSkia()
            .bitmap(),
-      *item_2->image().image_skia().bitmap()));
+      *item_2->image().GetImageSkia().bitmap()));
   // Verify the item file system URL resolves to the correct file in the file
   // manager's context.
   EXPECT_EQ(item_2_virtual_path,
@@ -1774,9 +1773,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenRecordingItem) {
       *holding_space_util::ResolveImage(
            holding_space_service->thumbnail_loader_for_testing(),
            HoldingSpaceItem::Type::kScreenRecording, item_1_full_path)
-           ->image_skia()
+           ->GetImageSkia()
            .bitmap(),
-      *item_1->image().image_skia().bitmap()));
+      *item_1->image().GetImageSkia().bitmap()));
   // Verify the item file system URL resolves to the correct file in the file
   // manager's context.
   EXPECT_EQ(item_1_virtual_path,
@@ -1790,9 +1789,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenRecordingItem) {
       *holding_space_util::ResolveImage(
            holding_space_service->thumbnail_loader_for_testing(),
            HoldingSpaceItem::Type::kScreenRecording, item_2_full_path)
-           ->image_skia()
+           ->GetImageSkia()
            .bitmap(),
-      *item_2->image().image_skia().bitmap()));
+      *item_2->image().GetImageSkia().bitmap()));
   // Verify the item file system URL resolves to the correct file in the file
   // manager's context.
   EXPECT_EQ(item_2_virtual_path,
