@@ -1339,10 +1339,11 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
               {"DataLength", 0},                    /* only checked for > 0 */
               {"FetchDurationMS", 0},               /* only checked for > 0 */
               {"NavigationStartToFetchStartMS", 0}, /* only checked for > 0 */
+              {"ISPFilteringStatus", 0},
               {"LinkClicked", 1},
               {"LinkPosition", 1},
               {"ResourceType", 1},
-              {"Status", 14},
+              {"Status", 0},
           }},
       // not eligible url #1
       UkmEntry{srp_source_id,

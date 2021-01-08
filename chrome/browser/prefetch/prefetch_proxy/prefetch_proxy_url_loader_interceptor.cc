@@ -182,6 +182,10 @@ void PrefetchProxyURLLoaderInterceptor::MaybeCreateLoader(
                        std::move(on_success_callback)));
     return;
   }
+  // Inform the metrics collector that the main frame HTML was used and probing
+  // was disabled.
+  ReportProbeResult(frame_tree_node_id_, url_,
+                    PrefetchProxyProbeResult::kNoProbing);
 
   EnsureCookiesCopiedAndInterceptPrefetchedNavigation(
       tentative_resource_request, std::move(prefetch));
