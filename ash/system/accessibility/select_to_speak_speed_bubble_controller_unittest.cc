@@ -174,4 +174,15 @@ TEST_F(SelectToSpeakSpeedBubbleControllerTest, SelectDefaultOption) {
   EXPECT_EQ(client.last_select_to_speak_panel_action_value(), 6.2);
 }
 
+TEST_F(SelectToSpeakSpeedBubbleControllerTest, FocusRestoredToSpeedButton) {
+  ShowSelectToSpeakSpeedBubble(/*rate=*/1.2);
+
+  GetEventGenerator()->GestureTapAt(
+      GetOption(5)->GetBoundsInScreen().CenterPoint());
+
+  FloatingMenuButton* speed_button =
+      GetMenuButton(SelectToSpeakMenuView::ButtonId::kSpeed);
+  EXPECT_TRUE(speed_button->HasFocus());
+}
+
 }  // namespace ash

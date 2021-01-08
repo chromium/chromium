@@ -20,6 +20,8 @@ const double kSelectToSpeakSpeechRates[] = {
     kSelectToSpeakSpeechRateFaster,
 };
 
+const char kSelectToSpeakSpeedBubbleWindowName[] = "SelectToSpeakSpeedBubble";
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_CONSTANTS_H_

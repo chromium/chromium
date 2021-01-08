@@ -217,6 +217,10 @@ void SelectToSpeakMenuView::SetInitialFocus() {
   pause_button_->RequestFocus();
 }
 
+void SelectToSpeakMenuView::SetSpeedButtonFocused() {
+  speed_button_->RequestFocus();
+}
+
 void SelectToSpeakMenuView::SetSpeedButtonToggled(bool toggled) {
   speed_button_->SetToggled(toggled);
 }
