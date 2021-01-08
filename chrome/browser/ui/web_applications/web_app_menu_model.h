@@ -14,6 +14,7 @@ class AssignToDesksMenuModel;
 class WebAppMenuModel : public AppMenuModel {
  public:
   static constexpr int kUninstallAppCommandId = 1;
+  static constexpr int kExtensionsMenuCommandId = 2;
 
   WebAppMenuModel(ui::AcceleratorProvider* provider, Browser* browser);
   WebAppMenuModel(const WebAppMenuModel&) = delete;

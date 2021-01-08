@@ -260,7 +260,7 @@ class WebAppIntegrationBrowserTest
     extensions::ScopedTestDialogAutoConfirm auto_confirm(
         extensions::ScopedTestDialogAutoConfirm::ACCEPT);
     auto app_menu_model =
-        std::make_unique<WebAppMenuModel>(nullptr, app_browser_);
+        std::make_unique<WebAppMenuModel>(/*provider=*/nullptr, app_browser_);
     app_menu_model->Init();
     ui::MenuModel* model = app_menu_model.get();
     int index = -1;

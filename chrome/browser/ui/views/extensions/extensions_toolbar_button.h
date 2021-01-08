@@ -26,6 +26,12 @@ class ExtensionsToolbarButton : public ToolbarButton,
   ExtensionsToolbarButton& operator=(const ExtensionsToolbarButton&) = delete;
   ~ExtensionsToolbarButton() override;
 
+  // Activate the Extensions menu. If the ExtensionsToolbarContainer is in
+  // kAutoHide mode this will cause it to show.
+  void ToggleExtensionsMenu();
+
+  bool IsExtensionsMenuShowing() const;
+
   // ToolbarButton:
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
@@ -38,8 +44,6 @@ class ExtensionsToolbarButton : public ToolbarButton,
 
  private:
   int GetIconSize() const;
-
-  void ButtonPressed();
 
   // A lock to keep the button pressed when a popup is visible.
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;

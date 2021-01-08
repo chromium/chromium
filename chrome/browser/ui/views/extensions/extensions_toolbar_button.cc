@@ -29,7 +29,7 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
   std::unique_ptr<views::MenuButtonController> menu_button_controller =
       std::make_unique<views::MenuButtonController>(
           this,
-          base::BindRepeating(&ExtensionsToolbarButton::ButtonPressed,
+          base::BindRepeating(&ExtensionsToolbarButton::ToggleExtensionsMenu,
                               base::Unretained(this)),
           std::make_unique<views::Button::DefaultButtonControllerDelegate>(
               this));
@@ -95,22 +95,28 @@ void ExtensionsToolbarButton::UpdateIcon() {
 void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
   pressed_lock_.reset();
+  extensions_container_->OnMenuClosed();
+}
+
+void ExtensionsToolbarButton::ToggleExtensionsMenu() {
+  if (ExtensionsMenuView::IsShowing()) {
+    ExtensionsMenuView::Hide();
+    return;
+  }
+  pressed_lock_ = menu_button_controller_->TakeLock();
+  extensions_container_->OnMenuOpening();
+  base::RecordAction(base::UserMetricsAction("Extensions.Toolbar.MenuOpened"));
+  ExtensionsMenuView::ShowBubble(this, browser_, extensions_container_,
+                                 extensions_container_->CanShowIconInToolbar())
+      ->AddObserver(this);
+}
+
+bool ExtensionsToolbarButton::IsExtensionsMenuShowing() const {
+  return pressed_lock_.get();
 }
 
 int ExtensionsToolbarButton::GetIconSize() const {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   return (touch_ui && !browser_->app_controller()) ? kDefaultTouchableIconSize
                                                    : kDefaultIconSize;
-}
-
-void ExtensionsToolbarButton::ButtonPressed() {
-  if (ExtensionsMenuView::IsShowing()) {
-    ExtensionsMenuView::Hide();
-    return;
-  }
-  pressed_lock_ = menu_button_controller_->TakeLock();
-  base::RecordAction(base::UserMetricsAction("Extensions.Toolbar.MenuOpened"));
-  ExtensionsMenuView::ShowBubble(this, browser_, extensions_container_,
-                                 extensions_container_->CanShowIconInToolbar())
-      ->AddObserver(this);
 }

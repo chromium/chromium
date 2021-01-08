@@ -75,6 +75,8 @@ class ExtensionsContainer {
   // Same as above, but uses PostTask() in all cases.
   virtual void ShowToolbarActionBubbleAsync(
       std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) = 0;
+
+  virtual void ToggleExtensionsMenu() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_

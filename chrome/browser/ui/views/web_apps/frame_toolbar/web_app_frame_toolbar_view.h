@@ -70,8 +70,12 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   ToolbarButton* GetBackButton() override;
   ReloadButton* GetReloadButton() override;
 
-  views::View* GetLeftContainerForTesting();
-  views::View* GetRightContainerForTesting();
+  WebAppNavigationButtonContainer* get_left_container_for_testing() {
+    return left_container_;
+  }
+  WebAppToolbarButtonContainer* get_right_container_for_testing() {
+    return right_container_;
+  }
   PageActionIconController* GetPageActionIconControllerForTesting();
 
  protected:

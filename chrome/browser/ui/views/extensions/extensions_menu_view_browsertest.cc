@@ -296,6 +296,10 @@ class ExtensionsMenuViewBrowserTest : public ExtensionsToolbarBrowserTest {
 
     // Removing the last extension. All actions now have the same state.
     RemoveExtension(method, extensions()[1]->id());
+
+    // Container should remain visible during the removal animation.
+    EXPECT_TRUE(GetExtensionsToolbarContainer()->IsDrawn());
+    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
     EXPECT_EQ(expected_visibility, GetExtensionsToolbarContainer()->IsDrawn());
   }
 

@@ -606,6 +606,12 @@ void ToolbarActionsBar::ShowToolbarActionBubbleAsync(
                      weak_ptr_factory_.GetWeakPtr(), std::move(bubble)));
 }
 
+void ToolbarActionsBar::ToggleExtensionsMenu() {
+  // This is only implemented by |ExtensionsToolbarContainer|.
+  // TODO(crbug.com/943702): Remove this entire class.
+  NOTREACHED();
+}
+
 bool ToolbarActionsBar::CloseOverflowMenuIfOpen() {
   return delegate_->CloseOverflowMenuIfOpen();
 }

@@ -698,7 +698,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NoTabSelectedMenuCrash) {
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
 
   app_browser->tab_strip_model()->CloseAllTabs();
-  auto app_menu_model = std::make_unique<WebAppMenuModel>(nullptr, app_browser);
+  auto app_menu_model = std::make_unique<WebAppMenuModel>(
+      /*provider=*/nullptr, app_browser);
   app_menu_model->Init();
 }
 
@@ -708,7 +709,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, UninstallMenuOption) {
   const AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
 
-  auto app_menu_model = std::make_unique<WebAppMenuModel>(nullptr, app_browser);
+  auto app_menu_model = std::make_unique<WebAppMenuModel>(
+      /*provider=*/nullptr, app_browser);
   app_menu_model->Init();
   ui::MenuModel* model = app_menu_model.get();
   int index = -1;

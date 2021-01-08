@@ -57,6 +57,11 @@ class ToolbarIconContainerView : public views::View,
     return static_cast<views::AnimatingLayoutManager*>(GetLayoutManager());
   }
 
+  const views::AnimatingLayoutManager* animating_layout_manager() const {
+    return static_cast<const views::AnimatingLayoutManager*>(
+        GetLayoutManager());
+  }
+
   // Provides access to the flex layout in the animating layout manager.
   views::FlexLayout* target_layout_manager() {
     return static_cast<views::FlexLayout*>(
