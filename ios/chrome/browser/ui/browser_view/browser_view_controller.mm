@@ -606,6 +606,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 @property(nonatomic, strong)
     BrowserViewHiderCoordinator* browserViewHiderCoordinator;
 
+// Whether the view has been translated for thumb strip usage when smooth
+// scrolling has been enabled. This allows the correct setup to be done when
+// displaying a new web state.
+@property(nonatomic, assign) BOOL viewTranslatedForSmoothScrolling;
+
 // BVC initialization
 // ------------------
 // If the BVC is initialized with a valid browser state & tab model immediately,
@@ -2408,7 +2413,15 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // Make new content visible, resizing it first as the orientation may
     // have changed from the last time it was displayed.
     CGRect webStateViewFrame = self.contentArea.bounds;
-    if (!fullscreen::features::ShouldUseSmoothScrolling()) {
+    if (fullscreen::features::ShouldUseSmoothScrolling()) {
+      // If the view was translated for the thumb strip, make sure to re-apply
+      // that translation here.
+      if (self.viewTranslatedForSmoothScrolling) {
+        CGFloat toolbarHeight = [self expandedTopToolbarHeight];
+        webStateViewFrame = UIEdgeInsetsInsetRect(
+            webStateViewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
+      }
+    } else {
       // If the Smooth Scrolling is on, the WebState view is not
       // resized, and should always match the bounds of the content area.  When
       // the provider is not initialized, viewport insets resize the webview, so
@@ -2908,25 +2921,32 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // frame must be moved down and the content inset is decreased. To prevent
     // the actual web content from jumping, the content offset must be moved up
     // by a corresponding amount.
-    if (self.currentWebState && ![self isNTPActiveForCurrentWebState] &&
-        fullscreen::features::ShouldUseSmoothScrolling()) {
+    if (fullscreen::features::ShouldUseSmoothScrolling()) {
+      self.viewTranslatedForSmoothScrolling = YES;
       CGFloat toolbarHeight = [self expandedTopToolbarHeight];
-      CGRect webStateViewFrame = UIEdgeInsetsInsetRect(
-          [self viewForWebState:self.currentWebState].frame,
-          UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
-      [self viewForWebState:self.currentWebState].frame = webStateViewFrame;
+      if (self.currentWebState) {
+        CGRect webStateViewFrame = UIEdgeInsetsInsetRect(
+            [self viewForWebState:self.currentWebState].frame,
+            UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
+        [self viewForWebState:self.currentWebState].frame = webStateViewFrame;
+      }
 
-      CRWWebViewScrollViewProxy* scrollProxy =
-          self.currentWebState->GetWebViewProxy().scrollViewProxy;
-      CGPoint scrollOffset = scrollProxy.contentOffset;
-      scrollOffset.y += toolbarHeight;
-      scrollProxy.contentOffset = scrollOffset;
-
-      // TODO(crbug.com/1155536): Inform FullscreenController about these
-      // changes and allow it to calculate the correct overall contentInset.
-      UIEdgeInsets contentInset = scrollProxy.contentInset;
-      contentInset.top -= toolbarHeight;
-      scrollProxy.contentInset = contentInset;
+      // Translate all web states' offset so web states from other tabs are also
+      // updated.
+      if (self.browser) {
+        WebStateList* webStateList = self.browser->GetWebStateList();
+        for (int index = 0; index < webStateList->count(); ++index) {
+          web::WebState* webState = webStateList->GetWebStateAt(index);
+          CRWWebViewScrollViewProxy* scrollProxy =
+              webState->GetWebViewProxy().scrollViewProxy;
+          CGPoint scrollOffset = scrollProxy.contentOffset;
+          scrollOffset.y += toolbarHeight;
+          scrollProxy.contentOffset = scrollOffset;
+        }
+      }
+      // This alerts the fullscreen controller to use the correct new content
+      // insets.
+      self.fullscreenController->FreezeToolbarHeight(true);
     }
   }
 }
@@ -2973,25 +2993,31 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self installFakeStatusBar];
     [self setupStatusBarLayout];
 
-    // See the comments in |-willAnimateViewReveal:| for the explantation of why
+    // See the comments in |-willAnimateViewReveal:| for the explanation of why
     // this is necessary.
-    if (self.currentWebState && ![self isNTPActiveForCurrentWebState] &&
-        fullscreen::features::ShouldUseSmoothScrolling()) {
+    if (fullscreen::features::ShouldUseSmoothScrolling()) {
+      self.viewTranslatedForSmoothScrolling = NO;
+      self.fullscreenController->FreezeToolbarHeight(false);
       CGFloat toolbarHeight = [self expandedTopToolbarHeight];
-      CGRect webStateViewFrame = UIEdgeInsetsInsetRect(
-          [self viewForWebState:self.currentWebState].frame,
-          UIEdgeInsetsMake(-toolbarHeight, 0, 0, 0));
-      [self viewForWebState:self.currentWebState].frame = webStateViewFrame;
+      if (self.currentWebState) {
+        CGRect webStateViewFrame = UIEdgeInsetsInsetRect(
+            [self viewForWebState:self.currentWebState].frame,
+            UIEdgeInsetsMake(-toolbarHeight, 0, 0, 0));
+        [self viewForWebState:self.currentWebState].frame = webStateViewFrame;
+      }
 
-      CRWWebViewScrollViewProxy* scrollProxy =
-          self.currentWebState->GetWebViewProxy().scrollViewProxy;
-      UIEdgeInsets contentInset = scrollProxy.contentInset;
-      contentInset.top += toolbarHeight;
-      scrollProxy.contentInset = contentInset;
+      if (self.browser) {
+        WebStateList* webStateList = self.browser->GetWebStateList();
+        for (int index = 0; index < webStateList->count(); ++index) {
+          web::WebState* webState = webStateList->GetWebStateAt(index);
+          CRWWebViewScrollViewProxy* scrollProxy =
+              webState->GetWebViewProxy().scrollViewProxy;
 
-      CGPoint scrollOffset = scrollProxy.contentOffset;
-      scrollOffset.y -= toolbarHeight;
-      scrollProxy.contentOffset = scrollOffset;
+          CGPoint scrollOffset = scrollProxy.contentOffset;
+          scrollOffset.y -= toolbarHeight;
+          scrollProxy.contentOffset = scrollOffset;
+        }
+      }
     }
   }
 }

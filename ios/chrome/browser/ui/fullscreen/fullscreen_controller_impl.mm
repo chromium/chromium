@@ -177,3 +177,7 @@ void FullscreenControllerImpl::ResizeHorizontalViewport() {
   // two relayouts.
   mediator_.ResizeHorizontalInsets();
 }
+
+void FullscreenControllerImpl::FreezeToolbarHeight(bool freeze_toolbar_height) {
+  model_.SetFreezeToolbarHeight(freeze_toolbar_height);
+}

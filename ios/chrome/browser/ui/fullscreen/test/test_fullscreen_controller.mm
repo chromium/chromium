@@ -126,3 +126,9 @@ void TestFullscreenController::OnFullscreenWillAnimate(
 void TestFullscreenController::ResizeHorizontalViewport() {
   // NOOP in tests.
 }
+
+void TestFullscreenController::FreezeToolbarHeight(bool freeze_toolbar_height) {
+  if (model_) {
+    model_->SetFreezeToolbarHeight(freeze_toolbar_height);
+  }
+}
