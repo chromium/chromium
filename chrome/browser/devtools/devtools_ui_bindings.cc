@@ -456,12 +456,12 @@ class DevToolsUIBindings::NetworkResourceLoader
                      const network::ResourceRequest& resource_request,
                      const net::NetworkTrafficAnnotationTag& traffic_annotation,
                      URLLoaderFactoryHolder url_loader_factory,
-                     const DevToolsUIBindings::DispatchCallback& callback,
+                     DevToolsUIBindings::DispatchCallback callback,
                      base::TimeDelta retry_delay = base::TimeDelta()) {
     auto resource_loader =
         std::make_unique<DevToolsUIBindings::NetworkResourceLoader>(
             stream_id, bindings, resource_request, traffic_annotation,
-            std::move(url_loader_factory), callback, retry_delay);
+            std::move(url_loader_factory), std::move(callback), retry_delay);
     bindings->loaders_.insert(std::move(resource_loader));
   }
 
@@ -471,7 +471,7 @@ class DevToolsUIBindings::NetworkResourceLoader
       const network::ResourceRequest& resource_request,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       URLLoaderFactoryHolder url_loader_factory,
-      const DispatchCallback& callback,
+      DispatchCallback callback,
       base::TimeDelta delay)
       : stream_id_(stream_id),
         bindings_(bindings),
@@ -481,7 +481,7 @@ class DevToolsUIBindings::NetworkResourceLoader
             std::make_unique<network::ResourceRequest>(resource_request),
             traffic_annotation)),
         url_loader_factory_(std::move(url_loader_factory)),
-        callback_(callback),
+        callback_(std::move(callback)),
         retry_delay_(delay) {
     loader_->SetOnResponseStartedCallback(base::BindOnce(
         &NetworkResourceLoader::OnResponseStarted, base::Unretained(this)));
@@ -538,11 +538,11 @@ class DevToolsUIBindings::NetworkResourceLoader
                    << delay << "." << std::endl;
       NetworkResourceLoader::Create(
           stream_id_, bindings_, resource_request_, traffic_annotation_,
-          std::move(url_loader_factory_), callback_, delay);
+          std::move(url_loader_factory_), std::move(callback_), delay);
     } else {
       auto response = BuildObjectForResponse(response_headers_.get(), success,
                                              loader_->NetError());
-      callback_.Run(response.get());
+      std::move(callback_).Run(response.get());
     }
     bindings_->loaders_.erase(bindings_->loaders_.find(this));
   }
@@ -823,10 +823,10 @@ void DevToolsUIBindings::SetInspectedPageBounds(const gfx::Rect& rect) {
   delegate_->SetInspectedPageBounds(rect);
 }
 
-void DevToolsUIBindings::SetIsDocked(const DispatchCallback& callback,
+void DevToolsUIBindings::SetIsDocked(DispatchCallback callback,
                                      bool dock_requested) {
   delegate_->SetIsDocked(dock_requested);
-  callback.Run(nullptr);
+  std::move(callback).Run(nullptr);
 }
 
 void DevToolsUIBindings::InspectElementCompleted() {
@@ -851,7 +851,7 @@ void DevToolsUIBindings::InspectedURLChanged(const std::string& url) {
                  base::StringPrintf(kTitleFormat, simplified_url.c_str())));
 }
 
-void DevToolsUIBindings::LoadNetworkResource(const DispatchCallback& callback,
+void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
                                              const std::string& url,
                                              const std::string& headers,
                                              int stream_id) {
@@ -860,7 +860,7 @@ void DevToolsUIBindings::LoadNetworkResource(const DispatchCallback& callback,
     base::DictionaryValue response;
     response.SetInteger("statusCode", 404);
     response.SetBoolean("urlValid", false);
-    callback.Run(&response);
+    std::move(callback).Run(&response);
     return;
   }
   // Create traffic annotation tag.
@@ -941,7 +941,7 @@ void DevToolsUIBindings::LoadNetworkResource(const DispatchCallback& callback,
       base::DictionaryValue response;
       response.SetBoolean("schemeSupported", false);
       response.SetInteger("statusCode", 403);
-      callback.Run(&response);
+      std::move(callback).Run(&response);
       return;
     }
   } else {
@@ -950,9 +950,9 @@ void DevToolsUIBindings::LoadNetworkResource(const DispatchCallback& callback,
     url_loader_factory = partition->GetURLLoaderFactoryForBrowserProcess();
   }
 
-  NetworkResourceLoader::Create(stream_id, this, resource_request,
-                                traffic_annotation,
-                                std::move(url_loader_factory), callback);
+  NetworkResourceLoader::Create(
+      stream_id, this, resource_request, traffic_annotation,
+      std::move(url_loader_factory), std::move(callback));
 }
 
 void DevToolsUIBindings::OpenInNewTab(const std::string& url) {
@@ -1230,10 +1230,10 @@ void DevToolsUIBindings::OpenNodeFrontend() {
   delegate_->OpenNodeFrontend();
 }
 
-void DevToolsUIBindings::GetPreferences(const DispatchCallback& callback) {
+void DevToolsUIBindings::GetPreferences(DispatchCallback callback) {
   const DictionaryValue* prefs =
       profile_->GetPrefs()->GetDictionary(prefs::kDevToolsPreferences);
-  callback.Run(prefs);
+  std::move(callback).Run(prefs);
 }
 
 void DevToolsUIBindings::SetPreference(const std::string& name,
@@ -1255,12 +1255,12 @@ void DevToolsUIBindings::ClearPreferences() {
   update.Get()->Clear();
 }
 
-void DevToolsUIBindings::Reattach(const DispatchCallback& callback) {
+void DevToolsUIBindings::Reattach(DispatchCallback callback) {
   if (agent_host_.get()) {
     agent_host_->DetachClient(this);
     InnerAttach();
   }
-  callback.Run(nullptr);
+  std::move(callback).Run(nullptr);
 }
 
 void DevToolsUIBindings::ReadyForTest() {
@@ -1342,28 +1342,28 @@ void DevToolsUIBindings::RecordUserMetricsAction(const std::string& name) {
   base::RecordComputedAction(name);
 }
 
-void DevToolsUIBindings::SendJsonRequest(const DispatchCallback& callback,
+void DevToolsUIBindings::SendJsonRequest(DispatchCallback callback,
                                          const std::string& browser_id,
                                          const std::string& url) {
   if (!android_bridge_) {
-    callback.Run(nullptr);
+    std::move(callback).Run(nullptr);
     return;
   }
-  android_bridge_->SendJsonRequest(browser_id, url,
-      base::Bind(&DevToolsUIBindings::JsonReceived,
-                 weak_factory_.GetWeakPtr(),
-                 callback));
+  android_bridge_->SendJsonRequest(
+      browser_id, url,
+      base::BindOnce(&DevToolsUIBindings::JsonReceived,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void DevToolsUIBindings::JsonReceived(const DispatchCallback& callback,
+void DevToolsUIBindings::JsonReceived(DispatchCallback callback,
                                       int result,
                                       const std::string& message) {
   if (result != net::OK) {
-    callback.Run(nullptr);
+    std::move(callback).Run(nullptr);
     return;
   }
   base::Value message_value(message);
-  callback.Run(&message_value);
+  std::move(callback).Run(&message_value);
 }
 
 void DevToolsUIBindings::DeviceCountChanged(int count) {
@@ -1533,32 +1533,34 @@ void DevToolsUIBindings::RegisterExtensionsAPI(const std::string& origin,
 
 namespace {
 
-void ShowSurveyCallback(const DevToolsUIBindings::DispatchCallback& callback,
+void ShowSurveyCallback(DevToolsUIBindings::DispatchCallback callback,
                         bool survey_shown) {
   base::DictionaryValue response;
   response.SetBoolean("surveyShown", survey_shown);
-  callback.Run(&response);
+  std::move(callback).Run(&response);
 }
 
 }  // namespace
 
-void DevToolsUIBindings::ShowSurvey(const DispatchCallback& callback,
+void DevToolsUIBindings::ShowSurvey(DispatchCallback callback,
                                     const std::string& trigger) {
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile_->GetOriginalProfile(), true);
+  base::RepeatingCallback<void(const base::Value*)> on_survey =
+      base::AdaptCallbackForRepeating(std::move(callback));
   hats_service->LaunchSurvey(
-      trigger, base::BindOnce(ShowSurveyCallback, callback, true),
-      base::BindOnce(ShowSurveyCallback, callback, false));
+      trigger, base::BindOnce(ShowSurveyCallback, on_survey, true),
+      base::BindOnce(ShowSurveyCallback, on_survey, false));
 }
 
-void DevToolsUIBindings::CanShowSurvey(const DispatchCallback& callback,
+void DevToolsUIBindings::CanShowSurvey(DispatchCallback callback,
                                        const std::string& trigger) {
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile_->GetOriginalProfile(), true);
   bool can_show = hats_service->CanShowSurvey(trigger);
   base::DictionaryValue response;
   response.SetBoolean("canShowSurvey", can_show);
-  callback.Run(&response);
+  std::move(callback).Run(&response);
 }
 
 void DevToolsUIBindings::SetDelegate(Delegate* delegate) {
