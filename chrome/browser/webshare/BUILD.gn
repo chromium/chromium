@@ -4,8 +4,8 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-static_library("storage") {
-  if (is_chromeos || is_mac) {
+if (is_chromeos || is_mac) {
+  static_library("storage") {
     sources = [
       "prepare_directory_task.cc",
       "prepare_directory_task.h",
