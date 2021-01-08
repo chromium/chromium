@@ -22,6 +22,7 @@
 
 class AutocompleteController;
 struct OmniboxLog;
+class PrefRegistrySimple;
 class Profile;
 class SearchPrefetchURLLoader;
 
@@ -117,6 +118,11 @@ class SearchPrefetchService : public KeyedService,
   base::Optional<SearchPrefetchStatus> GetSearchPrefetchStatusForTesting(
       base::string16 search_terms);
 
+  // Calls |LoadFromPrefs()|.
+  bool LoadFromPrefsForTesting();
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
  private:
   // Records a cache entry for a navigation that is being served.
   void AddCacheEntry(const GURL& navigation_url, const GURL& prefetch_url);
@@ -131,6 +137,14 @@ class SearchPrefetchService : public KeyedService,
   // function marks that prefetch as clicked to prevent deletion when omnibox
   // closes.
   void OnURLOpenedFromOmnibox(OmniboxLog* log);
+
+  // These methods serialize and deserialize |prefetch_cache_| to
+  // |profile_| pref service in a dictionary value.
+  //
+  // Returns true iff loading the prefs removed at least one entry, so the pref
+  // should be saved.
+  bool LoadFromPrefs();
+  void SaveToPrefs() const;
 
   // Prefetches that are started are stored using search terms as a key. Only
   // one prefetch should be started for a given search term until the old

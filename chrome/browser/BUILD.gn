@@ -1324,6 +1324,8 @@ static_library("browser") {
     "prefetch/no_state_prefetch/prerender_link_manager_factory.h",
     "prefetch/no_state_prefetch/prerender_manager_factory.cc",
     "prefetch/no_state_prefetch/prerender_manager_factory.h",
+    "prefetch/pref_names.cc",
+    "prefetch/pref_names.h",
     "prefetch/prefetch_proxy/prefetch_proxy_features.cc",
     "prefetch/prefetch_proxy/prefetch_proxy_features.h",
     "prefetch/prefetch_proxy/prefetch_proxy_from_string_url_loader.cc",

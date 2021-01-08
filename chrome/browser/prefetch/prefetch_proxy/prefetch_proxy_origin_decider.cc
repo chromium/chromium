@@ -9,26 +9,17 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/util/values/values_util.h"
+#include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace {
-// This pref contains a dictionary value whose keys are string representations
-// of a url::Origin and values are a base::Time. The recorded base::Time is the
-// time at which prefetch requests to the corresponding origin can resume, (any
-// base::Time that is in the past can be removed). Entries to the dictionary are
-// created when a prefetch request gets a 503 response with Retry-After header.
-const char kRetryAfterPrefPath[] =
-    "chrome.prefetch_proxy.origin_decider.retry_after";
-}  // namespace
-
 // static
 void PrefetchProxyOriginDecider::RegisterPrefs(PrefRegistrySimple* registry) {
   // Some loss in this pref (especially following a browser crash) is well
   // tolerated and helps ensure the pref service isn't slammed.
-  registry->RegisterDictionaryPref(kRetryAfterPrefPath,
+  registry->RegisterDictionaryPref(prefetch::prefs::kRetryAfterPrefPath,
                                    PrefRegistry::LOSSY_PREF);
 }
 
@@ -90,7 +81,7 @@ void PrefetchProxyOriginDecider::LoadFromPrefs() {
   origin_retry_afters_.clear();
 
   const base::DictionaryValue* dictionary =
-      pref_service_->GetDictionary(kRetryAfterPrefPath);
+      pref_service_->GetDictionary(prefetch::prefs::kRetryAfterPrefPath);
   DCHECK(dictionary);
 
   for (const auto& element : *dictionary) {
@@ -122,7 +113,7 @@ void PrefetchProxyOriginDecider::SaveToPrefs() const {
     base::Value value = util::TimeToValue(element.second);
     dictionary.SetKey(std::move(key), std::move(value));
   }
-  pref_service_->Set(kRetryAfterPrefPath, dictionary);
+  pref_service_->Set(prefetch::prefs::kRetryAfterPrefPath, dictionary);
 }
 
 bool PrefetchProxyOriginDecider::ClearPastEntries() {

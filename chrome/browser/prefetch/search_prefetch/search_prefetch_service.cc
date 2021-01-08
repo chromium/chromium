@@ -8,8 +8,11 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/util/values/values_util.h"
+#include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/net/prediction_options.h"
+#include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/prefetch/search_prefetch/back_forward_search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/full_body_search_prefetch_request.h"
@@ -25,6 +28,7 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "url/origin.h"
@@ -75,9 +79,20 @@ void RecordFinalStatus(SearchPrefetchStatus status) {
 
 }  // namespace
 
+// static
+void SearchPrefetchService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  // Some loss in this pref (especially following a browser crash) is well
+  // tolerated and helps ensure the pref service isn't slammed.
+  registry->RegisterDictionaryPref(prefetch::prefs::kCachePrefPath,
+                                   PrefRegistry::LOSSY_PREF);
+}
+
 SearchPrefetchService::SearchPrefetchService(Profile* profile)
     : profile_(profile) {
   DCHECK(!profile_->IsOffTheRecord());
+
+  if (LoadFromPrefs())
+    SaveToPrefs();
 }
 
 SearchPrefetchService::~SearchPrefetchService() = default;
@@ -328,6 +343,7 @@ void SearchPrefetchService::ClearPrefetches() {
   prefetches_.clear();
   prefetch_expiry_timers_.clear();
   prefetch_cache_.clear();
+  SaveToPrefs();
 }
 
 void SearchPrefetchService::DeletePrefetch(base::string16 search_terms) {
@@ -438,19 +454,28 @@ void SearchPrefetchService::OnTemplateURLServiceChanged() {
 }
 
 void SearchPrefetchService::ClearCacheEntry(const GURL& navigation_url) {
+  if (prefetch_cache_.find(navigation_url) == prefetch_cache_.end()) {
+    return;
+  }
+
   prefetch_cache_.erase(navigation_url);
+  SaveToPrefs();
 }
 
 void SearchPrefetchService::UpdateServeTime(const GURL& navigation_url) {
   if (prefetch_cache_.find(navigation_url) == prefetch_cache_.end())
     return;
+
   prefetch_cache_[navigation_url].second = base::Time::Now();
+  SaveToPrefs();
 }
 
 void SearchPrefetchService::AddCacheEntry(const GURL& navigation_url,
                                           const GURL& prefetch_url) {
-  // TODO(ryansturm): Add prefs support to handle session restore.
-  // https://crbug.com/1162121.
+  if (navigation_url == prefetch_url) {
+    return;
+  }
+
   prefetch_cache_.emplace(navigation_url,
                           std::make_pair(prefetch_url, base::Time::Now()));
 
@@ -468,4 +493,100 @@ void SearchPrefetchService::AddCacheEntry(const GURL& navigation_url,
     }
   }
   ClearCacheEntry(url_to_remove);
+  SaveToPrefs();
+}
+
+bool SearchPrefetchService::LoadFromPrefs() {
+  prefetch_cache_.clear();
+  const base::DictionaryValue* dictionary =
+      profile_->GetPrefs()->GetDictionary(prefetch::prefs::kCachePrefPath);
+  DCHECK(dictionary);
+
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  if (!template_url_service ||
+      !template_url_service->GetDefaultSearchProvider()) {
+    return dictionary->size() > 0;
+  }
+
+  for (const auto& element : *dictionary) {
+    GURL navigation_url(element.first);
+    if (!navigation_url.is_valid()) {
+      continue;
+    }
+
+    if (!element.second) {
+      continue;
+    }
+
+    base::Value::ConstListView const prefetch_url_and_time =
+        base::Value::AsListValue(*element.second).GetList();
+
+    if (prefetch_url_and_time.size() != 2 ||
+        !prefetch_url_and_time[0].is_string() ||
+        !prefetch_url_and_time[1].is_string()) {
+      continue;
+    }
+
+    std::string prefetch_url;
+    if (!prefetch_url_and_time[0].GetAsString(&prefetch_url)) {
+      continue;
+    }
+
+    // Make sure we are only mapping same origin in case of corrupted prefs.
+    if (url::Origin::Create(navigation_url) !=
+        url::Origin::Create(GURL(prefetch_url))) {
+      continue;
+    }
+
+    // Don't redirect same URL.
+    if (navigation_url == prefetch_url) {
+      continue;
+    }
+
+    // Make sure the navigation URL is still a search URL.
+    base::string16 search_terms;
+    template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
+        navigation_url, template_url_service->search_terms_data(),
+        &search_terms);
+
+    if (search_terms.size() == 0) {
+      continue;
+    }
+
+    base::Optional<base::Time> last_update =
+        util::ValueToTime(prefetch_url_and_time[1]);
+    if (!last_update) {
+      continue;
+    }
+
+    // This time isn't valid.
+    if (last_update.value() > base::Time::Now()) {
+      continue;
+    }
+
+    prefetch_cache_.emplace(
+        navigation_url,
+        std::make_pair(GURL(prefetch_url), last_update.value()));
+  }
+  return dictionary->size() > prefetch_cache_.size();
+}
+
+void SearchPrefetchService::SaveToPrefs() const {
+  base::DictionaryValue dictionary;
+  for (const auto& element : prefetch_cache_) {
+    std::string navigation_url = element.first.spec();
+    std::string prefetch_url = element.second.first.spec();
+    auto time =
+        std::make_unique<base::Value>(util::TimeToValue(element.second.second));
+    base::ListValue value;
+    value.AppendString(prefetch_url);
+    value.Append(std::move(time));
+    dictionary.SetKey(std::move(navigation_url), std::move(value));
+  }
+  profile_->GetPrefs()->Set(prefetch::prefs::kCachePrefPath, dictionary);
+}
+
+bool SearchPrefetchService::LoadFromPrefsForTesting() {
+  return LoadFromPrefs();
 }
