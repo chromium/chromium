@@ -107,7 +107,7 @@
 <translation id="3987993985790029246">Kopírovať odkaz</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Názov</translation>
-<translation id="4008040567710660924">Povolenie súborov cookie konkrétneho webu</translation>
+<translation id="4008040567710660924">Povoliť súbory cookie na konkrétnom webe.</translation>
 <translation id="4046123991198612571">Ďalšia skladba</translation>
 <translation id="4165986682804962316">Nastavenia webu</translation>
 <translation id="4200726100658658164">Otvoriť nastavenia polohy</translation>
@@ -120,7 +120,7 @@
 <translation id="4433925000917964731">Zjednodušenú verziu stránky poskytol Google</translation>
 <translation id="4434045419905280838">Vyskakovacie okná a presmerovania</translation>
 <translation id="445467742685312942">Povoliť webom prehrávať chránený obsah</translation>
-<translation id="4468959413250150279">Vypnite zvuk konkrétneho webu.</translation>
+<translation id="4468959413250150279">Vypnúť zvuk na konkrétnom webe.</translation>
 <translation id="4479647676395637221">Pýtať sa, či chcete povoliť webu používať kameru (odporúčané)</translation>
 <translation id="4505788138578415521">Webová adresa bola rozbalená</translation>
 <translation id="4534723447064627427">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> používať mikrofón, zapnite ho aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
@@ -155,7 +155,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ďalšie)}few{(+ # ďalšie)}many{(+ # more)}other{(+ # ďalších)}}</translation>
 <translation id="5403592356182871684">Názvy</translation>
 <translation id="5489227211564503167">Uplynutý čas: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" />.</translation>
-<translation id="5494752089476963479">Blokovať reklamy webov, ktoré zobrazujú obťažujúce alebo zavádzajúce reklamy</translation>
+<translation id="5494752089476963479">Blokovať reklamy na weboch, ktoré zobrazujú obťažujúce alebo zavádzajúce reklamy</translation>
 <translation id="5502860503640766021">Povolené: <ph name="PERMISSION_1" />, blokované: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Weby nemôžu žiadať o odosielanie upozornení</translation>
 <translation id="5516455585884385570">Otvoriť nastavenia upozornení</translation>
@@ -250,7 +250,7 @@
 <translation id="783819812427904514">Zapnúť zvuk videa</translation>
 <translation id="7846076177841592234">Zrušiť výber</translation>
 <translation id="7846621471902887024">Systém vás odhlási zo všetkých webov.</translation>
-<translation id="7882806643839505685">Povoliť zvuk pre konkrétny web.</translation>
+<translation id="7882806643839505685">Povoliť zvuk na konkrétnom webe.</translation>
 <translation id="7986741934819883144">Výber kontaktu</translation>
 <translation id="7993619969781047893">Funkcie na niektorých weboch môžu zlyhávať</translation>
 <translation id="7999064672810608036">Naozaj chcete vymazať všetky miestne dáta tohto webu, vrátane súborov cookie, a resetovať všetky jeho povolenia?</translation>
@@ -259,7 +259,7 @@
 <translation id="8067883171444229417">Prehrať video</translation>
 <translation id="8068648041423924542">Nedá sa vybrať certifikát</translation>
 <translation id="8087000398470557479">Tento obsah pochádza z domény <ph name="DOMAIN_NAME" /> a bol doručený Googlom.</translation>
-<translation id="8116925261070264013">Zvuk bol vypnutý</translation>
+<translation id="8116925261070264013">Vypnuté</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
 <translation id="8197286292360124385">Povolené: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Pokračovať</translation>
@@ -268,7 +268,7 @@
 <translation id="8261506727792406068">Odstrániť</translation>
 <translation id="8300705686683892304">Spravované aplikáciou</translation>
 <translation id="8324158725704657629">Nabudúce sa nepýtať</translation>
-<translation id="8372893542064058268">Povolenie synchronizácie na pozadí na konkrétnom webe.</translation>
+<translation id="8372893542064058268">Povoliť synchronizáciu na pozadí na konkrétnom webe.</translation>
 <translation id="8376384591331888629">Vrátane súborov cookie tretích strán na tomto webe</translation>
 <translation id="83792324527827022">Váš fotoaparát a mikrofón používa nejaký web</translation>
 <translation id="8380167699614421159">Tento web zobrazuje obťažujúce alebo zavádzajúce reklamy</translation>
@@ -279,17 +279,17 @@
 <translation id="8447861592752582886">Odvolať povolenie pre zariadenie</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Používa sa 1 súbor cookie}few{Používajú sa # súbory cookie}many{# cookies in use}other{Používa sa # súborov cookie}}</translation>
 <translation id="8463851957836045671">Web je rýchly</translation>
-<translation id="851751545965956758">Zakázať webom pripájať sa k zariadeniam</translation>
+<translation id="851751545965956758">Brániť webom pripájať sa k zariadeniam</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="857943718398505171">Povolené (odporúčané)</translation>
 <translation id="8609465669617005112">Presunúť nahor</translation>
 <translation id="8676374126336081632">Vymazať vstup</translation>
 <translation id="868929229000858085">Prehľadať kontakty</translation>
-<translation id="8702612070107455751">Budú vymazané všetky offline údaje.</translation>
+<translation id="8702612070107455751">Všetky offline dáta budú vymazané.</translation>
 <translation id="8719283222052720129">Zapnite v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" /> povolenie pre aplikáciu <ph name="APP_NAME" />.</translation>
 <translation id="8725066075913043281">Skúsiť znova</translation>
 <translation id="8730621377337864115">Hotovo</translation>
-<translation id="8737217482364735741">Týmto vymažete všetky dáta a súbory cookie uložené zdrojom <ph name="ORIGIN" />.</translation>
+<translation id="8737217482364735741">Týmto vymažete všetky dáta a súbory cookie uložené webom <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Vyberte obrázok</translation>
 <translation id="8801436777607969138">Blokovať JavaScript na konkrétnom webe.</translation>
 <translation id="8816026460808729765">Zablokovať webom prístup k senzorom</translation>
@@ -299,7 +299,7 @@
 <translation id="8929372349074745002">Tento web sa väčšine ľudí otvára rýchlo, aj tak reaguje</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="894871326938397531">Ukončiť režim inkognito?</translation>
-<translation id="8958424370300090006">Blokovanie súborov cookie konkrétneho webu</translation>
+<translation id="8958424370300090006">Blokovať súbory cookie na konkrétnom webe.</translation>
 <translation id="8959122750345127698">Navigácia je nedostupná: <ph name="URL" /></translation>
 <translation id="9019902583201351841">Spravované vašimi rodičmi</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

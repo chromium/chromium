@@ -1451,6 +1451,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2617342710774726426">SIM-карта кулпуланган</translation>
 <translation id="2618797463720777311">Nearby Share функциясын жөндөө</translation>
 <translation id="2619761439309613843">Күн сайын жаңыртуу</translation>
+<translation id="2620215283731032047"><ph name="FILE_NAME" /> файлын коопсуз жүктөп алууга болбойт.</translation>
 <translation id="2620436844016719705">Тутум</translation>
 <translation id="262154978979441594">Google Жардамчыга үнүңүздүн үлгүсүн үйрөтүңүз</translation>
 <translation id="2621713457727696555">Корголгон</translation>
@@ -5264,7 +5265,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7051943809462976355">Чычкан изделүүдө…</translation>
 <translation id="7052237160939977163">Иштин майнаптуулугун жогорулатуу дайындарын жөнөтүү</translation>
 <translation id="7053983685419859001">Бөгөттөө</translation>
-<translation id="705508001219706572">Бул баракты тезирээк ачуу үчүн <ph name="APP_NAME" /> колдонмосун орнотуңуз</translation>
 <translation id="7055152154916055070">Багыттоо бөгөттөлгөн:</translation>
 <translation id="7055451306017383754">Колдонмо бул папканы пайдаланып жаткандыктан, бөлүшүү токтотулган жок. Parallels Desktop эмки жолу өчүрүлгөндө, бул папканы бөлүшүү токтотулат.</translation>
 <translation id="7056526158851679338">Түзмөктөрдү &amp;текшерүү</translation>
@@ -7165,6 +7165,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9209563766569767417">Linux контейнеринин жөндөөсү текшерилүүдө</translation>
 <translation id="9209689095351280025">Сайттар Интернеттеги аракеттериңизге көз салган cookie файлдарын колдонушпайт</translation>
 <translation id="9211177926627870898">Жаңыртуу талап кылынат</translation>
+<translation id="9211490828691860325">Бардык иш такталар</translation>
 <translation id="9214520840402538427">Ой! Орнотуу убакыт аттрибуттарынын демилгеленишин күтүү убакыты аяктады. Кардарларды тейлеген өкүлүңүзгө кайрылыңыз.</translation>
 <translation id="9214695392875603905">Кекс</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" кошулду</translation>

@@ -1450,6 +1450,7 @@
 <translation id="2617342710774726426">SIM картица је закључана</translation>
 <translation id="2618797463720777311">Подесите Дељење у близини</translation>
 <translation id="2619761439309613843">Дневно освежавање</translation>
+<translation id="2620215283731032047">Безбедно преузимање датотеке <ph name="FILE_NAME" /> није успело.</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="262154978979441594">Обучавајте гласовни модел Google помоћника</translation>
 <translation id="2621713457727696555">Заштићено</translation>
@@ -5265,7 +5266,6 @@
 <translation id="7051943809462976355">Тражи се миш...</translation>
 <translation id="7052237160939977163">Шаљи податке о праћењу учинка</translation>
 <translation id="7053983685419859001">Блокирај</translation>
-<translation id="705508001219706572">Да бисте се овде брзо враћали, инсталирајте апликацију <ph name="APP_NAME" /></translation>
 <translation id="7055152154916055070">Блокирано је преусмеравање:</translation>
 <translation id="7055451306017383754">Опозивање дељења није успело јер нека апликација користи овај фолдер. Дељење фолдера ће бити опозвано када се Parallels Desktop следећи пут затвори.</translation>
 <translation id="7056526158851679338">&amp;Испитај уређаје</translation>
@@ -7169,6 +7169,7 @@
 <translation id="9209563766569767417">Проверава се подешавање Linux контејнера</translation>
 <translation id="9209689095351280025">Сајтови не могу да користе колачиће који вас прате на вебу</translation>
 <translation id="9211177926627870898">Ажурирање је обавезно</translation>
+<translation id="9211490828691860325">Све радне површине</translation>
 <translation id="9214520840402538427">Упс! Време покретања атрибута за време инсталације је истекло. Контактирајте представника подршке.</translation>
 <translation id="9214695392875603905">Мафин</translation>
 <translation id="9215293857209265904">Додат је „<ph name="EXTENSION_NAME" />“</translation>

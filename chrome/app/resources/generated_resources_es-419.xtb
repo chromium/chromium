@@ -1446,6 +1446,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2617342710774726426">La tarjeta SIM está bloqueada</translation>
 <translation id="2618797463720777311">Configura Compartir con Nearby</translation>
 <translation id="2619761439309613843">Cambiar diario</translation>
+<translation id="2620215283731032047">No se puede descargar el archivo <ph name="FILE_NAME" /> de forma segura.</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="262154978979441594">Entrenar el modelo de voz del Asistente de Google</translation>
 <translation id="2621713457727696555">Segura</translation>
@@ -5260,7 +5261,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7051943809462976355">Buscando mouse…</translation>
 <translation id="7052237160939977163">Enviar datos de seguimiento de rendimiento</translation>
 <translation id="7053983685419859001">Bloquear</translation>
-<translation id="705508001219706572">Para volver a acceder a este sitio rápidamente, instala <ph name="APP_NAME" />.</translation>
 <translation id="7055152154916055070">Se bloqueó el redireccionamiento:</translation>
 <translation id="7055451306017383754">No se puede dejar de compartir esta carpeta porque una app la está usando. Dejará de compartirse la próxima vez que se cierre Parallels Desktop.</translation>
 <translation id="7056526158851679338">&amp;Inspeccionar dispositivos</translation>
@@ -7160,6 +7160,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="9209563766569767417">Revisando la configuración del contenedor de Linux</translation>
 <translation id="9209689095351280025">Los sitios no pueden usar cookies para rastrearte en la Web</translation>
 <translation id="9211177926627870898">Actualización necesaria</translation>
+<translation id="9211490828691860325">Todos los escritorios</translation>
 <translation id="9214520840402538427">¡Vaya! Se ha agotado el tiempo de la inicialización de los atributos de tiempo de instalación. Comunícate con el representante de asistencia.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" agregada</translation>

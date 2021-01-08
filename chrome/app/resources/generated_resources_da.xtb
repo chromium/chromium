@@ -1452,6 +1452,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2617342710774726426">SIM-kortet er låst</translation>
 <translation id="2618797463720777311">Konfigurer "Deling tæt på"</translation>
 <translation id="2619761439309613843">Nyt hver dag</translation>
+<translation id="2620215283731032047"><ph name="FILE_NAME" /> kan ikke downloades sikkert.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="262154978979441594">Anvend en stemmemodel i Google Assistent</translation>
 <translation id="2621713457727696555">Beskyttet</translation>
@@ -5267,7 +5268,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7051943809462976355">Søger efter mus...</translation>
 <translation id="7052237160939977163">Send data om ydeevne</translation>
 <translation id="7053983685419859001">Bloker</translation>
-<translation id="705508001219706572">Installer <ph name="APP_NAME" /> for hurtigt at vende tilbage hertil</translation>
 <translation id="7055152154916055070">Omdirigeringen blev blokeret:</translation>
 <translation id="7055451306017383754">Delingen kunne ikke ophæves, fordi mappen stadig anvendes af en app. Delingen af mappen ophæves, næste gang Parallels Desktop lukkes.</translation>
 <translation id="7056526158851679338">&amp;Inspicer enheder</translation>
@@ -7170,6 +7170,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="9209563766569767417">Tjekker konfigurationen af Linux-containeren</translation>
 <translation id="9209689095351280025">Websites kan ikke bruge cookies, der sporer din aktivitet på nettet</translation>
 <translation id="9211177926627870898">Opdatering er påkrævet</translation>
+<translation id="9211490828691860325">Alle skriveborde</translation>
 <translation id="9214520840402538427">Ups! Initialiseringen af ​​installationstidens attributter har fået timeout. Kontakt en supportmedarbejder.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" er tilføjet</translation>

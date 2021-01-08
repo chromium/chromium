@@ -1450,6 +1450,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2617342710774726426">O chip está bloqueado</translation>
 <translation id="2618797463720777311">Configurar o "Compartilhar por proximidade"</translation>
 <translation id="2619761439309613843">Atualização diária</translation>
+<translation id="2620215283731032047">Não foi possível fazer o download de <ph name="FILE_NAME" /> por motivo de segurança.</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="262154978979441594">Treinar modelo de voz do Google Assistente</translation>
 <translation id="2621713457727696555">Protegida</translation>
@@ -5267,7 +5268,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7051943809462976355">Procurando mouse...</translation>
 <translation id="7052237160939977163">Enviar dados de rastreamento de desempenho</translation>
 <translation id="7053983685419859001">Bloquear</translation>
-<translation id="705508001219706572">Para acessar este conteúdo rapidamente, instale o app <ph name="APP_NAME" /></translation>
 <translation id="7055152154916055070">Redirecionamento bloqueado:</translation>
 <translation id="7055451306017383754">Não foi possível cancelar o compartilhamento porque um aplicativo está usando a pasta. O compartilhamento da pasta será cancelado na próxima vez que o Parallels Desktop for encerrado.</translation>
 <translation id="7056526158851679338">&amp;Inspecionar dispositivos</translation>
@@ -7168,6 +7168,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="9209563766569767417">Verificando a configuração do contêiner Linux</translation>
 <translation id="9209689095351280025">Os sites não podem usar cookies que rastreiem você pela Web</translation>
 <translation id="9211177926627870898">Atualização necessária</translation>
+<translation id="9211490828691860325">Todos os espaços de trabalho</translation>
 <translation id="9214520840402538427">Ops! A inicialização dos atributos de tempo de instalação ultrapassou o tempo limite. Entre em contato com o representante de suporte.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" adicionada</translation>

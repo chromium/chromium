@@ -1451,6 +1451,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2617342710774726426">SIM-kortet är låst</translation>
 <translation id="2618797463720777311">Konfigurera Närdelning</translation>
 <translation id="2619761439309613843">Daglig uppdatering</translation>
+<translation id="2620215283731032047">Det går inte att ladda ned <ph name="FILE_NAME" /> på ett säkert sätt.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="262154978979441594">Träna Google-assistentens röstmodell</translation>
 <translation id="2621713457727696555">Skyddat</translation>
@@ -5265,7 +5266,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7051943809462976355">Söker efter mus …</translation>
 <translation id="7052237160939977163">Skicka data från resultatspårning</translation>
 <translation id="7053983685419859001">Blockera</translation>
-<translation id="705508001219706572">Installera <ph name="APP_NAME" /> så att du kan komma tillbaka hit snabbt</translation>
 <translation id="7055152154916055070">Omdirigeringen blockerades:</translation>
 <translation id="7055451306017383754">Det gick inte att sluta dela eftersom ett program använder den här mappen. Mappen slutar delas nästa gång Parallels Desktop stängs av.</translation>
 <translation id="7056526158851679338">&amp;Inspektera enheter</translation>
@@ -7167,6 +7167,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="9209563766569767417">Linux-behållarens konfiguration kontrolleras</translation>
 <translation id="9209689095351280025">Webbplatser kan inte använda cookies som spårar dig på webben</translation>
 <translation id="9211177926627870898">Uppdatering krävs</translation>
+<translation id="9211490828691860325">Alla skrivbord</translation>
 <translation id="9214520840402538427">Hoppsan! Initieringen av attributen för installationstiden har gått ut. Kontakta din representant för kundsupport.</translation>
 <translation id="9214695392875603905">Muffin</translation>
 <translation id="9215293857209265904"><ph name="EXTENSION_NAME" /> har lagts till</translation>

@@ -101,6 +101,7 @@
 <translation id="4407044323746248786">എന്തായാലും Chromium-ത്തിൽ നിന്ന് പുറത്തുകടക്കണോ?</translation>
 <translation id="4415566066719264597">Chromium-ത്തെ പശ്ചാത്തലത്തിൽ പ്രവർത്തിക്കാൻ അനുവദിക്കുക</translation>
 <translation id="4423735387467980091">Chromium ഇഷ്‌ടാനുസൃതമാക്കുക, നിയന്ത്രിക്കുക</translation>
+<translation id="452711251841752011">Chromium-ലേക്ക് സ്വാഗതം; പുതിയ ബ്രൗസർ വിൻഡോ തുറന്നു</translation>
 <translation id="4544142686420020088">Chromium അപ്‌ഡേറ്റ് ചെയ്തില്ല, എന്തോ കുഴപ്പമുണ്ടായി. <ph name="BEGIN_LINK" />Chromium അപ്‌ഡേറ്റ് സംബന്ധിച്ച പ്രശ്നങ്ങളും പരാജയപ്പെട്ട അപ്ഡേറ്റുകളും പരിഹരിക്കുക.<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">നിങ്ങൾ <ph name="USER_EMAIL_ADDRESS" /> ആയി സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു. സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്ന എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകളും ചരിത്രവും മറ്റ് ക്രമീകരണങ്ങളും ആക്‌സസ് ചെയ്യാൻ ഇപ്പോൾ നിങ്ങൾക്കാകും.</translation>
 <translation id="459535195905078186">Chromium അപ്ലിക്കേഷനുകൾ</translation>
@@ -160,6 +161,7 @@
 <translation id="6248213926982192922">Chromium ഡിഫോൾട്ട് ബ്രൗസറാക്കൂ</translation>
 <translation id="6266342355635466082">Chromium-ന് അപ്‌ഡേറ്റുകൾക്കായി പരിശോധിക്കാനാവില്ല. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക.</translation>
 <translation id="6268381023930128611">Chromium-ത്തിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യണോ?</translation>
+<translation id="6281746429495226318">നിങ്ങളുടെ Chromium പ്രൊഫൈൽ ഇഷ്‌ടാനുസൃതമാക്കുക</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> അപകടകരമാകാൻ ഇടയുള്ളതിനാൽ, Chromium ഇതിനെ ബ്ലോക്കുചെയ്‌തു.</translation>
 <translation id="6309712487085796862">Chromium നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു.</translation>
 <translation id="6333502561965082103">Chromium-ത്തിൽ മറ്റൊരു പ്രവർത്തനം പുരോഗമിക്കുകയാണ്. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>

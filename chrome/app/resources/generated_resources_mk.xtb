@@ -802,6 +802,7 @@
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> е подготвен да ја комплетира инсталацијата</translation>
 <translation id="1868193363684582383">„Ok Google“</translation>
 <translation id="1868553836791672080">Проверката на лозинки не е достапна во Chromium</translation>
+<translation id="1869433484041798909">Копче за обележувач</translation>
 <translation id="187145082678092583">Помалку апликации</translation>
 <translation id="1871534214638631766">Прикажувај поврзани информации кога ќе кликнам со десно копче или кога долго ќе притиснам на содржини</translation>
 <translation id="1871615898038944731">Вашиот <ph name="DEVICE_TYPE" /> е ажуриран</translation>
@@ -833,6 +834,7 @@
 <translation id="1900305421498694955">Апликациите од Google Play може да бараат целосен пристап до системот на датотеки за да читаат и да запишуваат датотеки на надворешни уреди за складирање. Датотеките и папките создадени на уредот се видливи за сите што го користат надворешниот диск. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Избери ги &amp;сите</translation>
 <translation id="1901396183631570154">Chrome не може да ги зачува лозинкиве во сметката на Google. Сѐ уште може да ги зачувате на уредов.</translation>
+<translation id="1903995858055162096">Ова не е вашиот уред? Користете <ph name="BEGIN_LINK" />режим на гостин<ph name="END_LINK" />.</translation>
 <translation id="1905375423839394163">Име на уредот Chromebook</translation>
 <translation id="1906181697255754968">Сајтовите обично пристапуваат до датотеките и папките на вашиот уред за функции како што е автоматското зачувување на вашата работа</translation>
 <translation id="1906828677882361942">Не дозволувај ниту еден сајт да пристапува до сериските порти</translation>
@@ -1450,6 +1452,7 @@
 <translation id="2617342710774726426">SIM-картичката е заклучена</translation>
 <translation id="2618797463720777311">Поставување „Споделување во близина“</translation>
 <translation id="2619761439309613843">Дневно освежување</translation>
+<translation id="2620215283731032047"><ph name="FILE_NAME" /> не може да се преземе безбедно.</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="262154978979441594">Вежбајте го гласовниот модел на „Помошникот на Google“</translation>
 <translation id="2621713457727696555">Заштитена</translation>
@@ -5263,7 +5266,6 @@
 <translation id="7051943809462976355">Се бара глушец…</translation>
 <translation id="7052237160939977163">Испрати податоци во траги за учинок</translation>
 <translation id="7053983685419859001">Блокирај</translation>
-<translation id="705508001219706572">За брз пристап дотука, инсталирајте <ph name="APP_NAME" /></translation>
 <translation id="7055152154916055070">Пренасочувањето е блокирано:</translation>
 <translation id="7055451306017383754">Не може да се откаже споделувањето бидејќи некоја апликација ја користи папкава. Споделувањето на папкава ќе се откаже следниот пат кога ќе се исклучи Parallels Desktop.</translation>
 <translation id="7056526158851679338">&amp;Провери уреди</translation>
@@ -5436,6 +5438,7 @@
 <translation id="7251346854160851420">Стандарден тапет</translation>
 <translation id="7253521419891527137">&amp;Дознај повеќе</translation>
 <translation id="7254951428499890870">Дали сте сигурни дека сакате да стартувате „<ph name="APP_NAME" />“ во дијагностички режим?</translation>
+<translation id="725497546968438223">Копче за папка со обележувачи</translation>
 <translation id="7255002516883565667">Во моментов имате една картичка што може да се користи само на овој уред</translation>
 <translation id="7255935316994522020">Примени</translation>
 <translation id="7256069762010468647">Сајтот ја користи камерата</translation>
@@ -5697,6 +5700,7 @@
 <translation id="7564847347806291057">Заврши процес</translation>
 <translation id="7566118625369982896">Управувајте со линкови до апликации на Play</translation>
 <translation id="756809126120519699">Податоците на Chrome се исчистени</translation>
+<translation id="756876171895853918">Приспособете го аватарот</translation>
 <translation id="7568790562536448087">Се ажурира</translation>
 <translation id="7569983096843329377">Црна</translation>
 <translation id="7571643774869182231">Нема доволно простор за ажурирање</translation>
@@ -7166,6 +7170,7 @@
 <translation id="9209563766569767417">Се проверува поставувањето на контејнерот за Linux</translation>
 <translation id="9209689095351280025">Сајтовите не можe да користат колачиња што ве следат на интернет</translation>
 <translation id="9211177926627870898">Потребно е ажурирање</translation>
+<translation id="9211490828691860325">Сите работни површини</translation>
 <translation id="9214520840402538427">Упс! Иницијализацијата на атрибутите за време на инсталација истече. Контактирајте со вашиот претставник за поддршка.</translation>
 <translation id="9214695392875603905">Тортичка</translation>
 <translation id="9215293857209265904">Додадена е „<ph name="EXTENSION_NAME" />“</translation>

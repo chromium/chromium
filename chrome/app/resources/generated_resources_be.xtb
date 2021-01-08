@@ -804,6 +804,7 @@
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> гатовы завяршыць усталяванне</translation>
 <translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Праверка пароляў у браўзеры Chromium недаступная</translation>
+<translation id="1869433484041798909">Кнопка закладкі</translation>
 <translation id="187145082678092583">Менш праграм</translation>
 <translation id="1871534214638631766">Паказваць інфармацыю пра змесціва пры доўгім націсканні на яго або націсканні правай кнопкай мышы</translation>
 <translation id="1871615898038944731">Абнаўленне прылады <ph name="DEVICE_TYPE" /> не патрабуецца</translation>
@@ -835,6 +836,7 @@
 <translation id="1900305421498694955">Праграмы з Google Play могуць патрабаваць поўнага доступу да файлавай сістэмы – каб чытаць і запісваць файлы на знешніх прыладах сховішча. Створаныя на прыладзе файлы і папкі бачныя ўсім, хто выкарыстоўвае знешні дыск. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Выбраць &amp;усё</translation>
 <translation id="1901396183631570154">Браўзеру Chrome не ўдалося захаваць гэтыя паролі ва Уліковым запісе Google. Можна захаваць іх на гэтай прыладзе.</translation>
+<translation id="1903995858055162096">Не ваша прылада? Выкарыстайце <ph name="BEGIN_LINK" />Гасцявы рэжым<ph name="END_LINK" />.</translation>
 <translation id="1905375423839394163">Назва прылады Chromebook</translation>
 <translation id="1906181697255754968">Сайты звычайна атрымліваюць доступ да файлаў і папак на прыладзе для работы такіх функцый, як аўтаматычнае захаванне зробленага</translation>
 <translation id="1906828677882361942">Не дазваляць сайтам доступ да паслядоўных партоў</translation>
@@ -1452,6 +1454,7 @@
 <translation id="2617342710774726426">SIM-карта заблакіравана</translation>
 <translation id="2618797463720777311">Наладжванне функцыі "Абагульванне паблізу"</translation>
 <translation id="2619761439309613843">Штодзённае абнаўленне</translation>
+<translation id="2620215283731032047">Бяспечна спампаваць файл "<ph name="FILE_NAME" />" нельга.</translation>
 <translation id="2620436844016719705">Сістэма</translation>
 <translation id="262154978979441594">Навучыце Памочніка Google распазнаваць узор голасу</translation>
 <translation id="2621713457727696555">Абаронена</translation>
@@ -5266,7 +5269,6 @@
 <translation id="7051943809462976355">Ідзе пошук мышы...</translation>
 <translation id="7052237160939977163">Адпраўляць даныя трасіроўкі прадукцыйнасці</translation>
 <translation id="7053983685419859001">Заблакіраваць</translation>
-<translation id="705508001219706572">Каб хутка вяртацца сюды, усталюйце праграму "<ph name="APP_NAME" />"</translation>
 <translation id="7055152154916055070">Перанакіраванне заблакіравана:</translation>
 <translation id="7055451306017383754">Не ўдалося скасаваць абагульванне, бо гэту папку выкарыстоўвае праграма. Абагульванне папкі будзе скасавана пасля наступнага завяршэння працы Parallels Desktop.</translation>
 <translation id="7056526158851679338">&amp;Праверыць прылады</translation>
@@ -5439,6 +5441,7 @@
 <translation id="7251346854160851420">Стандартныя шпалеры</translation>
 <translation id="7253521419891527137">&amp;Даведацца больш</translation>
 <translation id="7254951428499890870">Сапраўды запусціць у рэжыме дыягностыкі праграму "<ph name="APP_NAME" />"?</translation>
+<translation id="725497546968438223">Кнопка папкі з закладкамі</translation>
 <translation id="7255002516883565667">Зараз у вас ёсць адна картка, якая можа выкарыстоўвацца толькі на гэтай прыладзе</translation>
 <translation id="7255935316994522020">Ужыць</translation>
 <translation id="7256069762010468647">Сайт выкарыстоўвае камеру</translation>
@@ -5700,6 +5703,7 @@
 <translation id="7564847347806291057">Завяршыць працэс</translation>
 <translation id="7566118625369982896">Кіраванне спасылкамі праграмы Play</translation>
 <translation id="756809126120519699">Даныя Chrome выдалены</translation>
+<translation id="756876171895853918">Наладзіць аватар</translation>
 <translation id="7568790562536448087">Ідзе абнаўленне</translation>
 <translation id="7569983096843329377">Чорны</translation>
 <translation id="7571643774869182231">Недастаткова памяці для абнаўлення</translation>
@@ -7168,6 +7172,7 @@
 <translation id="9209563766569767417">Ідзе праверка налад кантэйнера Linux</translation>
 <translation id="9209689095351280025">Сайты не могуць выкарыстоўваць файлы cookie для адсочвання вас у інтэрнэце</translation>
 <translation id="9211177926627870898">Патрабуецца абнаўленне</translation>
+<translation id="9211490828691860325">Усе працоўныя сталы</translation>
 <translation id="9214520840402538427">Памылка!  Была пратэрмінавана ініцыялізацыя атрыбутаў installation-time ("усталяванне-час").  Звярніцеся ў службу падтрымкі.</translation>
 <translation id="9214695392875603905">Кекс</translation>
 <translation id="9215293857209265904">Дададзена пашырэнне "<ph name="EXTENSION_NAME" />"</translation>

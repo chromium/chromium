@@ -24,6 +24,7 @@ Per concedir el permís, fes clic a <ph name="BUTTON_NAME" /> més avall per obr
 Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i torna-la a marcar.</translation>
 <translation id="225614027745146050">Et donem la benvinguda</translation>
 <translation id="2320166752086256636">Amaga el teclat</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. Tots els drets reservats.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2366718077645204424">No es pot connectar amb l'amfitrió. Probablement, això passa a causa de la configuració de la xarxa que esteu fent servir.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> L'última connexió va ser <ph name="RELATIVE_TIMESTAMP" />.</translation>

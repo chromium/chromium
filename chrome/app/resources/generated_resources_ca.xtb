@@ -801,6 +801,7 @@
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> està llest per completar la instal·lació</translation>
 <translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">La comprovació de contrasenyes no està disponible a Chromium</translation>
+<translation id="1869433484041798909">Botó d'adreça d'interès</translation>
 <translation id="187145082678092583">Menys aplicacions</translation>
 <translation id="1871534214638631766">Mostra informació relacionada amb el contingut en mantenir-lo premut o fer-hi clic amb el botó dret</translation>
 <translation id="1871615898038944731">El dispositiu <ph name="DEVICE_TYPE" /> està actualitzat</translation>
@@ -832,6 +833,7 @@
 <translation id="1900305421498694955">Pot ser que les aplicacions de Google Play requereixin accés complet al sistema de fitxers per llegir i escriure fitxers en dispositius d'emmagatzematge externs. Qualsevol persona que faci servir la unitat externa podrà veure les carpetes i els fitxers creats al dispositiu. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Selecciona-ho &amp;tot</translation>
 <translation id="1901396183631570154">Chrome no ha pogut desar aquestes contrasenyes al teu Compte de Google. Pots continuar desant-les en aquest dispositiu.</translation>
+<translation id="1903995858055162096">No és el teu dispositiu? Fes servir el <ph name="BEGIN_LINK" />mode de convidat<ph name="END_LINK" />.</translation>
 <translation id="1905375423839394163">Nom del dispositiu Chromebook</translation>
 <translation id="1906181697255754968">Els llocs web solen accedir als fitxers i a les carpetes del dispositiu per a funcions com ara desar automàticament la teva feina</translation>
 <translation id="1906828677882361942">No permetis que cap lloc web accedeixi als ports en sèrie</translation>
@@ -1448,6 +1450,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2617342710774726426">La targeta SIM està bloquejada</translation>
 <translation id="2618797463720777311">Configura la funció Compartició Nearby</translation>
 <translation id="2619761439309613843">Actualització diària</translation>
+<translation id="2620215283731032047"><ph name="FILE_NAME" /> no es pot baixar de manera segura.</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="262154978979441594">Entrena el model de veu de l'Assistent de Google</translation>
 <translation id="2621713457727696555">Segura</translation>
@@ -5263,7 +5266,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7051943809462976355">S'està cercant el ratolí...</translation>
 <translation id="7052237160939977163">Envia dades de traça del rendiment</translation>
 <translation id="7053983685419859001">Bloqueja</translation>
-<translation id="705508001219706572">Per tornar aquí ràpidament, instal·la <ph name="APP_NAME" /></translation>
 <translation id="7055152154916055070">S'ha bloquejat la redirecció:</translation>
 <translation id="7055451306017383754">No s'ha pogut deixar de compartir aquesta carpeta perquè una aplicació l'està utilitzant. Es deixarà de compartir la propera vegada que Parallels Desktop s'apagui.</translation>
 <translation id="7056526158851679338">&amp;Inspecciona els dispositius</translation>
@@ -5436,6 +5438,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7251346854160851420">Fons de pantalla predeterminat</translation>
 <translation id="7253521419891527137">&amp;Més informació</translation>
 <translation id="7254951428499890870">Confirmes que vols iniciar "<ph name="APP_NAME" />" en mode de diagnòstic?</translation>
+<translation id="725497546968438223">Botó de carpetes d'adreces d'interès</translation>
 <translation id="7255002516883565667">En aquest moment tens una targeta que només es pot utilitzar en aquest dispositiu</translation>
 <translation id="7255935316994522020">Aplica</translation>
 <translation id="7256069762010468647">El lloc web està utilitzant la càmera</translation>
@@ -5697,6 +5700,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7564847347806291057">Finalitza el procés</translation>
 <translation id="7566118625369982896">Gestiona els enllaços d'aplicacions de Play</translation>
 <translation id="756809126120519699">S'han esborrat les dades de Chrome</translation>
+<translation id="756876171895853918">Personalitza l'avatar</translation>
 <translation id="7568790562536448087">Actualització</translation>
 <translation id="7569983096843329377">Negre</translation>
 <translation id="7571643774869182231">No hi ha prou espai d'emmagatzematge per fer l'actualització</translation>
@@ -7163,6 +7167,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="9209563766569767417">S'està comprovant la configuració del contenidor de Linux</translation>
 <translation id="9209689095351280025">Els llocs web no poden utilitzar galetes que facin un seguiment de la teva activitat al web</translation>
 <translation id="9211177926627870898">Es necessita una actualització</translation>
+<translation id="9211490828691860325">Tots els escriptoris</translation>
 <translation id="9214520840402538427">La inicialització dels atributs en temps d'instal·lació ha esgotat el temps d'espera. Contacteu amb el representant d'assistència.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">S'ha afegit "<ph name="EXTENSION_NAME" />"</translation>

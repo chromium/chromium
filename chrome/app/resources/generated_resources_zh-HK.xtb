@@ -1450,6 +1450,7 @@
 <translation id="2617342710774726426">SIM 卡已鎖定</translation>
 <translation id="2618797463720777311">設定「咫尺共享」</translation>
 <translation id="2619761439309613843">每日重新整理</translation>
+<translation id="2620215283731032047">無法安全下載「<ph name="FILE_NAME" />」。</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="262154978979441594">訓練「Google 助理」語音模型</translation>
 <translation id="2621713457727696555">已受保護</translation>
@@ -5264,7 +5265,6 @@
 <translation id="7051943809462976355">正在搜尋滑鼠…</translation>
 <translation id="7052237160939977163">傳送效能追蹤數據</translation>
 <translation id="7053983685419859001">封鎖</translation>
-<translation id="705508001219706572">如要快速返回此處，請安裝「<ph name="APP_NAME" />」</translation>
 <translation id="7055152154916055070">已禁止重新導向：</translation>
 <translation id="7055451306017383754">某個應用程式正在使用此資料夾，因此無法取消分享。系統會在下次關閉 Parallels Desktop 時取消分享此資料夾。</translation>
 <translation id="7056526158851679338">檢查裝置(&amp;I)</translation>
@@ -7164,6 +7164,7 @@
 <translation id="9209563766569767417">正在檢查 Linux 容器設定</translation>
 <translation id="9209689095351280025">網站不能使用 Cookie 追蹤您的網絡活動</translation>
 <translation id="9211177926627870898">必須更新</translation>
+<translation id="9211490828691860325">所有桌面</translation>
 <translation id="9214520840402538427">糟糕！系統嘗試初始設定安裝時間 (installation-time) 屬性，但是動作已逾時。請與您的支援代表聯絡。</translation>
 <translation id="9214695392875603905">紙杯蛋糕</translation>
 <translation id="9215293857209265904">已新增「<ph name="EXTENSION_NAME" />」</translation>

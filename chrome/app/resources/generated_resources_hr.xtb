@@ -1452,6 +1452,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2617342710774726426">SIM kartica je zaključana</translation>
 <translation id="2618797463720777311">Postavljanje Dijeljenja s Android uređajima</translation>
 <translation id="2619761439309613843">Dnevno osvježavanje</translation>
+<translation id="2620215283731032047">Datoteka <ph name="FILE_NAME" /> ne može se sigurno preuzeti.</translation>
 <translation id="2620436844016719705">Sustav</translation>
 <translation id="262154978979441594">Uvježbavanje glasovnog modela Google asistenta</translation>
 <translation id="2621713457727696555">Zaštićeno</translation>
@@ -5265,7 +5266,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7051943809462976355">Traženje miša...</translation>
 <translation id="7052237160939977163">Šalji podatke o praćenju izvedbe</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
-<translation id="705508001219706572">Da biste se brzo vratili ovdje, instalirajte aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="7055152154916055070">Preusmjeravanje je blokirano:</translation>
 <translation id="7055451306017383754">Prestanak dijeljenja nije bio moguć jer jedna aplikacija koristi tu mapu. Dijeljenje mape prestat će kad se Parallels Desktop isključi.</translation>
 <translation id="7056526158851679338">&amp;Provjeri uređaje</translation>
@@ -7166,6 +7166,7 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu.</translation>
 <translation id="9209563766569767417">Provjera postavljanja Linuxovog spremnika</translation>
 <translation id="9209689095351280025">Web-lokacije ne mogu upotrebljavati kolačiće koji vas prate na webu</translation>
 <translation id="9211177926627870898">Potrebno je ažuriranje</translation>
+<translation id="9211490828691860325">Sve radne površine</translation>
 <translation id="9214520840402538427">Ups! Inicijalizacija atributa vremena instalacije istekla je. Obratite se predstavniku podrške.</translation>
 <translation id="9214695392875603905">Kolač</translation>
 <translation id="9215293857209265904">Dodano je proširenje "<ph name="EXTENSION_NAME" />"</translation>

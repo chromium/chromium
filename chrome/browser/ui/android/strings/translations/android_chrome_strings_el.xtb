@@ -37,7 +37,6 @@
 <translation id="1208340532756947324">Για συγχρονισμό και εξατομίκευση σε διάφορες συσκευές, ενεργοποιήστε τον συγχρονισμό</translation>
 <translation id="1209206284964581585">Προσωρινή απόκρυψη</translation>
 <translation id="1227058898775614466">Ιστορικό περιήγησης</translation>
-<translation id="1229399675748764149">Ορίστε αυτήν τη σελίδα ως αρχική σελίδα</translation>
 <translation id="1231733316453485619">Ενεργοποίηση συγχρονισμού;</translation>
 <translation id="123724288017357924">Επαναφ. τρέχ.σελ. αγνοώντας το περιεχ. κρυφ.μνήμης</translation>
 <translation id="124678866338384709">Κλείσιμο τρέχουσας καρτέλας</translation>
@@ -79,7 +78,6 @@
 <translation id="1513858653616922153">Διαγραφή κωδικού πρόσβασης</translation>
 <translation id="1521774566618522728">Ενεργή σήμερα</translation>
 <translation id="1538801903729528855">Αποκτήστε μια καλύτερη εμπειρία φωνής στον ιστό</translation>
-<translation id="1543538514740974167">Για ταχύτερη μετάβαση</translation>
 <translation id="1544826120773021464">Για να διαχειριστείτε τον Λογαριασμό σας Google, πατήστε το κουμπί Διαχείριση λογαριασμού.</translation>
 <translation id="1549000191223877751">Μεταβείτε σε άλλο παράθυρο</translation>
 <translation id="1553358976309200471">Ενημερώστε το Chrome</translation>
@@ -498,7 +496,6 @@
 <translation id="4587589328781138893">Ιστότοποι</translation>
 <translation id="4594952190837476234">Αυτή η σελίδα εκτός σύνδεσης δημιουργήθηκε στις <ph name="CREATION_TIME" /> και μπορεί να διαφέρει από την έκδοση στο διαδίκτυο.</translation>
 <translation id="4605958867780575332">Το στοιχείο καταργήθηκε <ph name="ITEM_TITLE" /></translation>
-<translation id="4614535611158687827">Αποθηκεύστε σελίδες για αργότερα και λάβετε σχετική υπενθύμιση.</translation>
 <translation id="4616150815774728855">Ανοίξτε <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">Χρήση κωδικού πρόσβασης</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 παραβιασμένος κωδικός πρόσβασης}other{# παραβιασμένοι κωδικοί πρόσβασης}}</translation>
@@ -877,7 +874,6 @@
 <translation id="7027549951530753705">Έγινε επαναφορά του στοιχείου <ph name="ITEM_TITLE" />.</translation>
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
 <translation id="7030675613184250187">Μπορείτε να αποθηκεύσετε σελίδες στη λίστα ανάγνωσής σας για να τις βρείτε ξανά ή να τις διαβάσετε εκτός σύνδεσης.</translation>
-<translation id="703523980599857277">Αλλαγή αρχικής σελίδας</translation>
 <translation id="7054588988317389591">Λήψη περιγραφών εικόνων;</translation>
 <translation id="7055152154916055070">Αποκλεισμένη ανακατεύθυνση:</translation>
 <translation id="7063006564040364415">Δεν ήταν δυνατή η σύνδεση στον διακομιστή συγχρονισμού.</translation>
@@ -888,7 +884,6 @@
 <translation id="7088681679121566888">Το Chrome έχει ενημερωθεί.</translation>
 <translation id="7106762743910369165">Η διαχείριση του προγράμματος περιήγησής σας πραγματοποιείται από τον οργανισμό σας.</translation>
 <translation id="7121362699166175603">Διαγράφει το ιστορικό και τα στοιχεία αυτόματης συμπλήρωσης στη γραμμή διευθύνσεων. Ο Λογαριασμός σας Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
-<translation id="7128355412245153445">Δείτε κορυφαίους ιστοτόπους και τις πιο πρόσφατες ειδήσεις κάθε φορά που πατάτε το κουμπί αρχικής οθόνης.</translation>
 <translation id="7138678301420049075">Άλλο</translation>
 <translation id="7146622961999026732">Αυτοί οι ιστότοποι και οι εφαρμογές φαίνονται σημαντικές για εσάς:</translation>
 <translation id="7149158118503947153"><ph name="BEGIN_LINK" />Φόρτωση αρχικής σελίδας<ph name="END_LINK" /> από <ph name="DOMAIN_NAME" /></translation>
@@ -1078,7 +1073,6 @@
 <translation id="8407396331882458341">1. Επιλέξτε την εφαρμογή <ph name="APP_NAME" />.\n2. Πατήστε την επιλογή Πάντα.</translation>
 <translation id="8410695015584479363">Παρακολούθηση τιμών</translation>
 <translation id="8413126021676339697">Εμφάνιση πλήρους ιστορικού</translation>
-<translation id="8425213833346101688">Αλλαγή</translation>
 <translation id="8427875596167638501">Η καρτέλα προεπισκόπησης έχει ανοίξει κατά το ήμισυ</translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
 <translation id="8438566539970814960">Βελτιώστε τις αναζητήσεις και την περιήγηση</translation>
@@ -1196,7 +1190,6 @@
 <translation id="926205370408745186">Κατάργηση της δραστηριότητάς σας στο Chrome από το Digital Wellbeing</translation>
 <translation id="927968626442779827">Χρησιμοποιήστε τη λειτουργία Lite στο Google Chrome.</translation>
 <translation id="932327136139879170">Αρχική σελίδα</translation>
-<translation id="93753284658583800">Η αρχική σελίδα άλλαξε.</translation>
 <translation id="938850635132480979">Σφάλμα: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Εισαγωγή φράσης πρόσβασης</translation>
 <translation id="948039501338975565">Λίστα φακέλων σελιδοδεικτών</translation>

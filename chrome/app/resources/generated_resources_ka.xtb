@@ -1450,6 +1450,7 @@
 <translation id="2617342710774726426">SIM ბარათი დაბლოკილია</translation>
 <translation id="2618797463720777311">მახლობლად გაზიარების დაყენეა</translation>
 <translation id="2619761439309613843">ყოველდღიური განახლება</translation>
+<translation id="2620215283731032047"><ph name="FILE_NAME" />-ის უსაფრთხოდ ჩამოტვირთვა ვერ მოხერხდება.</translation>
 <translation id="2620436844016719705">სისტემა</translation>
 <translation id="262154978979441594">Google ასისენტის ხმის მოდელის მომზადება</translation>
 <translation id="2621713457727696555">დაცული</translation>
@@ -5263,7 +5264,6 @@
 <translation id="7051943809462976355">მაუსის ძებნა…</translation>
 <translation id="7052237160939977163">ეფექტურობის ტრასირების მონაცემების გაგზავნა</translation>
 <translation id="7053983685419859001">დაბლოკვა</translation>
-<translation id="705508001219706572">აქ უფრო სწრაფად რომ დაბრუნდეთ ხოლმე, დააინსტალირეთ <ph name="APP_NAME" /></translation>
 <translation id="7055152154916055070">გადამისამართება დაიბლოკა:</translation>
 <translation id="7055451306017383754">გაზიარების გაუქმება ვერ მოხერხდა, ვინაიდან ამ საქაღალდეს ერთ-ერთი აპლიკაცია იყენებს. ამ საქაღალდის გაზიარება გაუქმდება Parallels Desktop-ის მომდევნო გათიშვისას.</translation>
 <translation id="7056526158851679338">მოწყობილობების შ&amp;ემოწმება</translation>
@@ -7163,6 +7163,7 @@
 <translation id="9209563766569767417">მიმდინარეობს Linux-ის კონტეინერის დაყენება</translation>
 <translation id="9209689095351280025">საიტები ვერ გამოიყენებს ქუქი-ჩანაწერებს ვებში თქვენთვის თვალის მისადევნებლად</translation>
 <translation id="9211177926627870898">საჭიროა განახლება</translation>
+<translation id="9211490828691860325">ყველა სამუშაო მაგიდა</translation>
 <translation id="9214520840402538427">უპს! დაინსტალირების დროის ატრიბუტების ინიციალიზაცია ამოიწურა. დაუკავშირდით მხარდაჭერის თქვენს წარმომადგენელს.</translation>
 <translation id="9214695392875603905">კექსი</translation>
 <translation id="9215293857209265904">„<ph name="EXTENSION_NAME" />“ დამატებულია</translation>

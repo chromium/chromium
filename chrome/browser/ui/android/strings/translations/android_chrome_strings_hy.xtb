@@ -37,7 +37,6 @@
 <translation id="1208340532756947324">Սարքերը համաժամացնելու և անհատականացնելու համար միացրեք համաժամացումը</translation>
 <translation id="1209206284964581585">Առայժմ թաքցնել</translation>
 <translation id="1227058898775614466">Նավարկման պատմություն</translation>
-<translation id="1229399675748764149">Դարձրեք այս էջը գլխավոր</translation>
 <translation id="1231733316453485619">Միացնե՞լ համաժամացումը</translation>
 <translation id="123724288017357924">Վերաբեռնել ընթացիկ էջը` անտեսելով հիշապահեստի բովանդակությունը</translation>
 <translation id="124678866338384709">Փակել ընթացիկ ներդիրը</translation>
@@ -79,7 +78,6 @@
 <translation id="1513858653616922153">Ջնջել գաղտնաբառը</translation>
 <translation id="1521774566618522728">Այսօր ակտիվ է եղել</translation>
 <translation id="1538801903729528855">Օգտագործեք ձայնային ներածումը համացանցում</translation>
-<translation id="1543538514740974167">Արագ հասանելիություն</translation>
 <translation id="1544826120773021464">Google հաշիվը կառավարելու համար հպեք «Կառավարել հաշիվը» կոճակին</translation>
 <translation id="1549000191223877751">Տեղափոխել այլ պատուհան</translation>
 <translation id="1553358976309200471">Թարմացնել Chrome-ը</translation>
@@ -498,7 +496,6 @@
 <translation id="4587589328781138893">Կայքեր</translation>
 <translation id="4594952190837476234">Այս էջը պահվել է <ph name="CREATION_TIME" />-ին, և կարող է տարբերվել առցանց տարբերակից։</translation>
 <translation id="4605958867780575332">Տարրը հեռացվեց՝ <ph name="ITEM_TITLE" /></translation>
-<translation id="4614535611158687827">Պահեք էջերը հետագայի համար և ստացեք հիշեցում</translation>
 <translation id="4616150815774728855">Բացել <ph name="WEBAPK_NAME" /> հավելվածը</translation>
 <translation id="4634124774493850572">Օգտագործել գաղտնաբառը</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 կոտրված գաղտնաբառ}one{# կոտրված գաղտնաբառ}other{# կոտրված գաղտնաբառ}}</translation>
@@ -877,7 +874,6 @@
 <translation id="7027549951530753705">Վերականգնման ամսաթիվը՝ <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
 <translation id="7030675613184250187">Դուք կարող եք ձեր ընթերցանության ցանկում պահել էջեր՝ դրանք նորից գտնելու և անցանց ռեժիմում կարդալու համար։</translation>
-<translation id="703523980599857277">Փոխել գլխավոր էջը</translation>
 <translation id="7054588988317389591">Ուզո՞ւմ եք ստանալ պատկերների նկարագրություններ</translation>
 <translation id="7055152154916055070">Վերահասցեավորումն արգելափակված է՝</translation>
 <translation id="7063006564040364415">Չհաջողվեց կապակցվել համաժամացման սերվերին:</translation>
@@ -888,7 +884,6 @@
 <translation id="7088681679121566888">Chrome-ը թարմացված է</translation>
 <translation id="7106762743910369165">Ձեր դիտարկիչը կառավարվում է ձեր կազմակերպության կողմից</translation>
 <translation id="7121362699166175603">Մաքրում է պատմությունն ու ինքնալրացումները հասցեագոտում: Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս: Դրանք կարող եք գտնել <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> էջում:</translation>
-<translation id="7128355412245153445">Ձեր թոփ կայքերն ու վերջին հոդվածները տեսնելու համար պարզապես սեղմեք Սկիզբ կոճակը</translation>
 <translation id="7138678301420049075">Այլ</translation>
 <translation id="7146622961999026732">Այս կայքերը և հավելվածները կարող են կարևոր լինել ձեզ համար՝</translation>
 <translation id="7149158118503947153"><ph name="BEGIN_LINK" />Բեռնել էջի բնօրինակը<ph name="END_LINK" /> <ph name="DOMAIN_NAME" /> տիրույթից</translation>
@@ -1078,7 +1073,6 @@
 <translation id="8407396331882458341">1. Ընտրեք <ph name="APP_NAME" /> հավելվածը\n2. Հպեք «Միշտ»</translation>
 <translation id="8410695015584479363">Հետևել գներին</translation>
 <translation id="8413126021676339697">Ցույց տալ ամբողջ պատմությունը</translation>
-<translation id="8425213833346101688">Փոխել</translation>
 <translation id="8427875596167638501">Նախադիտման ներդիրը կիսաբաց է</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8438566539970814960">Լավացնել որոնումն ու էջերի դիտումը</translation>
@@ -1196,7 +1190,6 @@
 <translation id="926205370408745186">Հեռացրեք Chrome-ի պատմությունը Թվային բարեկեցությունից</translation>
 <translation id="927968626442779827">Փորձեք Lite ռեժիմը Google Chrome-ում</translation>
 <translation id="932327136139879170">Գլխավոր էջ</translation>
-<translation id="93753284658583800">Գլխավոր էջը փոխվեց</translation>
 <translation id="938850635132480979">Սխալ՝ <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Մուտքագրեք անցաբառը</translation>
 <translation id="948039501338975565">Էջանիշներով պանակների ցանկ</translation>

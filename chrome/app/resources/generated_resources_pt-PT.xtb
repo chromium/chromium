@@ -1450,6 +1450,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2617342710774726426">O cartão SIM está bloqueado</translation>
 <translation id="2618797463720777311">Configure a funcionalidade Partilhar na proximidade</translation>
 <translation id="2619761439309613843">Atualização diária</translation>
+<translation id="2620215283731032047">Não é possível transferir o ficheiro <ph name="FILE_NAME" /> em segurança.</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="262154978979441594">Treinar o modelo de voz do Assistente Google</translation>
 <translation id="2621713457727696555">Protegida</translation>
@@ -5266,7 +5267,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7051943809462976355">A pesquisar rato...</translation>
 <translation id="7052237160939977163">Enviar dados de rastreio do desempenho</translation>
 <translation id="7053983685419859001">Bloquear</translation>
-<translation id="705508001219706572">Para voltar aqui rapidamente, instale a app <ph name="APP_NAME" />.</translation>
 <translation id="7055152154916055070">Redirecionamento bloqueado:</translation>
 <translation id="7055451306017383754">Não foi possível cancelar a partilha porque uma aplicação está a utilizar esta pasta. Será cancelada a partilha da pasta quando o Parallels Desktop for encerrado.</translation>
 <translation id="7056526158851679338">&amp;Inspecionar dispositivos</translation>
@@ -7167,6 +7167,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="9209563766569767417">A verificar a configuração do contentor do Linux…</translation>
 <translation id="9209689095351280025">Os sites não podem utilizar cookies que monitorizem a sua navegação na Web.</translation>
 <translation id="9211177926627870898">Atualização necessária</translation>
+<translation id="9211490828691860325">Todos os espaços de trabalho</translation>
 <translation id="9214520840402538427">Ups! A inicialização dos atributos de tempo de instalação expirou. Contacte o seu representante de suporte.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" adicionada</translation>

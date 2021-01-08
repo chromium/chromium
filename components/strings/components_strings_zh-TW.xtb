@@ -631,6 +631,7 @@
 <translation id="3487845404393360112">紙匣 4</translation>
 <translation id="3495081129428749620">在
     「<ph name="PAGE_TITLE" />」網頁中尋找</translation>
+<translation id="350069200438440499">檔案名稱：</translation>
 <translation id="3507936815618196901">根據你的周遭環境建立 3D 地圖並追蹤攝影機位置</translation>
 <translation id="3512163584740124171">由於相同政策群組中有其他政策的優先順序更高，因此系統已忽略這項政策。</translation>
 <translation id="3518941727116570328">多個物件處理</translation>
@@ -1236,6 +1237,7 @@
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5895187275912066135">發行日期</translation>
 <translation id="5901630391730855834">黃色</translation>
+<translation id="5903264686717710770">標題：</translation>
 <translation id="5905445707201418379">已根據「<ph name="ORIGIN" />」的來源政策加以封鎖。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (已同步)</translation>
 <translation id="5913377024445952699">已暫停擷取螢幕畫面</translation>
@@ -1432,6 +1434,7 @@
 <translation id="6687335167692595844">要求的字型大小</translation>
 <translation id="6689249931105087298">與黑點壓縮相對</translation>
 <translation id="6689271823431384964">你已登入帳戶，因此 Chrome 詢問你是否要將卡片儲存至 Google 帳戶。你可以在設定中變更這項行為。持卡人姓名來自你的帳戶。</translation>
+<translation id="6698381487523150993">建立於：</translation>
 <translation id="6702919718839027939">簡報</translation>
 <translation id="6710213216561001401">返回</translation>
 <translation id="6710594484020273272">&lt;輸入搜尋字詞&gt;</translation>

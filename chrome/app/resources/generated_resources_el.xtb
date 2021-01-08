@@ -1451,6 +1451,7 @@
 <translation id="2617342710774726426">Η κάρτα SIM είναι κλειδωμένη</translation>
 <translation id="2618797463720777311">Ρύθμιση λειτουργίας Κοινοποίηση κοντά</translation>
 <translation id="2619761439309613843">Ημερήσια ανανέωση</translation>
+<translation id="2620215283731032047">Δεν είναι δυνατή η λήψη του αρχείου <ph name="FILE_NAME" /> με ασφάλεια.</translation>
 <translation id="2620436844016719705">Σύστημα</translation>
 <translation id="262154978979441594">Εκπαίδευση φωνητικού μοντέλου Βοηθού Google</translation>
 <translation id="2621713457727696555">Unsecured</translation>
@@ -5266,7 +5267,6 @@
 <translation id="7051943809462976355">Αναζήτηση για το ποντίκι…</translation>
 <translation id="7052237160939977163">Αποστολή δεδομένων εντοπισμού απόδοσης</translation>
 <translation id="7053983685419859001">Αποκλεισμός</translation>
-<translation id="705508001219706572">Για να επιστρέψετε εδώ γρήγορα, εγκαταστήστε την εφαρμογή <ph name="APP_NAME" />.</translation>
 <translation id="7055152154916055070">Αποκλεισμένη ανακατεύθυνση:</translation>
 <translation id="7055451306017383754">Η κατάργηση κοινοποίησης δεν ήταν δυνατή, επειδή μια εφαρμογή χρησιμοποιεί αυτόν τον φάκελο. Η κοινοποίηση του φακέλου θα καταργηθεί κατά τον επόμενο τερματισμό λειτουργίας του Parallels Desktop.</translation>
 <translation id="7056526158851679338">&amp;Επιθεώρηση συσκευών</translation>
@@ -7166,6 +7166,7 @@
 <translation id="9209563766569767417">Έλεγχος της ρύθμισης του κοντέινερ Linux</translation>
 <translation id="9209689095351280025">Οι ιστότοποι δεν μπορούν να χρησιμοποιήσουν cookie που σας παρακολουθούν στον ιστό.</translation>
 <translation id="9211177926627870898">Απαιτείται ενημέρωση</translation>
+<translation id="9211490828691860325">Όλα τα γραφεία</translation>
 <translation id="9214520840402538427">Ωχ!  Η περίοδος προετοιμασίας των ιδιοτήτων χρόνου εγκατάστασης έχει λήξει.  Επικοινωνήστε με τον αντιπρόσωπό σας υποστήριξης.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">Προστέθηκε η επέκταση "<ph name="EXTENSION_NAME" />"</translation>

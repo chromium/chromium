@@ -1445,6 +1445,7 @@
 <translation id="2617342710774726426">SIM कार्ड लक गरिएको छ</translation>
 <translation id="2618797463720777311">नजिकैका यन्त्रसँग सेयर गर्ने सुविधा सेटअप गर्नुहोस्</translation>
 <translation id="2619761439309613843">दैनिक पुनः ताजा गर्नुहोस्</translation>
+<translation id="2620215283731032047"><ph name="FILE_NAME" /> सुरक्षित रूपमा डाउनलोड गर्न सकिएन।</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="262154978979441594">Google सहायकको आवाजको मोडेललाई आफ्नो आवाज चिन्न सिकाउनुहोस्</translation>
 <translation id="2621713457727696555">सुरक्षित पारियो</translation>
@@ -5257,7 +5258,6 @@
 <translation id="7051943809462976355">माउस खोज्दै...</translation>
 <translation id="7052237160939977163">प्रदर्शन ट्रेस लगत पठाउनुहोस्</translation>
 <translation id="7053983685419859001">रोक्नुहोस्</translation>
-<translation id="705508001219706572">यही पेजमा छिटोछरितो रूपमा फर्कन <ph name="APP_NAME" /> इन्स्टल गर्नुहोस्</translation>
 <translation id="7055152154916055070">रिडिरेक्ट नामक सुविधामाथि रोक लगाइयो:</translation>
 <translation id="7055451306017383754">कुनै एप्लिकेसनले यो फोल्डर प्रयोग गरिरहेका कारण यसलाई अनसेयर गर्न सकिएन। अर्को पटक Parallels Desktop सट डाउन हुँदा यो फोल्डर अनसेयर गरिने छ।</translation>
 <translation id="7056526158851679338">यन्त्रहरूको &amp;निरीक्षण गर्नुहोस्</translation>

@@ -1448,6 +1448,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2617342710774726426">SIM-kortet er låst</translation>
 <translation id="2618797463720777311">Konfigurer nærdeling</translation>
 <translation id="2619761439309613843">Daglig oppdatering</translation>
+<translation id="2620215283731032047"><ph name="FILE_NAME" /> kan ikke lastes ned sikkert.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="262154978979441594">Tren stemmemodellen for Google-assistenten</translation>
 <translation id="2621713457727696555">Sikret</translation>
@@ -5260,7 +5261,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7051943809462976355">Søker etter musen …</translation>
 <translation id="7052237160939977163">Send ytelsessporingsdata</translation>
 <translation id="7053983685419859001">Blokkér</translation>
-<translation id="705508001219706572">For å komme raskt tilbake hit, installer <ph name="APP_NAME" /></translation>
 <translation id="7055152154916055070">Viderekoblingen er blokkert:</translation>
 <translation id="7055451306017383754">Kunne ikke avvise delingen, fordi et program bruker denne mappen. Mappedelingen blir avvist neste gang Parallels Desktop avsluttes.</translation>
 <translation id="7056526158851679338">&amp;Inspiser enheter</translation>
@@ -7162,6 +7162,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="9209563766569767417">Sjekker konfigurasjonen av Linux-beholderen</translation>
 <translation id="9209689095351280025">Nettsteder kan ikke bruke informasjonskapsler som sporer deg på nettet</translation>
 <translation id="9211177926627870898">Oppdatering kreves</translation>
+<translation id="9211490828691860325">Alle skrivebord</translation>
 <translation id="9214520840402538427">Beklager. Oppstarten av attributtene for installasjonstid er tidsavbrutt. Ta kontakt med brukerstøtterepresentanten din.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">«<ph name="EXTENSION_NAME" />» ble lagt til</translation>

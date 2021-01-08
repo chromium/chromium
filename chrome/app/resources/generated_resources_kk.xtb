@@ -1448,6 +1448,7 @@
 <translation id="2617342710774726426">SIM картасы құлыпталған</translation>
 <translation id="2618797463720777311">Nearby Share функциясын реттеу</translation>
 <translation id="2619761439309613843">Күн сайын жаңарту</translation>
+<translation id="2620215283731032047"><ph name="FILE_NAME" /> файлын қауіпсіз жүктеп алу мүмкін емес.</translation>
 <translation id="2620436844016719705">Жүйе</translation>
 <translation id="262154978979441594">Google Assistant-ке дауыс үлгісін үйрету</translation>
 <translation id="2621713457727696555">Қорғалған</translation>
@@ -5261,7 +5262,6 @@
 <translation id="7051943809462976355">Тінтуірді іздеуде…</translation>
 <translation id="7052237160939977163">Өнімділікті бақылау деректерін жіберу</translation>
 <translation id="7053983685419859001">Бөгеу</translation>
-<translation id="705508001219706572">Осы жерге жылдам оралу үшін <ph name="APP_NAME" /> қолданбасын орнатыңыз.</translation>
 <translation id="7055152154916055070">Бағыттау функциясына тыйым салынды.</translation>
 <translation id="7055451306017383754">Бөлісуден бас тарту мүмкін емес, себебі бұл қалтаны қолданба пайдаланып жатыр. Parallels Desktop өшкен соң ғана, қалтаны бөлісуден бас тартылады.</translation>
 <translation id="7056526158851679338">&amp;Құрылғыларды тексеру</translation>
@@ -7162,6 +7162,7 @@
 <translation id="9209563766569767417">Linux контейнерінің реттелуі тексерілуде</translation>
 <translation id="9209689095351280025">Сайттар сізді интернетте қадағалайтын cookie файлдарын пайдалана алмайды.</translation>
 <translation id="9211177926627870898">Жаңарту қажет</translation>
+<translation id="9211490828691860325">Барлық жұмыс үстелдері</translation>
 <translation id="9214520840402538427">Орнату уақыты атрибуттарын жұмысқа дайындау мерзімі бітті. Қолдау көрсету өкіліне хабарласыңыз.</translation>
 <translation id="9214695392875603905">Маффин</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" қосылды</translation>

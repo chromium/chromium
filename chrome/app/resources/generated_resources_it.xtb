@@ -1448,6 +1448,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2617342710774726426">La scheda SIM è bloccata</translation>
 <translation id="2618797463720777311">Configura Condivisione nelle vicinanze</translation>
 <translation id="2619761439309613843">Aggiornam. quotidiano</translation>
+<translation id="2620215283731032047">Impossibile scaricare <ph name="FILE_NAME" /> in modo sicuro.</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="262154978979441594">Imposta il modello vocale dell'Assistente Google</translation>
 <translation id="2621713457727696555">Protetta</translation>
@@ -5262,7 +5263,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7051943809462976355">Ricerca mouse in corso...</translation>
 <translation id="7052237160939977163">Invia dati di rilevamento del rendimento</translation>
 <translation id="7053983685419859001">Blocca</translation>
-<translation id="705508001219706572">Per tornare qui rapidamente, installa <ph name="APP_NAME" /></translation>
 <translation id="7055152154916055070">Reindirizzamento bloccato:</translation>
 <translation id="7055451306017383754">Impossibile annullare la condivisione perché questa cartella è in uso in un'applicazione. La condivisione della cartella verrà annullata quando verrà arrestato Parallels Desktop.</translation>
 <translation id="7056526158851679338">&amp;Ispeziona dispositivi</translation>
@@ -7161,6 +7161,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="9209563766569767417">Controllo della configurazione del container Linux</translation>
 <translation id="9209689095351280025">I siti non possono utilizzare i cookie per monitorare la tua attività sul Web.</translation>
 <translation id="9211177926627870898">Aggiornamento richiesto</translation>
+<translation id="9211490828691860325">Tutte le scrivanie</translation>
 <translation id="9214520840402538427">Spiacenti. L'inizializzazione degli attributi installation-time è scaduta. Contatta il tuo rappresentante dell'assistenza.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" aggiunta</translation>

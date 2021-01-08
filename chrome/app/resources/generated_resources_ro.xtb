@@ -802,6 +802,7 @@
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> este pregătit pentru a finaliza instalarea</translation>
 <translation id="1868193363684582383">„Ok Google”</translation>
 <translation id="1868553836791672080">Verificarea parolei nu este disponibilă în Chromium</translation>
+<translation id="1869433484041798909">Butonul Marcaj</translation>
 <translation id="187145082678092583">Mai puține aplicații</translation>
 <translation id="1871534214638631766">Afișează informații conexe atunci când dai clic dreapta sau apeși lung conținutul</translation>
 <translation id="1871615898038944731">Dispozitivul <ph name="DEVICE_TYPE" /> este actualizat</translation>
@@ -833,6 +834,7 @@
 <translation id="1900305421498694955">Aplicațiile din Google Play pot necesita acces deplin la sistemul de fișiere pentru a citi și a scrie fișiere pe dispozitive de stocare externe. Fișierele și dosarele create pe dispozitiv sunt vizibile oricărei persoane care folosește unitatea externă. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Select&amp;ează tot</translation>
 <translation id="1901396183631570154">Chrome nu a putut salva parolele în Contul Google. Însă le poți salva pe acest dispozitiv.</translation>
+<translation id="1903995858055162096">Nu este dispozitivul tău? Folosește <ph name="BEGIN_LINK" />modul pentru invitați<ph name="END_LINK" />.</translation>
 <translation id="1905375423839394163">Numele dispozitivului Chromebook</translation>
 <translation id="1906181697255754968">Site-urile accesează de obicei fișiere și dosare de pe dispozitiv pentru funcții cum ar fi salvarea automată a ceea ce ai lucrat</translation>
 <translation id="1906828677882361942">Nu permite niciunui site să acceseze porturi seriale</translation>
@@ -1450,6 +1452,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2617342710774726426">Cardul SIM este blocat</translation>
 <translation id="2618797463720777311">Configurează Nearby Share</translation>
 <translation id="2619761439309613843">Actualizare zilnică</translation>
+<translation id="2620215283731032047"><ph name="FILE_NAME" /> nu se poate descărca în siguranță.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="262154978979441594">Creează un model vocal pentru Asistentul Google</translation>
 <translation id="2621713457727696555">Securizată</translation>
@@ -5264,7 +5267,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7051943809462976355">Se caută mouse-ul...</translation>
 <translation id="7052237160939977163">Trimiteți datele privind urmărirea performanței</translation>
 <translation id="7053983685419859001">Blochează</translation>
-<translation id="705508001219706572">Ca să revii rapid aici, instalează <ph name="APP_NAME" /></translation>
 <translation id="7055152154916055070">Redirecționarea a fost blocată:</translation>
 <translation id="7055451306017383754">Distribuirea nu s-a putut anula, deoarece o aplicație folosește acest dosar. Distribuirea dosarului va fi anulată la următoarea închidere a aplicației Parallels Desktop.</translation>
 <translation id="7056526158851679338">&amp;Inspectați dispozitivele</translation>
@@ -5437,6 +5439,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7251346854160851420">Imagine de fundal prestabilită</translation>
 <translation id="7253521419891527137">&amp;Aflați mai multe</translation>
 <translation id="7254951428499890870">Sigur doriți să lansați „<ph name="APP_NAME" />” în modul de diagnosticare?</translation>
+<translation id="725497546968438223">Butonul Dosar de marcaje</translation>
 <translation id="7255002516883565667">În acest moment ai un card care poate fi folosit doar pe acest dispozitiv</translation>
 <translation id="7255935316994522020">Aplicați</translation>
 <translation id="7256069762010468647">Site-ul folosește camera foto</translation>
@@ -5698,6 +5701,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7564847347806291057">Oprește procesul</translation>
 <translation id="7566118625369982896">Gestionează linkurile aplicației Play</translation>
 <translation id="756809126120519699">Datele Chrome au fost șterse</translation>
+<translation id="756876171895853918">Personalizează avatarul</translation>
 <translation id="7568790562536448087">Se actualizează</translation>
 <translation id="7569983096843329377">Negru</translation>
 <translation id="7571643774869182231">Nu există suficient spațiu de stocare pentru actualizare</translation>
@@ -7165,6 +7169,7 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="9209563766569767417">Verificarea configurației containerului Linux este în curs</translation>
 <translation id="9209689095351280025">Site-urile nu pot folosi cookie-uri care te urmăresc pe web.</translation>
 <translation id="9211177926627870898">Actualizare necesară</translation>
+<translation id="9211490828691860325">Toate desktopurile</translation>
 <translation id="9214520840402538427">Hopa! Inițializarea atributelor necesare în momentul instalării a expirat. Contactați reprezentantul dvs. de asistență.</translation>
 <translation id="9214695392875603905">Brioșă</translation>
 <translation id="9215293857209265904">S-a adăugat „<ph name="EXTENSION_NAME" />”</translation>

@@ -1449,6 +1449,7 @@
 <translation id="2617342710774726426">SIM 카드가 잠겨 있습니다.</translation>
 <translation id="2618797463720777311">Nearby Share 설정</translation>
 <translation id="2619761439309613843">매일 새로고침</translation>
+<translation id="2620215283731032047"><ph name="FILE_NAME" /> 파일은 안전하게 다운로드할 수 없습니다.</translation>
 <translation id="2620436844016719705">시스템</translation>
 <translation id="262154978979441594">Google 어시스턴트 음성 모델 학습시키기</translation>
 <translation id="2621713457727696555">보안</translation>
@@ -5261,7 +5262,6 @@
 <translation id="7051943809462976355">마우스 검색 중...</translation>
 <translation id="7052237160939977163">성능 추적 데이터 전송</translation>
 <translation id="7053983685419859001">차단</translation>
-<translation id="705508001219706572">이곳으로 빠르게 이동하려면 <ph name="APP_NAME" /> 앱을 설치하세요.</translation>
 <translation id="7055152154916055070">다음 주소로의 리디렉션이 차단됨:</translation>
 <translation id="7055451306017383754">다른 애플리케이션에서 폴더를 사용 중이므로 공유를 취소할 수 없습니다. 다음번에 Parallels Desktop이 종료되면 폴더 공유가 취소됩니다.</translation>
 <translation id="7056526158851679338">기기 검사(&amp;I)</translation>
@@ -7161,6 +7161,7 @@
 <translation id="9209563766569767417">Linux 컨테이너 설정 확인 중</translation>
 <translation id="9209689095351280025">사이트가 웹 전반에서 사용자를 추적하는 쿠키를 사용할 수 없습니다.</translation>
 <translation id="9211177926627870898">업데이트 필요</translation>
+<translation id="9211490828691860325">모든 데스크</translation>
 <translation id="9214520840402538427">설치 시간 속성의 시작 시간이 초과되었습니다. 지원 담당자에게 문의하시기 바랍니다.</translation>
 <translation id="9214695392875603905">컵케이크</translation>
 <translation id="9215293857209265904">'<ph name="EXTENSION_NAME" />'이(가) 추가됨</translation>

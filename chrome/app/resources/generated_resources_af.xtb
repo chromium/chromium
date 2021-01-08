@@ -1451,6 +1451,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2617342710774726426">SIM-kaart is gesluit</translation>
 <translation id="2618797463720777311">Stel Nabydeling op</translation>
 <translation id="2619761439309613843">Herlaai daagliks</translation>
+<translation id="2620215283731032047"><ph name="FILE_NAME" /> kan nie veilig afgelaai word nie.</translation>
 <translation id="2620436844016719705">Stelsel</translation>
 <translation id="262154978979441594">Lei Google Assistent-stemmodel op</translation>
 <translation id="2621713457727696555">Beveilig</translation>
@@ -5265,7 +5266,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7051943809462976355">Soek tans na muis …</translation>
 <translation id="7052237160939977163">Stuur prestasienasporingdata</translation>
 <translation id="7053983685419859001">Blokkeer</translation>
-<translation id="705508001219706572">Installeer <ph name="APP_NAME" /> om vinnig hierheen terug te kom</translation>
 <translation id="7055152154916055070">Herleiding is geblokkeer:</translation>
 <translation id="7055451306017383754">Kon nie ontdeel nie want 'n program gebruik tans hierdie vouer. Die vouer sal ontdeel word wanneer Parallels Dekstop weer afgeskakel word.</translation>
 <translation id="7056526158851679338">Ondersoek toestelle</translation>
@@ -7166,6 +7166,7 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="9209563766569767417">Gaan tans die Linux-houer se opstelling na</translation>
 <translation id="9209689095351280025">Werwe kan nie webkoekies gebruik wat jou oral op die web naspoor nie</translation>
 <translation id="9211177926627870898">Opdatering vereis</translation>
+<translation id="9211490828691860325">Alle lessenaars</translation>
 <translation id="9214520840402538427">Oeps! Die inwyding van die installeringtydeienskappe het uitgetel. Kontak asseblief jou steundiensverteenwoordiger.</translation>
 <translation id="9214695392875603905">Kolwyntjie</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" is bygevoeg</translation>

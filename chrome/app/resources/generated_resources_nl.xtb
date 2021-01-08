@@ -1449,6 +1449,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2617342710774726426">Simkaart is vergrendeld</translation>
 <translation id="2618797463720777311">'Dichtbij delen' instellen</translation>
 <translation id="2619761439309613843">Dagelijks vernieuwen</translation>
+<translation id="2620215283731032047"><ph name="FILE_NAME" /> kan niet beveiligd worden gedownload.</translation>
 <translation id="2620436844016719705">Systeem</translation>
 <translation id="262154978979441594">Spraakmodel van de Google Assistent trainen</translation>
 <translation id="2621713457727696555">Beveiligd</translation>
@@ -5263,7 +5264,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7051943809462976355">Muis zoeken...</translation>
 <translation id="7052237160939977163">Gegevens over het bijhouden van prestaties verzenden</translation>
 <translation id="7053983685419859001">Blokkeren</translation>
-<translation id="705508001219706572">Installeer <ph name="APP_NAME" /> om hier snel terug te keren</translation>
 <translation id="7055152154916055070">Omleiding geblokkeerd:</translation>
 <translation id="7055451306017383754">Kan het delen niet opheffen omdat een app deze map gebruikt. Het delen van de map wordt opgeheven als Parallels Desktop weer wordt uitgeschakeld.</translation>
 <translation id="7056526158851679338">Apparaten &amp;inspecteren</translation>
@@ -7163,6 +7163,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="9209563766569767417">De installatie van de Linux-container wordt gecontroleerd</translation>
 <translation id="9209689095351280025">Sites kunnen geen cookies gebruiken die je volgen op internet</translation>
 <translation id="9211177926627870898">Update vereist</translation>
+<translation id="9211490828691860325">Alle bureaus</translation>
 <translation id="9214520840402538427">De initialisatie van de kenmerken van de installatietijd is verlopen. Neem contact op met je ondersteuningsmedewerker.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">'<ph name="EXTENSION_NAME" />' toegevoegd</translation>

@@ -24,6 +24,7 @@ Toto povolenie udelíte tak, že kliknutím na <ph name="BUTTON_NAME" /> nižši
 Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknutie zrušte a potom ho znova začiarknite.</translation>
 <translation id="225614027745146050">Vitajte</translation>
 <translation id="2320166752086256636">Skryť klávesnicu</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. Všetky práva vyhradené.</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2366718077645204424">Hostiteľa sa nepodarilo nájsť. Pravdepodobne je to spôsobené konfiguráciou siete, ktorú používate.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Naposledy bol(a) online <ph name="RELATIVE_TIMESTAMP" />.</translation>

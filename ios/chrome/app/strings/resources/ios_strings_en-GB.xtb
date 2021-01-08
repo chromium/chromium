@@ -60,7 +60,7 @@
 <translation id="1492417797159476138">You already saved this username for this site</translation>
 <translation id="1509486075633541495">Sign in to website</translation>
 <translation id="1509960214886564027">Features on many sites may break</translation>
-<translation id="152234381334907219">Never Saved</translation>
+<translation id="152234381334907219">Never saved</translation>
 <translation id="1523341279170789507">Allow All Cookies</translation>
 <translation id="1535268707340844072">Your current setting may cause some sites to break. To manage cookies for all sites, see <ph name="BEGIN_LINK" />Cookie settings<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Address 1</translation>
@@ -179,7 +179,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2830972654601096923">Manage Addresses…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Initial Sync Setup Not Finished</translation>
-<translation id="2843803966603263712">Reset Translate Settings</translation>
+<translation id="2843803966603263712">Reset Translate settings</translation>
 <translation id="2858204748079866344">To protect your privacy, Chrome will not auto-fill your password in this field.</translation>
 <translation id="285960592395650245">Retry Download</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -595,7 +595,7 @@ Try to use a unique password for every site.</translation>
 <translation id="7159472599653637159">Request Mobile Site</translation>
 <translation id="7162168282402939716">Unlock incognito tabs with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Keep your passwords safe from security issues</translation>
-<translation id="7173114856073700355">Open Settings</translation>
+<translation id="7173114856073700355">Open settings</translation>
 <translation id="7189598951263744875">Share...</translation>
 <translation id="7192050974311852563">Start logging</translation>
 <translation id="7203585745079012652">Speak Answers Back</translation>

@@ -1442,6 +1442,7 @@
 <translation id="2617342710774726426">SIM କାର୍ଡ ଲକ୍‍ ହୋଇଯାଇଛି।</translation>
 <translation id="2618797463720777311">Nearby Share ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
 <translation id="2619761439309613843">ଦୈନିକ ରିଫ୍ରେଶ୍</translation>
+<translation id="2620215283731032047"><ph name="FILE_NAME" /> ସୁରକ୍ଷିତ ରୂପେ ଡାଉନ୍ ଲୋଡ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2620436844016719705">ସିଷ୍ଟମ୍‌</translation>
 <translation id="262154978979441594">Google Assistant ଭଏସ୍ ମୋଡେଲକୁ ତାଲିମ ଦିଅନ୍ତୁ</translation>
 <translation id="2621713457727696555">ସୁରକ୍ଷିତ</translation>
@@ -5257,7 +5258,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7051943809462976355">ମାଉସ୍ ପାଇଁ ଖୋଜୁଛି...</translation>
 <translation id="7052237160939977163">କାର୍ଯ୍ୟଦକ୍ଷତା ଟ୍ରେସ୍ ଡାଟା ପଠାନ୍ତୁ</translation>
 <translation id="7053983685419859001">ଅବରୋଧ କରନ୍ତୁ</translation>
-<translation id="705508001219706572">ଏଠାକୁ ଶୀଘ୍ର ଫେରିବା ପାଇଁ, <ph name="APP_NAME" /> ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="7055152154916055070">ରିଡାଇରେକ୍ଟକୁ ଅବରୋଧ କରାଯାଇଛି:</translation>
 <translation id="7055451306017383754">ଏକ ଆପ୍ଲିକେସନ୍ ଏହି ଫୋଲ୍ଡରକୁ ବ୍ୟବହାର କରୁଥିବା ଯୋଗୁଁ ଏହାକୁ ସେୟାର୍ କରିବା ବନ୍ଦ କରାଯାଇପାରିଲା ନାହିଁ। ପରବର୍ତ୍ତୀ ସମୟରେ Parallels Desktop ବନ୍ଦ ହେଲେ ଫୋଲ୍ଡରକୁ ସେୟାର୍ କରିବା ବନ୍ଦ ହୋଇଯିବ।</translation>
 <translation id="7056526158851679338">ଡିଭାଇସ୍‌ଗୁଡ଼ିକ &amp;ନିରୀକ୍ଷଣ କରନ୍ତୁ</translation>
@@ -7154,6 +7154,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9209563766569767417">Linux କଣ୍ଟେନର୍ ସେଟଅପ୍ ଯାଞ୍ଚ କରାଯାଉଛି</translation>
 <translation id="9209689095351280025">ସାଇଟଗୁଡ଼ିକ ସମଗ୍ର ୱେବରେ ଆପଣଙ୍କୁ ଟ୍ରାକ୍ କରୁଥିବା କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ ନାହିଁ</translation>
 <translation id="9211177926627870898">ଅପଡେଟ୍ କରିବା ଦରକାର</translation>
+<translation id="9211490828691860325">ସମସ୍ତ ଡେସ୍କ</translation>
 <translation id="9214520840402538427">ଓହୋ!  ଇନ୍‌ଷ୍ଟଲେସନ୍ ସମୟ ବୈଶିଷ୍ଟ୍ୟର ଇନ୍‌ଷ୍ଟାଲାଇଜେସନ୍ ସମୟ ଅବଧି ଶେଷ।  ଦୟାକରି ଆପଣଙ୍କ ସମର୍ଥକ ପ୍ରତିନିଧିଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="9214695392875603905">କପ୍‌କେକ୍‌</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ଯୋଗ କରାଗଲା</translation>

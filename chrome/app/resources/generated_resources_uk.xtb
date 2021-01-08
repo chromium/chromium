@@ -1452,6 +1452,7 @@
 <translation id="2617342710774726426">SIM-карту заблоковано</translation>
 <translation id="2618797463720777311">Налаштуйте функцію "Передавання поблизу"</translation>
 <translation id="2619761439309613843">Щоденне оновлення</translation>
+<translation id="2620215283731032047">Не вдається безпечно завантажити файл "<ph name="FILE_NAME" />".</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="262154978979441594">Навчити Google Асистента розпізнавати зразок голосу</translation>
 <translation id="2621713457727696555">Захищено</translation>
@@ -5266,7 +5267,6 @@
 <translation id="7051943809462976355">Пошук миші…</translation>
 <translation id="7052237160939977163">Надсилати дані відстеження ефективності</translation>
 <translation id="7053983685419859001">Блокувати</translation>
-<translation id="705508001219706572">Щоб швидко повертатися сюди, установіть додаток <ph name="APP_NAME" /></translation>
 <translation id="7055152154916055070">Переадресацію заблоковано:</translation>
 <translation id="7055451306017383754">Не вдалося закрити доступ, оскільки цю папку використовує додаток. Доступ до неї буде закрито після завершення роботи Parallels Desktop.</translation>
 <translation id="7056526158851679338">&amp;Перевірити пристрої</translation>
@@ -7169,6 +7169,7 @@
 <translation id="9209563766569767417">Перевірка налаштувань контейнера Linux</translation>
 <translation id="9209689095351280025">Сайти не можуть використовувати файли cookie, щоб відстежувати ваші дії в Інтернеті</translation>
 <translation id="9211177926627870898">Потрібне оновлення</translation>
+<translation id="9211490828691860325">Усі робочі столи</translation>
 <translation id="9214520840402538427">На жаль, ініціалізація атрибутів часу встановлення минула. Зв’яжіться з представником служби підтримки.</translation>
 <translation id="9214695392875603905">Кекс</translation>
 <translation id="9215293857209265904">Додано розширення "<ph name="EXTENSION_NAME" />"</translation>

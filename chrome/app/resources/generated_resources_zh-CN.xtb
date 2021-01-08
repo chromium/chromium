@@ -914,7 +914,7 @@
 <translation id="2007404777272201486">报告问题...</translation>
 <translation id="2010501376126504057">兼容的设备</translation>
 <translation id="2017334798163366053">停用性能数据收集</translation>
-<translation id="2017836877785168846">清除历史记录和地址栏中的自动填充项。</translation>
+<translation id="2017836877785168846">清除历史记录和地址栏中的自动补全项。</translation>
 <translation id="2018352199541442911">抱歉，系统目前不支持您的外部存储设备。</translation>
 <translation id="2019718679933488176">在新标签页中打开音频(&amp;O)</translation>
 <translation id="2020183425253392403">显示网络地址设置</translation>
@@ -1445,6 +1445,7 @@
 <translation id="2617342710774726426">SIM 卡已被锁定</translation>
 <translation id="2618797463720777311">设置“附近分享”功能</translation>
 <translation id="2619761439309613843">每日刷新</translation>
+<translation id="2620215283731032047">无法安全地下载“<ph name="FILE_NAME" />”。</translation>
 <translation id="2620436844016719705">系统</translation>
 <translation id="262154978979441594">训练 Google 助理语音模型</translation>
 <translation id="2621713457727696555">受保护</translation>
@@ -2415,7 +2416,7 @@
 <translation id="3713047097299026954">此安全密钥不含任何登录数据</translation>
 <translation id="3714195043138862580">此演示设备目前处于“已取消配置”状态。</translation>
 <translation id="3714633008798122362">网络日历</translation>
-<translation id="3719826155360621982">首页</translation>
+<translation id="3719826155360621982">主页</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">您与 Google</translation>
 <translation id="3722108462506185496">启动虚拟机服务时出错。请重试。</translation>
@@ -3540,7 +3541,7 @@
 <translation id="5060332552815861872">有 1 台可保存的打印机。</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{此文件夹包含 1 个书签。确定要删除此文件夹吗？}other{此文件夹包含 # 个书签。确定要删除此文件夹吗？}}</translation>
 <translation id="5062930723426326933">登录失败，请连接到互联网，然后重试。</translation>
-<translation id="5063480226653192405">使用情况</translation>
+<translation id="5063480226653192405">空间占用量</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5067399438976153555">始终启用</translation>
 <translation id="5067867186035333991">当 <ph name="HOST" /> 想要使用麦克风时询问我</translation>
@@ -4130,7 +4131,7 @@
 <translation id="5739235828260127894">正在等待验证。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">特大</translation>
 <translation id="5740328398383587084">附近分享</translation>
-<translation id="5740820643029013514">使用静态消息通知（推荐）</translation>
+<translation id="5740820643029013514">使用干扰性更低的提示方式（推荐）</translation>
 <translation id="574104302965107104">显示屏镜像</translation>
 <translation id="574209121243317957">音高</translation>
 <translation id="5742505912938664543">在此处添加辅助帐号后，您便可使用该帐号浏览网页、下载应用、查看 Gmail 及其他 Google 服务。</translation>
@@ -4841,7 +4842,7 @@
 <translation id="6556903358015358733">主题背景和壁纸</translation>
 <translation id="6557290421156335491">我的快捷方式</translation>
 <translation id="6560151649238390891">已插入建议</translation>
-<translation id="6561560012278703671">改用静态指示方式（禁止网站发送通知，以免干扰）</translation>
+<translation id="6561560012278703671">改用干扰性更低的提示方式（禁止网站发送通知，以免干扰）</translation>
 <translation id="6561726789132298588">Enter</translation>
 <translation id="6562117348069327379">将系统日志存储到“下载内容”目录中。</translation>
 <translation id="656293578423618167">该文件的路径或名称过长。请以较短的名称保存或保存到其他位置。</translation>
@@ -5258,7 +5259,6 @@
 <translation id="7051943809462976355">正在搜索鼠标…</translation>
 <translation id="7052237160939977163">发送性能跟踪数据</translation>
 <translation id="7053983685419859001">禁止</translation>
-<translation id="705508001219706572">若要快速返回到这里，请安装“<ph name="APP_NAME" />”</translation>
 <translation id="7055152154916055070">已禁止重定向：</translation>
 <translation id="7055451306017383754">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Parallels Desktop 时停止共享此文件夹。</translation>
 <translation id="7056526158851679338">检查设备(&amp;I)</translation>
@@ -5322,7 +5322,7 @@
 <translation id="711840821796638741">显示托管书签</translation>
 <translation id="711902386174337313">读取您登录过的设备的列表</translation>
 <translation id="7120865473764644444">无法连接到同步服务器。正在重试…</translation>
-<translation id="7121362699166175603">清除历史记录和地址栏中的自动填充项。您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
+<translation id="7121362699166175603">清除历史记录和地址栏中的自动补全项。您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="7121438501124788993">开发者模式</translation>
 <translation id="7121728544325372695">智能破折号</translation>
 <translation id="7122353087820324370">应用和 Chrome 操作系统设置不会同步到辅助帐号。</translation>
@@ -5559,7 +5559,7 @@
 <translation id="7409549334477097887">特大</translation>
 <translation id="7409735910987429903">网站可能会发送弹出式窗口以展示广告，或者使用重定向将您引导至您可能不想访问的网站</translation>
 <translation id="7410344089573941623"><ph name="HOST" /> 想要使用摄像头和麦克风时询问我是否同意</translation>
-<translation id="741204030948306876">立即启用</translation>
+<translation id="741204030948306876">立即开启</translation>
 <translation id="7412226954991670867">GPU 内存</translation>
 <translation id="7414464185801331860">18 倍</translation>
 <translation id="7415454883318062233">设置已完成</translation>
@@ -5817,7 +5817,7 @@
 <translation id="7702574632857388784">从列表中移除 <ph name="FILE_NAME" /></translation>
 <translation id="7702907602086592255">域名</translation>
 <translation id="7704305437604973648">任务</translation>
-<translation id="7704317875155739195">自动填充搜索字词和网址</translation>
+<translation id="7704317875155739195">自动补全搜索字词和网址</translation>
 <translation id="7704521324619958564">打开 Play 商店</translation>
 <translation id="7705276765467986571">无法加载书签模型。</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -6566,7 +6566,7 @@
 <translation id="8561853412914299728">“<ph name="TAB_TITLE" />”<ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">已尝试降低应用版本。</translation>
 <translation id="8569682776816196752">未找到任何目标</translation>
-<translation id="8571213806525832805">近 4 周</translation>
+<translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8571687764447439720">添加 Kerberos 票据</translation>
 <translation id="8571814292654854151">为您的个人资料命名</translation>
 <translation id="8574990355410201600">始终允许 <ph name="HOST" /> 播放声音</translation>
@@ -6653,7 +6653,7 @@
 <translation id="8661290697478713397">在隐身窗口中打开链接(&amp;G)</translation>
 <translation id="8662671328352114214">加入<ph name="TYPE" />网络</translation>
 <translation id="8662795692588422978">用户</translation>
-<translation id="8662811608048051533">您会从大多数网站退出。</translation>
+<translation id="8662811608048051533">会致使您从大多数网站退出。</translation>
 <translation id="8662911384982557515">将您的主页更改为：<ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome 无法设置壁纸。</translation>
 <translation id="8663099077749055505">始终禁止在 <ph name="HOST" /> 上自动下载多个文件</translation>
@@ -7157,6 +7157,7 @@
 <translation id="9209563766569767417">正在检查 Linux 容器设置</translation>
 <translation id="9209689095351280025">网站无法使用 Cookie 来跟踪您在网上的活动</translation>
 <translation id="9211177926627870898">需要更新</translation>
+<translation id="9211490828691860325">所有桌面</translation>
 <translation id="9214520840402538427">糟糕！安装时间属性的初始化已过期，请与您的支持代表联系。</translation>
 <translation id="9214695392875603905">纸杯蛋糕</translation>
 <translation id="9215293857209265904">已添加“<ph name="EXTENSION_NAME" />”</translation>
