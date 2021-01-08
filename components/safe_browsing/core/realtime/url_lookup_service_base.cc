@@ -73,6 +73,13 @@ void RecordCount100WithAndWithoutSuffix(const std::string& metric,
   base::UmaHistogramCounts100(metric + suffix, value);
 }
 
+void RecordCount1MWithAndWithoutSuffix(const std::string& metric,
+                                       const std::string& suffix,
+                                       int value) {
+  base::UmaHistogramCounts1M(metric, value);
+  base::UmaHistogramCounts1M(metric + suffix, value);
+}
+
 void RecordRequestPopulationWithAndWithoutSuffix(
     const std::string& metric,
     const std::string& suffix,
@@ -357,6 +364,8 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        GetTrafficAnnotationTag());
   network::SimpleURLLoader* loader = owned_loader.get();
+  RecordCount1MWithAndWithoutSuffix("SafeBrowsing.RT.Request.Size",
+                                    GetMetricSuffix(), req_data.size());
   owned_loader->AttachStringForUpload(req_data, "application/octet-stream");
   owned_loader->SetTimeoutDuration(
       base::TimeDelta::FromSeconds(kURLLookupTimeoutDurationInSeconds));

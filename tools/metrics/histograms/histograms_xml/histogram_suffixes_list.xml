@@ -16021,6 +16021,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="SafeBrowsing.RT.IsLookupSuccessful"/>
   <affected-histogram name="SafeBrowsing.RT.Network.Result"/>
   <affected-histogram name="SafeBrowsing.RT.Network.Time"/>
+  <affected-histogram name="SafeBrowsing.RT.Request.Size"/>
   <affected-histogram name="SafeBrowsing.RT.Request.UserPopulation"/>
   <affected-histogram name="SafeBrowsing.RT.ThreatInfoSize"/>
 </histogram_suffixes>
