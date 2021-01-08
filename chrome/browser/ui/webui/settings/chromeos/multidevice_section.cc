@@ -36,6 +36,8 @@ namespace chromeos {
 namespace settings {
 namespace {
 
+using FeatureState = multidevice_setup::mojom::FeatureState;
+
 const std::vector<SearchConcept>& GetMultiDeviceOptedInSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
       {{IDS_OS_SETTINGS_TAG_MULTIDEVICE_FORGET,
@@ -551,14 +553,11 @@ void MultiDeviceSection::OnHostStatusChanged(
         host_status_with_device) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetMultiDeviceOptedOutSearchConcepts());
-  updater.RemoveSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
   updater.RemoveSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
   updater.RemoveSearchTags(GetMultiDeviceOptedInSearchConcepts());
 
   if (IsOptedIn(host_status_with_device.first)) {
     updater.AddSearchTags(GetMultiDeviceOptedInSearchConcepts());
-    if (features::IsPhoneHubEnabled())
-      updater.AddSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
     if (features::IsWifiSyncAndroidEnabled())
       updater.AddSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
   } else {
@@ -571,11 +570,14 @@ void MultiDeviceSection::OnFeatureStatesChanged(
         feature_states_map) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetSmartLockOptionsSearchConcepts());
+  updater.RemoveSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
 
   if (feature_states_map.at(multidevice_setup::mojom::Feature::kSmartLock) ==
       multidevice_setup::mojom::FeatureState::kEnabledByUser) {
     updater.AddSearchTags(GetSmartLockOptionsSearchConcepts());
   }
+  if (IsPhoneHubSupported())
+    updater.AddSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
 }
 
 void MultiDeviceSection::OnNearbySharingEnabledChanged() {
@@ -588,6 +590,13 @@ void MultiDeviceSection::OnNearbySharingEnabledChanged() {
     updater.RemoveSearchTags(GetNearbyShareOnSearchConcepts());
     updater.AddSearchTags(GetNearbyShareOffSearchConcepts());
   }
+}
+
+bool MultiDeviceSection::IsPhoneHubSupported() {
+  const FeatureState feature_state = multidevice_setup_client_->GetFeatureState(
+      multidevice_setup::mojom::Feature::kPhoneHub);
+  return feature_state != FeatureState::kNotSupportedByPhone &&
+         feature_state != FeatureState::kNotSupportedByChromebook;
 }
 
 }  // namespace settings
