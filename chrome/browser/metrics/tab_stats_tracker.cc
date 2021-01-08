@@ -182,6 +182,7 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
 TabStatsTracker::~TabStatsTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BrowserList::GetInstance()->RemoveObserver(this);
+  base::PowerMonitor::RemoveObserver(this);
 }
 
 // static
