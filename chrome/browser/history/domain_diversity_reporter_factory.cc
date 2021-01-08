@@ -39,6 +39,10 @@ std::unique_ptr<KeyedService> DomainDiversityReporterFactory::BuildInstanceFor(
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
 
+  // Only build DomainDiversityReporter service with a valid |history_service|.
+  if (!history_service)
+    return nullptr;
+
   return std::make_unique<DomainDiversityReporter>(
       history_service, profile->GetPrefs(), base::DefaultClock::GetInstance());
 }

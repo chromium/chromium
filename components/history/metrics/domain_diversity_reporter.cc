@@ -31,6 +31,8 @@ DomainDiversityReporter::DomainDiversityReporter(
       clock_(clock),
       history_service_observer_(this) {
   DCHECK_NE(prefs_, nullptr);
+  DCHECK_NE(history_service_, nullptr);
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
