@@ -65,7 +65,11 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"scanQRCodeSuccess", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_SUCCESS},
     {"qrCodeRetry", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_RETRY},
     {"scanQrCodeInvalid", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_INVALID},
-    {"profileListPageMessage", IDS_CELLULAR_SETUP_PROFILE_LIST_PAGE_MESSAGE}};
+    {"profileListPageMessage", IDS_CELLULAR_SETUP_PROFILE_LIST_PAGE_MESSAGE},
+    {"eidPopupTitle", IDS_CELLULAR_SETUP_EID_POPUP_TITLE},
+    {"eidPopupDescription", IDS_CELLULAR_SETUP_EID_POPUP_DESCRIPTION},
+    {"closeEidPopupButtonLabel",
+     IDS_CELLULAR_SETUP_CLOSE_EID_POPUP_BUTTON_LABEL}};
 
 struct NamedBoolean {
   const char* name;

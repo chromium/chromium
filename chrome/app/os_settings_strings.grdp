@@ -2400,15 +2400,6 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_TETHER_NOT_SETUP_WITH_LEARN_MORE_LINK" desc="Text shown when viewing the Mobile data page and no instant tether network is available">
     No device detected <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_INTERNET_EID_POPUP_TITLE" desc="Label shown when vewing EID and QR code popup describing device EID">
-    Your device EID
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_EID_POPUP_DESCRIPTION" desc="Label shown when veiwing EID and QR code popup describing what an EID number is used for">
-    A customer service rep can use the EID number to help you activate service.
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_CLOSE_EID_POPUP_BUTTON_LABEL" desc="A11y and tooltip label for EID and QR code popup close button when viewing EID and QR code popup">
-    Close EID and QR code popup
-  </message>
   <message name="IDS_SETTINGS_INTERNET_SHOW_EID_POPUP_BUTTON_LABEL" desc="A11y and tooltop label for EID and QR code popup show button when viewing cellular network list">
     Show device EID and QR code popup
   </message>

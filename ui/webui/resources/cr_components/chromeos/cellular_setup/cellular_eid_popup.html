@@ -4,14 +4,10 @@
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="../../chromeos/os_settings_icons_css.html">
-<link rel="import" href="./internet_shared_css.html">
 
 <dom-module id="cellular-eid-popup">
   <template>
-    <style include="cr-shared-style
-        os-settings-icons
-        settings-shared internet-shared iron-flex">
+    <style include="cr-shared-style iron-flex">
 
       .cellular-network-list-header {
         border-top: var(--cr-separator-line);
@@ -58,19 +54,19 @@
         aria-describedby="eidDescription">
       <div class="header">
         <div id="eidTitle" class="title" arian-hidden="true">
-          $i18n{eidPopupTitle}
+          [[i18n('eidPopupTitle')]]
         </div>
         <cr-icon-button
             id="eidPopupCloseIcon"
             iron-icon="cr:close"
-            title="$i18n{closeEidPopupButtonLabel}"
-            aria-label="$i18n{closeEidPopupButtonLabel}"
+            title="[[i18n('closeEidPopupButtonLabel')]]"
+            aria-label="[[i18n('closeEidPopupButtonLabel')]]"
             on-click="onCloseTap_">
         </cr-icon-button>
       </div>
       <div class="body">
         <div id="eidDescription" arian-hidden="true">
-          $i18n{eidPopupDescription}
+          [[i18n('eidPopupDescription')]]
         </div>
         <!-- TODO(crbug/1093185): Add eid code -->
       </div>

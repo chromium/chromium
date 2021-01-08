@@ -14,6 +14,7 @@ js_type_check("closure_compile") {
     ":activation_code_page",
     ":base_page",
     ":button_bar",
+    ":cellular_eid_popup",
     ":cellular_setup",
     ":cellular_setup_delegate",
     ":cellular_types",
@@ -133,6 +134,10 @@ js_library("setup_selection_flow") {
     ":subflow_behavior",
     "//ui/webui/resources/js:i18n_behavior",
   ]
+}
+
+js_library("cellular_eid_popup") {
+  deps = [ "//ui/webui/resources/js:i18n_behavior" ]
 }
 
 js_library("subflow_behavior") {
@@ -387,6 +392,12 @@ js_library("setup_selection_flow.m") {
   extra_deps = [ ":setup_selection_flow_module" ]
 }
 
+js_library("cellular_eid_popup.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/cellular_eid_popup.m.js" ]
+  deps = [ "//ui/webui/resources/js:i18n_behavior.m" ]
+  extra_deps = [ ":cellular_eid_popup_module" ]
+}
+
 js_library("cellular_setup.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/cellular_setup.m.js" ]
   deps = [
@@ -406,6 +417,7 @@ group("polymer3_elements") {
     ":activation_code_page_module",
     ":base_page_module",
     ":button_bar_module",
+    ":cellular_eid_popup_module",
     ":cellular_setup_icons_module",
     ":cellular_setup_module",
     ":confirmation_code_page_module",
@@ -512,6 +524,14 @@ polymer_modulizer("esim_flow_ui") {
 polymer_modulizer("setup_selection_flow") {
   js_file = "setup_selection_flow.js"
   html_file = "setup_selection_flow.html"
+  html_type = "dom-module"
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  auto_imports = cr_components_chromeos_auto_imports
+}
+
+polymer_modulizer("cellular_eid_popup") {
+  js_file = "cellular_eid_popup.js"
+  html_file = "cellular_eid_popup.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
   auto_imports = cr_components_chromeos_auto_imports
