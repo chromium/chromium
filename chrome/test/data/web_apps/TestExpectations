@@ -1,0 +1,8 @@
+# Format:
+# crbug.com/bug_id [Platform] [Expectation] test_case
+#
+# Supported Platforms: ChromeOS, Linux, Mac, Win
+# Supported Expectations: Skip
+
+# Add support for |uninstall_from_menu| on CrOS
+crbug.com/1159651 [ ChromeOS ] [ Skip ] navigate_installable, install_omnibox_or_menu, launch_internal, uninstall_from_menu, navigate_browser_in_scope, assert_install_icon_shown,assert_launch_icon_not_shown,

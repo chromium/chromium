@@ -38,20 +38,34 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace {
 
-std::string test_case_file = "web_app_integration_browsertest_cases.csv";
-std::string platform_name =
+const std::string kTestCaseFilename =
+    "web_app_integration_browsertest_cases.csv";
+const std::string kExpectationsFilename = "TestExpectations";
+const std::string kPlatformName =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    "cros";
+    "ChromeOS";
 #elif defined(OS_LINUX)
-    "linux";
+    "Linux";
 #elif defined(OS_MAC)
-    "macos";
+    "Mac";
 #elif defined(OS_WIN)
-    "win";
+    "Win";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+std::string StripAllWhitespace(std::string line) {
+  std::string output;
+  output.reserve(line.size());
+  for (const char& c : line) {
+    if (!isspace(c)) {
+      output += c;
+    }
+  }
+  return output;
+}
 
 // Returns the path of the requested file in the test data directory.
 base::FilePath GetTestFilePath(const std::string& file_name) {
@@ -64,27 +78,83 @@ base::FilePath GetTestFilePath(const std::string& file_name) {
   return file_path.AppendASCII(file_name);
 }
 
-std::vector<std::string> ReadTestInputFile(std::string& file_name) {
+std::vector<std::string> ReadTestInputFile(const std::string& file_name) {
   base::FilePath file = GetTestFilePath(file_name);
   std::string contents;
   std::vector<std::string> test_cases;
   if (!base::ReadFileToString(file, &contents)) {
-    LOG(ERROR) << "File not found: " << file.value();
     return test_cases;
   }
 
   std::vector<std::string> file_lines = base::SplitString(
       contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const auto& line : file_lines) {
+    if (line[0] == '#') {
+      continue;
+    }
+
+    if (line.find('|') == std::string::npos) {
+      test_cases.push_back(StripAllWhitespace(line));
+      continue;
+    }
+
     std::vector<std::string> platforms_and_test = base::SplitString(
         line, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (platforms_and_test[0] == "all" ||
-        platforms_and_test[0].find(platform_name) != std::string::npos) {
-      test_cases.push_back(platforms_and_test[1]);
+    if (platforms_and_test[0].find(kPlatformName) != std::string::npos) {
+      test_cases.push_back(StripAllWhitespace(platforms_and_test[1]));
     }
   }
 
   return test_cases;
+}
+
+std::vector<std::string> GetPlatformIgnoredTests(const std::string& file_name) {
+  base::FilePath file = GetTestFilePath(file_name);
+  std::string contents;
+  std::vector<std::string> platform_expectations;
+  if (!base::ReadFileToString(file, &contents)) {
+    return platform_expectations;
+  }
+
+  std::vector<std::string> file_lines = base::SplitString(
+      contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const auto& line : file_lines) {
+    if (line[0] == '#') {
+      continue;
+    }
+
+    std::string platform;
+    std::string expectation;
+    std::string test_case;
+    RE2::FullMatch(
+        line, "crbug.com/\\d* \\[ (\\w*) \\] \\[ (\\w*) \\] ([\\w*,\\s*]*)",
+        &platform, &expectation, &test_case);
+    if (platform == kPlatformName) {
+      if (expectation == "Skip") {
+        platform_expectations.push_back(StripAllWhitespace(test_case));
+      } else {
+        NOTREACHED() << "Unsupported expectation " << expectation;
+      }
+    }
+  }
+  return platform_expectations;
+}
+
+std::vector<std::string> BuildAllPlatformTestCaseSet() {
+  std::vector<std::string> test_cases_all =
+      ReadTestInputFile(kTestCaseFilename);
+  std::sort(test_cases_all.begin(), test_cases_all.end());
+
+  std::vector<std::string> ignored_cases =
+      GetPlatformIgnoredTests(kExpectationsFilename);
+  std::sort(ignored_cases.begin(), ignored_cases.end());
+
+  std::vector<std::string> final_tests(test_cases_all.size());
+  auto iter = std::set_difference(test_cases_all.begin(), test_cases_all.end(),
+                                  ignored_cases.begin(), ignored_cases.end(),
+                                  final_tests.begin());
+  final_tests.resize(iter - final_tests.begin());
+  return final_tests;
 }
 
 }  // anonymous namespace
@@ -401,6 +471,6 @@ IN_PROC_BROWSER_TEST_P(WebAppIntegrationBrowserTest, Default) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebAppIntegrationBrowserTest,
-                         testing::ValuesIn(ReadTestInputFile(test_case_file)));
+                         testing::ValuesIn(BuildAllPlatformTestCaseSet()));
 
 }  // namespace web_app
