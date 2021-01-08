@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -33,6 +35,8 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/test/browser_test.h"
@@ -748,3 +752,54 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, IncognitoProfile) {
                    ->GetFilePath(prefs::kSaveFileDefaultDirectory)
                    .empty());
 }
+
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+class EphemeralGuestProfilePolicyTest
+    : public policy::PolicyTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  EphemeralGuestProfilePolicyTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kEnableEphemeralGuestProfilesOnDesktop);
+  }
+
+ protected:
+  void SetUp() override {
+    // Shortcut deletion delays tests shutdown on Win-7 and results in time out.
+    // See crbug.com/1073451.
+#if defined(OS_WIN)
+    AppShortcutManager::SuppressShortcutsForTesting();
+#endif
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(https://crbug.com/1125474): Remove this comment!
+// If this test times out on Windows7 (or flaky on Windows 10), please disable
+// it and assign the bug to rhalavati@.
+IN_PROC_BROWSER_TEST_P(EphemeralGuestProfilePolicyTest,
+                       TestsForceEphemeralProfilesPolicy) {
+  policy::PolicyMap policies;
+  SetPolicy(&policies, policy::key::kForceEphemeralProfiles,
+            base::Value(GetParam()));
+  UpdateProviderPolicy(policies);
+
+  Profile* guest = CreateGuestBrowser()->profile();
+  EXPECT_TRUE(guest->IsEphemeralGuestProfile());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesEntry* entry;
+  EXPECT_TRUE(profile_manager->GetProfileAttributesStorage()
+                  .GetProfileAttributesWithPath(guest->GetPath(), &entry));
+  EXPECT_TRUE(entry->IsGuest());
+  EXPECT_TRUE(entry->IsEphemeral());
+}
+
+INSTANTIATE_TEST_SUITE_P(AllGuestProfileTypes,
+                         EphemeralGuestProfilePolicyTest,
+                         /*policy_is_enforced=*/testing::Bool());
+
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
