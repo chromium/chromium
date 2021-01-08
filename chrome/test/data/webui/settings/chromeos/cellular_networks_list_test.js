@@ -166,7 +166,8 @@ suite('CellularNetworkList', function() {
 
     let eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
     assertTrue(!!eSimNetworkList);
-    assertEquals(1, cellularNetworkList.eSimPendingProfileItems_.length);
+
+    Polymer.dom.flush();
 
     const listItem = eSimNetworkList.$$('network-list-item');
     assertTrue(!!listItem);
