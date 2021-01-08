@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/native-file-system/#native-filesystem
-// https://wicg.github.io/native-file-system/#api-getoriginprivatefilesystem
+// https://wicg.github.io/file-system-access/#local-filesystem
 [
     SecureContext,
     RuntimeEnabled=FileSystemAccess,
