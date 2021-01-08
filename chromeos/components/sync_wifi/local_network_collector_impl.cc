@@ -40,8 +40,10 @@ dbus::ObjectPath GetServicePathForGuid(const std::string& guid) {
 }  // namespace
 
 LocalNetworkCollectorImpl::LocalNetworkCollectorImpl(
-    network_config::mojom::CrosNetworkConfig* cros_network_config)
-    : cros_network_config_(cros_network_config) {
+    network_config::mojom::CrosNetworkConfig* cros_network_config,
+    SyncedNetworkMetricsLogger* metrics_recorder)
+    : cros_network_config_(cros_network_config),
+      metrics_recorder_(metrics_recorder) {
   cros_network_config_->AddObserver(
       cros_network_config_observer_receiver_.BindNewPipeAndPassRemote());
 
@@ -79,6 +81,39 @@ void LocalNetworkCollectorImpl::GetAllSyncableNetworks(
   if (!count) {
     OnRequestFinished(request_guid);
   }
+}
+
+void LocalNetworkCollectorImpl::RecordZeroNetworksEligibleForSync() {
+  if (has_logged_zero_eligible_networks_metric_) {
+    return;
+  }
+
+  if (!is_mojo_networks_loaded_) {
+    after_networks_are_loaded_callback_queue_.push(base::BindOnce(
+        &LocalNetworkCollectorImpl::RecordZeroNetworksEligibleForSync,
+        weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  base::flat_set<NetworkEligibilityStatus>
+      network_eligible_for_sync_status_codes;
+  NetworkEligibilityStatus network_eligible_for_sync_status;
+  for (const network_config::mojom::NetworkStatePropertiesPtr& network :
+       mojo_networks_) {
+    if (!network ||
+        network->type != network_config::mojom::NetworkType::kWiFi) {
+      continue;
+    }
+    network_eligible_for_sync_status = GetNetworkEligibilityStatus(
+        network->guid, network->connectable,
+        network->type_state->get_wifi()->security, network->source,
+        /*log_result=*/false);
+    network_eligible_for_sync_status_codes.insert(
+        network_eligible_for_sync_status);
+  }
+  metrics_recorder_->RecordZeroNetworksEligibleForSync(
+      network_eligible_for_sync_status_codes);
+  has_logged_zero_eligible_networks_metric_ = true;
 }
 
 void LocalNetworkCollectorImpl::GetSyncableNetwork(const std::string& guid,

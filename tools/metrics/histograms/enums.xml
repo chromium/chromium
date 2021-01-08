@@ -53006,6 +53006,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="User Disconnect"/>
 </enum>
 
+<enum name="NetworkEligibilityStatus">
+  <int value="0" label="Network Is Eligible"/>
+  <int value="1" label="No Metedata"/>
+  <int value="2" label="Prohibited By Policy"/>
+  <int value="3" label="Invalid Password"/>
+  <int value="4" label="Not Connectable"/>
+  <int value="5" label="Not Configured By User"/>
+  <int value="6" label="Unsupported Security Type"/>
+  <int value="7" label="No Wifi Networks Available"/>
+</enum>
+
 <enum name="NetworkErrorType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Portal"/>

@@ -205,6 +205,10 @@ void WifiConfigurationBridge::OnGetAllSyncableNetworksResult(
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   Commit(std::move(batch));
   metrics_recorder_->RecordTotalCount(entries_.size());
+  // If zero networks are synced log the reason.
+  if (entries_.size() == 0) {
+    local_network_collector_->RecordZeroNetworksEligibleForSync();
+  }
 }
 
 base::Optional<syncer::ModelError> WifiConfigurationBridge::ApplySyncChanges(
@@ -243,6 +247,10 @@ base::Optional<syncer::ModelError> WifiConfigurationBridge::ApplySyncChanges(
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   Commit(std::move(batch));
   metrics_recorder_->RecordTotalCount(entries_.size());
+  // If zero networks are synced log the reason.
+  if (entries_.size() == 0) {
+    local_network_collector_->RecordZeroNetworksEligibleForSync();
+  }
 
   return base::nullopt;
 }
@@ -327,6 +335,10 @@ void WifiConfigurationBridge::OnReadAllData(
     }
   }
   metrics_recorder_->RecordTotalCount(entries_size);
+  // If zero networks are synced log the reason.
+  if (entries_size == 0) {
+    local_network_collector_->RecordZeroNetworksEligibleForSync();
+  }
 }
 
 void WifiConfigurationBridge::OnReadAllMetadata(
@@ -435,6 +447,10 @@ void WifiConfigurationBridge::SaveNetworkToSync(
                  << NetworkId(NetworkStateFromNetworkIdentifier(id))
                  << " to sync.";
   metrics_recorder_->RecordTotalCount(entries_.size());
+  // If zero networks are synced log the reason.
+  if (entries_.size() == 0) {
+    local_network_collector_->RecordZeroNetworksEligibleForSync();
+  }
 }
 
 void WifiConfigurationBridge::OnNetworkCreated(const std::string& guid) {

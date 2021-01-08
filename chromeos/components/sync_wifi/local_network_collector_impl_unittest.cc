@@ -16,6 +16,7 @@
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "chromeos/components/sync_wifi/network_test_helper.h"
 #include "chromeos/components/sync_wifi/network_type_conversions.h"
+#include "chromeos/components/sync_wifi/synced_network_metrics_logger.h"
 #include "chromeos/components/sync_wifi/test_data_generator.h"
 #include "chromeos/dbus/shill/fake_shill_simulated_result.h"
 #include "chromeos/network/network_handler.h"
@@ -60,8 +61,12 @@ class LocalNetworkCollectorImplTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     helper()->SetUp();
+    metrics_logger_ = std::make_unique<SyncedNetworkMetricsLogger>(
+        /*network_state_handler=*/nullptr,
+        /*network_connection_handler=*/nullptr);
+
     local_network_collector_ = std::make_unique<LocalNetworkCollectorImpl>(
-        remote_cros_network_config_.get());
+        remote_cros_network_config_.get(), metrics_logger_.get());
     local_network_collector_->SetNetworkMetadataStore(
         NetworkHandler::Get()->network_metadata_store()->GetWeakPtr());
     on_get_all_syncable_networks_count_ = 0;
@@ -114,6 +119,7 @@ class LocalNetworkCollectorImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<LocalNetworkCollector> local_network_collector_;
+  std::unique_ptr<SyncedNetworkMetricsLogger> metrics_logger_;
   std::unique_ptr<NetworkTestHelper> local_test_helper_;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
@@ -205,6 +211,33 @@ TEST_F(LocalNetworkCollectorImplTest,
                      base::Unretained(this), expected));
 
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(LocalNetworkCollectorImplTest, TestRecordZeroNetworksEligibleForSync) {
+  base::HistogramTester histogram_tester;
+  helper()->ConfigureWiFiNetwork(kMangoSsid, /*is_secured=*/true,
+                                 /*in_profile=*/false, /*has_connected=*/true,
+                                 /*owned_by_user=*/false);
+  helper()->ConfigureWiFiNetwork(kAnnieSsid, /*is_secured=*/false,
+                                 /*in_profile=*/true, /*has_connected=*/true);
+  helper()->ConfigureWiFiNetwork(kWalterSsid, /*is_secured=*/true,
+                                 /*in_profile=*/false, /*has_connected=*/true,
+                                 /*owned_by_user=*/true,
+                                 /*configured_by_sync=*/false,
+                                 /*is_from_policy=*/true);
+
+  local_network_collector()->RecordZeroNetworksEligibleForSync();
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectTotalCount(kZeroNetworksSyncedReasonHistogram, 3);
+  histogram_tester.ExpectBucketCount(
+      kZeroNetworksSyncedReasonHistogram,
+      NetworkEligibilityStatus::kUnsupportedSecurityType, 1);
+  histogram_tester.ExpectBucketCount(
+      kZeroNetworksSyncedReasonHistogram,
+      NetworkEligibilityStatus::kNotConfiguredByUser, 1);
+  histogram_tester.ExpectBucketCount(
+      kZeroNetworksSyncedReasonHistogram,
+      NetworkEligibilityStatus::kProhibitedByPolicy, 1);
 }
 
 TEST_F(LocalNetworkCollectorImplTest, TestGetSyncableNetwork) {

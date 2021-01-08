@@ -50,6 +50,10 @@ class LocalNetworkCollector {
   virtual void GetSyncableNetwork(const std::string& guid,
                                   ProtoCallback callback) = 0;
 
+  // Record the reason(s) why zero of the local networks are eligible to be
+  // synced.
+  virtual void RecordZeroNetworksEligibleForSync() = 0;
+
   // Retrieves the NetworkIdentifier for a given local network's |guid|
   // if the network no longer exists it returns nullopt.
   virtual base::Optional<NetworkIdentifier> GetNetworkIdentifierFromGuid(

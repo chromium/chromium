@@ -27,6 +27,7 @@ class FakeLocalNetworkCollector : public LocalNetworkCollector {
   // For test purposes, |guid| == serialized NetworkIdentifier.
   void GetSyncableNetwork(const std::string& guid,
                           ProtoCallback callback) override;
+  void RecordZeroNetworksEligibleForSync() override {}
   // For test purposes, |guid| == serialized NetworkIdentifier.
   base::Optional<NetworkIdentifier> GetNetworkIdentifierFromGuid(
       const std::string& guid) override;

@@ -6,8 +6,10 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
+#include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_state_handler.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -234,6 +236,28 @@ void SyncedNetworkMetricsLogger::RecordApplyNetworkFailureReason(
 
 void SyncedNetworkMetricsLogger::RecordTotalCount(int count) {
   base::UmaHistogramCounts1000(kTotalCountHistogram, count);
+}
+
+void SyncedNetworkMetricsLogger::RecordZeroNetworksEligibleForSync(
+    base::flat_set<NetworkEligibilityStatus> network_eligibility_status_codes) {
+  // There is an eligible network that was not synced for some reason.
+  if (network_eligibility_status_codes.find(
+          NetworkEligibilityStatus::kNetworkIsEligible) !=
+      network_eligibility_status_codes.end()) {
+    base::UmaHistogramEnumeration(kZeroNetworksSyncedReasonHistogram,
+                                  NetworkEligibilityStatus::kNetworkIsEligible);
+    return;
+  }
+
+  if (network_eligibility_status_codes.size() == 0) {
+    network_eligibility_status_codes.insert(
+        NetworkEligibilityStatus::kNoWifiNetworksAvailable);
+  }
+  for (const NetworkEligibilityStatus network_eligibility_status_code :
+       network_eligibility_status_codes) {
+    base::UmaHistogramEnumeration(kZeroNetworksSyncedReasonHistogram,
+                                  network_eligibility_status_code);
+  }
 }
 
 }  // namespace sync_wifi

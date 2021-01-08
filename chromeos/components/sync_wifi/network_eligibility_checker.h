@@ -14,6 +14,27 @@ namespace chromeos {
 
 namespace sync_wifi {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class NetworkEligibilityStatus {
+  kNetworkIsEligible = 0,
+  kNoMetadata = 1,
+  kProhibitedByPolicy = 2,
+  kInvalidPassword = 3,
+  kNotConnectable = 4,
+  kNotConfiguredByUser = 5,
+  kUnsupportedSecurityType = 6,
+  kNoWifiNetworksAvailable = 7,
+  kMaxValue = kNoWifiNetworksAvailable
+};
+
+NetworkEligibilityStatus GetNetworkEligibilityStatus(
+    const std::string& guid,
+    bool is_connectable,
+    const network_config::mojom::SecurityType& security_type,
+    const network_config::mojom::OncSource& source,
+    bool log_result);
+
 bool IsEligibleForSync(const std::string& guid,
                        bool is_connectable,
                        const network_config::mojom::SecurityType& security_type,

@@ -14,6 +14,7 @@
 #include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -245,6 +246,45 @@ TEST_F(SyncedNetworkMetricsLoggerTest, NetworkStatusChange_DuringLogout) {
   // Expect that there is no crash, and no Wi-Fi sync histograms recorded.
   EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Network.Wifi.Synced"),
               testing::ContainerEq(base::HistogramTester::CountsMap()));
+}
+
+TEST_F(SyncedNetworkMetricsLoggerTest, RecordZeroNetworksEligibleForSync) {
+  base::HistogramTester histogram_tester;
+
+  base::flat_set<NetworkEligibilityStatus>
+      network_eligible_for_sync_status_codes;
+  network_eligible_for_sync_status_codes.insert(
+      NetworkEligibilityStatus::kNoWifiNetworksAvailable);
+  synced_network_metrics_logger()->RecordZeroNetworksEligibleForSync(
+      network_eligible_for_sync_status_codes);
+  histogram_tester.ExpectBucketCount(
+      kZeroNetworksSyncedReasonHistogram,
+      NetworkEligibilityStatus::kNoWifiNetworksAvailable, 1);
+  histogram_tester.ExpectTotalCount(kZeroNetworksSyncedReasonHistogram, 1);
+
+  network_eligible_for_sync_status_codes.insert(
+      NetworkEligibilityStatus::kNotConnectable);
+  synced_network_metrics_logger()->RecordZeroNetworksEligibleForSync(
+      network_eligible_for_sync_status_codes);
+  histogram_tester.ExpectBucketCount(kZeroNetworksSyncedReasonHistogram,
+                                     NetworkEligibilityStatus::kNotConnectable,
+                                     1);
+  histogram_tester.ExpectTotalCount(kZeroNetworksSyncedReasonHistogram, 3);
+
+  network_eligible_for_sync_status_codes.insert(
+      NetworkEligibilityStatus::kNetworkIsEligible);
+  synced_network_metrics_logger()->RecordZeroNetworksEligibleForSync(
+      network_eligible_for_sync_status_codes);
+  histogram_tester.ExpectBucketCount(
+      kZeroNetworksSyncedReasonHistogram,
+      NetworkEligibilityStatus::kNetworkIsEligible, 1);
+  histogram_tester.ExpectBucketCount(kZeroNetworksSyncedReasonHistogram,
+                                     NetworkEligibilityStatus::kNotConnectable,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      kZeroNetworksSyncedReasonHistogram,
+      NetworkEligibilityStatus::kNoWifiNetworksAvailable, 2);
+  histogram_tester.ExpectTotalCount(kZeroNetworksSyncedReasonHistogram, 4);
 }
 
 }  // namespace sync_wifi

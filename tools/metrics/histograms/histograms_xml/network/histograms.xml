@@ -2050,6 +2050,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Network.Wifi.Synced.ZeroNetworksEligibleForSync.Reason"
+    enum="NetworkEligibilityStatus" expires_after="2021-11-01">
+  <owner>cvandermerwe@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Chrome OS metric logged for users who have the feature enabled but have zero
+    networks eligible for sync. Tracks the reasons why none of the networks are
+    eligible.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.ConcerningRequestHeader.AddedOnRedirect"
     enum="ConcerningHeaderPresent" expires_after="2019-11-01">
   <owner>mmenke@chromium.org</owner>
