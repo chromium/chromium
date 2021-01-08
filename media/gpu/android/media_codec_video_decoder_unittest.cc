@@ -21,6 +21,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "media/base/test_helpers.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/android/android_video_surface_chooser_impl.h"
 #include "media/gpu/android/fake_codec_allocator.h"
@@ -996,6 +997,8 @@ static std::vector<VideoCodec> GetTestList() {
     test_codecs.push_back(kCodecVP8);
   if (MediaCodecUtil::IsVp9DecoderAvailable())
     test_codecs.push_back(kCodecVP9);
+  if (MediaCodecUtil::IsAv1DecoderAvailable())
+    test_codecs.push_back(kCodecAV1);
   return test_codecs;
 }
 
@@ -1013,6 +1016,12 @@ static std::vector<VideoCodec> GetVp8IfAvailable() {
              : std::vector<VideoCodec>();
 }
 
+static std::vector<VideoCodec> GetAv1IfAvailable() {
+  return MediaCodecUtil::IsAv1DecoderAvailable()
+             ? std::vector<VideoCodec>(1, kCodecAV1)
+             : std::vector<VideoCodec>();
+}
+
 INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderTest,
                          MediaCodecVideoDecoderTest,
                          testing::ValuesIn(GetTestList()));
@@ -1026,5 +1035,9 @@ INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderH264Test,
 INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderVp8Test,
                          MediaCodecVideoDecoderVp8Test,
                          testing::ValuesIn(GetVp8IfAvailable()));
+
+INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderAV1Test,
+                         MediaCodecVideoDecoderAV1Test,
+                         testing::ValuesIn(GetAv1IfAvailable()));
 
 }  // namespace media
