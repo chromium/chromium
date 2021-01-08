@@ -13,16 +13,19 @@
 
 namespace crosapi {
 
-AccountManagerAsh::AccountManagerAsh(
-    chromeos::AccountManager* account_manager,
-    mojo::PendingReceiver<mojom::AccountManager> receiver)
-    : account_manager_(account_manager), receiver_(this, std::move(receiver)) {
+AccountManagerAsh::AccountManagerAsh(chromeos::AccountManager* account_manager)
+    : account_manager_(account_manager) {
   DCHECK(account_manager_);
   account_manager_->AddObserver(this);
 }
 
 AccountManagerAsh::~AccountManagerAsh() {
   account_manager_->RemoveObserver(this);
+}
+
+void AccountManagerAsh::BindReceiver(
+    mojo::PendingReceiver<mojom::AccountManager> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void AccountManagerAsh::IsInitialized(IsInitializedCallback callback) {

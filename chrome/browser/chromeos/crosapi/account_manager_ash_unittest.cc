@@ -93,8 +93,9 @@ class AccountManagerAshTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-    account_manager_ash_ = std::make_unique<AccountManagerAsh>(
-        &account_manager_, remote_.BindNewPipeAndPassReceiver());
+    account_manager_ash_ =
+        std::make_unique<AccountManagerAsh>(&account_manager_);
+    account_manager_ash_->BindReceiver(remote_.BindNewPipeAndPassReceiver());
     account_manager_async_waiter_ =
         std::make_unique<mojom::AccountManagerAsyncWaiter>(
             account_manager_ash_.get());

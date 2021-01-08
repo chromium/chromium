@@ -62,35 +62,38 @@ AshChromeServiceImpl::~AshChromeServiceImpl() = default;
 
 void AshChromeServiceImpl::BindAccountManager(
     mojo::PendingReceiver<mojom::AccountManager> receiver) {
-  DVLOG(1) << "Binding AccountManager receiver";
-  // Assumptions:
-  // 1. TODO(https://crbug.com/1102768): Multi-Signin / Fast-User-Switching is
-  // disabled.
-  // 2. ash-chrome has 1 and only 1 "regular" |Profile|.
+  // TODO(https://crrev.com/c/2601750): Move AccountManagerAsh ownership to
+  // chromeos::AccountManager.
+  if (!account_manager_ash_) {
+    // Assumptions:
+    // 1. TODO(https://crbug.com/1102768): Multi-Signin / Fast-User-Switching is
+    // disabled.
+    // 2. ash-chrome has 1 and only 1 "regular" |Profile|.
 #if DCHECK_IS_ON()
-  int num_regular_profiles = 0;
-  for (const Profile* profile :
-       g_browser_process->profile_manager()->GetLoadedProfiles()) {
-    if (chromeos::ProfileHelper::IsRegularProfile(profile))
-      num_regular_profiles++;
-  }
-  DCHECK_EQ(1, num_regular_profiles);
+    int num_regular_profiles = 0;
+    for (const Profile* profile :
+         g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      if (chromeos::ProfileHelper::IsRegularProfile(profile))
+        num_regular_profiles++;
+    }
+    DCHECK_EQ(1, num_regular_profiles);
 #endif  // DCHECK_IS_ON()
-  // Given these assumptions, there is 1 and only 1 Account Manager that
-  // can/should be contacted - the one attached to the regular |Profile| in
-  // ash-chrome, for the current |User|.
-  const user_manager::User* const user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  const Profile* const profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(user);
-  chromeos::AccountManager* const account_manager =
-      g_browser_process->platform_part()
-          ->GetAccountManagerFactory()
-          ->GetAccountManager(/* profile_path = */ profile->GetPath().value());
-  // TODO(https://crbug.com/1148448): Convert this to allow multiple,
-  // simultaneous crosapi clients. See BindScreenManager for an example.
-  account_manager_ash_ = std::make_unique<crosapi::AccountManagerAsh>(
-      account_manager, std::move(receiver));
+    // Given these assumptions, there is 1 and only 1 Account Manager that
+    // can/should be contacted - the one attached to the regular |Profile| in
+    // ash-chrome, for the current |User|.
+    const user_manager::User* const user =
+        user_manager::UserManager::Get()->GetActiveUser();
+    const Profile* const profile =
+        chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+    chromeos::AccountManager* const account_manager =
+        g_browser_process->platform_part()
+            ->GetAccountManagerFactory()
+            ->GetAccountManager(
+                /* profile_path = */ profile->GetPath().value());
+    account_manager_ash_ =
+        std::make_unique<crosapi::AccountManagerAsh>(account_manager);
+  }
+  account_manager_ash_->BindReceiver(std::move(receiver));
 }
 
 void AshChromeServiceImpl::BindFileManager(
