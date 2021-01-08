@@ -48,6 +48,7 @@ class VideoDecoderConfig;
 class VideoDecoderInit;
 class VideoFrame;
 class V8VideoFrameOutputCallback;
+class ScriptPromise;
 
 class MODULES_EXPORT VideoDecoderTraits {
  public:
@@ -85,6 +86,10 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   static VideoDecoder* Create(ScriptState*,
                               const VideoDecoderInit*,
                               ExceptionState&);
+
+  static ScriptPromise isConfigSupported(ScriptState*,
+                                         const VideoDecoderConfig*,
+                                         ExceptionState&);
 
   // For use by MediaSource and by ::MakeMediaConfig.
   static CodecConfigEval MakeMediaVideoDecoderConfig(

@@ -8778,6 +8778,7 @@ interface ValidityState
     getter valueMissing
     method constructor
 interface VideoDecoder
+    static method isConfigSupported
     attribute @@toStringTag
     getter decodeQueueSize
     getter state

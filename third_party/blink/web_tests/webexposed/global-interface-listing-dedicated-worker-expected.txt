@@ -1725,6 +1725,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter isActive
 [Worker]     method constructor
 [Worker] interface VideoDecoder
+[Worker]     static method isConfigSupported
 [Worker]     attribute @@toStringTag
 [Worker]     getter decodeQueueSize
 [Worker]     getter state

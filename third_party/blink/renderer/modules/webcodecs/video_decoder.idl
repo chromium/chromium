@@ -35,6 +35,9 @@
   // TODO(sandersd): Consider emitting an event when this number decreases.
   readonly attribute long decodeQueueSize;
 
+  // Which state the decoder is in, indicating which methods can be called.
+  readonly attribute CodecState state;
+
   // Set the stream configuration for future decode() requests.
   //
   // The next decode request must be for a keyframe.
@@ -73,6 +76,7 @@
   // Not recoverable: make a new VideoDecoder if needed.
   [RaisesException] void close();
 
-  // Which state the decoder is in, indicating which methods can be called.
-  readonly attribute CodecState state;
+  // Call prior to configure() to determine whether config will be supported.
+  [CallWith=ScriptState, RaisesException]
+  static Promise<boolean> isConfigSupported(VideoDecoderConfig config);
 };
