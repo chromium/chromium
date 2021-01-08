@@ -120,7 +120,7 @@ class SharesheetBubbleView::SharesheetParentWidgetObserver
 
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& bounds) override {
-    owner_->OnWidgetBoundsChanged(widget, bounds);
+    owner_->UpdateAnchorPosition();
   }
 
  private:
@@ -486,11 +486,6 @@ void SharesheetBubbleView::OnWidgetActivationChanged(views::Widget* widget,
     sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(action);
     CloseWidgetWithAnimateFadeOut(views::Widget::ClosedReason::kLostFocus);
   }
-}
-
-void SharesheetBubbleView::OnWidgetBoundsChanged(views::Widget* widget,
-                                                 const gfx::Rect& new_bounds) {
-  UpdateAnchorPosition();
 }
 
 void SharesheetBubbleView::CreateBubble() {
