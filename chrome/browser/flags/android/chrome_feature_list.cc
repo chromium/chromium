@@ -182,6 +182,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kEphemeralTabUsingBottomSheet,
     &kExploreSites,
     &kFocusOmniboxInIncognitoTabIntents,
+    &kGPayAppDynamicUpdate,
     &kHandleMediaIntents,
     &kHomepagePromoCard,
     &kHorizontalTabSwitcherAndroid,
@@ -507,6 +508,9 @@ const base::Feature kEphemeralTabUsingBottomSheet{
 
 const base::Feature kExploreSites{"ExploreSites",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kGPayAppDynamicUpdate{"GPayAppDynamicUpdate",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kHandleMediaIntents{"HandleMediaIntents",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
