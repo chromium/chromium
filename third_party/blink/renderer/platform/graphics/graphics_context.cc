@@ -503,6 +503,30 @@ static inline FloatRect AreaCastingShadowInHole(
   return UnionRect(bounds, offset_bounds);
 }
 
+static void AdjustHoleForSideClipping(FloatRect& hole_rect,
+                                      const FloatSize& shadow_offset,
+                                      float shadow_blur,
+                                      GraphicsContext::Edges clipped_edges) {
+  if (clipped_edges & GraphicsContext::kLeftEdge) {
+    float extend_by = std::max(shadow_offset.Width(), 0.0f) + shadow_blur;
+    hole_rect.Move(-extend_by, 0);
+    hole_rect.SetWidth(hole_rect.Width() + extend_by);
+  }
+  if (clipped_edges & GraphicsContext::kTopEdge) {
+    float extend_by = std::max(shadow_offset.Height(), 0.0f) + shadow_blur;
+    hole_rect.Move(0, -extend_by);
+    hole_rect.SetHeight(hole_rect.Height() + extend_by);
+  }
+  if (clipped_edges & GraphicsContext::kRightEdge) {
+    float shrink_by = std::min(shadow_offset.Width(), 0.0f) - shadow_blur;
+    hole_rect.SetWidth(hole_rect.Width() - shrink_by);
+  }
+  if (clipped_edges & GraphicsContext::kBottomEdge) {
+    float shrink_by = std::min(shadow_offset.Height(), 0.0f) - shadow_blur;
+    hole_rect.SetHeight(hole_rect.Height() - shrink_by);
+  }
+}
+
 void GraphicsContext::DrawInnerShadow(const FloatRoundedRect& rect,
                                       const Color& orig_shadow_color,
                                       const FloatSize& shadow_offset,
@@ -514,34 +538,13 @@ void GraphicsContext::DrawInnerShadow(const FloatRoundedRect& rect,
 
   FloatRect hole_rect(rect.Rect());
   hole_rect.Inflate(-shadow_spread);
-
   if (hole_rect.IsEmpty()) {
     FillRoundedRect(rect, Color(shadow_color));
     return;
   }
+  AdjustHoleForSideClipping(hole_rect, shadow_offset, shadow_blur,
+                            clipped_edges);
 
-  if (clipped_edges & kLeftEdge) {
-    hole_rect.Move(-std::max(shadow_offset.Width(), 0.0f) - shadow_blur, 0);
-    hole_rect.SetWidth(hole_rect.Width() +
-                       std::max(shadow_offset.Width(), 0.0f) + shadow_blur);
-  }
-  if (clipped_edges & kTopEdge) {
-    hole_rect.Move(0, -std::max(shadow_offset.Height(), 0.0f) - shadow_blur);
-    hole_rect.SetHeight(hole_rect.Height() +
-                        std::max(shadow_offset.Height(), 0.0f) + shadow_blur);
-  }
-  if (clipped_edges & kRightEdge)
-    hole_rect.SetWidth(hole_rect.Width() -
-                       std::min(shadow_offset.Width(), 0.0f) + shadow_blur);
-  if (clipped_edges & kBottomEdge)
-    hole_rect.SetHeight(hole_rect.Height() -
-                        std::min(shadow_offset.Height(), 0.0f) + shadow_blur);
-
-  Color fill_color(SkColorGetR(shadow_color), SkColorGetG(shadow_color),
-                   SkColorGetB(shadow_color), 255);
-
-  FloatRect outer_rect = AreaCastingShadowInHole(rect.Rect(), shadow_blur,
-                                                 shadow_spread, shadow_offset);
   FloatRoundedRect rounded_hole(hole_rect, rect.GetRadii());
 
   GraphicsContextStateSaver state_saver(*this);
@@ -556,11 +559,15 @@ void GraphicsContext::DrawInnerShadow(const FloatRoundedRect& rect,
   }
 
   DrawLooperBuilder draw_looper_builder;
-  draw_looper_builder.AddShadow(FloatSize(shadow_offset), shadow_blur,
-                                shadow_color,
+  draw_looper_builder.AddShadow(shadow_offset, shadow_blur, shadow_color,
                                 DrawLooperBuilder::kShadowRespectsTransforms,
                                 DrawLooperBuilder::kShadowIgnoresAlpha);
   SetDrawLooper(draw_looper_builder.DetachDrawLooper());
+
+  Color fill_color(SkColorGetR(shadow_color), SkColorGetG(shadow_color),
+                   SkColorGetB(shadow_color));
+  FloatRect outer_rect = AreaCastingShadowInHole(rect.Rect(), shadow_blur,
+                                                 shadow_spread, shadow_offset);
   FillRectWithRoundedHole(outer_rect, rounded_hole, fill_color);
 }
 
