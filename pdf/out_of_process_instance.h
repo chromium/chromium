@@ -348,14 +348,14 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   PP_CursorType_Dev cursor_ = PP_CURSORTYPE_POINTER;
 
   // Size, in pixels, of plugin rectangle.
-  pp::Size plugin_size_;
+  gfx::Size plugin_size_;
   // Size, in DIPs, of plugin rectangle.
-  pp::Size plugin_dip_size_;
+  gfx::Size plugin_dip_size_;
   // Remaining area, in pixels, to render the pdf in after accounting for
   // horizontal centering.
   gfx::Rect available_area_;
   // Positional offset, in CSS pixels, of the plugin rectangle.
-  pp::Point plugin_offset_;
+  gfx::Point plugin_offset_;
   // The scroll offset in CSS pixels.
   pp::Point scroll_offset_;
 

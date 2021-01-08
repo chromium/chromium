@@ -758,24 +758,24 @@ bool OutOfProcessInstance::HandleInputEvent(const pp::InputEvent& event) {
 }
 
 void OutOfProcessInstance::DidChangeView(const pp::View& view) {
-  pp::Rect view_rect(view.GetRect());
+  gfx::Rect view_rect = RectFromPPRect(view.GetRect());
   float old_device_scale = device_scale();
   float new_device_scale = view.GetDeviceScale();
-  pp::Size view_device_size(view_rect.width() * new_device_scale,
-                            view_rect.height() * new_device_scale);
+  gfx::Size view_device_size(view_rect.width() * new_device_scale,
+                             view_rect.height() * new_device_scale);
 
   if (view_device_size != plugin_size_ || new_device_scale != device_scale() ||
-      view_rect.point() != plugin_offset_) {
+      view_rect.origin() != plugin_offset_) {
     set_device_scale(new_device_scale);
     plugin_dip_size_ = view_rect.size();
     plugin_size_ = view_device_size;
-    plugin_offset_ = view_rect.point();
+    plugin_offset_ = view_rect.origin();
 
-    paint_manager().SetSize(SizeFromPPSize(view_device_size), device_scale());
+    paint_manager().SetSize(view_device_size, device_scale());
 
     const gfx::Size old_image_data_size = SizeFromPPSize(image_data_.size());
-    gfx::Size new_image_data_size = PaintManager::GetNewContextSize(
-        old_image_data_size, SizeFromPPSize(plugin_size_));
+    gfx::Size new_image_data_size =
+        PaintManager::GetNewContextSize(old_image_data_size, plugin_size_);
     if (new_image_data_size != old_image_data_size) {
       image_data_ = pp::ImageData(this, PP_IMAGEDATAFORMAT_BGRA_PREMUL,
                                   PPSizeFromSize(new_image_data_size), false);
@@ -1133,8 +1133,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
   for (const auto& paint_rect : paint_rects) {
     // Intersect with plugin area since there could be pending invalidates from
     // when the plugin area was larger.
-    gfx::Rect rect = gfx::IntersectRects(
-        paint_rect, gfx::Rect(SizeFromPPSize(plugin_size_)));
+    gfx::Rect rect = gfx::IntersectRects(paint_rect, gfx::Rect(plugin_size_));
     if (rect.IsEmpty())
       continue;
 
@@ -1835,7 +1834,7 @@ void OutOfProcessInstance::HandleResetPrintPreviewModeMessage(
   engine()->SetGrayscale(dict.Get(pp::Var(kJSPrintPreviewGrayscale)).AsBool());
   engine()->New(url_.c_str(), /*headers=*/nullptr);
 
-  paint_manager().InvalidateRect(gfx::Rect(SizeFromPPSize(plugin_size_)));
+  paint_manager().InvalidateRect(gfx::Rect(plugin_size_));
 }
 
 void OutOfProcessInstance::HandleSaveAttachmentMessage(
@@ -2092,7 +2091,7 @@ void OutOfProcessInstance::DocumentLoadFailed() {
   }
 
   document_load_state_ = LOAD_STATE_FAILED;
-  paint_manager().InvalidateRect(gfx::Rect(SizeFromPPSize(plugin_size_)));
+  paint_manager().InvalidateRect(gfx::Rect(plugin_size_));
 
   // Send a progress value of -1 to indicate a failure.
   SendLoadingProgress(-1);
@@ -2183,7 +2182,7 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
   if (zoom() != old_zoom || device_scale() != old_device_scale)
     engine()->ZoomUpdated(zoom() * device_scale());
 
-  available_area_ = gfx::Rect(SizeFromPPSize(plugin_size_));
+  available_area_ = gfx::Rect(plugin_size_);
   int doc_width = GetDocumentPixelWidth();
   if (doc_width < available_area_.width()) {
     available_area_.Offset((available_area_.width() - doc_width) / 2, 0);
@@ -2201,7 +2200,7 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
 
   if (document_size().IsEmpty())
     return;
-  paint_manager().InvalidateRect(gfx::Rect(SizeFromPPSize(plugin_size_)));
+  paint_manager().InvalidateRect(gfx::Rect(plugin_size_));
 
   if (accessibility_state_ == ACCESSIBILITY_STATE_LOADED)
     SendAccessibilityViewportInfo();
