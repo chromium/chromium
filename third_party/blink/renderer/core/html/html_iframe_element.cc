@@ -247,6 +247,7 @@ void HTMLIFrameElement::ParseAttribute(
       UpdateRequiredPolicy();
     }
   } else if (name == html_names::kTrusttokenAttr) {
+    UseCounter::Count(GetDocument(), WebFeature::kTrustTokenIframe);
     trust_token_ = value;
   } else {
     // Websites picked up a Chromium article that used this non-specified
