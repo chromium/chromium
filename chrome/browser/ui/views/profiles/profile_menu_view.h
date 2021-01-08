@@ -33,6 +33,8 @@ class Browser;
 // It displays a list of profiles and allows users to switch between profiles.
 class ProfileMenuView : public ProfileMenuViewBase {
  public:
+  METADATA_HEADER(ProfileMenuView);
+
   ProfileMenuView(views::Button* anchor_button, Browser* browser);
   ~ProfileMenuView() override;
 

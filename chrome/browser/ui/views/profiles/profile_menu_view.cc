@@ -63,6 +63,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -744,3 +745,7 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+BEGIN_METADATA(ProfileMenuView, ProfileMenuViewBase)
+ADD_READONLY_PROPERTY_METADATA(gfx::ImageSkia, SyncIcon)
+END_METADATA
