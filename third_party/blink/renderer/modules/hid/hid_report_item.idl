@@ -40,12 +40,38 @@ dictionary HIDReportItem {
     // all inputs simultaneously.
     boolean isArray;
 
+    // True if the item emits a fixed-size stream of bytes, or false if the item
+    // is a bit field.
+    boolean isBufferedBytes;
+
+    // True if the item is a read-only constant value, or false if the item is a
+    // report field with modifiable device data.
+    boolean isConstant;
+
+    // True if there is a linear relationship between the measured value and the
+    // raw data from the device, or false if the data has been processed and no
+    // longer represents a linear relationship.
+    boolean isLinear;
+
     // True if the usages for this item are defined by |usageMinimum| and
     // |usageMaximum| or false if the usages are defined by |usages|.
     boolean isRange;
 
+    // True if the item is a feature or output field that can change without
+    // host interaction, or false if the field should not change without host
+    // interaction.
+    boolean isVolatile;
+
     // True if the item uses an out-of-bounds value when there is no input.
     boolean hasNull;
+
+    // True if the item has a preferred state to which it will return when the
+    // user is not physically interacting with the control.
+    boolean hasPreferredState;
+
+    // True if the data rolls over when reaching either the extreme high or low
+    // value.
+    boolean wrap;
 
     // An ordered list of 32-bit usage values associated with this item. Unused
     // if |isRange| is true. If |reportCount| is two or more, usages are

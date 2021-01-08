@@ -117,8 +117,14 @@ hid_test(async (t, fake) => {
   const i = r.items[0];
   assert_true(i.isAbsolute, 'reportItem.isAbsolute');
   assert_false(i.isArray, 'reportItem.isArray');
+  assert_false(i.isBufferedBytes, 'reportItem.isBufferedBytes');
+  assert_false(i.isConstant, 'reportItem.isConstant');
+  assert_true(i.isLinear, 'reportItem.isLinear');
   assert_false(i.isRange, 'reportItem.isRange');
+  assert_false(i.isVolatile, 'reportItem.isVolatile');
   assert_false(i.hasNull, 'reportItem.hasNull');
+  assert_true(i.hasPreferredState, 'reportItem.hasPreferredState');
+  assert_false(i.wrap, 'reportItem.wrap');
   assert_equals(i.usages.length, 1, 'reportItem.usages.length');
   assert_equals(i.usages[0], 0x00090001, 'reportItem.usages[0]');
   assert_equals(i.usageMinimum, 0, 'reportItem.usageMinimum');

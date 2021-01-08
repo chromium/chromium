@@ -504,8 +504,14 @@ HIDReportItem* HIDDevice::ToHIDReportItem(
   HIDReportItem* result = HIDReportItem::Create();
   result->setIsAbsolute(!report_item.is_relative);
   result->setIsArray(!report_item.is_variable);
+  result->setIsBufferedBytes(report_item.is_buffered_bytes);
+  result->setIsConstant(report_item.is_constant);
+  result->setIsLinear(!report_item.is_non_linear);
   result->setIsRange(report_item.is_range);
+  result->setIsVolatile(report_item.is_volatile);
   result->setHasNull(report_item.has_null_position);
+  result->setHasPreferredState(!report_item.no_preferred_state);
+  result->setWrap(report_item.wrap);
   result->setReportSize(report_item.report_size);
   result->setReportCount(report_item.report_count);
   result->setUnitExponent(
