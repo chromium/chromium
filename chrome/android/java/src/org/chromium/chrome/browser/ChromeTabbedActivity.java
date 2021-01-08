@@ -151,7 +151,6 @@ import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
-import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -1703,8 +1702,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             LauncherShortcutActivity.updateIncognitoShortcut(ChromeTabbedActivity.this);
 
             ChromeSurveyController.initialize(mTabModelSelectorImpl);
-
-            DefaultBrowserPromoUtils.maybeRecordOutcomeOnStart();
 
             if (mStartSurfaceSupplier.get() != null && mOverviewShownOnStart) {
                 mStartSurfaceSupplier.get().onOverviewShownAtLaunch(getOnCreateTimestampMs());

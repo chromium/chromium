@@ -1580,6 +1580,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AndroidDefaultBrowserPromoUserActionType">
+  <obsolete>
+    Removed Dec 2020; experiment is done and the data isn't useful.
+  </obsolete>
   <int value="0" label="Change Default"/>
   <int value="1" label="No Thanks"/>
 </enum>

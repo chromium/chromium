@@ -4286,31 +4286,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         Viewing live page
       </message>
 
-      <!-- Default Browser Promo Strings-->
-      <message name="IDS_DEFAULT_BROWSER_PROMO_DIALOG_TITLE" desc="Title of the default browser promo dialog">
-        Set <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> as your default?
-      </message>
-      <message name="IDS_DEFAULT_BROWSER_PROMO_DIALOG_DESC" desc="Description in the default browser promo dialog, which is concatenated with one of the following steps strings">
-        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> has the smarts and speed you need to safely do, create, and explore online
-      </message>
-      <message name="IDS_DEFAULT_BROWSER_PROMO_DIALOG_DISAMBIGUATION_SHEET_STEPS" desc="Description of the steps to set the default browser throught disambiguation sheet. 'Always' should match TC ID 5575222334666843269.">
-        1. Choose <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph>\n2. Tap “Always”
-      </message>
-      <message name="IDS_DEFAULT_BROWSER_PROMO_DIALOG_SYSTEM_SETTINGS_STEPS"
-        desc="Description of the steps to set the default browser throught system settings.
-        'Go to Settings' should match TC ID 4431460803004659888. 'Browser App' should match TC ID 6222206565850006894.">
-        1. Go to Settings\n2. Tap “Browser App”\n3. Choose <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph>
-      </message>
-      <message name="IDS_DEFAULT_BROWSER_PROMO_DIALOG_ROLE_MANAGER_STEPS" desc="Description of the steps to set the default browser throught role manager. 'Set as default' should match TC ID 5706081295230541240.">
-        1. Choose <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph>\n2. Tap “Set as default”
-      </message>
-      <message name="IDS_DEFAULT_BROWSER_PROMO_DIALOG_CHOOSE_CHROME_BUTTON" desc="A button in the default browser promo dialog to choose chrome as default">
-        Choose <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph>
-      </message>
-      <message name="IDS_DEFAULT_BROWSER_PROMO_DIALOG_GO_TO_SETTINGS_BUTTON" desc="A button in the default browser promo to navigate users to systen settings. 'Go to Settings' should match TC ID 4431460803004659888.">
-        Go to Settings
-      </message>
-
       <!-- HTTPS image compression InfoBar -->
       <message name="IDS_LITE_MODE_HTTPS_IMAGE_COMPRESSION_MESSAGE" desc="The text of the infobar notifying the user that Chrome's Lite mode will now also compresses HTTPS images.">
         Lite mode now saves you more data by optimizing images on HTTPS pages.
