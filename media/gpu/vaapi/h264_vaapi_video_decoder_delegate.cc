@@ -369,11 +369,6 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
   bool uses_crypto = false;
   VAEncryptionParameters crypto_params = {};
   if (IsEncryptedSession()) {
-    // Always indicate full sample since H264 can support that and we don't know
-    // yet which it is.
-    // TODO(jkardatzke): Fix full sample encryption, specifying true for it here
-    // always will cause H264 subsample to fail and we don't know which it is
-    // yet.
     const ProtectedSessionState state = SetupDecryptDecode(
         /*full_sample=*/false, size, &crypto_params, &encryption_segment_info_,
         subsamples);

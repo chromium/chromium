@@ -279,7 +279,8 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
     for (const auto& profile_and_entrypoints : configurations) {
       const VAProfile va_profile = profile_and_entrypoints.first;
       scoped_refptr<VaapiWrapper> wrapper = VaapiWrapper::Create(
-          VaapiWrapper::kEncode, va_profile, base::DoNothing());
+          VaapiWrapper::kEncode, va_profile, EncryptionScheme::kUnencrypted,
+          base::DoNothing());
 
       // Depending on the GPU Gen, flags and policies, we may or may not utilize
       // all entrypoints (e.g. we might always want VAEntrypointEncSliceLP if

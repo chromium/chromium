@@ -335,7 +335,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
         codec == kCodecVP9 ? VaapiWrapper::kEncodeConstantQuantizationParameter
                            : VaapiWrapper::kEncode;
     vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
-        mode, config.output_profile,
+        mode, config.output_profile, EncryptionScheme::kUnencrypted,
         base::BindRepeating(&ReportVaapiErrorToUMA,
                             "Media.VaapiVideoEncodeAccelerator.VAAPIError"));
     if (!vaapi_wrapper_) {
@@ -728,6 +728,7 @@ std::unique_ptr<VaapiEncodeJob> VaapiVideoEncodeAccelerator::CreateEncodeJob(
     if (!vpp_vaapi_wrapper_) {
       vpp_vaapi_wrapper_ = VaapiWrapper::Create(
           VaapiWrapper::kVideoProcess, VAProfileNone,
+          EncryptionScheme::kUnencrypted,
           base::BindRepeating(
               &ReportVaapiErrorToUMA,
               "Media.VaapiVideoEncodeAccelerator.Vpp.VAAPIError"));

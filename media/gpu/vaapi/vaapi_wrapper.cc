@@ -787,8 +787,6 @@ bool GetRequiredAttribs(const base::Lock* va_lock,
         {VAConfigAttribProtectedContentCipherBlockSize, VA_PC_BLOCK_SIZE_128});
     required_attribs->push_back(
         {VAConfigAttribProtectedContentCipherMode, VA_PC_CIPHER_MODE_CTR});
-    required_attribs->push_back({VAConfigAttribProtectedContentCipherSampleType,
-                                 VA_PC_SAMPLE_TYPE_FULLSAMPLE});
 #endif
   } else {
     required_attribs->push_back({VAConfigAttribRTFormat, VA_RT_FORMAT_YUV420});
@@ -796,16 +794,8 @@ bool GetRequiredAttribs(const base::Lock* va_lock,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (mode == VaapiWrapper::kDecodeProtected && profile != VAProfileProtected) {
-    // TODO(jkardatzke): Remove this workarond once the iHD bug for full vs.
-    // subsample dependency here is fixed. VA_ENCRYPTION_TYPE_CTR_128 works for
-    // VP9. VA_ENCRYPTION_TYPE_CENC_CTR is needed for H264 full sample (and also
-    // works for H264 subsample). We can't know full vs. subsample at this point
-    // though, we only know codec.
     required_attribs->push_back(
-        {VAConfigAttribEncryption,
-         (profile == VAProfileVP9Profile0 || profile == VAProfileVP9Profile2)
-             ? VA_ENCRYPTION_TYPE_CTR_128
-             : VA_ENCRYPTION_TYPE_CENC_CTR});
+        {VAConfigAttribEncryption, VA_ENCRYPTION_TYPE_CENC_CTR});
   }
 #endif
 
@@ -1339,6 +1329,7 @@ VAImplementation VaapiWrapper::GetImplementationType() {
 scoped_refptr<VaapiWrapper> VaapiWrapper::Create(
     CodecMode mode,
     VAProfile va_profile,
+    EncryptionScheme encryption_scheme,
     const ReportErrorToUMACB& report_error_to_uma_cb) {
   if (!VASupportedProfiles::Get().IsProfileSupported(mode, va_profile)) {
     DVLOG(1) << "Unsupported va_profile: " << vaProfileStr(va_profile);
@@ -1358,7 +1349,7 @@ scoped_refptr<VaapiWrapper> VaapiWrapper::Create(
 
   scoped_refptr<VaapiWrapper> vaapi_wrapper(new VaapiWrapper(mode));
   if (vaapi_wrapper->VaInitialize(report_error_to_uma_cb)) {
-    if (vaapi_wrapper->Initialize(mode, va_profile))
+    if (vaapi_wrapper->Initialize(mode, va_profile, encryption_scheme))
       return vaapi_wrapper;
   }
   LOG(ERROR) << "Failed to create VaapiWrapper for va_profile: "
@@ -1370,9 +1361,10 @@ scoped_refptr<VaapiWrapper> VaapiWrapper::Create(
 scoped_refptr<VaapiWrapper> VaapiWrapper::CreateForVideoCodec(
     CodecMode mode,
     VideoCodecProfile profile,
+    EncryptionScheme encryption_scheme,
     const ReportErrorToUMACB& report_error_to_uma_cb) {
   const VAProfile va_profile = ProfileToVAProfile(profile, mode);
-  return Create(mode, va_profile, report_error_to_uma_cb);
+  return Create(mode, va_profile, encryption_scheme, report_error_to_uma_cb);
 }
 
 // static
@@ -1738,8 +1730,7 @@ std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateContextAndScopedVASurface(
 }
 
 bool VaapiWrapper::CreateProtectedSession(
-    media::EncryptionScheme encryption,
-    bool full_sample,
+    EncryptionScheme encryption,
     const std::vector<uint8_t>& hw_config,
     std::vector<uint8_t>* hw_identifier_out) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1748,7 +1739,7 @@ bool VaapiWrapper::CreateProtectedSession(
     LOG(ERROR) << "Cannot attached protected context if not in protected mode";
     return false;
   }
-  if (encryption == media::EncryptionScheme::kUnencrypted) {
+  if (encryption == EncryptionScheme::kUnencrypted) {
     LOG(ERROR) << "Must specify encryption scheme for protected mode";
     return false;
   }
@@ -1764,16 +1755,12 @@ bool VaapiWrapper::CreateProtectedSession(
     }
     DCHECK(!required_attribs.empty());
 
-    // We need to adjust the attributes for encryption scheme and sample mode.
+    // We need to adjust the attribute for encryption scheme.
     for (auto& attrib : required_attribs) {
       if (attrib.type == VAConfigAttribProtectedContentCipherMode) {
-        attrib.value = (encryption == media::EncryptionScheme::kCbcs)
+        attrib.value = (encryption == EncryptionScheme::kCbcs)
                            ? VA_PC_CIPHER_MODE_CBC
                            : VA_PC_CIPHER_MODE_CTR;
-      } else if (attrib.type ==
-                 VAConfigAttribProtectedContentCipherSampleType) {
-        attrib.value = full_sample ? VA_PC_SAMPLE_TYPE_FULLSAMPLE
-                                   : VA_PC_SAMPLE_TYPE_SUBSAMPLE;
       }
     }
 
@@ -2573,13 +2560,21 @@ VaapiWrapper::~VaapiWrapper() {
   Deinitialize();
 }
 
-bool VaapiWrapper::Initialize(CodecMode mode, VAProfile va_profile) {
+bool VaapiWrapper::Initialize(CodecMode mode,
+                              VAProfile va_profile,
+                              EncryptionScheme encryption_scheme) {
 #if DCHECK_IS_ON()
   if (mode == kEncodeConstantQuantizationParameter) {
     DCHECK_NE(va_profile, VAProfileJPEGBaseline)
         << "JPEG Encoding doesn't support CQP bitrate control";
   }
 #endif  // DCHECK_IS_ON()
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (encryption_scheme != EncryptionScheme::kUnencrypted &&
+      mode != kDecodeProtected)
+    return false;
+#endif
 
   const VAEntrypoint entrypoint = GetDefaultVaEntryPoint(mode, va_profile);
 
@@ -2588,6 +2583,18 @@ bool VaapiWrapper::Initialize(CodecMode mode, VAProfile va_profile) {
   if (!GetRequiredAttribs(va_lock_, va_display_, mode, va_profile, entrypoint,
                           &required_attribs)) {
     return false;
+  }
+
+  if (encryption_scheme != EncryptionScheme::kUnencrypted) {
+    DCHECK(!required_attribs.empty());
+    // We need to adjust the attribute for encryption scheme.
+    for (auto& attrib : required_attribs) {
+      if (attrib.type == VAConfigAttribEncryption) {
+        attrib.value = (encryption_scheme == EncryptionScheme::kCbcs)
+                           ? VA_ENCRYPTION_TYPE_CENC_CBC
+                           : VA_ENCRYPTION_TYPE_CENC_CTR;
+      }
+    }
   }
 
   const VAStatus va_res =

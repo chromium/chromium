@@ -205,7 +205,7 @@ bool VaapiVideoDecodeAccelerator::Initialize(const Config& config,
   VLOGF(2) << "Initializing VAVDA, profile: " << GetProfileName(profile);
 
   vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
-      VaapiWrapper::kDecode, profile,
+      VaapiWrapper::kDecode, profile, EncryptionScheme::kUnencrypted,
       base::BindRepeating(&ReportVaapiErrorToUMA,
                           "Media.VaapiVideoDecodeAccelerator.VAAPIError"));
 
@@ -620,7 +620,7 @@ void VaapiVideoDecodeAccelerator::TryFinishSurfaceSetChange() {
   if (profile_ != new_profile) {
     profile_ = new_profile;
     auto new_vaapi_wrapper = VaapiWrapper::CreateForVideoCodec(
-        VaapiWrapper::kDecode, profile_,
+        VaapiWrapper::kDecode, profile_, EncryptionScheme::kUnencrypted,
         base::BindRepeating(&ReportVaapiErrorToUMA,
                             "Media.VaapiVideoDecodeAccelerator.VAAPIError"));
     RETURN_AND_NOTIFY_ON_FAILURE(new_vaapi_wrapper.get(),
@@ -715,6 +715,7 @@ void VaapiVideoDecodeAccelerator::AssignPictureBuffers(
     if (!vpp_vaapi_wrapper_) {
       vpp_vaapi_wrapper_ = VaapiWrapper::Create(
           VaapiWrapper::kVideoProcess, VAProfileNone,
+          EncryptionScheme::kUnencrypted,
           base::BindRepeating(
               &ReportVaapiErrorToUMA,
               "Media.VaapiVideoDecodeAccelerator.Vpp.VAAPIError"));

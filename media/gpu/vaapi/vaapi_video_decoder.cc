@@ -220,7 +220,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
 #else
       VaapiWrapper::kDecode,
 #endif
-      profile,
+      profile, config.encryption_scheme(),
       base::BindRepeating(&ReportVaapiErrorToUMA,
                           "Media.VaapiVideoDecoder.VAAPIError"));
   UMA_HISTOGRAM_BOOLEAN("Media.VaapiVideoDecoder.VaapiWrapperCreationSuccess",
@@ -554,7 +554,7 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
 #else
         VaapiWrapper::kDecode,
 #endif
-        profile_,
+        profile_, encryption_scheme_,
         base::BindRepeating(&ReportVaapiErrorToUMA,
                             "Media.VaapiVideoDecoder.VAAPIError"));
     if (!new_vaapi_wrapper.get()) {

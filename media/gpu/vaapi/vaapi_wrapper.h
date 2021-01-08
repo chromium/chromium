@@ -151,6 +151,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   static scoped_refptr<VaapiWrapper> Create(
       CodecMode mode,
       VAProfile va_profile,
+      EncryptionScheme encryption_scheme,
       const ReportErrorToUMACB& report_error_to_uma_cb);
 
   // Create VaapiWrapper for VideoCodecProfile. It maps VideoCodecProfile
@@ -160,6 +161,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   static scoped_refptr<VaapiWrapper> CreateForVideoCodec(
       CodecMode mode,
       VideoCodecProfile profile,
+      EncryptionScheme encryption_scheme,
       const ReportErrorToUMACB& report_error_to_uma_cb);
 
   // Return the supported video encode profiles.
@@ -265,14 +267,12 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // decoding context to enable encrypted video decoding. If it cannot be
   // attached now, it will be attached when the decoding context is created or
   // re-created. |encryption| should be the encryption scheme from the
-  // DecryptConfig, |full_sample| should be true if full sample (i.e. CENC v1)
-  // encryption is used. |hw_config| should have been obtained from the
-  // OEMCrypto implementation via the CdmFactoryDaemonProxy. |hw_identifier_out|
-  // is an output parameter which will return session specific information which
-  // can be passed through the ChromeOsCdmContext to retrieve encrypted key
+  // DecryptConfig. |hw_config| should have been obtained from the OEMCrypto
+  // implementation via the CdmFactoryDaemonProxy. |hw_identifier_out| is an
+  // output parameter which will return session specific information which can
+  // be passed through the ChromeOsCdmContext to retrieve encrypted key
   // information. Returns true on success and false otherwise.
   bool CreateProtectedSession(media::EncryptionScheme encryption,
-                              bool full_sample,
                               const std::vector<uint8_t>& hw_config,
                               std::vector<uint8_t>* hw_identifier_out);
 
@@ -476,7 +476,9 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   FRIEND_TEST_ALL_PREFIXES(VaapiUtilsTest, BadScopedVAImage);
   FRIEND_TEST_ALL_PREFIXES(VaapiUtilsTest, BadScopedVABufferMapping);
 
-  bool Initialize(CodecMode mode, VAProfile va_profile) WARN_UNUSED_RESULT;
+  bool Initialize(CodecMode mode,
+                  VAProfile va_profile,
+                  EncryptionScheme encryption_scheme) WARN_UNUSED_RESULT;
   void Deinitialize();
   bool VaInitialize(const ReportErrorToUMACB& report_error_to_uma_cb)
       WARN_UNUSED_RESULT;

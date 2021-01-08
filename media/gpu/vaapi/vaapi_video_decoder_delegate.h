@@ -116,7 +116,6 @@ class VaapiVideoDecoderDelegate {
   EncryptionScheme encryption_scheme_;
   ProtectedSessionState protected_session_state_;
   std::unique_ptr<DecryptConfig> decrypt_config_;
-  bool full_sample_;
   std::vector<uint8_t> hw_identifier_;
   std::map<std::string, std::vector<uint8_t>> hw_key_data_map_;
 

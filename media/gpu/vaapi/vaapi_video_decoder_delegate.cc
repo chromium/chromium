@@ -92,7 +92,6 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
       protected_session_state_ = ProtectedSessionState::kFailed;
       return protected_session_state_;
     }
-    full_sample_ = full_sample;
     // We need to start the creation of this, first part requires getting the
     // hw config data from the daemon.
     chromeos::ChromeOsCdmFactory::GetHwConfigData(BindToCurrentLoop(
@@ -106,14 +105,10 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
 
   if (encryption_scheme_ == EncryptionScheme::kCenc) {
     crypto_params->encryption_type =
-        full_sample_ ? VA_ENCRYPTION_TYPE_CENC_CTR : VA_ENCRYPTION_TYPE_CTR_128;
+        full_sample ? VA_ENCRYPTION_TYPE_CENC_CTR : VA_ENCRYPTION_TYPE_CTR_128;
   } else {
-    if (full_sample_) {
-      LOG(ERROR) << "CBC encryption is not supported for CENCv1";
-      protected_session_state_ = ProtectedSessionState::kFailed;
-      return protected_session_state_;
-    }
-    crypto_params->encryption_type = VA_ENCRYPTION_TYPE_CBC;
+    crypto_params->encryption_type =
+        full_sample ? VA_ENCRYPTION_TYPE_CENC_CBC : VA_ENCRYPTION_TYPE_CBC;
   }
 
   if (subsamples.empty() ||
@@ -125,12 +120,6 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
     segments->emplace_back(std::move(segment_info));
     crypto_params->num_segments = 1;
     crypto_params->segment_info = &segments->back();
-    return protected_session_state_;
-  }
-
-  if (full_sample_ != full_sample) {
-    LOG(ERROR) << "Cannot switch between full/subsample mid session";
-    protected_session_state_ = ProtectedSessionState::kFailed;
     return protected_session_state_;
   }
 
@@ -205,8 +194,8 @@ void VaapiVideoDecoderDelegate::OnGetHwConfigData(
   }
 
   hw_identifier_.clear();
-  if (!vaapi_wrapper_->CreateProtectedSession(encryption_scheme_, full_sample_,
-                                              config_data, &hw_identifier_)) {
+  if (!vaapi_wrapper_->CreateProtectedSession(encryption_scheme_, config_data,
+                                              &hw_identifier_)) {
     LOG(ERROR) << "Failed to setup protected session";
     protected_session_state_ = ProtectedSessionState::kFailed;
     on_protected_session_update_cb_.Run(false);
