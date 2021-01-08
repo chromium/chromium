@@ -17,6 +17,8 @@ extern const char kServiceName[];
 extern const char kHostConfigFileName[];
 extern const char kHostConfigFilePath[];
 
+extern const char kHostSettingsFilePath[];
+
 // This helper script is executed as root to enable/disable/configure the host
 // service.
 // It is also used (as non-root) to provide version information for the

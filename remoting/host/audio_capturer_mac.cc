@@ -10,8 +10,13 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/threading/thread_restrictions.h"
+#include "remoting/base/logging.h"
+#include "remoting/host/host_setting_keys.h"
+#include "remoting/host/host_settings.h"
 #include "remoting/proto/audio.pb.h"
 
 namespace remoting {
@@ -88,8 +93,10 @@ AudioCapturerInstanceSet* AudioCapturerInstanceSet::Get() {
 
 }  // namespace
 
-AudioCapturerMac::AudioCapturerMac() {
+AudioCapturerMac::AudioCapturerMac(const std::string& audio_device_uid)
+    : audio_device_uid_(audio_device_uid) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  DCHECK(!audio_device_uid.empty());
 
   stream_description_.mSampleRate = kSampleRate;
   stream_description_.mFormatID = kAudioFormatLinearPCM;
@@ -188,15 +195,24 @@ bool AudioCapturerMac::StartInputQueue() {
   // This runs on AudioQueue's internal thread. For some reason if we specify
   // inCallbackRunLoop to current thread, then the callback will never get
   // called.
-  // TODO(yuweih): Search for the loopback device directly instead of relying on
-  // the default input device. This would allow the user to keep their
-  // microphone as the default input device.
   OSStatus err =
       AudioQueueNewInput(&stream_description_, &HandleInputBufferOnAQThread,
                          /* inUserData= */ this, /* inCallbackRunLoop= */ NULL,
                          kCFRunLoopCommonModes, 0, &input_queue_);
 
   if (HandleError(err, "AudioQueueNewInput")) {
+    return false;
+  }
+
+  // Use the loopback device for input.
+  HOST_LOG << "Using loopback device: " << audio_device_uid_;
+  base::ScopedCFTypeRef<CFStringRef> device_uid =
+      base::SysUTF8ToCFStringRef(audio_device_uid_);
+  CFStringRef unowned_device_uid = device_uid.get();
+  err = AudioQueueSetProperty(input_queue_, kAudioQueueProperty_CurrentDevice,
+                              &unowned_device_uid, sizeof(unowned_device_uid));
+  if (HandleError(err,
+                  "AudioQueueSetProperty(kAudioQueueProperty_CurrentDevice)")) {
     return false;
   }
 
@@ -216,6 +232,11 @@ bool AudioCapturerMac::StartInputQueue() {
 
   // Start input queue.
   err = AudioQueueStart(input_queue_, NULL);
+  if (err == kAudioQueueErr_InvalidDevice) {
+    LOG(ERROR) << "Loopback device " << audio_device_uid_
+               << " could not be located";
+    return false;
+  }
   if (HandleError(err, "AudioQueueStart")) {
     return false;
   }
@@ -260,29 +281,28 @@ bool AudioCapturerMac::HandleError(OSStatus err, const char* function_name) {
 
 // AudioCapturer
 
-// AudioCapturer support on Mac is still experimental.
-
-#if defined(NDEBUG)
-
 bool AudioCapturer::IsSupported() {
-  return false;
-}
-
-std::unique_ptr<AudioCapturer> AudioCapturer::Create() {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
-#else
-
-bool AudioCapturer::IsSupported() {
+  if (HostSettings::GetInstance()
+          ->GetString(kMacAudioCaptureDeviceUid)
+          .empty()) {
+    HOST_LOG << kMacAudioCaptureDeviceUid << " is not set or not a string. "
+             << "Audio capturer will be disabled.";
+    return false;
+  }
+  HOST_LOG << kMacAudioCaptureDeviceUid
+           << " is set. Audio capturer will be enabled.";
   return true;
 }
 
 std::unique_ptr<AudioCapturer> AudioCapturer::Create() {
-  return std::make_unique<AudioCapturerMac>();
+  std::string device_uid =
+      HostSettings::GetInstance()->GetString(kMacAudioCaptureDeviceUid);
+  if (device_uid.empty()) {
+    // AudioCapturer::Create is still called even when IsSupported() returns
+    // false.
+    return nullptr;
+  }
+  return std::make_unique<AudioCapturerMac>(device_uid);
 }
-
-#endif
 
 }  // namespace remoting

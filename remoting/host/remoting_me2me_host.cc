@@ -67,6 +67,7 @@
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/host_main.h"
 #include "remoting/host/host_power_save_blocker.h"
+#include "remoting/host/host_settings.h"
 #include "remoting/host/host_status_logger.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/ipc_desktop_environment.h"
@@ -830,6 +831,8 @@ void HostProcess::StartOnUiThread() {
     ShutdownOnUiThread();
     return;
   }
+
+  HostSettings::Initialize();
 
   if (!report_offline_reason_.empty()) {
     // Don't need to do any UI initialization.

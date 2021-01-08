@@ -174,6 +174,9 @@ static_library("common") {
     "host_power_save_blocker.h",
     "host_secret.cc",
     "host_secret.h",
+    "host_setting_keys.h",
+    "host_settings.cc",
+    "host_settings.h",
     "host_status_logger.cc",
     "host_status_logger.h",
     "host_status_monitor.cc",
@@ -409,6 +412,8 @@ static_library("common") {
       "desktop_resizer_mac.cc",
       "disconnect_window_mac.h",
       "disconnect_window_mac.mm",
+      "host_settings_mac.cc",
+      "host_settings_mac.h",
       "input_injector_mac.cc",
       "keyboard_layout_monitor_mac.cc",
       "pairing_registry_delegate_mac.cc",
@@ -418,9 +423,13 @@ static_library("common") {
     frameworks = [
       "Accelerate.framework",
       "Carbon.framework",
+      "CoreAudio.framework",
     ]
 
-    deps += [ ":remoting_version" ]
+    deps += [
+      ":remoting_version",
+      "//remoting/host/mac:constants",
+    ]
   }
 
   if (is_win) {

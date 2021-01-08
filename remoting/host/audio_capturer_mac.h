@@ -7,6 +7,8 @@
 
 #include <AudioToolbox/AudioToolbox.h>
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -23,7 +25,7 @@ namespace remoting {
 // audio on Mac through the loopback device.
 class AudioCapturerMac : public AudioCapturer {
  public:
-  AudioCapturerMac();
+  explicit AudioCapturerMac(const std::string& audio_device_uid);
   ~AudioCapturerMac() override;
 
   // AudioCapturer interface.
@@ -51,6 +53,8 @@ class AudioCapturerMac : public AudioCapturer {
   bool HandleError(OSStatus err, const char* function_name);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  std::string audio_device_uid_;
 
   AudioStreamBasicDescription stream_description_;
   PacketCapturedCallback callback_;
