@@ -14,8 +14,6 @@ namespace blink {
 template <typename T>
 using GarbageCollected = cppgc::GarbageCollected<T>;
 
-using GarbageCollectedMixin = cppgc::GarbageCollectedMixin;
-
 // Default MakeGarbageCollected: Constructs an instance of T, which is a garbage
 // collected type.
 template <typename T, typename... Args>

@@ -33,6 +33,7 @@
 
 #include "gin/public/wrapper_info.h"
 #include "third_party/blink/renderer/platform/bindings/v8_interface_bridge_base.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -43,7 +44,6 @@ namespace blink {
 class CustomWrappable;
 class DOMWrapperWorld;
 class ScriptWrappable;
-class Visitor;
 
 static const int kV8DOMWrapperTypeIndex =
     static_cast<int>(gin::kWrapperInfoIndex);

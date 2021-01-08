@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/heap/unified_heap_marking_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/buildflags.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 #include "v8/include/v8.h"
 
@@ -78,7 +79,8 @@ class TraceWrapperV8Reference {
   }
 
   template <class S>
-  TraceWrapperV8Reference(TraceWrapperV8Reference<S>&& other) noexcept {
+  TraceWrapperV8Reference(  // NOLINT
+      TraceWrapperV8Reference<S>&& other) noexcept {
     *this = std::move(other);
   }
 
@@ -140,17 +142,17 @@ class TraceWrapperV8Reference {
 
 namespace cppgc {
 template <typename T>
-struct TraceTrait<TraceWrapperV8Reference<T>> {
+struct TraceTrait<blink::TraceWrapperV8Reference<T>> {
   STATIC_ONLY(TraceTrait);
 
   static cppgc::TraceDescriptor GetTraceDescriptor(
-      const TraceWrapperV8Reference<T>* ref) {
+      const blink::TraceWrapperV8Reference<T>* ref) {
     return {ref, Trace};
   }
 
   static void Trace(Visitor* visitor, const void* self) {
     visitor->Trace(
-        static_cast<const TraceWrapperV8Reference<T>*>(self)->handle_);
+        static_cast<const blink::TraceWrapperV8Reference<T>*>(self)->handle_);
   }
 };
 }  // namespace cppgc

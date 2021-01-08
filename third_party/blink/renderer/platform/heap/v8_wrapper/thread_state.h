@@ -70,6 +70,11 @@ class ThreadState final {
     return allocation_handle_;
   }
   ALWAYS_INLINE v8::CppHeap& cpp_heap() const { return cpp_heap_; }
+  ALWAYS_INLINE v8::Isolate* GetIsolate() const {
+    // TODO(1056170): Refer to cpp_heap_ once getter for v8::Isolate is
+    // implemented.
+    return nullptr;
+  }
 
  private:
   // Main-thread ThreadState avoids TLS completely by using a regular global.
