@@ -62,12 +62,13 @@ interface HTMLMediaElement : HTMLElement
 
 # permissions API (crbug.com/490120), presentation API (crbug.com/521319),
 # share API (crbug.com/765923), custom scheme handlers (crbug.com/589502),
-# media session API (crbug.com/925997), and WebXr API (crbug.com/1012899)
-# are not supported in webview.
+# media session API (crbug.com/925997), Web Serial API (crbug.com/1164036),
+# and WebXr API (crbug.com/1012899) are not supported in webview.
 interface Navigator
     getter mediaSession                # crbug.com/925997
     getter permissions                 # crbug.com/490120
     getter presentation                # crbug.com/521319
+    getter serial                      # crbug.com/1164036
     getter xr                          # crbug.com/1012899
     method registerProtocolHandler     # crbug.com/589502
     method unregisterProtocolHandler   # crbug.com/589502
@@ -171,6 +172,11 @@ interface XRHitTestResult
 interface XRTransientInputHitTestSource
 interface XRAnchor
 interface XRAnchorSet
+
+# Web Serial API is not implemented on Android. If Bluetooth Classic support
+# were added this could change. https://crbug.com/1164036
+interface Serial : EventTarget
+interface SerialPort : EventTarget
 
 [GLOBAL OBJECT]
     method openDatabase
