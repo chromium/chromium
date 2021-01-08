@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -70,7 +71,10 @@ import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Unit tests for {@link AppMenuPropertiesDelegateImpl}.
@@ -575,6 +579,8 @@ public class AppMenuPropertiesDelegateUnitTest {
         assertMenuItemsAreEqual(menu, expectedItems);
         assertActionBarItemsAreEqual(menu, expectedActionBarItems);
         assertAddToItemsAreEqual(menu, expectedAddToItems);
+        assertAddToItemsEnableState(
+                menu, new HashSet<>(Arrays.asList(R.id.add_to_reading_list_menu_id)), null);
     }
 
     @Test
@@ -913,6 +919,20 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         Assert.assertThat("Populated add to items were:" + getMenuTitles(addToSubMenu), actualItems,
                 Matchers.containsInAnyOrder(expectedItems));
+    }
+
+    private void assertAddToItemsEnableState(
+            Menu menu, Set<Integer> enabledItems, Set<Integer> disabledItems) {
+        SubMenu addToSubMenu = menu.findItem(R.id.add_to_menu_id).getSubMenu();
+        for (int i = 0; i < addToSubMenu.size(); i++) {
+            MenuItem item = addToSubMenu.getItem(i);
+            if (enabledItems != null && enabledItems.contains(item.getItemId())) {
+                Assert.assertTrue(item.isEnabled());
+            }
+            if (disabledItems != null && disabledItems.contains(item.getItemId())) {
+                Assert.assertFalse(item.isEnabled());
+            }
+        }
     }
 
     private String getMenuTitles(Menu menu) {

@@ -1193,6 +1193,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/rappor/RapporServiceBridge.java",
   "java/src/org/chromium/chrome/browser/read_later/ReadLaterIPHController.java",
   "java/src/org/chromium/chrome/browser/read_later/ReadingListBridge.java",
+  "java/src/org/chromium/chrome/browser/read_later/ReadingListUtils.java",
   "java/src/org/chromium/chrome/browser/reengagement/ReengagementNotificationController.java",
   "java/src/org/chromium/chrome/browser/resources/ResourceMapper.java",
   "java/src/org/chromium/chrome/browser/rlz/RevenueStats.java",

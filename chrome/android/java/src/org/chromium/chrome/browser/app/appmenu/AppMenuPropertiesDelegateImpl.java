@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -448,6 +449,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                         addToMenuItem.getSubMenu().findItem(R.id.add_to_reading_list_menu_id);
                 addToReadingListMenuItem.setVisible(
                         CachedFeatureFlags.isEnabled(ChromeFeatureList.READ_LATER));
+                addToReadingListMenuItem.setEnabled(ReadingListUtils.isReadingListSupported(url));
 
                 MenuItem addToDownloadsMenuItem =
                         addToMenuItem.getSubMenu().findItem(R.id.add_to_downloads_menu_id);
