@@ -1996,7 +1996,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.GpuMemoryBufferVideoFramePool.UnsupportedFormat"
-    enum="VideoPixelFormatUnion" expires_after="M82">
+    enum="VideoPixelFormatUnion" expires_after="2022-01-06">
   <owner>dcastagna@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
   <summary>
