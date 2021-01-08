@@ -74,6 +74,8 @@ void SetCookieForPartition(
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       gaia_url, gaps_cookie_value, base::Time::Now(),
       base::nullopt /* server_time */));
+  if (!cc)
+    return;
 
   const net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   partition->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(

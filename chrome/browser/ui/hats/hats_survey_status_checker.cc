@@ -40,6 +40,7 @@ HatsSurveyStatusChecker::HatsSurveyStatusChecker(Profile* profile) {
   GURL cookie_url = GURL("https://www.google.com");
   auto survey_cookie = net::CanonicalCookie::Create(
       cookie_url, "PAIDCONTENT=0", base::Time::Now(), base::nullopt);
+  DCHECK(survey_cookie);
   network::mojom::CookieManager* cookie_manager =
       GetStoragePartition()->GetCookieManagerForBrowserProcess();
   cookie_manager->SetCanonicalCookie(*survey_cookie, cookie_url,

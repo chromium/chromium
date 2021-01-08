@@ -428,14 +428,11 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   if (parsed_cookie.IsSameParty())
     base::UmaHistogramBoolean("Cookie.IsSamePartyValid", is_same_party_valid);
 
-  // TODO(chlily): Log metrics.
   if (!status->IsInclude())
     return nullptr;
 
   CookieSameSiteString samesite_string = CookieSameSiteString::kUnspecified;
   CookieSameSite samesite = parsed_cookie.SameSite(&samesite_string);
-  RecordCookieSameSiteAttributeValueHistogram(samesite_string,
-                                              parsed_cookie.IsSameParty());
 
   CookieSourceScheme source_scheme = url.SchemeIsCryptographic()
                                          ? CookieSourceScheme::kSecure
@@ -449,9 +446,16 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
       parsed_cookie.IsHttpOnly(), samesite, parsed_cookie.Priority(),
       parsed_cookie.IsSameParty(), source_scheme, source_port));
 
-  DCHECK(cc->IsCanonical());
-
   // TODO(chlily): Log metrics.
+  if (!cc->IsCanonical()) {
+    status->AddExclusionReason(
+        net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+    return nullptr;
+  }
+
+  RecordCookieSameSiteAttributeValueHistogram(samesite_string,
+                                              parsed_cookie.IsSameParty());
+
   return cc;
 }
 

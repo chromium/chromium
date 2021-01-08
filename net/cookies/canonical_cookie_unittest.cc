@@ -194,6 +194,21 @@ TEST(CanonicalCookie, CreationCornerCases) {
   cookie = CanonicalCookie::Create(GURL("http://fool/;/"), "*", creation_time,
                                    server_time);
   EXPECT_TRUE(cookie.get());
+
+  // Control characters in name or value.
+  CookieInclusionStatus status;
+  cookie =
+      CanonicalCookie::Create(GURL("http://www.example.com/test/foo.html"),
+                              "\b=foo", creation_time, server_time, &status);
+  EXPECT_FALSE(cookie.get());
+  EXPECT_TRUE(status.HasExclusionReason(
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE));
+  cookie =
+      CanonicalCookie::Create(GURL("http://www.example.com/test/foo.html"),
+                              "bar=\b", creation_time, server_time, &status);
+  EXPECT_FALSE(cookie.get());
+  EXPECT_TRUE(status.HasExclusionReason(
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE));
 }
 
 TEST(CanonicalCookieTest, Create) {
