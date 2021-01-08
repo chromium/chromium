@@ -122,9 +122,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
   ui::EventDispatchDetails ProcessUnfilteredKeyPressEvent(ui::KeyEvent* event)
       WARN_UNUSED_RESULT;
 
-  // Sends input method result caused by the given key event to the focused text
-  // input client.
-  void ProcessInputMethodResult(ui::KeyEvent* event, bool filtered);
+  // Processes any pending input method operations that issued while handling
+  // the key event. Does not do anything if there were no pending operations.
+  void MaybeProcessPendingInputMethodResult(ui::KeyEvent* event, bool filtered);
 
   // Checks if the pending input method result needs inserting into the focused
   // text input client as a single character.

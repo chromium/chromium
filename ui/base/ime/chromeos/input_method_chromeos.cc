@@ -501,8 +501,7 @@ ui::EventDispatchDetails InputMethodChromeOS::ProcessKeyEventPostIME(
   if (client != GetTextInputClient())
     return dispatch_details;
 
-  if (HasInputMethodResult())
-    ProcessInputMethodResult(event, handled);
+  MaybeProcessPendingInputMethodResult(event, handled);
 
   // In case the focus was changed when sending input method results to the
   // focused window.
@@ -564,8 +563,9 @@ ui::EventDispatchDetails InputMethodChromeOS::ProcessUnfilteredKeyPressEvent(
   return details;
 }
 
-void InputMethodChromeOS::ProcessInputMethodResult(ui::KeyEvent* event,
-                                                   bool handled) {
+void InputMethodChromeOS::MaybeProcessPendingInputMethodResult(
+    ui::KeyEvent* event,
+    bool handled) {
   TextInputClient* client = GetTextInputClient();
   DCHECK(client);
 
@@ -619,10 +619,6 @@ bool InputMethodChromeOS::NeedInsertChar() const {
   return GetTextInputClient() &&
       (IsTextInputTypeNone() ||
        (!composing_text_ && result_text_.length() == 1));
-}
-
-bool InputMethodChromeOS::HasInputMethodResult() const {
-  return result_text_.length() || composition_changed_;
 }
 
 void InputMethodChromeOS::CommitText(const std::string& text) {

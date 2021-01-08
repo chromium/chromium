@@ -1175,6 +1175,20 @@ TEST_F(InputMethodChromeOSKeyEventTest, JP106KeyTest) {
   EXPECT_FALSE(input_method_manager_->state()->is_jp_ime());
 }
 
+TEST_F(InputMethodChromeOSKeyEventTest, SetAutocorrectRangeRunsAfterKeyEvent) {
+  input_type_ = TEXT_INPUT_TYPE_TEXT;
+  ime_->OnTextInputTypeChanged(this);
+  ime_->CommitText("a");
+
+  ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  ime_->DispatchKeyEvent(&event);
+  ime_->SetAutocorrectRange(gfx::Range(0, 1));
+  std::move(mock_ime_engine_handler_->last_passed_callback())
+      .Run(/*handled=*/true);
+
+  EXPECT_EQ(gfx::Range(0, 1), GetAutocorrectRange());
+}
+
 TEST_F(InputMethodChromeOSKeyEventTest,
        SetAutocorrectRangeRunsAfterCommitText) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
