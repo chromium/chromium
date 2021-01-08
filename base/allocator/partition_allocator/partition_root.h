@@ -1102,7 +1102,18 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   a. Call to the thread cache, if it succeeds, go to step 3.
   //   b. Otherwise, call the "raw" allocator <-- Locking
   // 3. Handle cookies/ref-count, zero allocation if required
-  size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
+
+  size_t raw_size = requested_size;
+#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+  // Without the size adjustment below, |Alloc()| returns a pointer past the end
+  // of a slot (most of the time a pointer to the beginning of the next slot)
+  // for zero-sized allocations when |PartitionRefCount| is used. The returned
+  // value may lead to incorrect results when passed to a function that performs
+  // bitwise operations on pointers, e.g., |PartitionAllocGetSlotOffset()|.
+  if (UNLIKELY(raw_size == 0))
+    raw_size = 1;
+#endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+  raw_size = AdjustSizeForExtrasAdd(raw_size);
   PA_CHECK(raw_size >= requested_size);  // check for overflows
 
   uint16_t bucket_index = SizeToBucketIndex(raw_size);

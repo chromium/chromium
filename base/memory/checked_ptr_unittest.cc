@@ -754,6 +754,26 @@ TEST(BackupRefPtrImpl, Basic) {
 #endif  // DCHECK_IS_ON()
 }
 
+TEST(BackupRefPtrImpl, ZeroSized) {
+  // This test works only if GigaCage is enabled. Bail out otherwise.
+  if (!features::IsPartitionAllocGigaCageEnabled())
+    return;
+
+  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
+  // new/delete once PartitionAlloc Everywhere is fully enabled.
+  PartitionAllocGlobalInit(HandleOOM);
+  PartitionAllocator<ThreadSafe> allocator;
+  allocator.init({});
+
+  std::vector<CheckedPtr<void>> ptrs;
+  // Use a reasonable number of elements to fill up the slot span.
+  for (int i = 0; i < 128 * 1024; ++i) {
+    // Constructing a CheckedPtr instance from a zero-sized allocation should
+    // not result in a crash.
+    ptrs.emplace_back(allocator.root()->Alloc(0, ""));
+  }
+}
+
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC) && ENABLE_BACKUP_REF_PTR_IMPL &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 }  // namespace internal
