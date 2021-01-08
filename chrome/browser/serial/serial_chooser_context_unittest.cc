@@ -8,8 +8,10 @@
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/serial/serial_blocklist.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/serial/serial_chooser_histograms.h"
 #include "chrome/test/base/testing_profile.h"
@@ -79,6 +81,24 @@ class SerialChooserContextTest : public testing::Test {
   SerialChooserContextTest(SerialChooserContextTest&) = delete;
   SerialChooserContextTest& operator=(SerialChooserContextTest&) = delete;
 
+  void TearDown() override {
+    // Because SerialBlocklist is a singleton it must be cleared after tests run
+    // to prevent leakage between tests.
+    feature_list_.Reset();
+    SerialBlocklist::Get().ResetToDefaultValuesForTesting();
+  }
+
+  void SetDynamicBlocklist(base::StringPiece value) {
+    feature_list_.Reset();
+
+    std::map<std::string, std::string> parameters;
+    parameters[kWebSerialBlocklistAdditions.name] = std::string(value);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kWebSerialBlocklist, parameters}}, {});
+
+    SerialBlocklist::Get().ResetToDefaultValuesForTesting();
+  }
+
   device::FakeSerialPortManager& port_manager() { return port_manager_; }
   TestingProfile* profile() { return &profile_; }
   SerialChooserContext* context() { return context_; }
@@ -89,6 +109,7 @@ class SerialChooserContextTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   device::FakeSerialPortManager port_manager_;
   TestingProfile profile_;
   SerialChooserContext* context_;
@@ -433,6 +454,36 @@ TEST_F(SerialChooserContextTest, PolicyBlockedForUrls) {
       objects = context()->GetGrantedObjects(kFooOrigin, kFooOrigin);
   EXPECT_EQ(0u, objects.size());
   objects = context()->GetGrantedObjects(kBarOrigin, kBarOrigin);
+  EXPECT_EQ(1u, objects.size());
+
+  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+      all_origin_objects = context()->GetAllGrantedObjects();
+  EXPECT_EQ(1u, all_origin_objects.size());
+}
+
+TEST_F(SerialChooserContextTest, Blocklist) {
+  const auto origin = url::Origin::Create(GURL("https://google.com"));
+
+  auto port = device::mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+  port->has_vendor_id = true;
+  port->vendor_id = 0x18D1;
+  port->has_product_id = true;
+  port->product_id = 0x58F0;
+  context()->GrantPortPermission(origin, origin, *port);
+  EXPECT_TRUE(context()->HasPortPermission(origin, origin, *port));
+
+  // Adding a USB device to the blocklist overrides any previously granted
+  // permissions.
+  SetDynamicBlocklist("usb:18D1:58F0");
+  EXPECT_FALSE(context()->HasPortPermission(origin, origin, *port));
+
+  // The lists of granted permissions will still include the entry because
+  // permission storage does not include the USB vendor and product IDs on all
+  // platforms and users should still be made aware of permissions they've
+  // granted even if they are being blocked from taking effect.
+  std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
+      objects = context()->GetGrantedObjects(origin, origin);
   EXPECT_EQ(1u, objects.size());
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>

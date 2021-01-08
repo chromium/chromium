@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/serial/serial_blocklist.h"
 #include "chrome/browser/serial/serial_chooser_histograms.h"
 #include "content/public/browser/device_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -226,6 +227,10 @@ bool SerialChooserContext::HasPortPermission(
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin,
     const device::mojom::SerialPortInfo& port) {
+  if (SerialBlocklist::Get().IsExcluded(port)) {
+    return false;
+  }
+
   if (!CanRequestObjectPermission(requesting_origin, embedding_origin)) {
     return false;
   }

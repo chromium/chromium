@@ -52,7 +52,7 @@ class SerialChooserController final
 
  private:
   void OnGetDevices(std::vector<device::mojom::SerialPortInfoPtr> ports);
-  bool FilterMatchesAny(const device::mojom::SerialPortInfo& port) const;
+  bool DisplayDevice(const device::mojom::SerialPortInfo& port) const;
   void RunCallback(device::mojom::SerialPortInfoPtr port);
 
   std::vector<blink::mojom::SerialPortFilterPtr> filters_;
