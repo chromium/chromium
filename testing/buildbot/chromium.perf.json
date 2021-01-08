@@ -990,8 +990,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-384.90",
-              "os": "Ubuntu-14.04",
+              "gpu": "10de:1cb3-440.100",
+              "os": "Ubuntu-18.04",
               "pool": "chrome.tests.perf",
               "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
             }
