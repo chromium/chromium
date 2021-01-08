@@ -82,6 +82,10 @@ bool PrerenderHost::ActivatePrerenderedContents(
   if (!current_web_contents)
     return false;
 
+  // Merge browsing history.
+  prerendered_contents_->GetController().CopyStateFromAndPrune(
+      &current_web_contents->GetController(), /*replace_entry=*/false);
+
   // Activate the prerendered contents.
   WebContentsDelegate* delegate = current_web_contents->GetDelegate();
   DCHECK(delegate);

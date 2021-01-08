@@ -47,7 +47,8 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
 
   // Activates the prerendered contents. Returns false when activation didn't
   // occur for some reason. This must be called after this host gets ready for
-  // activation.
+  // activation. `current_render_frame_host` is the RenderFrameHost that will
+  // be swapped out and destroyed by the activation.
   bool ActivatePrerenderedContents(
       RenderFrameHostImpl& current_render_frame_host);
 

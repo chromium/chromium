@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
@@ -54,7 +55,7 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<TestWebContentsDelegate> web_contents_delegate_;
 };
 
-TEST_F(PrerenderHostTest, StartPrerendering) {
+TEST_F(PrerenderHostTest, PrerenderAndActivate) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
@@ -67,17 +68,25 @@ TEST_F(PrerenderHostTest, StartPrerendering) {
       std::move(attributes), initiator_rfh->GetGlobalFrameRoutingId(),
       initiator_rfh->GetLastCommittedOrigin());
 
+  // Start the prerendering navigation.
   prerender_host->StartPrerendering();
-  // Prepare a fake response so as to commit the navigation.
-  TestRenderFrameHost* prerendering_rfh = static_cast<TestRenderFrameHost*>(
+
+  // Finish the prerendering navigation. Normally we could use
+  // EmbeddedTestServer to provide a response, but this test uses
+  // RenderViewHostImplTestHarness so the load goes through a
+  // TestNavigationURLLoader which we don't have access to in order
+  // to complete. Use NavigationSimulator to finish the navigation on the
+  // WebContents.
+  WebContents* prerender_contents = WebContents::FromRenderFrameHost(
       prerender_host->GetPrerenderedMainFrameHostForTesting());
-  ASSERT_TRUE(prerendering_rfh);
-  prerendering_rfh->PrepareForCommit();
+  ASSERT_TRUE(prerender_contents);
+  std::unique_ptr<NavigationSimulator> sim =
+      NavigationSimulator::CreateFromPending(prerender_contents);
+  sim->ReadyToCommit();
+  sim->Commit();
+  EXPECT_TRUE(prerender_host->is_ready_for_activation());
 
-  // Artificially finish navigation to make the prerender host ready to provide
-  // the prerendered contents.
-  prerender_host->DidFinishNavigation(nullptr);
-
+  // Activate.
   EXPECT_TRUE(prerender_host->ActivatePrerenderedContents(*initiator_rfh));
 }
 

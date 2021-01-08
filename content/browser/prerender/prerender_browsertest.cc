@@ -386,6 +386,30 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_PopUpWindow) {
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
 }
 
+// Tests that back-forward history is preserved after activation.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, HistoryAfterActivation) {
+  // This test is only meaningful with activation.
+  if (IsActivationDisabled())
+    return;
+
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Make and activate a prerendered page.
+  AddPrerender(kPrerenderingUrl);
+  NavigateWithLocation(kPrerenderingUrl);
+  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
+
+  // Navigate back to the initial page.
+  content::TestNavigationObserver observer(shell()->web_contents());
+  shell()->GoBackOrForward(-1);
+  observer.Wait();
+  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
+}
+
 // TODO(https://crbug.com/1132746): Test canceling prerendering.
 
 // TODO(https://crbug.com/1132746): Test prerendering for 404 page, redirection,
