@@ -2409,8 +2409,6 @@ if (!is_android) {
         "../browser/chromeos/accessibility/magnification_controller_browsertest.cc",
         "../browser/chromeos/accessibility/magnification_manager_browsertest.cc",
         "../browser/chromeos/accessibility/select_to_speak_browsertest.cc",
-        "../browser/chromeos/accessibility/speech_monitor.cc",
-        "../browser/chromeos/accessibility/speech_monitor.h",
         "../browser/chromeos/accessibility/spoken_feedback_app_list_browsertest.cc",
         "../browser/chromeos/accessibility/spoken_feedback_browsertest.cc",
         "../browser/chromeos/accessibility/spoken_feedback_browsertest.h",
