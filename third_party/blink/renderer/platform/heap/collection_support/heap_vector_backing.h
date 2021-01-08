@@ -7,7 +7,6 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/impl/finalizer_traits.h"
 #include "third_party/blink/renderer/platform/heap/impl/gc_info.h"
 #include "third_party/blink/renderer/platform/heap/impl/threading_traits.h"

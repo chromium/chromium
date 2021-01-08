@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/heap/impl/heap_page.h"
 #include "third_party/blink/renderer/platform/heap/impl/marking_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
