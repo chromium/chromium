@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/file_system_access/global_native_file_system.h"
+#include "third_party/blink/renderer/modules/file_system_access/global_file_system_access.h"
 
 #include <utility>
 
@@ -25,9 +25,9 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_directory_handle.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_error.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_file_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -142,7 +142,7 @@ void VerifyIsAllowedToShowFilePicker(const LocalDOMWindow& window,
     return;
   }
 
-  if (!window.GetSecurityOrigin()->CanAccessNativeFileSystem()) {
+  if (!window.GetSecurityOrigin()->CanAccessFileSystem()) {
     if (window.IsSandboxed(network::mojom::blink::WebSandboxFlags::kOrigin)) {
       exception_state.ThrowSecurityError(
           "Sandboxed documents aren't allowed to show a file picker.");
@@ -229,7 +229,7 @@ ScriptPromise ShowFilePickerImpl(
               return;
             if (file_operation_result->status !=
                 mojom::blink::FileSystemAccessStatus::kOk) {
-              native_file_system_error::Reject(resolver,
+              file_system_access_error::Reject(resolver,
                                                *file_operation_result);
               return;
             }
@@ -237,25 +237,25 @@ ScriptPromise ShowFilePickerImpl(
             // While it would be better to not trust the renderer process,
             // we're doing this here to avoid potential mojo message pipe
             // ordering problems, where the frame activation state
-            // reconciliation messages would compete with concurrent Native File
-            // System messages to the browser.
+            // reconciliation messages would compete with concurrent File
+            // System Access messages to the browser.
             // TODO(https://crbug.com/1017270): Remove this after spec change,
             // or when activation moves to browser.
             LocalFrame::NotifyUserActivation(
                 local_frame, mojom::blink::UserActivationNotificationType::
-                                 kNativeFileSystem);
+                                 kFileSystemAccess);
 
             if (return_as_sequence) {
-              HeapVector<Member<NativeFileSystemHandle>> results;
+              HeapVector<Member<FileSystemHandle>> results;
               results.ReserveInitialCapacity(entries.size());
               for (auto& entry : entries) {
-                results.push_back(NativeFileSystemHandle::CreateFromMojoEntry(
+                results.push_back(FileSystemHandle::CreateFromMojoEntry(
                     std::move(entry), context));
               }
               resolver->Resolve(results);
             } else {
               DCHECK_EQ(1u, entries.size());
-              resolver->Resolve(NativeFileSystemHandle::CreateFromMojoEntry(
+              resolver->Resolve(FileSystemHandle::CreateFromMojoEntry(
                   std::move(entries[0]), context));
             }
           },
@@ -267,7 +267,7 @@ ScriptPromise ShowFilePickerImpl(
 }  // namespace
 
 // static
-ScriptPromise GlobalNativeFileSystem::showOpenFilePicker(
+ScriptPromise GlobalFileSystemAccess::showOpenFilePicker(
     ScriptState* script_state,
     LocalDOMWindow& window,
     const OpenFilePickerOptions* options,
@@ -308,7 +308,7 @@ ScriptPromise GlobalNativeFileSystem::showOpenFilePicker(
 }
 
 // static
-ScriptPromise GlobalNativeFileSystem::showSaveFilePicker(
+ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
     ScriptState* script_state,
     LocalDOMWindow& window,
     const SaveFilePickerOptions* options,
@@ -346,7 +346,7 @@ ScriptPromise GlobalNativeFileSystem::showSaveFilePicker(
 }
 
 // static
-ScriptPromise GlobalNativeFileSystem::showDirectoryPicker(
+ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
     ScriptState* script_state,
     LocalDOMWindow& window,
     const DirectoryPickerOptions* options,

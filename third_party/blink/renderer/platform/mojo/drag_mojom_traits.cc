@@ -103,12 +103,12 @@ bool StructTraits<
   item.filename_data = blink::FilePathToWebString(filename_data);
   item.display_name_data = blink::FilePathToWebString(display_name_data);
   mojo::PendingRemote<::blink::mojom::blink::FileSystemAccessDragDropToken>
-      native_file_system_token(
+      file_system_access_token(
           data.TakeFileSystemAccessToken<mojo::PendingRemote<
               ::blink::mojom::blink::FileSystemAccessDragDropToken>>());
-  item.native_file_system_entry =
-      base::MakeRefCounted<::blink::NativeFileSystemDropData>(
-          std::move(native_file_system_token));
+  item.file_system_access_entry =
+      base::MakeRefCounted<::blink::FileSystemAccessDropData>(
+          std::move(file_system_access_token));
 
   *out = std::move(item);
   return true;
@@ -187,7 +187,7 @@ StructTraits<blink::mojom::DragItemFileDataView, blink::WebDragData::Item>::
     file_system_access_token(const blink::WebDragData::Item& item) {
   // Should never have to send a transfer token information from the renderer
   // to the browser.
-  DCHECK(!item.native_file_system_entry);
+  DCHECK(!item.file_system_access_entry);
   return mojo::NullRemote();
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_directory_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -19,9 +19,9 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_directory_iterator.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_error.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_file_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_directory_iterator.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -30,35 +30,33 @@ namespace blink {
 
 using mojom::blink::FileSystemAccessErrorPtr;
 
-NativeFileSystemDirectoryHandle::NativeFileSystemDirectoryHandle(
+FileSystemDirectoryHandle::FileSystemDirectoryHandle(
     ExecutionContext* context,
     const String& name,
     mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle> mojo_ptr)
-    : NativeFileSystemHandle(context, name), mojo_ptr_(context) {
+    : FileSystemHandle(context, name), mojo_ptr_(context) {
   mojo_ptr_.Bind(std::move(mojo_ptr),
                  context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   DCHECK(mojo_ptr_.is_bound());
 }
 
-NativeFileSystemDirectoryIterator* NativeFileSystemDirectoryHandle::entries() {
-  return MakeGarbageCollected<NativeFileSystemDirectoryIterator>(
-      this, NativeFileSystemDirectoryIterator::Mode::kKeyValue,
+FileSystemDirectoryIterator* FileSystemDirectoryHandle::entries() {
+  return MakeGarbageCollected<FileSystemDirectoryIterator>(
+      this, FileSystemDirectoryIterator::Mode::kKeyValue,
       GetExecutionContext());
 }
 
-NativeFileSystemDirectoryIterator* NativeFileSystemDirectoryHandle::keys() {
-  return MakeGarbageCollected<NativeFileSystemDirectoryIterator>(
-      this, NativeFileSystemDirectoryIterator::Mode::kKey,
-      GetExecutionContext());
+FileSystemDirectoryIterator* FileSystemDirectoryHandle::keys() {
+  return MakeGarbageCollected<FileSystemDirectoryIterator>(
+      this, FileSystemDirectoryIterator::Mode::kKey, GetExecutionContext());
 }
 
-NativeFileSystemDirectoryIterator* NativeFileSystemDirectoryHandle::values() {
-  return MakeGarbageCollected<NativeFileSystemDirectoryIterator>(
-      this, NativeFileSystemDirectoryIterator::Mode::kValue,
-      GetExecutionContext());
+FileSystemDirectoryIterator* FileSystemDirectoryHandle::values() {
+  return MakeGarbageCollected<FileSystemDirectoryIterator>(
+      this, FileSystemDirectoryIterator::Mode::kValue, GetExecutionContext());
 }
 
-ScriptPromise NativeFileSystemDirectoryHandle::getFileHandle(
+ScriptPromise FileSystemDirectoryHandle::getFileHandle(
     ScriptState* script_state,
     const String& name,
     const FileSystemGetFileOptions* options) {
@@ -76,10 +74,10 @@ ScriptPromise NativeFileSystemDirectoryHandle::getFileHandle(
             if (!context)
               return;
             if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
-              native_file_system_error::Reject(resolver, *result);
+              file_system_access_error::Reject(resolver, *result);
               return;
             }
-            resolver->Resolve(MakeGarbageCollected<NativeFileSystemFileHandle>(
+            resolver->Resolve(MakeGarbageCollected<FileSystemFileHandle>(
                 context, name, std::move(handle)));
           },
           WrapPersistent(resolver), name));
@@ -87,7 +85,7 @@ ScriptPromise NativeFileSystemDirectoryHandle::getFileHandle(
   return result;
 }
 
-ScriptPromise NativeFileSystemDirectoryHandle::getDirectoryHandle(
+ScriptPromise FileSystemDirectoryHandle::getDirectoryHandle(
     ScriptState* script_state,
     const String& name,
     const FileSystemGetDirectoryOptions* options) {
@@ -111,12 +109,11 @@ ScriptPromise NativeFileSystemDirectoryHandle::getDirectoryHandle(
             if (!context)
               return;
             if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
-              native_file_system_error::Reject(resolver, *result);
+              file_system_access_error::Reject(resolver, *result);
               return;
             }
-            resolver->Resolve(
-                MakeGarbageCollected<NativeFileSystemDirectoryHandle>(
-                    context, name, std::move(handle)));
+            resolver->Resolve(MakeGarbageCollected<FileSystemDirectoryHandle>(
+                context, name, std::move(handle)));
           },
           WrapPersistent(resolver), name));
 
@@ -131,10 +128,9 @@ void ReturnDataFunction(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 }  // namespace
 
-ScriptValue NativeFileSystemDirectoryHandle::getEntries(
-    ScriptState* script_state) {
-  auto* iterator = MakeGarbageCollected<NativeFileSystemDirectoryIterator>(
-      this, NativeFileSystemDirectoryIterator::Mode::kValue,
+ScriptValue FileSystemDirectoryHandle::getEntries(ScriptState* script_state) {
+  auto* iterator = MakeGarbageCollected<FileSystemDirectoryIterator>(
+      this, FileSystemDirectoryIterator::Mode::kValue,
       ExecutionContext::From(script_state));
   auto* isolate = script_state->GetIsolate();
   auto context = script_state->GetContext();
@@ -150,7 +146,7 @@ ScriptValue NativeFileSystemDirectoryHandle::getEntries(
   return ScriptValue(script_state->GetIsolate(), result);
 }
 
-ScriptPromise NativeFileSystemDirectoryHandle::removeEntry(
+ScriptPromise FileSystemDirectoryHandle::removeEntry(
     ScriptState* script_state,
     const String& name,
     const FileSystemRemoveOptions* options) {
@@ -167,16 +163,16 @@ ScriptPromise NativeFileSystemDirectoryHandle::removeEntry(
       name, options->recursive(),
       WTF::Bind(
           [](ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result) {
-            native_file_system_error::ResolveOrReject(resolver, *result);
+            file_system_access_error::ResolveOrReject(resolver, *result);
           },
           WrapPersistent(resolver)));
 
   return result;
 }
 
-ScriptPromise NativeFileSystemDirectoryHandle::resolve(
+ScriptPromise FileSystemDirectoryHandle::resolve(
     ScriptState* script_state,
-    NativeFileSystemHandle* possible_child) {
+    FileSystemHandle* possible_child) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
@@ -192,7 +188,7 @@ ScriptPromise NativeFileSystemDirectoryHandle::resolve(
           [](ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result,
              const base::Optional<Vector<String>>& path) {
             if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
-              native_file_system_error::Reject(resolver, *result);
+              file_system_access_error::Reject(resolver, *result);
               return;
             }
             if (!path.has_value()) {
@@ -207,19 +203,19 @@ ScriptPromise NativeFileSystemDirectoryHandle::resolve(
 }
 
 mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>
-NativeFileSystemDirectoryHandle::Transfer() {
+FileSystemDirectoryHandle::Transfer() {
   mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> result;
   if (mojo_ptr_.is_bound())
     mojo_ptr_->Transfer(result.InitWithNewPipeAndPassReceiver());
   return result;
 }
 
-void NativeFileSystemDirectoryHandle::Trace(Visitor* visitor) const {
+void FileSystemDirectoryHandle::Trace(Visitor* visitor) const {
   visitor->Trace(mojo_ptr_);
-  NativeFileSystemHandle::Trace(visitor);
+  FileSystemHandle::Trace(visitor);
 }
 
-void NativeFileSystemDirectoryHandle::QueryPermissionImpl(
+void FileSystemDirectoryHandle::QueryPermissionImpl(
     bool writable,
     base::OnceCallback<void(mojom::blink::PermissionStatus)> callback) {
   if (!mojo_ptr_.is_bound()) {
@@ -229,7 +225,7 @@ void NativeFileSystemDirectoryHandle::QueryPermissionImpl(
   mojo_ptr_->GetPermissionStatus(writable, std::move(callback));
 }
 
-void NativeFileSystemDirectoryHandle::RequestPermissionImpl(
+void FileSystemDirectoryHandle::RequestPermissionImpl(
     bool writable,
     base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                             mojom::blink::PermissionStatus)> callback) {
@@ -245,7 +241,7 @@ void NativeFileSystemDirectoryHandle::RequestPermissionImpl(
   mojo_ptr_->RequestPermission(writable, std::move(callback));
 }
 
-void NativeFileSystemDirectoryHandle::IsSameEntryImpl(
+void FileSystemDirectoryHandle::IsSameEntryImpl(
     mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> other,
     base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr, bool)>
         callback) {

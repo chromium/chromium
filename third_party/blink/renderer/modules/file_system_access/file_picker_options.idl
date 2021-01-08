@@ -12,7 +12,7 @@ enum CommonDirectory {
   "videos",
 };
 
-// https://wicg.github.io/native-file-system/#dictdef-filepickeroptions
+// https://wicg.github.io/file-system-access/#dictdef-filepickeroptions
 dictionary FilePickerOptions {
   sequence<FilePickerAcceptType> types;
   boolean excludeAcceptAllOption = false;

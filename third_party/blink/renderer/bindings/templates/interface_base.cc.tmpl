@@ -586,7 +586,7 @@ static void Install{{v8_class}}Template(
   interface_template->Inherit(intrinsic_iterator_prototype_interface_template);
   {% endif %}
 
-  {% if interface_name == 'NativeFileSystemDirectoryIterator' %}
+  {% if interface_name == 'FileSystemDirectoryIterator' %}
   // Temporary @@asyncIterator support for FileSystemDirectoryHandle
   // TODO(https://crbug.com/1087157): Replace with proper bindings support.
   v8::Local<v8::FunctionTemplate> intrinsic_iterator_prototype_interface_template =

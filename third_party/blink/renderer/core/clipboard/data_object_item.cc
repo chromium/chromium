@@ -63,12 +63,12 @@ DataObjectItem* DataObjectItem::CreateFromFile(File* file) {
 DataObjectItem* DataObjectItem::CreateFromFileWithFileSystemId(
     File* file,
     const String& file_system_id,
-    scoped_refptr<NativeFileSystemDropData> native_file_entry) {
+    scoped_refptr<FileSystemAccessDropData> file_system_access_entry) {
   DataObjectItem* item =
       MakeGarbageCollected<DataObjectItem>(kFileKind, file->type());
   item->file_ = file;
   item->file_system_id_ = file_system_id;
-  item->native_file_system_entry_ = native_file_entry;
+  item->file_system_access_entry_ = file_system_access_entry;
   return item;
 }
 
@@ -226,17 +226,17 @@ String DataObjectItem::FileSystemId() const {
 }
 
 bool DataObjectItem::HasFileSystemAccessEntry() const {
-  return static_cast<bool>(native_file_system_entry_);
+  return static_cast<bool>(file_system_access_entry_);
 }
 
 mojo::PendingRemote<mojom::blink::FileSystemAccessDragDropToken>
 DataObjectItem::CloneFileSystemAccessEntryToken() const {
   DCHECK(HasFileSystemAccessEntry());
   mojo::Remote<mojom::blink::FileSystemAccessDragDropToken> token_cloner(
-      std::move(native_file_system_entry_->data));
+      std::move(file_system_access_entry_->data));
   mojo::PendingRemote<mojom::blink::FileSystemAccessDragDropToken> token_clone;
   token_cloner->Clone(token_clone.InitWithNewPipeAndPassReceiver());
-  native_file_system_entry_->data = token_cloner.Unbind();
+  file_system_access_entry_->data = token_cloner.Unbind();
   return token_clone;
 }
 

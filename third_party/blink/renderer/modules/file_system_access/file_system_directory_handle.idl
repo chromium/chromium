@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/native-file-system/#filesystemdirectoryhandle
+// https://wicg.github.io/file-system-access/#filesystemdirectoryhandle
 [
     Exposed=(Window,Worker),
     SecureContext,
     Serializable,
-    RuntimeEnabled=NativeFileSystem,
-    ImplementedAs=NativeFileSystemDirectoryHandle
+    RuntimeEnabled=FileSystemAccess
 ] interface FileSystemDirectoryHandle : FileSystemHandle {
     // TODO(https://crbug.com/1087157): This interface defines an async
     // iterable, however that isn't supported yet by the bindings. So for now
     // just explicitly define what an async iterable definition implies.
     //async iterable<USVString, FileSystemHandle>;
-    NativeFileSystemDirectoryIterator entries();
-    NativeFileSystemDirectoryIterator keys();
-    NativeFileSystemDirectoryIterator values();
+    FileSystemDirectoryIterator entries();
+    FileSystemDirectoryIterator keys();
+    FileSystemDirectoryIterator values();
 
     [CallWith=ScriptState] Promise<FileSystemFileHandle> getFileHandle(USVString name, optional FileSystemGetFileOptions options = {});
     [CallWith=ScriptState] Promise<FileSystemDirectoryHandle> getDirectoryHandle(USVString name, optional FileSystemGetDirectoryOptions options = {});

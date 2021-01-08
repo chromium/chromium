@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/file_system_access/global_native_file_system.h"
+#include "third_party/blink/renderer/modules/file_system_access/global_file_system_access.h"
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -21,27 +21,27 @@
 
 namespace blink {
 
-class MockNativeFileSystemManager
+class MockFileSystemAccessManager
     : public mojom::blink::FileSystemAccessManager {
  public:
-  MockNativeFileSystemManager(BrowserInterfaceBrokerProxy& broker,
+  MockFileSystemAccessManager(BrowserInterfaceBrokerProxy& broker,
                               base::OnceClosure reached_callback)
       : reached_callback_(std::move(reached_callback)), broker_(broker) {
     broker_.SetBinderForTesting(
         mojom::blink::FileSystemAccessManager::Name_,
         WTF::BindRepeating(
-            &MockNativeFileSystemManager::BindNativeFileSystemManager,
+            &MockFileSystemAccessManager::BindFileSystemAccessManager,
             WTF::Unretained(this)));
   }
-  MockNativeFileSystemManager(BrowserInterfaceBrokerProxy& broker)
+  MockFileSystemAccessManager(BrowserInterfaceBrokerProxy& broker)
       : broker_(broker) {
     broker_.SetBinderForTesting(
         mojom::blink::FileSystemAccessManager::Name_,
         WTF::BindRepeating(
-            &MockNativeFileSystemManager::BindNativeFileSystemManager,
+            &MockFileSystemAccessManager::BindFileSystemAccessManager,
             WTF::Unretained(this)));
   }
-  ~MockNativeFileSystemManager() override {
+  ~MockFileSystemAccessManager() override {
     broker_.SetBinderForTesting(mojom::blink::FileSystemAccessManager::Name_,
                                 {});
   }
@@ -91,7 +91,7 @@ class MockNativeFileSystemManager
       GetEntryFromDragDropTokenCallback callback) override {}
 
  private:
-  void BindNativeFileSystemManager(mojo::ScopedMessagePipeHandle handle) {
+  void BindFileSystemAccessManager(mojo::ScopedMessagePipeHandle handle) {
     receivers_.Add(this,
                    mojo::PendingReceiver<mojom::blink::FileSystemAccessManager>(
                        std::move(handle)));
@@ -103,7 +103,7 @@ class MockNativeFileSystemManager
   BrowserInterfaceBrokerProxy& broker_;
 };
 
-class GlobalNativeFileSystemTest : public PageTestBase {
+class GlobalFileSystemAccessTest : public PageTestBase {
  public:
   void SetUp() override {
     PageTestBase::SetUp();
@@ -122,13 +122,13 @@ class GlobalNativeFileSystemTest : public PageTestBase {
   }
 };
 
-TEST_F(GlobalNativeFileSystemTest, UserActivationRequiredOtherwiseDenied) {
+TEST_F(GlobalFileSystemAccessTest, UserActivationRequiredOtherwiseDenied) {
   LocalFrame* frame = &GetFrame();
   EXPECT_FALSE(frame->HasStickyUserActivation());
 
-  MockNativeFileSystemManager manager(frame->GetBrowserInterfaceBroker());
+  MockFileSystemAccessManager manager(frame->GetBrowserInterfaceBroker());
   manager.SetChooseEntriesResponse(WTF::Bind(
-      [](MockNativeFileSystemManager::ChooseEntriesCallback callback) {
+      [](MockFileSystemAccessManager::ChooseEntriesCallback callback) {
         FAIL();
       }));
   ClassicScript::CreateUnspecifiedScript(
@@ -138,7 +138,7 @@ TEST_F(GlobalNativeFileSystemTest, UserActivationRequiredOtherwiseDenied) {
   EXPECT_FALSE(frame->HasStickyUserActivation());
 }
 
-TEST_F(GlobalNativeFileSystemTest, UserActivationChooseEntriesSuccessful) {
+TEST_F(GlobalFileSystemAccessTest, UserActivationChooseEntriesSuccessful) {
   LocalFrame* frame = &GetFrame();
   EXPECT_FALSE(frame->HasStickyUserActivation());
 
@@ -147,10 +147,10 @@ TEST_F(GlobalNativeFileSystemTest, UserActivationChooseEntriesSuccessful) {
   EXPECT_TRUE(frame->HasStickyUserActivation());
 
   base::RunLoop manager_run_loop;
-  MockNativeFileSystemManager manager(frame->GetBrowserInterfaceBroker(),
+  MockFileSystemAccessManager manager(frame->GetBrowserInterfaceBroker(),
                                       manager_run_loop.QuitClosure());
   manager.SetChooseEntriesResponse(WTF::Bind(
-      [](MockNativeFileSystemManager::ChooseEntriesCallback callback) {
+      [](MockFileSystemAccessManager::ChooseEntriesCallback callback) {
         auto error = mojom::blink::FileSystemAccessError::New();
         error->status = mojom::blink::FileSystemAccessStatus::kOk;
         error->message = "";
@@ -183,7 +183,7 @@ TEST_F(GlobalNativeFileSystemTest, UserActivationChooseEntriesSuccessful) {
   EXPECT_TRUE(frame->HasStickyUserActivation());
 }
 
-TEST_F(GlobalNativeFileSystemTest, UserActivationChooseEntriesErrors) {
+TEST_F(GlobalFileSystemAccessTest, UserActivationChooseEntriesErrors) {
   LocalFrame* frame = &GetFrame();
   EXPECT_FALSE(frame->HasStickyUserActivation());
 
@@ -197,7 +197,7 @@ TEST_F(GlobalNativeFileSystemTest, UserActivationChooseEntriesErrors) {
       // kOperationAborted is when the user cancels the file selection.
       FileSystemAccessStatus::kOperationAborted,
   };
-  MockNativeFileSystemManager manager(frame->GetBrowserInterfaceBroker());
+  MockFileSystemAccessManager manager(frame->GetBrowserInterfaceBroker());
 
   for (const FileSystemAccessStatus& status : statuses) {
     LocalFrame::NotifyUserActivation(
@@ -208,7 +208,7 @@ TEST_F(GlobalNativeFileSystemTest, UserActivationChooseEntriesErrors) {
     manager.SetQuitClosure(manager_run_loop.QuitClosure());
     manager.SetChooseEntriesResponse(WTF::Bind(
         [](mojom::blink::FileSystemAccessStatus status,
-           MockNativeFileSystemManager::ChooseEntriesCallback callback) {
+           MockFileSystemAccessManager::ChooseEntriesCallback callback) {
           auto error = mojom::blink::FileSystemAccessError::New();
           error->status = status;
           error->message = "";

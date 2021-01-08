@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/file_system_access/storage_manager_native_file_system.h"
+#include "third_party/blink/renderer/modules/file_system_access/storage_manager_file_system_access.h"
 
 #include <utility>
 
@@ -18,8 +18,8 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_directory_handle.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_error.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -61,10 +61,10 @@ void GetDirectoryImpl(ScriptPromiseResolver* resolver, bool allow_access) {
         if (!context)
           return;
         if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
-          native_file_system_error::Reject(resolver, *result);
+          file_system_access_error::Reject(resolver, *result);
           return;
         }
-        resolver->Resolve(MakeGarbageCollected<NativeFileSystemDirectoryHandle>(
+        resolver->Resolve(MakeGarbageCollected<FileSystemDirectoryHandle>(
             context, kSandboxRootDirectoryName, std::move(handle)));
       },
       WrapPersistent(resolver), std::move(manager)));
@@ -73,13 +73,13 @@ void GetDirectoryImpl(ScriptPromiseResolver* resolver, bool allow_access) {
 }  // namespace
 
 // static
-ScriptPromise StorageManagerNativeFileSystem::getDirectory(
+ScriptPromise StorageManagerFileSystemAccess::getDirectory(
     ScriptState* script_state,
     const StorageManager& storage,
     ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
 
-  if (!context->GetSecurityOrigin()->CanAccessNativeFileSystem()) {
+  if (!context->GetSecurityOrigin()->CanAccessFileSystem()) {
     if (context->IsSandboxed(network::mojom::blink::WebSandboxFlags::kOrigin)) {
       exception_state.ThrowSecurityError(
           "Storage directory access is denied because the context is "

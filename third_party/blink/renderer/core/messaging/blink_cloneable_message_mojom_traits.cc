@@ -52,7 +52,7 @@ bool StructTraits<blink::mojom::blink::CloneableMessage::DataView,
   out->locked_agent_cluster_id = locked_agent_cluster_id;
 
   Vector<PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken>>&
-      tokens = out->message->NativeFileSystemTokens();
+      tokens = out->message->FileSystemAccessTokens();
   if (!data.ReadFileSystemAccessTokens(&tokens)) {
     return false;
   }

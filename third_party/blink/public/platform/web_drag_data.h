@@ -45,7 +45,7 @@ namespace blink {
 template <typename T>
 class WebVector;
 
-using NativeFileSystemDropData =
+using FileSystemAccessDropData =
     base::RefCountedData<blink::CrossVariantMojoRemote<
         mojom::FileSystemAccessDragDropTokenInterfaceBase>>;
 
@@ -84,7 +84,7 @@ class WebDragData {
     // Only valid when storage_type == kStorageTypeFilename.
     WebString filename_data;
     WebString display_name_data;
-    scoped_refptr<NativeFileSystemDropData> native_file_system_entry;
+    scoped_refptr<FileSystemAccessDropData> file_system_access_entry;
 
     // Only valid when storage_type == kStorageTypeBinaryData.
     WebData binary_data;

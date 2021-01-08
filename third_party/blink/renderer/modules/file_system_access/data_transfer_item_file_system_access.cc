@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/file_system_access/data_transfer_item_native_file_system.h"
+#include "third_party/blink/renderer/modules/file_system_access/data_transfer_item_file_system_access.h"
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -18,9 +18,9 @@
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer_item.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_directory_handle.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_error.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_file_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -29,7 +29,7 @@
 namespace blink {
 
 // static
-ScriptPromise DataTransferItemNativeFileSystem::getAsFileSystemHandle(
+ScriptPromise DataTransferItemFileSystemAccess::getAsFileSystemHandle(
     ScriptState* script_state,
     DataTransferItem& data_transfer_item) {
   if (!data_transfer_item.GetDataTransfer()->CanReadData()) {
@@ -72,7 +72,7 @@ ScriptPromise DataTransferItemNativeFileSystem::getAsFileSystemHandle(
             ScriptState* script_state = resolver->GetScriptState();
             if (!script_state)
               return;
-            resolver->Resolve(NativeFileSystemHandle::CreateFromMojoEntry(
+            resolver->Resolve(FileSystemHandle::CreateFromMojoEntry(
                 std::move(entry), ExecutionContext::From(script_state)));
           },
           std::move(nfs_manager), WrapPersistent(resolver)));

@@ -55,8 +55,8 @@ class MODULES_EXPORT IDBValue final {
   const IDBKeyPath& KeyPath() const { return key_path_; }
 
   Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>>&
-  NativeFileSystemTokens() {
-    return native_file_system_tokens_;
+  FileSystemAccessTokens() {
+    return file_system_access_tokens_;
   }
 
   // Injects a primary key into a value coming from the backend.
@@ -104,7 +104,7 @@ class MODULES_EXPORT IDBValue final {
   Vector<WebBlobInfo> blob_info_;
 
   Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>>
-      native_file_system_tokens_;
+      file_system_access_tokens_;
 
   std::unique_ptr<IDBKey> primary_key_;
   IDBKeyPath key_path_;

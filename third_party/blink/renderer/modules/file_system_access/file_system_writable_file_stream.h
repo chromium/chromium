@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_WRITABLE_FILE_STREAM_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_WRITABLE_FILE_STREAM_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_WRITABLE_FILE_STREAM_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_WRITABLE_FILE_STREAM_H_
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
@@ -17,19 +17,19 @@ namespace blink {
 
 class ScriptPromise;
 class ScriptState;
-class NativeFileSystemUnderlyingSink;
+class FileSystemUnderlyingSink;
 
-class NativeFileSystemWritableFileStream final : public WritableStream {
+class FileSystemWritableFileStream final : public WritableStream {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static NativeFileSystemWritableFileStream* Create(
+  static FileSystemWritableFileStream* Create(
       ScriptState*,
       mojo::PendingRemote<mojom::blink::FileSystemAccessFileWriter>);
 
   void Trace(Visitor* visitor) const override;
 
-  // IDL defined functions specific to NativeFileSystemWritableFileStream.
+  // IDL defined functions specific to FileSystemWritableFileStream.
   ScriptPromise write(
       ScriptState*,
       const ArrayBufferOrArrayBufferViewOrBlobOrUSVStringOrWriteParams& data,
@@ -39,8 +39,8 @@ class NativeFileSystemWritableFileStream final : public WritableStream {
   ScriptPromise seek(ScriptState*, uint64_t offset, ExceptionState&);
 
  private:
-  Member<NativeFileSystemUnderlyingSink> underlying_sink_;
+  Member<FileSystemUnderlyingSink> underlying_sink_;
 };
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_WRITABLE_FILE_STREAM_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_WRITABLE_FILE_STREAM_H_

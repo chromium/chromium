@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 modules_idl_files = [
-  "native_file_system_directory_iterator.idl",
+  "file_system_directory_iterator.idl",
   "file_system_directory_handle.idl",
   "file_system_file_handle.idl",
   "file_system_handle.idl",
@@ -25,7 +25,7 @@ modules_dictionary_idl_files = [
 ]
 
 modules_dependency_idl_files = [
-  "data_transfer_item_native_file_system.idl",
-  "storage_manager_native_file_system.idl",
-  "window_native_file_system.idl",
+  "data_transfer_item_file_system_access.idl",
+  "storage_manager_file_system_access.idl",
+  "window_file_system_access.idl",
 ]

@@ -37,9 +37,9 @@ void WebLaunchServiceImpl::SetLaunchFiles(
   if (!window_)
     return;
 
-  HeapVector<Member<NativeFileSystemHandle>> files;
+  HeapVector<Member<FileSystemHandle>> files;
   for (auto& entry : entries) {
-    files.push_back(NativeFileSystemHandle::CreateFromMojoEntry(
+    files.push_back(FileSystemHandle::CreateFromMojoEntry(
         std::move(entry), window_->GetExecutionContext()));
   }
 

@@ -30358,7 +30358,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3343" label="V8Window_GetOriginPrivateDirectory_Method"/>
   <int value="3344" label="RTCConstraintEnableRtpDataChannelsTrue"/>
   <int value="3345" label="RTCConstraintEnableRtpDataChannelsFalse"/>
-  <int value="3346" label="NativeFileSystemDragAndDrop"/>
+  <int value="3346" label="FileSystemAccessDragAndDrop"/>
   <int value="3347" label="RTCAdaptivePtime"/>
   <int value="3348"
       label="HTMLMetaElementReferrerPolicyMultipleTokensAffectingRequest"/>

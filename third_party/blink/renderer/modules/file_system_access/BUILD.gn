@@ -6,26 +6,26 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("file_system_access") {
   sources = [
-    "data_transfer_item_native_file_system.cc",
-    "data_transfer_item_native_file_system.h",
-    "global_native_file_system.cc",
-    "global_native_file_system.h",
-    "native_file_system_directory_handle.cc",
-    "native_file_system_directory_handle.h",
-    "native_file_system_directory_iterator.cc",
-    "native_file_system_directory_iterator.h",
-    "native_file_system_error.cc",
-    "native_file_system_error.h",
-    "native_file_system_file_handle.cc",
-    "native_file_system_file_handle.h",
-    "native_file_system_handle.cc",
-    "native_file_system_handle.h",
-    "native_file_system_underlying_sink.cc",
-    "native_file_system_underlying_sink.h",
-    "native_file_system_writable_file_stream.cc",
-    "native_file_system_writable_file_stream.h",
-    "storage_manager_native_file_system.cc",
-    "storage_manager_native_file_system.h",
+    "data_transfer_item_file_system_access.cc",
+    "data_transfer_item_file_system_access.h",
+    "file_system_access_error.cc",
+    "file_system_access_error.h",
+    "file_system_directory_handle.cc",
+    "file_system_directory_handle.h",
+    "file_system_directory_iterator.cc",
+    "file_system_directory_iterator.h",
+    "file_system_file_handle.cc",
+    "file_system_file_handle.h",
+    "file_system_handle.cc",
+    "file_system_handle.h",
+    "file_system_underlying_sink.cc",
+    "file_system_underlying_sink.h",
+    "file_system_writable_file_stream.cc",
+    "file_system_writable_file_stream.h",
+    "global_file_system_access.cc",
+    "global_file_system_access.h",
+    "storage_manager_file_system_access.cc",
+    "storage_manager_file_system_access.h",
   ]
 
   deps = [ "//third_party/blink/renderer/platform" ]
@@ -33,7 +33,7 @@ blink_modules_sources("file_system_access") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "global_native_file_system_test.cc" ]
+  sources = [ "global_file_system_access_test.cc" ]
 
   configs += [
     "//third_party/blink/renderer:config",

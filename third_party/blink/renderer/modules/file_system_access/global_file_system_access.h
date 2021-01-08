@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_GLOBAL_NATIVE_FILE_SYSTEM_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_GLOBAL_NATIVE_FILE_SYSTEM_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_GLOBAL_FILE_SYSTEM_ACCESS_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_GLOBAL_FILE_SYSTEM_ACCESS_H_
 
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -18,8 +18,8 @@ class LocalDOMWindow;
 class ScriptPromise;
 class ScriptState;
 
-class GlobalNativeFileSystem {
-  STATIC_ONLY(GlobalNativeFileSystem);
+class GlobalFileSystemAccess {
+  STATIC_ONLY(GlobalFileSystemAccess);
 
  public:
   static ScriptPromise showOpenFilePicker(ScriptState*,
@@ -38,4 +38,4 @@ class GlobalNativeFileSystem {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_GLOBAL_NATIVE_FILE_SYSTEM_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_GLOBAL_FILE_SYSTEM_ACCESS_H_

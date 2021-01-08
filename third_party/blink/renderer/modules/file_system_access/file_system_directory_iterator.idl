@@ -8,7 +8,7 @@
 [
     LegacyNoInterfaceObject,
     ActiveScriptWrappable,
-    RuntimeEnabled=NativeFileSystem
-] interface NativeFileSystemDirectoryIterator {
+    RuntimeEnabled=FileSystemAccess
+] interface FileSystemDirectoryIterator {
   [CallWith=ScriptState] Promise<any> next();
 };

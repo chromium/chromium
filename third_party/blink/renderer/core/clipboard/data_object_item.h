@@ -59,7 +59,8 @@ class CORE_EXPORT DataObjectItem final
   static DataObjectItem* CreateFromFileWithFileSystemId(
       File*,
       const String& file_system_id,
-      scoped_refptr<NativeFileSystemDropData> native_file_entry = nullptr);
+      scoped_refptr<FileSystemAccessDropData> file_system_access_entry =
+          nullptr);
   static DataObjectItem* CreateFromURL(const String& url, const String& title);
   static DataObjectItem* CreateFromHTML(const String& html,
                                         const KURL& base_url);
@@ -106,7 +107,7 @@ class CORE_EXPORT DataObjectItem final
     kInternalSource,
   };
 
-  scoped_refptr<NativeFileSystemDropData> native_file_system_entry_;
+  scoped_refptr<FileSystemAccessDropData> file_system_access_entry_;
   DataSource source_;
   ItemKind kind_;
   String type_;

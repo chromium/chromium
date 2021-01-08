@@ -4,7 +4,7 @@
 generate_token.py http://127.0.0.1:8000 NativeFileSystem2 --expire-timestamp=2000000000
 -- -->
 <meta http-equiv="origin-trial" content="AmmBxJTKsdbb26LLpdAVmIKBvVxU6fKf6UZDoMXiD+b9bULkOHzUTtZ4dNwHMhI7tZzO+tNgmWCzNK2MLoZsvAEAAABZeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiTmF0aXZlRmlsZVN5c3RlbTIiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=">
-<title>Native File System API - interfaces exposed by origin trial</title>
+<title>File System Access API - interfaces exposed by origin trial</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/origin-trials-helper.js"></script>
@@ -17,5 +17,5 @@ test(t => {
     'FileSystemWritableFileStream': ['write', 'truncate', 'close', 'seek'],
     'global': ['showOpenFilePicker', 'showSaveFilePicker', 'showDirectoryPicker'],
   });
-}, 'Native File System API interfaces and properties in Origin-Trial enabled document.');
+}, 'File System Access API interfaces and properties in Origin-Trial enabled document.');
 </script>

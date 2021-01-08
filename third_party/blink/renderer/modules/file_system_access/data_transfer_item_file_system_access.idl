@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 [
-    ImplementedAs=DataTransferItemNativeFileSystem,
-    RuntimeEnabled=NativeFileSystem
+    ImplementedAs=DataTransferItemFileSystemAccess,
+    RuntimeEnabled=FileSystemAccess
 ] partial interface DataTransferItem {
-    [CallWith=ScriptState, MeasureAs=NativeFileSystemDragAndDrop] Promise<FileSystemHandle?> getAsFileSystemHandle();
+    [CallWith=ScriptState, MeasureAs=FileSystemAccessDragAndDrop]
+    Promise<FileSystemHandle?> getAsFileSystemHandle();
 };

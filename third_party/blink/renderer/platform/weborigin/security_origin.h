@@ -230,7 +230,6 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   bool CanAccessCookies() const { return !IsOpaque(); }
   bool CanAccessPasswordManager() const { return !IsOpaque(); }
   bool CanAccessFileSystem() const { return !IsOpaque(); }
-  bool CanAccessNativeFileSystem() const { return !IsOpaque(); }
   bool CanAccessCacheStorage() const { return !IsOpaque(); }
   bool CanAccessLocks() const { return !IsOpaque(); }
   bool CanAccessSessionStorage() const { return !IsOpaque(); }

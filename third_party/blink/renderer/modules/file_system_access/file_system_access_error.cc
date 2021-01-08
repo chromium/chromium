@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_error.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
 
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
-namespace native_file_system_error {
+namespace file_system_access_error {
 
 void Reject(ScriptPromiseResolver* resolver,
             const mojom::blink::FileSystemAccessError& error) {
@@ -65,5 +65,5 @@ void ResolveOrReject(ScriptPromiseResolver* resolver,
   }
 }
 
-}  // namespace native_file_system_error
+}  // namespace file_system_access_error
 }  // namespace blink

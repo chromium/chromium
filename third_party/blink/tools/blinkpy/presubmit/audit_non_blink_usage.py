@@ -389,7 +389,7 @@ _CONFIG = [
             'layout_invalidation_reason::.+',
             'media_constraints_impl::.+',
             'media_element_parser_helpers::.+',
-            'native_file_system_error::.+',
+            'file_system_access_error::.+',
             'network_utils::.+',
             'origin_trials::.+',
             'paint_filter_builder::.+',

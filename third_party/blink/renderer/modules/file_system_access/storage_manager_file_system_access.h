@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_STORAGE_MANAGER_NATIVE_FILE_SYSTEM_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_STORAGE_MANAGER_NATIVE_FILE_SYSTEM_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_STORAGE_MANAGER_FILE_SYSTEM_ACCESS_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_STORAGE_MANAGER_FILE_SYSTEM_ACCESS_H_
 
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -15,8 +15,8 @@ class ScriptPromise;
 class ScriptState;
 class StorageManager;
 
-class StorageManagerNativeFileSystem {
-  STATIC_ONLY(StorageManagerNativeFileSystem);
+class StorageManagerFileSystemAccess {
+  STATIC_ONLY(StorageManagerFileSystemAccess);
 
  public:
   static ScriptPromise getDirectory(ScriptState*,
@@ -26,4 +26,4 @@ class StorageManagerNativeFileSystem {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_STORAGE_MANAGER_NATIVE_FILE_SYSTEM_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_STORAGE_MANAGER_FILE_SYSTEM_ACCESS_H_

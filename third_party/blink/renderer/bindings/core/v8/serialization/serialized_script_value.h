@@ -102,7 +102,7 @@ class CORE_EXPORT SerializedScriptValue
   using TransferredWasmModulesArray = WTF::Vector<v8::CompiledWasmModule>;
   using MessagePortChannelArray = Vector<MessagePortChannel>;
   using StreamArray = Vector<Stream>;
-  using NativeFileSystemTokensArray =
+  using FileSystemAccessTokensArray =
       Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>>;
 
   // Increment this for each incompatible change to the wire format.
@@ -275,8 +275,8 @@ class CORE_EXPORT SerializedScriptValue
     return shared_array_buffers_contents_;
   }
   BlobDataHandleMap& BlobDataHandles() { return blob_data_handles_; }
-  NativeFileSystemTokensArray& NativeFileSystemTokens() {
-    return native_file_system_tokens_;
+  FileSystemAccessTokensArray& FileSystemAccessTokens() {
+    return file_system_access_tokens_;
   }
   MojoScopedHandleArray& MojoHandles() { return mojo_handles_; }
   ArrayBufferContentsArray& GetArrayBufferContentsArray() {
@@ -396,7 +396,7 @@ class CORE_EXPORT SerializedScriptValue
   BlobDataHandleMap blob_data_handles_;
   MojoScopedHandleArray mojo_handles_;
   SharedArrayBufferContentsArray shared_array_buffers_contents_;
-  NativeFileSystemTokensArray native_file_system_tokens_;
+  FileSystemAccessTokensArray file_system_access_tokens_;
   HashMap<const void* const*, std::unique_ptr<Attachment>> attachments_;
 
   bool has_registered_external_allocation_;

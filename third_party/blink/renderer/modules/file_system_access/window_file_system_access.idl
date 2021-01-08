@@ -6,8 +6,8 @@
 // https://wicg.github.io/native-file-system/#api-getoriginprivatefilesystem
 [
     SecureContext,
-    RuntimeEnabled=NativeFileSystem,
-    ImplementedAs=GlobalNativeFileSystem
+    RuntimeEnabled=FileSystemAccess,
+    ImplementedAs=GlobalFileSystemAccess
 ] partial interface Window {
     [CallWith=ScriptState, RaisesException, Measure]
     Promise<sequence<FileSystemFileHandle>> showOpenFilePicker(

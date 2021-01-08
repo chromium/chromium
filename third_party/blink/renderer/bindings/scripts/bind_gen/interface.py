@@ -5222,7 +5222,7 @@ def make_install_interface_template(cg_context, function_name, class_name,
 }
 """))
 
-    if class_like.identifier == "NativeFileSystemDirectoryIterator":
+    if class_like.identifier == "FileSystemDirectoryIterator":
         body.append(
             T("""\
 // Temporary @@asyncIterator support for FileSystemDirectoryHandle

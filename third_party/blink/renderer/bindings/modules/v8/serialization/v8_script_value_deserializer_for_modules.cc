@@ -13,8 +13,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/web_crypto_sub_tags.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_directory_handle.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_file_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
@@ -52,9 +52,9 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
           ExecutionContext::From(GetScriptState()), name,
           static_cast<mojom::blink::FileSystemType>(raw_type), KURL(root_url));
     }
-    case kNativeFileSystemFileHandleTag:
-    case kNativeFileSystemDirectoryHandleTag:
-      return ReadNativeFileSystemHandle(tag);
+    case kFileSystemFileHandleTag:
+    case kFileSystemDirectoryHandleTag:
+      return ReadFileSystemHandle(tag);
     case kRTCCertificateTag: {
       String pem_private_key;
       String pem_certificate;
@@ -311,10 +311,9 @@ CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
   return MakeGarbageCollected<CryptoKey>(key);
 }
 
-NativeFileSystemHandle*
-V8ScriptValueDeserializerForModules::ReadNativeFileSystemHandle(
+FileSystemHandle* V8ScriptValueDeserializerForModules::ReadFileSystemHandle(
     SerializationTag tag) {
-  if (!RuntimeEnabledFeatures::NativeFileSystemEnabled(
+  if (!RuntimeEnabledFeatures::FileSystemAccessEnabled(
           ExecutionContext::From(GetScriptState()))) {
     return nullptr;
   }
@@ -326,8 +325,8 @@ V8ScriptValueDeserializerForModules::ReadNativeFileSystemHandle(
   }
 
   // Find the FileSystemHandle's token.
-  SerializedScriptValue::NativeFileSystemTokensArray& tokens_array =
-      GetSerializedScriptValue()->NativeFileSystemTokens();
+  SerializedScriptValue::FileSystemAccessTokensArray& tokens_array =
+      GetSerializedScriptValue()->FileSystemAccessTokens();
   if (token_index >= tokens_array.size()) {
     return nullptr;
   }
@@ -344,34 +343,34 @@ V8ScriptValueDeserializerForModules::ReadNativeFileSystemHandle(
   token->Clone(token_clone.InitWithNewPipeAndPassReceiver());
   tokens_array[token_index] = std::move(token_clone);
 
-  // Use the NativeFileSystemManager to redeem the token to clone the
+  // Use the FileSystemAccessManager to redeem the token to clone the
   // FileSystemHandle.
   ExecutionContext* execution_context =
       ExecutionContext::From(GetScriptState());
   mojo::Remote<mojom::blink::FileSystemAccessManager>
-      native_file_system_manager;
+      file_system_access_manager;
   execution_context->GetBrowserInterfaceBroker().GetInterface(
-      native_file_system_manager.BindNewPipeAndPassReceiver());
+      file_system_access_manager.BindNewPipeAndPassReceiver());
 
   // Clone the FileSystemHandle object.
   switch (tag) {
-    case kNativeFileSystemFileHandleTag: {
+    case kFileSystemFileHandleTag: {
       mojo::PendingRemote<mojom::blink::FileSystemAccessFileHandle> file_handle;
 
-      native_file_system_manager->GetFileHandleFromToken(
+      file_system_access_manager->GetFileHandleFromToken(
           token.Unbind(), file_handle.InitWithNewPipeAndPassReceiver());
 
-      return MakeGarbageCollected<NativeFileSystemFileHandle>(
-          execution_context, name, std::move(file_handle));
+      return MakeGarbageCollected<FileSystemFileHandle>(execution_context, name,
+                                                        std::move(file_handle));
     }
-    case kNativeFileSystemDirectoryHandleTag: {
+    case kFileSystemDirectoryHandleTag: {
       mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>
           directory_handle;
 
-      native_file_system_manager->GetDirectoryHandleFromToken(
+      file_system_access_manager->GetDirectoryHandleFromToken(
           token.Unbind(), directory_handle.InitWithNewPipeAndPassReceiver());
 
-      return MakeGarbageCollected<NativeFileSystemDirectoryHandle>(
+      return MakeGarbageCollected<FileSystemDirectoryHandle>(
           execution_context, name, std::move(directory_handle));
     }
     default: {

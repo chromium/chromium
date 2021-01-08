@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_writable_file_stream.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_writable_file_stream.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view_or_blob_or_usv_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -12,13 +12,13 @@
 #include "third_party/blink/renderer/core/streams/count_queuing_strategy.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_underlying_sink.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_underlying_sink.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 
 namespace blink {
 
-NativeFileSystemWritableFileStream* NativeFileSystemWritableFileStream::Create(
+FileSystemWritableFileStream* FileSystemWritableFileStream::Create(
     ScriptState* script_state,
     mojo::PendingRemote<mojom::blink::FileSystemAccessFileWriter>
         writer_pending_remote) {
@@ -27,9 +27,9 @@ NativeFileSystemWritableFileStream* NativeFileSystemWritableFileStream::Create(
 
   ExecutionContext* context = ExecutionContext::From(script_state);
 
-  auto* stream = MakeGarbageCollected<NativeFileSystemWritableFileStream>();
+  auto* stream = MakeGarbageCollected<FileSystemWritableFileStream>();
 
-  auto* underlying_sink = MakeGarbageCollected<NativeFileSystemUnderlyingSink>(
+  auto* underlying_sink = MakeGarbageCollected<FileSystemUnderlyingSink>(
       context, std::move(writer_pending_remote));
   stream->underlying_sink_ = underlying_sink;
   auto underlying_sink_value = ScriptValue::From(script_state, underlying_sink);
@@ -43,7 +43,7 @@ NativeFileSystemWritableFileStream* NativeFileSystemWritableFileStream::Create(
 
   ExceptionState exception_state(script_state->GetIsolate(),
                                  ExceptionState::kConstructionContext,
-                                 "NativeFileSystemWritableFileStream");
+                                 "FileSystemWritableFileStream");
   stream->InitInternal(script_state, underlying_sink_value, strategy_value,
                        exception_state);
 
@@ -53,7 +53,7 @@ NativeFileSystemWritableFileStream* NativeFileSystemWritableFileStream::Create(
   return stream;
 }
 
-ScriptPromise NativeFileSystemWritableFileStream::write(
+ScriptPromise FileSystemWritableFileStream::write(
     ScriptState* script_state,
     const ArrayBufferOrArrayBufferViewOrBlobOrUSVStringOrWriteParams& data,
     ExceptionState& exception_state) {
@@ -69,7 +69,7 @@ ScriptPromise NativeFileSystemWritableFileStream::write(
   return promise;
 }
 
-ScriptPromise NativeFileSystemWritableFileStream::truncate(
+ScriptPromise FileSystemWritableFileStream::truncate(
     ScriptState* script_state,
     uint64_t size,
     ExceptionState& exception_state) {
@@ -89,7 +89,7 @@ ScriptPromise NativeFileSystemWritableFileStream::truncate(
   return promise;
 }
 
-ScriptPromise NativeFileSystemWritableFileStream::close(
+ScriptPromise FileSystemWritableFileStream::close(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   WritableStreamDefaultWriter* writer =
@@ -103,7 +103,7 @@ ScriptPromise NativeFileSystemWritableFileStream::close(
   return promise;
 }
 
-ScriptPromise NativeFileSystemWritableFileStream::seek(
+ScriptPromise FileSystemWritableFileStream::seek(
     ScriptState* script_state,
     uint64_t offset,
     ExceptionState& exception_state) {
@@ -123,7 +123,7 @@ ScriptPromise NativeFileSystemWritableFileStream::seek(
   return promise;
 }
 
-void NativeFileSystemWritableFileStream::Trace(Visitor* visitor) const {
+void FileSystemWritableFileStream::Trace(Visitor* visitor) const {
   WritableStream::Trace(visitor);
   visitor->Trace(underlying_sink_);
 }

@@ -2670,7 +2670,7 @@ enum WebFeature {
   kV8Window_ShowDirectoryPicker_Method = 3342,
   kRTCConstraintEnableRtpDataChannelsTrue = 3344,
   kRTCConstraintEnableRtpDataChannelsFalse = 3345,
-  kNativeFileSystemDragAndDrop = 3346,
+  kFileSystemAccessDragAndDrop = 3346,
   kRTCAdaptivePtime = 3347,
   kHTMLMetaElementReferrerPolicyMultipleTokensAffectingRequest = 3348,
   kNavigationTimingL2 = 3349,

@@ -62,18 +62,16 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
     return true;
   }
   if (wrapper_type_info == V8FileSystemFileHandle::GetWrapperTypeInfo() &&
-      RuntimeEnabledFeatures::NativeFileSystemEnabled(
+      RuntimeEnabledFeatures::FileSystemAccessEnabled(
           ExecutionContext::From(GetScriptState()))) {
-    return WriteNativeFileSystemHandle(
-        kNativeFileSystemFileHandleTag,
-        wrappable->ToImpl<NativeFileSystemHandle>());
+    return WriteFileSystemHandle(kFileSystemFileHandleTag,
+                                 wrappable->ToImpl<FileSystemHandle>());
   }
   if (wrapper_type_info == V8FileSystemDirectoryHandle::GetWrapperTypeInfo() &&
-      RuntimeEnabledFeatures::NativeFileSystemEnabled(
+      RuntimeEnabledFeatures::FileSystemAccessEnabled(
           ExecutionContext::From(GetScriptState()))) {
-    return WriteNativeFileSystemHandle(
-        kNativeFileSystemDirectoryHandleTag,
-        wrappable->ToImpl<NativeFileSystemHandle>());
+    return WriteFileSystemHandle(kFileSystemDirectoryHandleTag,
+                                 wrappable->ToImpl<FileSystemHandle>());
   }
   if (wrapper_type_info == V8RTCCertificate::GetWrapperTypeInfo()) {
     RTCCertificate* certificate = wrappable->ToImpl<RTCCertificate>();
@@ -301,20 +299,20 @@ bool V8ScriptValueSerializerForModules::WriteCryptoKey(
   return true;
 }
 
-bool V8ScriptValueSerializerForModules::WriteNativeFileSystemHandle(
+bool V8ScriptValueSerializerForModules::WriteFileSystemHandle(
     SerializationTag tag,
-    NativeFileSystemHandle* native_file_system_handle) {
+    FileSystemHandle* file_system_handle) {
   mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> token =
-      native_file_system_handle->Transfer();
+      file_system_handle->Transfer();
 
-  SerializedScriptValue::NativeFileSystemTokensArray& tokens_array =
-      GetSerializedScriptValue()->NativeFileSystemTokens();
+  SerializedScriptValue::FileSystemAccessTokensArray& tokens_array =
+      GetSerializedScriptValue()->FileSystemAccessTokens();
 
   tokens_array.push_back(std::move(token));
   const uint32_t token_index = static_cast<uint32_t>(tokens_array.size() - 1);
 
   WriteTag(tag);
-  WriteUTF8String(native_file_system_handle->name());
+  WriteUTF8String(file_system_handle->name());
   WriteUint32(token_index);
   return true;
 }

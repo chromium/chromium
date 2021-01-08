@@ -62,7 +62,7 @@ struct CORE_EXPORT StructTraits<blink::mojom::CloneableMessageDataView,
   static Vector<
       mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken>>
   file_system_access_tokens(blink::BlinkCloneableMessage& input) {
-    return std::move(input.message->NativeFileSystemTokens());
+    return std::move(input.message->FileSystemAccessTokens());
   }
 
   static bool Read(blink::mojom::CloneableMessageDataView,

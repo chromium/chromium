@@ -174,7 +174,7 @@ StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
     external_objects(const std::unique_ptr<blink::IDBValue>& input) {
   Vector<blink::mojom::blink::IDBExternalObjectPtr> external_objects;
   external_objects.ReserveInitialCapacity(
-      input->BlobInfo().size() + input->NativeFileSystemTokens().size());
+      input->BlobInfo().size() + input->FileSystemAccessTokens().size());
   for (const blink::WebBlobInfo& info : input->BlobInfo()) {
     auto blob_info = blink::mojom::blink::IDBBlobInfo::New();
     if (info.IsFile()) {
@@ -198,7 +198,7 @@ StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
         blink::mojom::blink::IDBExternalObject::NewBlobOrFile(
             std::move(blob_info)));
   }
-  for (auto& token : input->NativeFileSystemTokens()) {
+  for (auto& token : input->FileSystemAccessTokens()) {
     external_objects.push_back(
         blink::mojom::blink::IDBExternalObject::NewFileSystemAccessToken(
             std::move(token)));

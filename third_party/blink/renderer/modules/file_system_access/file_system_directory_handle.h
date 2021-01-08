@@ -2,33 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_DIRECTORY_HANDLE_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_DIRECTORY_HANDLE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_DIRECTORY_HANDLE_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_DIRECTORY_HANDLE_H_
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 class FileSystemGetDirectoryOptions;
 class FileSystemGetFileOptions;
 class FileSystemRemoveOptions;
-class NativeFileSystemDirectoryIterator;
+class FileSystemDirectoryIterator;
 
-class NativeFileSystemDirectoryHandle final : public NativeFileSystemHandle {
+class FileSystemDirectoryHandle final : public FileSystemHandle {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  NativeFileSystemDirectoryHandle(
+  FileSystemDirectoryHandle(
       ExecutionContext* context,
       const String& name,
       mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>);
 
   // FileSystemDirectoryHandle IDL interface:
-  NativeFileSystemDirectoryIterator* entries();
-  NativeFileSystemDirectoryIterator* keys();
-  NativeFileSystemDirectoryIterator* values();
+  FileSystemDirectoryIterator* entries();
+  FileSystemDirectoryIterator* keys();
+  FileSystemDirectoryIterator* values();
 
   bool isDirectory() const override { return true; }
 
@@ -43,7 +43,7 @@ class NativeFileSystemDirectoryHandle final : public NativeFileSystemHandle {
                             const String& name,
                             const FileSystemRemoveOptions*);
 
-  ScriptPromise resolve(ScriptState*, NativeFileSystemHandle* possible_child);
+  ScriptPromise resolve(ScriptState*, FileSystemHandle* possible_child);
 
   mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> Transfer()
       override;
@@ -74,4 +74,4 @@ class NativeFileSystemDirectoryHandle final : public NativeFileSystemHandle {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_DIRECTORY_HANDLE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_DIRECTORY_HANDLE_H_

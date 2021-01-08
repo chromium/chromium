@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_directory_iterator.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_directory_iterator.h"
 
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_directory_handle.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_error.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_file_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
-NativeFileSystemDirectoryIterator::NativeFileSystemDirectoryIterator(
-    NativeFileSystemDirectoryHandle* directory,
+FileSystemDirectoryIterator::FileSystemDirectoryIterator(
+    FileSystemDirectoryHandle* directory,
     Mode mode,
     ExecutionContext* execution_context)
     : ExecutionContextClient(execution_context),
@@ -28,17 +28,16 @@ NativeFileSystemDirectoryIterator::NativeFileSystemDirectoryIterator(
       execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
 }
 
-ScriptPromise NativeFileSystemDirectoryIterator::next(
-    ScriptState* script_state) {
+ScriptPromise FileSystemDirectoryIterator::next(ScriptState* script_state) {
   if (error_) {
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
     auto result = resolver->Promise();
-    native_file_system_error::Reject(resolver, *error_);
+    file_system_access_error::Reject(resolver, *error_);
     return result;
   }
 
   if (!entries_.IsEmpty()) {
-    NativeFileSystemHandle* handle = entries_.TakeFirst();
+    FileSystemHandle* handle = entries_.TakeFirst();
     ScriptValue result;
     switch (mode_) {
       case Mode::kKey:
@@ -68,11 +67,11 @@ ScriptPromise NativeFileSystemDirectoryIterator::next(
   return ScriptPromise::Cast(script_state, V8IteratorResultDone(script_state));
 }
 
-bool NativeFileSystemDirectoryIterator::HasPendingActivity() const {
+bool FileSystemDirectoryIterator::HasPendingActivity() const {
   return pending_next_;
 }
 
-void NativeFileSystemDirectoryIterator::Trace(Visitor* visitor) const {
+void FileSystemDirectoryIterator::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(receiver_);
@@ -81,7 +80,7 @@ void NativeFileSystemDirectoryIterator::Trace(Visitor* visitor) const {
   visitor->Trace(directory_);
 }
 
-void NativeFileSystemDirectoryIterator::DidReadDirectory(
+void FileSystemDirectoryIterator::DidReadDirectory(
     mojom::blink::FileSystemAccessErrorPtr result,
     Vector<mojom::blink::FileSystemAccessEntryPtr> entries,
     bool has_more_entries) {
@@ -90,13 +89,13 @@ void NativeFileSystemDirectoryIterator::DidReadDirectory(
   if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
     error_ = std::move(result);
     if (pending_next_) {
-      native_file_system_error::Reject(pending_next_, *error_);
+      file_system_access_error::Reject(pending_next_, *error_);
       pending_next_ = nullptr;
     }
     return;
   }
   for (auto& e : entries) {
-    entries_.push_back(NativeFileSystemHandle::CreateFromMojoEntry(
+    entries_.push_back(FileSystemHandle::CreateFromMojoEntry(
         std::move(e), GetExecutionContext()));
   }
   waiting_for_more_entries_ = has_more_entries;
