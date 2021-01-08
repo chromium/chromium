@@ -305,11 +305,4 @@ void LayoutSVGResourceClipper::StyleDidChange(StyleDifference diff,
   }
 }
 
-void LayoutSVGResourceClipper::WillBeDestroyed() {
-  NOT_DESTROYED();
-  MarkAllClientsForInvalidation(SVGResourceClient::kClipCacheInvalidation |
-                                SVGResourceClient::kPaintInvalidation);
-  LayoutSVGResourceContainer::WillBeDestroyed();
-}
-
 }  // namespace blink

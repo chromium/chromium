@@ -97,7 +97,12 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
   static bool FindCycleInSubtree(SVGResourcesCycleSolver&,
                                  const LayoutObject& root);
 
+  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void WillBeDestroyed() override;
+
  private:
+  void InvalidateClientsIfActiveResource();
+
   // Track global (markAllClientsForInvalidation) invalidations to avoid
   // redundant crawls.
   unsigned completed_invalidations_mask_ : 8;

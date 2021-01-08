@@ -55,6 +55,37 @@ void LayoutSVGResourceContainer::UpdateLayout() {
   ClearInvalidationMask();
 }
 
+void LayoutSVGResourceContainer::InvalidateClientsIfActiveResource() {
+  NOT_DESTROYED();
+  // If this is the 'active' resource (the first element with the specified 'id'
+  // in tree order), notify any clients that they need to reevaluate the
+  // resource's contents.
+  const LocalSVGResource* resource = ResourceForContainer(*this);
+  if (!resource || resource->Target() != GetElement())
+    return;
+  // Pass all available flags. This may be performing unnecessary invalidations
+  // in some cases.
+  MarkAllClientsForInvalidation(SVGResourceClient::kInvalidateAll);
+}
+
+void LayoutSVGResourceContainer::WillBeDestroyed() {
+  NOT_DESTROYED();
+  // The resource is being torn down.
+  InvalidateClientsIfActiveResource();
+  LayoutSVGHiddenContainer::WillBeDestroyed();
+}
+
+void LayoutSVGResourceContainer::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style) {
+  NOT_DESTROYED();
+  LayoutSVGHiddenContainer::StyleDidChange(diff, old_style);
+  if (old_style)
+    return;
+  // The resource has been attached.
+  InvalidateClientsIfActiveResource();
+}
+
 bool LayoutSVGResourceContainer::FindCycle(
     SVGResourcesCycleSolver& solver) const {
   NOT_DESTROYED();
