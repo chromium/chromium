@@ -4,14 +4,19 @@
 
 package org.chromium.chrome.browser.payments;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
 
 import org.mockito.Mockito;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.MojoPaymentRequestGateKeeper;
@@ -48,7 +53,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     private final WebContents mWebContents;
     private final JourneyLogger mJourneyLogger;
     private final PaymentRequestSpec mSpec;
-    private final ChromeActivity mActivity;
     private final PaymentUiService mPaymentUiService;
     private final boolean mGoogleBridgeEligible;
     private final PaymentOptions mOptions;
@@ -63,7 +67,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
         mClient = client;
         mDelegate = this;
         mPaymentUiService = paymentUiService;
-        mActivity = Mockito.mock(ChromeActivity.class);
         mJourneyLogger = Mockito.mock(JourneyLogger.class);
         mWebContents = Mockito.mock(WebContents.class);
         Mockito.doReturn("https://top.level.origin").when(mWebContents).getLastCommittedUrl();
@@ -184,8 +187,35 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     }
 
     @Override
-    public ChromeActivity getChromeActivity(WebContents webContents) {
-        return mActivity;
+    public Activity getActivity(WebContents webContents) {
+        Activity activity = Mockito.mock(Activity.class);
+        Resources resources = Mockito.mock(Resources.class);
+        Mockito.doReturn(resources).when(activity).getResources();
+        return activity;
+    }
+
+    @Nullable
+    @Override
+    public TabModelSelector getTabModelSelector(WebContents webContents) {
+        return Mockito.mock(TabModelSelector.class);
+    }
+
+    @Nullable
+    @Override
+    public TabModel getTabModel(WebContents webContents) {
+        return Mockito.mock(TabModel.class);
+    }
+
+    @Nullable
+    @Override
+    public OverviewModeBehavior getOverviewModeBehavior(WebContents webContents) {
+        return Mockito.mock(OverviewModeBehavior.class);
+    }
+
+    @Nullable
+    @Override
+    public ActivityLifecycleDispatcher getActivityLifecycleDispatcher(WebContents webContents) {
+        return Mockito.mock(ActivityLifecycleDispatcher.class);
     }
 
     @Override
