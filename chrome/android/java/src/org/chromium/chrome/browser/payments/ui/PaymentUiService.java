@@ -1198,13 +1198,10 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
      * Build the PaymentRequest UI.
      * @param activity The ChromeActivity for the payment request, cannot be null.
      * @param isWebContentsActive Whether the merchant's WebContents is active.
-     * @param isShowWaitingForUpdatedDetails Whether showing payment app or the app selector is
-     *         blocked on the updated payment details.
      * @return The error message if built unsuccessfully; null otherwise.
      */
     @Nullable
-    public String buildPaymentRequestUI(ChromeActivity activity, boolean isWebContentsActive,
-            boolean isShowWaitingForUpdatedDetails) {
+    public String buildPaymentRequestUI(ChromeActivity activity, boolean isWebContentsActive) {
         // Payment methods section must be ready before building the rest of the UI. This is because
         // shipping and contact sections (when requested by merchant) are populated depending on
         // whether or not the selected payment app (if such exists) can provide the required

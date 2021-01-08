@@ -320,8 +320,7 @@ public class ChromePaymentRequestService
         ChromeActivity chromeActivity = mDelegate.getChromeActivity(mWebContents);
         if (chromeActivity == null) return ErrorStrings.ACTIVITY_NOT_FOUND;
         String error = mPaymentUiService.buildPaymentRequestUI(chromeActivity,
-                /*isWebContentsActive=*/mDelegate.isWebContentsActive(mRenderFrameHost),
-                /*isShowWaitingForUpdatedDetails=*/isShowWaitingForUpdatedDetails);
+                /*isWebContentsActive=*/mDelegate.isWebContentsActive(mRenderFrameHost));
         if (error != null) return error;
         // Calculate skip ui and build ui only after all payment apps are ready and
         // request.show() is called.
