@@ -92,9 +92,11 @@ export const SAConstants = {
     AUTO_SCAN_TIME: 'settings.a11y.switch_access.auto_scan.speed_ms',
     AUTO_SCAN_KEYBOARD_TIME:
         'settings.a11y.switch_access.auto_scan.keyboard.speed_ms',
-    NEXT_SETTING: 'settings.a11y.switch_access.next.setting',
-    PREVIOUS_SETTING: 'settings.a11y.switch_access.previous.setting',
-    SELECT_SETTING: 'settings.a11y.switch_access.select.setting',
+    NEXT_DEVICE_KEY_CODES: 'settings.a11y.switch_access.next.device_key_codes',
+    PREVIOUS_DEVICE_KEY_CODES:
+        'settings.a11y.switch_access.previous.device_key_codes',
+    SELECT_DEVICE_KEY_CODES:
+        'settings.a11y.switch_access.select.device_key_codes',
   },
 
   // =========================== Sub-objects ===========================
