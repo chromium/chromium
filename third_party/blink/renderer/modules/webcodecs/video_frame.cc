@@ -213,6 +213,11 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
         // a VideoFrame instead of using writable_addr() here.
         reinterpret_cast<uint8_t*>(pm.writable_addr()), pm.computeByteSize(),
         timestamp);
+    if (!frame) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                        "Failed to create video frame");
+      return nullptr;
+    }
     frame->set_color_space(gfx::ColorSpace(*sk_color_space));
     frame->AddDestructionObserver(ConvertToBaseOnceCallback(CrossThreadBindOnce(
         base::DoNothing::Once<sk_sp<SkImage>>(), std::move(sk_image))));
