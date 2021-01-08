@@ -398,11 +398,16 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, PRE_TestSessionRestore) {
 
 // Test that the tab closed after the aborted shutdown attempt is not re-opened
 // when restoring the session.
-// Flaky on Windows trybots, see https://crbug.com/737860.
 // Flaky on chromium.chromeos, chromium.linux, and chromium.mac bots. See
-// https://crbug.com/1145235.
+// https://crbug.com/1145235. It was flaky on Windows, but  crrev.com/c/2559156,
+// which added retries to ReplaceFile, should fix the Windows flakiness.
+#if defined(OS_WIN)
+#define MAYBE_TestSessionRestore TestSessionRestore
+#else
+#define MAYBE_TestSessionRestore DISABLED_TestSessionRestore
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
-                       DISABLED_TestSessionRestore) {
+                       MAYBE_TestSessionRestore) {
   // The testing framework launches Chrome with about:blank as args.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(GURL(chrome::kChromeUIVersionURL),
