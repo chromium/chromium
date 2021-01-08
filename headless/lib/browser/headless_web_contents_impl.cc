@@ -177,6 +177,13 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
         ->block_new_web_contents();
   }
 
+  void RequestToLockMouse(content::WebContents* web_contents,
+                          bool user_gesture,
+                          bool last_unlocked_by_target) override {
+    web_contents->GotResponseToLockMouseRequest(
+        blink::mojom::PointerLockResult::kSuccess);
+  }
+
  private:
   HeadlessBrowserImpl* browser() { return headless_web_contents_->browser(); }
 
