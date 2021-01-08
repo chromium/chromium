@@ -15,6 +15,11 @@ void LogMessageAction(MessageAction message_action) {
       "MultiDevice.SecureChannel.Nearby.MessageAction", message_action);
 }
 
+void RecordNearbyDisconnection(NearbyDisconnectionReason reason) {
+  base::UmaHistogramEnumeration(
+      "MultiDevice.SecureChannel.Nearby.DisconnectionReason", reason);
+}
+
 }  // namespace util
 }  // namespace secure_channel
 }  // namespace chromeos

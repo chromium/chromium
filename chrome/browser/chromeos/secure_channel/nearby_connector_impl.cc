@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_connection_broker_impl.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_endpoint_finder_impl.h"
+#include "chrome/browser/chromeos/secure_channel/util/histogram_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/services/secure_channel/public/cpp/client/nearby_connector.h"
@@ -131,6 +132,12 @@ void NearbyConnectorImpl::ProcessQueuedConnectionRequests() {
 void NearbyConnectorImpl::OnNearbyProcessStopped() {
   PA_LOG(WARNING) << "Nearby process stopped unexpectedly. Destroying active "
                   << "connections.";
+
+  // Record the disconnection reason for each of the active brokers.
+  for (size_t i = 0; i < id_to_brokers_map_.size(); ++i) {
+    util::RecordNearbyDisconnection(
+        util::NearbyDisconnectionReason::kNearbyProcessCrash);
+  }
 
   ClearActiveAndPendingConnections();
   ProcessQueuedConnectionRequests();

@@ -274,6 +274,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MultiDevice.SecureChannel.Nearby.DisconnectionReason"
+    enum="MultiDeviceNearbyDisconnectionReason" expires_after="2022-01-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Tracks reasons why a Nearby Connection established via SecureChannel ends up
+    disconnecting. Includes a &quot;Disconnection requested by client&quot;
+    value emitted during intentional disconnections as well as several error
+    enum values.
+
+    Emitted when a connection fails to become established, or emitted after it
+    is already established when it becomes disconnected.
+  </summary>
+</histogram>
+
 <histogram name="MultiDevice.SecureChannel.Nearby.EffectiveConnectionResult"
     enum="BooleanSuccess" expires_after="2021-11-30">
   <owner>khorimoto@chromium.org</owner>

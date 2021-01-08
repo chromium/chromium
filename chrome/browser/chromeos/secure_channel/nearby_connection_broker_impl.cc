@@ -142,7 +142,15 @@ void NearbyConnectionBrokerImpl::TransitionToStatus(
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbyConnectionBrokerImpl::Disconnect() {
+void NearbyConnectionBrokerImpl::Disconnect(
+    util::NearbyDisconnectionReason reason) {
+  // Only log a single disconnection reason per connection attempt. Edge cases
+  // can cause this function to be invoked multiple times.
+  if (!has_disconnect_reason_been_logged_) {
+    has_disconnect_reason_been_logged_ = true;
+    util::RecordNearbyDisconnection(reason);
+  }
+
   if (!need_to_disconnect_endpoint_) {
     TransitionToDisconnectedAndInvokeCallback();
     return;
@@ -190,7 +198,7 @@ void NearbyConnectionBrokerImpl::OnEndpointDiscovered(
 
 void NearbyConnectionBrokerImpl::OnDiscoveryFailure() {
   DCHECK_EQ(ConnectionStatus::kDiscoveringEndpoint, connection_status_);
-  Disconnect();
+  Disconnect(util::NearbyDisconnectionReason::kFailedDiscovery);
 }
 
 void NearbyConnectionBrokerImpl::OnRequestConnectionResult(Status status) {
@@ -200,7 +208,7 @@ void NearbyConnectionBrokerImpl::OnRequestConnectionResult(Status status) {
     return;
 
   PA_LOG(WARNING) << "RequestConnection() failed: " << status;
-  Disconnect();
+  Disconnect(util::NearbyDisconnectionReason::kFailedRequestingConnection);
 }
 
 void NearbyConnectionBrokerImpl::OnAcceptConnectionResult(Status status) {
@@ -212,7 +220,7 @@ void NearbyConnectionBrokerImpl::OnAcceptConnectionResult(Status status) {
   }
 
   PA_LOG(WARNING) << "AcceptConnection() failed: " << status;
-  Disconnect();
+  Disconnect(util::NearbyDisconnectionReason::kFailedAcceptingConnection);
 }
 
 void NearbyConnectionBrokerImpl::OnSendPayloadResult(
@@ -228,7 +236,7 @@ void NearbyConnectionBrokerImpl::OnSendPayloadResult(
     return;
 
   PA_LOG(WARNING) << "OnSendPayloadResult() failed: " << status;
-  Disconnect();
+  Disconnect(util::NearbyDisconnectionReason::kSendMessageFailed);
 }
 
 void NearbyConnectionBrokerImpl::OnDisconnectFromEndpointResult(Status status) {
@@ -240,7 +248,7 @@ void NearbyConnectionBrokerImpl::OnDisconnectFromEndpointResult(Status status) {
   PA_LOG(WARNING) << "Failed to disconnect from endpoint with ID "
                   << remote_endpoint_id_ << ": " << status;
   need_to_disconnect_endpoint_ = false;
-  Disconnect();
+  Disconnect(util::NearbyDisconnectionReason::kDisconnectionRequestedByClient);
 }
 
 void NearbyConnectionBrokerImpl::OnConnectionStatusChangeTimeout() {
@@ -257,11 +265,32 @@ void NearbyConnectionBrokerImpl::OnConnectionStatusChangeTimeout() {
     need_to_disconnect_endpoint_ = true;
 
   PA_LOG(WARNING) << "Timeout changing connection status";
-  Disconnect();
+  util::NearbyDisconnectionReason reason;
+  switch (connection_status_) {
+    case ConnectionStatus::kDiscoveringEndpoint:
+      reason = util::NearbyDisconnectionReason::kTimeoutDuringDiscovery;
+      break;
+    case ConnectionStatus::kRequestingConnection:
+      reason = util::NearbyDisconnectionReason::kTimeoutDuringRequestConnection;
+      break;
+    case ConnectionStatus::kAcceptingConnection:
+      reason = util::NearbyDisconnectionReason::kTimeoutDuringAcceptConnection;
+      break;
+    case ConnectionStatus::kWaitingForConnectionToBeAcceptedByRemoteDevice:
+      reason =
+          util::NearbyDisconnectionReason::kTimeoutWaitingForConnectionAccepted;
+      break;
+    default:
+      NOTREACHED() << "Unexpected timeout with connection status "
+                   << connection_status_;
+      reason = util::NearbyDisconnectionReason::kConnectionLost;
+      break;
+  }
+  Disconnect(reason);
 }
 
 void NearbyConnectionBrokerImpl::OnMojoDisconnection() {
-  Disconnect();
+  Disconnect(util::NearbyDisconnectionReason::kDisconnectionRequestedByClient);
 }
 
 void NearbyConnectionBrokerImpl::SendMessage(const std::string& message,
@@ -339,7 +368,7 @@ void NearbyConnectionBrokerImpl::OnConnectionRejected(
   }
 
   PA_LOG(WARNING) << "Connection rejected: " << status;
-  Disconnect();
+  Disconnect(util::NearbyDisconnectionReason::kConnectionRejected);
 }
 
 void NearbyConnectionBrokerImpl::OnDisconnected(
@@ -354,7 +383,7 @@ void NearbyConnectionBrokerImpl::OnDisconnected(
     PA_LOG(WARNING) << "Connection disconnected unexpectedly";
   }
   need_to_disconnect_endpoint_ = false;
-  Disconnect();
+  Disconnect(util::NearbyDisconnectionReason::kConnectionLost);
 }
 
 void NearbyConnectionBrokerImpl::OnBandwidthChanged(
@@ -390,7 +419,7 @@ void NearbyConnectionBrokerImpl::OnPayloadReceived(
   if (!payload->content->is_bytes()) {
     PA_LOG(WARNING) << "OnPayloadReceived(): Received unexpected payload type "
                     << "(was expecting bytes type). Disconnecting.";
-    Disconnect();
+    Disconnect(util::NearbyDisconnectionReason::kReceivedUnexpectedPayloadType);
     return;
   }
 

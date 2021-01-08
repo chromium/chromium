@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_connection_broker.h"
+#include "chrome/browser/chromeos/secure_channel/util/histogram_util.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
@@ -102,7 +103,7 @@ class NearbyConnectionBrokerImpl
       std::unique_ptr<base::OneShotTimer> timer);
 
   void TransitionToStatus(ConnectionStatus connection_status);
-  void Disconnect();
+  void Disconnect(util::NearbyDisconnectionReason reason);
   void TransitionToDisconnectedAndInvokeCallback();
 
   void OnEndpointDiscovered(
@@ -173,6 +174,8 @@ class NearbyConnectionBrokerImpl
 
   // Starts as null; set in OnConnectionAccepted().
   base::Time time_when_connection_accepted_;
+
+  bool has_disconnect_reason_been_logged_ = false;
 
   base::WeakPtrFactory<NearbyConnectionBrokerImpl> weak_ptr_factory_{this};
 };

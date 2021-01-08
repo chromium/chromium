@@ -22,6 +22,28 @@ enum class MessageAction {
 // Logs a given message transfer action.
 void LogMessageAction(MessageAction message_action);
 
+// Reasons why a Nearby Connection may become disconnected. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class NearbyDisconnectionReason {
+  kDisconnectionRequestedByClient = 0,
+  kFailedDiscovery = 1,
+  kTimeoutDuringDiscovery = 2,
+  kFailedRequestingConnection = 3,
+  kTimeoutDuringRequestConnection = 4,
+  kFailedAcceptingConnection = 5,
+  kTimeoutDuringAcceptConnection = 6,
+  kConnectionRejected = 7,
+  kTimeoutWaitingForConnectionAccepted = 8,
+  kSendMessageFailed = 9,
+  kReceivedUnexpectedPayloadType = 10,
+  kConnectionLost = 11,
+  kNearbyProcessCrash = 12,
+  kMaxValue = kNearbyProcessCrash
+};
+
+void RecordNearbyDisconnection(NearbyDisconnectionReason reason);
+
 }  // namespace util
 }  // namespace secure_channel
 }  // namespace chromeos

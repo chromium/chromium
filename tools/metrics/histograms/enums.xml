@@ -50329,6 +50329,22 @@ Called by update_use_counter_css.py.-->
   <int value="5" label="Authentication Error"/>
 </enum>
 
+<enum name="MultiDeviceNearbyDisconnectionReason">
+  <int value="0" label="Disconnection requested by client"/>
+  <int value="1" label="Failed discovery"/>
+  <int value="2" label="Timeout during discovery"/>
+  <int value="3" label="Failed requesting connection"/>
+  <int value="4" label="Timeout during RequestConnection() call"/>
+  <int value="5" label="Failed accepting connection"/>
+  <int value="6" label="Timeout during AcceptConnection() call"/>
+  <int value="7" label="Connection rejected"/>
+  <int value="8" label="Timeout waiting for connection to be accepted"/>
+  <int value="9" label="SendMessage() failed"/>
+  <int value="10" label="Received unexpected payload type"/>
+  <int value="11" label="Connection lost"/>
+  <int value="12" label="Nearby process crash"/>
+</enum>
+
 <enum name="MultiDeviceNearbyMessageAction">
   <int value="0" label="Message Sent"/>
   <int value="1" label="Message Received"/>
