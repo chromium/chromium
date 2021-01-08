@@ -41,6 +41,7 @@ constexpr char kUsageMsg[] =
     "           --video=<video path>\n"
     "           [--frames=<number of frames to decode>]\n"
     "           [--out-prefix=<path prefix of decoded frame PNGs>]\n"
+    "           [--loop]\n"
     "           [--v=<log verbosity>]\n"
     "           [--help]\n";
 
@@ -59,20 +60,18 @@ constexpr char kHelpMsg[] =
     "        prefix (which may specify a directory) is provided here,\n"
     "        resulting in e.g. frame_0.png, frame_1.png, etc. if passed\n"
     "        \"frame\".\n"
+    "        If specified along with --loop (see below), only saves the first\n"
+    "        iteration of decoded frames.\n"
     "        If omitted, the output of this binary is error or lack thereof.\n"
+    "    --loop\n"
+    "        Optional. If specified, loops decoding until terminated\n"
+    "        externally or until an error occurs, at which point the current\n"
+    "        pass through the video completes and the binary exits.\n"
+    "        If specified with --frames, loops decoding that number of\n"
+    "        leading frames. If specified with --out-prefix, loops decoding,\n"
+    "        but only saves the first iteration of decoded frames.\n"
     "    --help\n"
     "        Display this help message and exit.\n";
-
-// Creates the appropriate decoder for the given |fourcc|.
-std::unique_ptr<VideoDecoder> CreateDecoder(
-    uint32_t fourcc,
-    std::unique_ptr<media::IvfParser> ivf_parser,
-    const VaapiDevice& va_device) {
-  if (fourcc == fourcc('V', 'P', '9', '0'))
-    return std::make_unique<Vp9Decoder>(std::move(ivf_parser), va_device);
-
-  return nullptr;
-}
 
 // Returns string representation of |fourcc|.
 std::string FourccStr(uint32_t fourcc) {
@@ -82,6 +81,30 @@ std::string FourccStr(uint32_t fourcc) {
     << static_cast<char>((fourcc >> 16) & 0xFF)
     << static_cast<char>((fourcc >> 24) & 0xFF);
   return s.str();
+}
+
+// Creates the appropriate decoder for |stream_data| which is expected to point
+// to IVF data of length |stream_len|. The decoder will use |va_device| to issue
+// VAAPI calls. Returns nullptr on failure.
+std::unique_ptr<VideoDecoder> CreateDecoder(const VaapiDevice& va_device,
+                                            const uint8_t* stream_data,
+                                            size_t stream_len) {
+  // Set up video parser.
+  auto ivf_parser = std::make_unique<media::IvfParser>();
+  media::IvfFileHeader file_header{};
+  if (!ivf_parser->Initialize(stream_data, stream_len, &file_header)) {
+    LOG(ERROR) << "Couldn't initialize IVF parser";
+    return nullptr;
+  }
+
+  // Create appropriate decoder for codec.
+  VLOG(1) << "Creating decoder with codec " << FourccStr(file_header.fourcc);
+  if (file_header.fourcc == fourcc('V', 'P', '9', '0'))
+    return std::make_unique<Vp9Decoder>(std::move(ivf_parser), va_device);
+
+  LOG(ERROR) << "Codec " << FourccStr(file_header.fourcc) << " not supported.\n"
+             << kUsageMsg;
+  return nullptr;
 }
 
 }  // namespace
@@ -119,20 +142,6 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  // Set up video stream and parser.
-  base::MemoryMappedFile stream;
-  if (!stream.Initialize(video_path)) {
-    LOG(ERROR) << "Couldn't open file: " << video_path;
-    return EXIT_FAILURE;
-  }
-
-  auto ivf_parser = std::make_unique<media::IvfParser>();
-  media::IvfFileHeader file_header{};
-  if (!ivf_parser->Initialize(stream.data(), stream.length(), &file_header)) {
-    LOG(ERROR) << "Couldn't initialize IVF parser for file: " << video_path;
-    return EXIT_FAILURE;
-  }
-
   // Initialize VA stubs.
   StubPathMap paths;
   const std::string va_suffix(base::NumberToString(VA_MAJOR_VERSION + 1));
@@ -146,43 +155,53 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  const VaapiDevice va_device;
-  std::unique_ptr<VideoDecoder> dec =
-      CreateDecoder(file_header.fourcc, std::move(ivf_parser), va_device);
-  if (!dec) {
-    LOG(ERROR) << "Codec " << FourccStr(file_header.fourcc)
-               << " not supported.\n"
-               << kUsageMsg;
+  // Set up video stream.
+  base::MemoryMappedFile stream;
+  if (!stream.Initialize(video_path)) {
+    LOG(ERROR) << "Couldn't open file: " << video_path;
     return EXIT_FAILURE;
   }
-  VLOG(1) << "Created decoder for codec " << FourccStr(file_header.fourcc);
 
-  VideoDecoder::Result res;
-  int i = 0;
+  const VaapiDevice va_device;
+  const bool loop_decode = cmd->HasSwitch("loop");
+  bool first_loop = true;
   bool errored = false;
-  while (true) {
-    LOG(INFO) << "Frame " << i << "...";
-    res = dec->DecodeNextFrame();
 
-    if (res == VideoDecoder::kEOStream) {
-      LOG(INFO) << "End of stream.";
-      break;
+  do {
+    const std::unique_ptr<VideoDecoder> dec =
+        CreateDecoder(va_device, stream.data(), stream.length());
+    if (!dec) {
+      LOG(ERROR) << "Failed to create decoder for file: " << video_path;
+      return EXIT_FAILURE;
+    }
+    int i = 0;
+
+    while (true) {
+      LOG(INFO) << "Frame " << i << "...";
+      const VideoDecoder::Result res = dec->DecodeNextFrame();
+
+      if (res == VideoDecoder::kEOStream) {
+        LOG(INFO) << "End of stream.";
+        break;
+      }
+
+      if (res == VideoDecoder::kFailed) {
+        LOG(ERROR) << "Failed to decode.";
+        errored = true;
+        continue;
+      }
+
+      if (!output_prefix.empty() && first_loop) {
+        dec->LastDecodedFrameToPNG(
+            base::StringPrintf("%s_%d.png", output_prefix.c_str(), i));
+      }
+
+      if (++i == n_frames)
+        break;
     }
 
-    if (res == VideoDecoder::kFailed) {
-      LOG(ERROR) << "Failed to decode.";
-      errored = true;
-      continue;
-    }
-
-    if (!output_prefix.empty()) {
-      dec->LastDecodedFrameToPNG(
-          base::StringPrintf("%s_%d.png", output_prefix.c_str(), i));
-    }
-
-    if (++i == n_frames)
-      break;
-  };
+    first_loop = false;
+  } while (loop_decode && !errored);
 
   LOG(INFO) << "Done reading.";
 
