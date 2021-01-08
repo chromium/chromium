@@ -418,11 +418,14 @@ ax::mojom::Role DialogDelegate::GetAccessibleWindowRole() {
 }
 
 int DialogDelegate::GetCornerRadius() const {
-  return base::FeatureList::IsEnabled(
-             features::kEnableMDRoundedCornersOnDialogs)
-             ? LayoutProvider::Get()->GetCornerRadiusMetric(
-                   views::EMPHASIS_MEDIUM)
-             : 2;
+#if defined(OS_MAC)
+  // TODO(crbug.com/1116680): On Mac MODAL_TYPE_WINDOW is implemented using
+  // sheets which causes visual artifacts when corner radius is increased for
+  // modal types. Remove this after this issue has been addressed.
+  if (GetModalType() == ui::MODAL_TYPE_WINDOW)
+    return 2;
+#endif
+  return LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_MEDIUM);
 }
 
 std::unique_ptr<View> DialogDelegate::DisownFootnoteView() {

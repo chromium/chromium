@@ -447,12 +447,8 @@ void FindBarView::OnThemeChanged() {
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
       bg_color);
 
-  border->SetCornerRadius(
-      base::FeatureList::IsEnabled(
-          views::features::kEnableMDRoundedCornersOnDialogs)
-          ? views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                views::EMPHASIS_MEDIUM)
-          : 2);
+  border->SetCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::EMPHASIS_MEDIUM));
 
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));

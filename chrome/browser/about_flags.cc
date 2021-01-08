@@ -5356,10 +5356,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(TOOLKIT_VIEWS)
-    {"enable-md-rounded-corners-on-dialogs",
-     flag_descriptions::kEnableMDRoundedCornersOnDialogsName,
-     flag_descriptions::kEnableMDRoundedCornersOnDialogsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(views::features::kEnableMDRoundedCornersOnDialogs)},
 
     {"enable-new-badge-on-menu-items",
      flag_descriptions::kEnableNewBadgeOnMenuItemsName,
