@@ -12,6 +12,6 @@
     android:viewportHeight="10"
     android:autoMirrored="true">
     <path
-        android:fillColor="@android:color/white"
+        android:fillColor="@color/default_bg_color"
         android:pathData="M 0,0 A 10,10 0 0 0 10,10 L 0,10 Z" />
 </vector>
