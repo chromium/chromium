@@ -98,7 +98,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
 
   void OnRegisteredCameraHalClient(int32_t result);
 
-  void GetSupportedFormats(int camera_id,
+  void GetSupportedFormats(const cros::mojom::CameraInfoPtr& camera_info,
                            VideoCaptureFormats* supported_formats);
 
   void SetCameraModuleOnIpcThread(
@@ -174,9 +174,10 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // conditions. For external cameras, the |camera_info_| would be read nad
   // updated in CameraDeviceStatusChange, which is also protected by
   // |camera_info_lock_|.
-  size_t num_builtin_cameras_;
   base::Lock camera_info_lock_;
-  std::unordered_map<int, cros::mojom::CameraInfoPtr> camera_info_;
+  size_t num_builtin_cameras_ GUARDED_BY(camera_info_lock_);
+  std::unordered_map<int, cros::mojom::CameraInfoPtr> camera_info_
+      GUARDED_BY(camera_info_lock_);
 
   // A map from |VideoCaptureDeviceDescriptor.device_id| to camera id, which is
   // updated in GetDeviceDescriptors() and queried in

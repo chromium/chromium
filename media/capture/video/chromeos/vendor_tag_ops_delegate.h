@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/synchronization/lock.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -41,6 +42,7 @@ class VendorTagOpsDelegate {
   const VendorTagInfo* GetInfoByTag(cros::mojom::CameraMetadataTag tag);
 
  private:
+  void StopInitialization();
   void RemovePending(uint32_t tag);
 
   void OnGotTagCount(int32_t tag_count);
@@ -63,6 +65,9 @@ class VendorTagOpsDelegate {
   std::map<cros::mojom::CameraMetadataTag, VendorTagInfo> tag_map_;
 
   base::WaitableEvent initialized_;
+
+  base::Lock lock_;
+  bool is_initializing_ GUARDED_BY(lock_);
 };
 
 }  // namespace media

@@ -221,11 +221,9 @@ std::unique_ptr<VideoCaptureDevice> CameraHalDelegate::CreateDevice(
 }
 
 void CameraHalDelegate::GetSupportedFormats(
-    int camera_id,
+    const cros::mojom::CameraInfoPtr& camera_info,
     VideoCaptureFormats* supported_formats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const cros::mojom::CameraInfoPtr& camera_info = camera_info_[camera_id];
 
   base::flat_set<int32_t> candidate_fps_set =
       GetAvailableFramerates(camera_info);
@@ -371,7 +369,8 @@ void CameraHalDelegate::GetDevicesInfo(
       desc.set_control_support(GetControlSupport(camera_info));
       device_id_to_camera_id_[desc.device_id] = camera_id;
       devices_info.emplace_back(desc);
-      GetSupportedFormats(camera_id, &devices_info.back().supported_formats);
+      GetSupportedFormats(camera_info_[camera_id],
+                          &devices_info.back().supported_formats);
     }
   }
 
@@ -490,6 +489,7 @@ void CameraHalDelegate::ResetMojoInterfaceOnIpcThread() {
   external_camera_info_updated_.Signal();
 
   // Clear all cached camera info, especially external cameras.
+  base::AutoLock lock(camera_info_lock_);
   camera_info_.clear();
   pending_external_camera_info_.clear();
 }
@@ -523,6 +523,8 @@ void CameraHalDelegate::UpdateBuiltInCameraInfoOnIpcThread() {
 
 void CameraHalDelegate::OnGotNumberOfCamerasOnIpcThread(int32_t num_cameras) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+
+  base::AutoLock lock(camera_info_lock_);
   if (num_cameras < 0) {
     builtin_camera_info_updated_.Signal();
     LOG(ERROR) << "Failed to get number of cameras: " << num_cameras;
@@ -544,6 +546,8 @@ void CameraHalDelegate::OnGotNumberOfCamerasOnIpcThread(int32_t num_cameras) {
 
 void CameraHalDelegate::OnSetCallbacksOnIpcThread(int32_t result) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+
+  base::AutoLock lock(camera_info_lock_);
   if (result) {
     num_builtin_cameras_ = 0;
     builtin_camera_info_updated_.Signal();
@@ -595,6 +599,7 @@ void CameraHalDelegate::OnGotCameraInfoOnIpcThread(
     // |camera_info_| might contain some entries for external cameras as well,
     // we should check all built-in cameras explicitly.
     bool all_updated = [&]() {
+      camera_info_lock_.AssertAcquired();
       for (size_t i = 0; i < num_builtin_cameras_; i++) {
         if (camera_info_.find(i) == camera_info_.end()) {
           return false;

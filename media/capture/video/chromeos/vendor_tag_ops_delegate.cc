@@ -13,7 +13,7 @@ namespace media {
 
 VendorTagOpsDelegate::VendorTagOpsDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner)
-    : ipc_task_runner_(ipc_task_runner) {}
+    : ipc_task_runner_(ipc_task_runner), is_initializing_(false) {}
 
 VendorTagOpsDelegate::~VendorTagOpsDelegate() = default;
 
@@ -28,17 +28,29 @@ VendorTagOpsDelegate::MakeReceiver() {
 
 void VendorTagOpsDelegate::Initialize() {
   DCHECK(ipc_task_runner_->RunsTasksInCurrentSequence());
+
+  base::AutoLock lock(lock_);
+  is_initializing_ = true;
   vendor_tag_ops_->GetTagCount(base::BindOnce(
       &VendorTagOpsDelegate::OnGotTagCount, base::Unretained(this)));
 }
 
 void VendorTagOpsDelegate::Reset() {
   DCHECK(ipc_task_runner_->RunsTasksInCurrentSequence());
+
+  base::AutoLock lock(lock_);
   vendor_tag_ops_.reset();
   pending_info_.clear();
   name_map_.clear();
   tag_map_.clear();
   initialized_.Reset();
+  is_initializing_ = false;
+}
+
+void VendorTagOpsDelegate::StopInitialization() {
+  base::AutoLock lock(lock_);
+  initialized_.Signal();
+  is_initializing_ = false;
 }
 
 void VendorTagOpsDelegate::RemovePending(uint32_t tag) {
@@ -47,7 +59,7 @@ void VendorTagOpsDelegate::RemovePending(uint32_t tag) {
   DCHECK_EQ(removed, 1u);
   if (pending_info_.empty()) {
     DVLOG(1) << "VendorTagOpsDelegate initialized";
-    initialized_.Signal();
+    StopInitialization();
   }
 }
 
@@ -55,13 +67,13 @@ void VendorTagOpsDelegate::OnGotTagCount(int32_t tag_count) {
   DCHECK(ipc_task_runner_->RunsTasksInCurrentSequence());
   if (tag_count == -1) {
     LOG(ERROR) << "Failed to get tag count";
-    initialized_.Signal();
+    StopInitialization();
     return;
   }
 
   if (tag_count == 0) {
     // There is no vendor tag, we are done here.
-    initialized_.Signal();
+    StopInitialization();
     return;
   }
 
@@ -134,6 +146,13 @@ void VendorTagOpsDelegate::OnGotTagType(uint32_t tag, int32_t type) {
 
 const VendorTagInfo* VendorTagOpsDelegate::GetInfoByName(
     const std::string& full_name) {
+  {
+    base::AutoLock lock(lock_);
+    if (!is_initializing_ && !initialized_.IsSignaled()) {
+      LOG(WARNING) << "VendorTagOps is accessed before calling Initialize()";
+      return nullptr;
+    }
+  }
   initialized_.Wait();
   auto it = name_map_.find(full_name);
   if (it == name_map_.end()) {
@@ -144,6 +163,13 @@ const VendorTagInfo* VendorTagOpsDelegate::GetInfoByName(
 
 const VendorTagInfo* VendorTagOpsDelegate::GetInfoByTag(
     cros::mojom::CameraMetadataTag tag) {
+  {
+    base::AutoLock lock(lock_);
+    if (!is_initializing_ && !initialized_.IsSignaled()) {
+      LOG(WARNING) << "VendorTagOps is accessed before calling Initialize()";
+      return nullptr;
+    }
+  }
   initialized_.Wait();
   auto it = tag_map_.find(tag);
   if (it == tag_map_.end()) {
