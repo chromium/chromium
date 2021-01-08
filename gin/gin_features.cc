@@ -50,4 +50,8 @@ const base::Feature kV8LocalHeaps{"V8LocalHeaps",
 const base::Feature kV8TurboDirectHeapAccess{"V8TurboDirectHeapAccess",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables fallback to a breadth-first regexp engine on excessive backtracking.
+const base::Feature kV8ExperimentalRegexpEngine{
+    "V8ExperimentalRegexpEngine", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features

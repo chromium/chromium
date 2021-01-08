@@ -21,6 +21,7 @@ GIN_EXPORT extern const base::Feature kV8ReduceConcurrentMarkingTasks;
 GIN_EXPORT extern const base::Feature kV8NoReclaimUnmodifiedWrappers;
 GIN_EXPORT extern const base::Feature kV8LocalHeaps;
 GIN_EXPORT extern const base::Feature kV8TurboDirectHeapAccess;
+GIN_EXPORT extern const base::Feature kV8ExperimentalRegexpEngine;
 
 }  // namespace features
 
