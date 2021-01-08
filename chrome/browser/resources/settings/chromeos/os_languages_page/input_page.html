@@ -137,7 +137,7 @@
           <template is="dom-repeat"
               items="[[languages.inputMethods.enabled]]">
             <div class$="list-item [[getInputMethodItemClass_(
-                item.id, languages.inputMethods.currentId)]] no-outline"
+                item.id, languages.inputMethods.currentId)]]"
                 actionable on-click="onInputMethodClick_"
                 on-keypress="onInputMethodKeyPress_"
                 tabindex$="[[getInputMethodTabIndex_(
