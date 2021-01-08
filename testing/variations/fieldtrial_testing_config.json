@@ -8111,8 +8111,7 @@
                         "default_locale": "en",
                         "experiment_tag": "",
                         "fetch_frequency": "15",
-                        "summary_card_poster_url": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
-                        "use_animated_gif_url": "false"
+                        "use_animated_gif_url": "true"
                     },
                     "enable_features": [
                         "VideoTutorials"
