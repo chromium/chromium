@@ -28,17 +28,27 @@ namespace content {
 
 namespace {
 
+void CheckForConditionAndWaitMoreIfNeeded(
+    base::RepeatingCallback<bool()> condition,
+    base::OnceClosure quit_closure) {
+  if (condition.Run()) {
+    std::move(quit_closure).Run();
+    return;
+  }
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&CheckForConditionAndWaitMoreIfNeeded,
+                     std::move(condition), std::move(quit_closure)),
+      TestTimeouts::tiny_timeout());
+}
+
 // Wait until |condition| returns true.
 void WaitForCondition(base::RepeatingCallback<bool()> condition,
                       const std::string& description) {
-  const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(30);
-  const base::TimeTicks start_time = base::TimeTicks::Now();
-  while (!condition.Run() && (base::TimeTicks::Now() - start_time < kTimeout)) {
-    base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  base::RunLoop run_loop;
+  CheckForConditionAndWaitMoreIfNeeded(condition, run_loop.QuitClosure());
+  run_loop.Run();
+
   ASSERT_TRUE(condition.Run())
       << "Timeout waiting for condition: " << description;
 }
