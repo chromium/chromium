@@ -464,9 +464,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
       _enable_chrome_module =
           _is_bundle_module && invoker.is_base_module && enable_chrome_module
       if (_enable_chrome_module) {
-        # TODO(crbug.com/1150459): Remove this once internal repo is updated.
-        not_needed(invoker, [ "module_descs" ])
-
         # If the manifest is being verified, add the chrome module's manifest.
         if (defined(invoker.expected_android_manifest)) {
           _bundle_target_gen_dir =

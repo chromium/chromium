@@ -2344,7 +2344,6 @@ template("monochrome_public_apk_or_module_tmpl") {
                              "include_64_bit_webview",
                              "is_64_bit_browser",
                              "is_base_module",
-                             "module_descs",
                              "resource_ids_provider_dep",
                              "static_library_provider",
                              "static_library_synchronized_proguard",
@@ -2996,9 +2995,6 @@ template("monochrome_or_trichrome_public_bundle_tmpl") {
     target_type = "android_app_bundle_module"
     is_base_module = true
     version_code = _version_code
-    if (enable_chrome_module) {
-      module_descs = _module_descs
-    }
 
     if (!_is_trichrome ||
         !defined(invoker.static_library_synchronized_proguard) ||

@@ -10,5 +10,4 @@ extra_icu_module_desc = {
     "//chrome/android/modules/extra_icu/internal:java",
     "//third_party/icu:icu_extra_assets",
   ]
-  supports_isolated_split = true
 }
