@@ -4,7 +4,6 @@
 
 [
   Exposed=(ServiceWorker,Window),
-  RuntimeEnabled=CookieStoreWorker,
   ImplementedAs=CookieStoreManager
 ] partial interface ServiceWorkerRegistration {
   [SameObject] readonly attribute CookieStoreManager cookies;

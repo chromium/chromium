@@ -6,7 +6,6 @@
 
 [
   Exposed=(ServiceWorker,Window),
-  RuntimeEnabled=CookieStoreDocument,
   SecureContext
 ] interface CookieStore : EventTarget {
   // https://wicg.github.io/cookie-store/explainer.html#the-query-api

@@ -63,8 +63,6 @@ class StorageAccessAPIBrowserTest : public InProcessBrowserTest {
     // HTTPS server only serves a valid cert for localhost, so this is needed
     // to load pages from other hosts without an error.
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "CookieStoreDocument");
   }
 
   GURL GetURL(const std::string& host) {

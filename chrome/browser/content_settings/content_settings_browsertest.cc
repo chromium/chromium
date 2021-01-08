@@ -186,12 +186,6 @@ class CookieSettingsTest
       set_secure_scheme();
   }
 
-  void SetUpCommandLine(base::CommandLine* cmd) override {
-    // Get access to CookieStore API.
-    cmd->AppendSwitch(switches::kEnableExperimentalWebPlatformFeatures);
-    ContentSettingsTest::SetUpCommandLine(cmd);
-  }
-
   void set_secure_scheme() { secure_scheme_ = true; }
 
   std::string ReadCookie(Browser* browser) {
@@ -962,13 +956,6 @@ class ContentSettingsWorkerModulesBrowserTest : public ContentSettingsTest {
  public:
   ContentSettingsWorkerModulesBrowserTest() = default;
   ~ContentSettingsWorkerModulesBrowserTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* cmd) override {
-    // Module scripts on Dedicated Worker is still an experimental feature.
-    // Likewise for CookieStore.
-    // TODO(crbug/680046,crbug/729800): Remove this after shipping.
-    cmd->AppendSwitch(switches::kEnableExperimentalWebPlatformFeatures);
-  }
 
  protected:
   void RegisterStaticFile(net::EmbeddedTestServer* server,

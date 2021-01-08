@@ -45,11 +45,6 @@ class CookieStoreSameSiteTest : public InProcessBrowserTest,
     ASSERT_TRUE(https_server_.Start());
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "CookieStoreDocument");
-  }
-
   void NavigateToPageWithFrame(const std::string& host) {
     GURL main_url(https_server_.GetURL(host, "/iframe.html"));
     ui_test_utils::NavigateToURL(browser(), main_url);

@@ -406,14 +406,6 @@
       status: "experimental",
     },
     {
-      name: "CookieStoreDocument",
-      status: "stable",
-    },
-    {
-      name: "CookieStoreWorker",
-      status: "stable",
-    },
-    {
       name: "CookiesWithoutSameSiteMustBeSecure",
       status: "test",
     },

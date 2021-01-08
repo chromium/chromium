@@ -5,7 +5,7 @@
 // https://wicg.github.io/cookie-store/explainer.html#the-change-events-api
 
 [
-  Exposed(ServiceWorker CookieStoreWorker, Window CookieStoreDocument),
+  Exposed=(ServiceWorker,Window),
   SecureContext
 ] interface CookieStoreManager {
   [CallWith=ScriptState, MeasureAs=CookieStoreAPI, RaisesException]
