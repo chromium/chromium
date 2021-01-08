@@ -137,6 +137,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
@@ -463,8 +464,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate =
                     (url, transition, postDataType, postData, incognito)
                     -> ReturnToChromeExperimentsUtil.willHandleLoadUrlWithPostDataFromStartSurface(
-                            url, transition, postDataType, postData, incognito,
-                            startSurfaceParentTabSupplier.get());
+                            new LoadUrlParams(url, transition | PageTransition.FROM_ADDRESS_BAR),
+                            postDataType, postData, incognito, startSurfaceParentTabSupplier.get());
             LocationBarCoordinator locationBarCoordinator = new LocationBarCoordinator(
                     mActivity.findViewById(R.id.location_bar), toolbarLayout, profileSupplier,
                     mLocationBarModel, mActionModeController.getActionModeCallback(),

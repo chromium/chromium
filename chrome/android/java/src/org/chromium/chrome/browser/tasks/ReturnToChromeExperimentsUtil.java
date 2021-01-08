@@ -147,16 +147,16 @@ public final class ReturnToChromeExperimentsUtil {
      */
     public static boolean willHandleLoadUrlFromStartSurface(String url,
             @PageTransition int transition, @Nullable Boolean incognito, @Nullable Tab parentTab) {
+        LoadUrlParams params = new LoadUrlParams(url, transition);
         return willHandleLoadUrlWithPostDataFromStartSurface(
-                url, transition, null, null, incognito, parentTab);
+                params, null, null, incognito, parentTab);
     }
 
     /**
      * Check if we should handle the navigation. If so, create a new tab and load the URL with POST
      * data.
      *
-     * @param url The URL to load.
-     * @param transition The page transition type.
+     * @param params The LoadUrlParams to load.
      * @param postDataType   postData type.
      * @param postData       POST data to include in the tab URL's request body, ex. bitmap when
      *         image search.
@@ -165,9 +165,10 @@ public final class ReturnToChromeExperimentsUtil {
      * @param parentTab  The parent tab used to create a new tab if needed.
      * @return true if we have handled the navigation, false otherwise.
      */
-    public static boolean willHandleLoadUrlWithPostDataFromStartSurface(String url,
-            @PageTransition int transition, @Nullable String postDataType,
-            @Nullable byte[] postData, @Nullable Boolean incognito, @Nullable Tab parentTab) {
+    public static boolean willHandleLoadUrlWithPostDataFromStartSurface(LoadUrlParams params,
+            @Nullable String postDataType, @Nullable byte[] postData, @Nullable Boolean incognito,
+            @Nullable Tab parentTab) {
+        String url = params.getUrl();
         ChromeActivity chromeActivity = getActivityPresentingOverviewWithOmnibox(url);
         if (chromeActivity == null) return false;
 
@@ -179,9 +180,6 @@ public final class ReturnToChromeExperimentsUtil {
             incognitoParam = incognito;
         }
 
-        LoadUrlParams params = new LoadUrlParams(url);
-        // TODO(https://crbug.com/1134187): This may no longer accurate.
-        params.setTransitionType(transition | PageTransition.FROM_ADDRESS_BAR);
         if (!TextUtils.isEmpty(postDataType) && postData != null && postData.length != 0) {
             params.setVerbatimHeaders("Content-Type: " + postDataType);
             params.setPostData(ResourceRequestBody.createFromBytes(postData));
@@ -190,14 +188,15 @@ public final class ReturnToChromeExperimentsUtil {
         chromeActivity.getTabCreator(incognitoParam)
                 .createNewTab(params, TabLaunchType.FROM_START_SURFACE, parentTab);
 
-        if (transition == PageTransition.AUTO_BOOKMARK) {
+        if (params.getTransitionType() == PageTransition.AUTO_BOOKMARK) {
             RecordUserAction.record("Suggestions.Tile.Tapped.GridTabSwitcher");
         } else {
             RecordUserAction.record("MobileOmniboxUse.GridTabSwitcher");
 
             // These are duplicated here but would have been recorded by LocationBarLayout#loadUrl.
             RecordUserAction.record("MobileOmniboxUse");
-            LocaleManager.getInstance().recordLocaleBasedSearchMetrics(false, url, transition);
+            LocaleManager.getInstance().recordLocaleBasedSearchMetrics(
+                    false, url, params.getTransitionType());
         }
 
         return true;
