@@ -43,6 +43,7 @@ import org.chromium.weblayer.NavigationState;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TabCallback;
 import org.chromium.weblayer.TabListCallback;
+import org.chromium.weblayer.WebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
 import java.io.ByteArrayInputStream;
@@ -90,8 +91,8 @@ public class NavigationTest {
                 Fragment fragment, Intent intent, int requestCode, Bundle options) {}
     }
 
-    private static class Callback extends NavigationCallback {
-        public static class NavigationCallbackHelper extends CallbackHelper {
+    private class Callback extends NavigationCallback {
+        public class NavigationCallbackHelper extends CallbackHelper {
             private Uri mUri;
             private boolean mIsSameDocument;
             private int mHttpStatusCode;
@@ -109,10 +110,15 @@ public class NavigationTest {
                 mRedirectChain = navigation.getRedirectChain();
                 mLoadError = navigation.getLoadError();
                 mNavigationState = navigation.getState();
-                mIsKnownProtocol = navigation.isKnownProtocol();
                 mIsPageInitiatedNavigation = navigation.isPageInitiated();
                 mIsServedFromBackForwardCache = navigation.isServedFromBackForwardCache();
                 notifyCalled();
+
+                int majorVersion = TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> WebLayer.getSupportedMajorVersion(mActivityTestRule.getActivity()));
+                if (majorVersion >= 89) {
+                    mIsKnownProtocol = navigation.isKnownProtocol();
+                }
             }
 
             public void assertCalledWith(int currentCallCount, String uri) throws TimeoutException {
@@ -162,7 +168,7 @@ public class NavigationTest {
             }
         }
 
-        public static class UriCallbackHelper extends CallbackHelper {
+        public class UriCallbackHelper extends CallbackHelper {
             private Uri mUri;
 
             public void notifyCalled(Uri uri) {
@@ -175,7 +181,7 @@ public class NavigationTest {
             }
         }
 
-        public static class NavigationCallbackValueRecorder {
+        public class NavigationCallbackValueRecorder {
             private List<String> mObservedValues =
                     Collections.synchronizedList(new ArrayList<String>());
 
@@ -193,7 +199,7 @@ public class NavigationTest {
             }
         }
 
-        public static class FirstContentfulPaintCallbackHelper extends CallbackHelper {
+        public class FirstContentfulPaintCallbackHelper extends CallbackHelper {
             private long mNavigationStartMillis;
             private long mFirstContentfulPaintMs;
 
@@ -212,7 +218,7 @@ public class NavigationTest {
             }
         }
 
-        public static class LargestContentfulPaintCallbackHelper extends CallbackHelper {
+        public class LargestContentfulPaintCallbackHelper extends CallbackHelper {
             private long mNavigationStartMillis;
             private long mLargestContentfulPaintMs;
 
