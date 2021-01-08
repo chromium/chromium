@@ -3982,12 +3982,12 @@
   {
     "name": "printer-status",
     "owners": [ "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 91
   },
   {
     "name": "printer-status-dialog",
     "owners": [ "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 91
   },
   {
     "name": "privacy-advisor",
