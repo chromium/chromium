@@ -132,10 +132,8 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
           extension_misc::kCameraAppId};
     }
     // We need "FileHandling" to use File Handling API to set launch directory.
-    // And we need "NativeFileSystem2" to use Native File System API.
     infos.at(SystemAppType::CAMERA).enabled_origin_trials =
-        OriginTrialsMap({{GetOrigin("chrome://camera-app"),
-                          {"FileHandling", "NativeFileSystem2"}}});
+        OriginTrialsMap({{GetOrigin("chrome://camera-app"), {"FileHandling"}}});
     infos.at(SystemAppType::CAMERA).capture_navigations = true;
 
     // TODO(b/172343409): Remove this log when the camera app is fully migrated
@@ -192,8 +190,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     infos.at(SystemAppType::MEDIA).show_in_launcher = false;
     infos.at(SystemAppType::MEDIA).show_in_search = false;
     infos.at(SystemAppType::MEDIA).enabled_origin_trials =
-        OriginTrialsMap({{GetOrigin("chrome://media-app"),
-                          {"FileHandling", "NativeFileSystem2"}}});
+        OriginTrialsMap({{GetOrigin("chrome://media-app"), {"FileHandling"}}});
   }
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::PRINT_MANAGEMENT)) {

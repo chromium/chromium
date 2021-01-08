@@ -882,13 +882,8 @@
       status: "stable",
     },
     {
-      // Also enabled when blink::features::kNativeFileSystemAPI is overridden
-      // on the command line (or via chrome://flags).
       name: "FileSystemAccess",
       status: {"Android": "test", "default": "stable"},
-      // TODO(mek): Remove origin trial integration.
-      origin_trial_feature_name: "NativeFileSystem2",
-      origin_trial_os: ["win", "mac", "linux", "chromeos"],
     },
     {
       // In-development features for the File System Access API.

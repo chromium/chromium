@@ -915,7 +915,7 @@ class SystemWebAppManagerFileHandlingOriginTrialsBrowserTest
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
             OriginTrialsMap({{GetOrigin(GURL("chrome://test-system-app/")),
-                              {"NativeFileSystem2", "FileHandling"}}}),
+                              {"FileHandling"}}}),
             install_from_web_app_info());
   }
 
@@ -1073,7 +1073,7 @@ class SystemWebAppManagerUninstallBrowserTest
           TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
               OriginTrialsMap(
                   {{url::Origin::Create(GURL("chrome://test-system-app/")),
-                    {"NativeFileSystem2", "FileHandling"}}}),
+                    {"FileHandling"}}}),
               install_from_web_app_info());
     } else {
       maybe_installation_ = TestSystemWebAppInstallation::SetUpWithoutApps();
