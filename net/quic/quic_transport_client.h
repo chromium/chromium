@@ -156,6 +156,11 @@ class NET_EXPORT QuicTransportClient
   }
   void OnStopSendingReceived(
       const quic::QuicStopSendingFrame& /*frame*/) override {}
+  void OnNewConnectionIdSent(
+      const quic::QuicConnectionId& /*server_connection_id*/,
+      const quic::QuicConnectionId& /*new_connecition_id*/) override {}
+  void OnConnectionIdRetired(
+      const quic::QuicConnectionId& /*server_connection_id*/) override {}
 
  private:
   // State of the connection establishment process.
