@@ -15,6 +15,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -55,6 +56,27 @@ public class AppBannerManager {
 
     /** Pointer to the native side AppBannerManager. */
     private long mNativePointer;
+
+    /** Whether add to home screen is permitted by the system. */
+    private static Boolean sIsSupported;
+
+    /**
+     * Checks if the add to home screen intent is supported.
+     * @return true if add to home screen is supported, false otherwise.
+     */
+    @CalledByNative
+    private static boolean isSupported() {
+        if (sIsSupported == null) {
+            sIsSupported = WebappsUtils.isAddToHomeIntentSupported();
+        }
+        return sIsSupported;
+    }
+
+    /** Overrides whether the system supports add to home screen. Used in testing. */
+    @VisibleForTesting
+    public static void setIsSupported(boolean state) {
+        sIsSupported = state;
+    }
 
     /**
      * Sets the delegate that provides information about a given package.

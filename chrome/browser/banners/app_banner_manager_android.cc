@@ -13,7 +13,6 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/AppBannerManagerHelper_jni.h"
 #include "chrome/browser/android/webapk/webapk_metrics.h"
 #include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_coordinator.h"
@@ -117,7 +116,7 @@ bool AppBannerManagerAndroid::OnAppDetailsRetrieved(
 
 void AppBannerManagerAndroid::RequestAppBanner(const GURL& validated_url) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (!Java_AppBannerManagerHelper_isEnabledForTab(env) ||
+  if (!Java_AppBannerManager_isSupported(env) ||
       !WebappsClient::Get()->CanShowAppBanners(web_contents())) {
     return;
   }

@@ -226,7 +226,7 @@ public class AppBannerManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        AppBannerManagerHelper.setIsSupported(true);
+        AppBannerManager.setIsSupported(true);
         ShortcutHelper.setDelegateForTests(new ShortcutHelper.Delegate() {
             @Override
             public void addShortcutToHomescreen(
