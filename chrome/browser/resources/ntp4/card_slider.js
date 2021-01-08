@@ -23,7 +23,7 @@
 
 // Use an anonymous function to enable strict mode just for this file (which
 // will be concatenated with other files when embedded in Chrome
-cr.define('cr.ui', function() {
+cr.define('ntp', function() {
   'use strict';
 
   /**
@@ -67,10 +67,10 @@ cr.define('cr.ui', function() {
     this.cardWidth_ = cardWidth;
 
     /**
-     * @type {!cr.ui.TouchHandler}
+     * @type {!ntp.TouchHandler}
      * @private
      */
-    this.touchHandler_ = new cr.ui.TouchHandler(this.container_);
+    this.touchHandler_ = new ntp.TouchHandler(this.container_);
   }
 
 
@@ -146,7 +146,7 @@ cr.define('cr.ui', function() {
       // available.  Note that this has minimal impact in the common case of
       // no touch events (eg. we're mainly just adding listeners for events that
       // will never trigger).
-      const TouchHandler = cr.ui.TouchHandler;
+      const TouchHandler = ntp.TouchHandler;
       this.container_.addEventListener(
           TouchHandler.EventType.TOUCH_START, this.onTouchStart_.bind(this));
       this.container_.addEventListener(
@@ -611,7 +611,7 @@ cr.define('cr.ui', function() {
      * @private
      */
     onTouchStart_(e) {
-      e = /** @type {!cr.ui.TouchHandler.Event} */ (e);
+      e = /** @type {!ntp.TouchHandler.Event} */ (e);
       this.container_.style.transition = '';
       e.enableDrag = true;
     },
@@ -623,7 +623,7 @@ cr.define('cr.ui', function() {
      * @private
      */
     onDragStart_(e) {
-      e = /** @type {!cr.ui.TouchHandler.Event} */ (e);
+      e = /** @type {!ntp.TouchHandler.Event} */ (e);
       e.enableDrag =
           this.cardCount > 1 && Math.abs(e.dragDeltaX) > Math.abs(e.dragDeltaY);
     },
@@ -635,7 +635,7 @@ cr.define('cr.ui', function() {
      * @private
      */
     onDragMove_(e) {
-      e = /** @type {!cr.ui.TouchHandler.Event} */ (e);
+      e = /** @type {!ntp.TouchHandler.Event} */ (e);
       let deltaX = e.dragDeltaX;
       // If dragging beyond the first or last card then apply a backoff so the
       // dragging feels stickier than usual.
@@ -653,7 +653,7 @@ cr.define('cr.ui', function() {
      * @private
      */
     onDragEnd_(e) {
-      e = /** @type {!cr.ui.TouchHandler.Event} */ (e);
+      e = /** @type {!ntp.TouchHandler.Event} */ (e);
       const deltaX = e.dragDeltaX;
       const velocity = this.touchHandler_.getEndVelocity().x;
       const newX = this.currentLeft_ + deltaX;

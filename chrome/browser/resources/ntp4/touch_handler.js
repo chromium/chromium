@@ -31,7 +31,7 @@
 
 // Use an anonymous function to enable strict mode just for this file (which
 // will be concatenated with other files when embedded in Chrome)
-cr.define('cr.ui', function() {
+cr.define('ntp', function() {
   'use strict';
 
   /**

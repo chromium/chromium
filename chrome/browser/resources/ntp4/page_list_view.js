@@ -62,7 +62,7 @@ cr.define('ntp', function() {
   PageListView.prototype = {
     /**
      * The CardSlider object to use for changing app pages.
-     * @type {cr.ui.CardSlider|undefined}
+     * @type {ntp.CardSlider|undefined}
      */
     cardSlider: undefined,
 
@@ -184,7 +184,7 @@ cr.define('ntp', function() {
 
       // Initialize the cardSlider without any cards at the moment.
       this.sliderFrame = cardSliderFrame;
-      this.cardSlider = new cr.ui.CardSlider(
+      this.cardSlider = new ntp.CardSlider(
           this.sliderFrame, this.pageList, this.sliderFrame.offsetWidth);
 
       // Prevent touch events from triggering any sort of native scrolling if

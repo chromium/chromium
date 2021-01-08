@@ -39,7 +39,6 @@ preprocess_if_expr("preprocess_src") {
     "array_data_model.js",
     "bubble_button.js",
     "bubble.js",
-    "card_slider.js",
     "command.js",
     "context_menu_handler.js",
     "dialogs.js",
@@ -63,7 +62,6 @@ preprocess_if_expr("preprocess_src") {
     "store_client.js",
     "store.js",
     "tabs.js",
-    "touch_handler.js",
     "tree.js",
   ]
 
