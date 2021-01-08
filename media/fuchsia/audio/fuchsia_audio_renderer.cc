@@ -523,6 +523,12 @@ void FuchsiaAudioRenderer::OnDemuxerStreamReadDone(
       SetPlaybackState(PlaybackState::kEndOfStream);
     }
     stream_sink_->EndOfStream();
+
+    // No more data is going to be biffered. Update buffering state to ensure
+    // RendererImpl starts playback in case it was waiting for buffering to
+    // finish.
+    SetBufferState(BUFFERING_HAVE_ENOUGH);
+
     return;
   }
 
