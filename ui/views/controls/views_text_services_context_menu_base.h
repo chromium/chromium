@@ -7,12 +7,14 @@
 
 #include "build/build_config.h"
 #include "ui/views/controls/views_text_services_context_menu.h"
+#include "ui/views/views_export.h"
 
 namespace views {
 
 // This base class is used to add and handle text service items in the textfield
 // context menu. Specific platforms may subclass and add additional items.
-class ViewsTextServicesContextMenuBase : public ViewsTextServicesContextMenu {
+class VIEWS_EXPORT ViewsTextServicesContextMenuBase
+    : public ViewsTextServicesContextMenu {
  public:
   ViewsTextServicesContextMenuBase(ui::SimpleMenuModel* menu,
                                    Textfield* client);
@@ -31,7 +33,7 @@ class ViewsTextServicesContextMenuBase : public ViewsTextServicesContextMenu {
   bool SupportsCommand(int command_id) const override;
 
  protected:
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(OS_CHROMEOS)
   Textfield* client() { return client_; }
   const Textfield* client() const { return client_; }
 #endif

@@ -287,6 +287,8 @@ component("cpp") {
     "update_types.h",
     "view_shadow.cc",
     "view_shadow.h",
+    "views_text_services_context_menu_impl.cc",
+    "views_text_services_context_menu_impl.h",
     "vm_camera_mic_constants.cc",
     "vm_camera_mic_constants.h",
     "wallpaper_controller.cc",

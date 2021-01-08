@@ -180,6 +180,7 @@ component("views") {
     "controls/tree/tree_view_controller.h",
     "controls/tree/tree_view_drawing_provider.h",
     "controls/views_text_services_context_menu.h",
+    "controls/views_text_services_context_menu_base.h",
     "debug_utils.h",
     "drag_controller.h",
     "drag_utils.h",
@@ -386,7 +387,6 @@ component("views") {
     "controls/tree/tree_view_controller.cc",
     "controls/tree/tree_view_drawing_provider.cc",
     "controls/views_text_services_context_menu_base.cc",
-    "controls/views_text_services_context_menu_base.h",
     "debug_utils.cc",
     "drag_utils.cc",
     "focus/external_focus_tracker.cc",
@@ -562,6 +562,10 @@ component("views") {
 
   if (is_chromeos_ash || is_chromeos_lacros) {
     sources += [ "controls/menu/menu_config_chromeos.cc" ]
+    if (!is_chromeos_lacros) {
+      public += [ "controls/views_text_services_context_menu_chromeos.h" ]
+      sources += [ "controls/views_text_services_context_menu_chromeos.cc" ]
+    }
   }
 
   if (is_mac) {

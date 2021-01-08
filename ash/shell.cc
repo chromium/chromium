@@ -84,6 +84,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/views_text_services_context_menu_impl.h"
 #include "ash/quick_answers/quick_answers_controller_impl.h"
 #include "ash/root_window_controller.h"
 #include "ash/screenshot_delegate.h"
@@ -210,6 +211,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/message_center.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/controls/views_text_services_context_menu_chromeos.h"
 #include "ui/views/corewm/tooltip_aura.h"
 #include "ui/views/corewm/tooltip_controller.h"
 #include "ui/views/focus/focus_manager_factory.h"
@@ -639,6 +641,10 @@ Shell::~Shell() {
   RemovePreTargetHandler(mouse_cursor_filter_.get());
   RemovePreTargetHandler(modality_filter_.get());
   RemovePreTargetHandler(tooltip_controller_.get());
+
+  // Resets the text context menu implementation factory.
+  views::ViewsTextServicesContextMenuChromeos::SetImplFactory(
+      base::NullCallback());
 
   event_rewriter_controller_.reset();
 
@@ -1252,6 +1258,16 @@ void Shell::Init(
     display_alignment_controller_ =
         std::make_unique<DisplayAlignmentController>();
   }
+
+  // Injects the factory which fulfills the implementation of the text context
+  // menu exclusive to CrOS.
+  views::ViewsTextServicesContextMenuChromeos::SetImplFactory(
+      base::BindRepeating(
+          [](ui::SimpleMenuModel* menu_model, views::Textfield* textfield)
+              -> std::unique_ptr<views::ViewsTextServicesContextMenu> {
+            return std::make_unique<ViewsTextServicesContextMenuImpl>(
+                menu_model, textfield);
+          }));
 
   for (auto& observer : shell_observers_)
     observer.OnShellInitialized();
