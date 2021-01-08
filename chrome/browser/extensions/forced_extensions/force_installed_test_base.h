@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_FORCE_INSTALLED_TEST_BASE_H_
 #define CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_FORCE_INSTALLED_TEST_BASE_H_
 
+#include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sync_preferences {
@@ -19,7 +21,6 @@ namespace extensions {
 
 class ExtensionRegistry;
 class InstallStageTracker;
-class ForceInstalledTracker;
 
 // This class is extended by tests to provide a setup for tracking installation
 // of force extensions. It also provides helper functions for creating and
@@ -43,6 +44,14 @@ class ForceInstalledTestBase : public testing::Test {
   // Creates and sets empty value for ExtensionInstallForcelist policy and
   // kInstallForceList preference.
   void SetupEmptyForceList();
+
+  // Creates a new extension with |extension_id| and |extension_name| and fakes
+  // its status by calling one of ForceInstalledTracker's
+  // ExtensionRegistryObserver override.
+  scoped_refptr<const Extension> CreateNewExtension(
+      const std::string& extension_name,
+      const std::string& extension_id,
+      const ForceInstalledTracker::ExtensionStatus& status);
 
   Profile* profile() const { return profile_; }
 

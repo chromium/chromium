@@ -8,7 +8,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
-#include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/policy_service_impl.h"
@@ -16,7 +15,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
-#include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -105,6 +103,25 @@ void ForceInstalledTestBase::SetupEmptyForceList() {
   policy::PolicyMap map;
   policy_provider_.UpdateChromePolicy(std::move(map));
   base::RunLoop().RunUntilIdle();
+}
+
+scoped_refptr<const Extension> ForceInstalledTestBase::CreateNewExtension(
+    const std::string& extension_name,
+    const std::string& extension_id,
+    const ForceInstalledTracker::ExtensionStatus& status) {
+  auto ext = ExtensionBuilder(extension_name).SetID(extension_id).Build();
+  switch (status) {
+    case ForceInstalledTracker::ExtensionStatus::PENDING:
+    case ForceInstalledTracker::ExtensionStatus::FAILED:
+      break;
+    case ForceInstalledTracker::ExtensionStatus::LOADED:
+      force_installed_tracker()->OnExtensionLoaded(profile(), ext.get());
+      break;
+    case ForceInstalledTracker::ExtensionStatus::READY:
+      force_installed_tracker()->OnExtensionLoaded(profile(), ext.get());
+      force_installed_tracker()->OnExtensionReady(profile(), ext.get());
+  }
+  return ext;
 }
 
 }  // namespace extensions

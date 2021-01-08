@@ -8,10 +8,11 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_test_base.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
+
+using ExtensionStatus = ForceInstalledTracker::ExtensionStatus;
 
 class ForceInstalledTrackerTest : public ForceInstalledTestBase,
                                   public ForceInstalledTracker::Observer {
@@ -56,8 +57,10 @@ TEST_F(ForceInstalledTrackerTest, BeforeForceInstallPolicy) {
 // become ready for use.
 TEST_F(ForceInstalledTrackerTest, AllExtensionsInstalled) {
   SetupForceList(true /*is_from_store */);
-  auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
-  auto ext2 = ExtensionBuilder(kExtensionName2).SetID(kExtensionId2).Build();
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::PENDING);
+  scoped_refptr<const Extension> ext2 = CreateNewExtension(
+      kExtensionName2, kExtensionId2, ExtensionStatus::PENDING);
   EXPECT_FALSE(loaded_called_);
   EXPECT_FALSE(ready_called_);
   EXPECT_FALSE(force_installed_tracker()->IsDoneLoading());
@@ -81,8 +84,8 @@ TEST_F(ForceInstalledTrackerTest, AllExtensionsInstalled) {
 // all extensions have either successfully loaded or failed.
 TEST_F(ForceInstalledTrackerTest, ExtensionPendingInstall) {
   SetupForceList(true /*is_from_store */);
-  auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::LOADED);
   EXPECT_FALSE(loaded_called_);
   EXPECT_FALSE(ready_called_);
   EXPECT_FALSE(force_installed_tracker()->IsDoneLoading());
@@ -100,10 +103,10 @@ TEST_F(ForceInstalledTrackerTest, ObserversOnlyCalledOnce) {
   // Start with a non-empty force-list, and install them, which triggers
   // observer.
   SetupForceList(true /*is_from_store */);
-  auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
-  auto ext2 = ExtensionBuilder(kExtensionName2).SetID(kExtensionId2).Build();
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::LOADED);
+  scoped_refptr<const Extension> ext2 = CreateNewExtension(
+      kExtensionName2, kExtensionId2, ExtensionStatus::LOADED);
   EXPECT_TRUE(loaded_called_);
 
   force_installed_tracker()->OnExtensionReady(profile(), ext1.get());
@@ -119,8 +122,8 @@ TEST_F(ForceInstalledTrackerTest, ObserversOnlyCalledOnce) {
 // either successfully loaded or failed.
 TEST_F(ForceInstalledTrackerTest, ExtensionsInstallationFailed) {
   SetupForceList(true /*is_from_store */);
-  auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::LOADED);
   force_installed_tracker()->OnExtensionInstallationFailed(
       kExtensionId2, InstallStageTracker::FailureReason::INVALID_ID);
   EXPECT_TRUE(loaded_called_);
@@ -134,22 +137,22 @@ TEST_F(ForceInstalledTrackerTest, ExtensionsInstallationFailed) {
 TEST_F(ForceInstalledTrackerTest, ExtensionsStatus) {
   SetupForceList(true /*is_from_store */);
   EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId1).status,
-            ForceInstalledTracker::ExtensionStatus::PENDING);
+            ExtensionStatus::PENDING);
   EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId2).status,
-            ForceInstalledTracker::ExtensionStatus::PENDING);
+            ExtensionStatus::PENDING);
 
-  auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::LOADED);
   force_installed_tracker()->OnExtensionInstallationFailed(
       kExtensionId2, InstallStageTracker::FailureReason::INVALID_ID);
   EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId1).status,
-            ForceInstalledTracker::ExtensionStatus::LOADED);
+            ExtensionStatus::LOADED);
   EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId2).status,
-            ForceInstalledTracker::ExtensionStatus::FAILED);
+            ExtensionStatus::FAILED);
 
   force_installed_tracker()->OnExtensionReady(profile(), ext1.get());
   EXPECT_EQ(force_installed_tracker()->extensions().at(kExtensionId1).status,
-            ForceInstalledTracker::ExtensionStatus::READY);
+            ExtensionStatus::READY);
 }
 
 // This test verifies that resetting the policy before all force installed
@@ -165,9 +168,8 @@ TEST_F(ForceInstalledTrackerTest, ExtensionsInstallationCancelled) {
 // installed extension is either ready for use or failed.
 TEST_F(ForceInstalledTrackerTest, AllExtensionsReady) {
   SetupForceList(true /*is_from_store */);
-  auto ext1 = ExtensionBuilder(kExtensionName1).SetID(kExtensionId1).Build();
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
-  force_installed_tracker()->OnExtensionReady(profile(), ext1.get());
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::READY);
   force_installed_tracker()->OnExtensionInstallationFailed(
       kExtensionId2, InstallStageTracker::FailureReason::INVALID_ID);
   EXPECT_TRUE(loaded_called_);
