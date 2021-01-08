@@ -865,28 +865,30 @@ void GpuMessageHandler::OnGpuInfoUpdate() {
   feature_status->Set("workarounds", std::move(workarounds));
   gpu_info_val->Set("featureStatus", std::move(feature_status));
   if (!GpuDataManagerImpl::GetInstance()->IsGpuProcessUsingHardwareGpu()) {
-    auto feature_status_for_hardware_gpu =
-        std::make_unique<base::DictionaryValue>();
-    feature_status_for_hardware_gpu->Set("featureStatus",
-                                         GetFeatureStatusForHardwareGpu());
-    feature_status_for_hardware_gpu->Set("problems",
-                                         GetProblemsForHardwareGpu());
-    auto workarounds_for_hardware_gpu = std::make_unique<base::ListValue>();
-    for (const auto& workaround : GetDriverBugWorkaroundsForHardwareGpu())
-      workarounds_for_hardware_gpu->AppendString(workaround);
-    feature_status_for_hardware_gpu->Set(
-        "workarounds", std::move(workarounds_for_hardware_gpu));
-    gpu_info_val->Set("featureStatusForHardwareGpu",
-                      std::move(feature_status_for_hardware_gpu));
     const gpu::GPUInfo gpu_info_for_hardware_gpu =
         GpuDataManagerImpl::GetInstance()->GetGPUInfoForHardwareGpu();
-    const gpu::GpuFeatureInfo gpu_feature_info_for_hardware_gpu =
-        GpuDataManagerImpl::GetInstance()->GetGpuFeatureInfoForHardwareGpu();
-    auto gpu_info_for_hardware_gpu_val = BasicGpuInfoAsListValue(
-        gpu_info_for_hardware_gpu, gpu_feature_info_for_hardware_gpu,
-        gfx::GpuExtraInfo{});
-    gpu_info_val->Set("basicInfoForHardwareGpu",
-                      std::move(gpu_info_for_hardware_gpu_val));
+    if (gpu_info_for_hardware_gpu.IsInitialized()) {
+      auto feature_status_for_hardware_gpu =
+          std::make_unique<base::DictionaryValue>();
+      feature_status_for_hardware_gpu->Set("featureStatus",
+                                           GetFeatureStatusForHardwareGpu());
+      feature_status_for_hardware_gpu->Set("problems",
+                                           GetProblemsForHardwareGpu());
+      auto workarounds_for_hardware_gpu = std::make_unique<base::ListValue>();
+      for (const auto& workaround : GetDriverBugWorkaroundsForHardwareGpu())
+        workarounds_for_hardware_gpu->AppendString(workaround);
+      feature_status_for_hardware_gpu->Set(
+          "workarounds", std::move(workarounds_for_hardware_gpu));
+      gpu_info_val->Set("featureStatusForHardwareGpu",
+                        std::move(feature_status_for_hardware_gpu));
+      const gpu::GpuFeatureInfo gpu_feature_info_for_hardware_gpu =
+          GpuDataManagerImpl::GetInstance()->GetGpuFeatureInfoForHardwareGpu();
+      auto gpu_info_for_hardware_gpu_val = BasicGpuInfoAsListValue(
+          gpu_info_for_hardware_gpu, gpu_feature_info_for_hardware_gpu,
+          gfx::GpuExtraInfo{});
+      gpu_info_val->Set("basicInfoForHardwareGpu",
+                        std::move(gpu_info_for_hardware_gpu_val));
+    }
   }
   gpu_info_val->Set("compositorInfo", CompositorInfo());
   gpu_info_val->Set("gpuMemoryBufferInfo", GpuMemoryBufferInfo(gpu_extra_info));

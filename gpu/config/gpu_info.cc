@@ -238,6 +238,10 @@ bool GPUInfo::IsInitialized() const {
   return gpu.vendor_id != 0 || !gl_vendor.empty();
 }
 
+bool GPUInfo::UsesSwiftShader() const {
+  return gl_renderer.find("SwiftShader") != std::string::npos;
+}
+
 void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   struct GPUInfoKnownFields {
     base::TimeDelta initialization_time;
