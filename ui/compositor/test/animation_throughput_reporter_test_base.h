@@ -15,6 +15,10 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/test_compositor_host.h"
 
+namespace base {
+class RunLoop;
+}
+
 namespace ui {
 class TestContextFactories;
 
@@ -39,13 +43,11 @@ class AnimationThroughputReporterTestBase : public testing::Test {
   // Advances the time by |delta|.
   void Advance(const base::TimeDelta& delta);
 
+  void QuitRunLoop();
+
  private:
   base::test::TaskEnvironment task_environment_{
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-#endif
-        base::test::TaskEnvironment::MainThreadType::UI
-  };
+      base::test::TaskEnvironment::MainThreadType::UI};
 
   std::unique_ptr<TestContextFactories> context_factories_;
   std::unique_ptr<TestCompositorHost> host_;
@@ -54,6 +56,8 @@ class AnimationThroughputReporterTestBase : public testing::Test {
   // A timer to generate continuous compositor frames to trigger throughput
   // data being transferred back.
   base::RepeatingTimer frame_generation_timer_;
+
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 }  // namespace ui

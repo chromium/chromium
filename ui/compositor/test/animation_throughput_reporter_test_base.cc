@@ -47,14 +47,14 @@ void AnimationThroughputReporterTestBase::TearDown() {
 
 void AnimationThroughputReporterTestBase::Advance(
     const base::TimeDelta& delta) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  task_environment_.FastForwardBy(delta);
-#else
-  base::RunLoop run_loop;
+  run_loop_ = std::make_unique<base::RunLoop>();
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), delta);
-  run_loop.Run();
-#endif
+      FROM_HERE, run_loop_->QuitClosure(), delta);
+  run_loop_->Run();
+}
+
+void AnimationThroughputReporterTestBase::QuitRunLoop() {
+  run_loop_->Quit();
 }
 
 }  // namespace ui

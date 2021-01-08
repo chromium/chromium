@@ -151,6 +151,8 @@ static_library("test_support") {
     "test/test_suite.h",
     "test/test_utils.cc",
     "test/test_utils.h",
+    "test/throughput_report_checker.cc",
+    "test/throughput_report_checker.h",
   ]
 
   if (is_android) {
