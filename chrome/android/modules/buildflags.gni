@@ -13,8 +13,7 @@ declare_args() {
   # other DFMs.
   # TODO(crbug.com/1126301): The binary size tools need to be updated to include
   # DFM code before this can be enabled on stable.
-  enable_chrome_module = android_channel == "default" ||
-                         android_channel == "canary" || android_channel == "dev"
+  enable_chrome_module = false
 
   # Whether to enable DFMs which depend on the chrome DFM. These will be split
   # out of the chrome DFM using DexSplitter.
