@@ -498,6 +498,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nHyperlinks(
 IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlink(
     LONG index,
     IAccessibleHyperlink** hyperlink) {
+  *hyperlink = nullptr;
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_HYPERLINK);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!owner())
@@ -514,7 +515,13 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlink(
   int32_t id = hypertext_.hyperlinks[index];
   AXPlatformNode* node = AXPlatformNodeWin::GetFromUniqueId(id);
   if (!node) {
-    // Error: possibly incorrect number of hyper links reported.
+    // TODO(https://crbug.com/id=1164043) Fix illegal hyperlink of iframes.
+    // Based on information received from DumpWithoutCrashing() reports, this
+    // is still sometimes occurring when get_hyperlink() is called on an
+    // iframe, which would have exactly 1 hyperlink and no text. The
+    // DumpWithoutCrashing() was removed to reduced crash report noise.
+    // Interestingly, the top url reported was always called "empty".
+    // Sample report for iframe issue: go/crash/93d7fce137a15ef0
     LONG num_hyperlinks = -1;
     get_nHyperlinks(&num_hyperlinks);
     std::ostringstream error;
@@ -526,7 +533,11 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlink(
     static auto* hyperlink_err = base::debug::AllocateCrashKeyString(
         "ax_hyperlink_err2", base::debug::CrashKeySize::Size256);
     base::debug::SetCrashKeyString(hyperlink_err, error.str().substr(230));
-    base::debug::DumpWithoutCrashing();
+    if (GetData().role != ax::mojom::Role::kIframe) {
+      // Only report for non-iframe situation. The iframe occurrence is known
+      // and was too noisy to keep reporting.
+      base::debug::DumpWithoutCrashing();
+    }
     NOTREACHED() << "Hyperlink error: " << error.str();
     return E_FAIL;
   }
