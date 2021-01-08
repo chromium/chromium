@@ -92,7 +92,7 @@
   {
     "name": "allow-sync-xhr-in-page-dismissal",
     "owners": [ "kdillon@chromium.org" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 93
   },
   {
     "name": "android-default-browser-promo",
