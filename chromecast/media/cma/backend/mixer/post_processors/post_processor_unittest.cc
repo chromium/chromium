@@ -166,7 +166,10 @@ void TestRingingTime(AudioPostProcessor2* pp,
   int frames_remaining = status.ringing_time_frames;
   int frames_to_process = std::min(frames_remaining, kNumFrames);
   while (frames_remaining > 0) {
+    // Make sure |frames_to_process| is an even multiple of 8.
     frames_to_process = std::min(frames_to_process, frames_remaining);
+    frames_to_process = (frames_to_process + 7);
+    frames_to_process -= frames_to_process % 8;
     data.assign(frames_to_process * num_input_channels, 0);
     pp->ProcessFrames(data.data(), frames_to_process, &metadata);
     frames_remaining -= frames_to_process;
