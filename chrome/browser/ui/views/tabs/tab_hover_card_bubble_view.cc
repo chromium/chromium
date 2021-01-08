@@ -616,7 +616,9 @@ void TabHoverCardBubbleView::UpdateAndShow(Tab* tab) {
   if (GetWidget()->IsVisible())
     ++hover_cards_seen_count_;
 
-  if (GetWidget()->IsVisible() && !disable_animations_for_testing_) {
+  const bool animations_enabled = gfx::Animation::ShouldRenderRichAnimation();
+  if (GetWidget()->IsVisible() && !disable_animations_for_testing_ &&
+      animations_enabled) {
     slide_animation_delegate_->AnimateToAnchorView(tab);
   } else {
     if (!anchor_view_set)
@@ -628,7 +630,8 @@ void TabHoverCardBubbleView::UpdateAndShow(Tab* tab) {
   }
 
   if (!GetWidget()->IsVisible()) {
-    if (disable_animations_for_testing_ || show_immediately) {
+    if (disable_animations_for_testing_ || show_immediately ||
+        !animations_enabled) {
       GetWidget()->SetOpacity(1.0f);
       GetWidget()->Show();
     } else {
@@ -652,7 +655,8 @@ void TabHoverCardBubbleView::FadeOutToHide() {
   thumbnail_observation_->Observe(nullptr);
   slide_animation_delegate_->StopAnimation();
   last_visible_timestamp_ = base::TimeTicks::Now();
-  if (disable_animations_for_testing_) {
+  if (disable_animations_for_testing_ ||
+      !gfx::Animation::ShouldRenderRichAnimation()) {
     GetWidget()->Hide();
   } else {
     fade_animation_delegate_->FadeOut();
