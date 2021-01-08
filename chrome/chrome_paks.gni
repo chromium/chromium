@@ -268,6 +268,10 @@ template("chrome_extra_paks") {
         "//extensions:extensions_resources",
       ]
     }
+    if (enable_plugins) {
+      sources += [ "$root_gen_dir/chrome/pdf_resources.pak" ]
+      deps += [ "//chrome/browser/resources/pdf:pdf_resources" ]
+    }
     if (enable_print_preview) {
       sources += [ "$root_gen_dir/chrome/print_preview_resources.pak" ]
       deps +=

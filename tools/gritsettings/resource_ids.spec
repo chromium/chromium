@@ -162,6 +162,10 @@
   "chrome/browser/resources/preinstalled_web_apps/resources.grd": {
     "includes": [1710],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/pdf/resources.grd": {
+    "META": {"sizes": {"includes": [200]}},
+    "includes": [1715],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/print_preview/print_preview_resources.grd": {
     "META": {"sizes": {"includes": [500],}},
     "includes": [1720],

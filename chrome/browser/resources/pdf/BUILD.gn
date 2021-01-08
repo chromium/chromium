@@ -3,9 +3,122 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/common/features.gni")
 import("//pdf/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+
+assert(enable_pdf, "enable_pdf check failed")
+
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [
+    "bookmark_type.js",
+    "browser_api.js",
+    "constants.js",
+    "controller.js",
+    "gesture_detector.js",
+    "index.css",
+    "index.html",
+    "local_storage_proxy.js",
+    "main.js",
+    "metrics.js",
+    "navigator.js",
+    "open_pdf_params_parser.js",
+    "pdf_scripting_api.js",
+    "pdf_viewer_base.js",
+    "pdf_viewer_utils.js",
+    "toolbar_manager.js",
+    "viewport.js",
+    "viewport_scroller.js",
+    "zoom_manager.js",
+  ]
+
+  if (is_chromeos) {
+    in_files += [
+      "ink_controller.js",
+      "ink/index.html",
+      "ink/ink_api.js",
+    ]
+  }
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "elements/icons.js",
+    "elements/shared-css.js",
+    "elements/shared-vars.js",
+    "elements/viewer-bookmark.js",
+    "elements/viewer-document-outline.js",
+    "elements/viewer-download-controls.js",
+    "elements/viewer-error-screen.js",
+    "elements/viewer-page-selector.js",
+    "elements/viewer-password-screen.js",
+    "elements/viewer-pdf-sidenav.js",
+    "elements/viewer-pdf-toolbar.js",
+    "elements/viewer-pdf-toolbar-new.js",
+    "elements/viewer-properties-dialog.js",
+    "elements/viewer-thumbnail-bar.js",
+    "elements/viewer-thumbnail.js",
+    "elements/viewer-toolbar-dropdown.js",
+    "elements/viewer-zoom-button.js",
+    "elements/viewer-zoom-toolbar.js",
+    "pdf_viewer.js",
+    "pdf_viewer_shared_style.js",
+  ]
+  if (is_chromeos) {
+    in_files += [
+      "elements/viewer-annotations-bar.js",
+      "elements/viewer-annotations-mode-dialog.js",
+      "elements/viewer-form-warning.js",
+      "elements/viewer-ink-host.js",
+      "elements/viewer-pen-options.js",
+    ]
+  }
+}
+
+generate_grd("build_grd") {
+  deps = [
+    ":preprocess",
+    ":preprocess_generated",
+  ]
+  manifest_files = [
+    "$target_gen_dir/$preprocess_manifest",
+    "$target_gen_dir/$preprocess_gen_manifest",
+  ]
+  grd_prefix = "pdf"
+  out_grd = "$target_gen_dir/resources.grd"
+  resource_path_prefix = "pdf"
+}
+
+grit("pdf_resources") {
+  defines = chrome_grit_defines
+
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/pdf_resources.h",
+    "grit/pdf_resources_map.cc",
+    "grit/pdf_resources_map.h",
+    "pdf_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
 
 assert(enable_pdf, "enable_pdf check failed")
 
@@ -26,7 +139,7 @@ html_to_js("web_components_local") {
 
 group("closure_compile") {
   deps = [
-    ":pdf_resources",
+    ":closure_compile_local",
     "elements:closure_compile",
   ]
   if (is_chromeos_ash) {
@@ -220,7 +333,7 @@ js_library("main") {
   ]
 }
 
-js_type_check("pdf_resources") {
+js_type_check("closure_compile_local") {
   is_polymer3 = true
   deps = [
     ":annotation_tool",

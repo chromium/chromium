@@ -21,7 +21,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/constants.h"
 #include "pdf/buildflags.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "chrome/grit/pdf_resources_map.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
@@ -111,6 +116,11 @@ ChromeComponentExtensionResourceManager::Data::Data() {
                               kComponentExtensionResourcesSize);
   AddComponentResourceEntries(kExtraComponentExtensionResources,
                               base::size(kExtraComponentExtensionResources));
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  AddComponentResourceEntries(kPdfResources, kPdfResourcesSize);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Add Files app JS modules resources.
   AddComponentResourceEntries(kFileManagerResources, kFileManagerResourcesSize);
