@@ -141,14 +141,16 @@ void GeneratedPasswordLeakDetectionPref::IdentityManagerShutdown(
   identity_manager_observer_.RemoveAll();
 }
 
-void GeneratedPasswordLeakDetectionPref::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  NotifyObservers(kGeneratedPasswordLeakDetectionPref);
-}
-
-void GeneratedPasswordLeakDetectionPref::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  NotifyObservers(kGeneratedPasswordLeakDetectionPref);
+void GeneratedPasswordLeakDetectionPref::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      NotifyObservers(kGeneratedPasswordLeakDetectionPref);
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
 void GeneratedPasswordLeakDetectionPref::OnExtendedAccountInfoUpdated(
