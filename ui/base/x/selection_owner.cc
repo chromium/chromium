@@ -164,7 +164,7 @@ void SelectionOwner::OnSelectionRequest(
 }
 
 void SelectionOwner::OnSelectionClear(const x11::SelectionClearEvent& event) {
-  DLOG(ERROR) << "SelectionClear";
+  DVLOG(1) << "SelectionClear";
 
   // TODO(erg): If we receive a SelectionClear event while we're handling data,
   // we need to delay clearing.
