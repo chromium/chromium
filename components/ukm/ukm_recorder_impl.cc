@@ -59,8 +59,9 @@ bool IsWhitelistedSourceId(SourceId source_id) {
 // new ones being added.
 size_t GetMaxSources() {
   constexpr size_t kDefaultMaxSources = 500;
-  return static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
+  static auto value = static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
       kUkmFeature, "MaxSources", kDefaultMaxSources));
+  return value;
 }
 
 // Gets the maximum number of Sources we can keep in memory at the end of the
@@ -68,16 +69,18 @@ size_t GetMaxSources() {
 // interval.
 size_t GetMaxKeptSources() {
   constexpr size_t kDefaultMaxKeptSources = 100;
-  return static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
+  static auto value = static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
       kUkmFeature, "MaxKeptSources", kDefaultMaxKeptSources));
+  return value;
 }
 
 // Gets the maximum number of Entries we'll keep in memory before discarding any
 // new ones being added.
 size_t GetMaxEntries() {
   constexpr size_t kDefaultMaxEntries = 5000;
-  return static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
+  static auto value = static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
       kUkmFeature, "MaxEntries", kDefaultMaxEntries));
+  return value;
 }
 
 // Returns whether |url| has one of the schemes supported for logging to UKM.
