@@ -18,13 +18,10 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -316,22 +313,5 @@ public class BookmarkBridgeTest {
         Assert.assertEquals("Expected that user (non-partner) bookmarks would get priority "
                         + "over partner bookmarks",
                 expectedSearchResults, searchResults);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
-    public void testAddToReadingList() {
-        Assert.assertNull("Should return null for non http/https URLs.",
-                mBookmarkBridge.addToReadingList("a", "chrome://flags"));
-        BookmarkId readingListId = mBookmarkBridge.addToReadingList("a", "https://www.google.com/");
-        Assert.assertNotNull(readingListId);
-        Assert.assertEquals(BookmarkType.READING_LIST, readingListId.getType());
-        BookmarkItem readingListItem =
-                mBookmarkBridge.getReadingListItem("https://www.google.com/");
-        Assert.assertNotNull(readingListItem);
-        Assert.assertEquals("https://www.google.com/", readingListItem.getUrl());
-        Assert.assertEquals("a", readingListItem.getTitle());
     }
 }
