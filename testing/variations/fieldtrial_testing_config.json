@@ -1374,9 +1374,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Stage2",
                     "enable_features": [
                         "AutofillEnableAccountWalletStorage"
+                    ],
+                    "disable_features": [
+                        "WalletRequiresFirstSyncSetupComplete"
                     ]
                 }
             ]
