@@ -1243,6 +1243,9 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_RESTORE_FOR_CRASH_NOTIFICATION_MESSAGE" desc="This is the text message of the notification for the user to select restore or not on startup after crash.">
           Chrome OS didn't shut down correctly.
         </message>
+        <message name="IDS_SET_RESTORE_NOTIFICATION_MESSAGE" desc="This is the text message of the notification for the user to set restore by default.">
+          Chrome OS can always restore your apps &amp; pages after reboot without asking every time.
+        </message>
       </if>
     </messages>
   </release>

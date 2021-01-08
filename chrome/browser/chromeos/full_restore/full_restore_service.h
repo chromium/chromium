@@ -22,6 +22,7 @@ class NewUserRestorePrefHandler;
 
 extern const char kRestoreForCrashNotificationId[];
 extern const char kRestoreNotificationId[];
+extern const char kSetRestorePrefNotificationId[];
 
 // The restore notification button index.
 enum class RestoreNotificationButtonIndex {

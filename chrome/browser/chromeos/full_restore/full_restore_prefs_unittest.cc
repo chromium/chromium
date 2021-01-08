@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
+
 #include "ash/public/cpp/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
@@ -82,7 +83,7 @@ TEST_F(FullRestorePrefsTest, UpgradingFromNotRestore) {
   EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
 }
 
-// When a new Chrome OS user, set 'always restore' as the default value if the
+// For a new Chrome OS user, set 'always restore' as the default value if the
 // browser setting is 'continue where you left off'.
 TEST_F(FullRestorePrefsTest, NewChromeOSUserFromRestore) {
   GetFakeUserManager()->set_current_user_new(true);
@@ -100,7 +101,7 @@ TEST_F(FullRestorePrefsTest, NewChromeOSUserFromRestore) {
   EXPECT_EQ(RestoreOption::kAlways, GetRestoreOption());
 }
 
-// When a new Chrome OS user, set 'ask every time' as the default value if the
+// For a new Chrome OS user, set 'ask every time' as the default value if the
 // browser setting is 'new tab'.
 TEST_F(FullRestorePrefsTest, NewChromeOSUserFromNotRestore) {
   GetFakeUserManager()->set_current_user_new(true);

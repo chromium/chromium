@@ -5859,11 +5859,17 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     <message name="IDS_RESTORE_NOTIFICATION_RESTORE_BUTTON" desc="The restore button label of the notification for the user to select restore apps and pages on startup.">
       Restore
     </message>
+    <message name="IDS_SET_RESTORE_NOTIFICATION_BUTTON" desc="The button label of the notification for the user to set restore by default.">
+      Settings
+    </message>
     <message name="IDS_RESTORE_NOTIFICATION_CANCEL_BUTTON" desc="The cancel button label of the notification for the user to select not restore on startup.">
       Cancel
     </message>
     <message name="IDS_RESTORE_NOTIFICATION_TITLE" desc="This is the title of the notification for the user to select restore or not on startup.">
       Restore apps &amp; pages?
+    </message>
+    <message name="IDS_SET_RESTORE_NOTIFICATION_TITLE" desc="This is the title of the notification for the user to set restore by default.">
+      Restore apps &amp; pages by default?
     </message>
     <message name="IDS_RESTORE_NOTIFICATION_MESSAGE" desc="This is the text message of the notification for the user to select restore or not on startup if the 'restore_apps_and_pages' setting is 'Ask every time', and the system is not crashed before reboot.">
       Continue where you left off.
