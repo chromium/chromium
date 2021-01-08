@@ -817,22 +817,26 @@ void PeopleHandler::FocusUI() {
   web_contents->GetDelegate()->ActivateContents(web_contents);
 }
 
-void PeopleHandler::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  // After a primary account was set, the Sync setup will start soon. Grab a
-  // SetupInProgressHandle right now to avoid a temporary "missing Sync
-  // confirmation" error in the avatar menu. See crbug.com/928696.
-  syncer::SyncService* service = GetSyncService();
-  if (service && !sync_blocker_)
-    sync_blocker_ = service->GetSetupInProgressHandle();
-
-  UpdateSyncStatus();
-}
-
-void PeopleHandler::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  sync_blocker_.reset();
-  UpdateSyncStatus();
+void PeopleHandler::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet: {
+      // After a primary account was set, the Sync setup will start soon. Grab a
+      // SetupInProgressHandle right now to avoid a temporary "missing Sync
+      // confirmation" error in the avatar menu. See crbug.com/928696.
+      syncer::SyncService* service = GetSyncService();
+      if (service && !sync_blocker_)
+        sync_blocker_ = service->GetSetupInProgressHandle();
+      UpdateSyncStatus();
+      return;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      sync_blocker_.reset();
+      UpdateSyncStatus();
+      return;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      return;
+  }
 }
 
 void PeopleHandler::OnStateChanged(syncer::SyncService* sync) {

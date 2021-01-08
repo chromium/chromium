@@ -83,9 +83,14 @@ class SignInObserver : public signin::IdentityManager::Observer {
     FAIL() << "Sign in observer timed out!";
   }
 
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override {
-    DVLOG(1) << "Google signin succeeded.";
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override {
+    if (event.GetEventTypeFor(signin::ConsentLevel::kSync) !=
+        signin::PrimaryAccountChangeEvent::Type::kSet) {
+      return;
+    }
+
+    DVLOG(1) << "Sign in finished: Sync primary account was set.";
     signed_in_ = true;
     QuitLoopRunner();
   }
