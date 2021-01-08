@@ -101,6 +101,27 @@ std::string GetErrorMessage() {
   [ChromeEarlGrey waitForWebStateContainingText:"bar"];
 }
 
+// Loads the URL which fails to load, then sucessfully navigates back/forward to
+// the page.
+- (void)testNavigateForwardToErrorPage {
+  self.serverRespondsWithContent = YES;
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo-query?bar")];
+  [ChromeEarlGrey waitForWebStateContainingText:"bar"];
+
+  // No response leads to ERR_CONNECTION_CLOSED error.
+  self.serverRespondsWithContent = NO;
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo-query?foo")];
+  [ChromeEarlGrey waitForWebStateContainingText:GetErrorMessage()];
+
+  self.serverRespondsWithContent = YES;
+  [ChromeEarlGrey goBack];
+  [ChromeEarlGrey waitForWebStateContainingText:"bar"];
+
+  // Navigate forward to the error page, which should load without errors.
+  [ChromeEarlGrey goForward];
+  [ChromeEarlGrey waitForWebStateContainingText:"foo"];
+}
+
 // Loads the URL which fails to load, then sucessfully reloads the page.
 - (void)testReloadErrorPage {
   // No response leads to ERR_CONNECTION_CLOSED error.
