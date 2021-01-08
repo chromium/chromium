@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/csspaint/background_color_paint_worklet.h"
 
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
+#include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/css_color_value.h"
@@ -29,16 +30,20 @@ class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
       const FloatSize& container_size,
       int worklet_id,
       const Vector<Color>& animated_colors,
+      const Vector<double>& offsets,
       cc::PaintWorkletInput::PropertyKeys property_keys)
       : PaintWorkletInput(container_size, worklet_id, std::move(property_keys)),
-        animated_colors_(animated_colors) {}
+        animated_colors_(animated_colors),
+        offsets_(offsets) {}
 
   ~BackgroundColorPaintWorkletInput() override = default;
 
   const Vector<Color>& AnimatedColors() const { return animated_colors_; }
+  const Vector<double>& Offsets() const { return offsets_; }
 
  private:
   Vector<Color> animated_colors_;
+  Vector<double> offsets_;
 };
 
 class BackgroundColorPaintWorkletProxyClient
@@ -64,18 +69,39 @@ class BackgroundColorPaintWorkletProxyClient
         static_cast<const BackgroundColorPaintWorkletInput*>(compositor_input);
     FloatSize container_size = input->ContainerSize();
     Vector<Color> animated_colors = input->AnimatedColors();
+    Vector<double> offsets = input->Offsets();
     DCHECK_GT(animated_colors.size(), 1u);
+    DCHECK_EQ(animated_colors.size(), offsets.size());
 
     DCHECK_EQ(animated_property_values.size(), 1u);
     const auto& entry = animated_property_values.begin();
     float progress = entry->second.float_value.value();
+
+    // Get the start and end color based on the progress and offsets.
+    DCHECK_EQ(offsets.front(), 0);
+    DCHECK_EQ(offsets.back(), 1);
+    unsigned result_index = -1;
+    for (unsigned i = 0; i < offsets.size() - 1; i++) {
+      if (progress <= offsets[i + 1]) {
+        result_index = i;
+        break;
+      }
+    }
+    DCHECK_GE(result_index, 0u);
+    // Because the progress is a global one, we need to adjust it with offsets.
+    float adjusted_progress =
+        (progress - offsets[result_index]) /
+        (offsets[result_index + 1] - offsets[result_index]);
     std::unique_ptr<InterpolableValue> from =
-        CSSColorInterpolationType::CreateInterpolableColor(animated_colors[0]);
+        CSSColorInterpolationType::CreateInterpolableColor(
+            animated_colors[result_index]);
     std::unique_ptr<InterpolableValue> to =
-        CSSColorInterpolationType::CreateInterpolableColor(animated_colors[1]);
+        CSSColorInterpolationType::CreateInterpolableColor(
+            animated_colors[result_index + 1]);
     std::unique_ptr<InterpolableValue> result =
-        CSSColorInterpolationType::CreateInterpolableColor(animated_colors[1]);
-    from->Interpolate(*to, progress, *result);
+        CSSColorInterpolationType::CreateInterpolableColor(
+            animated_colors[result_index + 1]);
+    from->Interpolate(*to, adjusted_progress, *result);
     Color rgba = CSSColorInterpolationType::GetRGBA(*(result.get()));
     SkColor current_color = static_cast<SkColor>(rgba);
 
@@ -88,6 +114,7 @@ class BackgroundColorPaintWorkletProxyClient
   }
 };
 
+// TODO(crbug.com/1163949): Support animation keyframes without 0% or 100%.
 void GetColorsFromStringKeyframe(const PropertySpecificKeyframe* frame,
                                  Vector<Color>* animated_colors,
                                  const Element* element) {
@@ -101,6 +128,13 @@ void GetColorsFromStringKeyframe(const PropertySpecificKeyframe* frame,
   const cssvalue::CSSColorValue* color_value =
       static_cast<const cssvalue::CSSColorValue*>(computed_value);
   animated_colors->push_back(color_value->Value());
+}
+
+void GetCompositorKeyframeOffset(const PropertySpecificKeyframe* frame,
+                                 Vector<double>* offsets) {
+  const CompositorKeyframeDouble& value =
+      To<CompositorKeyframeDouble>(*(frame->GetCompositorKeyframeValue()));
+  offsets->push_back(value.ToDouble());
 }
 
 void GetColorsFromTransitionKeyframe(const PropertySpecificKeyframe* frame,
@@ -140,6 +174,7 @@ scoped_refptr<Image> BackgroundColorPaintWorklet::Paint(
     const Node* node) {
   DCHECK(node->IsElementNode());
   Vector<Color> animated_colors;
+  Vector<double> offsets;
   const Element* element = static_cast<const Element*>(node);
   ElementAnimations* element_animations = element->GetElementAnimations();
   // TODO(crbug.com/1153672): implement main-thread fall back logic for
@@ -154,16 +189,12 @@ scoped_refptr<Image> BackgroundColorPaintWorklet::Paint(
         model->GetPropertySpecificKeyframes(
             PropertyHandle(GetCSSPropertyBackgroundColor()));
     DCHECK_GE(frames->size(), 2u);
-    // TODO(crbug.com/1153671): right now we keep the first and last keyframe
-    // values only, we need to keep all keyframe values.
-    if (model->IsStringKeyframeEffectModel()) {
-      GetColorsFromStringKeyframe(frames->front(), &animated_colors, element);
-      GetColorsFromStringKeyframe(frames->back(), &animated_colors, element);
-    } else {
-      GetColorsFromTransitionKeyframe(frames->front(), &animated_colors,
-                                      element);
-      GetColorsFromTransitionKeyframe(frames->back(), &animated_colors,
-                                      element);
+    for (const auto& frame : *frames) {
+      if (model->IsStringKeyframeEffectModel())
+        GetColorsFromStringKeyframe(frame, &animated_colors, element);
+      else
+        GetColorsFromTransitionKeyframe(frame, &animated_colors, element);
+      GetCompositorKeyframeOffset(frame, &offsets);
     }
   }
 
@@ -178,7 +209,7 @@ scoped_refptr<Image> BackgroundColorPaintWorklet::Paint(
       element_id);
   scoped_refptr<BackgroundColorPaintWorkletInput> input =
       base::MakeRefCounted<BackgroundColorPaintWorkletInput>(
-          container_size, worklet_id_, animated_colors,
+          container_size, worklet_id_, animated_colors, offsets,
           std::move(input_property_keys));
   return PaintWorkletDeferredImage::Create(std::move(input), container_size);
 }
