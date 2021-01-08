@@ -146,8 +146,11 @@ void PeerConnectionRemoteAudioSource::OnData(const void* audio_data,
     audio_bus_ = media::AudioBus::Create(number_of_channels, number_of_frames);
   }
 
-  audio_bus_->FromInterleaved(audio_data, number_of_frames,
-                              bits_per_sample / 8);
+  // Only 16 bits per sample is ever used. The FromInterleaved() call should
+  // be updated if that is no longer the case.
+  DCHECK_EQ(bits_per_sample, 16);
+  audio_bus_->FromInterleaved<media::SignedInt16SampleTypeTraits>(
+      reinterpret_cast<const int16_t*>(audio_data), number_of_frames);
 
   media::AudioParameters params = MediaStreamAudioSource::GetAudioParameters();
   if (!params.IsValid() ||

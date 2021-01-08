@@ -210,8 +210,12 @@ class FullDuplexAudioSinkSource
       EXPECT_EQ(channels_, dest->channels());
       size = std::min(dest->frames() * frame_size_, size);
       EXPECT_EQ(static_cast<size_t>(size) % sizeof(*dest->channel(0)), 0U);
-      dest->FromInterleaved(source, size / frame_size_,
-                            frame_size_ / channels_);
+
+      // We should only have 16 bits per sample.
+      DCHECK_EQ(frame_size_ / channels_, 2);
+      dest->FromInterleaved<SignedInt16SampleTypeTraits>(
+          reinterpret_cast<const int16_t*>(source), size / channels_);
+
       buffer_->Seek(size);
       return size / frame_size_;
     }
