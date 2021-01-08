@@ -13,12 +13,14 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks_observer.h"
+#include "chrome/browser/ui/app_list/search/score_normalizer/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 
 class Profile;
@@ -61,6 +63,9 @@ class ZeroStateFileProvider : public SearchProvider,
   // The ranking model used to produce local file results for searches with an
   // empty query.
   std::unique_ptr<RecurrenceRanker> files_ranker_;
+
+  // The normalizer normalizes the relevance scores of Results
+  base::Optional<ScoreNormalizer> normalizer_;
 
   base::TimeTicks query_start_time_;
 

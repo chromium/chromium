@@ -79,6 +79,11 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
         profile->GetPath().AppendASCII("zero_state_local_files.pb"), config,
         chromeos::ProfileHelper::IsEphemeralUserProfile(profile));
   }
+
+  if (base::FeatureList::IsEnabled(
+          app_list_features::kEnableLauncherSearchNormalization)) {
+    normalizer_.emplace("zero_state_file_provider", profile);
+  }
 }
 
 ZeroStateFileProvider::~ZeroStateFileProvider() = default;
@@ -116,6 +121,11 @@ void ZeroStateFileProvider::SetSearchResults(
       new_results.emplace_back(std::make_unique<FileChipResult>(
           filepath_score.first, filepath_score.second, profile_));
     }
+  }
+
+  if (normalizer_.has_value()) {
+    normalizer_->Record(new_results);
+    normalizer_->NormalizeResults(&new_results);
   }
 
   UMA_HISTOGRAM_TIMES("Apps.AppList.ZeroStateFileProvider.Latency",

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/omnibox_provider.h"
 
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
@@ -37,6 +38,10 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
           std::make_unique<ChromeAutocompleteProviderClient>(profile),
           AutocompleteClassifier::DefaultOmniboxProviders())) {
   controller_->AddObserver(this);
+  if (base::FeatureList::IsEnabled(
+          app_list_features::kEnableLauncherSearchNormalization)) {
+    normalizer_.emplace("omnibox_provider", profile);
+  }
 }
 
 OmniboxProvider::~OmniboxProvider() {}
@@ -85,6 +90,11 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
     new_results.emplace_back(std::make_unique<OmniboxResult>(
         profile_, list_controller_, controller_.get(), match,
         is_zero_state_input_));
+  }
+
+  if (normalizer_.has_value()) {
+    normalizer_->Record(new_results);
+    normalizer_->NormalizeResults(&new_results);
   }
 
   SwapResults(&new_results);

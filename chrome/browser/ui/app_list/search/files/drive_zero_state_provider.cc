@@ -101,6 +101,10 @@ DriveZeroStateProvider::DriveZeroStateProvider(
       drive_service_->AddObserver(this);
     }
   }
+  if (base::FeatureList::IsEnabled(
+          app_list_features::kEnableLauncherSearchNormalization)) {
+    normalizer_.emplace("drive_zero_state_provider", profile);
+  }
 }
 
 DriveZeroStateProvider::~DriveZeroStateProvider() {
@@ -214,6 +218,12 @@ void DriveZeroStateProvider::OnFilePathsLocated(
   }
 
   cache_results_.reset();
+
+  if (normalizer_.has_value()) {
+    normalizer_->Record(provider_results);
+    normalizer_->NormalizeResults(&provider_results);
+  }
+
   SwapResults(&provider_results);
 
   LogStatus(Status::kOk);
