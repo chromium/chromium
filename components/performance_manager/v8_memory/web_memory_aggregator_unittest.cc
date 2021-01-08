@@ -30,7 +30,7 @@ using NodeAggregationType = WebMemoryAggregator::NodeAggregationType;
 using WebMemoryAggregatorTest = WebMemoryTestHarness;
 
 struct ExpectedMemoryBreakdown {
-  uint64_t bytes = 0U;
+  WebMemoryTestHarness::Bytes bytes;
   AttributionScope scope = AttributionScope::kWindow;
   base::Optional<std::string> url;
   base::Optional<std::string> id;
@@ -38,7 +38,7 @@ struct ExpectedMemoryBreakdown {
 
   ExpectedMemoryBreakdown() = default;
   ExpectedMemoryBreakdown(
-      uint64_t expected_bytes,
+      WebMemoryTestHarness::Bytes expected_bytes,
       AttributionScope expected_scope,
       base::Optional<std::string> expected_url = base::nullopt,
       base::Optional<std::string> expected_id = base::nullopt,
@@ -59,7 +59,10 @@ mojom::WebMemoryMeasurementPtr CreateExpectedMemoryMeasurement(
   auto expected_measurement = mojom::WebMemoryMeasurement::New();
   for (const auto& breakdown : breakdowns) {
     auto expected_breakdown = mojom::WebMemoryBreakdownEntry::New();
-    expected_breakdown->bytes = breakdown.bytes;
+    if (breakdown.bytes) {
+      expected_breakdown->memory = mojom::WebMemoryUsage::New();
+      expected_breakdown->memory->bytes = breakdown.bytes.value();
+    }
 
     auto attribution = mojom::WebMemoryAttribution::New();
     attribution->scope = breakdown.scope;
@@ -129,15 +132,18 @@ TEST_F(WebMemoryAggregatorTest, CreateBreakdownEntry) {
     internal::CopyBreakdownAttribution(breakdown_with_url,
                                        breakdown_with_empty_url);
 
-    // All measurements should be created with 0 bytes.
+    // All measurements should be created without measurement results.
     auto expected_result = CreateExpectedMemoryMeasurement({
-        ExpectedMemoryBreakdown(0, AttributionScope::kCrossOriginAggregated,
+        ExpectedMemoryBreakdown(/*bytes=*/base::nullopt,
+                                AttributionScope::kCrossOriginAggregated,
                                 /*expected_url=*/base::nullopt,
                                 /*expected_id=*/base::nullopt,
                                 /*expected_src=*/base::nullopt),
-        ExpectedMemoryBreakdown(0, AttributionScope::kWindow,
+        ExpectedMemoryBreakdown(/*bytes=*/base::nullopt,
+                                AttributionScope::kWindow,
                                 "https://example.com", attribute, attribute),
-        ExpectedMemoryBreakdown(0, AttributionScope::kWindow,
+        ExpectedMemoryBreakdown(/*bytes=*/base::nullopt,
+                                AttributionScope::kWindow,
                                 /*expected_url=*/"", attribute, attribute),
     });
     EXPECT_EQ(MeasurementToJSON(measurement),
@@ -293,10 +299,21 @@ TEST_F(WebMemoryAggregatorTest, AggregateNestedCrossOrigin) {
       AddFrameNode("https://example.com/iframe3", Bytes{6}, subframe3,
                    "example-id6", "https://example.com/iframe3");
 
-  // A frame with 0 bytes of memory use (eg. a frame that's added to the frame
-  // tree during the measurement) should not appear in the result.
+  // To test aggregation all the frames above are in the same process, even
+  // though in production frames with different origins will be in different
+  // processes whenever possible. Frames in a different process from the
+  // requesting frame should all have 0 bytes reported.
+  FrameNodeImpl* cross_process_frame =
+      AddCrossProcessFrameNode("https://example.com/cross_process", Bytes{100},
+                               subframe3, "cross-process-id1");
+  FrameNodeImpl* cross_process_frame2 =
+      AddCrossProcessFrameNode("https://foo.com/cross_process", Bytes{200},
+                               subframe3, "cross-process-id2");
+
+  // A frame without a memory measurement (eg. a frame that's added to the frame
+  // tree during the measurement) should not have a memory entry in the result.
   FrameNodeImpl* empty_frame =
-      AddFrameNode("https://example.com/empty_frame", Bytes{0}, subframe3);
+      AddFrameNode("https://example.com/empty_frame", base::nullopt, subframe3);
 
   EXPECT_EQ(internal::FindAggregationStartNode(main_frame), main_frame);
   WebMemoryAggregator aggregator(main_frame);
@@ -339,6 +356,16 @@ TEST_F(WebMemoryAggregatorTest, AggregateNestedCrossOrigin) {
   EXPECT_EQ(internal::GetSameOriginParentOrOpener(
                 empty_frame, aggregator.requesting_origin()),
             subframe3);
+  EXPECT_EQ(aggregator.FindNodeAggregationType(cross_process_frame),
+            NodeAggregationType::kSameOriginAggregationPoint);
+  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
+                cross_process_frame, aggregator.requesting_origin()),
+            subframe3);
+  EXPECT_EQ(aggregator.FindNodeAggregationType(cross_process_frame2),
+            NodeAggregationType::kCrossOriginAggregationPoint);
+  EXPECT_EQ(internal::GetSameOriginParentOrOpener(
+                cross_process_frame2, aggregator.requesting_origin()),
+            subframe3);
 
   auto expected_result = CreateExpectedMemoryMeasurement({
       ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
@@ -358,6 +385,13 @@ TEST_F(WebMemoryAggregatorTest, AggregateNestedCrossOrigin) {
       ExpectedMemoryBreakdown(6, AttributionScope::kWindow,
                               "https://example.com/iframe3", "example-id6",
                               "https://example.com/iframe3"),
+      ExpectedMemoryBreakdown(0, AttributionScope::kWindow,
+                              "https://example.com/cross_process",
+                              "cross-process-id1"),
+      ExpectedMemoryBreakdown(0, AttributionScope::kCrossOriginAggregated,
+                              base::nullopt, "cross-process-id2"),
+      ExpectedMemoryBreakdown(base::nullopt, AttributionScope::kWindow,
+                              "https://example.com/empty_frame"),
   });
   auto result = aggregator.AggregateMeasureMemoryResult();
   EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
@@ -405,6 +439,29 @@ TEST_F(WebMemoryAggregatorTest, FindAggregationStartNode) {
   auto main_frame_result = main_frame_aggregator.AggregateMeasureMemoryResult();
   EXPECT_EQ(MeasurementToJSON(main_frame_result),
             MeasurementToJSON(main_frame_expected_result));
+}
+
+TEST_F(WebMemoryAggregatorTest, FindCrossProcessAggregationStartNode) {
+  FrameNodeImpl* main_frame = AddFrameNode("https://example.com/", Bytes{1});
+  FrameNodeImpl* cross_process_child = AddCrossProcessFrameNode(
+      "https://example.com/cross_process.html", Bytes{2}, main_frame);
+  FrameNodeImpl* same_process_child = AddFrameNode(
+      "https://example.com/same_process.html", Bytes{3}, cross_process_child);
+
+  auto origin = url::Origin::Create(GURL("https://example.com"));
+  ASSERT_EQ(internal::GetSameOriginParentOrOpener(cross_process_child, origin),
+            main_frame);
+  ASSERT_EQ(internal::GetSameOriginParentOrOpener(same_process_child, origin),
+            cross_process_child);
+
+  // |cross_process_child| has no ancestor in the same process as it.
+  EXPECT_EQ(internal::FindAggregationStartNode(cross_process_child),
+            cross_process_child);
+
+  // The search starting from |same_process_child| should skip over
+  // |cross_process_child|, which is in a different process, and find
+  // |main_frame| which is in the same process.
+  EXPECT_EQ(internal::FindAggregationStartNode(same_process_child), main_frame);
 }
 
 TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {

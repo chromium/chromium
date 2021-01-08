@@ -141,13 +141,6 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   aggregation_result_ = mojom::WebMemoryMeasurement::New();
   VisitFrame(nullptr, aggregation_start_node_);
-
-  // Don't report breakdowns without any memory use.
-  base::EraseIf(aggregation_result_->breakdown,
-                [](const mojom::WebMemoryBreakdownEntryPtr& entry) {
-                  return entry->bytes == 0;
-                });
-
   return std::move(aggregation_result_);
 }
 
@@ -221,7 +214,18 @@ bool WebMemoryAggregator::VisitFrame(
   DCHECK(aggregation_point);
   if (auto* frame_data =
           V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node)) {
-    aggregation_point->bytes += frame_data->v8_bytes_used();
+    if (!aggregation_point->memory) {
+      aggregation_point->memory = mojom::WebMemoryUsage::New();
+    }
+
+    // Ensure this frame is actually in the same process as the requesting
+    // frame. If not it should be considered to have 0 bytes.
+    // (https://github.com/WICG/performance-measure-memory/issues/20).
+    uint64_t bytes_used = (frame_node->GetProcessNode() ==
+                           aggregation_start_node_->GetProcessNode())
+                              ? frame_data->v8_bytes_used()
+                              : 0;
+    aggregation_point->memory->bytes += bytes_used;
   }
 
   // Recurse into children and opened pages. This node's aggregation point
@@ -269,10 +273,16 @@ const FrameNode* FindAggregationStartNode(const FrameNode* requesting_node) {
 
   // Follow parent and opener links to find the most general same-site node to
   // start the aggregation traversal from.
-  const FrameNode* start_node = requesting_node;
-  while (auto* parent_or_opener =
-             GetSameOriginParentOrOpener(start_node, requesting_origin)) {
-    start_node = parent_or_opener;
+  const FrameNode* start_node = nullptr;
+  for (auto* parent_or_opener = requesting_node; parent_or_opener;
+       parent_or_opener =
+           GetSameOriginParentOrOpener(parent_or_opener, requesting_origin)) {
+    // Only consider nodes in the same process as potential start nodes.
+    // (https://github.com/WICG/performance-measure-memory/issues/20).
+    if (parent_or_opener->GetProcessNode() ==
+        requesting_node->GetProcessNode()) {
+      start_node = parent_or_opener;
+    }
   }
 
   DCHECK(start_node);

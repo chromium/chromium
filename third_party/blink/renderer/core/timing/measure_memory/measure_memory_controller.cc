@@ -166,7 +166,8 @@ MemoryAttribution* ConvertAttribution(
 MemoryBreakdownEntry* ConvertBreakdown(
     const WebMemoryBreakdownEntryPtr& breakdown_entry) {
   auto* result = MemoryBreakdownEntry::Create();
-  result->setBytes(breakdown_entry->bytes);
+  DCHECK(breakdown_entry->memory);
+  result->setBytes(breakdown_entry->memory->bytes);
   HeapVector<Member<MemoryAttribution>> attribution;
   for (const auto& entry : breakdown_entry->attribution) {
     attribution.push_back(ConvertAttribution(entry));
@@ -187,7 +188,9 @@ MemoryBreakdownEntry* EmptyBreakdown() {
 MemoryMeasurement* ConvertResult(const WebMemoryMeasurementPtr& measurement) {
   HeapVector<Member<MemoryBreakdownEntry>> breakdown;
   for (const auto& entry : measurement->breakdown) {
-    breakdown.push_back(ConvertBreakdown(entry));
+    // Skip breakdowns that didn't get a measurement.
+    if (entry->memory)
+      breakdown.push_back(ConvertBreakdown(entry));
   }
   // Add an empty breakdown entry as required by the spec.
   // See https://github.com/WICG/performance-measure-memory/issues/10.

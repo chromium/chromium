@@ -70,12 +70,13 @@ void WebMemoryImplTest::MeasureAndVerify(
         base::flat_map<std::string, Bytes> actual;
         for (const auto& entry : result->breakdown) {
           EXPECT_EQ(1u, entry->attribution.size());
-          if (mojom::WebMemoryAttribution::Scope::kWindow ==
-              entry->attribution[0]->scope) {
-            actual[*entry->attribution[0]->url] = Bytes{entry->bytes};
-          } else {
-            actual[*entry->attribution[0]->src] = Bytes{entry->bytes};
-          }
+          std::string attribution_tag =
+              (mojom::WebMemoryAttribution::Scope::kWindow ==
+               entry->attribution[0]->scope)
+                  ? *entry->attribution[0]->url
+                  : *entry->attribution[0]->src;
+          actual[attribution_tag] =
+              entry->memory ? Bytes{entry->memory->bytes} : base::nullopt;
         }
         EXPECT_EQ(expected, actual);
         measurement_done = true;
@@ -130,7 +131,8 @@ TEST_F(WebMemoryImplPMTest, WebMeasureMemory) {
         const auto& entry = result->breakdown[0];
         EXPECT_EQ(1u, entry->attribution.size());
         EXPECT_EQ(kMainFrameUrl, *(entry->attribution[0]->url));
-        EXPECT_EQ(1001u, entry->bytes);
+        ASSERT_TRUE(entry->memory);
+        EXPECT_EQ(1001u, entry->memory->bytes);
         run_loop.Quit();
       });
   auto bad_message_callback =

@@ -19,6 +19,7 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/v8_memory/v8_context_tracker.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -226,6 +227,7 @@ void WebMemoryTestHarness::SetUp() {
   GetGraphFeaturesHelper().EnableV8ContextTracker();
   Super::SetUp();
   process_ = CreateNode<ProcessNodeImpl>();
+  other_process_ = CreateNode<ProcessNodeImpl>();
   pages_.push_back(CreateNode<PageNodeImpl>());
 }
 
@@ -239,6 +241,7 @@ FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
     Bytes memory_usage,
     FrameNodeImpl* parent,
     FrameNodeImpl* opener,
+    ProcessNodeImpl* process,
     base::Optional<std::string> id_attribute,
     base::Optional<std::string> src_attribute) {
   // If there's an opener, the new frame is also a new page.
@@ -252,14 +255,16 @@ FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
   int frame_tree_node_id = GetNextUniqueId();
   int frame_routing_id = GetNextUniqueId();
   auto frame_token = blink::LocalFrameToken();
-  auto frame = CreateNode<FrameNodeImpl>(process_.get(), page, parent,
+  auto frame = CreateNode<FrameNodeImpl>(process, page, parent,
                                          frame_tree_node_id, frame_routing_id,
                                          frame_token, browsing_instance_id);
   if (url) {
     frame->OnNavigationCommitted(GURL(*url), /*same document*/ true);
   }
-  V8DetailedMemoryExecutionContextData::CreateForTesting(frame.get())
-      ->set_v8_bytes_used(memory_usage.bytes);
+  if (memory_usage) {
+    V8DetailedMemoryExecutionContextData::CreateForTesting(frame.get())
+        ->set_v8_bytes_used(memory_usage.value());
+  }
   frames_.push_back(std::move(frame));
   FrameNodeImpl* frame_impl = frames_.back().get();
 
@@ -284,9 +289,20 @@ FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
     DCHECK(!id_attribute);
     DCHECK(!src_attribute);
   }
+
+  // If the frame is in the same process as its parent include the attribution
+  // in OnV8ContextCreated, otherwise it must be attached separately with
+  // OnRemoteIframeAttached.
   DCHECK(frame_impl->process_node());
-  frame_impl->process_node()->OnV8ContextCreated(std::move(description),
-                                                 std::move(attribution));
+  if (parent && parent->process_node() != frame_impl->process_node()) {
+    frame_impl->process_node()->OnV8ContextCreated(
+        std::move(description), mojom::IframeAttributionDataPtr());
+    V8ContextTracker::GetFromGraph(graph())->OnRemoteIframeAttachedForTesting(
+        frame_impl, parent, blink::RemoteFrameToken(), std::move(attribution));
+  } else {
+    frame_impl->process_node()->OnV8ContextCreated(std::move(description),
+                                                   std::move(attribution));
+  }
 
   return frame_impl;
 }

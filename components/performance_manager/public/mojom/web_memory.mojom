@@ -47,13 +47,21 @@ struct WebMemoryAttribution {
   string? id;
 };
 
+// The amount of memory used by a breakdown.
+struct WebMemoryUsage {
+  uint64 bytes;
+};
+
 // Describes a memory region and attributes it to a set of contexts.
 // Usually the set consists of a single context. If there are multiple
 // contexts then this means that the memory may be owned by any of them.
 struct WebMemoryBreakdownEntry {
-  uint64 bytes;
-  array<WebMemoryAttribution> attribution;
+  // The memory used in this breakdown. It is null for breakdowns that did not
+  // have a memory measurement (for example a frame that was added after the
+  // measurement started).
+  WebMemoryUsage? memory;
 
+  array<WebMemoryAttribution> attribution;
   // TODO(1085129): Add memory types once they are implemented.
 };
 

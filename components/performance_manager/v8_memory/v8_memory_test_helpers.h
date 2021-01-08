@@ -225,10 +225,7 @@ class WebMemoryTestHarness : public GraphTestHarness {
   using Super = GraphTestHarness;
 
   // Wrapper for memory usage bytes to improve test readability.
-  struct Bytes {
-    uint64_t bytes;
-    bool operator==(const Bytes& other) const { return bytes == other.bytes; }
-  };
+  using Bytes = base::Optional<uint64_t>;
 
   WebMemoryTestHarness();
   ~WebMemoryTestHarness() override;
@@ -243,7 +240,8 @@ class WebMemoryTestHarness : public GraphTestHarness {
       base::Optional<std::string> id_attribute = base::nullopt,
       base::Optional<std::string> src_attribute = base::nullopt) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes, parent,
-                            /*opener=*/nullptr, id_attribute, src_attribute);
+                            /*opener=*/nullptr, process_.get(), id_attribute,
+                            src_attribute);
   }
 
   // Creates a frame node as if from window.open and adds it to the graph.
@@ -251,7 +249,9 @@ class WebMemoryTestHarness : public GraphTestHarness {
                                         Bytes bytes,
                                         FrameNodeImpl* opener) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes,
-                            /*parent=*/nullptr, opener);
+                            /*parent=*/nullptr, opener, process_.get(),
+                            /*id_attribute=*/base::nullopt,
+                            /*src_attribute=*/base::nullopt);
   }
 
   // Creates a frame node in a different browsing instance and adds it to the
@@ -263,7 +263,8 @@ class WebMemoryTestHarness : public GraphTestHarness {
       base::Optional<std::string> id_attribute = base::nullopt,
       base::Optional<std::string> src_attribute = base::nullopt) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId + 1, bytes, parent,
-                            /*opener=*/nullptr, id_attribute, src_attribute);
+                            /*opener=*/nullptr, process_.get(), id_attribute,
+                            src_attribute);
   }
 
   // Creates a frame node in a different browsing instance as if from
@@ -273,7 +274,21 @@ class WebMemoryTestHarness : public GraphTestHarness {
       Bytes bytes,
       FrameNodeImpl* opener) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId + 1, bytes,
-                            /*parent=*/nullptr, opener);
+                            /*parent=*/nullptr, opener, process_.get(),
+                            /*id_attribute=*/base::nullopt,
+                            /*src_attribute=*/base::nullopt);
+  }
+
+  // Creates a frame node in a different process and adds it to the graph.
+  FrameNodeImpl* AddCrossProcessFrameNode(
+      std::string url,
+      Bytes bytes,
+      FrameNodeImpl* parent,
+      base::Optional<std::string> id_attribute = base::nullopt,
+      base::Optional<std::string> src_attribute = base::nullopt) {
+    return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes, parent,
+                            /*opener=*/nullptr, other_process_.get(),
+                            id_attribute, src_attribute);
   }
 
   ProcessNode* process_node() const { return process_.get(); }
@@ -282,16 +297,17 @@ class WebMemoryTestHarness : public GraphTestHarness {
   static constexpr int kDefaultBrowsingInstanceId = 0;
 
   // Creates and adds a new frame node to the graph.
-  FrameNodeImpl* AddFrameNodeImpl(
-      base::Optional<std::string> url,
-      int browsing_instance_id,
-      Bytes bytes,
-      FrameNodeImpl* parent = nullptr,
-      FrameNodeImpl* opener = nullptr,
-      base::Optional<std::string> id_attribute = base::nullopt,
-      base::Optional<std::string> src_attribute = base::nullopt);
+  FrameNodeImpl* AddFrameNodeImpl(base::Optional<std::string> url,
+                                  int browsing_instance_id,
+                                  Bytes bytes,
+                                  FrameNodeImpl* parent,
+                                  FrameNodeImpl* opener,
+                                  ProcessNodeImpl* process,
+                                  base::Optional<std::string> id_attribute,
+                                  base::Optional<std::string> src_attribute);
   int GetNextUniqueId();
   TestNodeWrapper<ProcessNodeImpl> process_;
+  TestNodeWrapper<ProcessNodeImpl> other_process_;
   std::vector<TestNodeWrapper<PageNodeImpl>> pages_;
   std::vector<TestNodeWrapper<FrameNodeImpl>> frames_;
   int next_unique_id_ = 0;
