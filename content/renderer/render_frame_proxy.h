@@ -216,12 +216,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
 
   mojom::RenderFrameProxyHost* GetFrameProxyHost();
 
-  // IPC handlers
-  void OnDeleteProxy();
-  void OnCompositorFrameSwapped(const IPC::Message& message);
-  void OnEnforceInsecureRequestPolicy(
-      blink::mojom::InsecureRequestPolicy policy);
-
   // mojom::RenderFrameProxy implementation:
   void EnableAutoResize(const gfx::Size& min_size,
                         const gfx::Size& max_size) override;
@@ -245,10 +239,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
 
   // The routing ID by which this RenderFrameProxy is known.
   const int routing_id_;
-
-  // The routing ID of the provisional RenderFrame (if any) that is meant to
-  // replace this RenderFrameProxy in the frame tree.
-  int provisional_frame_routing_id_;
 
   // Stores the WebRemoteFrame we are associated with.
   blink::WebRemoteFrame* web_frame_ = nullptr;

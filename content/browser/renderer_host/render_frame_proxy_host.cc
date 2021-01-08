@@ -166,7 +166,7 @@ RenderFrameProxyHost::~RenderFrameProxyHost() {
     // This can be removed once we don't have a swapped out state on
     // RenderFrame. See https://crbug.com/357747
     if (!frame_tree_node_->IsMainFrame())
-      Send(new UnfreezableFrameMsg_DeleteProxy(routing_id_));
+      GetAssociatedRemoteFrame()->DetachAndDispose();
   }
 
   // TODO(arthursonzogni): There are no known reason for removing the

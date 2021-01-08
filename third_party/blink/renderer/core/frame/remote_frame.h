@@ -167,6 +167,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void DidUpdateFramePolicy(const FramePolicy& frame_policy) override;
   void UpdateOpener(const base::Optional<base::UnguessableToken>&
                         opener_frame_token) override;
+  void DetachAndDispose() override;
 
   // Called only when this frame has a local frame owner.
   IntSize GetMainFrameViewportSize() const override;

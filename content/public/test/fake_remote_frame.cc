@@ -93,4 +93,6 @@ void FakeRemoteFrame::FakeRemoteFrame::BindFrameHostReceiver(
       std::move(handle)));
 }
 
+void FakeRemoteFrame::DetachAndDispose() {}
+
 }  // namespace content

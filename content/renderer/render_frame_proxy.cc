@@ -409,14 +409,7 @@ std::string RenderFrameProxy::unique_name() const {
 }
 
 bool RenderFrameProxy::OnMessageReceived(const IPC::Message& msg) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(RenderFrameProxy, msg)
-    IPC_MESSAGE_HANDLER(UnfreezableFrameMsg_DeleteProxy, OnDeleteProxy)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-
-  // Note: If |handled| is true, |this| may have been deleted.
-  return handled;
+  return false;
 }
 
 void RenderFrameProxy::OnAssociatedInterfaceRequest(
@@ -435,11 +428,6 @@ void RenderFrameProxy::OnAssociatedInterfaceRequest(
 
 bool RenderFrameProxy::Send(IPC::Message* message) {
   return agent_scheduling_group_.Send(message);
-}
-
-void RenderFrameProxy::OnDeleteProxy() {
-  DCHECK(web_frame_);
-  web_frame_->Detach();
 }
 
 void RenderFrameProxy::ChildProcessGone() {

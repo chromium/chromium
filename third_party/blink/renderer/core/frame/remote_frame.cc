@@ -143,6 +143,11 @@ RemoteFrame::~RemoteFrame() {
   DCHECK(!view_);
 }
 
+void RemoteFrame::DetachAndDispose() {
+  DCHECK(!IsMainFrame());
+  Detach(FrameDetachType::kRemove);
+}
+
 void RemoteFrame::Trace(Visitor* visitor) const {
   visitor->Trace(view_);
   visitor->Trace(security_context_);

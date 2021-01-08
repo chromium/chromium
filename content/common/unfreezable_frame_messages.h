@@ -23,8 +23,4 @@
 // Instructs the renderer to delete the RenderFrame.
 IPC_MESSAGE_ROUTED1(UnfreezableFrameMsg_Delete, content::FrameDeleteIntention)
 
-// Requests the corresponding RenderFrameProxy to be deleted and removed from
-// the frame tree.
-IPC_MESSAGE_ROUTED0(UnfreezableFrameMsg_DeleteProxy)
-
 #endif  // CONTENT_COMMON_UNFREEZABLE_FRAME_MESSAGES_H_
