@@ -735,7 +735,13 @@ const base::Feature kAbusiveNotificationPermissionRevocation{
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kRemoveStatusBarInWebApps{
-    "RemoveStatusBarInWebApps", base::FEATURE_DISABLED_BY_DEFAULT};
+    "RemoveStatusBarInWebApps",
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables permanent removal of Legacy Supervised Users on startup.
