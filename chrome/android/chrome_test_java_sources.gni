@@ -347,6 +347,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/omnibox/suggestions/tiles/TileSuggestionProcessorUnitTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchConsentUiRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchConsentUiTest.java",
+  "javatests/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchServiceRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandlerTest.java",
   "javatests/src/org/chromium/chrome/browser/page_info/ConnectionInfoViewTest.java",
   "javatests/src/org/chromium/chrome/browser/page_info/CookieControlsViewTest.java",

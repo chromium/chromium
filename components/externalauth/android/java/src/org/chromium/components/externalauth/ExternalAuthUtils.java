@@ -286,4 +286,12 @@ public class ExternalAuthUtils {
     protected String describeError(final int errorCode) {
         return GoogleApiAvailability.getInstance().getErrorString(errorCode);
     }
+
+    /**
+     * Sets an instance for testing.
+     * @param externalAuthUtils The instance to set for testing.
+     */
+    public static void setInstanceForTesting(ExternalAuthUtils externalAuthUtils) {
+        sInstance = externalAuthUtils;
+    }
 }

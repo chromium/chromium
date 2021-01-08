@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
@@ -35,9 +36,15 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import java.util.List;
 
 /**
- * A class responsible fore representing the current state of Chrome's integration with GSA.
+ * A class responsible for representing the current state of Chrome's integration with GSA.
  */
 public class GSAState {
+    /** Used to observe state changes in the class. */
+    public interface Observer {
+        /** Called when the GSA account name is set. */
+        void onSetGsaAccount();
+    }
+
     private static final String TAG = "GSAState";
 
     private static final int GSA_VERSION_FOR_DOCUMENT = 300401021;
@@ -67,6 +74,7 @@ public class GSAState {
      * The application context to use.
      */
     private final Context mContext;
+    private final ObserverList<Observer> mObserverList = new ObserverList<>();
 
     /**
      * Caches the result of a computation on whether GSA is available.
@@ -74,10 +82,10 @@ public class GSAState {
     private Boolean mGsaAvailable;
 
     /**
-     * The Google account being used by GSA according to the latest update we have received.
-     * This may be null.
+     * The Google account email address being used by GSA according to the latest update we have
+     * received.
      */
-    private String mGsaAccount;
+    private @Nullable String mGsaAccount;
 
     /**
      * Returns the singleton instance of GSAState and creates one if necessary.
@@ -110,6 +118,10 @@ public class GSAState {
      */
     public void setGsaAccount(String gsaAccount) {
         mGsaAccount = gsaAccount;
+
+        for (Observer observer : mObserverList) {
+            observer.onSetGsaAccount();
+        }
     }
 
     /**
@@ -275,5 +287,29 @@ public class GSAState {
         }
 
         return Boolean.parseBoolean(cursor.getString(0));
+    }
+
+    /**
+     * Adds an observer.
+     * @param observer The observer to add.
+     */
+    public void addObserver(@NonNull Observer observer) {
+        mObserverList.addObserver(observer);
+    }
+
+    /**
+     * Removes an observer.
+     * @param observer The observer to remove.
+     */
+    public void removeObserver(@NonNull Observer observer) {
+        mObserverList.removeObserver(observer);
+    }
+
+    /**
+     * Sets an instance for testing.
+     * @param gsaState The instance to set for testing.
+     */
+    public static void setInstanceForTesting(GSAState gsaState) {
+        sGSAState = gsaState;
     }
 }

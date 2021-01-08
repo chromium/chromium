@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -169,6 +167,8 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         mLocationBarDataProvider = locationBarDataProvider;
         mVoiceRecognitionHandler = voiceRecognitionHandler;
         mAssistantVoiceSearchServiceSupplier = assistantVoiceSearchSupplier;
+        mAssistantVoiceSearchServiceSupplier.onAvailable(
+                (assistantVoiceSearchService) -> onAssistantVoiceSearchServiceChanged());
 
         updateButtonVisibility();
         updateShouldAnimateIconChanges();
@@ -315,7 +315,7 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
     /** Updates visuals after the primary color has changed. */
     @CallSuper
     public void onPrimaryColorChanged() {
-        updateAssistantVoiceSearchColors();
+        updateAssistantVoiceSearchDrawableAndColors();
         updateUseDarkColors();
     }
 
@@ -369,27 +369,18 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
     }
 
     /* package */ void onAssistantVoiceSearchServiceChanged() {
-        AssistantVoiceSearchService assistantVoiceSearchService =
-                mAssistantVoiceSearchServiceSupplier.get();
-        assert assistantVoiceSearchService != null;
-        Drawable drawable = assistantVoiceSearchService.getCurrentMicDrawable();
-        mMicButton.setImageDrawable(drawable);
-        updateAssistantVoiceSearchColors();
+        updateAssistantVoiceSearchDrawableAndColors();
     }
 
-    private void updateAssistantVoiceSearchColors() {
+    private void updateAssistantVoiceSearchDrawableAndColors() {
         AssistantVoiceSearchService assistantVoiceSearchService =
                 mAssistantVoiceSearchServiceSupplier.get();
-        ColorStateList colorStateList;
-        // This will be called between inflation and initialization. For those calls, using a null
-        // ColorStateList should have no visible impact to the user.
-        if (assistantVoiceSearchService == null) {
-            colorStateList = null;
-        } else {
-            colorStateList = assistantVoiceSearchService.getMicButtonColorStateList(
-                    getPrimaryBackgroundColor(), getContext());
-        }
-        ApiCompatibilityUtils.setImageTintList(mMicButton, colorStateList);
+        if (assistantVoiceSearchService == null) return;
+
+        ApiCompatibilityUtils.setImageTintList(mMicButton,
+                assistantVoiceSearchService.getMicButtonColorStateList(
+                        getPrimaryBackgroundColor(), getContext()));
+        mMicButton.setImageDrawable(assistantVoiceSearchService.getCurrentMicDrawable());
     }
 
     /**
