@@ -585,6 +585,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<media::mojom::VideoDecodePerfHistory> receiver)
       override;
 
+  // Binds `receiever` to the `PushMessagingManager` instance owned by the
+  // render process host, and is used by workers via `BrowserInterfaceBroker`.
+  void BindPushMessaging(
+      mojo::PendingReceiver<blink::mojom::PushMessaging> receiver);
+
   // Binds |receiver| to a OneShotBackgroundSyncService instance owned by the
   // StoragePartition associated with the render process host, and is used by
   // frames and service workers via BrowserInterfaceBroker.
@@ -766,8 +771,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<blink::mojom::WebDatabaseHost> receiver);
   void BindAecDumpManager(
       mojo::PendingReceiver<blink::mojom::AecDumpManager> receiver);
-  void BindPushMessagingManager(
-      mojo::PendingReceiver<blink::mojom::PushMessaging> receiver);
   void BindP2PSocketManager(
       mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver);
   void CreateMediaLogRecordHost(

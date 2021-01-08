@@ -2292,11 +2292,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
           {base::TaskPriority::USER_BLOCKING, base::MayBlock()}));
 #endif
 
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::BindPushMessagingManager,
-                          weak_factory_.GetWeakPtr()));
-
   file_system_manager_impl_.reset(new FileSystemManagerImpl(
       GetID(), storage_partition_impl_->GetFileSystemContext(),
       ChromeBlobStorageContext::GetFor(GetBrowserContext())));
@@ -2533,8 +2528,9 @@ void RenderProcessHostImpl::CreatePeriodicSyncService(
       ->CreatePeriodicSyncService(std::move(receiver));
 }
 
-void RenderProcessHostImpl::BindPushMessagingManager(
+void RenderProcessHostImpl::BindPushMessaging(
     mojo::PendingReceiver<blink::mojom::PushMessaging> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   push_messaging_manager_->AddPushMessagingReceiver(std::move(receiver));
 }
 

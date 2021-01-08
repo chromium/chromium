@@ -1156,6 +1156,8 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
   map->Add<blink::mojom::PeriodicBackgroundSyncService>(
       BindServiceWorkerReceiver(
           &RenderProcessHostImpl::CreatePeriodicSyncService, host));
+  map->Add<blink::mojom::PushMessaging>(BindServiceWorkerReceiver(
+      &RenderProcessHostImpl::BindPushMessaging, host));
 }
 
 void PopulateBinderMapWithContext(
