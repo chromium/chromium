@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
@@ -20,7 +21,7 @@
 #include "components/policy/proto/record_constants.pb.h"
 #include "net/base/backoff_entry.h"
 
-#ifdef OS_CHROMEOS
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/profiles/profile.h"
 #endif  // OS_CHROMEOS
 

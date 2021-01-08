@@ -44,7 +44,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#ifdef OS_CHROMEOS
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -66,7 +66,7 @@ namespace {
 void GetCloudPolicyClient(
     base::OnceCallback<void(StatusOr<policy::CloudPolicyClient*>)>
         get_client_cb) {
-#ifdef OS_CHROMEOS
+#if defined(OS_CHROMEOS)
   policy::CloudPolicyManager* cloud_policy_manager =
       g_browser_process->platform_part()
           ->browser_policy_connector_chromeos()

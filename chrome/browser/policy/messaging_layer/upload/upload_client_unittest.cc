@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -22,7 +23,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_network_connection_tracker.h"
 
-#ifdef OS_CHROMEOS
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -174,7 +175,7 @@ class UploadClientTest : public ::testing::TestWithParam<bool> {
 
  protected:
   void SetUp() override {
-#ifdef OS_CHROMEOS
+#if defined(OS_CHROMEOS)
     // Set up fake primary profile.
     auto mock_user_manager =
         std::make_unique<testing::NiceMock<chromeos::FakeChromeUserManager>>();
@@ -193,7 +194,7 @@ class UploadClientTest : public ::testing::TestWithParam<bool> {
   }
 
   void TearDown() override {
-#ifdef OS_CHROMEOS
+#if defined(OS_CHROMEOS)
     user_manager_.reset();
     profile_.reset();
 #endif  // OS_CHROMEOS
@@ -202,7 +203,7 @@ class UploadClientTest : public ::testing::TestWithParam<bool> {
   bool need_encryption_key() const { return GetParam(); }
 
   content::BrowserTaskEnvironment task_envrionment_;
-#ifdef OS_CHROMEOS
+#if defined(OS_CHROMEOS)
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
 #endif  // OS_CHROMEOS

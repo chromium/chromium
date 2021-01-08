@@ -9,6 +9,7 @@
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
@@ -22,7 +23,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#ifdef OS_CHROMEOS
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -73,7 +74,7 @@ class TestEvent {
 class ReportClientTest : public testing::Test {
  public:
   void SetUp() override {
-#ifdef OS_CHROMEOS
+#if defined(OS_CHROMEOS)
     // Set up fake primary profile.
     auto mock_user_manager =
         std::make_unique<testing::NiceMock<chromeos::FakeChromeUserManager>>();
@@ -101,7 +102,7 @@ class ReportClientTest : public testing::Test {
   }
 
   void TearDown() override {
-#ifdef OS_CHROMEOS
+#if defined(OS_CHROMEOS)
     user_manager_.reset();
     profile_.reset();
 #endif  // OS_CHROMEOS
@@ -110,7 +111,7 @@ class ReportClientTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_envrionment_;
   std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;
-#ifdef OS_CHROMEOS
+#if defined(OS_CHROMEOS)
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
 #endif  // OS_CHROMEOS
