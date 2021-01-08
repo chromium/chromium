@@ -5730,8 +5730,8 @@
 
     'gpu_angle_mac_telemetry_tests': [
       'gpu_info_collection_telemetry_tests',
-      'gpu_webgl2_conformance_telemetry_tests',
-      'gpu_webgl_conformance_telemetry_tests',
+      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_validating_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
       'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
