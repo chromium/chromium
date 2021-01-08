@@ -46,10 +46,8 @@ std::unique_ptr<ArcSessionManager> CreateTestArcSessionManager(
   return manager;
 }
 
-bool ExpandPropertyFilesForTesting(ArcSessionManager* arc_session_manager,
-                                   const base::FilePath& temp_dir) {
+void ExpandPropertyFilesForTesting(ArcSessionManager* arc_session_manager) {
   arc_session_manager->OnExpandPropertyFilesAndReadSaltForTesting(true);
-  return true;
 }
 
 }  // namespace arc

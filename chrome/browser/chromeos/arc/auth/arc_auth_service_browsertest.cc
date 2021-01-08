@@ -227,8 +227,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     ArcSessionManager::Get()->SetArcSessionRunnerForTesting(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)));
-    EXPECT_TRUE(ExpandPropertyFilesForTesting(ArcSessionManager::Get(),
-                                              temp_dir_.GetPath()));
+    ExpandPropertyFilesForTesting(ArcSessionManager::Get());
 
     chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
   }

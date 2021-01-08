@@ -11,7 +11,6 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
@@ -593,8 +592,6 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
   }
 
   void SetUpOnMainThread() override {
-    ASSERT_TRUE(arc_temp_dir_.CreateUniqueTempDir());
-
     if (params_.is_tablet)
       ash::ShellTestApi().SetTabletModeEnabledForTest(true);
 
@@ -604,8 +601,7 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
       arc::ArcSessionManager::Get()->SetArcSessionRunnerForTesting(
           std::make_unique<arc::ArcSessionRunner>(
               base::BindRepeating(arc::FakeArcSession::Create)));
-      EXPECT_TRUE(arc::ExpandPropertyFilesForTesting(
-          arc::ArcSessionManager::Get(), arc_temp_dir_.GetPath()));
+      arc::ExpandPropertyFilesForTesting(arc::ArcSessionManager::Get());
     }
   }
   void TearDownInProcessBrowserTestFixture() override {
@@ -645,7 +641,6 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
   std::unique_ptr<ScopedTestRecommendAppsFetcherFactory>
       recommend_apps_fetcher_factory_;
   net::EmbeddedTestServer* arc_tos_server_;
-  base::ScopedTempDir arc_temp_dir_;
 
   DISALLOW_COPY_AND_ASSIGN(OobeEndToEndTestSetupMixin);
 };

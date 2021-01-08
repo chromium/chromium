@@ -131,8 +131,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
             base::BindRepeating(FakeArcSession::Create)));
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    EXPECT_TRUE(ExpandPropertyFilesForTesting(ArcSessionManager::Get(),
-                                              temp_dir_.GetPath()));
+    ExpandPropertyFilesForTesting(ArcSessionManager::Get());
 
     chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
 
