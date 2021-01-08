@@ -129,7 +129,13 @@ Polymer({
      * @private {number}
      * @const
      */
-    DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS_: {type: Number, value: 40 * 1000}
+    DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS_: {type: Number, value: 40 * 1000},
+
+    /**
+     * Tracks if we've given the ChromeVox hint yet.
+     * @private
+     */
+    chromeVoxHintGiven_: {type: Boolean, value: false}
   },
 
   /** Overridden from LoginScreenBehavior. */
@@ -668,7 +674,7 @@ Polymer({
    * @private
    */
   onVoiceNotLoaded_() {
-    if (!this.voicesChangedListenerMaybeGiveChromeVoxHint_) {
+    if (this.voicesChangedListenerMaybeGiveChromeVoxHint_ === undefined) {
       // Add voiceschanged listener that tries to give the hint when new voices
       // are loaded.
       this.voicesChangedListenerMaybeGiveChromeVoxHint_ =
@@ -700,6 +706,14 @@ Polymer({
    * @private
    */
   giveChromeVoxHint_(locale, options, isDefaultHint) {
+    if (this.chromeVoxHintGiven_) {
+      // Only give the hint once.
+      // Due to event listeners/timeouts, there is the chance that this gets
+      // called multiple times.
+      return;
+    }
+
+    this.chromeVoxHintGiven_ = true;
     if (isDefaultHint) {
       console.warn(
           'No voice available for ' + loadTimeData.getString('language') +
