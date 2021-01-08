@@ -408,6 +408,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "chrome/app/chrome_crash_reporter_client.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_content_file_system_backend_delegate.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_backend_delegate.h"
 #include "chrome/browser/chromeos/chrome_browser_main_chromeos.h"
@@ -425,6 +426,7 @@
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/chromeos/policy/system_proxy_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/smb_client/fileapi/smbfs_file_system_backend_delegate.h"
 #include "chrome/browser/chromeos/system/input_device_settings.h"
@@ -5095,6 +5097,21 @@ ChromeContentBrowserClient::CreateLoginDelegate(
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
     LoginAuthRequiredCallback auth_required_callback) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  policy::SystemProxyManager* system_proxy_manager =
+      g_browser_process->platform_part()
+          ->browser_policy_connector_chromeos()
+          ->GetSystemProxyManager();
+  // For Managed Guest Session and Kiosk devices, the credentials configured
+  // via the policy SystemProxySettings may be used for proxy authentication.
+  // Note: |system_proxy_manager| may be missing in tests.
+  if (system_proxy_manager && system_proxy_manager->CanUsePolicyCredentials(
+                                  auth_info, first_auth_attempt)) {
+    return system_proxy_manager->CreateLoginDelegate(
+        std::move(auth_required_callback));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // For subresources, create a LoginHandler directly, which may show a login
   // prompt to the user. Main frame resources go through LoginTabHelper, which
   // manages a more complicated flow to avoid confusion about which website is

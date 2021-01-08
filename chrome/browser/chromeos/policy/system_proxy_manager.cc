@@ -5,6 +5,8 @@
 #include "chrome/browser/chromeos/policy/system_proxy_manager.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,8 +19,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/system_proxy/system_proxy_client.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -46,6 +50,40 @@
 
 namespace {
 const char kSystemProxyService[] = "system-proxy-service";
+
+// A `content::LoginDelegate` implementation that returns to the caller the
+// proxy credentials set by the policy `SystemProxySettings`.
+class SystemProxyLoginHandler : public content::LoginDelegate {
+ public:
+  SystemProxyLoginHandler() = default;
+  ~SystemProxyLoginHandler() override = default;
+
+  SystemProxyLoginHandler(const SystemProxyLoginHandler&) = delete;
+  SystemProxyLoginHandler& operator=(const SystemProxyLoginHandler&) = delete;
+
+  void AuthenticateWithCredentials(
+      const std::string& username,
+      const std::string& password,
+      LoginAuthRequiredCallback auth_required_callback) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SystemProxyLoginHandler::InvokeWithCredentials,
+                       weak_factory_.GetWeakPtr(), username, password,
+                       std::move(auth_required_callback)));
+  }
+
+ private:
+  void InvokeWithCredentials(const std::string& username,
+                             const std::string& password,
+                             LoginAuthRequiredCallback auth_required_callback) {
+    std::move(auth_required_callback)
+        .Run(base::make_optional<net::AuthCredentials>(
+            base::UTF8ToUTF16(username), base::UTF8ToUTF16(password)));
+  }
+
+  base::WeakPtrFactory<SystemProxyLoginHandler> weak_factory_{this};
+};
+
 }  // namespace
 
 namespace policy {
@@ -378,6 +416,47 @@ void SystemProxyManager::CloseAuthDialogForTest() {
 void SystemProxyManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kSystemProxyUserTrafficHostAndPort,
                                /*default_value=*/std::string());
+}
+
+bool SystemProxyManager::CanUsePolicyCredentials(
+    const net::AuthChallengeInfo& auth_info,
+    bool first_auth_attempt) {
+  if (!auth_info.is_proxy || !first_auth_attempt)
+    return false;
+
+  if (!chromeos::LoginState::IsInitialized() ||
+      (!chromeos::LoginState::Get()->IsPublicSessionUser() &&
+       !chromeos::LoginState::Get()->IsKioskApp())) {
+    VLOG(1) << "Only kiosk app and MGS can reuse the policy provided proxy "
+               "credentials for authentication";
+    return false;
+  }
+
+  if (!system_proxy_enabled_ || system_services_username_.empty() ||
+      system_services_password_.empty()) {
+    return false;
+  }
+
+  if (!IsManagedProxyConfigured()) {
+    return false;
+  }
+  if (!policy_credentials_auth_schemes_.empty()) {
+    if (!base::Contains(policy_credentials_auth_schemes_, auth_info.scheme)) {
+      VLOG(1) << "Auth scheme not allowed by policy";
+      return false;
+    }
+  }
+
+  return true;
+}
+
+std::unique_ptr<content::LoginDelegate> SystemProxyManager::CreateLoginDelegate(
+    LoginAuthRequiredCallback auth_required_callback) {
+  auto login_delegate = std::make_unique<SystemProxyLoginHandler>();
+  login_delegate->AuthenticateWithCredentials(
+      system_services_username_, system_services_password_,
+      std::move(auth_required_callback));
+  return std::move(login_delegate);
 }
 
 void SystemProxyManager::OnSetAuthenticationDetails(

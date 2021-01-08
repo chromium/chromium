@@ -17,6 +17,8 @@
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
 #include "chromeos/network/network_state_handler_observer.h"
+#include "components/user_manager/user_manager.h"
+#include "content/public/browser/content_browser_client.h"
 #include "net/base/auth.h"
 
 namespace chromeos {
@@ -24,6 +26,10 @@ class NetworkState;
 class RequestSystemProxyCredentialsView;
 class SystemProxyNotification;
 }  // namespace chromeos
+
+namespace content {
+class LoginDelegate;
+}
 
 namespace system_proxy {
 class SetAuthenticationDetailsResponse;
@@ -80,6 +86,23 @@ class SystemProxyManager : public chromeos::NetworkStateHandlerObserver {
 
   // Registers prefs stored in user profiles.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // Indicates whether the credentials set via the device policy
+  // SystemProxySettings can be used for proxy authentication in Chrome. The
+  // following conditions must be true:
+  // - the current session must be Managed Guest Session (MGS) or Kiosk app;
+  // - the proxy is set via policy;
+  // - System-proxy is enabled and credentials are set via policy;
+  // - `first_auth_attempt` is true;
+  // - `auth_info.scheme` must be allowed by the SystemProxySettings policy.
+  bool CanUsePolicyCredentials(const net::AuthChallengeInfo& auth_info,
+                               bool first_auth_attempt);
+
+  // Returns a login delegate that posts `auth_required_callback` with the
+  // credentials provided by the policy SystemProxySettings. Callers must verify
+  // that `CanUsePolicyCredentials` is true before calling this method.
+  std::unique_ptr<content::LoginDelegate> CreateLoginDelegate(
+      LoginAuthRequiredCallback auth_required_callback);
 
  private:
   // NetworkStateHandlerObserver implementation

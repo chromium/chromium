@@ -20,6 +20,8 @@
 #include "chromeos/network/network_handler.h"
 #include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/proxy_config/proxy_prefs.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
@@ -43,6 +45,8 @@ using testing::WithArg;
 namespace {
 constexpr char kBrowserUsername[] = "browser_username";
 constexpr char kBrowserPassword[] = "browser_password";
+constexpr char kPolicyUsername[] = "policy_username";
+constexpr char kPolicyPassword[] = "policy_password";
 constexpr char kKerberosActivePrincipalName[] = "kerberos_princ_name";
 constexpr char kProxyAuthUrl[] = "http://example.com:3128";
 constexpr char kProxyAuthEmptyPath[] = "http://example.com:3128/";
@@ -73,6 +77,22 @@ network::NetworkService* GetNetworkService() {
   return network::NetworkService::GetNetworkServiceForTesting();
 }
 
+void SetManagedProxy(Profile* profile) {
+  // Configure a proxy via user policy.
+  base::Value proxy_config(base::Value::Type::DICTIONARY);
+  proxy_config.SetKey("mode",
+                      base::Value(ProxyPrefs::kFixedServersProxyModeName));
+  proxy_config.SetKey("server", base::Value(kProxyAuthUrl));
+  profile->GetPrefs()->Set(proxy_config::prefs::kProxy, proxy_config);
+}
+
+net::AuthChallengeInfo GetAuthInfo() {
+  net::AuthChallengeInfo auth_info;
+  auth_info.is_proxy = true;
+  auth_info.scheme = kScheme;
+  return auth_info;
+}
+
 }  // namespace
 
 namespace policy {
@@ -88,6 +108,7 @@ class SystemProxyManagerTest : public testing::Test {
     testing::Test::SetUp();
     chromeos::shill_clients::InitializeFakes();
     chromeos::NetworkHandler::Initialize();
+    chromeos::LoginState::Initialize();
 
     profile_ = std::make_unique<TestingProfile>();
     chromeos::SystemProxyClient::InitializeFake();
@@ -95,11 +116,14 @@ class SystemProxyManagerTest : public testing::Test {
         chromeos::CrosSettings::Get(), local_state_.Get());
     // Listen for pref changes for the primary profile.
     system_proxy_manager_->StartObservingPrimaryProfilePrefs(profile_.get());
+    chromeos::NetworkHandler::Get()->InitializePrefServices(
+        profile_->GetPrefs(), local_state_.Get());
   }
 
   void TearDown() override {
     system_proxy_manager_->StopObservingPrimaryProfilePrefs();
     system_proxy_manager_.reset();
+    chromeos::LoginState::Shutdown();
     chromeos::SystemProxyClient::Shutdown();
     chromeos::NetworkHandler::Shutdown();
     chromeos::shill_clients::Shutdown();
@@ -332,6 +356,100 @@ TEST_F(SystemProxyManagerTest, ArcWorkerAddressPrefSynced) {
   EXPECT_TRUE(profile_->GetPrefs()
                   ->GetString(::prefs::kSystemProxyUserTrafficHostAndPort)
                   .empty());
+}
+
+// Verifies that only MGS and Kiosk can use the policy provided credentials.
+TEST_F(SystemProxyManagerTest, CanUsePolicyCredentialsUserType) {
+  SetPolicy(/*system_proxy_enabled=*/true,
+            /*system_services_username=*/kPolicyUsername,
+            /*system_services_password=*/kPolicyPassword);
+  SetManagedProxy(profile_.get());
+
+  chromeos::LoginState::Get()->SetLoggedInState(
+      chromeos::LoginState::LOGGED_IN_ACTIVE,
+      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
+
+  EXPECT_TRUE(system_proxy_manager_->CanUsePolicyCredentials(
+      GetAuthInfo(), /*first_auth_attempt=*/true));
+
+  chromeos::LoginState::Get()->SetLoggedInState(
+      chromeos::LoginState::LOGGED_IN_ACTIVE,
+      chromeos::LoginState::LOGGED_IN_USER_KIOSK_APP);
+
+  EXPECT_TRUE(system_proxy_manager_->CanUsePolicyCredentials(
+      GetAuthInfo(), /*first_auth_attempt=*/true));
+
+  chromeos::LoginState::Get()->SetLoggedInState(
+      chromeos::LoginState::LOGGED_IN_ACTIVE,
+      chromeos::LoginState::LOGGED_IN_USER_REGULAR);
+
+  EXPECT_FALSE(system_proxy_manager_->CanUsePolicyCredentials(
+      GetAuthInfo(), /*first_auth_attempt=*/true));
+}
+
+// Verifies that the policy provided credentials are only used for proxy auth.
+TEST_F(SystemProxyManagerTest, CanUsePolicyCredentialsOriginServer) {
+  SetPolicy(/*system_proxy_enabled=*/true,
+            /*system_services_username=*/kPolicyUsername,
+            /*system_services_password=*/kPolicyPassword);
+  SetManagedProxy(profile_.get());
+
+  net::AuthChallengeInfo auth_info = GetAuthInfo();
+  auth_info.is_proxy = false;
+  chromeos::LoginState::Get()->SetLoggedInState(
+      chromeos::LoginState::LOGGED_IN_ACTIVE,
+      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
+
+  EXPECT_FALSE(system_proxy_manager_->CanUsePolicyCredentials(
+      auth_info, /*first_auth_attempt=*/true));
+}
+
+// Verifies that the policy provided credentials are only used for managed
+// proxies.
+TEST_F(SystemProxyManagerTest, CanUsePolicyCredentialsNoManagedProxy) {
+  SetPolicy(/*system_proxy_enabled=*/true,
+            /*system_services_username=*/kPolicyUsername,
+            /*system_services_password=*/kPolicyPassword);
+
+  chromeos::LoginState::Get()->SetLoggedInState(
+      chromeos::LoginState::LOGGED_IN_ACTIVE,
+      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
+
+  EXPECT_FALSE(system_proxy_manager_->CanUsePolicyCredentials(
+      GetAuthInfo(), /*first_auth_attempt=*/true));
+}
+
+// Verifies that `CanUsePolicyCredentials` returns false if no credentials are
+// specified by policy.
+TEST_F(SystemProxyManagerTest, NoPolicyCredentials) {
+  SetPolicy(/*system_proxy_enabled=*/true,
+            /*system_services_username=*/"",
+            /*system_services_password=*/"");
+  SetManagedProxy(profile_.get());
+
+  chromeos::LoginState::Get()->SetLoggedInState(
+      chromeos::LoginState::LOGGED_IN_ACTIVE,
+      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
+
+  EXPECT_FALSE(system_proxy_manager_->CanUsePolicyCredentials(
+      GetAuthInfo(), /*first_auth_attempt=*/true));
+}
+
+// Verifies that `CanUsePolicyCredentials` is only returning true for the first
+// auth attempt.
+TEST_F(SystemProxyManagerTest, CanUsePolicyCredentialsMgsMaxTries) {
+  SetPolicy(/*system_proxy_enabled=*/true,
+            /*system_services_username=*/kPolicyUsername,
+            /*system_services_password=*/kPolicyPassword);
+  SetManagedProxy(profile_.get());
+
+  chromeos::LoginState::Get()->SetLoggedInState(
+      chromeos::LoginState::LOGGED_IN_ACTIVE,
+      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
+  EXPECT_TRUE(system_proxy_manager_->CanUsePolicyCredentials(
+      GetAuthInfo(), /*first_auth_attempt=*/true));
+  EXPECT_FALSE(system_proxy_manager_->CanUsePolicyCredentials(
+      GetAuthInfo(), /*first_auth_attempt=*/false));
 }
 
 }  // namespace policy

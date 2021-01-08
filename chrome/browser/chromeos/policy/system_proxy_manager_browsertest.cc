@@ -17,7 +17,10 @@
 #include "chrome/browser/chromeos/policy/system_proxy_manager.h"
 #include "chrome/browser/chromeos/ui/request_system_proxy_credentials_view.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/login/login_handler.h"
+#include "chrome/browser/ui/login/login_handler_test_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -29,6 +32,7 @@
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -46,8 +50,16 @@
 #include "components/proxy_config/proxy_prefs.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/proxy_server.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/http/http_auth_cache.h"
+#include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/url_request/url_request_context.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -616,6 +628,169 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerPolicyCredentialsBrowserTest,
   EXPECT_EQ(++set_auth_details_call_count,
             client_test_interface()->GetSetAuthenticationDetailsCallCount());
   ExpectSystemCredentialsSent(kUsername, kPassword, {"ntlm"});
+}
+
+namespace {
+constexpr char kProxyUsername[] = "foo";
+constexpr char kProxyPassword[] = "bar";
+constexpr char kBadUsername[] = "bad-username";
+constexpr char kBadPassword[] = "bad-pwd";
+constexpr char kOriginHostname[] = "a.test";
+}  // namespace
+
+class SystemProxyCredentialsReuseBrowserTest
+    : public SystemProxyManagerPolicyCredentialsBrowserTest {
+ public:
+  SystemProxyCredentialsReuseBrowserTest()
+      : proxy_server_(std::make_unique<net::SpawnedTestServer>(
+            net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
+            base::FilePath())) {}
+  SystemProxyCredentialsReuseBrowserTest(
+      const SystemProxyCredentialsReuseBrowserTest&) = delete;
+  SystemProxyCredentialsReuseBrowserTest& operator=(
+      const SystemProxyCredentialsReuseBrowserTest&) = delete;
+  ~SystemProxyCredentialsReuseBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule(kOriginHostname, "127.0.0.1");
+    proxy_server_->set_redirect_connect_to_localhost(true);
+    ASSERT_TRUE(proxy_server_->Start());
+
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_->ServeFilesFromSourceDirectory("chrome/test/data");
+    net::test_server::RegisterDefaultHandlers(https_server_.get());
+    ASSERT_TRUE(https_server_->Start());
+  }
+
+ protected:
+  content::WebContents* GetWebContents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void SetManagedProxy() {
+    // Configure a proxy via user policy.
+    base::Value proxy_config(base::Value::Type::DICTIONARY);
+    proxy_config.SetKey("mode",
+                        base::Value(ProxyPrefs::kFixedServersProxyModeName));
+    proxy_config.SetKey(
+        "server", base::Value(proxy_server_->host_port_pair().ToString()));
+    browser()->profile()->GetPrefs()->Set(proxy_config::prefs::kProxy,
+                                          proxy_config);
+    RunUntilIdle();
+  }
+
+  GURL GetServerUrl(const std::string& page) {
+    return https_server_->GetURL(kOriginHostname, page);
+  }
+
+  // Navigates to the test page "/simple.html" and authenticates in the proxy
+  // login dialog with `username` and `password`.
+  void LoginWithDialog(const std::string& username,
+                       const std::string& password) {
+    LoginPromptBrowserTestObserver login_observer;
+    login_observer.Register(content::Source<content::NavigationController>(
+        &GetWebContents()->GetController()));
+    WindowedAuthNeededObserver auth_needed(&GetWebContents()->GetController());
+    ui_test_utils::NavigateToURL(browser(), GetServerUrl("/simple.html"));
+    auth_needed.Wait();
+    WindowedAuthSuppliedObserver auth_supplied(
+        &GetWebContents()->GetController());
+    LoginHandler* login_handler = login_observer.handlers().front();
+    login_handler->SetAuth(base::ASCIIToUTF16(username),
+                           base::ASCIIToUTF16(password));
+    auth_supplied.Wait();
+    EXPECT_EQ(1, login_observer.auth_supplied_count());
+  }
+
+  void CheckEntryInHttpAuthCache(const std::string& auth_scheme,
+                                 const std::string& expected_username,
+                                 const std::string& expected_password) {
+    network::mojom::NetworkContext* network_context =
+        content::BrowserContext::GetDefaultStoragePartition(
+            browser()->profile())
+            ->GetNetworkContext();
+    std::string username;
+    std::string password;
+    base::RunLoop loop;
+    network_context->LookupProxyAuthCredentials(
+        net::ProxyServer(net::ProxyServer::SCHEME_HTTP,
+                         proxy_server_->host_port_pair()),
+        auth_scheme, "MyRealm1",
+        base::BindOnce(
+            [](std::string* username, std::string* password,
+               base::OnceClosure closure,
+               const base::Optional<net::AuthCredentials>& credentials) {
+              if (credentials) {
+                *username = base::UTF16ToUTF8(credentials->username());
+                *password = base::UTF16ToUTF8(credentials->password());
+              }
+              std::move(closure).Run();
+            },
+            &username, &password, loop.QuitClosure()));
+    loop.Run();
+    EXPECT_EQ(username, expected_username);
+    EXPECT_EQ(password, expected_password);
+  }
+
+  SystemProxyManager* GetSystemProxyManager() {
+    return g_browser_process->platform_part()
+        ->browser_policy_connector_chromeos()
+        ->GetSystemProxyManager();
+  }
+
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  // A proxy server which requires authentication using the 'Basic'
+  // authentication method.
+  std::unique_ptr<net::SpawnedTestServer> proxy_server_;
+};
+
+// Verifies that the policy provided credentials are not used for regular users.
+IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest, RegularUser) {
+  SetManagedProxy();
+  SetPolicyCredentials(kProxyUsername, kProxyPassword);
+  LoginWithDialog(kProxyUsername, kProxyPassword);
+  CheckEntryInHttpAuthCache("Basic", kProxyUsername, kProxyPassword);
+}
+
+// Verifies that the policy provided credentials are used for MGS.
+IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
+                       PolicyCredentialsUsed) {
+  SetManagedProxy();
+  chromeos::LoginState::Get()->SetLoggedInState(
+      chromeos::LoginState::LOGGED_IN_ACTIVE,
+      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
+  SetPolicyCredentials(kProxyUsername, kProxyPassword);
+  ui_test_utils::NavigateToURL(browser(), GetServerUrl("/simple.html"));
+  CheckEntryInHttpAuthCache("Basic", kProxyUsername, kProxyPassword);
+}
+
+// Verifies that if the policy provided proxy credentials are not correct in a
+// MGS, then the user is prompted for credentials.
+IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
+                       BadPolicyCredentials) {
+  SetManagedProxy();
+  chromeos::LoginState::Get()->SetLoggedInState(
+      chromeos::LoginState::LOGGED_IN_ACTIVE,
+      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
+  SetPolicyCredentials(kBadUsername, kBadPassword);
+  LoginWithDialog(kProxyUsername, kProxyPassword);
+  CheckEntryInHttpAuthCache("Basic", kProxyUsername, kProxyPassword);
+}
+
+// Verifies that the policy provided proxy credentials are only used for
+// authentication schemes allowed by the SystemProxySettings policy.
+IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
+                       RestrictedPolicyCredentials) {
+  SetManagedProxy();
+  chromeos::LoginState::Get()->SetLoggedInState(
+      chromeos::LoginState::LOGGED_IN_ACTIVE,
+      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
+  SetPolicyCredentials(kProxyUsername, kProxyPassword, R"("ntlm","digest")");
+  LoginWithDialog(kProxyUsername, kProxyPassword);
+  CheckEntryInHttpAuthCache("Basic", kProxyUsername, kProxyPassword);
 }
 
 }  // namespace policy
