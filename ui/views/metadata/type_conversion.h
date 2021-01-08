@@ -45,10 +45,14 @@ using ArgType =
                               const T&>::type;
 
 // General Type Conversion Template Functions ---------------------------------
-template <typename T>
-struct TypeConverter {
-  static constexpr bool is_serializable = std::is_enum<T>::value;
+template <bool serializable>
+struct BaseTypeConverter {
+  static constexpr bool is_serializable = serializable;
   static bool IsSerializable() { return is_serializable; }
+};
+
+template <typename T>
+struct TypeConverter : BaseTypeConverter<std::is_enum<T>::value> {
   static base::string16 ToString(ArgType<T> source_value);
   static base::Optional<T> FromString(const base::string16& source_value);
 };
@@ -116,9 +120,7 @@ VIEWS_EXPORT base::Optional<SkColor> RgbaPiecesToSkColor(
 
 #define DECLARE_CONVERSIONS(T)                                               \
   template <>                                                                \
-  struct VIEWS_EXPORT TypeConverter<T> {                                     \
-    static constexpr bool is_serializable = true;                            \
-    static bool IsSerializable() { return is_serializable; }                 \
+  struct VIEWS_EXPORT TypeConverter<T> : BaseTypeConverter<true> {           \
     static base::string16 ToString(ArgType<T> source_value);                 \
     static base::Optional<T> FromString(const base::string16& source_value); \
   };
@@ -149,9 +151,8 @@ DECLARE_CONVERSIONS(gfx::Insets)
 VIEWS_EXPORT const base::string16& GetNullOptStr();
 
 template <typename T>
-struct TypeConverter<base::Optional<T>> {
-  static constexpr bool is_serializable = TypeConverter<T>::is_serializable;
-  static bool IsSerializable() { return is_serializable; }
+struct TypeConverter<base::Optional<T>>
+    : BaseTypeConverter<TypeConverter<T>::is_serializable> {
   static base::string16 ToString(ArgType<base::Optional<T>> source_value) {
     if (!source_value)
       return GetNullOptStr();
@@ -168,9 +169,7 @@ struct TypeConverter<base::Optional<T>> {
 };
 
 template <typename T>
-struct TypeConverter<std::unique_ptr<T>> {
-  static constexpr bool is_serializable = false;
-  static bool IsSerializable() { return is_serializable; }
+struct TypeConverter<std::unique_ptr<T>> : BaseTypeConverter<false> {
   static base::string16 ToString(const std::unique_ptr<T>& source_value);
   static base::Optional<std::unique_ptr<T>> FromString(
       const base::string16& source_value);
