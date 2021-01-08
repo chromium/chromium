@@ -476,7 +476,7 @@ public class TabListMediatorUnitTest {
                 .run(mModel.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mGridCardOnClickListenerProvider)
-                .onTabSelecting(mModel.get(1).model.get(TabProperties.TAB_ID));
+                .onTabSelecting(mModel.get(1).model.get(TabProperties.TAB_ID), true);
     }
 
     @Test
@@ -2052,7 +2052,7 @@ public class TabListMediatorUnitTest {
                 .run(mModel.get(0).model.get(TabProperties.TAB_ID));
 
         verify(mGridCardOnClickListenerProvider)
-                .onTabSelecting(mModel.get(0).model.get(TabProperties.TAB_ID));
+                .onTabSelecting(mModel.get(0).model.get(TabProperties.TAB_ID), true);
         verify(mTab1).loadUrl(
                 refEq(new LoadUrlParams(searchUrl, PageTransition.KEYWORD_GENERATED)));
     }
@@ -2083,7 +2083,7 @@ public class TabListMediatorUnitTest {
                 .run(mModel.get(0).model.get(TabProperties.TAB_ID));
 
         verify(mGridCardOnClickListenerProvider)
-                .onTabSelecting(mModel.get(0).model.get(TabProperties.TAB_ID));
+                .onTabSelecting(mModel.get(0).model.get(TabProperties.TAB_ID), true);
         verify(navigationController, never()).goToOffset(0);
 
         doReturn(webContents).when(mTab1).getWebContents();
