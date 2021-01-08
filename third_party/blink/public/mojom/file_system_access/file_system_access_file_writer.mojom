@@ -32,13 +32,15 @@ interface FileSystemAccessFileWriter {
 
   // Closes the file writer. This will materialize the writes operations on the
   // intended file target in the case of atomic writes.
+  // The mojo pipe will be destroyed when Close() completes.
   // Specify the |autoClose| flag to ensure Close() is automatically invoked
   // when the mojo pipe closes.
   // Returns whether the operation succeeded.
   Close() => (FileSystemAccessError result);
 
   // Aborts the write operation, resulting in the writes not being committed,
-  // even if autoClose is specified. All further operations will be rejected.
+  // even if |autoClose| is specified. The mojo pipe will be destroyed when
+  // Abort() completes.
   // Returns whether the write operation was aborted successfully.
   Abort() => (FileSystemAccessError result);
 };

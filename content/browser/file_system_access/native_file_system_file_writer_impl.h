@@ -66,7 +66,9 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
                    WriteStreamCallback callback) override;
 
   void Truncate(uint64_t length, TruncateCallback callback) override;
+  // The writer will be destroyed upon completion.
   void Close(CloseCallback callback) override;
+  // The writer will be destroyed upon completion.
   void Abort(AbortCallback callback) override;
 
   using HashCallback = base::OnceCallback<
@@ -82,10 +84,13 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
 
   mojo::Receiver<blink::mojom::FileSystemAccessFileWriter> receiver_;
 
+  // If the mojo pipe is severed before either Close() or Abort() is invoked,
+  // the transaction is aborted from the OnDisconnect method. Otherwise, the
+  // writer will be destroyed upon completion of Close() or Abort().
   void OnDisconnect();
 
-  // Delete the FileWriter after Close if the mojo pipe is unbound.
-  void CallCloseCallbackAndMaybeDeleteThis(
+  // Destroys the file writer after calling the close callback.
+  void CallCloseCallbackAndDeleteThis(
       blink::mojom::FileSystemAccessErrorPtr result);
 
   void WriteImpl(uint64_t offset,
@@ -125,44 +130,13 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
 
   void ComputeHashForSwapFile(HashCallback callback);
 
-  enum class State {
-    // The writer accepts write operations.
-    kOpen,
-    // The writer does not accept write operations and is in the process of
-    // closing.
-    kClosePending,
-    // The writer does not accept write operations and has entered an error
-    // state. A swap file may need to be purged.
-    kCloseError,
-    // The writer does not accept write operations. There should be no more swap
-    // file.
-    kClosed,
-  };
-  bool is_closed() const { return state_ != State::kOpen; }
-  // Returns whether the File Writer is in a state where any files can be
-  // deleted. We do not want to delete the files if there are clean-up
-  // operations in-flight.
-  bool can_purge() const {
-    return state_ == State::kOpen || state_ == State::kCloseError;
-  }
+  bool is_close_pending() const { return !close_callback_.is_null(); }
 
   // We write using this file URL. When `Close()` is invoked, we
   // execute a move operation from the swap URL to the target URL at `url_`. In
   // most filesystems, this move operation is atomic.
   storage::FileSystemURL swap_url_;
 
-  // NativeFileSystemWriter lifetime management has the following cases:
-  // 1) The mojo pipe is severed before Close() is invoked.
-  //    - Abort the transaction from the OnDisconnect method.
-  // 2) The mojo pipe is severed before Close() finishes.
-  //    - The Close() call is allowed to finish.
-  //    - The Writer is destroyed immediately afterwards, via the
-  //      CallCloseCallbackAndMaybeDeleteThis method.
-  // 3) The mojo pipe exists when Close() finishes.
-  //    - The Writer will exist for as long as the mojo pipe is connected.
-  //    - The Writer is destroyed via the OnDisconnect method.
-  State state_ = State::kOpen;
-  // This callback is non-null when the State is kClosePending or kCloseError.
   CloseCallback close_callback_;
 
   download::QuarantineConnectionCallback quarantine_connection_callback_;

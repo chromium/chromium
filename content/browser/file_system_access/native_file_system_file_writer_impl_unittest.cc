@@ -549,7 +549,7 @@ TEST_F(NativeFileSystemFileWriterImplTest, TruncateGrow) {
   EXPECT_EQ(std::string("abc\0\0", 5), ReadFile(test_file_url_));
 }
 
-TEST_F(NativeFileSystemFileWriterImplTest, CloseAfterCloseNotOK) {
+TEST_F(NativeFileSystemFileWriterImplTest, WriterDestroyedAfterClose) {
   uint64_t bytes_written;
   FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
@@ -557,49 +557,13 @@ TEST_F(NativeFileSystemFileWriterImplTest, CloseAfterCloseNotOK) {
 
   result = CloseSync();
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  result = CloseSync();
-  EXPECT_EQ(result, FileSystemAccessStatus::kInvalidState);
+  EXPECT_TRUE(handle_.WasInvalidated());
+  EXPECT_FALSE(storage::AsyncFileTestHelper::FileExists(
+      file_system_context_.get(), test_swap_url_,
+      storage::AsyncFileTestHelper::kDontCheckSize));
 }
 
-TEST_F(NativeFileSystemFileWriterImplTest, TruncateAfterCloseNotOK) {
-  uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  EXPECT_EQ(bytes_written, 3u);
-
-  result = CloseSync();
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-
-  result = TruncateSync(0);
-  EXPECT_EQ(result, FileSystemAccessStatus::kInvalidState);
-}
-
-TEST_P(NativeFileSystemFileWriterImplWriteTest, WriteAfterCloseNotOK) {
-  uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  EXPECT_EQ(bytes_written, 3u);
-
-  result = CloseSync();
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-
-  result = WriteSync(0, "bcd", &bytes_written);
-  EXPECT_EQ(result, FileSystemAccessStatus::kInvalidState);
-}
-
-TEST_F(NativeFileSystemFileWriterImplTest, AbortAfterCloseNotOK) {
-  uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  EXPECT_EQ(bytes_written, 3u);
-
-  result = CloseSync();
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  result = AbortSync();
-  EXPECT_EQ(result, FileSystemAccessStatus::kInvalidState);
-}
-
-TEST_F(NativeFileSystemFileWriterImplTest, AbortOK) {
+TEST_F(NativeFileSystemFileWriterImplTest, WriterDestroyedAfterAbort) {
   uint64_t bytes_written;
   FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
@@ -608,44 +572,10 @@ TEST_F(NativeFileSystemFileWriterImplTest, AbortOK) {
   result = AbortSync();
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ("", ReadFile(test_file_url_));
-}
-
-TEST_F(NativeFileSystemFileWriterImplTest, TruncateAfterAbortNotOK) {
-  uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  EXPECT_EQ(bytes_written, 3u);
-
-  result = AbortSync();
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-
-  result = TruncateSync(0);
-  EXPECT_EQ(result, FileSystemAccessStatus::kInvalidState);
-}
-
-TEST_P(NativeFileSystemFileWriterImplWriteTest, WriteAfterAbortNotOK) {
-  uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  EXPECT_EQ(bytes_written, 3u);
-
-  result = AbortSync();
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-
-  result = WriteSync(0, "bcd", &bytes_written);
-  EXPECT_EQ(result, FileSystemAccessStatus::kInvalidState);
-}
-
-TEST_F(NativeFileSystemFileWriterImplTest, CloseAfterAbortNotOK) {
-  uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  EXPECT_EQ(bytes_written, 3u);
-
-  result = AbortSync();
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  result = CloseSync();
-  EXPECT_EQ(result, FileSystemAccessStatus::kInvalidState);
+  EXPECT_TRUE(handle_.WasInvalidated());
+  EXPECT_FALSE(storage::AsyncFileTestHelper::FileExists(
+      file_system_context_.get(), test_swap_url_,
+      storage::AsyncFileTestHelper::kDontCheckSize));
 }
 
 // TODO(mek): More tests, particularly for error conditions.
