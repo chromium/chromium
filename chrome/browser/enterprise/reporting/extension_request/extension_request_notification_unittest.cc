@@ -81,7 +81,6 @@ TEST_P(ExtensionRequestNotificationTest, NoExtension) {
 #else
   request_notification.Show(base::BindOnce(&OnNotificationClosed, false));
 #endif
-  task_environment()->RunUntilIdle();
   EXPECT_FALSE(GetNotification().has_value());
 }
 
