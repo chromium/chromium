@@ -112,7 +112,7 @@ public class LibraryLoader {
     private final Object mNonMainDexLock = new Object();
 
     // Mediates all communication between Linker instances in different processes.
-    private final MultiProcessMediator mMessageHandler = new MultiProcessMediator();
+    private final MultiProcessMediator mMediator = new MultiProcessMediator();
 
     // Guards all the fields below.
     private final Object mLock = new Object();
@@ -248,7 +248,7 @@ public class LibraryLoader {
     }
 
     public final MultiProcessMediator getMediator() {
-        return mMessageHandler;
+        return mMediator;
     }
 
     /**
