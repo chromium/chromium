@@ -52,6 +52,10 @@ class AppShortcutManager {
                        CreateShortcutsCallback callback);
   void UpdateShortcuts(const web_app::AppId& app_id,
                        base::StringPiece old_name);
+  void DeleteShortcuts(const AppId& app_id,
+                       const base::FilePath& shortcuts_data_dir,
+                       std::unique_ptr<ShortcutInfo> shortcut_info,
+                       DeleteShortcutsCallback callback);
 
   // TODO(crbug.com/1098471): Move this into web_app_shortcuts_menu_win.cc when
   // a callback is integrated into the Shortcuts Menu registration flow.
@@ -96,6 +100,9 @@ class AppShortcutManager {
  protected:
   void OnShortcutsCreated(const AppId& app_id,
                           CreateShortcutsCallback callback,
+                          bool success);
+  void OnShortcutsDeleted(const AppId& app_id,
+                          DeleteShortcutsCallback callback,
                           bool success);
 
   AppRegistrar* registrar() { return registrar_; }

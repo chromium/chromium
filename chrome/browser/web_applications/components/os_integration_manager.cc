@@ -433,11 +433,17 @@ void OsIntegrationManager::DeleteShortcuts(
     const base::FilePath& shortcuts_data_dir,
     std::unique_ptr<ShortcutInfo> shortcut_info,
     DeleteShortcutsCallback callback) {
-  internals::ScheduleDeletePlatformShortcuts(
-      shortcuts_data_dir, std::move(shortcut_info),
-      base::BindOnce(&OsIntegrationManager::OnShortcutsDeleted,
-                     weak_ptr_factory_.GetWeakPtr(), app_id,
-                     std::move(callback)));
+  if (shortcut_manager_->CanCreateShortcuts()) {
+    auto shortcuts_callback = base::BindOnce(
+        &OsIntegrationManager::OnShortcutsDeleted,
+        weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback));
+
+    shortcut_manager_->DeleteShortcuts(app_id, shortcuts_data_dir,
+                                       std::move(shortcut_info),
+                                       std::move(shortcuts_callback));
+  } else {
+    std::move(callback).Run(false);
+  }
 }
 
 void OsIntegrationManager::UnregisterFileHandlers(const AppId& app_id) {
