@@ -32,29 +32,43 @@ DomainReliabilityInternalsUI::DomainReliabilityInternalsUI(
   html_source->AddResourcePath("domain_reliability_internals.js",
       IDR_DOMAIN_RELIABILITY_INTERNALS_JS);
   html_source->SetDefaultResource(IDR_DOMAIN_RELIABILITY_INTERNALS_HTML);
-
-  web_ui->RegisterMessageCallback(
-      "updateData",
-      base::BindRepeating(&DomainReliabilityInternalsUI::UpdateData,
-                          base::Unretained(this)));
-
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, html_source);
+
+  web_ui->AddMessageHandler(
+      std::make_unique<DomainReliabilityInternalsHandler>());
 }
 
-DomainReliabilityInternalsUI::~DomainReliabilityInternalsUI() {}
+DomainReliabilityInternalsUI::~DomainReliabilityInternalsUI() = default;
 
-void DomainReliabilityInternalsUI::UpdateData(const base::ListValue* args) {
+DomainReliabilityInternalsHandler::DomainReliabilityInternalsHandler() =
+    default;
+DomainReliabilityInternalsHandler::~DomainReliabilityInternalsHandler() =
+    default;
+
+void DomainReliabilityInternalsHandler::RegisterMessages() {
+  web_ui()->RegisterMessageCallback(
+      "updateData",
+      base::BindRepeating(&DomainReliabilityInternalsHandler::HandleUpdateData,
+                          base::Unretained(this)));
+}
+
+void DomainReliabilityInternalsHandler::HandleUpdateData(
+    const base::ListValue* args) {
+  DCHECK_EQ(1u, args->GetSize());
+  AllowJavascript();
+  callback_id_ = args->GetList()[0].GetString();
+
   Profile* profile = Profile::FromWebUI(web_ui());
   network::mojom::NetworkContext* network_context =
       content::BrowserContext::GetDefaultStoragePartition(profile)
           ->GetNetworkContext();
   network_context->GetDomainReliabilityJSON(
-      base::BindOnce(&DomainReliabilityInternalsUI::OnDataUpdated,
+      base::BindOnce(&DomainReliabilityInternalsHandler::OnDataUpdated,
                      weak_factory_.GetWeakPtr()));
 }
 
-void DomainReliabilityInternalsUI::OnDataUpdated(base::Value data) const {
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "DomainReliabilityInternals.onDataUpdated", data);
+void DomainReliabilityInternalsHandler::OnDataUpdated(base::Value data) {
+  ResolveJavascriptCallback(base::Value(std::move(callback_id_)), data);
+  callback_id_.clear();
 }
