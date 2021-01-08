@@ -6665,7 +6665,7 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
     {"enable-avif", flag_descriptions::kEnableAVIFName,
-     flag_descriptions::kEnableAVIFDescription, kOsDesktop,
+     flag_descriptions::kEnableAVIFDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kAVIF)},
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 

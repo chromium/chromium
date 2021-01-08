@@ -97,7 +97,7 @@ declare_args() {
   # Enable logging override, e.g. enable DVLOGs at build time.
   enable_logging_override = is_chromecast
 
-  enable_dav1d_decoder = !is_android && !is_ios
+  enable_dav1d_decoder = !is_ios
 
   # Enable browser managed persistent metadata storage for EME persistent
   # session and persistent usage record session.
