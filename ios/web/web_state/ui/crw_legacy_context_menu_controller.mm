@@ -11,21 +11,14 @@
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/unguessable_token.h"
 #include "base/values.h"
-#import "ios/web/js_messaging/crw_wk_script_message_router.h"
-#import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #include "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#import "ios/web/web_state/context_menu_constants.h"
 #import "ios/web/web_state/context_menu_params_utils.h"
-#import "ios/web/web_state/ui/html_element_fetch_request.h"
-#import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
+#import "ios/web/web_state/ui/crw_context_menu_element_fetcher.h"
 #import "ios/web/web_state/web_state_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -54,13 +47,6 @@ void CancelTouches(UIGestureRecognizer* gesture_recognizer) {
   }
 }
 
-// Javascript function name to obtain element details at a point.
-const char kFindElementAtPointFunctionName[] = "findElementAtPoint";
-
-// JavaScript message handler name installed in WKWebView for found element
-// response.
-NSString* const kFindElementResultHandlerName = @"FindElementResultHandler";
-
 // Enum used to record element details fetched for the context menu.
 enum class ContextMenuElementFrame {
   // Recorded when the element was found in the main frame.
@@ -87,17 +73,6 @@ enum class DelayedElementDetailsState {
   // recognizer fully recognized a long press.
   Cancel = 1,
   kMaxValue = Cancel
-};
-
-// Struct to track the details of the element at |location| in |webView|.
-struct ContextMenuInfo {
-  // The location of the long press.
-  CGPoint location;
-  // True if the element is in the page's main frame, false if in an iframe.
-  BOOL is_main_frame;
-  // DOM element information. May contain the keys defined in
-  // ios/web/web_state/context_menu_constants.h. All values are strings.
-  NSDictionary* dom_element;
 };
 
 // Returns an array of gesture recognizers with |fragment| in it's description
@@ -182,6 +157,8 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
 // WebState associated with this controller.
 @property(nonatomic, assign) web::WebStateImpl* webState;
 
+@property(nonatomic, strong) CRWContextMenuElementFetcher* elementFetcher;
+
 // Called when the |_contextMenuRecognizer| finishes recognizing a long press.
 - (void)longPressDetectedByGestureRecognizer:
     (UIGestureRecognizer*)gestureRecognizer;
@@ -190,21 +167,12 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
 // Called when the |_contextMenuRecognizer| changes.
 - (void)longPressGestureRecognizerChanged;
 // Show the context menu or allow the system default behavior based on the DOM
-// element details in |_contextMenuInfoForLastTouch.dom_element|.
+// element details in |contextMenuParams|.
 - (void)processReceivedDOMElement;
 // Called when the context menu must be shown.
 - (void)showContextMenu;
 // Cancels all touch events in the web view (long presses, tapping, scrolling).
 - (void)cancelAllTouches;
-// Asynchronously fetches information about DOM element for the given point (in
-// UIView coordinates). |handler| can not be nil. See
-// |_contextMenuInfoForLastTouch.dom_element| for element format description.
-- (void)fetchDOMElementAtPoint:(CGPoint)point
-             completionHandler:(void (^)(NSDictionary*))handler;
-// Sets the value of |_contextMenuInfoForLastTouch.dom_element|.
-- (void)setDOMElementForLastTouch:(NSDictionary*)element;
-// Called to process a message received from JavaScript.
-- (void)didReceiveScriptMessage:(WKScriptMessage*)message;
 // Cancels the display of the context menu and clears associated element fetch
 // request state.
 - (void)cancelContextMenuDisplay;
@@ -214,10 +182,8 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
   std::unique_ptr<web::WebStateObserverBridge> _observer;
   // Long press recognizer that allows showing context menus.
   UILongPressGestureRecognizer* _contextMenuRecognizer;
-  // DOM element information for the point where the user made the last touch.
-  // Precalculation is necessary because retreiving DOM element relies on async
-  // API so element info can not be built on demand.
-  ContextMenuInfo _contextMenuInfoForLastTouch;
+  // Location of the last touch on the screen.
+  CGPoint _lastTouchLocation;
   // Whether or not the system cotext menu should be displayed. If not, custom
   // context menu should be displayed.
   BOOL _systemContextMenuEnabled;
@@ -229,10 +195,8 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
   // |_contextMenuRecognizer| finished, but couldn't yet show the context menu
   // becuase the DOM element details were not yet available.
   BOOL _contextMenuNeedsDisplay;
-  // Details for currently in progress element fetches. The objects are
-  // instances of HTMLElementFetchRequest and are keyed by a unique requestId
-  // string.
-  NSMutableDictionary* _pendingElementFetchRequests;
+  // Parameters for the context menu, populated by the element fetcher.
+  base::Optional<web::ContextMenuParams> _contextMenuParams;
 }
 
 @synthesize webView = _webView;
@@ -243,7 +207,10 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
   self = [super init];
   if (self) {
     _webView = webView;
-    _pendingElementFetchRequests = [[NSMutableDictionary alloc] init];
+
+    _elementFetcher =
+        [[CRWContextMenuElementFetcher alloc] initWithWebView:webView
+                                                     webState:webState];
 
     _webState = webState;
     _observer = std::make_unique<web::WebStateObserverBridge>(self);
@@ -273,20 +240,6 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
     [_webView addGestureRecognizer:_contextMenuRecognizer];
 
     OverrideGestureRecognizers(_contextMenuRecognizer, _webView);
-
-    // Listen for fetched element response.
-    web::WKWebViewConfigurationProvider& configurationProvider =
-        web::WKWebViewConfigurationProvider::FromBrowserState(
-            webState->GetBrowserState());
-    CRWWKScriptMessageRouter* messageRouter =
-        configurationProvider.GetScriptMessageRouter();
-    __weak CRWLegacyContextMenuController* weakSelf = self;
-    [messageRouter
-        setScriptMessageHandler:^(WKScriptMessage* message) {
-          [weakSelf didReceiveScriptMessage:message];
-        }
-                           name:kFindElementResultHandlerName
-                        webView:webView];
   }
   return self;
 }
@@ -329,7 +282,7 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
 }
 
 - (void)longPressGestureRecognizerBegan {
-  if (_contextMenuInfoForLastTouch.dom_element) {
+  if (_contextMenuParams.has_value()) {
     [self processReceivedDOMElement];
   } else {
     // Shows the context menu once the DOM element information is set.
@@ -340,7 +293,7 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
 
 - (void)longPressGestureRecognizerChanged {
   if (!_contextMenuNeedsDisplay ||
-      CGPointEqualToPoint(_contextMenuInfoForLastTouch.location, CGPointZero)) {
+      CGPointEqualToPoint(_lastTouchLocation, CGPointZero)) {
     return;
   }
 
@@ -350,10 +303,8 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
   // |_contextMenuNeedsDisplay| has already been set to True.
   CGPoint currentTouchLocation =
       [_contextMenuRecognizer locationInView:_webView];
-  float deltaX = std::abs(_contextMenuInfoForLastTouch.location.x -
-                          currentTouchLocation.x);
-  float deltaY = std::abs(_contextMenuInfoForLastTouch.location.y -
-                          currentTouchLocation.y);
+  float deltaX = std::abs(_lastTouchLocation.x - currentTouchLocation.x);
+  float deltaY = std::abs(_lastTouchLocation.y - currentTouchLocation.y);
   if (deltaX > kLongPressMoveDeltaPixels ||
       deltaY > kLongPressMoveDeltaPixels) {
     [self cancelContextMenuDisplay];
@@ -361,8 +312,9 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
 }
 
 - (void)processReceivedDOMElement {
-  BOOL canShowContextMenu = web::CanShowContextMenuForElementDictionary(
-      _contextMenuInfoForLastTouch.dom_element);
+  BOOL canShowContextMenu =
+      _contextMenuParams.has_value() &&
+      web::CanShowContextMenuForParams(_contextMenuParams.value());
   if (!canShowContextMenu) {
     // There is no link or image under user's gesture. Do not cancel all touches
     // to allow system text selection UI.
@@ -374,30 +326,25 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
   // intentionally suppress system context menu UI.
   [self cancelAllTouches];
 
-  _contextMenuInfoForLastTouch.location =
-      [_contextMenuRecognizer locationInView:_webView];
+  _lastTouchLocation = [_contextMenuRecognizer locationInView:_webView];
   [self showContextMenu];
 }
 
 - (void)showContextMenu {
-  if (!self.webState) {
+  if (!self.webState || !_contextMenuParams.has_value()) {
     return;
   }
 
   // Log if the element is in the main frame or a child frame.
   UMA_HISTOGRAM_ENUMERATION("ContextMenu.DOMElementFrame",
-                            (_contextMenuInfoForLastTouch.is_main_frame
+                            (_contextMenuParams.value().is_main_frame
                                  ? ContextMenuElementFrame::MainFrame
                                  : ContextMenuElementFrame::Iframe),
                             ContextMenuElementFrame::Count);
 
-  web::ContextMenuParams params = web::ContextMenuParamsFromElementDictionary(
-      _contextMenuInfoForLastTouch.dom_element);
-  params.view = _webView;
-  params.location = _contextMenuInfoForLastTouch.location;
-  params.is_main_frame = _contextMenuInfoForLastTouch.is_main_frame;
+  _contextMenuParams.value().location = _lastTouchLocation;
 
-  self.webState->HandleContextMenu(params);
+  self.webState->HandleContextMenu(_contextMenuParams.value());
 }
 
 - (void)cancelAllTouches {
@@ -415,29 +362,14 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
   }
 }
 
-- (void)setDOMElementForLastTouch:(NSDictionary*)element {
-  _contextMenuInfoForLastTouch.dom_element = [element copy];
+// Sets the value of |params|.
+- (void)setParamsForLastTouch:(const web::ContextMenuParams&)params {
+  _contextMenuParams = params;
   if (_contextMenuNeedsDisplay) {
     _contextMenuNeedsDisplay = NO;
     UMA_HISTOGRAM_ENUMERATION(kContextMenuDelayedElementDetailsHistogram,
                               DelayedElementDetailsState::Show);
     [self processReceivedDOMElement];
-  }
-}
-
-- (void)didReceiveScriptMessage:(WKScriptMessage*)message {
-  NSMutableDictionary* response =
-      [[NSMutableDictionary alloc] initWithDictionary:message.body];
-  _contextMenuInfoForLastTouch.is_main_frame = message.frameInfo.mainFrame;
-  NSString* requestID = response[web::kContextMenuElementRequestId];
-  HTMLElementFetchRequest* fetchRequest =
-      _pendingElementFetchRequests[requestID];
-  // Do not process the message if a fetch request with a matching |requestID|
-  // was not found. This ensures that the response matches a request made by
-  // this CRWLegacyContextMenuController instance.
-  if (fetchRequest) {
-    [_pendingElementFetchRequests removeObjectForKey:requestID];
-    [fetchRequest runHandlerWithResponse:response];
   }
 }
 
@@ -447,11 +379,8 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
                               DelayedElementDetailsState::Cancel);
   }
   _contextMenuNeedsDisplay = NO;
-  _contextMenuInfoForLastTouch.location = CGPointZero;
-  for (HTMLElementFetchRequest* fetchRequest in _pendingElementFetchRequests
-           .allValues) {
-    [fetchRequest invalidate];
-  }
+  _lastTouchLocation = CGPointZero;
+  [self.elementFetcher cancelFetches];
 }
 
 #pragma mark -
@@ -481,14 +410,15 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
   // touch. If there a link, the web controller will reject system's context
   // menu and show another one. If for some reason context menu info is not
   // fetched - system context menu will be shown.
-  [self setDOMElementForLastTouch:nil];
+  _contextMenuParams.reset();
   [self cancelContextMenuDisplay];
 
   __weak CRWLegacyContextMenuController* weakSelf = self;
-  [self fetchDOMElementAtPoint:[touch locationInView:_webView]
-             completionHandler:^(NSDictionary* element) {
-               [weakSelf setDOMElementForLastTouch:element];
-             }];
+  [self.elementFetcher
+      fetchDOMElementAtPoint:[touch locationInView:_webView.scrollView]
+           completionHandler:^(const web::ContextMenuParams& params) {
+             [weakSelf setParamsForLastTouch:params];
+           }];
   return YES;
 }
 
@@ -510,39 +440,6 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
   }
 
   return YES;
-}
-
-#pragma mark -
-#pragma mark Web Page Features
-
-- (void)fetchDOMElementAtPoint:(CGPoint)point
-             completionHandler:(void (^)(NSDictionary*))handler {
-  if (!self.webState) {
-    return;
-  }
-  web::WebFrame* frame = GetMainFrame(self.webState);
-  if (!frame) {
-    // A WebFrame may not exist for certain types of content, like PDFs.
-    return;
-  }
-  DCHECK(handler);
-
-  std::string requestID = base::UnguessableToken::Create().ToString();
-  HTMLElementFetchRequest* fetchRequest =
-      [[HTMLElementFetchRequest alloc] initWithFoundElementHandler:handler];
-  _pendingElementFetchRequests[base::SysUTF8ToNSString(requestID)] =
-      fetchRequest;
-
-  CGSize webViewContentSize = self.webScrollView.contentSize;
-
-  std::vector<base::Value> args;
-  args.push_back(base::Value(requestID));
-  args.push_back(base::Value(point.x + self.scrollPosition.x));
-  args.push_back(base::Value(point.y + self.scrollPosition.y));
-  args.push_back(base::Value(webViewContentSize.width));
-  args.push_back(base::Value(webViewContentSize.height));
-  frame->CallJavaScriptFunction(std::string(kFindElementAtPointFunctionName),
-                                args);
 }
 
 #pragma mark - CRWWebStateObserver

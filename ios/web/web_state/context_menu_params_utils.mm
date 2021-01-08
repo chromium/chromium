@@ -68,13 +68,11 @@ TitleAndOrigin GetContextMenuTitleAndOrigin(NSDictionary* element) {
 
 namespace web {
 
-BOOL CanShowContextMenuForElementDictionary(NSDictionary* element) {
-  NSString* href = element[kContextMenuElementHyperlink];
-  if (GURL(base::SysNSStringToUTF8(href)).is_valid()) {
+BOOL CanShowContextMenuForParams(const ContextMenuParams& params) {
+  if (params.link_url.is_valid()) {
     return YES;
   }
-  NSString* src = element[kContextMenuElementSource];
-  if (GURL(base::SysNSStringToUTF8(src)).is_valid()) {
+  if (params.src_url.is_valid()) {
     return YES;
   }
   return NO;

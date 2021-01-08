@@ -478,11 +478,11 @@ source_set("ios_web_web_state_ui_unittests") {
   ]
 
   sources = [
+    "web_state/ui/crw_html_element_fetch_request_unittest.mm",
     "web_state/ui/crw_web_controller_unittest.mm",
     "web_state/ui/crw_web_view_content_view_unittest.mm",
     "web_state/ui/crw_web_view_proxy_impl_unittest.mm",
     "web_state/ui/crw_web_view_scroll_view_proxy_unittest.mm",
-    "web_state/ui/html_element_fetch_request_unittest.mm",
     "web_state/ui/web_view_js_utils_unittest.mm",
     "web_state/ui/wk_content_rule_list_util_unittest.mm",
     "web_state/ui/wk_web_view_configuration_provider_unittest.mm",
@@ -527,6 +527,7 @@ test("ios_web_inttests") {
     ":web",
     "//base/test:test_support",
     "//ios/net",
+    "//ios/testing:block_swizzler",
     "//ios/testing:embedded_test_server_support",
     "//ios/testing:http_server_bundle_data",
     "//ios/web:resources_grit",
@@ -554,6 +555,8 @@ test("ios_web_inttests") {
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
     "//ios/web/web_state",
+    "//ios/web/web_state:context_menu",
+    "//ios/web/web_state/ui:crw_context_menu_controller",
     "//mojo/core/embedder",
     "//net:test_support",
     "//services/network/public/cpp",
@@ -578,6 +581,7 @@ test("ios_web_inttests") {
     "web_state/error_page_inttest.mm",
     "web_state/http_auth_inttest.mm",
     "web_state/keep_render_process_alive_inttest.mm",
+    "web_state/ui/crw_context_menu_element_fetcher_inttest.mm",
     "web_state/web_state_observer_inttest.mm",
     "webui/web_ui_inttest.mm",
     "webui/web_ui_mojo_inttest.mm",

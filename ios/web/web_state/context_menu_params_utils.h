@@ -11,10 +11,9 @@
 
 namespace web {
 
-// Returns true if the |element| dictionary contains enough information to
-// present a context menu. (A valid url for either kContextMenuElementHyperlink
-// or kContextMenuElementSource must exist in the dicitionary.)
-BOOL CanShowContextMenuForElementDictionary(NSDictionary* element);
+// Returns true if the |params| contain enough information to present a context
+// menu. (A valid url for either link_url or src_url must exist in the params.)
+BOOL CanShowContextMenuForParams(const ContextMenuParams& params);
 
 // creates a ContextMenuParams from a NSDictionary representing an HTML element.
 // The fields "href", "src", "title", "referrerPolicy" and "innerText" will

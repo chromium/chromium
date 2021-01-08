@@ -104,10 +104,12 @@ source_set("crw_context_menu_controller") {
   ]
 
   sources = [
+    "crw_context_menu_element_fetcher.h",
+    "crw_context_menu_element_fetcher.mm",
+    "crw_html_element_fetch_request.h",
+    "crw_html_element_fetch_request.mm",
     "crw_legacy_context_menu_controller.h",
     "crw_legacy_context_menu_controller.mm",
-    "html_element_fetch_request.h",
-    "html_element_fetch_request.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

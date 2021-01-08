@@ -113,55 +113,49 @@ TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTestDataTitle) {
   EXPECT_EQ(params.menu_title_origin, ContextMenuTitleOrigin::kURL);
 }
 
-// Tests that a context menu will not be shown for an empty element dictionary.
+// Tests that a context menu will not be shown for empty params.
 TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestEmptyDictionary) {
-  EXPECT_FALSE(CanShowContextMenuForElementDictionary(@{}));
-}
-
-// Tests that a context menu will not be shown for an element dictionary with
-// only a request id.
-TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestRequestIdOnly) {
-  EXPECT_FALSE(CanShowContextMenuForElementDictionary(
-      @{kContextMenuElementRequestId : @"kContextMenuElementRequestId"}));
+  EXPECT_FALSE(CanShowContextMenuForParams(ContextMenuParams()));
 }
 
 // Tests that a context menu will be shown for a link.
 TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestHyperlink) {
-  EXPECT_TRUE(CanShowContextMenuForElementDictionary(@{
-    kContextMenuElementHyperlink : @"http://example.com",
-    kContextMenuElementInnerText : @"Click me."
-  }));
+  ContextMenuParams params;
+  params.link_url = GURL("http://example.com");
+  params.link_text = @"Click me.";
+  EXPECT_TRUE(CanShowContextMenuForParams(params));
 }
 
 // Tests that a context menu will not be shown for an invalid link.
 TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestInvalidHyperlink) {
-  EXPECT_FALSE(CanShowContextMenuForElementDictionary(
-      @{kContextMenuElementHyperlink : @"invalid_url"}));
+  ContextMenuParams params;
+  params.link_url = GURL("invalid_url");
+  EXPECT_FALSE(CanShowContextMenuForParams(params));
 }
 
 // Tests that a context menu will be shown for an image.
 TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestImageWithTitle) {
-  EXPECT_TRUE(CanShowContextMenuForElementDictionary(@{
-    kContextMenuElementSource : @"http://example.com/image.jpeg",
-    kContextMenuElementTitle : @"Image"
-  }));
+  ContextMenuParams params;
+  params.src_url = GURL("http://example.com/image.jpeg");
+  params.menu_title = @"Image";
+  EXPECT_TRUE(CanShowContextMenuForParams(params));
 }
 
 // Tests that a context menu will not be shown for an image with an invalid
 // source url.
 TEST_F(ContextMenuParamsUtilsTest,
        CanShowContextMenuTestImageWithInvalidSource) {
-  EXPECT_FALSE(CanShowContextMenuForElementDictionary(@{
-    kContextMenuElementSource : @"invalid_url",
-  }));
+  ContextMenuParams params;
+  params.src_url = GURL("invalid_url");
+  EXPECT_FALSE(CanShowContextMenuForParams(params));
 }
 
 // Tests that a context menu will be shown for a linked image.
 TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestLinkedImage) {
-  EXPECT_TRUE(CanShowContextMenuForElementDictionary(@{
-    kContextMenuElementHyperlink : @"http://example.com",
-    kContextMenuElementSource : @"http://example.com/image.jpeg"
-  }));
+  ContextMenuParams params;
+  params.link_url = GURL("http://example.com");
+  params.src_url = GURL("http://example.com/image.jpeg");
+  EXPECT_TRUE(CanShowContextMenuForParams(params));
 }
 
 // Tests that the menu title prepends the element's alt text if it is an image
