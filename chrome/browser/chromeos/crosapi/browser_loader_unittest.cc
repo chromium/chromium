@@ -78,7 +78,7 @@ TEST_F(BrowserLoaderTest, ShowUpdateNotification) {
   EXPECT_EQ(0, delegate->set_lacros_update_available_);
 
   // Update check does not trigger an update notification.
-  constexpr char kLacrosFishfoodId[] = "hkifppleldbgkdlijbdfkdpedggaopda";
+  constexpr char kLacrosFishfoodId[] = "ldobopbhiamakmncndpkeelenhdmgfhk";
   browser_loader.OnEvent(
       UpdateClient::Observer::Events::COMPONENT_CHECKING_FOR_UPDATES,
       kLacrosFishfoodId);

@@ -33,7 +33,7 @@ namespace {
 // At that point, this feature can only be removed from the code and we can
 // switch unconditionally to the dogfood deployment..
 const base::Feature kLacrosPreferDogfoodOverFishfood{
-    "LacrosPreferDogfoodOverFishfood", base::FEATURE_DISABLED_BY_DEFAULT};
+    "LacrosPreferDogfoodOverFishfood", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Emergency kill switch in case the notification code doesn't work properly.
 const base::Feature kLacrosShowUpdateNotifications{
