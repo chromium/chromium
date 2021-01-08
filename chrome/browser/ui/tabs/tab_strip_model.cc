@@ -30,6 +30,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
@@ -2153,6 +2154,11 @@ void TabStripModel::AddToReadLaterImpl(const std::vector<int>& indices) {
       model->AddEntry(url, base::UTF16ToUTF8(title),
                       reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
     }
+  }
+  // Maybe show the bookmark bar if an item exists in read later.
+  if (model->size()) {
+    chrome::MaybeShowBookmarkBarForReadLater(
+        chrome::FindBrowserWithWebContents(GetWebContentsAt(indices[0])));
   }
 }
 

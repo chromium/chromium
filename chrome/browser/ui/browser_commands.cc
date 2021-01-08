@@ -90,6 +90,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -1055,6 +1056,7 @@ bool MoveCurrentTabToReadLater(Browser* browser) {
     return false;
   model->AddEntry(url, base::UTF16ToUTF8(title),
                   reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
+  MaybeShowBookmarkBarForReadLater(browser);
   return true;
 }
 
@@ -1079,6 +1081,20 @@ bool IsCurrentTabUnreadInReadLater(Browser* browser) {
     return false;
   const ReadingListEntry* entry = model->GetEntryByURL(url);
   return entry && !entry->IsRead();
+}
+
+void MaybeShowBookmarkBarForReadLater(Browser* browser) {
+#if !defined(OS_ANDROID)
+  PrefService* pref_service = browser->profile()->GetPrefs();
+  if (pref_service &&
+      !pref_service->GetBoolean(
+          reading_list::prefs::kReadingListDesktopFirstUseExperienceShown)) {
+    pref_service->SetBoolean(
+        reading_list::prefs::kReadingListDesktopFirstUseExperienceShown, true);
+    if (browser->bookmark_bar_state() == BookmarkBar::HIDDEN)
+      ToggleBookmarkBar(browser);
+  }
+#endif  // defined(OS_ANDROID)
 }
 
 void SaveCreditCard(Browser* browser) {

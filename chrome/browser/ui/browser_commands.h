@@ -145,6 +145,7 @@ bool CanMoveActiveTabToReadLater(Browser* browser);
 bool MoveCurrentTabToReadLater(Browser* browser);
 bool MarkCurrentTabAsReadInReadLater(Browser* browser);
 bool IsCurrentTabUnreadInReadLater(Browser* browser);
+void MaybeShowBookmarkBarForReadLater(Browser* browser);
 void SaveCreditCard(Browser* browser);
 void MigrateLocalCards(Browser* browser);
 void MaybeShowSaveLocalCardSignInPromo(Browser* browser);

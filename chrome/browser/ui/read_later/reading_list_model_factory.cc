@@ -89,6 +89,11 @@ void ReadingListModelFactory::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       reading_list::prefs::kReadingListHasUnseenEntries, false,
       PrefRegistry::NO_REGISTRATION_FLAGS);
+#if !defined(OS_ANDROID)
+  registry->RegisterBooleanPref(
+      reading_list::prefs::kReadingListDesktopFirstUseExperienceShown, false,
+      PrefRegistry::NO_REGISTRATION_FLAGS);
+#endif  // !defined(OS_ANDROID)
 }
 
 content::BrowserContext* ReadingListModelFactory::GetBrowserContextToUse(

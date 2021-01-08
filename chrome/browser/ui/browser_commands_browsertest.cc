@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/browser_commands.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "content/public/test/browser_test.h"
 
 namespace chrome {
@@ -163,6 +165,48 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveActiveTabToNewWindow) {
             url1);
   EXPECT_EQ(active_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
             url2);
+}
+
+class ReadLaterBrowserCommandsTest : public BrowserCommandsTest {
+ public:
+  ReadLaterBrowserCommandsTest() {
+    feature_list_.InitAndEnableFeature(reading_list::switches::kReadLater);
+  }
+  ~ReadLaterBrowserCommandsTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verify that the bookmark bar is shown the first time someone saves to read
+// later.
+IN_PROC_BROWSER_TEST_F(ReadLaterBrowserCommandsTest,
+                       PRE_ReadLaterOpensBookmarksBarOnFirstUse) {
+  GURL url("https://www.google.com");
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  EXPECT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
+  // Verify the bookmark bar is shown after saving to the reading list.
+  MoveCurrentTabToReadLater(browser());
+  EXPECT_EQ(BookmarkBar::SHOW, browser()->bookmark_bar_state());
+  ToggleBookmarkBar(browser());
+  EXPECT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
+  // Verify the bookmark bar isn't reshown on subsequent saves to the reading
+  // list.
+  MoveCurrentTabToReadLater(browser());
+  EXPECT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
+}
+
+// Verify that the bookmark bar is not reshown after Chrome restarts.
+IN_PROC_BROWSER_TEST_F(ReadLaterBrowserCommandsTest,
+                       ReadLaterOpensBookmarksBarOnFirstUse) {
+  GURL url("https://www.google.com");
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  EXPECT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
+  // Verify the bookmark bar is still hidden after saving to the reading list.
+  MoveCurrentTabToReadLater(browser());
+  EXPECT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
 }
 
 }  // namespace chrome
