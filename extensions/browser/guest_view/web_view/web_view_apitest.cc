@@ -663,6 +663,13 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestNavOnSrcAttributeChange) {
   RunTest("testNavOnSrcAttributeChange", "web_view/apitest");
 }
 
+IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestLoadCommitUrlsWithIframe) {
+  const std::string app_location = "web_view/apitest";
+  StartTestServer(app_location);
+  RunTest("testLoadCommitUrlsWithIframe", app_location);
+  StopTestServer();
+}
+
 IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestNewWindow) {
   std::string app_location = "web_view/apitest";
   StartTestServer(app_location);

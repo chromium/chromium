@@ -12,6 +12,7 @@ embedder.setUp_ = function(config) {
   embedder.baseGuestURL = 'http://localhost:' + config.testServer.port;
   embedder.closeSocketURL = embedder.baseGuestURL + '/close-socket';
   embedder.emptyGuestURL = embedder.baseGuestURL + '/empty_guest.html';
+  embedder.emptyFrameURL = embedder.baseGuestURL + '/empty_frame.html';
   embedder.noReferrerGuestURL =
       embedder.baseGuestURL + '/guest_noreferrer.html';
   embedder.detectUserAgentURL = embedder.baseGuestURL + '/detect-user-agent';
@@ -1305,6 +1306,33 @@ function testNavOnSrcAttributeChange() {
   document.body.appendChild(webview);
 }
 
+// Tests that loadcommit has the correct |url| set when a guest's iframe commits
+// a navigation.
+function testLoadCommitUrlsWithIframe() {
+  let webview = document.createElement('webview');
+  let loadCommitSeen = 0;
+  webview.addEventListener('loadcommit', function(e) {
+    ++loadCommitSeen;
+    if (loadCommitSeen === 1) {
+      embedder.test.assertEq(embedder.emptyGuestURL, e.url);
+      embedder.test.assertEq(true, e.isTopLevel);
+      embedder.test.assertEq(embedder.emptyGuestURL, webview.src);
+      webview.executeScript({
+        code: "let iframe = document.createElement('iframe'); " +
+              "iframe.src = '" + embedder.emptyFrameURL + "'; " +
+              "document.body.appendChild(iframe);"
+      });
+    } else if (loadCommitSeen === 2) {
+      embedder.test.assertEq(embedder.emptyFrameURL, e.url);
+      embedder.test.assertEq(false, e.isTopLevel);
+      embedder.test.assertEq(embedder.emptyGuestURL, webview.src);
+      embedder.test.succeed();
+    }
+  });
+  webview.src = embedder.emptyGuestURL;
+  document.body.appendChild(webview);
+}
+
 // This test verifies that new window attachment functions as expected.
 //
 // TODO(crbug.com/594215) Test that opening a new window with a data URL is
@@ -1969,6 +1997,7 @@ embedder.test.testList = {
   'testNavOnConsecutiveSrcAttributeChanges':
       testNavOnConsecutiveSrcAttributeChanges,
   'testNavOnSrcAttributeChange': testNavOnSrcAttributeChange,
+  'testLoadCommitUrlsWithIframe': testLoadCommitUrlsWithIframe,
   'testNewWindow': testNewWindow,
   'testNewWindowNoPreventDefault': testNewWindowNoPreventDefault,
   'testNewWindowNoReferrerLink': testNewWindowNoReferrerLink,
