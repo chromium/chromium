@@ -51,11 +51,6 @@ crbug.com/1048761 external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.ht
 # WPT Test harness doesn't deal with finding an about:blank ref test
 crbug.com/1066130 external/wpt/infrastructure/assumptions/blank.html [ Failure ]
 
-# When running under Python 3 on Windows, this test fails to activate backpressure.
-crbug.com/1155106 external/wpt/websockets/stream/tentative/backpressure-receive.any.html [ Failure ]
-crbug.com/1155106 external/wpt/websockets/stream/tentative/backpressure-receive.any.worker.html [ Failure ]
-crbug.com/1155106 external/wpt/websockets/stream/tentative/backpressure-receive.any.sharedworker.html [ Failure ]
-
 # Favicon is not supported by run_web_tests.
 external/wpt/fetch/metadata/favicon.https.sub.html [ Skip ]
 
