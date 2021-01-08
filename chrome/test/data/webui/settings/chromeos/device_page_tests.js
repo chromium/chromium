@@ -1547,7 +1547,6 @@ cr.define('device_page_tests', function() {
                     settings.DevicePageBrowserProxyImpl.getInstance()
                         .updatePowerStatusCalled_);
 
-                acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
                 lidClosedToggle = assert(powerPage.$$('#lidClosedToggle'));
 
                 assertEquals(
@@ -1587,9 +1586,13 @@ cr.define('device_page_tests', function() {
 
           // Power source row is hidden since there's no battery.
           assertTrue(powerSourceRow.hidden);
-          // Idle settings while on battery should not be visible if the
-          // battery is not present.
+          // Idle settings while on battery and while charging should not be
+          // visible if the battery is not present.
           assertEquals(null, powerPage.$$('#batteryIdleSettingBox'));
+          assertEquals(null, powerPage.$$('#acIdleSettingBox'));
+
+          // Expect the "When idle" dropdown options to appear instead.
+          assert(powerPage.$$('#noBatteryAcIdleSelect'));
         });
 
         test('power sources', function() {
@@ -1666,6 +1669,19 @@ cr.define('device_page_tests', function() {
         });
 
         test('set AC idle behavior', function() {
+          const batteryStatus = {
+            present: true,
+            charging: false,
+            calculating: false,
+            percent: 50,
+            statusText: '5 hours left',
+          };
+          cr.webUIListenerCallback(
+              'battery-status-changed', Object.assign({}, batteryStatus));
+          setPowerSources([], '', false);
+          Polymer.dom.flush();
+
+          acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
           selectValue(acIdleSelect, settings.IdleBehavior.DISPLAY_ON);
           expectEquals(
               settings.IdleBehavior.DISPLAY_ON,
@@ -1885,6 +1901,7 @@ cr.define('device_page_tests', function() {
                 });
               })
               .then(function() {
+                acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
                 const batteryIdleSelect =
                     assert(powerPage.$$('#batteryIdleSelect'));
                 expectEquals(
@@ -1971,6 +1988,7 @@ cr.define('device_page_tests', function() {
                    powerPage.async(resolve);
                  })
               .then(function() {
+                acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
                 const batteryIdleSelect =
                     assert(powerPage.$$('#batteryIdleSelect'));
                 expectEquals(

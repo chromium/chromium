@@ -53,35 +53,55 @@
       </div>
     </div>
 
-    <div id="powerIdleLabel"
-        class$="cr-row [[getFirst_(batteryStatus_.present)]]"
-        aria-label="true">
-      $i18n{powerIdleLabel}
-    </div>
-    <div class="cr-row indented first">
-      <div class="flex" aria-hidden="true">
-        $i18n{powerIdleWhileChargingLabel}
+    <div class$="cr-row [[getFirst_(batteryStatus_.present)]]">
+      <div id="powerIdleLabel" class="flex" aria-label="true">
+        $i18n{powerIdleLabel}
       </div>
-      <template is="dom-if" if="[[acIdleManaged_]]" restamp>
-        <cr-policy-indicator id="acIdleManagedIndicator"
-            indicator-type="devicePolicy"
-            icon-aria-label="$i18n{powerIdleWhileChargingAriaLabel}">
-        </cr-policy-indicator>
-      </template>
-      <select id="acIdleSelect" class="md-select"
-          on-change="onAcIdleSelectChange_"
-          disabled="[[shouldAcIdleSelectBeDisabled_]]"
-          aria-label="$i18n{powerIdleWhileChargingAriaLabel}"
-          deep-link-focus-id$="[[Setting.kPowerIdleBehaviorWhileCharging]]">
-        <template is="dom-repeat" items="[[acIdleOptions_]]">
-          <option value="[[item.value]]" selected="[[item.selected]]">
-            [[item.name]]
-          </option>
+      <template is="dom-if" if="[[!batteryStatus_.present]]" restamp>
+        <template is="dom-if" if="[[acIdleManaged_]]" restamp>
+          <cr-policy-indicator id="noBatteryAcIdleManagedIndicator"
+              indicator-type="devicePolicy"
+              icon-aria-label="$i18n{powerIdleWhileChargingAriaLabel}">
+          </cr-policy-indicator>
         </template>
-      </select>
+        <select id="noBatteryAcIdleSelect" class="md-select"
+            on-change="onAcIdleSelectChange_"
+            disabled="[[shouldAcIdleSelectBeDisabled_]]"
+            aria-label="$i18n{powerIdleWhileChargingAriaLabel}"
+            deep-link-focus-id$="[[Setting.kPowerIdleBehaviorWhileCharging]]">
+          <template is="dom-repeat" items="[[acIdleOptions_]]">
+            <option value="[[item.value]]" selected="[[item.selected]]">
+              [[item.name]]
+            </option>
+          </template>
+        </select>
+      </template>
     </div>
 
     <template is="dom-if" if="[[batteryStatus_.present]]" restamp>
+      <div id="acIdleSettingBox" class="cr-row indented first">
+        <div class="flex" aria-hidden="true">
+          $i18n{powerIdleWhileChargingLabel}
+        </div>
+        <template is="dom-if" if="[[acIdleManaged_]]" restamp>
+          <cr-policy-indicator id="acIdleManagedIndicator"
+              indicator-type="devicePolicy"
+              icon-aria-label="$i18n{powerIdleWhileChargingAriaLabel}">
+          </cr-policy-indicator>
+        </template>
+        <select id="acIdleSelect" class="md-select"
+            on-change="onAcIdleSelectChange_"
+            disabled="[[shouldAcIdleSelectBeDisabled_]]"
+            aria-label="$i18n{powerIdleWhileChargingAriaLabel}"
+            deep-link-focus-id$="[[Setting.kPowerIdleBehaviorWhileCharging]]">
+          <template is="dom-repeat" items="[[acIdleOptions_]]">
+            <option value="[[item.value]]" selected="[[item.selected]]">
+              [[item.name]]
+            </option>
+          </template>
+        </select>
+      </div>
+
       <div id="batteryIdleSettingBox" class="cr-row indented">
         <div class="flex" aria-hidden="true">
           $i18n{powerIdleWhileOnBatteryLabel}
