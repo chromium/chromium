@@ -5,6 +5,7 @@
 #include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
 
 #include "base/allocator/allocator_shim_internals.h"
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -117,6 +118,7 @@ base::ThreadSafePartitionRoot* AlignedAllocator() {
 }
 
 #if defined(OS_WIN) && defined(ARCH_CPU_X86)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 bool IsRunning32bitEmulatedOnArm64() {
   using IsWow64Process2Function = decltype(&IsWow64Process2);
 
@@ -135,6 +137,7 @@ bool IsRunning32bitEmulatedOnArm64() {
     return true;
   return false;
 }
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // The number of bytes to add to every allocation. Ordinarily zero, but set to 8
 // when emulating an x86 on ARM64 to avoid a bug in the Windows x86 emulator.
