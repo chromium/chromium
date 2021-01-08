@@ -84,8 +84,8 @@ class ModuleScriptTest : public ::testing::Test, public ParametrizedModuleTest {
     ModuleScriptCreationParams params(
         KURL("https://fox.url/script.js"), KURL("https://fox.url/"),
         ScriptSourceLocationType::kInline, ModuleType::kJavaScript,
-        ParkableString(source_text.IsolatedCopy().ReleaseImpl()), cache_handler,
-        network::mojom::CredentialsMode::kOmit);
+        ParkableString(source_text.IsolatedCopy().ReleaseImpl()),
+        cache_handler);
     return JSModuleScript::Create(params, modulator, ScriptFetchOptions());
   }
 

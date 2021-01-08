@@ -49,7 +49,6 @@ class CORE_EXPORT WorkerModuleScriptFetcher final
 
   void NotifyClient(const KURL& request_url,
                     ModuleType module_type,
-                    const network::mojom::CredentialsMode credentials_mode,
                     const ParkableString& source_text,
                     const ResourceResponse& response,
                     SingleCachedMetadataHandler* cache_handler);

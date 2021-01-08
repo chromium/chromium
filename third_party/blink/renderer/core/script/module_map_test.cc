@@ -117,9 +117,8 @@ class ModuleMapTestModulator final : public DummyModulator {
                ModuleGraphLevel,
                ModuleScriptFetcher::Client* client) override {
       CHECK_EQ(request.GetScriptType(), mojom::blink::ScriptType::kModule);
-      TestRequest* test_request = MakeGarbageCollected<TestRequest>(
-          request.Url(), request.GetResourceRequest().GetCredentialsMode(),
-          client);
+      TestRequest* test_request =
+          MakeGarbageCollected<TestRequest>(request.Url(), client);
       modulator_->test_requests_.push_back(test_request);
     }
     String DebugName() const override { return "TestModuleScriptFetcher"; }
@@ -148,21 +147,18 @@ class ModuleMapTestModulator final : public DummyModulator {
   }
 
   struct TestRequest final : public GarbageCollected<TestRequest> {
-    TestRequest(const KURL& url,
-                network::mojom::CredentialsMode credential_mode,
-                ModuleScriptFetcher::Client* client)
-        : url_(url), credential_mode_(credential_mode), client_(client) {}
+    TestRequest(const KURL& url, ModuleScriptFetcher::Client* client)
+        : url_(url), client_(client) {}
     void NotifyFetchFinished() {
       client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
           url_, url_, ScriptSourceLocationType::kExternalFile,
           ModuleType::kJavaScript, ParkableString(String("").ReleaseImpl()),
-          nullptr, credential_mode_));
+          nullptr));
     }
     void Trace(Visitor* visitor) const { visitor->Trace(client_); }
 
    private:
     const KURL url_;
-    const network::mojom::CredentialsMode credential_mode_;
     Member<ModuleScriptFetcher::Client> client_;
   };
   HeapVector<Member<TestRequest>> test_requests_;

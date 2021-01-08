@@ -102,7 +102,6 @@ void WorkerModuleScriptFetcher::NotifyFinished(Resource* resource) {
   }
 
   NotifyClient(resource->Url(), module_type,
-               script_resource->GetResourceRequest().GetCredentialsMode(),
                script_resource->SourceText(), resource->GetResponse(),
                script_resource->CacheHandler());
 }
@@ -110,7 +109,6 @@ void WorkerModuleScriptFetcher::NotifyFinished(Resource* resource) {
 void WorkerModuleScriptFetcher::NotifyClient(
     const KURL& request_url,
     ModuleType module_type,
-    const network::mojom::CredentialsMode credentials_mode,
     const ParkableString& source_text,
     const ResourceResponse& response,
     SingleCachedMetadataHandler* cache_handler) {
@@ -188,7 +186,7 @@ void WorkerModuleScriptFetcher::NotifyClient(
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       /*source_url=*/url, /*base_url=*/url,
       ScriptSourceLocationType::kExternalFile, module_type, source_text,
-      cache_handler, credentials_mode));
+      cache_handler));
 }
 
 void WorkerModuleScriptFetcher::DidReceiveData(base::span<const char> span) {
@@ -230,7 +228,6 @@ void WorkerModuleScriptFetcher::OnFinishedLoadingWorkerMainScript() {
     source_text_.Append(decoder_->Flush());
   NotifyClient(worker_main_script_loader_->GetRequestURL(),
                ModuleType::kJavaScript,
-               network::mojom::CredentialsMode::kSameOrigin,
                ParkableString(source_text_.ToString().ReleaseImpl()), response,
                worker_main_script_loader_->CreateCachedMetadataHandler());
 }

@@ -728,7 +728,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
         ModuleScriptCreationParams params(
             source_url, base_url, ScriptSourceLocationType::kInline,
             ModuleType::kJavaScript, ParkableString(source_text.Impl()),
-            nullptr, options.CredentialsMode());
+            nullptr);
         ModuleScript* module_script =
             JSModuleScript::Create(params, modulator, options, position);
 

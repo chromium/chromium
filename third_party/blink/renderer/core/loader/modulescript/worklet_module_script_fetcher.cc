@@ -56,8 +56,7 @@ void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
     params.emplace(/*source_url=*/url, /*base_url=*/url,
                    ScriptSourceLocationType::kExternalFile, module_type,
                    script_resource->SourceText(),
-                   script_resource->CacheHandler(),
-                   script_resource->GetResourceRequest().GetCredentialsMode());
+                   script_resource->CacheHandler());
   }
 
   // This will eventually notify |client| passed to

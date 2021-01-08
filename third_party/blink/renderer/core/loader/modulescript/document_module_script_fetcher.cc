@@ -71,8 +71,7 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       /*source_url=*/url, /*base_url=*/url,
       ScriptSourceLocationType::kExternalFile, module_type,
-      script_resource->SourceText(), script_resource->CacheHandler(),
-      script_resource->GetResourceRequest().GetCredentialsMode(), streamer,
+      script_resource->SourceText(), script_resource->CacheHandler(), streamer,
       not_streamed_reason));
 }
 
