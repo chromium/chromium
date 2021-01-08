@@ -23,4 +23,13 @@ interface PrintBackendService {
   // No value provided for `printer_caps` if there is a failure.
   GetPrinterSemanticCapsAndDefaults(string printer_name)
     => (PrinterSemanticCapsAndDefaults? printer_caps);
+
+  // Gets the basic info, paper sizes, and semantic capabilities and defaults
+  // for a specific printer.
+  // No value for `printer_info`, `user_defined_papers`, and `printer_caps` if
+  // there is a failure.
+  FetchCapabilities(string printer_name)
+    => (PrinterBasicInfo? printer_info,
+        array<Paper>? user_defined_papers,
+        PrinterSemanticCapsAndDefaults? printer_caps);
 };

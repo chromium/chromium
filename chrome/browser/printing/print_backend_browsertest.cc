@@ -110,6 +110,21 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     CheckForQuit();
   }
 
+  void OnDidFetchCapabilities(
+      base::Optional<PrinterBasicInfo>* capture_printer_info,
+      base::Optional<PrinterSemanticCapsAndDefaults::Papers>*
+          capture_user_defined_papers,
+      base::Optional<PrinterSemanticCapsAndDefaults>* capture_printer_caps,
+      const base::Optional<PrinterBasicInfo>& printer_info,
+      const base::Optional<PrinterSemanticCapsAndDefaults::Papers>&
+          user_defined_papers,
+      const base::Optional<PrinterSemanticCapsAndDefaults>& printer_caps) {
+    *capture_printer_info = printer_info;
+    *capture_user_defined_papers = user_defined_papers;
+    *capture_printer_caps = printer_caps;
+    CheckForQuit();
+  }
+
   // The following are helper functions for having a wait loop in the test and
   // exit when expected messages are received.  Expect to only have to wait for
   // one message.
@@ -206,6 +221,39 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
           &PrintBackendBrowserTest::OnDidGetPrinterSemanticCapsAndDefaults,
           base::Unretained(this), &printer_caps));
   WaitUntilCallbackReceived();
+  EXPECT_FALSE(printer_caps.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FetchCapabilities) {
+  base::Optional<PrinterBasicInfo> printer_info;
+  base::Optional<PrinterSemanticCapsAndDefaults::Papers> user_defined_papers;
+  base::Optional<PrinterSemanticCapsAndDefaults> printer_caps;
+
+  DoInitAndSetupTestData();
+
+  // Safe to use base::Unretained(this) since waiting locally on the callback
+  // forces a shorter lifetime than `this`.
+  GetPrintBackendService()->FetchCapabilities(
+      kDefaultPrinterName,
+      base::BindOnce(&PrintBackendBrowserTest::OnDidFetchCapabilities,
+                     base::Unretained(this), &printer_info,
+                     &user_defined_papers, &printer_caps));
+  WaitUntilCallbackReceived();
+  EXPECT_TRUE(printer_info.has_value());
+  EXPECT_TRUE(user_defined_papers.has_value());
+  EXPECT_TRUE(printer_caps.has_value());
+  EXPECT_TRUE(printer_info->is_default);
+  EXPECT_EQ(printer_caps->copies_max, kCopiesMax);
+
+  // Requesting for an invalid printer should not return capabilities.
+  GetPrintBackendService()->FetchCapabilities(
+      kInvalidPrinterName,
+      base::BindOnce(&PrintBackendBrowserTest::OnDidFetchCapabilities,
+                     base::Unretained(this), &printer_info,
+                     &user_defined_papers, &printer_caps));
+  WaitUntilCallbackReceived();
+  EXPECT_FALSE(printer_info.has_value());
+  EXPECT_FALSE(user_defined_papers.has_value());
   EXPECT_FALSE(printer_caps.has_value());
 }
 

@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/threading/hang_watcher.h"
+#include "build/build_config.h"
 
 // -----------------------------------------------------------------------------
 // Usage documentation
@@ -228,6 +229,9 @@ class ScopedIPCSupport;
 }
 namespace printing {
 class LocalPrinterHandlerDefault;
+#if defined(OS_MAC)
+class PrintBackendServiceImpl;
+#endif
 class PrintJobWorker;
 class PrinterQuery;
 }
@@ -399,6 +403,9 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class module_installer::ScopedAllowModulePakLoad;
   friend class mojo::CoreLibraryInitializer;
   friend class printing::LocalPrinterHandlerDefault;
+#if defined(OS_MAC)
+  friend class printing::PrintBackendServiceImpl;
+#endif
   friend class printing::PrintJobWorker;
   friend class resource_coordinator::TabManagerDelegate;  // crbug.com/778703
   friend class web::WebSubThread;
