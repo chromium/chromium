@@ -134,9 +134,9 @@ source_set("api") {
       "media_perception_private/media_perception_private_api.h",
     ]
 
+    # TODO(crbug/1158984): as above, remove these deps.
     public_deps += [
       "//extensions/browser/api/cec_private",
-      "//extensions/browser/api/clipboard",
       "//extensions/browser/api/diagnostics",
       "//extensions/browser/api/virtual_keyboard",
       "//extensions/browser/api/vpn_provider",
@@ -207,6 +207,10 @@ group("api_implementations") {
     "//extensions/browser/api/virtual_keyboard_private",
     "//extensions/browser/api/web_request",
   ]
+
+  if (is_chromeos_ash) {
+    public_deps += [ "//extensions/browser/api/clipboard" ]
+  }
 }
 
 function_registration("api_registration") {
