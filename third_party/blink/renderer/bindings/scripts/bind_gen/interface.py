@@ -5213,8 +5213,9 @@ def make_install_interface_template(cg_context, function_name, class_name,
 // https://heycam.github.io/webidl/#es-DOMException-specialness
 {
   v8::Local<v8::FunctionTemplate> intrinsic_error_prototype_interface_template =
-      v8::FunctionTemplate::New(${isolate});
-  intrinsic_error_prototype_interface_template->RemovePrototype();
+      v8::FunctionTemplate::New(${isolate}, nullptr, v8::Local<v8::Value>(),
+                                v8::Local<v8::Signature>(), 0,
+                                v8::ConstructorBehavior::kThrow);
   intrinsic_error_prototype_interface_template->SetIntrinsicDataProperty(
       V8AtomicString(${isolate}, "prototype"), v8::kErrorPrototype);
   ${interface_function_template}->Inherit(
@@ -5230,8 +5231,9 @@ def make_install_interface_template(cg_context, function_name, class_name,
 {
   v8::Local<v8::FunctionTemplate>
       intrinsic_iterator_prototype_interface_template =
-      v8::FunctionTemplate::New(${isolate});
-  intrinsic_iterator_prototype_interface_template->RemovePrototype();
+      v8::FunctionTemplate::New(${isolate}, nullptr, v8::Local<v8::Value>(),
+                                v8::Local<v8::Signature>(), 0,
+                                v8::ConstructorBehavior::kThrow);
   intrinsic_iterator_prototype_interface_template->SetIntrinsicDataProperty(
       V8AtomicString(${isolate}, "prototype"), v8::kAsyncIteratorPrototype);
   ${interface_function_template}->Inherit(
@@ -5257,8 +5259,9 @@ ${instance_object_template}->MarkAsUndetectable();
 {
   v8::Local<v8::FunctionTemplate>
       intrinsic_iterator_prototype_interface_template =
-      v8::FunctionTemplate::New(${isolate});
-  intrinsic_iterator_prototype_interface_template->RemovePrototype();
+      v8::FunctionTemplate::New(${isolate}, nullptr, v8::Local<v8::Value>(),
+                                v8::Local<v8::Signature>(), 0,
+                                v8::ConstructorBehavior::kThrow);
   intrinsic_iterator_prototype_interface_template->SetIntrinsicDataProperty(
       V8AtomicString(${isolate}, "prototype"), v8::kIteratorPrototype);
   ${interface_function_template}->Inherit(

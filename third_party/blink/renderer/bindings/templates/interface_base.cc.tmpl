@@ -579,8 +579,9 @@ static void Install{{v8_class}}Template(
   //   so there is no need to reuse this FunctionTemplate and register it in
   //   V8PerIsolateData.
   v8::Local<v8::FunctionTemplate> intrinsic_iterator_prototype_interface_template =
-      v8::FunctionTemplate::New(isolate);
-  intrinsic_iterator_prototype_interface_template->RemovePrototype();
+      v8::FunctionTemplate::New(isolate, nullptr, v8::Local<v8::Value>(), 
+                                v8::Local<v8::Signature>(), 0, 
+                                v8::ConstructorBehavior::kThrow);
   intrinsic_iterator_prototype_interface_template->SetIntrinsicDataProperty(
       V8AtomicString(isolate, "prototype"), v8::kIteratorPrototype);
   interface_template->Inherit(intrinsic_iterator_prototype_interface_template);
@@ -590,8 +591,9 @@ static void Install{{v8_class}}Template(
   // Temporary @@asyncIterator support for FileSystemDirectoryHandle
   // TODO(https://crbug.com/1087157): Replace with proper bindings support.
   v8::Local<v8::FunctionTemplate> intrinsic_iterator_prototype_interface_template =
-      v8::FunctionTemplate::New(isolate);
-  intrinsic_iterator_prototype_interface_template->RemovePrototype();
+      v8::FunctionTemplate::New(isolate, nullptr, v8::Local<v8::Value>(), 
+                                v8::Local<v8::Signature>(), 0, 
+                                v8::ConstructorBehavior::kThrow);
   intrinsic_iterator_prototype_interface_template->SetIntrinsicDataProperty(
       V8AtomicString(isolate, "prototype"), v8::kAsyncIteratorPrototype);
   interface_template->Inherit(intrinsic_iterator_prototype_interface_template);
@@ -614,8 +616,9 @@ static void Install{{v8_class}}Template(
   // |interface_template| is instantiated, its prototype.__proto__ will point to
   // |intrinsic_error_prototype_interface_template|'s "prototype" property.
   v8::Local<v8::FunctionTemplate> intrinsic_error_prototype_interface_template =
-      v8::FunctionTemplate::New(isolate);
-  intrinsic_error_prototype_interface_template->RemovePrototype();
+      v8::FunctionTemplate::New(isolate, nullptr, v8::Local<v8::Value>(), 
+                                v8::Local<v8::Signature>(), 0, 
+                                v8::ConstructorBehavior::kThrow);
   intrinsic_error_prototype_interface_template->SetIntrinsicDataProperty(
       V8AtomicString(isolate, "prototype"), v8::kErrorPrototype);
   interface_template->Inherit(intrinsic_error_prototype_interface_template);

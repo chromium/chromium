@@ -409,8 +409,6 @@ void InstallCSSPropertyAttributes(
     v8::Local<v8::FunctionTemplate> set_func = v8::FunctionTemplate::New(
         isolate, CSSPropertyAttributeSet, v8_property_name, signature, 1,
         v8::ConstructorBehavior::kThrow, v8::SideEffectType::kHasSideEffect);
-    get_func->RemovePrototype();
-    set_func->RemovePrototype();
     get_func->SetAcceptAnyReceiver(false);
     set_func->SetAcceptAnyReceiver(false);
     get_func->SetClassName(
