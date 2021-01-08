@@ -2171,9 +2171,6 @@ bool ChildProcessSecurityPolicyImpl::ShouldOriginGetOptInIsolation(
     const IsolationContext& isolation_context,
     const url::Origin& origin,
     bool origin_requests_isolation) {
-  // Note: we cannot check the feature flags and early-out here, because the
-  // origin trial might be active (in which case no feature flags are active).
-
   if (!IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin))
     return false;
 

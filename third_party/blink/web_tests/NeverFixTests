@@ -1964,9 +1964,7 @@ http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Skip ]
 # with site isolation enabled, we use a different virtual test suite than
 # not-site-per-process, named no-auto-wpt-origin-isolation.
 external/wpt/origin-isolation/* [ Skip ]
-wpt_internal/origin-isolation/* [ Skip ]
 virtual/no-auto-wpt-origin-isolation/external/wpt/origin-isolation/* [ Pass ]
-virtual/no-auto-wpt-origin-isolation/wpt_internal/origin-isolation/* [ Pass ]
 # ==== Tests incompatible with the default WPT Origin Isolation end here ==^^
 
 # Tests using testRunner.useUnfortunateSynchronousResizeMode occasionally fail on Win7,

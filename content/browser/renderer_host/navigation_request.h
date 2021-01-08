@@ -246,7 +246,7 @@ class CONTENT_EXPORT NavigationRequest
     HEADER,        // requested using the Origin-Isolation header
     ORIGIN_POLICY  // requested using origin policy
   };
-  OptInIsolationCheckResult IsOptInIsolationRequested(const GURL& url);
+  OptInIsolationCheckResult IsOptInIsolationRequested();
 
   // The origin isolation end result is determined early in the lifecycle of a
   // NavigationRequest, but used late. In particular, we want to trigger use

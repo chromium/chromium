@@ -124,7 +124,6 @@
               "inspector-protocol/dom-snapshot",
               "media/stable",
               "webexposed",
-              "wpt_internal/origin-isolation",
               "compositing/filters"
               ],
     "args": ["--stable-release-mode",
@@ -518,8 +517,7 @@
   },
   {
     "prefix": "no-auto-wpt-origin-isolation",
-    "bases": ["external/wpt/origin-isolation",
-              "wpt_internal/origin-isolation"],
+    "bases": ["external/wpt/origin-isolation"],
     "args": ["--disable-auto-wpt-origin-isolation"]
   },
   {

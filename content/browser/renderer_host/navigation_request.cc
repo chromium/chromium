@@ -116,7 +116,6 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
@@ -2024,7 +2023,7 @@ void NavigationRequest::OnRequestRedirected(
 }
 
 void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
-  if (IsOptInIsolationRequested(url) == OptInIsolationCheckResult::NONE)
+  if (IsOptInIsolationRequested() == OptInIsolationCheckResult::NONE)
     return;
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -2068,7 +2067,7 @@ bool NavigationRequest::HasCommittingOrigin(const url::Origin& origin) {
 }
 
 NavigationRequest::OptInIsolationCheckResult
-NavigationRequest::IsOptInIsolationRequested(const GURL& url) {
+NavigationRequest::IsOptInIsolationRequested() {
   if (!response())
     return OptInIsolationCheckResult::NONE;
 
@@ -2088,17 +2087,9 @@ NavigationRequest::IsOptInIsolationRequested(const GURL& url) {
   if (requests_via_origin_policy)
     return OptInIsolationCheckResult::ORIGIN_POLICY;
 
-  // The header can be enabled via either a command-line flag or an origin
-  // trial.
-  blink::TrialTokenValidator validator;
-  const bool header_is_enabled =
-      base::FeatureList::IsEnabled(features::kOriginIsolationHeader) ||
-      (response()->headers && validator.RequestEnablesFeature(
-                                  url, response()->headers.get(),
-                                  "OriginIsolationHeader", base::Time::Now()));
-
   const bool requests_via_header =
-      header_is_enabled && response_head_->parsed_headers->origin_isolation;
+      base::FeatureList::IsEnabled(features::kOriginIsolationHeader) &&
+      response_head_->parsed_headers->origin_isolation;
 
   if (requests_via_header)
     return OptInIsolationCheckResult::HEADER;
@@ -2203,8 +2194,8 @@ void NavigationRequest::ProcessOriginIsolationEndResult() {
 }
 
 UrlInfo NavigationRequest::GetUrlInfo() {
-  return UrlInfo(GetURL(), IsOptInIsolationRequested(GetURL()) !=
-                               OptInIsolationCheckResult::NONE);
+  return UrlInfo(
+      GetURL(), IsOptInIsolationRequested() != OptInIsolationCheckResult::NONE);
 }
 
 void NavigationRequest::OnResponseStarted(
@@ -2453,7 +2444,7 @@ void NavigationRequest::OnResponseStarted(
     DCHECK(!response_should_be_rendered_);
 
   if (render_frame_host_)
-    DetermineOriginIsolationEndResult(IsOptInIsolationRequested(GetURL()));
+    DetermineOriginIsolationEndResult(IsOptInIsolationRequested());
 
   cross_origin_embedder_policy_ = cross_origin_embedder_policy;
 
