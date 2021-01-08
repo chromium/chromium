@@ -138,7 +138,6 @@ source_set("api") {
     public_deps += [
       "//extensions/browser/api/cec_private",
       "//extensions/browser/api/diagnostics",
-      "//extensions/browser/api/virtual_keyboard",
       "//extensions/browser/api/vpn_provider",
       "//extensions/browser/api/webcam_private",
     ]
@@ -209,7 +208,10 @@ group("api_implementations") {
   ]
 
   if (is_chromeos_ash) {
-    public_deps += [ "//extensions/browser/api/clipboard" ]
+    public_deps += [
+      "//extensions/browser/api/clipboard",
+      "//extensions/browser/api/virtual_keyboard",
+    ]
   }
 }
 

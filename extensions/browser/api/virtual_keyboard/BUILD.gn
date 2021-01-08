@@ -17,6 +17,7 @@ source_set("virtual_keyboard") {
     "//build:chromeos_buildflags",
     "//extensions/browser/api/virtual_keyboard_private",
     "//extensions/common/api",
+    "//ui/base/ime/chromeos",
   ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
