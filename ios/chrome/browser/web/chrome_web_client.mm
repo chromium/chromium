@@ -397,7 +397,11 @@ UIView* ChromeWebClient::GetWindowedContainer() {
 }
 
 bool ChromeWebClient::EnableLongPressAndForceTouchHandling() const {
-  return !web::features::UseWebViewNativeContextMenu();
+  return !web::features::UseWebViewNativeContextMenuWeb();
+}
+
+bool ChromeWebClient::EnableLongPressUIContextMenu() const {
+  return web::features::UseWebViewNativeContextMenuSystem();
 }
 
 bool ChromeWebClient::ForceMobileVersionByDefault(const GURL& url) {

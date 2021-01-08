@@ -3294,7 +3294,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)webState:(web::WebState*)webState
     handleContextMenu:(const web::ContextMenuParams&)params {
-  DCHECK(!web::features::UseWebViewNativeContextMenu());
+  DCHECK(!web::features::UseWebViewNativeContextMenuWeb() &&
+         !web::features::UseWebViewNativeContextMenuSystem());
   // Prevent context menu from displaying for a tab which is no longer the
   // current one.
   if (webState != self.currentWebState) {
